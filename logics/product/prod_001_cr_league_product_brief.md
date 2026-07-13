@@ -1,9 +1,9 @@
 ## prod_001_cr_league_product_brief - CR League Product Brief
 > Date: 2026-07-13
 > Status: Proposed
-> Related request: `req_000_define_the_asynchronous_racing_league_game_product_brief`
-> Related backlog: `item_001_document_and_validate_the_grand_prix_core_loop`, `item_002_build_the_first_league_and_team_experience`, `item_003_prototype_race_simulation_replay_and_report`, `item_004_design_and_implement_the_v1_card_and_inventory_system`, `item_005_define_balancing_and_retention_mechanics_for_social_leagues`, `item_006_prepare_a_low_cost_asynchronous_technical_foundation`
-> Related task: `task_001_orchestrate_cr_league_product_brief_and_mvp_discovery`
+> Related request: `req_001_define_grand_prix_core_loop_and_simulation_v1`
+> Related backlog: `item_007_define_grand_prix_core_loop_and_simulation_v1`
+> Related task: `task_002_define_grand_prix_core_loop_and_simulation_v1`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
@@ -349,5 +349,5 @@ Can wait until later:
 - Should team condition or car wear persist between races in V1, or should each Grand Prix start clean except for cards and credits?
 
 # References
-- Product back-reference: `req_000_define_the_asynchronous_racing_league_game_product_brief`
-- Task back-reference: `task_001_orchestrate_cr_league_product_brief_and_mvp_discovery`
+- Product back-reference: `item_007_define_grand_prix_core_loop_and_simulation_v1`
+- Task back-reference: `task_002_define_grand_prix_core_loop_and_simulation_v1`

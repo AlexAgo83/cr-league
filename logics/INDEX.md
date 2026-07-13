@@ -19,6 +19,12 @@
 |---|---|---|---|---|---|
 | [prod_001_cr_league_product_brief](product/prod_001_cr_league_product_brief.md) | 7. Progression | Proposed |  |  | product/prod_001_cr_league_product_brief.md |
 
+## Roadmaps
+
+| Doc | Title | Status | Owner | Progress | Path |
+|---|---|---|---|---|---|
+| [1.0](roadmap/road_001_cr_league_roadmap.md) | Private league V1 | Proposed |  |  | roadmap/road_001_cr_league_roadmap.md |
+
 ## Requests
 
 | Doc | Title | Status | Owner | Progress | Path |
@@ -36,6 +42,14 @@
 | [req_010_add_cr_league_repository_governance_docs](request/req_010_add_cr_league_repository_governance_docs.md) | Add CR League repository governance docs | Done |  |  | request/req_010_add_cr_league_repository_governance_docs.md |
 | [req_011_define_cr_league_engineering_adrs](request/req_011_define_cr_league_engineering_adrs.md) | Define CR League engineering ADRs | Done |  |  | request/req_011_define_cr_league_engineering_adrs.md |
 | [req_012_align_scaffold_with_cr_league_engineering_adrs](request/req_012_align_scaffold_with_cr_league_engineering_adrs.md) | Align scaffold with CR League engineering ADRs | Done |  |  | request/req_012_align_scaffold_with_cr_league_engineering_adrs.md |
+| [req_013_implement_cr_league_pure_simulation_core](request/req_013_implement_cr_league_pure_simulation_core.md) | Implement CR League pure simulation core | Done |  |  | request/req_013_implement_cr_league_pure_simulation_core.md |
+| [req_014_add_cr_league_simulation_preview_api_and_screen](request/req_014_add_cr_league_simulation_preview_api_and_screen.md) | Add CR League simulation preview API and screen | Done |  |  | request/req_014_add_cr_league_simulation_preview_api_and_screen.md |
+| [req_015_add_minimal_league_persistence_api](request/req_015_add_minimal_league_persistence_api.md) | Add minimal league persistence API | Done |  |  | request/req_015_add_minimal_league_persistence_api.md |
+| [req_016_add_playable_demo_league_web_flow](request/req_016_add_playable_demo_league_web_flow.md) | Add playable demo league web flow | Done |  |  | request/req_016_add_playable_demo_league_web_flow.md |
+| [req_017_prepare_real_postgresql_migration_and_seed_workflow](request/req_017_prepare_real_postgresql_migration_and_seed_workflow.md) | Prepare real PostgreSQL migration and seed workflow | Done |  |  | request/req_017_prepare_real_postgresql_migration_and_seed_workflow.md |
+| [req_018_wire_web_copy_to_i18n_catalog](request/req_018_wire_web_copy_to_i18n_catalog.md) | Wire web copy to i18n catalog | Done |  |  | request/req_018_wire_web_copy_to_i18n_catalog.md |
+| [req_019_harden_current_grand_prix_state_rules](request/req_019_harden_current_grand_prix_state_rules.md) | Harden current Grand Prix state rules | Done |  |  | request/req_019_harden_current_grand_prix_state_rules.md |
+| [req_020_add_join_league_by_code_flow](request/req_020_add_join_league_by_code_flow.md) | Add join league by code flow | Done |  |  | request/req_020_add_join_league_by_code_flow.md |
 
 ## Backlog
 
@@ -59,6 +73,14 @@
 | [item_016_add_cr_league_repository_governance_docs](backlog/item_016_add_cr_league_repository_governance_docs.md) | Add CR League repository governance docs | Done |  | 100% | backlog/item_016_add_cr_league_repository_governance_docs.md |
 | [item_017_define_cr_league_engineering_adrs](backlog/item_017_define_cr_league_engineering_adrs.md) | Define CR League engineering ADRs | Done |  | 100% | backlog/item_017_define_cr_league_engineering_adrs.md |
 | [item_018_align_scaffold_with_cr_league_engineering_adrs](backlog/item_018_align_scaffold_with_cr_league_engineering_adrs.md) | Align scaffold with CR League engineering ADRs | Done |  | 100% | backlog/item_018_align_scaffold_with_cr_league_engineering_adrs.md |
+| [item_019_implement_cr_league_pure_simulation_core](backlog/item_019_implement_cr_league_pure_simulation_core.md) | Implement CR League pure simulation core | Done |  | 100% | backlog/item_019_implement_cr_league_pure_simulation_core.md |
+| [item_020_add_cr_league_simulation_preview_api_and_screen](backlog/item_020_add_cr_league_simulation_preview_api_and_screen.md) | Add CR League simulation preview API and screen | Done |  | 100% | backlog/item_020_add_cr_league_simulation_preview_api_and_screen.md |
+| [item_021_add_minimal_league_persistence_api](backlog/item_021_add_minimal_league_persistence_api.md) | Add minimal league persistence API | Done |  | 100% | backlog/item_021_add_minimal_league_persistence_api.md |
+| [item_022_add_playable_demo_league_web_flow](backlog/item_022_add_playable_demo_league_web_flow.md) | Add playable demo league web flow | Done |  | 100% | backlog/item_022_add_playable_demo_league_web_flow.md |
+| [item_023_prepare_real_postgresql_migration_and_seed_workflow](backlog/item_023_prepare_real_postgresql_migration_and_seed_workflow.md) | Prepare real PostgreSQL migration and seed workflow | Done |  | 100% | backlog/item_023_prepare_real_postgresql_migration_and_seed_workflow.md |
+| [item_024_wire_web_copy_to_i18n_catalog](backlog/item_024_wire_web_copy_to_i18n_catalog.md) | Wire web copy to i18n catalog | Done |  | 100% | backlog/item_024_wire_web_copy_to_i18n_catalog.md |
+| [item_025_harden_current_grand_prix_state_rules](backlog/item_025_harden_current_grand_prix_state_rules.md) | Harden current Grand Prix state rules | Done |  | 100% | backlog/item_025_harden_current_grand_prix_state_rules.md |
+| [item_026_add_join_league_by_code_flow](backlog/item_026_add_join_league_by_code_flow.md) | Add join league by code flow | Done |  | 100% | backlog/item_026_add_join_league_by_code_flow.md |
 
 ## Tasks
 
@@ -77,3 +99,11 @@
 | [task_011_add_cr_league_repository_governance_docs](tasks/task_011_add_cr_league_repository_governance_docs.md) | Add CR League repository governance docs | Done | codex | 100% | tasks/task_011_add_cr_league_repository_governance_docs.md |
 | [task_012_define_cr_league_engineering_adrs](tasks/task_012_define_cr_league_engineering_adrs.md) | Define CR League engineering ADRs | Done | codex | 100% | tasks/task_012_define_cr_league_engineering_adrs.md |
 | [task_013_align_scaffold_with_cr_league_engineering_adrs](tasks/task_013_align_scaffold_with_cr_league_engineering_adrs.md) | Align scaffold with CR League engineering ADRs | Done | codex | 100% | tasks/task_013_align_scaffold_with_cr_league_engineering_adrs.md |
+| [task_014_implement_cr_league_pure_simulation_core](tasks/task_014_implement_cr_league_pure_simulation_core.md) | Implement CR League pure simulation core | Done | codex | 100% | tasks/task_014_implement_cr_league_pure_simulation_core.md |
+| [task_015_add_cr_league_simulation_preview_api_and_screen](tasks/task_015_add_cr_league_simulation_preview_api_and_screen.md) | Add CR League simulation preview API and screen | Done | codex | 100% | tasks/task_015_add_cr_league_simulation_preview_api_and_screen.md |
+| [task_016_add_minimal_league_persistence_api](tasks/task_016_add_minimal_league_persistence_api.md) | Add minimal league persistence API | Done | codex | 100% | tasks/task_016_add_minimal_league_persistence_api.md |
+| [task_017_add_playable_demo_league_web_flow](tasks/task_017_add_playable_demo_league_web_flow.md) | Add playable demo league web flow | Done | codex | 100% | tasks/task_017_add_playable_demo_league_web_flow.md |
+| [task_018_prepare_real_postgresql_migration_and_seed_workflow](tasks/task_018_prepare_real_postgresql_migration_and_seed_workflow.md) | Prepare real PostgreSQL migration and seed workflow | Done | codex | 100% | tasks/task_018_prepare_real_postgresql_migration_and_seed_workflow.md |
+| [task_019_wire_web_copy_to_i18n_catalog](tasks/task_019_wire_web_copy_to_i18n_catalog.md) | Wire web copy to i18n catalog | Done | codex | 100% | tasks/task_019_wire_web_copy_to_i18n_catalog.md |
+| [task_020_harden_current_grand_prix_state_rules](tasks/task_020_harden_current_grand_prix_state_rules.md) | Harden current Grand Prix state rules | Done | codex | 100% | tasks/task_020_harden_current_grand_prix_state_rules.md |
+| [task_021_add_join_league_by_code_flow](tasks/task_021_add_join_league_by_code_flow.md) | Add join league by code flow | Done | codex | 100% | tasks/task_021_add_join_league_by_code_flow.md |

@@ -169,14 +169,18 @@ logics-manager lint --require-status
 logics-manager audit --group-by-doc
 ```
 
-The current implementation roadmap is:
+The current release roadmap is:
+
+- `logics/roadmap/road_001_cr_league_roadmap.md`
+
+The detailed implementation-wave roadmap is:
 
 - `logics/specs/spec_016_implementation_roadmap.md`
 
-Next planned code wave:
+Current roadmap direction:
 
-- scaffolded foundation is complete;
-- next wave should implement the pure simulation core.
+- `0.1` playable vertical slice is mostly implemented;
+- next major product increment is `0.2` private league prototype.
 
 ## Contributing
 

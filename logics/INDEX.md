@@ -21,6 +21,7 @@
 | [req_002_define_cr_league_v1_planning_specs](request/req_002_define_cr_league_v1_planning_specs.md) | Define CR League V1 planning specs | Done |  |  | request/req_002_define_cr_league_v1_planning_specs.md |
 | [req_003_decide_cr_league_v1_application_architecture](request/req_003_decide_cr_league_v1_application_architecture.md) | Decide CR League V1 application architecture | Done |  |  | request/req_003_decide_cr_league_v1_application_architecture.md |
 | [req_004_define_cr_league_implementation_contracts_v0](request/req_004_define_cr_league_implementation_contracts_v0.md) | Define CR League implementation contracts V0 | Done |  |  | request/req_004_define_cr_league_implementation_contracts_v0.md |
+| [req_005_capture_cr_league_product_critique_and_gameplay_refinements](request/req_005_capture_cr_league_product_critique_and_gameplay_refinements.md) | Capture CR League product critique and gameplay refinements | Done |  |  | request/req_005_capture_cr_league_product_critique_and_gameplay_refinements.md |
 
 ## Backlog
 
@@ -36,6 +37,7 @@
 | [item_008_define_cr_league_v1_planning_specs](backlog/item_008_define_cr_league_v1_planning_specs.md) | Define CR League V1 planning specs | Done |  | 100% | backlog/item_008_define_cr_league_v1_planning_specs.md |
 | [item_009_decide_cr_league_v1_application_architecture](backlog/item_009_decide_cr_league_v1_application_architecture.md) | Decide CR League V1 application architecture | Done |  | 100% | backlog/item_009_decide_cr_league_v1_application_architecture.md |
 | [item_010_define_cr_league_implementation_contracts_v0](backlog/item_010_define_cr_league_implementation_contracts_v0.md) | Define CR League implementation contracts V0 | Done |  | 100% | backlog/item_010_define_cr_league_implementation_contracts_v0.md |
+| [item_011_capture_cr_league_product_critique_and_gameplay_refinements](backlog/item_011_capture_cr_league_product_critique_and_gameplay_refinements.md) | Capture CR League product critique and gameplay refinements | Done |  | 100% | backlog/item_011_capture_cr_league_product_critique_and_gameplay_refinements.md |
 
 ## Tasks
 
@@ -46,3 +48,4 @@
 | [task_003_define_cr_league_v1_planning_specs](tasks/task_003_define_cr_league_v1_planning_specs.md) | Define CR League V1 planning specs | Done | codex | 100% | tasks/task_003_define_cr_league_v1_planning_specs.md |
 | [task_004_decide_cr_league_v1_application_architecture](tasks/task_004_decide_cr_league_v1_application_architecture.md) | Decide CR League V1 application architecture | Done | codex | 100% | tasks/task_004_decide_cr_league_v1_application_architecture.md |
 | [task_005_define_cr_league_implementation_contracts_v0](tasks/task_005_define_cr_league_implementation_contracts_v0.md) | Define CR League implementation contracts V0 | Done | codex | 100% | tasks/task_005_define_cr_league_implementation_contracts_v0.md |
+| [task_006_capture_cr_league_product_critique_and_gameplay_refinements](tasks/task_006_capture_cr_league_product_critique_and_gameplay_refinements.md) | Capture CR League product critique and gameplay refinements | Done | codex | 100% | tasks/task_006_capture_cr_league_product_critique_and_gameplay_refinements.md |

@@ -6,3 +6,73 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model League {
+  id        String   @id @default(cuid())
+  name      String
+  code      String   @unique
+  status    String   @default("active")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  teams       Team[]
+  grandPrixes GrandPrix[]
+
+  @@map("leagues")
+}
+
+model Team {
+  id        String   @id @default(cuid())
+  leagueId  String
+  name      String
+  kind      String   @default("human")
+  credits   Int      @default(0)
+  points    Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  league    League         @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  decisions RaceDecision[]
+
+  @@unique([leagueId, name])
+  @@map("teams")
+}
+
+model GrandPrix {
+  id             String   @id @default(cuid())
+  leagueId       String
+  name           String
+  round          Int      @default(1)
+  seed           String
+  primaryTrait   String
+  secondaryTrait String
+  forecast       Json
+  status         String   @default("briefing")
+  result         Json?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  league    League         @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  decisions RaceDecision[]
+
+  @@unique([leagueId, round])
+  @@map("grand_prixes")
+}
+
+model RaceDecision {
+  id           String   @id @default(cuid())
+  grandPrixId  String
+  teamId       String
+  approach     String
+  preparation  String
+  cardId       String?
+  rivalTeamId  String?
+  defaulted    Boolean  @default(false)
+  submittedAt  DateTime @default(now())
+
+  grandPrix GrandPrix @relation(fields: [grandPrixId], references: [id], onDelete: Cascade)
+  team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([grandPrixId, teamId])
+  @@map("race_decisions")
+}

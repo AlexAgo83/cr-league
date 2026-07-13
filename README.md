@@ -2,7 +2,7 @@
 
 Tactical urban micro-EV racing league prototype.
 
-CR League is a solo-first, private-league-ready racing game where the player acts as a team principal rather than a driver. The current repository contains the Wave 1 technical foundation: a Vite React PWA shell, Fastify API shell, shared TypeScript package, Prisma/PostgreSQL schema shell, and Logics planning corpus.
+CR League is a solo-first, private-league-ready racing game where the player acts as a team principal rather than a driver. The current repository contains a Vite React PWA shell, Fastify API, shared TypeScript simulation package, Prisma/PostgreSQL schema, and Logics planning corpus.
 
 ```mermaid
 flowchart LR
@@ -18,18 +18,16 @@ flowchart LR
 Implemented:
 
 - npm workspace monorepo
-- `apps/web` Vite + React shell
-- `apps/api` Fastify shell with `GET /health`
-- `packages/shared` shared metadata/types package
-- `prisma/schema.prisma` PostgreSQL datasource shell
+- `apps/web` Vite + React shell with simulation preview
+- `apps/api` Fastify API with health, simulation preview, and minimal league endpoints
+- `packages/shared` shared metadata, race domain types, demo race, and simulation engine
+- `prisma/schema.prisma` PostgreSQL league/team/Grand Prix/decision schema
 - TypeScript, ESLint, Vitest baseline
 - Logics product, gameplay, architecture, UX, implementation-contract, and roadmap docs
 
 Not implemented yet:
 
-- race simulation
-- persisted game data
-- gameplay UI
+- full gameplay UI
 - authentication
 - private multiplayer
 - deployment config
@@ -75,6 +73,17 @@ Check the API:
 
 ```bash
 curl http://127.0.0.1:4874/health
+curl -X POST http://127.0.0.1:4874/simulation/preview
+```
+
+Create and resolve a demo league through the API:
+
+```bash
+curl -X POST http://127.0.0.1:4874/leagues \
+  -H "content-type: application/json" \
+  -d '{"name":"Office League","teamName":"Circle One"}'
+
+curl -X POST http://127.0.0.1:4874/leagues/<leagueId>/resolve
 ```
 
 ## Configuration

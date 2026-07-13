@@ -1,0 +1,16 @@
+:root {
+  color: var(--color-text);
+  background: var(--color-page);
+  font-family: var(--font-sans);
+}
+
+body {
+  margin: 0;
+}
+
+h1 {
+  font-size: clamp(2.5rem, 10vw, 5rem);
+  letter-spacing: 0;
+  line-height: 1;
+  margin: 0 0 16px;
+}

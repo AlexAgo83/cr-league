@@ -35,6 +35,7 @@
 | [req_009_scaffold_cr_league_monorepo_foundation](request/req_009_scaffold_cr_league_monorepo_foundation.md) | Scaffold CR League monorepo foundation | Done |  |  | request/req_009_scaffold_cr_league_monorepo_foundation.md |
 | [req_010_add_cr_league_repository_governance_docs](request/req_010_add_cr_league_repository_governance_docs.md) | Add CR League repository governance docs | Done |  |  | request/req_010_add_cr_league_repository_governance_docs.md |
 | [req_011_define_cr_league_engineering_adrs](request/req_011_define_cr_league_engineering_adrs.md) | Define CR League engineering ADRs | Done |  |  | request/req_011_define_cr_league_engineering_adrs.md |
+| [req_012_align_scaffold_with_cr_league_engineering_adrs](request/req_012_align_scaffold_with_cr_league_engineering_adrs.md) | Align scaffold with CR League engineering ADRs | Done |  |  | request/req_012_align_scaffold_with_cr_league_engineering_adrs.md |
 
 ## Backlog
 
@@ -57,6 +58,7 @@
 | [item_015_scaffold_cr_league_monorepo_foundation](backlog/item_015_scaffold_cr_league_monorepo_foundation.md) | Scaffold CR League monorepo foundation | Done |  | 100% | backlog/item_015_scaffold_cr_league_monorepo_foundation.md |
 | [item_016_add_cr_league_repository_governance_docs](backlog/item_016_add_cr_league_repository_governance_docs.md) | Add CR League repository governance docs | Done |  | 100% | backlog/item_016_add_cr_league_repository_governance_docs.md |
 | [item_017_define_cr_league_engineering_adrs](backlog/item_017_define_cr_league_engineering_adrs.md) | Define CR League engineering ADRs | Done |  | 100% | backlog/item_017_define_cr_league_engineering_adrs.md |
+| [item_018_align_scaffold_with_cr_league_engineering_adrs](backlog/item_018_align_scaffold_with_cr_league_engineering_adrs.md) | Align scaffold with CR League engineering ADRs | Done |  | 100% | backlog/item_018_align_scaffold_with_cr_league_engineering_adrs.md |
 
 ## Tasks
 
@@ -74,3 +76,4 @@
 | [task_010_scaffold_cr_league_monorepo_foundation](tasks/task_010_scaffold_cr_league_monorepo_foundation.md) | Scaffold CR League monorepo foundation | Done | codex | 100% | tasks/task_010_scaffold_cr_league_monorepo_foundation.md |
 | [task_011_add_cr_league_repository_governance_docs](tasks/task_011_add_cr_league_repository_governance_docs.md) | Add CR League repository governance docs | Done | codex | 100% | tasks/task_011_add_cr_league_repository_governance_docs.md |
 | [task_012_define_cr_league_engineering_adrs](tasks/task_012_define_cr_league_engineering_adrs.md) | Define CR League engineering ADRs | Done | codex | 100% | tasks/task_012_define_cr_league_engineering_adrs.md |
+| [task_013_align_scaffold_with_cr_league_engineering_adrs](tasks/task_013_align_scaffold_with_cr_league_engineering_adrs.md) | Align scaffold with CR League engineering ADRs | Done | codex | 100% | tasks/task_013_align_scaffold_with_cr_league_engineering_adrs.md |

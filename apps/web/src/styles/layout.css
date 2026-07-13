@@ -1,0 +1,26 @@
+.app-shell {
+  align-items: center;
+  display: grid;
+  min-height: 100dvh;
+  padding: var(--space-page);
+}
+
+.hero {
+  margin: 0 auto;
+  max-width: 720px;
+}
+
+.eyebrow {
+  color: var(--color-accent);
+  font-size: 0.875rem;
+  font-weight: 700;
+  margin: 0 0 12px;
+  text-transform: uppercase;
+}
+
+.hero p:last-child {
+  color: var(--color-muted);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  margin: 0;
+}

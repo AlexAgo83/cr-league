@@ -4,7 +4,8 @@
 > Related product: `prod_001_cr_league_product_brief`
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
-> Confidence: 89
+> Confidence: 90
+> Non-semantic edit: refreshed 0.2 delivery notes after cadence/dashboard slice.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1 without pretending the full game should be built in one pass.
@@ -14,8 +15,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 # Current Position
 - Product discovery, core gameplay specs, architecture, device targets, theme direction, ADRs, repository governance, and implementation contracts are documented.
 - The monorepo foundation exists with Vite React, Fastify, Prisma, shared simulation package, tests, lint, build, and Logics validation.
-- The prototype can create a persisted demo league, submit a race directive, resolve a Grand Prix, show report/replay evidence, persist rewards, join an active league by invite code, rejoin a claimed team, and advance to the next Grand Prix.
-- This is not yet a complete game loop: there is no configurable league schedule/deadline system, card inventory economy, replay polish, full auth/permissions, or production deployment.
+- The prototype can create a persisted demo league, submit a race directive, resolve a Grand Prix, show report/replay evidence, persist rewards, join an active league by invite code, rejoin a claimed team, advance to the next Grand Prix, configure cadence/deadline, and show GP history/readiness.
+- This is not yet a complete game loop: there is no automatic scheduler, notifications, card inventory economy, replay polish, full auth/permissions, or production deployment.
 
 # Milestones
 ## 0.1 - Playable vertical slice
@@ -44,6 +45,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - `req_018_wire_web_copy_to_i18n_catalog`
   - `req_019_harden_current_grand_prix_state_rules`
   - `req_020_add_join_league_by_code_flow`
+  - `req_021_build_private_league_prototype_foundation`
+  - `req_022_add_private_league_cadence_and_dashboard`
 
 ## 0.2 - Private league prototype
 - Goal: Turn the current demo league into a credible private league session for colleagues.
@@ -62,6 +65,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - `POST /leagues/:leagueId/next-grand-prix`;
   - optional defaulted resolution through `allowDefaults`;
   - submitted/missing team action state.
+  - manual cadence/deadline settings;
+  - GP history and dashboard readiness/action display.
 - Exit signal:
   - 2+ human players can join the same league, prepare for the same GP, and resolve a race with absent players defaulted;
   - a solo player can bypass waiting time with bots;
@@ -138,8 +143,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Do not start 1.0 production hardening until the private-league loop has survived at least one real playtest.
 
 # Next Recommended Requests
-- Add configurable league cadence and preparation deadline rules.
-- Improve the dashboard for league state, next action, and joined players.
+- Add automatic deadline resolution only if manual operation becomes painful in playtest.
+- Improve the dashboard layout after feedback from a real colleague session.
 - Add a first replay visualization pass from the stored event timeline.
 - Add card inventory and economy progression once repeated GP sessions are usable.
 

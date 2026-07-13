@@ -4,12 +4,17 @@ type LeagueState = {
   league: {
     id: string;
     code: string;
+    cadence: string;
   };
   currentGrandPrix: {
     round: number;
     status: string;
     result: unknown;
   };
+  grandPrixHistory: Array<{
+    round: number;
+    status: string;
+  }>;
   teams: Array<{
     id: string;
     kind: string;
@@ -40,6 +45,16 @@ await request<LeagueState>("/leagues/rejoin", {
   method: "POST",
   body: JSON.stringify(created.player)
 });
+const configured = await request<LeagueState>(`/leagues/${created.league.id}/settings`, {
+  method: "POST",
+  body: JSON.stringify({
+    cadence: "weekly",
+    preparationDeadlineAt: new Date(Date.now() + 60_000).toISOString()
+  })
+});
+if (configured.league.cadence !== "weekly") {
+  throw new Error("League cadence did not update.");
+}
 
 const joinedTeamName = `Joined Team ${Date.now()}`;
 const joined = await request<LeagueState>("/leagues/join", {
@@ -112,6 +127,9 @@ const next = await request<LeagueState>(`/leagues/${created.league.id}/next-gran
 });
 if (next.currentGrandPrix.round !== resolved.currentGrandPrix.round + 1 || next.currentGrandPrix.status !== "briefing") {
   throw new Error("Next Grand Prix did not start.");
+}
+if (next.grandPrixHistory.length < 2) {
+  throw new Error("Grand Prix history did not include previous rounds.");
 }
 
 console.log(`Smoke OK: ${resolved.league.code} resolved and advanced`);

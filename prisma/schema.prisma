@@ -8,12 +8,14 @@ datasource db {
 }
 
 model League {
-  id        String   @id @default(cuid())
-  name      String
-  code      String   @unique
-  status    String   @default("active")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                    String    @id @default(cuid())
+  name                  String
+  code                  String    @unique
+  status                String    @default("active")
+  cadence               String    @default("manual")
+  preparationDeadlineAt DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   teams       Team[]
   grandPrixes GrandPrix[]

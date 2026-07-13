@@ -7,7 +7,9 @@ const baseState = {
     id: "league_1",
     name: "Office League",
     code: "ABC123",
-    status: "active"
+    status: "active",
+    cadence: "manual",
+    preparationDeadlineAt: null
   },
   currentGrandPrix: {
     id: "gp_1",
@@ -16,27 +18,39 @@ const baseState = {
     status: "briefing",
     result: null
   },
+  grandPrixHistory: [
+    {
+      id: "gp_1",
+      name: "Silver Ridge GP",
+      round: 1,
+      status: "briefing",
+      result: null
+    }
+  ],
   teams: [
     {
       id: "team_1",
       name: "Circle One",
       kind: "human",
       points: 0,
-      credits: 0
+      credits: 0,
+      ready: false
     },
     {
       id: "team_2",
       name: "Mika Blitz",
       kind: "bot",
       points: 0,
-      credits: 0
+      credits: 0,
+      ready: false
     }
   ],
   actionState: {
     submittedTeamIds: [],
     missingTeamIds: ["team_1", "team_2"],
     canResolve: false,
-    canStartNextGrandPrix: false
+    canStartNextGrandPrix: false,
+    nextAction: "wait_for_directives"
   },
   player: {
     teamId: "team_1",
@@ -51,7 +65,8 @@ const decidedState = {
     submittedTeamIds: ["team_1"],
     missingTeamIds: ["team_2"],
     canResolve: true,
-    canStartNextGrandPrix: false
+    canStartNextGrandPrix: false,
+    nextAction: "resolve_grand_prix"
   },
   decisions: [
     {
@@ -70,7 +85,8 @@ const resolvedState = {
     submittedTeamIds: ["team_1"],
     missingTeamIds: [],
     canResolve: false,
-    canStartNextGrandPrix: true
+    canStartNextGrandPrix: true,
+    nextAction: "start_next_grand_prix"
   },
   currentGrandPrix: {
     ...baseState.currentGrandPrix,
@@ -126,7 +142,8 @@ const resolvedState = {
       name: "Circle One",
       kind: "human",
       points: 25,
-      credits: 150
+      credits: 150,
+      ready: true
     }
   ]
 };
@@ -137,6 +154,25 @@ const nextGrandPrixState = {
     ...baseState.currentGrandPrix,
     id: "gp_2",
     round: 2
+  },
+  grandPrixHistory: [
+    {
+      id: "gp_2",
+      name: "Silver Ridge GP",
+      round: 2,
+      status: "briefing",
+      result: null
+    },
+    ...baseState.grandPrixHistory
+  ]
+};
+
+const settingsState = {
+  ...baseState,
+  league: {
+    ...baseState.league,
+    cadence: "weekly",
+    preparationDeadlineAt: "2026-07-15T10:00:00.000Z"
   }
 };
 
@@ -152,7 +188,8 @@ describe("App", () => {
       .mockResolvedValueOnce(response(baseState))
       .mockResolvedValueOnce(response(decidedState))
       .mockResolvedValueOnce(response(resolvedState))
-      .mockResolvedValueOnce(response(nextGrandPrixState));
+      .mockResolvedValueOnce(response(nextGrandPrixState))
+      .mockResolvedValueOnce(response(settingsState));
 
     render(<App />);
 
@@ -173,7 +210,15 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     expect(await screen.findByText("Code ABC123 · Round 2 · briefing")).toBeTruthy();
-    expect(fetch).toHaveBeenCalledTimes(4);
+
+    fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
+    fireEvent.click(screen.getByRole("button", { name: "Update settings" }));
+    expect(await screen.findByText("League settings updated.")).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Forget team" }));
+    expect(screen.getByText("Team claim forgotten.")).toBeTruthy();
+    expect(localStorage.getItem("cr-league-player-claim")).toBe(null);
+    expect(fetch).toHaveBeenCalledTimes(5);
   });
 
   it("joins a league by code", async () => {

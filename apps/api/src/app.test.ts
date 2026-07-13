@@ -314,18 +314,66 @@ describe("api app", () => {
     expect(defaultResolveResponse.json().currentGrandPrix.status).toBe("resolved");
     expect(nextResponse.statusCode).toBe(200);
     expect(nextResponse.json().currentGrandPrix).toMatchObject({ round: 2, status: "briefing", result: null });
+    expect(nextResponse.json().grandPrixHistory.map((grandPrix: { round: number }) => grandPrix.round)).toEqual([2, 1]);
     expect(nextResponse.json().actionState).toMatchObject({
       submittedTeamIds: [],
       missingTeamIds: expect.arrayContaining([teamId]),
       canResolve: false,
-      canStartNextGrandPrix: false
+      canStartNextGrandPrix: false,
+      nextAction: "wait_for_directives"
     });
     expect(earlyNextResponse.statusCode).toBe(409);
+  });
+
+  it("updates private league cadence and preparation deadline", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Circle One" }
+    });
+    const leagueId = createResponse.json().league.id;
+    const deadline = new Date(Date.now() + 60_000).toISOString();
+
+    const settingsResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/settings`,
+      payload: { cadence: "weekly", preparationDeadlineAt: deadline }
+    });
+    const invalidSettingsResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/settings`,
+      payload: { cadence: "always_on" }
+    });
+
+    await app.close();
+
+    expect(settingsResponse.statusCode).toBe(200);
+    expect(settingsResponse.json().league).toMatchObject({
+      cadence: "weekly",
+      preparationDeadlineAt: deadline
+    });
+    expect(invalidSettingsResponse.statusCode).toBe(409);
   });
 });
 
 function createMemoryDb(): PrismaClient {
-  type LeagueRow = { id: string; name: string; code: string; status: string };
+  type LeagueRow = {
+    id: string;
+    name: string;
+    code: string;
+    status: string;
+    cadence: string;
+    preparationDeadlineAt: Date | null;
+  };
   type TeamRow = {
     id: string;
     leagueId: string;
@@ -367,8 +415,8 @@ function createMemoryDb(): PrismaClient {
 
   return {
     league: {
-      create: async ({ data }: { data: Omit<LeagueRow, "id" | "status"> }) => {
-        const league = { id: id("league"), status: "active", ...data };
+      create: async ({ data }: { data: Pick<LeagueRow, "name" | "code"> & Partial<Pick<LeagueRow, "cadence" | "preparationDeadlineAt">> }) => {
+        const league = { id: id("league"), status: "active", cadence: "manual", preparationDeadlineAt: null, ...data };
         leagues.push(league);
         return league;
       },
@@ -378,7 +426,6 @@ function createMemoryDb(): PrismaClient {
         const leagueGrandPrixes = grandPrixes
           .filter((grandPrix) => grandPrix.leagueId === league.id)
           .sort((left, right) => right.round - left.round)
-          .slice(0, 1)
           .map((grandPrix) => ({
             ...grandPrix,
             decisions: decisions.filter((decision) => decision.grandPrixId === grandPrix.id)
@@ -391,6 +438,18 @@ function createMemoryDb(): PrismaClient {
             .sort((left, right) => right.points - left.points || left.name.localeCompare(right.name)),
           grandPrixes: leagueGrandPrixes
         };
+      },
+      update: async ({
+        where,
+        data
+      }: {
+        where: { id: string };
+        data: { cadence?: string; preparationDeadlineAt?: Date | null };
+      }) => {
+        const league = leagues.find((candidate) => candidate.id === where.id);
+        if (!league) throw new Error("League not found");
+        Object.assign(league, data);
+        return league;
       }
     },
     team: {

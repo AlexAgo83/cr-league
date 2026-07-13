@@ -8,7 +8,8 @@ import {
   rejoinLeague,
   resolveCurrentGrandPrix,
   startNextGrandPrix,
-  submitDecision
+  submitDecision,
+  updateLeagueSettings
 } from "./store.js";
 
 export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient) {
@@ -52,6 +53,23 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     const state = await getLeagueState(db, request.params.leagueId);
     if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
     return state;
+  });
+
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/settings", async (request, reply) => {
+    if (!isSettingsBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected league settings body." });
+    }
+
+    try {
+      const state = await updateLeagueSettings(db, request.params.leagueId, request.body);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
   });
 
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/decisions", async (request, reply) => {
@@ -110,6 +128,18 @@ function isRejoinBody(value: unknown): value is Parameters<typeof rejoinLeague>[
 
   const candidate = value as Record<string, unknown>;
   return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string";
+}
+
+function isSettingsBody(value: unknown): value is Parameters<typeof updateLeagueSettings>[2] {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Record<string, unknown>;
+  return (
+    (candidate.cadence === undefined || typeof candidate.cadence === "string") &&
+    (candidate.preparationDeadlineAt === undefined ||
+      candidate.preparationDeadlineAt === null ||
+      typeof candidate.preparationDeadlineAt === "string")
+  );
 }
 
 function isDecisionBody(value: unknown): value is Parameters<typeof submitDecision>[2] {

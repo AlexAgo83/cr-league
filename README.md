@@ -180,7 +180,7 @@ The detailed implementation-wave roadmap is:
 Current roadmap direction:
 
 - `0.1` playable vertical slice is mostly implemented;
-- `0.2` private league prototype foundation is started.
+- `0.2` private league prototype foundation now includes manual cadence, readiness dashboard, rejoin, and GP history.
 
 ## Contributing
 

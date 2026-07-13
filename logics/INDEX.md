@@ -51,6 +51,7 @@
 | [req_019_harden_current_grand_prix_state_rules](request/req_019_harden_current_grand_prix_state_rules.md) | Harden current Grand Prix state rules | Done |  |  | request/req_019_harden_current_grand_prix_state_rules.md |
 | [req_020_add_join_league_by_code_flow](request/req_020_add_join_league_by_code_flow.md) | Add join league by code flow | Done |  |  | request/req_020_add_join_league_by_code_flow.md |
 | [req_021_build_private_league_prototype_foundation](request/req_021_build_private_league_prototype_foundation.md) | Build private league prototype foundation | Done |  |  | request/req_021_build_private_league_prototype_foundation.md |
+| [req_022_add_private_league_cadence_and_dashboard](request/req_022_add_private_league_cadence_and_dashboard.md) | Add private league cadence and dashboard | Done |  |  | request/req_022_add_private_league_cadence_and_dashboard.md |
 
 ## Backlog
 
@@ -83,6 +84,7 @@
 | [item_025_harden_current_grand_prix_state_rules](backlog/item_025_harden_current_grand_prix_state_rules.md) | Harden current Grand Prix state rules | Done |  | 100% | backlog/item_025_harden_current_grand_prix_state_rules.md |
 | [item_026_add_join_league_by_code_flow](backlog/item_026_add_join_league_by_code_flow.md) | Add join league by code flow | Done |  | 100% | backlog/item_026_add_join_league_by_code_flow.md |
 | [item_027_build_private_league_prototype_foundation](backlog/item_027_build_private_league_prototype_foundation.md) | Build private league prototype foundation | Done |  | 100% | backlog/item_027_build_private_league_prototype_foundation.md |
+| [item_028_add_private_league_cadence_and_dashboard](backlog/item_028_add_private_league_cadence_and_dashboard.md) | Add private league cadence and dashboard | Done |  | 100% | backlog/item_028_add_private_league_cadence_and_dashboard.md |
 
 ## Tasks
 
@@ -110,3 +112,4 @@
 | [task_020_harden_current_grand_prix_state_rules](tasks/task_020_harden_current_grand_prix_state_rules.md) | Harden current Grand Prix state rules | Done | codex | 100% | tasks/task_020_harden_current_grand_prix_state_rules.md |
 | [task_021_add_join_league_by_code_flow](tasks/task_021_add_join_league_by_code_flow.md) | Add join league by code flow | Done | codex | 100% | tasks/task_021_add_join_league_by_code_flow.md |
 | [task_022_build_private_league_prototype_foundation](tasks/task_022_build_private_league_prototype_foundation.md) | Build private league prototype foundation | Done | codex | 100% | tasks/task_022_build_private_league_prototype_foundation.md |
+| [task_023_add_private_league_cadence_and_dashboard](tasks/task_023_add_private_league_cadence_and_dashboard.md) | Add private league cadence and dashboard | Done | codex | 100% | tasks/task_023_add_private_league_cadence_and_dashboard.md |

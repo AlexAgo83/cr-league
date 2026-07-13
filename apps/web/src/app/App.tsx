@@ -1,6 +1,6 @@
 import { APP_NAME, type RaceDecision, type RaceResult } from "@cr-league/shared";
 import { useEffect, useMemo, useState } from "react";
-import { t } from "../i18n/index.js";
+import { t, type TranslationKey } from "../i18n/index.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
 const PLAYER_CLAIM_KEY = "cr-league-player-claim";
@@ -11,6 +11,8 @@ type LeagueState = {
     name: string;
     code: string;
     status: string;
+    cadence: string;
+    preparationDeadlineAt: string | null;
   };
   currentGrandPrix: {
     id: string;
@@ -19,18 +21,27 @@ type LeagueState = {
     status: string;
     result: RaceResult | null;
   };
+  grandPrixHistory: Array<{
+    id: string;
+    name: string;
+    round: number;
+    status: string;
+    result: RaceResult | null;
+  }>;
   teams: Array<{
     id: string;
     name: string;
     kind: string;
     points: number;
     credits: number;
+    ready: boolean;
   }>;
   actionState: {
     submittedTeamIds: string[];
     missingTeamIds: string[];
     canResolve: boolean;
     canStartNextGrandPrix: boolean;
+    nextAction: string;
   };
   player?: {
     teamId: string;
@@ -49,6 +60,8 @@ type FormState = {
   leagueName: string;
   joinCode: string;
   teamName: string;
+  cadence: string;
+  preparationDeadlineAt: string;
   approach: RaceDecision["approach"];
   preparation: RaceDecision["preparation"];
   cardId: RaceDecision["cardId"] | "";
@@ -58,6 +71,8 @@ const initialForm: FormState = {
   leagueName: t("default_league_name"),
   joinCode: "",
   teamName: t("default_team_name"),
+  cadence: "manual",
+  preparationDeadlineAt: "",
   approach: "balanced",
   preparation: "weather",
   cardId: "rain_grip"
@@ -142,6 +157,22 @@ export function App() {
     });
   }
 
+  async function updateSettings() {
+    if (!leagueState) return;
+
+    await run(t("status_updating_settings"), async () => {
+      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/settings`, {
+        method: "POST",
+        body: JSON.stringify({
+          cadence: form.cadence,
+          preparationDeadlineAt: form.preparationDeadlineAt ? new Date(form.preparationDeadlineAt).toISOString() : null
+        })
+      });
+      setLeagueState(state);
+      setMessage(t("status_settings_updated"));
+    });
+  }
+
   async function resolveGrandPrix() {
     if (!leagueState) return;
 
@@ -180,6 +211,12 @@ export function App() {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : t("status_api_unavailable"));
     }
+  }
+
+  function forgetPlayer() {
+    localStorage.removeItem(PLAYER_CLAIM_KEY);
+    setLeagueState(null);
+    setMessage(t("status_player_forgotten"));
   }
 
   return (
@@ -222,6 +259,27 @@ export function App() {
               />
             </label>
           </div>
+
+          {leagueState ? (
+            <div className="field-grid">
+              <label>
+                {t("field_cadence")}
+                <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
+                  <option value="manual">{t("cadence_manual")}</option>
+                  <option value="fast">{t("cadence_fast")}</option>
+                  <option value="weekly">{t("cadence_weekly")}</option>
+                </select>
+              </label>
+              <label>
+                {t("field_deadline")}
+                <input
+                  type="datetime-local"
+                  value={form.preparationDeadlineAt}
+                  onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })}
+                />
+              </label>
+            </div>
+          ) : null}
 
           <div className="field-grid">
             <label>
@@ -273,6 +331,12 @@ export function App() {
             <button type="button" onClick={startNextGrandPrix} disabled={status === "loading" || !leagueState?.actionState.canStartNextGrandPrix}>
               {t("action_next_grand_prix")}
             </button>
+            <button type="button" onClick={updateSettings} disabled={status === "loading" || !leagueState}>
+              {t("action_update_settings")}
+            </button>
+            <button type="button" onClick={forgetPlayer} disabled={status === "loading" || !leagueState?.player}>
+              {t("action_forget_team")}
+            </button>
           </div>
         </article>
 
@@ -287,15 +351,36 @@ export function App() {
               {leagueState.actionState.submittedTeamIds.length} {t("league_ready")} · {leagueState.actionState.missingTeamIds.length}{" "}
               {t("league_missing")}
             </p>
+            <p>
+              {t("league_cadence")} {t(`cadence_${leagueState.league.cadence}` as TranslationKey)} · {t("league_next_action")}{" "}
+              {t(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}
+            </p>
+            {playerTeam ? (
+              <p>
+                {t("league_your_team")} {playerTeam.name}
+              </p>
+            ) : null}
             <ol className="classification">
               {leagueState.teams.map((team) => (
                 <li key={team.id}>
                   <span>
-                    <strong>{team.name}</strong> {team.kind === "bot" ? t("team_bot") : t("team_you")}
+                    <strong>{team.name}</strong> {team.kind === "bot" ? t("team_bot") : t("team_you")} ·{" "}
+                    {team.ready ? t("team_ready") : t("team_missing")}
                   </span>
                   <span>
                     {team.points} {t("unit_points")} · {team.credits} {t("unit_credits")}
                   </span>
+                </li>
+              ))}
+            </ol>
+            <h3>{t("league_history")}</h3>
+            <ol className="classification">
+              {leagueState.grandPrixHistory.map((grandPrix) => (
+                <li key={grandPrix.id}>
+                  <span>
+                    {t("league_round")} {grandPrix.round}
+                  </span>
+                  <span>{grandPrix.status}</span>
                 </li>
               ))}
             </ol>

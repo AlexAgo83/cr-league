@@ -3,6 +3,8 @@ import type { PrismaClient } from "@prisma/client";
 
 type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision">;
 
+const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
+
 export class LeagueRuleError extends Error {
   constructor(message: string) {
     super(message);
@@ -25,12 +27,19 @@ export type RejoinLeagueInput = {
   claimCode?: string;
 };
 
+export type UpdateLeagueSettingsInput = {
+  cadence?: string;
+  preparationDeadlineAt?: string | null;
+};
+
 export type LeagueState = {
   league: {
     id: string;
     name: string;
     code: string;
     status: string;
+    cadence: string;
+    preparationDeadlineAt: string | null;
   };
   currentGrandPrix: {
     id: string;
@@ -39,18 +48,27 @@ export type LeagueState = {
     status: string;
     result: unknown;
   };
+  grandPrixHistory: Array<{
+    id: string;
+    name: string;
+    round: number;
+    status: string;
+    result: unknown;
+  }>;
   teams: Array<{
     id: string;
     name: string;
     kind: string;
     points: number;
     credits: number;
+    ready: boolean;
   }>;
   actionState: {
     submittedTeamIds: string[];
     missingTeamIds: string[];
     canResolve: boolean;
     canStartNextGrandPrix: boolean;
+    nextAction: string;
   };
   player?: {
     teamId: string;
@@ -161,13 +179,12 @@ export async function rejoinLeague(db: Db, input: RejoinLeagueInput = {}) {
 }
 
 export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueState | null> {
-  const league = await db.league.findUnique({
+    const league = await db.league.findUnique({
     where: { id: leagueId },
     include: {
       teams: { orderBy: [{ points: "desc" }, { name: "asc" }] },
       grandPrixes: {
         orderBy: { round: "desc" },
-        take: 1,
         include: {
           decisions: true
         }
@@ -183,7 +200,9 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       id: league.id,
       name: league.name,
       code: league.code,
-      status: league.status
+      status: league.status,
+      cadence: league.cadence,
+      preparationDeadlineAt: league.preparationDeadlineAt?.toISOString() ?? null
     },
     currentGrandPrix: {
       id: grandPrix.id,
@@ -192,17 +211,26 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       status: grandPrix.status,
       result: grandPrix.result
     },
+    grandPrixHistory: league.grandPrixes.map((entry) => ({
+      id: entry.id,
+      name: entry.name,
+      round: entry.round,
+      status: entry.status,
+      result: entry.result
+    })),
     teams: league.teams.map((team) => ({
       id: team.id,
       name: team.name,
       kind: team.kind,
       points: team.points,
-      credits: team.credits
+      credits: team.credits,
+      ready: grandPrix.decisions.some((decision) => decision.teamId === team.id)
     })),
     actionState: buildActionState(
       league.teams.map((team) => team.id),
       grandPrix.status,
-      grandPrix.decisions.map((decision) => decision.teamId)
+      grandPrix.decisions.map((decision) => decision.teamId),
+      league.preparationDeadlineAt
     ),
     decisions: grandPrix.decisions.map((decision) => ({
       teamId: decision.teamId,
@@ -212,6 +240,34 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       rivalTeamId: decision.rivalTeamId
     }))
   };
+}
+
+export async function updateLeagueSettings(db: Db, leagueId: string, input: UpdateLeagueSettingsInput = {}) {
+  const data: { cadence?: string; preparationDeadlineAt?: Date | null } = {};
+
+  if (input.cadence !== undefined) {
+    if (!isLeagueCadence(input.cadence)) {
+      throw new LeagueRuleError("Unsupported league cadence.");
+    }
+    data.cadence = input.cadence;
+  }
+
+  if (input.preparationDeadlineAt !== undefined) {
+    data.preparationDeadlineAt = input.preparationDeadlineAt ? new Date(input.preparationDeadlineAt) : null;
+    if (data.preparationDeadlineAt && Number.isNaN(data.preparationDeadlineAt.getTime())) {
+      throw new LeagueRuleError("Invalid preparation deadline.");
+    }
+  }
+
+  const league = await db.league.findUnique({ where: { id: leagueId } });
+  if (!league) return null;
+
+  await db.league.update({
+    where: { id: leagueId },
+    data
+  });
+
+  return getLeagueState(db, leagueId);
 }
 
 export async function submitDecision(db: Db, leagueId: string, input: SubmitDecisionInput) {
@@ -344,15 +400,19 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
   });
 }
 
-function buildActionState(teamIds: string[], grandPrixStatus: string, submittedTeamIds: string[]) {
+function buildActionState(teamIds: string[], grandPrixStatus: string, submittedTeamIds: string[], deadline: Date | null) {
   const submitted = new Set(submittedTeamIds);
   const missingTeamIds = grandPrixStatus === "resolved" ? [] : teamIds.filter((teamId) => !submitted.has(teamId));
+  const deadlinePassed = deadline ? Date.now() >= deadline.getTime() : false;
+  const canStartNextGrandPrix = grandPrixStatus === "resolved";
+  const canResolve = grandPrixStatus !== "resolved" && (submittedTeamIds.length > 0 || deadlinePassed);
 
   return {
     submittedTeamIds,
     missingTeamIds,
-    canResolve: grandPrixStatus !== "resolved" && submittedTeamIds.length > 0,
-    canStartNextGrandPrix: grandPrixStatus === "resolved"
+    canResolve,
+    canStartNextGrandPrix,
+    nextAction: canStartNextGrandPrix ? "start_next_grand_prix" : canResolve ? "resolve_grand_prix" : "wait_for_directives"
   };
 }
 
@@ -379,4 +439,8 @@ function createLeagueCode() {
 
 function createClaimCode() {
   return Math.random().toString(36).slice(2, 12).toUpperCase();
+}
+
+function isLeagueCadence(value: string): value is (typeof LEAGUE_CADENCES)[number] {
+  return LEAGUE_CADENCES.includes(value as (typeof LEAGUE_CADENCES)[number]);
 }

@@ -9,5 +9,6 @@ export type HealthStatus = {
 
 export { CARD_DEFINITIONS, type CardDefinition } from "./cards/definitions.js";
 export * from "./domain/race.js";
+export { DEMO_RACE_INPUT } from "./simulation/demoRace.js";
 export { createPrng, type Prng } from "./simulation/prng.js";
 export { simulateRace } from "./simulation/simulateRace.js";

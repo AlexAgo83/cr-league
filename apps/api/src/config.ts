@@ -7,7 +7,7 @@ export type ApiConfig = {
 export function readApiConfig(env: NodeJS.ProcessEnv = process.env): ApiConfig {
   return {
     host: env.API_HOST ?? "127.0.0.1",
-    port: Number(env.API_PORT ?? 4000),
-    webOrigin: env.WEB_ORIGIN ?? "http://localhost:5173"
+    port: Number(env.API_PORT ?? 4874),
+    webOrigin: env.WEB_ORIGIN ?? "http://localhost:4873"
   };
 }

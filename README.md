@@ -74,7 +74,7 @@ npm run dev:api
 Check the API:
 
 ```bash
-curl http://127.0.0.1:4000/health
+curl http://127.0.0.1:4874/health
 ```
 
 ## Configuration
@@ -90,8 +90,8 @@ Current variables:
 ```env
 DATABASE_URL="postgresql://user:password@localhost:5432/cr_league?schema=cr_league"
 API_HOST="127.0.0.1"
-API_PORT="4000"
-WEB_ORIGIN="http://localhost:5173"
+API_PORT="4874"
+WEB_ORIGIN="http://localhost:4873"
 ```
 
 Rules:

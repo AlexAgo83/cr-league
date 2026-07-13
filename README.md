@@ -180,7 +180,7 @@ The detailed implementation-wave roadmap is:
 Current roadmap direction:
 
 - `0.1` playable vertical slice is mostly implemented;
-- next major product increment is `0.2` private league prototype.
+- `0.2` private league prototype foundation is started.
 
 ## Contributing
 

@@ -17,13 +17,13 @@
 
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
-| [prod_001_cr_league_product_brief](product/prod_001_cr_league_product_brief.md) | 7. Progression | Proposed |  |  | product/prod_001_cr_league_product_brief.md |
+| [prod_001_cr_league_product_brief](product/prod_001_cr_league_product_brief.md) | 7. Progression | Settled |  |  | product/prod_001_cr_league_product_brief.md |
 
 ## Roadmaps
 
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
-| [1.0](roadmap/road_001_cr_league_roadmap.md) | Private league V1 | Proposed |  |  | roadmap/road_001_cr_league_roadmap.md |
+| [1.0](roadmap/road_001_cr_league_roadmap.md) | Private league V1 | Settled |  |  | roadmap/road_001_cr_league_roadmap.md |
 
 ## Requests
 
@@ -50,6 +50,7 @@
 | [req_018_wire_web_copy_to_i18n_catalog](request/req_018_wire_web_copy_to_i18n_catalog.md) | Wire web copy to i18n catalog | Done |  |  | request/req_018_wire_web_copy_to_i18n_catalog.md |
 | [req_019_harden_current_grand_prix_state_rules](request/req_019_harden_current_grand_prix_state_rules.md) | Harden current Grand Prix state rules | Done |  |  | request/req_019_harden_current_grand_prix_state_rules.md |
 | [req_020_add_join_league_by_code_flow](request/req_020_add_join_league_by_code_flow.md) | Add join league by code flow | Done |  |  | request/req_020_add_join_league_by_code_flow.md |
+| [req_021_build_private_league_prototype_foundation](request/req_021_build_private_league_prototype_foundation.md) | Build private league prototype foundation | Done |  |  | request/req_021_build_private_league_prototype_foundation.md |
 
 ## Backlog
 
@@ -81,6 +82,7 @@
 | [item_024_wire_web_copy_to_i18n_catalog](backlog/item_024_wire_web_copy_to_i18n_catalog.md) | Wire web copy to i18n catalog | Done |  | 100% | backlog/item_024_wire_web_copy_to_i18n_catalog.md |
 | [item_025_harden_current_grand_prix_state_rules](backlog/item_025_harden_current_grand_prix_state_rules.md) | Harden current Grand Prix state rules | Done |  | 100% | backlog/item_025_harden_current_grand_prix_state_rules.md |
 | [item_026_add_join_league_by_code_flow](backlog/item_026_add_join_league_by_code_flow.md) | Add join league by code flow | Done |  | 100% | backlog/item_026_add_join_league_by_code_flow.md |
+| [item_027_build_private_league_prototype_foundation](backlog/item_027_build_private_league_prototype_foundation.md) | Build private league prototype foundation | Done |  | 100% | backlog/item_027_build_private_league_prototype_foundation.md |
 
 ## Tasks
 
@@ -107,3 +109,4 @@
 | [task_019_wire_web_copy_to_i18n_catalog](tasks/task_019_wire_web_copy_to_i18n_catalog.md) | Wire web copy to i18n catalog | Done | codex | 100% | tasks/task_019_wire_web_copy_to_i18n_catalog.md |
 | [task_020_harden_current_grand_prix_state_rules](tasks/task_020_harden_current_grand_prix_state_rules.md) | Harden current Grand Prix state rules | Done | codex | 100% | tasks/task_020_harden_current_grand_prix_state_rules.md |
 | [task_021_add_join_league_by_code_flow](tasks/task_021_add_join_league_by_code_flow.md) | Add join league by code flow | Done | codex | 100% | tasks/task_021_add_join_league_by_code_flow.md |
+| [task_022_build_private_league_prototype_foundation](tasks/task_022_build_private_league_prototype_foundation.md) | Build private league prototype foundation | Done | codex | 100% | tasks/task_022_build_private_league_prototype_foundation.md |

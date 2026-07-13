@@ -20,6 +20,11 @@ export type JoinLeagueInput = {
   teamName?: string;
 };
 
+export type RejoinLeagueInput = {
+  teamId?: string;
+  claimCode?: string;
+};
+
 export type LeagueState = {
   league: {
     id: string;
@@ -41,6 +46,16 @@ export type LeagueState = {
     points: number;
     credits: number;
   }>;
+  actionState: {
+    submittedTeamIds: string[];
+    missingTeamIds: string[];
+    canResolve: boolean;
+    canStartNextGrandPrix: boolean;
+  };
+  player?: {
+    teamId: string;
+    claimCode: string;
+  };
   decisions: Array<{
     teamId: string;
     approach: string;
@@ -54,8 +69,13 @@ export type SubmitDecisionInput = RaceDecision & {
   teamId: string;
 };
 
+export type ResolveGrandPrixInput = {
+  allowDefaults?: boolean;
+};
+
 export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   const code = createLeagueCode();
+  const playerClaimCode = createClaimCode();
   const league = await db.league.create({
     data: {
       name: input.name?.trim() || "CR League Demo",
@@ -68,6 +88,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
       leagueId: league.id,
       name: index === 0 ? input.teamName?.trim() || participant.teamName : participant.teamName,
       kind: participant.kind,
+      claimCode: index === 0 ? playerClaimCode : createClaimCode(),
       points: 0,
       credits: 0
     }))
@@ -85,7 +106,9 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
     }
   });
 
-  return getLeagueState(db, league.id);
+  const state = await getLeagueState(db, league.id);
+  const playerTeam = state?.teams.find((team) => team.kind === "human");
+  return state && playerTeam ? withPlayer(state, playerTeam.id, playerClaimCode) : state;
 }
 
 export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
@@ -107,17 +130,34 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
     throw new LeagueRuleError("This team name is already taken.");
   }
 
-  await db.team.create({
+  const team = await db.team.create({
     data: {
       leagueId: league.id,
       name: teamName,
       kind: "human",
+      claimCode: createClaimCode(),
       points: 0,
       credits: 0
     }
   });
 
-  return getLeagueState(db, league.id);
+  const nextState = await getLeagueState(db, league.id);
+  return nextState ? withPlayer(nextState, team.id, team.claimCode ?? "") : nextState;
+}
+
+export async function rejoinLeague(db: Db, input: RejoinLeagueInput = {}) {
+  if (!input.teamId || !input.claimCode) {
+    throw new LeagueRuleError("Team id and claim code are required.");
+  }
+
+  const team = await db.team.findUnique({
+    where: { id: input.teamId },
+    include: { league: true }
+  });
+  if (!team || team.claimCode !== input.claimCode) return null;
+
+  const state = await getLeagueState(db, team.leagueId);
+  return state ? withPlayer(state, team.id, team.claimCode) : null;
 }
 
 export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueState | null> {
@@ -159,6 +199,11 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       points: team.points,
       credits: team.credits
     })),
+    actionState: buildActionState(
+      league.teams.map((team) => team.id),
+      grandPrix.status,
+      grandPrix.decisions.map((decision) => decision.teamId)
+    ),
     decisions: grandPrix.decisions.map((decision) => ({
       teamId: decision.teamId,
       approach: decision.approach,
@@ -204,14 +249,14 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
   return getLeagueState(db, leagueId);
 }
 
-export async function resolveCurrentGrandPrix(db: Db, leagueId: string) {
+export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: ResolveGrandPrixInput = {}) {
   const state = await getLeagueState(db, leagueId);
   const grandPrix = await getCurrentGrandPrix(db, leagueId);
   if (!state || !grandPrix) return null;
   if (grandPrix.status === "resolved") {
     throw new LeagueRuleError("This Grand Prix is already resolved.");
   }
-  if (!hasHumanDecision(state)) {
+  if (!hasHumanDecision(state) && !input.allowDefaults) {
     throw new LeagueRuleError("Submit your race directive before launching the Grand Prix.");
   }
 
@@ -242,6 +287,28 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string) {
       }
     });
   }
+
+  return getLeagueState(db, leagueId);
+}
+
+export async function startNextGrandPrix(db: Db, leagueId: string) {
+  const grandPrix = await getCurrentGrandPrix(db, leagueId);
+  if (!grandPrix) return null;
+  if (grandPrix.status !== "resolved") {
+    throw new LeagueRuleError("Resolve the current Grand Prix before starting the next one.");
+  }
+
+  await db.grandPrix.create({
+    data: {
+      leagueId,
+      name: DEMO_RACE_INPUT.grandPrixName,
+      round: grandPrix.round + 1,
+      seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-${grandPrix.round + 1}`,
+      primaryTrait: DEMO_RACE_INPUT.primaryTrait,
+      secondaryTrait: DEMO_RACE_INPUT.secondaryTrait,
+      forecast: DEMO_RACE_INPUT.forecast
+    }
+  });
 
   return getLeagueState(db, leagueId);
 }
@@ -277,6 +344,28 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
   });
 }
 
+function buildActionState(teamIds: string[], grandPrixStatus: string, submittedTeamIds: string[]) {
+  const submitted = new Set(submittedTeamIds);
+  const missingTeamIds = grandPrixStatus === "resolved" ? [] : teamIds.filter((teamId) => !submitted.has(teamId));
+
+  return {
+    submittedTeamIds,
+    missingTeamIds,
+    canResolve: grandPrixStatus !== "resolved" && submittedTeamIds.length > 0,
+    canStartNextGrandPrix: grandPrixStatus === "resolved"
+  };
+}
+
+function withPlayer(state: LeagueState, teamId: string, claimCode: string): LeagueState {
+  return {
+    ...state,
+    player: {
+      teamId,
+      claimCode
+    }
+  };
+}
+
 async function getCurrentGrandPrix(db: Db, leagueId: string) {
   return db.grandPrix.findFirst({
     where: { leagueId },
@@ -286,4 +375,8 @@ async function getCurrentGrandPrix(db: Db, leagueId: string) {
 
 function createLeagueCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
+}
+
+function createClaimCode() {
+  return Math.random().toString(36).slice(2, 12).toUpperCase();
 }

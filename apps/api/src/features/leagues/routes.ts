@@ -5,7 +5,9 @@ import {
   createDemoLeague,
   getLeagueState,
   joinLeagueByCode,
+  rejoinLeague,
   resolveCurrentGrandPrix,
+  startNextGrandPrix,
   submitDecision
 } from "./store.js";
 
@@ -20,6 +22,23 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     try {
       const state = await joinLeagueByCode(db, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
+  });
+
+  app.post("/leagues/rejoin", async (request, reply) => {
+    if (!isRejoinBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and claim code." });
+    }
+
+    try {
+      const state = await rejoinLeague(db, request.body);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "Team claim not found." });
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
@@ -54,7 +73,20 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
 
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/resolve", async (request, reply) => {
     try {
-      const state = await resolveCurrentGrandPrix(db, request.params.leagueId);
+      const state = await resolveCurrentGrandPrix(db, request.params.leagueId, request.body ?? {});
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
+  });
+
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/next-grand-prix", async (request, reply) => {
+    try {
+      const state = await startNextGrandPrix(db, request.params.leagueId);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
       return state;
     } catch (error) {
@@ -71,6 +103,13 @@ function isJoinBody(value: unknown): value is Parameters<typeof joinLeagueByCode
 
   const candidate = value as Record<string, unknown>;
   return typeof candidate.code === "string" && typeof candidate.teamName === "string";
+}
+
+function isRejoinBody(value: unknown): value is Parameters<typeof rejoinLeague>[1] {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string";
 }
 
 function isDecisionBody(value: unknown): value is Parameters<typeof submitDecision>[2] {

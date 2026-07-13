@@ -85,6 +85,7 @@ describe("api app", () => {
     });
     const created = createResponse.json();
     const leagueId = created.league.id;
+    const claim = created.player;
     const teamId = created.teams.find((team: { kind: string }) => team.kind === "human").id;
 
     const readResponse = await app.inject({
@@ -130,6 +131,7 @@ describe("api app", () => {
     await app.close();
 
     expect(createResponse.statusCode).toBe(200);
+    expect(claim).toMatchObject({ teamId, claimCode: expect.any(String) });
     expect(readResponse.statusCode).toBe(200);
     expect(readResponse.json().league).toMatchObject({ id: leagueId, name: "Office League" });
     expect(joinResponse.statusCode).toBe(200);
@@ -259,11 +261,80 @@ describe("api app", () => {
     expect(duplicateResponse.statusCode).toBe(409);
     expect(closedResponse.statusCode).toBe(409);
   });
+
+  it("rejoins a claimed team, advances to the next Grand Prix, and can resolve with default decisions", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Circle One" }
+    });
+    const created = createResponse.json();
+    const leagueId = created.league.id;
+    const teamId = created.player.teamId;
+
+    const rejoinResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/rejoin",
+      payload: created.player
+    });
+    const badRejoinResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/rejoin",
+      payload: { teamId, claimCode: "WRONG" }
+    });
+    const defaultResolveResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/resolve`,
+      payload: { allowDefaults: true }
+    });
+    const nextResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/next-grand-prix`
+    });
+    const earlyNextResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/next-grand-prix`
+    });
+
+    await app.close();
+
+    expect(rejoinResponse.statusCode).toBe(200);
+    expect(rejoinResponse.json().player).toMatchObject(created.player);
+    expect(badRejoinResponse.statusCode).toBe(404);
+    expect(defaultResolveResponse.statusCode).toBe(200);
+    expect(defaultResolveResponse.json().currentGrandPrix.status).toBe("resolved");
+    expect(nextResponse.statusCode).toBe(200);
+    expect(nextResponse.json().currentGrandPrix).toMatchObject({ round: 2, status: "briefing", result: null });
+    expect(nextResponse.json().actionState).toMatchObject({
+      submittedTeamIds: [],
+      missingTeamIds: expect.arrayContaining([teamId]),
+      canResolve: false,
+      canStartNextGrandPrix: false
+    });
+    expect(earlyNextResponse.statusCode).toBe(409);
+  });
 });
 
 function createMemoryDb(): PrismaClient {
   type LeagueRow = { id: string; name: string; code: string; status: string };
-  type TeamRow = { id: string; leagueId: string; name: string; kind: string; points: number; credits: number };
+  type TeamRow = {
+    id: string;
+    leagueId: string;
+    name: string;
+    kind: string;
+    claimCode: string | null;
+    points: number;
+    credits: number;
+  };
   type GrandPrixRow = {
     id: string;
     leagueId: string;
@@ -333,6 +404,14 @@ function createMemoryDb(): PrismaClient {
           teams.push({ id: id("team"), ...team });
         }
         return { count: data.length };
+      },
+      findUnique: async ({ where }: { where: { id: string } }) => {
+        const team = teams.find((candidate) => candidate.id === where.id);
+        if (!team) return null;
+        return {
+          ...team,
+          league: leagues.find((league) => league.id === team.leagueId) ?? null
+        };
       },
       update: async ({
         where,

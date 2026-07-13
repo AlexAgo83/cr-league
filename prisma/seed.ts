@@ -18,6 +18,7 @@ async function main() {
       leagueId: league.id,
       name: index === 0 ? "Circle One" : participant.teamName,
       kind: participant.kind,
+      claimCode: `DEMO01-${index}`,
       points: 0,
       credits: 0
     })),

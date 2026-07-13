@@ -1,8 +1,9 @@
 import { APP_NAME, type RaceDecision, type RaceResult } from "@cr-league/shared";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { t } from "../i18n/index.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
+const PLAYER_CLAIM_KEY = "cr-league-player-claim";
 
 type LeagueState = {
   league: {
@@ -25,6 +26,16 @@ type LeagueState = {
     points: number;
     credits: number;
   }>;
+  actionState: {
+    submittedTeamIds: string[];
+    missingTeamIds: string[];
+    canResolve: boolean;
+    canStartNextGrandPrix: boolean;
+  };
+  player?: {
+    teamId: string;
+    claimCode: string;
+  };
   decisions: Array<{
     teamId: string;
     approach: RaceDecision["approach"];
@@ -58,7 +69,27 @@ export function App() {
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState(t("status_initial"));
 
-  const playerTeam = useMemo(() => leagueState?.teams.find((team) => team.kind === "human") ?? leagueState?.teams[0], [leagueState]);
+  useEffect(() => {
+    const saved = localStorage.getItem(PLAYER_CLAIM_KEY);
+    if (!saved) return;
+    void run(t("status_rejoining_league"), async () => {
+      const state = await api<LeagueState>("/leagues/rejoin", {
+        method: "POST",
+        body: saved
+      });
+      rememberPlayer(state);
+      setLeagueState(state);
+      setMessage(t("status_league_rejoined"));
+    });
+  }, []);
+
+  const playerTeam = useMemo(
+    () =>
+      leagueState?.teams.find((team) => team.id === leagueState.player?.teamId) ??
+      leagueState?.teams.find((team) => team.kind === "human") ??
+      leagueState?.teams[0],
+    [leagueState]
+  );
   const playerDecision = leagueState?.decisions.find((decision) => decision.teamId === playerTeam?.id);
   const result = leagueState?.currentGrandPrix.result;
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
@@ -72,6 +103,7 @@ export function App() {
           teamName: form.teamName
         })
       });
+      rememberPlayer(state);
       setLeagueState(state);
       setMessage(t("status_league_created"));
     });
@@ -86,6 +118,7 @@ export function App() {
           teamName: form.teamName
         })
       });
+      rememberPlayer(state);
       setLeagueState(state);
       setMessage(t("status_league_joined"));
     });
@@ -114,10 +147,25 @@ export function App() {
 
     await run(t("status_resolving_grand_prix"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/resolve`, {
-        method: "POST"
+        method: "POST",
+        body: JSON.stringify({
+          allowDefaults: !playerDecision
+        })
       });
       setLeagueState(state);
       setMessage(t("status_grand_prix_resolved"));
+    });
+  }
+
+  async function startNextGrandPrix() {
+    if (!leagueState) return;
+
+    await run(t("status_starting_next_grand_prix"), async () => {
+      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/next-grand-prix`, {
+        method: "POST"
+      });
+      setLeagueState(state);
+      setMessage(t("status_next_grand_prix_started"));
     });
   }
 
@@ -219,8 +267,11 @@ export function App() {
             <button type="button" onClick={submitDirective} disabled={status === "loading" || !leagueState || isResolved}>
               {t("action_submit_directive")}
             </button>
-            <button type="button" onClick={resolveGrandPrix} disabled={status === "loading" || !playerDecision || isResolved}>
+            <button type="button" onClick={resolveGrandPrix} disabled={status === "loading" || !leagueState || isResolved}>
               {t("action_launch_grand_prix")}
+            </button>
+            <button type="button" onClick={startNextGrandPrix} disabled={status === "loading" || !leagueState?.actionState.canStartNextGrandPrix}>
+              {t("action_next_grand_prix")}
             </button>
           </div>
         </article>
@@ -231,6 +282,10 @@ export function App() {
             <p>
               {t("league_code")} {leagueState.league.code} · {t("league_round")} {leagueState.currentGrandPrix.round} ·{" "}
               {leagueState.currentGrandPrix.status}
+            </p>
+            <p>
+              {leagueState.actionState.submittedTeamIds.length} {t("league_ready")} · {leagueState.actionState.missingTeamIds.length}{" "}
+              {t("league_missing")}
             </p>
             <ol className="classification">
               {leagueState.teams.map((team) => (
@@ -292,6 +347,12 @@ export function App() {
       </section>
     </main>
   );
+}
+
+function rememberPlayer(state: LeagueState) {
+  if (state.player) {
+    localStorage.setItem(PLAYER_CLAIM_KEY, JSON.stringify(state.player));
+  }
 }
 
 async function api<T>(path: string, init: RequestInit): Promise<T> {

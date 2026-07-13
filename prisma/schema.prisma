@@ -26,6 +26,7 @@ model Team {
   leagueId  String
   name      String
   kind      String   @default("human")
+  claimCode String?  @unique
   credits   Int      @default(0)
   points    Int      @default(0)
   createdAt DateTime @default(now())

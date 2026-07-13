@@ -6,6 +6,7 @@ type LeagueState = {
     code: string;
   };
   currentGrandPrix: {
+    round: number;
     status: string;
     result: unknown;
   };
@@ -13,6 +14,10 @@ type LeagueState = {
     id: string;
     kind: string;
   }>;
+  player?: {
+    teamId: string;
+    claimCode: string;
+  };
 };
 
 const created = await request<LeagueState>("/leagues", {
@@ -27,6 +32,14 @@ const playerTeam = created.teams.find((team) => team.kind === "human") ?? create
 if (!playerTeam) {
   throw new Error("No team returned by league creation.");
 }
+if (!created.player) {
+  throw new Error("No player claim returned by league creation.");
+}
+
+await request<LeagueState>("/leagues/rejoin", {
+  method: "POST",
+  body: JSON.stringify(created.player)
+});
 
 const joinedTeamName = `Joined Team ${Date.now()}`;
 const joined = await request<LeagueState>("/leagues/join", {
@@ -67,7 +80,8 @@ await request<LeagueState>(`/leagues/${created.league.id}/decisions`, {
 });
 
 const resolved = await request<LeagueState>(`/leagues/${created.league.id}/resolve`, {
-  method: "POST"
+  method: "POST",
+  body: JSON.stringify({ allowDefaults: true })
 });
 
 if (resolved.currentGrandPrix.status !== "resolved" || !resolved.currentGrandPrix.result) {
@@ -93,7 +107,14 @@ await expectStatus("/leagues/join", 409, {
   })
 });
 
-console.log(`Smoke OK: ${resolved.league.code} resolved`);
+const next = await request<LeagueState>(`/leagues/${created.league.id}/next-grand-prix`, {
+  method: "POST"
+});
+if (next.currentGrandPrix.round !== resolved.currentGrandPrix.round + 1 || next.currentGrandPrix.status !== "briefing") {
+  throw new Error("Next Grand Prix did not start.");
+}
+
+console.log(`Smoke OK: ${resolved.league.code} resolved and advanced`);
 
 async function request<T>(path: string, init: RequestInit): Promise<T> {
   const response = await fetch(`${apiBaseUrl}${path}`, {

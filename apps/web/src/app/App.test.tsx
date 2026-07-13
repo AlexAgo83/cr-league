@@ -134,6 +134,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
     expect(screen.getByText("Rain Grip triggers for Circle One")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Submit directive" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByRole("button", { name: "Launch GP" }).hasAttribute("disabled")).toBe(true);
     expect(fetch).toHaveBeenCalledTimes(3);
   });
 });

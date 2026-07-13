@@ -85,7 +85,7 @@ describe("api app", () => {
     });
     const created = createResponse.json();
     const leagueId = created.league.id;
-    const teamId = created.teams[0].id;
+    const teamId = created.teams.find((team: { kind: string }) => team.kind === "human").id;
 
     const readResponse = await app.inject({
       method: "GET",
@@ -108,6 +108,20 @@ describe("api app", () => {
       url: `/leagues/${leagueId}/resolve`
     });
 
+    const lateDecisionResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/decisions`,
+      payload: {
+        teamId,
+        approach: "prudent",
+        preparation: "reliability"
+      }
+    });
+    const secondResolveResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/resolve`
+    });
+
     await app.close();
 
     expect(createResponse.statusCode).toBe(200);
@@ -120,6 +134,38 @@ describe("api app", () => {
       result: expect.objectContaining({
         classification: expect.any(Array)
       })
+    });
+    expect(lateDecisionResponse.statusCode).toBe(409);
+    expect(secondResolveResponse.statusCode).toBe(409);
+  });
+
+  it("rejects resolving before the player submits a directive", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Circle One" }
+    });
+    const leagueId = createResponse.json().league.id;
+
+    const resolveResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/resolve`
+    });
+
+    await app.close();
+
+    expect(resolveResponse.statusCode).toBe(409);
+    expect(resolveResponse.json()).toMatchObject({
+      message: "Submit your race directive before launching the Grand Prix."
     });
   });
 });

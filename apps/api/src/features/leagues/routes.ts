@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import type { PrismaClient } from "@prisma/client";
-import { createDemoLeague, getLeagueState, resolveCurrentGrandPrix, submitDecision } from "./store.js";
+import { LeagueRuleError, createDemoLeague, getLeagueState, resolveCurrentGrandPrix, submitDecision } from "./store.js";
 
 export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient) {
   app.post("/leagues", async (request) => createDemoLeague(db, request.body ?? {}));
@@ -16,15 +16,29 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return reply.code(400).send({ error: "Bad Request", message: "Expected a team decision body." });
     }
 
-    const state = await submitDecision(db, request.params.leagueId, request.body);
-    if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-    return state;
+    try {
+      const state = await submitDecision(db, request.params.leagueId, request.body);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
   });
 
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/resolve", async (request, reply) => {
-    const state = await resolveCurrentGrandPrix(db, request.params.leagueId);
-    if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-    return state;
+    try {
+      const state = await resolveCurrentGrandPrix(db, request.params.leagueId);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
   });
 }
 

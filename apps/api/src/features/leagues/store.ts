@@ -3,6 +3,13 @@ import type { PrismaClient } from "@prisma/client";
 
 type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision">;
 
+export class LeagueRuleError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name = "LeagueRuleError";
+  }
+}
+
 export type CreateLeagueInput = {
   name?: string;
   teamName?: string;
@@ -128,6 +135,9 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
 export async function submitDecision(db: Db, leagueId: string, input: SubmitDecisionInput) {
   const grandPrix = await getCurrentGrandPrix(db, leagueId);
   if (!grandPrix) return null;
+  if (grandPrix.status === "resolved") {
+    throw new LeagueRuleError("This Grand Prix is already resolved.");
+  }
 
   await db.raceDecision.upsert({
     where: {
@@ -161,6 +171,12 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string) {
   const state = await getLeagueState(db, leagueId);
   const grandPrix = await getCurrentGrandPrix(db, leagueId);
   if (!state || !grandPrix) return null;
+  if (grandPrix.status === "resolved") {
+    throw new LeagueRuleError("This Grand Prix is already resolved.");
+  }
+  if (!hasHumanDecision(state)) {
+    throw new LeagueRuleError("Submit your race directive before launching the Grand Prix.");
+  }
 
   const participants = buildParticipants(state);
   const result = simulateRace({
@@ -191,6 +207,11 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string) {
   }
 
   return getLeagueState(db, leagueId);
+}
+
+function hasHumanDecision(state: LeagueState) {
+  const humanTeamIds = new Set(state.teams.filter((team) => team.kind === "human").map((team) => team.id));
+  return state.decisions.some((decision) => humanTeamIds.has(decision.teamId));
 }
 
 function buildParticipants(state: LeagueState): RaceParticipant[] {

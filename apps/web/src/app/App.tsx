@@ -59,6 +59,7 @@ export function App() {
   const playerTeam = useMemo(() => leagueState?.teams.find((team) => team.kind === "human") ?? leagueState?.teams[0], [leagueState]);
   const playerDecision = leagueState?.decisions.find((decision) => decision.teamId === playerTeam?.id);
   const result = leagueState?.currentGrandPrix.result;
+  const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
 
   async function createLeague() {
     await run(t("status_creating_league"), async () => {
@@ -111,9 +112,9 @@ export function App() {
     try {
       await action();
       setStatus("idle");
-    } catch {
+    } catch (error) {
       setStatus("error");
-      setMessage(t("status_api_unavailable"));
+      setMessage(error instanceof Error ? error.message : t("status_api_unavailable"));
     }
   }
 
@@ -187,10 +188,10 @@ export function App() {
             <button type="button" onClick={createLeague} disabled={status === "loading" || Boolean(leagueState)}>
               {t("action_create_league")}
             </button>
-            <button type="button" onClick={submitDirective} disabled={status === "loading" || !leagueState || Boolean(result)}>
+            <button type="button" onClick={submitDirective} disabled={status === "loading" || !leagueState || isResolved}>
               {t("action_submit_directive")}
             </button>
-            <button type="button" onClick={resolveGrandPrix} disabled={status === "loading" || !playerDecision || Boolean(result)}>
+            <button type="button" onClick={resolveGrandPrix} disabled={status === "loading" || !playerDecision || isResolved}>
               {t("action_launch_grand_prix")}
             </button>
           </div>
@@ -272,7 +273,8 @@ async function api<T>(path: string, init: RequestInit): Promise<T> {
   });
 
   if (!response.ok) {
-    throw new Error(`API request failed with ${response.status}`);
+    const errorBody = (await response.json().catch(() => null)) as { message?: string } | null;
+    throw new Error(errorBody?.message ?? `API request failed with ${response.status}`);
   }
 
   return (await response.json()) as T;

@@ -46,6 +46,18 @@ if (resolved.currentGrandPrix.status !== "resolved" || !resolved.currentGrandPri
   throw new Error("Grand Prix did not resolve.");
 }
 
+await expectStatus(`/leagues/${created.league.id}/decisions`, 409, {
+  method: "POST",
+  body: JSON.stringify({
+    teamId: playerTeam.id,
+    approach: "prudent",
+    preparation: "reliability"
+  })
+});
+await expectStatus(`/leagues/${created.league.id}/resolve`, 409, {
+  method: "POST"
+});
+
 console.log(`Smoke OK: ${resolved.league.code} resolved`);
 
 async function request<T>(path: string, init: RequestInit): Promise<T> {
@@ -59,4 +71,15 @@ async function request<T>(path: string, init: RequestInit): Promise<T> {
   }
 
   return (await response.json()) as T;
+}
+
+async function expectStatus(path: string, status: number, init: RequestInit) {
+  const response = await fetch(`${apiBaseUrl}${path}`, {
+    ...init,
+    headers: init.body ? { "content-type": "application/json", ...init.headers } : init.headers
+  });
+
+  if (response.status !== status) {
+    throw new Error(`${init.method ?? "GET"} ${path} expected ${status}, got ${response.status}: ${await response.text()}`);
+  }
 }

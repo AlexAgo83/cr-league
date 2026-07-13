@@ -223,7 +223,8 @@ label small {
 }
 
 .classification,
-.events {
+.events,
+.card-inventory {
   display: grid;
   gap: 10px;
   list-style: none;
@@ -243,7 +244,8 @@ label small {
   padding-top: 0;
 }
 
-.classification li {
+.classification li,
+.card-inventory li {
   align-items: center;
   border-top: 1px solid #e5e7eb;
   display: flex;
@@ -253,9 +255,21 @@ label small {
 }
 
 .classification li span:last-child,
+.card-inventory strong,
 .events span {
   color: var(--color-muted);
   font-size: 0.875rem;
+}
+
+.garage-section .card-shop {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  margin-top: 12px;
+}
+
+.garage-section .card-shop button {
+  padding: 10px 12px;
 }
 
 .events li {

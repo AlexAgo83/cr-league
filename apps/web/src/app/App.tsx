@@ -1,4 +1,4 @@
-import { APP_NAME, type RaceDecision, type RaceResult } from "@cr-league/shared";
+import { APP_NAME, type CardId, type RaceDecision, type RaceResult } from "@cr-league/shared";
 import { useEffect, useMemo, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 
@@ -38,7 +38,12 @@ type LeagueState = {
     kind: string;
     points: number;
     credits: number;
+    cards: CardId[];
     ready: boolean;
+  }>;
+  cardShop: Array<{
+    cardId: CardId;
+    price: number;
   }>;
   actionState: {
     submittedTeamIds: string[];
@@ -120,6 +125,8 @@ export function App() {
   const result = leagueState?.currentGrandPrix.result;
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
   const forecastPick = leagueState ? strongestForecast(leagueState.currentGrandPrix.forecast) : "dry";
+  const ownedCardIds = useMemo(() => Array.from(new Set(playerTeam?.cards ?? [])), [playerTeam]);
+  const selectedCardId = ownedCardIds.includes(form.cardId as CardId) ? form.cardId : "";
 
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
@@ -161,7 +168,7 @@ export function App() {
           teamId: playerTeam.id,
           approach: form.approach,
           preparation: form.preparation,
-          cardId: form.cardId || undefined
+          cardId: selectedCardId || undefined
         })
       });
       setLeagueState(state);
@@ -209,6 +216,22 @@ export function App() {
       });
       setLeagueState(state);
       setMessage(tt("status_next_grand_prix_started"));
+    });
+  }
+
+  async function buyCard(cardId: CardId) {
+    if (!leagueState || !playerTeam) return;
+
+    await run(tt("status_buying_card"), async () => {
+      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/cards/buy`, {
+        method: "POST",
+        body: JSON.stringify({
+          teamId: playerTeam.id,
+          cardId
+        })
+      });
+      setLeagueState(state);
+      setMessage(tt("status_card_bought"));
     });
   }
 
@@ -368,16 +391,15 @@ export function App() {
                 </label>
                 <label>
                   {tt("field_card")}
-                  <select value={form.cardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })}>
+                  <select value={selectedCardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })}>
                     <option value="">{tt("card_none")}</option>
-                    <option value="rain_grip">{tt("card_rain_grip")}</option>
-                    <option value="fleet_maintenance">{tt("card_fleet_maintenance")}</option>
-                    <option value="launch_boost">{tt("card_launch_boost")}</option>
-                    <option value="urban_draft">{tt("card_urban_draft")}</option>
-                    <option value="final_surge">{tt("card_final_surge")}</option>
-                    <option value="fleet_sponsorship">{tt("card_fleet_sponsorship")}</option>
+                    {ownedCardIds.map((cardId) => (
+                      <option key={cardId} value={cardId}>
+                        {tt(`card_${cardId}` as TranslationKey)}
+                      </option>
+                    ))}
                   </select>
-                  <small>{form.cardId ? tt(`card_${form.cardId}_hint` as TranslationKey) : tt("card_none_hint")}</small>
+                  <small>{selectedCardId ? tt(`card_${selectedCardId}_hint` as TranslationKey) : tt("card_none_hint")}</small>
                 </label>
               </div>
 
@@ -427,6 +449,38 @@ export function App() {
                 {tt("league_missing")}
               </p>
             </section>
+            {playerTeam ? (
+              <section className="dashboard-section garage-section">
+                <h3>{tt("dashboard_garage")}</h3>
+                <p>
+                  {playerTeam.credits} {tt("unit_credits")} · {tt("garage_between_gp_hint")}
+                </p>
+                <ul className="card-inventory">
+                  {ownedCardIds.length ? (
+                    ownedCardIds.map((cardId) => (
+                      <li key={cardId}>
+                        <span>{tt(`card_${cardId}` as TranslationKey)}</span>
+                        <strong>x{countCards(playerTeam.cards, cardId)}</strong>
+                      </li>
+                    ))
+                  ) : (
+                    <li>{tt("garage_empty_inventory")}</li>
+                  )}
+                </ul>
+                <div className="card-shop">
+                  {leagueState.cardShop.map((item) => (
+                    <button
+                      key={item.cardId}
+                      type="button"
+                      onClick={() => buyCard(item.cardId)}
+                      disabled={status === "loading" || !isResolved || playerTeam.credits < item.price}
+                    >
+                      {tt(`card_${item.cardId}` as TranslationKey)} · {item.price}
+                    </button>
+                  ))}
+                </div>
+              </section>
+            ) : null}
             <ol className="classification">
               {leagueState.teams.map((team) => (
                 <li key={team.id}>
@@ -538,4 +592,8 @@ function isStaleLeagueError(error: unknown) {
 
 function strongestForecast(forecast: Record<string, number>) {
   return Object.entries(forecast).reduce((best, current) => (current[1] > best[1] ? current : best), ["dry", 0])[0];
+}
+
+function countCards(cards: CardId[], cardId: CardId) {
+  return cards.filter((candidate) => candidate === cardId).length;
 }

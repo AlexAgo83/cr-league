@@ -41,6 +41,7 @@ const baseState = {
       kind: "human",
       points: 0,
       credits: 0,
+      cards: ["rain_grip"],
       ready: false
     },
     {
@@ -49,8 +50,13 @@ const baseState = {
       kind: "bot",
       points: 0,
       credits: 0,
+      cards: [],
       ready: false
     }
+  ],
+  cardShop: [
+    { cardId: "rain_grip", price: 100 },
+    { cardId: "launch_boost", price: 100 }
   ],
   actionState: {
     submittedTeamIds: [],
@@ -150,6 +156,7 @@ const resolvedState = {
       kind: "human",
       points: 25,
       credits: 150,
+      cards: [],
       ready: true
     }
   ]
@@ -218,6 +225,7 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "Current GP" })).toBeTruthy();
     expect(screen.getByText("Fast · Weather sensitive")).toBeTruthy();
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
+    expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
     expect(screen.getByText("0 ready · 2 missing")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
@@ -227,6 +235,7 @@ describe("App", () => {
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
     expect(screen.getByText("Lap 5")).toBeTruthy();
     expect(screen.getByText("Rain Grip triggers for Circle One")).toBeTruthy();
+    expect(screen.getByText("No cards in inventory.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Submit directive" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByRole("button", { name: "Launch GP" }).hasAttribute("disabled")).toBe(true);
 

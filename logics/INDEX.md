@@ -52,6 +52,7 @@
 | [req_020_add_join_league_by_code_flow](request/req_020_add_join_league_by_code_flow.md) | Add join league by code flow | Done |  |  | request/req_020_add_join_league_by_code_flow.md |
 | [req_021_build_private_league_prototype_foundation](request/req_021_build_private_league_prototype_foundation.md) | Build private league prototype foundation | Done |  |  | request/req_021_build_private_league_prototype_foundation.md |
 | [req_022_add_private_league_cadence_and_dashboard](request/req_022_add_private_league_cadence_and_dashboard.md) | Add private league cadence and dashboard | Done |  |  | request/req_022_add_private_league_cadence_and_dashboard.md |
+| [req_023_add_automated_private_league_playtest_scenario](request/req_023_add_automated_private_league_playtest_scenario.md) | Add automated private league playtest scenario | Done |  |  | request/req_023_add_automated_private_league_playtest_scenario.md |
 
 ## Backlog
 
@@ -85,6 +86,7 @@
 | [item_026_add_join_league_by_code_flow](backlog/item_026_add_join_league_by_code_flow.md) | Add join league by code flow | Done |  | 100% | backlog/item_026_add_join_league_by_code_flow.md |
 | [item_027_build_private_league_prototype_foundation](backlog/item_027_build_private_league_prototype_foundation.md) | Build private league prototype foundation | Done |  | 100% | backlog/item_027_build_private_league_prototype_foundation.md |
 | [item_028_add_private_league_cadence_and_dashboard](backlog/item_028_add_private_league_cadence_and_dashboard.md) | Add private league cadence and dashboard | Done |  | 100% | backlog/item_028_add_private_league_cadence_and_dashboard.md |
+| [item_029_add_automated_private_league_playtest_scenario](backlog/item_029_add_automated_private_league_playtest_scenario.md) | Add automated private league playtest scenario | Done |  | 100% | backlog/item_029_add_automated_private_league_playtest_scenario.md |
 
 ## Tasks
 
@@ -113,3 +115,4 @@
 | [task_021_add_join_league_by_code_flow](tasks/task_021_add_join_league_by_code_flow.md) | Add join league by code flow | Done | codex | 100% | tasks/task_021_add_join_league_by_code_flow.md |
 | [task_022_build_private_league_prototype_foundation](tasks/task_022_build_private_league_prototype_foundation.md) | Build private league prototype foundation | Done | codex | 100% | tasks/task_022_build_private_league_prototype_foundation.md |
 | [task_023_add_private_league_cadence_and_dashboard](tasks/task_023_add_private_league_cadence_and_dashboard.md) | Add private league cadence and dashboard | Done | codex | 100% | tasks/task_023_add_private_league_cadence_and_dashboard.md |
+| [task_024_add_automated_private_league_playtest_scenario](tasks/task_024_add_automated_private_league_playtest_scenario.md) | Add automated private league playtest scenario | Done | codex | 100% | tasks/task_024_add_automated_private_league_playtest_scenario.md |

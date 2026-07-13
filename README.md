@@ -144,6 +144,7 @@ Run the local quality gate:
 npm run typecheck
 npm run build
 npm test
+npm run test:e2e
 npm run lint
 npm run db:generate
 npm run logics:validate

@@ -363,6 +363,69 @@ describe("api app", () => {
     });
     expect(invalidSettingsResponse.statusCode).toBe(409);
   });
+
+  it("runs a three Grand Prix private league scenario", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Circle One" }
+    });
+    const created = createResponse.json();
+    const leagueId = created.league.id;
+    const teamId = created.player.teamId;
+
+    await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code: created.league.code, teamName: "Late Apex" }
+    });
+
+    let state = created;
+    for (const round of [1, 2, 3]) {
+      const decisionResponse = await app.inject({
+        method: "POST",
+        url: `/leagues/${leagueId}/decisions`,
+        payload: {
+          teamId,
+          approach: "balanced",
+          preparation: "weather"
+        }
+      });
+      const resolveResponse = await app.inject({
+        method: "POST",
+        url: `/leagues/${leagueId}/resolve`,
+        payload: { allowDefaults: true }
+      });
+
+      expect(decisionResponse.statusCode).toBe(200);
+      expect(resolveResponse.statusCode).toBe(200);
+      expect(resolveResponse.json().currentGrandPrix).toMatchObject({ round, status: "resolved" });
+      state = resolveResponse.json();
+
+      if (round < 3) {
+        const nextResponse = await app.inject({
+          method: "POST",
+          url: `/leagues/${leagueId}/next-grand-prix`
+        });
+        expect(nextResponse.statusCode).toBe(200);
+        expect(nextResponse.json().currentGrandPrix).toMatchObject({ round: round + 1, status: "briefing" });
+      }
+    }
+
+    await app.close();
+
+    expect(state.grandPrixHistory.map((grandPrix: { round: number }) => grandPrix.round)).toEqual([3, 2, 1]);
+    expect(state.teams.reduce((total: number, team: { points: number }) => total + team.points, 0)).toBeGreaterThan(0);
+  });
 });
 
 function createMemoryDb(): PrismaClient {

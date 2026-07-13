@@ -1,9 +1,9 @@
 ## prod_001_cr_league_product_brief - CR League Product Brief
 > Date: 2026-07-13
 > Status: Settled
-> Related request: `req_022_add_private_league_cadence_and_dashboard`
-> Related backlog: `item_028_add_private_league_cadence_and_dashboard`
-> Related task: `task_023_add_private_league_cadence_and_dashboard`
+> Related request: `req_023_add_automated_private_league_playtest_scenario`
+> Related backlog: `item_029_add_automated_private_league_playtest_scenario`
+> Related task: `task_024_add_automated_private_league_playtest_scenario`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
@@ -349,5 +349,5 @@ Can wait until later:
 - Should team condition or car wear persist between races in V1, or should each Grand Prix start clean except for cards and credits?
 
 # References
-- Product back-reference: `item_028_add_private_league_cadence_and_dashboard`
-- Task back-reference: `task_023_add_private_league_cadence_and_dashboard`
+- Product back-reference: `item_029_add_automated_private_league_playtest_scenario`
+- Task back-reference: `task_024_add_automated_private_league_playtest_scenario`

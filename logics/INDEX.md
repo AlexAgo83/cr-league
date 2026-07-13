@@ -20,6 +20,7 @@
 | [req_001_define_grand_prix_core_loop_and_simulation_v1](request/req_001_define_grand_prix_core_loop_and_simulation_v1.md) | Define Grand Prix core loop and simulation V1 | Done |  |  | request/req_001_define_grand_prix_core_loop_and_simulation_v1.md |
 | [req_002_define_cr_league_v1_planning_specs](request/req_002_define_cr_league_v1_planning_specs.md) | Define CR League V1 planning specs | Done |  |  | request/req_002_define_cr_league_v1_planning_specs.md |
 | [req_003_decide_cr_league_v1_application_architecture](request/req_003_decide_cr_league_v1_application_architecture.md) | Decide CR League V1 application architecture | Done |  |  | request/req_003_decide_cr_league_v1_application_architecture.md |
+| [req_004_define_cr_league_implementation_contracts_v0](request/req_004_define_cr_league_implementation_contracts_v0.md) | Define CR League implementation contracts V0 | Done |  |  | request/req_004_define_cr_league_implementation_contracts_v0.md |
 
 ## Backlog
 
@@ -34,6 +35,7 @@
 | [item_007_define_grand_prix_core_loop_and_simulation_v1](backlog/item_007_define_grand_prix_core_loop_and_simulation_v1.md) | Define Grand Prix core loop and simulation V1 | Done |  | 100% | backlog/item_007_define_grand_prix_core_loop_and_simulation_v1.md |
 | [item_008_define_cr_league_v1_planning_specs](backlog/item_008_define_cr_league_v1_planning_specs.md) | Define CR League V1 planning specs | Done |  | 100% | backlog/item_008_define_cr_league_v1_planning_specs.md |
 | [item_009_decide_cr_league_v1_application_architecture](backlog/item_009_decide_cr_league_v1_application_architecture.md) | Decide CR League V1 application architecture | Done |  | 100% | backlog/item_009_decide_cr_league_v1_application_architecture.md |
+| [item_010_define_cr_league_implementation_contracts_v0](backlog/item_010_define_cr_league_implementation_contracts_v0.md) | Define CR League implementation contracts V0 | Done |  | 100% | backlog/item_010_define_cr_league_implementation_contracts_v0.md |
 
 ## Tasks
 
@@ -43,3 +45,4 @@
 | [task_002_define_grand_prix_core_loop_and_simulation_v1](tasks/task_002_define_grand_prix_core_loop_and_simulation_v1.md) | Define Grand Prix core loop and simulation V1 | Done | codex | 100% | tasks/task_002_define_grand_prix_core_loop_and_simulation_v1.md |
 | [task_003_define_cr_league_v1_planning_specs](tasks/task_003_define_cr_league_v1_planning_specs.md) | Define CR League V1 planning specs | Done | codex | 100% | tasks/task_003_define_cr_league_v1_planning_specs.md |
 | [task_004_decide_cr_league_v1_application_architecture](tasks/task_004_decide_cr_league_v1_application_architecture.md) | Decide CR League V1 application architecture | Done | codex | 100% | tasks/task_004_decide_cr_league_v1_application_architecture.md |
+| [task_005_define_cr_league_implementation_contracts_v0](tasks/task_005_define_cr_league_implementation_contracts_v0.md) | Define CR League implementation contracts V0 | Done | codex | 100% | tasks/task_005_define_cr_league_implementation_contracts_v0.md |

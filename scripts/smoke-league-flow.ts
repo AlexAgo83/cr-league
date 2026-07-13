@@ -28,6 +28,34 @@ if (!playerTeam) {
   throw new Error("No team returned by league creation.");
 }
 
+const joinedTeamName = `Joined Team ${Date.now()}`;
+const joined = await request<LeagueState>("/leagues/join", {
+  method: "POST",
+  body: JSON.stringify({
+    code: created.league.code,
+    teamName: joinedTeamName
+  })
+});
+
+if (!joined.teams.some((team) => team.kind === "human")) {
+  throw new Error("Joined league did not return human teams.");
+}
+
+await expectStatus("/leagues/join", 404, {
+  method: "POST",
+  body: JSON.stringify({
+    code: "NOPE00",
+    teamName: "Ghost Team"
+  })
+});
+await expectStatus("/leagues/join", 409, {
+  method: "POST",
+  body: JSON.stringify({
+    code: created.league.code,
+    teamName: joinedTeamName
+  })
+});
+
 await request<LeagueState>(`/leagues/${created.league.id}/decisions`, {
   method: "POST",
   body: JSON.stringify({
@@ -56,6 +84,13 @@ await expectStatus(`/leagues/${created.league.id}/decisions`, 409, {
 });
 await expectStatus(`/leagues/${created.league.id}/resolve`, 409, {
   method: "POST"
+});
+await expectStatus("/leagues/join", 409, {
+  method: "POST",
+  body: JSON.stringify({
+    code: created.league.code,
+    teamName: `Late Team ${Date.now()}`
+  })
 });
 
 console.log(`Smoke OK: ${resolved.league.code} resolved`);

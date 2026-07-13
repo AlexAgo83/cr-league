@@ -1,9 +1,33 @@
 import type { FastifyInstance } from "fastify";
 import type { PrismaClient } from "@prisma/client";
-import { LeagueRuleError, createDemoLeague, getLeagueState, resolveCurrentGrandPrix, submitDecision } from "./store.js";
+import {
+  LeagueRuleError,
+  createDemoLeague,
+  getLeagueState,
+  joinLeagueByCode,
+  resolveCurrentGrandPrix,
+  submitDecision
+} from "./store.js";
 
 export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient) {
   app.post("/leagues", async (request) => createDemoLeague(db, request.body ?? {}));
+
+  app.post("/leagues/join", async (request, reply) => {
+    if (!isJoinBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected a league code and team name." });
+    }
+
+    try {
+      const state = await joinLeagueByCode(db, request.body);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
+  });
 
   app.get<{ Params: { leagueId: string } }>("/leagues/:leagueId", async (request, reply) => {
     const state = await getLeagueState(db, request.params.leagueId);
@@ -40,6 +64,13 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       throw error;
     }
   });
+}
+
+function isJoinBody(value: unknown): value is Parameters<typeof joinLeagueByCode>[1] {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.code === "string" && typeof candidate.teamName === "string";
 }
 
 function isDecisionBody(value: unknown): value is Parameters<typeof submitDecision>[2] {

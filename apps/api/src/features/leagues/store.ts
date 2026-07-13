@@ -15,6 +15,11 @@ export type CreateLeagueInput = {
   teamName?: string;
 };
 
+export type JoinLeagueInput = {
+  code?: string;
+  teamName?: string;
+};
+
 export type LeagueState = {
   league: {
     id: string;
@@ -77,6 +82,38 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
       primaryTrait: DEMO_RACE_INPUT.primaryTrait,
       secondaryTrait: DEMO_RACE_INPUT.secondaryTrait,
       forecast: DEMO_RACE_INPUT.forecast
+    }
+  });
+
+  return getLeagueState(db, league.id);
+}
+
+export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
+  const code = input.code?.trim().toUpperCase();
+  const teamName = input.teamName?.trim();
+  if (!code || !teamName) {
+    throw new LeagueRuleError("League code and team name are required.");
+  }
+
+  const league = await db.league.findUnique({ where: { code } });
+  if (!league) return null;
+
+  const state = await getLeagueState(db, league.id);
+  if (!state) return null;
+  if (state.currentGrandPrix.status === "resolved") {
+    throw new LeagueRuleError("This league is not accepting new teams after the Grand Prix is resolved.");
+  }
+  if (state.teams.some((team) => team.name.toLowerCase() === teamName.toLowerCase())) {
+    throw new LeagueRuleError("This team name is already taken.");
+  }
+
+  await db.team.create({
+    data: {
+      leagueId: league.id,
+      name: teamName,
+      kind: "human",
+      points: 0,
+      credits: 0
     }
   });
 
@@ -216,7 +253,7 @@ function hasHumanDecision(state: LeagueState) {
 
 function buildParticipants(state: LeagueState): RaceParticipant[] {
   return state.teams.map((team, index) => {
-    const demo = DEMO_RACE_INPUT.participants[index];
+    const demo = DEMO_RACE_INPUT.participants[index % DEMO_RACE_INPUT.participants.length];
     if (!demo) {
       throw new Error("Demo race participant template is missing.");
     }

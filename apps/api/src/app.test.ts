@@ -91,6 +91,11 @@ describe("api app", () => {
       method: "GET",
       url: `/leagues/${leagueId}`
     });
+    const joinResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code: created.league.code, teamName: "Late Apex" }
+    });
 
     const decisionResponse = await app.inject({
       method: "POST",
@@ -127,6 +132,7 @@ describe("api app", () => {
     expect(createResponse.statusCode).toBe(200);
     expect(readResponse.statusCode).toBe(200);
     expect(readResponse.json().league).toMatchObject({ id: leagueId, name: "Office League" });
+    expect(joinResponse.statusCode).toBe(200);
     expect(decisionResponse.statusCode).toBe(200);
     expect(resolveResponse.statusCode).toBe(200);
     expect(resolveResponse.json().currentGrandPrix).toMatchObject({
@@ -167,6 +173,91 @@ describe("api app", () => {
     expect(resolveResponse.json()).toMatchObject({
       message: "Submit your race directive before launching the Grand Prix."
     });
+  });
+
+  it("lets a player join an active league by code", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Circle One" }
+    });
+    const code = createResponse.json().league.code;
+
+    const joinResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code, teamName: "Late Apex" }
+    });
+
+    await app.close();
+
+    expect(joinResponse.statusCode).toBe(200);
+    expect(joinResponse.json().teams).toEqual(expect.arrayContaining([expect.objectContaining({ name: "Late Apex", kind: "human" })]));
+  });
+
+  it("rejects unknown, duplicate, and closed league joins", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Circle One" }
+    });
+    const created = createResponse.json();
+    const leagueId = created.league.id;
+    const code = created.league.code;
+    const teamId = created.teams.find((team: { kind: string }) => team.kind === "human").id;
+
+    const unknownResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code: "NOPE00", teamName: "Ghost Team" }
+    });
+    const duplicateResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code, teamName: "Circle One" }
+    });
+    await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/decisions`,
+      payload: {
+        teamId,
+        approach: "balanced",
+        preparation: "weather"
+      }
+    });
+    await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/resolve`
+    });
+    const closedResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code, teamName: "Late Apex" }
+    });
+
+    await app.close();
+
+    expect(unknownResponse.statusCode).toBe(404);
+    expect(duplicateResponse.statusCode).toBe(409);
+    expect(closedResponse.statusCode).toBe(409);
   });
 });
 
@@ -210,8 +301,8 @@ function createMemoryDb(): PrismaClient {
         leagues.push(league);
         return league;
       },
-      findUnique: async ({ where }: { where: { id: string } }) => {
-        const league = leagues.find((candidate) => candidate.id === where.id);
+      findUnique: async ({ where }: { where: { id?: string; code?: string } }) => {
+        const league = leagues.find((candidate) => candidate.id === where.id || candidate.code === where.code);
         if (!league) return null;
         const leagueGrandPrixes = grandPrixes
           .filter((grandPrix) => grandPrix.leagueId === league.id)
@@ -232,6 +323,11 @@ function createMemoryDb(): PrismaClient {
       }
     },
     team: {
+      create: async ({ data }: { data: Omit<TeamRow, "id"> }) => {
+        const team = { id: id("team"), ...data };
+        teams.push(team);
+        return team;
+      },
       createMany: async ({ data }: { data: Array<Omit<TeamRow, "id">> }) => {
         for (const team of data) {
           teams.push({ id: id("team"), ...team });

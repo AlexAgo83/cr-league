@@ -138,6 +138,27 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Launch GP" }).hasAttribute("disabled")).toBe(true);
     expect(fetch).toHaveBeenCalledTimes(3);
   });
+
+  it("joins a league by code", async () => {
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Join code"), { target: { value: "abc123" } });
+    fireEvent.click(screen.getByRole("button", { name: "Join league" }));
+
+    expect(await screen.findByText("Code ABC123 · Round 1 · briefing")).toBeTruthy();
+    expect(fetch).toHaveBeenCalledWith(
+      "http://localhost:4874/leagues/join",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          code: "ABC123",
+          teamName: "Circle One"
+        })
+      })
+    );
+  });
 });
 
 function response(body: unknown) {

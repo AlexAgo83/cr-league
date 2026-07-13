@@ -36,6 +36,7 @@ type LeagueState = {
 
 type FormState = {
   leagueName: string;
+  joinCode: string;
   teamName: string;
   approach: RaceDecision["approach"];
   preparation: RaceDecision["preparation"];
@@ -44,6 +45,7 @@ type FormState = {
 
 const initialForm: FormState = {
   leagueName: t("default_league_name"),
+  joinCode: "",
   teamName: t("default_team_name"),
   approach: "balanced",
   preparation: "weather",
@@ -72,6 +74,20 @@ export function App() {
       });
       setLeagueState(state);
       setMessage(t("status_league_created"));
+    });
+  }
+
+  async function joinLeague() {
+    await run(t("status_joining_league"), async () => {
+      const state = await api<LeagueState>("/leagues/join", {
+        method: "POST",
+        body: JSON.stringify({
+          code: form.joinCode,
+          teamName: form.teamName
+        })
+      });
+      setLeagueState(state);
+      setMessage(t("status_league_joined"));
     });
   }
 
@@ -141,6 +157,15 @@ export function App() {
               />
             </label>
             <label>
+              {t("field_join_code")}
+              <input
+                value={form.joinCode}
+                onChange={(event) => setForm({ ...form, joinCode: event.target.value.toUpperCase() })}
+                disabled={Boolean(leagueState)}
+                maxLength={6}
+              />
+            </label>
+            <label>
               {t("field_team")}
               <input
                 value={form.teamName}
@@ -187,6 +212,9 @@ export function App() {
           <div className="actions">
             <button type="button" onClick={createLeague} disabled={status === "loading" || Boolean(leagueState)}>
               {t("action_create_league")}
+            </button>
+            <button type="button" onClick={joinLeague} disabled={status === "loading" || Boolean(leagueState)}>
+              {t("action_join_league")}
             </button>
             <button type="button" onClick={submitDirective} disabled={status === "loading" || !leagueState || isResolved}>
               {t("action_submit_directive")}

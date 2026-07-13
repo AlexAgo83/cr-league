@@ -261,6 +261,22 @@ describe("App", () => {
       })
     );
   });
+
+  it("clears a stale saved player claim", async () => {
+    localStorage.setItem("cr-league-player-claim", JSON.stringify(baseState.player));
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: "Team claim not found." }), {
+        status: 404,
+        headers: { "content-type": "application/json" }
+      })
+    );
+
+    render(<App />);
+
+    expect(await screen.findByText("Saved league no longer exists. Join the playtest again.")).toBeTruthy();
+    expect(localStorage.getItem("cr-league-player-claim")).toBe(null);
+    expect(screen.getByRole("button", { name: "Join league" })).toBeTruthy();
+  });
 });
 
 function response(body: unknown) {

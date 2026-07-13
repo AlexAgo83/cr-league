@@ -1,14 +1,14 @@
 .app-shell {
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
   min-height: 100dvh;
   padding: var(--space-page);
 }
 
 .hero {
   max-width: 760px;
-  padding-top: clamp(24px, 8vh, 72px);
+  padding-top: clamp(12px, 4vh, 40px);
 }
 
 .eyebrow {
@@ -44,8 +44,10 @@ button {
 }
 
 button:disabled {
-  cursor: wait;
-  opacity: 0.7;
+  background: #d1d5db;
+  color: #6b7280;
+  cursor: not-allowed;
+  opacity: 1;
 }
 
 input,
@@ -66,7 +68,7 @@ label {
 .play-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  grid-template-columns: repeat(12, minmax(0, 1fr));
   width: 100%;
 }
 
@@ -79,6 +81,14 @@ label {
 
 .control-panel {
   grid-column: 1 / -1;
+}
+
+.race-panel {
+  grid-column: span 8;
+}
+
+.league-panel {
+  grid-column: span 4;
 }
 
 .panel h2,
@@ -107,11 +117,38 @@ label {
   margin-bottom: 12px;
 }
 
+.setup-fields {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  max-width: 920px;
+}
+
+.settings-fields {
+  grid-template-columns: minmax(180px, 1fr) minmax(220px, 2fr);
+}
+
+.directive-fields {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 20px;
+}
+
+.primary-actions {
+  margin-top: 16px;
+}
+
+.race-actions button:first-child:not(:disabled),
+.primary-actions button:not(:disabled) {
+  background: var(--color-accent);
+}
+
+.result-panel,
+.moments-panel {
+  grid-column: span 6;
 }
 
 .classification,
@@ -174,4 +211,22 @@ label {
 
 .report-panel {
   grid-column: 1 / -1;
+}
+
+@media (max-width: 860px) {
+  .app-shell {
+    padding: 20px;
+  }
+
+  .race-panel,
+  .league-panel,
+  .result-panel,
+  .moments-panel {
+    grid-column: 1 / -1;
+  }
+
+  .settings-fields,
+  .directive-fields {
+    grid-template-columns: 1fr;
+  }
 }

@@ -1,8 +1,8 @@
 {
   "app_eyebrow": "Urban micro-EV racing league",
-  "app_intro": "Create a demo league, set your team directive, then launch the Grand Prix.",
+  "app_intro": "Create or join a private league, set your directive, then launch the Grand Prix.",
   "flow_label": "Demo league flow",
-  "status_initial": "Create a demo league to start.",
+  "status_initial": "Join PLAY01 for the playtest, or create a league to start.",
   "status_creating_league": "Creating league...",
   "status_league_created": "League created. Submit your race directive.",
   "status_joining_league": "Joining league...",
@@ -18,6 +18,7 @@
   "status_updating_settings": "Updating league settings...",
   "status_settings_updated": "League settings updated.",
   "status_player_forgotten": "Team claim forgotten.",
+  "status_saved_league_expired": "Saved league no longer exists. Join the playtest again.",
   "status_api_unavailable": "API unavailable. Start the API server and retry.",
   "default_league_name": "Office League",
   "default_team_name": "Circle One",

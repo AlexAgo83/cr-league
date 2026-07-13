@@ -209,6 +209,12 @@ export function App() {
       setStatus("idle");
     } catch (error) {
       setStatus("error");
+      if (isStaleLeagueError(error)) {
+        localStorage.removeItem(PLAYER_CLAIM_KEY);
+        setLeagueState(null);
+        setMessage(t("status_saved_league_expired"));
+        return;
+      }
       setMessage(error instanceof Error ? error.message : t("status_api_unavailable"));
     }
   }
@@ -228,120 +234,121 @@ export function App() {
       </section>
 
       <section className="play-grid" aria-label={t("flow_label")}>
-        <article className="panel control-panel">
+        <article className={leagueState ? "panel race-panel" : "panel control-panel setup-panel"}>
           <h2>{t("race_desk_title")}</h2>
           <p className={status === "error" ? "status error" : "status"}>{message}</p>
 
-          <div className="field-grid">
-            <label>
-              {t("field_league")}
-              <input
-                value={form.leagueName}
-                onChange={(event) => setForm({ ...form, leagueName: event.target.value })}
-                disabled={Boolean(leagueState)}
-              />
-            </label>
-            <label>
-              {t("field_join_code")}
-              <input
-                value={form.joinCode}
-                onChange={(event) => setForm({ ...form, joinCode: event.target.value.toUpperCase() })}
-                disabled={Boolean(leagueState)}
-                maxLength={6}
-              />
-            </label>
-            <label>
-              {t("field_team")}
-              <input
-                value={form.teamName}
-                onChange={(event) => setForm({ ...form, teamName: event.target.value })}
-                disabled={Boolean(leagueState)}
-              />
-            </label>
-          </div>
+          {!leagueState ? (
+            <>
+              <div className="field-grid setup-fields">
+                <label>
+                  {t("field_league")}
+                  <input value={form.leagueName} onChange={(event) => setForm({ ...form, leagueName: event.target.value })} />
+                </label>
+                <label>
+                  {t("field_join_code")}
+                  <input
+                    value={form.joinCode}
+                    onChange={(event) => setForm({ ...form, joinCode: event.target.value.toUpperCase() })}
+                    maxLength={6}
+                    placeholder="PLAY01"
+                  />
+                </label>
+                <label>
+                  {t("field_team")}
+                  <input value={form.teamName} onChange={(event) => setForm({ ...form, teamName: event.target.value })} />
+                </label>
+              </div>
 
-          {leagueState ? (
-            <div className="field-grid">
-              <label>
-                {t("field_cadence")}
-                <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
-                  <option value="manual">{t("cadence_manual")}</option>
-                  <option value="fast">{t("cadence_fast")}</option>
-                  <option value="weekly">{t("cadence_weekly")}</option>
-                </select>
-              </label>
-              <label>
-                {t("field_deadline")}
-                <input
-                  type="datetime-local"
-                  value={form.preparationDeadlineAt}
-                  onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })}
-                />
-              </label>
-            </div>
+              <div className="actions primary-actions">
+                <button type="button" onClick={createLeague} disabled={status === "loading"}>
+                  {t("action_create_league")}
+                </button>
+                <button type="button" onClick={joinLeague} disabled={status === "loading"}>
+                  {t("action_join_league")}
+                </button>
+              </div>
+            </>
           ) : null}
 
-          <div className="field-grid">
-            <label>
-              {t("field_approach")}
-              <select value={form.approach} onChange={(event) => setForm({ ...form, approach: event.target.value as FormState["approach"] })}>
-                <option value="prudent">{t("approach_prudent")}</option>
-                <option value="balanced">{t("approach_balanced")}</option>
-                <option value="aggressive">{t("approach_aggressive")}</option>
-              </select>
-            </label>
-            <label>
-              {t("field_preparation")}
-              <select
-                value={form.preparation}
-                onChange={(event) => setForm({ ...form, preparation: event.target.value as FormState["preparation"] })}
-              >
-                <option value="speed">{t("preparation_speed")}</option>
-                <option value="reliability">{t("preparation_reliability")}</option>
-                <option value="weather">{t("preparation_weather")}</option>
-              </select>
-            </label>
-            <label>
-              {t("field_card")}
-              <select value={form.cardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })}>
-                <option value="">{t("card_none")}</option>
-                <option value="rain_grip">{t("card_rain_grip")}</option>
-                <option value="fleet_maintenance">{t("card_fleet_maintenance")}</option>
-                <option value="launch_boost">{t("card_launch_boost")}</option>
-                <option value="urban_draft">{t("card_urban_draft")}</option>
-                <option value="final_surge">{t("card_final_surge")}</option>
-                <option value="fleet_sponsorship">{t("card_fleet_sponsorship")}</option>
-              </select>
-            </label>
-          </div>
+          {leagueState ? (
+            <>
+              <div className="field-grid settings-fields">
+                <label>
+                  {t("field_cadence")}
+                  <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
+                    <option value="manual">{t("cadence_manual")}</option>
+                    <option value="fast">{t("cadence_fast")}</option>
+                    <option value="weekly">{t("cadence_weekly")}</option>
+                  </select>
+                </label>
+                <label>
+                  {t("field_deadline")}
+                  <input
+                    type="datetime-local"
+                    value={form.preparationDeadlineAt}
+                    onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })}
+                  />
+                </label>
+              </div>
 
-          <div className="actions">
-            <button type="button" onClick={createLeague} disabled={status === "loading" || Boolean(leagueState)}>
-              {t("action_create_league")}
-            </button>
-            <button type="button" onClick={joinLeague} disabled={status === "loading" || Boolean(leagueState)}>
-              {t("action_join_league")}
-            </button>
-            <button type="button" onClick={submitDirective} disabled={status === "loading" || !leagueState || isResolved}>
-              {t("action_submit_directive")}
-            </button>
-            <button type="button" onClick={resolveGrandPrix} disabled={status === "loading" || !leagueState || isResolved}>
-              {t("action_launch_grand_prix")}
-            </button>
-            <button type="button" onClick={startNextGrandPrix} disabled={status === "loading" || !leagueState?.actionState.canStartNextGrandPrix}>
-              {t("action_next_grand_prix")}
-            </button>
-            <button type="button" onClick={updateSettings} disabled={status === "loading" || !leagueState}>
-              {t("action_update_settings")}
-            </button>
-            <button type="button" onClick={forgetPlayer} disabled={status === "loading" || !leagueState?.player}>
-              {t("action_forget_team")}
-            </button>
-          </div>
+              <div className="field-grid directive-fields">
+                <label>
+                  {t("field_approach")}
+                  <select value={form.approach} onChange={(event) => setForm({ ...form, approach: event.target.value as FormState["approach"] })}>
+                    <option value="prudent">{t("approach_prudent")}</option>
+                    <option value="balanced">{t("approach_balanced")}</option>
+                    <option value="aggressive">{t("approach_aggressive")}</option>
+                  </select>
+                </label>
+                <label>
+                  {t("field_preparation")}
+                  <select
+                    value={form.preparation}
+                    onChange={(event) => setForm({ ...form, preparation: event.target.value as FormState["preparation"] })}
+                  >
+                    <option value="speed">{t("preparation_speed")}</option>
+                    <option value="reliability">{t("preparation_reliability")}</option>
+                    <option value="weather">{t("preparation_weather")}</option>
+                  </select>
+                </label>
+                <label>
+                  {t("field_card")}
+                  <select value={form.cardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })}>
+                    <option value="">{t("card_none")}</option>
+                    <option value="rain_grip">{t("card_rain_grip")}</option>
+                    <option value="fleet_maintenance">{t("card_fleet_maintenance")}</option>
+                    <option value="launch_boost">{t("card_launch_boost")}</option>
+                    <option value="urban_draft">{t("card_urban_draft")}</option>
+                    <option value="final_surge">{t("card_final_surge")}</option>
+                    <option value="fleet_sponsorship">{t("card_fleet_sponsorship")}</option>
+                  </select>
+                </label>
+              </div>
+
+              <div className="actions race-actions">
+                <button type="button" onClick={submitDirective} disabled={status === "loading" || isResolved}>
+                  {t("action_submit_directive")}
+                </button>
+                <button type="button" onClick={resolveGrandPrix} disabled={status === "loading" || isResolved}>
+                  {t("action_launch_grand_prix")}
+                </button>
+                <button type="button" onClick={startNextGrandPrix} disabled={status === "loading" || !leagueState.actionState.canStartNextGrandPrix}>
+                  {t("action_next_grand_prix")}
+                </button>
+                <button type="button" onClick={updateSettings} disabled={status === "loading"}>
+                  {t("action_update_settings")}
+                </button>
+                <button type="button" onClick={forgetPlayer} disabled={status === "loading" || !leagueState.player}>
+                  {t("action_forget_team")}
+                </button>
+              </div>
+            </>
+          ) : null}
         </article>
 
         {leagueState ? (
-          <article className="panel">
+          <article className="panel league-panel">
             <h2>{leagueState.league.name}</h2>
             <section className="dashboard-section">
               <h3>{t("dashboard_my_team")}</h3>
@@ -396,7 +403,7 @@ export function App() {
 
         {result ? (
           <>
-            <article className="panel">
+            <article className="panel result-panel">
               <h2>{result.grandPrixName}</h2>
               <p>{result.report.headline}</p>
               <ol className="classification">
@@ -413,7 +420,7 @@ export function App() {
               </ol>
             </article>
 
-            <article className="panel">
+            <article className="panel moments-panel">
               <h2>{t("result_key_moments")}</h2>
               <ul className="events replay-timeline">
                 {result.events.slice(0, 6).map((event) => (
@@ -455,8 +462,21 @@ async function api<T>(path: string, init: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const errorBody = (await response.json().catch(() => null)) as { message?: string } | null;
-    throw new Error(errorBody?.message ?? `API request failed with ${response.status}`);
+    throw new ApiError(response.status, errorBody?.message ?? `API request failed with ${response.status}`);
   }
 
   return (await response.json()) as T;
+}
+
+class ApiError extends Error {
+  constructor(
+    readonly statusCode: number,
+    message: string
+  ) {
+    super(message);
+  }
+}
+
+function isStaleLeagueError(error: unknown) {
+  return error instanceof ApiError && error.statusCode === 404 && localStorage.getItem(PLAYER_CLAIM_KEY);
 }

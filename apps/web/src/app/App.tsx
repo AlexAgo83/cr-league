@@ -478,7 +478,7 @@ export function App() {
             <article className="panel moments-panel">
               <h2>{tt("result_key_moments")}</h2>
               <ul className="events replay-timeline">
-                {result.events.slice(0, 6).map((event) => (
+                {result.events.slice(0, 8).map((event) => (
                   <li key={event.id}>
                     <span className="lap-marker">{tt("unit_lap")} {event.lap}</span>
                     <strong>{event.replayText}</strong>

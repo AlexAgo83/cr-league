@@ -45,6 +45,8 @@ export function simulateRace(input: RaceInput): RaceResult {
       maybeAddCardEvent(state, segment, weather[segment], events, states);
       maybeAddRiskEvent(state, segment, events, prng.next);
     }
+
+    maybeAddFlavorEvent(segment, weather[segment], input, states, events, prng.next);
   }
 
   const classification = classify(states);
@@ -262,6 +264,45 @@ function maybeAddRiskEvent(state: TeamState, segment: RaceSegment, events: RaceE
   });
 }
 
+function maybeAddFlavorEvent(
+  segment: RaceSegment,
+  weather: Weather,
+  input: RaceInput,
+  states: TeamState[],
+  events: RaceEvent[],
+  next: () => number
+) {
+  if (segment === "start") return;
+
+  const state = states[Math.floor(next() * states.length)] ?? states[0];
+  if (!state) return;
+
+  const replayTextBySegment: Record<RaceSegment, string> = {
+    start: "",
+    early: `${state.participant.teamName} settles into the ${traitLabel(input.primaryTrait)} sector`,
+    mid:
+      weather === "dry"
+        ? `${state.participant.teamName} keeps the pace stable on a dry middle stint`
+        : `${state.participant.teamName} searches for grip as ${weatherLabel(weather)} arrives`,
+    late: `${state.participant.teamName} manages energy into the closing laps`,
+    finish: `Pit walls call final targets as ${state.participant.teamName} pushes to the line`
+  };
+
+  events.push({
+    id: "",
+    order: events.length,
+    segment,
+    lap: lapForSegment(segment),
+    type: "race_note",
+    teamId: state.participant.teamId,
+    severity: "minor",
+    positionDelta: 0,
+    tags: ["flavor"],
+    replayText: replayTextBySegment[segment],
+    reportText: replayTextBySegment[segment] + "."
+  });
+}
+
 function classify(states: TeamState[]): ClassificationEntry[] {
   const sorted = [...states].sort((left, right) => right.scores.score - left.scores.score || left.participant.standingsRank - right.participant.standingsRank);
 
@@ -390,4 +431,8 @@ function lapForSegment(segment: RaceSegment) {
 
 function weatherLabel(weather: Weather) {
   return weather.replace("_", " ");
+}
+
+function traitLabel(trait: RaceInput["primaryTrait"]) {
+  return trait.replace("_", " ");
 }

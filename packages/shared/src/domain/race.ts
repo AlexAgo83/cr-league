@@ -68,6 +68,7 @@ export type RaceEventType =
   | "late_push_failure"
   | "sponsor_payout"
   | "held_position"
+  | "race_note"
   | "finish";
 
 export type RaceEvent = {

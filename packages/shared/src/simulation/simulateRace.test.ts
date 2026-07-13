@@ -94,7 +94,7 @@ describe("simulateRace", () => {
     const result = simulateRace(baseRace);
 
     expect(result.classification).toHaveLength(6);
-    expect(result.events.length).toBeGreaterThan(0);
+    expect(result.events.length).toBeGreaterThan(6);
     expect(result.consumedCards).toEqual(
       expect.arrayContaining([
         { teamId: "alice", cardId: "rain_grip" },
@@ -113,5 +113,12 @@ describe("simulateRace", () => {
     expect(result.events.some((event) => event.cardId === "fleet_maintenance")).toBe(true);
     expect(result.events.some((event) => event.cardId === "launch_boost")).toBe(true);
     expect(result.events.some((event) => event.cardId === "fleet_sponsorship")).toBe(true);
+  });
+
+  it("adds minor race notes to make replay less repetitive", () => {
+    const result = simulateRace(baseRace);
+
+    expect(result.events.filter((event) => event.type === "race_note")).toHaveLength(4);
+    expect(result.events.some((event) => event.severity === "minor" && event.tags.includes("flavor"))).toBe(true);
   });
 });

@@ -1,0 +1,274 @@
+{
+  "title": "Define the asynchronous racing league game product brief",
+  "references": [
+    "Conversation on 2026-07-13: product discovery for a solo and private multiplayer racing league game where players manage a racing team rather than driving directly.",
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md"
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Game product definition",
+    "needs": [
+      "Create a detailed product brief that captures the core concept of CR League: an asynchronous racing championship where players act as racing team principals.",
+      "Document the first playable loop strongly enough that future work can resume without relying on conversation memory.",
+      "Support both solo play with bots and private multiplayer leagues with friends or coworkers, while keeping the initial implementation small enough to build and host cheaply.",
+      "Define the gameplay philosophy: short strategic preparation before each Grand Prix, automated simulation, visual replay, explanatory race report, cards as special tactical moves, and comeback options that do not hand free wins to trailing players.",
+      "Identify MVP scope, explicit non-goals, major risks, and the first backlog slices needed to validate whether the game is fun."
+    ],
+    "context": [
+      "The player is not the driver. The player runs a racing team and issues pre-race directives before each Grand Prix.",
+      "A championship contains multiple Grands Prix. The cadence must be configurable: weekly or delayed for private multiplayer, immediate or accelerated for solo play.",
+      "The game should feel approachable for non-gamers, especially coworkers in a private league, but still provide enough depth for players who want to optimize.",
+      "The product should avoid a costly always-on real-time backend in the first version. A lazy simulation model is acceptable: due races are resolved on first access after their scheduled time.",
+      "The desired visual tone is competitive cartoon with a slight retro influence: readable, stylish, not childish, not absurd, not futuristic, and not a serious motorsport simulation.",
+      "The first version should include both visual replay and written race report because the result must not feel like an opaque dice roll.",
+      "Cards are inspired by accessible board-game special moves rather than a deep deckbuilder. They should create memorable race events and tactical decisions."
+    ],
+    "acceptance_criteria": [
+      "AC1: A product brief exists and explains the game vision, target audience, core loop, MVP scope, non-goals, art direction, technical constraints, and risks.",
+      "AC2: The documented MVP supports both solo play with bots and private multiplayer leagues using the same core race engine and preparation loop.",
+      "AC3: The Grand Prix loop is described from pre-race briefing through player decisions, simulation, replay, report, rewards, and championship progression.",
+      "AC4: The brief defines cards as simple, mostly consumable special moves with clear race-story impact and a one-card-per-Grand-Prix V1 assumption.",
+      "AC5: The brief captures the balancing philosophy: trailing players receive comeback options and additional goals without being granted automatic victories.",
+      "AC6: The brief explicitly excludes V1 features that would inflate cost or scope, including live real-time races, complex 3D rendering, deep market systems, advanced notifications, and heavy vehicle upgrade trees.",
+      "AC7: The backlog identifies the first development slices required to validate fun: league setup, team creation, race preparation, simulation, replay/reporting, cards/inventory, and progression."
+    ]
+  },
+  "product": {
+    "title": "CR League Product Brief",
+    "overview": "CR League is an asynchronous racing championship game where players manage a team, make a few strategic pre-race bets, play special cards, then watch a simulated Grand Prix produce a visual replay, report, rewards, and championship movement.",
+    "goals": [
+      "Make each Grand Prix feel like a short strategic bet rather than a driving challenge: players read the conditions, commit to a plan, optionally play a card, and then see whether the plan paid off.",
+      "Create a game that works for private social leagues first, while still allowing immediate solo play with bots for onboarding, testing, and players who want to play at their own pace.",
+      "Generate race stories that players can understand and retell: weather gambles, rival battles, card saves, mechanical failures, late comebacks, and visible consequences of pre-race choices.",
+      "Keep the first version approachable for non-gamers by limiting mandatory pre-race decisions, providing strong defaults, and avoiding excessive configuration.",
+      "Give engaged players more to think about through optional practice insights, card inventory planning, rival goals, and risk/reward tradeoffs without forcing casual players through heavy management screens.",
+      "Use a cheap, robust asynchronous architecture: races can be scheduled, but simulation may happen lazily when the league is next accessed after the deadline."
+    ],
+    "non_goals": [
+      "Do not build real-time driving or direct in-race player control in V1.",
+      "Do not require a constantly awake backend process to trigger races exactly on schedule in V1.",
+      "Do not build a deep Formula 1-style management simulation with staff, engineering departments, contracts, sponsors, and complex car parts in V1.",
+      "Do not build a large deckbuilder or complex trading-card economy in V1.",
+      "Do not make advanced 3D presentation a dependency for proving the game loop.",
+      "Do not expose many league and simulation parameters to users during initial league creation."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Document and validate the Grand Prix core loop",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Gameplay foundation",
+      "request_acs": [
+        "AC1",
+        "AC3",
+        "AC5"
+      ],
+      "problem": [
+        "The product will fail if pre-race choices feel like opaque stat tuning or if players cannot understand why a race result happened.",
+        "The core loop must be simple enough for casual players but expressive enough to create memorable race stories."
+      ],
+      "scope_in": [
+        "Define the default Grand Prix phases: briefing, preparation, lock/deadline, simulation, replay, report, rewards, standings, next-race setup.",
+        "Define the initial mandatory decisions: race approach, technical preparation, and one optional special plan such as a card or rival objective.",
+        "Define how weather, circuit type, risk, reliability, and card effects should be communicated to the player.",
+        "Define the minimum report content needed to explain the result."
+      ],
+      "scope_out": [
+        "Exact numerical balancing formulas.",
+        "Full UI implementation.",
+        "Live in-race interaction."
+      ],
+      "acceptance_criteria": [
+        "AC1: The Grand Prix loop can be described in under one minute to a casual player.",
+        "AC2: The loop includes at least three explicit feedback points explaining how player decisions changed the race.",
+        "AC3: The loop supports both immediate solo execution and scheduled multiplayer execution.",
+        "AC4: The loop includes default behavior for absent multiplayer users."
+      ]
+    },
+    {
+      "title": "Build the first league and team experience",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Onboarding and league setup",
+      "request_acs": [
+        "AC2",
+        "AC7"
+      ],
+      "problem": [
+        "Players must be able to start quickly either alone or with a private group.",
+        "League creation can become intimidating if too many settings are exposed too early."
+      ],
+      "scope_in": [
+        "Create a racing team profile with name, colors, and a simple identity.",
+        "Start solo mode with bots immediately.",
+        "Create a private league with a short invite code.",
+        "Join a private league using a short invite code.",
+        "Use sensible default settings: 8 Grand Prix season, private league, bots available, weekly multiplayer cadence, manual immediate solo cadence."
+      ],
+      "scope_out": [
+        "Public matchmaking.",
+        "Authentication beyond what is needed for a first playable prototype.",
+        "Rich cosmetic customization.",
+        "Advanced league administration."
+      ],
+      "acceptance_criteria": [
+        "AC1: A new user can create a team and reach the next Grand Prix briefing without reading instructions.",
+        "AC2: A solo league can be created with bots and run immediately.",
+        "AC3: A private multiplayer league can be created and joined through a six-character code or equivalent short code.",
+        "AC4: League creation exposes only a small set of settings while preserving strong defaults."
+      ]
+    },
+    {
+      "title": "Prototype race simulation, replay, and report",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Race resolution",
+      "request_acs": [
+        "AC3",
+        "AC7"
+      ],
+      "problem": [
+        "The race result must feel fair, legible, and dramatic even though the player does not drive.",
+        "A pure table of results will not be enough to validate the concept."
+      ],
+      "scope_in": [
+        "Implement a deterministic or seedable race simulation model that combines team choices, bot profiles, weather, circuit traits, reliability, risk, and card effects.",
+        "Produce a compact event timeline for each Grand Prix.",
+        "Render a simple top-down 2D replay with identifiable teams, positions, weather/event cues, and a short duration.",
+        "Generate a written race report that explains key events, decision impact, rewards, and standings changes."
+      ],
+      "scope_out": [
+        "Photorealistic presentation.",
+        "Advanced 3D scene or AI-generated production asset dependency.",
+        "Full motorsport physics simulation.",
+        "Real-time networked race viewing."
+      ],
+      "acceptance_criteria": [
+        "AC1: The same race seed and inputs produce the same result for debugging.",
+        "AC2: A race produces final classification, championship point changes, credit rewards, and an event timeline.",
+        "AC3: The visual replay shows at least starts, overtakes or position changes, and major events.",
+        "AC4: The written report names at least three key reasons for the final outcome when applicable."
+      ]
+    },
+    {
+      "title": "Design and implement the V1 card and inventory system",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Cards and progression",
+      "request_acs": [
+        "AC4",
+        "AC5",
+        "AC7"
+      ],
+      "problem": [
+        "Cards need to create exciting tactical moments without turning the first version into a large deckbuilder or unbalanced economy.",
+        "Trailing players need comeback tools that feel like smart opportunities rather than artificial boosts."
+      ],
+      "scope_in": [
+        "Define a first set of roughly 12 cards.",
+        "Use mostly consumable cards in V1.",
+        "Allow at most one card to be played per Grand Prix.",
+        "Support a simple inventory and shop using race credits.",
+        "Include card types that support weather gambles, reliability saves, aggressive starts, late pushes, rival pressure, and economy choices."
+      ],
+      "scope_out": [
+        "Rare card crafting.",
+        "Player-to-player trading.",
+        "Auction house or dynamic market.",
+        "Large card collection meta.",
+        "Permanent passive card builds in V1."
+      ],
+      "acceptance_criteria": [
+        "AC1: Each V1 card has a clear trigger, upside, downside or limitation, and race-report explanation.",
+        "AC2: A player can buy, hold, and play a card before a Grand Prix.",
+        "AC3: Played consumable cards are removed from inventory after resolution.",
+        "AC4: At least three cards are useful specifically for trailing or risk-taking players without guaranteeing a win."
+      ]
+    },
+    {
+      "title": "Define balancing and retention mechanics for social leagues",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "League retention",
+      "request_acs": [
+        "AC2",
+        "AC5"
+      ],
+      "problem": [
+        "A championship can lose players quickly if early leaders run away or trailing players feel they have nothing meaningful to do.",
+        "Overt rubber-banding can frustrate leaders and make wins feel fake."
+      ],
+      "scope_in": [
+        "Define comeback philosophy and acceptable mechanisms.",
+        "Add rival goals so players can care about beating nearby opponents even when they are not fighting for first.",
+        "Reward trailing players with slightly better opportunity access, such as more credits or cards that are stronger from behind.",
+        "Define bot personalities that create readable opponents in solo and filled multiplayer leagues.",
+        "Define absent-player defaults for multiplayer deadlines."
+      ],
+      "scope_out": [
+        "Hidden manipulation of race results to force close championships.",
+        "Complex matchmaking rating.",
+        "Public competitive ladder.",
+        "Push notification strategy beyond future consideration."
+      ],
+      "acceptance_criteria": [
+        "AC1: The design names at least three non-cheating comeback mechanisms.",
+        "AC2: A player outside the title fight still has at least one meaningful goal per Grand Prix.",
+        "AC3: Bot profiles have simple, legible tendencies.",
+        "AC4: Multiplayer races can proceed when one or more players miss the preparation deadline."
+      ]
+    },
+    {
+      "title": "Prepare a low-cost asynchronous technical foundation",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Technical architecture",
+      "request_acs": [
+        "AC2",
+        "AC6",
+        "AC7"
+      ],
+      "problem": [
+        "The game should not require an expensive always-on backend for the first playable version.",
+        "The architecture must still support persistent leagues, scheduled races, invite codes, bot participants, and reproducible race results."
+      ],
+      "scope_in": [
+        "Define a web app architecture with persistent storage and a minimal backend.",
+        "Use lazy race resolution for scheduled multiplayer races.",
+        "Allow solo races to bypass waiting and resolve immediately.",
+        "Persist race inputs, seed, event timeline, final result, replay data, rewards, and standings.",
+        "Keep future deployment compatible with low-cost hosts where services may sleep."
+      ],
+      "scope_out": [
+        "Always-on job worker requirement for V1.",
+        "Hard real-time multiplayer infrastructure.",
+        "Complex microservice architecture.",
+        "Premature scaling for public launch traffic."
+      ],
+      "acceptance_criteria": [
+        "AC1: A due race can be resolved idempotently on first league access after its scheduled time.",
+        "AC2: Race resolution stores enough data to replay and explain the result later.",
+        "AC3: Solo and multiplayer use the same simulation engine.",
+        "AC4: The architecture does not require a constantly running scheduler for MVP correctness."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate CR League product brief and MVP discovery",
+    "plan": [
+      "Review the generated product brief for completeness against the discovery conversation.",
+      "Expand the product brief with specific sections for vision, audience, gameplay pillars, Grand Prix loop, cards, balancing, art direction, MVP, non-goals, technical assumptions, risks, and open questions.",
+      "Validate the Logics chain and apply deterministic fixes where appropriate.",
+      "Use the backlog items to sequence the first implementation or prototyping waves after the product brief is accepted.",
+      "Keep the corpus commit-ready, but do not commit unless the operator explicitly requests it."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/asynchronous-racing-league.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

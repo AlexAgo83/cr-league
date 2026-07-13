@@ -1,0 +1,352 @@
+{
+  "budgets": {
+    "max_docs": 32,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_000_define_the_asynchronous_racing_league_game_product_brief item_001_document_and_validate_the_grand_prix_core_loop item_002_build_the_first_league_and_team_experience item_003_prototype_race_simulation_replay_and_report item_004_design_and_implement_the_v1_card_and_inventory_system item_005_define_balancing_and_retention_mechanics_for_social_leagues item_006_prepare_a_low_cost_asynchronous_technical_foundation task_001_orchestrate_cr_league_product_brief_and_mvp_discovery --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_001_document_and_validate_the_grand_prix_core_loop",
+          "item_002_build_the_first_league_and_team_experience",
+          "item_003_prototype_race_simulation_replay_and_report",
+          "item_004_design_and_implement_the_v1_card_and_inventory_system",
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues",
+          "item_006_prepare_a_low_cost_asynchronous_technical_foundation"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_000_define_the_asynchronous_racing_league_game_product_brief"
+        ],
+        "task": [
+          "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+        ]
+      },
+      "path": "logics/product/prod_001_cr_league_product_brief.md",
+      "ref": "prod_001_cr_league_product_brief",
+      "status": "Proposed",
+      "title": "CR League Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, define the asynchronous racing league game product brief, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Define the asynchronous racing league game product brief",
+        "use when": "You need to implement or review the scaffolded workflow for Define the asynchronous racing league game product brief."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_001_document_and_validate_the_grand_prix_core_loop",
+          "item_002_build_the_first_league_and_team_experience",
+          "item_003_prototype_race_simulation_replay_and_report",
+          "item_004_design_and_implement_the_v1_card_and_inventory_system",
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues",
+          "item_006_prepare_a_low_cost_asynchronous_technical_foundation"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_000_define_the_asynchronous_racing_league_game_product_brief"
+        ]
+      },
+      "path": "logics/request/req_000_define_the_asynchronous_racing_league_game_product_brief.md",
+      "ref": "req_000_define_the_asynchronous_racing_league_game_product_brief",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Define the asynchronous racing league game product brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, document and validate the grand prix core loop, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Document and validate the Grand Prix core loop",
+        "use when": "Implementing the scaffolded slice for Document and validate the Grand Prix core loop."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_001_document_and_validate_the_grand_prix_core_loop"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_000_define_the_asynchronous_racing_league_game_product_brief"
+        ],
+        "task": [
+          "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+        ]
+      },
+      "path": "logics/backlog/item_001_document_and_validate_the_grand_prix_core_loop.md",
+      "ref": "item_001_document_and_validate_the_grand_prix_core_loop",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Document and validate the Grand Prix core loop"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, build the first league and team experience, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Build the first league and team experience",
+        "use when": "Implementing the scaffolded slice for Build the first league and team experience."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_002_build_the_first_league_and_team_experience"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_000_define_the_asynchronous_racing_league_game_product_brief"
+        ],
+        "task": [
+          "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+        ]
+      },
+      "path": "logics/backlog/item_002_build_the_first_league_and_team_experience.md",
+      "ref": "item_002_build_the_first_league_and_team_experience",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Build the first league and team experience"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, prototype race simulation, replay, and report, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Prototype race simulation, replay, and report",
+        "use when": "Implementing the scaffolded slice for Prototype race simulation, replay, and report."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_003_prototype_race_simulation_replay_and_report"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_000_define_the_asynchronous_racing_league_game_product_brief"
+        ],
+        "task": [
+          "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+        ]
+      },
+      "path": "logics/backlog/item_003_prototype_race_simulation_replay_and_report.md",
+      "ref": "item_003_prototype_race_simulation_replay_and_report",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Prototype race simulation, replay, and report"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate CR League product brief and MVP discovery",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_001_document_and_validate_the_grand_prix_core_loop",
+          "item_002_build_the_first_league_and_team_experience",
+          "item_003_prototype_race_simulation_replay_and_report",
+          "item_004_design_and_implement_the_v1_card_and_inventory_system",
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues",
+          "item_006_prepare_a_low_cost_asynchronous_technical_foundation"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_000_define_the_asynchronous_racing_league_game_product_brief"
+        ],
+        "task": [
+          "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+        ]
+      },
+      "path": "logics/tasks/task_001_orchestrate_cr_league_product_brief_and_mvp_discovery.md",
+      "ref": "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate CR League product brief and MVP discovery"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, design and implement the v1 card and inventory system, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Design and implement the V1 card and inventory system",
+        "use when": "Implementing the scaffolded slice for Design and implement the V1 card and inventory system."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_004_design_and_implement_the_v1_card_and_inventory_system"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_000_define_the_asynchronous_racing_league_game_product_brief"
+        ],
+        "task": [
+          "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+        ]
+      },
+      "path": "logics/backlog/item_004_design_and_implement_the_v1_card_and_inventory_system.md",
+      "ref": "item_004_design_and_implement_the_v1_card_and_inventory_system",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Design and implement the V1 card and inventory system"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, define balancing and retention mechanics for social leagues, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Define balancing and retention mechanics for social leagues",
+        "use when": "Implementing the scaffolded slice for Define balancing and retention mechanics for social leagues."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_000_define_the_asynchronous_racing_league_game_product_brief"
+        ],
+        "task": [
+          "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+        ]
+      },
+      "path": "logics/backlog/item_005_define_balancing_and_retention_mechanics_for_social_leagues.md",
+      "ref": "item_005_define_balancing_and_retention_mechanics_for_social_leagues",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Define balancing and retention mechanics for social leagues"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, prepare a low-cost asynchronous technical foundation, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Prepare a low-cost asynchronous technical foundation",
+        "use when": "Implementing the scaffolded slice for Prepare a low-cost asynchronous technical foundation."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_006_prepare_a_low_cost_asynchronous_technical_foundation"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_000_define_the_asynchronous_racing_league_game_product_brief"
+        ],
+        "task": [
+          "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+        ]
+      },
+      "path": "logics/backlog/item_006_prepare_a_low_cost_asynchronous_technical_foundation.md",
+      "ref": "item_006_prepare_a_low_cost_asynchronous_technical_foundation",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Prepare a low-cost asynchronous technical foundation"
+    }
+  ],
+  "estimates": {
+    "char_count": 8732,
+    "companion_doc_count": 1,
+    "doc_count": 8
+  },
+  "generated_at": "2026-07-13T19:12:11Z",
+  "handoff": {
+    "companion_doc_count": 1,
+    "enabled": true,
+    "source_refs": [
+      "req_000_define_the_asynchronous_racing_league_game_product_brief",
+      "item_001_document_and_validate_the_grand_prix_core_loop",
+      "item_002_build_the_first_league_and_team_experience",
+      "item_003_prototype_race_simulation_replay_and_report",
+      "item_004_design_and_implement_the_v1_card_and_inventory_system",
+      "item_005_define_balancing_and_retention_mechanics_for_social_leagues",
+      "item_006_prepare_a_low_cost_asynchronous_technical_foundation",
+      "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Choose the source locale for app-owned user-facing copy.",
+      "Run logics-manager i18n init --source-locale <locale>.",
+      "Route new UI copy through stable semantic keys."
+    ],
+    "applicable": null,
+    "configured": false,
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "Run logics-manager i18n init --source-locale <locale> for a project that owns user-facing copy.",
+    "ok": true,
+    "state": "absent"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_000_define_the_asynchronous_racing_league_game_product_brief,item_001_document_and_validate_the_grand_prix_core_loop,item_002_build_the_first_league_and_team_experience,item_003_prototype_race_simulation_replay_and_report,item_004_design_and_implement_the_v1_card_and_inventory_system,item_005_define_balancing_and_retention_mechanics_for_social_leagues,item_006_prepare_a_low_cost_asynchronous_technical_foundation,task_001_orchestrate_cr_league_product_brief_and_mvp_discovery",
+  "refs": [
+    "req_000_define_the_asynchronous_racing_league_game_product_brief",
+    "item_001_document_and_validate_the_grand_prix_core_loop",
+    "item_002_build_the_first_league_and_team_experience",
+    "item_003_prototype_race_simulation_replay_and_report",
+    "item_004_design_and_implement_the_v1_card_and_inventory_system",
+    "item_005_define_balancing_and_retention_mechanics_for_social_leagues",
+    "item_006_prepare_a_low_cost_asynchronous_technical_foundation",
+    "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "Missing logics/release/contract.json."
+    ],
+    "configured": false,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Run logics-manager release discover --write, then review and promote logics/release/contract.draft.json to logics/release/contract.json.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "not_configured",
+    "target_version": null
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_001_orchestrate_cr_league_product_brief_and_mvp_discovery.md",
+      "ref": "task_001_orchestrate_cr_league_product_brief_and_mvp_discovery"
+    }
+  ]
+}

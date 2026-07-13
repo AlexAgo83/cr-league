@@ -1,2 +1,7 @@
 AGENTS.md
 LOGICS.md
+node_modules/
+dist/
+.npm-cache/
+.env
+*.tsbuildinfo

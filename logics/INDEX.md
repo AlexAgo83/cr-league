@@ -25,6 +25,7 @@
 | [req_006_capture_cr_league_theme_and_brand_inspiration](request/req_006_capture_cr_league_theme_and_brand_inspiration.md) | Capture CR League theme and brand inspiration | Done |  |  | request/req_006_capture_cr_league_theme_and_brand_inspiration.md |
 | [req_007_define_cr_league_device_targets_and_responsive_ux](request/req_007_define_cr_league_device_targets_and_responsive_ux.md) | Define CR League device targets and responsive UX | Done |  |  | request/req_007_define_cr_league_device_targets_and_responsive_ux.md |
 | [req_008_define_cr_league_implementation_roadmap](request/req_008_define_cr_league_implementation_roadmap.md) | Define CR League implementation roadmap | Done |  |  | request/req_008_define_cr_league_implementation_roadmap.md |
+| [req_009_scaffold_cr_league_monorepo_foundation](request/req_009_scaffold_cr_league_monorepo_foundation.md) | Scaffold CR League monorepo foundation | Done |  |  | request/req_009_scaffold_cr_league_monorepo_foundation.md |
 
 ## Backlog
 
@@ -44,6 +45,7 @@
 | [item_012_capture_cr_league_theme_and_brand_inspiration](backlog/item_012_capture_cr_league_theme_and_brand_inspiration.md) | Capture CR League theme and brand inspiration | Done |  | 100% | backlog/item_012_capture_cr_league_theme_and_brand_inspiration.md |
 | [item_013_define_cr_league_device_targets_and_responsive_ux](backlog/item_013_define_cr_league_device_targets_and_responsive_ux.md) | Define CR League device targets and responsive UX | Done |  | 100% | backlog/item_013_define_cr_league_device_targets_and_responsive_ux.md |
 | [item_014_define_cr_league_implementation_roadmap](backlog/item_014_define_cr_league_implementation_roadmap.md) | Define CR League implementation roadmap | Done |  | 100% | backlog/item_014_define_cr_league_implementation_roadmap.md |
+| [item_015_scaffold_cr_league_monorepo_foundation](backlog/item_015_scaffold_cr_league_monorepo_foundation.md) | Scaffold CR League monorepo foundation | Done |  | 100% | backlog/item_015_scaffold_cr_league_monorepo_foundation.md |
 
 ## Tasks
 
@@ -58,3 +60,4 @@
 | [task_007_capture_cr_league_theme_and_brand_inspiration](tasks/task_007_capture_cr_league_theme_and_brand_inspiration.md) | Capture CR League theme and brand inspiration | Done | codex | 100% | tasks/task_007_capture_cr_league_theme_and_brand_inspiration.md |
 | [task_008_define_cr_league_device_targets_and_responsive_ux](tasks/task_008_define_cr_league_device_targets_and_responsive_ux.md) | Define CR League device targets and responsive UX | Done | codex | 100% | tasks/task_008_define_cr_league_device_targets_and_responsive_ux.md |
 | [task_009_define_cr_league_implementation_roadmap](tasks/task_009_define_cr_league_implementation_roadmap.md) | Define CR League implementation roadmap | Done | codex | 100% | tasks/task_009_define_cr_league_implementation_roadmap.md |
+| [task_010_scaffold_cr_league_monorepo_foundation](tasks/task_010_scaffold_cr_league_monorepo_foundation.md) | Scaffold CR League monorepo foundation | Done | codex | 100% | tasks/task_010_scaffold_cr_league_monorepo_foundation.md |

@@ -1,9 +1,9 @@
 ## prod_001_cr_league_product_brief - CR League Product Brief
 > Date: 2026-07-13
 > Status: Proposed
-> Related request: `req_008_define_cr_league_implementation_roadmap`
-> Related backlog: `item_014_define_cr_league_implementation_roadmap`
-> Related task: `task_009_define_cr_league_implementation_roadmap`
+> Related request: `req_009_scaffold_cr_league_monorepo_foundation`
+> Related backlog: `item_015_scaffold_cr_league_monorepo_foundation`
+> Related task: `task_010_scaffold_cr_league_monorepo_foundation`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
@@ -349,5 +349,5 @@ Can wait until later:
 - Should team condition or car wear persist between races in V1, or should each Grand Prix start clean except for cards and credits?
 
 # References
-- Product back-reference: `item_014_define_cr_league_implementation_roadmap`
-- Task back-reference: `task_009_define_cr_league_implementation_roadmap`
+- Product back-reference: `item_015_scaffold_cr_league_monorepo_foundation`
+- Task back-reference: `task_010_scaffold_cr_league_monorepo_foundation`

@@ -46,6 +46,9 @@ export type LeagueState = {
     name: string;
     round: number;
     status: string;
+    primaryTrait: RaceInput["primaryTrait"];
+    secondaryTrait: RaceInput["secondaryTrait"];
+    forecast: RaceInput["forecast"];
     result: unknown;
   };
   grandPrixHistory: Array<{
@@ -209,6 +212,9 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       name: grandPrix.name,
       round: grandPrix.round,
       status: grandPrix.status,
+      primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
+      secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+      forecast: grandPrix.forecast as RaceInput["forecast"],
       result: grandPrix.result
     },
     grandPrixHistory: league.grandPrixes.map((entry) => ({

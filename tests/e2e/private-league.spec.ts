@@ -89,6 +89,13 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
       name: "Silver Ridge GP",
       round,
       status: currentStatus,
+      primaryTrait: "fast",
+      secondaryTrait: "weather_sensitive",
+      forecast: {
+        dry: 60,
+        light_rain: 30,
+        heavy_rain: 10
+      },
       result
     },
     grandPrixHistory: Array.from({ length: round }, (_, index) => {

@@ -16,6 +16,13 @@ const baseState = {
     name: "Silver Ridge GP",
     round: 1,
     status: "briefing",
+    primaryTrait: "fast",
+    secondaryTrait: "weather_sensitive",
+    forecast: {
+      dry: 60,
+      light_rain: 30,
+      heavy_rain: 10
+    },
     result: null
   },
   grandPrixHistory: [
@@ -209,6 +216,8 @@ describe("App", () => {
     expect(await screen.findByText("Code ABC123 · Round 1 · briefing")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Current GP" })).toBeTruthy();
+    expect(screen.getByText("Fast · Weather sensitive")).toBeTruthy();
+    expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getByText("0 ready · 2 missing")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));

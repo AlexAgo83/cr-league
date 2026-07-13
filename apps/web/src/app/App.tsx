@@ -20,6 +20,9 @@ type LeagueState = {
     name: string;
     round: number;
     status: string;
+    primaryTrait: string;
+    secondaryTrait: string;
+    forecast: Record<string, number>;
     result: RaceResult | null;
   };
   grandPrixHistory: Array<{
@@ -116,6 +119,7 @@ export function App() {
   const playerDecision = leagueState?.decisions.find((decision) => decision.teamId === playerTeam?.id);
   const result = leagueState?.currentGrandPrix.result;
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
+  const forecastPick = leagueState ? strongestForecast(leagueState.currentGrandPrix.forecast) : "dry";
 
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
@@ -298,6 +302,29 @@ export function App() {
 
           {leagueState ? (
             <>
+              <section className="race-briefing">
+                <div>
+                  <span className="section-kicker">{tt("briefing_next_action")}</span>
+                  <h3>{tt(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}</h3>
+                  <p>{isResolved ? tt("briefing_tip_resolved") : tt("briefing_tip_prepare")}</p>
+                </div>
+                <dl className="briefing-facts">
+                  <div>
+                    <dt>{tt("briefing_track")}</dt>
+                    <dd>
+                      {tt(`trait_${leagueState.currentGrandPrix.primaryTrait}` as TranslationKey)} ·{" "}
+                      {tt(`trait_${leagueState.currentGrandPrix.secondaryTrait}` as TranslationKey)}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt>{tt("briefing_forecast")}</dt>
+                    <dd>
+                      {tt(`weather_${forecastPick}` as TranslationKey)} · {leagueState.currentGrandPrix.forecast[forecastPick]}%
+                    </dd>
+                  </div>
+                </dl>
+              </section>
+
               <div className="field-grid settings-fields">
                 <label>
                   {tt("field_cadence")}
@@ -325,6 +352,7 @@ export function App() {
                     <option value="balanced">{tt("approach_balanced")}</option>
                     <option value="aggressive">{tt("approach_aggressive")}</option>
                   </select>
+                  <small>{tt(`approach_${form.approach}_hint` as TranslationKey)}</small>
                 </label>
                 <label>
                   {tt("field_preparation")}
@@ -336,6 +364,7 @@ export function App() {
                     <option value="reliability">{tt("preparation_reliability")}</option>
                     <option value="weather">{tt("preparation_weather")}</option>
                   </select>
+                  <small>{tt(`preparation_${form.preparation}_hint` as TranslationKey)}</small>
                 </label>
                 <label>
                   {tt("field_card")}
@@ -348,6 +377,7 @@ export function App() {
                     <option value="final_surge">{tt("card_final_surge")}</option>
                     <option value="fleet_sponsorship">{tt("card_fleet_sponsorship")}</option>
                   </select>
+                  <small>{form.cardId ? tt(`card_${form.cardId}_hint` as TranslationKey) : tt("card_none_hint")}</small>
                 </label>
               </div>
 
@@ -504,4 +534,8 @@ class ApiError extends Error {
 
 function isStaleLeagueError(error: unknown) {
   return error instanceof ApiError && error.statusCode === 404 && localStorage.getItem(PLAYER_CLAIM_KEY);
+}
+
+function strongestForecast(forecast: Record<string, number>) {
+  return Object.entries(forecast).reduce((best, current) => (current[1] > best[1] ? current : best), ["dry", 0])[0];
 }

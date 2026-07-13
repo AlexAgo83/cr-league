@@ -82,6 +82,12 @@ label {
   gap: 6px;
 }
 
+label small {
+  color: #6b7280;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
 .play-grid {
   display: grid;
   gap: 16px;
@@ -152,6 +158,54 @@ label {
   flex-wrap: wrap;
   gap: 12px;
   margin-top: 20px;
+}
+
+.race-briefing {
+  background: #f8fafc;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.8fr);
+  margin-bottom: 16px;
+  padding: 16px;
+}
+
+.section-kicker {
+  color: var(--color-accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.race-briefing h3 {
+  margin: 4px 0 8px;
+}
+
+.race-briefing p {
+  margin-bottom: 0;
+}
+
+.briefing-facts {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.briefing-facts div {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 10px;
+}
+
+.briefing-facts dt {
+  color: #6b7280;
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.briefing-facts dd {
+  margin: 2px 0 0;
 }
 
 .primary-actions {
@@ -250,6 +304,10 @@ label {
 
   .settings-fields,
   .directive-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .race-briefing {
     grid-template-columns: 1fr;
   }
 }

@@ -92,6 +92,12 @@ curl -X POST http://127.0.0.1:4874/leagues \
 curl -X POST http://127.0.0.1:4874/leagues/<leagueId>/resolve
 ```
 
+Run the real API + PostgreSQL smoke flow after the API is started:
+
+```bash
+npm run smoke:league
+```
+
 ## Configuration
 
 Copy the example environment file when local runtime config is needed:
@@ -107,6 +113,20 @@ DATABASE_URL="postgresql://user:password@localhost:5432/cr_league?schema=cr_leag
 API_HOST="127.0.0.1"
 API_PORT="4874"
 WEB_ORIGIN="http://localhost:4873"
+```
+
+Prepare the local PostgreSQL schema:
+
+```bash
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+```
+
+For hosted or non-interactive environments, use:
+
+```bash
+npm run db:deploy
 ```
 
 Rules:
@@ -125,6 +145,7 @@ npm run typecheck
 npm run build
 npm test
 npm run lint
+npm run db:generate
 npm run logics:validate
 ```
 

@@ -15,6 +15,11 @@
     "test": "vitest run",
     "lint": "eslint .",
     "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:seed": "prisma db seed",
+    "db:studio": "prisma studio",
+    "smoke:league": "tsx scripts/smoke-league-flow.ts",
     "logics:validate": "logics-manager lint --require-status && logics-manager audit --group-by-doc"
   },
   "devDependencies": {

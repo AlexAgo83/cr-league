@@ -97,6 +97,12 @@
   - use stronger hierarchy for briefing, directive, race, and report states;
   - avoid generic admin-form presentation.
 
+## Follow-up Implemented
+- Added English/French UI switching so local testers can play in French.
+- Added a guided GP briefing with current action, track profile, likely weather, and directive hints.
+- Added deterministic minor race notes to make the replay less repetitive without changing race balance.
+- Kept the slice intentionally thin: no inventory economy, no full visual track replay, and no new scheduler.
+
 ## Backlog Candidates
 - Add guided pre-GP briefing and decision helper.
 - Expand race event variety and replay flavor.

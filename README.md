@@ -189,7 +189,7 @@ The detailed implementation-wave roadmap is:
 Current roadmap direction:
 
 - `0.1` playable vertical slice is mostly implemented;
-- `0.2` private league prototype foundation now includes manual cadence, readiness dashboard, rejoin, GP history, a seeded playtest fixture, and a lightweight replay timeline.
+- `0.2` private league prototype foundation now includes manual cadence, readiness dashboard, rejoin, GP history, a seeded playtest fixture, a lightweight replay timeline, French UI switching, guided GP briefing, and more replay flavor.
 
 ## Contributing
 

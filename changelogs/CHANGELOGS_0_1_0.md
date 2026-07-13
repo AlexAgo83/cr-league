@@ -7,6 +7,7 @@ Initial foundation release notes for CR League.
 - Defined the CR League product, gameplay, theme, responsive UX, architecture, and implementation roadmap through Logics.
 - Scaffolded the Wave 1 monorepo foundation.
 - Added repository governance docs.
+- Added the first private-league playtest loop, guided GP briefing, replay flavor, and English/French UI switching.
 
 ## Engineering
 
@@ -16,6 +17,8 @@ Initial foundation release notes for CR League.
 - Added shared TypeScript package under `packages/shared`.
 - Added Prisma/PostgreSQL schema shell under `prisma`.
 - Added TypeScript, ESLint, Vitest, and validation scripts.
+- Added deterministic minor race notes to make replay output less repetitive.
+- Added lightweight i18n catalog support for English and French.
 
 ## Validation
 

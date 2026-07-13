@@ -22,6 +22,7 @@
 | [req_003_decide_cr_league_v1_application_architecture](request/req_003_decide_cr_league_v1_application_architecture.md) | Decide CR League V1 application architecture | Done |  |  | request/req_003_decide_cr_league_v1_application_architecture.md |
 | [req_004_define_cr_league_implementation_contracts_v0](request/req_004_define_cr_league_implementation_contracts_v0.md) | Define CR League implementation contracts V0 | Done |  |  | request/req_004_define_cr_league_implementation_contracts_v0.md |
 | [req_005_capture_cr_league_product_critique_and_gameplay_refinements](request/req_005_capture_cr_league_product_critique_and_gameplay_refinements.md) | Capture CR League product critique and gameplay refinements | Done |  |  | request/req_005_capture_cr_league_product_critique_and_gameplay_refinements.md |
+| [req_006_capture_cr_league_theme_and_brand_inspiration](request/req_006_capture_cr_league_theme_and_brand_inspiration.md) | Capture CR League theme and brand inspiration | Done |  |  | request/req_006_capture_cr_league_theme_and_brand_inspiration.md |
 
 ## Backlog
 
@@ -38,6 +39,7 @@
 | [item_009_decide_cr_league_v1_application_architecture](backlog/item_009_decide_cr_league_v1_application_architecture.md) | Decide CR League V1 application architecture | Done |  | 100% | backlog/item_009_decide_cr_league_v1_application_architecture.md |
 | [item_010_define_cr_league_implementation_contracts_v0](backlog/item_010_define_cr_league_implementation_contracts_v0.md) | Define CR League implementation contracts V0 | Done |  | 100% | backlog/item_010_define_cr_league_implementation_contracts_v0.md |
 | [item_011_capture_cr_league_product_critique_and_gameplay_refinements](backlog/item_011_capture_cr_league_product_critique_and_gameplay_refinements.md) | Capture CR League product critique and gameplay refinements | Done |  | 100% | backlog/item_011_capture_cr_league_product_critique_and_gameplay_refinements.md |
+| [item_012_capture_cr_league_theme_and_brand_inspiration](backlog/item_012_capture_cr_league_theme_and_brand_inspiration.md) | Capture CR League theme and brand inspiration | Done |  | 100% | backlog/item_012_capture_cr_league_theme_and_brand_inspiration.md |
 
 ## Tasks
 
@@ -49,3 +51,4 @@
 | [task_004_decide_cr_league_v1_application_architecture](tasks/task_004_decide_cr_league_v1_application_architecture.md) | Decide CR League V1 application architecture | Done | codex | 100% | tasks/task_004_decide_cr_league_v1_application_architecture.md |
 | [task_005_define_cr_league_implementation_contracts_v0](tasks/task_005_define_cr_league_implementation_contracts_v0.md) | Define CR League implementation contracts V0 | Done | codex | 100% | tasks/task_005_define_cr_league_implementation_contracts_v0.md |
 | [task_006_capture_cr_league_product_critique_and_gameplay_refinements](tasks/task_006_capture_cr_league_product_critique_and_gameplay_refinements.md) | Capture CR League product critique and gameplay refinements | Done | codex | 100% | tasks/task_006_capture_cr_league_product_critique_and_gameplay_refinements.md |
+| [task_007_capture_cr_league_theme_and_brand_inspiration](tasks/task_007_capture_cr_league_theme_and_brand_inspiration.md) | Capture CR League theme and brand inspiration | Done | codex | 100% | tasks/task_007_capture_cr_league_theme_and_brand_inspiration.md |

@@ -1,9 +1,10 @@
 import { APP_NAME, type RaceDecision, type RaceResult } from "@cr-league/shared";
 import { useEffect, useMemo, useState } from "react";
-import { t, type TranslationKey } from "../i18n/index.js";
+import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
 const PLAYER_CLAIM_KEY = "cr-league-player-claim";
+const LANGUAGE_KEY = "cr-league-language";
 
 type LeagueState = {
   league: {
@@ -67,34 +68,41 @@ type FormState = {
   cardId: RaceDecision["cardId"] | "";
 };
 
-const initialForm: FormState = {
-  leagueName: t("default_league_name"),
-  joinCode: "",
-  teamName: t("default_team_name"),
-  cadence: "manual",
-  preparationDeadlineAt: "",
-  approach: "balanced",
-  preparation: "weather",
-  cardId: "rain_grip"
-};
+function createInitialForm(locale: Locale): FormState {
+  return {
+    leagueName: t("default_league_name", locale),
+    joinCode: "",
+    teamName: t("default_team_name", locale),
+    cadence: "manual",
+    preparationDeadlineAt: "",
+    approach: "balanced",
+    preparation: "weather",
+    cardId: "rain_grip"
+  };
+}
 
 export function App() {
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    const saved = localStorage.getItem(LANGUAGE_KEY);
+    return isLocale(saved) ? saved : "en";
+  });
+  const tt = (key: TranslationKey) => t(key, locale);
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
-  const [form, setForm] = useState<FormState>(initialForm);
+  const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
-  const [message, setMessage] = useState(t("status_initial"));
+  const [message, setMessage] = useState(() => t("status_initial", locale));
 
   useEffect(() => {
     const saved = localStorage.getItem(PLAYER_CLAIM_KEY);
     if (!saved) return;
-    void run(t("status_rejoining_league"), async () => {
+    void run(tt("status_rejoining_league"), async () => {
       const state = await api<LeagueState>("/leagues/rejoin", {
         method: "POST",
         body: saved
       });
       rememberPlayer(state);
       setLeagueState(state);
-      setMessage(t("status_league_rejoined"));
+      setMessage(tt("status_league_rejoined"));
     });
   }, []);
 
@@ -110,7 +118,7 @@ export function App() {
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
 
   async function createLeague() {
-    await run(t("status_creating_league"), async () => {
+    await run(tt("status_creating_league"), async () => {
       const state = await api<LeagueState>("/leagues", {
         method: "POST",
         body: JSON.stringify({
@@ -120,12 +128,12 @@ export function App() {
       });
       rememberPlayer(state);
       setLeagueState(state);
-      setMessage(t("status_league_created"));
+      setMessage(tt("status_league_created"));
     });
   }
 
   async function joinLeague() {
-    await run(t("status_joining_league"), async () => {
+    await run(tt("status_joining_league"), async () => {
       const state = await api<LeagueState>("/leagues/join", {
         method: "POST",
         body: JSON.stringify({
@@ -135,14 +143,14 @@ export function App() {
       });
       rememberPlayer(state);
       setLeagueState(state);
-      setMessage(t("status_league_joined"));
+      setMessage(tt("status_league_joined"));
     });
   }
 
   async function submitDirective() {
     if (!leagueState || !playerTeam) return;
 
-    await run(t("status_submitting_directive"), async () => {
+    await run(tt("status_submitting_directive"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/decisions`, {
         method: "POST",
         body: JSON.stringify({
@@ -153,14 +161,14 @@ export function App() {
         })
       });
       setLeagueState(state);
-      setMessage(t("status_directive_locked"));
+      setMessage(tt("status_directive_locked"));
     });
   }
 
   async function updateSettings() {
     if (!leagueState) return;
 
-    await run(t("status_updating_settings"), async () => {
+    await run(tt("status_updating_settings"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/settings`, {
         method: "POST",
         body: JSON.stringify({
@@ -169,14 +177,14 @@ export function App() {
         })
       });
       setLeagueState(state);
-      setMessage(t("status_settings_updated"));
+      setMessage(tt("status_settings_updated"));
     });
   }
 
   async function resolveGrandPrix() {
     if (!leagueState) return;
 
-    await run(t("status_resolving_grand_prix"), async () => {
+    await run(tt("status_resolving_grand_prix"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/resolve`, {
         method: "POST",
         body: JSON.stringify({
@@ -184,19 +192,19 @@ export function App() {
         })
       });
       setLeagueState(state);
-      setMessage(t("status_grand_prix_resolved"));
+      setMessage(tt("status_grand_prix_resolved"));
     });
   }
 
   async function startNextGrandPrix() {
     if (!leagueState) return;
 
-    await run(t("status_starting_next_grand_prix"), async () => {
+    await run(tt("status_starting_next_grand_prix"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/next-grand-prix`, {
         method: "POST"
       });
       setLeagueState(state);
-      setMessage(t("status_next_grand_prix_started"));
+      setMessage(tt("status_next_grand_prix_started"));
     });
   }
 
@@ -212,41 +220,58 @@ export function App() {
       if (isStaleLeagueError(error)) {
         localStorage.removeItem(PLAYER_CLAIM_KEY);
         setLeagueState(null);
-        setMessage(t("status_saved_league_expired"));
+        setMessage(tt("status_saved_league_expired"));
         return;
       }
-      setMessage(error instanceof Error ? error.message : t("status_api_unavailable"));
+      setMessage(error instanceof Error ? error.message : tt("status_api_unavailable"));
     }
   }
 
   function forgetPlayer() {
     localStorage.removeItem(PLAYER_CLAIM_KEY);
     setLeagueState(null);
-    setMessage(t("status_player_forgotten"));
+    setMessage(tt("status_player_forgotten"));
+  }
+
+  function changeLocale(nextLocale: Locale) {
+    localStorage.setItem(LANGUAGE_KEY, nextLocale);
+    setLocaleState(nextLocale);
+    if (!leagueState && message === t("status_initial", locale)) {
+      setMessage(t("status_initial", nextLocale));
+    }
   }
 
   return (
     <main className="app-shell">
       <section className="hero" aria-labelledby="app-title">
-        <p className="eyebrow">{t("app_eyebrow")}</p>
+        <div className="hero-topline">
+          <p className="eyebrow">{tt("app_eyebrow")}</p>
+          <label className="language-select">
+            {tt("language_label")}
+            <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
+              <option value="en">{tt("language_en")}</option>
+              <option value="fr">{tt("language_fr")}</option>
+            </select>
+          </label>
+        </div>
         <h1 id="app-title">{APP_NAME}</h1>
-        <p>{t("app_intro")}</p>
+        <p>{tt("app_intro")}</p>
       </section>
 
-      <section className="play-grid" aria-label={t("flow_label")}>
+      <section className="play-grid" aria-label={tt("flow_label")}>
         <article className={leagueState ? "panel race-panel" : "panel control-panel setup-panel"}>
-          <h2>{t("race_desk_title")}</h2>
+          <h2>{tt("race_desk_title")}</h2>
           <p className={status === "error" ? "status error" : "status"}>{message}</p>
 
           {!leagueState ? (
             <>
               <div className="field-grid setup-fields">
                 <label>
-                  {t("field_league")}
+                  {tt("field_league")}
                   <input value={form.leagueName} onChange={(event) => setForm({ ...form, leagueName: event.target.value })} />
                 </label>
                 <label>
-                  {t("field_join_code")}
+                  {tt("field_join_code")}
                   <input
                     value={form.joinCode}
                     onChange={(event) => setForm({ ...form, joinCode: event.target.value.toUpperCase() })}
@@ -255,17 +280,17 @@ export function App() {
                   />
                 </label>
                 <label>
-                  {t("field_team")}
+                  {tt("field_team")}
                   <input value={form.teamName} onChange={(event) => setForm({ ...form, teamName: event.target.value })} />
                 </label>
               </div>
 
               <div className="actions primary-actions">
                 <button type="button" onClick={createLeague} disabled={status === "loading"}>
-                  {t("action_create_league")}
+                  {tt("action_create_league")}
                 </button>
                 <button type="button" onClick={joinLeague} disabled={status === "loading"}>
-                  {t("action_join_league")}
+                  {tt("action_join_league")}
                 </button>
               </div>
             </>
@@ -275,15 +300,15 @@ export function App() {
             <>
               <div className="field-grid settings-fields">
                 <label>
-                  {t("field_cadence")}
+                  {tt("field_cadence")}
                   <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
-                    <option value="manual">{t("cadence_manual")}</option>
-                    <option value="fast">{t("cadence_fast")}</option>
-                    <option value="weekly">{t("cadence_weekly")}</option>
+                    <option value="manual">{tt("cadence_manual")}</option>
+                    <option value="fast">{tt("cadence_fast")}</option>
+                    <option value="weekly">{tt("cadence_weekly")}</option>
                   </select>
                 </label>
                 <label>
-                  {t("field_deadline")}
+                  {tt("field_deadline")}
                   <input
                     type="datetime-local"
                     value={form.preparationDeadlineAt}
@@ -294,53 +319,53 @@ export function App() {
 
               <div className="field-grid directive-fields">
                 <label>
-                  {t("field_approach")}
+                  {tt("field_approach")}
                   <select value={form.approach} onChange={(event) => setForm({ ...form, approach: event.target.value as FormState["approach"] })}>
-                    <option value="prudent">{t("approach_prudent")}</option>
-                    <option value="balanced">{t("approach_balanced")}</option>
-                    <option value="aggressive">{t("approach_aggressive")}</option>
+                    <option value="prudent">{tt("approach_prudent")}</option>
+                    <option value="balanced">{tt("approach_balanced")}</option>
+                    <option value="aggressive">{tt("approach_aggressive")}</option>
                   </select>
                 </label>
                 <label>
-                  {t("field_preparation")}
+                  {tt("field_preparation")}
                   <select
                     value={form.preparation}
                     onChange={(event) => setForm({ ...form, preparation: event.target.value as FormState["preparation"] })}
                   >
-                    <option value="speed">{t("preparation_speed")}</option>
-                    <option value="reliability">{t("preparation_reliability")}</option>
-                    <option value="weather">{t("preparation_weather")}</option>
+                    <option value="speed">{tt("preparation_speed")}</option>
+                    <option value="reliability">{tt("preparation_reliability")}</option>
+                    <option value="weather">{tt("preparation_weather")}</option>
                   </select>
                 </label>
                 <label>
-                  {t("field_card")}
+                  {tt("field_card")}
                   <select value={form.cardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })}>
-                    <option value="">{t("card_none")}</option>
-                    <option value="rain_grip">{t("card_rain_grip")}</option>
-                    <option value="fleet_maintenance">{t("card_fleet_maintenance")}</option>
-                    <option value="launch_boost">{t("card_launch_boost")}</option>
-                    <option value="urban_draft">{t("card_urban_draft")}</option>
-                    <option value="final_surge">{t("card_final_surge")}</option>
-                    <option value="fleet_sponsorship">{t("card_fleet_sponsorship")}</option>
+                    <option value="">{tt("card_none")}</option>
+                    <option value="rain_grip">{tt("card_rain_grip")}</option>
+                    <option value="fleet_maintenance">{tt("card_fleet_maintenance")}</option>
+                    <option value="launch_boost">{tt("card_launch_boost")}</option>
+                    <option value="urban_draft">{tt("card_urban_draft")}</option>
+                    <option value="final_surge">{tt("card_final_surge")}</option>
+                    <option value="fleet_sponsorship">{tt("card_fleet_sponsorship")}</option>
                   </select>
                 </label>
               </div>
 
               <div className="actions race-actions">
                 <button type="button" onClick={submitDirective} disabled={status === "loading" || isResolved}>
-                  {t("action_submit_directive")}
+                  {tt("action_submit_directive")}
                 </button>
                 <button type="button" onClick={resolveGrandPrix} disabled={status === "loading" || isResolved}>
-                  {t("action_launch_grand_prix")}
+                  {tt("action_launch_grand_prix")}
                 </button>
                 <button type="button" onClick={startNextGrandPrix} disabled={status === "loading" || !leagueState.actionState.canStartNextGrandPrix}>
-                  {t("action_next_grand_prix")}
+                  {tt("action_next_grand_prix")}
                 </button>
                 <button type="button" onClick={updateSettings} disabled={status === "loading"}>
-                  {t("action_update_settings")}
+                  {tt("action_update_settings")}
                 </button>
                 <button type="button" onClick={forgetPlayer} disabled={status === "loading" || !leagueState.player}>
-                  {t("action_forget_team")}
+                  {tt("action_forget_team")}
                 </button>
               </div>
             </>
@@ -351,47 +376,47 @@ export function App() {
           <article className="panel league-panel">
             <h2>{leagueState.league.name}</h2>
             <section className="dashboard-section">
-              <h3>{t("dashboard_my_team")}</h3>
-              <p>{playerTeam ? `${t("league_your_team")} ${playerTeam.name}` : t("dashboard_no_team")}</p>
+              <h3>{tt("dashboard_my_team")}</h3>
+              <p>{playerTeam ? `${tt("league_your_team")} ${playerTeam.name}` : tt("dashboard_no_team")}</p>
             </section>
             <section className="dashboard-section">
-              <h3>{t("dashboard_current_gp")}</h3>
+              <h3>{tt("dashboard_current_gp")}</h3>
               <p>
-                {t("league_code")} {leagueState.league.code} · {t("league_round")} {leagueState.currentGrandPrix.round} ·{" "}
+                {tt("league_code")} {leagueState.league.code} · {tt("league_round")} {leagueState.currentGrandPrix.round} ·{" "}
                 {leagueState.currentGrandPrix.status}
               </p>
               <p>
-                {t("league_cadence")} {t(`cadence_${leagueState.league.cadence}` as TranslationKey)} · {t("league_next_action")}{" "}
-                {t(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}
+                {tt("league_cadence")} {tt(`cadence_${leagueState.league.cadence}` as TranslationKey)} · {tt("league_next_action")}{" "}
+                {tt(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}
               </p>
             </section>
             <section className="dashboard-section">
-              <h3>{t("dashboard_players")}</h3>
+              <h3>{tt("dashboard_players")}</h3>
               <p>
-                {leagueState.actionState.submittedTeamIds.length} {t("league_ready")} · {leagueState.actionState.missingTeamIds.length}{" "}
-                {t("league_missing")}
+                {leagueState.actionState.submittedTeamIds.length} {tt("league_ready")} · {leagueState.actionState.missingTeamIds.length}{" "}
+                {tt("league_missing")}
               </p>
             </section>
             <ol className="classification">
               {leagueState.teams.map((team) => (
                 <li key={team.id}>
                   <span>
-                    <strong>{team.name}</strong> {team.kind === "bot" ? t("team_bot") : t("team_you")} ·{" "}
-                    {team.ready ? t("team_ready") : t("team_missing")}
+                    <strong>{team.name}</strong> {team.kind === "bot" ? tt("team_bot") : tt("team_you")} ·{" "}
+                    {team.ready ? tt("team_ready") : tt("team_missing")}
                   </span>
                   <span>
-                    {team.points} {t("unit_points")} · {team.credits} {t("unit_credits")}
+                    {team.points} {tt("unit_points")} · {team.credits} {tt("unit_credits")}
                   </span>
                 </li>
               ))}
             </ol>
             <section className="dashboard-section">
-              <h3>{t("league_history")}</h3>
+              <h3>{tt("league_history")}</h3>
               <ol className="classification">
                 {leagueState.grandPrixHistory.map((grandPrix) => (
                   <li key={grandPrix.id}>
                     <span>
-                      {t("league_round")} {grandPrix.round}
+                      {tt("league_round")} {grandPrix.round}
                     </span>
                     <span>{grandPrix.status}</span>
                   </li>
@@ -413,7 +438,7 @@ export function App() {
                       <strong>P{entry.position}</strong> {entry.teamName}
                     </span>
                     <span>
-                      {entry.points} {t("unit_points")} · {entry.credits} {t("unit_credits")}
+                      {entry.points} {tt("unit_points")} · {entry.credits} {tt("unit_credits")}
                     </span>
                   </li>
                 ))}
@@ -421,11 +446,11 @@ export function App() {
             </article>
 
             <article className="panel moments-panel">
-              <h2>{t("result_key_moments")}</h2>
+              <h2>{tt("result_key_moments")}</h2>
               <ul className="events replay-timeline">
                 {result.events.slice(0, 6).map((event) => (
                   <li key={event.id}>
-                    <span className="lap-marker">{t("unit_lap")} {event.lap}</span>
+                    <span className="lap-marker">{tt("unit_lap")} {event.lap}</span>
                     <strong>{event.replayText}</strong>
                   </li>
                 ))}
@@ -433,7 +458,7 @@ export function App() {
             </article>
 
             <article className="panel report-panel">
-              <h2>{t("result_race_report")}</h2>
+              <h2>{tt("result_race_report")}</h2>
               {result.report.blocks.map((block) => (
                 <section key={block.title}>
                   <h3>{block.title}</h3>

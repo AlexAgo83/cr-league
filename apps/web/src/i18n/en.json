@@ -77,5 +77,8 @@
   "result_race_report": "Race report",
   "unit_points": "pts",
   "unit_credits": "credits",
-  "unit_lap": "Lap"
+  "unit_lap": "Lap",
+  "language_label": "Language",
+  "language_en": "English",
+  "language_fr": "Francais"
 }

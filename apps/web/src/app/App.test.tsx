@@ -182,6 +182,16 @@ afterEach(() => {
 });
 
 describe("App", () => {
+  it("switches the interface language", () => {
+    render(<App />);
+
+    fireEvent.change(screen.getByLabelText("Language"), { target: { value: "fr" } });
+
+    expect(screen.getByRole("button", { name: "Rejoindre" })).toBeTruthy();
+    expect(screen.getByText("Stand de course")).toBeTruthy();
+    expect(localStorage.getItem("cr-league-language")).toBe("fr");
+  });
+
   it("plays through the demo league flow", async () => {
     const fetch = vi
       .spyOn(globalThis, "fetch")

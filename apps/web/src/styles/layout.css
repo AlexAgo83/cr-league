@@ -11,12 +11,29 @@
   padding-top: clamp(12px, 4vh, 40px);
 }
 
+.hero-topline {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
 .eyebrow {
   color: var(--color-accent);
   font-size: 0.875rem;
   font-weight: 700;
   margin: 0 0 12px;
   text-transform: uppercase;
+}
+
+.language-select {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.language-select select {
+  padding: 6px 8px;
 }
 
 .hero p:last-child,
@@ -216,6 +233,12 @@ label {
 @media (max-width: 860px) {
   .app-shell {
     padding: 20px;
+  }
+
+  .hero-topline {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
   }
 
   .race-panel,

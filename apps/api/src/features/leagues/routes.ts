@@ -2,6 +2,7 @@ import type { FastifyInstance } from "fastify";
 import type { PrismaClient } from "@prisma/client";
 import {
   LeagueRuleError,
+  buyCard,
   createDemoLeague,
   getLeagueState,
   joinLeagueByCode,
@@ -62,6 +63,23 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
 
     try {
       const state = await updateLeagueSettings(db, request.params.leagueId, request.body);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
+  });
+
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cards/buy", async (request, reply) => {
+    if (!isBuyCardBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and card id." });
+    }
+
+    try {
+      const state = await buyCard(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
       return state;
     } catch (error) {
@@ -140,6 +158,13 @@ function isSettingsBody(value: unknown): value is Parameters<typeof updateLeague
       candidate.preparationDeadlineAt === null ||
       typeof candidate.preparationDeadlineAt === "string")
   );
+}
+
+function isBuyCardBody(value: unknown): value is Parameters<typeof buyCard>[2] {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.teamId === "string" && typeof candidate.cardId === "string";
 }
 
 function isDecisionBody(value: unknown): value is Parameters<typeof submitDecision>[2] {

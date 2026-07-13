@@ -86,7 +86,8 @@ describe("api app", () => {
     const created = createResponse.json();
     const leagueId = created.league.id;
     const claim = created.player;
-    const teamId = created.teams.find((team: { kind: string }) => team.kind === "human").id;
+    const createdTeam = created.teams.find((team: { kind: string }) => team.kind === "human");
+    const teamId = createdTeam.id;
 
     const readResponse = await app.inject({
       method: "GET",
@@ -113,6 +114,18 @@ describe("api app", () => {
       method: "POST",
       url: `/leagues/${leagueId}/resolve`
     });
+    const resolved = resolveResponse.json();
+    const resolvedTeam = resolved.teams.find((team: { id: string }) => team.id === teamId);
+
+    const buyResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/cards/buy`,
+      payload: {
+        teamId,
+        cardId: "launch_boost"
+      }
+    });
+    const boughtTeam = buyResponse.json().teams.find((team: { id: string }) => team.id === teamId);
 
     const lateDecisionResponse = await app.inject({
       method: "POST",
@@ -132,17 +145,23 @@ describe("api app", () => {
 
     expect(createResponse.statusCode).toBe(200);
     expect(claim).toMatchObject({ teamId, claimCode: expect.any(String) });
+    expect(createdTeam.cards).toEqual(["rain_grip"]);
+    expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: 100 });
     expect(readResponse.statusCode).toBe(200);
     expect(readResponse.json().league).toMatchObject({ id: leagueId, name: "Office League" });
     expect(joinResponse.statusCode).toBe(200);
     expect(decisionResponse.statusCode).toBe(200);
     expect(resolveResponse.statusCode).toBe(200);
-    expect(resolveResponse.json().currentGrandPrix).toMatchObject({
+    expect(resolved.currentGrandPrix).toMatchObject({
       status: "resolved",
       result: expect.objectContaining({
         classification: expect.any(Array)
       })
     });
+    expect(resolvedTeam.cards).not.toContain("rain_grip");
+    expect(buyResponse.statusCode).toBe(200);
+    expect(boughtTeam.cards).toContain("launch_boost");
+    expect(boughtTeam.credits).toBe(resolvedTeam.credits - 100);
     expect(lateDecisionResponse.statusCode).toBe(409);
     expect(secondResolveResponse.statusCode).toBe(409);
   });
@@ -445,6 +464,7 @@ function createMemoryDb(): PrismaClient {
     claimCode: string | null;
     points: number;
     credits: number;
+    cards: string[];
   };
   type GrandPrixRow = {
     id: string;
@@ -540,12 +560,14 @@ function createMemoryDb(): PrismaClient {
         data
       }: {
         where: { id: string };
-        data: { points?: { increment: number }; credits?: { increment: number } };
+        data: { points?: { increment: number }; credits?: { increment?: number; decrement?: number }; cards?: string[] };
       }) => {
         const team = teams.find((candidate) => candidate.id === where.id);
         if (!team) throw new Error("Team not found");
         team.points += data.points?.increment ?? 0;
         team.credits += data.credits?.increment ?? 0;
+        team.credits -= data.credits?.decrement ?? 0;
+        if (data.cards) team.cards = data.cards;
         return team;
       }
     },

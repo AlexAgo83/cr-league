@@ -1,9 +1,21 @@
-import { DEMO_RACE_INPUT, simulateRace, type RaceDecision, type RaceInput, type RaceParticipant } from "@cr-league/shared";
+import {
+  CARD_DEFINITIONS,
+  DEMO_RACE_INPUT,
+  simulateRace,
+  type CardId,
+  type RaceDecision,
+  type RaceInput,
+  type RaceParticipant
+} from "@cr-league/shared";
+import type { Prisma } from "@prisma/client";
 import type { PrismaClient } from "@prisma/client";
 
 type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision">;
 
 const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
+const STARTER_CARDS: CardId[] = ["rain_grip"];
+const CARD_PRICE = 100;
+const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICE }));
 
 export class LeagueRuleError extends Error {
   constructor(message: string) {
@@ -64,7 +76,12 @@ export type LeagueState = {
     kind: string;
     points: number;
     credits: number;
+    cards: CardId[];
     ready: boolean;
+  }>;
+  cardShop: Array<{
+    cardId: CardId;
+    price: number;
   }>;
   actionState: {
     submittedTeamIds: string[];
@@ -111,7 +128,8 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
       kind: participant.kind,
       claimCode: index === 0 ? playerClaimCode : createClaimCode(),
       points: 0,
-      credits: 0
+      credits: 0,
+      cards: index === 0 ? STARTER_CARDS : []
     }))
   });
 
@@ -158,7 +176,8 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
       kind: "human",
       claimCode: createClaimCode(),
       points: 0,
-      credits: 0
+      credits: 0,
+      cards: STARTER_CARDS
     }
   });
 
@@ -230,8 +249,10 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       kind: team.kind,
       points: team.points,
       credits: team.credits,
+      cards: normalizeCards(team.cards),
       ready: grandPrix.decisions.some((decision) => decision.teamId === team.id)
     })),
+    cardShop: CARD_SHOP,
     actionState: buildActionState(
       league.teams.map((team) => team.id),
       grandPrix.status,
@@ -246,6 +267,33 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       rivalTeamId: decision.rivalTeamId
     }))
   };
+}
+
+export async function buyCard(db: Db, leagueId: string, input: { teamId?: string; cardId?: string } = {}) {
+  if (!input.teamId || !input.cardId || !isCardId(input.cardId)) {
+    throw new LeagueRuleError("Expected a team and a valid card.");
+  }
+
+  const state = await getLeagueState(db, leagueId);
+  if (!state) return null;
+
+  const team = state.teams.find((candidate) => candidate.id === input.teamId);
+  if (!team) {
+    throw new LeagueRuleError("Team does not belong to this league.");
+  }
+  if (team.credits < CARD_PRICE) {
+    throw new LeagueRuleError("Not enough credits to buy this card.");
+  }
+
+  await db.team.update({
+    where: { id: team.id },
+    data: {
+      credits: { decrement: CARD_PRICE },
+      cards: appendCard(team.cards, input.cardId)
+    }
+  });
+
+  return getLeagueState(db, leagueId);
 }
 
 export async function updateLeagueSettings(db: Db, leagueId: string, input: UpdateLeagueSettingsInput = {}) {
@@ -281,6 +329,12 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
   if (!grandPrix) return null;
   if (grandPrix.status === "resolved") {
     throw new LeagueRuleError("This Grand Prix is already resolved.");
+  }
+  const state = await getLeagueState(db, leagueId);
+  const team = state?.teams.find((candidate) => candidate.id === input.teamId);
+  if (!state || !team) return null;
+  if (input.cardId && !team.cards.includes(input.cardId)) {
+    throw new LeagueRuleError("This card is not in your inventory.");
   }
 
   await db.raceDecision.upsert({
@@ -346,6 +400,16 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
       data: {
         points: { increment: entry.points },
         credits: { increment: entry.credits }
+      }
+    });
+  }
+  for (const consumed of result.consumedCards) {
+    const team = state.teams.find((candidate) => candidate.id === consumed.teamId);
+    if (!team) continue;
+    await db.team.update({
+      where: { id: team.id },
+      data: {
+        cards: removeOneCard(team.cards, consumed.cardId)
       }
     });
   }
@@ -449,4 +513,23 @@ function createClaimCode() {
 
 function isLeagueCadence(value: string): value is (typeof LEAGUE_CADENCES)[number] {
   return LEAGUE_CADENCES.includes(value as (typeof LEAGUE_CADENCES)[number]);
+}
+
+function isCardId(value: string): value is CardId {
+  return value in CARD_DEFINITIONS;
+}
+
+function normalizeCards(value: Prisma.JsonValue): CardId[] {
+  return Array.isArray(value) ? value.filter((cardId): cardId is CardId => typeof cardId === "string" && isCardId(cardId)) : [];
+}
+
+function appendCard(cards: CardId[], cardId: CardId): Prisma.InputJsonValue {
+  return [...cards, cardId];
+}
+
+function removeOneCard(cards: CardId[], cardId: CardId): Prisma.InputJsonValue {
+  const nextCards = [...cards];
+  const index = nextCards.indexOf(cardId);
+  if (index >= 0) nextCards.splice(index, 1);
+  return nextCards;
 }

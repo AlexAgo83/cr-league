@@ -268,10 +268,7 @@ export function App() {
 async function api<T>(path: string, init: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE_URL}${path}`, {
     ...init,
-    headers: {
-      "content-type": "application/json",
-      ...init.headers
-    }
+    headers: init.body ? { "content-type": "application/json", ...init.headers } : init.headers
   });
 
   if (!response.ok) {

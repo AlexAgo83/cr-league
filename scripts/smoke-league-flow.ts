@@ -51,10 +51,7 @@ console.log(`Smoke OK: ${resolved.league.code} resolved`);
 async function request<T>(path: string, init: RequestInit): Promise<T> {
   const response = await fetch(`${apiBaseUrl}${path}`, {
     ...init,
-    headers: {
-      "content-type": "application/json",
-      ...init.headers
-    }
+    headers: init.body ? { "content-type": "application/json", ...init.headers } : init.headers
   });
 
   if (!response.ok) {

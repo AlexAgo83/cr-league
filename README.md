@@ -18,7 +18,7 @@ flowchart LR
 Implemented:
 
 - npm workspace monorepo
-- `apps/web` Vite + React shell with simulation preview
+- `apps/web` Vite + React shell with playable demo league flow
 - `apps/api` Fastify API with health, simulation preview, and minimal league endpoints
 - `packages/shared` shared metadata, race domain types, demo race, and simulation engine
 - `prisma/schema.prisma` PostgreSQL league/team/Grand Prix/decision schema
@@ -42,9 +42,9 @@ Not implemented yet:
 
 ## Repository Topology
 
-- `apps/web`: PWA frontend shell
-- `apps/api`: Fastify API shell
-- `packages/shared`: shared app metadata and future domain contracts
+- `apps/web`: PWA frontend shell and demo league flow
+- `apps/api`: Fastify API with simulation and league routes
+- `packages/shared`: shared app metadata, race domain contracts, and simulation engine
 - `prisma`: Prisma schema
 - `logics`: product, architecture, specs, requests, backlog, and task docs
 - `changelogs`: curated release notes
@@ -67,6 +67,12 @@ Start the API:
 
 ```bash
 npm run dev:api
+```
+
+Open the playable demo flow:
+
+```text
+http://localhost:4873/
 ```
 
 Check the API:

@@ -5,6 +5,13 @@
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
 | [adr_001_cr_league_v1_static_pwa_api_architecture](architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md) | Option B: Static PWA + dedicated API | Proposed |  |  | architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md |
+| [adr_002_framework_stack](architecture/adr_002_framework_stack.md) | Framework Stack | Proposed |  |  | architecture/adr_002_framework_stack.md |
+| [adr_003_code_organization](architecture/adr_003_code_organization.md) | Code Organization | Proposed |  |  | architecture/adr_003_code_organization.md |
+| [adr_004_data_security](architecture/adr_004_data_security.md) | Data and Security | Proposed |  |  | architecture/adr_004_data_security.md |
+| [adr_005_theme_design_system](architecture/adr_005_theme_design_system.md) | Theme and Design System | Proposed |  |  | architecture/adr_005_theme_design_system.md |
+| [adr_006_accessibility](architecture/adr_006_accessibility.md) | Accessibility | Proposed |  |  | architecture/adr_006_accessibility.md |
+| [adr_007_i18n](architecture/adr_007_i18n.md) | Internationalization | Proposed |  |  | architecture/adr_007_i18n.md |
+| [adr_008_testing_quality](architecture/adr_008_testing_quality.md) | Testing and Quality | Proposed |  |  | architecture/adr_008_testing_quality.md |
 
 ## Product briefs
 
@@ -27,6 +34,7 @@
 | [req_008_define_cr_league_implementation_roadmap](request/req_008_define_cr_league_implementation_roadmap.md) | Define CR League implementation roadmap | Done |  |  | request/req_008_define_cr_league_implementation_roadmap.md |
 | [req_009_scaffold_cr_league_monorepo_foundation](request/req_009_scaffold_cr_league_monorepo_foundation.md) | Scaffold CR League monorepo foundation | Done |  |  | request/req_009_scaffold_cr_league_monorepo_foundation.md |
 | [req_010_add_cr_league_repository_governance_docs](request/req_010_add_cr_league_repository_governance_docs.md) | Add CR League repository governance docs | Done |  |  | request/req_010_add_cr_league_repository_governance_docs.md |
+| [req_011_define_cr_league_engineering_adrs](request/req_011_define_cr_league_engineering_adrs.md) | Define CR League engineering ADRs | Done |  |  | request/req_011_define_cr_league_engineering_adrs.md |
 
 ## Backlog
 
@@ -48,6 +56,7 @@
 | [item_014_define_cr_league_implementation_roadmap](backlog/item_014_define_cr_league_implementation_roadmap.md) | Define CR League implementation roadmap | Done |  | 100% | backlog/item_014_define_cr_league_implementation_roadmap.md |
 | [item_015_scaffold_cr_league_monorepo_foundation](backlog/item_015_scaffold_cr_league_monorepo_foundation.md) | Scaffold CR League monorepo foundation | Done |  | 100% | backlog/item_015_scaffold_cr_league_monorepo_foundation.md |
 | [item_016_add_cr_league_repository_governance_docs](backlog/item_016_add_cr_league_repository_governance_docs.md) | Add CR League repository governance docs | Done |  | 100% | backlog/item_016_add_cr_league_repository_governance_docs.md |
+| [item_017_define_cr_league_engineering_adrs](backlog/item_017_define_cr_league_engineering_adrs.md) | Define CR League engineering ADRs | Done |  | 100% | backlog/item_017_define_cr_league_engineering_adrs.md |
 
 ## Tasks
 
@@ -64,3 +73,4 @@
 | [task_009_define_cr_league_implementation_roadmap](tasks/task_009_define_cr_league_implementation_roadmap.md) | Define CR League implementation roadmap | Done | codex | 100% | tasks/task_009_define_cr_league_implementation_roadmap.md |
 | [task_010_scaffold_cr_league_monorepo_foundation](tasks/task_010_scaffold_cr_league_monorepo_foundation.md) | Scaffold CR League monorepo foundation | Done | codex | 100% | tasks/task_010_scaffold_cr_league_monorepo_foundation.md |
 | [task_011_add_cr_league_repository_governance_docs](tasks/task_011_add_cr_league_repository_governance_docs.md) | Add CR League repository governance docs | Done | codex | 100% | tasks/task_011_add_cr_league_repository_governance_docs.md |
+| [task_012_define_cr_league_engineering_adrs](tasks/task_012_define_cr_league_engineering_adrs.md) | Define CR League engineering ADRs | Done | codex | 100% | tasks/task_012_define_cr_league_engineering_adrs.md |

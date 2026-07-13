@@ -5,7 +5,7 @@
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
 > Confidence: 90
-> Non-semantic edit: refreshed 0.2 delivery notes after cadence/dashboard slice.
+> Non-semantic edit: refreshed 0.2 delivery notes after playtest-kit slice.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1 without pretending the full game should be built in one pass.
@@ -15,7 +15,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 # Current Position
 - Product discovery, core gameplay specs, architecture, device targets, theme direction, ADRs, repository governance, and implementation contracts are documented.
 - The monorepo foundation exists with Vite React, Fastify, Prisma, shared simulation package, tests, lint, build, and Logics validation.
-- The prototype can create a persisted demo league, submit a race directive, resolve a Grand Prix, show report/replay evidence, persist rewards, join an active league by invite code, rejoin a claimed team, advance to the next Grand Prix, configure cadence/deadline, and show GP history/readiness.
+- The prototype can create a persisted demo league, submit a race directive, resolve a Grand Prix, show report/replay evidence, persist rewards, join an active league by invite code, rejoin a claimed team, advance to the next Grand Prix, configure cadence/deadline, show GP history/readiness, and seed a manual private-league playtest session.
 - This is not yet a complete game loop: there is no automatic scheduler, notifications, card inventory economy, replay polish, full auth/permissions, or production deployment.
 
 # Milestones
@@ -50,7 +50,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 
 ## 0.2 - Private league prototype
 - Goal: Turn the current demo league into a credible private league session for colleagues.
-- Status: Foundation started.
+- Status: Foundation started; playtest kit available.
 - Scope:
   - stable lightweight player/team identity without full account complexity;
   - create/join/rejoin private league flow with clear invite code UX;
@@ -58,15 +58,18 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - configurable cadence for manual, fast solo, and scheduled async modes;
   - preparation deadline model and missing-player default decisions;
   - next Grand Prix generation after a resolved GP;
-  - basic league settings that do not require admin-heavy UI.
+  - basic league settings that do not require admin-heavy UI;
+  - seeded manual playtest setup for a short private-league session.
 - Delivered foundation:
   - team claim tokens for local rejoin;
   - `POST /leagues/rejoin`;
   - `POST /leagues/:leagueId/next-grand-prix`;
   - optional defaulted resolution through `allowDefaults`;
-  - submitted/missing team action state.
+  - submitted/missing team action state;
   - manual cadence/deadline settings;
-  - GP history and dashboard readiness/action display.
+  - GP history and dashboard readiness/action display;
+  - manual 3-GP playtest checklist and `PLAY01` fixture seed;
+  - lightweight lap-tagged replay timeline.
 - Exit signal:
   - 2+ human players can join the same league, prepare for the same GP, and resolve a race with absent players defaulted;
   - a solo player can bypass waiting time with bots;
@@ -75,6 +78,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - `prod_001_cr_league_product_brief`
   - `spec_016_implementation_roadmap`
   - `req_020_add_join_league_by_code_flow`
+  - `req_024_prepare_private_league_playtest_kit`
 
 ## 0.3 - Playtest-ready game loop
 - Goal: Make the prototype worth testing with colleagues beyond a single technical demo.
@@ -84,7 +88,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - replay/report UX pass that makes player choices legible;
   - clearer dashboard for standings, next GP, deadline, and player action state;
   - reset/start-over flow for test sessions;
-  - lightweight playtest checklist and feedback capture;
+  - structured playtest result capture after running the checklist;
   - desktop and mobile layouts checked against real interaction paths.
 - Exit signal:
   - 3 to 5 testers can complete a 3-GP session;

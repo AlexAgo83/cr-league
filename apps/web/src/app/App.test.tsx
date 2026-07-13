@@ -197,6 +197,8 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Create league" }));
     expect(await screen.findByText("Code ABC123 · Round 1 · briefing")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Current GP" })).toBeTruthy();
     expect(screen.getByText("0 ready · 2 missing")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
@@ -204,6 +206,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
+    expect(screen.getByText("Lap 5")).toBeTruthy();
     expect(screen.getByText("Rain Grip triggers for Circle One")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Submit directive" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByRole("button", { name: "Launch GP" }).hasAttribute("disabled")).toBe(true);

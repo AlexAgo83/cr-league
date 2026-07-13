@@ -48,6 +48,7 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
 
   await page.getByRole("button", { name: "Create league" }).click();
   await expect(page.getByText("Code ABC123 · Round 1 · briefing")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Current GP" })).toBeVisible();
   await expect(page.getByText("0 ready · 2 missing")).toBeVisible();
 
   await page.getByLabel("Cadence").selectOption("weekly");
@@ -61,6 +62,7 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
 
     await page.getByRole("button", { name: "Launch GP" }).click();
     await expect(page.locator("p").filter({ hasText: `Silver Ridge GP ${expectedRound}: Circle One wins.` })).toBeVisible();
+    await expect(page.getByText("Lap 5")).toBeVisible();
 
     if (expectedRound < 3) {
       await page.getByRole("button", { name: "Next GP" }).click();

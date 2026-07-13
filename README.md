@@ -98,6 +98,14 @@ Run the real API + PostgreSQL smoke flow after the API is started:
 npm run smoke:league
 ```
 
+Prepare a reusable private-league playtest fixture:
+
+```bash
+npm run playtest:seed
+```
+
+This creates league code `PLAY01` with bot teams. Human testers can join that code from separate browser profiles. Use [docs/playtest/private-league-3gp-checklist.md](docs/playtest/private-league-3gp-checklist.md) for the manual 3-GP script and feedback prompts.
+
 ## Configuration
 
 Copy the example environment file when local runtime config is needed:
@@ -181,7 +189,7 @@ The detailed implementation-wave roadmap is:
 Current roadmap direction:
 
 - `0.1` playable vertical slice is mostly implemented;
-- `0.2` private league prototype foundation now includes manual cadence, readiness dashboard, rejoin, and GP history.
+- `0.2` private league prototype foundation now includes manual cadence, readiness dashboard, rejoin, GP history, a seeded playtest fixture, and a lightweight replay timeline.
 
 ## Contributing
 

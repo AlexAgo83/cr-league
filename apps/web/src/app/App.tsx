@@ -343,23 +343,28 @@ export function App() {
         {leagueState ? (
           <article className="panel">
             <h2>{leagueState.league.name}</h2>
-            <p>
-              {t("league_code")} {leagueState.league.code} · {t("league_round")} {leagueState.currentGrandPrix.round} ·{" "}
-              {leagueState.currentGrandPrix.status}
-            </p>
-            <p>
-              {leagueState.actionState.submittedTeamIds.length} {t("league_ready")} · {leagueState.actionState.missingTeamIds.length}{" "}
-              {t("league_missing")}
-            </p>
-            <p>
-              {t("league_cadence")} {t(`cadence_${leagueState.league.cadence}` as TranslationKey)} · {t("league_next_action")}{" "}
-              {t(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}
-            </p>
-            {playerTeam ? (
+            <section className="dashboard-section">
+              <h3>{t("dashboard_my_team")}</h3>
+              <p>{playerTeam ? `${t("league_your_team")} ${playerTeam.name}` : t("dashboard_no_team")}</p>
+            </section>
+            <section className="dashboard-section">
+              <h3>{t("dashboard_current_gp")}</h3>
               <p>
-                {t("league_your_team")} {playerTeam.name}
+                {t("league_code")} {leagueState.league.code} · {t("league_round")} {leagueState.currentGrandPrix.round} ·{" "}
+                {leagueState.currentGrandPrix.status}
               </p>
-            ) : null}
+              <p>
+                {t("league_cadence")} {t(`cadence_${leagueState.league.cadence}` as TranslationKey)} · {t("league_next_action")}{" "}
+                {t(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}
+              </p>
+            </section>
+            <section className="dashboard-section">
+              <h3>{t("dashboard_players")}</h3>
+              <p>
+                {leagueState.actionState.submittedTeamIds.length} {t("league_ready")} · {leagueState.actionState.missingTeamIds.length}{" "}
+                {t("league_missing")}
+              </p>
+            </section>
             <ol className="classification">
               {leagueState.teams.map((team) => (
                 <li key={team.id}>
@@ -373,17 +378,19 @@ export function App() {
                 </li>
               ))}
             </ol>
-            <h3>{t("league_history")}</h3>
-            <ol className="classification">
-              {leagueState.grandPrixHistory.map((grandPrix) => (
-                <li key={grandPrix.id}>
-                  <span>
-                    {t("league_round")} {grandPrix.round}
-                  </span>
-                  <span>{grandPrix.status}</span>
-                </li>
-              ))}
-            </ol>
+            <section className="dashboard-section">
+              <h3>{t("league_history")}</h3>
+              <ol className="classification">
+                {leagueState.grandPrixHistory.map((grandPrix) => (
+                  <li key={grandPrix.id}>
+                    <span>
+                      {t("league_round")} {grandPrix.round}
+                    </span>
+                    <span>{grandPrix.status}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
           </article>
         ) : null}
 
@@ -408,11 +415,11 @@ export function App() {
 
             <article className="panel">
               <h2>{t("result_key_moments")}</h2>
-              <ul className="events">
+              <ul className="events replay-timeline">
                 {result.events.slice(0, 6).map((event) => (
                   <li key={event.id}>
-                    <span>{t("unit_lap")} {event.lap}</span>
-                    {event.replayText}
+                    <span className="lap-marker">{t("unit_lap")} {event.lap}</span>
+                    <strong>{event.replayText}</strong>
                   </li>
                 ))}
               </ul>

@@ -922,7 +922,7 @@ label small {
 .map-car circle {
   fill: var(--car-primary, var(--color-telemetry));
   stroke: var(--car-secondary, #0a0f15);
-  stroke-width: 4;
+  stroke-width: 3;
 }
 
 .map-car.player circle {
@@ -930,9 +930,14 @@ label small {
 }
 
 .map-car text {
-  fill: #041018;
-  font-size: 12px;
+  fill: #f8fafc;
+  font-size: 9px;
   font-weight: 900;
+  paint-order: stroke;
+  pointer-events: none;
+  stroke: rgb(0 0 0 / 0.88);
+  stroke-linejoin: round;
+  stroke-width: 3px;
 }
 
 /* ---------- Lists (standings, history, inventory, events) ---------- */

@@ -178,7 +178,7 @@ export function ReplayView({
   const replayTimes = finishTimes(result, replayTrace);
   const cars: MapCar[] = field.map((entry, index) => ({
     id: entry.teamId,
-    label: entry.teamName.slice(0, 3).toUpperCase(),
+    label: String(Math.max(1, liveTower.findIndex((team) => team.teamId === entry.teamId) + 1)),
     player: entry.teamId === playerTeamId,
     delay: 0,
     duration: replayTimes.times[entry.teamId] ?? replayTimes.leader + index,

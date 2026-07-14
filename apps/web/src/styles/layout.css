@@ -1453,8 +1453,8 @@ label small {
   font-size: 0.875rem;
 }
 
-.standings-list li span:first-child,
-.card-inventory span {
+.standings-list li > span:first-child,
+.card-inventory li > span {
   display: grid;
   gap: 3px;
 }
@@ -1497,6 +1497,33 @@ label small {
 
 .card-stat-badge.weakness {
   opacity: 0.68;
+}
+
+.card-inventory {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+}
+
+.card-inventory li {
+  align-items: start;
+  background: var(--color-cockpit);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  padding: 12px;
+}
+
+.card-inventory li:first-child {
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+}
+
+.card-inventory strong {
+  background: rgb(255 255 255 / 0.06);
+  border-radius: 999px;
+  color: var(--color-text);
+  font-size: 0.78rem;
+  padding: 2px 7px;
 }
 
 .classification li.current-team {

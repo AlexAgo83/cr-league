@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 0%
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -22,6 +22,14 @@
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.
+
+# Execution direction
+- Start with `item_040` and `item_041`: lock the screen model and CSS vocabulary before changing JSX structure.
+- Then implement the primary loop through `item_042`, because Course and the dominant action define whether the redesign works.
+- Implement `item_043` and `item_044` as support/payoff surfaces after the race desk is coherent.
+- Keep `item_045` active throughout the UI work; every new visible label must land in EN and FR catalogs in the same wave as the component change.
+- Use `item_046` to reduce `App.tsx` only where extraction helps the redesign. Do not create a generic design system.
+- Finish with `item_047` visual QA and playtest prompts before closeout. A passing build without screenshots is not enough for this request.
 
 # Backlog
 - `item_040_define_the_cockpit_information_architecture`

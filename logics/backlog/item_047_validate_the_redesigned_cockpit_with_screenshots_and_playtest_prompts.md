@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 0%
 > Complexity: Low
 > Theme: Validation and playtest readiness
@@ -31,6 +31,24 @@
 - AC2: Playtest docs ask whether the next action is obvious in each GP state.
 - AC3: Desktop and mobile screenshots are captured or explicitly inspected for redesigned states.
 - AC4: The Logics closeout records validation commands and visual QA proof.
+
+# Direction to carry into implementation
+- Screenshot matrix:
+  - Desktop and mobile, no-league/setup.
+  - Desktop and mobile, briefing/preparation with directive form.
+  - Desktop and mobile, ready/locked with directive summary.
+  - Desktop and mobile, resolved/post-GP with result and readout.
+  - Desktop and mobile, between-GP with garage purchase available.
+  - At least one pass in French mode.
+- Playtest questions to add:
+  - Does the first viewport feel like a racing command cockpit instead of an admin dashboard?
+  - Can you name the next action within five seconds?
+  - Do you understand what the result says happened and why?
+  - Does the race readout feel honest about what it shows?
+  - Are any labels still in English in French mode?
+  - Are championship and garage helpful without distracting from the current GP?
+- Validation proof to record at closeout: unit tests, typecheck, lint, build, e2e or documented browser playtest, i18n validation/status, `logics-manager flow validate`, `logics-manager lint --require-status`, and `logics-manager audit --group-by-doc`.
+- Known remaining limits should be documented explicitly, especially if the replay remains static or if some secondary playtest/debug controls stay visually less polished.
 
 # AC Traceability
 - request-AC7 -> This backlog slice. Proof: AC1: Playtest docs ask whether the cockpit feels like a racing game rather than an admin dashboard.

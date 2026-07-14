@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 0%
 > Complexity: Medium
 > Theme: Localization quality
@@ -31,6 +31,14 @@
 - AC2: French mode no longer shows English for the redesigned primary surfaces.
 - AC3: `logics-manager i18n validate` passes.
 - AC4: A lightweight test or scripted check protects the main redesigned labels from future hardcoded regressions.
+
+# Direction to carry into implementation
+- Treat French as the playtest-priority locale for this redesign. The UI may be authored in English internally, but a French playtest cannot expose English fragments in the redesigned surfaces.
+- No new user-facing JSX literals in the cockpit except proper names, dynamic values, or data that comes from the API. New labels belong in `apps/web/src/i18n/en.json` and `apps/web/src/i18n/fr.json`.
+- Label groups that must be covered: Course, Strategy, Championship, Garage, Result, Directive, Preparation, Directive locked, Race complete, Next GP, Race readout, Classification, Key moments, Report, credits, points, weather, readiness, card consumed, and rewards.
+- Add or update tests so they assert a small set of main labels in French mode. The goal is to protect the redesigned experience, not to build a full translation linter.
+- If `logics-manager i18n status` reports no project-owned contract, record the current state and still run the existing i18n validation/check surface used by the repo.
+- Check empty states and disabled states too; English leaks often hide in placeholders, errors, unavailable card messages, and secondary controls.
 
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: New cockpit, championship, garage, result, and replay labels exist in both EN and FR catalogs.

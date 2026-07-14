@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 0%
 > Complexity: Medium
 > Theme: UX structure
@@ -32,6 +32,18 @@
 - AC2: The plan defines desktop and mobile ordering for Course, Championship, Garage, and Result/Replay.
 - AC3: The plan removes or consolidates at least one redundant panel from the current long stack.
 - AC4: The plan names the post-GP information sequence: outcome first, explanation second, replay/report supporting evidence after.
+
+# Direction to carry into implementation
+- Screen zones:
+  - Course: current GP state, next action, readiness, and the active directive.
+  - Strategy: directive form or locked directive summary, selected card, and track/weather cues.
+  - Championship: round, invite code, leader, standings, and readiness context.
+  - Garage: credits, rewards, inventory, available card choices, and purchase state.
+  - Result/Replay: final outcome, player consequence, classification, race readout, key moments, and report.
+- Desktop order: primary left column for Course, Strategy, Result/Replay; secondary right column for Championship and Garage. The primary action must be visible without scanning the full page.
+- Mobile order: Course, primary action, Strategy, Result/Replay when present, Garage, Championship, secondary settings.
+- Post-GP sequence: outcome first, then why it happened, then classification, then race readout, then key moments/report, then next-GP action.
+- Consolidation targets: merge duplicated dashboard/status cards into Course or Championship; move settings, forget team, and restart playtest out of the command row; remove any panel that repeats state already visible in the cockpit header.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: The IA plan names the primary surface for each game state and identifies the player's next action in that state.

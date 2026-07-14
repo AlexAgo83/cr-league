@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 0%
 > Complexity: Medium
 > Theme: Race desk UX
@@ -33,6 +33,24 @@
 - AC2: The directive form remains usable and validated by the existing API flow.
 - AC3: French mode shows French labels for the redesigned race desk controls and state text.
 - AC4: Existing create, directive submit, resolve, and next-GP flows remain covered by unit or e2e tests.
+
+# Direction to carry into implementation
+- Briefing/preparation state:
+  - Header: current GP, track name if available, and state label `Preparation`.
+  - Primary command: `Submit directive`.
+  - Supporting telemetry: weather, track traits, readiness, available card, player team, and invite/league context only if it helps the decision.
+  - Directive form: compact, grouped as the strategy input, with validation errors near the relevant control.
+- Ready/locked state:
+  - Header: current GP and state label `Directive locked`.
+  - Primary command: `Launch GP` or the existing resolve wording used by the app.
+  - Supporting telemetry: one-line directive summary, selected card, readiness, and what will happen next.
+  - Do not keep editable strategy controls visually dominant once the directive is locked.
+- Resolved state:
+  - Header: state label `Race complete`.
+  - Primary command: `Next GP` when valid.
+  - Supporting telemetry: position, points, credits, card consumed, reward, and the shortest explanation of why the outcome happened.
+- Secondary commands such as settings, forget team, restart, and debug/playtest controls must sit away from the command row and cannot compete with the state command.
+- All labels above must exist in EN and FR catalogs before the slice is considered complete.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: In each race state, there is one visually dominant primary action and secondary actions are clearly lower priority.

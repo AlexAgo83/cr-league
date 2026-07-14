@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 0%
 > Complexity: Medium
 > Theme: Supporting game panels
@@ -32,6 +32,19 @@
 - AC2: Post-GP rewards and consumed card information are visible without reading a paragraph.
 - AC3: The garage does not show purchasable actions before they are valid.
 - AC4: Existing e2e coverage still verifies the 3-GP loop and card purchase path.
+
+# Direction to carry into implementation
+- Championship panel:
+  - Treat it like a timing screen, not a generic table.
+  - Rows should show position, team, points or delta, and a visual mark for the player's team.
+  - Header should show round/current GP, leader, invite code, and readiness only if those values are useful in the current state.
+  - Keep it visible but visually quieter than Course: smaller heading, tighter rows, no dominant primary button.
+- Garage panel:
+  - Split progression into credits/rewards, inventory, and available purchases.
+  - Each card item should show name, short effect, strategic fit, cost/status, and one action only when valid.
+  - Consumed card and reward information should appear as compact result chips after a GP, not as paragraph-only text.
+  - Invalid or unavailable purchases should explain why in one short line, using catalog-backed copy.
+- The supporting panels should make the league feel persistent, but they must never force the player to hunt for the next race action.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Championship and garage panels are visually secondary to the current race action but remain easy to scan.

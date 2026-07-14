@@ -6,7 +6,8 @@
 > Related task: `task_033_orchestrate_race_cockpit_redesign_v0`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
-> Confidence: 90
+> Non-semantic edit: expanded DA implementation guidance without changing workflow links or request scope.
+> Confidence: 91
 
 # Overview
 Race Cockpit Redesign V0 turns the current functional prototype into a coherent game cockpit: a focused race desk, championship overview, garage, and result/replay surface that make CR League feel intentionally designed and understandable before adding more mechanics.
@@ -58,6 +59,29 @@ flowchart LR
 - The result view should be a payoff sequence: outcome, player consequence, classification, replay summary, key moments, report.
 - The replay must be honest about its data. If it is static, it should say so clearly instead of implying precise animated race movement.
 - French playtest quality is a product requirement, not an afterthought; redesigned surfaces must be catalog-backed.
+
+# Art direction: Pit Wall Compact
+- Positioning: the V0 should feel like a compact pit-wall command screen for an asynchronous racing league. It should not feel like a SaaS admin dashboard, a marketing landing page, an arcade sci-fi cockpit, or a luxury F1 carbon mockup.
+- Layout doctrine: Course owns the player's current task; Strategy explains the chosen directive; Championship and Garage support the loop; Result/Replay is the payoff after a GP is resolved.
+- Palette baseline:
+  - App background: `#0b0f14` or `#101418`.
+  - Cockpit surface: `#151b22`.
+  - Content surface: `#1f2933`.
+  - Primary text: `#f8fafc`.
+  - Muted text: `#9ca3af`.
+  - Success or locked-ready accent: `#16c784`.
+  - Warning or preparation accent: `#f59e0b`.
+  - Danger or negative delta accent: `#ef4444`.
+  - Weather or telemetry accent: `#38bdf8`.
+- Motifs: telemetry strips, race-state badges, P1/P2 position plates, timing-screen rows, compact game cards, and visible action hierarchy.
+- Avoid: decorative blobs, generic gradients, oversized cards, full dark-blue monotony, fake precision in the replay, and visible explanatory copy that exists only because the UI is unclear.
+
+# Product surface model
+- Setup/no league: keep it short and functional. It should not dominate the visual identity once a league exists.
+- Briefing/preparation: the first viewport shows current GP, preparation state, directive controls, track/weather chips, readiness, and one dominant submit action.
+- Ready/locked: the first viewport shows `Directive locked`, a concise directive summary, readiness context, and one dominant launch/resolve action.
+- Resolved/post-GP: the first viewport shows outcome, player consequence, points/credits/card impact, and one dominant next-GP action.
+- Between-GP support: Championship and Garage stay visible but secondary so the player understands progress without losing the next action.
 
 # Success signals
 - A tester can identify the current GP state and next action within five seconds on desktop and mobile.

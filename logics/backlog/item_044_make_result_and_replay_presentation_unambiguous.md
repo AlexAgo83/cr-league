@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 0%
 > Complexity: Medium
 > Theme: Result comprehension
@@ -32,6 +32,22 @@
 - AC2: The replay panel text explains what the user is looking at without relying on external instructions.
 - AC3: The current static replay does not visually imply precision that the data does not support.
 - AC4: Unit or e2e assertions cover the key result/replay labels in at least one locale.
+
+# Direction to carry into implementation
+- Rename or frame the static replay as `Race readout` or `Race summary` unless the implementation adds actual time-based replay controls. The label must set the right expectation.
+- Post-GP sequence:
+  - Headline outcome: position, points, or podium/miss signal.
+  - `Your race`: what the player's directive and card changed.
+  - `Why`: the main causal factors from events, weather, track traits, or card effects.
+  - `Classification`: final order as timing rows.
+  - `Race readout`: visual summary of phases/events without pretending to be precise telemetry.
+  - `Key moments`: readable event list.
+  - `Report`: generated narrative text.
+- Visual readout rules:
+  - Use lanes, phases, or event markers only when the data supports them.
+  - Avoid animated car movement or lap precision unless the simulation provides that contract.
+  - Empty/low-event races still need a clear explanation instead of an empty-looking panel.
+- French copy must avoid ambiguous English loanwords where a clear French label exists; verify the meaning with actual in-app context, not isolated translation keys.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: A resolved GP result view clearly labels outcome, classification, replay summary, key moments, and report.

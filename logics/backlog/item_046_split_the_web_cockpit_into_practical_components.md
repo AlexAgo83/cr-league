@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 0%
 > Complexity: Medium
 > Theme: Frontend maintainability
@@ -32,6 +32,20 @@
 - AC2: Component boundaries map to product surfaces, not generic UI abstractions.
 - AC3: No new runtime dependency is added for the refactor.
 - AC4: Existing unit and e2e tests continue to pass after extraction.
+
+# Direction to carry into implementation
+- Extract practical product components only when they make the redesign easier to implement or test:
+  - `RaceDesk` for current GP state, directive controls, telemetry, and the dominant command.
+  - `DirectivePanel` if the strategy form is large enough to justify separation.
+  - `ChampionshipPanel` for timing-screen standings and league context.
+  - `GaragePanel` for credits, rewards, inventory, and purchasable cards.
+  - `ResultView` for outcome, classification, explanation, key moments, and report.
+  - `RaceReadout` for the static replay/readout surface.
+  - `StatusBadge` only if repeated state labels would otherwise duplicate markup.
+- Keep API calls, top-level loading/error state, and league/session orchestration in the app root unless moving them removes real duplication.
+- Do not add stores, contexts, factories, design-system folders, or generic UI primitives for one screen.
+- Keep tests user-facing: rendered labels, button availability, flow behavior, and locale coverage matter more than component internals.
+- CSS can be organized by surface names, but avoid a broad naming migration that does not directly help the cockpit redesign.
 
 # AC Traceability
 - request-AC6 -> This backlog slice. Proof: AC1: The app root is smaller and delegates redesigned surfaces to clearly named components or local helpers.

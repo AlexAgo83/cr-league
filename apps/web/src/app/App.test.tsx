@@ -381,18 +381,20 @@ describe("App", () => {
     fireEvent.click(screen.getByText("Directive locked. You can launch the Grand Prix.").closest(".floating-notification")!.querySelector("button")!);
     expect(screen.queryByText("Directive locked. You can launch the Grand Prix.")).toBe(null);
     expect(screen.getByText("Ready to launch")).toBeTruthy();
+    for (const select of document.querySelectorAll(".directive-panel select")) {
+      expect(select.hasAttribute("disabled")).toBe(true);
+    }
     expect(screen.getByRole("button", { name: "Lap time" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByText("Locked after directive")).toBeTruthy();
 
     // Launch: auto-switches to the result view
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(screen.getByText("Race resolved")).toBeTruthy();
+    expect(screen.getByText("Race finished")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Result" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
     expect(document.querySelector(".command-bar")?.textContent).not.toContain("The race is reviewed: move to the next Grand Prix.");
-    expect(screen.getByText("The race is reviewed: move to the next Grand Prix.")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("L5");

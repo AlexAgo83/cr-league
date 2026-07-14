@@ -10,6 +10,7 @@ export function DirectivePanel({
   ownedCardIds,
   selectedCardId,
   selectedCardFit,
+  disabled,
   tt
 }: {
   form: FormState;
@@ -17,6 +18,7 @@ export function DirectivePanel({
   ownedCardIds: CardId[];
   selectedCardId: FormState["cardId"];
   selectedCardFit: CardFit | null;
+  disabled?: boolean;
   tt: Translator;
 }) {
   return (
@@ -25,7 +27,7 @@ export function DirectivePanel({
       <div className="field-grid directive-fields">
         <label>
           {tt("field_approach")}
-          <select value={form.approach} onChange={(event) => setForm({ ...form, approach: event.target.value as FormState["approach"] })}>
+          <select value={form.approach} onChange={(event) => setForm({ ...form, approach: event.target.value as FormState["approach"] })} disabled={disabled}>
             <option value="prudent">{tt("approach_prudent")}</option>
             <option value="balanced">{tt("approach_balanced")}</option>
             <option value="aggressive">{tt("approach_aggressive")}</option>
@@ -34,7 +36,7 @@ export function DirectivePanel({
         </label>
         <label>
           {tt("field_preparation")}
-          <select value={form.preparation} onChange={(event) => setForm({ ...form, preparation: event.target.value as FormState["preparation"] })}>
+          <select value={form.preparation} onChange={(event) => setForm({ ...form, preparation: event.target.value as FormState["preparation"] })} disabled={disabled}>
             <option value="speed">{tt("preparation_speed")}</option>
             <option value="reliability">{tt("preparation_reliability")}</option>
             <option value="weather">{tt("preparation_weather")}</option>
@@ -43,7 +45,7 @@ export function DirectivePanel({
         </label>
         <label>
           {tt("field_card")}
-          <select value={selectedCardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })}>
+          <select value={selectedCardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })} disabled={disabled}>
             <option value="">{tt("card_none")}</option>
             {ownedCardIds.map((cardId) => (
               <option key={cardId} value={cardId}>

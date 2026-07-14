@@ -1061,6 +1061,7 @@ export function App() {
                 ownedCardIds={ownedCardIds}
                 selectedCardId={selectedCardId}
                 selectedCardFit={selectedCardFit}
+                disabled={status === "loading" || Boolean(playerDecision) || isResolved}
                 tt={tt}
               />
               <section className="panel qualifying-card">

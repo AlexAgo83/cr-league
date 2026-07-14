@@ -797,54 +797,8 @@ body {
 
 .play-grid {
   align-items: start;
-  gap: 14px;
-  grid-template-columns: 72px repeat(12, minmax(0, 1fr));
-}
-
-.cockpit-rail {
-  align-self: stretch;
-  background: #10161d;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  display: grid;
-  gap: 8px;
-  grid-column: 1;
-  justify-items: center;
-  padding: 12px 8px;
-  position: sticky;
-  top: 18px;
-}
-
-.cockpit-rail a,
-.rail-mark {
-  align-items: center;
-  border-radius: 6px;
-  color: var(--color-muted);
-  display: flex;
-  font-size: 0.72rem;
-  font-weight: 900;
-  height: 44px;
-  justify-content: center;
-  text-decoration: none;
-  text-transform: uppercase;
-  width: 100%;
-}
-
-.rail-mark {
-  background: var(--color-accent);
-  color: #06110c;
-}
-
-.cockpit-rail a {
-  border: 1px solid transparent;
-  writing-mode: vertical-rl;
-}
-
-.cockpit-rail a:hover,
-.cockpit-rail a:focus-visible {
-  border-color: var(--color-border);
-  color: var(--color-text);
-  outline: 0;
+  gap: 16px;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
 }
 
 .panel {
@@ -860,7 +814,7 @@ body {
 
 .race-panel {
   background: linear-gradient(180deg, #151b22, #10161d);
-  grid-column: 2 / span 8;
+  grid-column: span 8;
 }
 
 .league-panel {
@@ -869,7 +823,7 @@ body {
 
 .recap-panel,
 .report-panel {
-  grid-column: 2 / -1;
+  grid-column: 1 / -1;
 }
 
 .result-panel,
@@ -954,7 +908,7 @@ button.primary-command:not(:disabled),
 .race-console {
   background: #0d131a;
   border-color: var(--color-border);
-  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .race-console h3 {
@@ -972,6 +926,11 @@ button.primary-command:not(:disabled),
   background: rgb(56 189 248 / 0.1);
   border-color: rgb(56 189 248 / 0.24);
   color: #d9f4ff;
+}
+
+.race-telemetry {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
 }
 
 .race-state {
@@ -1020,7 +979,18 @@ button.primary-command:not(:disabled),
 }
 
 .race-workbench {
-  grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.85fr);
+}
+
+.directive-block {
+  order: -1;
+}
+
+.settings-block {
+  background: #10161d;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 12px;
 }
 
 .race-workbench > div,
@@ -1040,7 +1010,7 @@ button.primary-command:not(:disabled),
   display: grid;
   gap: 12px;
   grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
-  margin-top: 16px;
+  margin-top: 12px;
   padding: 12px;
 }
 
@@ -1052,6 +1022,10 @@ button.primary-command:not(:disabled),
 .garage-summary {
   background: #10161d;
   border-color: var(--color-border);
+}
+
+.dashboard-summary {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .dashboard-summary span,
@@ -1140,10 +1114,6 @@ button.primary-command:not(:disabled),
     grid-template-columns: 1fr;
   }
 
-  .cockpit-rail {
-    display: none;
-  }
-
   .race-panel,
   .league-panel,
   .recap-panel,
@@ -1158,6 +1128,10 @@ button.primary-command:not(:disabled),
   .race-console,
   .race-command-row {
     grid-template-columns: 1fr;
+  }
+
+  .dashboard-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -1184,6 +1158,49 @@ button.primary-command:not(:disabled),
 
   .hero h1 {
     font-size: 2rem;
+  }
+
+  .app-shell {
+    padding: 12px;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .panel-heading {
+    margin-bottom: 10px;
+  }
+
+  .race-console,
+  .city-circuit-map,
+  .replay-track {
+    padding: 12px;
+  }
+
+  .race-console h3 {
+    font-size: 1.25rem;
+  }
+
+  .race-telemetry,
+  .directive-fields,
+  .settings-fields,
+  .dashboard-summary {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .race-telemetry span,
+  .circuit-traits span {
+    font-size: 0.72rem;
+    padding: 5px 7px;
+  }
+
+  .settings-block {
+    order: 2;
+  }
+
+  .race-command-row {
+    gap: 8px;
   }
 
   .city-replay-track .city-circuit-map,

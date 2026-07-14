@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 95
-> Progress: 70%
+> Progress: 75%
 > Complexity: Low
 > Theme: Validation and playtest readiness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -62,6 +62,7 @@
 - Captured French mobile resolved replay state: `~/Desktop/CRL/crl-cockpit-mobile-replay.png`.
 - Inspected the first mobile pass and fixed the cramped two-column action block before recording the final evidence.
 - Inspected the resolved replay pass and replaced raw English simulator prose in redesigned result/event/report areas with catalog-backed display text.
+- Rejected the first corrective visual pass as still too stacked, removed the desktop rail, widened the cockpit grid, moved directive controls before league settings, and captured replacement screenshots: `~/Desktop/CRL/crl-cockpit-desktop-briefing-v2.png`, `~/Desktop/CRL/crl-cockpit-desktop-replay-v2.png`, `~/Desktop/CRL/crl-cockpit-mobile-briefing-v2.png`, and `~/Desktop/CRL/crl-cockpit-mobile-replay-v2.png`.
 
 # AC Traceability
 - request-AC7 -> This backlog slice. Proof: AC1: Playtest docs ask whether the cockpit feels like a racing game rather than an admin dashboard.

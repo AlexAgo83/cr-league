@@ -125,6 +125,7 @@ flowchart LR
 - Routed the new shell labels, command hints, GP status labels, report headings, and race-event summaries through EN/FR catalogs.
 - Localized the displayed race report/event text at the UI boundary so French playtests do not show raw English simulator prose in the redesigned result areas.
 - Captured visual QA screenshots in `~/Desktop/CRL/` for desktop and mobile briefing/replay states after the implementation pass.
+- Corrective layout pass removed the oversized desktop rail, widened the race cockpit, put the directive before league settings, and regenerated `*-v2.png` screenshots after the first visual QA showed the page still felt too stacked.
 
 # Remaining limits
 - The replay is still a deterministic visual playback derived from resolved events, not a full sampled race timeline with scrubber and proven overtake curves.

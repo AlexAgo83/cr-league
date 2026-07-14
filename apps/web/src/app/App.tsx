@@ -385,15 +385,6 @@ export function App() {
       </section>
 
       <section className="play-grid" aria-label={tt("flow_label")}>
-        {leagueState ? (
-          <aside className="cockpit-rail" aria-label={tt("cockpit_sections")}>
-            <span className="rail-mark">CRL</span>
-            <a href="#race-desk">{tt("rail_race")}</a>
-            <a href="#championship">{tt("rail_league")}</a>
-            {result ? <a href="#race-replay">{tt("rail_replay")}</a> : null}
-          </aside>
-        ) : null}
-
         <article className={leagueState ? "panel race-panel" : "panel control-panel setup-panel"} id="race-desk">
           <div className="panel-heading">
             <div>
@@ -461,7 +452,7 @@ export function App() {
               <CityCircuitMap circuit={currentCircuit} tt={tt} />
 
               <section className="race-workbench" aria-label={tt("directive_workbench")}>
-                <div>
+                <div className="settings-block">
                   <h3>{tt("settings_title")}</h3>
                   <div className="field-grid settings-fields">
                     <label>
@@ -483,7 +474,7 @@ export function App() {
                   </div>
                 </div>
 
-                <div>
+                <div className="directive-block">
                   <h3>{tt("directive_title")}</h3>
                   <div className="field-grid directive-fields">
                     <label>

@@ -940,6 +940,7 @@ label small {
 
 @media (prefers-reduced-motion: reduce) {
   .circuit-route-accent,
+  .circuit-start-line,
   .replay-map-controls .replay-playback-button.playing::after,
   .replay-map-controls .replay-playback-button.paused {
     animation: none;
@@ -957,10 +958,19 @@ label small {
 }
 
 .circuit-start-line {
+  animation: start-line-flash 1.2s ease-in-out infinite;
   stroke: var(--color-text);
   stroke-linecap: round;
-  stroke-width: 5;
+  stroke-width: 3;
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.65));
+}
+
+@keyframes start-line-flash {
+  50% {
+    filter: drop-shadow(0 0 6px rgb(56 189 248 / 0.7));
+    opacity: 0.72;
+    stroke: var(--color-telemetry);
+  }
 }
 
 .map-car-shape {

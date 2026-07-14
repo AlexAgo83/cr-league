@@ -8,7 +8,7 @@ import { ChampionshipView } from "../features/ChampionshipView.js";
 import { CircuitMap } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
-import { ResultView } from "../features/ResultView.js";
+import { ResultView, type ResultTab } from "../features/ResultView.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
 const PLAYER_CLAIM_KEY = "cr-league-player-claim";
@@ -35,6 +35,7 @@ export function App() {
     return isLocale(browserLocale) ? browserLocale : "en";
   });
   const [gameView, setGameView] = useState<GameView>("drive");
+  const [resultTab, setResultTab] = useState<ResultTab>("report");
   const tt = (key: TranslationKey) => t(key, locale);
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const [briefingOpen, setBriefingOpen] = useState(false);
@@ -163,6 +164,7 @@ export function App() {
       });
       setLeagueState(state);
       setGameView("result");
+      setResultTab("report");
       setMessage(tt("status_grand_prix_resolved"));
     });
   }
@@ -381,6 +383,7 @@ export function App() {
             playerTeamId={playerTeam?.id}
             playerDecision={playerDecision}
             forecastPick={forecastPick}
+            tab={resultTab}
             tt={tt}
           />
         ) : null}
@@ -393,14 +396,21 @@ export function App() {
           <small className="command-hint">{tt(`command_hint_${deskState}` as TranslationKey)}</small>
         </div>
         <div className="command-actions">
-          <button
-            className="info-command"
-            type="button"
-            aria-label={tt("briefing_next_action")}
-            onClick={() => setBriefingOpen(true)}
-          >
-            i
-          </button>
+          {gameView === "drive" ? (
+            <button className="info-command" type="button" onClick={() => setBriefingOpen(true)}>
+              {tt("race_info")}
+            </button>
+          ) : null}
+          {gameView === "result" && result ? (
+            <button
+              className="result-toggle-command"
+              type="button"
+              aria-controls={`result-${resultTab === "report" ? "replay" : "report"}-panel`}
+              onClick={() => setResultTab(resultTab === "report" ? "replay" : "report")}
+            >
+              {tt(`result_tab_${resultTab === "report" ? "replay" : "report"}` as TranslationKey)}
+            </button>
+          ) : null}
           <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
             {primaryCommand.label}
           </button>

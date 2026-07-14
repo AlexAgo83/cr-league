@@ -711,29 +711,17 @@ label small {
 
 /* ---------- Replay & report ---------- */
 
-.result-tabs {
-  background: rgb(255 255 255 / 0.04);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  display: inline-flex;
-  gap: 4px;
-  margin-bottom: 16px;
-  padding: 4px;
-}
-
-.result-tabs button {
+button.result-toggle-command {
   background: transparent;
-  border: 0;
+  border: 1px solid var(--color-border);
   border-radius: 6px;
-  color: var(--color-muted);
-  min-height: 34px;
-  padding: 7px 14px;
+  color: var(--color-telemetry);
+  min-height: 48px;
 }
 
-.result-tabs button.active,
-.result-tabs button[aria-selected="true"] {
-  background: var(--color-accent);
-  color: #06100c;
+button.result-toggle-command:hover {
+  border-color: var(--color-telemetry);
+  color: var(--color-text);
 }
 
 .replay-explainer,
@@ -924,15 +912,10 @@ label small {
 button.info-command {
   background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: 50%;
   color: var(--color-telemetry);
-  font-family: Georgia, serif;
-  font-size: 1.05rem;
-  font-style: italic;
-  font-weight: 700;
   height: 44px;
-  padding: 0;
-  width: 44px;
+  padding: 0 14px;
+  white-space: nowrap;
 }
 
 button.info-command:hover {

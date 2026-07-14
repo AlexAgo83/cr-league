@@ -244,7 +244,7 @@ describe("App", () => {
 
     // Briefing modal from the info button
     expect(screen.queryByText("Wait for directives")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Next action" }));
+    fireEvent.click(screen.getByRole("button", { name: "Race info" }));
     expect(screen.getByText("Wait for directives")).toBeTruthy();
     expect(screen.getByText("Fast")).toBeTruthy();
     expect(screen.getByText("Weather sensitive")).toBeTruthy();
@@ -267,15 +267,16 @@ describe("App", () => {
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
     expect(screen.getByText("Race resolved")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Result" }).className).toContain("active");
-    expect(screen.getByRole("tab", { name: "Report" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
+    expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
     expect(screen.getByText("Balanced · Weather · Rain Grip")).toBeTruthy();
     expect(screen.getByText("Your card shaped the race. Keep one for moments where the track or forecast clearly matches it.")).toBeTruthy();
 
     // Replay view
-    fireEvent.keyDown(screen.getByRole("tablist", { name: "Race result sections" }), { key: "ArrowLeft" });
-    expect(screen.getByRole("tab", { name: "Replay" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
+    expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("Winner")).toBeTruthy();
     expect(screen.getByLabelText("Race replay by lap")).toBeTruthy();
@@ -351,7 +352,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Create league" }));
 
     fireEvent.click(await screen.findByRole("button", { name: "Result" }));
-    fireEvent.click(screen.getByRole("tab", { name: "Replay" }));
+    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("No replay events were recorded for this GP.")).toBeTruthy();
   });

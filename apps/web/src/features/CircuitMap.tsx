@@ -79,6 +79,7 @@ export function CircuitMap({
   cars = [],
   svgRef,
   overlay,
+  className,
   showHeading = true,
   framed = true,
   showTraits = true
@@ -88,6 +89,7 @@ export function CircuitMap({
   cars?: MapCar[];
   svgRef?: Ref<SVGSVGElement>;
   overlay?: React.ReactNode;
+  className?: string;
   showHeading?: boolean;
   framed?: boolean;
   showTraits?: boolean;
@@ -95,7 +97,10 @@ export function CircuitMap({
   const { zoom, tiles, d, start } = circuitScene(circuit);
 
   return (
-    <section className={framed ? "circuit-map" : "circuit-map circuit-map-unframed"} aria-label={tt("city_circuit_map")}>
+    <section
+      className={`${framed ? "circuit-map" : "circuit-map circuit-map-unframed"}${className ? ` ${className}` : ""}`}
+      aria-label={tt("city_circuit_map")}
+    >
       {showHeading ? (
         <div className="circuit-map-heading">
           <span className="circuit-city">

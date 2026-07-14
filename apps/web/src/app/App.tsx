@@ -337,29 +337,27 @@ export function App() {
       <section className="view-container">
         {gameView === "drive" ? (
           <div className="drive-grid">
-            <section className="panel drive-map-panel">
-              <CircuitMap
-                circuit={currentCircuit}
-                tt={tt}
-                showHeading={false}
-                framed={false}
-                showTraits={false}
-                overlay={
-                  <>
-                    <div className="map-status">
-                      <span className="circuit-city">
-                        {countryFlag(currentCircuit.country)} {currentCircuit.city}
-                      </span>
-                      <strong>{tt(currentCircuit.layoutKey)}</strong>
-                      <small>
-                        {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
-                      </small>
-                    </div>
-                    <MapTraitsPanel traits={currentCircuit.traits} tt={tt} />
-                  </>
-                }
-              />
-            </section>
+            <CircuitMap
+              className="drive-map-panel"
+              circuit={currentCircuit}
+              tt={tt}
+              showHeading={false}
+              showTraits={false}
+              overlay={
+                <>
+                  <div className="map-status">
+                    <span className="circuit-city">
+                      {countryFlag(currentCircuit.country)} {currentCircuit.city}
+                    </span>
+                    <strong>{tt(currentCircuit.layoutKey)}</strong>
+                    <small>
+                      {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
+                    </small>
+                  </div>
+                  <MapTraitsPanel traits={currentCircuit.traits} tt={tt} />
+                </>
+              }
+            />
             <DirectivePanel
               form={form}
               setForm={setForm}

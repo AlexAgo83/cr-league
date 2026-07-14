@@ -122,10 +122,11 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.getByRole("button", { name: "Create league" }).click();
   await page.getByRole("button", { name: "Race", exact: true }).click();
 
-  const driveMap = page.locator(".drive-map-panel .circuit-map");
-  await expect(driveMap).toHaveClass(/circuit-map-unframed/);
-  await expect(driveMap).toHaveCSS("padding", "0px");
-  await expect(driveMap).toHaveCSS("border-top-width", "0px");
+  const driveMap = page.locator(".drive-map-panel");
+  await expect(driveMap).toHaveClass(/circuit-map/);
+  await expect(driveMap).not.toHaveClass(/circuit-map-unframed/);
+  await expect(driveMap).toHaveCSS("padding", "16px");
+  await expect(driveMap).toHaveCSS("border-top-width", "1px");
   await expect(page.locator(".drive-map-panel .map-status")).toContainText("🇫🇷 Paris");
   await expect(page.locator(".drive-map-panel .map-status")).toContainText("5 laps");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Grip");
@@ -139,12 +140,12 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   const mapPanel = page.locator(".replay-map-panel");
   const copyPanel = page.locator(".replay-copy-panel");
   const momentsPanel = page.locator(".replay-moments-panel");
-  const replayMap = mapPanel.locator(".circuit-map");
+  const replayMap = mapPanel;
 
   await expect(mapPanel.locator(".circuit-map-stage")).toBeVisible();
-  await expect(replayMap).toHaveClass(/circuit-map-unframed/);
-  await expect(replayMap).toHaveCSS("padding", "0px");
-  await expect(replayMap).toHaveCSS("border-top-width", "0px");
+  await expect(replayMap).not.toHaveClass(/circuit-map-unframed/);
+  await expect(replayMap).toHaveCSS("padding", "16px");
+  await expect(replayMap).toHaveCSS("border-top-width", "1px");
   await expect(mapPanel.locator(".map-status")).toContainText("🇫🇷 Paris");
   await expect(mapPanel.locator(".map-status")).toContainText("Lap 1/5");
   await expect(mapPanel.locator(".map-status")).toContainText("Dry");

@@ -107,7 +107,8 @@ export function CircuitMap({
           <path className="circuit-route-edge" d={d} />
           <path className="circuit-route-accent" d={d} />
           <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />
-          {cars.map((car) => (
+          {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
+          {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => (
             <g key={car.id} className={car.player ? "map-car player" : "map-car"}>
               <circle r="16" />
               <text textAnchor="middle" dominantBaseline="central">

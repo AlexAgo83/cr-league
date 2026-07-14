@@ -103,12 +103,21 @@ export type ReportBlock = {
   body: string;
 };
 
+export type ReplayTracePoint = {
+  segment: RaceSegment;
+  lap: number;
+  progress: number;
+  order: string[];
+  gaps: Record<string, number>;
+};
+
 export type RaceResult = {
   grandPrixName: string;
   seed: string;
   resolvedWeather: Record<RaceSegment, Weather>;
   classification: ClassificationEntry[];
   events: RaceEvent[];
+  replayTrace?: ReplayTracePoint[];
   consumedCards: Array<{ teamId: string; cardId: CardId }>;
   report: {
     headline: string;

@@ -95,6 +95,10 @@ describe("simulateRace", () => {
 
     expect(result.classification).toHaveLength(6);
     expect(result.events.length).toBeGreaterThan(6);
+    expect(result.replayTrace).toHaveLength(6);
+    expect(result.replayTrace?.[0]?.progress).toBe(0);
+    expect(result.replayTrace?.at(-1)?.progress).toBe(1);
+    expect(result.replayTrace?.at(-1)?.order).toEqual(result.classification.map((entry) => entry.teamId));
     expect(result.consumedCards).toEqual(
       expect.arrayContaining([
         { teamId: "alice", cardId: "rain_grip" },

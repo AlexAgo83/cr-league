@@ -8,6 +8,7 @@ import type {
   RaceParticipant,
   RaceResult,
   RaceSegment,
+  ReplayTracePoint,
   Weather
 } from "../domain/race.js";
 import { RACE_SEGMENTS } from "../domain/race.js";
@@ -34,8 +35,9 @@ export function simulateRace(input: RaceInput): RaceResult {
   const weather = resolveWeather(input.forecast, prng.pickWeighted);
   const states = input.participants.map(createTeamState);
   const events: RaceEvent[] = [];
+  const replayTrace: ReplayTracePoint[] = [createReplayTracePoint("start", 0, states, "grid")];
 
-  for (const segment of RACE_SEGMENTS) {
+  for (const [index, segment] of RACE_SEGMENTS.entries()) {
     if (segment !== "start" && weather[segment] !== weather[previousSegment(segment)]) {
       events.push(createWeatherEvent(events.length, segment, weather[segment], states[0]?.participant.teamId ?? ""));
     }
@@ -47,6 +49,7 @@ export function simulateRace(input: RaceInput): RaceResult {
     }
 
     maybeAddFlavorEvent(segment, weather[segment], input, states, events, prng.next);
+    replayTrace.push(createReplayTracePoint(segment, (index + 1) / RACE_SEGMENTS.length, states, "score"));
   }
 
   const classification = classify(states);
@@ -58,10 +61,33 @@ export function simulateRace(input: RaceInput): RaceResult {
     resolvedWeather: weather,
     classification,
     events: events.map((event, order) => ({ ...event, id: `evt_${String(order + 1).padStart(3, "0")}`, order })),
+    replayTrace,
     consumedCards: states
       .filter((state): state is TeamState & { consumedCard: CardId } => Boolean(state.consumedCard))
       .map((state) => ({ teamId: state.participant.teamId, cardId: state.consumedCard })),
     report: buildReport(input.grandPrixName, classification, events)
+  };
+}
+
+function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], mode: "grid" | "score"): ReplayTracePoint {
+  const sorted =
+    mode === "grid"
+      ? [...states].sort((left, right) => left.participant.standingsRank - right.participant.standingsRank)
+      : [...states].sort((left, right) => right.scores.score - left.scores.score || left.participant.standingsRank - right.participant.standingsRank);
+  const leaderScore = sorted[0]?.scores.score ?? 0;
+
+  return {
+    segment,
+    lap: lapForSegment(segment),
+    progress,
+    order: sorted.map((state) => state.participant.teamId),
+    gaps: Object.fromEntries(
+      sorted.map((state, index) => [
+        state.participant.teamId,
+        // ponytail: score-to-gap is visual telemetry, replace with sector timing when simulation models exact lap deltas.
+        mode === "grid" ? index * 1.2 : Math.max(0, Number(((leaderScore - state.scores.score) / 8).toFixed(1)))
+      ])
+    )
   };
 }
 

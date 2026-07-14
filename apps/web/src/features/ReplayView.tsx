@@ -1,4 +1,4 @@
-import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type Weather } from "@cr-league/shared";
+import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayTracePoint, type Weather } from "@cr-league/shared";
 import { useEffect, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { countryFlag, type CityCircuit } from "../app/circuits.js";
@@ -7,6 +7,7 @@ import type { RaceEvent } from "../app/helpers.js";
 import { CircuitMap, MapTraitsPanel, type MapCar, type MapTraitStats } from "./CircuitMap.js";
 
 const WEATHER_ICONS = { dry: "☀️", light_rain: "🌦️", heavy_rain: "⛈️" } as const;
+const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], gaps: {} };
 
 function clampStat(value: number) {
   return Math.max(1, Math.min(99, Math.round(value)));
@@ -22,14 +23,39 @@ function liveTraits(base: MapTraitStats, weather: Weather, lap: number): MapTrai
   };
 }
 
-function liveClassification(result: RaceResult, time: number, replayEnd: number): RaceResult["classification"] {
+function fallbackReplayTrace(result: RaceResult): ReplayTracePoint[] {
+  return [
+    {
+      segment: "start",
+      lap: 1,
+      progress: 0,
+      order: [...result.classification].sort((left, right) => left.position + left.positionChange - (right.position + right.positionChange)).map((entry) => entry.teamId),
+      gaps: Object.fromEntries(result.classification.map((entry) => [entry.teamId, Math.max(0, entry.position + entry.positionChange - 1)]))
+    },
+    {
+      segment: "finish",
+      lap: 5,
+      progress: 1,
+      order: result.classification.map((entry) => entry.teamId),
+      gaps: Object.fromEntries(result.classification.map((entry, index) => [entry.teamId, index]))
+    }
+  ];
+}
+
+function tracePointAt(trace: ReplayTracePoint[], progress: number) {
+  return [...trace].reverse().find((point) => point.progress <= progress) ?? trace[0] ?? EMPTY_TRACE_POINT;
+}
+
+function liveClassification(result: RaceResult, trace: ReplayTracePoint[], time: number, replayEnd: number): RaceResult["classification"] {
   const progress = replayEnd > 0 ? Math.min(1, Math.max(0, time / replayEnd)) : 1;
+  const from = tracePointAt(trace, progress);
+  const to = trace.find((point) => point.progress > progress) ?? from;
+  const span = to.progress - from.progress || 1;
+  const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
   return [...result.classification].sort((left, right) => {
-    const leftStart = left.position + left.positionChange;
-    const rightStart = right.position + right.positionChange;
-    const leftLive = leftStart + (left.position - leftStart) * progress;
-    const rightLive = rightStart + (right.position - rightStart) * progress;
-    return leftLive - rightLive || left.position - right.position;
+    const leftGap = (from.gaps[left.teamId] ?? 0) + ((to.gaps[left.teamId] ?? 0) - (from.gaps[left.teamId] ?? 0)) * ratio;
+    const rightGap = (from.gaps[right.teamId] ?? 0) + ((to.gaps[right.teamId] ?? 0) - (from.gaps[right.teamId] ?? 0)) * ratio;
+    return leftGap - rightGap || from.order.indexOf(left.teamId) - from.order.indexOf(right.teamId) || left.position - right.position;
   });
 }
 
@@ -68,16 +94,17 @@ export function ReplayView({
   const [speed, setSpeed] = useState(1);
   const [driverFocus, setDriverFocus] = useState(false);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
-  const [liveTower, setLiveTower] = useState(() => liveClassification(result, 0, 1));
+  const replayTrace = result.replayTrace?.length ? result.replayTrace : fallbackReplayTrace(result);
+  const [liveTower, setLiveTower] = useState(() => liveClassification(result, replayTrace, 0, 1));
   const names = teamNamesFromResult(result);
   const field = result.classification;
+  const finalGaps = replayTrace.at(-1)?.gaps ?? {};
   const cars: MapCar[] = field.map((entry, index) => ({
     id: entry.teamId,
     label: entry.teamName.slice(0, 3).toUpperCase(),
     player: entry.teamId === playerTeamId,
-    // ponytail: everyone launches from the line at t=0; per-position lap times spread the field naturally.
     delay: 0,
-    duration: 14 + index * 0.6
+    duration: 14 + (finalGaps[entry.teamId] ?? index) * 0.25
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
   // Replay ends when the last car completes the race distance; the clock parks there on pause.
@@ -121,11 +148,9 @@ export function ReplayView({
 
   function updateLive(time: number) {
     const progress = replayEnd > 0 ? time / replayEnd : 0;
-    const segment = RACE_SEGMENTS[Math.min(RACE_SEGMENTS.length - 1, Math.floor(progress * RACE_SEGMENTS.length))] ?? RACE_SEGMENTS[0];
-    const lapDuration = playerCar?.duration || replayEnd / circuit.laps || 1;
-    const lap = Math.min(circuit.laps, Math.floor(time / lapDuration) + 1);
-    setLive((current) => (current.lap === lap && current.segment === segment ? current : { lap, segment }));
-    const nextTower = liveClassification(result, time, replayEnd);
+    const tracePoint = tracePointAt(replayTrace, progress);
+    setLive((current) => (current.lap === tracePoint.lap && current.segment === tracePoint.segment ? current : { lap: tracePoint.lap, segment: tracePoint.segment }));
+    const nextTower = liveClassification(result, replayTrace, time, replayEnd);
     setLiveTower((current) => (current.map((entry) => entry.teamId).join("|") === nextTower.map((entry) => entry.teamId).join("|") ? current : nextTower));
   }
 

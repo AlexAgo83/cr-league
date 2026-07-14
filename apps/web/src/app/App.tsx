@@ -6,7 +6,7 @@ import { cardFit, strongestForecast } from "./helpers.js";
 import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
-import { CircuitMap, MapTraitsPanel, RaceSignalsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
+import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
 import { ReplayView } from "../features/ReplayView.js";
@@ -890,7 +890,6 @@ export function App() {
                       </small>
                     </div>
                     <MapTraitsPanel traits={currentCircuit.traits} impacts={directiveTraitImpacts} tt={tt} />
-                    <RaceSignalsPanel circuit={currentCircuit} tt={tt} />
                     <div className="map-qualifying-times">
                       <strong>{tt("qualifying_times_title")}</strong>
                       {qualifyingLeaderboard.length ? (

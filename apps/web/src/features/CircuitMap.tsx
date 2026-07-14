@@ -370,32 +370,3 @@ export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitS
     </div>
   );
 }
-
-export function RaceSignalsPanel({ circuit, tt }: { circuit: CityCircuit; tt: Translator }) {
-  const weatherValue = circuit.likelyWeather === "heavy_rain" ? 88 : circuit.likelyWeather === "light_rain" ? 58 : 24;
-  const rows = [
-    { label: "race_signal_weather", value: weatherValue, text: tt(`weather_${circuit.likelyWeather}` as TranslationKey) },
-    { label: "circuit_grip", value: circuit.traits.grip, text: signalText(circuit.traits.grip, tt) },
-    { label: "circuit_overtaking", value: circuit.traits.overtaking, text: signalText(circuit.traits.overtaking, tt) },
-    { label: "circuit_energy", value: circuit.traits.energy, text: signalText(circuit.traits.energy, tt) }
-  ] satisfies Array<{ label: TranslationKey; value: number; text: string }>;
-
-  return (
-    <div className="map-race-signals">
-      <strong>{tt("race_signals_title")}</strong>
-      {rows.map((row) => (
-        <span key={row.label} title={`${tt(row.label)} · ${row.text}`}>
-          <em>{tt(row.label)}</em>
-          <i style={{ "--signal": `${row.value}%` } as CSSProperties} />
-          <b>{row.text}</b>
-        </span>
-      ))}
-    </div>
-  );
-}
-
-function signalText(value: number, tt: Translator) {
-  if (value >= 70) return tt("race_signal_high");
-  if (value >= 45) return tt("race_signal_medium");
-  return tt("race_signal_low");
-}

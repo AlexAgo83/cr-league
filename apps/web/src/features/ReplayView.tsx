@@ -206,6 +206,7 @@ export function ReplayView({
   const [carProgress, setCarProgress] = useState(() => carProgressAt(result, replayTrace, 0, circuit.laps));
   const [positionPops, setPositionPops] = useState<Record<string, { delta: number; key: number }>>({});
   const orderRef = useRef(liveTower.map((entry) => entry.teamId));
+  const positionPopTimers = useRef<number[]>([]);
   const names = teamNamesFromResult(result);
   const field = result.classification;
   const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
@@ -260,10 +261,14 @@ export function ReplayView({
     localStorage.setItem(REPLAY_FOCUS_KEY, driverFocus ? "1" : "0");
   }, [driverFocus]);
 
+  useEffect(() => () => positionPopTimers.current.forEach(window.clearTimeout), []);
+
   function seek(time: number) {
     clock.current = Math.max(0, Math.min(time, replayEnd));
     svgRef.current?.setCurrentTime?.(clock.current);
     if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
+    positionPopTimers.current.forEach(window.clearTimeout);
+    positionPopTimers.current = [];
     setPositionPops({});
     updateLive(clock.current, false);
   }
@@ -286,10 +291,16 @@ export function ReplayView({
     if (orderRef.current.join("|") !== nextOrder.join("|")) {
       if (animatePositions) {
         const deltas = positionDeltas(orderRef.current, nextOrder);
-        setPositionPops((current) => ({
-          ...current,
-          ...Object.fromEntries(Object.entries(deltas).map(([teamId, delta]) => [teamId, { delta, key: Math.round(time * 1000) }]))
-        }));
+        const key = Math.round(time * 1000);
+        const pops = Object.fromEntries(Object.entries(deltas).map(([teamId, delta]) => [teamId, { delta, key }]));
+        setPositionPops((current) => ({ ...current, ...pops }));
+        for (const teamId of Object.keys(pops)) {
+          positionPopTimers.current.push(
+            window.setTimeout(() => {
+              setPositionPops((current) => (current[teamId]?.key === key ? Object.fromEntries(Object.entries(current).filter(([id]) => id !== teamId)) : current));
+            }, 1100)
+          );
+        }
       }
       orderRef.current = nextOrder;
       setLiveTower(nextTower);

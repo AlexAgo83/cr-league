@@ -251,7 +251,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
       points: 0,
       credits: 0,
       cards: STARTER_CARDS,
-      livery: DEFAULT_LIVERY
+      livery: randomLivery()
     }
   });
 
@@ -305,7 +305,8 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
       claimCode: createClaimCode(),
       points: 0,
       credits: 0,
-      cards: STARTER_CARDS
+      cards: STARTER_CARDS,
+      livery: randomLivery()
     }
   });
 
@@ -1147,12 +1148,14 @@ function normalizeLivery(value: unknown): TeamLivery {
   };
 }
 
-function randomBotLivery(): TeamLivery {
+function randomLivery(): TeamLivery {
   const primary = BOT_LIVERY_COLORS[Math.floor(Math.random() * BOT_LIVERY_COLORS.length)] ?? DEFAULT_LIVERY.primary;
   const secondaryChoices = BOT_LIVERY_COLORS.filter((color) => color !== primary);
   const secondary = secondaryChoices[Math.floor(Math.random() * secondaryChoices.length)] ?? DEFAULT_LIVERY.secondary;
   return { primary, secondary };
 }
+
+const randomBotLivery = randomLivery;
 
 function isHexColor(value: string) {
   return /^#[0-9a-f]{6}$/i.test(value);

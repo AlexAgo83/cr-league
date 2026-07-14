@@ -165,10 +165,19 @@ describe("api app", () => {
     expect(claim).toMatchObject({ teamId, claimCode: expect.any(String) });
     expect(created.league).toMatchObject({ maxPlayers: 8, fillWithBots: true, qualifyingAttemptLimit: 3, maxGrandPrixPerSeason: 6 });
     expect(createdTeam.cards).toEqual(["rain_grip"]);
+    expect(createdTeam.livery).toMatchObject({
+      primary: expect.stringMatching(/^#[0-9a-f]{6}$/i),
+      secondary: expect.stringMatching(/^#[0-9a-f]{6}$/i)
+    });
+    expect(createdTeam.livery.primary).not.toBe(createdTeam.livery.secondary);
     expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: 100 });
     expect(readResponse.statusCode).toBe(200);
     expect(readResponse.json().league).toMatchObject({ id: leagueId, name: "Office League" });
     expect(joinResponse.statusCode).toBe(200);
+    expect(joinResponse.json().teams.find((team: { name: string }) => team.name === "Late Apex").livery).toMatchObject({
+      primary: expect.stringMatching(/^#[0-9a-f]{6}$/i),
+      secondary: expect.stringMatching(/^#[0-9a-f]{6}$/i)
+    });
     expect(decisionResponse.statusCode).toBe(200);
     expect(qualifyingResponse.statusCode).toBe(200);
     expect(qualifyingResponse.json()).toMatchObject({

@@ -23,7 +23,7 @@ const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
   late: 34,
   finish: 20
 };
-const REPLAY_TRACE_STEPS_PER_SEGMENT = 4;
+const REPLAY_TRACE_STEPS_PER_SEGMENT = 10;
 
 type TeamState = {
   participant: RaceParticipant;

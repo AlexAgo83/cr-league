@@ -95,10 +95,10 @@ describe("simulateRace", () => {
 
     expect(result.classification).toHaveLength(6);
     expect(result.events.length).toBeGreaterThan(6);
-    expect(result.replayTrace).toHaveLength(21);
+    expect(result.replayTrace).toHaveLength(51);
     expect(result.replayTrace?.[0]?.progress).toBe(0);
-    expect(result.replayTrace?.[1]?.progress).toBe(0.05);
-    expect(result.replayTrace?.[4]?.progress).toBe(0.2);
+    expect(result.replayTrace?.[1]?.progress).toBe(0.02);
+    expect(result.replayTrace?.[10]?.progress).toBe(0.2);
     expect(new Set(Object.values(result.replayTrace?.[0]?.gaps ?? {}))).toEqual(new Set([0]));
     expect(result.replayTrace?.at(-1)?.progress).toBe(1);
     expect(result.replayTrace?.at(-1)?.order).toEqual(result.classification.map((entry) => entry.teamId));

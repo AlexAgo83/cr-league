@@ -76,9 +76,9 @@ export function eventReportText(event: RaceEvent, names: Map<string, string>, tt
   return `${eventReplayText(event, names, tt)}${delta}.`;
 }
 
-export function resultHeadline(result: RaceResult, tt: Translator) {
+export function resultHeadline(result: RaceResult, tt: Translator, title = result.grandPrixName) {
   const winner = result.classification[0];
-  return winner ? `${result.grandPrixName}: ${winner.teamName} ${tt("report_wins")}.` : result.grandPrixName;
+  return winner ? `${title}: ${winner.teamName} ${tt("report_wins")}.` : title;
 }
 
 export function localizedReportBlocks(result: RaceResult, tt: Translator) {

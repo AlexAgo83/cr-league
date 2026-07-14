@@ -35,6 +35,7 @@ export function ResultView({
           <ReportView
             state={state}
             result={result}
+            circuit={circuit}
             playerTeamId={playerTeamId}
             playerDecision={playerDecision}
             forecastPick={forecastPick}

@@ -297,7 +297,7 @@ describe("App", () => {
 
     // Report view
     fireEvent.click(screen.getByRole("button", { name: "Report" }));
-    expect(screen.getByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
+    expect(screen.getByText("Paris Docklands Sprint: Circle One wins.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();

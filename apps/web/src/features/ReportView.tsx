@@ -1,4 +1,5 @@
 import type { RaceResult } from "@cr-league/shared";
+import type { CityCircuit } from "../app/circuits.js";
 import {
   describeDecision,
   eventReportText,
@@ -13,6 +14,7 @@ import type { LeagueState } from "../app/types.js";
 export function ReportView({
   state,
   result,
+  circuit,
   playerTeamId,
   playerDecision,
   forecastPick,
@@ -20,19 +22,21 @@ export function ReportView({
 }: {
   state: LeagueState;
   result: RaceResult;
+  circuit: CityCircuit;
   playerTeamId: string | undefined;
   playerDecision: LeagueState["decisions"][number] | undefined;
   forecastPick: string;
   tt: Translator;
 }) {
   const names = teamNamesFromResult(result);
+  const raceTitle = `${circuit.city} ${tt(circuit.layoutKey)}`;
   const majorEvents = result.events.filter((event) => event.severity === "major");
   const playerEvents = result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId);
   const recap = [
     {
       className: "difference",
       title: tt("result_difference"),
-      body: majorEvents[0] ? eventReportText(majorEvents[0], names, tt) : resultHeadline(result, tt)
+      body: majorEvents[0] ? eventReportText(majorEvents[0], names, tt) : resultHeadline(result, tt, raceTitle)
     },
     {
       className: "directive",
@@ -51,8 +55,8 @@ export function ReportView({
       <section className="panel report-hero">
         <div className="report-headline">
           <span className="section-kicker">{tt("result_race_report")}</span>
-          <h2>{result.grandPrixName}</h2>
-          <p>{resultHeadline(result, tt)}</p>
+          <h2>{raceTitle}</h2>
+          <p>{resultHeadline(result, tt, raceTitle)}</p>
         </div>
         <ol className="report-podium">
           {result.classification.map((entry) => (

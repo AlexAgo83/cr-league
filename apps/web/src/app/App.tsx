@@ -1,7 +1,7 @@
 import { APP_NAME, type CardId, type QualifyingRun } from "@cr-league/shared";
 import { useEffect, useMemo, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
-import { circuitForRound, countryFlag } from "./circuits.js";
+import { CITY_CIRCUITS, circuitForRound, countryFlag } from "./circuits.js";
 import { cardFit, strongestForecast } from "./helpers.js";
 import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
@@ -61,6 +61,39 @@ function createInitialForm(locale: Locale): FormState {
     preparation: "weather",
     cardId: "rain_grip"
   };
+}
+
+function AmbientRaceBackground({ tt }: { tt: (key: TranslationKey) => string }) {
+  const { circuit, cars } = useMemo(() => {
+    const liveries: Array<[string, string]> = [
+      ["#22c55e", "#052e16"],
+      ["#38bdf8", "#082f49"],
+      ["#facc15", "#451a03"],
+      ["#fb7185", "#4c0519"],
+      ["#a78bfa", "#2e1065"],
+      ["#f97316", "#431407"],
+      ["#14b8a6", "#042f2e"],
+      ["#e5e7eb", "#111827"]
+    ];
+    return {
+      circuit: CITY_CIRCUITS[Math.floor(Math.random() * CITY_CIRCUITS.length)]!,
+      cars: liveries.map(([primary, secondary], index) => ({
+        id: `ambient-${index}`,
+        label: "",
+        player: false,
+        delay: -Math.random() * 22,
+        duration: 16 + Math.random() * 12,
+        repeatCount: "indefinite" as const,
+        livery: { primary, secondary }
+      }))
+    };
+  }, []);
+
+  return (
+    <div className="ambient-race-background" aria-hidden="true">
+      <CircuitMap className="ambient-race-map" circuit={circuit} tt={tt} cars={cars} showHeading={false} framed={false} showTraits={false} />
+    </div>
+  );
 }
 
 export function App() {
@@ -652,6 +685,7 @@ export function App() {
   if (!profileSession) {
     return (
       <main className="app-shell setup-shell">
+        <AmbientRaceBackground tt={tt} />
         {setupTopbar}
 
         <section className="setup-grid setup-grid-single" aria-labelledby="profile-title">
@@ -711,6 +745,7 @@ export function App() {
   if (!leagueState) {
     return (
       <main className="app-shell setup-shell">
+        <AmbientRaceBackground tt={tt} />
         {setupTopbar}
 
         <section className="setup-grid" aria-label={tt("flow_label")}>

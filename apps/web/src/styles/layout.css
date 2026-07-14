@@ -15,10 +15,58 @@
 .setup-shell {
   justify-content: flex-start;
   max-width: 980px;
+  position: relative;
 }
 
 .game-shell {
   padding-bottom: 96px; /* room for the sticky command bar */
+}
+
+.setup-shell > :not(.ambient-race-background) {
+  position: relative;
+  z-index: 1;
+}
+
+.ambient-race-background {
+  bottom: 0;
+  left: 0;
+  opacity: 0.34;
+  overflow: hidden;
+  pointer-events: none;
+  position: fixed;
+  right: 0;
+  top: 0;
+  z-index: 0;
+}
+
+.ambient-race-background::after {
+  background:
+    radial-gradient(circle at 50% 42%, rgb(10 15 21 / 0.1), rgb(10 15 21 / 0.78) 68%),
+    linear-gradient(180deg, rgb(10 15 21 / 0.35), rgb(10 15 21 / 0.88));
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.ambient-race-map {
+  height: 100%;
+  transform: scale(1.18);
+}
+
+.ambient-race-map .circuit-map-stage {
+  background: transparent;
+  border: 0;
+  height: 100%;
+}
+
+.ambient-race-map .circuit-map-stage svg {
+  height: 100%;
+  width: 100%;
+}
+
+.ambient-race-map .map-attribution,
+.ambient-race-map .map-car text {
+  display: none;
 }
 
 /* ---------- Setup hero ---------- */

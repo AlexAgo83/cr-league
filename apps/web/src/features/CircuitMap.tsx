@@ -15,6 +15,7 @@ export type MapCar = {
   livery?: TeamLivery;
   positionDelta?: number;
   positionDeltaKey?: number;
+  repeatCount?: number | "indefinite";
 };
 
 export type MapTraitStats = {
@@ -333,7 +334,7 @@ export function CircuitMap({
                     ) : null}
                   </g>
                   {car.progress === undefined ? (
-                    <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={circuit.laps} fill="freeze" rotate="auto" />
+                    <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
                   ) : null}
                 </g>
               );

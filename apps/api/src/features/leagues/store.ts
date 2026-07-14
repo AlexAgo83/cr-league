@@ -675,6 +675,8 @@ export async function startNextGrandPrix(db: Db, leagueId: string) {
   const nextSeason = grandPrix.round >= state.league.maxGrandPrixPerSeason ? grandPrix.season + 1 : grandPrix.season;
   const nextRound = grandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : grandPrix.round + 1;
 
+  await buyBotCards(db, state, `${leagueId}-s${nextSeason}-r${nextRound}`);
+
   await db.grandPrix.create({
     data: {
       leagueId,
@@ -767,7 +769,7 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
       : {
           approach: demo?.decision.approach ?? "balanced",
           preparation: demo?.decision.preparation ?? "speed",
-          cardId: demo?.decision.cardId,
+          cardId: defaultCardForTeam(team, demo?.decision.cardId),
           rivalTeamId: demo?.decision.rivalTeamId
         };
     nextRuns.push(
@@ -820,9 +822,34 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
             cardId: (decision.cardId ?? undefined) as RaceDecision["cardId"],
             rivalTeamId: decision.rivalTeamId ?? undefined
           }
-        : { ...demo.decision, defaulted: true }
+        : { ...demo.decision, cardId: defaultCardForTeam(team, demo.decision.cardId), defaulted: true }
     };
   });
+}
+
+async function buyBotCards(db: Db, state: LeagueState, seed: string) {
+  await Promise.all(
+    state.teams
+      .filter((team) => team.kind === "bot" && team.credits >= CARD_PRICE)
+      .map((team) =>
+        db.team.update({
+          where: { id: team.id },
+          data: {
+            credits: { decrement: CARD_PRICE },
+            cards: appendCard(team.cards, randomCardId(`${seed}-${team.id}-${team.credits}-${team.cards.length}`))
+          }
+        })
+      )
+  );
+}
+
+function defaultCardForTeam(team: LeagueState["teams"][number], preferred?: CardId) {
+  return preferred && team.cards.includes(preferred) ? preferred : team.cards[0];
+}
+
+function randomCardId(seed: string): CardId {
+  const cards = Object.keys(CARD_DEFINITIONS) as CardId[];
+  return cards[createHash("sha1").update(seed).digest()[0]! % cards.length]!;
 }
 
 function bestQualifyingRuns(runs: QualifyingRun[]) {

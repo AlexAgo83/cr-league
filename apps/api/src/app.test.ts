@@ -137,6 +137,8 @@ describe("api app", () => {
       }
     });
     const boughtTeam = buyResponse.json().teams.find((team: { id: string }) => team.id === teamId);
+    const botBeforeNext = resolved.teams.find((team: { id: string; kind: string; credits: number; cards: string[] }) => team.kind === "bot" && team.credits >= 100);
+    if (!botBeforeNext) throw new Error("Expected a bot with enough credits to buy a card.");
 
     const lateDecisionResponse = await app.inject({
       method: "POST",
@@ -151,6 +153,11 @@ describe("api app", () => {
       method: "POST",
       url: `/leagues/${leagueId}/resolve`
     });
+    const nextResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/next-grand-prix`
+    });
+    const botAfterNext = nextResponse.json().teams.find((team: { id: string }) => team.id === botBeforeNext.id);
 
     await app.close();
 
@@ -196,6 +203,9 @@ describe("api app", () => {
     expect(boughtTeam.credits).toBe(resolvedTeam.credits - 100);
     expect(lateDecisionResponse.statusCode).toBe(409);
     expect(secondResolveResponse.statusCode).toBe(409);
+    expect(nextResponse.statusCode).toBe(200);
+    expect(botAfterNext.cards).toHaveLength(botBeforeNext.cards.length + 1);
+    expect(botAfterNext.credits).toBe(botBeforeNext.credits - 100);
   });
 
   it("creates and recovers a profile with linked league teams", async () => {

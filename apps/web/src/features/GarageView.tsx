@@ -138,14 +138,13 @@ export function GarageView({
 
         <section className="panel">
           <h3>{tt("garage_shop")}</h3>
-          {!isResolved ? <p className="garage-locked">{tt("garage_shop_locked")}</p> : null}
           <div className="card-shop">
             {shopOffers.map((item) => (
               <button
                 key={item.cardId}
                 type="button"
                 onClick={() => onBuyCard(item.cardId)}
-                disabled={loading || !isResolved || playerTeam.credits < item.price}
+                disabled={loading || playerTeam.credits < item.price}
               >
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
                 <strong>{item.price}</strong>

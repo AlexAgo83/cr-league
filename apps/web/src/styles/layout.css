@@ -1701,6 +1701,23 @@ button.primary-command {
     grid-template-columns: 1fr;
   }
 
+  .championship-side-column {
+    display: none;
+  }
+
+  .standings-table li {
+    gap: 6px 10px;
+    padding: 10px;
+  }
+
+  .standings-team {
+    font-size: 0.95rem;
+  }
+
+  .standings-score {
+    min-width: 48px;
+  }
+
   .report-main-grid {
     grid-template-columns: 1fr;
   }

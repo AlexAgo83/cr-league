@@ -88,6 +88,7 @@ describe("api app", () => {
     const leagueId = created.league.id;
     const claim = created.player;
     const createdTeam = created.teams.find((team: { id: string }) => team.id === claim.teamId);
+    const createdBots = created.teams.filter((team: { kind: string }) => team.kind === "bot");
     const teamId = createdTeam.id;
 
     const readResponse = await app.inject({
@@ -173,6 +174,8 @@ describe("api app", () => {
       secondary: expect.stringMatching(/^#[0-9a-f]{6}$/i)
     });
     expect(createdTeam.livery.primary).not.toBe(createdTeam.livery.secondary);
+    expect(new Set(createdBots.map((team: { name: string }) => team.name.toLowerCase())).size).toBe(createdBots.length);
+    expect(new Set(createdBots.map((team: { livery: { primary: string; secondary: string } }) => `${team.livery.primary}:${team.livery.secondary}`)).size).toBe(createdBots.length);
     expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: CARD_PRICES.rain_grip });
     expect(created.cardShop).toContainEqual({ cardId: "soft_tires", price: CARD_PRICES.soft_tires });
     expect(created.cardShop).toContainEqual({ cardId: "qualifying_focus", price: CARD_PRICES.qualifying_focus });

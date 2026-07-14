@@ -1113,7 +1113,6 @@ export function App() {
           <ChampionshipView
             state={leagueState}
             playerTeamId={playerTeam?.id}
-            onOpenLeagueControls={() => setLeagueControlsOpen(true)}
             onReplayGrandPrix={setHistoryReplay}
             tt={tt}
           />
@@ -1182,6 +1181,11 @@ export function App() {
                 ◷
               </button>
             </>
+          ) : null}
+          {gameView === "championship" ? (
+            <button className="result-toggle-command" type="button" onClick={() => setLeagueControlsOpen(true)}>
+              {tt("settings_title")}
+            </button>
           ) : null}
           <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
             {primaryCommand.label}

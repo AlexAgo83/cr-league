@@ -728,14 +728,18 @@ export async function restartLeague(db: Db, leagueId: string) {
     }
   });
 
+  const usedBotLiveries = new Set(state.teams.filter((team) => team.kind !== "bot").map((team) => liveryKey(team.livery)));
+  let botLiveryIndex = 0;
   for (const team of state.teams) {
+    const livery = team.kind === "bot" ? uniqueBotLivery(botLiveryIndex, usedBotLiveries) : team.livery;
+    if (team.kind === "bot") botLiveryIndex += 1;
     await db.team.update({
       where: { id: team.id },
       data: {
         points: 0,
         credits: 0,
         cards: team.kind === "human" ? STARTER_CARDS : [],
-        livery: team.kind === "bot" ? randomBotLivery() : team.livery
+        livery
       }
     });
   }
@@ -898,8 +902,9 @@ async function fillLeagueWithBots(db: Db, state: LeagueState) {
   }).filter((participant): participant is (typeof botTemplates)[number] => Boolean(participant));
   if (!bots.length) return;
 
+  const usedLiveries = new Set(state.teams.map((team) => liveryKey(team.livery)));
   await db.team.createMany({
-    data: bots.map((participant) => ({
+    data: bots.map((participant, index) => ({
       leagueId: state.league.id,
       name: participant.teamName,
       kind: "bot",
@@ -907,7 +912,7 @@ async function fillLeagueWithBots(db: Db, state: LeagueState) {
       points: 0,
       credits: 0,
       cards: [],
-      livery: randomBotLivery()
+      livery: uniqueBotLivery(index, usedLiveries)
     }))
   });
 }
@@ -1182,7 +1187,21 @@ function randomLivery(): TeamLivery {
   return { primary, secondary };
 }
 
-const randomBotLivery = randomLivery;
+function uniqueBotLivery(startIndex: number, used: Set<string>): TeamLivery {
+  const pairs = BOT_LIVERY_COLORS.flatMap((primary) => BOT_LIVERY_COLORS.filter((secondary) => secondary !== primary).map((secondary) => ({ primary, secondary })));
+  for (let offset = 0; offset < pairs.length; offset += 1) {
+    const livery = pairs[(startIndex + offset) % pairs.length];
+    if (livery && !used.has(liveryKey(livery))) {
+      used.add(liveryKey(livery));
+      return livery;
+    }
+  }
+  return randomLivery();
+}
+
+function liveryKey(livery: TeamLivery) {
+  return `${livery.primary}:${livery.secondary}`.toLowerCase();
+}
 
 function isHexColor(value: string) {
   return /^#[0-9a-f]{6}$/i.test(value);

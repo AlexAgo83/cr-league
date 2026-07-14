@@ -1,17 +1,16 @@
 import type { TranslationKey } from "../i18n/index.js";
 import { statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
+import type { CSSProperties } from "react";
 
 export function ChampionshipView({
   state,
   playerTeamId,
-  onOpenLeagueControls,
   onReplayGrandPrix,
   tt
 }: {
   state: LeagueState;
   playerTeamId: string | undefined;
-  onOpenLeagueControls: () => void;
   onReplayGrandPrix: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
   tt: Translator;
 }) {
@@ -27,9 +26,6 @@ export function ChampionshipView({
           <h2>{state.league.name}</h2>
           <div className="championship-meta">
             <span className="invite-code">{state.league.code}</span>
-            <button type="button" className="secondary-button" onClick={onOpenLeagueControls}>
-              {tt("settings_title")}
-            </button>
           </div>
         </div>
         <div className="dashboard-summary" aria-label={tt("dashboard_summary")}>
@@ -71,6 +67,12 @@ export function ChampionshipView({
               {state.teams.map((team, index) => (
                 <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
                   <strong className="standings-rank">P{index + 1}</strong>
+                  <span
+                    className="standings-livery-plate"
+                    style={{ "--livery-primary": team.livery.primary, "--livery-secondary": team.livery.secondary } as CSSProperties & Record<string, string>}
+                  >
+                    <span>{team.name.slice(0, 3).toUpperCase()}</span>
+                  </span>
                   <span className="standings-team">
                     {team.name}
                     <small>{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</small>
@@ -78,11 +80,11 @@ export function ChampionshipView({
                   <span className={team.ready ? "ready-pill ready" : "ready-pill missing"}>
                     {team.ready ? tt("team_ready") : tt("team_missing")}
                   </span>
-                  <span className="standings-score">
+                  <span className="standings-score standings-points">
                     <strong>{team.points}</strong>
                     <small>{tt("unit_points")}</small>
                   </span>
-                  <span className="standings-score">
+                  <span className="standings-score standings-credits">
                     <strong>{team.credits}</strong>
                     <small>{tt("unit_credits")}</small>
                   </span>

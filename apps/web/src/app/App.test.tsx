@@ -470,11 +470,13 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
-    // League controls live in the championship view
+    // League controls live in the bottom action bar on the championship view.
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     expect(screen.getByLabelText("Language")).toBeTruthy();
     expect(document.querySelector(".profile-menu-panel")?.textContent).not.toContain("League controls");
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(document.querySelector(".championship-overview")?.textContent).not.toContain("League controls");
+    expect(document.querySelector(".command-actions")?.textContent).toContain("League controls");
     fireEvent.click(screen.getByRole("button", { name: "League controls" }));
     expect(screen.getByRole("dialog", { name: "League controls" })).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });

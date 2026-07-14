@@ -1604,7 +1604,7 @@ label small {
   border-radius: 8px;
   display: grid;
   gap: 10px;
-  grid-template-columns: 46px minmax(0, 1fr) auto auto auto;
+  grid-template-columns: 46px 48px minmax(0, 1fr) auto auto auto;
   padding: 10px 12px;
 }
 
@@ -1616,6 +1616,28 @@ label small {
 .standings-rank {
   color: var(--color-accent);
   font-size: 0.82rem;
+}
+
+.standings-livery-plate {
+  align-items: center;
+  background: var(--livery-primary);
+  border: 2px solid var(--livery-secondary);
+  border-radius: 6px;
+  color: var(--livery-secondary);
+  display: flex;
+  font-size: 0.78rem;
+  font-weight: 900;
+  height: 28px;
+  justify-content: center;
+  transform: skewX(-10deg);
+  width: 42px;
+}
+
+.standings-livery-plate span {
+  -webkit-text-stroke: 0.55px var(--livery-primary);
+  paint-order: stroke fill;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.38);
+  transform: skewX(10deg);
 }
 
 .standings-team {
@@ -1718,13 +1740,17 @@ label small {
 @media (max-width: 720px) {
   .standings-table li {
     grid-template-areas:
-      "rank team ready"
-      "rank points credits";
-    grid-template-columns: 38px minmax(0, 1fr) auto;
+      "rank plate team ready"
+      "rank points points credits";
+    grid-template-columns: 38px 42px minmax(0, 1fr) auto;
   }
 
   .standings-rank {
     grid-area: rank;
+  }
+
+  .standings-livery-plate {
+    grid-area: plate;
   }
 
   .standings-team {
@@ -1744,11 +1770,11 @@ label small {
     min-width: 0;
   }
 
-  .standings-score:nth-of-type(3) {
+  .standings-points {
     grid-area: points;
   }
 
-  .standings-score:nth-of-type(4) {
+  .standings-credits {
     grid-area: credits;
     justify-self: end;
   }
@@ -1826,7 +1852,7 @@ label small {
   background: var(--livery-primary);
   border: 3px solid var(--livery-secondary);
   border-radius: 7px;
-  color: #041018;
+  color: var(--livery-secondary);
   display: flex;
   flex: 0 0 auto;
   font-size: 1.44rem;
@@ -1838,8 +1864,9 @@ label small {
 }
 
 .garage-livery-preview span {
-  -webkit-text-stroke: 0.8px #f8fafc;
+  -webkit-text-stroke: 0.8px var(--livery-primary);
   paint-order: stroke fill;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.38);
   transform: skewX(10deg);
 }
 

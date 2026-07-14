@@ -161,12 +161,12 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     const copyPanel = document.querySelector(".replay-copy-panel")?.getBoundingClientRect();
     const momentsPanel = document.querySelector(".replay-moments-panel")?.getBoundingClientRect();
     return {
-      copyBelowMap: Boolean(mapPanel && copyPanel && copyPanel.top > mapPanel.bottom),
-      momentsRightOfMap: Boolean(mapPanel && momentsPanel && momentsPanel.left > mapPanel.right),
-      momentsAlignedWithMap: Boolean(mapPanel && momentsPanel && Math.abs(momentsPanel.top - mapPanel.top) < 2)
+      mapBelowCopy: Boolean(mapPanel && copyPanel && mapPanel.top > copyPanel.bottom),
+      momentsRightOfCopy: Boolean(copyPanel && momentsPanel && momentsPanel.left > copyPanel.right),
+      momentsAlignedWithCopy: Boolean(copyPanel && momentsPanel && Math.abs(momentsPanel.top - copyPanel.top) < 2)
     };
   });
-  expect(desktop).toEqual({ copyBelowMap: true, momentsRightOfMap: true, momentsAlignedWithMap: true });
+  expect(desktop).toEqual({ mapBelowCopy: true, momentsRightOfCopy: true, momentsAlignedWithCopy: true });
   await page.screenshot({ path: testInfo.outputPath("replay-layout-desktop.png"), fullPage: true });
 
   await page.setViewportSize({ width: 390, height: 900 });
@@ -175,11 +175,11 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     const copyPanel = document.querySelector(".replay-copy-panel")?.getBoundingClientRect();
     const momentsPanel = document.querySelector(".replay-moments-panel")?.getBoundingClientRect();
     return {
-      copyBelowMap: Boolean(mapPanel && copyPanel && copyPanel.top > mapPanel.bottom),
-      momentsBelowCopy: Boolean(copyPanel && momentsPanel && momentsPanel.top > copyPanel.bottom)
+      mapBelowCopy: Boolean(mapPanel && copyPanel && mapPanel.top > copyPanel.bottom),
+      momentsBelowMap: Boolean(mapPanel && momentsPanel && momentsPanel.top > mapPanel.bottom)
     };
   });
-  expect(mobile).toEqual({ copyBelowMap: true, momentsBelowCopy: true });
+  expect(mobile).toEqual({ mapBelowCopy: true, momentsBelowMap: true });
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 

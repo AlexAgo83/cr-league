@@ -12,13 +12,13 @@ Replay layout changes were ambiguous because panel names did not describe owners
 
 The Replay view has three named zones:
 
-- `replay-map-panel` owns the circuit heading, map, cars, weather timeline, and lap markers.
-- `replay-copy-panel` owns the "Race replay" title, description, and playback controls.
+- `replay-copy-panel` owns the "Race replay" title and description.
+- `replay-map-panel` owns the circuit heading, map, cars, playback controls, weather timeline, and lap markers.
 - `replay-moments-panel` owns key moments.
 
-Desktop layout: `replay-map-panel` is left, `replay-moments-panel` is right, and `replay-copy-panel` sits below `replay-map-panel`.
+Desktop layout: `replay-copy-panel` is left/top, `replay-map-panel` sits below it, and `replay-moments-panel` is right aligned with `replay-copy-panel`.
 
-Mobile layout: the zones stack as map, copy/controls, moments.
+Mobile layout: the zones stack as copy, map, moments.
 
 ## Verification
 

@@ -114,6 +114,11 @@ export function ReplayView({
     <div className="view-stack">
       <div className="replay-main-grid">
         <div className="replay-content-column">
+          <section className="panel replay-copy-panel">
+            <h2>{tt("result_replay_title")}</h2>
+            <p className="replay-explainer">{tt("result_replay_explainer")}</p>
+          </section>
+
           <section className="panel replay-map-panel">
             <CircuitMap
               circuit={circuit}
@@ -199,11 +204,6 @@ export function ReplayView({
                 </>
               }
             />
-          </section>
-
-          <section className="panel replay-copy-panel">
-            <h2>{tt("result_replay_title")}</h2>
-            <p className="replay-explainer">{tt("result_replay_explainer")}</p>
           </section>
         </div>
 

@@ -302,8 +302,8 @@ export function CircuitMap({
                       <text
                         key={`${car.id}-${car.positionDeltaKey}`}
                         className={car.positionDelta > 0 ? "map-car-delta gain" : "map-car-delta loss"}
-                        x="24"
-                        y="-14"
+                        x="34"
+                        y="-20"
                         textAnchor="middle"
                         dominantBaseline="central"
                       >

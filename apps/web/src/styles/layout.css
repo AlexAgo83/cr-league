@@ -1000,8 +1000,8 @@ label small {
 
 .map-car-delta {
   animation: map-car-delta-float 1s ease-out both;
-  font-size: 14px;
-  stroke-width: 4px;
+  font-size: 24px;
+  stroke-width: 7px;
 }
 
 .map-car-delta.gain {
@@ -1015,7 +1015,7 @@ label small {
 @keyframes map-car-delta-float {
   to {
     opacity: 0;
-    transform: translateY(-22px);
+    transform: translateY(-32px);
   }
 }
 

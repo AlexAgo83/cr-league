@@ -20,10 +20,10 @@ export type MapTraitStats = {
 const VIEW_WIDTH = 1000;
 const VIEW_HEIGHT = 560;
 const SAFE_AREA = {
-  top: 140,
-  right: 150,
-  bottom: 100,
-  left: 170
+  top: 115,
+  right: 110,
+  bottom: 80,
+  left: 125
 };
 const TILE_SIZE = 256;
 

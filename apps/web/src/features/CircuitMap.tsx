@@ -260,7 +260,7 @@ export function CircuitMap({
               />
             ))}
             <path ref={routeRef} className="circuit-route-glow" d={d} />
-            <path className="circuit-route-asphalt" d={d} />
+            <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={d} />
             <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={d} />
             <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={d} />
             <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />

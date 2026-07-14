@@ -903,6 +903,10 @@ label small {
   opacity: 0.24;
 }
 
+.replay-muted-asphalt {
+  opacity: 0.28;
+}
+
 @keyframes route-flow {
   to {
     stroke-dashoffset: -148;

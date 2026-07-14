@@ -1730,9 +1730,34 @@ button.primary-command {
     line-height: 1.35;
   }
 
-  .report-key-moments li,
-  .report-rewards li,
+  .report-key-moments li {
+    gap: 8px;
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 10px;
+  }
+
+  .report-key-moments p {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .report-rewards li {
+    gap: 6px 10px;
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 10px;
+  }
+
   .report-rewards dl {
-    grid-template-columns: 1fr;
+    gap: 6px;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .report-rewards dt {
+    font-size: 0.62rem;
+  }
+
+  .report-rewards dd {
+    font-size: 0.78rem;
   }
 }

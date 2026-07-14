@@ -931,7 +931,7 @@ label small {
 
 .map-car text {
   fill: #f8fafc;
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 900;
   paint-order: stroke;
   pointer-events: none;

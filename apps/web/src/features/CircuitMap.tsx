@@ -254,7 +254,7 @@ export function CircuitMap({
               return (
                 <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={point ? `translate(${point.x} ${point.y})` : undefined}>
                   <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                    <circle r="10" />
+                    <circle r="12" />
                     <text textAnchor="middle" dominantBaseline="central">
                       {car.label}
                     </text>

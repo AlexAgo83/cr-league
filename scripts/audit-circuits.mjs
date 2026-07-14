@@ -9,6 +9,7 @@ const thresholds = {
   closureGapMeters: 120,
   maxSegmentMeters: 250,
   reverseReuseMeters: 30,
+  sameDirectionReuseMeters: 30,
   directUturns: 0,
   crossings: 0
 };
@@ -35,7 +36,8 @@ for (const report of reports) {
       `${Math.round(report.maxSegmentMeters)}m max`.padStart(9),
       `${report.crossings} cross`.padStart(8),
       `${report.directUturns} uturn`.padStart(8),
-      `${Math.round(report.reverseReuseMeters)}m reverse`.padStart(11)
+      `${Math.round(report.reverseReuseMeters)}m reverse`.padStart(11),
+      `${Math.round(report.sameDirectionReuseMeters)}m repeat`.padStart(10)
     ].join("  ")
   );
   for (const failure of report.failures) {
@@ -74,7 +76,7 @@ function auditCircuit(circuit) {
   const segments = toSegments(circuit.points);
   const crossings = countCrossings(segments);
   const directUturns = countDirectUturns(segments);
-  const reverseReuseMeters = measureReverseReuse(segments);
+  const { reverseReuseMeters, sameDirectionReuseMeters } = measureReuse(segments);
   const segmentLengths = segments.map((segment) => segment.length);
   const lengthMeters = segmentLengths.reduce((sum, length) => sum + length, 0);
   const maxSegmentMeters = Math.max(0, ...segmentLengths);
@@ -96,6 +98,9 @@ function auditCircuit(circuit) {
   if (reverseReuseMeters > thresholds.reverseReuseMeters) {
     failures.push(`${Math.round(reverseReuseMeters)}m repris en sens inverse`);
   }
+  if (sameDirectionReuseMeters > thresholds.sameDirectionReuseMeters) {
+    failures.push(`${Math.round(sameDirectionReuseMeters)}m repris en boucle`);
+  }
 
   return {
     ...circuit,
@@ -106,6 +111,7 @@ function auditCircuit(circuit) {
     crossings,
     directUturns,
     reverseReuseMeters,
+    sameDirectionReuseMeters,
     failures
   };
 }
@@ -147,20 +153,28 @@ function countDirectUturns(segments) {
   }).length;
 }
 
-function measureReverseReuse(segments) {
-  const reused = new Set();
+function measureReuse(segments) {
+  const reverse = new Set();
+  const sameDirection = new Set();
   for (let i = 0; i < segments.length; i += 1) {
     for (let j = i + 2; j < segments.length; j += 1) {
       const a = segments[i];
       const b = segments[j];
       if (a.length < 8 || b.length < 8) continue;
       if (distanceProjected(a.midpoint, b.midpoint) > 10) continue;
-      if (angleDelta(a.angle, b.angle) < 2.55) continue;
-      reused.add(i);
-      reused.add(j);
+      if (angleDelta(a.angle, b.angle) >= 2.55) {
+        reverse.add(i);
+        reverse.add(j);
+      } else {
+        sameDirection.add(i);
+        sameDirection.add(j);
+      }
     }
   }
-  return [...reused].reduce((sum, index) => sum + segments[index].length, 0);
+  return {
+    reverseReuseMeters: [...reverse].reduce((sum, index) => sum + segments[index].length, 0),
+    sameDirectionReuseMeters: [...sameDirection].reduce((sum, index) => sum + segments[index].length, 0)
+  };
 }
 
 function segmentsIntersect(a, b, c, d) {
@@ -219,6 +233,7 @@ function toGeoJson(reports) {
         crossings: report.crossings,
         directUturns: report.directUturns,
         reverseReuseMeters: Math.round(report.reverseReuseMeters),
+        sameDirectionReuseMeters: Math.round(report.sameDirectionReuseMeters),
         failures: report.failures
       },
       geometry: {

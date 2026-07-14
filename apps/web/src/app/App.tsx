@@ -181,7 +181,7 @@ export function App() {
           cardId: selectedCardId || undefined
         })
       });
-      setLeagueState(state);
+      setLeagueState(withCurrentPlayer(state));
       setMessage(tt("status_directive_locked"));
     });
   }
@@ -197,7 +197,7 @@ export function App() {
           preparationDeadlineAt: form.preparationDeadlineAt ? new Date(form.preparationDeadlineAt).toISOString() : null
         })
       });
-      setLeagueState(state);
+      setLeagueState(withCurrentPlayer(state));
       setMessage(tt("status_settings_updated"));
     });
   }
@@ -213,7 +213,7 @@ export function App() {
           traits: currentCircuit.traits
         })
       });
-      setLeagueState(state);
+      setLeagueState(withCurrentPlayer(state));
       setGameView("result");
       setResultTab("replay");
       setMessage(tt("status_grand_prix_resolved"));
@@ -227,7 +227,7 @@ export function App() {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/next-grand-prix`, {
         method: "POST"
       });
-      setLeagueState(state);
+      setLeagueState(withCurrentPlayer(state));
       setGameView("drive");
       setMessage(tt("status_next_grand_prix_started"));
     });
@@ -244,7 +244,7 @@ export function App() {
           cardId
         })
       });
-      setLeagueState(state);
+      setLeagueState(withCurrentPlayer(state));
       setMessage(tt("status_card_bought"));
     });
   }
@@ -260,7 +260,7 @@ export function App() {
           livery
         })
       });
-      setLeagueState(state);
+      setLeagueState(withCurrentPlayer(state));
       setMessage(tt("status_livery_updated"));
     });
   }
@@ -276,8 +276,9 @@ export function App() {
           name
         })
       });
-      setLeagueState(state);
-      rememberPlayer(state);
+      const nextState = withCurrentPlayer(state);
+      setLeagueState(nextState);
+      rememberPlayer(nextState);
       setMessage(tt("status_team_name_updated"));
     });
   }
@@ -342,7 +343,7 @@ export function App() {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/restart`, {
         method: "POST"
       });
-      setLeagueState(leagueState.player ? { ...state, player: leagueState.player } : state);
+      setLeagueState(withCurrentPlayer(state));
       setMessage(tt("status_league_restarted"));
     });
   }
@@ -910,6 +911,11 @@ export function App() {
     const nextClaims = upsertPlayerClaim(loadPlayerClaims(), claim);
     storePlayerClaims(nextClaims, claim.teamId);
     setSavedClaims(nextClaims);
+  }
+
+  function withCurrentPlayer(state: LeagueState): LeagueState {
+    const player = state.player ?? leagueState?.player;
+    return player && state.teams.some((team) => team.id === player.teamId) ? { ...state, player } : state;
   }
 
   function forgetClaim(teamId?: string) {

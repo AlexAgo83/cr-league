@@ -377,6 +377,48 @@ describe("App", () => {
     expect(fetch).toHaveBeenCalledTimes(6);
   });
 
+  it("keeps the current player attached when action responses omit player", async () => {
+    saveProfile();
+    const rivalFirstState = {
+      ...baseState,
+      teams: [
+        {
+          ...baseState.teams[0],
+          id: "team_9",
+          name: "Rival Human"
+        },
+        baseState.teams[0],
+        baseState.teams[1]
+      ]
+    };
+    const rivalFirstDecided = {
+      ...decidedState,
+      teams: rivalFirstState.teams
+    };
+    const rivalFirstResolved = {
+      ...resolvedState,
+      teams: rivalFirstState.teams
+    };
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(response(rivalFirstState))
+      .mockResolvedValueOnce(response(withoutPlayer(rivalFirstDecided)))
+      .mockResolvedValueOnce(response(withoutPlayer(rivalFirstResolved)));
+
+    render(<App />);
+
+    createLeagueFromSetup();
+    expect(await screen.findByText("ABC123")).toBeTruthy();
+    expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
+    expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
+    expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
+
+    fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
+  });
+
   it("shows and copies the saved profile code from the profile menu", async () => {
     saveProfile();
     const writeText = vi.fn().mockResolvedValue(undefined);
@@ -609,4 +651,10 @@ function response(body: unknown) {
     ok: true,
     json: async () => body
   } as Response;
+}
+
+function withoutPlayer<T extends { player?: unknown }>(state: T): Omit<T, "player"> {
+  const rest = { ...state };
+  delete rest.player;
+  return rest;
 }

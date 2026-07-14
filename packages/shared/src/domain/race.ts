@@ -45,11 +45,18 @@ export type RaceParticipant = {
 
 export type WeatherForecast = Record<Weather, number>;
 
+export type RaceTraits = {
+  grip: number;
+  overtaking: number;
+  energy: number;
+};
+
 export type RaceInput = {
   seed: string;
   grandPrixName: string;
   primaryTrait: CircuitTrait;
   secondaryTrait: CircuitTrait;
+  traits?: RaceTraits;
   forecast: WeatherForecast;
   participants: RaceParticipant[];
 };

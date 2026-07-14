@@ -5,7 +5,8 @@ import {
   type CardId,
   type RaceDecision,
   type RaceInput,
-  type RaceParticipant
+  type RaceParticipant,
+  type RaceTraits
 } from "@cr-league/shared";
 import type { Prisma } from "@prisma/client";
 import type { PrismaClient } from "@prisma/client";
@@ -109,6 +110,7 @@ export type SubmitDecisionInput = RaceDecision & {
 
 export type ResolveGrandPrixInput = {
   allowDefaults?: boolean;
+  traits?: unknown;
 };
 
 export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
@@ -382,6 +384,7 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
     grandPrixName: grandPrix.name,
     primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
     secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+    traits: normalizeRaceTraits(input.traits),
     forecast: grandPrix.forecast as RaceInput["forecast"],
     participants
   });
@@ -546,6 +549,23 @@ async function getCurrentGrandPrix(db: Db, leagueId: string) {
     where: { leagueId },
     orderBy: { round: "desc" }
   });
+}
+
+function normalizeRaceTraits(value: unknown): RaceTraits | undefined {
+  if (!value || typeof value !== "object") return undefined;
+  const traits = value as Partial<Record<keyof RaceTraits, unknown>>;
+  const { grip, overtaking, energy } = traits;
+  if (typeof grip !== "number" || typeof overtaking !== "number" || typeof energy !== "number") return undefined;
+  if (!Number.isFinite(grip) || !Number.isFinite(overtaking) || !Number.isFinite(energy)) return undefined;
+  return {
+    grip: clampTrait(grip),
+    overtaking: clampTrait(overtaking),
+    energy: clampTrait(energy)
+  };
+}
+
+function clampTrait(value: number) {
+  return Math.max(1, Math.min(99, Math.round(value)));
 }
 
 function createLeagueCode() {

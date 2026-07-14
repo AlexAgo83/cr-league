@@ -5,7 +5,7 @@ import { circuitForRound, countryFlag } from "./circuits.js";
 import { cardFit, strongestForecast } from "./helpers.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
-import { CircuitMap, MapTraitsPanel } from "../features/CircuitMap.js";
+import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
@@ -13,6 +13,24 @@ import { ResultView, type ResultTab } from "../features/ResultView.js";
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
 const PLAYER_CLAIM_KEY = "cr-league-player-claim";
 const LANGUAGE_KEY = "cr-league-language";
+
+function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
+  const impacts: MapTraitImpacts = {};
+  const add = (trait: keyof MapTraitImpacts, label: string) => {
+    impacts[trait] = [...(impacts[trait] ?? []), `+${label}`];
+  };
+
+  if (form.preparation === "weather") add("grip", tt("preparation_weather"));
+  if (form.preparation === "speed") add("overtaking", tt("preparation_speed"));
+  if (form.preparation === "reliability") add("energy", tt("preparation_reliability"));
+  if (form.approach === "aggressive") add("overtaking", tt("approach_aggressive"));
+  if (form.approach === "prudent") add("energy", tt("approach_prudent"));
+  if (selectedCardId === "rain_grip") add("grip", tt("field_card"));
+  if (selectedCardId === "launch_boost" || selectedCardId === "urban_draft") add("overtaking", tt("field_card"));
+  if (selectedCardId === "fleet_maintenance" || selectedCardId === "final_surge") add("energy", tt("field_card"));
+
+  return impacts;
+}
 
 function createInitialForm(locale: Locale): FormState {
   return {
@@ -73,6 +91,7 @@ export function App() {
   const ownedCardIds = useMemo(() => Array.from(new Set(playerTeam?.cards ?? [])), [playerTeam]);
   const selectedCardId = ownedCardIds.includes(form.cardId as CardId) ? form.cardId : "";
   const selectedCardFit = leagueState && selectedCardId ? cardFit(selectedCardId as CardId, leagueState, forecastPick) : null;
+  const directiveTraitImpacts = traitImpacts(form, selectedCardId, tt);
   const playerResult = result?.classification.find((entry) => entry.teamId === playerTeam?.id);
   const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
@@ -161,7 +180,8 @@ export function App() {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/resolve`, {
         method: "POST",
         body: JSON.stringify({
-          allowDefaults: !playerDecision
+          allowDefaults: !playerDecision,
+          traits: currentCircuit.traits
         })
       });
       setLeagueState(state);
@@ -399,7 +419,7 @@ export function App() {
                         {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
                       </small>
                     </div>
-                    <MapTraitsPanel traits={currentCircuit.traits} tt={tt} />
+                    <MapTraitsPanel traits={currentCircuit.traits} impacts={directiveTraitImpacts} tt={tt} />
                   </>
                 }
               />

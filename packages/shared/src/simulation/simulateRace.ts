@@ -188,10 +188,16 @@ function applySegment(
   next: () => number
 ) {
   const { scores } = state;
-  const weatherPenalty = weather === "dry" ? 0 : Math.max(0, 56 - scores.weatherReadiness) * (weather === "heavy_rain" ? 0.18 : 0.1);
+  const traits = raceTraits(input, weather, segment);
+  const weatherPenalty =
+    weather === "dry" ? 0 : Math.max(0, 56 - scores.weatherReadiness) * (weather === "heavy_rain" ? 0.18 : 0.1) * (1 + (60 - traits.grip) / 120);
   const circuitBonus = circuitFit(state, input);
   const variance = (next() - 0.5) * 8;
-  let delta = circuitBonus + variance - weatherPenalty;
+  let delta =
+    circuitBonus +
+    variance -
+    weatherPenalty +
+    ((traits.grip - 60) * scores.control + (traits.overtaking - 60) * scores.aggression + (traits.energy - 60) * scores.reliability) / 650;
 
   if (segment === "start") {
     delta += scores.pace * 0.35 + scores.aggression * 0.35 + scores.control * 0.3;
@@ -216,6 +222,36 @@ function applySegment(
 function segmentTime(segment: RaceSegment, delta: number) {
   const base = SEGMENT_BASE_TIME[segment];
   return Math.max(base * 0.72, Math.min(base * 1.28, base - delta * 0.16));
+}
+
+function raceTraits(input: RaceInput, weather: Weather, segment: RaceSegment) {
+  const traits = input.traits ?? traitsFromTags(input);
+  const rainGrip = weather === "heavy_rain" ? -12 : weather === "light_rain" ? -5 : 0;
+  const lateRace = Math.max(0, lapForSegment(segment) - 1);
+
+  return {
+    grip: clampTrait(traits.grip + rainGrip),
+    overtaking: clampTrait(traits.overtaking + (weather === "dry" ? 0 : 3)),
+    energy: clampTrait(traits.energy - lateRace * 2 - (weather === "heavy_rain" ? 5 : 0))
+  };
+}
+
+function traitsFromTags(input: RaceInput) {
+  const profile = { grip: 62, overtaking: 62, energy: 62 };
+
+  for (const trait of [input.primaryTrait, input.secondaryTrait]) {
+    if (trait === "fast") profile.energy += 5;
+    if (trait === "technical") profile.grip += 8;
+    if (trait === "urban") profile.overtaking += 10;
+    if (trait === "high_wear") profile.energy -= 10;
+    if (trait === "weather_sensitive") profile.grip += 6;
+  }
+
+  return profile;
+}
+
+function clampTrait(value: number) {
+  return Math.max(1, Math.min(99, Math.round(value)));
 }
 
 function circuitFit(state: TeamState, input: RaceInput) {

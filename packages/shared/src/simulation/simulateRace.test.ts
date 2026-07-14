@@ -128,4 +128,11 @@ describe("simulateRace", () => {
     expect(result.events.filter((event) => event.type === "race_note")).toHaveLength(4);
     expect(result.events.some((event) => event.severity === "minor" && event.tags.includes("flavor"))).toBe(true);
   });
+
+  it("uses circuit trait values in race timing", () => {
+    const stable = simulateRace({ ...baseRace, traits: { grip: 78, overtaking: 50, energy: 72 } });
+    const attack = simulateRace({ ...baseRace, traits: { grip: 50, overtaking: 82, energy: 48 } });
+
+    expect(stable.replayTrace?.at(-1)?.times).not.toEqual(attack.replayTrace?.at(-1)?.times);
+  });
 });

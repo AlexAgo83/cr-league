@@ -551,7 +551,7 @@ label small {
   z-index: 2;
 }
 
-.map-traits-panel span {
+.map-traits-panel > span {
   align-items: baseline;
   color: var(--color-muted);
   display: flex;
@@ -565,6 +565,15 @@ label small {
 .map-traits-panel strong {
   color: var(--color-text);
   font-size: 0.95rem;
+}
+
+.map-traits-panel em {
+  background: rgb(22 199 132 / 0.16);
+  border-radius: 999px;
+  color: var(--color-accent);
+  font-size: 0.58rem;
+  font-style: normal;
+  padding: 1px 5px;
 }
 
 .replay-map-controls {
@@ -1628,26 +1637,35 @@ button.primary-command {
     padding: 14px;
   }
 
+  .circuit-map-stage svg {
+    height: min(84vw, 520px);
+    left: 50%;
+    min-width: 100%;
+    position: relative;
+    transform: translateX(-50%);
+    width: auto;
+  }
+
   .map-status {
     border-radius: 6px;
     gap: 1px;
     left: 8px;
     max-width: 118px;
-    padding: 6px 8px;
+    padding: 5px 7px;
     top: 8px;
   }
 
   .map-status .circuit-city {
-    font-size: 0.62rem;
+    font-size: 0.56rem;
   }
 
   .map-status strong {
-    font-size: 0.8rem;
+    font-size: 0.72rem;
     line-height: 1.1;
   }
 
   .map-status small {
-    font-size: 0.68rem;
+    font-size: 0.6rem;
     line-height: 1.15;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1657,44 +1675,56 @@ button.primary-command {
   .circuit-map-stage > .map-traits-panel {
     left: 8px;
     min-width: 104px;
-    top: 82px;
+    top: 66px;
   }
 
   .map-traits-panel {
     border-radius: 6px;
-    gap: 3px;
-    padding: 6px 8px;
+    gap: 2px;
+    padding: 5px 7px;
   }
 
-  .map-traits-panel span {
-    font-size: 0.58rem;
-    gap: 6px;
+  .map-traits-panel > span {
+    font-size: 0.52rem;
+    gap: 5px;
   }
 
   .map-traits-panel strong {
-    font-size: 0.78rem;
+    font-size: 0.7rem;
+  }
+
+  .map-traits-panel em {
+    font-size: 0.48rem;
+    padding: 0 4px;
+  }
+
+  .replay-map-controls {
+    left: auto;
+    right: 8px;
+    top: 8px;
+    transform: none;
   }
 
   .replay-tower {
     border-radius: 6px;
     gap: 2px;
-    padding: 5px 7px;
+    padding: 4px 6px;
     right: 8px;
-    top: 8px;
+    top: 54px;
   }
 
   .replay-tower li {
-    font-size: 0.58rem;
+    font-size: 0.52rem;
     gap: 4px;
   }
 
   .replay-tower strong {
-    font-size: 0.54rem;
+    font-size: 0.5rem;
     min-width: 15px;
   }
 
   .replay-tower span {
-    max-width: 70px;
+    max-width: 66px;
   }
 
   .hero-topline {

@@ -18,6 +18,8 @@ export type MapTraitStats = {
   energy: number;
 };
 
+export type MapTraitImpacts = Partial<Record<keyof MapTraitStats, string[]>>;
+
 const VIEW_WIDTH = 1000;
 const VIEW_HEIGHT = 560;
 const SAFE_AREA = {
@@ -27,7 +29,7 @@ const SAFE_AREA = {
   left: 125
 };
 const TILE_SIZE = 256;
-const FOCUS_ZOOM = 1.8;
+const FOCUS_ZOOM = 2.15;
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
   const scale = TILE_SIZE * 2 ** zoom;
@@ -232,21 +234,25 @@ export function CircuitMap({
   );
 }
 
-export function MapTraitsPanel({ traits, tt }: { traits: MapTraitStats; tt: Translator }) {
+export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitStats; tt: Translator; impacts?: MapTraitImpacts }) {
+  const rows: Array<{ key: keyof MapTraitStats; label: TranslationKey; hint: TranslationKey }> = [
+    { key: "grip", label: "circuit_grip", hint: "circuit_grip_hint" },
+    { key: "overtaking", label: "circuit_overtaking", hint: "circuit_overtaking_hint" },
+    { key: "energy", label: "circuit_energy", hint: "circuit_energy_hint" }
+  ];
+
   return (
     <div className="map-traits-panel">
-      <span>
-        <strong>{traits.grip}</strong>
-        {tt("circuit_grip")}
-      </span>
-      <span>
-        <strong>{traits.overtaking}</strong>
-        {tt("circuit_overtaking")}
-      </span>
-      <span>
-        <strong>{traits.energy}</strong>
-        {tt("circuit_energy")}
-      </span>
+      {rows.map((row) => {
+        const rowImpacts = impacts[row.key] ?? [];
+        return (
+          <span key={row.key} title={[tt(row.hint), ...rowImpacts].join("\n")}>
+            <strong>{traits[row.key]}</strong>
+            <span className="trait-label">{tt(row.label)}</span>
+            {rowImpacts.length ? <em>+{rowImpacts.length}</em> : null}
+          </span>
+        );
+      })}
     </div>
   );
 }

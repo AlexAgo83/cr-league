@@ -39,6 +39,8 @@ const TRAFFIC_ENTER_DISTANCE = 44;
 const TRAFFIC_EXIT_DISTANCE = 60;
 const CLOSE_ENTER_DISTANCE = 2;
 const CLOSE_EXIT_DISTANCE = 6;
+const DRIFT_LOOKAHEAD = 0.012;
+const MAX_DRIFT_ANGLE = 14;
 type CameraZoomMode = "normal" | "traffic" | "close";
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
@@ -119,6 +121,16 @@ function poseOnRoute(points: Array<{ x: number; y: number }>, progress: number) 
 function pointOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
   const pose = poseOnRoute(points, progress);
   return { x: pose.x, y: pose.y };
+}
+
+function angleDelta(from: number, to: number) {
+  return ((((to - from) % 360) + 540) % 360) - 180;
+}
+
+function driftAngle(points: Array<{ x: number; y: number }>, progress: number) {
+  const before = poseOnRoute(points, progress - DRIFT_LOOKAHEAD).angle;
+  const after = poseOnRoute(points, progress + DRIFT_LOOKAHEAD).angle;
+  return Math.max(-MAX_DRIFT_ANGLE, Math.min(MAX_DRIFT_ANGLE, angleDelta(before, after) * 0.45));
 }
 
 function boundsOf(points: Array<{ x: number; y: number }>) {
@@ -254,13 +266,14 @@ export function CircuitMap({
             {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
               const pose = car.progress === undefined ? null : poseOnRoute(points, car.progress);
+              const drift = car.progress === undefined ? 0 : driftAngle(points, car.progress);
               const carStyle = car.livery
                 ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
                 : undefined;
               return (
                 <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
                   <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                    <rect className="map-car-body" x="-15" y="-10" width="30" height="20" rx="6" transform={pose ? `rotate(${pose.angle})` : undefined} />
+                    <rect className="map-car-body" x="-15" y="-10" width="30" height="20" rx="6" transform={pose ? `rotate(${pose.angle}) skewX(${drift})` : undefined} />
                     <text textAnchor="middle" dominantBaseline="central">
                       {car.label}
                     </text>

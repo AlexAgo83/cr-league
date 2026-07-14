@@ -17,7 +17,7 @@ const REFERENCE_REPLAY_DISTANCE_PIXELS = 9_000;
 const POSITION_CHANGE_MARGIN_LAPS = 0.015;
 const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
-const MAX_VISUAL_PROGRESS_STEP = 0.07;
+const MAX_VISUAL_PROGRESS_STEP = 0.012;
 
 function savedReplaySpeed() {
   const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
@@ -212,6 +212,7 @@ export function smoothCarProgress(current: Record<string, number>, target: Recor
     Object.keys({ ...current, ...target }).map((teamId) => {
       const to = target[teamId] ?? 0;
       const from = current[teamId] ?? to;
+      if (to < from) return [teamId, from];
       const delta = to - from;
       if (Math.abs(delta) <= MAX_VISUAL_PROGRESS_STEP) return [teamId, to];
       return [teamId, from + Math.sign(delta) * MAX_VISUAL_PROGRESS_STEP];

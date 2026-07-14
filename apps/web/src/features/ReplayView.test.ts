@@ -134,8 +134,8 @@ describe("ReplayView timing", () => {
   });
 
   it("limits visual progress jumps between frames", () => {
-    expect(smoothCarProgress({ leader: 1 }, { leader: 1.5 }).leader).toBeCloseTo(1.07);
-    expect(smoothCarProgress({ leader: 1 }, { leader: 1.04 }).leader).toBeCloseTo(1.04);
+    expect(smoothCarProgress({ leader: 1 }, { leader: 1.5 }).leader).toBeCloseTo(1.012);
+    expect(smoothCarProgress({ leader: 1 }, { leader: 1.006 }).leader).toBeCloseTo(1.006);
   });
 });
 

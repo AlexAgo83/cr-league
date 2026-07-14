@@ -148,6 +148,7 @@ export function App() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const notificationId = useRef(0);
   const lastNotification = useRef("");
+  const lastCommandHint = useRef("");
 
   useEffect(() => {
     if (message === t("status_initial", locale)) return;
@@ -234,6 +235,17 @@ export function App() {
             action: () => setNextGrandPrixConfirmOpen(true),
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
+
+  useEffect(() => {
+    if (!leagueState) return;
+    const text = t(`command_hint_${deskState}` as TranslationKey, locale);
+    if (text === lastCommandHint.current) return;
+    lastCommandHint.current = text;
+    const id = notificationId.current + 1;
+    notificationId.current = id;
+    setNotifications((items) => [...items, { id, text, tone: "info" as const }].slice(-5));
+    window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 5_000);
+  }, [deskState, leagueState, locale]);
 
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
@@ -1126,7 +1138,6 @@ export function App() {
           <span className={`race-state state-${deskState}`}>
             <span className="race-state-label">{tt(`race_state_${deskState}` as TranslationKey)}</span>
           </span>
-          <small className="command-hint">{tt(`command_hint_${deskState}` as TranslationKey)}</small>
         </div>
         <div className="command-actions">
           {gameView === "result" && result ? (

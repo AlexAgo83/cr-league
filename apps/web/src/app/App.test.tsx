@@ -378,7 +378,7 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Submit directive" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(document.querySelector(".command-context")?.textContent).not.toContain("Directive locked");
-    fireEvent.click(screen.getAllByRole("button", { name: "Close notification" }).at(-1)!);
+    fireEvent.click(screen.getByText("Directive locked. You can launch the Grand Prix.").closest(".floating-notification")!.querySelector("button")!);
     expect(screen.queryByText("Directive locked. You can launch the Grand Prix.")).toBe(null);
     expect(screen.getByText("Ready to launch")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Lap time" }).hasAttribute("disabled")).toBe(true);
@@ -391,6 +391,8 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Result" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
+    expect(document.querySelector(".command-bar")?.textContent).not.toContain("The race is reviewed: move to the next Grand Prix.");
+    expect(screen.getByText("The race is reviewed: move to the next Grand Prix.")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("L5");

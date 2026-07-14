@@ -28,7 +28,6 @@ export function ReportView({
   const names = teamNamesFromResult(result);
   const majorEvents = result.events.filter((event) => event.severity === "major");
   const playerEvents = result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId);
-  const winner = result.classification[0];
   const recap = [
     {
       className: "difference",
@@ -50,32 +49,19 @@ export function ReportView({
   return (
     <div className="view-stack report-view">
       <section className="panel report-hero">
-        <div>
+        <div className="report-headline">
           <span className="section-kicker">{tt("result_race_report")}</span>
           <h2>{result.grandPrixName}</h2>
           <p>{resultHeadline(result, tt)}</p>
         </div>
-        {winner ? (
-          <div className="winner-badge">
-            <span>P1</span>
-            <strong>{winner.teamName}</strong>
-            <small>
-              {winner.points} {tt("unit_points")} · {winner.credits} {tt("unit_credits")}
-            </small>
-          </div>
-        ) : null}
-      </section>
-
-      <section className="panel report-classification-panel">
-        <ol className="classification report-classification">
+        <ol className="report-podium">
           {result.classification.map((entry) => (
             <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>
-              <span>
-                <strong>P{entry.position}</strong> {entry.teamName}
-              </span>
-              <span>
+              <strong>P{entry.position}</strong>
+              <span>{entry.teamName}</span>
+              <small>
                 {entry.points} {tt("unit_points")} · {entry.credits} {tt("unit_credits")}
-              </span>
+              </small>
             </li>
           ))}
         </ol>

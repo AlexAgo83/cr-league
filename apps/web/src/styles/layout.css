@@ -820,18 +820,14 @@ button.result-toggle-command:hover {
 }
 
 .report-hero {
-  align-items: stretch;
-  background:
-    linear-gradient(135deg, rgb(22 199 132 / 0.22), rgb(56 189 248 / 0.14) 46%, rgb(13 19 26 / 0.92)),
-    var(--color-panel);
+  background: linear-gradient(135deg, rgb(22 199 132 / 0.12), rgb(56 189 248 / 0.08)), var(--color-panel);
   display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(0, 1fr) minmax(190px, 0.35fr);
+  gap: 16px;
 }
 
 .report-hero h2 {
-  font-size: clamp(2rem, 4vw, 3.4rem);
-  line-height: 0.95;
+  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  line-height: 1;
   margin-bottom: 10px;
 }
 
@@ -842,57 +838,42 @@ button.result-toggle-command:hover {
   margin: 0;
 }
 
-.winner-badge {
-  align-content: center;
-  background: rgb(10 15 21 / 0.58);
-  border: 1px solid rgb(22 199 132 / 0.45);
-  border-radius: 8px;
+.report-podium {
   display: grid;
-  gap: 6px;
-  padding: 16px;
-}
-
-.winner-badge span {
-  color: var(--color-accent);
-  font-size: 0.8125rem;
-  font-weight: 800;
-}
-
-.winner-badge strong {
-  font-size: 1.25rem;
-}
-
-.winner-badge small,
-.report-blocks p {
-  color: var(--color-muted);
-}
-
-.report-classification-panel {
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+  list-style: none;
+  margin: 0;
   padding: 0;
 }
 
-.report-classification {
-  gap: 0;
+.report-podium li {
+  background: rgb(10 15 21 / 0.45);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 12px;
 }
 
-.report-classification li {
-  background: linear-gradient(90deg, rgb(255 255 255 / 0.05), transparent);
-  border-top: 1px solid var(--color-border);
-  padding: 14px 16px;
+.report-podium li:first-child {
+  border-color: rgb(22 199 132 / 0.5);
+  box-shadow: inset 0 3px 0 var(--color-accent);
 }
 
-.report-classification li:first-child {
-  background: linear-gradient(90deg, rgb(22 199 132 / 0.18), rgb(56 189 248 / 0.08));
-  border-top: 0;
+.report-podium strong {
+  color: var(--color-accent);
+  font-size: 0.8125rem;
 }
 
-.report-classification strong {
-  background: rgb(255 255 255 / 0.08);
-  border-radius: 999px;
-  display: inline-flex;
-  margin-right: 8px;
-  min-width: 42px;
-  padding: 3px 9px;
+.report-podium span {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.report-podium small,
+.report-blocks p {
+  color: var(--color-muted);
 }
 
 .lap-marker {
@@ -1088,14 +1069,7 @@ button.primary-command {
   }
 
   .command-context {
-    flex: 1;
-    min-width: 0;
-  }
-
-  .command-context .status {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    display: none;
   }
 
   .panel {
@@ -1118,5 +1092,18 @@ button.primary-command {
 
   .report-hero {
     grid-template-columns: 1fr;
+  }
+
+  .recap-grid {
+    gap: 10px;
+  }
+
+  .recap-grid section {
+    padding: 10px 12px;
+  }
+
+  .recap-grid p {
+    font-size: 0.9rem;
+    line-height: 1.35;
   }
 }

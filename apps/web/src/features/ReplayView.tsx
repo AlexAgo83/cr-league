@@ -65,13 +65,15 @@ export function ReplayView({
     if (progressRef.current) progressRef.current.style.width = "0%";
     setPlaying(true);
   }
+  // Majors and player moments first pick, race notes as filler — then strict race order.
   const keyMoments = [
     ...result.events.filter((event) => event.severity === "major"),
     ...result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId),
     ...result.events.filter((event) => event.severity === "minor" && event.type === "race_note")
   ]
     .filter((event, index, events) => events.findIndex((candidate) => candidate.id === event.id) === index)
-    .slice(0, 8);
+    .slice(0, 8)
+    .sort((left, right) => left.order - right.order);
 
   // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.
   const maxLap = Math.max(1, ...result.events.map((event) => event.lap));

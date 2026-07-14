@@ -624,6 +624,17 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
   });
 
+  it("opens sign out confirmation from the league setup screen", () => {
+    saveProfile();
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+
+    expect(screen.getByRole("dialog", { name: "Sign out" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Sign out" })).toBeTruthy();
+  });
+
   it("clears a stale saved player claim", async () => {
     saveProfile();
     localStorage.setItem(

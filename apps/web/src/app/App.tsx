@@ -547,6 +547,24 @@ export function App() {
     </div>
   ) : null;
 
+  const profileLogoutModal = profileLogoutOpen ? (
+    <div className="modal-overlay" onClick={() => setProfileLogoutOpen(false)}>
+      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("profile_logout_title")} onClick={(event) => event.stopPropagation()}>
+        <span className="section-kicker">{tt("profile_kicker")}</span>
+        <h2>{tt("profile_logout_title")}</h2>
+        <p>{tt("profile_logout_confirm")}</p>
+        <div className="actions secondary-actions">
+          <button type="button" className="danger-button" onClick={forgetProfile}>
+            {tt("action_forget_profile")}
+          </button>
+          <button type="button" onClick={() => setProfileLogoutOpen(false)}>
+            {tt("action_close")}
+          </button>
+        </div>
+      </section>
+    </div>
+  ) : null;
+
   if (!profileSession) {
     return (
       <main className="app-shell setup-shell">
@@ -601,6 +619,7 @@ export function App() {
           </div>
         </section>
         {profileCodeModal}
+        {profileLogoutModal}
       </main>
     );
   }
@@ -687,6 +706,7 @@ export function App() {
           </aside>
         </section>
         {profileCodeModal}
+        {profileLogoutModal}
       </main>
     );
   }
@@ -858,23 +878,7 @@ export function App() {
         </div>
       ) : null}
       {profileCodeModal}
-      {profileLogoutOpen ? (
-        <div className="modal-overlay" onClick={() => setProfileLogoutOpen(false)}>
-          <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("profile_logout_title")} onClick={(event) => event.stopPropagation()}>
-            <span className="section-kicker">{tt("profile_kicker")}</span>
-            <h2>{tt("profile_logout_title")}</h2>
-            <p>{tt("profile_logout_confirm")}</p>
-            <div className="actions secondary-actions">
-              <button type="button" className="danger-button" onClick={forgetProfile}>
-                {tt("action_forget_profile")}
-              </button>
-              <button type="button" onClick={() => setProfileLogoutOpen(false)}>
-                {tt("action_close")}
-              </button>
-            </div>
-          </section>
-        </div>
-      ) : null}
+      {profileLogoutModal}
       {leagueControlsOpen ? (
         <div className="modal-overlay" onClick={closeLeagueControls}>
           <section className="panel modal league-controls-modal" role="dialog" aria-modal="true" aria-label={tt("settings_title")} onClick={(event) => event.stopPropagation()}>

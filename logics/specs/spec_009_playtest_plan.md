@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 85%
-> Confidence: 80%
+> Confidence: 85
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -11,6 +11,9 @@
 
 # Purpose
 Define how to test whether the CR League loop is fun before building too much.
+
+# Current Status
+Keep this spec in Draft. The repository has a private-league checklist and balance evidence workflow, but the current qualifying/replay/garage loop still needs a real 3-to-5 tester session before the playtest plan is settled.
 
 # Test Goal
 Validate the core product question:

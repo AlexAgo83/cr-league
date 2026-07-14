@@ -4,14 +4,14 @@
 
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
-| [adr_001_cr_league_v1_static_pwa_api_architecture](architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md) | Option B: Static PWA + dedicated API | Proposed |  |  | architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md |
-| [adr_002_framework_stack](architecture/adr_002_framework_stack.md) | Framework Stack | Proposed |  |  | architecture/adr_002_framework_stack.md |
-| [adr_003_code_organization](architecture/adr_003_code_organization.md) | Code Organization | Proposed |  |  | architecture/adr_003_code_organization.md |
-| [adr_004_data_security](architecture/adr_004_data_security.md) | Data and Security | Proposed |  |  | architecture/adr_004_data_security.md |
-| [adr_005_theme_design_system](architecture/adr_005_theme_design_system.md) | Theme and Design System | Proposed |  |  | architecture/adr_005_theme_design_system.md |
-| [adr_006_accessibility](architecture/adr_006_accessibility.md) | Accessibility | Proposed |  |  | architecture/adr_006_accessibility.md |
-| [adr_007_i18n](architecture/adr_007_i18n.md) | Internationalization | Proposed |  |  | architecture/adr_007_i18n.md |
-| [adr_008_testing_quality](architecture/adr_008_testing_quality.md) | Testing and Quality | Proposed |  |  | architecture/adr_008_testing_quality.md |
+| [adr_001_cr_league_v1_static_pwa_api_architecture](architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md) | Option B: Static PWA + dedicated API | Accepted |  |  | architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md |
+| [adr_002_framework_stack](architecture/adr_002_framework_stack.md) | Framework Stack | Accepted |  |  | architecture/adr_002_framework_stack.md |
+| [adr_003_code_organization](architecture/adr_003_code_organization.md) | Code Organization | Accepted |  |  | architecture/adr_003_code_organization.md |
+| [adr_004_data_security](architecture/adr_004_data_security.md) | Data and Security | Accepted |  |  | architecture/adr_004_data_security.md |
+| [adr_005_theme_design_system](architecture/adr_005_theme_design_system.md) | Theme and Design System | Accepted |  |  | architecture/adr_005_theme_design_system.md |
+| [adr_006_accessibility](architecture/adr_006_accessibility.md) | Accessibility | Accepted |  |  | architecture/adr_006_accessibility.md |
+| [adr_007_i18n](architecture/adr_007_i18n.md) | Internationalization | Accepted |  |  | architecture/adr_007_i18n.md |
+| [adr_008_testing_quality](architecture/adr_008_testing_quality.md) | Testing and Quality | Accepted |  |  | architecture/adr_008_testing_quality.md |
 
 ## Product briefs
 

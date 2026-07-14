@@ -1,7 +1,7 @@
 ## spec_013_product_critique_and_gameplay_refinements - Product Critique and Gameplay Refinements
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 90%
 > Confidence: 80%
 > Related request: `req_005_capture_cr_league_product_critique_and_gameplay_refinements`

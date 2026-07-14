@@ -1,7 +1,7 @@
 ## spec_012_frontend_vertical_slice_flow - Frontend Vertical Slice Flow
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 90
 > Confidence: 85
 > Related request: `req_004_define_cr_league_implementation_contracts_v0`

@@ -1,7 +1,7 @@
 ## spec_011_simulation_algorithm_v0 - Simulation Algorithm V0
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 85%
 > Confidence: 70%
 > Related request: `req_004_define_cr_league_implementation_contracts_v0`

@@ -1,7 +1,7 @@
 ## spec_015_device_targets_and_responsive_ux - Device Targets and Responsive UX
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 90%
 > Confidence: 85%
 > Related request: `req_007_define_cr_league_device_targets_and_responsive_ux`

@@ -1,7 +1,7 @@
 ## spec_008_art_direction_mini_brief - Art Direction Mini Brief
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 85%
 > Confidence: 75%
 > Related request: `req_002_define_cr_league_v1_planning_specs`

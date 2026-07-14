@@ -1,7 +1,7 @@
 ## spec_010_data_model_and_api_contract_v0 - Data Model and API Contract V0
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 90
 > Confidence: 90
 > Related request: `req_004_define_cr_league_implementation_contracts_v0`

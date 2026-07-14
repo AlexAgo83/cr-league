@@ -1,7 +1,7 @@
 ## spec_014_theme_and_brand_inspiration - Theme and Brand Inspiration
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 90
 > Confidence: 80
 > Related request: `req_006_capture_cr_league_theme_and_brand_inspiration`

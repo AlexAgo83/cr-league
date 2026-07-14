@@ -1,6 +1,6 @@
 ## adr_001_cr_league_v1_static_pwa_api_architecture - CR League V1 static PWA API architecture
 > Date: 2026-07-13
-> Status: Proposed
+> Status: Accepted
 > Related request: `req_003_decide_cr_league_v1_application_architecture`
 > Related backlog: `item_009_decide_cr_league_v1_application_architecture`
 > Related task: `task_004_decide_cr_league_v1_application_architecture`

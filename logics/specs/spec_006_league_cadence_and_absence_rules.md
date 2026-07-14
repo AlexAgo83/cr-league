@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 90%
-> Confidence: 80%
+> Confidence: 82
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -11,6 +11,9 @@
 
 # Purpose
 Define how asynchronous leagues advance without stalling.
+
+# Current Status
+Keep this spec in Draft. Manual cadence, readiness, missing-player defaults, and league controls exist, but automatic deadline resolution, reminders, and real asynchronous absence behavior are not validated yet.
 
 # Cadence Model
 Solo:

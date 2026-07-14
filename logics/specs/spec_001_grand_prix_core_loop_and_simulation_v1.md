@@ -1,7 +1,7 @@
 ## spec_001_grand_prix_core_loop_and_simulation_v1 - Grand Prix Core Loop and Simulation V1
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 90%
 > Confidence: 85%
 > Date: 2026-07-13

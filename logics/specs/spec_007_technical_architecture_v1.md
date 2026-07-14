@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 80%
-> Confidence: 70%
+> Confidence: 75
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -13,6 +13,9 @@
 Define a low-cost technical direction for V1.
 
 This is not a final architecture decision. It is a pragmatic target for the first implementation.
+
+# Current Status
+Keep this spec in Draft. The local stack is real and ADR-backed, but live hosting, deployment, backup, support, and beta operations are not settled enough to call the V1 technical architecture final.
 
 # Architecture Principles
 - Web app first.

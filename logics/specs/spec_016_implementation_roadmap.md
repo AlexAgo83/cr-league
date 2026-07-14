@@ -1,7 +1,7 @@
 ## spec_016_implementation_roadmap - Implementation Roadmap
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: Implementation order reflects the current prototype reality: private-league foundation, race recap readability, replay, qualifying, seasons, garage/card progression, balance simulation, race desk immersion, session restart, and dashboard clarity were pulled forward after playtest feedback.
 > Confidence: 90
 > Related request: `req_008_define_cr_league_implementation_roadmap`

@@ -1,7 +1,7 @@
 ## spec_002_card_set_v1 - Card Set V1
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 90%
 > Confidence: 90
 > Related request: `req_002_define_cr_league_v1_planning_specs`

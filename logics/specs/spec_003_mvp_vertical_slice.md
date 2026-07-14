@@ -1,7 +1,7 @@
 ## spec_003_mvp_vertical_slice - MVP Vertical Slice
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 90%
 > Confidence: 85%
 > Related request: `req_002_define_cr_league_v1_planning_specs`

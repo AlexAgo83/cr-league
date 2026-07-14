@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 90%
-> Confidence: 80%
+> Confidence: 85
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -14,6 +14,9 @@
 Define how race outcomes are presented so players understand and remember them.
 
 The replay and report are not decoration. They are the explanation layer for an automated simulation.
+
+# Current Status
+Keep this spec in Draft. The app now has animated road-routed GP replay, qualifying replay, report tabs, historical replay, and localized event summaries, but replay/report comprehension still needs current multi-person playtest evidence before this becomes settled.
 
 # UX Goal
 After a Grand Prix, the player should know:

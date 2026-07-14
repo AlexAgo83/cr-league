@@ -1,6 +1,6 @@
 ## adr_008_testing_quality - Testing and Quality
 > Date: 2026-07-13
-> Status: Proposed
+> Status: Accepted
 > Related request: `req_011_define_cr_league_engineering_adrs`
 > Related backlog: `item_017_define_cr_league_engineering_adrs`
 > Related task: `task_012_define_cr_league_engineering_adrs`

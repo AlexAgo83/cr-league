@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 85%
-> Confidence: 75%
+> Confidence: 80
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -13,6 +13,9 @@
 Define the minimal economy for V1.
 
 The economy should create useful choices between races without becoming the game.
+
+# Current Status
+Keep this spec in Draft. The prototype has credits, fixed-price card buying, recommendations, bot card buying, 15 consumable cards, and a balance simulation kit, but prices, payouts, comeback pressure, and shop shape are still active balancing topics.
 
 # Resources
 V1 has three resource concepts:

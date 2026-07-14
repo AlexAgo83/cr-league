@@ -90,15 +90,15 @@ function createReplayTracePoint(segment: RaceSegment, progress: number, states: 
     progress,
     order: sorted.map((state) => state.participant.teamId),
     times: Object.fromEntries(
-      sorted.map((state, index) => [
+      sorted.map((state) => [
         state.participant.teamId,
-        mode === "grid" ? Number((index * 1.2).toFixed(1)) : Number(state.elapsedTime.toFixed(1))
+        mode === "grid" ? 0 : Number(state.elapsedTime.toFixed(1))
       ])
     ),
     gaps: Object.fromEntries(
-      sorted.map((state, index) => [
+      sorted.map((state) => [
         state.participant.teamId,
-        mode === "grid" ? index * 1.2 : Math.max(0, Number((state.elapsedTime - leaderTime).toFixed(1)))
+        mode === "grid" ? 0 : Math.max(0, Number((state.elapsedTime - leaderTime).toFixed(1)))
       ])
     )
   };

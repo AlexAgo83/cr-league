@@ -60,6 +60,13 @@ function qualifyingReplayTower(run: QualifyingRun | null, runs: QualifyingRun[],
     }));
 }
 
+function latestQualifyingRun(runs: QualifyingRun[]) {
+  return runs.reduce<QualifyingRun | null>(
+    (latest, run) => (!latest || run.attempts > latest.attempts || (run.attempts === latest.attempts && (run.lap ?? 0) > (latest.lap ?? 0)) ? run : latest),
+    null
+  );
+}
+
 function createInitialForm(locale: Locale): FormState {
   return {
     leagueName: randomLeagueName() || t("default_league_name", locale),
@@ -186,7 +193,9 @@ export function App() {
   const qualifyingRuns = leagueState?.currentGrandPrix.qualifyingRuns ?? [];
   const playerQualifyingRuns = qualifyingRuns.filter((run) => run.teamId === playerTeam?.id);
   const playerQualifyingRun = playerQualifyingRuns.reduce<QualifyingRun | null>((best, run) => (!best || run.time < best.time ? run : best), null);
-  const replayQualifyingRun = qualifyingResult ?? playerQualifyingRun;
+  const lastQualifyingRun = latestQualifyingRun(playerQualifyingRuns);
+  const currentQualifyingResult = qualifyingResult && playerQualifyingRuns.some((run) => run.teamId === qualifyingResult.teamId && run.attempts === qualifyingResult.attempts) ? qualifyingResult : null;
+  const replayQualifyingRun = currentQualifyingResult ?? lastQualifyingRun;
   const qualifyingReplayEntries = qualifyingReplayTower(replayQualifyingRun, qualifyingRuns, tt);
   const qualifyingLeaderboard = [...qualifyingRuns]
     .sort((left, right) => left.time - right.time)
@@ -315,6 +324,12 @@ export function App() {
     if (qualifyingDisabled) return;
     setQualifyingOpen(true);
     void launchQualifyingRun();
+  }
+
+  function openLastQualifyingRun() {
+    if (!lastQualifyingRun) return;
+    setQualifyingResult(lastQualifyingRun);
+    setQualifyingOpen(true);
   }
 
   async function updateSettings() {
@@ -1035,9 +1050,21 @@ export function App() {
                   </small>
                   {!playerQualifyingRun ? <small>{tt("qualifying_suggestion")}</small> : null}
                 </div>
-                <button type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
-                  {tt("action_qualifying")}
-                </button>
+                <div className="qualifying-actions">
+                  <button type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
+                    {tt("action_qualifying")}
+                  </button>
+                  <button
+                    type="button"
+                    className="icon-button"
+                    aria-label={tt("action_qualifying_history")}
+                    title={tt("action_qualifying_history")}
+                    onClick={openLastQualifyingRun}
+                    disabled={!lastQualifyingRun}
+                  >
+                    ◷
+                  </button>
+                </div>
               </section>
             </div>
           </div>

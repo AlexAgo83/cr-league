@@ -155,6 +155,7 @@
   "action_submit_directive": "Submit directive",
   "action_launch_grand_prix": "Launch GP",
   "action_qualifying": "Lap time",
+  "action_qualifying_history": "Replay last lap time",
   "action_launch_qualifying": "Run lap time",
   "action_next_grand_prix": "Next GP",
   "action_update_settings": "Update settings",

@@ -730,8 +730,22 @@ label small {
   gap: 4px;
 }
 
+.qualifying-actions {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
 .qualifying-card button {
   flex-shrink: 0;
+}
+
+.qualifying-card .icon-button {
+  font-size: 1rem;
+  height: 40px;
+  min-height: 0;
+  padding: 0;
+  width: 40px;
 }
 
 .qualifying-replay {

@@ -882,7 +882,7 @@ export function App() {
         <AmbientRaceBackground tt={tt} />
         {setupTopbar}
 
-        <section className="setup-grid" aria-label={tt("flow_label")}>
+        <section className="setup-grid setup-grid-single" aria-label={tt("flow_label")}>
           <div className="panel setup-main-panel">
             <div className="panel-heading">
               <div>
@@ -979,26 +979,26 @@ export function App() {
                 </div>
               </>
             )}
-          </div>
 
-          <aside className="panel saved-leagues">
-            <span className="section-kicker">{tt("profile_saved_leagues")}</span>
-            {savedClaims.length ? (
-              <div className="saved-league-list">
-                {savedClaims.map((claim) => (
-                  <button key={claim.teamId} type="button" className="profile-menu-action" onClick={() => void switchLeague(claim.teamId)} disabled={status === "loading"}>
-                    <strong>{claim.leagueName}</strong>
-                    <small>
-                      {claim.teamName}
-                      {claim.leagueCode ? ` · ${claim.leagueCode}` : ""}
-                    </small>
-                  </button>
-                ))}
-              </div>
-            ) : (
-              <p className="saved-leagues-empty">{tt("profile_saved_leagues_empty")}</p>
-            )}
-          </aside>
+            <div className="saved-leagues saved-leagues-compact">
+              <span className="section-kicker">{tt("profile_saved_leagues")}</span>
+              {savedClaims.length ? (
+                <div className="saved-league-list">
+                  {savedClaims.map((claim) => (
+                    <button key={claim.teamId} type="button" className="profile-menu-action" onClick={() => void switchLeague(claim.teamId)} disabled={status === "loading"}>
+                      <strong>{claim.leagueName}</strong>
+                      <small>
+                        {claim.teamName}
+                        {claim.leagueCode ? ` · ${claim.leagueCode}` : ""}
+                      </small>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <p className="saved-leagues-empty">{tt("profile_saved_leagues_empty")}</p>
+              )}
+            </div>
+          </div>
         </section>
         {notificationStack}
         {profileCodeModal}

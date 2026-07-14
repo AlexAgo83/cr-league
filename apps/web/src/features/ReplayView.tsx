@@ -16,6 +16,7 @@ const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
 const REFERENCE_REPLAY_DISTANCE_PIXELS = 9_000;
 const POSITION_CHANGE_MARGIN_LAPS = 0.015;
 const TRACE_ORDER_GAP_LAPS = 0.035;
+const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 
 function savedReplaySpeed() {
   const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
@@ -75,9 +76,13 @@ function traceGapsAt(trace: ReplayTracePoint[], progress: number) {
 }
 
 function traceRankTargetsAt(trace: ReplayTracePoint[], progress: number) {
-  const from = tracePointAt(trace, progress);
-  const to = trace.find((point) => point.progress > progress) ?? from;
-  const span = to.progress - from.progress || 1;
+  const transition = trace.slice(1).map((point, index) => ({ from: trace[index]!, to: point })).find(({ from, to }) => {
+    const span = Math.max(to.progress - from.progress, MIN_RANK_TRANSITION_PROGRESS);
+    return !sameOrder(from.order, to.order) && progress >= from.progress && progress < Math.min(1, from.progress + span);
+  });
+  const from = transition?.from ?? tracePointAt(trace, progress);
+  const to = transition?.to ?? from;
+  const span = transition ? Math.max(to.progress - from.progress, MIN_RANK_TRANSITION_PROGRESS) : 1;
   const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
   const eased = ratio * ratio * (3 - 2 * ratio);
   return Object.fromEntries(
@@ -87,6 +92,10 @@ function traceRankTargetsAt(trace: ReplayTracePoint[], progress: number) {
       return [teamId, fromRank + (toRank - fromRank) * eased];
     })
   );
+}
+
+function sameOrder(left: string[], right: string[]) {
+  return left.length === right.length && left.every((teamId, index) => teamId === right[index]);
 }
 
 function raceProgressAt(time: number, raceDuration: number) {

@@ -118,6 +118,19 @@ describe("ReplayView timing", () => {
     expect(before.leader ?? 0).toBeGreaterThan(before.last ?? 0);
     expect(after.last ?? 0).toBeGreaterThan(after.leader ?? 0);
   });
+
+  it("keeps dense trace overtakes on a minimum visual transition", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "start", lap: 1, progress: 0.02, order: ["last", "leader"], times: { leader: 1, last: 1 }, gaps: { leader: 0, last: 0 } },
+      { segment: "early", lap: 2, progress: 0.2, order: ["last", "leader"], times: { leader: 10, last: 10 }, gaps: { leader: 0, last: 0 } }
+    ];
+    const early = carProgressAtTrace(result, trace, 0.02, 5);
+    const later = carProgressAtTrace(result, trace, 0.08, 5);
+
+    expect(early.leader ?? 0).toBeGreaterThan(early.last ?? 0);
+    expect(later.last ?? 0).toBeGreaterThan(later.leader ?? 0);
+  });
 });
 
 function testCircuit(laps: number, route: Array<{ lat: number; lng: number }>) {

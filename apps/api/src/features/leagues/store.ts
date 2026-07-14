@@ -26,7 +26,8 @@ const STARTER_CARDS: CardId[] = ["rain_grip"];
 const QUALIFYING_LOCK_CARDS = new Set<CardId>(["qualifying_focus"]);
 const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICES[cardId as CardId] }));
 const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
-const BOT_LIVERY_COLORS = ["#38bdf8", "#f97316", "#a78bfa", "#f43f5e", "#facc15", "#22c55e", "#e879f9", "#fb7185"] as const;
+const PRIMARY_LIVERY_COLORS = ["#0f172a", "#1e1b4b", "#312e81", "#3f1d2d", "#1f2937", "#064e3b", "#451a03", "#172554"] as const;
+const SECONDARY_LIVERY_COLORS = ["#f8fafc", "#fde68a", "#bfdbfe", "#bbf7d0", "#fecdd3", "#ddd6fe", "#fed7aa", "#ccfbf1"] as const;
 const DEFAULT_MAX_PLAYERS = 8;
 const MAX_PLAYERS_LIMIT = 16;
 const DEFAULT_QUALIFYING_ATTEMPTS = 3;
@@ -1181,14 +1182,13 @@ function normalizeLivery(value: unknown): TeamLivery {
 }
 
 function randomLivery(): TeamLivery {
-  const primary = BOT_LIVERY_COLORS[Math.floor(Math.random() * BOT_LIVERY_COLORS.length)] ?? DEFAULT_LIVERY.primary;
-  const secondaryChoices = BOT_LIVERY_COLORS.filter((color) => color !== primary);
-  const secondary = secondaryChoices[Math.floor(Math.random() * secondaryChoices.length)] ?? DEFAULT_LIVERY.secondary;
+  const primary = PRIMARY_LIVERY_COLORS[Math.floor(Math.random() * PRIMARY_LIVERY_COLORS.length)] ?? DEFAULT_LIVERY.primary;
+  const secondary = SECONDARY_LIVERY_COLORS[Math.floor(Math.random() * SECONDARY_LIVERY_COLORS.length)] ?? DEFAULT_LIVERY.secondary;
   return { primary, secondary };
 }
 
 function uniqueBotLivery(startIndex: number, used: Set<string>): TeamLivery {
-  const pairs = BOT_LIVERY_COLORS.flatMap((primary) => BOT_LIVERY_COLORS.filter((secondary) => secondary !== primary).map((secondary) => ({ primary, secondary })));
+  const pairs = PRIMARY_LIVERY_COLORS.flatMap((primary) => SECONDARY_LIVERY_COLORS.map((secondary) => ({ primary, secondary })));
   for (let offset = 0; offset < pairs.length; offset += 1) {
     const livery = pairs[(startIndex + offset) % pairs.length];
     if (livery && !used.has(liveryKey(livery))) {

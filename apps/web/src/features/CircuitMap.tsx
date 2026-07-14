@@ -107,13 +107,21 @@ export function CircuitMap({
           <path className="circuit-route-edge" d={d} />
           <path className="circuit-route-accent" d={d} />
           <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />
-          {cars.map((car) => (
+          {cars.map((car, index) => (
             <g key={car.id} className={car.player ? "map-car player" : "map-car"}>
               <circle r="16" />
               <text textAnchor="middle" dominantBaseline="central">
                 {car.label}
               </text>
-              <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount="indefinite" />
+              {/* Fractional repeatCount parks each finisher on the track a little short
+                  of the line (parc fermé queue), instead of stacking them all on it. */}
+              <animateMotion
+                path={d}
+                dur={`${car.duration}s`}
+                begin={`${car.delay}s`}
+                repeatCount={circuit.laps - index * 0.02}
+                fill="freeze"
+              />
             </g>
           ))}
         </svg>

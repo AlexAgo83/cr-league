@@ -344,6 +344,9 @@ describe("App", () => {
     // Qualifying modal from the directive panel
     expect(screen.queryByText("Wait for directives")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Lap time" }));
+    expect(screen.getByRole("dialog", { name: "Run a lap time?" })).toBeTruthy();
+    expect(screen.getByText("This attempt uses your current directive and the forecast conditions. Attempts left 3/3")).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Lap time" }).at(-1)!);
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
     expect(screen.getByText("Relive this run lap by lap:", { exact: false })).toBeTruthy();

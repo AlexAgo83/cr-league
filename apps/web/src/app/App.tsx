@@ -131,6 +131,7 @@ export function App() {
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [qualifyingOpen, setQualifyingOpen] = useState(false);
+  const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -335,6 +336,11 @@ export function App() {
 
   function openQualifyingRun() {
     if (qualifyingDisabled) return;
+    setQualifyingConfirmOpen(true);
+  }
+
+  function startQualifyingRunConfirmed() {
+    setQualifyingConfirmOpen(false);
     setQualifyingOpen(true);
     void launchQualifyingRun();
   }
@@ -742,6 +748,25 @@ export function App() {
             {tt("action_submit_directive")}
           </button>
           <button type="button" onClick={() => setDirectiveConfirmOpen(false)}>
+            {tt("action_close")}
+          </button>
+        </div>
+      </section>
+    </div>
+  ) : null;
+  const qualifyingConfirmModal = qualifyingConfirmOpen ? (
+    <div className="modal-overlay" onClick={() => setQualifyingConfirmOpen(false)}>
+      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("qualifying_confirm_title")} onClick={(event) => event.stopPropagation()}>
+        <span className="section-kicker">{tt("qualifying_kicker")}</span>
+        <h2>{tt("qualifying_confirm_title")}</h2>
+        <p>
+          {tt("qualifying_confirm_body")} {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
+        </p>
+        <div className="actions secondary-actions">
+          <button type="button" onClick={startQualifyingRunConfirmed} disabled={status === "loading"}>
+            {tt("action_qualifying")}
+          </button>
+          <button type="button" onClick={() => setQualifyingConfirmOpen(false)}>
             {tt("action_close")}
           </button>
         </div>
@@ -1187,6 +1212,7 @@ export function App() {
       {profileCodeModal}
       {profileLogoutModal}
       {directiveConfirmModal}
+      {qualifyingConfirmModal}
       {nextGrandPrixConfirmModal}
       {historyReplay?.result ? (
         <div className="modal-overlay" onClick={() => setHistoryReplay(null)}>

@@ -124,6 +124,7 @@ export function App() {
   const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
   const result = leagueState?.currentGrandPrix.result;
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
+  const qualifyingDisabled = status === "loading" || isResolved || Boolean(playerDecision) || qualifyingAttemptsLeft <= 0;
   const forecastPick = leagueState ? strongestForecast(leagueState.currentGrandPrix.forecast) : "dry";
   const ownedCardIds = useMemo(() => Array.from(new Set(playerTeam?.cards ?? [])), [playerTeam]);
   const selectedCardId = ownedCardIds.includes(form.cardId as CardId) ? form.cardId : "";
@@ -213,7 +214,7 @@ export function App() {
   }
 
   async function launchQualifyingRun() {
-    if (!leagueState || !playerTeam || isResolved) return;
+    if (!leagueState || !playerTeam || qualifyingDisabled) return;
 
     await run(tt("status_qualifying_running"), async () => {
       const response = await api<{ state: LeagueState; run: QualifyingRun; isBest: boolean }>(`/leagues/${leagueState.league.id}/qualifying`, {
@@ -233,6 +234,7 @@ export function App() {
   }
 
   function openQualifyingRun() {
+    if (qualifyingDisabled) return;
     setQualifyingOpen(true);
     void launchQualifyingRun();
   }
@@ -902,7 +904,7 @@ export function App() {
                   </small>
                   {!playerQualifyingRun ? <small>{tt("qualifying_suggestion")}</small> : null}
                 </div>
-                <button type="button" onClick={openQualifyingRun} disabled={status === "loading" || isResolved || qualifyingAttemptsLeft <= 0}>
+                <button type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
                   {tt("action_qualifying")}
                 </button>
               </section>

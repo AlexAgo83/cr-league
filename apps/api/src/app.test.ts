@@ -99,16 +99,6 @@ describe("api app", () => {
       payload: { code: created.league.code, teamName: "Late Apex" }
     });
 
-    const decisionResponse = await app.inject({
-      method: "POST",
-      url: `/leagues/${leagueId}/decisions`,
-      payload: {
-        teamId,
-        approach: "aggressive",
-        preparation: "weather",
-        cardId: "rain_grip"
-      }
-    });
     const qualifyingResponse = await app.inject({
       method: "POST",
       url: `/leagues/${leagueId}/qualifying`,
@@ -118,6 +108,16 @@ describe("api app", () => {
         preparation: "weather",
         cardId: "rain_grip",
         traits: { grip: 70, overtaking: 66, energy: 62 }
+      }
+    });
+    const decisionResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/decisions`,
+      payload: {
+        teamId,
+        approach: "aggressive",
+        preparation: "weather",
+        cardId: "rain_grip"
       }
     });
 
@@ -330,6 +330,36 @@ describe("api app", () => {
     expect(firstRun.statusCode).toBe(200);
     expect(firstRun.json().run.attempts).toBe(1);
     expect(secondRun.statusCode).toBe(409);
+  });
+
+  it("rejects qualifying after the player submits a directive", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const payload = {
+      teamId: created.player.teamId,
+      approach: "balanced",
+      preparation: "weather"
+    };
+    const decisionResponse = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/decisions`, payload });
+    const qualifyingResponse = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
+
+    await app.close();
+
+    expect(decisionResponse.statusCode).toBe(200);
+    expect(qualifyingResponse.statusCode).toBe(409);
   });
 
   it("rejects resolving before the player submits a directive", async () => {

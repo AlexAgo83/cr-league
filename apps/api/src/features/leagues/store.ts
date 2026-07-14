@@ -550,6 +550,9 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
   const state = await getLeagueState(db, leagueId);
   const team = state?.teams.find((candidate) => candidate.id === input.teamId);
   if (!state || !team) return null;
+  if (state.decisions.some((decision) => decision.teamId === team.id)) {
+    throw new LeagueRuleError("Qualifying is closed after submitting your directive.");
+  }
   if (input.cardId && !team.cards.includes(input.cardId)) {
     throw new LeagueRuleError("This card is not in your inventory.");
   }

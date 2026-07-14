@@ -7,7 +7,7 @@
 }
 
 .hero {
-  max-width: 760px;
+  max-width: 920px;
   padding-top: clamp(12px, 4vh, 40px);
 }
 
@@ -67,6 +67,10 @@ button:disabled {
   opacity: 1;
 }
 
+button.primary-command:not(:disabled) {
+  background: #111827;
+}
+
 input,
 select {
   border: 1px solid #d1d5db;
@@ -102,12 +106,33 @@ label small {
   padding: 20px;
 }
 
+.panel-heading {
+  align-items: start;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
 .control-panel {
   grid-column: 1 / -1;
 }
 
 .race-panel {
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
   grid-column: span 8;
+  overflow: hidden;
+  position: relative;
+}
+
+.race-panel::before {
+  background: linear-gradient(90deg, #047857, #111827, #f97316);
+  content: "";
+  display: block;
+  height: 4px;
+  left: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
 }
 
 .league-panel {
@@ -160,13 +185,14 @@ label small {
   margin-top: 20px;
 }
 
-.race-briefing {
-  background: #f8fafc;
+.race-console {
+  background: #111827;
   border: 1px solid #d1d5db;
   border-radius: 8px;
+  color: white;
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 1fr) minmax(240px, 0.8fr);
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.8fr);
   margin-bottom: 16px;
   padding: 16px;
 }
@@ -178,34 +204,72 @@ label small {
   text-transform: uppercase;
 }
 
-.race-briefing h3 {
+.race-console .section-kicker {
+  color: #34d399;
+}
+
+.race-console h3 {
   margin: 4px 0 8px;
 }
 
-.race-briefing p {
+.race-console p {
+  color: #d1d5db;
   margin-bottom: 0;
 }
 
-.briefing-facts {
-  display: grid;
-  gap: 10px;
-  margin: 0;
+.race-telemetry {
+  align-content: start;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
-.briefing-facts div {
-  border-left: 3px solid var(--color-accent);
-  padding-left: 10px;
-}
-
-.briefing-facts dt {
-  color: #6b7280;
-  font-size: 0.75rem;
+.race-telemetry span,
+.race-state {
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.8125rem;
   font-weight: 800;
-  text-transform: uppercase;
+  padding: 6px 10px;
 }
 
-.briefing-facts dd {
-  margin: 2px 0 0;
+.race-telemetry span {
+  background: rgb(255 255 255 / 0.12);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  color: white;
+}
+
+.race-state {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #047857;
+  white-space: nowrap;
+}
+
+.state-ready {
+  background: #fff7ed;
+  border-color: #fed7aa;
+  color: #c2410c;
+}
+
+.state-resolved {
+  background: #eff6ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.race-workbench {
+  display: grid;
+  gap: 16px;
+}
+
+.race-workbench > div {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 14px;
+}
+
+.race-workbench h3 {
+  margin-bottom: 10px;
 }
 
 .primary-actions {
@@ -215,6 +279,18 @@ label small {
 .race-actions button:first-child:not(:disabled),
 .primary-actions button:not(:disabled) {
   background: var(--color-accent);
+}
+
+.race-actions button:not(.primary-command):not(:disabled) {
+  background: white;
+  border: 1px solid #cbd5e1;
+  color: var(--color-text);
+}
+
+.race-actions button.primary-command:not(:disabled) {
+  background: #111827;
+  border: 1px solid #111827;
+  color: white;
 }
 
 .result-panel,
@@ -373,7 +449,12 @@ label small {
     grid-template-columns: 1fr;
   }
 
-  .race-briefing {
+  .race-console {
     grid-template-columns: 1fr;
+  }
+
+  .panel-heading {
+    align-items: stretch;
+    flex-direction: column;
   }
 }

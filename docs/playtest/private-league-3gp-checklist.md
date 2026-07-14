@@ -21,6 +21,7 @@
 ## Observe
 - Can testers tell which team is theirs?
 - Is the next expected action obvious?
+- Does the race desk state (`Prepare`, `Ready`, `Race resolved`) match the action testers think they should take?
 - Do ready/missing states match what players did?
 - Does the result feel connected to the submitted directive?
 - Does the race recap explain what made the difference?
@@ -28,6 +29,7 @@
 - Does the history make the championship feel persistent?
 - Does buying or saving a card after a GP give a reason to continue?
 - Do the `Recommended`, `Risky`, and `Low fit` labels help the card choice?
+- Does the pit-wall/race-desk presentation feel more like a race weekend than an admin form?
 
 ## Questions
 - What did you expect to happen before launching the GP?

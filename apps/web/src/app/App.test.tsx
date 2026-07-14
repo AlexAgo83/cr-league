@@ -221,6 +221,8 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Create league" }));
     expect(await screen.findByText("Code ABC123 · Round 1 · briefing")).toBeTruthy();
+    expect(screen.getByText("Pit wall")).toBeTruthy();
+    expect(screen.getByText("Prepare")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Current GP" })).toBeTruthy();
     expect(screen.getByText("Fast · Weather sensitive")).toBeTruthy();
@@ -230,9 +232,11 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
+    expect(screen.getByText("Ready to launch")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
+    expect(screen.getByText("Race resolved")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
     expect(screen.getByText("Balanced · Weather · Rain Grip")).toBeTruthy();

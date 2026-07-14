@@ -23,7 +23,7 @@
 
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
-| [1.0](roadmap/road_001_cr_league_roadmap.md) | Private league V1 | Settled |  |  | roadmap/road_001_cr_league_roadmap.md |
+| [1.0](roadmap/road_001_cr_league_roadmap.md) | Private league V1 | Accepted |  |  | roadmap/road_001_cr_league_roadmap.md |
 
 ## Requests
 
@@ -58,6 +58,7 @@
 | [req_026_add_between_gp_progression_v0](request/req_026_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done |  |  | request/req_026_add_between_gp_progression_v0.md |
 | [req_027_improve_between_gp_garage_guidance](request/req_027_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done |  |  | request/req_027_improve_between_gp_garage_guidance.md |
 | [req_028_improve_race_recap_readability](request/req_028_improve_race_recap_readability.md) | Improve race recap readability | Done |  |  | request/req_028_improve_race_recap_readability.md |
+| [req_029_improve_race_desk_immersion_ui](request/req_029_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done |  |  | request/req_029_improve_race_desk_immersion_ui.md |
 
 ## Backlog
 
@@ -97,6 +98,7 @@
 | [item_032_add_between_gp_progression_v0](backlog/item_032_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done |  | 100% | backlog/item_032_add_between_gp_progression_v0.md |
 | [item_033_improve_between_gp_garage_guidance](backlog/item_033_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done |  | 100% | backlog/item_033_improve_between_gp_garage_guidance.md |
 | [item_034_improve_race_recap_readability](backlog/item_034_improve_race_recap_readability.md) | Improve race recap readability | Done |  | 100% | backlog/item_034_improve_race_recap_readability.md |
+| [item_035_improve_race_desk_immersion_ui](backlog/item_035_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done |  | 100% | backlog/item_035_improve_race_desk_immersion_ui.md |
 
 ## Tasks
 
@@ -131,3 +133,4 @@
 | [task_027_add_between_gp_progression_v0](tasks/task_027_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done | codex | 100% | tasks/task_027_add_between_gp_progression_v0.md |
 | [task_028_improve_between_gp_garage_guidance](tasks/task_028_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done | codex | 100% | tasks/task_028_improve_between_gp_garage_guidance.md |
 | [task_029_improve_race_recap_readability](tasks/task_029_improve_race_recap_readability.md) | Improve race recap readability | Done | codex | 100% | tasks/task_029_improve_race_recap_readability.md |
+| [task_030_improve_race_desk_immersion_ui](tasks/task_030_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done | codex | 100% | tasks/task_030_improve_race_desk_immersion_ui.md |

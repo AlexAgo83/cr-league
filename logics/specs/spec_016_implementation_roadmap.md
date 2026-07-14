@@ -2,14 +2,14 @@
 > From version: 1.0.0
 > Schema version: 1.0
 > Status: Draft
-> Understanding: Implementation order reflects the current prototype reality: private-league foundation, race recap readability, a thin garage/card progression hook, and garage guidance were pulled forward after playtest feedback.
+> Understanding: Implementation order reflects the current prototype reality: private-league foundation, race recap readability, a thin garage/card progression hook, garage guidance, and first-pass race desk immersion were pulled forward after playtest feedback.
 > Confidence: 90
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Related backlog: `item_014_define_cr_league_implementation_roadmap`
 > Related task: `task_009_define_cr_league_implementation_roadmap`
 > Related product: `prod_001_cr_league_product_brief`
 > Related architecture: `adr_001_cr_league_v1_static_pwa_api_architecture`
-> Implementation note: The current prototype intentionally pulled private-league foundation and a thin card inventory/shop hook forward after playtest feedback.
+> Implementation note: The current prototype intentionally pulled private-league foundation, a thin card inventory/shop hook, and race desk immersion forward after playtest feedback.
 
 # Purpose
 Define the implementation order for CR League.
@@ -30,9 +30,10 @@ Everything else is secondary until the player can:
 7. want to run the next Grand Prix.
 
 # Current Delivered Slice Notes
-- The playable web/API prototype now supports private league create/join/rejoin, manual cadence, readiness, GP history, guided briefing, player-focused race recap, replay flavor events, English/French UI switching, and a seeded `PLAY01` playtest fixture.
+- The playable web/API prototype now supports private league create/join/rejoin, manual cadence, readiness, GP history, guided briefing, state-driven race desk guidance, player-focused race recap, replay flavor events, English/French UI switching, and a seeded `PLAY01` playtest fixture.
 - A thin between-GP progression hook exists before the full economy wave: teams persist `cards`, human teams start with `rain_grip`, players can buy fixed-price cards with credits, directives validate owned cards, resolved GPs consume played cards, and the garage now explains rewards, consumed cards, and contextual card fit.
 - This does not replace the later economy/card-depth wave. Selling, rarity, draft offers, catch-up tuning, balance telemetry, and a richer collection UI remain out of scope until playtest feedback proves the thin loop.
+- This also does not replace the later replay/visual polish wave. The current desk pass improves hierarchy and action clarity, but it is still not a visual track replay or final art direction.
 
 # Wave 1: Monorepo Foundation
 Goal: create the technical skeleton with no game complexity.
@@ -158,6 +159,7 @@ Scope:
 - larger desktop replay;
 - report/replay linking;
 - first pass visual theme for urban micro-EV.
+- state-driven race desk that makes the current command obvious.
 
 Exit criteria:
 

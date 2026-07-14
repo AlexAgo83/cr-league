@@ -62,6 +62,8 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
 
   await page.getByRole("button", { name: "Create league" }).click();
   await expect(page.getByText("Code ABC123 · Round 1 · briefing")).toBeVisible();
+  await expect(page.getByText("Pit wall")).toBeVisible();
+  await expect(page.getByText("Prepare")).toBeVisible();
   await expect(page.getByRole("heading", { name: "Current GP" })).toBeVisible();
   await expect(page.getByText("0 ready · 2 missing")).toBeVisible();
 
@@ -73,8 +75,10 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
   for (const expectedRound of [1, 2, 3]) {
     await page.getByRole("button", { name: "Submit directive" }).click();
     await expect(page.getByText("Directive locked. You can launch the Grand Prix.")).toBeVisible();
+    await expect(page.getByText("Ready to launch")).toBeVisible();
 
     await page.getByRole("button", { name: "Launch GP" }).click();
+    await expect(page.getByText("Race resolved")).toBeVisible();
     await expect(page.locator("p").filter({ hasText: `Silver Ridge GP ${expectedRound}: Circle One wins.` })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Race recap" })).toBeVisible();
     await expect(page.getByText("Balanced · Weather · Rain Grip")).toBeVisible();

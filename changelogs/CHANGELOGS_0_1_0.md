@@ -11,6 +11,7 @@ Initial foundation release notes for CR League.
 - Added the first between-GP progression hook with persisted card inventory, fixed-price card buying, and card consumption.
 - Improved the garage loop with a post-GP reward summary, separated inventory/offers, and contextual card fit labels.
 - Improved the resolved race screen with a player-focused recap, directive summary, next-GP takeaway, and prioritized timeline.
+- Improved the main race desk with a pit-wall treatment, explicit Prepare/Ready/Resolved states, and one visually dominant command per state.
 
 ## Engineering
 
@@ -25,6 +26,7 @@ Initial foundation release notes for CR League.
 - Added team card inventories, a card purchase endpoint, owned-card validation, and the minimal garage UI.
 - Limited visible shop offers to a small recommended set and covered the updated garage flow in unit/e2e tests.
 - Added race recap copy and timeline labels in English/French.
+- Added race desk state copy in English/French and unit/e2e coverage for the guided desk states.
 
 ## Validation
 

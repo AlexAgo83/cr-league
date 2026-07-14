@@ -134,6 +134,7 @@ export function App() {
   const playerEvents = result?.events.filter((event) => event.teamId === playerTeam?.id || event.relatedTeamId === playerTeam?.id) ?? [];
   const majorEvents = result?.events.filter((event) => event.severity === "major") ?? [];
   const ambienceEvents = result?.events.filter((event) => event.severity === "minor" && event.type === "race_note") ?? [];
+  const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
 
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
@@ -294,7 +295,13 @@ export function App() {
 
       <section className="play-grid" aria-label={tt("flow_label")}>
         <article className={leagueState ? "panel race-panel" : "panel control-panel setup-panel"}>
-          <h2>{tt("race_desk_title")}</h2>
+          <div className="panel-heading">
+            <div>
+              <span className="section-kicker">{tt("race_desk_kicker")}</span>
+              <h2>{tt("race_desk_title")}</h2>
+            </div>
+            {leagueState ? <span className={`race-state state-${deskState}`}>{tt(`race_state_${deskState}` as TranslationKey)}</span> : null}
+          </div>
           <p className={status === "error" ? "status error" : "status"}>{message}</p>
 
           {!leagueState ? (
@@ -332,95 +339,95 @@ export function App() {
 
           {leagueState ? (
             <>
-              <section className="race-briefing">
+              <section className="race-console">
                 <div>
                   <span className="section-kicker">{tt("briefing_next_action")}</span>
                   <h3>{tt(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}</h3>
                   <p>{isResolved ? tt("briefing_tip_resolved") : tt("briefing_tip_prepare")}</p>
                 </div>
-                <dl className="briefing-facts">
-                  <div>
-                    <dt>{tt("briefing_track")}</dt>
-                    <dd>
-                      {tt(`trait_${leagueState.currentGrandPrix.primaryTrait}` as TranslationKey)} ·{" "}
-                      {tt(`trait_${leagueState.currentGrandPrix.secondaryTrait}` as TranslationKey)}
-                    </dd>
-                  </div>
-                  <div>
-                    <dt>{tt("briefing_forecast")}</dt>
-                    <dd>
-                      {tt(`weather_${forecastPick}` as TranslationKey)} · {leagueState.currentGrandPrix.forecast[forecastPick]}%
-                    </dd>
-                  </div>
-                </dl>
+                <div className="race-telemetry" aria-label={tt("race_telemetry")}>
+                  <span>{tt(`trait_${leagueState.currentGrandPrix.primaryTrait}` as TranslationKey)}</span>
+                  <span>{tt(`trait_${leagueState.currentGrandPrix.secondaryTrait}` as TranslationKey)}</span>
+                  <span>
+                    {tt(`weather_${forecastPick}` as TranslationKey)} {leagueState.currentGrandPrix.forecast[forecastPick]}%
+                  </span>
+                </div>
               </section>
 
-              <div className="field-grid settings-fields">
-                <label>
-                  {tt("field_cadence")}
-                  <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
-                    <option value="manual">{tt("cadence_manual")}</option>
-                    <option value="fast">{tt("cadence_fast")}</option>
-                    <option value="weekly">{tt("cadence_weekly")}</option>
-                  </select>
-                </label>
-                <label>
-                  {tt("field_deadline")}
-                  <input
-                    type="datetime-local"
-                    value={form.preparationDeadlineAt}
-                    onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })}
-                  />
-                </label>
-              </div>
+              <section className="race-workbench" aria-label={tt("directive_workbench")}>
+                <div>
+                  <h3>{tt("settings_title")}</h3>
+                  <div className="field-grid settings-fields">
+                    <label>
+                      {tt("field_cadence")}
+                      <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
+                        <option value="manual">{tt("cadence_manual")}</option>
+                        <option value="fast">{tt("cadence_fast")}</option>
+                        <option value="weekly">{tt("cadence_weekly")}</option>
+                      </select>
+                    </label>
+                    <label>
+                      {tt("field_deadline")}
+                      <input
+                        type="datetime-local"
+                        value={form.preparationDeadlineAt}
+                        onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })}
+                      />
+                    </label>
+                  </div>
+                </div>
 
-              <div className="field-grid directive-fields">
-                <label>
-                  {tt("field_approach")}
-                  <select value={form.approach} onChange={(event) => setForm({ ...form, approach: event.target.value as FormState["approach"] })}>
-                    <option value="prudent">{tt("approach_prudent")}</option>
-                    <option value="balanced">{tt("approach_balanced")}</option>
-                    <option value="aggressive">{tt("approach_aggressive")}</option>
-                  </select>
-                  <small>{tt(`approach_${form.approach}_hint` as TranslationKey)}</small>
-                </label>
-                <label>
-                  {tt("field_preparation")}
-                  <select
-                    value={form.preparation}
-                    onChange={(event) => setForm({ ...form, preparation: event.target.value as FormState["preparation"] })}
-                  >
-                    <option value="speed">{tt("preparation_speed")}</option>
-                    <option value="reliability">{tt("preparation_reliability")}</option>
-                    <option value="weather">{tt("preparation_weather")}</option>
-                  </select>
-                  <small>{tt(`preparation_${form.preparation}_hint` as TranslationKey)}</small>
-                </label>
-                <label>
-                  {tt("field_card")}
-                  <select value={selectedCardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })}>
-                    <option value="">{tt("card_none")}</option>
-                    {ownedCardIds.map((cardId) => (
-                      <option key={cardId} value={cardId}>
-                        {tt(`card_${cardId}` as TranslationKey)}
-                      </option>
-                    ))}
-                  </select>
-                  <small>
-                    {selectedCardFit ? `${tt(`card_fit_${selectedCardFit.level}` as TranslationKey)} · ` : ""}
-                    {selectedCardId ? tt(`card_${selectedCardId}_hint` as TranslationKey) : tt("card_none_hint")}
-                  </small>
-                </label>
-              </div>
+                <div>
+                  <h3>{tt("directive_title")}</h3>
+                  <div className="field-grid directive-fields">
+                    <label>
+                      {tt("field_approach")}
+                      <select value={form.approach} onChange={(event) => setForm({ ...form, approach: event.target.value as FormState["approach"] })}>
+                        <option value="prudent">{tt("approach_prudent")}</option>
+                        <option value="balanced">{tt("approach_balanced")}</option>
+                        <option value="aggressive">{tt("approach_aggressive")}</option>
+                      </select>
+                      <small>{tt(`approach_${form.approach}_hint` as TranslationKey)}</small>
+                    </label>
+                    <label>
+                      {tt("field_preparation")}
+                      <select
+                        value={form.preparation}
+                        onChange={(event) => setForm({ ...form, preparation: event.target.value as FormState["preparation"] })}
+                      >
+                        <option value="speed">{tt("preparation_speed")}</option>
+                        <option value="reliability">{tt("preparation_reliability")}</option>
+                        <option value="weather">{tt("preparation_weather")}</option>
+                      </select>
+                      <small>{tt(`preparation_${form.preparation}_hint` as TranslationKey)}</small>
+                    </label>
+                    <label>
+                      {tt("field_card")}
+                      <select value={selectedCardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })}>
+                        <option value="">{tt("card_none")}</option>
+                        {ownedCardIds.map((cardId) => (
+                          <option key={cardId} value={cardId}>
+                            {tt(`card_${cardId}` as TranslationKey)}
+                          </option>
+                        ))}
+                      </select>
+                      <small>
+                        {selectedCardFit ? `${tt(`card_fit_${selectedCardFit.level}` as TranslationKey)} · ` : ""}
+                        {selectedCardId ? tt(`card_${selectedCardId}_hint` as TranslationKey) : tt("card_none_hint")}
+                      </small>
+                    </label>
+                  </div>
+                </div>
+              </section>
 
               <div className="actions race-actions">
-                <button type="button" onClick={submitDirective} disabled={status === "loading" || isResolved}>
+                <button className={deskState === "prepare" ? "primary-command" : undefined} type="button" onClick={submitDirective} disabled={status === "loading" || isResolved}>
                   {tt("action_submit_directive")}
                 </button>
-                <button type="button" onClick={resolveGrandPrix} disabled={status === "loading" || isResolved}>
+                <button className={deskState === "ready" ? "primary-command" : undefined} type="button" onClick={resolveGrandPrix} disabled={status === "loading" || isResolved}>
                   {tt("action_launch_grand_prix")}
                 </button>
-                <button type="button" onClick={startNextGrandPrix} disabled={status === "loading" || !leagueState.actionState.canStartNextGrandPrix}>
+                <button className={deskState === "resolved" ? "primary-command" : undefined} type="button" onClick={startNextGrandPrix} disabled={status === "loading" || !leagueState.actionState.canStartNextGrandPrix}>
                   {tt("action_next_grand_prix")}
                 </button>
                 <button type="button" onClick={updateSettings} disabled={status === "loading"}>

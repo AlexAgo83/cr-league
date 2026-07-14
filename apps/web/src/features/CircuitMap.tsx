@@ -35,8 +35,11 @@ const TILE_SIZE = 256;
 const FOCUS_ZOOM = 2.55;
 const TRAFFIC_FOCUS_ZOOM = 3.45;
 const CLOSE_FOCUS_ZOOM = FOCUS_ZOOM * 2;
-const TRAFFIC_CAR_DISTANCE = 44;
-const CLOSE_CAR_DISTANCE = 10;
+const TRAFFIC_ENTER_DISTANCE = 44;
+const TRAFFIC_EXIT_DISTANCE = 60;
+const CLOSE_ENTER_DISTANCE = 10;
+const CLOSE_EXIT_DISTANCE = 18;
+type CameraZoomMode = "normal" | "traffic" | "close";
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
   const scale = TILE_SIZE * 2 ** zoom;
@@ -154,6 +157,7 @@ export function CircuitMap({
   const carsRef = useRef(cars);
   const pointsRef = useRef(points);
   const zoomRef = useRef(FOCUS_ZOOM);
+  const zoomModeRef = useRef<CameraZoomMode>("normal");
   const markerScale = camera?.enabled ? 1 / FOCUS_ZOOM : 1;
   carsRef.current = cars;
   pointsRef.current = points;
@@ -165,6 +169,7 @@ export function CircuitMap({
     if (!cameraGroup || !route || !camera?.enabled || !car || !route.getTotalLength) {
       cameraGroup?.removeAttribute("transform");
       zoomRef.current = FOCUS_ZOOM;
+      zoomModeRef.current = "normal";
       return;
     }
 
@@ -182,12 +187,17 @@ export function CircuitMap({
           return Math.hypot(otherPoint.x - point.x, otherPoint.y - point.y);
         })
       );
-      const targetZoom =
-        nearestCarDistance < CLOSE_CAR_DISTANCE
-          ? CLOSE_FOCUS_ZOOM
-          : nearestCarDistance < TRAFFIC_CAR_DISTANCE
-            ? TRAFFIC_FOCUS_ZOOM
-            : FOCUS_ZOOM;
+      if (zoomModeRef.current === "close") {
+        if (nearestCarDistance > CLOSE_EXIT_DISTANCE) zoomModeRef.current = nearestCarDistance < TRAFFIC_EXIT_DISTANCE ? "traffic" : "normal";
+      } else if (zoomModeRef.current === "traffic") {
+        if (nearestCarDistance < CLOSE_ENTER_DISTANCE) zoomModeRef.current = "close";
+        else if (nearestCarDistance > TRAFFIC_EXIT_DISTANCE) zoomModeRef.current = "normal";
+      } else if (nearestCarDistance < CLOSE_ENTER_DISTANCE) {
+        zoomModeRef.current = "close";
+      } else if (nearestCarDistance < TRAFFIC_ENTER_DISTANCE) {
+        zoomModeRef.current = "traffic";
+      }
+      const targetZoom = zoomModeRef.current === "close" ? CLOSE_FOCUS_ZOOM : zoomModeRef.current === "traffic" ? TRAFFIC_FOCUS_ZOOM : FOCUS_ZOOM;
       zoomRef.current += (targetZoom - zoomRef.current) * 0.08;
       cameraGroup.querySelectorAll<SVGGElement>(".map-car-marker").forEach((marker) => marker.setAttribute("transform", `scale(${1 / zoomRef.current})`));
       cameraGroup.setAttribute("transform", `translate(${focusX} ${focusY}) scale(${zoomRef.current}) translate(${-point.x} ${-point.y})`);

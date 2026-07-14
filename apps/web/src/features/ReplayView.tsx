@@ -14,6 +14,7 @@ const REPLAY_SPEED_KEY = "cr-league-replay-speed";
 const REPLAY_FOCUS_KEY = "cr-league-replay-focus";
 const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
 const REFERENCE_REPLAY_DISTANCE_PIXELS = 9_000;
+const POSITION_CHANGE_MARGIN_LAPS = 0.015;
 
 function savedReplaySpeed() {
   const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
@@ -128,6 +129,24 @@ function liveClassification(result: RaceResult, trace: ReplayTracePoint[], progr
   const gaps = traceGapsAt(trace, progress);
   return [...result.classification].sort((left, right) => {
     return (gaps[left.teamId] ?? 0) - (gaps[right.teamId] ?? 0) || from.order.indexOf(left.teamId) - from.order.indexOf(right.teamId) || left.position - right.position;
+  });
+}
+
+export function liveClassificationByCarProgress(
+  result: RaceResult,
+  trace: ReplayTracePoint[],
+  progress: number,
+  carProgress: Record<string, number>,
+  currentOrder: string[] = []
+): RaceResult["classification"] {
+  if (progress >= 1) return result.classification;
+  const traceOrder = tracePointAt(trace, progress).order;
+  const stableOrder = new Map((currentOrder.length ? currentOrder : traceOrder).map((teamId, index) => [teamId, index]));
+  return [...result.classification].sort((left, right) => {
+    const progressDiff = (carProgress[right.teamId] ?? 0) - (carProgress[left.teamId] ?? 0);
+    return Math.abs(progressDiff) > POSITION_CHANGE_MARGIN_LAPS
+      ? progressDiff
+      : (stableOrder.get(left.teamId) ?? 999) - (stableOrder.get(right.teamId) ?? 999) || left.position - right.position;
   });
 }
 
@@ -285,8 +304,9 @@ export function ReplayView({
     const displayLap = displayLapAtProgress(progress, circuit.laps);
     const segment = segmentAtProgress(progress);
     setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
-    setCarProgress(carProgressAtRaceTime(result, replayTimes.times, raceTime, circuit.laps));
-    const nextTower = liveClassification(result, replayTrace, progress);
+    const nextCarProgress = carProgressAtRaceTime(result, replayTimes.times, raceTime, circuit.laps);
+    setCarProgress(nextCarProgress);
+    const nextTower = liveClassificationByCarProgress(result, replayTrace, progress, nextCarProgress, orderRef.current);
     const nextOrder = nextTower.map((entry) => entry.teamId);
     if (orderRef.current.join("|") !== nextOrder.join("|")) {
       if (animatePositions) {

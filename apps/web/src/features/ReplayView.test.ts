@@ -1,6 +1,15 @@
 import { describe, expect, it } from "vitest";
-import type { RaceResult } from "@cr-league/shared";
-import { carProgressAtRaceTime, displayLapAtProgress, finishTimes, positionDeltas, replayDistanceScale, scaleFinishTimes, segmentAtProgress } from "./ReplayView.js";
+import type { RaceResult, ReplayTracePoint } from "@cr-league/shared";
+import {
+  carProgressAtRaceTime,
+  displayLapAtProgress,
+  finishTimes,
+  liveClassificationByCarProgress,
+  positionDeltas,
+  replayDistanceScale,
+  scaleFinishTimes,
+  segmentAtProgress
+} from "./ReplayView.js";
 
 const result: RaceResult = {
   grandPrixName: "Test GP",
@@ -59,6 +68,19 @@ describe("ReplayView timing", () => {
 
   it("reports position gains as positive deltas", () => {
     expect(positionDeltas(["leader", "last"], ["last", "leader"])).toEqual({ last: 1, leader: -1 });
+  });
+
+  it("keeps close visual positions in stable order before swapping", () => {
+    const trace: ReplayTracePoint[] = [{ segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {} }];
+
+    expect(liveClassificationByCarProgress(result, trace, 0.5, { leader: 1, last: 1.01 }, ["leader", "last"]).map((entry) => entry.teamId)).toEqual([
+      "leader",
+      "last"
+    ]);
+    expect(liveClassificationByCarProgress(result, trace, 0.5, { leader: 1, last: 1.03 }, ["leader", "last"]).map((entry) => entry.teamId)).toEqual([
+      "last",
+      "leader"
+    ]);
   });
 });
 

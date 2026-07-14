@@ -6,7 +6,7 @@ import { cardFit, strongestForecast } from "./helpers.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
 import { CircuitMap } from "../features/CircuitMap.js";
-import { DirectiveView } from "../features/DirectiveView.js";
+import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
 import { ReplayView } from "../features/ReplayView.js";
 import { ReportView } from "../features/ReportView.js";
@@ -335,26 +335,30 @@ export function App() {
 
       <section className="view-container">
         {gameView === "drive" ? (
-          <div className="view-stack">
+          <div className="drive-grid">
             <CircuitMap circuit={currentCircuit} tt={tt} />
+            <DirectivePanel
+              form={form}
+              setForm={setForm}
+              ownedCardIds={ownedCardIds}
+              selectedCardId={selectedCardId}
+              selectedCardFit={selectedCardFit}
+              tt={tt}
+            />
           </div>
         ) : null}
-        {gameView === "directive" ? (
-          <DirectiveView
+        {gameView === "championship" ? (
+          <ChampionshipView
             state={leagueState}
+            playerTeamId={playerTeam?.id}
             form={form}
             setForm={setForm}
-            ownedCardIds={ownedCardIds}
-            selectedCardId={selectedCardId}
-            selectedCardFit={selectedCardFit}
             loading={status === "loading"}
             onUpdateSettings={updateSettings}
             onForgetPlayer={forgetPlayer}
+            onRestartLeague={restartLeague}
             tt={tt}
           />
-        ) : null}
-        {gameView === "championship" ? (
-          <ChampionshipView state={leagueState} playerTeamId={playerTeam?.id} loading={status === "loading"} onRestartLeague={restartLeague} tt={tt} />
         ) : null}
         {gameView === "garage" ? (
           <GarageView

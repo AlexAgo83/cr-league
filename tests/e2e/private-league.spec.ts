@@ -71,7 +71,6 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
 
   await page.getByRole("button", { name: "Create league" }).click();
   await expect(page.getByRole("button", { name: "Race", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Directive", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Championship", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Garage", exact: true })).toBeVisible();
   await page.getByRole("button", { name: "Championship", exact: true }).click();

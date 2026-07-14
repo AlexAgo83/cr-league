@@ -234,10 +234,12 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Create league" }));
 
-    // Drive view + topbar
+    // Drive view: map + directive panel side by side
     expect(await screen.findByText("ABC123")).toBeTruthy();
     expect(screen.getByText("Prepare")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
+    expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
+    expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Replay" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByRole("button", { name: "Report" }).hasAttribute("disabled")).toBe(true);
 
@@ -256,11 +258,7 @@ describe("App", () => {
     expect(screen.getByText("Current GP")).toBeTruthy();
     expect(screen.getByText("0/2")).toBeTruthy();
 
-    // Directive view
-    fireEvent.click(screen.getByRole("button", { name: "Directive" }));
-    expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
-    expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
-
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(screen.getByText("Ready to launch")).toBeTruthy();
@@ -302,18 +300,15 @@ describe("App", () => {
     expect((await screen.findAllByText("Round 2")).length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Restart session" })).toBeTruthy();
 
-    // Settings live in the directive view
-    fireEvent.click(screen.getByRole("button", { name: "Directive" }));
+    // League controls live in the championship view
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
     fireEvent.click(screen.getByRole("button", { name: "Update settings" }));
     expect(await screen.findByText("League settings updated.")).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     fireEvent.click(screen.getByRole("button", { name: "Restart session" }));
     expect(await screen.findByText("Playtest session restarted.")).toBeTruthy();
     expect(screen.getAllByText("Round 1").length).toBeGreaterThan(0);
 
-    fireEvent.click(screen.getByRole("button", { name: "Directive" }));
     fireEvent.click(screen.getByRole("button", { name: "Forget team" }));
     expect(screen.getByText("Team claim forgotten.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-player-claim")).toBe(null);

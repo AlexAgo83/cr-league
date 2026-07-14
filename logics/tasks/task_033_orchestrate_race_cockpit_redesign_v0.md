@@ -62,6 +62,9 @@
 - Run scaffold command tests.
 
 # Report
+- 2026-07-14 wave 3 (operator UX feedback):
+  - Merged the Course and Directive views: the race view now shows the circuit map with the directive panel beside it (stacked on mobile), since the directive decision needs the track/weather context. League controls (cadence, deadline, forget team) moved to the Championship view next to restart. Nav is 5 tabs.
+  - The next-action briefing moved into a modal opened from an info button placed before the primary command in the command bar; the race view is map-first.
 - 2026-07-14 wave 2 (corrective — screen model and visual direction realignment):
   - Root cause of the reported overlapping/broken screens: the previous wave kept every panel mounted in one DOM tree and simulated the six cockpit views with ~500 lines of absolute-positioned, `data-game-view`-scoped CSS. Panels collided at intermediate viewports; on mobile the replay and report views were fully covered by sibling panels.
   - Replaced the CSS view-toggle model with real conditional React views (`item_040`, `item_046`): `App.tsx` now owns state/API/shell only, and `features/` holds `DriveView`, `DirectiveView`, `ChampionshipView`, `GarageView`, `ReplayView`, `ReportView` plus a shared `CircuitMap`. One view mounted at a time; overlap is structurally impossible.

@@ -1841,6 +1841,8 @@ label small {
 }
 
 .garage-livery-preview span {
+  -webkit-text-stroke: 0.8px #f8fafc;
+  paint-order: stroke fill;
   transform: skewX(10deg);
 }
 

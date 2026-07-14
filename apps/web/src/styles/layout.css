@@ -711,6 +711,31 @@ label small {
 
 /* ---------- Replay & report ---------- */
 
+.result-tabs {
+  background: rgb(255 255 255 / 0.04);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: 16px;
+  padding: 4px;
+}
+
+.result-tabs button {
+  background: transparent;
+  border: 0;
+  border-radius: 6px;
+  color: var(--color-muted);
+  min-height: 34px;
+  padding: 7px 14px;
+}
+
+.result-tabs button.active,
+.result-tabs button[aria-selected="true"] {
+  background: var(--color-accent);
+  color: #06100c;
+}
+
 .replay-explainer,
 .replay-summary span,
 .replay-empty {

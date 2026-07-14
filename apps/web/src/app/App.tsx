@@ -8,8 +8,7 @@ import { ChampionshipView } from "../features/ChampionshipView.js";
 import { CircuitMap } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
-import { ReplayView } from "../features/ReplayView.js";
-import { ReportView } from "../features/ReportView.js";
+import { ResultView } from "../features/ResultView.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
 const PLAYER_CLAIM_KEY = "cr-league-player-claim";
@@ -163,7 +162,7 @@ export function App() {
         })
       });
       setLeagueState(state);
-      setGameView("report");
+      setGameView("result");
       setMessage(tt("status_grand_prix_resolved"));
     });
   }
@@ -316,7 +315,7 @@ export function App() {
               type="button"
               className={gameView === view ? "active" : undefined}
               onClick={() => setGameView(view)}
-              disabled={(view === "replay" || view === "report") && !result}
+              disabled={view === "result" && !result}
             >
               {tt(`rail_${view}` as TranslationKey)}
             </button>
@@ -374,13 +373,11 @@ export function App() {
             tt={tt}
           />
         ) : null}
-        {gameView === "replay" && result ? (
-          <ReplayView result={result} circuit={currentCircuit} playerTeamId={playerTeam?.id} tt={tt} />
-        ) : null}
-        {gameView === "report" && result ? (
-          <ReportView
+        {gameView === "result" && result ? (
+          <ResultView
             state={leagueState}
             result={result}
+            circuit={currentCircuit}
             playerTeamId={playerTeam?.id}
             playerDecision={playerDecision}
             forecastPick={forecastPick}

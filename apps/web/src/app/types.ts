@@ -59,9 +59,9 @@ export type LeagueState = {
   }>;
 };
 
-export type GameView = "drive" | "championship" | "garage" | "replay" | "report";
+export type GameView = "drive" | "championship" | "garage" | "result";
 
-export const GAME_VIEWS: GameView[] = ["drive", "championship", "garage", "replay", "report"];
+export const GAME_VIEWS: GameView[] = ["drive", "championship", "garage", "result"];
 
 export type FormState = {
   leagueName: string;

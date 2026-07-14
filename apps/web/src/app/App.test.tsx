@@ -240,8 +240,7 @@ describe("App", () => {
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
-    expect(screen.getByRole("button", { name: "Replay" }).hasAttribute("disabled")).toBe(true);
-    expect(screen.getByRole("button", { name: "Report" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByRole("button", { name: "Result" }).hasAttribute("disabled")).toBe(true);
 
     // Briefing modal from the info button
     expect(screen.queryByText("Wait for directives")).toBe(null);
@@ -263,17 +262,20 @@ describe("App", () => {
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(screen.getByText("Ready to launch")).toBeTruthy();
 
-    // Launch: auto-switches to the report view
+    // Launch: auto-switches to the result view
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
     expect(screen.getByText("Race resolved")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Result" }).className).toContain("active");
+    expect(screen.getByRole("tab", { name: "Report" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
     expect(screen.getByText("Balanced · Weather · Rain Grip")).toBeTruthy();
     expect(screen.getByText("Your card shaped the race. Keep one for moments where the track or forecast clearly matches it.")).toBeTruthy();
 
     // Replay view
-    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
+    fireEvent.keyDown(screen.getByRole("tablist", { name: "Race result sections" }), { key: "ArrowLeft" });
+    expect(screen.getByRole("tab", { name: "Replay" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("Winner")).toBeTruthy();
     expect(screen.getByLabelText("Race replay by lap")).toBeTruthy();
@@ -348,7 +350,8 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Create league" }));
 
-    fireEvent.click(await screen.findByRole("button", { name: "Replay" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Result" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Replay" }));
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("No replay events were recorded for this GP.")).toBeTruthy();
   });

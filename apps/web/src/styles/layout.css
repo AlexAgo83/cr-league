@@ -1025,7 +1025,7 @@ button.result-toggle-command:hover {
 }
 
 .report-podium small,
-.report-blocks p {
+.report-key-moments p {
   color: var(--color-muted);
 }
 
@@ -1094,17 +1094,6 @@ button.result-toggle-command:hover {
 
 .report-side-recap .recap-grid {
   grid-template-columns: 1fr;
-}
-
-.report-blocks {
-  display: grid;
-  gap: 14px;
-}
-
-.report-blocks > section {
-  background: rgb(255 255 255 / 0.035);
-  border-left: 3px solid var(--color-telemetry);
-  padding: 12px 14px;
 }
 
 .report-key-moments ol,

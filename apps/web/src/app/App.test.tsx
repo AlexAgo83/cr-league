@@ -278,6 +278,7 @@ describe("App", () => {
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("L5");
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip");
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("+2 pos");
+    expect(document.querySelector(".replay-tower li")?.textContent).toContain("P1Mika Blitz");
 
     // Timeline markers carry the key moments and seek on click
     expect(document.querySelectorAll(".replay-tick").length).toBe(4);
@@ -285,6 +286,7 @@ describe("App", () => {
     expect(document.querySelector(".replay-marker")?.getAttribute("title")).toContain("Rain Grip");
     fireEvent.click(document.querySelector(".replay-marker")!);
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("100%");
+    expect(document.querySelector(".replay-tower li")?.textContent).toContain("P1Circle One");
     fireEvent.click(screen.getByRole("button", { name: /Restart/ }));
     fireEvent.click(screen.getByRole("button", { name: /L5.*Rain Grip/ }));
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("100%");

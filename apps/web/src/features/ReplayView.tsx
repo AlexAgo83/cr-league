@@ -22,6 +22,17 @@ function liveTraits(base: MapTraitStats, weather: Weather, lap: number): MapTrai
   };
 }
 
+function liveClassification(result: RaceResult, time: number, replayEnd: number): RaceResult["classification"] {
+  const progress = replayEnd > 0 ? Math.min(1, Math.max(0, time / replayEnd)) : 1;
+  return [...result.classification].sort((left, right) => {
+    const leftStart = left.position + left.positionChange;
+    const rightStart = right.position + right.positionChange;
+    const leftLive = leftStart + (left.position - leftStart) * progress;
+    const rightLive = rightStart + (right.position - rightStart) * progress;
+    return leftLive - rightLive || left.position - right.position;
+  });
+}
+
 function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator) {
   const team = names.get(event.teamId) ?? "";
   const context = event.cardId ? tt(`card_${event.cardId}` as TranslationKey) : event.type === "weather_change" ? tt("event_weather_change") : team;
@@ -57,8 +68,9 @@ export function ReplayView({
   const [speed, setSpeed] = useState(1);
   const [driverFocus, setDriverFocus] = useState(false);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
+  const [liveTower, setLiveTower] = useState(() => liveClassification(result, 0, 1));
   const names = teamNamesFromResult(result);
-  const field = result.classification.slice(0, 6);
+  const field = result.classification;
   const cars: MapCar[] = field.map((entry, index) => ({
     id: entry.teamId,
     label: entry.teamName.slice(0, 3).toUpperCase(),
@@ -113,6 +125,8 @@ export function ReplayView({
     const lapDuration = playerCar?.duration || replayEnd / circuit.laps || 1;
     const lap = Math.min(circuit.laps, Math.floor(time / lapDuration) + 1);
     setLive((current) => (current.lap === lap && current.segment === segment ? current : { lap, segment }));
+    const nextTower = liveClassification(result, time, replayEnd);
+    setLiveTower((current) => (current.map((entry) => entry.teamId).join("|") === nextTower.map((entry) => entry.teamId).join("|") ? current : nextTower));
   }
 
   // Majors and player moments first pick, race notes as filler — then strict race order.
@@ -204,9 +218,9 @@ export function ReplayView({
                   </select>
                 </div>
                 <ol className="replay-tower">
-                  {result.classification.map((entry) => (
+                  {liveTower.map((entry, index) => (
                     <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
-                      <strong>P{entry.position}</strong>
+                      <strong>P{index + 1}</strong>
                       <span>{entry.teamName}</span>
                     </li>
                   ))}

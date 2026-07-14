@@ -88,6 +88,9 @@ type CityCircuit = {
   };
   likelyWeather: "dry" | "light_rain" | "heavy_rain";
   routePath: string;
+  center: { lat: number; lng: number };
+  zoom: number;
+  route: Array<{ lat: number; lng: number }>;
 };
 
 const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
@@ -98,7 +101,18 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     laps: 5,
     traits: { grip: 64, overtaking: 72, energy: 58 },
     likelyWeather: "light_rain",
-    routePath: "M52 112 C62 38 160 26 216 52 C288 85 273 142 194 134 C108 126 112 74 174 78 C226 82 225 112 181 112"
+    routePath: "M52 112 C62 38 160 26 216 52 C288 85 273 142 194 134 C108 126 112 74 174 78 C226 82 225 112 181 112",
+    center: { lat: 48.8568, lng: 2.3524 },
+    zoom: 14,
+    route: [
+      { lat: 48.8624, lng: 2.3332 },
+      { lat: 48.8665, lng: 2.3465 },
+      { lat: 48.8612, lng: 2.3656 },
+      { lat: 48.8526, lng: 2.3727 },
+      { lat: 48.8467, lng: 2.3562 },
+      { lat: 48.8505, lng: 2.3384 },
+      { lat: 48.8624, lng: 2.3332 }
+    ]
   },
   {
     city: "Paris",
@@ -107,7 +121,17 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     laps: 6,
     traits: { grip: 70, overtaking: 55, energy: 62 },
     likelyWeather: "dry",
-    routePath: "M44 96 C78 38 158 35 210 58 C268 83 280 135 218 148 C156 162 78 138 44 96"
+    routePath: "M44 96 C78 38 158 35 210 58 C268 83 280 135 218 148 C156 162 78 138 44 96",
+    center: { lat: 48.8492, lng: 2.3458 },
+    zoom: 14,
+    route: [
+      { lat: 48.8544, lng: 2.3238 },
+      { lat: 48.8582, lng: 2.3424 },
+      { lat: 48.8512, lng: 2.3664 },
+      { lat: 48.8425, lng: 2.3594 },
+      { lat: 48.8408, lng: 2.3372 },
+      { lat: 48.8544, lng: 2.3238 }
+    ]
   },
   {
     city: "Amsterdam",
@@ -116,7 +140,17 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     laps: 5,
     traits: { grip: 60, overtaking: 68, energy: 66 },
     likelyWeather: "light_rain",
-    routePath: "M48 124 C66 52 122 36 178 44 C250 55 292 102 260 138 C226 176 110 166 76 136 C58 120 82 90 132 82"
+    routePath: "M48 124 C66 52 122 36 178 44 C250 55 292 102 260 138 C226 176 110 166 76 136 C58 120 82 90 132 82",
+    center: { lat: 52.371, lng: 4.895 },
+    zoom: 14,
+    route: [
+      { lat: 52.381, lng: 4.883 },
+      { lat: 52.379, lng: 4.904 },
+      { lat: 52.369, lng: 4.914 },
+      { lat: 52.361, lng: 4.896 },
+      { lat: 52.366, lng: 4.878 },
+      { lat: 52.381, lng: 4.883 }
+    ]
   },
   {
     city: "Amsterdam",
@@ -125,7 +159,17 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     laps: 4,
     traits: { grip: 58, overtaking: 78, energy: 52 },
     likelyWeather: "heavy_rain",
-    routePath: "M38 128 L96 54 L180 48 L290 76 L250 136 L142 152 Z"
+    routePath: "M38 128 L96 54 L180 48 L290 76 L250 136 L142 152 Z",
+    center: { lat: 52.392, lng: 4.905 },
+    zoom: 14,
+    route: [
+      { lat: 52.401, lng: 4.882 },
+      { lat: 52.407, lng: 4.907 },
+      { lat: 52.395, lng: 4.928 },
+      { lat: 52.382, lng: 4.913 },
+      { lat: 52.385, lng: 4.889 },
+      { lat: 52.401, lng: 4.882 }
+    ]
   },
   {
     city: "Berlin",
@@ -134,7 +178,17 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     laps: 6,
     traits: { grip: 76, overtaking: 62, energy: 70 },
     likelyWeather: "dry",
-    routePath: "M52 96 C52 46 104 24 164 34 C238 47 294 82 278 126 C260 176 150 170 88 140 C64 128 52 114 52 96"
+    routePath: "M52 96 C52 46 104 24 164 34 C238 47 294 82 278 126 C260 176 150 170 88 140 C64 128 52 114 52 96",
+    center: { lat: 52.515, lng: 13.377 },
+    zoom: 14,
+    route: [
+      { lat: 52.526, lng: 13.352 },
+      { lat: 52.528, lng: 13.384 },
+      { lat: 52.516, lng: 13.405 },
+      { lat: 52.503, lng: 13.392 },
+      { lat: 52.504, lng: 13.359 },
+      { lat: 52.526, lng: 13.352 }
+    ]
   },
   {
     city: "Berlin",
@@ -143,7 +197,17 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     laps: 5,
     traits: { grip: 68, overtaking: 74, energy: 60 },
     likelyWeather: "dry",
-    routePath: "M42 132 C84 70 138 68 168 38 C202 64 238 58 286 104 C244 146 198 126 166 158 C128 124 92 158 42 132"
+    routePath: "M42 132 C84 70 138 68 168 38 C202 64 238 58 286 104 C244 146 198 126 166 158 C128 124 92 158 42 132",
+    center: { lat: 52.521, lng: 13.405 },
+    zoom: 14,
+    route: [
+      { lat: 52.529, lng: 13.388 },
+      { lat: 52.532, lng: 13.411 },
+      { lat: 52.520, lng: 13.428 },
+      { lat: 52.509, lng: 13.412 },
+      { lat: 52.514, lng: 13.391 },
+      { lat: 52.529, lng: 13.388 }
+    ]
   }
 ];
 
@@ -759,6 +823,7 @@ function VisualReplay({
   const [isPlaying, setIsPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
   const circuit = circuitForRound(round);
+  const mapPath = projectedCircuitMap(circuit).path;
   const playerEntry = result.classification.find((entry) => entry.teamId === playerTeamId) ?? result.classification[0];
   const winner = result.classification[0];
   const replayEvents = result.events
@@ -771,7 +836,7 @@ function VisualReplay({
   }));
   const speedDuration = `${Math.max(3, 9 / speed)}s`;
   const playbackStyle = {
-    "--race-path": `path("${circuit.routePath}")`,
+    "--race-path": `path("${mapPath}")`,
     "--race-duration": speedDuration,
     "--race-state": isPlaying ? "running" : "paused"
   } as CSSProperties & Record<string, string>;
@@ -808,7 +873,7 @@ function VisualReplay({
             style={{
               animationDelay: `${delay}s`,
               animationDuration: `${duration / speed}s`,
-              offsetPath: `path("${circuit.routePath}")`
+              offsetPath: `path("${mapPath}")`
             } as CSSProperties}
           >
             {entry.teamName.slice(0, 3).toUpperCase()}
@@ -844,6 +909,8 @@ function VisualReplay({
 }
 
 function CityCircuitMap({ circuit, tt, compact = false }: { circuit: CityCircuit; tt: (key: TranslationKey) => string; compact?: boolean }) {
+  const map = projectedCircuitMap(circuit);
+
   return (
     <section className={compact ? "city-circuit-map compact" : "city-circuit-map"} aria-label={tt("city_circuit_map")}>
       <div className="city-circuit-heading">
@@ -853,11 +920,22 @@ function CityCircuitMap({ circuit, tt, compact = false }: { circuit: CityCircuit
           {circuit.country} · {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
         </small>
       </div>
-      <svg viewBox="0 0 330 190" aria-hidden="true">
-        <path className="city-route-shadow" d={circuit.routePath} />
-        <path className="city-route-line" d={circuit.routePath} />
-        <path className="city-route-accent" d={circuit.routePath} />
-      </svg>
+      <div className="city-map-stage">
+        {map.tiles.map((tile) => (
+          <img
+            key={`${tile.x}-${tile.y}`}
+            alt=""
+            className="city-map-tile"
+            src={`https://tile.openstreetmap.org/${circuit.zoom}/${tile.x}/${tile.y}.png`}
+            style={{ left: tile.left, top: tile.top }}
+          />
+        ))}
+        <svg viewBox={`0 0 ${map.width} ${map.height}`} aria-hidden="true">
+          <path className="city-route-shadow" d={map.path} />
+          <path className="city-route-line" d={map.path} />
+          <path className="city-route-accent" d={map.path} />
+        </svg>
+      </div>
       {!compact ? (
         <div className="circuit-traits">
           <span>{tt("circuit_grip")} {circuit.traits.grip}</span>
@@ -871,6 +949,54 @@ function CityCircuitMap({ circuit, tt, compact = false }: { circuit: CityCircuit
 
 function circuitForRound(round: number) {
   return CITY_CIRCUITS[(Math.max(1, round) - 1) % CITY_CIRCUITS.length] ?? CITY_CIRCUITS[0];
+}
+
+function projectedCircuitMap(circuit: CityCircuit) {
+  const width = 960;
+  const height = 520;
+  const tileSize = 256;
+  const center = projectLatLng(circuit.center, circuit.zoom);
+  const points = circuit.route.map((point) => {
+    const projected = projectLatLng(point, circuit.zoom);
+    return {
+      x: projected.x - center.x + width / 2,
+      y: projected.y - center.y + height / 2
+    };
+  });
+  const minTileX = Math.floor((center.x - width / 2) / tileSize);
+  const maxTileX = Math.floor((center.x + width / 2) / tileSize);
+  const minTileY = Math.floor((center.y - height / 2) / tileSize);
+  const maxTileY = Math.floor((center.y + height / 2) / tileSize);
+  const tiles = [];
+
+  for (let x = minTileX; x <= maxTileX; x += 1) {
+    for (let y = minTileY; y <= maxTileY; y += 1) {
+      tiles.push({
+        x,
+        y,
+        left: x * tileSize - (center.x - width / 2),
+        top: y * tileSize - (center.y - height / 2)
+      });
+    }
+  }
+
+  return {
+    width,
+    height,
+    tiles,
+    path: points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ")
+  };
+}
+
+function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
+  const tileSize = 256;
+  const scale = tileSize * 2 ** zoom;
+  const sin = Math.sin((point.lat * Math.PI) / 180);
+
+  return {
+    x: ((point.lng + 180) / 360) * scale,
+    y: (0.5 - Math.log((1 + sin) / (1 - sin)) / (4 * Math.PI)) * scale
+  };
 }
 
 function rememberPlayer(state: LeagueState) {

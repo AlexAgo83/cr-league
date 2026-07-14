@@ -77,10 +77,6 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
   await expect(page.getByText("Current GP")).toBeVisible();
   await expect(page.getByText("0/2")).toBeVisible();
 
-  await page.getByLabel("Cadence").selectOption("weekly");
-  await page.getByRole("button", { name: "Update settings" }).click();
-  await expect(page.getByText("League settings updated.")).toBeVisible();
-  await expect(page.getByLabel("League summary").getByText("Weekly")).toBeVisible();
   await expect(page.getByLabel("League summary").getByText("Wait for directives")).toBeVisible();
 
   for (const expectedRound of [1, 2, 3]) {
@@ -96,26 +92,14 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
     await expect(page.getByLabel("Race replay by lap")).toBeVisible();
     await expect(page.getByText("Balanced · Weather · Rain Grip")).toBeVisible();
     await expect(page.locator(".replay-timeline").getByText("Lap 5")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Garage" })).toBeVisible();
-    await expect(page.getByText("Last GP")).toBeVisible();
 
     if (expectedRound < 3) {
-      if (expectedRound === 1) {
-        await page.getByRole("button", { name: /Launch Boost .*100/ }).click();
-        await expect(page.getByText("Card added to your garage.")).toBeVisible();
-      }
       await page.getByRole("button", { name: "Next GP" }).click();
       await expect(page.getByText(`Round ${expectedRound + 1}`).first()).toBeVisible();
     }
   }
 
   await expect(page.getByText("Round 3").first()).toBeVisible();
-  await expect(page.getByText("Your team Circle One")).toBeVisible();
-  page.on("dialog", (dialog) => dialog.accept());
-  await page.getByRole("button", { name: "Restart session" }).click();
-  await expect(page.getByText("Playtest session restarted.")).toBeVisible();
-  await expect(page.getByText("Round 1").first()).toBeVisible();
-  await expect(page.getByText("Your team Circle One")).toBeVisible();
 });
 
 function leagueState(result: ReturnType<typeof resultForRound> | null = null) {

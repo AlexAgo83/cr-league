@@ -814,11 +814,11 @@ body {
 
 .race-panel {
   background: linear-gradient(180deg, #151b22, #10161d);
-  grid-column: span 8;
+  grid-column: 1 / -1;
 }
 
 .league-panel {
-  grid-column: span 4;
+  grid-column: 1 / -1;
 }
 
 .recap-panel,
@@ -888,6 +888,10 @@ button.primary-command:not(:disabled),
   color: #6f7a88;
 }
 
+.race-actions.secondary-actions {
+  display: none;
+}
+
 .panel-heading {
   border-bottom: 1px solid var(--color-border);
   margin: -2px 0 14px;
@@ -954,32 +958,66 @@ button.primary-command:not(:disabled),
 .city-circuit-map,
 .replay-track {
   background:
-    linear-gradient(90deg, rgb(255 255 255 / 0.03) 1px, transparent 1px),
-    linear-gradient(0deg, rgb(255 255 255 / 0.03) 1px, transparent 1px),
-    radial-gradient(circle at 70% 20%, rgb(56 189 248 / 0.12), transparent 32%),
     #090e13;
-  background-size: 38px 38px, 38px 38px, auto, auto;
   border-color: #253241;
 }
 
+.city-map-stage {
+  aspect-ratio: 16 / 8.65;
+  background: #071018;
+  border-radius: 6px;
+  margin-inline: auto;
+  min-height: 360px;
+  overflow: hidden;
+  position: relative;
+  width: min(100%, 960px);
+}
+
+.city-map-tile {
+  height: 256px;
+  opacity: 0.72;
+  position: absolute;
+  width: 256px;
+}
+
+.city-map-stage::after {
+  background:
+    linear-gradient(180deg, rgb(3 8 13 / 0.1), rgb(3 8 13 / 0.56)),
+    radial-gradient(circle at 50% 50%, transparent 32%, rgb(3 8 13 / 0.38));
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.city-map-stage svg {
+  display: block;
+  height: 100%;
+  inset: 0;
+  position: absolute;
+  width: 100%;
+  z-index: 2;
+}
+
 .city-route-shadow {
-  stroke: #1f2937;
-  stroke-width: 22;
+  stroke: rgb(2 6 12 / 0.78);
+  stroke-width: 24;
 }
 
 .city-route-line {
-  stroke: #0b0f14;
-  stroke-width: 12;
+  stroke: #f8fafc;
+  stroke-width: 11;
 }
 
 .city-route-accent {
   stroke: var(--color-accent);
-  stroke-dasharray: 56 42;
-  stroke-width: 4;
+  stroke-dasharray: 42 28;
+  stroke-width: 5;
 }
 
 .race-workbench {
-  grid-template-columns: minmax(0, 1.15fr) minmax(220px, 0.85fr);
+  grid-template-columns: 1fr;
 }
 
 .directive-block {
@@ -987,10 +1025,7 @@ button.primary-command:not(:disabled),
 }
 
 .settings-block {
-  background: #10161d;
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  padding: 12px;
+  display: none;
 }
 
 .race-workbench > div,
@@ -1026,6 +1061,30 @@ button.primary-command:not(:disabled),
 
 .dashboard-summary {
   grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.league-panel {
+  align-items: center;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(220px, 0.35fr) minmax(0, 1fr);
+  padding: 14px 16px;
+}
+
+.league-panel .panel-heading {
+  border: 0;
+  margin: 0;
+  padding: 0;
+}
+
+.league-panel .dashboard-summary {
+  margin: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.league-panel .dashboard-section,
+.league-panel .dashboard-actions {
+  display: none;
 }
 
 .dashboard-summary span,
@@ -1080,8 +1139,8 @@ button.primary-command:not(:disabled),
   min-height: 300px;
 }
 
-.city-replay-track .city-circuit-map svg {
-  height: 300px;
+.city-replay-track .city-map-stage {
+  min-height: 420px;
 }
 
 .replay-car {
@@ -1131,6 +1190,14 @@ button.primary-command:not(:disabled),
   }
 
   .dashboard-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .league-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .league-panel .dashboard-summary {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
@@ -1195,10 +1262,6 @@ button.primary-command:not(:disabled),
     padding: 5px 7px;
   }
 
-  .settings-block {
-    order: 2;
-  }
-
   .race-command-row {
     gap: 8px;
   }
@@ -1208,7 +1271,8 @@ button.primary-command:not(:disabled),
     min-height: 280px;
   }
 
-  .city-replay-track .city-circuit-map svg {
-    height: 220px;
+  .city-map-stage,
+  .city-replay-track .city-map-stage {
+    min-height: 260px;
   }
 }

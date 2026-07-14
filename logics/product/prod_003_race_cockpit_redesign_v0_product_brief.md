@@ -126,11 +126,12 @@ flowchart LR
 - Localized the displayed race report/event text at the UI boundary so French playtests do not show raw English simulator prose in the redesigned result areas.
 - Captured visual QA screenshots in `~/Desktop/CRL/` for desktop and mobile briefing/replay states after the implementation pass.
 - Corrective layout pass removed the oversized desktop rail, widened the race cockpit, put the directive before league settings, and regenerated `*-v2.png` screenshots after the first visual QA showed the page still felt too stacked.
+- Follow-up map-first pass replaced the abstract SVG-only circuit with OpenStreetMap tiles plus projected lat/lng route overlays, removed league settings and secondary controls from the first viewport, and reduced championship/garage/standings to a compact summary strip below the race view.
 
 # Remaining limits
 - The replay is still a deterministic visual playback derived from resolved events, not a full sampled race timeline with scrubber and proven overtake curves.
-- The city circuits remain static stored SVG paths; Fleet Sim route reuse is still a product direction, not a runtime dependency.
-- Secondary setup/admin controls are visually calmer, but they have not been split into separate routed screens.
+- The city circuits now use static stored lat/lng routes rendered over OSM tiles; Fleet Sim route-authoring reuse is still a product direction, not a runtime dependency.
+- Secondary setup/admin controls are intentionally not first-viewport material anymore; they still need a cleaner dedicated management surface later.
 
 # References
 - Product back-reference: `req_032_redesign_the_cr_league_race_cockpit_v0`

@@ -401,6 +401,25 @@ label small {
   right: 4px;
 }
 
+.replay-progress {
+  background: rgb(255 255 255 / 0.16);
+  border-radius: 999px;
+  bottom: 24px;
+  height: 6px;
+  left: 14px;
+  overflow: hidden;
+  position: absolute;
+  right: 14px;
+  z-index: 2;
+}
+
+.replay-progress-fill {
+  background: var(--color-accent);
+  border-radius: 999px;
+  height: 100%;
+  width: 0%;
+}
+
 .circuit-route-glow,
 .circuit-route-asphalt,
 .circuit-route-edge,

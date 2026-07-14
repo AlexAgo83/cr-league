@@ -71,12 +71,14 @@ export function CircuitMap({
   circuit,
   tt,
   cars = [],
-  svgRef
+  svgRef,
+  overlay
 }: {
   circuit: CityCircuit;
   tt: Translator;
   cars?: MapCar[];
   svgRef?: Ref<SVGSVGElement>;
+  overlay?: React.ReactNode;
 }) {
   const { zoom, tiles, d, start } = circuitScene(circuit);
 
@@ -120,6 +122,7 @@ export function CircuitMap({
           ))}
         </svg>
         <small className="map-attribution">© OpenStreetMap · © CARTO</small>
+        {overlay}
       </div>
       <div className="circuit-traits">
         <span>

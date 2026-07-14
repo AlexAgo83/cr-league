@@ -17,6 +17,7 @@ export function ReplayView({
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const progressRef = useRef<HTMLDivElement>(null);
   const clock = useRef(0);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
@@ -48,6 +49,7 @@ export function ReplayView({
       clock.current = Math.min(clock.current + ((now - last) / 1000) * speed, replayEnd);
       last = now;
       svg.setCurrentTime(clock.current);
+      if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
       if (clock.current >= replayEnd) {
         setPlaying(false);
         return;
@@ -60,6 +62,7 @@ export function ReplayView({
   function restart() {
     clock.current = 0;
     svgRef.current?.setCurrentTime?.(0);
+    if (progressRef.current) progressRef.current.style.width = "0%";
     setPlaying(true);
   }
   const keyMoments = [
@@ -85,7 +88,17 @@ export function ReplayView({
             </span>
           ) : null}
         </div>
-        <CircuitMap circuit={circuit} tt={tt} cars={cars} svgRef={svgRef} />
+        <CircuitMap
+          circuit={circuit}
+          tt={tt}
+          cars={cars}
+          svgRef={svgRef}
+          overlay={
+            <div className="replay-progress" aria-hidden="true">
+              <div ref={progressRef} className="replay-progress-fill" />
+            </div>
+          }
+        />
         <div className="actions replay-controls secondary-actions">
           <button type="button" onClick={() => (!playing && clock.current >= replayEnd ? restart() : setPlaying(!playing))}>
             {playing ? tt("action_pause") : tt("action_play")}

@@ -90,8 +90,8 @@ function circuitScene(circuit: CityCircuit) {
   };
 }
 
-function pointOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
-  if (!points.length) return { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2 };
+function poseOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
+  if (!points.length) return { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
   const closed = [...points, points[0]!];
   const segments = closed.slice(1).map((point, index) => ({
     from: closed[index]!,
@@ -106,13 +106,19 @@ function pointOnRoute(points: Array<{ x: number; y: number }>, progress: number)
       const ratio = segment.length ? distance / segment.length : 0;
       return {
         x: segment.from.x + (segment.to.x - segment.from.x) * ratio,
-        y: segment.from.y + (segment.to.y - segment.from.y) * ratio
+        y: segment.from.y + (segment.to.y - segment.from.y) * ratio,
+        angle: Math.atan2(segment.to.y - segment.from.y, segment.to.x - segment.from.x) * 180 / Math.PI
       };
     }
     distance -= segment.length;
   }
 
-  return points[0]!;
+  return { ...points[0]!, angle: 0 };
+}
+
+function pointOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
+  const pose = poseOnRoute(points, progress);
+  return { x: pose.x, y: pose.y };
 }
 
 function boundsOf(points: Array<{ x: number; y: number }>) {
@@ -247,20 +253,20 @@ export function CircuitMap({
             <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />
             {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
-              const point = car.progress === undefined ? null : pointOnRoute(points, car.progress);
+              const pose = car.progress === undefined ? null : poseOnRoute(points, car.progress);
               const carStyle = car.livery
                 ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
                 : undefined;
               return (
-                <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={point ? `translate(${point.x} ${point.y})` : undefined}>
+                <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
                   <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                    <circle r="12" />
+                    <rect className="map-car-body" x="-15" y="-10" width="30" height="20" rx="6" transform={pose ? `rotate(${pose.angle})` : undefined} />
                     <text textAnchor="middle" dominantBaseline="central">
                       {car.label}
                     </text>
                   </g>
                   {car.progress === undefined ? (
-                    <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={circuit.laps} fill="freeze" />
+                    <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={circuit.laps} fill="freeze" rotate="auto" />
                   ) : null}
                 </g>
               );

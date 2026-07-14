@@ -919,13 +919,13 @@ label small {
   stroke-width: 4;
 }
 
-.map-car circle {
+.map-car-body {
   fill: var(--car-primary, var(--color-telemetry));
   stroke: var(--car-secondary, #0a0f15);
   stroke-width: 3;
 }
 
-.map-car.player circle {
+.map-car.player .map-car-body {
   fill: var(--car-primary, var(--color-accent));
 }
 

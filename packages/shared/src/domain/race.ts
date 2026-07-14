@@ -108,6 +108,7 @@ export type ReplayTracePoint = {
   lap: number;
   progress: number;
   order: string[];
+  times: Record<string, number>;
   gaps: Record<string, number>;
 };
 

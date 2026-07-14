@@ -7,7 +7,7 @@ import type { RaceEvent } from "../app/helpers.js";
 import { CircuitMap, MapTraitsPanel, type MapCar, type MapTraitStats } from "./CircuitMap.js";
 
 const WEATHER_ICONS = { dry: "☀️", light_rain: "🌦️", heavy_rain: "⛈️" } as const;
-const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], gaps: {} };
+const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 
 function clampStat(value: number) {
   return Math.max(1, Math.min(99, Math.round(value)));
@@ -30,6 +30,7 @@ function fallbackReplayTrace(result: RaceResult): ReplayTracePoint[] {
       lap: 1,
       progress: 0,
       order: [...result.classification].sort((left, right) => left.position + left.positionChange - (right.position + right.positionChange)).map((entry) => entry.teamId),
+      times: Object.fromEntries(result.classification.map((entry) => [entry.teamId, Math.max(0, entry.position + entry.positionChange - 1)])),
       gaps: Object.fromEntries(result.classification.map((entry) => [entry.teamId, Math.max(0, entry.position + entry.positionChange - 1)]))
     },
     {
@@ -37,6 +38,7 @@ function fallbackReplayTrace(result: RaceResult): ReplayTracePoint[] {
       lap: 5,
       progress: 1,
       order: result.classification.map((entry) => entry.teamId),
+      times: Object.fromEntries(result.classification.map((entry, index) => [entry.teamId, index])),
       gaps: Object.fromEntries(result.classification.map((entry, index) => [entry.teamId, index]))
     }
   ];

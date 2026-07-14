@@ -15,11 +15,19 @@ import { RACE_SEGMENTS } from "../domain/race.js";
 import { createPrng } from "./prng.js";
 
 const POINTS_BY_POSITION = [25, 18, 15, 12, 10, 8] as const;
-const CREDITS_BY_POSITION = [150, 130, 115, 105, 100, 95] as const;
+const CREDITS_BY_POSITION = [150, 130, 115, 105, 100, 100] as const;
+const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
+  start: 18,
+  early: 34,
+  mid: 36,
+  late: 34,
+  finish: 20
+};
 
 type TeamState = {
   participant: RaceParticipant;
   scores: InternalScores;
+  elapsedTime: number;
   positionDelta: number;
   resultTags: Set<string>;
   mechanicSaveAvailable: boolean;
@@ -49,7 +57,7 @@ export function simulateRace(input: RaceInput): RaceResult {
     }
 
     maybeAddFlavorEvent(segment, weather[segment], input, states, events, prng.next);
-    replayTrace.push(createReplayTracePoint(segment, (index + 1) / RACE_SEGMENTS.length, states, "score"));
+    replayTrace.push(createReplayTracePoint(segment, (index + 1) / RACE_SEGMENTS.length, states, "time"));
   }
 
   const classification = classify(states);
@@ -69,23 +77,28 @@ export function simulateRace(input: RaceInput): RaceResult {
   };
 }
 
-function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], mode: "grid" | "score"): ReplayTracePoint {
+function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], mode: "grid" | "time"): ReplayTracePoint {
   const sorted =
     mode === "grid"
       ? [...states].sort((left, right) => left.participant.standingsRank - right.participant.standingsRank)
-      : [...states].sort((left, right) => right.scores.score - left.scores.score || left.participant.standingsRank - right.participant.standingsRank);
-  const leaderScore = sorted[0]?.scores.score ?? 0;
+      : [...states].sort((left, right) => left.elapsedTime - right.elapsedTime || right.scores.score - left.scores.score);
+  const leaderTime = sorted[0]?.elapsedTime ?? 0;
 
   return {
     segment,
     lap: lapForSegment(segment),
     progress,
     order: sorted.map((state) => state.participant.teamId),
+    times: Object.fromEntries(
+      sorted.map((state, index) => [
+        state.participant.teamId,
+        mode === "grid" ? Number((index * 1.2).toFixed(1)) : Number(state.elapsedTime.toFixed(1))
+      ])
+    ),
     gaps: Object.fromEntries(
       sorted.map((state, index) => [
         state.participant.teamId,
-        // ponytail: score-to-gap is visual telemetry, replace with sector timing when simulation models exact lap deltas.
-        mode === "grid" ? index * 1.2 : Math.max(0, Number(((leaderScore - state.scores.score) / 8).toFixed(1)))
+        mode === "grid" ? index * 1.2 : Math.max(0, Number((state.elapsedTime - leaderTime).toFixed(1)))
       ])
     )
   };
@@ -106,6 +119,7 @@ function createTeamState(participant: RaceParticipant): TeamState {
   return {
     participant,
     scores,
+    elapsedTime: 0,
     positionDelta: 0,
     resultTags: new Set(),
     mechanicSaveAvailable: participant.decision.cardId === "fleet_maintenance",
@@ -196,6 +210,12 @@ function applySegment(
   }
 
   scores.score += delta;
+  state.elapsedTime += segmentTime(segment, delta);
+}
+
+function segmentTime(segment: RaceSegment, delta: number) {
+  const base = SEGMENT_BASE_TIME[segment];
+  return Math.max(base * 0.72, Math.min(base * 1.28, base - delta * 0.16));
 }
 
 function circuitFit(state: TeamState, input: RaceInput) {
@@ -330,11 +350,11 @@ function maybeAddFlavorEvent(
 }
 
 function classify(states: TeamState[]): ClassificationEntry[] {
-  const sorted = [...states].sort((left, right) => right.scores.score - left.scores.score || left.participant.standingsRank - right.participant.standingsRank);
+  const sorted = [...states].sort((left, right) => left.elapsedTime - right.elapsedTime || right.scores.score - left.scores.score);
 
   return sorted.map((state, index) => {
     const position = index + 1;
-    const baseCredits = CREDITS_BY_POSITION[index] ?? 95;
+    const baseCredits = CREDITS_BY_POSITION[index] ?? 100;
     const sponsorBonus = state.participant.decision.cardId === "fleet_sponsorship" ? 50 : 0;
 
     return {

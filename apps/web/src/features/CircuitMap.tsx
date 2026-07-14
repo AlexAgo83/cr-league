@@ -128,6 +128,22 @@ function routeLength(points: Array<{ x: number; y: number }>) {
   return points.slice(1).reduce((sum, point, index) => sum + Math.hypot(point.x - points[index]!.x, point.y - points[index]!.y), 0);
 }
 
+function startFinishLine(points: Array<{ x: number; y: number }>) {
+  const start = points[0] ?? { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2 };
+  const next = points.find((point) => Math.hypot(point.x - start.x, point.y - start.y) > 0.1) ?? { x: start.x + 1, y: start.y };
+  const angle = Math.atan2(next.y - start.y, next.x - start.x) + Math.PI / 2;
+  const halfLength = 16;
+  const dx = Math.cos(angle) * halfLength;
+  const dy = Math.sin(angle) * halfLength;
+
+  return {
+    x1: start.x - dx,
+    y1: start.y - dy,
+    x2: start.x + dx,
+    y2: start.y + dy
+  };
+}
+
 export function circuitDisplayLength(circuit: CityCircuit) {
   return routeLength(circuitScene(circuit).points);
 }
@@ -187,6 +203,7 @@ export function CircuitMap({
   const zoomModeRef = useRef<CameraZoomMode>("normal");
   const markerScale = camera?.enabled ? 1 / FOCUS_ZOOM : 1;
   const hasCars = cars.length > 0;
+  const replayStart = startFinishLine(points);
   carsRef.current = cars;
   pointsRef.current = points;
 
@@ -272,7 +289,11 @@ export function CircuitMap({
             <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={d} />
             <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={d} />
             <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={d} />
-            <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />
+            {hasCars ? (
+              <line className="circuit-start-line" x1={replayStart.x1} y1={replayStart.y1} x2={replayStart.x2} y2={replayStart.y2} />
+            ) : (
+              <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />
+            )}
             {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
               const pose = car.progress === undefined ? null : poseOnRoute(points, car.progress);

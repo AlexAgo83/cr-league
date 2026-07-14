@@ -3,7 +3,8 @@ import { useEffect, useMemo, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { circuitForRound, countryFlag } from "./circuits.js";
 import { cardFit, strongestForecast } from "./helpers.js";
-import { GAME_VIEWS, type FormState, type GameView, type LeagueState } from "./types.js";
+import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
+import { GAME_VIEWS, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
@@ -14,6 +15,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874
 const PLAYER_CLAIM_KEY = "cr-league-player-claim";
 const PLAYER_CLAIMS_KEY = "cr-league-player-claims";
 const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
+const PROFILE_SESSION_KEY = "cr-league-profile-session";
 const LANGUAGE_KEY = "cr-league-language";
 
 type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
@@ -43,9 +45,9 @@ function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: 
 
 function createInitialForm(locale: Locale): FormState {
   return {
-    leagueName: t("default_league_name", locale),
+    leagueName: randomLeagueName() || t("default_league_name", locale),
     joinCode: "",
-    teamName: t("default_team_name", locale),
+    teamName: randomTeamName() || t("default_team_name", locale),
     cadence: "manual",
     preparationDeadlineAt: "",
     approach: "balanced",
@@ -69,11 +71,14 @@ export function App() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
+  const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
+  const [profileForm, setProfileForm] = useState({ email: "", recoveryCode: "" });
   const [savedClaims, setSavedClaims] = useState(loadPlayerClaims);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState(() => t("status_initial", locale));
 
   useEffect(() => {
+    if (!profileSession) return;
     const saved = getActiveClaim(savedClaims);
     if (!saved) return;
     void run(
@@ -130,7 +135,8 @@ export function App() {
         method: "POST",
         body: JSON.stringify({
           name: form.leagueName,
-          teamName: form.teamName
+          teamName: form.teamName,
+          profileId: profileSession?.profile.id
         })
       });
       rememberPlayer(state);
@@ -146,7 +152,8 @@ export function App() {
         method: "POST",
         body: JSON.stringify({
           code: form.joinCode,
-          teamName: form.teamName
+          teamName: form.teamName,
+          profileId: profileSession?.profile.id
         })
       });
       rememberPlayer(state);
@@ -253,6 +260,51 @@ export function App() {
     });
   }
 
+  async function updateTeamName(name: string) {
+    if (!leagueState || !playerTeam) return;
+
+    await run(tt("status_team_name_updated"), async () => {
+      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/teams/name`, {
+        method: "POST",
+        body: JSON.stringify({
+          teamId: playerTeam.id,
+          name
+        })
+      });
+      setLeagueState(state);
+      rememberPlayer(state);
+      setMessage(tt("status_team_name_updated"));
+    });
+  }
+
+  async function createProfileSession() {
+    await run(tt("status_creating_profile"), async () => {
+      const session = await api<ProfileSession>("/profiles", {
+        method: "POST",
+        body: JSON.stringify({ email: profileForm.email })
+      });
+      storeProfileSession(session);
+      setProfileSession(session);
+      setSavedClaims(claimsFromProfile(session));
+      setMessage(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`);
+    });
+  }
+
+  async function recoverProfileSession() {
+    await run(tt("status_recovering_profile"), async () => {
+      const session = await api<ProfileSession>("/profiles/recover", {
+        method: "POST",
+        body: JSON.stringify(profileForm)
+      });
+      storeProfileSession(session);
+      const claims = claimsFromProfile(session);
+      storePlayerClaims(claims, claims[0]?.teamId);
+      setProfileSession(session);
+      setSavedClaims(claims);
+      setMessage(tt("status_profile_recovered"));
+    });
+  }
+
   async function switchLeague(teamId: string) {
     const claim = savedClaims.find((candidate) => candidate.teamId === teamId);
     if (!claim || claim.teamId === leagueState?.player?.teamId) return;
@@ -319,6 +371,16 @@ export function App() {
     setMessage(tt("status_initial"));
   }
 
+  function forgetProfile() {
+    localStorage.removeItem(PROFILE_SESSION_KEY);
+    localStorage.removeItem(PLAYER_CLAIM_KEY);
+    setProfileSession(null);
+    setLeagueState(null);
+    setSavedClaims([]);
+    storePlayerClaims([], undefined);
+    setMessage(tt("status_initial"));
+  }
+
   function changeLocale(nextLocale: Locale) {
     localStorage.setItem(LANGUAGE_KEY, nextLocale);
     setLocaleState(nextLocale);
@@ -330,6 +392,55 @@ export function App() {
   function closeLeagueControls() {
     setLeagueControlsOpen(false);
     setProfileOpen(false);
+  }
+
+  if (!profileSession) {
+    return (
+      <main className="app-shell setup-shell">
+        <section className="hero" aria-labelledby="app-title">
+          <div className="hero-topline">
+            <p className="eyebrow">{tt("app_eyebrow")}</p>
+            <label className="language-select">
+              {tt("language_label")}
+              <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
+                <option value="en">{tt("language_en")}</option>
+                <option value="fr">{tt("language_fr")}</option>
+              </select>
+            </label>
+          </div>
+          <h1 id="app-title">{APP_NAME}</h1>
+          <p>{tt("profile_intro")}</p>
+        </section>
+
+        <section className="panel setup-panel" aria-label={tt("profile_title")}>
+          <div className="panel-heading">
+            <div>
+              <span className="section-kicker">{tt("profile_kicker")}</span>
+              <h2>{tt("profile_title")}</h2>
+            </div>
+          </div>
+          <p className={status === "error" ? "status error" : "status"}>{message}</p>
+          <div className="field-grid setup-fields">
+            <label>
+              {tt("field_email")}
+              <input type="email" value={profileForm.email} onChange={(event) => setProfileForm({ ...profileForm, email: event.target.value })} />
+            </label>
+            <label>
+              {tt("field_recovery_code")}
+              <input value={profileForm.recoveryCode} onChange={(event) => setProfileForm({ ...profileForm, recoveryCode: event.target.value.toUpperCase() })} />
+            </label>
+          </div>
+          <div className="actions primary-actions">
+            <button type="button" onClick={createProfileSession} disabled={status === "loading"}>
+              {tt("action_create_profile")}
+            </button>
+            <button type="button" onClick={recoverProfileSession} disabled={status === "loading"}>
+              {tt("action_recover_profile")}
+            </button>
+          </div>
+        </section>
+      </main>
+    );
   }
 
   if (!leagueState) {
@@ -361,7 +472,7 @@ export function App() {
           <div className="field-grid setup-fields">
             <label>
               {tt("field_league")}
-              <input value={form.leagueName} onChange={(event) => setForm({ ...form, leagueName: event.target.value })} />
+              <input maxLength={40} value={form.leagueName} onChange={(event) => setForm({ ...form, leagueName: event.target.value })} />
             </label>
             <label>
               {tt("field_join_code")}
@@ -374,7 +485,7 @@ export function App() {
             </label>
             <label>
               {tt("field_team")}
-              <input value={form.teamName} onChange={(event) => setForm({ ...form, teamName: event.target.value })} />
+              <input maxLength={32} value={form.teamName} onChange={(event) => setForm({ ...form, teamName: event.target.value })} />
             </label>
           </div>
           <div className="actions primary-actions">
@@ -473,6 +584,9 @@ export function App() {
               <button type="button" className="profile-menu-action" onClick={addLeague}>
                 {tt("action_add_league")}
               </button>
+              <button type="button" className="profile-menu-action" onClick={forgetProfile}>
+                {tt("action_forget_profile")}
+              </button>
               {leagueState.player ? (
                 <button
                   type="button"
@@ -550,6 +664,7 @@ export function App() {
             loading={status === "loading"}
             onBuyCard={buyCard}
             onUpdateLivery={updateLivery}
+            onUpdateTeamName={updateTeamName}
             tt={tt}
           />
         ) : null}
@@ -735,6 +850,32 @@ function loadPlayerClaims(): StoredPlayerClaim[] {
   const migrated = upsertPlayerClaim(claims, oldClaim);
   storePlayerClaims(migrated, oldClaim.teamId);
   return migrated;
+}
+
+function loadProfileSession(): ProfileSession | null {
+  const raw = localStorage.getItem(PROFILE_SESSION_KEY);
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as ProfileSession;
+    return parsed?.profile?.id && parsed.profile.email ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeProfileSession(session: ProfileSession) {
+  localStorage.setItem(PROFILE_SESSION_KEY, JSON.stringify(session));
+}
+
+function claimsFromProfile(session: ProfileSession): StoredPlayerClaim[] {
+  return session.teams.map((team) => ({
+    teamId: team.teamId,
+    claimCode: team.claimCode,
+    leagueId: team.leagueId,
+    leagueName: team.leagueName,
+    leagueCode: team.leagueCode,
+    teamName: team.teamName
+  }));
 }
 
 function parsePlayerClaims(raw: string | null): StoredPlayerClaim[] {

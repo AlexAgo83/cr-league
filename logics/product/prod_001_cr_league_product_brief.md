@@ -6,6 +6,8 @@
 > Related task: `task_024_add_automated_private_league_playtest_scenario`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Confidence: 80
+> Non-semantic edit: clarified lightweight profile recovery within the settled product scope without changing workflow links or status.
 
 # Overview
 CR League is an asynchronous racing championship game where players manage a team, make a few strategic pre-race bets, play special cards, then watch a simulated Grand Prix produce a visual replay, report, rewards, and championship movement.
@@ -23,7 +25,8 @@ The first playable version must prove one question before anything else:
 # Overview diagram
 ```mermaid
 flowchart LR
-  Team[Create team] --> League[Join or create league]
+  Profile[Create or recover profile] --> Team[Create league team]
+  Team --> League[Join or create league]
   League --> Briefing[Grand Prix briefing]
   Briefing --> Prep[Choose plan and card]
   Prep --> Sim[Simulate race]
@@ -58,6 +61,12 @@ flowchart LR
 - Cheap asynchronous operation: V1 should not rely on always-on live infrastructure.
 
 # Game modes
+## Profile and team identity
+- The first app action is lightweight profile setup: the player enters an email and receives a recovery code they can keep to recover the account reference on another device.
+- The profile is not the racing identity shown inside championships. Each league stores its own team name and colors, so the same profile can run different teams across solo and private leagues.
+- Team names should stay short and readable: 3 to 32 characters, letters/numbers/spaces plus simple apostrophe or hyphen punctuation. League names should stay within 3 to 40 readable characters.
+- League and team creation should use strong random defaults so creating a first session does not feel like filling empty admin inputs.
+
 ## Solo
 - The player creates a team and starts a championship with bots.
 - Solo races can be launched immediately without waiting for real time.
@@ -273,7 +282,8 @@ V1 should start with 2D top-down presentation. 3D can be explored later only aft
 
 # Technical assumptions
 - Web app.
-- Persistent backend storage for teams, leagues, schedules, decisions, race seeds, race results, event timelines, inventory, credits, and standings.
+- Persistent backend storage for profiles, teams, leagues, schedules, decisions, race seeds, race results, event timelines, inventory, credits, and standings.
+- Profile recovery is intentionally lightweight in the prototype: unique email plus recovery code, stored locally after setup. It is a sync/recovery bridge, not full password or OAuth authentication.
 - Minimal backend suitable for low-cost hosting.
 - Lazy scheduled race resolution: if a multiplayer Grand Prix is due at 20:00 and nobody accesses the league until 21:10, the first access resolves and stores the result.
 - Race resolution must be idempotent so two users opening the league at the same time cannot create duplicate results.

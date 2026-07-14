@@ -4,18 +4,53 @@ import {
   LeagueRuleError,
   buyCard,
   createDemoLeague,
+  createProfile,
   getLeagueState,
   joinLeagueByCode,
+  recoverProfile,
   rejoinLeague,
   restartLeague,
   resolveCurrentGrandPrix,
   startNextGrandPrix,
   submitDecision,
   updateLeagueSettings,
-  updateTeamLivery
+  updateTeamLivery,
+  updateTeamName
 } from "./store.js";
 
 export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient) {
+  app.post("/profiles", async (request, reply) => {
+    if (!isCreateProfileBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected a valid email." });
+    }
+
+    try {
+      return await createProfile(db, request.body);
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
+  });
+
+  app.post("/profiles/recover", async (request, reply) => {
+    if (!isRecoverProfileBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected an email and recovery code." });
+    }
+
+    try {
+      const session = await recoverProfile(db, request.body);
+      if (!session) return reply.code(404).send({ error: "Not Found", message: "Profile not found." });
+      return session;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
+  });
+
   app.post("/leagues", async (request) => createDemoLeague(db, request.body ?? {}));
 
   app.post("/leagues/join", async (request, reply) => {
@@ -109,6 +144,23 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/teams/name", async (request, reply) => {
+    if (!isTeamNameBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected team name body." });
+    }
+
+    try {
+      const state = await updateTeamName(db, request.params.leagueId, request.body);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
+  });
+
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/decisions", async (request, reply) => {
     if (!isDecisionBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a team decision body." });
@@ -159,6 +211,18 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
   });
 }
 
+function isCreateProfileBody(value: unknown): value is Parameters<typeof createProfile>[1] {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.email === "string";
+}
+
+function isRecoverProfileBody(value: unknown): value is Parameters<typeof recoverProfile>[1] {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.email === "string" && typeof candidate.recoveryCode === "string";
+}
+
 function isJoinBody(value: unknown): value is Parameters<typeof joinLeagueByCode>[1] {
   if (!value || typeof value !== "object") return false;
 
@@ -197,6 +261,13 @@ function isLiveryBody(value: unknown): value is Parameters<typeof updateTeamLive
 
   const candidate = value as Record<string, unknown>;
   return typeof candidate.teamId === "string" && typeof candidate.livery === "object" && candidate.livery !== null;
+}
+
+function isTeamNameBody(value: unknown): value is Parameters<typeof updateTeamName>[2] {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.teamId === "string" && typeof candidate.name === "string";
 }
 
 function isDecisionBody(value: unknown): value is Parameters<typeof submitDecision>[2] {

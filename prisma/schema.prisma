@@ -23,9 +23,22 @@ model League {
   @@map("leagues")
 }
 
+model Profile {
+  id               String   @id @default(cuid())
+  email            String   @unique
+  recoveryCodeHash String
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  teams Team[]
+
+  @@map("profiles")
+}
+
 model Team {
   id        String   @id @default(cuid())
   leagueId  String
+  profileId String?
   name      String
   kind      String   @default("human")
   claimCode String?  @unique
@@ -36,6 +49,7 @@ model Team {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  profile   Profile?       @relation(fields: [profileId], references: [id], onDelete: SetNull)
   league    League         @relation(fields: [leagueId], references: [id], onDelete: Cascade)
   decisions RaceDecision[]
 

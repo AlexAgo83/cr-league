@@ -16,6 +16,7 @@ export function GarageView({
   loading,
   onBuyCard,
   onUpdateLivery,
+  onUpdateTeamName,
   tt
 }: {
   state: LeagueState;
@@ -28,13 +29,19 @@ export function GarageView({
   loading: boolean;
   onBuyCard: (cardId: CardId) => void;
   onUpdateLivery: (livery: LeagueState["teams"][number]["livery"]) => void;
+  onUpdateTeamName: (name: string) => void;
   tt: Translator;
 }) {
   const [livery, setLivery] = useState(playerTeam?.livery ?? { primary: "#16c784", secondary: "#38bdf8" });
+  const [teamName, setTeamName] = useState(playerTeam?.name ?? "");
 
   useEffect(() => {
     if (playerTeam?.livery) setLivery(playerTeam.livery);
   }, [playerTeam?.livery]);
+
+  useEffect(() => {
+    if (playerTeam?.name) setTeamName(playerTeam.name);
+  }, [playerTeam?.name]);
 
   if (!playerTeam) {
     return (
@@ -54,6 +61,15 @@ export function GarageView({
         <p>
           {tt("league_your_team")} {playerTeam.name} · {playerTeam.points} {tt("unit_points")} · {playerTeam.credits} {tt("unit_credits")}
         </p>
+        <div className="field-grid garage-livery-fields">
+          <label>
+            {tt("garage_team_name")}
+            <input maxLength={32} value={teamName} onChange={(event) => setTeamName(event.target.value)} />
+          </label>
+          <button type="button" onClick={() => onUpdateTeamName(teamName)} disabled={loading || teamName.trim() === playerTeam.name}>
+            {tt("garage_team_name_save")}
+          </button>
+        </div>
         {isResolved && playerResult ? (
           <div className="garage-summary">
             <strong>{tt("garage_last_gp")}</strong>

@@ -166,6 +166,104 @@ describe("api app", () => {
     expect(secondResolveResponse.statusCode).toBe(409);
   });
 
+  it("creates and recovers a profile with linked league teams", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const profileResponse = await app.inject({
+      method: "POST",
+      url: "/profiles",
+      payload: { email: "Pilot@Example.test " }
+    });
+    const profile = profileResponse.json();
+    const duplicateResponse = await app.inject({
+      method: "POST",
+      url: "/profiles",
+      payload: { email: "pilot@example.test" }
+    });
+    const createLeagueResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id }
+    });
+    const recoverResponse = await app.inject({
+      method: "POST",
+      url: "/profiles/recover",
+      payload: { email: "pilot@example.test", recoveryCode: profile.recoveryCode }
+    });
+    const badRecoverResponse = await app.inject({
+      method: "POST",
+      url: "/profiles/recover",
+      payload: { email: "pilot@example.test", recoveryCode: "BAD-CODE" }
+    });
+
+    await app.close();
+
+    expect(profileResponse.statusCode).toBe(200);
+    expect(profile).toMatchObject({
+      profile: { email: "pilot@example.test" },
+      recoveryCode: expect.stringMatching(/^[0-9A-F]{8}$/),
+      teams: []
+    });
+    expect(duplicateResponse.statusCode).toBe(409);
+    expect(createLeagueResponse.statusCode).toBe(200);
+    expect(recoverResponse.statusCode).toBe(200);
+    expect(recoverResponse.json()).toMatchObject({
+      profile: { id: profile.profile.id, email: "pilot@example.test" },
+      teams: [expect.objectContaining({ leagueName: "Office League", teamName: "Volt Union" })]
+    });
+    expect(badRecoverResponse.statusCode).toBe(404);
+  });
+
+  it("renames a team with readable unique names only", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const leagueId = created.league.id;
+    const teamId = created.player.teamId;
+
+    const renameResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/teams/name`,
+      payload: { teamId, name: "Harbor Pulse" }
+    });
+    const duplicateResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/teams/name`,
+      payload: { teamId, name: "Mika Blitz" }
+    });
+    const invalidResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/teams/name`,
+      payload: { teamId, name: "x!" }
+    });
+
+    await app.close();
+
+    expect(renameResponse.statusCode).toBe(200);
+    expect(renameResponse.json().teams).toEqual(expect.arrayContaining([expect.objectContaining({ id: teamId, name: "Harbor Pulse" })]));
+    expect(duplicateResponse.statusCode).toBe(409);
+    expect(invalidResponse.statusCode).toBe(409);
+  });
+
   it("rejects resolving before the player submits a directive", async () => {
     const app = await buildApp(
       {
@@ -468,9 +566,15 @@ function createMemoryDb(): PrismaClient {
     cadence: string;
     preparationDeadlineAt: Date | null;
   };
+  type ProfileRow = {
+    id: string;
+    email: string;
+    recoveryCodeHash: string;
+  };
   type TeamRow = {
     id: string;
     leagueId: string;
+    profileId: string | null;
     name: string;
     kind: string;
     claimCode: string | null;
@@ -503,6 +607,7 @@ function createMemoryDb(): PrismaClient {
   };
 
   const leagues: LeagueRow[] = [];
+  const profiles: ProfileRow[] = [];
   const teams: TeamRow[] = [];
   const grandPrixes: GrandPrixRow[] = [];
   const decisions: DecisionRow[] = [];
@@ -548,15 +653,50 @@ function createMemoryDb(): PrismaClient {
         return league;
       }
     },
+    profile: {
+      create: async ({ data }: { data: Omit<ProfileRow, "id"> }) => {
+        const profile = { id: id("profile"), ...data };
+        profiles.push(profile);
+        return profile;
+      },
+      findUnique: async ({
+        where,
+        include
+      }: {
+        where: { id?: string; email?: string };
+        include?: { teams?: { include?: { league?: boolean }; orderBy?: { updatedAt: string } } };
+      }) => {
+        const profile = profiles.find((candidate) => candidate.id === where.id || candidate.email === where.email);
+        if (!profile) return null;
+        if (!include?.teams) return profile;
+        return {
+          ...profile,
+          teams: teams
+            .filter((team) => team.profileId === profile.id)
+            .map((team) => ({
+              ...team,
+              league: leagues.find((league) => league.id === team.leagueId) ?? null
+            }))
+        };
+      }
+    },
     team: {
-      create: async ({ data }: { data: Omit<TeamRow, "id" | "livery"> & Partial<Pick<TeamRow, "livery">> }) => {
-        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, ...data };
+      create: async ({
+        data
+      }: {
+        data: Omit<TeamRow, "id" | "livery" | "profileId"> & Partial<Pick<TeamRow, "livery" | "profileId">>;
+      }) => {
+        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, ...data, profileId: data.profileId ?? null };
         teams.push(team);
         return team;
       },
-      createMany: async ({ data }: { data: Array<Omit<TeamRow, "id" | "livery"> & Partial<Pick<TeamRow, "livery">>> }) => {
+      createMany: async ({
+        data
+      }: {
+        data: Array<Omit<TeamRow, "id" | "livery" | "profileId"> & Partial<Pick<TeamRow, "livery" | "profileId">>>;
+      }) => {
         for (const team of data) {
-          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, ...team });
+          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, ...team, profileId: team.profileId ?? null });
         }
         return { count: data.length };
       },
@@ -578,6 +718,7 @@ function createMemoryDb(): PrismaClient {
           credits?: number | { increment?: number; decrement?: number };
           cards?: string[];
           livery?: { primary: string; secondary: string };
+          name?: string;
         };
       }) => {
         const team = teams.find((candidate) => candidate.id === where.id);
@@ -595,6 +736,7 @@ function createMemoryDb(): PrismaClient {
         }
         if (data.cards) team.cards = data.cards;
         if (data.livery) team.livery = data.livery;
+        if (data.name) team.name = data.name;
         return team;
       }
     },

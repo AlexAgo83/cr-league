@@ -9,10 +9,11 @@ import {
   type RaceTraits,
   type TeamLivery
 } from "@cr-league/shared";
+import { createHash, randomBytes } from "node:crypto";
 import type { Prisma } from "@prisma/client";
 import type { PrismaClient } from "@prisma/client";
 
-type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision">;
+type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | "profile">;
 
 const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
 const STARTER_CARDS: CardId[] = ["rain_grip"];
@@ -20,6 +21,8 @@ const CARD_PRICE = 100;
 const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICE }));
 const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 const BOT_LIVERY_COLORS = ["#38bdf8", "#f97316", "#a78bfa", "#f43f5e", "#facc15", "#22c55e", "#e879f9", "#fb7185"] as const;
+const TEAM_NAME_LIMIT = 32;
+const LEAGUE_NAME_LIMIT = 40;
 
 export class LeagueRuleError extends Error {
   constructor(message: string) {
@@ -31,11 +34,13 @@ export class LeagueRuleError extends Error {
 export type CreateLeagueInput = {
   name?: string;
   teamName?: string;
+  profileId?: string;
 };
 
 export type JoinLeagueInput = {
   code?: string;
   teamName?: string;
+  profileId?: string;
 };
 
 export type RejoinLeagueInput = {
@@ -122,13 +127,81 @@ export type UpdateTeamLiveryInput = {
   livery?: unknown;
 };
 
+export type UpdateTeamNameInput = {
+  teamId?: string;
+  name?: string;
+};
+
+export type CreateProfileInput = {
+  email?: string;
+};
+
+export type RecoverProfileInput = {
+  email?: string;
+  recoveryCode?: string;
+};
+
+export type ProfileSession = {
+  profile: {
+    id: string;
+    email: string;
+  };
+  recoveryCode?: string;
+  teams: Array<{
+    leagueId: string;
+    leagueName: string;
+    leagueCode: string;
+    teamId: string;
+    teamName: string;
+    claimCode: string;
+  }>;
+};
+
+export async function createProfile(db: Db, input: CreateProfileInput = {}): Promise<ProfileSession> {
+  const email = normalizeEmail(input.email);
+  if (!email) throw new LeagueRuleError("A valid email is required.");
+
+  const existing = await db.profile.findUnique({ where: { email } });
+  if (existing) throw new LeagueRuleError("This email already has a profile. Recover it with your code.");
+
+  const recoveryCode = createRecoveryCode();
+  const profile = await db.profile.create({
+    data: {
+      email,
+      recoveryCodeHash: hashRecoveryCode(recoveryCode)
+    }
+  });
+
+  return { profile: { id: profile.id, email: profile.email }, recoveryCode, teams: [] };
+}
+
+export async function recoverProfile(db: Db, input: RecoverProfileInput = {}): Promise<ProfileSession | null> {
+  const email = normalizeEmail(input.email);
+  const recoveryCode = input.recoveryCode?.trim().toUpperCase();
+  if (!email || !recoveryCode) throw new LeagueRuleError("Email and recovery code are required.");
+
+  const profile = await db.profile.findUnique({ where: { email } });
+  if (!profile || profile.recoveryCodeHash !== hashRecoveryCode(recoveryCode)) return null;
+
+  return profileSession(db, profile.id);
+}
+
 export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   const code = createLeagueCode();
   const playerClaimCode = createClaimCode();
-  const playerTeamName = input.teamName?.trim() || DEMO_RACE_INPUT.participants[0]?.teamName || "Player Team";
+  const leagueName = normalizeDisplayName(input.name, LEAGUE_NAME_LIMIT);
+  const playerTeamName = normalizeDisplayName(input.teamName, TEAM_NAME_LIMIT);
+  if (input.name !== undefined && !leagueName) {
+    throw new LeagueRuleError("League name must be 3 to 40 readable characters.");
+  }
+  if (input.teamName !== undefined && !playerTeamName) {
+    throw new LeagueRuleError("Team name must be 3 to 32 readable characters.");
+  }
+  await ensureProfileExists(db, input.profileId);
+
   const league = await db.league.create({
     data: {
-      name: input.name?.trim() || "CR League Demo",
+      name: leagueName || "CR League Demo",
       code
     }
   });
@@ -136,7 +209,8 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   await db.team.createMany({
     data: DEMO_RACE_INPUT.participants.map((participant, index) => ({
       leagueId: league.id,
-      name: index === 0 ? playerTeamName : participant.teamName,
+      profileId: index === 0 ? input.profileId : undefined,
+      name: index === 0 ? playerTeamName || DEMO_RACE_INPUT.participants[0]?.teamName || "Player Team" : participant.teamName,
       kind: participant.kind,
       claimCode: index === 0 ? playerClaimCode : createClaimCode(),
       points: 0,
@@ -165,10 +239,11 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
 
 export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
   const code = input.code?.trim().toUpperCase();
-  const teamName = input.teamName?.trim();
+  const teamName = normalizeDisplayName(input.teamName, TEAM_NAME_LIMIT);
   if (!code || !teamName) {
     throw new LeagueRuleError("League code and team name are required.");
   }
+  await ensureProfileExists(db, input.profileId);
 
   const league = await db.league.findUnique({ where: { code } });
   if (!league) return null;
@@ -185,6 +260,7 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
   const team = await db.team.create({
     data: {
       leagueId: league.id,
+      profileId: input.profileId,
       name: teamName,
       kind: "human",
       claimCode: createClaimCode(),
@@ -350,6 +426,30 @@ export async function updateTeamLivery(db: Db, leagueId: string, input: UpdateTe
   await db.team.update({
     where: { id: team.id },
     data: { livery }
+  });
+
+  return getLeagueState(db, leagueId);
+}
+
+export async function updateTeamName(db: Db, leagueId: string, input: UpdateTeamNameInput = {}) {
+  if (!input.teamId) {
+    throw new LeagueRuleError("Expected a team.");
+  }
+  const name = normalizeDisplayName(input.name, TEAM_NAME_LIMIT);
+  if (!name) {
+    throw new LeagueRuleError("Team name must be 3 to 32 readable characters.");
+  }
+
+  const state = await getLeagueState(db, leagueId);
+  const team = state?.teams.find((candidate) => candidate.id === input.teamId);
+  if (!state || !team) return null;
+  if (state.teams.some((candidate) => candidate.id !== team.id && candidate.name.toLowerCase() === name.toLowerCase())) {
+    throw new LeagueRuleError("This team name is already taken.");
+  }
+
+  await db.team.update({
+    where: { id: team.id },
+    data: { name }
   });
 
   return getLeagueState(db, leagueId);
@@ -604,6 +704,61 @@ function createLeagueCode() {
 
 function createClaimCode() {
   return Math.random().toString(36).slice(2, 12).toUpperCase();
+}
+
+function createRecoveryCode() {
+  return randomBytes(4).toString("hex").toUpperCase();
+}
+
+function hashRecoveryCode(code: string) {
+  return createHash("sha256").update(code.trim().toUpperCase()).digest("hex");
+}
+
+function normalizeEmail(value: unknown) {
+  if (typeof value !== "string") return "";
+  const email = value.trim().toLowerCase();
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
+}
+
+function normalizeDisplayName(value: unknown, maxLength: number) {
+  if (typeof value !== "string") return "";
+  const name = value.trim().replace(/\s+/g, " ");
+  if (name.length < 3 || name.length > maxLength) return "";
+  return /^[\p{L}\p{N}' -]+$/u.test(name) ? name : "";
+}
+
+async function ensureProfileExists(db: Db, profileId: string | undefined) {
+  if (!profileId) return;
+  const profile = await db.profile.findUnique({ where: { id: profileId } });
+  if (!profile) throw new LeagueRuleError("Profile not found.");
+}
+
+async function profileSession(db: Db, profileId: string): Promise<ProfileSession | null> {
+  const profile = await db.profile.findUnique({
+    where: { id: profileId },
+    include: {
+      teams: {
+        include: { league: true },
+        orderBy: { updatedAt: "desc" }
+      }
+    }
+  });
+  if (!profile) return null;
+
+  return {
+    profile: {
+      id: profile.id,
+      email: profile.email
+    },
+    teams: profile.teams.map((team) => ({
+      leagueId: team.leagueId,
+      leagueName: team.league.name,
+      leagueCode: team.league.code,
+      teamId: team.id,
+      teamName: team.name,
+      claimCode: team.claimCode ?? ""
+    }))
+  };
 }
 
 function isLeagueCadence(value: string): value is (typeof LEAGUE_CADENCES)[number] {

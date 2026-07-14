@@ -27,6 +27,15 @@ async function mockLeagueApi(page: Page) {
     const url = new URL(request.url());
     const path = url.pathname;
 
+    if (path === "/profiles") {
+      return route.fulfill({
+        json: {
+          profile: { id: "profile_1", email: "pilot@example.test" },
+          recoveryCode: "ABCD1234",
+          teams: []
+        }
+      });
+    }
     if (path === "/leagues") {
       return route.fulfill({ json: leagueState() });
     }
@@ -79,6 +88,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await mockLeagueApi(page);
 
   await page.goto("/");
+  await createProfile(page);
 
   await page.getByRole("button", { name: "Create league" }).click();
   await expect(page.getByRole("button", { name: "Race", exact: true })).toBeVisible();
@@ -138,6 +148,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await mockLeagueApi(page);
   await page.goto("/");
+  await createProfile(page);
   await page.getByRole("button", { name: "Create league" }).click();
   await page.getByRole("button", { name: "Garage", exact: true }).click();
   await page.getByLabel("Primary").fill("#c51697");
@@ -229,6 +240,12 @@ function expectedCircuitTitle(resultRound: number) {
   if (resultRound === 1) return "Paris Docklands Sprint";
   if (resultRound === 2) return "Paris Left Bank Loop";
   return "Amsterdam Canal Loop";
+}
+
+async function createProfile(page: Page) {
+  await page.getByLabel("Email").fill("pilot@example.test");
+  await page.getByRole("button", { name: "Create profile" }).click();
+  await expect(page.getByText("Profile created. Save this recovery code: ABCD1234")).toBeVisible();
 }
 
 function leagueState(result: ReturnType<typeof resultForRound> | null = null) {

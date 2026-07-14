@@ -60,6 +60,22 @@ export type LeagueState = {
   }>;
 };
 
+export type ProfileSession = {
+  profile: {
+    id: string;
+    email: string;
+  };
+  recoveryCode?: string;
+  teams: Array<{
+    leagueId: string;
+    leagueName: string;
+    leagueCode: string;
+    teamId: string;
+    teamName: string;
+    claimCode: string;
+  }>;
+};
+
 export type GameView = "drive" | "championship" | "garage" | "result";
 
 export const GAME_VIEWS: GameView[] = ["drive", "championship", "garage", "result"];

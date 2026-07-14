@@ -5,12 +5,13 @@
 - Prepare the database with migrations and seed data.
 - Run `npm run playtest:seed`.
 - Share league code `PLAY01` with testers.
-- Use one browser profile per tester, or clear the saved team claim between testers.
+- Ask each tester to create a profile with an email and keep the recovery code, or recover an existing profile before joining.
+- Use one browser profile per tester, or clear the saved profile between testers.
 - Ask testers to join `PLAY01` with human team names, for example `Volt Union` and `Late Apex`.
 
 ## Scenario
-1. Player A joins code `PLAY01` as `Volt Union`.
-2. Player B joins code `PLAY01` as `Late Apex`.
+1. Player A creates or recovers a profile, then joins code `PLAY01` as `Volt Union`.
+2. Player B creates or recovers a profile, then joins code `PLAY01` as `Late Apex`.
 3. Set cadence to `Fast`.
 4. Each player submits a directive for GP 1.
 5. Resolve GP 1 and read the race recap, report, and replay.
@@ -44,7 +45,7 @@
 - What did the recap teach you for the next GP?
 
 ## Known Limits
-- No real account system yet.
+- Profile recovery is lightweight only: email plus recovery code, not full password/OAuth authentication.
 - No automatic deadline resolution yet.
 - Card inventory exists only as a thin fixed-price garage with a small recommended offer set; no selling, rarity, draft offers, or catch-up economy yet.
 - Restart session is a playtest operator tool, not a full admin/season management system.

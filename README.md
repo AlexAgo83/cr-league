@@ -19,7 +19,7 @@ Implemented:
 
 - npm workspace monorepo
 - `apps/web` Vite + React shell with playable demo league flow
-- `apps/api` Fastify API with health, simulation preview, and minimal league endpoints
+- `apps/api` Fastify API with health, simulation preview, lightweight profile recovery, and league endpoints
 - `packages/shared` shared metadata, race domain types, demo race, and simulation engine
 - `prisma/schema.prisma` PostgreSQL league/team/card inventory/Grand Prix/decision schema
 - TypeScript, ESLint, Vitest baseline
@@ -28,7 +28,7 @@ Implemented:
 Not implemented yet:
 
 - full gameplay UI
-- authentication
+- full authentication
 - private multiplayer
 - deployment config
 
@@ -85,9 +85,13 @@ curl -X POST http://127.0.0.1:4874/simulation/preview
 Create and resolve a demo league through the API:
 
 ```bash
+curl -X POST http://127.0.0.1:4874/profiles \
+  -H "content-type: application/json" \
+  -d '{"email":"pilot@example.test"}'
+
 curl -X POST http://127.0.0.1:4874/leagues \
   -H "content-type: application/json" \
-  -d '{"name":"Office League","teamName":"Volt Union"}'
+  -d '{"name":"Office League","teamName":"Volt Union","profileId":"<profileId>"}'
 
 curl -X POST http://127.0.0.1:4874/leagues/<leagueId>/resolve
 ```
@@ -104,7 +108,7 @@ Prepare a reusable private-league playtest fixture:
 npm run playtest:seed
 ```
 
-This creates league code `PLAY01` with bot teams. Human testers can join that code from separate browser profiles. Use [docs/playtest/private-league-3gp-checklist.md](docs/playtest/private-league-3gp-checklist.md) for the manual 3-GP script and feedback prompts. The in-app `Restart session` action resets a league to round 1 while keeping joined teams and claims.
+This creates league code `PLAY01` with bot teams. Human testers should first create or recover a lightweight profile, then join that code from separate browser profiles. Use [docs/playtest/private-league-3gp-checklist.md](docs/playtest/private-league-3gp-checklist.md) for the manual 3-GP script and feedback prompts. The in-app `Restart session` action resets a league to round 1 while keeping joined teams and claims.
 
 ## Configuration
 
@@ -189,7 +193,7 @@ The detailed implementation-wave roadmap is:
 Current roadmap direction:
 
 - `0.1` playable vertical slice is mostly implemented;
-- `0.2` private league prototype foundation now includes manual cadence, readiness dashboard, rejoin, GP history, session restart, a seeded playtest fixture, a lightweight replay timeline, French UI switching, guided GP briefing, a state-driven race desk, and more replay flavor;
+- `0.2` private league prototype foundation now includes lightweight profile recovery, manual cadence, readiness dashboard, rejoin, GP history, session restart, a seeded playtest fixture, a lightweight replay timeline, French UI switching, guided GP briefing, a state-driven race desk, and more replay flavor;
 - `0.3` is now the next product risk: make repeated GP play feel like a game, with guided briefing, clearer championship dashboard, player-focused race recap, thin card inventory/shop, post-GP garage summary, contextual card recommendations, first-pass pit-wall hierarchy, and static visual replay already present as a bridge toward `0.4`.
 
 ## Contributing

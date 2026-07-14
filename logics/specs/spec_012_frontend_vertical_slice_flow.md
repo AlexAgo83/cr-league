@@ -2,8 +2,8 @@
 > From version: 1.0.0
 > Schema version: 1.0
 > Status: Draft
-> Understanding: 85%
-> Confidence: 80%
+> Understanding: 90
+> Confidence: 85
 > Related request: `req_004_define_cr_league_implementation_contracts_v0`
 > Related backlog: `item_010_define_cr_league_implementation_contracts_v0`
 > Related task: `task_005_define_cr_league_implementation_contracts_v0`
@@ -15,23 +15,38 @@ Define the first frontend flow to build in the Vite React PWA.
 The first slice should prove the solo Grand Prix loop before private multiplayer.
 
 # Screen Order
-## 1. Team Setup
+## 1. Profile Setup
 Fields:
 
-- player display name;
-- team name;
-- primary color;
-- secondary color.
+- email;
+- recovery code for returning users.
 
-Action:
+Actions:
 
-- create solo championship.
+- create profile;
+- recover profile.
 
 Success:
 
-- navigate to solo dashboard.
+- save the returned profile session locally;
+- continue to league and team setup.
 
-## 2. Solo Dashboard
+## 2. League And Team Setup
+Fields:
+
+- league name, prefilled with a random racing default;
+- team name;
+- join code;
+
+Action:
+
+- create a league or join by code.
+
+Success:
+
+- navigate to the race dashboard.
+
+## 3. Solo Dashboard
 Shows:
 
 - team summary;
@@ -41,7 +56,7 @@ Shows:
 - available cards count;
 - button to open briefing.
 
-## 3. Grand Prix Briefing
+## 4. Grand Prix Briefing
 Shows:
 
 - GP name;
@@ -55,7 +70,7 @@ Action:
 
 - continue to preparation.
 
-## 4. Preparation Form
+## 5. Preparation Form
 Controls:
 
 - race approach segmented control: Prudent, Balanced, Aggressive;
@@ -70,7 +85,7 @@ Action:
 
 V0 can combine submit and resolve in one flow for solo.
 
-## 5. Race Resolving State
+## 6. Race Resolving State
 Shows:
 
 - short loading state;
@@ -78,7 +93,7 @@ Shows:
 
 No fake long wait required.
 
-## 6. Race Report
+## 7. Race Report
 Primary result screen.
 
 Shows:
@@ -98,7 +113,7 @@ Action:
 - continue to next GP;
 - view replay if replay exists.
 
-## 7. Standings
+## 8. Standings
 Shows:
 
 - current championship table;
@@ -106,16 +121,17 @@ Shows:
 - previous position movement if available;
 - player row highlighted.
 
-## 8. Inventory
+## 9. Inventory
 Shows:
 
 - credits;
 - available cards;
 - consumed card result from last race if relevant.
+- garage identity controls for team name and car colors.
 
 V0 can make inventory read-only if no shop exists yet.
 
-## 9. Minimal Replay
+## 10. Minimal Replay
 Replay can come after report in first implementation.
 
 V0 acceptable version:
@@ -140,6 +156,7 @@ Inventory and standings can be panels inside dashboard/result at first.
 # State Strategy
 - Fetch server state from API.
 - Keep form state local until submit.
+- Persist the profile session and saved league claims in local storage after profile create/recover.
 - Do not add global state library in V0.
 - Use route loaders or simple hooks.
 - Cache only when needed.
@@ -153,7 +170,7 @@ Inventory and standings can be panels inside dashboard/result at first.
 
 # Implementation Order
 1. Static mocked screens.
-2. Hook team setup to API.
+2. Hook profile setup and team setup to API.
 3. Hook dashboard/briefing to API.
 4. Hook preparation to API.
 5. Hook result/report to API.
@@ -163,7 +180,7 @@ Inventory and standings can be panels inside dashboard/result at first.
 # Non-goals
 - No private multiplayer UI in first slice.
 - No shop UI unless backend is ready.
-- No polished onboarding.
+- No full password/OAuth onboarding.
 - No settings page.
 - No notifications.
 - No full responsive polish before core flow works.

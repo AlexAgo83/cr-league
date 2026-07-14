@@ -2,8 +2,8 @@
 > From version: 1.0.0
 > Schema version: 1.0
 > Status: Draft
-> Understanding: 85%
-> Confidence: 75%
+> Understanding: 90
+> Confidence: 80
 > Related request: `req_004_define_cr_league_implementation_contracts_v0`
 > Related backlog: `item_010_define_cr_league_implementation_contracts_v0`
 > Related task: `task_005_define_cr_league_implementation_contracts_v0`
@@ -22,26 +22,27 @@ This contract is solo-first but multiplayer-compatible.
 - Store race input and output clearly enough to replay and debug without re-running simulation.
 
 # Entities
-## Player
-Represents a human or local prototype identity.
+## Profile
+Represents a lightweight recoverable human account reference.
 
 Fields:
 
 - `id`
-- `displayName`
-- `kind`: `HUMAN` or `BOT`
+- `email`
+- `recoveryCodeHash`
 - `createdAt`
 - `updatedAt`
 
-V0 note: no full auth fields yet.
+V0 note: this is not full auth. The prototype uses a unique email and one recovery code so a player can recover the local account reference on another device.
 
 ## Team
-The player's racing identity.
+A profile's racing identity inside one league.
 
 Fields:
 
 - `id`
-- `playerId`
+- `leagueId`
+- `profileId`, nullable for bots or legacy teams
 - `name`
 - `primaryColor`
 - `secondaryColor`
@@ -51,8 +52,9 @@ Fields:
 
 Constraints:
 
-- team belongs to one player;
-- team name unique per league later, not globally in V0.
+- a human team can belong to one profile;
+- team name unique per league;
+- team names are 3 to 32 readable characters.
 
 ## League
 Championship container.
@@ -207,7 +209,64 @@ Fields:
 - `consumedAt`
 
 # API V0
-All endpoints are under `/api`.
+The initial prototype currently exposes endpoints without an `/api` prefix.
+
+## POST /profiles
+Creates a lightweight profile and returns the one-time recovery code to save locally.
+
+Request:
+
+```json
+{
+  "email": "pilot@example.test"
+}
+```
+
+Response:
+
+```json
+{
+  "profile": {
+    "id": "profile_...",
+    "email": "pilot@example.test"
+  },
+  "recoveryCode": "ABCD1234",
+  "teams": []
+}
+```
+
+## POST /profiles/recover
+Recovers the profile and returns its joined teams.
+
+Request:
+
+```json
+{
+  "email": "pilot@example.test",
+  "recoveryCode": "ABCD1234"
+}
+```
+
+Response:
+
+```json
+{
+  "profile": {
+    "id": "profile_...",
+    "email": "pilot@example.test"
+  },
+  "teams": [
+    {
+      "leagueId": "league_...",
+      "leagueName": "Office League",
+      "leagueCode": "ABC123",
+      "teamId": "team_...",
+      "teamName": "Volt Union",
+      "claimCode": "CLAIM123"
+    }
+  ]
+}
+```
 
 ## POST /api/solo/championships
 Creates a player, team, solo league, bots, season, calendar, starter cards, and initial standings.
@@ -309,6 +368,15 @@ Returns stored race result and events.
 ## GET /api/teams/:teamId/inventory
 Returns available cards and credits.
 
+## POST /leagues/:leagueId/teams/name
+Updates the player's team name inside a league.
+
+Rules:
+
+- reject names outside 3 to 32 readable characters;
+- reject duplicate names in the same league;
+- return the updated league state.
+
 # Error Shape
 Use a simple JSON error:
 
@@ -330,7 +398,7 @@ Minimum approach:
 - credit/standing updates happen with result creation.
 
 # Non-goals
-- No full auth in V0.
+- No password, OAuth, session-cookie, or permission model in V0.
 - No private multiplayer join endpoints in the first slice.
 - No admin endpoints.
 - No public matchmaking.

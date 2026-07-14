@@ -236,12 +236,13 @@ describe("App", () => {
 
     fireEvent.change(screen.getByLabelText("Language"), { target: { value: "fr" } });
 
-    expect(screen.getByRole("button", { name: "Rejoindre" })).toBeTruthy();
-    expect(screen.getByText("Stand de course")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Créer profil" })).toBeTruthy();
+    expect(screen.getByText("Sauvegarder ton accès")).toBeTruthy();
     expect(localStorage.getItem("cr-league-language")).toBe("fr");
   });
 
   it("plays through the demo league flow", async () => {
+    saveProfile();
     const fetch = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(response(baseState))
@@ -377,6 +378,7 @@ describe("App", () => {
   });
 
   it("closes the profile menu when focus leaves it", async () => {
+    saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
 
     render(<App />);
@@ -392,6 +394,7 @@ describe("App", () => {
   });
 
   it("shows a replay empty state when a resolved race has no events", async () => {
+    saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       response({
         ...resolvedState,
@@ -415,11 +418,13 @@ describe("App", () => {
   });
 
   it("joins a league by code", async () => {
+    saveProfile();
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
 
     render(<App />);
 
     fireEvent.change(screen.getByLabelText("Join code"), { target: { value: "abc123" } });
+    fireEvent.change(screen.getByLabelText("Team"), { target: { value: "Volt Union" } });
     fireEvent.click(screen.getByRole("button", { name: "Join league" }));
 
     expect(await screen.findByText("ABC123")).toBeTruthy();
@@ -429,7 +434,8 @@ describe("App", () => {
         method: "POST",
         body: JSON.stringify({
           code: "ABC123",
-          teamName: "Volt Union"
+          teamName: "Volt Union",
+          profileId: "profile_1"
         })
       })
     );
@@ -438,6 +444,7 @@ describe("App", () => {
   });
 
   it("rejoins and migrates a saved player claim", async () => {
+    saveProfile();
     localStorage.setItem("cr-league-player-claim", JSON.stringify(baseState.player));
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
 
@@ -456,6 +463,7 @@ describe("App", () => {
   });
 
   it("switches between saved league claims", async () => {
+    saveProfile();
     localStorage.setItem(
       "cr-league-player-claims",
       JSON.stringify([
@@ -498,6 +506,7 @@ describe("App", () => {
   });
 
   it("opens league adding without dropping saved claims", async () => {
+    saveProfile();
     localStorage.setItem(
       "cr-league-player-claims",
       JSON.stringify([
@@ -528,6 +537,7 @@ describe("App", () => {
   });
 
   it("clears a stale saved player claim", async () => {
+    saveProfile();
     localStorage.setItem(
       "cr-league-player-claims",
       JSON.stringify([
@@ -557,6 +567,17 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Join league" })).toBeTruthy();
   });
 });
+
+function saveProfile() {
+  localStorage.setItem(
+    "cr-league-profile-session",
+    JSON.stringify({
+      profile: { id: "profile_1", email: "pilot@example.test" },
+      recoveryCode: "ABCD1234",
+      teams: []
+    })
+  );
+}
 
 function response(body: unknown) {
   return {

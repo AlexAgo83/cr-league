@@ -34,7 +34,7 @@ const DEFAULT_GRAND_PRIX_PER_SEASON = 6;
 const MAX_GRAND_PRIX_PER_SEASON = 18;
 const TEAM_NAME_LIMIT = 32;
 const LEAGUE_NAME_LIMIT = 40;
-const QUALIFYING_REPLAY_SECONDS_PER_LAP = 3;
+const QUALIFYING_REPLAY_SECONDS_PER_LAP = 10;
 
 export class LeagueRuleError extends Error {
   constructor(message: string) {

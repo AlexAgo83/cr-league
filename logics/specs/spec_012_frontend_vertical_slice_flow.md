@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 90
-> Confidence: 85
+> Confidence: 92
 > Related request: `req_004_define_cr_league_implementation_contracts_v0`
 > Related backlog: `item_010_define_cr_league_implementation_contracts_v0`
 > Related task: `task_005_define_cr_league_implementation_contracts_v0`
@@ -185,7 +185,7 @@ Inventory and standings can be panels inside dashboard/result at first.
 - No notifications.
 - No full responsive polish before core flow works.
 
-# Open Questions
-- Should report and replay be separate routes or one result route?
-- Should the first UI use real API only or allow mocked fallback?
-- Should color selection use fixed swatches first instead of a color picker?
+# Resolved Questions
+- Report and replay are separate tabs/views inside the result flow rather than separate routes.
+- The app uses the real API flow; tests and fixtures cover the prototype loop.
+- Team colors use compact color pickers and livery preview rather than fixed swatches only.

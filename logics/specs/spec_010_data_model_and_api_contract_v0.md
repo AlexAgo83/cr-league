@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 90
-> Confidence: 90
+> Confidence: 92
 > Related request: `req_004_define_cr_league_implementation_contracts_v0`
 > Related backlog: `item_010_define_cr_league_implementation_contracts_v0`
 > Related task: `task_005_define_cr_league_implementation_contracts_v0`
@@ -325,8 +325,8 @@ Minimum approach:
 - No public matchmaking.
 - No complete normalization of replay/events/cards before playtest feedback proves the need.
 
-# Open Questions
-- Should event rows be normalized before beta, or is `GrandPrix.result` JSON enough?
-- Should credits remain a balance on `Team`, or become a ledger for audit/support?
-- Should card definitions remain shared-code constants, or be seeded to DB for live tuning?
-- Should seasons become a table before live beta, or is `GrandPrix.season` enough?
+# Resolved Questions
+- `GrandPrix.result` JSON is enough for the prototype; event-row normalization waits for beta/support needs.
+- Credits remain a `Team` balance for now; ledger support is deferred.
+- Card definitions remain shared-code constants for the prototype.
+- `GrandPrix.season` is enough for the current season rollover model.

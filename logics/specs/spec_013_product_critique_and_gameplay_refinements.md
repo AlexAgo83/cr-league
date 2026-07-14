@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 90%
-> Confidence: 80%
+> Confidence: 92
 > Related request: `req_005_capture_cr_league_product_critique_and_gameplay_refinements`
 > Related backlog: `item_011_capture_cr_league_product_critique_and_gameplay_refinements`
 > Related task: `task_006_capture_cr_league_product_critique_and_gameplay_refinements`
@@ -220,8 +220,8 @@ If a session requires more than this for casual players, the product is drifting
 - No hidden rubber-banding.
 - No permanent team upgrades in this refinement pass.
 
-# Open Questions
-- Should rival objective be automatic only, or can the player change it in V1?
-- Should post-race cards be bought with credits or offered as rewards?
-- Should season-ending awards be generated from real event tags or simple standings stats first?
-- Should team memorable moments be stored as result tags or derived from race events?
+# Resolved Questions
+- Rival objectives remain implicit/derived for now; explicit player-selected rival targeting is deferred.
+- Cards are bought with credits in a simple shop rather than granted as post-race rewards.
+- Season-ending presentation starts from standings/history rather than a separate award engine.
+- Memorable moments are derived from race events/results for now.

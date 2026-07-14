@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 92
 > Date: 2026-07-13
 > Related request: `req_001_define_grand_prix_core_loop_and_simulation_v1`
 > Related backlog: `item_007_define_grand_prix_core_loop_and_simulation_v1`
@@ -533,13 +533,13 @@ Next hook:
 - No public matchmaking.
 - No 3D requirement.
 
-# Open Questions
-- Should the first implementation include rival targeting as a first-class input, or only report natural rival outcomes?
-- Should practice sessions exist in V1, or wait until after a vertical slice proves the basic loop?
-- Should weather be one resolved state for the whole race or a simple segment timeline?
-- How many event types are needed for the first replay to feel alive?
-- Should the first prototype use 6 teams, 8 teams, or a variable grid?
-- Should credits be awarded only by finish position, or also by objectives and comeback opportunities?
+# Resolved Questions
+- Rival targeting can wait as a first-class input; the current prototype reports natural rival/nearby battles first.
+- Practice became qualifying attempts rather than a separate practice system.
+- Weather uses a simple segment timeline.
+- Replay now uses generated event/replay traces rather than a text-only event list.
+- Grid size is configurable, defaulting to 8 with a maximum of 16.
+- Credits are currently awarded by finish position plus card/economy effects; broader objective bonuses remain economy-balancing work.
 
 # Implementation Notes
 - Start with deterministic pure functions for simulation.

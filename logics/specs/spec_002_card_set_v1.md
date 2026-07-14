@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 90%
-> Confidence: 90
+> Confidence: 92
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -202,9 +202,9 @@ Each card should define:
 - No permanent passive card builds.
 - No card combos that require long rule text.
 
-# Open Questions
-- Should Weather Radar exist later, or do qualifying attempts cover enough pre-race insight?
-- Should cards stay fixed-price in a simple shop, or move to random/draft offers after playtest?
-- Should each player start with the same starter cards?
-- Should failed conditional race cards be fully consumed?
-- Should only qualifying cards lock card choice after chrono, as the current prototype does?
+# Resolved Questions
+- Weather Radar is deferred; qualifying attempts currently cover the pre-race insight role.
+- Cards stay fixed-price in the simple shop until playtest evidence says random/draft offers are needed.
+- Human teams currently start with the same starter card.
+- Failed conditional race cards are consumed in the current prototype.
+- Only qualifying-focused cards lock the card choice after chrono.

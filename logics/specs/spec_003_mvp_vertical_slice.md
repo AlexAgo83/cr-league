@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 92
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -76,7 +76,7 @@ After the vertical slice proves the loop, expand to:
 - shop;
 - improved replay.
 
-# Open Questions
-- Should the first vertical slice persist locally or use a simple backend immediately?
-- Is a text-first replay acceptable for the first internal playtest?
-- Should the slice use 3 GP or 5 GP to test season comeback?
+# Resolved Questions
+- The first useful slice uses a real Fastify API and PostgreSQL schema rather than local-only persistence.
+- Text-first replay was not enough; the prototype now uses a visual road-routed replay.
+- Short playtest sessions use 3 GP, while league setup defaults to 6 GP per season.

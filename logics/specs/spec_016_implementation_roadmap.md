@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: Implementation order reflects the current prototype reality: private-league foundation, race recap readability, replay, qualifying, seasons, garage/card progression, balance simulation, race desk immersion, session restart, and dashboard clarity were pulled forward after playtest feedback.
-> Confidence: 90
+> Confidence: 92
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Related backlog: `item_014_define_cr_league_implementation_roadmap`
 > Related task: `task_009_define_cr_league_implementation_roadmap`
@@ -269,7 +269,7 @@ Acceptance criteria for the next useful request should include:
 - Do not add a rendering engine before simple replay fails.
 - Do not tune economy before simulation/playtest feedback exists.
 
-# Open Questions
+# Follow-up Questions
 - Does the current qualifying model make grid position feel earned without making GP outcomes too deterministic?
 - Are card prices and credit rewards tight enough to make buying a choice, not an automatic click?
 - Does season rollover need a dedicated season-history UI before live beta?

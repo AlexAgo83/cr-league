@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 85%
-> Confidence: 70%
+> Confidence: 92
 > Related request: `req_004_define_cr_league_implementation_contracts_v0`
 > Related backlog: `item_010_define_cr_league_implementation_contracts_v0`
 > Related task: `task_005_define_cr_league_implementation_contracts_v0`
@@ -224,7 +224,7 @@ Use deterministic templates keyed by event type.
 - No machine-generated prose.
 - No hidden rubber-banding.
 
-# Open Questions
-- Are the placeholder modifiers too visible or too weak?
-- Should bot archetypes modify scores before or during segments?
-- Should event generation happen during scoring or after classification?
+# Resolved Questions
+- Placeholder modifiers have been replaced by the current shared simulation balance pass and balance script.
+- Bot behavior is folded into generated decisions, qualifying, cards, and simulation scoring rather than a separate complex AI layer.
+- Events and replay traces are generated from the simulation result path and used by report/replay surfaces.

@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 85%
-> Confidence: 75%
+> Confidence: 92
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -79,7 +79,7 @@ Use utility-first clarity. Do not make a marketing landing page as the first app
 - No 3D requirement.
 - No photorealism.
 
-# Open Questions
-- What are 3 reference games or visuals to explicitly emulate?
-- Should the app feel more like a sports dashboard or board game table?
-- Should cars have characterful faces/details or stay more vehicle-like?
+# Resolved Questions
+- The app direction is now a compact pit-wall/race operations HUD rather than a marketing page.
+- The visual balance leans game-like cockpit over SaaS dashboard, while keeping dense controls readable.
+- Cars stay vehicle-like and livery-driven instead of character-faced.

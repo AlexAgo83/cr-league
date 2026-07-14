@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 90
-> Confidence: 80
+> Confidence: 92
 > Related request: `req_006_capture_cr_league_theme_and_brand_inspiration`
 > Related backlog: `item_012_capture_cr_league_theme_and_brand_inspiration`
 > Related task: `task_007_capture_cr_league_theme_and_brand_inspiration`
@@ -247,11 +247,11 @@ Example first GP:
 - No real-world vehicle spec simulation.
 - No corporate KPI gameplay.
 
-# Open Questions
-- Should the game name remain CR League or evolve toward a more urban micro-EV name?
-- Should partner naming appear anywhere as a subtle internal codename, or stay completely out of player-facing copy?
-- Should the first vehicle be visually close to the compact urban micro-EV silhouette or only broadly inspired?
-- Should batteries be a real mechanic in V1 or just card/theme vocabulary at first?
+# Resolved Questions
+- The product remains CR League for the prototype.
+- Partner/internal naming stays out of player-facing copy.
+- Vehicle visuals are broadly inspired by compact urban micro-EV silhouettes without reproducing a real product.
+- Battery language stays theme/card vocabulary for now, not a core V1 resource.
 
 # References
 - Internal CR League product and art-direction docs.

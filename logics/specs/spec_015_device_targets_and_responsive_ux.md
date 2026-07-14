@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 92
 > Related request: `req_007_define_cr_league_device_targets_and_responsive_ux`
 > Related backlog: `item_013_define_cr_league_device_targets_and_responsive_ux`
 > Related task: `task_008_define_cr_league_device_targets_and_responsive_ux`
@@ -219,8 +219,8 @@ V1 PWA should support:
 - No hover-only interactions.
 - No desktop-only feature required for core gameplay.
 
-# Open Questions
-- Should mobile show report before replay, while desktop shows replay and report together?
-- Should league creation be desktop-recommended but still mobile-supported?
-- Should card offer after race use a carousel on mobile or a simple list?
-- Should the PWA install prompt appear only after a player finishes first GP?
+# Resolved Questions
+- Mobile and desktop both keep replay/report accessible through the same result flow, with responsive layout changes.
+- League creation remains mobile-supported.
+- Card offers use simple responsive lists/grids, not a carousel.
+- PWA install prompting is not part of the current prototype surface.

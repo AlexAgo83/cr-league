@@ -327,11 +327,9 @@ export function ReplayView({
                     type="button"
                     aria-label="Focus driver"
                     title="Focus driver"
-                    className={driverFocus ? "active" : undefined}
+                    className={driverFocus ? "replay-focus-button active" : "replay-focus-button"}
                     onClick={() => setDriverFocus(!driverFocus)}
-                  >
-                    ⌖
-                  </button>
+                  />
                   <select aria-label={tt("replay_speed")} value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
                     {REPLAY_SPEEDS.map((option) => (
                       <option key={option} value={option}>

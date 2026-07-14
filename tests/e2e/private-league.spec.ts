@@ -143,6 +143,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   const replayMap = mapPanel;
 
   await expect(mapPanel.locator(".circuit-map-stage")).toBeVisible();
+  await expect(mapPanel.locator(".circuit-map-stage")).toHaveCSS("border-top-width", "1px");
   await expect(replayMap).toHaveClass(/circuit-map-unframed/);
   await expect(replayMap).toHaveCSS("padding", "0px");
   await expect(replayMap).toHaveCSS("border-top-width", "0px");

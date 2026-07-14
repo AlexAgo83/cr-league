@@ -382,6 +382,7 @@ label small {
 
 .circuit-map-stage {
   background: #0a0f15;
+  border: 1px solid rgb(92 142 166 / 0.42);
   border-radius: 6px;
   overflow: hidden;
   position: relative;

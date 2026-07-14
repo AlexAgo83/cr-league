@@ -37,8 +37,8 @@ const TRAFFIC_FOCUS_ZOOM = 3.45;
 const CLOSE_FOCUS_ZOOM = FOCUS_ZOOM * 2;
 const TRAFFIC_ENTER_DISTANCE = 44;
 const TRAFFIC_EXIT_DISTANCE = 60;
-const CLOSE_ENTER_DISTANCE = 10;
-const CLOSE_EXIT_DISTANCE = 18;
+const CLOSE_ENTER_DISTANCE = 6;
+const CLOSE_EXIT_DISTANCE = 12;
 type CameraZoomMode = "normal" | "traffic" | "close";
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {

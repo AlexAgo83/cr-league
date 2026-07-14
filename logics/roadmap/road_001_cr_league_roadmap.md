@@ -4,8 +4,8 @@
 > Related product: `prod_001_cr_league_product_brief`
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
-> Confidence: 90
-> Non-semantic edit: refreshed 0.2/0.3 delivery notes after playtest reset and dashboard pass.
+> Confidence: 95
+> Non-semantic edit: refreshed 0.3 cockpit/replay direction after race cockpit V1 framing.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1 without pretending the full game should be built in one pass.
@@ -91,9 +91,13 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 
 ## 0.3 - Playtest-ready game loop
 - Goal: Make the prototype worth testing with colleagues beyond a single technical demo.
-- Status: Planned.
+- Status: Planned; next implementation focus.
 - Scope:
   - 3-GP mini championship loop;
+  - V2 race cockpit redesign with clear Course, Championship, Garage, and Result/Replay responsibilities;
+  - static V1 city circuit catalog: Paris Docklands Sprint/Left Bank Loop, Amsterdam Canal Loop/Harbor Sprint, Berlin Ring Sector/Mitte Dash;
+  - city-circuit rendering from stored route geometry, without Leaflet/OSRM runtime dependencies;
+  - deterministic animated race replay with cars moving on the circuit, simple controls, visible overtakes when supported by the generated timeline, and a static readout fallback;
   - replay/report UX pass that makes player choices legible;
   - more race-event variety and non-impact flavor moments;
   - clearer dashboard for standings, next GP, deadline, and player action state;
@@ -112,6 +116,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - `spec_001_grand_prix_core_loop_and_simulation_v1`
   - `spec_016_implementation_roadmap`
   - `prod_001_cr_league_product_brief`
+  - `prod_003_race_cockpit_redesign_v0_product_brief`
+  - `req_032_redesign_the_cr_league_race_cockpit_v0`
 
 ## 0.4 - Economy and card depth
 - Goal: Add enough card and currency depth for repeated sessions without burying the casual player.
@@ -169,8 +175,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 
 # Next Recommended Requests
 - Add automatic deadline resolution only if manual operation becomes painful in playtest.
-- Improve the dashboard layout after feedback from a real colleague session.
-- Add a first replay visualization pass from the stored event timeline.
+- Implement the V2 cockpit and deterministic animated replay before adding more economy depth.
+- Improve the dashboard layout only where it supports the cockpit flow.
 - Re-test whether the race desk state badge and primary command make the next action obvious.
 - Re-test whether the dashboard and restart flow make repeated playtests easy to operate.
 - Expand card economy only after the thin garage loop has playtest feedback.
@@ -179,7 +185,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Building the card economy before a repeated-GP loop would tune the wrong game.
 - Private multiplayer without stable rejoin identity will become frustrating even with invite codes.
 - Async cadence can feel dead if the next action and deadline are not obvious.
-- A richer replay can become expensive if it starts with 3D before a simple event-driven view proves the need.
+- A richer replay can become expensive if it turns into real-time simulation, 3D, or live routing before deterministic playback proves the need.
 - The prototype can drift from the Circle One / urban micro-EV tone if visual polish is postponed too long.
 
 # References

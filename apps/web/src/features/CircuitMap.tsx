@@ -9,6 +9,7 @@ export type MapCar = {
   player: boolean;
   delay: number;
   duration: number;
+  progress?: number;
 };
 
 export type MapTraitStats = {
@@ -71,9 +72,35 @@ function circuitScene(circuit: CityCircuit) {
   return {
     zoom,
     tiles,
+    points,
     d: points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ") + " Z",
     start: points[0] ?? { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2 }
   };
+}
+
+function pointOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
+  if (!points.length) return { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2 };
+  const closed = [...points, points[0]!];
+  const segments = closed.slice(1).map((point, index) => ({
+    from: closed[index]!,
+    to: point,
+    length: Math.hypot(point.x - closed[index]!.x, point.y - closed[index]!.y)
+  }));
+  const total = segments.reduce((sum, segment) => sum + segment.length, 0) || 1;
+  let distance = (((progress % 1) + 1) % 1) * total;
+
+  for (const segment of segments) {
+    if (distance <= segment.length) {
+      const ratio = segment.length ? distance / segment.length : 0;
+      return {
+        x: segment.from.x + (segment.to.x - segment.from.x) * ratio,
+        y: segment.from.y + (segment.to.y - segment.from.y) * ratio
+      };
+    }
+    distance -= segment.length;
+  }
+
+  return points[0]!;
 }
 
 function boundsOf(points: Array<{ x: number; y: number }>) {
@@ -112,7 +139,7 @@ export function CircuitMap({
   framed?: boolean;
   showTraits?: boolean;
 }) {
-  const { zoom, tiles, d, start } = circuitScene(circuit);
+  const { zoom, tiles, points, d, start } = circuitScene(circuit);
   const cameraRef = useRef<SVGGElement>(null);
   const routeRef = useRef<SVGPathElement>(null);
   const markerScale = camera?.enabled ? 1 / FOCUS_ZOOM : 1;
@@ -131,8 +158,8 @@ export function CircuitMap({
     const focusY = VIEW_HEIGHT / 2;
     let frame = requestAnimationFrame(function tick() {
       const elapsed = Math.max(0, camera.timeRef.current - car.delay);
-      const progress = camera.timeRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration;
-      const point = route.getPointAtLength(length * progress);
+      const progress = car.progress ?? (camera.timeRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration);
+      const point = car.progress === undefined ? route.getPointAtLength(length * progress) : pointOnRoute(points, progress);
       cameraGroup.setAttribute("transform", `translate(${focusX} ${focusY}) scale(${FOCUS_ZOOM}) translate(${-point.x} ${-point.y})`);
       frame = requestAnimationFrame(tick);
     });
@@ -179,18 +206,22 @@ export function CircuitMap({
             <path className="circuit-route-accent" d={d} />
             <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />
             {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
-            {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => (
-              <g key={car.id} className={car.player ? "map-car player" : "map-car"}>
-                <g transform={`scale(${markerScale})`}>
-                  <circle r="16" />
-                  <text textAnchor="middle" dominantBaseline="central">
-                    {car.label}
-                  </text>
+            {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
+              const point = car.progress === undefined ? null : pointOnRoute(points, car.progress);
+              return (
+                <g key={car.id} className={car.player ? "map-car player" : "map-car"} transform={point ? `translate(${point.x} ${point.y})` : undefined}>
+                  <g transform={`scale(${markerScale})`}>
+                    <circle r="16" />
+                    <text textAnchor="middle" dominantBaseline="central">
+                      {car.label}
+                    </text>
+                  </g>
+                  {car.progress === undefined ? (
+                    <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={circuit.laps} fill="freeze" />
+                  ) : null}
                 </g>
-                {/* Each car runs its laps then freezes on the finish line. */}
-                <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={circuit.laps} fill="freeze" />
-              </g>
-            ))}
+              );
+            })}
           </g>
         </svg>
         <small className="map-attribution">© OSM · CARTO</small>

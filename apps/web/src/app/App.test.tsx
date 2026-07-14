@@ -282,6 +282,12 @@ describe("App", () => {
     expect(screen.getByText("Key event")).toBeTruthy();
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip · Circle One profits from the weather call");
 
+    // Replay playback controls
+    fireEvent.click(screen.getByRole("button", { name: "Pause" }));
+    expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Restart" }));
+    expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
+
     // Garage view
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     expect(screen.getByText("Last GP")).toBeTruthy();

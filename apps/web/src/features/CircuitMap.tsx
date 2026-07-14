@@ -1,3 +1,4 @@
+import type { Ref } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
@@ -69,11 +70,13 @@ function boundsOf(points: Array<{ x: number; y: number }>) {
 export function CircuitMap({
   circuit,
   tt,
-  cars = []
+  cars = [],
+  svgRef
 }: {
   circuit: CityCircuit;
   tt: Translator;
   cars?: MapCar[];
+  svgRef?: Ref<SVGSVGElement>;
 }) {
   const { zoom, tiles, d, start } = circuitScene(circuit);
 
@@ -87,7 +90,7 @@ export function CircuitMap({
         </small>
       </div>
       <div className="circuit-map-stage">
-        <svg viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           {tiles.map((tile) => (
             <image
               key={`${tile.x}-${tile.y}`}

@@ -1,4 +1,5 @@
 import { RACE_SEGMENTS, type RaceResult } from "@cr-league/shared";
+import { useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
@@ -15,8 +16,28 @@ export function ReplayView({
   playerTeamId: string | undefined;
   tt: Translator;
 }) {
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [playing, setPlaying] = useState(true);
   const names = teamNamesFromResult(result);
   const playerEntry = result.classification.find((entry) => entry.teamId === playerTeamId);
+
+  // ponytail: SMIL clock control; jsdom has no pauseAnimations, hence the guards.
+  function togglePlay() {
+    const svg = svgRef.current;
+    if (playing) {
+      svg?.pauseAnimations?.();
+    } else {
+      svg?.unpauseAnimations?.();
+    }
+    setPlaying(!playing);
+  }
+
+  function restart() {
+    const svg = svgRef.current;
+    svg?.setCurrentTime?.(0);
+    svg?.unpauseAnimations?.();
+    setPlaying(true);
+  }
   const winner = result.classification[0];
   const field = result.classification.slice(0, 6);
   const cars: MapCar[] = field.map((entry, index) => ({
@@ -50,7 +71,15 @@ export function ReplayView({
             </span>
           ) : null}
         </div>
-        <CircuitMap circuit={circuit} tt={tt} cars={cars} />
+        <CircuitMap circuit={circuit} tt={tt} cars={cars} svgRef={svgRef} />
+        <div className="actions replay-controls secondary-actions">
+          <button type="button" onClick={togglePlay}>
+            {playing ? tt("action_pause") : tt("action_play")}
+          </button>
+          <button type="button" onClick={restart}>
+            {tt("action_replay_restart")}
+          </button>
+        </div>
         <ol className="replay-laps" aria-label={tt("result_replay_track_label")}>
           {RACE_SEGMENTS.map((segment, index) => (
             <li key={segment}>

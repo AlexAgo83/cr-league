@@ -1,0 +1,194 @@
+{
+  "title": "Over-engineering cleanup pass 1",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/roadmap/road_001_cr_league_roadmap.md",
+    "packages/shared/src/index.ts",
+    "packages/shared/src/simulation/prng.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/economy/constants.ts",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/web/src/app/helpers.ts",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "Audit findings: a repo-wide over-engineering audit identified 13 actionable cleanups: dead i18n keys, dead helpers, dead enum members, an all-identical price map, duplicated helpers, over-exposed package surface, stray empty directories, a fabricated qualifying RaceResult, and a redundant validation layer between routes and store."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Code health and simplification",
+    "needs": [
+      "Remove dead code and dead localization keys identified by the audit so the codebase only carries what the product actually uses.",
+      "Collapse duplicated helpers and degenerate data structures (a 15-entry price map where every value is identical) into single sources of truth.",
+      "Reduce the shared package public surface to what consumers actually import, keeping internals internal.",
+      "Replace the fabricated full RaceResult built for qualifying runs with a minimal shape, if the web client does not render the fabricated fields.",
+      "Consolidate the duplicated input validation between API route body guards and store-level rule checks without weakening the trust boundary.",
+      "Delete stray empty directories and placeholder files left over from earlier scaffolding."
+    ],
+    "context": [
+      "A three-way audit (web, api+shared, tooling) ran on 2026-07-15 and confirmed the repo is otherwise healthy: no committed build artifacts, no unused dependencies, prisma live, scripts wired.",
+      "The 13 retained findings split into ten mechanical, zero-risk cuts and two changes that need verification first: the qualifying result shape (verify the web never renders qualifyingRuns[].result internals) and the route/store validation overlap (guarded by 1089 lines of existing API tests).",
+      "All cuts must preserve behavior: this is deletion and consolidation, not redesign. TypeScript, unit tests, and e2e are the safety net.",
+      "The shared package has zero runtime dependencies and its barrel currently re-exports internals (createPrng, Prng, InternalScores) no consumer imports."
+    ],
+    "acceptance_criteria": [
+      "AC1: Dead i18n keys are removed from both EN and FR catalogs, and every remaining key is referenced by the web app.",
+      "AC2: Dead code is deleted: localizedReportBlocks, prng.int, and the never-emitted RaceEventType members strong_start, poor_start, late_push_failure.",
+      "AC3: CARD_PRICES is replaced by a single CARD_PRICE constant and all consumers are updated.",
+      "AC4: clampTrait exists once and is imported where needed; traitLabel/weatherLabel collapse to one helper.",
+      "AC5: The shared package barrel no longer exports createPrng, Prng, or InternalScores; internals stay importable inside the package.",
+      "AC6: Stray artifacts are gone: empty root src/ directory, apps/api/src/simulation/.gitkeep, apps/api/src/db/.gitkeep, and the local .npm-cache directory.",
+      "AC7: Qualifying runs persist a minimal result shape instead of a fabricated full RaceResult, unless verification shows the web renders the fabricated fields, in which case the finding is closed as invalid with proof.",
+      "AC8: Route body guards keep shape/type checks as the single trust boundary while the store keeps only business rules, with no duplicated shape validation, and all existing API tests pass.",
+      "AC9: Typecheck, lint, unit tests, build, and e2e all pass after the cleanup."
+    ]
+  },
+  "product": {
+    "title": "Over-engineering Cleanup Product Brief",
+    "overview": "A deletion-first maintenance pass that removes dead code, dead translations, duplicated helpers, and speculative surface area identified by a repo-wide audit, so future feature work starts from a smaller, honest codebase.",
+    "goals": [
+      "Shrink the codebase by roughly 200 lines with zero behavior change.",
+      "Make the shared package surface match what consumers actually use.",
+      "Establish one validation layer per concern: shape at the route boundary, business rules in the store.",
+      "Leave the i18n catalogs exactly matching the UI so future locale audits are trivial."
+    ],
+    "non_goals": [
+      "Do not redesign any UI surface or add abstractions (no Modal wrapper, no component extraction).",
+      "Do not change gameplay, economy values, or simulation behavior.",
+      "Do not touch the logics/ workflow corpus beyond this request chain.",
+      "Do not add dependencies or tooling."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Delete dead code, dead i18n keys, and stray files",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Dead code removal",
+      "request_acs": ["AC1", "AC2", "AC6", "AC9"],
+      "problem": [
+        "About 30 i18n keys survive in both catalogs from a previous UI iteration with zero references.",
+        "localizedReportBlocks, prng.int, and three RaceEventType members are exported or declared but never used or emitted.",
+        "Empty directories and .gitkeep placeholders from early scaffolding suggest structure that does not exist."
+      ],
+      "scope_in": [
+        "Remove the ~30 audited unused keys from apps/web/src/i18n/en.json and fr.json.",
+        "Delete localizedReportBlocks from apps/web/src/app/helpers.ts.",
+        "Delete prng.int from the Prng type and implementation.",
+        "Delete RaceEventType members strong_start, poor_start, late_push_failure.",
+        "Remove the empty root src/ directory, apps/api/src/simulation/.gitkeep, apps/api/src/db/.gitkeep, and the local .npm-cache directory.",
+        "Re-verify each key/symbol has zero references (including dynamic template access) before deleting."
+      ],
+      "scope_out": [
+        "Adding new i18n keys or tooling to detect unused keys.",
+        "Any change to rendered copy."
+      ],
+      "acceptance_criteria": [
+        "AC1: Both catalogs contain only keys referenced by the web app, and EN/FR key sets are identical.",
+        "AC2: The named dead symbols are gone and typecheck passes.",
+        "AC3: The named stray directories and placeholder files are gone.",
+        "AC4: Unit tests and e2e pass unchanged."
+      ]
+    },
+    {
+      "title": "Consolidate duplicated helpers and degenerate constants",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Deduplication",
+      "request_acs": ["AC3", "AC4", "AC5", "AC9"],
+      "problem": [
+        "CARD_PRICES maps 15 card ids to the identical value 115, hiding the fact that there is one price.",
+        "clampTrait is defined verbatim in both the API store and the shared simulation.",
+        "traitLabel and weatherLabel have identical bodies.",
+        "The shared barrel exports createPrng, Prng, and InternalScores which no consumer outside the package imports."
+      ],
+      "scope_in": [
+        "Replace CARD_PRICES with a single exported CARD_PRICE constant and update all consumers.",
+        "Export clampTrait once from the shared package and import it in the API store.",
+        "Collapse traitLabel/weatherLabel into one label helper.",
+        "Remove createPrng, Prng, and InternalScores from the public surface; move InternalScores local to simulateRace.ts.",
+        "Merge the two type-only prisma imports in store.ts into one."
+      ],
+      "scope_out": [
+        "Introducing per-card pricing logic or economy changes.",
+        "Renaming anything consumers already import for other reasons."
+      ],
+      "acceptance_criteria": [
+        "AC1: One price constant exists and purchase behavior is unchanged (existing tests prove it).",
+        "AC2: clampTrait has exactly one definition in the repo.",
+        "AC3: The shared barrel exports only symbols imported by at least one consumer.",
+        "AC4: Typecheck, unit tests, and build pass."
+      ]
+    },
+    {
+      "title": "Slim the qualifying result to what the client renders",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Data shape honesty",
+      "request_acs": ["AC7", "AC9"],
+      "problem": [
+        "createQualifyingResult fabricates a full RaceResult (events, replay trace, report) per qualifying run only to satisfy the type, duplicating simulateRace's output shape with a parallel hand-rolled model of roughly 54 lines.",
+        "If the web only reads lap times from qualifying runs, the fabricated fields are dead weight persisted per run."
+      ],
+      "scope_in": [
+        "Verify exactly which fields of qualifyingRuns[].result the web client reads (search App.tsx and feature views).",
+        "If only lap/best-time data is read: define a minimal qualifying result shape, update store, routes, shared types, and web accordingly, including any persisted data migration or backward-compat read.",
+        "If the fabricated fields are rendered: close the finding as invalid with the evidence, changing nothing."
+      ],
+      "scope_out": [
+        "Changing qualifying gameplay, scoring, or the number of runs.",
+        "Building a real qualifying replay."
+      ],
+      "acceptance_criteria": [
+        "AC1: A written verification note lists every consumer field of qualifyingRuns[].result.",
+        "AC2: Either the minimal shape ships with all gates green, or the finding is closed as invalid with proof.",
+        "AC3: Existing qualifying flows (run, lock, suggestion) behave identically in e2e."
+      ]
+    },
+    {
+      "title": "Single-layer validation between routes and store",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Validation consolidation",
+      "request_acs": ["AC8", "AC9"],
+      "problem": [
+        "Ten isXBody route guards check field presence and types, then the store re-validates the same inputs and throws LeagueRuleError, so the same input is validated twice with the guards mostly deciding 400 vs 409.",
+        "Redundant validation drifts: a rule updated in one layer but not the other becomes a latent inconsistency."
+      ],
+      "scope_in": [
+        "Keep route guards as the single shape/type trust boundary (presence, primitive types).",
+        "Keep the store as the single business-rule layer (normalization, bounds, uniqueness, domain invariants).",
+        "Remove shape re-checks from the store and business rules from guards, route by route, running the API test suite after each route.",
+        "Preserve the 400 vs 409 status mapping exactly as the tests specify it."
+      ],
+      "scope_out": [
+        "Adding a validation library or schema framework.",
+        "Changing any endpoint contract, status code, or error message the tests assert."
+      ],
+      "acceptance_criteria": [
+        "AC1: No input field is shape-validated in both layers.",
+        "AC2: The full API test suite passes without modifying any test expectation.",
+        "AC3: Trust-boundary validation still rejects malformed bodies with 400 before reaching the store."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate over-engineering cleanup pass 1",
+    "plan": [
+      "Re-verify each audited finding against the current tree before cutting (references, dynamic access, test usage).",
+      "Ship the two Low-complexity deletion/consolidation items first as one commit each, gates green.",
+      "Run the qualifying-result verification and either implement the minimal shape or close the finding with proof.",
+      "Consolidate validation route by route with the API test suite as the contract.",
+      "Run typecheck, lint, unit tests, build, and e2e; record proof in the Logics closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/over-engineering-cleanup.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

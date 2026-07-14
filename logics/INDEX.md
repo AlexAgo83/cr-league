@@ -20,6 +20,7 @@
 | [prod_001_cr_league_product_brief](product/prod_001_cr_league_product_brief.md) | 8. Progression | Settled |  |  | product/prod_001_cr_league_product_brief.md |
 | [prod_002_visual_replay_v0_product_brief](product/prod_002_visual_replay_v0_product_brief.md) | Visual Replay V0 Product Brief | Settled |  |  | product/prod_002_visual_replay_v0_product_brief.md |
 | [prod_003_race_cockpit_redesign_v0_product_brief](product/prod_003_race_cockpit_redesign_v0_product_brief.md) | Race Cockpit Redesign V0 Product Brief | Settled |  |  | product/prod_003_race_cockpit_redesign_v0_product_brief.md |
+| [prod_004_over_engineering_cleanup_product_brief](product/prod_004_over_engineering_cleanup_product_brief.md) | Over-engineering Cleanup Product Brief | Proposed |  |  | product/prod_004_over_engineering_cleanup_product_brief.md |
 
 ## Roadmaps
 
@@ -64,6 +65,7 @@
 | [req_030_add_playtest_session_reset_and_league_dashboard_clarity](request/req_030_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done |  |  | request/req_030_add_playtest_session_reset_and_league_dashboard_clarity.md |
 | [req_031_add_first_visual_race_replay_from_event_timeline](request/req_031_add_first_visual_race_replay_from_event_timeline.md) | Add first visual race replay from event timeline | Done |  |  | request/req_031_add_first_visual_race_replay_from_event_timeline.md |
 | [req_032_redesign_the_cr_league_race_cockpit_v0](request/req_032_redesign_the_cr_league_race_cockpit_v0.md) | Redesign the CR League race cockpit V0 | Done |  |  | request/req_032_redesign_the_cr_league_race_cockpit_v0.md |
+| [req_033_over_engineering_cleanup_pass_1](request/req_033_over_engineering_cleanup_pass_1.md) | Over-engineering cleanup pass 1 | Draft |  |  | request/req_033_over_engineering_cleanup_pass_1.md |
 
 ## Backlog
 
@@ -116,6 +118,10 @@
 | [item_045_audit_and_harden_i18n_for_redesigned_surfaces](backlog/item_045_audit_and_harden_i18n_for_redesigned_surfaces.md) | Audit and harden i18n for redesigned surfaces | Done |  | 100% | backlog/item_045_audit_and_harden_i18n_for_redesigned_surfaces.md |
 | [item_046_split_the_web_cockpit_into_practical_components](backlog/item_046_split_the_web_cockpit_into_practical_components.md) | Split the web cockpit into practical components | Done |  | 100% | backlog/item_046_split_the_web_cockpit_into_practical_components.md |
 | [item_047_validate_the_redesigned_cockpit_with_screenshots_and_playtest_prompts](backlog/item_047_validate_the_redesigned_cockpit_with_screenshots_and_playtest_prompts.md) | Validate the redesigned cockpit with screenshots and playtest prompts | Done |  | 100% | backlog/item_047_validate_the_redesigned_cockpit_with_screenshots_and_playtest_prompts.md |
+| [item_048_delete_dead_code_dead_i18n_keys_and_stray_files](backlog/item_048_delete_dead_code_dead_i18n_keys_and_stray_files.md) | Delete dead code, dead i18n keys, and stray files | Ready |  | 0% | backlog/item_048_delete_dead_code_dead_i18n_keys_and_stray_files.md |
+| [item_049_consolidate_duplicated_helpers_and_degenerate_constants](backlog/item_049_consolidate_duplicated_helpers_and_degenerate_constants.md) | Consolidate duplicated helpers and degenerate constants | Ready |  | 0% | backlog/item_049_consolidate_duplicated_helpers_and_degenerate_constants.md |
+| [item_050_slim_the_qualifying_result_to_what_the_client_renders](backlog/item_050_slim_the_qualifying_result_to_what_the_client_renders.md) | Slim the qualifying result to what the client renders | Ready |  | 0% | backlog/item_050_slim_the_qualifying_result_to_what_the_client_renders.md |
+| [item_051_single_layer_validation_between_routes_and_store](backlog/item_051_single_layer_validation_between_routes_and_store.md) | Single-layer validation between routes and store | Ready |  | 0% | backlog/item_051_single_layer_validation_between_routes_and_store.md |
 
 ## Tasks
 
@@ -154,3 +160,4 @@
 | [task_031_add_playtest_session_reset_and_league_dashboard_clarity](tasks/task_031_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done | codex | 100% | tasks/task_031_add_playtest_session_reset_and_league_dashboard_clarity.md |
 | [task_032_orchestrate_visual_replay_v0](tasks/task_032_orchestrate_visual_replay_v0.md) | Orchestrate visual replay V0 | Done | codex | 100% | tasks/task_032_orchestrate_visual_replay_v0.md |
 | [task_033_orchestrate_race_cockpit_redesign_v0](tasks/task_033_orchestrate_race_cockpit_redesign_v0.md) | Orchestrate race cockpit redesign V0 | Done |  | 100% | tasks/task_033_orchestrate_race_cockpit_redesign_v0.md |
+| [task_034_orchestrate_over_engineering_cleanup_pass_1](tasks/task_034_orchestrate_over_engineering_cleanup_pass_1.md) | Orchestrate over-engineering cleanup pass 1 | Ready |  | 0% | tasks/task_034_orchestrate_over_engineering_cleanup_pass_1.md |

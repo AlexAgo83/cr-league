@@ -79,6 +79,11 @@ export function displayLapAtProgress(progress: number, laps: number) {
   return Math.max(1, Math.min(laps, Math.round(1 + Math.max(0, Math.min(1, progress)) * (laps - 1))));
 }
 
+export function segmentAtProgress(progress: number): RaceSegment {
+  const index = Math.min(RACE_SEGMENTS.length - 1, Math.floor(Math.max(0, Math.min(1, progress)) * RACE_SEGMENTS.length));
+  return RACE_SEGMENTS[index] ?? "start";
+}
+
 export function finishTimes(result: RaceResult, trace: ReplayTracePoint[]) {
   const final = trace.at(-1);
   const leaderTime = Math.min(...result.classification.map((entry) => final?.times[entry.teamId] ?? Number.POSITIVE_INFINITY));
@@ -234,9 +239,9 @@ export function ReplayView({
   function updateLive(time: number) {
     const progress = raceProgressAt(time, raceDuration);
     const raceTime = Math.max(0, time - START_HOLD_SECONDS);
-    const tracePoint = tracePointAt(replayTrace, progress);
-    const displayLap = displayLapAtProgress(tracePoint.progress, circuit.laps);
-    setLive((current) => (current.lap === displayLap && current.segment === tracePoint.segment ? current : { lap: displayLap, segment: tracePoint.segment }));
+    const displayLap = displayLapAtProgress(progress, circuit.laps);
+    const segment = segmentAtProgress(progress);
+    setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
     setCarProgress(carProgressAtRaceTime(result, replayTimes.times, raceTime, circuit.laps));
     const nextTower = liveClassification(result, replayTrace, progress);
     setLiveTower((current) => (current.map((entry) => entry.teamId).join("|") === nextTower.map((entry) => entry.teamId).join("|") ? current : nextTower));

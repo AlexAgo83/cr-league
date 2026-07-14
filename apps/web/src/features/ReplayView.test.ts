@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { RaceResult } from "@cr-league/shared";
-import { carProgressAtRaceTime, displayLapAtProgress, finishTimes } from "./ReplayView.js";
+import { carProgressAtRaceTime, displayLapAtProgress, finishTimes, segmentAtProgress } from "./ReplayView.js";
 
 const result: RaceResult = {
   grandPrixName: "Test GP",
@@ -20,6 +20,21 @@ describe("ReplayView timing", () => {
     expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 4))).toEqual([1, 2, 3, 3, 4]);
     expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 5))).toEqual([1, 2, 3, 4, 5]);
     expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 6))).toEqual([1, 2, 4, 5, 6]);
+  });
+
+  it("uses the same segment timing for live weather and replay weather markers", () => {
+    expect([0, 0.19, 0.2, 0.39, 0.4, 0.59, 0.6, 0.79, 0.8, 1].map(segmentAtProgress)).toEqual([
+      "start",
+      "start",
+      "early",
+      "early",
+      "mid",
+      "mid",
+      "late",
+      "late",
+      "finish",
+      "finish"
+    ]);
   });
 
   it("keeps replay running until the last finisher reaches the line", () => {

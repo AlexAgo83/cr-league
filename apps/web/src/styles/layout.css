@@ -1703,7 +1703,7 @@ button.primary-command {
   }
 
   .game-shell {
-    padding-bottom: 108px;
+    padding-bottom: 92px;
   }
 
   .topbar {
@@ -1898,24 +1898,30 @@ button.primary-command {
   .command-bar {
     gap: 8px;
     justify-content: space-between;
-    padding: 10px;
+    padding: 8px;
     width: calc(100% - 24px);
   }
 
   .command-actions {
-    gap: 8px;
+    gap: 6px;
     justify-content: flex-end;
     min-width: 0;
   }
 
   button.info-command,
   .result-toggle-command {
-    min-width: 86px;
-    padding-inline: 10px;
+    font-size: 0.82rem;
+    height: 38px;
+    min-height: 38px;
+    min-width: 76px;
+    padding-inline: 8px;
   }
 
   button.primary-command {
-    min-width: 130px;
+    font-size: 0.9rem;
+    min-height: 40px;
+    min-width: 112px;
+    padding-inline: 12px;
   }
 
   .report-hero {

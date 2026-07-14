@@ -81,8 +81,8 @@ function AmbientRaceBackground({ tt }: { tt: (key: TranslationKey) => string }) 
         id: `ambient-${index}`,
         label: "",
         player: false,
-        delay: -Math.random() * 22,
-        duration: 16 + Math.random() * 12,
+        delay: -index * 2.2,
+        duration: 14 + index * 1.4,
         repeatCount: "indefinite" as const,
         livery: { primary, secondary }
       }))
@@ -91,7 +91,7 @@ function AmbientRaceBackground({ tt }: { tt: (key: TranslationKey) => string }) 
 
   return (
     <div className="ambient-race-background" aria-hidden="true">
-      <CircuitMap className="ambient-race-map" circuit={circuit} tt={tt} cars={cars} showHeading={false} framed={false} showTraits={false} />
+      <CircuitMap className="ambient-race-map" circuit={circuit} tt={tt} cars={cars} camera={{ enabled: true, car: cars[0] }} showHeading={false} framed={false} showTraits={false} />
     </div>
   );
 }

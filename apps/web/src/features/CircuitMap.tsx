@@ -188,7 +188,7 @@ export function CircuitMap({
   camera?: {
     enabled: boolean;
     car: MapCar | undefined;
-    timeRef: React.RefObject<number>;
+    timeRef?: React.RefObject<number>;
   };
   className?: string;
   showHeading?: boolean;
@@ -200,6 +200,7 @@ export function CircuitMap({
   const routeRef = useRef<SVGPathElement>(null);
   const carsRef = useRef(cars);
   const pointsRef = useRef(points);
+  const clockRef = useRef(0);
   const zoomRef = useRef(FOCUS_ZOOM);
   const zoomModeRef = useRef<CameraZoomMode>("normal");
   const markerScale = camera?.enabled ? 1 / FOCUS_ZOOM : 1;
@@ -222,9 +223,11 @@ export function CircuitMap({
     const length = route.getTotalLength();
     const focusX = VIEW_WIDTH / 2;
     const focusY = VIEW_HEIGHT / 2;
+    const startedAt = performance.now();
     let frame = requestAnimationFrame(function tick() {
-      const elapsed = Math.max(0, camera.timeRef.current - car.delay);
-      const progress = car.progress ?? (camera.timeRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration);
+      clockRef.current = camera.timeRef?.current ?? (performance.now() - startedAt) / 1000;
+      const elapsed = Math.max(0, clockRef.current - car.delay);
+      const progress = car.progress ?? (car.repeatCount !== "indefinite" && clockRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration);
       const point = car.progress === undefined ? route.getPointAtLength(length * progress) : pointOnRoute(pointsRef.current, progress);
       const nearestCarDistance = Math.min(
         ...carsRef.current.map((other) => {

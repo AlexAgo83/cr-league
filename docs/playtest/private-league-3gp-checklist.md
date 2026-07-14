@@ -13,7 +13,7 @@
 2. Player B joins code `PLAY01` as `Late Apex`.
 3. Set cadence to `Fast`.
 4. Each player submits a directive for GP 1.
-5. Resolve GP 1 and read the report/replay.
+5. Resolve GP 1 and read the race recap, report, and replay.
 6. Review the garage summary, check the consumed-card line, buy one recommended card if enough credits are available, then start GP 2.
 7. Start GP 3 and repeat.
 8. Stop after GP 3 and review standings/history.
@@ -23,6 +23,7 @@
 - Is the next expected action obvious?
 - Do ready/missing states match what players did?
 - Does the result feel connected to the submitted directive?
+- Does the race recap explain what made the difference?
 - Does the replay timeline make the race easier to understand?
 - Does the history make the championship feel persistent?
 - Does buying or saving a card after a GP give a reason to continue?
@@ -34,6 +35,7 @@
 - What was confusing or hidden?
 - Would you come back for the next GP later?
 - Did being behind still feel playable?
+- What did the recap teach you for the next GP?
 
 ## Known Limits
 - No real account system yet.

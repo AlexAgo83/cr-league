@@ -103,12 +103,13 @@
 - Added deterministic minor race notes to make the replay less repetitive without changing race balance.
 - Added the first thin between-GP progression hook: persisted card inventory, fixed-price buying with credits, owned-card directive validation, and card consumption after GP resolution.
 - Improved the garage presentation with post-GP rewards, consumed-card summary, separated inventory/offers, and simple card fit labels.
+- Added a player-focused race recap with key difference, directive summary, next-GP takeaway, and prioritized timeline labels.
 - Remaining limits are intentional: no card selling, rarity, draft offers, catch-up economy tuning, full visual track replay, or scheduler.
 
 ## Backlog Candidates
 - Add guided pre-GP briefing and decision helper.
 - Expand race event variety and replay flavor.
-- Rework result screen into a race recap.
+- Keep testing whether the race recap explains cause and effect before adding visual replay.
 - Add a first immersion pass for the race desk UI.
 - Tune and expand between-GP progression only after the thin garage loop has playtest feedback.
 

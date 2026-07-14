@@ -222,6 +222,21 @@ label small {
   grid-column: span 6;
 }
 
+.recap-panel {
+  grid-column: 1 / -1;
+}
+
+.recap-grid {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.recap-grid section {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 12px;
+}
+
 .classification,
 .events,
 .card-inventory {
@@ -310,6 +325,11 @@ label small {
   padding-top: 10px;
 }
 
+.events li.player-event {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 10px;
+}
+
 .replay-timeline li {
   align-items: start;
   grid-template-columns: auto 1fr;
@@ -348,7 +368,8 @@ label small {
   }
 
   .settings-fields,
-  .directive-fields {
+  .directive-fields,
+  .recap-grid {
     grid-template-columns: 1fr;
   }
 

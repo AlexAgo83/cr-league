@@ -131,6 +131,9 @@ export function App() {
   const playerResult = result?.classification.find((entry) => entry.teamId === playerTeam?.id);
   const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
   const shopOffers = leagueState ? recommendedShopOffers(leagueState, forecastPick) : [];
+  const playerEvents = result?.events.filter((event) => event.teamId === playerTeam?.id || event.relatedTeamId === playerTeam?.id) ?? [];
+  const majorEvents = result?.events.filter((event) => event.severity === "major") ?? [];
+  const ambienceEvents = result?.events.filter((event) => event.severity === "minor" && event.type === "race_note") ?? [];
 
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
@@ -539,6 +542,26 @@ export function App() {
 
         {result ? (
           <>
+            {playerTeam && playerResult ? (
+              <article className="panel recap-panel">
+                <h2>{tt("result_recap_title")}</h2>
+                <div className="recap-grid">
+                  <section>
+                    <h3>{tt("result_difference")}</h3>
+                    <p>{majorEvents[0]?.reportText ?? result.report.headline}</p>
+                  </section>
+                  <section>
+                    <h3>{tt("result_your_directive")}</h3>
+                    <p>{describeDecision(playerDecision, tt)}</p>
+                  </section>
+                  <section>
+                    <h3>{tt("result_next_lesson")}</h3>
+                    <p>{nextLesson(leagueState, playerDecision, playerEvents, forecastPick, tt)}</p>
+                  </section>
+                </div>
+              </article>
+            ) : null}
+
             <article className="panel result-panel">
               <h2>{result.grandPrixName}</h2>
               <p>{result.report.headline}</p>
@@ -559,10 +582,14 @@ export function App() {
             <article className="panel moments-panel">
               <h2>{tt("result_key_moments")}</h2>
               <ul className="events replay-timeline">
-                {result.events.slice(0, 8).map((event) => (
-                  <li key={event.id}>
+                {[...playerEvents, ...majorEvents, ...ambienceEvents]
+                  .filter((event, index, events) => events.findIndex((candidate) => candidate.id === event.id) === index)
+                  .slice(0, 8)
+                  .map((event) => (
+                  <li key={event.id} className={event.teamId === playerTeam?.id ? "player-event" : undefined}>
                     <span className="lap-marker">{tt("unit_lap")} {event.lap}</span>
                     <strong>{event.replayText}</strong>
+                    <small>{event.severity === "major" ? tt("event_major") : tt("event_ambience")}</small>
                   </li>
                 ))}
               </ul>
@@ -647,4 +674,24 @@ function cardFit(cardId: CardId, state: LeagueState, forecastPick: string): Card
   if (cardId === "urban_draft") return traits.includes("urban") ? { level: "recommended", score: 78 } : { level: "low", score: 30 };
   if (cardId === "final_surge") return { level: "risky", score: 55 };
   return { level: "risky", score: 52 };
+}
+
+function describeDecision(decision: LeagueState["decisions"][number] | undefined, tt: (key: TranslationKey) => string) {
+  if (!decision) return tt("result_no_directive");
+  const card = decision.cardId ? ` · ${tt(`card_${decision.cardId}` as TranslationKey)}` : "";
+  return `${tt(`approach_${decision.approach}` as TranslationKey)} · ${tt(`preparation_${decision.preparation}` as TranslationKey)}${card}`;
+}
+
+function nextLesson(
+  state: LeagueState | null,
+  decision: LeagueState["decisions"][number] | undefined,
+  events: RaceResult["events"],
+  forecastPick: string,
+  tt: (key: TranslationKey) => string
+) {
+  if (events.some((event) => event.cardId)) return tt("lesson_card_paid");
+  if (decision?.preparation === "weather" && forecastPick !== "dry") return tt("lesson_weather_paid");
+  if (state?.currentGrandPrix.secondaryTrait === "high_wear") return tt("lesson_reliability");
+  if (state?.currentGrandPrix.primaryTrait === "fast") return tt("lesson_speed");
+  return tt("lesson_balanced");
 }

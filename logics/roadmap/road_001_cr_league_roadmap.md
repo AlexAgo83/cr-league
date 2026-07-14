@@ -5,7 +5,7 @@
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
 > Confidence: 90
-> Non-semantic edit: refreshed 0.2/0.4 delivery notes after garage guidance pass.
+> Non-semantic edit: refreshed 0.2/0.3 delivery notes after race recap pass.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1 without pretending the full game should be built in one pass.
@@ -73,6 +73,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - French language switcher;
   - GP briefing with track profile, likely weather, and directive hints;
   - deterministic minor race notes for replay variety;
+  - player-focused race recap with directive summary and next-GP takeaway;
   - first thin card inventory/shop hook for between-GP progression;
   - post-GP garage summary and contextual card fit labels.
 - Exit signal:
@@ -100,6 +101,9 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Exit signal:
   - 3 to 5 testers can complete a 3-GP session;
   - feedback can answer whether choices feel causal, whether waiting cadence is acceptable, and whether weaker players still feel in the game.
+- Delivered foundation:
+  - resolved GP recap panel explaining key difference, player directive, and next-GP lesson;
+  - replay timeline now prioritizes player and key events before ambience notes.
 - Linked docs:
   - `spec_001_grand_prix_core_loop_and_simulation_v1`
   - `spec_016_implementation_roadmap`

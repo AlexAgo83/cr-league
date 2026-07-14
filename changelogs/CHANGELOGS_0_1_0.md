@@ -10,6 +10,7 @@ Initial foundation release notes for CR League.
 - Added the first private-league playtest loop, guided GP briefing, replay flavor, and English/French UI switching.
 - Added the first between-GP progression hook with persisted card inventory, fixed-price card buying, and card consumption.
 - Improved the garage loop with a post-GP reward summary, separated inventory/offers, and contextual card fit labels.
+- Improved the resolved race screen with a player-focused recap, directive summary, next-GP takeaway, and prioritized timeline.
 
 ## Engineering
 
@@ -23,6 +24,7 @@ Initial foundation release notes for CR League.
 - Added lightweight i18n catalog support for English and French.
 - Added team card inventories, a card purchase endpoint, owned-card validation, and the minimal garage UI.
 - Limited visible shop offers to a small recommended set and covered the updated garage flow in unit/e2e tests.
+- Added race recap copy and timeline labels in English/French.
 
 ## Validation
 

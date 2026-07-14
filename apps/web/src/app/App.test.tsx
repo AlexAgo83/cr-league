@@ -233,7 +233,12 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
+    expect(screen.getByText("Balanced · Weather · Rain Grip")).toBeTruthy();
+    expect(screen.getByText("Your card shaped the race. Keep one for moments where the track or forecast clearly matches it.")).toBeTruthy();
     expect(screen.getByText("Lap 5")).toBeTruthy();
+    expect(screen.getByText("Key event")).toBeTruthy();
     expect(screen.getByText("Rain Grip triggers for Circle One")).toBeTruthy();
     expect(screen.getByText("Last GP")).toBeTruthy();
     expect(screen.getByText("+150 credits · +25 pts")).toBeTruthy();

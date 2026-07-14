@@ -57,6 +57,7 @@
 | [req_025_add_guided_race_weekend_experience](request/req_025_add_guided_race_weekend_experience.md) | Add guided race weekend experience | Done |  |  | request/req_025_add_guided_race_weekend_experience.md |
 | [req_026_add_between_gp_progression_v0](request/req_026_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done |  |  | request/req_026_add_between_gp_progression_v0.md |
 | [req_027_improve_between_gp_garage_guidance](request/req_027_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done |  |  | request/req_027_improve_between_gp_garage_guidance.md |
+| [req_028_improve_race_recap_readability](request/req_028_improve_race_recap_readability.md) | Improve race recap readability | Done |  |  | request/req_028_improve_race_recap_readability.md |
 
 ## Backlog
 
@@ -95,6 +96,7 @@
 | [item_031_add_guided_race_weekend_experience](backlog/item_031_add_guided_race_weekend_experience.md) | Add guided race weekend experience | Done |  | 100% | backlog/item_031_add_guided_race_weekend_experience.md |
 | [item_032_add_between_gp_progression_v0](backlog/item_032_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done |  | 100% | backlog/item_032_add_between_gp_progression_v0.md |
 | [item_033_improve_between_gp_garage_guidance](backlog/item_033_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done |  | 100% | backlog/item_033_improve_between_gp_garage_guidance.md |
+| [item_034_improve_race_recap_readability](backlog/item_034_improve_race_recap_readability.md) | Improve race recap readability | Done |  | 100% | backlog/item_034_improve_race_recap_readability.md |
 
 ## Tasks
 
@@ -128,3 +130,4 @@
 | [task_026_add_guided_race_weekend_experience](tasks/task_026_add_guided_race_weekend_experience.md) | Add guided race weekend experience | Done | codex | 100% | tasks/task_026_add_guided_race_weekend_experience.md |
 | [task_027_add_between_gp_progression_v0](tasks/task_027_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done | codex | 100% | tasks/task_027_add_between_gp_progression_v0.md |
 | [task_028_improve_between_gp_garage_guidance](tasks/task_028_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done | codex | 100% | tasks/task_028_improve_between_gp_garage_guidance.md |
+| [task_029_improve_race_recap_readability](tasks/task_029_improve_race_recap_readability.md) | Improve race recap readability | Done | codex | 100% | tasks/task_029_improve_race_recap_readability.md |

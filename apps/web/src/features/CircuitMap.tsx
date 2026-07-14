@@ -72,29 +72,25 @@ export function CircuitMap({
   tt,
   cars = [],
   svgRef,
-  overlay,
-  showHeading = true
+  overlay
 }: {
   circuit: CityCircuit;
   tt: Translator;
   cars?: MapCar[];
   svgRef?: Ref<SVGSVGElement>;
   overlay?: React.ReactNode;
-  showHeading?: boolean;
 }) {
   const { zoom, tiles, d, start } = circuitScene(circuit);
 
   return (
     <section className="circuit-map" aria-label={tt("city_circuit_map")}>
-      {showHeading ? (
-        <div className="circuit-map-heading">
-          <span className="circuit-city">{circuit.city}</span>
-          <strong>{tt(circuit.layoutKey)}</strong>
-          <small>
-            {circuit.country} · {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
-          </small>
-        </div>
-      ) : null}
+      <div className="circuit-map-heading">
+        <span className="circuit-city">{circuit.city}</span>
+        <strong>{tt(circuit.layoutKey)}</strong>
+        <small>
+          {circuit.country} · {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
+        </small>
+      </div>
       <div className="circuit-map-stage">
         <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           {tiles.map((tile) => (

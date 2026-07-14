@@ -730,27 +730,6 @@ button.result-toggle-command:hover {
   font-size: 0.875rem;
 }
 
-.replay-circuit-panel {
-  display: grid;
-  gap: 6px;
-}
-
-.replay-circuit-panel h2 {
-  font-size: clamp(1.8rem, 3vw, 2.5rem);
-  line-height: 1;
-  margin: 0;
-}
-
-.replay-circuit-panel h2 span {
-  display: block;
-}
-
-.replay-circuit-panel p {
-  color: var(--color-muted);
-  font-weight: 800;
-  margin: 0;
-}
-
 .replay-main-grid {
   align-items: start;
   display: grid;

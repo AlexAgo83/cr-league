@@ -209,6 +209,86 @@ label small {
   padding: 16px;
 }
 
+.city-circuit-map {
+  background:
+    radial-gradient(circle at 72% 18%, rgb(52 211 153 / 12%), transparent 32%),
+    #0b1117;
+  border: 1px solid #263442;
+  border-radius: 8px;
+  color: white;
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+  overflow: hidden;
+  padding: 14px;
+  position: relative;
+}
+
+.city-circuit-heading {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.city-circuit-heading span {
+  color: #34d399;
+  font-size: 0.75rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.city-circuit-heading small {
+  color: #94a3b8;
+}
+
+.city-circuit-map svg {
+  display: block;
+  height: 190px;
+  width: 100%;
+}
+
+.city-route-shadow,
+.city-route-line,
+.city-route-accent {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.city-route-shadow {
+  stroke: #334155;
+  stroke-width: 18;
+}
+
+.city-route-line {
+  stroke: #0f172a;
+  stroke-width: 10;
+}
+
+.city-route-accent {
+  stroke: #34d399;
+  stroke-dasharray: 68 210;
+  stroke-width: 4;
+}
+
+.circuit-traits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.circuit-traits span {
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+  color: #d1d5db;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  padding: 5px 9px;
+}
+
 .section-kicker {
   color: var(--color-accent);
   font-size: 0.75rem;
@@ -484,6 +564,16 @@ label small {
   gap: 16px;
 }
 
+.replay-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.replay-controls button {
+  background: #111827;
+}
+
 .replay-summary {
   display: flex;
   flex-wrap: wrap;
@@ -503,43 +593,58 @@ label small {
 }
 
 .replay-track {
-  background: #f8fafc;
-  border: 1px solid #d1d5db;
+  background: #0b1117;
+  border: 1px solid #263442;
   border-radius: 8px;
   display: grid;
   gap: 14px;
-  min-height: 210px;
+  min-height: 330px;
   overflow: hidden;
-  padding: 18px 14px 14px;
+  padding: 14px;
   position: relative;
 }
 
-.replay-marker {
-  background: white;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  box-shadow: 0 8px 18px rgb(15 23 42 / 10%);
-  display: grid;
-  gap: 2px;
-  max-width: 42%;
-  min-width: 110px;
-  padding: 8px 10px;
+.city-replay-track .city-circuit-map {
+  border: 0;
+  margin: 0;
+  min-height: 236px;
+  padding: 0;
+}
+
+.city-replay-track .city-circuit-map svg {
+  height: 236px;
+}
+
+.city-circuit-map.compact .city-circuit-heading {
   position: absolute;
-  transform: translateX(-50%);
+  top: 0;
+  z-index: 1;
 }
 
-.replay-marker.player {
-  border-color: var(--color-accent);
-  top: 52px;
+.replay-car {
+  animation: replay-drive var(--race-duration, 9s) linear infinite;
+  animation-play-state: var(--race-state, running);
+  background: #38bdf8;
+  border: 2px solid #0b1117;
+  border-radius: 999px;
+  color: #031018;
+  display: grid;
+  font-size: 0.625rem;
+  font-weight: 900;
+  height: 26px;
+  offset-path: var(--race-path);
+  offset-rotate: 0deg;
+  place-items: center;
+  position: absolute;
+  width: 40px;
+  z-index: 2;
 }
 
-.replay-marker.field {
-  top: 112px;
-}
-
-.replay-marker small {
-  color: var(--color-muted);
-  font-size: 0.75rem;
+.replay-car.player {
+  background: #34d399;
+  color: #031009;
+  height: 30px;
+  width: 46px;
 }
 
 .replay-laps,
@@ -554,11 +659,10 @@ label small {
 .replay-laps {
   align-self: end;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  padding-top: 154px;
 }
 
 .replay-laps li {
-  border-top: 3px solid #94a3b8;
+  border-top: 3px solid #334155;
   display: grid;
   gap: 3px;
   min-width: 0;
@@ -571,19 +675,20 @@ label small {
   font-size: 0.75rem;
 }
 
-.replay-axis-label {
-  color: var(--color-muted);
-  font-size: 0.75rem;
-  left: 14px;
-  position: absolute;
-  top: 18px;
-}
-
 .replay-callouts li {
   border-left: 3px solid var(--color-accent);
   display: grid;
   gap: 3px;
   padding-left: 10px;
+}
+
+@keyframes replay-drive {
+  from {
+    offset-distance: 0%;
+  }
+  to {
+    offset-distance: 100%;
+  }
 }
 
 .report-panel {

@@ -1,10 +1,10 @@
 ## item_045_audit_and_harden_i18n_for_redesigned_surfaces - Audit and harden i18n for redesigned surfaces
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Localization quality
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

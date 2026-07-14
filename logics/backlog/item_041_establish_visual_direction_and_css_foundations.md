@@ -1,10 +1,10 @@
 ## item_041_establish_visual_direction_and_css_foundations - Establish visual direction and CSS foundations
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 95
 > Confidence: 95
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Visual direction
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

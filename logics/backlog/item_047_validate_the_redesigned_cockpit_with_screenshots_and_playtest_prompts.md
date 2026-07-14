@@ -1,10 +1,10 @@
 ## item_047_validate_the_redesigned_cockpit_with_screenshots_and_playtest_prompts - Validate the redesigned cockpit with screenshots and playtest prompts
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 95
 > Confidence: 94
-> Progress: 0%
+> Progress: 35%
 > Complexity: Low
 > Theme: Validation and playtest readiness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

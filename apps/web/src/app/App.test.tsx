@@ -253,9 +253,11 @@ describe("App", () => {
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
     expect(screen.getByText("Race resolved")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Visual replay" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("Winner")).toBeTruthy();
-    expect(screen.getAllByText("P1 · Circle One").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Speed x2" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
     expect(screen.getByText("Balanced · Weather · Rain Grip")).toBeTruthy();
     expect(screen.getByText("Your card shaped the race. Keep one for moments where the track or forecast clearly matches it.")).toBeTruthy();
@@ -306,7 +308,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Create league" }));
 
-    expect(await screen.findByRole("heading", { name: "Visual replay" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("No replay events were recorded for this GP.")).toBeTruthy();
   });
 

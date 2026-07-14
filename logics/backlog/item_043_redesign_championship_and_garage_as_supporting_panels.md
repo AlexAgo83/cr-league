@@ -1,10 +1,10 @@
 ## item_043_redesign_championship_and_garage_as_supporting_panels - Redesign championship and garage as supporting panels
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Supporting game panels
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -1,10 +1,10 @@
 ## item_046_split_the_web_cockpit_into_practical_components - Split the web cockpit into practical components
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 95
 > Confidence: 94
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Frontend maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

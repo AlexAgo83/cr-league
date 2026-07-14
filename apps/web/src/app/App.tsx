@@ -1,5 +1,5 @@
 import { APP_NAME, RACE_SEGMENTS, type CardId, type RaceDecision, type RaceResult } from "@cr-league/shared";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type CSSProperties } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
@@ -76,6 +76,77 @@ type FormState = {
   cardId: RaceDecision["cardId"] | "";
 };
 
+type CityCircuit = {
+  city: string;
+  country: string;
+  layout: string;
+  laps: number;
+  traits: {
+    grip: number;
+    overtaking: number;
+    energy: number;
+  };
+  likelyWeather: "dry" | "light_rain" | "heavy_rain";
+  routePath: string;
+};
+
+const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
+  {
+    city: "Paris",
+    country: "FR",
+    layout: "Docklands Sprint",
+    laps: 5,
+    traits: { grip: 64, overtaking: 72, energy: 58 },
+    likelyWeather: "light_rain",
+    routePath: "M52 112 C62 38 160 26 216 52 C288 85 273 142 194 134 C108 126 112 74 174 78 C226 82 225 112 181 112"
+  },
+  {
+    city: "Paris",
+    country: "FR",
+    layout: "Left Bank Loop",
+    laps: 6,
+    traits: { grip: 70, overtaking: 55, energy: 62 },
+    likelyWeather: "dry",
+    routePath: "M44 96 C78 38 158 35 210 58 C268 83 280 135 218 148 C156 162 78 138 44 96"
+  },
+  {
+    city: "Amsterdam",
+    country: "NL",
+    layout: "Canal Loop",
+    laps: 5,
+    traits: { grip: 60, overtaking: 68, energy: 66 },
+    likelyWeather: "light_rain",
+    routePath: "M48 124 C66 52 122 36 178 44 C250 55 292 102 260 138 C226 176 110 166 76 136 C58 120 82 90 132 82"
+  },
+  {
+    city: "Amsterdam",
+    country: "NL",
+    layout: "Harbor Sprint",
+    laps: 4,
+    traits: { grip: 58, overtaking: 78, energy: 52 },
+    likelyWeather: "heavy_rain",
+    routePath: "M38 128 L96 54 L180 48 L290 76 L250 136 L142 152 Z"
+  },
+  {
+    city: "Berlin",
+    country: "DE",
+    layout: "Ring Sector",
+    laps: 6,
+    traits: { grip: 76, overtaking: 62, energy: 70 },
+    likelyWeather: "dry",
+    routePath: "M52 96 C52 46 104 24 164 34 C238 47 294 82 278 126 C260 176 150 170 88 140 C64 128 52 114 52 96"
+  },
+  {
+    city: "Berlin",
+    country: "DE",
+    layout: "Mitte Dash",
+    laps: 5,
+    traits: { grip: 68, overtaking: 74, energy: 60 },
+    likelyWeather: "dry",
+    routePath: "M42 132 C84 70 138 68 168 38 C202 64 238 58 286 104 C244 146 198 126 166 158 C128 124 92 158 42 132"
+  }
+];
+
 function createInitialForm(locale: Locale): FormState {
   return {
     leagueName: t("default_league_name", locale),
@@ -136,6 +207,7 @@ export function App() {
   const ambienceEvents = result?.events.filter((event) => event.severity === "minor" && event.type === "race_note") ?? [];
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
   const leader = leagueState?.teams[0];
+  const currentCircuit = leagueState ? circuitForRound(leagueState.currentGrandPrix.round) : CITY_CIRCUITS[0];
 
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
@@ -359,6 +431,11 @@ export function App() {
                   <p>{isResolved ? tt("briefing_tip_resolved") : tt("briefing_tip_prepare")}</p>
                 </div>
                 <div className="race-telemetry" aria-label={tt("race_telemetry")}>
+                  <span>{currentCircuit.city}</span>
+                  <span>{currentCircuit.layout}</span>
+                  <span>
+                    {currentCircuit.laps} {tt("unit_laps")}
+                  </span>
                   <span>{tt(`trait_${leagueState.currentGrandPrix.primaryTrait}` as TranslationKey)}</span>
                   <span>{tt(`trait_${leagueState.currentGrandPrix.secondaryTrait}` as TranslationKey)}</span>
                   <span>
@@ -366,6 +443,7 @@ export function App() {
                   </span>
                 </div>
               </section>
+              <CityCircuitMap circuit={currentCircuit} tt={tt} />
 
               <section className="race-workbench" aria-label={tt("directive_workbench")}>
                 <div>
@@ -629,7 +707,7 @@ export function App() {
               </ol>
             </article>
 
-            <VisualReplay result={result} playerTeamId={playerTeam?.id} tt={tt} />
+            <VisualReplay result={result} playerTeamId={playerTeam?.id} round={leagueState.currentGrandPrix.round} tt={tt} />
 
             <article className="panel moments-panel">
               <h2>{tt("result_key_moments")}</h2>
@@ -666,18 +744,33 @@ export function App() {
 function VisualReplay({
   result,
   playerTeamId,
+  round,
   tt
 }: {
   result: RaceResult;
   playerTeamId: string | undefined;
+  round: number;
   tt: (key: TranslationKey) => string;
 }) {
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [speed, setSpeed] = useState(1);
+  const circuit = circuitForRound(round);
   const playerEntry = result.classification.find((entry) => entry.teamId === playerTeamId) ?? result.classification[0];
   const winner = result.classification[0];
-  const referenceEntry = result.classification.find((entry) => entry.teamId !== playerEntry?.teamId) ?? winner;
   const replayEvents = result.events
     .filter((event) => event.severity === "major" || event.teamId === playerTeamId || event.relatedTeamId === playerTeamId)
     .slice(0, 3);
+  const cars = result.classification.slice(0, 6).map((entry, index) => ({
+    entry,
+    delay: -(index * 0.72 + Math.max(0, entry.position - 1) * 0.18),
+    duration: 8 + entry.position * 0.55
+  }));
+  const speedDuration = `${Math.max(3, 9 / speed)}s`;
+  const playbackStyle = {
+    "--race-path": `path("${circuit.routePath}")`,
+    "--race-duration": speedDuration,
+    "--race-state": isPlaying ? "running" : "paused"
+  } as CSSProperties & Record<string, string>;
 
   return (
     <article className="panel visual-replay-panel">
@@ -693,13 +786,32 @@ function VisualReplay({
           </span>
         ) : null}
       </div>
+      <div className="replay-controls" aria-label={tt("result_replay_controls")}>
+        <button type="button" onClick={() => setIsPlaying((value) => !value)}>
+          {isPlaying ? tt("action_pause_replay") : tt("action_play_replay")}
+        </button>
+        <button type="button" onClick={() => setSpeed((value) => (value === 1 ? 2 : 1))}>
+          {speed === 1 ? tt("action_replay_speed_fast") : tt("action_replay_speed_normal")}
+        </button>
+      </div>
       <h3>{tt("result_replay_positions")}</h3>
-      <div className="replay-track" aria-label={tt("result_replay_track_label")}>
-        {playerEntry ? <ReplayMarker entry={playerEntry} total={result.classification.length} label={tt("result_replay_you")} lane="player" /> : null}
-        {referenceEntry ? <ReplayMarker entry={referenceEntry} total={result.classification.length} label={tt("result_replay_reference")} lane="field" /> : null}
-        <strong className="replay-axis-label">{tt("result_replay_axis")}</strong>
+      <div className="replay-track city-replay-track" aria-label={tt("result_replay_track_label")} style={playbackStyle}>
+        <CityCircuitMap circuit={circuit} tt={tt} compact />
+        {cars.map(({ entry, delay, duration }) => (
+          <span
+            key={entry.teamId}
+            className={`replay-car ${entry.teamId === playerTeamId ? "player" : ""}`}
+            style={{
+              animationDelay: `${delay}s`,
+              animationDuration: `${duration / speed}s`,
+              offsetPath: `path("${circuit.routePath}")`
+            } as CSSProperties}
+          >
+            {entry.teamName.slice(0, 3).toUpperCase()}
+          </span>
+        ))}
         <ol className="replay-laps">
-          {RACE_SEGMENTS.map((segment, index) => (
+          {RACE_SEGMENTS.slice(0, Math.min(RACE_SEGMENTS.length, circuit.laps)).map((segment, index) => (
             <li key={segment}>
               <strong>
                 {tt("result_replay_phase")} {index + 1}
@@ -727,27 +839,34 @@ function VisualReplay({
   );
 }
 
-function ReplayMarker({
-  entry,
-  total,
-  label,
-  lane
-}: {
-  entry: RaceResult["classification"][number];
-  total: number;
-  label: string;
-  lane: "player" | "field";
-}) {
-  const left = total <= 1 ? 50 : 16 + ((entry.position - 1) / (total - 1)) * 68;
-
+function CityCircuitMap({ circuit, tt, compact = false }: { circuit: CityCircuit; tt: (key: TranslationKey) => string; compact?: boolean }) {
   return (
-    <span className={`replay-marker ${lane}`} style={{ left: `${left}%` }}>
-      <strong>{label}</strong>
-      <small>
-        P{entry.position} · {entry.teamName}
-      </small>
-    </span>
+    <section className={compact ? "city-circuit-map compact" : "city-circuit-map"} aria-label={tt("city_circuit_map")}>
+      <div className="city-circuit-heading">
+        <span>{circuit.city}</span>
+        <strong>{circuit.layout}</strong>
+        <small>
+          {circuit.country} · {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
+        </small>
+      </div>
+      <svg viewBox="0 0 330 190" aria-hidden="true">
+        <path className="city-route-shadow" d={circuit.routePath} />
+        <path className="city-route-line" d={circuit.routePath} />
+        <path className="city-route-accent" d={circuit.routePath} />
+      </svg>
+      {!compact ? (
+        <div className="circuit-traits">
+          <span>{tt("circuit_grip")} {circuit.traits.grip}</span>
+          <span>{tt("circuit_overtaking")} {circuit.traits.overtaking}</span>
+          <span>{tt("circuit_energy")} {circuit.traits.energy}</span>
+        </div>
+      ) : null}
+    </section>
   );
+}
+
+function circuitForRound(round: number) {
+  return CITY_CIRCUITS[(Math.max(1, round) - 1) % CITY_CIRCUITS.length] ?? CITY_CIRCUITS[0];
 }
 
 function rememberPlayer(state: LeagueState) {

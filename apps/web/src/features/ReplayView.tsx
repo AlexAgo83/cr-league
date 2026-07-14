@@ -1,15 +1,23 @@
-import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayTracePoint, type Weather } from "@cr-league/shared";
+import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
 import { useEffect, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { countryFlag, type CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
 import type { RaceEvent } from "../app/helpers.js";
-import { CircuitMap, MapTraitsPanel, type MapCar, type MapTraitStats } from "./CircuitMap.js";
+import { CircuitMap, MapTraitsPanel, type MapCar, type MapTraitImpacts, type MapTraitStats } from "./CircuitMap.js";
 
 const WEATHER_ICONS = { dry: "☀️", light_rain: "🌦️", heavy_rain: "⛈️" } as const;
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 const START_HOLD_SECONDS = 1;
 const FINISH_HOLD_SECONDS = 1;
+const REPLAY_SPEED_KEY = "cr-league-replay-speed";
+const REPLAY_FOCUS_KEY = "cr-league-replay-focus";
+const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
+
+function savedReplaySpeed() {
+  const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
+  return REPLAY_SPEEDS.includes(saved as (typeof REPLAY_SPEEDS)[number]) ? saved : 1;
+}
 
 function clampStat(value: number) {
   return Math.max(1, Math.min(99, Math.round(value)));
@@ -108,19 +116,23 @@ export function ReplayView({
   result,
   circuit,
   playerTeamId,
+  teamLiveries = {},
+  traitImpacts = {},
   tt
 }: {
   result: RaceResult;
   circuit: CityCircuit;
   playerTeamId: string | undefined;
+  teamLiveries?: Record<string, TeamLivery>;
+  traitImpacts?: MapTraitImpacts;
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const clock = useRef(0);
   const [playing, setPlaying] = useState(true);
-  const [speed, setSpeed] = useState(1);
-  const [driverFocus, setDriverFocus] = useState(false);
+  const [speed, setSpeed] = useState(savedReplaySpeed);
+  const [driverFocus, setDriverFocus] = useState(() => localStorage.getItem(REPLAY_FOCUS_KEY) === "1");
   const replayTrace = result.replayTrace?.length ? result.replayTrace : fallbackReplayTrace(result);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const [liveTower, setLiveTower] = useState(() => liveClassification(result, replayTrace, 0));
@@ -134,7 +146,8 @@ export function ReplayView({
     player: entry.teamId === playerTeamId,
     delay: 0,
     duration: 14 + (finalGaps[entry.teamId] ?? index) * 0.25,
-    progress: carProgress[entry.teamId] ?? 0
+    progress: carProgress[entry.teamId] ?? 0,
+    livery: teamLiveries[entry.teamId]
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
   const raceDuration = Math.max(0, ...cars.map((car) => car.delay + circuit.laps * car.duration));
@@ -165,6 +178,14 @@ export function ReplayView({
     });
     return () => cancelAnimationFrame(frame);
   }, [playing, speed, replayEnd]);
+
+  useEffect(() => {
+    localStorage.setItem(REPLAY_SPEED_KEY, String(speed));
+  }, [speed]);
+
+  useEffect(() => {
+    localStorage.setItem(REPLAY_FOCUS_KEY, driverFocus ? "1" : "0");
+  }, [driverFocus]);
 
   function seek(time: number) {
     clock.current = Math.max(0, Math.min(time, replayEnd));
@@ -246,7 +267,7 @@ export function ReplayView({
                     {tt(`weather_${liveWeather}` as TranslationKey)}
                   </small>
                 </div>
-                <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, live.lap)} tt={tt} />
+                <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, live.lap)} impacts={traitImpacts} tt={tt} />
                 <div className="replay-map-controls">
                   <button
                     type="button"
@@ -269,10 +290,11 @@ export function ReplayView({
                     ⌖
                   </button>
                   <select aria-label={tt("replay_speed")} value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
-                    <option value={0.5}>×0.5</option>
-                    <option value={1}>×1</option>
-                    <option value={2}>×2</option>
-                    <option value={4}>×4</option>
+                    {REPLAY_SPEEDS.map((option) => (
+                      <option key={option} value={option}>
+                        ×{option}
+                      </option>
+                    ))}
                   </select>
                 </div>
                 <ol className="replay-tower">

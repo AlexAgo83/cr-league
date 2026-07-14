@@ -477,6 +477,7 @@ function createMemoryDb(): PrismaClient {
     points: number;
     credits: number;
     cards: string[];
+    livery: { primary: string; secondary: string };
   };
   type GrandPrixRow = {
     id: string;
@@ -548,14 +549,14 @@ function createMemoryDb(): PrismaClient {
       }
     },
     team: {
-      create: async ({ data }: { data: Omit<TeamRow, "id"> }) => {
-        const team = { id: id("team"), ...data };
+      create: async ({ data }: { data: Omit<TeamRow, "id" | "livery"> & Partial<Pick<TeamRow, "livery">> }) => {
+        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, ...data };
         teams.push(team);
         return team;
       },
-      createMany: async ({ data }: { data: Array<Omit<TeamRow, "id">> }) => {
+      createMany: async ({ data }: { data: Array<Omit<TeamRow, "id" | "livery"> & Partial<Pick<TeamRow, "livery">>> }) => {
         for (const team of data) {
-          teams.push({ id: id("team"), ...team });
+          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, ...team });
         }
         return { count: data.length };
       },
@@ -572,7 +573,12 @@ function createMemoryDb(): PrismaClient {
         data
       }: {
         where: { id: string };
-        data: { points?: number | { increment: number }; credits?: number | { increment?: number; decrement?: number }; cards?: string[] };
+        data: {
+          points?: number | { increment: number };
+          credits?: number | { increment?: number; decrement?: number };
+          cards?: string[];
+          livery?: { primary: string; secondary: string };
+        };
       }) => {
         const team = teams.find((candidate) => candidate.id === where.id);
         if (!team) throw new Error("Team not found");
@@ -588,6 +594,7 @@ function createMemoryDb(): PrismaClient {
           team.credits -= data.credits?.decrement ?? 0;
         }
         if (data.cards) team.cards = data.cards;
+        if (data.livery) team.livery = data.livery;
         return team;
       }
     },

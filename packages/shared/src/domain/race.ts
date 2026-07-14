@@ -51,6 +51,11 @@ export type RaceTraits = {
   energy: number;
 };
 
+export type TeamLivery = {
+  primary: string;
+  secondary: string;
+};
+
 export type RaceInput = {
   seed: string;
   grandPrixName: string;

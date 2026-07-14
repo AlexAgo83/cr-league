@@ -8,6 +8,7 @@ let hasDecision = false;
 let credits = 0;
 let points = 0;
 let cards: string[] = ["rain_grip"];
+let livery = { primary: "#16c784", secondary: "#38bdf8" };
 
 test.beforeEach(() => {
   round = 1;
@@ -17,6 +18,7 @@ test.beforeEach(() => {
   credits = 0;
   points = 0;
   cards = ["rain_grip"];
+  livery = { primary: "#16c784", secondary: "#38bdf8" };
 });
 
 async function mockLeagueApi(page: Page) {
@@ -48,6 +50,10 @@ async function mockLeagueApi(page: Page) {
       cards = [...cards, "launch_boost"];
       return route.fulfill({ json: leagueState(resultForRound(round)) });
     }
+    if (path === "/leagues/league_1/teams/livery") {
+      livery = (request.postDataJSON() as { livery: { primary: string; secondary: string } }).livery;
+      return route.fulfill({ json: leagueState(currentStatus === "resolved" ? resultForRound(round) : null) });
+    }
     if (path === "/leagues/league_1/next-grand-prix") {
       round += 1;
       currentStatus = "briefing";
@@ -61,6 +67,7 @@ async function mockLeagueApi(page: Page) {
       credits = 0;
       points = 0;
       cards = ["rain_grip"];
+      livery = { primary: "#16c784", secondary: "#38bdf8" };
       return route.fulfill({ json: leagueState() });
     }
 
@@ -132,6 +139,11 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await mockLeagueApi(page);
   await page.goto("/");
   await page.getByRole("button", { name: "Create league" }).click();
+  await page.getByRole("button", { name: "Garage", exact: true }).click();
+  await page.getByLabel("Primary").fill("#c51697");
+  await page.getByLabel("Secondary").fill("#633af8");
+  await page.getByRole("button", { name: "Save colors" }).click();
+  await expect(page.getByText("Car colors updated.")).toBeVisible();
   await page.getByRole("button", { name: "Race", exact: true }).click();
 
   const driveMap = page.locator(".drive-map-panel");
@@ -168,6 +180,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".map-status")).toContainText("Dry");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("64");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("58");
+  await expect(mapPanel.locator(".map-car.player").first()).toHaveAttribute("style", /--car-primary: #c51697/);
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Pause" })).toBeVisible();
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Restart" })).toBeVisible();
   await mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Focus driver" }).click();
@@ -260,6 +273,7 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
         points,
         credits,
         cards,
+        livery,
         ready: hasDecision
       },
       {
@@ -269,6 +283,7 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
         points: 0,
         credits: 0,
         cards: [],
+        livery: { primary: "#38bdf8", secondary: "#16c784" },
         ready: false
       }
     ],

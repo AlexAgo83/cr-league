@@ -1,4 +1,6 @@
 import { useEffect, useRef, type Ref } from "react";
+import type { CSSProperties } from "react";
+import type { TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { countryFlag, type CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
@@ -10,6 +12,7 @@ export type MapCar = {
   delay: number;
   duration: number;
   progress?: number;
+  livery?: TeamLivery;
 };
 
 export type MapTraitStats = {
@@ -150,7 +153,7 @@ export function CircuitMap({
     const cameraGroup = cameraRef.current;
     const route = routeRef.current;
     const car = camera?.car;
-    if (!cameraGroup || !route || !camera?.enabled || !car) {
+    if (!cameraGroup || !route || !camera?.enabled || !car || !route.getTotalLength) {
       cameraGroup?.removeAttribute("transform");
       return;
     }
@@ -210,8 +213,11 @@ export function CircuitMap({
             {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
               const point = car.progress === undefined ? null : pointOnRoute(points, car.progress);
+              const carStyle = car.livery
+                ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
+                : undefined;
               return (
-                <g key={car.id} className={car.player ? "map-car player" : "map-car"} transform={point ? `translate(${point.x} ${point.y})` : undefined}>
+                <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={point ? `translate(${point.x} ${point.y})` : undefined}>
                   <g transform={`scale(${markerScale})`}>
                     <circle r="16" />
                     <text textAnchor="middle" dominantBaseline="central">

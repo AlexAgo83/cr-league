@@ -32,6 +32,7 @@ model Team {
   credits   Int      @default(0)
   points    Int      @default(0)
   cards     Json     @default("[]")
+  livery    Json     @default("{\"primary\":\"#16c784\",\"secondary\":\"#38bdf8\"}")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

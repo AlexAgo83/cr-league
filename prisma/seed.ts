@@ -2,6 +2,7 @@ import { PrismaClient } from "@prisma/client";
 import { DEMO_RACE_INPUT } from "../packages/shared/src/simulation/demoRace.js";
 
 const prisma = new PrismaClient();
+const BOT_LIVERY_COLORS = ["#38bdf8", "#f97316", "#a78bfa", "#f43f5e", "#facc15", "#22c55e"] as const;
 
 async function main() {
   const league = await prisma.league.upsert({
@@ -20,7 +21,14 @@ async function main() {
       kind: participant.kind,
       claimCode: `DEMO01-${index}`,
       points: 0,
-      credits: 0
+      credits: 0,
+      livery:
+        participant.kind === "bot"
+          ? {
+              primary: BOT_LIVERY_COLORS[index % BOT_LIVERY_COLORS.length],
+              secondary: BOT_LIVERY_COLORS[(index + 2) % BOT_LIVERY_COLORS.length]
+            }
+          : { primary: "#16c784", secondary: "#38bdf8" }
     })),
     skipDuplicates: true
   });

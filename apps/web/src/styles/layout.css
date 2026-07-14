@@ -739,13 +739,13 @@ label small {
 }
 
 .map-car circle {
-  fill: var(--color-telemetry);
-  stroke: #0a0f15;
+  fill: var(--car-primary, var(--color-telemetry));
+  stroke: var(--car-secondary, #0a0f15);
   stroke-width: 4;
 }
 
 .map-car.player circle {
-  fill: var(--color-accent);
+  fill: var(--car-primary, var(--color-accent));
 }
 
 .map-car text {
@@ -1041,6 +1041,34 @@ label small {
 .card-shop small {
   color: var(--color-muted);
   font-size: 0.8125rem;
+}
+
+.garage-livery-panel {
+  display: grid;
+  gap: 12px;
+}
+
+.garage-livery-preview {
+  align-items: center;
+  background: var(--livery-primary);
+  border: 4px solid var(--livery-secondary);
+  border-radius: 999px;
+  color: #041018;
+  display: flex;
+  font-size: 0.8rem;
+  font-weight: 900;
+  height: 58px;
+  justify-content: center;
+  width: 58px;
+}
+
+.garage-livery-fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.garage-livery-fields input[type="color"] {
+  min-height: 42px;
+  padding: 4px;
 }
 
 .card-shop {

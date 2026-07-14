@@ -1,4 +1,6 @@
 import type { CardId, RaceResult } from "@cr-league/shared";
+import type { CSSProperties } from "react";
+import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { cardFit, countCards, recommendedShopOffers, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
@@ -13,6 +15,7 @@ export function GarageView({
   isResolved,
   loading,
   onBuyCard,
+  onUpdateLivery,
   tt
 }: {
   state: LeagueState;
@@ -24,8 +27,15 @@ export function GarageView({
   isResolved: boolean;
   loading: boolean;
   onBuyCard: (cardId: CardId) => void;
+  onUpdateLivery: (livery: LeagueState["teams"][number]["livery"]) => void;
   tt: Translator;
 }) {
+  const [livery, setLivery] = useState(playerTeam?.livery ?? { primary: "#16c784", secondary: "#38bdf8" });
+
+  useEffect(() => {
+    if (playerTeam?.livery) setLivery(playerTeam.livery);
+  }, [playerTeam?.livery]);
+
   if (!playerTeam) {
     return (
       <section className="panel">
@@ -57,6 +67,26 @@ export function GarageView({
             </span>
           </div>
         ) : null}
+      </section>
+
+      <section className="panel garage-livery-panel">
+        <h3>{tt("garage_livery")}</h3>
+        <div className="garage-livery-preview" style={{ "--livery-primary": livery.primary, "--livery-secondary": livery.secondary } as CSSProperties & Record<string, string>}>
+          <span>{playerTeam.name.slice(0, 3).toUpperCase()}</span>
+        </div>
+        <div className="field-grid garage-livery-fields">
+          <label>
+            {tt("garage_livery_primary")}
+            <input type="color" value={livery.primary} onChange={(event) => setLivery({ ...livery, primary: event.target.value })} />
+          </label>
+          <label>
+            {tt("garage_livery_secondary")}
+            <input type="color" value={livery.secondary} onChange={(event) => setLivery({ ...livery, secondary: event.target.value })} />
+          </label>
+        </div>
+        <button type="button" onClick={() => onUpdateLivery(livery)} disabled={loading}>
+          {tt("garage_livery_save")}
+        </button>
       </section>
 
       <section className="panel">

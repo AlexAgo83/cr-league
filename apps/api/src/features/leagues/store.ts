@@ -6,7 +6,8 @@ import {
   type RaceDecision,
   type RaceInput,
   type RaceParticipant,
-  type RaceTraits
+  type RaceTraits,
+  type TeamLivery
 } from "@cr-league/shared";
 import type { Prisma } from "@prisma/client";
 import type { PrismaClient } from "@prisma/client";
@@ -17,6 +18,8 @@ const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
 const STARTER_CARDS: CardId[] = ["rain_grip"];
 const CARD_PRICE = 100;
 const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICE }));
+const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
+const BOT_LIVERY_COLORS = ["#38bdf8", "#f97316", "#a78bfa", "#f43f5e", "#facc15", "#22c55e", "#e879f9", "#fb7185"] as const;
 
 export class LeagueRuleError extends Error {
   constructor(message: string) {
@@ -78,6 +81,7 @@ export type LeagueState = {
     points: number;
     credits: number;
     cards: CardId[];
+    livery: TeamLivery;
     ready: boolean;
   }>;
   cardShop: Array<{
@@ -113,6 +117,11 @@ export type ResolveGrandPrixInput = {
   traits?: unknown;
 };
 
+export type UpdateTeamLiveryInput = {
+  teamId?: string;
+  livery?: unknown;
+};
+
 export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   const code = createLeagueCode();
   const playerClaimCode = createClaimCode();
@@ -131,7 +140,8 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
       claimCode: index === 0 ? playerClaimCode : createClaimCode(),
       points: 0,
       credits: 0,
-      cards: index === 0 ? STARTER_CARDS : []
+      cards: index === 0 ? STARTER_CARDS : [],
+      livery: participant.kind === "bot" ? randomBotLivery() : DEFAULT_LIVERY
     }))
   });
 
@@ -252,6 +262,7 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       points: team.points,
       credits: team.credits,
       cards: normalizeCards(team.cards),
+      livery: normalizeLivery(team.livery),
       ready: grandPrix.decisions.some((decision) => decision.teamId === team.id)
     })),
     cardShop: CARD_SHOP,
@@ -321,6 +332,23 @@ export async function updateLeagueSettings(db: Db, leagueId: string, input: Upda
   await db.league.update({
     where: { id: leagueId },
     data
+  });
+
+  return getLeagueState(db, leagueId);
+}
+
+export async function updateTeamLivery(db: Db, leagueId: string, input: UpdateTeamLiveryInput = {}) {
+  if (!input.teamId) {
+    throw new LeagueRuleError("Expected a team.");
+  }
+  const livery = normalizeLivery(input.livery);
+  const state = await getLeagueState(db, leagueId);
+  const team = state?.teams.find((candidate) => candidate.id === input.teamId);
+  if (!state || !team) return null;
+
+  await db.team.update({
+    where: { id: team.id },
+    data: { livery }
   });
 
   return getLeagueState(db, leagueId);
@@ -467,7 +495,8 @@ export async function restartLeague(db: Db, leagueId: string) {
       data: {
         points: 0,
         credits: 0,
-        cards: team.kind === "human" ? STARTER_CARDS : []
+        cards: team.kind === "human" ? STARTER_CARDS : [],
+        livery: team.kind === "bot" ? randomBotLivery() : team.livery
       }
     });
   }
@@ -586,6 +615,26 @@ function isCardId(value: string): value is CardId {
 
 function normalizeCards(value: Prisma.JsonValue): CardId[] {
   return Array.isArray(value) ? value.filter((cardId): cardId is CardId => typeof cardId === "string" && isCardId(cardId)) : [];
+}
+
+function normalizeLivery(value: unknown): TeamLivery {
+  if (!value || typeof value !== "object") return DEFAULT_LIVERY;
+  const livery = value as Partial<Record<keyof TeamLivery, unknown>>;
+  return {
+    primary: typeof livery.primary === "string" && isHexColor(livery.primary) ? livery.primary : DEFAULT_LIVERY.primary,
+    secondary: typeof livery.secondary === "string" && isHexColor(livery.secondary) ? livery.secondary : DEFAULT_LIVERY.secondary
+  };
+}
+
+function randomBotLivery(): TeamLivery {
+  const primary = BOT_LIVERY_COLORS[Math.floor(Math.random() * BOT_LIVERY_COLORS.length)] ?? DEFAULT_LIVERY.primary;
+  const secondaryChoices = BOT_LIVERY_COLORS.filter((color) => color !== primary);
+  const secondary = secondaryChoices[Math.floor(Math.random() * secondaryChoices.length)] ?? DEFAULT_LIVERY.secondary;
+  return { primary, secondary };
+}
+
+function isHexColor(value: string) {
+  return /^#[0-9a-f]{6}$/i.test(value);
 }
 
 function appendCard(cards: CardId[], cardId: CardId): Prisma.InputJsonValue {

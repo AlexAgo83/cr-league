@@ -2,6 +2,7 @@ import type { RaceResult } from "@cr-league/shared";
 import type { CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
+import type { MapTraitImpacts } from "./CircuitMap.js";
 import { ReplayView } from "./ReplayView.js";
 import { ReportView } from "./ReportView.js";
 
@@ -15,6 +16,7 @@ export function ResultView({
   playerDecision,
   forecastPick,
   tab,
+  traitImpacts,
   tt
 }: {
   state: LeagueState;
@@ -24,13 +26,16 @@ export function ResultView({
   playerDecision: LeagueState["decisions"][number] | undefined;
   forecastPick: string;
   tab: ResultTab;
+  traitImpacts: MapTraitImpacts;
   tt: Translator;
 }) {
+  const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
+
   return (
     <div className="result-view">
       <div id={`result-${tab}-panel`}>
         {tab === "replay" ? (
-          <ReplayView result={result} circuit={circuit} playerTeamId={playerTeamId} tt={tt} />
+          <ReplayView result={result} circuit={circuit} playerTeamId={playerTeamId} teamLiveries={teamLiveries} traitImpacts={traitImpacts} tt={tt} />
         ) : (
           <ReportView
             state={state}

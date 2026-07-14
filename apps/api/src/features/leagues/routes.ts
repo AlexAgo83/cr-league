@@ -11,7 +11,8 @@ import {
   resolveCurrentGrandPrix,
   startNextGrandPrix,
   submitDecision,
-  updateLeagueSettings
+  updateLeagueSettings,
+  updateTeamLivery
 } from "./store.js";
 
 export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient) {
@@ -81,6 +82,23 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
 
     try {
       const state = await buyCard(db, request.params.leagueId, request.body);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
+  });
+
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/teams/livery", async (request, reply) => {
+    if (!isLiveryBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected team livery body." });
+    }
+
+    try {
+      const state = await updateTeamLivery(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
       return state;
     } catch (error) {
@@ -172,6 +190,13 @@ function isBuyCardBody(value: unknown): value is Parameters<typeof buyCard>[2] {
 
   const candidate = value as Record<string, unknown>;
   return typeof candidate.teamId === "string" && typeof candidate.cardId === "string";
+}
+
+function isLiveryBody(value: unknown): value is Parameters<typeof updateTeamLivery>[2] {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.teamId === "string" && typeof candidate.livery === "object" && candidate.livery !== null;
 }
 
 function isDecisionBody(value: unknown): value is Parameters<typeof submitDecision>[2] {

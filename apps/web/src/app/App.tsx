@@ -92,6 +92,9 @@ export function App() {
   const selectedCardId = ownedCardIds.includes(form.cardId as CardId) ? form.cardId : "";
   const selectedCardFit = leagueState && selectedCardId ? cardFit(selectedCardId as CardId, leagueState, forecastPick) : null;
   const directiveTraitImpacts = traitImpacts(form, selectedCardId, tt);
+  const replayTraitImpacts = playerDecision
+    ? traitImpacts({ ...form, approach: playerDecision.approach, preparation: playerDecision.preparation }, playerDecision.cardId ?? "", tt)
+    : directiveTraitImpacts;
   const playerResult = result?.classification.find((entry) => entry.teamId === playerTeam?.id);
   const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
@@ -217,6 +220,22 @@ export function App() {
       });
       setLeagueState(state);
       setMessage(tt("status_card_bought"));
+    });
+  }
+
+  async function updateLivery(livery: LeagueState["teams"][number]["livery"]) {
+    if (!leagueState || !playerTeam) return;
+
+    await run(tt("status_livery_updated"), async () => {
+      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/teams/livery`, {
+        method: "POST",
+        body: JSON.stringify({
+          teamId: playerTeam.id,
+          livery
+        })
+      });
+      setLeagueState(state);
+      setMessage(tt("status_livery_updated"));
     });
   }
 
@@ -452,6 +471,7 @@ export function App() {
             isResolved={isResolved}
             loading={status === "loading"}
             onBuyCard={buyCard}
+            onUpdateLivery={updateLivery}
             tt={tt}
           />
         ) : null}
@@ -464,6 +484,7 @@ export function App() {
             playerDecision={playerDecision}
             forecastPick={forecastPick}
             tab={resultTab}
+            traitImpacts={replayTraitImpacts}
             tt={tt}
           />
         ) : null}

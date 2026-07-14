@@ -42,6 +42,7 @@ const baseState = {
       points: 0,
       credits: 0,
       cards: ["rain_grip"],
+      livery: { primary: "#16c784", secondary: "#38bdf8" },
       ready: false
     },
     {
@@ -51,6 +52,7 @@ const baseState = {
       points: 0,
       credits: 0,
       cards: [],
+      livery: { primary: "#38bdf8", secondary: "#16c784" },
       ready: false
     }
   ],
@@ -167,6 +169,7 @@ const resolvedState = {
       points: 25,
       credits: 150,
       cards: [],
+      livery: { primary: "#16c784", secondary: "#38bdf8" },
       ready: true
     }
   ]
@@ -296,8 +299,11 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Restart" }));
     expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Focus driver" }));
+    expect(localStorage.getItem("cr-league-replay-focus")).toBe("1");
     fireEvent.change(screen.getByLabelText("Speed"), { target: { value: "2" } });
     expect((screen.getByLabelText("Speed") as HTMLSelectElement).value).toBe("2");
+    expect(localStorage.getItem("cr-league-replay-speed")).toBe("2");
 
     // Report view
     fireEvent.click(screen.getByRole("button", { name: "Report" }));

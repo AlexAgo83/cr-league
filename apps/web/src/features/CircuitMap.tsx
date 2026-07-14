@@ -36,7 +36,7 @@ const FOCUS_ZOOM = 2.55;
 const TRAFFIC_FOCUS_ZOOM = 3.45;
 const CLOSE_FOCUS_ZOOM = FOCUS_ZOOM * 2;
 const TRAFFIC_CAR_DISTANCE = 44;
-const CLOSE_CAR_DISTANCE = 28;
+const CLOSE_CAR_DISTANCE = 18;
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
   const scale = TILE_SIZE * 2 ** zoom;

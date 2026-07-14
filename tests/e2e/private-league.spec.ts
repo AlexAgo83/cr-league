@@ -68,15 +68,6 @@ async function mockLeagueApi(page: Page) {
   });
 }
 
-async function resolveFirstGrandPrix(page: Page) {
-  await page.goto("/");
-  await page.getByRole("button", { name: "Create league" }).click();
-  await page.getByRole("button", { name: "Race", exact: true }).click();
-  await page.getByRole("button", { name: "Submit directive" }).click();
-  await page.getByRole("button", { name: "Launch GP" }).click();
-  await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
-}
-
 test("plays a three Grand Prix private league loop", async ({ page }) => {
   await mockLeagueApi(page);
 
@@ -127,13 +118,28 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
 test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
   await mockLeagueApi(page);
-  await resolveFirstGrandPrix(page);
+  await page.goto("/");
+  await page.getByRole("button", { name: "Create league" }).click();
+  await page.getByRole("button", { name: "Race", exact: true }).click();
+
+  const driveMap = page.locator(".drive-map-panel .circuit-map");
+  await expect(driveMap).toHaveClass(/circuit-map-unframed/);
+  await expect(driveMap).toHaveCSS("padding", "0px");
+  await expect(driveMap).toHaveCSS("border-top-width", "0px");
+
+  await page.getByRole("button", { name: "Submit directive" }).click();
+  await page.getByRole("button", { name: "Launch GP" }).click();
+  await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
 
   const mapPanel = page.locator(".replay-map-panel");
   const copyPanel = page.locator(".replay-copy-panel");
   const momentsPanel = page.locator(".replay-moments-panel");
+  const replayMap = mapPanel.locator(".circuit-map");
 
   await expect(mapPanel.locator(".circuit-map-stage")).toBeVisible();
+  await expect(replayMap).toHaveClass(/circuit-map-unframed/);
+  await expect(replayMap).toHaveCSS("padding", "0px");
+  await expect(replayMap).toHaveCSS("border-top-width", "0px");
   await expect(mapPanel.locator(".replay-progress")).toBeVisible();
   await expect(mapPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
   await expect(copyPanel.getByRole("button", { name: "Pause" })).toBeVisible();

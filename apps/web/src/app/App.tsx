@@ -337,7 +337,17 @@ export function App() {
       <section className="view-container">
         {gameView === "drive" ? (
           <div className="drive-grid">
-            <CircuitMap circuit={currentCircuit} tt={tt} />
+            <section className="panel drive-map-panel">
+              <div className="circuit-map-heading">
+                <span className="circuit-city">{currentCircuit.city}</span>
+                <strong>{tt(currentCircuit.layoutKey)}</strong>
+                <small>
+                  {currentCircuit.country} · {currentCircuit.laps} {tt("unit_laps")} ·{" "}
+                  {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
+                </small>
+              </div>
+              <CircuitMap circuit={currentCircuit} tt={tt} showHeading={false} framed={false} />
+            </section>
             <DirectivePanel
               form={form}
               setForm={setForm}

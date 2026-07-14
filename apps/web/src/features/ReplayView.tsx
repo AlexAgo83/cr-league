@@ -114,6 +114,7 @@ export function ReplayView({
               cars={cars}
               svgRef={svgRef}
               showHeading={false}
+              framed={false}
               overlay={
                 <>
                   <ol className="replay-tower">

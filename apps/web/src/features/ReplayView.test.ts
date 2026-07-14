@@ -95,6 +95,29 @@ describe("ReplayView timing", () => {
     expect(progress.last ?? 0).toBeGreaterThan(progress.leader ?? 0);
     expect(liveClassificationByCarProgress(result, trace, 0.5, progress, ["last", "leader"]).map((entry) => entry.teamId)).toEqual(["last", "leader"]);
   });
+
+  it("uses trace order as a visual spacing target", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "start", lap: 1, progress: 0.2, order: ["leader", "last"], times: { leader: 10, last: 10 }, gaps: { leader: 0, last: 0 } }
+    ];
+    const progress = carProgressAtTrace(result, trace, 0.2, 5);
+
+    expect(progress.leader ?? 0).toBeGreaterThan(progress.last ?? 0);
+    expect(liveClassificationByCarProgress(result, trace, 0.2, progress, ["leader", "last"]).map((entry) => entry.teamId)).toEqual(["leader", "last"]);
+  });
+
+  it("eases visual positions toward upcoming trace order changes", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "early", lap: 2, progress: 0.2, order: ["last", "leader"], times: { leader: 10, last: 10 }, gaps: { leader: 0, last: 0 } }
+    ];
+    const before = carProgressAtTrace(result, trace, 0.05, 5);
+    const after = carProgressAtTrace(result, trace, 0.15, 5);
+
+    expect(before.leader ?? 0).toBeGreaterThan(before.last ?? 0);
+    expect(after.last ?? 0).toBeGreaterThan(after.leader ?? 0);
+  });
 });
 
 function testCircuit(laps: number, route: Array<{ lat: number; lng: number }>) {

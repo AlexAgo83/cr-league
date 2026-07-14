@@ -15,6 +15,7 @@ const REPLAY_FOCUS_KEY = "cr-league-replay-focus";
 const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
 const REFERENCE_REPLAY_DISTANCE_PIXELS = 9_000;
 const POSITION_CHANGE_MARGIN_LAPS = 0.015;
+const TRACE_ORDER_GAP_LAPS = 0.035;
 
 function savedReplaySpeed() {
   const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
@@ -70,6 +71,21 @@ function traceGapsAt(trace: ReplayTracePoint[], progress: number) {
       teamId,
       (from.gaps[teamId] ?? 0) + ((to.gaps[teamId] ?? 0) - (from.gaps[teamId] ?? 0)) * ratio
     ])
+  );
+}
+
+function traceRankTargetsAt(trace: ReplayTracePoint[], progress: number) {
+  const from = tracePointAt(trace, progress);
+  const to = trace.find((point) => point.progress > progress) ?? from;
+  const span = to.progress - from.progress || 1;
+  const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
+  const eased = ratio * ratio * (3 - 2 * ratio);
+  return Object.fromEntries(
+    Array.from(new Set([...from.order, ...to.order])).map((teamId) => {
+      const fromRank = Math.max(0, from.order.indexOf(teamId));
+      const toRank = Math.max(0, to.order.indexOf(teamId));
+      return [teamId, fromRank + (toRank - fromRank) * eased];
+    })
   );
 }
 
@@ -154,11 +170,14 @@ export function positionDeltas(currentOrder: string[], nextOrder: string[]) {
 
 export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[], progress: number, laps: number) {
   const gaps = traceGapsAt(trace, progress);
+  const rankTargets = traceRankTargetsAt(trace, progress);
   const finalTimes = trace.at(-1)?.times ?? {};
   const totalTime = Math.max(1, ...Object.values(finalTimes));
   return Object.fromEntries(
     result.classification.map((entry) => {
-      const raceLaps = progress * laps - ((gaps[entry.teamId] ?? 0) / totalTime) * laps;
+      const timeGap = ((gaps[entry.teamId] ?? 0) / totalTime) * laps;
+      const orderGap = (rankTargets[entry.teamId] ?? 0) * TRACE_ORDER_GAP_LAPS;
+      const raceLaps = progress * laps - Math.max(timeGap, orderGap);
       return [entry.teamId, Math.max(0, raceLaps)];
     })
   );

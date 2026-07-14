@@ -270,7 +270,6 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(screen.getByText("Winner")).toBeTruthy();
     expect(screen.getByLabelText("Race replay by lap")).toBeTruthy();
     expect(screen.getByText("Phase 1")).toBeTruthy();
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("Lap 5");

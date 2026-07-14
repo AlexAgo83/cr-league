@@ -24,8 +24,6 @@ export function ReplayView({
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
   const names = teamNamesFromResult(result);
-  const playerEntry = result.classification.find((entry) => entry.teamId === playerTeamId);
-  const winner = result.classification[0];
   const field = result.classification.slice(0, 6);
   const cars: MapCar[] = field.map((entry, index) => ({
     id: entry.teamId,
@@ -103,16 +101,6 @@ export function ReplayView({
       <section className="panel">
         <h2>{tt("result_replay_title")}</h2>
         <p className="replay-explainer">{tt("result_replay_explainer")}</p>
-        <div className="replay-summary">
-          <span>
-            {tt("result_replay_winner")} <strong>{winner?.teamName ?? result.grandPrixName}</strong>
-          </span>
-          {playerEntry ? (
-            <span>
-              {tt("result_replay_you")} <strong>P{playerEntry.position}</strong>
-            </span>
-          ) : null}
-        </div>
         <CircuitMap
           circuit={circuit}
           tt={tt}

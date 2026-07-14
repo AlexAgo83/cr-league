@@ -74,28 +74,6 @@ export function ReportView({
       <div className="report-main-grid">
         <section className="panel report-blocks">
           <h2>{tt("result_race_report")}</h2>
-          <section className="report-key-moments">
-            <h3>{tt("report_key_moments")}</h3>
-            {keyEvents.length ? (
-              <ol>
-                {keyEvents.map((event) => (
-                  <li key={event.id || `${event.order}-${event.type}-${event.teamId}`}>
-                    <span className="lap-marker">
-                      {tt("unit_lap")} {event.lap}
-                    </span>
-                    <div>
-                      <strong>{names.get(event.teamId) ?? tt("event_major")}</strong>
-                      <p>{eventReportText(event, names, tt)}</p>
-                      <small>{describeEventImpact(event.positionDelta, tt)}</small>
-                    </div>
-                  </li>
-                ))}
-              </ol>
-            ) : (
-              <p>{tt("report_clean_race")}</p>
-            )}
-          </section>
-
           <section className="report-rewards">
             <h3>{tt("report_rewards")}</h3>
             <ol>
@@ -124,6 +102,28 @@ export function ReportView({
                 </li>
               ))}
             </ol>
+          </section>
+
+          <section className="report-key-moments">
+            <h3>{tt("report_key_moments")}</h3>
+            {keyEvents.length ? (
+              <ol>
+                {keyEvents.map((event) => (
+                  <li key={event.id || `${event.order}-${event.type}-${event.teamId}`}>
+                    <span className="lap-marker">
+                      {tt("unit_lap")} {event.lap}
+                    </span>
+                    <div>
+                      <strong>{names.get(event.teamId) ?? tt("event_major")}</strong>
+                      <p>{eventReportText(event, names, tt)}</p>
+                      <small>{describeEventImpact(event.positionDelta, tt)}</small>
+                    </div>
+                  </li>
+                ))}
+              </ol>
+            ) : (
+              <p>{tt("report_clean_race")}</p>
+            )}
           </section>
         </section>
 

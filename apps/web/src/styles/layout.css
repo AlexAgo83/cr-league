@@ -725,17 +725,9 @@ button.result-toggle-command:hover {
 }
 
 .replay-explainer,
-.replay-summary span,
 .replay-empty {
   color: var(--color-muted);
   font-size: 0.875rem;
-}
-
-.replay-summary {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 20px;
-  margin-bottom: 14px;
 }
 
 .replay-controls {
@@ -750,10 +742,6 @@ button.result-toggle-command:hover {
 
 .replay-speed select {
   width: auto;
-}
-
-.replay-summary strong {
-  color: var(--color-text);
 }
 
 .replay-laps {
@@ -856,7 +844,7 @@ button.result-toggle-command:hover {
   padding: 12px;
 }
 
-.report-podium li:first-child {
+.report-podium li.current-team {
   border-color: rgb(22 199 132 / 0.5);
   box-shadow: inset 0 3px 0 var(--color-accent);
 }

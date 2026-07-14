@@ -2,7 +2,7 @@
   "app_eyebrow": "Urban micro-EV racing league",
   "app_intro": "Create or join a private league, set your directive, then launch the Grand Prix.",
   "flow_label": "Demo league flow",
-  "status_initial": "Join PLAY01 for the playtest, or create a league to start.",
+  "status_initial": "From the pit wall, create a league or enter a code to join the grid.",
   "status_creating_league": "Creating league...",
   "status_league_created": "League created. Submit your race directive.",
   "status_joining_league": "Joining league...",

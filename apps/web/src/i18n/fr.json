@@ -2,7 +2,7 @@
   "app_eyebrow": "Championnat urbain de micro-EV",
   "app_intro": "Crée ou rejoins une ligue privée, fixe ta directive, puis lance le Grand Prix.",
   "flow_label": "Parcours de ligue démo",
-  "status_initial": "Rejoins PLAY01 pour le playtest, ou crée une ligue pour commencer.",
+  "status_initial": "Depuis le muret, crée une ligue ou entre un code pour rejoindre la grille.",
   "status_creating_league": "Création de la ligue...",
   "status_league_created": "Ligue créée. Envoie ta directive de course.",
   "status_joining_league": "Connexion à la ligue...",

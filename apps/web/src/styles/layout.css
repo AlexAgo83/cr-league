@@ -130,6 +130,10 @@
   padding: 8px 12px;
 }
 
+.nav-label-short {
+  display: none;
+}
+
 .game-nav button:hover:not(:disabled) {
   color: var(--color-text);
 }
@@ -1524,11 +1528,16 @@ button.primary-command {
   .topbar {
     align-items: center;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 6px;
+    padding: 8px;
     top: 8px;
   }
 
   .brand {
+    grid-column: 1;
+    grid-row: 1;
+    gap: 0;
     min-width: 0;
   }
 
@@ -1541,15 +1550,36 @@ button.primary-command {
     display: flex;
   }
 
+  .profile-menu {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .profile-menu-panel {
+    width: min(280px, calc(100vw - 24px));
+  }
+
   .game-nav {
     display: grid;
-    grid-column: 1 / -1;
-    grid-template-columns: repeat(3, 1fr);
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-width: 0;
   }
 
   .game-nav button {
-    min-height: 36px;
-    padding: 7px 4px;
+    font-size: 0.72rem;
+    min-height: 32px;
+    padding: 5px 1px;
+  }
+
+  .nav-label-full {
+    display: none;
+  }
+
+  .nav-label-short {
+    display: inline;
   }
 
   .command-context {

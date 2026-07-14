@@ -326,7 +326,10 @@ export function App() {
               onClick={() => setGameView(view)}
               disabled={view === "result" && !result}
             >
-              {tt(`rail_${view}` as TranslationKey)}
+              <span className="nav-label-full">{tt(`rail_${view}` as TranslationKey)}</span>
+              <span className="nav-label-short" aria-hidden="true">
+                {tt(`rail_short_${view}` as TranslationKey)}
+              </span>
             </button>
           ))}
         </nav>

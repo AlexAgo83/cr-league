@@ -35,7 +35,7 @@ export function App() {
     return isLocale(browserLocale) ? browserLocale : "en";
   });
   const [gameView, setGameView] = useState<GameView>("drive");
-  const [resultTab, setResultTab] = useState<ResultTab>("report");
+  const [resultTab, setResultTab] = useState<ResultTab>("replay");
   const tt = (key: TranslationKey) => t(key, locale);
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const [briefingOpen, setBriefingOpen] = useState(false);
@@ -164,7 +164,7 @@ export function App() {
       });
       setLeagueState(state);
       setGameView("result");
-      setResultTab("report");
+      setResultTab("replay");
       setMessage(tt("status_grand_prix_resolved"));
     });
   }

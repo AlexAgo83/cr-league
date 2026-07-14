@@ -90,13 +90,13 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
     await page.getByRole("button", { name: "Launch GP" }).click();
     await expect(page.getByRole("button", { name: "Result" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Next GP" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Race report" })).toBeVisible();
-    await expect(page.getByText("Silver Ridge GP: Circle One wins.").first()).toBeVisible();
-    await page.getByRole("button", { name: "Replay" }).click();
     await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Report" })).toBeVisible();
     await expect(page.getByLabel("Race replay by lap")).toBeVisible();
     await expect(page.locator(".replay-timeline").getByText("Lap 5")).toBeVisible();
+    await page.getByRole("button", { name: "Report" }).click();
+    await expect(page.getByRole("heading", { name: "Race report" })).toBeVisible();
+    await expect(page.getByText("Silver Ridge GP: Circle One wins.").first()).toBeVisible();
 
     if (expectedRound < 3) {
       await page.getByRole("button", { name: "Race", exact: true }).click();

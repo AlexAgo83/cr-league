@@ -73,6 +73,22 @@ export function ReplayView({
     .filter((event, index, events) => events.findIndex((candidate) => candidate.id === event.id) === index)
     .slice(0, 8);
 
+  // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.
+  const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
+  const markerByLap = new Map<number, { texts: string[]; player: boolean }>();
+  for (const event of keyMoments.filter((event) => event.severity === "major" || event.teamId === playerTeamId)) {
+    const marker = markerByLap.get(event.lap) ?? { texts: [], player: false };
+    marker.texts.push(`${tt("unit_lap")} ${event.lap} · ${eventReplayText(event, names, tt)}`);
+    marker.player ||= event.teamId === playerTeamId;
+    markerByLap.set(event.lap, marker);
+  }
+  const markers = [...markerByLap.entries()].map(([lap, marker]) => ({
+    lap,
+    left: `${Math.min(96, Math.max(3, (lap / maxLap) * 100))}%`,
+    title: marker.texts.join("\n"),
+    player: marker.player
+  }));
+
   return (
     <div className="view-stack">
       <section className="panel">
@@ -96,6 +112,17 @@ export function ReplayView({
           overlay={
             <div className="replay-progress" aria-hidden="true">
               <div ref={progressRef} className="replay-progress-fill" />
+              {RACE_SEGMENTS.slice(1).map((segment, index) => (
+                <span key={segment} className="replay-tick" style={{ left: `${((index + 1) / RACE_SEGMENTS.length) * 100}%` }} />
+              ))}
+              {markers.map((marker) => (
+                <span
+                  key={marker.lap}
+                  className={marker.player ? "replay-marker player" : "replay-marker"}
+                  style={{ left: marker.left }}
+                  title={marker.title}
+                />
+              ))}
             </div>
           }
         />

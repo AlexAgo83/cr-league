@@ -1041,7 +1041,7 @@ export function App() {
               />
               <section className="panel qualifying-card">
                 <h2>{tt("action_qualifying")}</h2>
-                <div>
+                <div className="qualifying-meta">
                   <strong>
                     {tt("qualifying_best")} {playerQualifyingRun ? `${playerQualifyingRun.time.toFixed(2)}s` : "-"}
                   </strong>

@@ -376,6 +376,21 @@ describe("App", () => {
     expect(fetch).toHaveBeenCalledTimes(6);
   });
 
+  it("closes the profile menu when focus leaves it", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Create league" }));
+    const profileButton = await screen.findByRole("button", { name: "Profile menu" });
+    fireEvent.click(profileButton);
+    expect(screen.getByRole("button", { name: "League controls" })).toBeTruthy();
+
+    fireEvent.blur(profileButton, { relatedTarget: screen.getByRole("button", { name: "Race" }) });
+
+    expect(screen.queryByRole("button", { name: "League controls" })).toBe(null);
+  });
+
   it("shows a replay empty state when a resolved race has no events", async () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       response({

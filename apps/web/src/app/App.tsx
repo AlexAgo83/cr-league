@@ -430,7 +430,12 @@ export function App() {
             </button>
           ))}
         </nav>
-        <div className="profile-menu">
+        <div
+          className="profile-menu"
+          onBlur={(event) => {
+            if (!event.currentTarget.contains(event.relatedTarget)) setProfileOpen(false);
+          }}
+        >
           <button
             type="button"
             className="profile-menu-button"

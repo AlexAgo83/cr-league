@@ -211,6 +211,8 @@
   "circuit_rome_tiber_loop": "Tiber Loop",
   "circuit_lisbon_baixa_loop": "Baixa Loop",
   "circuit_vienna_ring_loop": "Ring Loop",
+  "circuit_porto_boavista_loop": "Boavista Loop",
+  "circuit_madrid_centro_loop": "Centro Loop",
   "circuit_grip": "Grip",
   "circuit_grip_hint": "Higher means rain and corners punish the car less.",
   "circuit_overtaking": "Attack",

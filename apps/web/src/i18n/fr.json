@@ -211,6 +211,8 @@
   "circuit_rome_tiber_loop": "Boucle du Tibre",
   "circuit_lisbon_baixa_loop": "Boucle Baixa",
   "circuit_vienna_ring_loop": "Boucle du Ring",
+  "circuit_porto_boavista_loop": "Boucle Boavista",
+  "circuit_madrid_centro_loop": "Boucle Centro",
   "circuit_grip": "Adhérence",
   "circuit_grip_hint": "Plus c'est haut, moins la pluie et les virages punissent.",
   "circuit_overtaking": "Attaque",

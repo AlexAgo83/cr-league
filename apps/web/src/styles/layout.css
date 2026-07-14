@@ -896,7 +896,7 @@ button.result-toggle-command:hover {
   color: var(--color-text);
   display: grid;
   gap: 8px;
-  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
   padding: 7px 8px;
   text-align: left;
   width: 100%;
@@ -909,9 +909,9 @@ button.result-toggle-command:hover {
 }
 
 .replay-moment-button .lap-marker {
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   justify-content: center;
-  padding: 2px 0;
+  padding: 2px 6px;
 }
 
 .moment-main {
@@ -940,11 +940,11 @@ button.result-toggle-command:hover {
 .moment-impact {
   background: rgb(56 189 248 / 0.1);
   border: 1px solid rgb(56 189 248 / 0.18);
-  border-radius: 999px;
+  border-radius: 5px;
   color: var(--color-telemetry);
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 900;
-  padding: 2px 6px;
+  padding: 1px 4px;
   white-space: nowrap;
 }
 

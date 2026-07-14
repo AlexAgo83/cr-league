@@ -878,12 +878,12 @@ label small {
 
 .circuit-route-glow {
   stroke: rgb(22 199 132 / 0.16);
-  stroke-width: 30;
+  stroke-width: 22;
 }
 
 .circuit-route-asphalt {
   stroke: #232e3b;
-  stroke-width: 16;
+  stroke-width: 12;
 }
 
 .circuit-route-edge {

@@ -752,16 +752,14 @@ label small {
   animation: replay-pulse 1.2s ease-in-out infinite;
 }
 
-.replay-map-controls .replay-focus-button::before {
-  background:
-    linear-gradient(currentColor, currentColor) center / 1.5px 14px no-repeat,
-    linear-gradient(currentColor, currentColor) center / 14px 1.5px no-repeat;
-  border: 1.5px solid currentColor;
-  border-radius: 999px;
-  box-sizing: border-box;
-  content: "";
-  height: 14px;
-  width: 14px;
+.replay-focus-icon {
+  fill: none;
+  height: 17px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 17px;
 }
 
 .replay-map-controls button.active {

@@ -366,7 +366,9 @@ export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitS
         return (
           <span key={row.key} className={`map-trait-${row.key}`} title={[tt(row.hint), ...rowImpacts].join("\n")}>
             <i aria-hidden="true">{row.icon}</i>
-            <strong>{traits[row.key]}</strong>
+            <strong className="map-trait-value" style={{ "--trait-value": `${traits[row.key]}%` } as CSSProperties & Record<string, string>}>
+              <span>{traits[row.key]}</span>
+            </strong>
             <span className="trait-label">{tt(row.label)}</span>
             {rowImpacts.length ? <em>+{rowImpacts.length}</em> : null}
           </span>

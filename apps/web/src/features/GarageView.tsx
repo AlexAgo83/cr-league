@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { cardFit, countCards, recommendedShopOffers, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
+import { CardStatBadges } from "./CardStatBadges.js";
 
 export function GarageView({
   state,
@@ -124,6 +125,7 @@ export function GarageView({
                   <span>
                     {tt(`card_${cardId}` as TranslationKey)}
                     <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
+                    <CardStatBadges cardId={cardId} tt={tt} />
                   </span>
                   <strong>x{countCards(playerTeam.cards, cardId)}</strong>
                 </li>
@@ -148,6 +150,7 @@ export function GarageView({
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
                 <strong>{item.price}</strong>
                 <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>
+                <CardStatBadges cardId={item.cardId} tt={tt} />
               </button>
             ))}
           </div>

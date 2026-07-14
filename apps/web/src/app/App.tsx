@@ -47,6 +47,19 @@ function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: 
   return impacts;
 }
 
+function qualifyingReplayTower(run: QualifyingRun | null, runs: QualifyingRun[], tt: (key: TranslationKey) => string) {
+  if (!run) return [];
+  return runs
+    .filter((lapRun) => lapRun.teamId === run.teamId && lapRun.attempts === run.attempts)
+    .sort((left, right) => (left.lap ?? 0) - (right.lap ?? 0))
+    .map((lapRun, index) => ({
+      id: `${lapRun.teamId}-${lapRun.attempts}-${lapRun.lap ?? index + 1}`,
+      teamId: lapRun.teamId,
+      teamName: `${tt("unit_lap")} ${lapRun.lap ?? index + 1}`,
+      value: `${lapRun.time.toFixed(2)}s`
+    }));
+}
+
 function createInitialForm(locale: Locale): FormState {
   return {
     leagueName: randomLeagueName() || t("default_league_name", locale),
@@ -173,6 +186,8 @@ export function App() {
   const qualifyingRuns = leagueState?.currentGrandPrix.qualifyingRuns ?? [];
   const playerQualifyingRuns = qualifyingRuns.filter((run) => run.teamId === playerTeam?.id);
   const playerQualifyingRun = playerQualifyingRuns.reduce<QualifyingRun | null>((best, run) => (!best || run.time < best.time ? run : best), null);
+  const replayQualifyingRun = qualifyingResult ?? playerQualifyingRun;
+  const qualifyingReplayEntries = qualifyingReplayTower(replayQualifyingRun, qualifyingRuns, tt);
   const qualifyingLeaderboard = [...qualifyingRuns]
     .sort((left, right) => left.time - right.time)
     .slice(0, 10)
@@ -1097,15 +1112,15 @@ export function App() {
             <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setQualifyingOpen(false)}>
               ×
             </button>
-            {(qualifyingResult ?? playerQualifyingRun) ? (
+            {replayQualifyingRun ? (
               <div className="qualifying-replay">
                 <ReplayView
-                  result={(qualifyingResult ?? playerQualifyingRun)!.result}
+                  result={replayQualifyingRun.result}
                   circuit={currentCircuit}
                   playerTeamId={playerTeam?.id}
                   teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
                   traitImpacts={directiveTraitImpacts}
-                  towerEntries={qualifyingLeaderboard.map((run) => ({ teamId: run.teamId, teamName: run.teamName, value: `${run.time.toFixed(2)}s` }))}
+                  towerEntries={qualifyingReplayEntries}
                   titleKey="qualifying_replay_title"
                   explainerKey="qualifying_replay_explainer"
                   tt={tt}

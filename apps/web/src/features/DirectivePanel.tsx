@@ -2,6 +2,7 @@ import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CardFit, Translator } from "../app/helpers.js";
 import type { FormState } from "../app/types.js";
+import { CardStatBadges } from "./CardStatBadges.js";
 
 export function DirectivePanel({
   form,
@@ -54,6 +55,7 @@ export function DirectivePanel({
             {selectedCardFit ? `${tt(`card_fit_${selectedCardFit.level}` as TranslationKey)} · ` : ""}
             {selectedCardId ? tt(`card_${selectedCardId}_hint` as TranslationKey) : tt("card_none_hint")}
           </small>
+          {selectedCardId ? <CardStatBadges cardId={selectedCardId as CardId} tt={tt} /> : null}
         </label>
       </div>
     </section>

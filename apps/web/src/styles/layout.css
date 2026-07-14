@@ -988,9 +988,19 @@ label small {
   color: #22c55e;
 }
 
+.map-trait-grip {
+  --trait-fill: rgb(34 197 94 / 0.32);
+  --trait-tone: #22c55e;
+}
+
 .map-trait-overtaking i {
   background: rgb(56 189 248 / 0.18);
   color: #38bdf8;
+}
+
+.map-trait-overtaking {
+  --trait-fill: rgb(56 189 248 / 0.3);
+  --trait-tone: #38bdf8;
 }
 
 .map-trait-energy i {
@@ -998,9 +1008,37 @@ label small {
   color: #facc15;
 }
 
+.map-trait-energy {
+  --trait-fill: rgb(250 204 21 / 0.3);
+  --trait-tone: #facc15;
+}
+
 .map-traits-panel strong {
+  align-items: center;
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 6px;
   color: var(--color-text);
+  display: inline-flex;
   font-size: 0.95rem;
+  height: 24px;
+  justify-content: center;
+  min-width: 34px;
+  overflow: hidden;
+  position: relative;
+}
+
+.map-traits-panel strong::before {
+  background: var(--trait-fill);
+  bottom: 0;
+  content: "";
+  height: var(--trait-value);
+  left: 0;
+  position: absolute;
+  right: 0;
+}
+
+.map-traits-panel strong span {
+  position: relative;
 }
 
 .map-traits-panel .trait-label {
@@ -1385,6 +1423,46 @@ label small {
   gap: 3px;
 }
 
+.card-stat-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.card-stat-badge {
+  align-items: center;
+  background: rgb(255 255 255 / 0.04);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 999px;
+  color: var(--color-muted);
+  display: inline-flex;
+  font-size: 0.64rem;
+  font-weight: 900;
+  gap: 4px;
+  padding: 3px 7px 3px 3px;
+  text-transform: uppercase;
+}
+
+.card-stat-badge i {
+  align-items: center;
+  background: color-mix(in srgb, var(--trait-tone) 18%, transparent);
+  border-radius: 999px;
+  color: var(--trait-tone);
+  display: inline-flex;
+  font-style: normal;
+  height: 16px;
+  justify-content: center;
+  width: 16px;
+}
+
+.card-stat-badge.bonus {
+  border-color: color-mix(in srgb, var(--trait-tone) 28%, transparent);
+}
+
+.card-stat-badge.weakness {
+  opacity: 0.68;
+}
+
 .classification li.current-team {
   border-left: 3px solid var(--color-accent);
   padding-left: 10px;
@@ -1731,6 +1809,10 @@ label small {
 
 .card-shop button small {
   grid-column: 1;
+}
+
+.card-shop .card-stat-badges {
+  grid-column: 1 / -1;
 }
 
 .card-shop button:not(:disabled):hover,
@@ -2411,6 +2493,8 @@ button.primary-command {
 
   .map-traits-panel strong {
     font-size: 0.7rem;
+    height: 18px;
+    min-width: 26px;
   }
 
   .map-traits-panel em {

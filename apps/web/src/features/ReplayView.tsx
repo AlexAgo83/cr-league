@@ -18,6 +18,7 @@ const POSITION_CHANGE_MARGIN_LAPS = 0.015;
 const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_STEP = 0.012;
+type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 
 function savedReplaySpeed() {
   const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
@@ -264,7 +265,7 @@ export function ReplayView({
   traitImpacts?: MapTraitImpacts;
   titleKey?: TranslationKey;
   explainerKey?: TranslationKey;
-  towerEntries?: Array<{ teamId: string; teamName: string; value: string }>;
+  towerEntries?: ReplayTowerEntry[];
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -296,7 +297,7 @@ export function ReplayView({
     positionDeltaKey: positionPops[entry.teamId]?.key
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
-  const tower = towerEntries ?? snapshot.tower.map((entry) => ({ teamId: entry.teamId, teamName: entry.teamName, value: "" }));
+  const tower: ReplayTowerEntry[] = towerEntries ?? snapshot.tower.map((entry) => ({ teamId: entry.teamId, teamName: entry.teamName, value: "" }));
   const circuitDistance = `${(circuitLengthMeters(circuit) / 1000).toFixed(1)} km`;
   const raceDuration = replayTimes.leader;
   const lastFinishTime = replayTimes.last;
@@ -488,7 +489,7 @@ export function ReplayView({
                 </div>
                 <ol className="replay-tower">
                   {tower.map((entry, index) => (
-                    <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
+                    <li key={entry.id ?? entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
                       <span
                         className="replay-tower-livery"
                         aria-label={`P${index + 1}`}

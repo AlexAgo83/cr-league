@@ -9,7 +9,8 @@ import {
   positionDeltas,
   replayDistanceScale,
   scaleFinishTimes,
-  segmentAtProgress
+  segmentAtProgress,
+  smoothCarProgress
 } from "./ReplayView.js";
 
 const result: RaceResult = {
@@ -130,6 +131,11 @@ describe("ReplayView timing", () => {
 
     expect(early.leader ?? 0).toBeGreaterThan(early.last ?? 0);
     expect(later.last ?? 0).toBeGreaterThan(later.leader ?? 0);
+  });
+
+  it("limits visual progress jumps between frames", () => {
+    expect(smoothCarProgress({ leader: 1 }, { leader: 1.5 }).leader).toBeCloseTo(1.07);
+    expect(smoothCarProgress({ leader: 1 }, { leader: 1.04 }).leader).toBeCloseTo(1.04);
   });
 });
 

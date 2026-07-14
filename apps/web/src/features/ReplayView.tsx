@@ -17,6 +17,7 @@ const REFERENCE_REPLAY_DISTANCE_PIXELS = 9_000;
 const POSITION_CHANGE_MARGIN_LAPS = 0.015;
 const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
+const MAX_VISUAL_PROGRESS_STEP = 0.07;
 
 function savedReplaySpeed() {
   const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
@@ -206,6 +207,18 @@ function replaySnapshot(
   return { carProgress, tower };
 }
 
+export function smoothCarProgress(current: Record<string, number>, target: Record<string, number>) {
+  return Object.fromEntries(
+    Object.keys({ ...current, ...target }).map((teamId) => {
+      const to = target[teamId] ?? 0;
+      const from = current[teamId] ?? to;
+      const delta = to - from;
+      if (Math.abs(delta) <= MAX_VISUAL_PROGRESS_STEP) return [teamId, to];
+      return [teamId, from + Math.sign(delta) * MAX_VISUAL_PROGRESS_STEP];
+    })
+  );
+}
+
 export function carProgressAtRaceTime(result: RaceResult, times: Record<string, number>, raceTime: number, laps: number) {
   return Object.fromEntries(
     result.classification.map((entry) => {
@@ -258,6 +271,7 @@ export function ReplayView({
   const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const [snapshot, setSnapshot] = useState(initialSnapshot);
+  const snapshotRef = useRef(initialSnapshot);
   const [positionPops, setPositionPops] = useState<Record<string, { delta: number; key: number }>>({});
   const orderRef = useRef(initialSnapshot.tower.map((entry) => entry.teamId));
   const positionPopTimers = useRef<number[]>([]);
@@ -281,6 +295,7 @@ export function ReplayView({
   const replayEnd = START_HOLD_SECONDS + lastFinishTime + FINISH_HOLD_SECONDS;
   const raceTimeAtProgress = (progress: number) => START_HOLD_SECONDS + progress * raceDuration;
   const replayPercentAtRaceProgress = (progress: number) => (raceTimeAtProgress(progress) / replayEnd) * 100;
+  snapshotRef.current = snapshot;
 
   // SMIL has no playback-rate API, so the SVG clock is driven by hand:
   // animations stay paused and a rAF loop advances setCurrentTime at `speed`.
@@ -338,8 +353,10 @@ export function ReplayView({
     const displayLap = displayLapAtProgress(progress, circuit.laps);
     const segment = segmentAtProgress(progress);
     setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
-    const nextSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, orderRef.current);
-    const nextTower = nextSnapshot.tower;
+    const targetSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, orderRef.current);
+    const carProgress = animatePositions ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress) : targetSnapshot.carProgress;
+    const nextTower = liveClassificationByCarProgress(result, replayTrace, progress, carProgress, orderRef.current);
+    const nextSnapshot = { carProgress, tower: nextTower };
     const nextOrder = nextTower.map((entry) => entry.teamId);
     if (orderRef.current.join("|") !== nextOrder.join("|")) {
       if (animatePositions) {
@@ -357,6 +374,7 @@ export function ReplayView({
       }
       orderRef.current = nextOrder;
     }
+    snapshotRef.current = nextSnapshot;
     setSnapshot(nextSnapshot);
   }
 

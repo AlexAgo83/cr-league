@@ -1105,6 +1105,7 @@ export function App() {
                   playerTeamId={playerTeam?.id}
                   teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
                   traitImpacts={directiveTraitImpacts}
+                  towerEntries={qualifyingLeaderboard.map((run) => ({ teamId: run.teamId, teamName: run.teamName, value: `${run.time.toFixed(2)}s` }))}
                   titleKey="qualifying_replay_title"
                   explainerKey="qualifying_replay_explainer"
                   tt={tt}

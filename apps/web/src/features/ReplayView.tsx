@@ -254,6 +254,7 @@ export function ReplayView({
   traitImpacts = {},
   titleKey = "result_replay_title",
   explainerKey = "result_replay_explainer",
+  towerEntries,
   tt
 }: {
   result: RaceResult;
@@ -263,6 +264,7 @@ export function ReplayView({
   traitImpacts?: MapTraitImpacts;
   titleKey?: TranslationKey;
   explainerKey?: TranslationKey;
+  towerEntries?: Array<{ teamId: string; teamName: string; value: string }>;
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -294,6 +296,7 @@ export function ReplayView({
     positionDeltaKey: positionPops[entry.teamId]?.key
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
+  const tower = towerEntries ?? snapshot.tower.map((entry) => ({ teamId: entry.teamId, teamName: entry.teamName, value: "" }));
   const circuitDistance = `${(circuitLengthMeters(circuit) / 1000).toFixed(1)} km`;
   const raceDuration = replayTimes.leader;
   const lastFinishTime = replayTimes.last;
@@ -484,7 +487,7 @@ export function ReplayView({
                   </select>
                 </div>
                 <ol className="replay-tower">
-                  {snapshot.tower.map((entry, index) => (
+                  {tower.map((entry, index) => (
                     <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
                       <span
                         className="replay-tower-livery"
@@ -499,6 +502,7 @@ export function ReplayView({
                         {index + 1}
                       </span>
                       <span className="replay-tower-team">{entry.teamName}</span>
+                      {entry.value ? <span className="replay-tower-value">{entry.value}</span> : null}
                     </li>
                   ))}
                 </ol>

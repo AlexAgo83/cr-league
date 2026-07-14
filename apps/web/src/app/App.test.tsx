@@ -338,6 +338,8 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "Run a lap time" })).toBe(null);
     expect(screen.queryByText("Your best time sets your grid slot.", { exact: false })).toBe(null);
     expect(screen.queryByRole("button", { name: "Run lap time" })).toBe(null);
+    expect(document.querySelector(".replay-tower")?.textContent).toContain("72.42s");
+    expect(document.querySelector(".replay-tower")?.textContent).toContain("75.18s");
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.queryByText("Run a lap time")).toBe(null);
     expect(screen.getByText("72.42s")).toBeTruthy();

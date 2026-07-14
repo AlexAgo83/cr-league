@@ -1118,9 +1118,10 @@ label small {
 .replay-tower li {
   align-items: center;
   color: var(--color-text);
-  display: flex;
+  display: grid;
   font-size: 0.78rem;
   gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
 }
 
 .replay-tower-livery {
@@ -1155,6 +1156,11 @@ label small {
 .replay-tower li.player .replay-tower-team {
   color: var(--color-accent);
   font-weight: 700;
+}
+
+.replay-tower-value {
+  color: var(--color-accent);
+  font-weight: 900;
 }
 
 .circuit-route-glow,

@@ -11,6 +11,12 @@ export type MapCar = {
   duration: number;
 };
 
+export type MapTraitStats = {
+  grip: number;
+  overtaking: number;
+  energy: number;
+};
+
 const VIEW_WIDTH = 1000;
 const VIEW_HEIGHT = 560;
 const PADDING = 70;
@@ -74,7 +80,8 @@ export function CircuitMap({
   svgRef,
   overlay,
   showHeading = true,
-  framed = true
+  framed = true,
+  showTraits = true
 }: {
   circuit: CityCircuit;
   tt: Translator;
@@ -83,6 +90,7 @@ export function CircuitMap({
   overlay?: React.ReactNode;
   showHeading?: boolean;
   framed?: boolean;
+  showTraits?: boolean;
 }) {
   const { zoom, tiles, d, start } = circuitScene(circuit);
 
@@ -132,17 +140,26 @@ export function CircuitMap({
         <small className="map-attribution">© OpenStreetMap · © CARTO</small>
         {overlay}
       </div>
-      <div className="circuit-traits">
-        <span>
-          {tt("circuit_grip")} {circuit.traits.grip}
-        </span>
-        <span>
-          {tt("circuit_overtaking")} {circuit.traits.overtaking}
-        </span>
-        <span>
-          {tt("circuit_energy")} {circuit.traits.energy}
-        </span>
-      </div>
+      {showTraits ? <MapTraitsPanel traits={circuit.traits} tt={tt} /> : null}
     </section>
+  );
+}
+
+export function MapTraitsPanel({ traits, tt }: { traits: MapTraitStats; tt: Translator }) {
+  return (
+    <div className="map-traits-panel">
+      <span>
+        <strong>{traits.grip}</strong>
+        {tt("circuit_grip")}
+      </span>
+      <span>
+        <strong>{traits.overtaking}</strong>
+        {tt("circuit_overtaking")}
+      </span>
+      <span>
+        <strong>{traits.energy}</strong>
+        {tt("circuit_energy")}
+      </span>
+    </div>
   );
 }

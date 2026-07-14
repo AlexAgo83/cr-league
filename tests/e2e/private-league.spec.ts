@@ -128,6 +128,8 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(driveMap).toHaveCSS("border-top-width", "0px");
   await expect(page.locator(".drive-map-panel .map-status")).toContainText("🇫🇷 Paris");
   await expect(page.locator(".drive-map-panel .map-status")).toContainText("5 laps");
+  await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Grip");
+  await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("64");
   const directiveWidth = await page.locator(".directive-panel").evaluate((element) => element.getBoundingClientRect().width);
 
   await page.getByRole("button", { name: "Submit directive" }).click();
@@ -146,6 +148,8 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".map-status")).toContainText("🇫🇷 Paris");
   await expect(mapPanel.locator(".map-status")).toContainText("Lap 1/5");
   await expect(mapPanel.locator(".map-status")).toContainText("Dry");
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText("64");
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText("58");
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Pause" })).toBeVisible();
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Restart" })).toBeVisible();
   await expect(mapPanel.locator(".replay-map-controls").getByLabel("Speed")).toHaveValue("1");
@@ -153,6 +157,9 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     .poll(async () => momentsPanel.evaluate((element) => element.getBoundingClientRect().width))
     .toBeCloseTo(directiveWidth, 0);
   await expect(mapPanel.locator(".replay-progress")).toBeVisible();
+  await mapPanel.locator(".replay-marker").click();
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText("59");
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText("50");
   await expect(copyPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
   await expect(momentsPanel.getByRole("heading", { name: "Key moments" })).toBeVisible();
 

@@ -469,6 +469,39 @@ label small {
   font-weight: 700;
 }
 
+.map-traits-panel {
+  background: rgb(10 15 21 / 0.76);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 9px 10px;
+}
+
+.circuit-map-stage > .map-traits-panel {
+  left: 12px;
+  min-width: 132px;
+  position: absolute;
+  top: 92px;
+  z-index: 2;
+}
+
+.map-traits-panel span {
+  align-items: baseline;
+  color: var(--color-muted);
+  display: flex;
+  font-size: 0.72rem;
+  font-weight: 800;
+  gap: 8px;
+  justify-content: space-between;
+  text-transform: uppercase;
+}
+
+.map-traits-panel strong {
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
 .replay-map-controls {
   align-items: center;
   background: rgb(10 15 21 / 0.68);
@@ -646,22 +679,6 @@ label small {
   fill: #041018;
   font-size: 12px;
   font-weight: 900;
-}
-
-.circuit-traits {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.circuit-traits span {
-  background: rgb(255 255 255 / 0.06);
-  border: 1px solid rgb(255 255 255 / 0.12);
-  border-radius: 999px;
-  color: var(--color-muted);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  padding: 4px 10px;
 }
 
 /* ---------- Lists (standings, history, inventory, events) ---------- */

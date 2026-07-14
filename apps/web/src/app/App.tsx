@@ -5,7 +5,7 @@ import { circuitForRound, countryFlag } from "./circuits.js";
 import { cardFit, strongestForecast } from "./helpers.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
-import { CircuitMap } from "../features/CircuitMap.js";
+import { CircuitMap, MapTraitsPanel } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
@@ -343,16 +343,20 @@ export function App() {
                 tt={tt}
                 showHeading={false}
                 framed={false}
+                showTraits={false}
                 overlay={
-                  <div className="map-status">
-                    <span className="circuit-city">
-                      {countryFlag(currentCircuit.country)} {currentCircuit.city}
-                    </span>
-                    <strong>{tt(currentCircuit.layoutKey)}</strong>
-                    <small>
-                      {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
-                    </small>
-                  </div>
+                  <>
+                    <div className="map-status">
+                      <span className="circuit-city">
+                        {countryFlag(currentCircuit.country)} {currentCircuit.city}
+                      </span>
+                      <strong>{tt(currentCircuit.layoutKey)}</strong>
+                      <small>
+                        {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
+                      </small>
+                    </div>
+                    <MapTraitsPanel traits={currentCircuit.traits} tt={tt} />
+                  </>
                 }
               />
             </section>

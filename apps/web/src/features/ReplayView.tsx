@@ -1,11 +1,25 @@
-import { RACE_SEGMENTS, type RaceResult, type RaceSegment } from "@cr-league/shared";
+import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type Weather } from "@cr-league/shared";
 import { useEffect, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { countryFlag, type CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
-import { CircuitMap, type MapCar } from "./CircuitMap.js";
+import { CircuitMap, MapTraitsPanel, type MapCar, type MapTraitStats } from "./CircuitMap.js";
 
 const WEATHER_ICONS = { dry: "☀️", light_rain: "🌦️", heavy_rain: "⛈️" } as const;
+
+function clampStat(value: number) {
+  return Math.max(1, Math.min(99, Math.round(value)));
+}
+
+function liveTraits(base: MapTraitStats, weather: Weather, lap: number): MapTraitStats {
+  const rainGrip = weather === "heavy_rain" ? -12 : weather === "light_rain" ? -5 : 0;
+  const lateRace = Math.max(0, lap - 1);
+  return {
+    grip: clampStat(base.grip + rainGrip),
+    overtaking: clampStat(base.overtaking + (weather === "dry" ? 0 : 3)),
+    energy: clampStat(base.energy - lateRace * 2 - (weather === "heavy_rain" ? 5 : 0))
+  };
+}
 
 export function ReplayView({
   result,
@@ -127,6 +141,7 @@ export function ReplayView({
               svgRef={svgRef}
               showHeading={false}
               framed={false}
+              showTraits={false}
               overlay={
                 <>
                   <div className="map-status">
@@ -139,6 +154,7 @@ export function ReplayView({
                       {tt(`weather_${liveWeather}` as TranslationKey)}
                     </small>
                   </div>
+                  <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, live.lap)} tt={tt} />
                   <div className="replay-map-controls">
                     <button
                       type="button"

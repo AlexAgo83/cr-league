@@ -257,6 +257,8 @@ async function createProfile(page: Page) {
   await page.getByLabel("Email").fill("pilot@example.test");
   await page.getByRole("button", { name: "Create profile" }).click();
   await expect(page.getByText("Profile created. Save this recovery code: ABCD1234")).toBeVisible();
+  await expect(page.getByRole("button", { name: "Profile menu" })).toHaveAttribute("aria-expanded", "false");
+  await expect(page.locator(".profile-menu-panel")).toHaveCount(0);
 }
 
 async function createLeague(page: Page) {

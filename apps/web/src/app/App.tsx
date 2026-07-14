@@ -292,6 +292,7 @@ export function App() {
       setProfileSession(session);
       setSavedClaims(claimsFromProfile(session));
       setSetupMode("choice");
+      setProfileOpen(false);
       setMessage(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`);
     });
   }
@@ -308,6 +309,7 @@ export function App() {
       setProfileSession(session);
       setSavedClaims(claims);
       setSetupMode("choice");
+      setProfileOpen(false);
       setMessage(tt("status_profile_recovered"));
     });
   }

@@ -134,6 +134,25 @@ export function ReplayView({
                       {tt(`weather_${liveWeather}` as TranslationKey)}
                     </small>
                   </div>
+                  <div className="replay-map-controls">
+                    <button
+                      type="button"
+                      aria-label={playing ? tt("action_pause") : tt("action_play")}
+                      title={playing ? tt("action_pause") : tt("action_play")}
+                      onClick={() => (!playing && clock.current >= replayEnd ? restart() : setPlaying(!playing))}
+                    >
+                      {playing ? "⏸" : "▶"}
+                    </button>
+                    <button type="button" aria-label={tt("action_replay_restart")} title={tt("action_replay_restart")} onClick={restart}>
+                      ↻
+                    </button>
+                    <select aria-label={tt("replay_speed")} value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
+                      <option value={0.5}>×0.5</option>
+                      <option value={1}>×1</option>
+                      <option value={2}>×2</option>
+                      <option value={4}>×4</option>
+                    </select>
+                  </div>
                   <ol className="replay-tower">
                     {result.classification.slice(0, 6).map((entry) => (
                       <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
@@ -185,23 +204,6 @@ export function ReplayView({
           <section className="panel replay-copy-panel">
             <h2>{tt("result_replay_title")}</h2>
             <p className="replay-explainer">{tt("result_replay_explainer")}</p>
-            <div className="actions replay-controls secondary-actions">
-              <button type="button" onClick={() => (!playing && clock.current >= replayEnd ? restart() : setPlaying(!playing))}>
-                {playing ? tt("action_pause") : tt("action_play")}
-              </button>
-              <button type="button" onClick={restart}>
-                {tt("action_replay_restart")}
-              </button>
-              <label className="replay-speed">
-                {tt("replay_speed")}
-                <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
-                  <option value={0.5}>×0.5</option>
-                  <option value={1}>×1</option>
-                  <option value={2}>×2</option>
-                  <option value={4}>×4</option>
-                </select>
-              </label>
-            </div>
           </section>
         </div>
 

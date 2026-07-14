@@ -469,6 +469,44 @@ label small {
   font-weight: 700;
 }
 
+.replay-map-controls {
+  align-items: center;
+  background: rgb(10 15 21 / 0.68);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 999px;
+  display: flex;
+  gap: 4px;
+  left: 50%;
+  padding: 4px;
+  position: absolute;
+  top: 12px;
+  transform: translateX(-50%);
+  z-index: 2;
+}
+
+.replay-map-controls button,
+.replay-map-controls select {
+  background: rgb(255 255 255 / 0.07);
+  border: 0;
+  border-radius: 999px;
+  color: var(--color-text);
+  height: 30px;
+  min-height: 0;
+  padding: 0 9px;
+}
+
+.replay-map-controls button {
+  font-size: 0.9rem;
+  line-height: 1;
+  width: 30px;
+}
+
+.replay-map-controls select {
+  font-size: 0.75rem;
+  font-weight: 800;
+  width: auto;
+}
+
 .replay-marker {
   background: var(--color-telemetry);
   border: 2px solid #0a0f15;
@@ -774,20 +812,6 @@ button.result-toggle-command:hover {
 .replay-moments-panel {
   position: sticky;
   top: 92px;
-}
-
-.replay-controls {
-  align-items: center;
-}
-
-.replay-speed {
-  align-items: center;
-  display: flex;
-  gap: 8px;
-}
-
-.replay-speed select {
-  width: auto;
 }
 
 .report-phases-list {

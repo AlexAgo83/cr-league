@@ -146,12 +146,14 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".map-status")).toContainText("🇫🇷 Paris");
   await expect(mapPanel.locator(".map-status")).toContainText("Lap 1/5");
   await expect(mapPanel.locator(".map-status")).toContainText("Dry");
+  await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Pause" })).toBeVisible();
+  await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Restart" })).toBeVisible();
+  await expect(mapPanel.locator(".replay-map-controls").getByLabel("Speed")).toHaveValue("1");
   await expect
     .poll(async () => momentsPanel.evaluate((element) => element.getBoundingClientRect().width))
     .toBeCloseTo(directiveWidth, 0);
   await expect(mapPanel.locator(".replay-progress")).toBeVisible();
-  await expect(mapPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
-  await expect(copyPanel.getByRole("button", { name: "Pause" })).toBeVisible();
+  await expect(copyPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
   await expect(momentsPanel.getByRole("heading", { name: "Key moments" })).toBeVisible();
 
   const desktop = await page.evaluate(() => {

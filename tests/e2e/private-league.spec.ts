@@ -126,6 +126,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(driveMap).toHaveClass(/circuit-map-unframed/);
   await expect(driveMap).toHaveCSS("padding", "0px");
   await expect(driveMap).toHaveCSS("border-top-width", "0px");
+  const directiveWidth = await page.locator(".directive-panel").evaluate((element) => element.getBoundingClientRect().width);
 
   await page.getByRole("button", { name: "Submit directive" }).click();
   await page.getByRole("button", { name: "Launch GP" }).click();
@@ -140,6 +141,9 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(replayMap).toHaveClass(/circuit-map-unframed/);
   await expect(replayMap).toHaveCSS("padding", "0px");
   await expect(replayMap).toHaveCSS("border-top-width", "0px");
+  await expect
+    .poll(async () => momentsPanel.evaluate((element) => element.getBoundingClientRect().width))
+    .toBeCloseTo(directiveWidth, 0);
   await expect(mapPanel.locator(".replay-progress")).toBeVisible();
   await expect(mapPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
   await expect(copyPanel.getByRole("button", { name: "Pause" })).toBeVisible();

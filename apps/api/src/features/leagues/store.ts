@@ -917,7 +917,14 @@ function createQualifyingRuns(input: {
         : input.decision.preparation === "reliability"
           ? 0.4
           : 0;
-  const cardDelta = input.decision.cardId === "launch_boost" ? -0.8 : input.decision.cardId === "rain_grip" && weather !== "dry" ? -0.7 : 0;
+  const cardDelta =
+    input.decision.cardId === "qualifying_focus"
+      ? -1.4
+      : input.decision.cardId === "launch_boost"
+        ? -0.8
+        : input.decision.cardId === "rain_grip" && weather !== "dry"
+          ? -0.7
+          : 0;
   const lapTimes = Array.from({ length: input.laps }, (_, index) => {
     const warmupPenalty = index === 0 && input.laps > 1 ? 1.1 : 0;
     const tyreDelta = index > 1 ? (index - 1) * 0.16 : 0;

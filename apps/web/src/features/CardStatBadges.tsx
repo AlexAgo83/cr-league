@@ -17,7 +17,16 @@ const CARD_BADGES: Record<CardId, Array<{ trait: "grip" | "overtaking" | "energy
     { trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" },
     { trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" }
   ],
-  fleet_sponsorship: [{ trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }]
+  fleet_sponsorship: [{ trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }],
+  soft_tires: [
+    { trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" },
+    { trait: "energy", sign: "-", icon: "⚡", label: "circuit_energy" }
+  ],
+  qualifying_focus: [{ trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" }],
+  defensive_order: [
+    { trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" },
+    { trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }
+  ]
 };
 
 export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator }) {

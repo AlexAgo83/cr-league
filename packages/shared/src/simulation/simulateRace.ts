@@ -179,6 +179,17 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
   } else if (participant.botArchetype === "mechanic") {
     scores.reliability += 6;
   }
+
+  if (participant.decision.cardId === "soft_tires") {
+    scores.pace += 6;
+    scores.aggression += 4;
+    scores.reliability -= 6;
+  } else if (participant.decision.cardId === "defensive_order") {
+    scores.control += 8;
+    scores.reliability += 4;
+    scores.aggression -= 6;
+    scores.pace -= 2;
+  }
 }
 
 function resolveWeather(
@@ -329,6 +340,16 @@ function maybeAddCardEvent(
   } else if (cardId === "fleet_sponsorship" && segment === "finish") {
     state.resultTags.add("sponsor_bonus");
     events.push(createCardEvent(events.length, state, segment, "sponsor_payout", 0));
+  } else if (cardId === "soft_tires" && segment === "early") {
+    state.scores.score += 10;
+    state.scores.reliability -= 4;
+    state.positionDelta += 1;
+    state.resultTags.add("soft_tires");
+    events.push(createCardEvent(events.length, state, segment, "card_triggered", 1));
+  } else if (cardId === "defensive_order" && segment === "late") {
+    state.scores.score += 8;
+    state.resultTags.add("defensive_order");
+    events.push(createCardEvent(events.length, state, segment, "held_position", 0));
   }
 }
 

@@ -41,8 +41,8 @@ function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: 
   if (form.approach === "aggressive") add("overtaking", tt("approach_aggressive"));
   if (form.approach === "prudent") add("energy", tt("approach_prudent"));
   if (selectedCardId === "rain_grip") add("grip", tt("field_card"));
-  if (selectedCardId === "launch_boost" || selectedCardId === "urban_draft") add("overtaking", tt("field_card"));
-  if (selectedCardId === "fleet_maintenance" || selectedCardId === "final_surge") add("energy", tt("field_card"));
+  if (selectedCardId === "launch_boost" || selectedCardId === "urban_draft" || selectedCardId === "soft_tires" || selectedCardId === "qualifying_focus") add("overtaking", tt("field_card"));
+  if (selectedCardId === "fleet_maintenance" || selectedCardId === "final_surge" || selectedCardId === "defensive_order") add("energy", tt("field_card"));
 
   return impacts;
 }

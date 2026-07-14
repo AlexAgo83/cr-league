@@ -24,7 +24,10 @@ export type CardId =
   | "launch_boost"
   | "urban_draft"
   | "final_surge"
-  | "fleet_sponsorship";
+  | "fleet_sponsorship"
+  | "soft_tires"
+  | "qualifying_focus"
+  | "defensive_order";
 
 export type RaceDecision = {
   approach: RaceApproach;

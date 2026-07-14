@@ -50,5 +50,26 @@ export const CARD_DEFINITIONS: Record<CardId, CardDefinition> = {
     family: "economy",
     consumable: true,
     playerPromise: "Sacrifice some pace for a stronger credit payout."
+  },
+  soft_tires: {
+    id: "soft_tires",
+    name: "Soft Tires",
+    family: "attack",
+    consumable: true,
+    playerPromise: "Gain launch and attack pace early, then manage weaker late endurance."
+  },
+  qualifying_focus: {
+    id: "qualifying_focus",
+    name: "Qualifying Lap",
+    family: "attack",
+    consumable: true,
+    playerPromise: "Focus the car on a faster qualifying attempt, with little race value."
+  },
+  defensive_order: {
+    id: "defensive_order",
+    name: "Defensive Order",
+    family: "reliability",
+    consumable: true,
+    playerPromise: "Protect your position under pressure, but give up attacking edge."
   }
 };

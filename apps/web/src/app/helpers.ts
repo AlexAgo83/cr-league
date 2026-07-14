@@ -28,6 +28,9 @@ export function cardFit(cardId: CardId, state: LeagueState, forecastPick: string
   if (cardId === "launch_boost") return traits.includes("fast") ? { level: "recommended", score: 80 } : { level: "risky", score: 50 };
   if (cardId === "urban_draft") return traits.includes("urban") ? { level: "recommended", score: 78 } : { level: "low", score: 30 };
   if (cardId === "final_surge") return { level: "risky", score: 55 };
+  if (cardId === "soft_tires") return traits.includes("fast") ? { level: "recommended", score: 82 } : { level: "risky", score: 58 };
+  if (cardId === "qualifying_focus") return { level: "recommended", score: 76 };
+  if (cardId === "defensive_order") return traits.includes("high_wear") || traits.includes("technical") ? { level: "recommended", score: 84 } : { level: "low", score: 42 };
   return { level: "risky", score: 52 };
 }
 

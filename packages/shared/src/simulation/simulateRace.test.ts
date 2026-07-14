@@ -125,6 +125,35 @@ describe("simulateRace", () => {
     expect(result.events.some((event) => event.cardId === "fleet_sponsorship")).toBe(true);
   });
 
+  it("applies the new race cards", () => {
+    const result = simulateRace({
+      ...baseRace,
+      participants: [
+        {
+          ...baseRace.participants[0]!,
+          teamId: "soft",
+          standingsRank: 1,
+          decision: { approach: "aggressive", preparation: "speed", cardId: "soft_tires" }
+        },
+        {
+          ...baseRace.participants[1]!,
+          teamId: "defense",
+          standingsRank: 2,
+          decision: { approach: "prudent", preparation: "reliability", cardId: "defensive_order" }
+        }
+      ]
+    });
+
+    expect(result.consumedCards).toEqual(
+      expect.arrayContaining([
+        { teamId: "soft", cardId: "soft_tires" },
+        { teamId: "defense", cardId: "defensive_order" }
+      ])
+    );
+    expect(result.events.some((event) => event.cardId === "soft_tires" && event.positionDelta > 0)).toBe(true);
+    expect(result.events.some((event) => event.cardId === "defensive_order" && event.type === "held_position")).toBe(true);
+  });
+
   it("adds minor race notes to make replay less repetitive", () => {
     const result = simulateRace(baseRace);
 

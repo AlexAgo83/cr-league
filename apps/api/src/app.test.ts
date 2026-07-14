@@ -171,6 +171,9 @@ describe("api app", () => {
     });
     expect(createdTeam.livery.primary).not.toBe(createdTeam.livery.secondary);
     expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: 100 });
+    expect(created.cardShop).toContainEqual({ cardId: "soft_tires", price: 100 });
+    expect(created.cardShop).toContainEqual({ cardId: "qualifying_focus", price: 100 });
+    expect(created.cardShop).toContainEqual({ cardId: "defensive_order", price: 100 });
     expect(readResponse.statusCode).toBe(200);
     expect(readResponse.json().league).toMatchObject({ id: leagueId, name: "Office League" });
     expect(joinResponse.statusCode).toBe(200);

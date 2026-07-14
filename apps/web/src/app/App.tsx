@@ -430,7 +430,8 @@ export function App() {
     setProfileOpen(false);
   }
 
-  const profileMenu = (
+  function profileMenu(showManageLeague = true) {
+    return (
     <div
       className="profile-menu"
       onBlur={(event) => {
@@ -467,9 +468,11 @@ export function App() {
               <option value="fr">{tt("language_fr")}</option>
             </select>
           </label>
-          <button type="button" className="profile-menu-action" onClick={addLeague}>
-            {tt("action_add_league")}
-          </button>
+          {showManageLeague ? (
+            <button type="button" className="profile-menu-action" onClick={addLeague}>
+              {tt("action_add_league")}
+            </button>
+          ) : null}
           {leagueState?.player ? (
             <button
               type="button"
@@ -498,7 +501,8 @@ export function App() {
         </div>
       ) : null}
     </div>
-  );
+    );
+  }
 
   const setupTopbar = (
     <header className="setup-topbar">
@@ -507,14 +511,17 @@ export function App() {
         <strong>{APP_NAME}</strong>
       </div>
       <div className="setup-topbar-actions">
-        <label className="language-select">
-          {tt("language_label")}
-          <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
-            <option value="en">{tt("language_en")}</option>
-            <option value="fr">{tt("language_fr")}</option>
-          </select>
-        </label>
-        {profileSession ? profileMenu : null}
+        {profileSession ? (
+          profileMenu(false)
+        ) : (
+          <label className="language-select">
+            {tt("language_label")}
+            <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
+              <option value="en">{tt("language_en")}</option>
+              <option value="fr">{tt("language_fr")}</option>
+            </select>
+          </label>
+        )}
       </div>
     </header>
   );
@@ -663,9 +670,9 @@ export function App() {
             )}
           </div>
 
-          {savedClaims.length ? (
-            <aside className="panel saved-leagues">
-              <span className="section-kicker">{tt("profile_saved_leagues")}</span>
+          <aside className="panel saved-leagues">
+            <span className="section-kicker">{tt("profile_saved_leagues")}</span>
+            {savedClaims.length ? (
               <div className="saved-league-list">
                 {savedClaims.map((claim) => (
                   <button key={claim.teamId} type="button" className="profile-menu-action" onClick={() => void switchLeague(claim.teamId)} disabled={status === "loading"}>
@@ -677,8 +684,10 @@ export function App() {
                   </button>
                 ))}
               </div>
-            </aside>
-          ) : null}
+            ) : (
+              <p className="saved-leagues-empty">{tt("profile_saved_leagues_empty")}</p>
+            )}
+          </aside>
         </section>
         {profileCodeModal}
       </main>
@@ -709,7 +718,7 @@ export function App() {
             </button>
           ))}
         </nav>
-        {profileMenu}
+        {profileMenu()}
       </header>
 
       <section className="view-container">

@@ -541,6 +541,21 @@ describe("App", () => {
     expect(await screen.findByText("ABC123")).toBeTruthy();
   });
 
+  it("keeps setup league chrome focused when no league is active", () => {
+    saveProfile();
+
+    render(<App />);
+
+    expect(screen.getByText("Saved leagues")).toBeTruthy();
+    expect(screen.getByText("No saved leagues yet.")).toBeTruthy();
+    expect(screen.queryByLabelText("Language")).toBe(null);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(screen.getByLabelText("Language")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Manage league" })).toBe(null);
+    expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
+  });
+
   it("clears a stale saved player claim", async () => {
     saveProfile();
     localStorage.setItem(

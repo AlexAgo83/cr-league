@@ -259,6 +259,8 @@ async function createProfile(page: Page) {
   await expect(page.getByText("Profile created. Save this recovery code: ABCD1234")).toBeVisible();
   await expect(page.getByRole("button", { name: "Profile menu" })).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator(".profile-menu-panel")).toHaveCount(0);
+  await expect(page.getByText("No saved leagues yet.")).toBeVisible();
+  await expect(page.getByLabel("Language")).toHaveCount(0);
 }
 
 async function createLeague(page: Page) {

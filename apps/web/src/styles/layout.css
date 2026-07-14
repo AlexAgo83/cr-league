@@ -458,6 +458,11 @@ label small {
   gap: 4px;
 }
 
+.saved-leagues-empty {
+  color: var(--color-muted);
+  margin: 0;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

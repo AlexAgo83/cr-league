@@ -69,6 +69,7 @@
   "profile_recover_hint": "Use your saved code.",
   "profile_league_switch": "Active league",
   "profile_saved_leagues": "Saved leagues",
+  "profile_saved_leagues_empty": "No saved leagues yet.",
   "directive_title": "Race directive",
   "field_league": "League",
   "field_join_code": "Join code",

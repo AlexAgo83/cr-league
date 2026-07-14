@@ -59,10 +59,14 @@ export function ReplayView({
     return () => cancelAnimationFrame(frame);
   }, [playing, speed, replayEnd]);
 
+  function seek(time: number) {
+    clock.current = Math.max(0, Math.min(time, replayEnd));
+    svgRef.current?.setCurrentTime?.(clock.current);
+    if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
+  }
+
   function restart() {
-    clock.current = 0;
-    svgRef.current?.setCurrentTime?.(0);
-    if (progressRef.current) progressRef.current.style.width = "0%";
+    seek(0);
     setPlaying(true);
   }
   // Majors and player moments first pick, race notes as filler — then strict race order.
@@ -87,6 +91,7 @@ export function ReplayView({
   const markers = [...markerByLap.entries()].map(([lap, marker]) => ({
     lap,
     left: `${Math.min(96, Math.max(3, (lap / maxLap) * 100))}%`,
+    time: (lap / maxLap) * replayEnd,
     title: marker.texts.join("\n"),
     player: marker.player
   }));
@@ -121,7 +126,14 @@ export function ReplayView({
                   </li>
                 ))}
               </ol>
-              <div className="replay-progress" aria-hidden="true">
+              <div
+                className="replay-progress"
+                aria-hidden="true"
+                onClick={(event) => {
+                  const rect = event.currentTarget.getBoundingClientRect();
+                  seek(((event.clientX - rect.left) / rect.width) * replayEnd);
+                }}
+              >
               <div ref={progressRef} className="replay-progress-fill" />
               {RACE_SEGMENTS.slice(1).map((segment, index) => (
                 <span key={segment} className="replay-tick" style={{ left: `${((index + 1) / RACE_SEGMENTS.length) * 100}%` }} />
@@ -132,6 +144,10 @@ export function ReplayView({
                   className={marker.player ? "replay-marker player" : "replay-marker"}
                   style={{ left: marker.left }}
                   title={marker.title}
+                  onClick={(event) => {
+                    event.stopPropagation();
+                    seek(marker.time);
+                  }}
                 />
               ))}
               </div>

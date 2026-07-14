@@ -679,12 +679,6 @@ label small {
   color: var(--color-accent);
 }
 
-@media (max-width: 600px) {
-  .replay-tower {
-    display: none; /* ponytail: too small to overlay the map; standings live one tab away */
-  }
-}
-
 .circuit-route-glow,
 .circuit-route-asphalt,
 .circuit-route-edge,
@@ -1609,7 +1603,7 @@ button.primary-command {
     border-radius: 6px;
     gap: 1px;
     left: 8px;
-    max-width: 96px;
+    max-width: 118px;
     padding: 6px 8px;
     top: 8px;
   }
@@ -1650,6 +1644,32 @@ button.primary-command {
 
   .map-traits-panel strong {
     font-size: 0.78rem;
+  }
+
+  .replay-tower {
+    border-radius: 6px;
+    gap: 3px;
+    padding: 6px 8px;
+    right: 8px;
+    top: 58px;
+  }
+
+  .replay-tower li {
+    font-size: 0.62rem;
+    gap: 5px;
+  }
+
+  .replay-tower li:nth-child(n + 5) {
+    display: none;
+  }
+
+  .replay-tower strong {
+    font-size: 0.58rem;
+    min-width: 16px;
+  }
+
+  .replay-tower span {
+    max-width: 72px;
   }
 
   .hero-topline {

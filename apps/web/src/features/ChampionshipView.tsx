@@ -5,10 +5,12 @@ import type { LeagueState } from "../app/types.js";
 export function ChampionshipView({
   state,
   playerTeamId,
+  onOpenLeagueControls,
   tt
 }: {
   state: LeagueState;
   playerTeamId: string | undefined;
+  onOpenLeagueControls: () => void;
   tt: Translator;
 }) {
   const leader = state.teams[0];
@@ -21,6 +23,12 @@ export function ChampionshipView({
         <div>
           <span className="section-kicker">{tt("championship_kicker")}</span>
           <h2>{state.league.name}</h2>
+          <div className="championship-meta">
+            <span className="invite-code">{state.league.code}</span>
+            <button type="button" className="secondary-button" onClick={onOpenLeagueControls}>
+              {tt("settings_title")}
+            </button>
+          </div>
         </div>
         <div className="dashboard-summary" aria-label={tt("dashboard_summary")}>
           <div className="current-race-summary">

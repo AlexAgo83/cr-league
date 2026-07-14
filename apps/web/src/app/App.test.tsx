@@ -260,7 +260,8 @@ describe("App", () => {
     createLeagueFromSetup();
 
     // Drive view: map + directive panel side by side
-    expect(await screen.findByText("ABC123")).toBeTruthy();
+    await expectChampionshipCode("ABC123");
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByText("Prepare")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race prep" })).toBeTruthy();
     expect(screen.getByText("Study the current GP, set your directive, pick a card, then lock the plan.")).toBeTruthy();
@@ -284,6 +285,7 @@ describe("App", () => {
     expect(screen.getAllByText("Current GP").length).toBe(1);
     expect(document.querySelector(".current-gp-panel")).toBe(null);
     expect(screen.getByText("0/2")).toBeTruthy();
+    expect(document.querySelector(".championship-overview")?.textContent).toContain("ABC123");
     expect(document.querySelector(".standings-table")?.textContent).toContain("Volt Union");
     expect(document.querySelector(".round-timeline")?.textContent).toContain("R1");
 
@@ -358,9 +360,11 @@ describe("App", () => {
     expect((await screen.findAllByText("Round 2")).length).toBeGreaterThan(0);
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
-    // League controls live in the profile menu modal
+    // League controls live in the championship view
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     expect(screen.getByLabelText("Language")).toBeTruthy();
+    expect(document.querySelector(".profile-menu-panel")?.textContent).not.toContain("League controls");
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.click(screen.getByRole("button", { name: "League controls" }));
     expect(screen.getByRole("dialog", { name: "League controls" })).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
@@ -408,7 +412,8 @@ describe("App", () => {
     render(<App />);
 
     createLeagueFromSetup();
-    expect(await screen.findByText("ABC123")).toBeTruthy();
+    await expectChampionshipCode("ABC123");
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
@@ -484,7 +489,7 @@ describe("App", () => {
     fireEvent.change(screen.getByLabelText("Team"), { target: { value: "Volt Union" } });
     fireEvent.click(screen.getByRole("button", { name: "Join league" }));
 
-    expect(await screen.findByText("ABC123")).toBeTruthy();
+    await expectChampionshipCode("ABC123");
     expect(fetch).toHaveBeenCalledWith(
       "http://localhost:4874/leagues/join",
       expect.objectContaining({
@@ -551,7 +556,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.change(screen.getByLabelText("Active league"), { target: { value: "team_3" } });
 
-    expect(await screen.findByText("NIGHT1")).toBeTruthy();
+    await expectChampionshipCode("NIGHT1");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_3");
     expect(fetch).toHaveBeenLastCalledWith(
       "http://localhost:4874/leagues/rejoin",
@@ -592,7 +597,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Office League/ }));
 
-    expect(await screen.findByText("ABC123")).toBeTruthy();
+    await expectChampionshipCode("ABC123");
   });
 
   it("keeps setup league chrome focused when no league is active", () => {
@@ -656,6 +661,11 @@ function saveProfile() {
 function createLeagueFromSetup() {
   fireEvent.click(screen.getByRole("button", { name: /Create league/ }));
   fireEvent.click(screen.getByRole("button", { name: "Start league" }));
+}
+
+async function expectChampionshipCode(code: string) {
+  fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
+  expect(document.querySelector(".championship-overview")?.textContent).toContain(code);
 }
 
 function response(body: unknown) {

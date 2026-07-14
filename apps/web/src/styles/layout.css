@@ -280,6 +280,27 @@
   color: var(--color-telemetry);
 }
 
+.profile-menu-action-info {
+  border-color: rgb(245 158 11 / 0.4);
+  color: #fbbf24;
+}
+
+.profile-menu-action-info:hover {
+  border-color: #fbbf24;
+  color: #fde68a;
+}
+
+.profile-menu-action-danger {
+  border-color: rgb(248 113 113 / 0.42);
+  color: #f87171;
+}
+
+.profile-menu-action-danger:hover,
+.danger-button {
+  border-color: #f87171;
+  color: #fecaca;
+}
+
 .profile-menu-panel label {
   display: grid;
   gap: 6px;
@@ -1010,6 +1031,14 @@ label small {
 
 .championship-overview h2 {
   margin: 0;
+}
+
+.championship-meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
 }
 
 .dashboard-summary {

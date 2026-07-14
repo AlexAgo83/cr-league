@@ -74,6 +74,7 @@ export function App() {
   const [briefingOpen, setBriefingOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileCodeOpen, setProfileCodeOpen] = useState(false);
+  const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
   const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
@@ -444,12 +445,6 @@ export function App() {
       </button>
       {profileOpen ? (
         <div className="profile-menu-panel">
-          {leagueState ? (
-            <div className="profile-league-summary">
-              <strong>{leagueState.league.name}</strong>
-              <span className="invite-code">{leagueState.league.code}</span>
-            </div>
-          ) : null}
           {savedClaims.length > 1 ? (
             <label>
               {tt("profile_league_switch")}
@@ -474,21 +469,9 @@ export function App() {
               {tt("action_add_league")}
             </button>
           ) : null}
-          {leagueState?.player ? (
-            <button
-              type="button"
-              className="profile-menu-action"
-              onClick={() => {
-                setLeagueControlsOpen(true);
-                setProfileOpen(false);
-              }}
-            >
-              {tt("settings_title")}
-            </button>
-          ) : null}
           <button
             type="button"
-            className="profile-menu-action"
+            className="profile-menu-action profile-menu-action-info"
             onClick={() => {
               setProfileCodeOpen(true);
               setProfileOpen(false);
@@ -496,7 +479,14 @@ export function App() {
           >
             {tt("action_copy_profile_code")}
           </button>
-          <button type="button" className="profile-menu-action" onClick={forgetProfile}>
+          <button
+            type="button"
+            className="profile-menu-action profile-menu-action-danger"
+            onClick={() => {
+              setProfileLogoutOpen(true);
+              setProfileOpen(false);
+            }}
+          >
             {tt("action_forget_profile")}
           </button>
         </div>
@@ -701,7 +691,6 @@ export function App() {
         <div className="brand">
           <img className="brand-icon" src="/favicon.svg" alt={APP_NAME} />
           <strong>{leagueState.league.name}</strong>
-          <span className="invite-code">{leagueState.league.code}</span>
         </div>
         <nav className="game-nav" aria-label={tt("cockpit_sections")}>
           {GAME_VIEWS.map((view) => (
@@ -767,6 +756,7 @@ export function App() {
           <ChampionshipView
             state={leagueState}
             playerTeamId={playerTeam?.id}
+            onOpenLeagueControls={() => setLeagueControlsOpen(true)}
             tt={tt}
           />
         ) : null}
@@ -862,6 +852,23 @@ export function App() {
         </div>
       ) : null}
       {profileCodeModal}
+      {profileLogoutOpen ? (
+        <div className="modal-overlay" onClick={() => setProfileLogoutOpen(false)}>
+          <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("profile_logout_title")} onClick={(event) => event.stopPropagation()}>
+            <span className="section-kicker">{tt("profile_kicker")}</span>
+            <h2>{tt("profile_logout_title")}</h2>
+            <p>{tt("profile_logout_confirm")}</p>
+            <div className="actions secondary-actions">
+              <button type="button" className="danger-button" onClick={forgetProfile}>
+                {tt("action_forget_profile")}
+              </button>
+              <button type="button" onClick={() => setProfileLogoutOpen(false)}>
+                {tt("action_close")}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
       {leagueControlsOpen ? (
         <div className="modal-overlay" onClick={closeLeagueControls}>
           <section className="panel modal league-controls-modal" role="dialog" aria-modal="true" aria-label={tt("settings_title")} onClick={(event) => event.stopPropagation()}>

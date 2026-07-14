@@ -451,7 +451,9 @@ export function App() {
 
       <footer className="command-bar">
         <div className="command-context">
-          <span className={`race-state state-${deskState}`}>{tt(`race_state_${deskState}` as TranslationKey)}</span>
+          <span className={`race-state state-${deskState}`}>
+            <span className="race-state-label">{tt(`race_state_${deskState}` as TranslationKey)}</span>
+          </span>
           <p className={status === "error" ? "status error" : "status"}>{message}</p>
           <small className="command-hint">{tt(`command_hint_${deskState}` as TranslationKey)}</small>
         </div>

@@ -1583,7 +1583,22 @@ button.primary-command {
   }
 
   .command-context {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .command-context .status,
+  .command-hint {
     display: none;
+  }
+
+  .race-state {
+    font-size: 0.72rem;
+    max-width: 100%;
+    overflow: hidden;
+    padding: 4px 8px;
+    text-overflow: ellipsis;
   }
 
   .panel {
@@ -1597,7 +1612,22 @@ button.primary-command {
   }
 
   .command-bar {
+    gap: 8px;
+    justify-content: space-between;
+    padding: 10px;
     width: calc(100% - 24px);
+  }
+
+  .command-actions {
+    gap: 8px;
+    justify-content: flex-end;
+    min-width: 0;
+  }
+
+  button.info-command,
+  .result-toggle-command {
+    min-width: 86px;
+    padding-inline: 10px;
   }
 
   button.primary-command {

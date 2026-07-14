@@ -102,6 +102,7 @@
 - Added a guided GP briefing with current action, track profile, likely weather, and directive hints.
 - Added deterministic minor race notes to make the replay less repetitive without changing race balance.
 - Added the first thin between-GP progression hook: persisted card inventory, fixed-price buying with credits, owned-card directive validation, and card consumption after GP resolution.
+- Improved the garage presentation with post-GP rewards, consumed-card summary, separated inventory/offers, and simple card fit labels.
 - Remaining limits are intentional: no card selling, rarity, draft offers, catch-up economy tuning, full visual track replay, or scheduler.
 
 ## Backlog Candidates

@@ -235,7 +235,11 @@ describe("App", () => {
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
     expect(screen.getByText("Lap 5")).toBeTruthy();
     expect(screen.getByText("Rain Grip triggers for Circle One")).toBeTruthy();
+    expect(screen.getByText("Last GP")).toBeTruthy();
+    expect(screen.getByText("+150 credits · +25 pts")).toBeTruthy();
+    expect(screen.getByText("Consumed Rain Grip")).toBeTruthy();
     expect(screen.getByText("No cards in inventory.")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Recommended offers" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Submit directive" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByRole("button", { name: "Launch GP" }).hasAttribute("disabled")).toBe(true);
 

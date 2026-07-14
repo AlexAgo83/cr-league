@@ -78,10 +78,11 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
     await expect(page.locator("p").filter({ hasText: `Silver Ridge GP ${expectedRound}: Circle One wins.` })).toBeVisible();
     await expect(page.getByText("Lap 5")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Garage" })).toBeVisible();
+    await expect(page.getByText("Last GP")).toBeVisible();
 
     if (expectedRound < 3) {
       if (expectedRound === 1) {
-        await page.getByRole("button", { name: "Launch Boost · 100" }).click();
+        await page.getByRole("button", { name: /Launch Boost .*100/ }).click();
         await expect(page.getByText("Card added to your garage.")).toBeVisible();
       }
       await page.getByRole("button", { name: "Next GP" }).click();

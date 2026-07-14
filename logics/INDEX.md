@@ -56,6 +56,7 @@
 | [req_024_prepare_private_league_playtest_kit](request/req_024_prepare_private_league_playtest_kit.md) | Prepare private league playtest kit | Done |  |  | request/req_024_prepare_private_league_playtest_kit.md |
 | [req_025_add_guided_race_weekend_experience](request/req_025_add_guided_race_weekend_experience.md) | Add guided race weekend experience | Done |  |  | request/req_025_add_guided_race_weekend_experience.md |
 | [req_026_add_between_gp_progression_v0](request/req_026_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done |  |  | request/req_026_add_between_gp_progression_v0.md |
+| [req_027_improve_between_gp_garage_guidance](request/req_027_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done |  |  | request/req_027_improve_between_gp_garage_guidance.md |
 
 ## Backlog
 
@@ -93,6 +94,7 @@
 | [item_030_prepare_private_league_playtest_kit](backlog/item_030_prepare_private_league_playtest_kit.md) | Prepare private league playtest kit | Done |  | 100% | backlog/item_030_prepare_private_league_playtest_kit.md |
 | [item_031_add_guided_race_weekend_experience](backlog/item_031_add_guided_race_weekend_experience.md) | Add guided race weekend experience | Done |  | 100% | backlog/item_031_add_guided_race_weekend_experience.md |
 | [item_032_add_between_gp_progression_v0](backlog/item_032_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done |  | 100% | backlog/item_032_add_between_gp_progression_v0.md |
+| [item_033_improve_between_gp_garage_guidance](backlog/item_033_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done |  | 100% | backlog/item_033_improve_between_gp_garage_guidance.md |
 
 ## Tasks
 
@@ -125,3 +127,4 @@
 | [task_025_prepare_private_league_playtest_kit](tasks/task_025_prepare_private_league_playtest_kit.md) | Prepare private league playtest kit | Done | codex | 100% | tasks/task_025_prepare_private_league_playtest_kit.md |
 | [task_026_add_guided_race_weekend_experience](tasks/task_026_add_guided_race_weekend_experience.md) | Add guided race weekend experience | Done | codex | 100% | tasks/task_026_add_guided_race_weekend_experience.md |
 | [task_027_add_between_gp_progression_v0](tasks/task_027_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done | codex | 100% | tasks/task_027_add_between_gp_progression_v0.md |
+| [task_028_improve_between_gp_garage_guidance](tasks/task_028_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done | codex | 100% | tasks/task_028_improve_between_gp_garage_guidance.md |

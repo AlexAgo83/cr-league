@@ -14,7 +14,7 @@
 3. Set cadence to `Fast`.
 4. Each player submits a directive for GP 1.
 5. Resolve GP 1 and read the report/replay.
-6. Review the garage, buy one card if enough credits are available, then start GP 2.
+6. Review the garage summary, check the consumed-card line, buy one recommended card if enough credits are available, then start GP 2.
 7. Start GP 3 and repeat.
 8. Stop after GP 3 and review standings/history.
 
@@ -26,6 +26,7 @@
 - Does the replay timeline make the race easier to understand?
 - Does the history make the championship feel persistent?
 - Does buying or saving a card after a GP give a reason to continue?
+- Do the `Recommended`, `Risky`, and `Low fit` labels help the card choice?
 
 ## Questions
 - What did you expect to happen before launching the GP?
@@ -37,5 +38,5 @@
 ## Known Limits
 - No real account system yet.
 - No automatic deadline resolution yet.
-- Card inventory exists only as a thin fixed-price garage; no selling, rarity, draft offers, or catch-up economy yet.
+- Card inventory exists only as a thin fixed-price garage with a small recommended offer set; no selling, rarity, draft offers, or catch-up economy yet.
 - Replay is an event timeline, not a visual track simulation.

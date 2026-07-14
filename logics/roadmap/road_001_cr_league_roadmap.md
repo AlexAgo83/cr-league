@@ -5,7 +5,7 @@
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
 > Confidence: 90
-> Non-semantic edit: refreshed 0.2/0.4 delivery notes after between-GP progression v0.
+> Non-semantic edit: refreshed 0.2/0.4 delivery notes after garage guidance pass.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1 without pretending the full game should be built in one pass.
@@ -73,7 +73,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - French language switcher;
   - GP briefing with track profile, likely weather, and directive hints;
   - deterministic minor race notes for replay variety;
-  - first thin card inventory/shop hook for between-GP progression.
+  - first thin card inventory/shop hook for between-GP progression;
+  - post-GP garage summary and contextual card fit labels.
 - Exit signal:
   - 2+ human players can join the same league, prepare for the same GP, and resolve a race with absent players defaulted;
   - a solo player can bypass waiting time with bots;
@@ -119,7 +120,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - fixed 100-credit card purchase endpoint;
   - owned-card validation on directive submission;
   - consumed cards removed after GP resolution;
-  - minimal garage UI with inventory counts and buy buttons.
+  - minimal garage UI with inventory counts, buy buttons, post-GP reward summary, and three recommended offers.
 - Exit signal:
   - players earn and spend credits across multiple GPs;
   - card choices create visible replay/report moments;

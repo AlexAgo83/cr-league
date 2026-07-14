@@ -127,6 +127,10 @@ export function App() {
   const forecastPick = leagueState ? strongestForecast(leagueState.currentGrandPrix.forecast) : "dry";
   const ownedCardIds = useMemo(() => Array.from(new Set(playerTeam?.cards ?? [])), [playerTeam]);
   const selectedCardId = ownedCardIds.includes(form.cardId as CardId) ? form.cardId : "";
+  const selectedCardFit = leagueState && selectedCardId ? cardFit(selectedCardId, leagueState, forecastPick) : null;
+  const playerResult = result?.classification.find((entry) => entry.teamId === playerTeam?.id);
+  const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
+  const shopOffers = leagueState ? recommendedShopOffers(leagueState, forecastPick) : [];
 
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
@@ -399,7 +403,10 @@ export function App() {
                       </option>
                     ))}
                   </select>
-                  <small>{selectedCardId ? tt(`card_${selectedCardId}_hint` as TranslationKey) : tt("card_none_hint")}</small>
+                  <small>
+                    {selectedCardFit ? `${tt(`card_fit_${selectedCardFit.level}` as TranslationKey)} · ` : ""}
+                    {selectedCardId ? tt(`card_${selectedCardId}_hint` as TranslationKey) : tt("card_none_hint")}
+                  </small>
                 </label>
               </div>
 
@@ -452,14 +459,31 @@ export function App() {
             {playerTeam ? (
               <section className="dashboard-section garage-section">
                 <h3>{tt("dashboard_garage")}</h3>
+                {isResolved && playerResult ? (
+                  <div className="garage-summary">
+                    <strong>{tt("garage_last_gp")}</strong>
+                    <span>
+                      +{playerResult.credits} {tt("unit_credits")} · +{playerResult.points} {tt("unit_points")}
+                    </span>
+                    <span>
+                      {consumedCardIds.length
+                        ? `${tt("garage_consumed")} ${consumedCardIds.map((cardId) => tt(`card_${cardId}` as TranslationKey)).join(", ")}`
+                        : tt("garage_no_card_consumed")}
+                    </span>
+                  </div>
+                ) : null}
                 <p>
                   {playerTeam.credits} {tt("unit_credits")} · {tt("garage_between_gp_hint")}
                 </p>
+                <h4>{tt("garage_inventory")}</h4>
                 <ul className="card-inventory">
                   {ownedCardIds.length ? (
                     ownedCardIds.map((cardId) => (
                       <li key={cardId}>
-                        <span>{tt(`card_${cardId}` as TranslationKey)}</span>
+                        <span>
+                          {tt(`card_${cardId}` as TranslationKey)}
+                          <small>{tt(`card_fit_${cardFit(cardId, leagueState, forecastPick).level}` as TranslationKey)}</small>
+                        </span>
                         <strong>x{countCards(playerTeam.cards, cardId)}</strong>
                       </li>
                     ))
@@ -467,15 +491,18 @@ export function App() {
                     <li>{tt("garage_empty_inventory")}</li>
                   )}
                 </ul>
+                <h4>{tt("garage_shop")}</h4>
+                {!isResolved ? <p className="garage-locked">{tt("garage_shop_locked")}</p> : null}
                 <div className="card-shop">
-                  {leagueState.cardShop.map((item) => (
+                  {shopOffers.map((item) => (
                     <button
                       key={item.cardId}
                       type="button"
                       onClick={() => buyCard(item.cardId)}
                       disabled={status === "loading" || !isResolved || playerTeam.credits < item.price}
                     >
-                      {tt(`card_${item.cardId}` as TranslationKey)} · {item.price}
+                      <span>{tt(`card_${item.cardId}` as TranslationKey)} · {item.price}</span>
+                      <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>
                     </button>
                   ))}
                 </div>
@@ -596,4 +623,28 @@ function strongestForecast(forecast: Record<string, number>) {
 
 function countCards(cards: CardId[], cardId: CardId) {
   return cards.filter((candidate) => candidate === cardId).length;
+}
+
+type CardFit = {
+  level: "recommended" | "risky" | "low";
+  score: number;
+};
+
+function recommendedShopOffers(state: LeagueState, forecastPick: string) {
+  return state.cardShop
+    .map((item) => ({ ...item, fit: cardFit(item.cardId, state, forecastPick) }))
+    .sort((left, right) => right.fit.score - left.fit.score || left.cardId.localeCompare(right.cardId))
+    .slice(0, 3);
+}
+
+function cardFit(cardId: CardId, state: LeagueState, forecastPick: string): CardFit {
+  const traits = [state.currentGrandPrix.primaryTrait, state.currentGrandPrix.secondaryTrait];
+  const hasRain = forecastPick !== "dry";
+
+  if (cardId === "rain_grip") return hasRain || traits.includes("weather_sensitive") ? { level: "recommended", score: 90 } : { level: "risky", score: 45 };
+  if (cardId === "fleet_maintenance") return traits.includes("high_wear") ? { level: "recommended", score: 85 } : { level: "low", score: 35 };
+  if (cardId === "launch_boost") return traits.includes("fast") ? { level: "recommended", score: 80 } : { level: "risky", score: 50 };
+  if (cardId === "urban_draft") return traits.includes("urban") ? { level: "recommended", score: 78 } : { level: "low", score: 30 };
+  if (cardId === "final_surge") return { level: "risky", score: 55 };
+  return { level: "risky", score: 52 };
 }

@@ -797,26 +797,54 @@ button.result-toggle-command:hover {
 
 .replay-timeline li {
   align-items: start;
+  background: rgb(10 15 21 / 0.34);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 8px;
+  padding: 0;
+}
+
+.replay-timeline li:first-child {
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.replay-timeline li.player-event {
+  background: linear-gradient(90deg, rgb(22 199 132 / 0.14), rgb(10 15 21 / 0.34));
+  border-color: rgb(22 199 132 / 0.36);
+  padding-left: 0;
 }
 
 .replay-moment-button {
   background: transparent;
   color: var(--color-text);
   display: grid;
-  gap: 4px 10px;
-  grid-template-columns: auto 1fr;
-  padding: 0;
+  gap: 3px 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 10px;
   text-align: left;
+  width: 100%;
 }
 
 .replay-moment-button:hover,
 .replay-moment-button:focus-visible {
+  background: rgb(56 189 248 / 0.08);
   color: var(--color-telemetry);
+}
+
+.replay-moment-button .lap-marker {
+  font-size: 0.72rem;
+  grid-row: 1 / span 2;
+  padding: 2px 8px;
+}
+
+.replay-moment-button strong {
+  font-size: 0.9rem;
+  line-height: 1.2;
 }
 
 .replay-moment-button small {
   color: var(--color-muted);
   grid-column: 2;
+  line-height: 1.2;
 }
 
 .report-hero {

@@ -270,9 +270,9 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(document.querySelector(".replay-timeline")?.textContent).toContain("Lap 5");
-    expect(screen.getByText("Key event")).toBeTruthy();
-    expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip · Circle One profits from the weather call");
+    expect(document.querySelector(".replay-timeline")?.textContent).toContain("L5");
+    expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip");
+    expect(document.querySelector(".replay-timeline")?.textContent).toContain("+2 pos");
 
     // Timeline markers carry the key moments and seek on click
     expect(document.querySelectorAll(".replay-tick").length).toBe(4);
@@ -281,7 +281,7 @@ describe("App", () => {
     fireEvent.click(document.querySelector(".replay-marker")!);
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("100%");
     fireEvent.click(screen.getByRole("button", { name: /Restart/ }));
-    fireEvent.click(screen.getByRole("button", { name: /Lap 5.*Rain Grip/ }));
+    fireEvent.click(screen.getByRole("button", { name: /L5.*Rain Grip/ }));
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("100%");
 
     // Replay playback controls

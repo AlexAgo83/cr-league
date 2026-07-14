@@ -891,12 +891,13 @@ button.result-toggle-command:hover {
 }
 
 .replay-moment-button {
+  align-items: center;
   background: transparent;
   color: var(--color-text);
   display: grid;
-  gap: 3px 10px;
-  grid-template-columns: auto minmax(0, 1fr);
-  padding: 10px;
+  gap: 8px;
+  grid-template-columns: 34px minmax(0, 1fr) auto;
+  padding: 7px 8px;
   text-align: left;
   width: 100%;
 }
@@ -908,20 +909,43 @@ button.result-toggle-command:hover {
 }
 
 .replay-moment-button .lap-marker {
-  font-size: 0.72rem;
-  grid-row: 1 / span 2;
-  padding: 2px 8px;
+  font-size: 0.68rem;
+  justify-content: center;
+  padding: 2px 0;
 }
 
-.replay-moment-button strong {
-  font-size: 0.9rem;
-  line-height: 1.2;
+.moment-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
 }
 
-.replay-moment-button small {
+.moment-main strong {
+  font-size: 0.8rem;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moment-main small {
   color: var(--color-muted);
-  grid-column: 2;
-  line-height: 1.2;
+  font-size: 0.68rem;
+  line-height: 1.15;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.moment-impact {
+  background: rgb(56 189 248 / 0.1);
+  border: 1px solid rgb(56 189 248 / 0.18);
+  border-radius: 999px;
+  color: var(--color-telemetry);
+  font-size: 0.68rem;
+  font-weight: 900;
+  padding: 2px 6px;
+  white-space: nowrap;
 }
 
 .report-hero {

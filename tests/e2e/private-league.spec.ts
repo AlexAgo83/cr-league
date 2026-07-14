@@ -96,7 +96,7 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
     await expect(page.getByRole("button", { name: "Next GP" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Report" })).toBeVisible();
-    await expect(page.locator(".replay-timeline").getByText("Lap 5")).toBeVisible();
+    await expect(page.locator(".replay-timeline").getByText("L5")).toBeVisible();
     await page.getByRole("button", { name: "Report" }).click();
     await expect(page.getByRole("heading", { name: "Race report" })).toBeVisible();
     await expect(page.getByLabel("Race phases")).toBeVisible();

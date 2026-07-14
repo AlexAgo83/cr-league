@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { countryFlag, type CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
+import type { RaceEvent } from "../app/helpers.js";
 import { CircuitMap, MapTraitsPanel, type MapCar, type MapTraitStats } from "./CircuitMap.js";
 
 const WEATHER_ICONS = { dry: "☀️", light_rain: "🌦️", heavy_rain: "⛈️" } as const;
@@ -18,6 +19,23 @@ function liveTraits(base: MapTraitStats, weather: Weather, lap: number): MapTrai
     grip: clampStat(base.grip + rainGrip),
     overtaking: clampStat(base.overtaking + (weather === "dry" ? 0 : 3)),
     energy: clampStat(base.energy - lateRace * 2 - (weather === "heavy_rain" ? 5 : 0))
+  };
+}
+
+function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator) {
+  const team = names.get(event.teamId) ?? "";
+  const context = event.cardId ? tt(`card_${event.cardId}` as TranslationKey) : event.type === "weather_change" ? tt("event_weather_change") : team;
+  const impact = event.positionDelta
+    ? `${event.positionDelta > 0 ? "+" : ""}${event.positionDelta} pos`
+    : event.severity === "major"
+      ? tt("event_major")
+      : tt("event_ambience");
+  return {
+    icon: event.tags.includes("weather") || event.type === "weather_change" ? "🌦" : event.cardId ? "◆" : event.positionDelta > 0 ? "↗" : "•",
+    context,
+    team,
+    text: eventReplayText(event, names, tt),
+    impact
   };
 }
 
@@ -228,13 +246,21 @@ export function ReplayView({
             <ul className="events replay-timeline">
               {keyMoments.map((event) => (
                 <li key={event.id} className={event.teamId === playerTeamId ? "player-event" : undefined}>
-                  <button type="button" className="replay-moment-button" onClick={() => seek((event.lap / maxLap) * replayEnd)}>
-                    <span className="lap-marker">
-                      {tt("unit_lap")} {event.lap}
-                    </span>
-                    <strong>{eventReplayText(event, names, tt)}</strong>
-                    <small>{event.severity === "major" ? tt("event_major") : tt("event_ambience")}</small>
-                  </button>
+                  {(() => {
+                    const card = momentCard(event, names, tt);
+                    return (
+                      <button type="button" className="replay-moment-button" title={card.text} onClick={() => seek((event.lap / maxLap) * replayEnd)}>
+                        <span className="lap-marker">L{event.lap}</span>
+                        <span className="moment-main">
+                          <strong>
+                            {card.icon} {card.context}
+                          </strong>
+                          <small>{card.team || card.text}</small>
+                        </span>
+                        <span className="moment-impact">{card.impact}</span>
+                      </button>
+                    );
+                  })()}
                 </li>
               ))}
             </ul>

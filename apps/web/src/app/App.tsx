@@ -746,6 +746,17 @@ export function App() {
           <button type="button" onClick={() => void startNextGrandPrix()} disabled={status === "loading"}>
             {tt("action_next_grand_prix")}
           </button>
+          <button
+            type="button"
+            onClick={() => {
+              setNextGrandPrixConfirmOpen(false);
+              setGameView("result");
+              setResultTab("report");
+            }}
+            disabled={!result}
+          >
+            {tt("result_tab_report")}
+          </button>
           <button type="button" onClick={() => setNextGrandPrixConfirmOpen(false)}>
             {tt("action_close")}
           </button>

@@ -437,6 +437,17 @@ describe("App", () => {
     expect(await screen.findByText("Profile code copied: ABCD1234")).toBeTruthy();
   });
 
+  it("closes the profile menu when focus leaves it", async () => {
+    saveProfile();
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
+
+    fireEvent.blur(document.querySelector(".profile-menu")!, { relatedTarget: null });
+    expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
+  });
+
   it("shows a replay empty state when a resolved race has no events", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(

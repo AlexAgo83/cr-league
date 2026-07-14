@@ -436,7 +436,7 @@ export function App() {
     <div
       className="profile-menu"
       onBlur={(event) => {
-        if (event.relatedTarget && event.relatedTarget !== document.body && !event.currentTarget.contains(event.relatedTarget)) setProfileOpen(false);
+        if (!event.currentTarget.contains(event.relatedTarget)) setProfileOpen(false);
       }}
     >
       <button type="button" className="profile-menu-button" aria-label={tt("profile_menu")} aria-expanded={profileOpen} onClick={() => setProfileOpen((open) => !open)}>

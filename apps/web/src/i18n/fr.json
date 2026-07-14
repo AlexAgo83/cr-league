@@ -218,6 +218,8 @@
   "result_recap_title": "Récap de course",
   "result_replay_title": "Replay de course",
   "result_replay_explainer": "Revis le GP tour après tour : météo, rythme et moments clés font bouger le classement.",
+  "qualifying_replay_title": "Replay du chrono",
+  "qualifying_replay_explainer": "Revis ton essai tour après tour : trajectoire, météo et rythme montrent comment ce temps a été construit.",
   "result_replay_field": "Peloton",
   "result_replay_reference": "Repère",
   "result_replay_axis": "La tête du classement est à gauche.",

@@ -252,6 +252,8 @@ export function ReplayView({
   playerTeamId,
   teamLiveries = {},
   traitImpacts = {},
+  titleKey = "result_replay_title",
+  explainerKey = "result_replay_explainer",
   tt
 }: {
   result: RaceResult;
@@ -259,6 +261,8 @@ export function ReplayView({
   playerTeamId: string | undefined;
   teamLiveries?: Record<string, TeamLivery>;
   traitImpacts?: MapTraitImpacts;
+  titleKey?: TranslationKey;
+  explainerKey?: TranslationKey;
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -415,8 +419,8 @@ export function ReplayView({
       <div className="replay-main-grid">
         <div className="replay-content-column">
           <section className="panel race-context-panel replay-copy-panel">
-            <h2>{tt("result_replay_title")}</h2>
-            <p>{tt("result_replay_explainer")}</p>
+            <h2>{tt(titleKey)}</h2>
+            <p>{tt(explainerKey)}</p>
           </section>
 
           <CircuitMap

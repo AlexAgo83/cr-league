@@ -977,26 +977,10 @@ export function App() {
 
       {qualifyingOpen ? (
         <div className="modal-overlay" onClick={() => setQualifyingOpen(false)}>
-          <section className="panel modal qualifying-modal" role="dialog" aria-modal="true" aria-label={tt("qualifying_title")} onClick={(event) => event.stopPropagation()}>
-            <span className="section-kicker">{tt("qualifying_kicker")}</span>
-            <h2>{tt("qualifying_title")}</h2>
-            <p>{tt("qualifying_explainer")}</p>
-            <div className="race-telemetry" aria-label={tt("race_telemetry")}>
-              <span>{tt(`approach_${form.approach}` as TranslationKey)}</span>
-              <span>{tt(`preparation_${form.preparation}` as TranslationKey)}</span>
-              <span>{tt(`weather_${forecastPick}` as TranslationKey)}</span>
-              <span>
-                {tt("qualifying_best")} {playerQualifyingRun ? `${playerQualifyingRun.time.toFixed(2)}s` : "—"}
-              </span>
-              <span>
-                {tt("qualifying_attempts")} {qualifyingAttemptsUsed}/{qualifyingAttemptLimit}
-              </span>
-            </div>
-            <div className="actions">
-              <button type="button" onClick={() => setQualifyingOpen(false)}>
-                {tt("action_close")}
-              </button>
-            </div>
+          <section className="panel modal qualifying-modal" role="dialog" aria-modal="true" aria-label={tt("qualifying_replay_title")} onClick={(event) => event.stopPropagation()}>
+            <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setQualifyingOpen(false)}>
+              ×
+            </button>
             {(qualifyingResult ?? playerQualifyingRun) ? (
               <div className="qualifying-replay">
                 <ReplayView
@@ -1005,6 +989,8 @@ export function App() {
                   playerTeamId={playerTeam?.id}
                   teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
                   traitImpacts={directiveTraitImpacts}
+                  titleKey="qualifying_replay_title"
+                  explainerKey="qualifying_replay_explainer"
                   tt={tt}
                 />
               </div>

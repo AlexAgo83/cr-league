@@ -218,6 +218,8 @@
   "result_recap_title": "Race recap",
   "result_replay_title": "Race replay",
   "result_replay_explainer": "Relive the GP lap by lap: weather, pace, and key moments move the standings.",
+  "qualifying_replay_title": "Lap time replay",
+  "qualifying_replay_explainer": "Relive this run lap by lap: line, forecast, and rhythm show how the time was built.",
   "result_replay_field": "Field",
   "result_replay_reference": "Reference",
   "result_replay_axis": "Front of the classification is on the left.",

@@ -543,8 +543,28 @@ label small {
   max-width: 560px;
 }
 
+.modal-close-button {
+  align-items: center;
+  background: rgb(15 23 42 / 0.82);
+  border: 1px solid rgb(148 163 184 / 0.26);
+  border-radius: 999px;
+  color: var(--text);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 1.25rem;
+  height: 34px;
+  justify-content: center;
+  line-height: 1;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 34px;
+  z-index: 3;
+}
+
 .qualifying-modal {
   max-width: 960px;
+  position: relative;
 }
 
 .qualifying-card {
@@ -569,7 +589,7 @@ label small {
 }
 
 .qualifying-replay {
-  margin-top: 16px;
+  margin-top: 0;
 }
 
 .qualifying-replay .replay-main-grid {

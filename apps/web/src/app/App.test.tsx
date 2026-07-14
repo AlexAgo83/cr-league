@@ -12,11 +12,13 @@ const baseState = {
     maxPlayers: 8,
     fillWithBots: true,
     qualifyingAttemptLimit: 3,
+    maxGrandPrixPerSeason: 3,
     preparationDeadlineAt: null
   },
   currentGrandPrix: {
     id: "gp_1",
     name: "Silver Ridge GP",
+    season: 1,
     round: 1,
     status: "briefing",
     primaryTrait: "fast",
@@ -33,6 +35,7 @@ const baseState = {
     {
       id: "gp_1",
       name: "Silver Ridge GP",
+      season: 1,
       round: 1,
       status: "briefing",
       result: null
@@ -184,12 +187,14 @@ const nextGrandPrixState = {
   currentGrandPrix: {
     ...baseState.currentGrandPrix,
     id: "gp_2",
+    season: 1,
     round: 2
   },
   grandPrixHistory: [
     {
       id: "gp_2",
       name: "Silver Ridge GP",
+      season: 1,
       round: 2,
       status: "briefing",
       result: null
@@ -284,7 +289,7 @@ describe("App", () => {
 
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
-    expect(screen.getAllByText("Round 1").length).toBeGreaterThan(0);
+    expect(screen.getByText("Season 1 · Round 1/3")).toBeTruthy();
     expect(screen.getAllByText("Current GP").length).toBe(1);
     expect(document.querySelector(".current-gp-panel")).toBe(null);
     expect(screen.getByText("0/2")).toBeTruthy();
@@ -360,7 +365,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
-    expect((await screen.findAllByText("Round 2")).length).toBeGreaterThan(0);
+    expect(await screen.findByText("Season 1 · Round 2/3")).toBeTruthy();
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
     // League controls live in the championship view
@@ -376,7 +381,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Restart session" }));
     expect(await screen.findByText("Playtest session restarted.")).toBeTruthy();
-    expect(screen.getAllByText("Round 1").length).toBeGreaterThan(0);
+    expect(screen.getByText("Season 1 · Round 1/3")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Forget team" }));
     expect(screen.getByText("Team claim forgotten.")).toBeTruthy();

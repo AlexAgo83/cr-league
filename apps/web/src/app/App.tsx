@@ -54,6 +54,7 @@ function createInitialForm(locale: Locale): FormState {
     maxPlayers: 8,
     fillWithBots: true,
     qualifyingAttemptLimit: 3,
+    maxGrandPrixPerSeason: 3,
     cadence: "manual",
     preparationDeadlineAt: "",
     approach: "balanced",
@@ -154,7 +155,8 @@ export function App() {
           profileId: profileSession?.profile.id,
           maxPlayers: form.maxPlayers,
           fillWithBots: form.fillWithBots,
-          qualifyingAttemptLimit: form.qualifyingAttemptLimit
+          qualifyingAttemptLimit: form.qualifyingAttemptLimit,
+          maxGrandPrixPerSeason: form.maxGrandPrixPerSeason
         })
       });
       rememberPlayer(state);
@@ -725,6 +727,16 @@ export function App() {
                           max="5"
                           value={form.qualifyingAttemptLimit}
                           onChange={(event) => setForm({ ...form, qualifyingAttemptLimit: Number(event.target.value) })}
+                        />
+                      </label>
+                      <label>
+                        {tt("field_gp_per_season")}
+                        <input
+                          type="number"
+                          min="1"
+                          max="12"
+                          value={form.maxGrandPrixPerSeason}
+                          onChange={(event) => setForm({ ...form, maxGrandPrixPerSeason: Number(event.target.value) })}
                         />
                       </label>
                       <label className="checkbox-field">

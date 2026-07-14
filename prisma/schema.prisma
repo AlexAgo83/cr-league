@@ -16,6 +16,7 @@ model League {
   maxPlayers            Int       @default(8)
   fillWithBots          Boolean   @default(true)
   qualifyingAttemptLimit Int       @default(3)
+  maxGrandPrixPerSeason Int       @default(3)
   preparationDeadlineAt DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
@@ -63,6 +64,7 @@ model Team {
 model GrandPrix {
   id             String   @id @default(cuid())
   leagueId       String
+  season         Int      @default(1)
   name           String
   round          Int      @default(1)
   seed           String
@@ -78,7 +80,7 @@ model GrandPrix {
   league    League         @relation(fields: [leagueId], references: [id], onDelete: Cascade)
   decisions RaceDecision[]
 
-  @@unique([leagueId, round])
+  @@unique([leagueId, season, round])
   @@map("grand_prixes")
 }
 

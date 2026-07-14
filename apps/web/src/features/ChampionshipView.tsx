@@ -15,7 +15,7 @@ export function ChampionshipView({
 }) {
   const leader = state.teams[0];
   const currentGrandPrix = state.currentGrandPrix;
-  const sortedHistory = [...state.grandPrixHistory].sort((left, right) => left.round - right.round);
+  const sortedHistory = [...state.grandPrixHistory].sort((left, right) => left.season - right.season || left.round - right.round);
 
   return (
     <div className="view-stack championship-view">
@@ -34,7 +34,7 @@ export function ChampionshipView({
           <div className="current-race-summary">
             <span>{tt("dashboard_current_gp")}</span>
             <strong>
-              {tt("league_round")} {currentGrandPrix.round}
+              {tt("league_season")} {currentGrandPrix.season} · {tt("league_round")} {currentGrandPrix.round}/{state.league.maxGrandPrixPerSeason}
             </strong>
             <small>{statusLabel(currentGrandPrix.status, tt)}</small>
             <small>{tt(`next_action_${state.actionState.nextAction}` as TranslationKey)}</small>
@@ -96,10 +96,12 @@ export function ChampionshipView({
                 <li key={grandPrix.id}>
                   <span
                     className={`round-chip status-${
-                      grandPrix.status === currentGrandPrix.status && grandPrix.round === currentGrandPrix.round ? "current" : grandPrix.status
+                      grandPrix.status === currentGrandPrix.status && grandPrix.season === currentGrandPrix.season && grandPrix.round === currentGrandPrix.round
+                        ? "current"
+                        : grandPrix.status
                     }`}
                   >
-                    R{grandPrix.round}
+                    S{grandPrix.season} R{grandPrix.round}
                   </span>
                   <small>{statusLabel(grandPrix.status, tt)}</small>
                 </li>

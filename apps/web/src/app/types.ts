@@ -10,11 +10,13 @@ export type LeagueState = {
     maxPlayers: number;
     fillWithBots: boolean;
     qualifyingAttemptLimit: number;
+    maxGrandPrixPerSeason: number;
     preparationDeadlineAt: string | null;
   };
   currentGrandPrix: {
     id: string;
     name: string;
+    season: number;
     round: number;
     status: string;
     primaryTrait: string;
@@ -26,6 +28,7 @@ export type LeagueState = {
   grandPrixHistory: Array<{
     id: string;
     name: string;
+    season: number;
     round: number;
     status: string;
     result: RaceResult | null;
@@ -91,6 +94,7 @@ export type FormState = {
   maxPlayers: number;
   fillWithBots: boolean;
   qualifyingAttemptLimit: number;
+  maxGrandPrixPerSeason: number;
   cadence: string;
   preparationDeadlineAt: string;
   approach: RaceDecision["approach"];

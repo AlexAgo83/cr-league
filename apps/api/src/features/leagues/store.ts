@@ -30,6 +30,8 @@ const DEFAULT_MAX_PLAYERS = 8;
 const MAX_PLAYERS_LIMIT = 16;
 const DEFAULT_QUALIFYING_ATTEMPTS = 3;
 const MAX_QUALIFYING_ATTEMPTS = 5;
+const DEFAULT_GRAND_PRIX_PER_SEASON = 3;
+const MAX_GRAND_PRIX_PER_SEASON = 12;
 const TEAM_NAME_LIMIT = 32;
 const LEAGUE_NAME_LIMIT = 40;
 
@@ -47,6 +49,7 @@ export type CreateLeagueInput = {
   maxPlayers?: number;
   fillWithBots?: boolean;
   qualifyingAttemptLimit?: number;
+  maxGrandPrixPerSeason?: number;
 };
 
 export type JoinLeagueInput = {
@@ -75,11 +78,13 @@ export type LeagueState = {
     maxPlayers: number;
     fillWithBots: boolean;
     qualifyingAttemptLimit: number;
+    maxGrandPrixPerSeason: number;
     preparationDeadlineAt: string | null;
   };
   currentGrandPrix: {
     id: string;
     name: string;
+    season: number;
     round: number;
     status: string;
     primaryTrait: RaceInput["primaryTrait"];
@@ -91,6 +96,7 @@ export type LeagueState = {
   grandPrixHistory: Array<{
     id: string;
     name: string;
+    season: number;
     round: number;
     status: string;
     result: unknown;
@@ -220,6 +226,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   await ensureProfileExists(db, input.profileId);
   const maxPlayers = clampInteger(input.maxPlayers, DEFAULT_MAX_PLAYERS, 2, MAX_PLAYERS_LIMIT);
   const qualifyingAttemptLimit = clampInteger(input.qualifyingAttemptLimit, DEFAULT_QUALIFYING_ATTEMPTS, 1, MAX_QUALIFYING_ATTEMPTS);
+  const maxGrandPrixPerSeason = clampInteger(input.maxGrandPrixPerSeason, DEFAULT_GRAND_PRIX_PER_SEASON, 1, MAX_GRAND_PRIX_PER_SEASON);
 
   const league = await db.league.create({
     data: {
@@ -227,7 +234,8 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
       code,
       maxPlayers,
       fillWithBots: input.fillWithBots ?? true,
-      qualifyingAttemptLimit
+      qualifyingAttemptLimit,
+      maxGrandPrixPerSeason
     }
   });
 
@@ -249,6 +257,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
     data: {
       leagueId: league.id,
       name: DEMO_RACE_INPUT.grandPrixName,
+      season: 1,
       round: 1,
       seed: `${DEMO_RACE_INPUT.seed}-${league.id}`,
       primaryTrait: DEMO_RACE_INPUT.primaryTrait,
@@ -344,11 +353,13 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       maxPlayers: league.maxPlayers,
       fillWithBots: league.fillWithBots,
       qualifyingAttemptLimit: league.qualifyingAttemptLimit,
+      maxGrandPrixPerSeason: league.maxGrandPrixPerSeason,
       preparationDeadlineAt: league.preparationDeadlineAt?.toISOString() ?? null
     },
     currentGrandPrix: {
       id: grandPrix.id,
       name: grandPrix.name,
+      season: grandPrix.season,
       round: grandPrix.round,
       status: grandPrix.status,
       primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
@@ -360,6 +371,7 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
     grandPrixHistory: league.grandPrixes.map((entry) => ({
       id: entry.id,
       name: entry.name,
+      season: entry.season,
       round: entry.round,
       status: entry.status,
       result: entry.result
@@ -643,17 +655,22 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
 
 export async function startNextGrandPrix(db: Db, leagueId: string) {
   const grandPrix = await getCurrentGrandPrix(db, leagueId);
+  const state = await getLeagueState(db, leagueId);
   if (!grandPrix) return null;
   if (grandPrix.status !== "resolved") {
     throw new LeagueRuleError("Resolve the current Grand Prix before starting the next one.");
   }
+  if (!state) return null;
+  const nextSeason = grandPrix.round >= state.league.maxGrandPrixPerSeason ? grandPrix.season + 1 : grandPrix.season;
+  const nextRound = grandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : grandPrix.round + 1;
 
   await db.grandPrix.create({
     data: {
       leagueId,
       name: DEMO_RACE_INPUT.grandPrixName,
-      round: grandPrix.round + 1,
-      seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-${grandPrix.round + 1}`,
+      season: nextSeason,
+      round: nextRound,
+      seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-s${nextSeason}-r${nextRound}`,
       primaryTrait: DEMO_RACE_INPUT.primaryTrait,
       secondaryTrait: DEMO_RACE_INPUT.secondaryTrait,
       forecast: DEMO_RACE_INPUT.forecast
@@ -698,6 +715,7 @@ export async function restartLeague(db: Db, leagueId: string) {
     data: {
       leagueId,
       name: DEMO_RACE_INPUT.grandPrixName,
+      season: 1,
       round: 1,
       seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-restart`,
       primaryTrait: DEMO_RACE_INPUT.primaryTrait,

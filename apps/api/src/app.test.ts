@@ -156,7 +156,7 @@ describe("api app", () => {
 
     expect(createResponse.statusCode).toBe(200);
     expect(claim).toMatchObject({ teamId, claimCode: expect.any(String) });
-    expect(created.league).toMatchObject({ maxPlayers: 8, fillWithBots: true, qualifyingAttemptLimit: 3 });
+    expect(created.league).toMatchObject({ maxPlayers: 8, fillWithBots: true, qualifyingAttemptLimit: 3, maxGrandPrixPerSeason: 3 });
     expect(createdTeam.cards).toEqual(["rain_grip"]);
     expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: 100 });
     expect(readResponse.statusCode).toBe(200);
@@ -498,7 +498,7 @@ describe("api app", () => {
     expect(defaultResolveResponse.statusCode).toBe(200);
     expect(defaultResolveResponse.json().currentGrandPrix.status).toBe("resolved");
     expect(nextResponse.statusCode).toBe(200);
-    expect(nextResponse.json().currentGrandPrix).toMatchObject({ round: 2, status: "briefing", result: null });
+    expect(nextResponse.json().currentGrandPrix).toMatchObject({ season: 1, round: 2, status: "briefing", result: null });
     expect(nextResponse.json().grandPrixHistory.map((grandPrix: { round: number }) => grandPrix.round)).toEqual([2, 1]);
     expect(nextResponse.json().actionState).toMatchObject({
       submittedTeamIds: [],
@@ -509,7 +509,7 @@ describe("api app", () => {
     });
     expect(earlyNextResponse.statusCode).toBe(409);
     expect(restartResponse.statusCode).toBe(200);
-    expect(restartResponse.json().currentGrandPrix).toMatchObject({ round: 1, status: "briefing", result: null });
+    expect(restartResponse.json().currentGrandPrix).toMatchObject({ season: 1, round: 1, status: "briefing", result: null });
     expect(restartResponse.json().grandPrixHistory.map((grandPrix: { round: number }) => grandPrix.round)).toEqual([1]);
     expect(restartResponse.json().teams.find((team: { id: string }) => team.id === teamId)).toMatchObject({
       points: 0,
@@ -613,9 +613,15 @@ describe("api app", () => {
         expect(nextResponse.json().currentGrandPrix).toMatchObject({ round: round + 1, status: "briefing" });
       }
     }
+    const nextSeasonResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/next-grand-prix`
+    });
 
     await app.close();
 
+    expect(nextSeasonResponse.statusCode).toBe(200);
+    expect(nextSeasonResponse.json().currentGrandPrix).toMatchObject({ season: 2, round: 1, status: "briefing" });
     expect(state.grandPrixHistory.map((grandPrix: { round: number }) => grandPrix.round)).toEqual([3, 2, 1]);
     expect(state.teams.reduce((total: number, team: { points: number }) => total + team.points, 0)).toBeGreaterThan(0);
   });
@@ -631,6 +637,7 @@ function createMemoryDb(): PrismaClient {
     maxPlayers: number;
     fillWithBots: boolean;
     qualifyingAttemptLimit: number;
+    maxGrandPrixPerSeason: number;
     preparationDeadlineAt: Date | null;
   };
   type ProfileRow = {
@@ -654,6 +661,7 @@ function createMemoryDb(): PrismaClient {
     id: string;
     leagueId: string;
     name: string;
+    season: number;
     round: number;
     seed: string;
     primaryTrait: string;
@@ -688,7 +696,9 @@ function createMemoryDb(): PrismaClient {
         data
       }: {
         data: Pick<LeagueRow, "name" | "code"> &
-          Partial<Pick<LeagueRow, "cadence" | "maxPlayers" | "fillWithBots" | "qualifyingAttemptLimit" | "preparationDeadlineAt">>;
+          Partial<
+            Pick<LeagueRow, "cadence" | "maxPlayers" | "fillWithBots" | "qualifyingAttemptLimit" | "maxGrandPrixPerSeason" | "preparationDeadlineAt">
+          >;
       }) => {
         const league = {
           id: id("league"),
@@ -697,6 +707,7 @@ function createMemoryDb(): PrismaClient {
           maxPlayers: 8,
           fillWithBots: true,
           qualifyingAttemptLimit: 3,
+          maxGrandPrixPerSeason: 3,
           preparationDeadlineAt: null,
           ...data
         };
@@ -708,7 +719,7 @@ function createMemoryDb(): PrismaClient {
         if (!league) return null;
         const leagueGrandPrixes = grandPrixes
           .filter((grandPrix) => grandPrix.leagueId === league.id)
-          .sort((left, right) => right.round - left.round)
+          .sort((left, right) => right.season - left.season || right.round - left.round)
           .map((grandPrix) => ({
             ...grandPrix,
             decisions: decisions.filter((decision) => decision.grandPrixId === grandPrix.id)
@@ -831,7 +842,7 @@ function createMemoryDb(): PrismaClient {
       findFirst: async ({ where }: { where: { leagueId: string } }) =>
         grandPrixes
           .filter((grandPrix) => grandPrix.leagueId === where.leagueId)
-          .sort((left, right) => right.round - left.round)[0] ?? null,
+          .sort((left, right) => right.season - left.season || right.round - left.round)[0] ?? null,
       update: async ({ where, data }: { where: { id: string }; data: Partial<Pick<GrandPrixRow, "qualifyingRuns" | "status" | "result">> }) => {
         const grandPrix = grandPrixes.find((candidate) => candidate.id === where.id);
         if (!grandPrix) throw new Error("Grand Prix not found");

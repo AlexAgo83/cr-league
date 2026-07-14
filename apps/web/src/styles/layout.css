@@ -547,7 +547,7 @@ label small {
   left: 12px;
   min-width: 132px;
   position: absolute;
-  top: 92px;
+  top: 106px;
   z-index: 2;
 }
 
@@ -1648,28 +1648,24 @@ button.primary-command {
 
   .replay-tower {
     border-radius: 6px;
-    gap: 3px;
-    padding: 6px 8px;
+    gap: 2px;
+    padding: 5px 7px;
     right: 8px;
-    top: 58px;
+    top: 8px;
   }
 
   .replay-tower li {
-    font-size: 0.62rem;
-    gap: 5px;
-  }
-
-  .replay-tower li:nth-child(n + 5) {
-    display: none;
+    font-size: 0.58rem;
+    gap: 4px;
   }
 
   .replay-tower strong {
-    font-size: 0.58rem;
-    min-width: 16px;
+    font-size: 0.54rem;
+    min-width: 15px;
   }
 
   .replay-tower span {
-    max-width: 72px;
+    max-width: 70px;
   }
 
   .hero-topline {

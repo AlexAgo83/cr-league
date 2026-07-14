@@ -204,7 +204,7 @@ export function ReplayView({
                   </select>
                 </div>
                 <ol className="replay-tower">
-                  {result.classification.slice(0, 6).map((entry) => (
+                  {result.classification.map((entry) => (
                     <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
                       <strong>P{entry.position}</strong>
                       <span>{entry.teamName}</span>

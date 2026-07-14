@@ -270,8 +270,6 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(screen.getByLabelText("Race replay by lap")).toBeTruthy();
-    expect(screen.getByText("Phase 1")).toBeTruthy();
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("Lap 5");
     expect(screen.getByText("Key event")).toBeTruthy();
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip · Circle One profits from the weather call");
@@ -298,6 +296,9 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Report" }));
     expect(screen.getByText("Paris Docklands Sprint: Circle One wins.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();
+    expect(screen.getByLabelText("Race phases")).toBeTruthy();
+    expect(screen.getByText("Phase 1")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
     expect(screen.getByText("Balanced · Weather · Rain Grip")).toBeTruthy();

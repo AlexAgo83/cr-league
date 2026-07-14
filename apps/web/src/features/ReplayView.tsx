@@ -172,18 +172,6 @@ export function ReplayView({
               </select>
             </label>
           </div>
-          <ol className="replay-laps" aria-label={tt("result_replay_track_label")}>
-            {RACE_SEGMENTS.map((segment, index) => (
-              <li key={segment}>
-                <strong>
-                  {tt("result_replay_phase")} {index + 1}
-                </strong>
-                <span>
-                  {WEATHER_ICONS[result.resolvedWeather[segment]]} {tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
-                </span>
-              </li>
-            ))}
-          </ol>
         </section>
 
         <section className="panel replay-moments-panel">

@@ -1,5 +1,6 @@
-import type { RaceResult } from "@cr-league/shared";
+import { RACE_SEGMENTS, type RaceResult } from "@cr-league/shared";
 import type { CityCircuit } from "../app/circuits.js";
+import type { TranslationKey } from "../i18n/index.js";
 import {
   describeDecision,
   eventReportText,
@@ -9,6 +10,8 @@ import {
   type Translator
 } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
+
+const WEATHER_ICONS = { dry: "☀️", light_rain: "🌦️", heavy_rain: "⛈️" } as const;
 
 export function ReportView({
   state,
@@ -72,60 +75,78 @@ export function ReportView({
       </section>
 
       <div className="report-main-grid">
-        <section className="panel report-blocks">
-          <h2>{tt("result_race_report")}</h2>
-          <section className="report-rewards">
-            <h3>{tt("report_rewards")}</h3>
-            <ol>
-              {result.classification.map((entry) => (
-                <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>
-                  <strong>P{entry.position}</strong>
-                  <span>{entry.teamName}</span>
-                  <dl>
-                    <div>
-                      <dt>{tt("report_reward_points")}</dt>
-                      <dd>
-                        {entry.points} {tt("unit_points")}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>{tt("report_reward_credits")}</dt>
-                      <dd>
-                        {entry.credits} {tt("unit_credits")}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>{tt("report_reward_movement")}</dt>
-                      <dd>{describePositionChange(entry.positionChange, tt)}</dd>
-                    </div>
-                  </dl>
+        <div className="report-content-column">
+          <section className="panel report-phases">
+            <h3>{tt("report_phases")}</h3>
+            <ol className="report-phases-list" aria-label={tt("report_phases")}>
+              {RACE_SEGMENTS.map((segment, index) => (
+                <li key={segment}>
+                  <strong>
+                    {tt("result_replay_phase")} {index + 1}
+                  </strong>
+                  <span>
+                    {WEATHER_ICONS[result.resolvedWeather[segment]]} {tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
+                  </span>
                 </li>
               ))}
             </ol>
           </section>
 
-          <section className="report-key-moments">
-            <h3>{tt("report_key_moments")}</h3>
-            {keyEvents.length ? (
+          <section className="panel report-blocks">
+            <h2>{tt("result_race_report")}</h2>
+            <section className="report-rewards">
+              <h3>{tt("report_rewards")}</h3>
               <ol>
-                {keyEvents.map((event) => (
-                  <li key={event.id || `${event.order}-${event.type}-${event.teamId}`}>
-                    <span className="lap-marker">
-                      {tt("unit_lap")} {event.lap}
-                    </span>
-                    <div>
-                      <strong>{names.get(event.teamId) ?? tt("event_major")}</strong>
-                      <p>{eventReportText(event, names, tt)}</p>
-                      <small>{describeEventImpact(event.positionDelta, tt)}</small>
-                    </div>
+                {result.classification.map((entry) => (
+                  <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>
+                    <strong>P{entry.position}</strong>
+                    <span>{entry.teamName}</span>
+                    <dl>
+                      <div>
+                        <dt>{tt("report_reward_points")}</dt>
+                        <dd>
+                          {entry.points} {tt("unit_points")}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>{tt("report_reward_credits")}</dt>
+                        <dd>
+                          {entry.credits} {tt("unit_credits")}
+                        </dd>
+                      </div>
+                      <div>
+                        <dt>{tt("report_reward_movement")}</dt>
+                        <dd>{describePositionChange(entry.positionChange, tt)}</dd>
+                      </div>
+                    </dl>
                   </li>
                 ))}
               </ol>
-            ) : (
-              <p>{tt("report_clean_race")}</p>
-            )}
+            </section>
+
+            <section className="report-key-moments">
+              <h3>{tt("report_key_moments")}</h3>
+              {keyEvents.length ? (
+                <ol>
+                  {keyEvents.map((event) => (
+                    <li key={event.id || `${event.order}-${event.type}-${event.teamId}`}>
+                      <span className="lap-marker">
+                        {tt("unit_lap")} {event.lap}
+                      </span>
+                      <div>
+                        <strong>{names.get(event.teamId) ?? tt("event_major")}</strong>
+                        <p>{eventReportText(event, names, tt)}</p>
+                        <small>{describeEventImpact(event.positionDelta, tt)}</small>
+                      </div>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p>{tt("report_clean_race")}</p>
+              )}
+            </section>
           </section>
-        </section>
+        </div>
 
         <section className="panel report-side-recap">
           <h2>{tt("result_recap_title")}</h2>

@@ -756,7 +756,7 @@ button.result-toggle-command:hover {
   width: auto;
 }
 
-.replay-laps {
+.report-phases-list {
   display: grid;
   gap: 8px;
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr));
@@ -765,7 +765,7 @@ button.result-toggle-command:hover {
   padding: 0;
 }
 
-.replay-laps li {
+.report-phases-list li {
   border-top: 3px solid var(--color-border);
   display: grid;
   gap: 3px;
@@ -773,7 +773,7 @@ button.result-toggle-command:hover {
   padding-top: 7px;
 }
 
-.replay-laps span {
+.report-phases-list span {
   color: var(--color-muted);
   font-size: 0.75rem;
 }
@@ -909,6 +909,11 @@ button.result-toggle-command:hover {
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.75fr);
+}
+
+.report-content-column {
+  display: grid;
+  gap: 16px;
 }
 
 .lap-marker {

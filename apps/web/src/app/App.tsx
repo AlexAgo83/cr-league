@@ -186,6 +186,13 @@ export function App() {
 
   async function submitDirective() {
     if (!leagueState || !playerTeam) return;
+    if (
+      qualifyingAttemptsUsed === 0
+        ? !window.confirm(tt("directive_confirm_no_qualifying"))
+        : qualifyingAttemptsLeft > 0 && !window.confirm(`${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`)
+    ) {
+      return;
+    }
 
     await run(tt("status_submitting_directive"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/decisions`, {

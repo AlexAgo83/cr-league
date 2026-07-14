@@ -260,7 +260,7 @@ describe("App", () => {
       .mockResolvedValueOnce(response(nextGrandPrixState))
       .mockResolvedValueOnce(response(settingsState))
       .mockResolvedValueOnce(response(baseState));
-    vi.spyOn(window, "confirm").mockReturnValue(true);
+    const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
 
     render(<App />);
 
@@ -303,6 +303,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
+    expect(confirm).toHaveBeenCalledWith("You have not run a lap time yet. Submit the directive anyway?");
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(screen.getByText("Ready to launch")).toBeTruthy();
 
@@ -420,6 +421,7 @@ describe("App", () => {
       .mockResolvedValueOnce(response(rivalFirstState))
       .mockResolvedValueOnce(response(withoutPlayer(rivalFirstDecided)))
       .mockResolvedValueOnce(response(withoutPlayer(rivalFirstResolved)));
+    vi.spyOn(window, "confirm").mockReturnValue(true);
 
     render(<App />);
 

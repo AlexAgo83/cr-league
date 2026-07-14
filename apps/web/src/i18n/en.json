@@ -99,6 +99,8 @@
   "qualifying_attempts": "Attempts",
   "qualifying_remaining": "Attempts left",
   "qualifying_suggestion": "Run a lap time before locking your directive to place your car on the grid.",
+  "directive_confirm_no_qualifying": "You have not run a lap time yet. Submit the directive anyway?",
+  "directive_confirm_remaining": "You still have lap time attempts left. Submit the directive now?",
   "briefing_track": "Track profile",
   "briefing_forecast": "Likely weather",
   "briefing_tip_prepare": "Pick a directive that matches the track and forecast before launching the GP.",

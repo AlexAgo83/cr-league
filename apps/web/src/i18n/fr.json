@@ -99,6 +99,8 @@
   "qualifying_attempts": "Essais",
   "qualifying_remaining": "Essais restants",
   "qualifying_suggestion": "Fais un chrono avant de verrouiller ta directive pour placer ta voiture sur la grille.",
+  "directive_confirm_no_qualifying": "Tu n'as pas encore fait d'essai chrono. Envoyer la directive quand même ?",
+  "directive_confirm_remaining": "Il te reste des essais chrono. Envoyer la directive maintenant ?",
   "briefing_track": "Profil de piste",
   "briefing_forecast": "Météo probable",
   "briefing_tip_prepare": "Choisis une directive adaptée à la piste et à la météo avant de lancer le GP.",

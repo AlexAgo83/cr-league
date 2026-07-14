@@ -365,6 +365,8 @@ describe("api app", () => {
     expect(secondRun.json().run.attempts).toBe(2);
     expect(firstRun.json().state.currentGrandPrix.qualifyingRuns.filter((run: { teamId: string }) => run.teamId === created.player.teamId)).toHaveLength(2);
     expect(secondRun.json().state.currentGrandPrix.qualifyingRuns.filter((run: { teamId: string }) => run.teamId === created.player.teamId)).toHaveLength(4);
+    expect(secondRun.json().run.time).toBeGreaterThan(70);
+    expect(secondRun.json().run.result.replayTrace.at(-1).times[created.player.teamId]).toBe(6);
     expect(secondRun.json().run.result.events).toHaveLength(2);
   });
 

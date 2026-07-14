@@ -34,6 +34,7 @@ const DEFAULT_GRAND_PRIX_PER_SEASON = 6;
 const MAX_GRAND_PRIX_PER_SEASON = 18;
 const TEAM_NAME_LIMIT = 32;
 const LEAGUE_NAME_LIMIT = 40;
+const QUALIFYING_REPLAY_SECONDS_PER_LAP = 3;
 
 export class LeagueRuleError extends Error {
   constructor(message: string) {
@@ -912,7 +913,7 @@ function createQualifyingRuns(input: {
 function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, lapTimes: number[], weather: Weather): RaceResult {
   const segments: RaceSegment[] = ["start", "early", "mid", "late", "finish"];
   const bestTime = Math.min(...lapTimes);
-  const totalTime = lapTimes.reduce((sum, time) => sum + time, 0);
+  const visualTime = lapTimes.length * QUALIFYING_REPLAY_SECONDS_PER_LAP;
   const events: RaceEvent[] = lapTimes.map((time, index) => ({
     id: `qualifying_lap_${index + 1}`,
     order: index,
@@ -951,7 +952,7 @@ function createQualifyingResult(teamId: string, teamName: string, seed: string, 
         lap: Math.min(lapTimes.length, Math.floor(index / 4) + 1),
         progress,
         order: [teamId],
-        times: { [teamId]: Number((totalTime * progress).toFixed(1)) },
+        times: { [teamId]: Number((visualTime * progress).toFixed(1)) },
         gaps: { [teamId]: 0 }
       };
     }),

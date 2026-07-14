@@ -608,6 +608,10 @@ label small {
   z-index: 60;
 }
 
+.setup-shell > .notification-stack {
+  bottom: 16px;
+}
+
 .floating-notification {
   align-items: start;
   background: rgb(13 19 26 / 0.94);

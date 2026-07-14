@@ -345,6 +345,7 @@ describe("App", () => {
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(screen.getByText("Ready to launch")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Lap time" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByText("Locked after directive")).toBeTruthy();
 
     // Launch: auto-switches to the result view
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));

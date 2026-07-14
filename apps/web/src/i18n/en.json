@@ -98,6 +98,7 @@
   "qualifying_best": "Best",
   "qualifying_attempts": "Attempts",
   "qualifying_remaining": "Attempts left",
+  "qualifying_locked": "Locked after directive",
   "qualifying_suggestion": "Run a lap time before locking your directive to place your car on the grid.",
   "qualifying_times_title": "Lap times",
   "qualifying_times_empty": "No lap times",

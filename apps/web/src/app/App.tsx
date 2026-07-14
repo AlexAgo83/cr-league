@@ -963,7 +963,7 @@ export function App() {
                     {tt("qualifying_best")} {playerQualifyingRun ? `${playerQualifyingRun.time.toFixed(2)}s` : "-"}
                   </strong>
                   <small>
-                    {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
+                    {playerDecision ? tt("qualifying_locked") : `${tt("qualifying_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`}
                   </small>
                   {!playerQualifyingRun ? <small>{tt("qualifying_suggestion")}</small> : null}
                 </div>

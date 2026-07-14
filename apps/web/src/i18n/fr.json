@@ -98,6 +98,7 @@
   "qualifying_best": "Meilleur",
   "qualifying_attempts": "Essais",
   "qualifying_remaining": "Essais restants",
+  "qualifying_locked": "Verrouillé après directive",
   "qualifying_suggestion": "Fais un chrono avant de verrouiller ta directive pour placer ta voiture sur la grille.",
   "qualifying_times_title": "Chronos",
   "qualifying_times_empty": "Aucun chrono",

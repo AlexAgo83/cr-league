@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 90
-> Confidence: 80
+> Confidence: 90
 > Related request: `req_004_define_cr_league_implementation_contracts_v0`
 > Related backlog: `item_010_define_cr_league_implementation_contracts_v0`
 > Related task: `task_005_define_cr_league_implementation_contracts_v0`
@@ -13,6 +13,8 @@
 Define the minimum database and API contract for the first CR League implementation wave.
 
 This contract is solo-first but multiplayer-compatible.
+
+Current implementation note: the prototype has moved from the original solo endpoint sketch to a league-first API without an `/api` prefix. The Prisma schema also keeps some structures intentionally compact as JSON (`Team.cards`, `Team.livery`, `GrandPrix.forecast`, `GrandPrix.qualifyingRuns`, `GrandPrix.result`) instead of normalizing every V1 concept.
 
 # Database Target
 - PostgreSQL.
@@ -63,10 +65,14 @@ Fields:
 
 - `id`
 - `name`
-- `mode`: `SOLO` or `PRIVATE`
-- `inviteCode`
-- `status`: `DRAFT`, `ACTIVE`, `COMPLETED`
-- `cadence`: `MANUAL`, `DAILY`, `WEEKLY`
+- `code`
+- `status`
+- `cadence`
+- `maxPlayers`
+- `fillWithBots`
+- `qualifyingAttemptLimit`
+- `maxGrandPrixPerSeason`
+- `preparationDeadlineAt`
 - `createdAt`
 - `updatedAt`
 
@@ -75,55 +81,29 @@ V0:
 - solo league only needs `MANUAL`;
 - invite code can be nullable for solo.
 
-## LeagueMember
-Connects teams to leagues.
-
-Fields:
-
-- `id`
-- `leagueId`
-- `teamId`
-- `slot`
-- `role`: `OWNER`, `MEMBER`, `BOT`
-- `createdAt`
-
-Constraints:
-
-- unique `(leagueId, teamId)`;
-- unique `(leagueId, slot)`.
-
-## Season
-Fields:
-
-- `id`
-- `leagueId`
-- `number`
-- `status`: `ACTIVE`, `COMPLETED`
-- `createdAt`
-- `updatedAt`
-
-V0 can create one season per league.
+V0 does not have a separate `LeagueMember` or `Season` table. Team membership is represented by `Team.leagueId`; season number is stored on each `GrandPrix`.
 
 ## GrandPrix
 Fields:
 
 - `id`
-- `seasonId`
+- `leagueId`
+- `season`
 - `round`
 - `name`
-- `circuitKey`
 - `primaryTrait`
 - `secondaryTrait`
-- `forecastJson`
-- `scheduledAt`
-- `status`: `SCHEDULED`, `LOCKED`, `RESOLVING`, `RESOLVED`
+- `forecast`
+- `qualifyingRuns`
+- `status`
+- `result`
 - `seed`
 - `createdAt`
 - `updatedAt`
 
 Constraints:
 
-- unique `(seasonId, round)`.
+- unique `(leagueId, season, round)`.
 
 ## RaceDecision
 Fields:
@@ -133,7 +113,7 @@ Fields:
 - `teamId`
 - `approach`: `PRUDENT`, `BALANCED`, `AGGRESSIVE`
 - `preparation`: `SPEED`, `RELIABILITY`, `WEATHER`
-- `cardInventoryItemId`
+- `cardId`
 - `rivalTeamId`
 - `defaulted`
 - `submittedAt`
@@ -142,71 +122,15 @@ Constraints:
 
 - unique `(grandPrixId, teamId)`.
 
-## RaceResult
-One per Grand Prix.
+## Race Result, Events, Cards, And Livery
+The current prototype stores these as JSON instead of separate tables:
 
-Fields:
+- `GrandPrix.result`: classification, events, report, consumed cards, replay trace, rewards;
+- `GrandPrix.qualifyingRuns`: lap-tagged qualifying attempts and replay data;
+- `Team.cards`: owned card id array;
+- `Team.livery`: primary/secondary colors.
 
-- `id`
-- `grandPrixId`
-- `seed`
-- `resolvedWeatherJson`
-- `classificationJson`
-- `standingsAfterJson`
-- `reportJson`
-- `replayJson`
-- `resolvedAt`
-
-Constraints:
-
-- unique `grandPrixId`.
-
-## RaceEvent
-Normalized event timeline row.
-
-Fields:
-
-- `id`
-- `grandPrixId`
-- `order`
-- `segment`
-- `lap`
-- `type`
-- `teamId`
-- `relatedTeamId`
-- `cardId`
-- `severity`
-- `positionDelta`
-- `tagsJson`
-- `replayText`
-- `reportText`
-
-Constraints:
-
-- unique `(grandPrixId, order)`.
-
-## CardDefinition
-Static card catalogue persisted or seeded.
-
-Fields:
-
-- `id`
-- `name`
-- `family`
-- `description`
-- `price`
-- `consumable`
-- `enabled`
-
-## CardInventoryItem
-Fields:
-
-- `id`
-- `teamId`
-- `cardDefinitionId`
-- `status`: `AVAILABLE`, `RESERVED`, `CONSUMED`
-- `acquiredAt`
-- `consumedAt`
+This keeps the prototype small. Normalize later only if querying, auditing, or admin tooling needs it.
 
 # API V0
 The initial prototype currently exposes endpoints without an `/api` prefix.
@@ -268,33 +192,32 @@ Response:
 }
 ```
 
-## POST /api/solo/championships
-Creates a player, team, solo league, bots, season, calendar, starter cards, and initial standings.
+## POST /leagues
+Creates a league, the player's team, optional bots, the first Grand Prix, starter cards, and initial state.
 
 Request:
 
 ```json
 {
-  "playerName": "Alice",
+  "name": "Office League",
   "teamName": "Alice Racing",
-  "primaryColor": "#e11d48",
-  "secondaryColor": "#facc15"
+  "profileId": "profile_...",
+  "maxPlayers": 8,
+  "fillWithBots": true,
+  "qualifyingAttemptLimit": 3,
+  "maxGrandPrixPerSeason": 6
 }
 ```
 
-Response:
+Response: current `LeagueState`.
 
-```json
-{
-  "playerId": "player_...",
-  "teamId": "team_...",
-  "leagueId": "league_...",
-  "seasonId": "season_...",
-  "nextGrandPrixId": "gp_..."
-}
-```
+## POST /leagues/join
+Joins an active league by code and creates a human team.
 
-## GET /api/leagues/:leagueId
+## POST /leagues/rejoin
+Rejoins a saved team by `teamId` and `claimCode`.
+
+## GET /leagues/:leagueId
 Returns dashboard state.
 
 Includes:
@@ -302,32 +225,34 @@ Includes:
 - league;
 - teams;
 - current standings;
-- next Grand Prix;
+- current Grand Prix;
 - resolved recent result if any.
+- card shop;
+- action state.
 
-## GET /api/races/:grandPrixId/briefing
-Returns player-facing race briefing.
+## POST /leagues/:leagueId/settings
+Updates cadence/deadline settings.
 
-Includes:
+## POST /leagues/:leagueId/cards/buy
+Buys one card for a team using credits.
 
-- circuit traits;
-- forecast;
-- standings;
-- rival suggestion;
-- available cards;
-- existing decision if submitted.
+## POST /leagues/:leagueId/teams/livery
+Updates a team's livery colors.
 
-## PUT /api/races/:grandPrixId/decision
-Submits or replaces a decision before resolution.
+## POST /leagues/:leagueId/teams/name
+Updates a team name.
+
+## POST /leagues/:leagueId/decisions
+Submits a decision before resolution.
 
 Request:
 
 ```json
 {
   "teamId": "team_...",
-  "approach": "AGGRESSIVE",
-  "preparation": "WEATHER",
-  "cardInventoryItemId": "inv_...",
+  "approach": "aggressive",
+  "preparation": "weather",
+  "cardId": "rain_grip",
   "rivalTeamId": "team_rival"
 }
 ```
@@ -335,41 +260,38 @@ Request:
 Rules:
 
 - reject if race is resolved;
-- reject card not owned or unavailable;
-- reserve selected card if needed;
+- reject card not owned;
 - one decision per team per race.
+- reject further directive edits after lock.
 
-## POST /api/races/:grandPrixId/resolve
-Resolves a race idempotently.
+## POST /leagues/:leagueId/qualifying
+Runs one qualifying attempt with the current directive choices.
+
+Rules:
+
+- reject if directive is already submitted;
+- reject if attempt limit is reached;
+- qualifying cards can lock the card choice after use;
+- returns updated `LeagueState`, the run, and whether it is the player's best.
+
+## POST /leagues/:leagueId/resolve
+Resolves the current Grand Prix idempotently.
 
 Rules:
 
 - if already resolved, return stored result;
 - apply default decisions for missing teams;
+- bots run at least one qualifying attempt before the race;
 - consume played cards only once;
 - update credits and standings only once.
 
-Response:
+Response: updated `LeagueState`.
 
-```json
-{
-  "grandPrixId": "gp_...",
-  "resultId": "result_...",
-  "classification": [],
-  "events": [],
-  "report": {},
-  "standings": []
-}
-```
+## POST /leagues/:leagueId/next-grand-prix
+Creates the next Grand Prix. If the current round reaches `maxGrandPrixPerSeason`, the next GP starts the next season at round 1.
 
-## GET /api/races/:grandPrixId/result
-Returns stored race result and events.
-
-## GET /api/teams/:teamId/inventory
-Returns available cards and credits.
-
-## POST /leagues/:leagueId/teams/name
-Updates the player's team name inside a league.
+## POST /leagues/:leagueId/restart
+Resets the playtest league to season 1 / round 1 while keeping teams and profiles.
 
 Rules:
 
@@ -392,19 +314,19 @@ Race resolution must be transactionally safe.
 
 Minimum approach:
 
-- race status moves from `SCHEDULED` to `RESOLVING` inside a transaction;
-- unique `RaceResult.grandPrixId` prevents duplicate results;
-- card consumption checks status before update;
-- credit/standing updates happen with result creation.
+- current Grand Prix status/result guards prevent duplicate resolution;
+- unique `(leagueId, season, round)` prevents duplicate GP creation;
+- card consumption checks the stored result path before update;
+- credit/standing updates happen with result storage.
 
 # Non-goals
 - No password, OAuth, session-cookie, or permission model in V0.
-- No private multiplayer join endpoints in the first slice.
 - No admin endpoints.
 - No public matchmaking.
-- No complete Prisma schema tuning before first scaffold.
+- No complete normalization of replay/events/cards before playtest feedback proves the need.
 
 # Open Questions
-- Should event rows be fully normalized or stored as JSON in `RaceResult` for the first scaffold?
-- Should credits be a balance on `Team` or a ledger from day one?
-- Should card definitions live only in shared code and be seeded to DB at startup?
+- Should event rows be normalized before beta, or is `GrandPrix.result` JSON enough?
+- Should credits remain a balance on `Team`, or become a ledger for audit/support?
+- Should card definitions remain shared-code constants, or be seeded to DB for live tuning?
+- Should seasons become a table before live beta, or is `GrandPrix.season` enough?

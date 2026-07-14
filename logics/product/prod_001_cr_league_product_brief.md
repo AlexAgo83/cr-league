@@ -79,12 +79,14 @@ flowchart LR
 - Bots can fill empty slots so the championship still feels populated.
 - The default cadence is weekly, but cadence should be configurable.
 - If a player misses the preparation deadline, the race still proceeds with a default plan.
+- League creation can expose only a few setup levers: max players, bot fill, qualifying attempt limit, and GP per season. These settings are useful for playtests but should stay compact.
 
 # Default V1 assumptions
-- Season length: 8 Grand Prix by default.
-- Participants: 2 to 8 human players, with bots available to fill the grid.
+- Season length: 6 Grand Prix by default, configurable up to 18 in the current prototype.
+- Participants: 2 to 8 human players by default, configurable up to 16, with bots available to fill the grid.
 - Race cadence: weekly by default for multiplayer; manual immediate launch for solo.
 - Pre-race mandatory decisions: 3 decisions by default.
+- Qualifying attempts: 3 by default, configurable up to 5.
 - Cards: mostly consumable in V1.
 - Card usage: maximum 1 played card per Grand Prix.
 - Race presentation: visual top-down 2D replay plus written race report.
@@ -105,7 +107,17 @@ The player sees the upcoming race context:
 
 The briefing should help players make a risk decision. It should not present raw simulation formulas.
 
-## 2. Preparation
+## 2. Qualifying
+Before locking the race directive, the player can run a limited number of qualifying attempts using the current directive and expected conditions.
+
+- Best qualifying time helps determine the starting grid.
+- The player can replay the latest qualifying attempt.
+- Bots should run at least one qualifying attempt before the GP starts.
+- Once the race directive is locked, qualifying is closed for that GP.
+
+Qualifying should create useful pressure before the GP without becoming a separate driving game.
+
+## 3. Preparation
 The V1 preparation model should use three decisions:
 
 - Race approach: prudent, balanced, or aggressive.
@@ -114,15 +126,16 @@ The V1 preparation model should use three decisions:
 
 The exact labels may change, but the structure should remain small. The player should feel they are choosing a plan, not filling a spreadsheet.
 
-## 3. Lock or launch
+## 4. Lock or launch
 - In solo, the player can launch the Grand Prix immediately.
 - In multiplayer, the race resolves after a deadline or when the configured condition is met.
 - Missing players receive default choices so the league does not stall.
 
-## 4. Simulation
+## 5. Simulation
 The race engine combines:
 
 - team/player choices;
+- qualifying grid;
 - bot profiles;
 - circuit traits;
 - weather outcome;
@@ -133,7 +146,7 @@ The race engine combines:
 
 The simulation should produce both final results and an event timeline.
 
-## 5. Replay
+## 6. Replay
 The replay should be short, readable, and focused on drama rather than realism:
 
 - top-down 2D circuit view;
@@ -145,7 +158,7 @@ The replay should be short, readable, and focused on drama rather than realism:
 
 The replay does not need direct interaction in V1.
 
-## 6. Race report
+## 7. Race report
 The written report explains what happened:
 
 - final classification;
@@ -161,25 +174,26 @@ The report should create social quotes, such as:
 
 - "Your rain gamble paid off when showers arrived mid-race."
 - "The aggressive start gained two places, but increased late reliability pressure."
-- "Mechanic Express prevented a minor failure from becoming a retirement."
+- "Fleet Maintenance prevented a minor failure from becoming a retirement."
 - "You finished ahead of your rival for the first time this season."
 
-## 7. Progression
+## 8. Progression
 After the race:
 
 - standings update;
 - credits are awarded;
 - used consumable cards are removed;
-- the shop or reward pool becomes relevant;
+- the garage/shop becomes relevant;
 - the next Grand Prix briefing becomes the next reason to return.
+- at season rollover, standings restart for the new season while prior GP history remains consultable.
 
 # Cards and inventory
 Cards are special tactical moves. They should feel closer to accessible board-game events than to a deep deckbuilder.
 
-V1 card rules:
+Current prototype card rules:
 
-- roughly 12 cards initially;
-- mostly consumable;
+- 15 cards in the current catalogue;
+- all current cards are consumable;
 - one played card maximum per Grand Prix;
 - stored in a simple team inventory;
 - bought with race credits through a simple shop;
@@ -189,14 +203,15 @@ Good cards should create race stories. Avoid cards that are only invisible stat 
 
 Example V1 card directions:
 
-- Rain Tires: strong upside if rain appears, downside if the race stays dry.
-- Mechanic Express: cancels the first minor reliability failure.
-- Rocket Start: gains early position when paired with aggressive approach, but increases wear risk.
-- Calm Radio: reduces driver error risk while defending.
-- Late Push: improves final-lap pace if outside the podium, with reliability risk.
-- Slipstream: bonus when starting or running behind a target rival.
-- Conservative Setup: protects points with lower upside.
-- Sponsor Bonus: sacrifices performance potential for extra credits.
+- Rain Grip: strong upside if rain appears, downside if the race stays dry.
+- Fleet Maintenance: cancels the first minor reliability failure.
+- Launch Boost: gains early position when paired with aggressive approach, but increases wear risk.
+- Defensive Order: reduces driver error risk while defending.
+- Final Surge: improves final-lap pace if outside the podium, with reliability risk.
+- Urban Draft: bonus when running behind a target rival.
+- Defensive Order: protects points with lower upside.
+- Fleet Sponsorship: sacrifices performance potential for extra credits.
+- Qualifying-focused cards can improve a chrono attempt, but only those chrono cards should lock the card choice after qualifying.
 
 # Economy and progression
 V1 should keep resources minimal:
@@ -206,6 +221,8 @@ V1 should keep resources minimal:
 - Inventory: cards owned by the team.
 
 Avoid deep garage management in V1. No staff hiring, complex car parts, sponsor contracts, or permanent upgrade trees until the core loop is proven.
+
+The current garage may cover team identity, livery colors, car preview, inventory/shop, and card purchase confirmation. That is still "light garage" as long as it does not introduce permanent stat upgrades.
 
 Rewards should encourage return:
 
@@ -351,11 +368,11 @@ Can wait until later:
 - Over-management: too many resources, upgrades, and stats would bury the simple strategic bet at the heart of the game.
 
 # Open questions
-- Should V1 include optional practice sessions, or should practice wait until after the first playable loop?
-- Should card acquisition happen through a fixed shop, random draw, post-race rewards, or a hybrid?
-- How many participants should a default league contain after bots fill empty slots?
+- Does the current qualifying model make the starting grid feel earned without making the final race feel predetermined?
+- Should card acquisition stay a fixed shop, move to random offers, or become a hybrid after playtest feedback?
+- Is 6 GP the right default season length for private leagues, or only for short playtests?
 - Should multiplayer races resolve at a fixed scheduled time, when all users are ready, or whichever comes first?
-- What is the minimum replay fidelity needed to make the result feel alive?
+- What replay fidelity is enough before live beta?
 - Should team condition or car wear persist between races in V1, or should each Grand Prix start clean except for cards and credits?
 
 # References

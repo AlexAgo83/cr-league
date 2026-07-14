@@ -2,13 +2,13 @@
 
 Tactical urban micro-EV racing league prototype.
 
-CR League is a solo-first, private-league-ready racing game where the player acts as a team principal rather than a driver. The current repository contains a Vite React PWA shell, Fastify API, shared TypeScript simulation package, Prisma/PostgreSQL schema, and Logics planning corpus.
+CR League is a private-league racing game where the player acts as a team principal rather than a driver. The current repository contains a Vite React PWA, Fastify API, shared TypeScript simulation package, Prisma/PostgreSQL schema, balance simulation kit, and Logics planning corpus.
 
 ```mermaid
 flowchart LR
   Web[Vite React PWA] --> API[Fastify API]
   API --> DB[(PostgreSQL schema cr_league)]
-  API --> Sim[Future seeded simulation]
+  API --> Sim[Seeded race and qualifying simulation]
   Sim --> Events[Race events and report]
   Events --> Web
 ```
@@ -18,19 +18,20 @@ flowchart LR
 Implemented:
 
 - npm workspace monorepo
-- `apps/web` Vite + React shell with playable demo league flow
-- `apps/api` Fastify API with health, simulation preview, lightweight profile recovery, and league endpoints
-- `packages/shared` shared metadata, race domain types, demo race, and simulation engine
-- `prisma/schema.prisma` PostgreSQL league/team/card inventory/Grand Prix/decision schema
+- `apps/web` Vite + React app with profile setup, pit-wall setup, race cockpit, championship, garage, replay, report, and responsive layouts
+- `apps/api` Fastify API with health, simulation preview, lightweight profile recovery, league, qualifying, card, team, settings, restart, and next-GP endpoints
+- `packages/shared` shared metadata, race domain types, city circuits, card catalogue, economy constants, and simulation engine
+- `prisma/schema.prisma` PostgreSQL league/team/profile/card inventory/Grand Prix/decision schema with seasons, qualifying runs, liveries, and league setup limits
 - TypeScript, ESLint, Vitest baseline
 - Logics product, gameplay, architecture, UX, implementation-contract, and roadmap docs
+- balance simulation scripts and reports under `scripts/` and `reports/balance/`
 
 Not implemented yet:
 
-- full gameplay UI
 - full authentication
-- private multiplayer
-- deployment config
+- production deployment config
+- automatic deadline resolution/notifications
+- public matchmaking or live beta operations
 
 ## Tech Stack
 
@@ -42,12 +43,14 @@ Not implemented yet:
 
 ## Repository Topology
 
-- `apps/web`: PWA frontend shell and demo league flow
+- `apps/web`: PWA frontend app and game screens
 - `apps/api`: Fastify API with simulation and league routes
 - `packages/shared`: shared app metadata, race domain contracts, and simulation engine
 - `prisma`: Prisma schema
 - `logics`: product, architecture, specs, requests, backlog, and task docs
 - `changelogs`: curated release notes
+- `docs`: playtest, balance, and UI-zone notes
+- `reports/balance`: generated balance simulation outputs
 
 ## Getting Started
 
@@ -109,6 +112,14 @@ npm run playtest:seed
 ```
 
 This creates league code `PLAY01` with bot teams. Human testers should first create or recover a lightweight profile, then join that code from separate browser profiles. Use [docs/playtest/private-league-3gp-checklist.md](docs/playtest/private-league-3gp-checklist.md) for the manual 3-GP script and feedback prompts. The in-app `Restart session` action resets a league to round 1 while keeping joined teams and claims.
+
+Run the balance kit:
+
+```bash
+npm run balance:sim -- --runs 300 --limit 10 --json reports/balance/latest.json
+```
+
+See [docs/balance-simulations.md](docs/balance-simulations.md) for what the output measures.
 
 ## Configuration
 
@@ -192,9 +203,10 @@ The detailed implementation-wave roadmap is:
 
 Current roadmap direction:
 
-- `0.1` playable vertical slice is mostly implemented;
-- `0.2` private league prototype foundation now includes lightweight profile recovery, manual cadence, readiness dashboard, rejoin, GP history, session restart, a seeded playtest fixture, a lightweight replay timeline, French UI switching, guided GP briefing, a state-driven race desk, and more replay flavor;
-- `0.3` is now the next product risk: make repeated GP play feel like a game, with guided briefing, clearer championship dashboard, player-focused race recap, thin card inventory/shop, post-GP garage summary, contextual card recommendations, first-pass pit-wall hierarchy, and static visual replay already present as a bridge toward `0.4`.
+- `0.1` playable vertical slice is implemented;
+- `0.2` private league prototype foundation is implemented for local/private playtests: lightweight profile recovery, create/join/rejoin, manual cadence, readiness, GP history, restart, seed fixture, i18n, and guarded state rules;
+- `0.3` playtest game loop is now the active polish lane: guided race prep, qualifying attempts with replay, animated road-routed city replays, compact profile/pit-wall entry screens, championship history replay, season rollover, garage, cards, and balance checks are present but still need real playtest validation;
+- `0.4` economy/card depth has started with inventory/shop, 15 cards, prices, credits, recommendations, and a balance simulation kit; broader progression should wait for playtest signal.
 
 ## Contributing
 

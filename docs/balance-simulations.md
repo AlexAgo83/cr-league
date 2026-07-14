@@ -31,4 +31,12 @@ Use the output this way:
 - `Circuit summary` shows whether a circuit is much richer or poorer than the others.
 - `Outliers` flags strategies more than `--outlier` average points away from `balanced/speed/no_card`.
 
-The script reuses `simulateRace`; it is a balance smoke test, not a full league-season simulator.
+What to check after card/economy changes:
+
+- no single card dominates points, win rate, and credit margin at the same time;
+- economy cards should pay for future options without becoming the obvious racing choice;
+- qualifying-focused cards should improve average grid without making average finish automatic;
+- circuit summaries should not show one circuit paying wildly more points/credits than the others;
+- card price changes should keep `GP/card` in a range that makes buying a choice.
+
+The script reuses `simulateRace`; it is a balance smoke test, not a full league-season simulator. Use it before playtests, then treat tester feedback as the stronger signal.

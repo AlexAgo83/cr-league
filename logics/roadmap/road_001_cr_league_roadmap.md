@@ -15,13 +15,13 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 # Current Position
 - Product discovery, core gameplay specs, architecture, device targets, theme direction, ADRs, repository governance, and implementation contracts are documented.
 - The monorepo foundation exists with Vite React, Fastify, Prisma, shared simulation package, tests, lint, build, and Logics validation.
-- The prototype can create a persisted demo league, submit a race directive, resolve a Grand Prix, show report/replay evidence, persist rewards, join an active league by invite code, rejoin a claimed team, advance to the next Grand Prix, restart a playtest league, configure cadence/deadline, show GP history/readiness, switch between English and French UI, show a guided GP briefing, present a state-driven race desk, buy/hold/consume simple cards, and seed a manual private-league playtest session.
-- This is not yet a complete game loop: there is no automatic scheduler, notifications, deep card economy, replay polish, full auth/permissions, or production deployment.
+- The prototype can create a persisted private league, recover a lightweight profile, join/rejoin by invite code, configure grid size/bots/qualifying attempts/season length, run qualifying attempts, lock directives, resolve a Grand Prix, replay races on road-routed city circuits, show reports/history, start the next GP, roll to a new season, restart a playtest league, switch English/French UI, manage a garage, buy/hold/consume 15 cards, and run balance simulations.
+- This is not yet a complete beta: there is no automatic scheduler, notifications, full auth/permissions, production deployment, or real multi-person playtest evidence for the current economy/replay balance.
 
 # Milestones
 ## 0.1 - Playable vertical slice
 - Goal: Make the smallest end-to-end CR League loop playable and technically validated.
-- Status: Mostly implemented.
+- Status: Implemented.
 - Scope:
   - monorepo foundation and repository governance;
   - pure deterministic simulation core;
@@ -50,7 +50,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 
 ## 0.2 - Private league prototype
 - Goal: Turn the current demo league into a credible private league session for colleagues.
-- Status: Foundation started; playtest kit available.
+- Status: Implemented for local/private playtest operation.
 - Scope:
   - stable lightweight player/team identity without full account complexity;
   - create/join/rejoin private league flow with clear invite code UX;
@@ -91,13 +91,16 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 
 ## 0.3 - Playtest-ready game loop
 - Goal: Make the prototype worth testing with colleagues beyond a single technical demo.
-- Status: Started; cockpit/replay visual pass in progress.
+- Status: Active polish and validation lane.
 - Scope:
   - 3-GP mini championship loop;
   - V2 race cockpit redesign with clear Course, Championship, Garage, and Result/Replay responsibilities;
-  - static 0.3 city circuit seed: Paris Docklands Sprint/Left Bank Loop, Amsterdam Canal Loop/Harbor Sprint, Berlin Ring Sector/Mitte Dash;
+  - compact profile and pit-wall entry screens over the animated map background;
+  - city circuit seed for Paris, Amsterdam, Berlin, Rome, Lisbon, Vienna, Porto, and Madrid;
   - city-circuit rendering from stored road-routed geometry, without Leaflet/OSRM runtime dependencies;
-  - deterministic animated race replay with cars moving on the circuit, simple controls, visible overtakes when supported by the generated timeline, and a static readout fallback;
+  - deterministic animated race replay with cars moving on the circuit, simple controls, visible overtakes, qualifying replay, and a static readout fallback;
+  - qualifying attempts that influence the starting grid and are disabled once the directive is locked;
+  - configurable season length and season rollover with fresh standings and historical consultation;
   - replay/report UX pass that makes player choices legible;
   - more race-event variety and non-impact flavor moments;
   - clearer dashboard for standings, next GP, deadline, and player action state;
@@ -114,7 +117,10 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - race desk now shows one dominant command per state instead of competing action buttons;
   - city circuit and replay panels use larger dark route surfaces with visible moving cars and clearer callouts;
   - cockpit rail now exposes Course, Directive, Championship, Garage, Replay, and Report as dedicated game views instead of hiding secondary gameplay or stacking everything on one page;
-  - six 0.3 seed circuits now use stored OSRM-sampled road geometry for Paris, Amsterdam, and Berlin layouts;
+  - city circuits now use stored road-routed geometry across the current capital/city set;
+  - qualifying attempts produce lap-tagged replay data, leaderboard display, and grid influence;
+  - season rollover starts a fresh season state while preserving GP history for consultation;
+  - profile and pit-wall entry screens now use one compact central panel over the ambient replay map;
   - French display now localizes redesigned report/event summaries instead of showing raw English simulator prose;
   - desktop and mobile briefing/replay screenshots captured in `~/Desktop/CRL/`;
   - desktop Prepare/Ready desk states and mobile resolved state visually checked after the pit-wall pass;
@@ -128,7 +134,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 
 ## 0.4 - Economy and card depth
 - Goal: Add enough card and currency depth for repeated sessions without burying the casual player.
-- Status: Started with a thin inventory/shop hook; deeper economy planned.
+- Status: Started; balance kit available.
 - Scope:
   - inventory view;
   - buy/sell or draft-style card acquisition;
@@ -138,10 +144,14 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - economy rules documented before broadening the card list.
 - Delivered foundation:
   - `Team.cards` persisted as JSON;
-  - fixed 100-credit card purchase endpoint;
+  - fixed-price card purchase endpoint;
   - owned-card validation on directive submission;
   - consumed cards removed after GP resolution;
-  - minimal garage UI with inventory counts, buy buttons, post-GP reward summary, and three recommended offers.
+  - garage UI with inventory/shop switch, livery editing, team identity, rewards, and recommended offers;
+  - 15-card consumable catalogue with weather, reliability, attack, rival, comeback, economy, and qualifying cards;
+  - card buy confirmation modal with card promise and affordability check;
+  - bots can buy cards and run at least one qualifying attempt before GP resolution;
+  - `npm run balance:sim` compares strategies, card value, economy pressure, qualifying grid, circuits, and outliers.
 - Exit signal:
   - players earn and spend credits across multiple GPs;
   - card choices create visible replay/report moments;
@@ -217,12 +227,10 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Do not start 1.0 production hardening until the live beta has produced real usage feedback.
 
 # Next Recommended Requests
+- Run a real 3-to-5 tester session against the current qualifying/replay/garage loop before widening the economy again.
+- Re-test whether compact profile/pit-wall entry, championship history replay, and garage shop/inventory make the first-session path obvious.
 - Add automatic deadline resolution only if manual operation becomes painful in playtest.
-- Implement the V2 cockpit and deterministic animated replay before adding more economy depth.
-- Improve the dashboard layout only where it supports the cockpit flow.
-- Re-test whether the race desk state badge and primary command make the next action obvious.
-- Re-test whether the dashboard and restart flow make repeated playtests easy to operate.
-- Expand card economy only after the thin garage loop has playtest feedback.
+- Expand card/economy only after the balance kit and playtest notes agree on the next pressure point.
 
 # Risks
 - Building the card economy before a repeated-GP loop would tune the wrong game.

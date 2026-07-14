@@ -87,18 +87,17 @@ function circuitScene(circuit: CityCircuit) {
     zoom,
     tiles,
     points,
-    d: points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ") + " Z",
+    d: points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" "),
     start: points[0] ?? { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2 }
   };
 }
 
 function poseOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
   if (!points.length) return { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
-  const closed = [...points, points[0]!];
-  const segments = closed.slice(1).map((point, index) => ({
-    from: closed[index]!,
+  const segments = points.slice(1).map((point, index) => ({
+    from: points[index]!,
     to: point,
-    length: Math.hypot(point.x - closed[index]!.x, point.y - closed[index]!.y)
+    length: Math.hypot(point.x - points[index]!.x, point.y - points[index]!.y)
   }));
   const total = segments.reduce((sum, segment) => sum + segment.length, 0) || 1;
   let distance = (((progress % 1) + 1) % 1) * total;

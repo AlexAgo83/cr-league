@@ -54,7 +54,7 @@ export function ChampionshipView({
                   style={{ "--livery-primary": leader.livery.primary, "--livery-secondary": leader.livery.secondary } as CSSProperties & Record<string, string>}
                 >
                   <span className="livery-plate-text">{leader.name.slice(0, 3).toUpperCase()}</span>
-                  {seasonWins.get(leader.id) ? <span className="livery-plate-stars">{"★".repeat(seasonWins.get(leader.id) ?? 0)}</span> : null}
+                  <PlateStars count={seasonWins.get(leader.id) ?? 0} />
                 </span>
                 <span>{leader.name}</span>
               </strong>
@@ -86,7 +86,7 @@ export function ChampionshipView({
                     style={{ "--livery-primary": team.livery.primary, "--livery-secondary": team.livery.secondary } as CSSProperties & Record<string, string>}
                   >
                     <span className="livery-plate-text">{team.name.slice(0, 3).toUpperCase()}</span>
-                    {seasonWins.get(team.id) ? <span className="livery-plate-stars">{"★".repeat(seasonWins.get(team.id) ?? 0)}</span> : null}
+                    <PlateStars count={seasonWins.get(team.id) ?? 0} />
                   </span>
                   <span className="standings-team">
                     {team.name}
@@ -142,6 +142,11 @@ export function ChampionshipView({
       </div>
     </div>
   );
+}
+
+function PlateStars({ count }: { count: number }) {
+  const stars = "★".repeat(Math.min(count, 5));
+  return stars ? <span className="livery-plate-stars">{stars}</span> : null;
 }
 
 function historyLabel(grandPrix: LeagueState["grandPrixHistory"][number], playerTeamId: string | undefined, tt: Translator) {

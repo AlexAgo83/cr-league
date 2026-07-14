@@ -1,0 +1,61 @@
+## item_043_redesign_championship_and_garage_as_supporting_panels - Redesign championship and garage as supporting panels
+> From version: 0.1.0
+> Schema version: 1.0
+> Status: Ready
+> Understanding: 90%
+> Confidence: 85%
+> Progress: 0%
+> Complexity: Medium
+> Theme: Supporting game panels
+> Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+
+# Problem
+- Championship, standings, history, garage, inventory, rewards, and shop currently compete for attention with the race desk.
+- The garage and championship should make the loop feel persistent without overwhelming the current GP decision.
+- The UI should make post-race rewards and card availability feel like game progression rather than a raw admin list.
+
+# Scope
+- In:
+  - Redesign the championship overview as a compact supporting panel with invite code, round, readiness, leader, and standings.
+  - Redesign the garage as a compact progression panel with last GP rewards, inventory, and available card choices.
+  - Separate persistent championship context from immediate race action.
+  - Use visual hierarchy to make rewards, credits, and consumed cards scannable.
+  - Ensure all visible championship and garage copy uses i18n catalogs.
+- Out:
+  - New card economy.
+  - New shop offer algorithm.
+  - Card selling, rarity, drafts, or catch-up tuning.
+  - Full season-management UI.
+
+# Acceptance criteria
+- AC1: Championship and garage panels are visually secondary to the current race action but remain easy to scan.
+- AC2: Post-GP rewards and consumed card information are visible without reading a paragraph.
+- AC3: The garage does not show purchasable actions before they are valid.
+- AC4: Existing e2e coverage still verifies the 3-GP loop and card purchase path.
+
+# AC Traceability
+- request-AC1 -> This backlog slice. Proof: AC1: Championship and garage panels are visually secondary to the current race action but remain easy to scan.
+- request-AC2 -> This backlog slice. Proof: AC2: Post-GP rewards and consumed card information are visible without reading a paragraph.
+- request-AC5 -> This backlog slice. Proof: AC3: The garage does not show purchasable actions before they are valid.
+- request-AC7 -> This backlog slice. Proof: AC4: Existing e2e coverage still verifies the 3-GP loop and card purchase path.
+- request-AC8 -> This backlog slice. Proof: AC4: Existing e2e coverage still verifies the 3-GP loop and card purchase path.
+
+# Decision framing
+- Product framing: Not needed
+- Architecture framing: Not needed
+
+# Links
+- Product brief(s): `prod_003_race_cockpit_redesign_v0_product_brief`
+- Architecture decision(s): (none yet)
+- Request: `req_032_redesign_the_cr_league_race_cockpit_v0`
+- Primary task(s): `task_033_orchestrate_race_cockpit_redesign_v0`
+
+# AI Context
+- Summary: Redesign championship and garage as supporting panels
+- Keywords: scaffolded-backlog, redesign championship and garage as supporting panels, implementation-ready
+- Use when: Implementing the scaffolded slice for Redesign championship and garage as supporting panels.
+- Skip when: The change belongs to another backlog slice.
+
+# Priority
+- Priority: Medium
+- Rationale: Set by scaffold input or defaulted for grooming.

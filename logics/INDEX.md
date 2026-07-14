@@ -19,6 +19,7 @@
 |---|---|---|---|---|---|
 | [prod_001_cr_league_product_brief](product/prod_001_cr_league_product_brief.md) | 7. Progression | Settled |  |  | product/prod_001_cr_league_product_brief.md |
 | [prod_002_visual_replay_v0_product_brief](product/prod_002_visual_replay_v0_product_brief.md) | Visual Replay V0 Product Brief | Settled |  |  | product/prod_002_visual_replay_v0_product_brief.md |
+| [prod_003_race_cockpit_redesign_v0_product_brief](product/prod_003_race_cockpit_redesign_v0_product_brief.md) | Race Cockpit Redesign V0 Product Brief | Proposed |  |  | product/prod_003_race_cockpit_redesign_v0_product_brief.md |
 
 ## Roadmaps
 
@@ -62,6 +63,7 @@
 | [req_029_improve_race_desk_immersion_ui](request/req_029_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done |  |  | request/req_029_improve_race_desk_immersion_ui.md |
 | [req_030_add_playtest_session_reset_and_league_dashboard_clarity](request/req_030_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done |  |  | request/req_030_add_playtest_session_reset_and_league_dashboard_clarity.md |
 | [req_031_add_first_visual_race_replay_from_event_timeline](request/req_031_add_first_visual_race_replay_from_event_timeline.md) | Add first visual race replay from event timeline | Done |  |  | request/req_031_add_first_visual_race_replay_from_event_timeline.md |
+| [req_032_redesign_the_cr_league_race_cockpit_v0](request/req_032_redesign_the_cr_league_race_cockpit_v0.md) | Redesign the CR League race cockpit V0 | Draft |  |  | request/req_032_redesign_the_cr_league_race_cockpit_v0.md |
 
 ## Backlog
 
@@ -106,6 +108,14 @@
 | [item_037_design_visual_replay_v0_contract_and_layout](backlog/item_037_design_visual_replay_v0_contract_and_layout.md) | Design visual replay V0 contract and layout | Done |  | 100% | backlog/item_037_design_visual_replay_v0_contract_and_layout.md |
 | [item_038_implement_visual_replay_panel_in_the_web_app](backlog/item_038_implement_visual_replay_panel_in_the_web_app.md) | Implement visual replay panel in the web app | Done |  | 100% | backlog/item_038_implement_visual_replay_panel_in_the_web_app.md |
 | [item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks](backlog/item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks.md) | Capture replay V0 playtest prompts and follow-up risks | Done |  | 100% | backlog/item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks.md |
+| [item_040_define_the_cockpit_information_architecture](backlog/item_040_define_the_cockpit_information_architecture.md) | Define the cockpit information architecture | Ready |  | 0% | backlog/item_040_define_the_cockpit_information_architecture.md |
+| [item_041_establish_visual_direction_and_css_foundations](backlog/item_041_establish_visual_direction_and_css_foundations.md) | Establish visual direction and CSS foundations | Ready |  | 0% | backlog/item_041_establish_visual_direction_and_css_foundations.md |
+| [item_042_rebuild_the_race_desk_around_one_clear_action](backlog/item_042_rebuild_the_race_desk_around_one_clear_action.md) | Rebuild the race desk around one clear action | Ready |  | 0% | backlog/item_042_rebuild_the_race_desk_around_one_clear_action.md |
+| [item_043_redesign_championship_and_garage_as_supporting_panels](backlog/item_043_redesign_championship_and_garage_as_supporting_panels.md) | Redesign championship and garage as supporting panels | Ready |  | 0% | backlog/item_043_redesign_championship_and_garage_as_supporting_panels.md |
+| [item_044_make_result_and_replay_presentation_unambiguous](backlog/item_044_make_result_and_replay_presentation_unambiguous.md) | Make result and replay presentation unambiguous | Ready |  | 0% | backlog/item_044_make_result_and_replay_presentation_unambiguous.md |
+| [item_045_audit_and_harden_i18n_for_redesigned_surfaces](backlog/item_045_audit_and_harden_i18n_for_redesigned_surfaces.md) | Audit and harden i18n for redesigned surfaces | Ready |  | 0% | backlog/item_045_audit_and_harden_i18n_for_redesigned_surfaces.md |
+| [item_046_split_the_web_cockpit_into_practical_components](backlog/item_046_split_the_web_cockpit_into_practical_components.md) | Split the web cockpit into practical components | Ready |  | 0% | backlog/item_046_split_the_web_cockpit_into_practical_components.md |
+| [item_047_validate_the_redesigned_cockpit_with_screenshots_and_playtest_prompts](backlog/item_047_validate_the_redesigned_cockpit_with_screenshots_and_playtest_prompts.md) | Validate the redesigned cockpit with screenshots and playtest prompts | Ready |  | 0% | backlog/item_047_validate_the_redesigned_cockpit_with_screenshots_and_playtest_prompts.md |
 
 ## Tasks
 
@@ -143,3 +153,4 @@
 | [task_030_improve_race_desk_immersion_ui](tasks/task_030_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done | codex | 100% | tasks/task_030_improve_race_desk_immersion_ui.md |
 | [task_031_add_playtest_session_reset_and_league_dashboard_clarity](tasks/task_031_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done | codex | 100% | tasks/task_031_add_playtest_session_reset_and_league_dashboard_clarity.md |
 | [task_032_orchestrate_visual_replay_v0](tasks/task_032_orchestrate_visual_replay_v0.md) | Orchestrate visual replay V0 | Done | codex | 100% | tasks/task_032_orchestrate_visual_replay_v0.md |
+| [task_033_orchestrate_race_cockpit_redesign_v0](tasks/task_033_orchestrate_race_cockpit_redesign_v0.md) | Orchestrate race cockpit redesign V0 | Ready |  | 0% | tasks/task_033_orchestrate_race_cockpit_redesign_v0.md |

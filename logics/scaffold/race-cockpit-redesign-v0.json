@@ -1,0 +1,372 @@
+{
+  "title": "Redesign the CR League race cockpit V0",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/roadmap/road_001_cr_league_roadmap.md",
+    "logics/specs/spec_016_implementation_roadmap.md",
+    "logics/architecture/adr_005_theme_design_system.md",
+    "logics/architecture/adr_006_accessibility.md",
+    "logics/architecture/adr_007_i18n.md",
+    "docs/playtest/private-league-3gp-checklist.md",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/styles/layout.css",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "tests/e2e/private-league.spec.ts",
+    "Recent feedback: the current app feels visually unstructured, lacks an intentional art direction, stacks unrelated panels into one long page, makes the replay hard to understand, and still exposes English copy in a localized experience."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Cockpit UX and visual direction",
+    "needs": [
+      "Replace the current prototype-like single-page stack with a coherent race cockpit that feels like a game interface rather than an admin dashboard.",
+      "Establish a minimal but intentional visual direction for CR League: racing pit wall, urban micro-EV championship, clear state hierarchy, and restrained game-like energy.",
+      "Make the main screen answer the player's immediate questions in under five seconds: where the GP stands, what action is expected, what the player's team status is, and what changed after the race.",
+      "Make all visible user-facing copy respect the existing i18n catalog and prevent English copy from leaking into the French experience.",
+      "Split the current large web app surface into practical, domain-named components only where that makes the redesign easier to reason about and test.",
+      "Rework the result and replay experience so it is visually clear whether the user is looking at a final classification summary, a race story, or a replay-like visualization."
+    ],
+    "context": [
+      "The current CR League prototype can create and run a private league loop, submit directives, resolve GPs, show a dashboard, garage, recap, report, and a first visual replay.",
+      "The implementation is functionally validated, but the user-facing experience now exposes a product risk: the interface does not yet feel designed, directed, or game-like enough to carry the concept.",
+      "The main React screen currently concentrates too many responsibilities in `apps/web/src/app/App.tsx`, which makes visual hierarchy and localized copy harder to audit.",
+      "The current palette, panel rhythm, and layout read as a generic web dashboard. The product brief asks for an asynchronous racing championship where the player feels like a team principal watching the consequences of a strategic bet.",
+      "The redesign should not introduce new gameplay mechanics, a routing framework, a component library, animation engine, or broad dependency churn. The first win is a better cockpit and clearer result/replay presentation using existing React, CSS, and catalogs.",
+      "The work should preserve the proven 3-GP private league loop and established gates: typecheck, unit tests, lint, build, e2e, i18n validation, Logics validation, plus desktop and mobile visual QA."
+    ],
+    "acceptance_criteria": [
+      "AC1: The main playable screen is reorganized into a cockpit layout with clear Course, Championship, Garage, and Result/Replay responsibilities instead of one long undifferentiated stack.",
+      "AC2: A documented V0 visual direction defines palette, density, typography scale, panel rhythm, state colors, and racing-specific UI motifs without adding a design-system dependency.",
+      "AC3: The race desk exposes a single obvious primary action per state and keeps the current GP status, player directive, and next action visible on desktop and mobile.",
+      "AC4: The result and replay area clearly distinguishes final classification, race explanation, replay/visual summary, and written report, with no ambiguous labels.",
+      "AC5: French and English UI copy come from the i18n catalogs for all redesigned surfaces, and a test or audit catches the main hardcoded-copy regressions.",
+      "AC6: The web implementation is split into practical components or helpers for the redesigned surfaces, without speculative abstractions or new dependencies.",
+      "AC7: Desktop and mobile screenshots demonstrate that text does not overlap, core controls remain visible, and the app no longer reads as an unstructured admin page.",
+      "AC8: Existing 3-GP e2e behavior and validation gates continue to pass after the redesign."
+    ]
+  },
+  "product": {
+    "title": "Race Cockpit Redesign V0 Product Brief",
+    "overview": "Race Cockpit Redesign V0 turns the current functional prototype into a coherent game cockpit: a focused race desk, championship overview, garage, and result/replay surface that make CR League feel intentionally designed and understandable before adding more mechanics.",
+    "goals": [
+      "Make CR League feel like an asynchronous racing strategy game, not a generic operations dashboard.",
+      "Give the player a clear first viewport: race state, next action, team status, and championship context.",
+      "Create a compact visual language that can survive future features: dark pit-wall command surface, racing state accents, readable cards, and dense but calm information.",
+      "Make the post-GP moment satisfying and legible by separating classification, explanation, replay summary, and race report.",
+      "Raise i18n quality so French playtests do not encounter English fragments in redesigned areas.",
+      "Keep the redesign cheap: no new UI framework, no design-token bureaucracy, no animation engine, and no new gameplay contracts."
+    ],
+    "non_goals": [
+      "Do not add new race mechanics, new cards, new economy rules, or scheduler behavior in this redesign.",
+      "Do not introduce a component library, Tailwind migration, CSS-in-JS framework, or routing system.",
+      "Do not build a full animated replay or cinematic broadcast mode.",
+      "Do not optimize for final brand identity, logos, marketing pages, or public launch assets.",
+      "Do not rewrite the API or simulation model unless a display bug blocks the cockpit.",
+      "Do not create abstractions for hypothetical future screens beyond what the current cockpit needs."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Define the cockpit information architecture",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "UX structure",
+      "request_acs": [
+        "AC1",
+        "AC3",
+        "AC4",
+        "AC7"
+      ],
+      "problem": [
+        "The current page stacks setup, race desk, dashboard, garage, standings, recap, replay, key moments, and report in one long flow.",
+        "Players cannot immediately tell which panel is the main task, which is context, and which is post-race evidence.",
+        "The lack of screen-level hierarchy makes the app feel unfinished even when the underlying loop works."
+      ],
+      "scope_in": [
+        "Define the V0 screen model for the playable app: Course, Championship, Garage, and Result/Replay regions.",
+        "Decide which information belongs in the first viewport before and after a GP is resolved.",
+        "Specify desktop layout rules, mobile stacking order, and sticky or persistent action expectations if needed.",
+        "Name which existing panels should be merged, moved, renamed, or removed from the default flow.",
+        "Document the state model for briefing, ready, resolved, between-GP, and no-league setup states."
+      ],
+      "scope_out": [
+        "New navigation routes.",
+        "Marketing or landing page layout.",
+        "Deep season management screens.",
+        "New gameplay mechanics or new API contracts."
+      ],
+      "acceptance_criteria": [
+        "AC1: The IA plan names the primary surface for each game state and identifies the player's next action in that state.",
+        "AC2: The plan defines desktop and mobile ordering for Course, Championship, Garage, and Result/Replay.",
+        "AC3: The plan removes or consolidates at least one redundant panel from the current long stack.",
+        "AC4: The plan names the post-GP information sequence: outcome first, explanation second, replay/report supporting evidence after."
+      ]
+    },
+    {
+      "title": "Establish visual direction and CSS foundations",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Visual direction",
+      "request_acs": [
+        "AC2",
+        "AC3",
+        "AC7"
+      ],
+      "problem": [
+        "The current colors and panels feel generic and do not communicate racing, pit wall, strategy, or championship drama.",
+        "The UI lacks a deliberate hierarchy between command surfaces, data cards, warnings, results, and supporting text.",
+        "Ad hoc color use will keep drifting unless the redesign defines a small reusable vocabulary."
+      ],
+      "scope_in": [
+        "Define a V0 palette with a dark command surface, neutral content surfaces, and race-state accents for prepare, ready, resolved, risk, and success.",
+        "Define typography scale and density rules for cockpit panels, compact cards, headings, status badges, and body text.",
+        "Define panel rhythm: when a surface is a command area, a repeated card, a data row, or an unframed section.",
+        "Update CSS variables and layout classes in `apps/web/src/styles/layout.css` without adding a styling dependency.",
+        "Preserve accessibility basics: contrast, focus states, readable text sizes, and non-color-only state communication."
+      ],
+      "scope_out": [
+        "Final brand identity.",
+        "Custom illustration set.",
+        "SVG decorative backgrounds.",
+        "New icon package or component library.",
+        "Animation system."
+      ],
+      "acceptance_criteria": [
+        "AC1: The CSS exposes a small set of named colors or variables for cockpit, surface, text, muted text, accent, warning, and success.",
+        "AC2: The first viewport reads as a racing command cockpit rather than a neutral SaaS dashboard.",
+        "AC3: Race states are visually distinct and labeled in text.",
+        "AC4: Desktop and mobile screenshots show no obvious text overlap or unreadable contrast."
+      ]
+    },
+    {
+      "title": "Rebuild the race desk around one clear action",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race desk UX",
+      "request_acs": [
+        "AC1",
+        "AC3",
+        "AC5",
+        "AC8"
+      ],
+      "problem": [
+        "The race desk currently mixes setup, settings, directive controls, telemetry, and action buttons in a way that dilutes the main task.",
+        "Players should immediately understand whether they are preparing, waiting, resolving, reviewing, or starting the next GP.",
+        "Several labels and copy paths need to be checked so the race desk does not leak English in French playtests."
+      ],
+      "scope_in": [
+        "Redesign the race desk first viewport for briefing, ready, and resolved states.",
+        "Keep exactly one visually dominant command for the current state.",
+        "Group directive controls as a clear strategy form, separate from league settings.",
+        "Show track traits, likely weather, selected card, readiness, and player team status as supporting cockpit telemetry.",
+        "Move secondary commands such as settings, forget team, and restart away from the primary action row.",
+        "Route all new race desk copy through EN/FR catalogs."
+      ],
+      "scope_out": [
+        "Changing directive choices.",
+        "Adding card recommendations beyond existing logic.",
+        "New scheduler behavior.",
+        "Account or permission changes."
+      ],
+      "acceptance_criteria": [
+        "AC1: In each race state, there is one visually dominant primary action and secondary actions are clearly lower priority.",
+        "AC2: The directive form remains usable and validated by the existing API flow.",
+        "AC3: French mode shows French labels for the redesigned race desk controls and state text.",
+        "AC4: Existing create, directive submit, resolve, and next-GP flows remain covered by unit or e2e tests."
+      ]
+    },
+    {
+      "title": "Redesign championship and garage as supporting panels",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Supporting game panels",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC5",
+        "AC7",
+        "AC8"
+      ],
+      "problem": [
+        "Championship, standings, history, garage, inventory, rewards, and shop currently compete for attention with the race desk.",
+        "The garage and championship should make the loop feel persistent without overwhelming the current GP decision.",
+        "The UI should make post-race rewards and card availability feel like game progression rather than a raw admin list."
+      ],
+      "scope_in": [
+        "Redesign the championship overview as a compact supporting panel with invite code, round, readiness, leader, and standings.",
+        "Redesign the garage as a compact progression panel with last GP rewards, inventory, and available card choices.",
+        "Separate persistent championship context from immediate race action.",
+        "Use visual hierarchy to make rewards, credits, and consumed cards scannable.",
+        "Ensure all visible championship and garage copy uses i18n catalogs."
+      ],
+      "scope_out": [
+        "New card economy.",
+        "New shop offer algorithm.",
+        "Card selling, rarity, drafts, or catch-up tuning.",
+        "Full season-management UI."
+      ],
+      "acceptance_criteria": [
+        "AC1: Championship and garage panels are visually secondary to the current race action but remain easy to scan.",
+        "AC2: Post-GP rewards and consumed card information are visible without reading a paragraph.",
+        "AC3: The garage does not show purchasable actions before they are valid.",
+        "AC4: Existing e2e coverage still verifies the 3-GP loop and card purchase path."
+      ]
+    },
+    {
+      "title": "Make result and replay presentation unambiguous",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Result comprehension",
+      "request_acs": [
+        "AC1",
+        "AC4",
+        "AC5",
+        "AC7",
+        "AC8"
+      ],
+      "problem": [
+        "The first visual replay pass is technically derived from result data but can still be misunderstood as a live or positional race simulation.",
+        "Players need separate cues for final classification, causal explanation, visual summary, and written report.",
+        "The post-GP moment should feel like the payoff of the player's directive, not a set of disconnected cards."
+      ],
+      "scope_in": [
+        "Redesign the post-GP result area into an explicit sequence: headline outcome, player consequence, final classification, replay summary, key moments, report.",
+        "Rename and label replay elements so users know whether they are looking at final positions, weather phases, events, or narrative report.",
+        "Keep the visual replay honest if it remains static; do not imply precise lap-by-lap car movement unless implemented.",
+        "Improve empty and low-event states so the result page still explains the race.",
+        "Route all result/replay labels through EN/FR catalogs."
+      ],
+      "scope_out": [
+        "Full animated race replay.",
+        "New simulation event types.",
+        "Replay controls or scrubber.",
+        "Canvas or 3D implementation."
+      ],
+      "acceptance_criteria": [
+        "AC1: A resolved GP result view clearly labels outcome, classification, replay summary, key moments, and report.",
+        "AC2: The replay panel text explains what the user is looking at without relying on external instructions.",
+        "AC3: The current static replay does not visually imply precision that the data does not support.",
+        "AC4: Unit or e2e assertions cover the key result/replay labels in at least one locale."
+      ]
+    },
+    {
+      "title": "Audit and harden i18n for redesigned surfaces",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Localization quality",
+      "request_acs": [
+        "AC5",
+        "AC8"
+      ],
+      "problem": [
+        "The app has EN/FR catalogs, but user-facing strings can still be introduced directly in JSX, tests, or helper output.",
+        "French playtests lose trust when parts of the cockpit remain in English.",
+        "A manual i18n check is too easy to skip during rapid UI redesign."
+      ],
+      "scope_in": [
+        "Audit redesigned web surfaces for hardcoded user-facing strings.",
+        "Move missing user-facing copy into `apps/web/src/i18n/en.json` and `apps/web/src/i18n/fr.json`.",
+        "Add a small project-owned check or test focused on the redesigned cockpit's key labels.",
+        "Keep language switching behavior intact and preserve existing i18n validation."
+      ],
+      "scope_out": [
+        "Adding new locales.",
+        "Server-side localization.",
+        "Pluralization framework.",
+        "Full static analysis of every possible string in the repository."
+      ],
+      "acceptance_criteria": [
+        "AC1: New cockpit, championship, garage, result, and replay labels exist in both EN and FR catalogs.",
+        "AC2: French mode no longer shows English for the redesigned primary surfaces.",
+        "AC3: `logics-manager i18n validate` passes.",
+        "AC4: A lightweight test or scripted check protects the main redesigned labels from future hardcoded regressions."
+      ]
+    },
+    {
+      "title": "Split the web cockpit into practical components",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Frontend maintainability",
+      "request_acs": [
+        "AC6",
+        "AC8"
+      ],
+      "problem": [
+        "`apps/web/src/app/App.tsx` has grown into a large mixed surface that combines state orchestration, API actions, layout, result rendering, garage, dashboard, and replay.",
+        "This makes visual redesign harder because every UI change risks touching the whole file.",
+        "The code needs practical component boundaries, but not a speculative design system."
+      ],
+      "scope_in": [
+        "Extract only the cockpit surfaces that are actively redesigned: race desk, championship panel, garage panel, result view, and visual replay.",
+        "Keep API state and top-level action handlers in the app root unless moving them clearly reduces duplication.",
+        "Reuse existing types and helper functions; do not introduce stores, contexts, factories, or one-off abstraction layers.",
+        "Keep tests focused on rendered behavior rather than component internals."
+      ],
+      "scope_out": [
+        "Routing framework.",
+        "Global state library.",
+        "Design-system package.",
+        "Storybook or component explorer.",
+        "Large file/folder reorganization unrelated to the cockpit."
+      ],
+      "acceptance_criteria": [
+        "AC1: The app root is smaller and delegates redesigned surfaces to clearly named components or local helpers.",
+        "AC2: Component boundaries map to product surfaces, not generic UI abstractions.",
+        "AC3: No new runtime dependency is added for the refactor.",
+        "AC4: Existing unit and e2e tests continue to pass after extraction."
+      ]
+    },
+    {
+      "title": "Validate the redesigned cockpit with screenshots and playtest prompts",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Validation and playtest readiness",
+      "request_acs": [
+        "AC7",
+        "AC8"
+      ],
+      "problem": [
+        "The redesign is only successful if it changes what a tester understands and feels, not just if the code compiles.",
+        "The current playtest checklist needs to capture visual direction, cockpit clarity, replay comprehension, and French-copy quality.",
+        "Screenshots should catch obvious responsive failures before another playtest."
+      ],
+      "scope_in": [
+        "Update the private-league 3-GP playtest checklist with cockpit-specific questions.",
+        "Capture desktop and mobile screenshots for briefing, ready, resolved, and between-GP states.",
+        "Document known remaining limits after the redesign, especially any replay limitations.",
+        "Run the established gates and record proof in the Logics task closeout."
+      ],
+      "scope_out": [
+        "Running a full external playtest.",
+        "Analytics instrumentation.",
+        "Automated visual regression infrastructure.",
+        "Production release work."
+      ],
+      "acceptance_criteria": [
+        "AC1: Playtest docs ask whether the cockpit feels like a racing game rather than an admin dashboard.",
+        "AC2: Playtest docs ask whether the next action is obvious in each GP state.",
+        "AC3: Desktop and mobile screenshots are captured or explicitly inspected for redesigned states.",
+        "AC4: The Logics closeout records validation commands and visual QA proof."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate race cockpit redesign V0",
+    "plan": [
+      "Read the current app layout, CSS, i18n catalogs, roadmap, product brief, and existing playtest notes before editing UI.",
+      "Define the cockpit information architecture and visual direction before changing components.",
+      "Refactor only the surfaces needed for the redesign, keeping state and API behavior stable.",
+      "Implement the cockpit, championship, garage, result, and replay presentation changes with EN/FR catalog coverage.",
+      "Run unit, typecheck, lint, build, e2e, i18n, Logics validation, and desktop/mobile visual QA.",
+      "Update playtest docs and close the Logics chain with concrete proof."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/race-cockpit-redesign-v0.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

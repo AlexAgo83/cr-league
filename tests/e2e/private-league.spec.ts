@@ -105,9 +105,19 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.locator(".round-timeline")).toContainText("R1");
   await expect(page.locator(".championship-settings-panel")).toHaveCount(0);
   await page.getByRole("button", { name: "Profile menu" }).click();
+  await expect(page.getByRole("button", { name: "Manage league" })).toBeVisible();
   await expect(page.getByRole("button", { name: "League controls" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Copy profile code" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Forget profile" })).toBeVisible();
+  const menuButtons = await page.locator(".profile-menu-panel button").evaluateAll((buttons) => buttons.map((button) => button.textContent?.trim()));
+  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "Forget profile"]);
   await expect(page.getByLabel("Language")).toBeVisible();
-  await page.getByRole("button", { name: "Profile menu" }).click();
+  await page.getByRole("button", { name: "Copy profile code" }).click();
+  await expect(page.getByRole("dialog", { name: "Profile code" })).toBeVisible();
+  await expect(page.getByLabel("Copy profile code")).toHaveValue("ABCD1234");
+  await page.getByLabel("Copy profile code").click();
+  await expect(page.getByText("Profile code copied: ABCD1234")).toBeVisible();
+  await page.getByRole("button", { name: "Close" }).click();
   await page.screenshot({ path: testInfo.outputPath("championship-layout-desktop.png"), fullPage: true });
 
   await expect(page.getByLabel("League summary").getByText("Wait for directives")).toBeVisible();
@@ -243,6 +253,7 @@ function expectedCircuitTitle(resultRound: number) {
 }
 
 async function createProfile(page: Page) {
+  await page.getByRole("button", { name: /Create profile/ }).click();
   await page.getByLabel("Email").fill("pilot@example.test");
   await page.getByRole("button", { name: "Create profile" }).click();
   await expect(page.getByText("Profile created. Save this recovery code: ABCD1234")).toBeVisible();

@@ -62,6 +62,20 @@
   padding: 10px 14px;
 }
 
+.setup-topbar-actions {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
+.profile-code-input {
+  cursor: copy;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
+
 .setup-grid {
   align-items: start;
   display: grid;

@@ -24,6 +24,7 @@ type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueCode: string;
   teamName: string;
 };
+type ProfileMode = "choice" | "create" | "recover";
 type SetupMode = "choice" | "create" | "join";
 
 function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
@@ -68,9 +69,11 @@ export function App() {
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
   const tt = (key: TranslationKey) => t(key, locale);
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
+  const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [briefingOpen, setBriefingOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [profileCodeOpen, setProfileCodeOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
   const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
@@ -376,11 +379,36 @@ export function App() {
     setMessage(tt("status_initial"));
   }
 
+  async function copyProfileCode() {
+    const code = profileSession?.recoveryCode;
+    if (!code) {
+      setMessage(tt("status_profile_code_missing"));
+      return;
+    }
+
+    try {
+      await navigator.clipboard?.writeText(code);
+    } catch {
+      const input = document.createElement("input");
+      input.value = code;
+      input.setAttribute("readonly", "");
+      input.style.left = "-9999px";
+      input.style.position = "fixed";
+      document.body.append(input);
+      input.select();
+      document.execCommand("copy");
+      input.remove();
+    }
+
+    setMessage(`${tt("status_profile_code_copied")} ${code}`);
+  }
+
   function forgetProfile() {
     localStorage.removeItem(PROFILE_SESSION_KEY);
     localStorage.removeItem(PLAYER_CLAIM_KEY);
     setProfileSession(null);
     setLeagueState(null);
+    setProfileMode("choice");
     setSetupMode("choice");
     setSavedClaims([]);
     storePlayerClaims([], undefined);
@@ -400,21 +428,118 @@ export function App() {
     setProfileOpen(false);
   }
 
+  const profileMenu = (
+    <div
+      className="profile-menu"
+      onBlur={(event) => {
+        if (event.relatedTarget && event.relatedTarget !== document.body && !event.currentTarget.contains(event.relatedTarget)) setProfileOpen(false);
+      }}
+    >
+      <button type="button" className="profile-menu-button" aria-label={tt("profile_menu")} aria-expanded={profileOpen} onClick={() => setProfileOpen((open) => !open)}>
+        {playerTeam?.name.slice(0, 2).toUpperCase() ?? "CR"}
+      </button>
+      {profileOpen ? (
+        <div className="profile-menu-panel">
+          {leagueState ? (
+            <div className="profile-league-summary">
+              <strong>{leagueState.league.name}</strong>
+              <span className="invite-code">{leagueState.league.code}</span>
+            </div>
+          ) : null}
+          {savedClaims.length > 1 ? (
+            <label>
+              {tt("profile_league_switch")}
+              <select value={leagueState?.player?.teamId ?? ""} onChange={(event) => void switchLeague(event.target.value)}>
+                {savedClaims.map((claim) => (
+                  <option key={claim.teamId} value={claim.teamId}>
+                    {claim.leagueName} · {claim.teamName}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : null}
+          <label>
+            {tt("language_label")}
+            <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
+              <option value="en">{tt("language_en")}</option>
+              <option value="fr">{tt("language_fr")}</option>
+            </select>
+          </label>
+          <button type="button" className="profile-menu-action" onClick={addLeague}>
+            {tt("action_add_league")}
+          </button>
+          {leagueState?.player ? (
+            <button
+              type="button"
+              className="profile-menu-action"
+              onClick={() => {
+                setLeagueControlsOpen(true);
+                setProfileOpen(false);
+              }}
+            >
+              {tt("settings_title")}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className="profile-menu-action"
+            onClick={() => {
+              setProfileCodeOpen(true);
+              setProfileOpen(false);
+            }}
+          >
+            {tt("action_copy_profile_code")}
+          </button>
+          <button type="button" className="profile-menu-action" onClick={forgetProfile}>
+            {tt("action_forget_profile")}
+          </button>
+        </div>
+      ) : null}
+    </div>
+  );
+
   const setupTopbar = (
     <header className="setup-topbar">
       <div className="brand">
         <img className="brand-icon" src="/favicon.svg" alt={APP_NAME} />
         <strong>{APP_NAME}</strong>
       </div>
-      <label className="language-select">
-        {tt("language_label")}
-        <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
-          <option value="en">{tt("language_en")}</option>
-          <option value="fr">{tt("language_fr")}</option>
-        </select>
-      </label>
+      <div className="setup-topbar-actions">
+        <label className="language-select">
+          {tt("language_label")}
+          <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
+            <option value="en">{tt("language_en")}</option>
+            <option value="fr">{tt("language_fr")}</option>
+          </select>
+        </label>
+        {profileSession ? profileMenu : null}
+      </div>
     </header>
   );
+
+  const profileCodeModal = profileCodeOpen ? (
+    <div className="modal-overlay" onClick={() => setProfileCodeOpen(false)}>
+      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("profile_code_title")} onClick={(event) => event.stopPropagation()}>
+        <span className="section-kicker">{tt("profile_kicker")}</span>
+        <h2>{tt("profile_code_title")}</h2>
+        <input
+          className="profile-code-input"
+          aria-label={tt("action_copy_profile_code")}
+          readOnly
+          value={profileSession?.recoveryCode ?? tt("status_profile_code_missing")}
+          onClick={(event) => {
+            event.currentTarget.select();
+            void copyProfileCode();
+          }}
+        />
+        <div className="actions">
+          <button type="button" onClick={() => setProfileCodeOpen(false)}>
+            {tt("action_close")}
+          </button>
+        </div>
+      </section>
+    </div>
+  ) : null;
 
   if (!profileSession) {
     return (
@@ -426,30 +551,50 @@ export function App() {
             <div className="panel-heading">
               <div>
                 <span className="section-kicker">{tt("profile_kicker")}</span>
-                <h1 id="profile-title">{tt("profile_title")}</h1>
+                <h1 id="profile-title">
+                  {profileMode === "create" ? tt("profile_create_title") : profileMode === "recover" ? tt("profile_recover_title") : tt("profile_title")}
+                </h1>
               </div>
             </div>
-            <p className={status === "error" ? "status error" : "status"}>{message}</p>
-            <div className="field-grid setup-fields">
-              <label>
-                {tt("field_email")}
-                <input type="email" value={profileForm.email} onChange={(event) => setProfileForm({ ...profileForm, email: event.target.value })} />
-              </label>
-              <label>
-                {tt("field_recovery_code")}
-                <input value={profileForm.recoveryCode} onChange={(event) => setProfileForm({ ...profileForm, recoveryCode: event.target.value.toUpperCase() })} />
-              </label>
-            </div>
-            <div className="actions primary-actions">
-              <button type="button" onClick={createProfileSession} disabled={status === "loading"}>
-                {tt("action_create_profile")}
-              </button>
-              <button type="button" onClick={recoverProfileSession} disabled={status === "loading"}>
-                {tt("action_recover_profile")}
-              </button>
-            </div>
+            <p className={status === "error" ? "status error" : "status"}>{message === tt("status_initial") ? tt("profile_intro") : message}</p>
+            {profileMode === "choice" ? (
+              <div className="setup-choice-grid">
+                <button type="button" className="setup-choice" onClick={() => setProfileMode("create")}>
+                  <strong>{tt("action_create_profile")}</strong>
+                  <small>{tt("profile_create_hint")}</small>
+                </button>
+                <button type="button" className="setup-choice" onClick={() => setProfileMode("recover")}>
+                  <strong>{tt("action_recover_profile")}</strong>
+                  <small>{tt("profile_recover_hint")}</small>
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="field-grid setup-fields">
+                  <label>
+                    {tt("field_email")}
+                    <input type="email" value={profileForm.email} onChange={(event) => setProfileForm({ ...profileForm, email: event.target.value })} />
+                  </label>
+                  {profileMode === "recover" ? (
+                    <label>
+                      {tt("field_recovery_code")}
+                      <input value={profileForm.recoveryCode} onChange={(event) => setProfileForm({ ...profileForm, recoveryCode: event.target.value.toUpperCase() })} />
+                    </label>
+                  ) : null}
+                </div>
+                <div className="actions primary-actions">
+                  <button type="button" onClick={profileMode === "create" ? createProfileSession : recoverProfileSession} disabled={status === "loading"}>
+                    {profileMode === "create" ? tt("action_create_profile") : tt("action_recover_profile")}
+                  </button>
+                  <button type="button" className="secondary-button" onClick={() => setProfileMode("choice")} disabled={status === "loading"}>
+                    {tt("action_back")}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </section>
+        {profileCodeModal}
       </main>
     );
   }
@@ -533,6 +678,7 @@ export function App() {
             </aside>
           ) : null}
         </section>
+        {profileCodeModal}
       </main>
     );
   }
@@ -561,67 +707,7 @@ export function App() {
             </button>
           ))}
         </nav>
-        <div
-          className="profile-menu"
-          onBlur={(event) => {
-            if (!event.currentTarget.contains(event.relatedTarget)) setProfileOpen(false);
-          }}
-        >
-          <button
-            type="button"
-            className="profile-menu-button"
-            aria-label={tt("profile_menu")}
-            aria-expanded={profileOpen}
-            onClick={() => setProfileOpen(!profileOpen)}
-          >
-            {playerTeam?.name.slice(0, 2).toUpperCase() ?? "CR"}
-          </button>
-          {profileOpen ? (
-            <div className="profile-menu-panel">
-              <div className="profile-league-summary">
-                <strong>{leagueState.league.name}</strong>
-                <span className="invite-code">{leagueState.league.code}</span>
-              </div>
-              {savedClaims.length > 1 ? (
-                <label>
-                  {tt("profile_league_switch")}
-                  <select value={leagueState.player?.teamId ?? ""} onChange={(event) => void switchLeague(event.target.value)}>
-                    {savedClaims.map((claim) => (
-                      <option key={claim.teamId} value={claim.teamId}>
-                        {claim.leagueName} · {claim.teamName}
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              ) : null}
-              <label>
-                {tt("language_label")}
-                <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
-                  <option value="en">{tt("language_en")}</option>
-                  <option value="fr">{tt("language_fr")}</option>
-                </select>
-              </label>
-              <button type="button" className="profile-menu-action" onClick={addLeague}>
-                {tt("action_add_league")}
-              </button>
-              <button type="button" className="profile-menu-action" onClick={forgetProfile}>
-                {tt("action_forget_profile")}
-              </button>
-              {leagueState.player ? (
-                <button
-                  type="button"
-                  className="profile-menu-action"
-                  onClick={() => {
-                    setLeagueControlsOpen(true);
-                    setProfileOpen(false);
-                  }}
-                >
-                  {tt("settings_title")}
-                </button>
-              ) : null}
-            </div>
-          ) : null}
-        </div>
+        {profileMenu}
       </header>
 
       <section className="view-container">
@@ -763,6 +849,7 @@ export function App() {
           </section>
         </div>
       ) : null}
+      {profileCodeModal}
       {leagueControlsOpen ? (
         <div className="modal-overlay" onClick={closeLeagueControls}>
           <section className="panel modal league-controls-modal" role="dialog" aria-modal="true" aria-label={tt("settings_title")} onClick={(event) => event.stopPropagation()}>

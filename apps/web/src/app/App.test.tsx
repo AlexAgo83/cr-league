@@ -236,7 +236,7 @@ describe("App", () => {
 
     fireEvent.change(screen.getByLabelText("Language"), { target: { value: "fr" } });
 
-    expect(screen.getByRole("button", { name: "Créer profil" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Créer profil/ })).toBeTruthy();
     expect(screen.getByText("Sauvegarder ton accès")).toBeTruthy();
     expect(localStorage.getItem("cr-league-language")).toBe("fr");
   });
@@ -377,20 +377,22 @@ describe("App", () => {
     expect(fetch).toHaveBeenCalledTimes(6);
   });
 
-  it("closes the profile menu when focus leaves it", async () => {
+  it("shows and copies the saved profile code from the profile menu", async () => {
     saveProfile();
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
 
     render(<App />);
 
-    createLeagueFromSetup();
-    const profileButton = await screen.findByRole("button", { name: "Profile menu" });
-    fireEvent.click(profileButton);
-    expect(screen.getByRole("button", { name: "League controls" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copy profile code" }));
 
-    fireEvent.blur(profileButton, { relatedTarget: screen.getByRole("button", { name: "Race" }) });
+    expect(screen.getByRole("dialog", { name: "Profile code" })).toBeTruthy();
+    expect(screen.getByDisplayValue("ABCD1234")).toBeTruthy();
 
-    expect(screen.queryByRole("button", { name: "League controls" })).toBe(null);
+    fireEvent.click(screen.getByLabelText("Copy profile code"));
+    expect(writeText).toHaveBeenCalledWith("ABCD1234");
+    expect(await screen.findByText("Profile code copied: ABCD1234")).toBeTruthy();
   });
 
   it("shows a replay empty state when a resolved race has no events", async () => {
@@ -528,10 +530,12 @@ describe("App", () => {
 
     expect(await screen.findByText("League rejoined.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
-    fireEvent.click(screen.getByRole("button", { name: "Add league" }));
+    fireEvent.click(screen.getByRole("button", { name: "Manage league" }));
 
     expect(screen.getByRole("button", { name: /Create league/ })).toBeTruthy();
     expect(screen.getByText("Saved leagues")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Office League/ }));
 
     expect(await screen.findByText("ABC123")).toBeTruthy();

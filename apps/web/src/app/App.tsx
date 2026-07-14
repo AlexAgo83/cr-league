@@ -81,6 +81,7 @@ export function App() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileCodeOpen, setProfileCodeOpen] = useState(false);
   const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
+  const [directiveConfirmOpen, setDirectiveConfirmOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
   const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
@@ -186,14 +187,16 @@ export function App() {
 
   async function submitDirective() {
     if (!leagueState || !playerTeam) return;
-    if (
-      qualifyingAttemptsUsed === 0
-        ? !window.confirm(tt("directive_confirm_no_qualifying"))
-        : qualifyingAttemptsLeft > 0 && !window.confirm(`${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`)
-    ) {
+    if (qualifyingAttemptsUsed === 0 || qualifyingAttemptsLeft > 0) {
+      setDirectiveConfirmOpen(true);
       return;
     }
+    await submitDirectiveConfirmed();
+  }
 
+  async function submitDirectiveConfirmed() {
+    if (!leagueState || !playerTeam) return;
+    setDirectiveConfirmOpen(false);
     await run(tt("status_submitting_directive"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/decisions`, {
         method: "POST",
@@ -607,6 +610,28 @@ export function App() {
     </div>
   ) : null;
 
+  const directiveConfirmModal = directiveConfirmOpen ? (
+    <div className="modal-overlay" onClick={() => setDirectiveConfirmOpen(false)}>
+      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("directive_confirm_title")} onClick={(event) => event.stopPropagation()}>
+        <span className="section-kicker">{tt("qualifying_kicker")}</span>
+        <h2>{tt("directive_confirm_title")}</h2>
+        <p>
+          {qualifyingAttemptsUsed === 0
+            ? tt("directive_confirm_no_qualifying")
+            : `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`}
+        </p>
+        <div className="actions secondary-actions">
+          <button type="button" onClick={submitDirectiveConfirmed} disabled={status === "loading"}>
+            {tt("action_submit_directive")}
+          </button>
+          <button type="button" onClick={() => setDirectiveConfirmOpen(false)}>
+            {tt("action_close")}
+          </button>
+        </div>
+      </section>
+    </div>
+  ) : null;
+
   if (!profileSession) {
     return (
       <main className="app-shell setup-shell">
@@ -985,6 +1010,7 @@ export function App() {
       ) : null}
       {profileCodeModal}
       {profileLogoutModal}
+      {directiveConfirmModal}
       {leagueControlsOpen ? (
         <div className="modal-overlay" onClick={closeLeagueControls}>
           <section className="panel modal league-controls-modal" role="dialog" aria-modal="true" aria-label={tt("settings_title")} onClick={(event) => event.stopPropagation()}>

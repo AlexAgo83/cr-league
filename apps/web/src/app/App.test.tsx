@@ -192,14 +192,18 @@ const nextGrandPrixState = {
   },
   grandPrixHistory: [
     {
+      ...baseState.grandPrixHistory[0],
+      status: "resolved",
+      result: resolvedState.currentGrandPrix.result
+    },
+    {
       id: "gp_2",
       name: "Silver Ridge GP",
       season: 1,
       round: 2,
       status: "briefing",
       result: null
-    },
-    ...baseState.grandPrixHistory
+    }
   ]
 };
 
@@ -260,7 +264,7 @@ describe("App", () => {
       .mockResolvedValueOnce(response(nextGrandPrixState))
       .mockResolvedValueOnce(response(settingsState))
       .mockResolvedValueOnce(response(baseState));
-    const confirm = vi.spyOn(window, "confirm").mockReturnValue(true);
+    vi.spyOn(window, "confirm").mockReturnValue(true);
 
     render(<App />);
 
@@ -303,7 +307,9 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
-    expect(confirm).toHaveBeenCalledWith("You have not run a lap time yet. Submit the directive anyway?");
+    expect(screen.getByRole("dialog", { name: "Confirm directive" })).toBeTruthy();
+    expect(screen.getByText("You have not run a lap time yet. Submit the directive anyway?")).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Submit directive" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(screen.getByText("Ready to launch")).toBeTruthy();
 
@@ -371,6 +377,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
     expect(await screen.findByText("Season 1 · Round 2/6")).toBeTruthy();
+    expect(document.querySelector(".round-timeline")?.textContent).toContain("P1");
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
     // League controls live in the championship view
@@ -421,7 +428,6 @@ describe("App", () => {
       .mockResolvedValueOnce(response(rivalFirstState))
       .mockResolvedValueOnce(response(withoutPlayer(rivalFirstDecided)))
       .mockResolvedValueOnce(response(withoutPlayer(rivalFirstResolved)));
-    vi.spyOn(window, "confirm").mockReturnValue(true);
 
     render(<App />);
 
@@ -431,6 +437,7 @@ describe("App", () => {
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Submit directive" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 

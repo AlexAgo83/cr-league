@@ -103,7 +103,7 @@ export function ChampionshipView({
                   >
                     S{grandPrix.season} R{grandPrix.round}
                   </span>
-                  <small>{statusLabel(grandPrix.status, tt)}</small>
+                  <small>{historyLabel(grandPrix, playerTeamId, tt)}</small>
                 </li>
               ))}
             </ol>
@@ -112,4 +112,9 @@ export function ChampionshipView({
       </div>
     </div>
   );
+}
+
+function historyLabel(grandPrix: LeagueState["grandPrixHistory"][number], playerTeamId: string | undefined, tt: Translator) {
+  const position = playerTeamId ? grandPrix.result?.classification.find((entry) => entry.teamId === playerTeamId)?.position : undefined;
+  return position ? `P${position}` : statusLabel(grandPrix.status, tt);
 }

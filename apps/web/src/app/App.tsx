@@ -232,6 +232,11 @@ export function App() {
     });
   }
 
+  function openQualifyingRun() {
+    setQualifyingOpen(true);
+    void launchQualifyingRun();
+  }
+
   async function updateSettings() {
     if (!leagueState) return;
 
@@ -897,7 +902,7 @@ export function App() {
                   </small>
                   {!playerQualifyingRun ? <small>{tt("qualifying_suggestion")}</small> : null}
                 </div>
-                <button type="button" onClick={() => setQualifyingOpen(true)} disabled={isResolved || qualifyingAttemptsLeft <= 0}>
+                <button type="button" onClick={openQualifyingRun} disabled={status === "loading" || isResolved || qualifyingAttemptsLeft <= 0}>
                   {tt("action_qualifying")}
                 </button>
               </section>
@@ -986,9 +991,6 @@ export function App() {
               </span>
             </div>
             <div className="actions">
-              <button type="button" onClick={launchQualifyingRun} disabled={status === "loading" || isResolved || qualifyingAttemptsUsed >= qualifyingAttemptLimit}>
-                {tt("action_launch_qualifying")}
-              </button>
               <button type="button" onClick={() => setQualifyingOpen(false)}>
                 {tt("action_close")}
               </button>

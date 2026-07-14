@@ -207,6 +207,21 @@ const nextGrandPrixState = {
   ]
 };
 
+const qualifyingRun = {
+  teamId: "team_1",
+  time: 72.42,
+  attempts: 1,
+  result: resolvedState.currentGrandPrix.result
+};
+
+const qualifiedState = {
+  ...baseState,
+  currentGrandPrix: {
+    ...baseState.currentGrandPrix,
+    qualifyingRuns: [qualifyingRun]
+  }
+};
+
 const settingsState = {
   ...baseState,
   league: {
@@ -259,6 +274,7 @@ describe("App", () => {
     const fetch = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(response(baseState))
+      .mockResolvedValueOnce(response({ state: qualifiedState, run: qualifyingRun, isBest: true }))
       .mockResolvedValueOnce(response(decidedState))
       .mockResolvedValueOnce(response(resolvedState))
       .mockResolvedValueOnce(response(nextGrandPrixState))
@@ -292,6 +308,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Lap time" }));
     expect(screen.getByRole("heading", { name: "Run a lap time" })).toBeTruthy();
     expect(screen.getByText("Your best time sets your grid slot.", { exact: false })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Run lap time" })).toBe(null);
+    expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.queryByText("Run a lap time")).toBe(null);
 
@@ -308,7 +326,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
     expect(screen.getByRole("dialog", { name: "Confirm directive" })).toBeTruthy();
-    expect(screen.getByText("You have not run a lap time yet. Submit the directive anyway?")).toBeTruthy();
+    expect(screen.getByText("You still have lap time attempts left. Submit the directive now? 2/3")).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "Submit directive" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(screen.getByText("Ready to launch")).toBeTruthy();
@@ -399,7 +417,7 @@ describe("App", () => {
     expect(screen.getByText("Team claim forgotten.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-player-claims")).toBe("[]");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
-    expect(fetch).toHaveBeenCalledTimes(6);
+    expect(fetch).toHaveBeenCalledTimes(7);
   });
 
   it("keeps the current player attached when action responses omit player", async () => {

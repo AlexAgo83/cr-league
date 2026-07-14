@@ -439,6 +439,51 @@ export async function startNextGrandPrix(db: Db, leagueId: string) {
   return getLeagueState(db, leagueId);
 }
 
+export async function restartLeague(db: Db, leagueId: string) {
+  const state = await getLeagueState(db, leagueId);
+  if (!state) return null;
+
+  await db.raceDecision.deleteMany({
+    where: {
+      grandPrix: {
+        leagueId
+      }
+    }
+  });
+  await db.grandPrix.deleteMany({ where: { leagueId } });
+  await db.league.update({
+    where: { id: leagueId },
+    data: {
+      preparationDeadlineAt: null
+    }
+  });
+
+  for (const team of state.teams) {
+    await db.team.update({
+      where: { id: team.id },
+      data: {
+        points: 0,
+        credits: 0,
+        cards: team.kind === "human" ? STARTER_CARDS : []
+      }
+    });
+  }
+
+  await db.grandPrix.create({
+    data: {
+      leagueId,
+      name: DEMO_RACE_INPUT.grandPrixName,
+      round: 1,
+      seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-restart`,
+      primaryTrait: DEMO_RACE_INPUT.primaryTrait,
+      secondaryTrait: DEMO_RACE_INPUT.secondaryTrait,
+      forecast: DEMO_RACE_INPUT.forecast
+    }
+  });
+
+  return getLeagueState(db, leagueId);
+}
+
 function hasHumanDecision(state: LeagueState) {
   const humanTeamIds = new Set(state.teams.filter((team) => team.kind === "human").map((team) => team.id));
   return state.decisions.some((decision) => humanTeamIds.has(decision.teamId));

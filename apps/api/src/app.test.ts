@@ -323,6 +323,10 @@ describe("api app", () => {
       method: "POST",
       url: `/leagues/${leagueId}/next-grand-prix`
     });
+    const restartResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/restart`
+    });
 
     await app.close();
 
@@ -342,6 +346,14 @@ describe("api app", () => {
       nextAction: "wait_for_directives"
     });
     expect(earlyNextResponse.statusCode).toBe(409);
+    expect(restartResponse.statusCode).toBe(200);
+    expect(restartResponse.json().currentGrandPrix).toMatchObject({ round: 1, status: "briefing", result: null });
+    expect(restartResponse.json().grandPrixHistory.map((grandPrix: { round: number }) => grandPrix.round)).toEqual([1]);
+    expect(restartResponse.json().teams.find((team: { id: string }) => team.id === teamId)).toMatchObject({
+      points: 0,
+      credits: 0,
+      cards: ["rain_grip"]
+    });
   });
 
   it("updates private league cadence and preparation deadline", async () => {
@@ -560,13 +572,21 @@ function createMemoryDb(): PrismaClient {
         data
       }: {
         where: { id: string };
-        data: { points?: { increment: number }; credits?: { increment?: number; decrement?: number }; cards?: string[] };
+        data: { points?: number | { increment: number }; credits?: number | { increment?: number; decrement?: number }; cards?: string[] };
       }) => {
         const team = teams.find((candidate) => candidate.id === where.id);
         if (!team) throw new Error("Team not found");
-        team.points += data.points?.increment ?? 0;
-        team.credits += data.credits?.increment ?? 0;
-        team.credits -= data.credits?.decrement ?? 0;
+        if (typeof data.points === "number") {
+          team.points = data.points;
+        } else {
+          team.points += data.points?.increment ?? 0;
+        }
+        if (typeof data.credits === "number") {
+          team.credits = data.credits;
+        } else {
+          team.credits += data.credits?.increment ?? 0;
+          team.credits -= data.credits?.decrement ?? 0;
+        }
         if (data.cards) team.cards = data.cards;
         return team;
       }
@@ -587,6 +607,19 @@ function createMemoryDb(): PrismaClient {
         grandPrix.status = data.status;
         grandPrix.result = data.result;
         return grandPrix;
+      },
+      deleteMany: async ({ where }: { where: { leagueId: string } }) => {
+        for (let index = grandPrixes.length - 1; index >= 0; index -= 1) {
+          const grandPrix = grandPrixes[index];
+          if (grandPrix?.leagueId === where.leagueId) {
+            const grandPrixId = grandPrix.id;
+            for (let decisionIndex = decisions.length - 1; decisionIndex >= 0; decisionIndex -= 1) {
+              if (decisions[decisionIndex]?.grandPrixId === grandPrixId) decisions.splice(decisionIndex, 1);
+            }
+            grandPrixes.splice(index, 1);
+          }
+        }
+        return { count: 0 };
       }
     },
     raceDecision: {
@@ -618,6 +651,13 @@ function createMemoryDb(): PrismaClient {
         };
         decisions.push(decision);
         return decision;
+      },
+      deleteMany: async ({ where }: { where: { grandPrix: { leagueId: string } } }) => {
+        const grandPrixIds = new Set(grandPrixes.filter((grandPrix) => grandPrix.leagueId === where.grandPrix.leagueId).map((grandPrix) => grandPrix.id));
+        for (let index = decisions.length - 1; index >= 0; index -= 1) {
+          if (grandPrixIds.has(decisions[index]?.grandPrixId ?? "")) decisions.splice(index, 1);
+        }
+        return { count: 0 };
       }
     }
   } as unknown as PrismaClient;

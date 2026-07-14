@@ -59,6 +59,7 @@
 | [req_027_improve_between_gp_garage_guidance](request/req_027_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done |  |  | request/req_027_improve_between_gp_garage_guidance.md |
 | [req_028_improve_race_recap_readability](request/req_028_improve_race_recap_readability.md) | Improve race recap readability | Done |  |  | request/req_028_improve_race_recap_readability.md |
 | [req_029_improve_race_desk_immersion_ui](request/req_029_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done |  |  | request/req_029_improve_race_desk_immersion_ui.md |
+| [req_030_add_playtest_session_reset_and_league_dashboard_clarity](request/req_030_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done |  |  | request/req_030_add_playtest_session_reset_and_league_dashboard_clarity.md |
 
 ## Backlog
 
@@ -99,6 +100,7 @@
 | [item_033_improve_between_gp_garage_guidance](backlog/item_033_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done |  | 100% | backlog/item_033_improve_between_gp_garage_guidance.md |
 | [item_034_improve_race_recap_readability](backlog/item_034_improve_race_recap_readability.md) | Improve race recap readability | Done |  | 100% | backlog/item_034_improve_race_recap_readability.md |
 | [item_035_improve_race_desk_immersion_ui](backlog/item_035_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done |  | 100% | backlog/item_035_improve_race_desk_immersion_ui.md |
+| [item_036_add_playtest_session_reset_and_league_dashboard_clarity](backlog/item_036_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done |  | 100% | backlog/item_036_add_playtest_session_reset_and_league_dashboard_clarity.md |
 
 ## Tasks
 
@@ -134,3 +136,4 @@
 | [task_028_improve_between_gp_garage_guidance](tasks/task_028_improve_between_gp_garage_guidance.md) | Improve between-GP garage guidance | Done | codex | 100% | tasks/task_028_improve_between_gp_garage_guidance.md |
 | [task_029_improve_race_recap_readability](tasks/task_029_improve_race_recap_readability.md) | Improve race recap readability | Done | codex | 100% | tasks/task_029_improve_race_recap_readability.md |
 | [task_030_improve_race_desk_immersion_ui](tasks/task_030_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done | codex | 100% | tasks/task_030_improve_race_desk_immersion_ui.md |
+| [task_031_add_playtest_session_reset_and_league_dashboard_clarity](tasks/task_031_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done | codex | 100% | tasks/task_031_add_playtest_session_reset_and_league_dashboard_clarity.md |

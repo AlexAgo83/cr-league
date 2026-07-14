@@ -213,22 +213,25 @@ describe("App", () => {
       .mockResolvedValueOnce(response(decidedState))
       .mockResolvedValueOnce(response(resolvedState))
       .mockResolvedValueOnce(response(nextGrandPrixState))
-      .mockResolvedValueOnce(response(settingsState));
+      .mockResolvedValueOnce(response(settingsState))
+      .mockResolvedValueOnce(response(baseState));
+    vi.spyOn(window, "confirm").mockReturnValue(true);
 
     render(<App />);
 
     expect(screen.getByRole("heading", { name: "CR League" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Create league" }));
-    expect(await screen.findByText("Code ABC123 · Round 1 · briefing")).toBeTruthy();
+    expect(await screen.findByText("ABC123")).toBeTruthy();
+    expect(screen.getAllByText("Round 1").length).toBeGreaterThan(0);
     expect(screen.getByText("Pit wall")).toBeTruthy();
     expect(screen.getByText("Prepare")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Current GP" })).toBeTruthy();
+    expect(screen.getByText("Current GP")).toBeTruthy();
     expect(screen.getByText("Fast · Weather sensitive")).toBeTruthy();
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
-    expect(screen.getByText("0 ready · 2 missing")).toBeTruthy();
+    expect(screen.getByText("0/2")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
@@ -253,16 +256,21 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Launch GP" }).hasAttribute("disabled")).toBe(true);
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
-    expect(await screen.findByText("Code ABC123 · Round 2 · briefing")).toBeTruthy();
+    expect(await screen.findByText("Round 2")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Restart session" })).toBeTruthy();
 
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
     fireEvent.click(screen.getByRole("button", { name: "Update settings" }));
     expect(await screen.findByText("League settings updated.")).toBeTruthy();
 
+    fireEvent.click(screen.getByRole("button", { name: "Restart session" }));
+    expect(await screen.findByText("Playtest session restarted.")).toBeTruthy();
+    expect(screen.getAllByText("Round 1").length).toBeGreaterThan(0);
+
     fireEvent.click(screen.getByRole("button", { name: "Forget team" }));
     expect(screen.getByText("Team claim forgotten.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-player-claim")).toBe(null);
-    expect(fetch).toHaveBeenCalledTimes(5);
+    expect(fetch).toHaveBeenCalledTimes(6);
   });
 
   it("joins a league by code", async () => {
@@ -273,7 +281,7 @@ describe("App", () => {
     fireEvent.change(screen.getByLabelText("Join code"), { target: { value: "abc123" } });
     fireEvent.click(screen.getByRole("button", { name: "Join league" }));
 
-    expect(await screen.findByText("Code ABC123 · Round 1 · briefing")).toBeTruthy();
+    expect(await screen.findByText("ABC123")).toBeTruthy();
     expect(fetch).toHaveBeenCalledWith(
       "http://localhost:4874/leagues/join",
       expect.objectContaining({

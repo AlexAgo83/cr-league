@@ -106,6 +106,9 @@
 - Added a player-focused race recap with key difference, directive summary, next-GP takeaway, and prioritized timeline labels.
 - Added a first race-desk immersion pass: pit-wall hierarchy, explicit Prepare/Ready/Resolved state badges, telemetry chips, and one visually dominant command per state.
 - Visually checked the updated desk on desktop Prepare/Ready states and mobile resolved state before validation.
+- Added a guarded playtest restart action so the same league can return to round 1 without making teams rejoin.
+- Reworked the league panel into a clearer championship dashboard with invite code, current GP, readiness, leader, player team, standings, garage, and history.
+- Visually checked the updated dashboard on desktop and mobile before validation.
 - Remaining limits are intentional: no card selling, rarity, draft offers, catch-up economy tuning, full visual track replay, or scheduler.
 
 ## Backlog Candidates
@@ -114,6 +117,7 @@
 - Keep testing whether the race recap explains cause and effect before adding visual replay.
 - Add a first immersion pass for the race desk UI.
 - Re-test whether the state badge plus primary command removes the need to guess the next action.
+- Re-test whether the clearer dashboard and session restart make repeated colleague playtests easier to operate.
 - Tune and expand between-GP progression only after the thin garage loop has playtest feedback.
 
 ## Open Questions

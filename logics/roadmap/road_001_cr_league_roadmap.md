@@ -5,7 +5,7 @@
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
 > Confidence: 90
-> Non-semantic edit: refreshed 0.2/0.3 delivery notes after race desk immersion pass.
+> Non-semantic edit: refreshed 0.2/0.3 delivery notes after playtest reset and dashboard pass.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1 without pretending the full game should be built in one pass.
@@ -15,7 +15,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 # Current Position
 - Product discovery, core gameplay specs, architecture, device targets, theme direction, ADRs, repository governance, and implementation contracts are documented.
 - The monorepo foundation exists with Vite React, Fastify, Prisma, shared simulation package, tests, lint, build, and Logics validation.
-- The prototype can create a persisted demo league, submit a race directive, resolve a Grand Prix, show report/replay evidence, persist rewards, join an active league by invite code, rejoin a claimed team, advance to the next Grand Prix, configure cadence/deadline, show GP history/readiness, switch between English and French UI, show a guided GP briefing, present a state-driven race desk, buy/hold/consume simple cards, and seed a manual private-league playtest session.
+- The prototype can create a persisted demo league, submit a race directive, resolve a Grand Prix, show report/replay evidence, persist rewards, join an active league by invite code, rejoin a claimed team, advance to the next Grand Prix, restart a playtest league, configure cadence/deadline, show GP history/readiness, switch between English and French UI, show a guided GP briefing, present a state-driven race desk, buy/hold/consume simple cards, and seed a manual private-league playtest session.
 - This is not yet a complete game loop: there is no automatic scheduler, notifications, deep card economy, replay polish, full auth/permissions, or production deployment.
 
 # Milestones
@@ -68,6 +68,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - submitted/missing team action state;
   - manual cadence/deadline settings;
   - GP history and dashboard readiness/action display;
+  - guarded playtest session restart that keeps league/team identity;
   - manual 3-GP playtest checklist and `PLAY01` fixture seed;
   - lightweight lap-tagged replay timeline;
   - French language switcher;
@@ -105,7 +106,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Delivered foundation:
   - resolved GP recap panel explaining key difference, player directive, and next-GP lesson;
   - replay timeline now prioritizes player and key events before ambience notes;
-  - desktop Prepare/Ready desk states and mobile resolved state visually checked after the pit-wall pass.
+  - desktop Prepare/Ready desk states and mobile resolved state visually checked after the pit-wall pass;
+  - guarded session restart and clearer championship dashboard visually checked on desktop and mobile.
 - Linked docs:
   - `spec_001_grand_prix_core_loop_and_simulation_v1`
   - `spec_016_implementation_roadmap`
@@ -170,6 +172,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Improve the dashboard layout after feedback from a real colleague session.
 - Add a first replay visualization pass from the stored event timeline.
 - Re-test whether the race desk state badge and primary command make the next action obvious.
+- Re-test whether the dashboard and restart flow make repeated playtests easy to operate.
 - Expand card economy only after the thin garage loop has playtest feedback.
 
 # Risks

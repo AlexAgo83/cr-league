@@ -17,6 +17,7 @@
 6. Review the garage summary, check the consumed-card line, buy one recommended card if enough credits are available, then start GP 2.
 7. Start GP 3 and repeat.
 8. Stop after GP 3 and review standings/history.
+9. Use `Restart session` once and confirm the league returns to round 1 while teams remain joined.
 
 ## Observe
 - Can testers tell which team is theirs?
@@ -27,6 +28,8 @@
 - Does the race recap explain what made the difference?
 - Does the replay timeline make the race easier to understand?
 - Does the history make the championship feel persistent?
+- Does the dashboard make invite code, current GP, readiness, leader, standings, garage, and history easy to scan?
+- Does restarting the session feel clear enough for repeating a playtest?
 - Does buying or saving a card after a GP give a reason to continue?
 - Do the `Recommended`, `Risky`, and `Low fit` labels help the card choice?
 - Does the pit-wall/race-desk presentation feel more like a race weekend than an admin form?
@@ -43,4 +46,5 @@
 - No real account system yet.
 - No automatic deadline resolution yet.
 - Card inventory exists only as a thin fixed-price garage with a small recommended offer set; no selling, rarity, draft offers, or catch-up economy yet.
+- Restart session is a playtest operator tool, not a full admin/season management system.
 - Replay is an event timeline, not a visual track simulation.

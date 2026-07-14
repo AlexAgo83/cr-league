@@ -104,7 +104,7 @@ Prepare a reusable private-league playtest fixture:
 npm run playtest:seed
 ```
 
-This creates league code `PLAY01` with bot teams. Human testers can join that code from separate browser profiles. Use [docs/playtest/private-league-3gp-checklist.md](docs/playtest/private-league-3gp-checklist.md) for the manual 3-GP script and feedback prompts.
+This creates league code `PLAY01` with bot teams. Human testers can join that code from separate browser profiles. Use [docs/playtest/private-league-3gp-checklist.md](docs/playtest/private-league-3gp-checklist.md) for the manual 3-GP script and feedback prompts. The in-app `Restart session` action resets a league to round 1 while keeping joined teams and claims.
 
 ## Configuration
 
@@ -189,8 +189,8 @@ The detailed implementation-wave roadmap is:
 Current roadmap direction:
 
 - `0.1` playable vertical slice is mostly implemented;
-- `0.2` private league prototype foundation now includes manual cadence, readiness dashboard, rejoin, GP history, a seeded playtest fixture, a lightweight replay timeline, French UI switching, guided GP briefing, a state-driven race desk, and more replay flavor;
-- `0.3` is now the next product risk: make repeated GP play feel like a game, with guided briefing, player-focused race recap, thin card inventory/shop, post-GP garage summary, contextual card recommendations, and first-pass pit-wall hierarchy already present as a bridge toward `0.4`.
+- `0.2` private league prototype foundation now includes manual cadence, readiness dashboard, rejoin, GP history, session restart, a seeded playtest fixture, a lightweight replay timeline, French UI switching, guided GP briefing, a state-driven race desk, and more replay flavor;
+- `0.3` is now the next product risk: make repeated GP play feel like a game, with guided briefing, clearer championship dashboard, player-focused race recap, thin card inventory/shop, post-GP garage summary, contextual card recommendations, and first-pass pit-wall hierarchy already present as a bridge toward `0.4`.
 
 ## Contributing
 

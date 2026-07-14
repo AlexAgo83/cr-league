@@ -54,6 +54,15 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
       hasDecision = false;
       return route.fulfill({ json: leagueState() });
     }
+    if (path === "/leagues/league_1/restart") {
+      round = 1;
+      currentStatus = "briefing";
+      hasDecision = false;
+      credits = 0;
+      points = 0;
+      cards = ["rain_grip"];
+      return route.fulfill({ json: leagueState() });
+    }
 
     return route.fulfill({ status: 404, json: { message: "Unhandled mock route" } });
   });
@@ -61,16 +70,18 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
   await page.goto("/");
 
   await page.getByRole("button", { name: "Create league" }).click();
-  await expect(page.getByText("Code ABC123 · Round 1 · briefing")).toBeVisible();
+  await expect(page.getByText("ABC123")).toBeVisible();
+  await expect(page.getByText("Round 1").first()).toBeVisible();
   await expect(page.getByText("Pit wall")).toBeVisible();
   await expect(page.getByText("Prepare")).toBeVisible();
-  await expect(page.getByRole("heading", { name: "Current GP" })).toBeVisible();
-  await expect(page.getByText("0 ready · 2 missing")).toBeVisible();
+  await expect(page.getByText("Current GP")).toBeVisible();
+  await expect(page.getByText("0/2")).toBeVisible();
 
   await page.getByLabel("Cadence").selectOption("weekly");
   await page.getByRole("button", { name: "Update settings" }).click();
   await expect(page.getByText("League settings updated.")).toBeVisible();
-  await expect(page.getByText("Cadence Weekly · Next action Wait for directives")).toBeVisible();
+  await expect(page.getByLabel("League summary").getByText("Weekly")).toBeVisible();
+  await expect(page.getByLabel("League summary").getByText("Wait for directives")).toBeVisible();
 
   for (const expectedRound of [1, 2, 3]) {
     await page.getByRole("button", { name: "Submit directive" }).click();
@@ -92,11 +103,16 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
         await expect(page.getByText("Card added to your garage.")).toBeVisible();
       }
       await page.getByRole("button", { name: "Next GP" }).click();
-      await expect(page.getByText(`Code ABC123 · Round ${expectedRound + 1} · briefing`)).toBeVisible();
+      await expect(page.getByText(`Round ${expectedRound + 1}`).first()).toBeVisible();
     }
   }
 
   await expect(page.getByText("Round 3").first()).toBeVisible();
+  await expect(page.getByText("Your team Circle One")).toBeVisible();
+  page.on("dialog", (dialog) => dialog.accept());
+  await page.getByRole("button", { name: "Restart session" }).click();
+  await expect(page.getByText("Playtest session restarted.")).toBeVisible();
+  await expect(page.getByText("Round 1").first()).toBeVisible();
   await expect(page.getByText("Your team Circle One")).toBeVisible();
 });
 

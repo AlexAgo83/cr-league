@@ -7,6 +7,7 @@ import {
   getLeagueState,
   joinLeagueByCode,
   rejoinLeague,
+  restartLeague,
   resolveCurrentGrandPrix,
   startNextGrandPrix,
   submitDecision,
@@ -131,6 +132,12 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       }
       throw error;
     }
+  });
+
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/restart", async (request, reply) => {
+    const state = await restartLeague(db, request.params.leagueId);
+    if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+    return state;
   });
 }
 

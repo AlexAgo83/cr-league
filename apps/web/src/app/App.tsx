@@ -135,6 +135,7 @@ export function App() {
   const majorEvents = result?.events.filter((event) => event.severity === "major") ?? [];
   const ambienceEvents = result?.events.filter((event) => event.severity === "minor" && event.type === "race_note") ?? [];
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
+  const leader = leagueState?.teams[0];
 
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
@@ -240,6 +241,18 @@ export function App() {
       });
       setLeagueState(state);
       setMessage(tt("status_card_bought"));
+    });
+  }
+
+  async function restartLeague() {
+    if (!leagueState || !window.confirm(tt("restart_confirm"))) return;
+
+    await run(tt("status_restarting_league"), async () => {
+      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/restart`, {
+        method: "POST"
+      });
+      setLeagueState(leagueState.player ? { ...state, player: leagueState.player } : state);
+      setMessage(tt("status_league_restarted"));
     });
   }
 
@@ -443,27 +456,47 @@ export function App() {
 
         {leagueState ? (
           <article className="panel league-panel">
-            <h2>{leagueState.league.name}</h2>
+            <div className="panel-heading">
+              <div>
+                <span className="section-kicker">{tt("championship_kicker")}</span>
+                <h2>{leagueState.league.name}</h2>
+              </div>
+              <span className="invite-code">{leagueState.league.code}</span>
+            </div>
+            <div className="dashboard-summary" aria-label={tt("dashboard_summary")}>
+              <div>
+                <span>{tt("dashboard_current_gp")}</span>
+                <strong>
+                  {tt("league_round")} {leagueState.currentGrandPrix.round}
+                </strong>
+                <small>{leagueState.currentGrandPrix.status}</small>
+              </div>
+              <div>
+                <span>{tt("dashboard_players")}</span>
+                <strong>
+                  {leagueState.actionState.submittedTeamIds.length}/{leagueState.teams.length}
+                </strong>
+                <small>{tt("league_ready")}</small>
+              </div>
+              <div>
+                <span>{tt("dashboard_leader")}</span>
+                <strong>{leader?.name ?? "-"}</strong>
+                <small>
+                  {leader?.points ?? 0} {tt("unit_points")}
+                </small>
+              </div>
+              <div>
+                <span>{tt("league_cadence")}</span>
+                <strong>{tt(`cadence_${leagueState.league.cadence}` as TranslationKey)}</strong>
+                <small>{tt(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}</small>
+              </div>
+            </div>
             <section className="dashboard-section">
               <h3>{tt("dashboard_my_team")}</h3>
-              <p>{playerTeam ? `${tt("league_your_team")} ${playerTeam.name}` : tt("dashboard_no_team")}</p>
-            </section>
-            <section className="dashboard-section">
-              <h3>{tt("dashboard_current_gp")}</h3>
               <p>
-                {tt("league_code")} {leagueState.league.code} · {tt("league_round")} {leagueState.currentGrandPrix.round} ·{" "}
-                {leagueState.currentGrandPrix.status}
-              </p>
-              <p>
-                {tt("league_cadence")} {tt(`cadence_${leagueState.league.cadence}` as TranslationKey)} · {tt("league_next_action")}{" "}
-                {tt(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}
-              </p>
-            </section>
-            <section className="dashboard-section">
-              <h3>{tt("dashboard_players")}</h3>
-              <p>
-                {leagueState.actionState.submittedTeamIds.length} {tt("league_ready")} · {leagueState.actionState.missingTeamIds.length}{" "}
-                {tt("league_missing")}
+                {playerTeam
+                  ? `${tt("league_your_team")} ${playerTeam.name} · ${playerTeam.points} ${tt("unit_points")} · ${playerTeam.credits} ${tt("unit_credits")}`
+                  : tt("dashboard_no_team")}
               </p>
             </section>
             {playerTeam ? (
@@ -518,19 +551,24 @@ export function App() {
                 </div>
               </section>
             ) : null}
-            <ol className="classification">
-              {leagueState.teams.map((team) => (
-                <li key={team.id}>
-                  <span>
-                    <strong>{team.name}</strong> {team.kind === "bot" ? tt("team_bot") : tt("team_you")} ·{" "}
-                    {team.ready ? tt("team_ready") : tt("team_missing")}
-                  </span>
-                  <span>
-                    {team.points} {tt("unit_points")} · {team.credits} {tt("unit_credits")}
-                  </span>
-                </li>
-              ))}
-            </ol>
+            <section className="dashboard-section">
+              <h3>{tt("dashboard_standings")}</h3>
+              <ol className="classification standings-list">
+                {leagueState.teams.map((team, index) => (
+                  <li key={team.id} className={team.id === playerTeam?.id ? "current-team" : undefined}>
+                    <span>
+                      <strong>P{index + 1}</strong> {team.name}
+                      <small>
+                        {team.kind === "bot" ? tt("team_bot") : tt("team_you")} · {team.ready ? tt("team_ready") : tt("team_missing")}
+                      </small>
+                    </span>
+                    <span>
+                      {team.points} {tt("unit_points")} · {team.credits} {tt("unit_credits")}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </section>
             <section className="dashboard-section">
               <h3>{tt("league_history")}</h3>
               <ol className="classification">
@@ -544,6 +582,11 @@ export function App() {
                 ))}
               </ol>
             </section>
+            <div className="actions dashboard-actions">
+              <button type="button" onClick={restartLeague} disabled={status === "loading"}>
+                {tt("action_restart_league")}
+              </button>
+            </div>
           </article>
         ) : null}
 

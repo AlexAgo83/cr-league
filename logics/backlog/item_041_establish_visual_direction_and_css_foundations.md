@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 90
+> Confidence: 92
 > Progress: 0%
 > Complexity: Medium
 > Theme: Visual direction
@@ -35,6 +35,7 @@
 - AC4: Desktop and mobile screenshots show no obvious text overlap or unreadable contrast.
 
 # Direction to carry into implementation
+- Treat the V2 mockups as the preferred visual baseline. The first mockup pass was too coarse; implementation should keep the V2 refinements: rail navigation, compact top ticker, tighter grid, slimmer panels, track-map motif, telemetry bars, and less rectangular bulk.
 - Use the product brief palette as the CSS baseline: app background `#0b0f14` or `#101418`, cockpit surface `#151b22`, content surface `#1f2933`, primary text `#f8fafc`, muted text `#9ca3af`, success `#16c784`, warning `#f59e0b`, danger `#ef4444`, and weather/telemetry `#38bdf8`.
 - Name CSS variables by role, not by component: background, cockpit, surface, surface-raised, text, text-muted, border, accent, success, warning, danger, telemetry.
 - Component vocabulary:
@@ -45,7 +46,7 @@
   - Result block: post-GP outcome and player consequence.
 - State colors must never be color-only. Pair every state with text such as `Preparation`, `Directive locked`, `Race complete`, `Risk`, `Reward`, or `Ready`.
 - Keep typography dense and legible: no hero-scale type inside panels, no viewport-based font sizing, no negative letter spacing, and stable panel dimensions where dynamic copy can grow.
-- Avoid visual traps already called out by the user: loose one-page pile, generic SaaS cards, weak hierarchy, English leftovers, and colors that look arbitrary.
+- Avoid visual traps already called out by the user: loose one-page pile, generic SaaS cards, weak hierarchy, English leftovers, arbitrary colors, heavy blocky panels, and mockup-level roughness.
 
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: The CSS exposes a small set of named colors or variables for cockpit, surface, text, muted text, accent, warning, and success.

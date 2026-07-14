@@ -7,7 +7,7 @@
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Non-semantic edit: expanded DA implementation guidance without changing workflow links or request scope.
-> Confidence: 91
+> Confidence: 92
 
 # Overview
 Race Cockpit Redesign V0 turns the current functional prototype into a coherent game cockpit: a focused race desk, championship overview, garage, and result/replay surface that make CR League feel intentionally designed and understandable before adding more mechanics.
@@ -63,6 +63,7 @@ flowchart LR
 # Art direction: Pit Wall Compact
 - Positioning: the V0 should feel like a compact pit-wall command screen for an asynchronous racing league. It should not feel like a SaaS admin dashboard, a marketing landing page, an arcade sci-fi cockpit, or a luxury F1 carbon mockup.
 - Layout doctrine: Course owns the player's current task; Strategy explains the chosen directive; Championship and Garage support the loop; Result/Replay is the payoff after a GP is resolved.
+- Preferred direction: use the V2 cockpit mockup direction as the baseline. It is more refined than the first blocky pass because it adds a left command rail, tighter cockpit grid, slimmer panels, a real track-map/readout motif, more deliberate telemetry, and less oversized card weight.
 - Palette baseline:
   - App background: `#0b0f14` or `#101418`.
   - Cockpit surface: `#151b22`.
@@ -74,7 +75,8 @@ flowchart LR
   - Danger or negative delta accent: `#ef4444`.
   - Weather or telemetry accent: `#38bdf8`.
 - Motifs: telemetry strips, race-state badges, P1/P2 position plates, timing-screen rows, compact game cards, and visible action hierarchy.
-- Avoid: decorative blobs, generic gradients, oversized cards, full dark-blue monotony, fake precision in the replay, and visible explanatory copy that exists only because the UI is unclear.
+- V2 motifs to preserve: left rail with compact section markers, header ticker pills, cockpit command card, track map, telemetry bars, timing-screen standings, compact strategy choices, and readout lanes for resolved races.
+- Avoid: decorative blobs, generic gradients, oversized cards, full dark-blue monotony, fake precision in the replay, rough wireframe-like blocks, and visible explanatory copy that exists only because the UI is unclear.
 
 # Product surface model
 - Setup/no league: keep it short and functional. It should not dominate the visual identity once a league exists.

@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 90
+> Confidence: 92
 > Progress: 0%
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -25,6 +25,7 @@
 
 # Execution direction
 - Start with `item_040` and `item_041`: lock the screen model and CSS vocabulary before changing JSX structure.
+- Use the V2 mockup direction as the visual baseline; do not implement the earlier coarse/blocky mockup as-is.
 - Then implement the primary loop through `item_042`, because Course and the dominant action define whether the redesign works.
 - Implement `item_043` and `item_044` as support/payoff surfaces after the race desk is coherent.
 - Keep `item_045` active throughout the UI work; every new visible label must land in EN and FR catalogs in the same wave as the component change.

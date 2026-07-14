@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 90
+> Confidence: 92
 > Progress: 0%
 > Complexity: Medium
 > Theme: UX structure
@@ -34,13 +34,14 @@
 - AC4: The plan names the post-GP information sequence: outcome first, explanation second, replay/report supporting evidence after.
 
 # Direction to carry into implementation
+- Baseline: follow the V2 mockup structure over the earlier blocky layout. The cockpit should feel like a composed command product, not only a set of dark cards.
 - Screen zones:
   - Course: current GP state, next action, readiness, and the active directive.
   - Strategy: directive form or locked directive summary, selected card, and track/weather cues.
   - Championship: round, invite code, leader, standings, and readiness context.
   - Garage: credits, rewards, inventory, available card choices, and purchase state.
   - Result/Replay: final outcome, player consequence, classification, race readout, key moments, and report.
-- Desktop order: primary left column for Course, Strategy, Result/Replay; secondary right column for Championship and Garage. The primary action must be visible without scanning the full page.
+- Desktop order: fixed left rail for section markers, top header for race state and ticker pills, primary grid for Course/Strategy/Telemetry/Result, and a right-side timing/support column for Championship or Garage. The primary action must be visible without scanning the full page.
 - Mobile order: Course, primary action, Strategy, Result/Replay when present, Garage, Championship, secondary settings.
 - Post-GP sequence: outcome first, then why it happened, then classification, then race readout, then key moments/report, then next-GP action.
 - Consolidation targets: merge duplicated dashboard/status cards into Course or Championship; move settings, forget team, and restart playtest out of the command row; remove any panel that repeats state already visible in the cockpit header.

@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 90
+> Confidence: 92
 > Progress: 0%
 > Complexity: Medium
 > Theme: Result comprehension
@@ -34,6 +34,7 @@
 - AC4: Unit or e2e assertions cover the key result/replay labels in at least one locale.
 
 # Direction to carry into implementation
+- Follow the V2 result mockup direction for the resolved state: payoff panel first, final classification as timing screen, race readout lanes in the middle, and causal explanation cards below.
 - Rename or frame the static replay as `Race readout` or `Race summary` unless the implementation adds actual time-based replay controls. The label must set the right expectation.
 - Post-GP sequence:
   - Headline outcome: position, points, or podium/miss signal.
@@ -44,6 +45,7 @@
   - `Key moments`: readable event list.
   - `Report`: generated narrative text.
 - Visual readout rules:
+  - Prefer V2-style lanes, phase bands, and labeled team markers over large decorative track art for result explanation.
   - Use lanes, phases, or event markers only when the data supports them.
   - Avoid animated car movement or lap precision unless the simulation provides that contract.
   - Empty/low-event races still need a clear explanation instead of an empty-looking panel.

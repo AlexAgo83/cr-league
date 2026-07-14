@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 90
+> Confidence: 92
 > Progress: 0%
 > Complexity: Low
 > Theme: Validation and playtest readiness
@@ -33,6 +33,7 @@
 - AC4: The Logics closeout records validation commands and visual QA proof.
 
 # Direction to carry into implementation
+- Use the V2 mockup direction as the acceptance reference for visual QA. A screen that only matches the earlier coarse/blocky pass is not sufficient.
 - Screenshot matrix:
   - Desktop and mobile, no-league/setup.
   - Desktop and mobile, briefing/preparation with directive form.
@@ -42,6 +43,7 @@
   - At least one pass in French mode.
 - Playtest questions to add:
   - Does the first viewport feel like a racing command cockpit instead of an admin dashboard?
+  - Does the screen feel refined enough, or still like rough blocks laid out on a dark page?
   - Can you name the next action within five seconds?
   - Do you understand what the result says happened and why?
   - Does the race readout feel honest about what it shows?

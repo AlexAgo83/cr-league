@@ -23,12 +23,13 @@ export function ChampionshipView({
           <h2>{state.league.name}</h2>
         </div>
         <div className="dashboard-summary" aria-label={tt("dashboard_summary")}>
-          <div>
+          <div className="current-race-summary">
             <span>{tt("dashboard_current_gp")}</span>
             <strong>
               {tt("league_round")} {currentGrandPrix.round}
             </strong>
             <small>{statusLabel(currentGrandPrix.status, tt)}</small>
+            <small>{tt(`next_action_${state.actionState.nextAction}` as TranslationKey)}</small>
           </div>
           <div>
             <span>{tt("dashboard_players")}</span>
@@ -98,17 +99,6 @@ export function ChampionshipView({
             </ol>
           </section>
         </div>
-
-        <aside className="championship-side-column">
-          <section className="panel current-gp-panel">
-            <h3>{tt("dashboard_current_gp")}</h3>
-            <strong>
-              {tt("league_round")} {currentGrandPrix.round}
-            </strong>
-            <span>{statusLabel(currentGrandPrix.status, tt)}</span>
-            <small>{tt(`next_action_${state.actionState.nextAction}` as TranslationKey)}</small>
-          </section>
-        </aside>
       </div>
     </div>
   );

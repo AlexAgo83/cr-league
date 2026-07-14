@@ -281,7 +281,8 @@ describe("App", () => {
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     expect(screen.getAllByText("Round 1").length).toBeGreaterThan(0);
-    expect(screen.getAllByText("Current GP").length).toBeGreaterThan(1);
+    expect(screen.getAllByText("Current GP").length).toBe(1);
+    expect(document.querySelector(".current-gp-panel")).toBe(null);
     expect(screen.getByText("0/2")).toBeTruthy();
     expect(document.querySelector(".standings-table")?.textContent).toContain("Volt Union");
     expect(document.querySelector(".round-timeline")?.textContent).toContain("R1");

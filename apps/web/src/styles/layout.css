@@ -1028,6 +1028,11 @@ label small {
   padding: 12px;
 }
 
+.dashboard-summary .current-race-summary {
+  border-color: rgb(56 189 248 / 0.42);
+  box-shadow: inset 3px 0 0 var(--color-telemetry);
+}
+
 .dashboard-summary span,
 .dashboard-summary small {
   color: var(--color-muted);
@@ -1038,17 +1043,13 @@ label small {
   align-items: start;
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 1.5fr) minmax(280px, 0.75fr);
-}
-
-.championship-side-column {
-  display: grid;
-  gap: 16px;
+  grid-template-columns: 1fr;
 }
 
 .championship-main-column {
   display: grid;
   gap: 16px;
+  grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
 }
 
 .standings-table {
@@ -1088,7 +1089,6 @@ label small {
 
 .standings-team small,
 .standings-score small,
-.current-gp-panel small,
 .round-timeline small {
   color: var(--color-muted);
   font-size: 0.72rem;
@@ -1115,25 +1115,6 @@ label small {
   display: grid;
   justify-items: end;
   min-width: 58px;
-}
-
-.current-gp-panel {
-  display: grid;
-  gap: 4px;
-  padding: 16px;
-}
-
-.current-gp-panel h3 {
-  margin-bottom: 6px;
-}
-
-.current-gp-panel > strong {
-  font-size: 1.15rem;
-}
-
-.current-gp-panel > span {
-  color: var(--color-telemetry);
-  font-weight: 800;
 }
 
 .round-timeline {
@@ -1178,7 +1159,8 @@ label small {
 
 @media (max-width: 1040px) {
   .championship-overview,
-  .championship-grid {
+  .championship-grid,
+  .championship-main-column {
     grid-template-columns: 1fr;
   }
 }
@@ -2004,10 +1986,6 @@ button.primary-command {
 
   .report-hero {
     grid-template-columns: 1fr;
-  }
-
-  .championship-side-column {
-    display: none;
   }
 
   .standings-table li {

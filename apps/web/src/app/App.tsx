@@ -466,7 +466,7 @@ export function App() {
     setProfileOpen(false);
   }
 
-  function profileMenu(showManageLeague = true) {
+  function profileMenu(showManageLeague = true, showLeagueSwitch = true) {
     return (
     <div
       className="profile-menu"
@@ -479,7 +479,7 @@ export function App() {
       </button>
       {profileOpen ? (
         <div className="profile-menu-panel">
-          {savedClaims.length > 1 ? (
+          {showLeagueSwitch && savedClaims.length > 1 ? (
             <label>
               {tt("profile_league_switch")}
               <select value={leagueState?.player?.teamId ?? ""} onChange={(event) => void switchLeague(event.target.value)}>
@@ -539,7 +539,7 @@ export function App() {
       </div>
       <div className="setup-topbar-actions">
         {profileSession ? (
-          profileMenu(false)
+          profileMenu(false, false)
         ) : (
           <label className="language-select">
             {tt("language_label")}

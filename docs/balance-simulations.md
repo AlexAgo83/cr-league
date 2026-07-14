@@ -1,0 +1,32 @@
+# Balance simulations
+
+Run the balance kit from the repo root:
+
+```bash
+npm run balance:sim
+```
+
+Useful variants:
+
+```bash
+npm run balance:sim -- --runs 500
+npm run balance:sim -- --runs 1000 --json reports/balance/latest.json
+npm run balance:sim -- --runs 100 --circuits 3 --limit 8
+```
+
+What it measures:
+
+- one candidate strategy at a time against a fixed seven-car bot grid;
+- all approach/preparation/card combinations, including no card;
+- all city circuits by default;
+- deterministic qualifying grid estimate before each race;
+- average grid, average finish, win rate, podium rate, points, credits, and card trigger rate.
+
+Use the output this way:
+
+- `Top strategies` shows overpowered combinations.
+- `Bottom strategies` shows dead choices.
+- `Card summary` compares cards independent of approach/preparation.
+- `Outliers` flags strategies more than `--outlier` average points away from `balanced/speed/no_card`.
+
+The script reuses `simulateRace`; it is a balance smoke test, not a full league-season simulator.

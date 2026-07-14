@@ -122,13 +122,13 @@ export function App() {
   const playerQualifyingRun = playerQualifyingRuns.reduce<QualifyingRun | null>((best, run) => (!best || run.time < best.time ? run : best), null);
   const qualifyingLeaderboard = [...qualifyingRuns]
     .sort((left, right) => left.time - right.time)
-    .slice(0, 8)
+    .slice(0, 10)
     .map((run, index) => ({
       ...run,
       position: index + 1,
       teamName: leagueState?.teams.find((team) => team.id === run.teamId)?.name ?? run.teamId
     }));
-  const qualifyingAttemptsUsed = Math.max(playerQualifyingRuns.length, ...playerQualifyingRuns.map((run) => run.attempts));
+  const qualifyingAttemptsUsed = Math.max(0, ...playerQualifyingRuns.map((run) => run.attempts));
   const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? form.qualifyingAttemptLimit;
   const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
   const result = leagueState?.currentGrandPrix.result;
@@ -233,7 +233,8 @@ export function App() {
           approach: form.approach,
           preparation: form.preparation,
           cardId: selectedCardId || undefined,
-          traits: currentCircuit.traits
+          traits: currentCircuit.traits,
+          laps: currentCircuit.laps
         })
       });
       setLeagueState(withCurrentPlayer(response.state));
@@ -894,9 +895,10 @@ export function App() {
                       {qualifyingLeaderboard.length ? (
                         <ol>
                           {qualifyingLeaderboard.map((run) => (
-                            <li key={run.teamId} className={run.teamId === playerTeam?.id ? "player" : undefined}>
+                            <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeam?.id ? "player" : undefined}>
                               <span>
                                 {run.position}. {run.teamName}
+                                {run.lap ? ` · ${tt("unit_lap")} ${run.lap}` : ""}
                               </span>
                               <em>{run.time.toFixed(2)}s</em>
                             </li>

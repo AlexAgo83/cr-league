@@ -174,7 +174,7 @@ describe("api app", () => {
       },
       state: {
         currentGrandPrix: {
-          qualifyingRuns: [expect.objectContaining({ teamId, time: expect.any(Number) })]
+          qualifyingRuns: expect.arrayContaining([expect.objectContaining({ teamId, time: expect.any(Number) })])
         }
       }
     });
@@ -320,7 +320,8 @@ describe("api app", () => {
     const payload = {
       teamId: created.player.teamId,
       approach: "balanced",
-      preparation: "weather"
+      preparation: "weather",
+      laps: 2
     };
     const firstRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
     const secondRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
@@ -351,7 +352,8 @@ describe("api app", () => {
     const payload = {
       teamId: created.player.teamId,
       approach: "balanced",
-      preparation: "weather"
+      preparation: "weather",
+      laps: 2
     };
     const firstRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
     const secondRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
@@ -361,7 +363,9 @@ describe("api app", () => {
     expect(firstRun.statusCode).toBe(200);
     expect(secondRun.statusCode).toBe(200);
     expect(secondRun.json().run.attempts).toBe(2);
-    expect(secondRun.json().state.currentGrandPrix.qualifyingRuns.filter((run: { teamId: string }) => run.teamId === created.player.teamId)).toHaveLength(2);
+    expect(firstRun.json().state.currentGrandPrix.qualifyingRuns.filter((run: { teamId: string }) => run.teamId === created.player.teamId)).toHaveLength(2);
+    expect(secondRun.json().state.currentGrandPrix.qualifyingRuns.filter((run: { teamId: string }) => run.teamId === created.player.teamId)).toHaveLength(4);
+    expect(secondRun.json().run.result.events).toHaveLength(2);
   });
 
   it("rejects qualifying after the player submits a directive", async () => {

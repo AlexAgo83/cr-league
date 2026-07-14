@@ -210,13 +210,15 @@ const nextGrandPrixState = {
 const qualifyingRun = {
   teamId: "team_1",
   time: 72.42,
-  attempts: 2,
+  lap: 2,
+  attempts: 1,
   result: resolvedState.currentGrandPrix.result
 };
 
 const slowerQualifyingRun = {
   ...qualifyingRun,
   time: 75.18,
+  lap: 1,
   attempts: 1
 };
 
@@ -338,7 +340,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
     expect(screen.getByRole("dialog", { name: "Confirm directive" })).toBeTruthy();
-    expect(screen.getByText("You still have lap time attempts left. Submit the directive now? 1/3")).toBeTruthy();
+    expect(screen.getByText("You still have lap time attempts left. Submit the directive now? 2/3")).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "Submit directive" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(screen.getByText("Ready to launch")).toBeTruthy();

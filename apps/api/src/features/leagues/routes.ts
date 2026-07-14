@@ -302,5 +302,8 @@ function isDecisionBody(value: unknown): value is Parameters<typeof submitDecisi
 function isQualifyingBody(value: unknown): value is Parameters<typeof submitQualifyingRun>[2] {
   if (!isDecisionBody(value)) return false;
   const candidate = value as Record<string, unknown>;
-  return candidate.traits === undefined || (typeof candidate.traits === "object" && candidate.traits !== null);
+  return (
+    (candidate.traits === undefined || (typeof candidate.traits === "object" && candidate.traits !== null)) &&
+    (candidate.laps === undefined || typeof candidate.laps === "number")
+  );
 }

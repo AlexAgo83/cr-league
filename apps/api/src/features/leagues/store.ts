@@ -141,6 +141,7 @@ export type SubmitDecisionInput = RaceDecision & {
 
 export type SubmitQualifyingInput = SubmitDecisionInput & {
   traits?: unknown;
+  laps?: unknown;
 };
 
 export type ResolveGrandPrixInput = {
@@ -563,7 +564,14 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
     cardId: input.cardId,
     rivalTeamId: input.rivalTeamId
   };
-  const run = createQualifyingRun({
+  const runs = normalizeQualifyingRuns(grandPrix.qualifyingRuns);
+  const teamRuns = runs.filter((candidate) => candidate.teamId === team.id);
+  const previousBest = teamRuns.reduce<QualifyingRun | null>((best, candidate) => (!best || candidate.time < best.time ? candidate : best), null);
+  const attempts = Math.max(0, ...teamRuns.map((candidate) => candidate.attempts)) + 1;
+  if (attempts > state.league.qualifyingAttemptLimit) {
+    throw new LeagueRuleError("No qualifying attempts left.");
+  }
+  const attemptRuns = createQualifyingRuns({
     seed: `${grandPrix.seed}-${team.id}-${Date.now()}-${Math.random()}`,
     teamId: team.id,
     teamName: team.name,
@@ -571,17 +579,12 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
     primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
     secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
     traits: normalizeRaceTraits(input.traits),
-    forecast: grandPrix.forecast as RaceInput["forecast"]
+    forecast: grandPrix.forecast as RaceInput["forecast"],
+    laps: clampInteger(input.laps, 5, 1, 20)
   });
-  const runs = normalizeQualifyingRuns(grandPrix.qualifyingRuns);
-  const teamRuns = runs.filter((candidate) => candidate.teamId === team.id);
-  const previousBest = teamRuns.reduce<QualifyingRun | null>((best, candidate) => (!best || candidate.time < best.time ? candidate : best), null);
-  const attempts = Math.max(teamRuns.length, ...teamRuns.map((candidate) => candidate.attempts)) + 1;
-  if (attempts > state.league.qualifyingAttemptLimit) {
-    throw new LeagueRuleError("No qualifying attempts left.");
-  }
-  const nextRun = { ...run, attempts };
-  const nextRuns = [...runs, nextRun];
+  const nextRunsForAttempt = attemptRuns.map((run) => ({ ...run, attempts }));
+  const nextRun = nextRunsForAttempt.reduce((best, run) => (run.time < best.time ? run : best), nextRunsForAttempt[0]!);
+  const nextRuns = [...runs, ...nextRunsForAttempt];
 
   await db.grandPrix.update({
     where: { id: grandPrix.id },
@@ -591,7 +594,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
   return {
     state: await getLeagueState(db, leagueId),
     run: nextRun,
-    isBest: !previousBest || run.time < previousBest.time
+    isBest: !previousBest || nextRun.time < previousBest.time
   };
 }
 
@@ -767,15 +770,16 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
           rivalTeamId: demo?.decision.rivalTeamId
         };
     nextRuns.push(
-      createQualifyingRun({
+      createQualifyingRuns({
         seed: `${grandPrix.seed}-${team.id}-bot-qualifying`,
         teamId: team.id,
         teamName: team.name,
         decision,
         primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
         secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
-        forecast: grandPrix.forecast as RaceInput["forecast"]
-      })
+        forecast: grandPrix.forecast as RaceInput["forecast"],
+        laps: 1
+      })[0]!
     );
   }
 
@@ -860,7 +864,7 @@ async function fillLeagueWithBots(db: Db, state: LeagueState) {
   });
 }
 
-function createQualifyingRun(input: {
+function createQualifyingRuns(input: {
   seed: string;
   teamId: string;
   teamName: string;
@@ -869,7 +873,8 @@ function createQualifyingRun(input: {
   secondaryTrait: RaceInput["secondaryTrait"];
   traits?: RaceTraits;
   forecast: RaceInput["forecast"];
-}): QualifyingRun {
+  laps: number;
+}): QualifyingRun[] {
   const weather = strongestForecast(input.forecast);
   const traits = input.traits ?? { grip: 62, overtaking: 62, energy: 62 };
   const traitBonus = (traits.grip + traits.overtaking + traits.energy - 180) / 18;
@@ -884,35 +889,43 @@ function createQualifyingRun(input: {
           ? 0.4
           : 0;
   const cardDelta = input.decision.cardId === "launch_boost" ? -0.8 : input.decision.cardId === "rain_grip" && weather !== "dry" ? -0.7 : 0;
-  const variance = (Math.random() - 0.5) * 2.4;
-  const time = Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + variance).toFixed(2));
-  const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, time, weather);
+  const lapTimes = Array.from({ length: input.laps }, (_, index) => {
+    const warmupPenalty = index === 0 && input.laps > 1 ? 1.1 : 0;
+    const tyreDelta = index > 1 ? (index - 1) * 0.16 : 0;
+    const variance = (Math.random() - 0.5) * 2.4;
+    return Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + warmupPenalty + tyreDelta + variance).toFixed(2));
+  });
+  const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, weather);
+  const createdAt = new Date().toISOString();
 
-  return {
+  return lapTimes.map((time, index) => ({
     teamId: input.teamId,
     time,
+    lap: index + 1,
     attempts: 1,
     decision: input.decision,
     result,
-    createdAt: new Date().toISOString()
-  };
+    createdAt
+  }));
 }
 
-function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, time: number, weather: Weather): RaceResult {
+function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, lapTimes: number[], weather: Weather): RaceResult {
   const segments: RaceSegment[] = ["start", "early", "mid", "late", "finish"];
-  const event: RaceEvent = {
-    id: "qualifying_finish",
-    order: 0,
-    segment: "finish",
-    lap: 1,
+  const bestTime = Math.min(...lapTimes);
+  const totalTime = lapTimes.reduce((sum, time) => sum + time, 0);
+  const events: RaceEvent[] = lapTimes.map((time, index) => ({
+    id: `qualifying_lap_${index + 1}`,
+    order: index,
+    segment: segments[Math.min(segments.length - 1, Math.floor((index / lapTimes.length) * segments.length))] ?? "finish",
+    lap: index + 1,
     type: "finish",
     teamId,
     severity: "minor",
     positionDelta: 0,
     tags: ["qualifying"],
-    replayText: `${teamName} boucle son chrono en ${time.toFixed(2)}s`,
-    reportText: `${teamName} signe un chrono en ${time.toFixed(2)}s.`
-  };
+    replayText: `${teamName} boucle le tour ${index + 1} en ${time.toFixed(2)}s`,
+    reportText: `${teamName} signe ${time.toFixed(2)}s au tour ${index + 1}.`
+  }));
 
   return {
     grandPrixName: "Chrono",
@@ -930,18 +943,21 @@ function createQualifyingResult(teamId: string, teamName: string, seed: string, 
         resultTags: [decision.approach, decision.preparation]
       }
     ],
-    events: [event],
-    replayTrace: Array.from({ length: 11 }, (_, index) => ({
-      segment: segments[Math.min(segments.length - 1, Math.floor((index / 10) * segments.length))] ?? "start",
-      lap: 1,
-      progress: index / 10,
-      order: [teamId],
-      times: { [teamId]: Number(((time * index) / 10).toFixed(1)) },
-      gaps: { [teamId]: 0 }
-    })),
+    events,
+    replayTrace: Array.from({ length: lapTimes.length * 4 + 1 }, (_, index) => {
+      const progress = index / (lapTimes.length * 4);
+      return {
+        segment: segments[Math.min(segments.length - 1, Math.floor(progress * segments.length))] ?? "start",
+        lap: Math.min(lapTimes.length, Math.floor(index / 4) + 1),
+        progress,
+        order: [teamId],
+        times: { [teamId]: Number((totalTime * progress).toFixed(1)) },
+        gaps: { [teamId]: 0 }
+      };
+    }),
     consumedCards: [],
     report: {
-      headline: `${teamName} ${time.toFixed(2)}s`,
+      headline: `${teamName} ${bestTime.toFixed(2)}s`,
       blocks: []
     }
   };

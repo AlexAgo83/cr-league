@@ -3,7 +3,7 @@ import type { CardId } from "../domain/race.js";
 export const RACE_POINTS_BY_POSITION = [25, 18, 15, 12, 10, 8] as const;
 export const RACE_CREDITS_BY_POSITION = [150, 130, 115, 105, 100, 100] as const;
 export const FLEET_SPONSORSHIP_CREDIT_BONUS = 50;
-export const ECONOMY_MODE_CREDIT_BONUS = 35;
+export const ECONOMY_MODE_CREDIT_BONUS = 45;
 export const CARD_PRICES: Record<CardId, number> = {
   rain_grip: 115,
   fleet_maintenance: 115,

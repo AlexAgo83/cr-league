@@ -210,12 +210,12 @@ function buildParticipants(candidateDecision: RaceDecision, candidateGrid: numbe
 
 function botTemplates(): RaceParticipant[] {
   const botPlans: Array<{ decision: RaceDecision; botArchetype: BotArchetype }> = [
-    { botArchetype: "sprinter", decision: { approach: "aggressive", preparation: "speed", cardId: "qualifying_focus" } },
+    { botArchetype: "sprinter", decision: { approach: "aggressive", preparation: "speed", cardId: "adjustable_wing" } },
     { botArchetype: "sprinter", decision: { approach: "aggressive", preparation: "speed", cardId: "launch_boost" } },
-    { botArchetype: "prudent", decision: { approach: "balanced", preparation: "speed" } },
-    { botArchetype: "rain_specialist", decision: { approach: "prudent", preparation: "weather", cardId: "rain_grip" } },
-    { botArchetype: "mechanic", decision: { approach: "prudent", preparation: "reliability", cardId: "defensive_order" } },
-    { botArchetype: "mechanic", decision: { approach: "balanced", preparation: "reliability", cardId: "fleet_maintenance" } },
+    { botArchetype: "prudent", decision: { approach: "balanced", preparation: "speed", cardId: "calculated_attack" } },
+    { botArchetype: "rain_specialist", decision: { approach: "prudent", preparation: "weather", cardId: "rain_mapping" } },
+    { botArchetype: "mechanic", decision: { approach: "prudent", preparation: "reliability", cardId: "hard_tires" } },
+    { botArchetype: "mechanic", decision: { approach: "balanced", preparation: "reliability", cardId: "pit_relay" } },
     { botArchetype: "gambler", decision: { approach: "aggressive", preparation: "weather", cardId: "soft_tires" } }
   ];
 
@@ -245,7 +245,28 @@ function qualifyingTime(decision: RaceDecision, traits: RaceInput["traits"], wea
   const weatherPenalty = weather === "heavy_rain" ? 2.8 : weather === "light_rain" ? 1.2 : 0;
   const approachDelta = decision.approach === "aggressive" ? -1.1 : decision.approach === "prudent" ? 0.7 : 0;
   const prepDelta = decision.preparation === "speed" ? -1.2 : decision.preparation === "weather" && weather !== "dry" ? -1.4 : decision.preparation === "reliability" ? 0.4 : 0;
-  const cardDelta = decision.cardId === "qualifying_focus" ? -0.3 : decision.cardId === "launch_boost" ? -0.6 : decision.cardId === "rain_grip" && weather !== "dry" ? -0.7 : 0;
+  const cardDelta =
+    decision.cardId === "qualifying_focus"
+      ? -0.3
+      : decision.cardId === "launch_boost"
+        ? -0.6
+        : decision.cardId === "soft_tires"
+          ? -0.4
+          : decision.cardId === "adjustable_wing"
+            ? -0.2
+            : decision.cardId === "rain_grip" && weather !== "dry"
+              ? -0.7
+              : decision.cardId === "rain_mapping" && weather !== "dry"
+                ? -0.4
+                : decision.cardId === "hard_tires"
+                  ? 0.2
+                  : decision.cardId === "economy_mode"
+                    ? 0.4
+                    : decision.cardId === "pit_relay"
+                      ? 0.2
+                      : decision.cardId === "calculated_attack"
+                        ? -0.1
+                        : 0;
   return Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + (next() - 0.5) * 2.4);
 }
 

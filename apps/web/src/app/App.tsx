@@ -24,6 +24,7 @@ type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueCode: string;
   teamName: string;
 };
+type SetupMode = "choice" | "create" | "join";
 
 function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
   const impacts: MapTraitImpacts = {};
@@ -67,6 +68,7 @@ export function App() {
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
   const tt = (key: TranslationKey) => t(key, locale);
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
+  const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [briefingOpen, setBriefingOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
@@ -286,6 +288,7 @@ export function App() {
       storeProfileSession(session);
       setProfileSession(session);
       setSavedClaims(claimsFromProfile(session));
+      setSetupMode("choice");
       setMessage(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`);
     });
   }
@@ -301,6 +304,7 @@ export function App() {
       storePlayerClaims(claims, claims[0]?.teamId);
       setProfileSession(session);
       setSavedClaims(claims);
+      setSetupMode("choice");
       setMessage(tt("status_profile_recovered"));
     });
   }
@@ -367,6 +371,7 @@ export function App() {
   function addLeague() {
     setLeagueState(null);
     setGameView("drive");
+    setSetupMode("choice");
     setProfileOpen(false);
     setMessage(tt("status_initial"));
   }
@@ -376,6 +381,7 @@ export function App() {
     localStorage.removeItem(PLAYER_CLAIM_KEY);
     setProfileSession(null);
     setLeagueState(null);
+    setSetupMode("choice");
     setSavedClaims([]);
     storePlayerClaims([], undefined);
     setMessage(tt("status_initial"));
@@ -394,49 +400,54 @@ export function App() {
     setProfileOpen(false);
   }
 
+  const setupTopbar = (
+    <header className="setup-topbar">
+      <div className="brand">
+        <img className="brand-icon" src="/favicon.svg" alt={APP_NAME} />
+        <strong>{APP_NAME}</strong>
+      </div>
+      <label className="language-select">
+        {tt("language_label")}
+        <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
+          <option value="en">{tt("language_en")}</option>
+          <option value="fr">{tt("language_fr")}</option>
+        </select>
+      </label>
+    </header>
+  );
+
   if (!profileSession) {
     return (
       <main className="app-shell setup-shell">
-        <section className="hero" aria-labelledby="app-title">
-          <div className="hero-topline">
-            <p className="eyebrow">{tt("app_eyebrow")}</p>
-            <label className="language-select">
-              {tt("language_label")}
-              <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
-                <option value="en">{tt("language_en")}</option>
-                <option value="fr">{tt("language_fr")}</option>
-              </select>
-            </label>
-          </div>
-          <h1 id="app-title">{APP_NAME}</h1>
-          <p>{tt("profile_intro")}</p>
-        </section>
+        {setupTopbar}
 
-        <section className="panel setup-panel" aria-label={tt("profile_title")}>
-          <div className="panel-heading">
-            <div>
-              <span className="section-kicker">{tt("profile_kicker")}</span>
-              <h2>{tt("profile_title")}</h2>
+        <section className="setup-grid setup-grid-single" aria-labelledby="profile-title">
+          <div className="panel setup-main-panel">
+            <div className="panel-heading">
+              <div>
+                <span className="section-kicker">{tt("profile_kicker")}</span>
+                <h1 id="profile-title">{tt("profile_title")}</h1>
+              </div>
             </div>
-          </div>
-          <p className={status === "error" ? "status error" : "status"}>{message}</p>
-          <div className="field-grid setup-fields">
-            <label>
-              {tt("field_email")}
-              <input type="email" value={profileForm.email} onChange={(event) => setProfileForm({ ...profileForm, email: event.target.value })} />
-            </label>
-            <label>
-              {tt("field_recovery_code")}
-              <input value={profileForm.recoveryCode} onChange={(event) => setProfileForm({ ...profileForm, recoveryCode: event.target.value.toUpperCase() })} />
-            </label>
-          </div>
-          <div className="actions primary-actions">
-            <button type="button" onClick={createProfileSession} disabled={status === "loading"}>
-              {tt("action_create_profile")}
-            </button>
-            <button type="button" onClick={recoverProfileSession} disabled={status === "loading"}>
-              {tt("action_recover_profile")}
-            </button>
+            <p className={status === "error" ? "status error" : "status"}>{message}</p>
+            <div className="field-grid setup-fields">
+              <label>
+                {tt("field_email")}
+                <input type="email" value={profileForm.email} onChange={(event) => setProfileForm({ ...profileForm, email: event.target.value })} />
+              </label>
+              <label>
+                {tt("field_recovery_code")}
+                <input value={profileForm.recoveryCode} onChange={(event) => setProfileForm({ ...profileForm, recoveryCode: event.target.value.toUpperCase() })} />
+              </label>
+            </div>
+            <div className="actions primary-actions">
+              <button type="button" onClick={createProfileSession} disabled={status === "loading"}>
+                {tt("action_create_profile")}
+              </button>
+              <button type="button" onClick={recoverProfileSession} disabled={status === "loading"}>
+                {tt("action_recover_profile")}
+              </button>
+            </div>
           </div>
         </section>
       </main>
@@ -446,58 +457,67 @@ export function App() {
   if (!leagueState) {
     return (
       <main className="app-shell setup-shell">
-        <section className="hero" aria-labelledby="app-title">
-          <div className="hero-topline">
-            <p className="eyebrow">{tt("app_eyebrow")}</p>
-            <label className="language-select">
-              {tt("language_label")}
-              <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
-                <option value="en">{tt("language_en")}</option>
-                <option value="fr">{tt("language_fr")}</option>
-              </select>
-            </label>
-          </div>
-          <h1 id="app-title">{APP_NAME}</h1>
-          <p>{tt("app_intro")}</p>
-        </section>
+        {setupTopbar}
 
-        <section className="panel setup-panel" aria-label={tt("flow_label")}>
-          <div className="panel-heading">
-            <div>
-              <span className="section-kicker">{tt("race_desk_kicker")}</span>
-              <h2>{tt("race_desk_title")}</h2>
+        <section className="setup-grid" aria-label={tt("flow_label")}>
+          <div className="panel setup-main-panel">
+            <div className="panel-heading">
+              <div>
+                <span className="section-kicker">{tt("race_desk_kicker")}</span>
+                <h1>{setupMode === "create" ? tt("setup_create_title") : setupMode === "join" ? tt("setup_join_title") : tt("race_desk_title")}</h1>
+              </div>
             </div>
+            <p className={status === "error" ? "status error" : "status"}>{message}</p>
+
+            {setupMode === "choice" ? (
+              <div className="setup-choice-grid">
+                <button type="button" className="setup-choice" onClick={() => setSetupMode("create")}>
+                  <strong>{tt("action_create_league")}</strong>
+                  <small>{tt("setup_create_hint")}</small>
+                </button>
+                <button type="button" className="setup-choice" onClick={() => setSetupMode("join")}>
+                  <strong>{tt("action_join_league")}</strong>
+                  <small>{tt("setup_join_hint")}</small>
+                </button>
+              </div>
+            ) : (
+              <>
+                <div className="field-grid setup-fields">
+                  {setupMode === "create" ? (
+                    <label>
+                      {tt("field_league")}
+                      <input maxLength={40} value={form.leagueName} onChange={(event) => setForm({ ...form, leagueName: event.target.value })} />
+                    </label>
+                  ) : (
+                    <label>
+                      {tt("field_join_code")}
+                      <input
+                        value={form.joinCode}
+                        onChange={(event) => setForm({ ...form, joinCode: event.target.value.toUpperCase() })}
+                        maxLength={6}
+                        placeholder="PLAY01"
+                      />
+                    </label>
+                  )}
+                  <label>
+                    {tt("field_team")}
+                    <input maxLength={32} value={form.teamName} onChange={(event) => setForm({ ...form, teamName: event.target.value })} />
+                  </label>
+                </div>
+                <div className="actions primary-actions">
+                  <button type="button" onClick={setupMode === "create" ? createLeague : joinLeague} disabled={status === "loading"}>
+                    {setupMode === "create" ? tt("action_start_league") : tt("action_join_league")}
+                  </button>
+                  <button type="button" className="secondary-button" onClick={() => setSetupMode("choice")} disabled={status === "loading"}>
+                    {tt("action_back")}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
-          <p className={status === "error" ? "status error" : "status"}>{message}</p>
-          <div className="field-grid setup-fields">
-            <label>
-              {tt("field_league")}
-              <input maxLength={40} value={form.leagueName} onChange={(event) => setForm({ ...form, leagueName: event.target.value })} />
-            </label>
-            <label>
-              {tt("field_join_code")}
-              <input
-                value={form.joinCode}
-                onChange={(event) => setForm({ ...form, joinCode: event.target.value.toUpperCase() })}
-                maxLength={6}
-                placeholder="PLAY01"
-              />
-            </label>
-            <label>
-              {tt("field_team")}
-              <input maxLength={32} value={form.teamName} onChange={(event) => setForm({ ...form, teamName: event.target.value })} />
-            </label>
-          </div>
-          <div className="actions primary-actions">
-            <button type="button" onClick={createLeague} disabled={status === "loading"}>
-              {tt("action_create_league")}
-            </button>
-            <button type="button" onClick={joinLeague} disabled={status === "loading"}>
-              {tt("action_join_league")}
-            </button>
-          </div>
+
           {savedClaims.length ? (
-            <div className="saved-leagues">
+            <aside className="panel saved-leagues">
               <span className="section-kicker">{tt("profile_saved_leagues")}</span>
               <div className="saved-league-list">
                 {savedClaims.map((claim) => (
@@ -510,7 +530,7 @@ export function App() {
                   </button>
                 ))}
               </div>
-            </div>
+            </aside>
           ) : null}
         </section>
       </main>

@@ -14,6 +14,7 @@
 
 .setup-shell {
   justify-content: flex-start;
+  max-width: 980px;
 }
 
 .game-shell {
@@ -47,6 +48,72 @@
   display: flex;
   gap: 16px;
   justify-content: space-between;
+}
+
+.setup-topbar {
+  align-items: center;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 10px 14px;
+}
+
+.setup-grid {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 320px);
+}
+
+.setup-grid-single {
+  grid-template-columns: minmax(0, 720px);
+  justify-content: center;
+}
+
+.setup-main-panel {
+  border-top: 3px solid var(--color-telemetry);
+}
+
+.setup-main-panel h1 {
+  font-size: 1.8rem;
+  line-height: 1.1;
+  margin: 0;
+}
+
+.setup-choice-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.setup-choice {
+  background: var(--color-cockpit);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  display: grid;
+  gap: 8px;
+  min-height: 104px;
+  padding: 16px;
+  text-align: left;
+}
+
+.setup-choice:hover {
+  border-color: var(--color-telemetry);
+  color: var(--color-text);
+}
+
+.setup-choice strong {
+  color: var(--color-text);
+}
+
+.setup-choice small {
+  color: var(--color-muted);
+  font-weight: 600;
+  line-height: 1.35;
 }
 
 .eyebrow {
@@ -233,6 +300,10 @@
   .drive-grid {
     grid-template-columns: 1fr;
   }
+
+  .setup-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .panel {
@@ -314,6 +385,17 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.secondary-button:not(:disabled) {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+}
+
+.secondary-button:not(:disabled):hover {
+  border-color: var(--color-muted);
+  color: var(--color-text);
+}
+
 input,
 select {
   background: var(--color-cockpit);
@@ -348,11 +430,8 @@ label small {
 }
 
 .saved-leagues {
-  border-top: 1px solid var(--color-border);
   display: grid;
   gap: 10px;
-  margin-top: 16px;
-  padding-top: 16px;
 }
 
 .saved-league-list {
@@ -1615,6 +1694,19 @@ button.primary-command {
     gap: 6px;
     padding: 8px;
     top: 8px;
+  }
+
+  .setup-topbar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .setup-topbar .brand strong {
+    display: inline;
+  }
+
+  .setup-choice-grid {
+    grid-template-columns: 1fr;
   }
 
   .brand {

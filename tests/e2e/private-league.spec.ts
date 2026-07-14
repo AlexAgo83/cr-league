@@ -90,7 +90,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await page.goto("/");
   await createProfile(page);
 
-  await page.getByRole("button", { name: "Create league" }).click();
+  await createLeague(page);
   await expect(page.getByRole("button", { name: "Race", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Championship", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Garage", exact: true })).toBeVisible();
@@ -149,7 +149,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await mockLeagueApi(page);
   await page.goto("/");
   await createProfile(page);
-  await page.getByRole("button", { name: "Create league" }).click();
+  await createLeague(page);
   await page.getByRole("button", { name: "Garage", exact: true }).click();
   await page.getByLabel("Primary").fill("#c51697");
   await page.getByLabel("Secondary").fill("#633af8");
@@ -246,6 +246,11 @@ async function createProfile(page: Page) {
   await page.getByLabel("Email").fill("pilot@example.test");
   await page.getByRole("button", { name: "Create profile" }).click();
   await expect(page.getByText("Profile created. Save this recovery code: ABCD1234")).toBeVisible();
+}
+
+async function createLeague(page: Page) {
+  await page.getByRole("button", { name: "Create league" }).click();
+  await page.getByRole("button", { name: "Start league" }).click();
 }
 
 function leagueState(result: ReturnType<typeof resultForRound> | null = null) {

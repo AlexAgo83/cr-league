@@ -255,9 +255,9 @@ describe("App", () => {
 
     render(<App />);
 
-    expect(screen.getByRole("heading", { name: "CR League" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Race desk" })).toBeTruthy();
 
-    fireEvent.click(screen.getByRole("button", { name: "Create league" }));
+    createLeagueFromSetup();
 
     // Drive view: map + directive panel side by side
     expect(await screen.findByText("ABC123")).toBeTruthy();
@@ -383,7 +383,7 @@ describe("App", () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Create league" }));
+    createLeagueFromSetup();
     const profileButton = await screen.findByRole("button", { name: "Profile menu" });
     fireEvent.click(profileButton);
     expect(screen.getByRole("button", { name: "League controls" })).toBeTruthy();
@@ -410,7 +410,7 @@ describe("App", () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: "Create league" }));
+    createLeagueFromSetup();
 
     fireEvent.click(await screen.findByRole("button", { name: "Result" }));
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
@@ -423,6 +423,7 @@ describe("App", () => {
 
     render(<App />);
 
+    fireEvent.click(screen.getByRole("button", { name: /Join league/ }));
     fireEvent.change(screen.getByLabelText("Join code"), { target: { value: "abc123" } });
     fireEvent.change(screen.getByLabelText("Team"), { target: { value: "Volt Union" } });
     fireEvent.click(screen.getByRole("button", { name: "Join league" }));
@@ -529,7 +530,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.click(screen.getByRole("button", { name: "Add league" }));
 
-    expect(screen.getByRole("button", { name: "Create league" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Create league/ })).toBeTruthy();
     expect(screen.getByText("Saved leagues")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Office League/ }));
 
@@ -564,7 +565,7 @@ describe("App", () => {
     expect(await screen.findByText("Saved league no longer exists. Join the playtest again.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-player-claims")).toBe("[]");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
-    expect(screen.getByRole("button", { name: "Join league" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Join league/ })).toBeTruthy();
   });
 });
 
@@ -577,6 +578,11 @@ function saveProfile() {
       teams: []
     })
   );
+}
+
+function createLeagueFromSetup() {
+  fireEvent.click(screen.getByRole("button", { name: /Create league/ }));
+  fireEvent.click(screen.getByRole("button", { name: "Start league" }));
 }
 
 function response(body: unknown) {

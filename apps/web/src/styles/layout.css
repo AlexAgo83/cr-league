@@ -826,33 +826,45 @@ label small {
 }
 
 .replay-tower li {
-  align-items: baseline;
+  align-items: center;
   color: var(--color-text);
   display: flex;
   font-size: 0.78rem;
   gap: 8px;
 }
 
-.replay-tower strong {
-  color: var(--color-telemetry);
-  font-size: 0.7rem;
-  min-width: 20px;
+.replay-tower-livery {
+  align-items: center;
+  background: var(--livery-primary);
+  border: 2px solid var(--livery-secondary);
+  border-radius: 999px;
+  box-shadow: 0 0 0 1px rgb(10 15 21 / 0.7);
+  color: #f8fafc;
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-size: 0.58rem;
+  font-weight: 900;
+  height: 16px;
+  justify-content: center;
+  line-height: 1;
+  text-shadow:
+    0 1px 1px rgb(0 0 0 / 0.9),
+    1px 0 1px rgb(0 0 0 / 0.9),
+    -1px 0 1px rgb(0 0 0 / 0.9),
+    0 -1px 1px rgb(0 0 0 / 0.9);
+  width: 16px;
 }
 
-.replay-tower span {
+.replay-tower-team {
   max-width: 130px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.replay-tower li.player span {
+.replay-tower li.player .replay-tower-team {
   color: var(--color-accent);
   font-weight: 700;
-}
-
-.replay-tower li.player strong {
-  color: var(--color-accent);
 }
 
 .circuit-route-glow,
@@ -1928,12 +1940,13 @@ button.primary-command {
     gap: 4px;
   }
 
-  .replay-tower strong {
-    font-size: 0.5rem;
-    min-width: 15px;
+  .replay-tower-livery {
+    font-size: 0.46rem;
+    height: 13px;
+    width: 13px;
   }
 
-  .replay-tower span {
+  .replay-tower-team {
     max-width: 66px;
   }
 

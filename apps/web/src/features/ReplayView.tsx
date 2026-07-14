@@ -1,5 +1,5 @@
 import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
-import { useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { countryFlag, type CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
@@ -349,8 +349,19 @@ export function ReplayView({
                 <ol className="replay-tower">
                   {liveTower.map((entry, index) => (
                     <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
-                      <strong>P{index + 1}</strong>
-                      <span>{entry.teamName}</span>
+                      <span
+                        className="replay-tower-livery"
+                        aria-label={`P${index + 1}`}
+                        style={
+                          {
+                            "--livery-primary": teamLiveries[entry.teamId]?.primary ?? "#38bdf8",
+                            "--livery-secondary": teamLiveries[entry.teamId]?.secondary ?? "#16c784"
+                          } as CSSProperties & Record<string, string>
+                        }
+                      >
+                        {index + 1}
+                      </span>
+                      <span className="replay-tower-team">{entry.teamName}</span>
                     </li>
                   ))}
                 </ol>

@@ -68,7 +68,7 @@ async function mockLeagueApi(page: Page) {
   });
 }
 
-test("plays a three Grand Prix private league loop", async ({ page }) => {
+test("plays a three Grand Prix private league loop", async ({ page }, testInfo) => {
   await mockLeagueApi(page);
 
   await page.goto("/");
@@ -81,8 +81,12 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
   await page.getByRole("button", { name: "Championship", exact: true }).click();
   await expect(page.getByText("ABC123")).toBeVisible();
   await expect(page.getByText("Round 1").first()).toBeVisible();
-  await expect(page.getByText("Current GP")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Current GP" })).toBeVisible();
   await expect(page.getByText("0/2")).toBeVisible();
+  await expect(page.locator(".championship-grid")).toBeVisible();
+  await expect(page.locator(".standings-table")).toContainText("Circle One");
+  await expect(page.locator(".round-timeline")).toContainText("R1");
+  await page.screenshot({ path: testInfo.outputPath("championship-layout-desktop.png"), fullPage: true });
 
   await expect(page.getByLabel("League summary").getByText("Wait for directives")).toBeVisible();
   await page.getByRole("button", { name: "Race", exact: true }).click();

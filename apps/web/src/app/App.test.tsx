@@ -343,6 +343,7 @@ describe("App", () => {
     expect(screen.getByText("You still have lap time attempts left. Submit the directive now? 2/3")).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "Submit directive" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
+    expect(document.querySelector(".command-context")?.textContent).not.toContain("Directive locked");
     expect(screen.getByText("Ready to launch")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Lap time" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByText("Locked after directive")).toBeTruthy();
@@ -430,7 +431,7 @@ describe("App", () => {
     expect(screen.getByText("Season 1 · Round 1/6")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Forget team" }));
-    expect(screen.getByText("Team claim forgotten.")).toBeTruthy();
+    expect(screen.getAllByText("Team claim forgotten.").length).toBeGreaterThan(0);
     expect(localStorage.getItem("cr-league-player-claims")).toBe("[]");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
     expect(fetch).toHaveBeenCalledTimes(7);
@@ -688,6 +689,9 @@ describe("App", () => {
 
     expect(screen.getByRole("dialog", { name: "Sign out" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Sign out" })).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Sign out" }).at(-1)!);
+    expect(screen.queryByRole("dialog", { name: "Sign out" })).toBe(null);
+    expect(screen.getByRole("heading", { name: "Save your access" })).toBeTruthy();
   });
 
   it("clears a stale saved player claim", async () => {

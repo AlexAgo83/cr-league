@@ -1,5 +1,5 @@
 import { APP_NAME, type CardId, type QualifyingRun } from "@cr-league/shared";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitForRound, countryFlag } from "./circuits.js";
 import { cardFit, strongestForecast } from "./helpers.js";
@@ -27,6 +27,7 @@ type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
 };
 type ProfileMode = "choice" | "create" | "recover";
 type SetupMode = "choice" | "create" | "join";
+type Notification = { id: number; text: string; tone: "info" | "error" };
 
 function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
   const impacts: MapTraitImpacts = {};
@@ -122,6 +123,21 @@ export function App() {
   const [savedClaims, setSavedClaims] = useState(loadPlayerClaims);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState(() => t("status_initial", locale));
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const notificationId = useRef(0);
+  const lastNotification = useRef("");
+
+  useEffect(() => {
+    if (message === t("status_initial", locale)) return;
+    if (message === lastNotification.current) return;
+    lastNotification.current = message;
+    const id = notificationId.current + 1;
+    notificationId.current = id;
+    const tone: Notification["tone"] = status === "error" ? "error" : "info";
+    setNotifications((items) => [...items, { id, text: message, tone }].slice(-5));
+    const timeout = window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 10_000);
+    return () => window.clearTimeout(timeout);
+  }, [message, status, locale]);
 
   useEffect(() => {
     if (!profileSession) return;
@@ -507,6 +523,9 @@ export function App() {
     localStorage.removeItem(PLAYER_CLAIM_KEY);
     setProfileSession(null);
     setLeagueState(null);
+    setProfileLogoutOpen(false);
+    setProfileCodeOpen(false);
+    setProfileOpen(false);
     setProfileMode("choice");
     setSetupMode("choice");
     setSavedClaims([]);
@@ -681,6 +700,15 @@ export function App() {
       </section>
     </div>
   ) : null;
+  const notificationStack = notifications.length ? (
+    <div className="notification-stack" aria-live="polite">
+      {notifications.map((notification) => (
+        <p key={notification.id} className={`floating-notification ${notification.tone}`}>
+          {notification.text}
+        </p>
+      ))}
+    </div>
+  ) : null;
 
   if (!profileSession) {
     return (
@@ -736,6 +764,7 @@ export function App() {
             )}
           </div>
         </section>
+        {notificationStack}
         {profileCodeModal}
         {profileLogoutModal}
       </main>
@@ -866,6 +895,7 @@ export function App() {
             )}
           </aside>
         </section>
+        {notificationStack}
         {profileCodeModal}
         {profileLogoutModal}
       </main>
@@ -1018,7 +1048,6 @@ export function App() {
           <span className={`race-state state-${deskState}`}>
             <span className="race-state-label">{tt(`race_state_${deskState}` as TranslationKey)}</span>
           </span>
-          <p className={status === "error" ? "status error" : "status"}>{message}</p>
           <small className="command-hint">{tt(`command_hint_${deskState}` as TranslationKey)}</small>
         </div>
         <div className="command-actions">
@@ -1037,6 +1066,7 @@ export function App() {
           </button>
         </div>
       </footer>
+      {notificationStack}
 
       {qualifyingOpen ? (
         <div className="modal-overlay" onClick={() => setQualifyingOpen(false)}>

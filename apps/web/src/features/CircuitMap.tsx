@@ -273,7 +273,7 @@ export function CircuitMap({
               return (
                 <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
                   <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                    <rect className="map-car-body" x="-15" y="-10" width="30" height="20" rx="6" transform={pose ? `rotate(${pose.angle}) skewX(${drift})` : undefined} />
+                    <rect className="map-car-body" x="-15" y="-10" width="30" height="20" rx="6" transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
                     <text textAnchor="middle" dominantBaseline="central">
                       {car.label}
                     </text>

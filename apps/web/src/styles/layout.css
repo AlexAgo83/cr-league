@@ -1866,12 +1866,40 @@ label small {
 
 .garage-livery-fields {
   align-items: end;
-  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(2, auto) minmax(0, 1fr);
+  justify-content: start;
+}
+
+.garage-livery-fields label {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
 }
 
 .garage-livery-fields input[type="color"] {
-  min-height: 42px;
-  padding: 4px;
+  border: 2px solid rgb(255 255 255 / 0.18);
+  border-radius: 999px;
+  cursor: pointer;
+  height: 32px;
+  min-height: 0;
+  overflow: hidden;
+  padding: 0;
+  width: 32px;
+}
+
+.garage-livery-fields input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+
+.garage-livery-fields input[type="color"]::-webkit-color-swatch {
+  border: 0;
+  border-radius: 999px;
+}
+
+.garage-livery-fields input[type="color"]::-moz-color-swatch {
+  border: 0;
+  border-radius: 999px;
 }
 
 .card-shop {

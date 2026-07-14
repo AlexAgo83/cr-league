@@ -94,12 +94,12 @@ export function GarageView({
         </div>
         <div className="field-grid garage-livery-fields">
           <label>
-            {tt("garage_livery_primary")}
-            <input type="color" value={livery.primary} onChange={(event) => setLivery({ ...livery, primary: event.target.value })} />
+            <span>{tt("garage_livery_primary")}</span>
+            <input type="color" value={livery.primary} aria-label={tt("garage_livery_primary")} onChange={(event) => setLivery({ ...livery, primary: event.target.value })} />
           </label>
           <label>
-            {tt("garage_livery_secondary")}
-            <input type="color" value={livery.secondary} onChange={(event) => setLivery({ ...livery, secondary: event.target.value })} />
+            <span>{tt("garage_livery_secondary")}</span>
+            <input type="color" value={livery.secondary} aria-label={tt("garage_livery_secondary")} onChange={(event) => setLivery({ ...livery, secondary: event.target.value })} />
           </label>
           <button type="button" onClick={() => onUpdateLivery(livery)} disabled={loading}>
             {tt("garage_livery_save")}

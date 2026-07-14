@@ -92,8 +92,10 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
     await expect(page.getByText("Race resolved")).toBeVisible();
     await expect(page.locator("p").filter({ hasText: `Silver Ridge GP ${expectedRound}: Circle One wins.` })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Race recap" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Visual replay" })).toBeVisible();
+    await expect(page.getByLabel("Race replay by lap")).toBeVisible();
     await expect(page.getByText("Balanced · Weather · Rain Grip")).toBeVisible();
-    await expect(page.getByText("Lap 5")).toBeVisible();
+    await expect(page.locator(".replay-timeline").getByText("Lap 5")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Garage" })).toBeVisible();
     await expect(page.getByText("Last GP")).toBeVisible();
 
@@ -217,6 +219,16 @@ function resultForRound(resultRound: number) {
         positionChange: 1,
         status: "finished",
         resultTags: ["weather_gamble"]
+      },
+      {
+        position: 2,
+        teamId: "team_2",
+        teamName: "Mika Blitz",
+        points: 18,
+        credits: 100,
+        positionChange: -1,
+        status: "finished",
+        resultTags: []
       }
     ],
     events: [

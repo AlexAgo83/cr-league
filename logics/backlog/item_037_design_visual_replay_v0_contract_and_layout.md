@@ -1,10 +1,10 @@
 ## item_037_design_visual_replay_v0_contract_and_layout - Design visual replay V0 contract and layout
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -37,6 +37,7 @@
 - request-AC3 -> This backlog slice. Proof: AC3: The layout keeps readable labels on desktop and mobile.
 - request-AC4 -> This backlog slice. Proof: AC4: The plan explicitly avoids new rendering dependencies.
 - request-AC5 -> This backlog slice. Proof: AC4: The plan explicitly avoids new rendering dependencies.
+- request-AC6 -> This backlog slice. Evidence needed: EN/FR copy, unit or e2e assertions, visual screenshots, and Logics/docs updates cover the slice.
 
 # Decision framing
 - Product framing: Not needed
@@ -57,3 +58,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_032_orchestrate_visual_replay_v0`
+
+# Notes
+- Task `task_032_orchestrate_visual_replay_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

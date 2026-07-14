@@ -1,8 +1,8 @@
 ## prod_002_visual_replay_v0_product_brief - Visual Replay V0 Product Brief
 > Date: 2026-07-14
-> Status: Proposed
+> Status: Settled
 > Related request: `req_031_add_first_visual_race_replay_from_event_timeline`
-> Related backlog: `item_037_design_visual_replay_v0_contract_and_layout`, `item_038_implement_visual_replay_panel_in_the_web_app`, `item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks`
+> Related backlog: `item_037_design_visual_replay_v0_contract_and_layout`
 > Related task: `task_032_orchestrate_visual_replay_v0`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -56,5 +56,5 @@ flowchart LR
 - Playtest notes can answer whether V0 is enough or whether richer animation is worth a later slice.
 
 # References
-- Product back-reference: `req_031_add_first_visual_race_replay_from_event_timeline`
+- Product back-reference: `item_037_design_visual_replay_v0_contract_and_layout`
 - Task back-reference: `task_032_orchestrate_visual_replay_v0`

@@ -18,7 +18,7 @@
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
 | [prod_001_cr_league_product_brief](product/prod_001_cr_league_product_brief.md) | 7. Progression | Settled |  |  | product/prod_001_cr_league_product_brief.md |
-| [prod_002_visual_replay_v0_product_brief](product/prod_002_visual_replay_v0_product_brief.md) | Visual Replay V0 Product Brief | Proposed |  |  | product/prod_002_visual_replay_v0_product_brief.md |
+| [prod_002_visual_replay_v0_product_brief](product/prod_002_visual_replay_v0_product_brief.md) | Visual Replay V0 Product Brief | Settled |  |  | product/prod_002_visual_replay_v0_product_brief.md |
 
 ## Roadmaps
 
@@ -61,7 +61,7 @@
 | [req_028_improve_race_recap_readability](request/req_028_improve_race_recap_readability.md) | Improve race recap readability | Done |  |  | request/req_028_improve_race_recap_readability.md |
 | [req_029_improve_race_desk_immersion_ui](request/req_029_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done |  |  | request/req_029_improve_race_desk_immersion_ui.md |
 | [req_030_add_playtest_session_reset_and_league_dashboard_clarity](request/req_030_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done |  |  | request/req_030_add_playtest_session_reset_and_league_dashboard_clarity.md |
-| [req_031_add_first_visual_race_replay_from_event_timeline](request/req_031_add_first_visual_race_replay_from_event_timeline.md) | Add first visual race replay from event timeline | Draft |  |  | request/req_031_add_first_visual_race_replay_from_event_timeline.md |
+| [req_031_add_first_visual_race_replay_from_event_timeline](request/req_031_add_first_visual_race_replay_from_event_timeline.md) | Add first visual race replay from event timeline | Done |  |  | request/req_031_add_first_visual_race_replay_from_event_timeline.md |
 
 ## Backlog
 
@@ -103,9 +103,9 @@
 | [item_034_improve_race_recap_readability](backlog/item_034_improve_race_recap_readability.md) | Improve race recap readability | Done |  | 100% | backlog/item_034_improve_race_recap_readability.md |
 | [item_035_improve_race_desk_immersion_ui](backlog/item_035_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done |  | 100% | backlog/item_035_improve_race_desk_immersion_ui.md |
 | [item_036_add_playtest_session_reset_and_league_dashboard_clarity](backlog/item_036_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done |  | 100% | backlog/item_036_add_playtest_session_reset_and_league_dashboard_clarity.md |
-| [item_037_design_visual_replay_v0_contract_and_layout](backlog/item_037_design_visual_replay_v0_contract_and_layout.md) | Design visual replay V0 contract and layout | Ready |  | 0% | backlog/item_037_design_visual_replay_v0_contract_and_layout.md |
-| [item_038_implement_visual_replay_panel_in_the_web_app](backlog/item_038_implement_visual_replay_panel_in_the_web_app.md) | Implement visual replay panel in the web app | Ready |  | 0% | backlog/item_038_implement_visual_replay_panel_in_the_web_app.md |
-| [item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks](backlog/item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks.md) | Capture replay V0 playtest prompts and follow-up risks | Ready |  | 0% | backlog/item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks.md |
+| [item_037_design_visual_replay_v0_contract_and_layout](backlog/item_037_design_visual_replay_v0_contract_and_layout.md) | Design visual replay V0 contract and layout | Done |  | 100% | backlog/item_037_design_visual_replay_v0_contract_and_layout.md |
+| [item_038_implement_visual_replay_panel_in_the_web_app](backlog/item_038_implement_visual_replay_panel_in_the_web_app.md) | Implement visual replay panel in the web app | Done |  | 100% | backlog/item_038_implement_visual_replay_panel_in_the_web_app.md |
+| [item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks](backlog/item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks.md) | Capture replay V0 playtest prompts and follow-up risks | Done |  | 100% | backlog/item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks.md |
 
 ## Tasks
 
@@ -142,4 +142,4 @@
 | [task_029_improve_race_recap_readability](tasks/task_029_improve_race_recap_readability.md) | Improve race recap readability | Done | codex | 100% | tasks/task_029_improve_race_recap_readability.md |
 | [task_030_improve_race_desk_immersion_ui](tasks/task_030_improve_race_desk_immersion_ui.md) | Improve race desk immersion UI | Done | codex | 100% | tasks/task_030_improve_race_desk_immersion_ui.md |
 | [task_031_add_playtest_session_reset_and_league_dashboard_clarity](tasks/task_031_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done | codex | 100% | tasks/task_031_add_playtest_session_reset_and_league_dashboard_clarity.md |
-| [task_032_orchestrate_visual_replay_v0](tasks/task_032_orchestrate_visual_replay_v0.md) | Orchestrate visual replay V0 | Ready |  | 0% | tasks/task_032_orchestrate_visual_replay_v0.md |
+| [task_032_orchestrate_visual_replay_v0](tasks/task_032_orchestrate_visual_replay_v0.md) | Orchestrate visual replay V0 | Done | codex | 100% | tasks/task_032_orchestrate_visual_replay_v0.md |

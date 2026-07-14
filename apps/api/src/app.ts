@@ -15,8 +15,12 @@ export async function buildApp(config: ApiConfig, dependencies: AppDependencies 
     logger: true
   });
 
+  const webOrigins = new Set([config.webOrigin, "http://localhost:4873", "http://127.0.0.1:4873"]);
+
   await app.register(cors, {
-    origin: config.webOrigin
+    origin: (origin, callback) => {
+      callback(null, !origin || webOrigins.has(origin));
+    }
   });
 
   await registerHealthRoutes(app);

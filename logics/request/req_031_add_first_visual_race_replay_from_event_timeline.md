@@ -1,9 +1,9 @@
 ## req_031_add_first_visual_race_replay_from_event_timeline - Add first visual race replay from event timeline
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Medium
 > Theme: Replay readability and race immersion
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -28,6 +28,14 @@
 - AC4: The replay is readable on desktop and mobile with no overlapping labels or inaccessible hover-only controls.
 - AC5: The implementation uses existing React/CSS capabilities and does not introduce a rendering engine dependency.
 - AC6: EN/FR copy, unit or e2e assertions, visual screenshots, and Logics/docs updates cover the slice.
+
+# AC Traceability
+- AC1 -> `task_032_orchestrate_visual_replay_v0`. Proof: `apps/web/src/app/App.tsx` renders `VisualReplay` from `RaceResult` classification, weather, and events.
+- AC2 -> `task_032_orchestrate_visual_replay_v0`. Proof: `VisualReplay` renders player and field markers, five lap segments, and event callouts.
+- AC3 -> `task_032_orchestrate_visual_replay_v0`. Proof: replay callouts prioritize player/major events while the existing recap, key moments, and race report remain below the panel.
+- AC4 -> `task_032_orchestrate_visual_replay_v0`. Proof: desktop and mobile Playwright screenshots were inspected for the replay panel with labels inside the panel.
+- AC5 -> `task_032_orchestrate_visual_replay_v0`. Proof: the implementation uses React and CSS only; `package.json` dependencies were not expanded.
+- AC6 -> `task_032_orchestrate_visual_replay_v0`. Proof: EN/FR catalogs, unit/e2e assertions, playtest docs, README, and Logics updates were changed in the slice.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

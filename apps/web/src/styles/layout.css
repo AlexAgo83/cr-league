@@ -306,7 +306,8 @@ label small {
 }
 
 .result-panel,
-.moments-panel {
+.moments-panel,
+.visual-replay-panel {
   grid-column: span 6;
 }
 
@@ -478,6 +479,113 @@ label small {
   padding: 2px 8px;
 }
 
+.visual-replay-panel {
+  display: grid;
+  gap: 16px;
+}
+
+.replay-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.replay-explainer,
+.replay-summary span,
+.replay-empty {
+  color: var(--color-muted);
+  font-size: 0.875rem;
+}
+
+.visual-replay-panel h3 {
+  font-size: 0.95rem;
+  margin: 0;
+}
+
+.replay-track {
+  background: #f8fafc;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  display: grid;
+  gap: 14px;
+  min-height: 210px;
+  overflow: hidden;
+  padding: 18px 14px 14px;
+  position: relative;
+}
+
+.replay-marker {
+  background: white;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  box-shadow: 0 8px 18px rgb(15 23 42 / 10%);
+  display: grid;
+  gap: 2px;
+  max-width: 42%;
+  min-width: 110px;
+  padding: 8px 10px;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.replay-marker.player {
+  border-color: var(--color-accent);
+  top: 52px;
+}
+
+.replay-marker.field {
+  top: 112px;
+}
+
+.replay-marker small {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.replay-laps,
+.replay-callouts {
+  display: grid;
+  gap: 8px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.replay-laps {
+  align-self: end;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  padding-top: 154px;
+}
+
+.replay-laps li {
+  border-top: 3px solid #94a3b8;
+  display: grid;
+  gap: 3px;
+  min-width: 0;
+  padding-top: 7px;
+}
+
+.replay-laps span,
+.replay-callouts span {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+}
+
+.replay-axis-label {
+  color: var(--color-muted);
+  font-size: 0.75rem;
+  left: 14px;
+  position: absolute;
+  top: 18px;
+}
+
+.replay-callouts li {
+  border-left: 3px solid var(--color-accent);
+  display: grid;
+  gap: 3px;
+  padding-left: 10px;
+}
+
 .report-panel {
   grid-column: 1 / -1;
 }
@@ -496,7 +604,8 @@ label small {
   .race-panel,
   .league-panel,
   .result-panel,
-  .moments-panel {
+  .moments-panel,
+  .visual-replay-panel {
     grid-column: 1 / -1;
   }
 
@@ -514,5 +623,13 @@ label small {
   .panel-heading {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .replay-laps {
+    grid-template-columns: 1fr;
+  }
+
+  .replay-marker {
+    max-width: calc(100% - 28px);
   }
 }

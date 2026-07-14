@@ -1,4 +1,4 @@
-import { APP_NAME, type CardId, type RaceDecision, type RaceResult } from "@cr-league/shared";
+import { APP_NAME, RACE_SEGMENTS, type CardId, type RaceDecision, type RaceResult } from "@cr-league/shared";
 import { useEffect, useMemo, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 
@@ -629,6 +629,8 @@ export function App() {
               </ol>
             </article>
 
+            <VisualReplay result={result} playerTeamId={playerTeam?.id} tt={tt} />
+
             <article className="panel moments-panel">
               <h2>{tt("result_key_moments")}</h2>
               <ul className="events replay-timeline">
@@ -658,6 +660,93 @@ export function App() {
         ) : null}
       </section>
     </main>
+  );
+}
+
+function VisualReplay({
+  result,
+  playerTeamId,
+  tt
+}: {
+  result: RaceResult;
+  playerTeamId: string | undefined;
+  tt: (key: TranslationKey) => string;
+}) {
+  const playerEntry = result.classification.find((entry) => entry.teamId === playerTeamId) ?? result.classification[0];
+  const winner = result.classification[0];
+  const referenceEntry = result.classification.find((entry) => entry.teamId !== playerEntry?.teamId) ?? winner;
+  const replayEvents = result.events
+    .filter((event) => event.severity === "major" || event.teamId === playerTeamId || event.relatedTeamId === playerTeamId)
+    .slice(0, 3);
+
+  return (
+    <article className="panel visual-replay-panel">
+      <h2>{tt("result_replay_title")}</h2>
+      <p className="replay-explainer">{tt("result_replay_explainer")}</p>
+      <div className="replay-summary">
+        <span>
+          {tt("result_replay_winner")} <strong>{winner?.teamName ?? result.grandPrixName}</strong>
+        </span>
+        {playerEntry ? (
+          <span>
+            {tt("result_replay_you")} <strong>P{playerEntry.position}</strong>
+          </span>
+        ) : null}
+      </div>
+      <h3>{tt("result_replay_positions")}</h3>
+      <div className="replay-track" aria-label={tt("result_replay_track_label")}>
+        {playerEntry ? <ReplayMarker entry={playerEntry} total={result.classification.length} label={tt("result_replay_you")} lane="player" /> : null}
+        {referenceEntry ? <ReplayMarker entry={referenceEntry} total={result.classification.length} label={tt("result_replay_reference")} lane="field" /> : null}
+        <strong className="replay-axis-label">{tt("result_replay_axis")}</strong>
+        <ol className="replay-laps">
+          {RACE_SEGMENTS.map((segment, index) => (
+            <li key={segment}>
+              <strong>
+                {tt("result_replay_phase")} {index + 1}
+              </strong>
+              <span>{tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}</span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      {replayEvents.length > 0 ? (
+        <ol className="replay-callouts">
+          {replayEvents.map((event) => (
+            <li key={event.id}>
+              <span>
+                {tt("unit_lap")} {event.lap}
+              </span>
+              <strong>{event.replayText}</strong>
+            </li>
+          ))}
+        </ol>
+      ) : (
+        <p className="replay-empty">{tt("result_replay_empty")}</p>
+      )}
+    </article>
+  );
+}
+
+function ReplayMarker({
+  entry,
+  total,
+  label,
+  lane
+}: {
+  entry: RaceResult["classification"][number];
+  total: number;
+  label: string;
+  lane: "player" | "field";
+}) {
+  const left = total <= 1 ? 50 : 16 + ((entry.position - 1) / (total - 1)) * 68;
+
+  return (
+    <span className={`replay-marker ${lane}`} style={{ left: `${left}%` }}>
+      <strong>{label}</strong>
+      <small>
+        P{entry.position} · {entry.teamName}
+      </small>
+    </span>
   );
 }
 

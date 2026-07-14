@@ -1,10 +1,10 @@
 ## item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks - Capture replay V0 playtest prompts and follow-up risks
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Playtest readiness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,7 @@
 - request-AC3 -> This backlog slice. Proof: AC1: Playtest docs ask whether the replay made the race easier to understand.
 - request-AC4 -> This backlog slice. Proof: AC2: Playtest docs ask whether visual event callouts match the written recap.
 - request-AC6 -> This backlog slice. Proof: AC3: Known limits document that replay V0 is not a full race simulation.
+- request-AC5 -> This backlog slice. Evidence needed: The implementation uses existing React/CSS capabilities and does not introduce a rendering engine dependency.
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +54,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_032_orchestrate_visual_replay_v0`
+
+# Notes
+- Task `task_032_orchestrate_visual_replay_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

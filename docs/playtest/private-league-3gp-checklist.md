@@ -26,7 +26,8 @@
 - Do ready/missing states match what players did?
 - Does the result feel connected to the submitted directive?
 - Does the race recap explain what made the difference?
-- Does the replay timeline make the race easier to understand?
+- Does the visual replay make the race easier to understand than the timeline alone?
+- Do visual event callouts match the written recap and key moments?
 - Does the history make the championship feel persistent?
 - Does the dashboard make invite code, current GP, readiness, leader, standings, garage, and history easy to scan?
 - Does restarting the session feel clear enough for repeating a playtest?
@@ -47,4 +48,4 @@
 - No automatic deadline resolution yet.
 - Card inventory exists only as a thin fixed-price garage with a small recommended offer set; no selling, rarity, draft offers, or catch-up economy yet.
 - Restart session is a playtest operator tool, not a full admin/season management system.
-- Replay is an event timeline, not a visual track simulation.
+- Replay V0 is a static visual summary from stored classification and event data, not a full race simulation.

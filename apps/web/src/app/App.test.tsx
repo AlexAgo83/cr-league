@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
 
@@ -124,6 +124,16 @@ const resolvedState = {
           positionChange: 1,
           status: "finished",
           resultTags: ["weather_gamble"]
+        },
+        {
+          position: 2,
+          teamId: "team_2",
+          teamName: "Mika Blitz",
+          points: 18,
+          credits: 100,
+          positionChange: -1,
+          status: "finished",
+          resultTags: []
         }
       ],
       events: [
@@ -191,6 +201,7 @@ const settingsState = {
 };
 
 afterEach(() => {
+  cleanup();
   vi.restoreAllMocks();
   localStorage.clear();
 });
@@ -228,7 +239,8 @@ describe("App", () => {
     expect(screen.getByText("Prepare")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
     expect(screen.getByText("Current GP")).toBeTruthy();
-    expect(screen.getByText("Fast · Weather sensitive")).toBeTruthy();
+    expect(screen.getAllByText("Fast").length).toBeGreaterThan(0);
+    expect(screen.getByText("Weather sensitive")).toBeTruthy();
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
     expect(screen.getByText("0/2")).toBeTruthy();
@@ -241,12 +253,15 @@ describe("App", () => {
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
     expect(screen.getByText("Race resolved")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Visual replay" })).toBeTruthy();
+    expect(screen.getByText("Winner")).toBeTruthy();
+    expect(screen.getAllByText("P1 · Circle One").length).toBeGreaterThan(0);
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
     expect(screen.getByText("Balanced · Weather · Rain Grip")).toBeTruthy();
     expect(screen.getByText("Your card shaped the race. Keep one for moments where the track or forecast clearly matches it.")).toBeTruthy();
-    expect(screen.getByText("Lap 5")).toBeTruthy();
+    expect(document.querySelector(".replay-timeline")?.textContent).toContain("Lap 5");
     expect(screen.getByText("Key event")).toBeTruthy();
-    expect(screen.getByText("Rain Grip triggers for Circle One")).toBeTruthy();
+    expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip triggers for Circle One");
     expect(screen.getByText("Last GP")).toBeTruthy();
     expect(screen.getByText("+150 credits · +25 pts")).toBeTruthy();
     expect(screen.getByText("Consumed Rain Grip")).toBeTruthy();
@@ -256,7 +271,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Launch GP" }).hasAttribute("disabled")).toBe(true);
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
-    expect(await screen.findByText("Round 2")).toBeTruthy();
+    expect((await screen.findAllByText("Round 2")).length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Restart session" })).toBeTruthy();
 
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
@@ -271,6 +286,28 @@ describe("App", () => {
     expect(screen.getByText("Team claim forgotten.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-player-claim")).toBe(null);
     expect(fetch).toHaveBeenCalledTimes(6);
+  });
+
+  it("shows a replay empty state when a resolved race has no events", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      response({
+        ...resolvedState,
+        currentGrandPrix: {
+          ...resolvedState.currentGrandPrix,
+          result: {
+            ...resolvedState.currentGrandPrix.result,
+            events: []
+          }
+        }
+      })
+    );
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Create league" }));
+
+    expect(await screen.findByRole("heading", { name: "Visual replay" })).toBeTruthy();
+    expect(screen.getByText("No replay events were recorded for this GP.")).toBeTruthy();
   });
 
   it("joins a league by code", async () => {

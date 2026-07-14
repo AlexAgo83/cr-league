@@ -1,10 +1,10 @@
 ## item_038_implement_visual_replay_panel_in_the_web_app - Implement visual replay panel in the web app
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Frontend implementation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -61,3 +61,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_032_orchestrate_visual_replay_v0`
+
+# Notes
+- Task `task_032_orchestrate_visual_replay_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

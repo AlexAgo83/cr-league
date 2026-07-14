@@ -189,7 +189,9 @@ export function ReplayView({
               <strong>
                 {tt("result_replay_phase")} {index + 1}
               </strong>
-              <span>{tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}</span>
+              <span>
+                {WEATHER_ICONS[result.resolvedWeather[segment]]} {tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
+              </span>
             </li>
           ))}
         </ol>

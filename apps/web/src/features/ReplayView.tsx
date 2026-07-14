@@ -22,6 +22,18 @@ export function ReplayView({
   const [speed, setSpeed] = useState(1);
   const names = teamNamesFromResult(result);
   const playerEntry = result.classification.find((entry) => entry.teamId === playerTeamId);
+  const winner = result.classification[0];
+  const field = result.classification.slice(0, 6);
+  const cars: MapCar[] = field.map((entry, index) => ({
+    id: entry.teamId,
+    label: entry.teamName.slice(0, 3).toUpperCase(),
+    player: entry.teamId === playerTeamId,
+    // ponytail: cars evenly spaced along the loop, leader first — deterministic replay feel, not a physics sim.
+    delay: -((field.length - index) * (14 / field.length)),
+    duration: 14 + index * 0.6
+  }));
+  // Replay ends when the last car completes the race distance; the clock parks there on pause.
+  const replayEnd = Math.max(0, ...cars.map((car) => car.delay + circuit.laps * car.duration));
 
   // SMIL has no playback-rate API, so the SVG clock is driven by hand:
   // animations stay paused and a rAF loop advances setCurrentTime at `speed`.
@@ -33,29 +45,23 @@ export function ReplayView({
     if (!playing) return;
     let last = performance.now();
     let frame = requestAnimationFrame(function tick(now: number) {
-      clock.current += ((now - last) / 1000) * speed;
+      clock.current = Math.min(clock.current + ((now - last) / 1000) * speed, replayEnd);
       last = now;
       svg.setCurrentTime(clock.current);
+      if (clock.current >= replayEnd) {
+        setPlaying(false);
+        return;
+      }
       frame = requestAnimationFrame(tick);
     });
     return () => cancelAnimationFrame(frame);
-  }, [playing, speed]);
+  }, [playing, speed, replayEnd]);
 
   function restart() {
     clock.current = 0;
     svgRef.current?.setCurrentTime?.(0);
     setPlaying(true);
   }
-  const winner = result.classification[0];
-  const field = result.classification.slice(0, 6);
-  const cars: MapCar[] = field.map((entry, index) => ({
-    id: entry.teamId,
-    label: entry.teamName.slice(0, 3).toUpperCase(),
-    player: entry.teamId === playerTeamId,
-    // ponytail: cars evenly spaced along the loop, leader first — deterministic replay feel, not a physics sim.
-    delay: -((field.length - index) * (14 / field.length)),
-    duration: 14 + index * 0.6
-  }));
   const keyMoments = [
     ...result.events.filter((event) => event.severity === "major"),
     ...result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId),
@@ -81,7 +87,7 @@ export function ReplayView({
         </div>
         <CircuitMap circuit={circuit} tt={tt} cars={cars} svgRef={svgRef} />
         <div className="actions replay-controls secondary-actions">
-          <button type="button" onClick={() => setPlaying(!playing)}>
+          <button type="button" onClick={() => (!playing && clock.current >= replayEnd ? restart() : setPlaying(!playing))}>
             {playing ? tt("action_pause") : tt("action_play")}
           </button>
           <button type="button" onClick={restart}>

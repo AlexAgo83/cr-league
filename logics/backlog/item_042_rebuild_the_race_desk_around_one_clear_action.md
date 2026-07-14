@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 90
+> Confidence: 93
 > Progress: 0%
 > Complexity: Medium
 > Theme: Race desk UX
@@ -38,7 +38,7 @@
 - Briefing/preparation state:
   - Header: current GP, track name if available, and state label `Preparation`.
   - Primary command: `Submit directive`.
-  - Supporting telemetry: weather, track traits, readiness, available card, player team, and invite/league context only if it helps the decision.
+  - Supporting telemetry: city, circuit layout, weather, track traits, readiness, available card, player team, and invite/league context only if it helps the decision.
   - Directive form: compact, grouped as the strategy input, with validation errors near the relevant control.
 - Ready/locked state:
   - Header: current GP and state label `Directive locked`.

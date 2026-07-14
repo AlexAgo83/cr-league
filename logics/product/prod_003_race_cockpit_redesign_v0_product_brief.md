@@ -7,7 +7,7 @@
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Non-semantic edit: expanded DA implementation guidance without changing workflow links or request scope.
-> Confidence: 92
+> Confidence: 93
 
 # Overview
 Race Cockpit Redesign V0 turns the current functional prototype into a coherent game cockpit: a focused race desk, championship overview, garage, and result/replay surface that make CR League feel intentionally designed and understandable before adding more mechanics.
@@ -56,6 +56,8 @@ flowchart LR
 - The primary product surface is a race cockpit, not a dashboard. The Course region owns the player's current action.
 - Championship and Garage are supporting panels. They should be scannable and persistent without competing with the race command.
 - The visual direction should be minimal but deliberate: dark pit-wall command area, neutral information surfaces, racing state accents, and dense game-readable cards.
+- Circuits should be grounded in real European cities, with multiple named layouts per city over time. This gives the league a believable calendar without inventing fantasy tracks.
+- Fleet Sim is a useful reference for city presets, `LatLng` route thinking, Leaflet/OSM rendering, and OSRM routing, but CR League should not embed a raw fleet-management map in the race cockpit.
 - The result view should be a payoff sequence: outcome, player consequence, classification, replay summary, key moments, report.
 - The replay must be honest about its data. If it is static, it should say so clearly instead of implying precise animated race movement.
 - French playtest quality is a product requirement, not an afterthought; redesigned surfaces must be catalog-backed.
@@ -76,7 +78,15 @@ flowchart LR
   - Weather or telemetry accent: `#38bdf8`.
 - Motifs: telemetry strips, race-state badges, P1/P2 position plates, timing-screen rows, compact game cards, and visible action hierarchy.
 - V2 motifs to preserve: left rail with compact section markers, header ticker pills, cockpit command card, track map, telemetry bars, timing-screen standings, compact strategy choices, and readout lanes for resolved races.
+- City circuit motif: the track map should feel like a stylized racing extraction from a real city route, not a generic abstract loop. Use city names and layout names such as Paris Docklands Sprint, Amsterdam Canal Loop, Berlin Ring Sector, Barcelona Grid, Milan Navigli Run, Copenhagen Harbor, or Lisbon Hills as product examples.
 - Avoid: decorative blobs, generic gradients, oversized cards, full dark-blue monotony, fake precision in the replay, rough wireframe-like blocks, and visible explanatory copy that exists only because the UI is unclear.
+
+# City circuit direction
+- Product model: a city can host several circuits. Each circuit has a city, country, layout name, compact route geometry or simplified path, track traits, likely weather profile, and a short flavor label.
+- V0 implementation preference: start with a small static circuit catalog checked into CR League. Do not add live routing, Leaflet, OSRM calls, or a new map dependency unless the static catalog blocks the experience.
+- Fleet Sim reuse boundary: inspect and borrow concepts from `../fleet-sim` such as Paris presets, `LatLng`, route geometry, and OSRM adapter shape. Do not copy the FleetMap UI wholesale; CR League needs a broadcast/racing cockpit map, not a fleet operations dashboard.
+- Rendering approach: render a simplified dark city-route silhouette inside the cockpit, with sector bands, weather/event markers, and player/team markers. Keep it readable at small sizes and honest about the available race data.
+- Future extension: if static routes become limiting, add an offline route generation/build step or OSRM-backed authoring tool that outputs stored circuit geometry. Runtime gameplay should not depend on a network routing service.
 
 # Product surface model
 - Setup/no league: keep it short and functional. It should not dominate the visual identity once a league exists.

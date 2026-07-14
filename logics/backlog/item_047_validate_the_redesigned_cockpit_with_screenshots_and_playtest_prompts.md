@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 92
+> Confidence: 93
 > Progress: 0%
 > Complexity: Low
 > Theme: Validation and playtest readiness
@@ -44,6 +44,7 @@
 - Playtest questions to add:
   - Does the first viewport feel like a racing command cockpit instead of an admin dashboard?
   - Does the screen feel refined enough, or still like rough blocks laid out on a dark page?
+  - Does the city circuit read as a real European racing layout rather than a generic abstract loop or fleet dashboard map?
   - Can you name the next action within five seconds?
   - Do you understand what the result says happened and why?
   - Does the race readout feel honest about what it shows?

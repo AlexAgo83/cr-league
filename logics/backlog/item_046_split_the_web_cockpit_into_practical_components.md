@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 90
+> Confidence: 93
 > Progress: 0%
 > Complexity: Medium
 > Theme: Frontend maintainability
@@ -41,6 +41,7 @@
   - `GaragePanel` for credits, rewards, inventory, and purchasable cards.
   - `ResultView` for outcome, classification, explanation, key moments, and report.
   - `RaceReadout` for the static replay/readout surface.
+  - `CityCircuitMap` only if the route rendering would otherwise bloat `RaceDesk` or `RaceReadout`.
   - `StatusBadge` only if repeated state labels would otherwise duplicate markup.
 - Keep API calls, top-level loading/error state, and league/session orchestration in the app root unless moving them removes real duplication.
 - Do not add stores, contexts, factories, design-system folders, or generic UI primitives for one screen.

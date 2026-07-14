@@ -274,7 +274,7 @@ export function CircuitMap({
               return (
                 <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
                   <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                    <rect className="map-car-body" x="-15" y="-10" width="30" height="20" rx="6" transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
+                    <path className="map-car-body" d="M-15,-7 Q-8,-11 3,-10 L14,-4 Q17,0 14,4 L3,10 Q-8,11 -15,7 Q-12,0 -15,-7 Z" transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
                     <text textAnchor="middle" dominantBaseline="central">
                       {car.label}
                     </text>

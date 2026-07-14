@@ -353,10 +353,10 @@ export function CircuitMap({
 }
 
 export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitStats; tt: Translator; impacts?: MapTraitImpacts }) {
-  const rows: Array<{ key: keyof MapTraitStats; label: TranslationKey; hint: TranslationKey }> = [
-    { key: "grip", label: "circuit_grip", hint: "circuit_grip_hint" },
-    { key: "overtaking", label: "circuit_overtaking", hint: "circuit_overtaking_hint" },
-    { key: "energy", label: "circuit_energy", hint: "circuit_energy_hint" }
+  const rows: Array<{ key: keyof MapTraitStats; label: TranslationKey; hint: TranslationKey; icon: string }> = [
+    { key: "grip", label: "circuit_grip", hint: "circuit_grip_hint", icon: "◆" },
+    { key: "overtaking", label: "circuit_overtaking", hint: "circuit_overtaking_hint", icon: "↗" },
+    { key: "energy", label: "circuit_energy", hint: "circuit_energy_hint", icon: "⚡" }
   ];
 
   return (
@@ -364,7 +364,8 @@ export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitS
       {rows.map((row) => {
         const rowImpacts = impacts[row.key] ?? [];
         return (
-          <span key={row.key} title={[tt(row.hint), ...rowImpacts].join("\n")}>
+          <span key={row.key} className={`map-trait-${row.key}`} title={[tt(row.hint), ...rowImpacts].join("\n")}>
+            <i aria-hidden="true">{row.icon}</i>
             <strong>{traits[row.key]}</strong>
             <span className="trait-label">{tt(row.label)}</span>
             {rowImpacts.length ? <em>+{rowImpacts.length}</em> : null}

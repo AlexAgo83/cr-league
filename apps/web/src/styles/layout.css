@@ -900,10 +900,10 @@ label small {
 }
 
 .circuit-map-stage > .map-traits-panel {
+  bottom: 12px;
   left: 12px;
   min-width: 132px;
   position: absolute;
-  top: 106px;
   z-index: 2;
 }
 
@@ -963,19 +963,50 @@ label small {
 }
 
 .map-traits-panel > span {
-  align-items: baseline;
+  align-items: center;
   color: var(--color-muted);
-  display: flex;
+  display: grid;
   font-size: 0.72rem;
   font-weight: 800;
-  gap: 8px;
-  justify-content: space-between;
+  gap: 7px;
+  grid-template-columns: auto auto minmax(0, 1fr) auto;
   text-transform: uppercase;
+}
+
+.map-traits-panel i {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-style: normal;
+  height: 18px;
+  justify-content: center;
+  width: 18px;
+}
+
+.map-trait-grip i {
+  background: rgb(34 197 94 / 0.18);
+  color: #22c55e;
+}
+
+.map-trait-overtaking i {
+  background: rgb(56 189 248 / 0.18);
+  color: #38bdf8;
+}
+
+.map-trait-energy i {
+  background: rgb(250 204 21 / 0.18);
+  color: #facc15;
 }
 
 .map-traits-panel strong {
   color: var(--color-text);
   font-size: 0.95rem;
+}
+
+.map-traits-panel .trait-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .map-traits-panel em {
@@ -2337,9 +2368,9 @@ button.primary-command {
   }
 
   .circuit-map-stage > .map-traits-panel {
+    bottom: 8px;
     left: 8px;
     min-width: 104px;
-    top: 66px;
   }
 
   .map-qualifying-times {
@@ -2370,6 +2401,12 @@ button.primary-command {
   .map-traits-panel > span {
     font-size: 0.52rem;
     gap: 5px;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+  }
+
+  .map-traits-panel i {
+    height: 14px;
+    width: 14px;
   }
 
   .map-traits-panel strong {

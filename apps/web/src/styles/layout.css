@@ -819,6 +819,82 @@ button.result-toggle-command:hover {
   grid-column: 2;
 }
 
+.report-hero {
+  align-items: stretch;
+  background:
+    linear-gradient(135deg, rgb(22 199 132 / 0.22), rgb(56 189 248 / 0.14) 46%, rgb(13 19 26 / 0.92)),
+    var(--color-panel);
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1fr) minmax(190px, 0.35fr);
+}
+
+.report-hero h2 {
+  font-size: clamp(2rem, 4vw, 3.4rem);
+  line-height: 0.95;
+  margin-bottom: 10px;
+}
+
+.report-hero p {
+  color: var(--color-text);
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.winner-badge {
+  align-content: center;
+  background: rgb(10 15 21 / 0.58);
+  border: 1px solid rgb(22 199 132 / 0.45);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  padding: 16px;
+}
+
+.winner-badge span {
+  color: var(--color-accent);
+  font-size: 0.8125rem;
+  font-weight: 800;
+}
+
+.winner-badge strong {
+  font-size: 1.25rem;
+}
+
+.winner-badge small,
+.report-blocks p {
+  color: var(--color-muted);
+}
+
+.report-classification-panel {
+  padding: 0;
+}
+
+.report-classification {
+  gap: 0;
+}
+
+.report-classification li {
+  background: linear-gradient(90deg, rgb(255 255 255 / 0.05), transparent);
+  border-top: 1px solid var(--color-border);
+  padding: 14px 16px;
+}
+
+.report-classification li:first-child {
+  background: linear-gradient(90deg, rgb(22 199 132 / 0.18), rgb(56 189 248 / 0.08));
+  border-top: 0;
+}
+
+.report-classification strong {
+  background: rgb(255 255 255 / 0.08);
+  border-radius: 999px;
+  display: inline-flex;
+  margin-right: 8px;
+  min-width: 42px;
+  padding: 3px 9px;
+}
+
 .lap-marker {
   align-self: start;
   background: rgb(22 199 132 / 0.12);
@@ -839,8 +915,21 @@ button.result-toggle-command:hover {
 }
 
 .recap-grid section {
-  border-top: 1px solid var(--color-border);
-  padding-top: 12px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 14px;
+}
+
+.recap-card.difference {
+  border-color: rgb(56 189 248 / 0.42);
+}
+
+.recap-card.directive {
+  border-color: rgb(22 199 132 / 0.42);
+}
+
+.recap-card.lesson {
+  border-color: rgb(245 158 11 / 0.42);
 }
 
 .recap-grid h3 {
@@ -849,6 +938,17 @@ button.result-toggle-command:hover {
 
 .recap-grid p {
   margin-bottom: 0;
+}
+
+.report-blocks {
+  display: grid;
+  gap: 14px;
+}
+
+.report-blocks > section {
+  background: rgb(255 255 255 / 0.035);
+  border-left: 3px solid var(--color-telemetry);
+  padding: 12px 14px;
 }
 
 /* ---------- Command bar ---------- */
@@ -1014,5 +1114,9 @@ button.primary-command {
 
   button.primary-command {
     min-width: 130px;
+  }
+
+  .report-hero {
+    grid-template-columns: 1fr;
   }
 }

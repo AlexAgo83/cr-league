@@ -28,13 +28,46 @@ export function ReportView({
   const names = teamNamesFromResult(result);
   const majorEvents = result.events.filter((event) => event.severity === "major");
   const playerEvents = result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId);
+  const winner = result.classification[0];
+  const recap = [
+    {
+      className: "difference",
+      title: tt("result_difference"),
+      body: majorEvents[0] ? eventReportText(majorEvents[0], names, tt) : resultHeadline(result, tt)
+    },
+    {
+      className: "directive",
+      title: tt("result_your_directive"),
+      body: describeDecision(playerDecision, tt)
+    },
+    {
+      className: "lesson",
+      title: tt("result_next_lesson"),
+      body: nextLesson(state, playerDecision, playerEvents, forecastPick, tt)
+    }
+  ];
 
   return (
-    <div className="view-stack">
-      <section className="panel">
-        <h2>{result.grandPrixName}</h2>
-        <p>{resultHeadline(result, tt)}</p>
-        <ol className="classification">
+    <div className="view-stack report-view">
+      <section className="panel report-hero">
+        <div>
+          <span className="section-kicker">{tt("result_race_report")}</span>
+          <h2>{result.grandPrixName}</h2>
+          <p>{resultHeadline(result, tt)}</p>
+        </div>
+        {winner ? (
+          <div className="winner-badge">
+            <span>P1</span>
+            <strong>{winner.teamName}</strong>
+            <small>
+              {winner.points} {tt("unit_points")} · {winner.credits} {tt("unit_credits")}
+            </small>
+          </div>
+        ) : null}
+      </section>
+
+      <section className="panel report-classification-panel">
+        <ol className="classification report-classification">
           {result.classification.map((entry) => (
             <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>
               <span>
@@ -51,22 +84,16 @@ export function ReportView({
       <section className="panel">
         <h2>{tt("result_recap_title")}</h2>
         <div className="recap-grid">
-          <section>
-            <h3>{tt("result_difference")}</h3>
-            <p>{majorEvents[0] ? eventReportText(majorEvents[0], names, tt) : resultHeadline(result, tt)}</p>
-          </section>
-          <section>
-            <h3>{tt("result_your_directive")}</h3>
-            <p>{describeDecision(playerDecision, tt)}</p>
-          </section>
-          <section>
-            <h3>{tt("result_next_lesson")}</h3>
-            <p>{nextLesson(state, playerDecision, playerEvents, forecastPick, tt)}</p>
-          </section>
+          {recap.map((item) => (
+            <section key={item.title} className={`recap-card ${item.className}`}>
+              <h3>{item.title}</h3>
+              <p>{item.body}</p>
+            </section>
+          ))}
         </div>
       </section>
 
-      <section className="panel">
+      <section className="panel report-blocks">
         <h2>{tt("result_race_report")}</h2>
         {localizedReportBlocks(result, tt).map((block) => (
           <section key={block.title}>

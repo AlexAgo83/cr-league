@@ -730,18 +730,6 @@ button.result-toggle-command:hover {
   font-size: 0.875rem;
 }
 
-.replay-main-grid {
-  align-items: start;
-  display: grid;
-  gap: 16px;
-  grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.65fr);
-}
-
-.replay-moments-panel {
-  position: sticky;
-  top: 92px;
-}
-
 .replay-controls {
   align-items: center;
 }
@@ -1232,14 +1220,6 @@ button.primary-command {
 
   .report-main-grid {
     grid-template-columns: 1fr;
-  }
-
-  .replay-main-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .replay-moments-panel {
-    position: static;
   }
 
   .report-side-recap {

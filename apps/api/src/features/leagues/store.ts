@@ -607,11 +607,14 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
   }
   const readyState = state.league.fillWithBots ? await getLeagueState(db, leagueId) : state;
   if (!readyState) return null;
-  if (readyState.teams.length < 2) {
+  await ensureBotQualifyingRuns(db, grandPrix, readyState);
+  const raceState = await getLeagueState(db, leagueId);
+  if (!raceState) return null;
+  if (raceState.teams.length < 2) {
     throw new LeagueRuleError("At least two teams are required to launch the Grand Prix.");
   }
 
-  const participants = buildParticipants(readyState);
+  const participants = buildParticipants(raceState);
   const result = simulateRace({
     seed: grandPrix.seed,
     grandPrixName: grandPrix.name,
@@ -733,6 +736,46 @@ export async function restartLeague(db: Db, leagueId: string) {
 function hasHumanDecision(state: LeagueState) {
   const humanTeamIds = new Set(state.teams.filter((team) => team.kind === "human").map((team) => team.id));
   return state.decisions.some((decision) => humanTeamIds.has(decision.teamId));
+}
+
+async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typeof getCurrentGrandPrix>>, state: LeagueState) {
+  if (!grandPrix) return;
+  const runs = normalizeQualifyingRuns(grandPrix.qualifyingRuns);
+  const runTeamIds = new Set(runs.map((run) => run.teamId));
+  const missingBots = state.teams.filter((team) => team.kind === "bot" && !runTeamIds.has(team.id));
+  if (!missingBots.length) return;
+
+  const nextRuns = [...runs];
+  for (const team of missingBots) {
+    const demo = DEMO_RACE_INPUT.participants[state.teams.indexOf(team) % DEMO_RACE_INPUT.participants.length];
+    const submittedDecision = state.decisions.find((candidate) => candidate.teamId === team.id);
+    const decision: RaceDecision = submittedDecision
+      ? {
+          approach: submittedDecision.approach as RaceDecision["approach"],
+          preparation: submittedDecision.preparation as RaceDecision["preparation"],
+          cardId: (submittedDecision.cardId ?? undefined) as RaceDecision["cardId"],
+          rivalTeamId: submittedDecision.rivalTeamId ?? undefined
+        }
+      : {
+          approach: demo?.decision.approach ?? "balanced",
+          preparation: demo?.decision.preparation ?? "speed",
+          cardId: demo?.decision.cardId,
+          rivalTeamId: demo?.decision.rivalTeamId
+        };
+    nextRuns.push(
+      createQualifyingRun({
+        seed: `${grandPrix.seed}-${team.id}-bot-qualifying`,
+        teamId: team.id,
+        teamName: team.name,
+        decision,
+        primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
+        secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+        forecast: grandPrix.forecast as RaceInput["forecast"]
+      })
+    );
+  }
+
+  await db.grandPrix.update({ where: { id: grandPrix.id }, data: { qualifyingRuns: nextRuns } });
 }
 
 function buildParticipants(state: LeagueState): RaceParticipant[] {

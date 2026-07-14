@@ -180,6 +180,10 @@ describe("api app", () => {
     });
     expect(resolveResponse.statusCode).toBe(200);
     expect(resolved.teams).toHaveLength(8);
+    const qualifyingTeamIds = new Set(resolved.currentGrandPrix.qualifyingRuns.map((run: { teamId: string }) => run.teamId));
+    for (const botTeam of resolved.teams.filter((team: { kind: string }) => team.kind === "bot")) {
+      expect(qualifyingTeamIds.has(botTeam.id)).toBe(true);
+    }
     expect(resolved.currentGrandPrix).toMatchObject({
       status: "resolved",
       result: expect.objectContaining({

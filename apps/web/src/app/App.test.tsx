@@ -285,11 +285,11 @@ describe("App", () => {
     expect(document.querySelectorAll(".replay-weather").length).toBe(5);
     expect(document.querySelector(".replay-marker")?.getAttribute("title")).toContain("Rain Grip");
     fireEvent.click(document.querySelector(".replay-marker")!);
-    expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("100%");
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("P1Circle One");
     fireEvent.click(screen.getByRole("button", { name: /Restart/ }));
+    expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("0%");
     fireEvent.click(screen.getByRole("button", { name: /L5.*Rain Grip/ }));
-    expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("100%");
+    expect(Number.parseFloat((document.querySelector(".replay-progress-fill") as HTMLElement).style.width)).toBeLessThan(100);
 
     // Replay playback controls
     fireEvent.click(screen.getByRole("button", { name: "Pause" }));

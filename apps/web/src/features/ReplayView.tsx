@@ -8,6 +8,8 @@ import { CircuitMap, MapTraitsPanel, type MapCar, type MapTraitStats } from "./C
 
 const WEATHER_ICONS = { dry: "☀️", light_rain: "🌦️", heavy_rain: "⛈️" } as const;
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
+const START_HOLD_SECONDS = 1;
+const FINISH_HOLD_SECONDS = 1;
 
 function clampStat(value: number) {
   return Math.max(1, Math.min(99, Math.round(value)));
@@ -61,8 +63,11 @@ function traceGapsAt(trace: ReplayTracePoint[], progress: number) {
   );
 }
 
-function liveClassification(result: RaceResult, trace: ReplayTracePoint[], time: number, replayEnd: number): RaceResult["classification"] {
-  const progress = replayEnd > 0 ? Math.min(1, Math.max(0, time / replayEnd)) : 1;
+function raceProgressAt(time: number, raceDuration: number) {
+  return raceDuration > 0 ? Math.min(1, Math.max(0, (time - START_HOLD_SECONDS) / raceDuration)) : 1;
+}
+
+function liveClassification(result: RaceResult, trace: ReplayTracePoint[], progress: number): RaceResult["classification"] {
   const from = tracePointAt(trace, progress);
   const gaps = traceGapsAt(trace, progress);
   return [...result.classification].sort((left, right) => {
@@ -118,7 +123,7 @@ export function ReplayView({
   const [driverFocus, setDriverFocus] = useState(false);
   const replayTrace = result.replayTrace?.length ? result.replayTrace : fallbackReplayTrace(result);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
-  const [liveTower, setLiveTower] = useState(() => liveClassification(result, replayTrace, 0, 1));
+  const [liveTower, setLiveTower] = useState(() => liveClassification(result, replayTrace, 0));
   const [carProgress, setCarProgress] = useState(() => carProgressAt(result, replayTrace, 0, circuit.laps));
   const names = teamNamesFromResult(result);
   const field = result.classification;
@@ -132,8 +137,10 @@ export function ReplayView({
     progress: carProgress[entry.teamId] ?? 0
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
-  // Replay ends when the last car completes the race distance; the clock parks there on pause.
-  const replayEnd = Math.max(0, ...cars.map((car) => car.delay + circuit.laps * car.duration));
+  const raceDuration = Math.max(0, ...cars.map((car) => car.delay + circuit.laps * car.duration));
+  const replayEnd = START_HOLD_SECONDS + raceDuration + FINISH_HOLD_SECONDS;
+  const raceTimeAtProgress = (progress: number) => START_HOLD_SECONDS + progress * raceDuration;
+  const replayPercentAtRaceProgress = (progress: number) => (raceTimeAtProgress(progress) / replayEnd) * 100;
 
   // SMIL has no playback-rate API, so the SVG clock is driven by hand:
   // animations stay paused and a rAF loop advances setCurrentTime at `speed`.
@@ -172,11 +179,11 @@ export function ReplayView({
   }
 
   function updateLive(time: number) {
-    const progress = replayEnd > 0 ? time / replayEnd : 0;
+    const progress = raceProgressAt(time, raceDuration);
     const tracePoint = tracePointAt(replayTrace, progress);
     setLive((current) => (current.lap === tracePoint.lap && current.segment === tracePoint.segment ? current : { lap: tracePoint.lap, segment: tracePoint.segment }));
     setCarProgress(carProgressAt(result, replayTrace, progress, circuit.laps));
-    const nextTower = liveClassification(result, replayTrace, time, replayEnd);
+    const nextTower = liveClassification(result, replayTrace, progress);
     setLiveTower((current) => (current.map((entry) => entry.teamId).join("|") === nextTower.map((entry) => entry.teamId).join("|") ? current : nextTower));
   }
 
@@ -201,8 +208,8 @@ export function ReplayView({
   }
   const markers = [...markerByLap.entries()].map(([lap, marker]) => ({
     lap,
-    left: `${Math.min(96, Math.max(3, (lap / maxLap) * 100))}%`,
-    time: (lap / maxLap) * replayEnd,
+    left: `${Math.min(96, Math.max(3, replayPercentAtRaceProgress(lap / maxLap)))}%`,
+    time: raceTimeAtProgress(lap / maxLap),
     title: marker.texts.join("\n"),
     player: marker.player
   }));
@@ -286,13 +293,13 @@ export function ReplayView({
                 >
                   <div ref={progressRef} className="replay-progress-fill" />
                   {RACE_SEGMENTS.slice(1).map((segment, index) => (
-                    <span key={segment} className="replay-tick" style={{ left: `${((index + 1) / RACE_SEGMENTS.length) * 100}%` }} />
+                    <span key={segment} className="replay-tick" style={{ left: `${replayPercentAtRaceProgress((index + 1) / RACE_SEGMENTS.length)}%` }} />
                   ))}
                   {RACE_SEGMENTS.map((segment, index) => (
                     <span
                       key={segment}
                       className="replay-weather"
-                      style={{ left: `${((index + 0.5) / RACE_SEGMENTS.length) * 100}%` }}
+                      style={{ left: `${replayPercentAtRaceProgress((index + 0.5) / RACE_SEGMENTS.length)}%` }}
                       title={tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
                     >
                       {WEATHER_ICONS[result.resolvedWeather[segment]]}
@@ -325,7 +332,7 @@ export function ReplayView({
                   {(() => {
                     const card = momentCard(event, names, tt);
                     return (
-                      <button type="button" className="replay-moment-button" title={card.text} onClick={() => seek((event.lap / maxLap) * replayEnd)}>
+                      <button type="button" className="replay-moment-button" title={card.text} onClick={() => seek(raceTimeAtProgress(event.lap / maxLap))}>
                         <span className="lap-marker">L{event.lap}</span>
                         <span className="moment-main">
                           <strong>

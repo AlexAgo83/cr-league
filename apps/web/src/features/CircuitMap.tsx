@@ -189,6 +189,7 @@ export function CircuitMap({
             ? TRAFFIC_FOCUS_ZOOM
             : FOCUS_ZOOM;
       zoomRef.current += (targetZoom - zoomRef.current) * 0.08;
+      cameraGroup.querySelectorAll<SVGGElement>(".map-car-marker").forEach((marker) => marker.setAttribute("transform", `scale(${1 / zoomRef.current})`));
       cameraGroup.setAttribute("transform", `translate(${focusX} ${focusY}) scale(${zoomRef.current}) translate(${-point.x} ${-point.y})`);
       frame = requestAnimationFrame(tick);
     });
@@ -242,7 +243,7 @@ export function CircuitMap({
                 : undefined;
               return (
                 <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={point ? `translate(${point.x} ${point.y})` : undefined}>
-                  <g transform={`scale(${markerScale})`}>
+                  <g className="map-car-marker" transform={`scale(${markerScale})`}>
                     <circle r="10" />
                     <text textAnchor="middle" dominantBaseline="central">
                       {car.label}

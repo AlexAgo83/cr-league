@@ -7,7 +7,7 @@
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Non-semantic edit: expanded DA implementation guidance without changing workflow links or request scope.
-> Confidence: 94
+> Confidence: 95
 
 # Overview
 Race Cockpit Redesign V0 turns the current functional prototype into a coherent game cockpit: a focused race desk, championship overview, garage, and result/replay surface that make CR League feel intentionally designed and understandable before adding more mechanics.
@@ -84,6 +84,11 @@ flowchart LR
 # City circuit direction
 - Product model: a city can host several circuits. Each circuit has a city, country, layout name, compact route geometry or simplified path, track traits, likely weather profile, and a short flavor label.
 - V0 implementation preference: start with a small static circuit catalog checked into CR League. Do not add live routing, Leaflet, OSRM calls, or a new map dependency unless the static catalog blocks the experience.
+- V1 circuit set:
+  - Paris: `Docklands Sprint`, `Left Bank Loop`.
+  - Amsterdam: `Canal Loop`, `Harbor Sprint`.
+  - Berlin: `Ring Sector`, `Mitte Dash`.
+- Each V1 circuit should expose no more than three gameplay traits: grip, overtaking, and energy. Add a likely weather profile and lap count, but avoid a larger track-stat model until gameplay needs it.
 - Fleet Sim reuse boundary: inspect and borrow concepts from `../fleet-sim` such as Paris presets, `LatLng`, route geometry, and OSRM adapter shape. Do not copy the FleetMap UI wholesale; CR League needs a broadcast/racing cockpit map, not a fleet operations dashboard.
 - Rendering approach: render a simplified dark city-route silhouette inside the cockpit, with sector bands, weather/event markers, and player/team markers. Keep it readable at small sizes and honest about the available race data.
 - Future extension: if static routes become limiting, add an offline route generation/build step or OSRM-backed authoring tool that outputs stored circuit geometry. Runtime gameplay should not depend on a network routing service.

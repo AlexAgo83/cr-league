@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 94
+> Confidence: 95
 > Progress: 0%
 > Complexity: Medium
 > Theme: Result comprehension
@@ -50,6 +50,9 @@
   - Each car has sampled points with `t`, route `progress`, `rank`, and optional visual offset.
   - Events have `t`, `type`, `teamId`, label, and optional sector/progress.
   - The final playback sample must match the resolved classification.
+- Circuit data contract:
+  - The V1 replay can assume the static circuit catalog contains city, country, layout, path geometry, sectors, laps, grip, overtaking, energy, and likely weather.
+  - Do not require runtime routing to render the replay.
 - Visual readout rules:
   - Prefer the city circuit route as the visual anchor: show the simplified European city layout, moving cars, sector/weather/event markers, and current replay time. Do not show full Leaflet controls in the result panel.
   - Use interpolation along stored route geometry for movement. Do not add physics, collision, or live pathfinding.

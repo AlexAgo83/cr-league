@@ -132,7 +132,7 @@ function startFinishLine(points: Array<{ x: number; y: number }>) {
   const start = points[0] ?? { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2 };
   const next = points.find((point) => Math.hypot(point.x - start.x, point.y - start.y) > 0.1) ?? { x: start.x + 1, y: start.y };
   const angle = Math.atan2(next.y - start.y, next.x - start.x) + Math.PI / 2;
-  const halfLength = 16;
+  const halfLength = 10;
   const dx = Math.cos(angle) * halfLength;
   const dy = Math.sin(angle) * halfLength;
 

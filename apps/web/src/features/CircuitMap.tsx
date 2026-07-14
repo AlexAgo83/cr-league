@@ -19,7 +19,12 @@ export type MapTraitStats = {
 
 const VIEW_WIDTH = 1000;
 const VIEW_HEIGHT = 560;
-const PADDING = 70;
+const SAFE_AREA = {
+  top: 140,
+  right: 150,
+  bottom: 100,
+  left: 170
+};
 const TILE_SIZE = 256;
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
@@ -37,16 +42,22 @@ function circuitScene(circuit: CityCircuit) {
   let zoom = 16;
   let projected = circuit.route.map((point) => projectLatLng(point, zoom));
   let bounds = boundsOf(projected);
+  const safeWidth = VIEW_WIDTH - SAFE_AREA.left - SAFE_AREA.right;
+  const safeHeight = VIEW_HEIGHT - SAFE_AREA.top - SAFE_AREA.bottom;
 
-  while (zoom > 10 && (bounds.maxX - bounds.minX > VIEW_WIDTH - PADDING * 2 || bounds.maxY - bounds.minY > VIEW_HEIGHT - PADDING * 2)) {
+  while (zoom > 10 && (bounds.maxX - bounds.minX > safeWidth || bounds.maxY - bounds.minY > safeHeight)) {
     zoom -= 1;
     projected = circuit.route.map((point) => projectLatLng(point, zoom));
     bounds = boundsOf(projected);
   }
 
   const center = { x: (bounds.minX + bounds.maxX) / 2, y: (bounds.minY + bounds.maxY) / 2 };
-  const originX = center.x - VIEW_WIDTH / 2;
-  const originY = center.y - VIEW_HEIGHT / 2;
+  const safeCenter = {
+    x: SAFE_AREA.left + safeWidth / 2,
+    y: SAFE_AREA.top + safeHeight / 2
+  };
+  const originX = center.x - safeCenter.x;
+  const originY = center.y - safeCenter.y;
   const points = projected.map((point) => ({ x: point.x - originX, y: point.y - originY }));
 
   const tiles = [];

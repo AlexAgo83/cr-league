@@ -131,7 +131,11 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(page.locator(".drive-map-panel .map-status")).toContainText("5 laps");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Grip");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("64");
+  await expect(page.locator(".drive-content-column > .race-context-panel")).toBeVisible();
   const directiveWidth = await page.locator(".directive-panel").evaluate((element) => element.getBoundingClientRect().width);
+  await expect
+    .poll(async () => page.locator(".drive-content-column > .race-context-panel").evaluate((element) => element.getBoundingClientRect().width))
+    .toBeCloseTo(await driveMap.evaluate((element) => element.getBoundingClientRect().width), 0);
 
   await page.getByRole("button", { name: "Submit directive" }).click();
   await page.getByRole("button", { name: "Launch GP" }).click();

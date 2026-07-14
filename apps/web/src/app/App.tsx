@@ -337,28 +337,34 @@ export function App() {
       <section className="view-container">
         {gameView === "drive" ? (
           <div className="drive-grid">
-            <CircuitMap
-              className="drive-map-panel"
-              circuit={currentCircuit}
-              tt={tt}
-              showHeading={false}
-              framed={false}
-              showTraits={false}
-              overlay={
-                <>
-                  <div className="map-status">
-                    <span className="circuit-city">
-                      {countryFlag(currentCircuit.country)} {currentCircuit.city}
-                    </span>
-                    <strong>{tt(currentCircuit.layoutKey)}</strong>
-                    <small>
-                      {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
-                    </small>
-                  </div>
-                  <MapTraitsPanel traits={currentCircuit.traits} tt={tt} />
-                </>
-              }
-            />
+            <div className="drive-content-column">
+              <section className="panel race-context-panel">
+                <h2>{tt("drive_context_title")}</h2>
+                <p>{tt("drive_context_explainer")}</p>
+              </section>
+              <CircuitMap
+                className="drive-map-panel"
+                circuit={currentCircuit}
+                tt={tt}
+                showHeading={false}
+                framed={false}
+                showTraits={false}
+                overlay={
+                  <>
+                    <div className="map-status">
+                      <span className="circuit-city">
+                        {countryFlag(currentCircuit.country)} {currentCircuit.city}
+                      </span>
+                      <strong>{tt(currentCircuit.layoutKey)}</strong>
+                      <small>
+                        {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
+                      </small>
+                    </div>
+                    <MapTraitsPanel traits={currentCircuit.traits} tt={tt} />
+                  </>
+                }
+              />
+            </div>
             <DirectivePanel
               form={form}
               setForm={setForm}

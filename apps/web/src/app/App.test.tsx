@@ -237,6 +237,8 @@ describe("App", () => {
     // Drive view: map + directive panel side by side
     expect(await screen.findByText("ABC123")).toBeTruthy();
     expect(screen.getByText("Prepare")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Race prep" })).toBeTruthy();
+    expect(screen.getByText("Read the circuit, set the directive, pick a card, then lock the plan.")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
@@ -270,6 +272,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("L5");
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip");
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("+2 pos");

@@ -815,10 +815,28 @@ button.result-toggle-command:hover {
   color: var(--color-text);
 }
 
-.replay-explainer,
+.race-context-panel {
+  align-items: baseline;
+  background: rgb(15 23 33 / 0.72);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  padding: 8px 10px;
+}
+
+.race-context-panel h2 {
+  color: var(--color-telemetry);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.race-context-panel p,
 .replay-empty {
   color: var(--color-muted);
-  font-size: 0.875rem;
+  font-size: 0.82rem;
+  margin: 0;
 }
 
 .replay-main-grid {
@@ -828,6 +846,7 @@ button.result-toggle-command:hover {
   grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
 }
 
+.drive-content-column,
 .replay-content-column {
   display: grid;
   gap: 16px;

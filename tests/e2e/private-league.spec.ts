@@ -132,7 +132,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     await expect(page.getByRole("button", { name: "Next GP" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Report" })).toBeVisible();
-    await expect(page.locator(".replay-timeline").getByText("L5")).toBeVisible();
+    await expect(page.locator(".replay-timeline").getByText(`L${expectedCircuitLaps(expectedRound)}`)).toBeVisible();
     await page.getByRole("button", { name: "Report" }).click();
     await expect(page.getByRole("heading", { name: expectedCircuitTitle(expectedRound) })).toBeVisible();
     await expect(page.getByLabel("Race phases")).toBeVisible();
@@ -250,6 +250,10 @@ function expectedCircuitTitle(resultRound: number) {
   if (resultRound === 1) return "Paris Docklands Sprint";
   if (resultRound === 2) return "Paris Left Bank Loop";
   return "Amsterdam Canal Loop";
+}
+
+function expectedCircuitLaps(resultRound: number) {
+  return resultRound === 2 ? 6 : 5;
 }
 
 async function createProfile(page: Page) {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { RaceResult } from "@cr-league/shared";
-import { carProgressAtRaceTime, finishTimes } from "./ReplayView.js";
+import { carProgressAtRaceTime, displayLapAtProgress, finishTimes } from "./ReplayView.js";
 
 const result: RaceResult = {
   grandPrixName: "Test GP",
@@ -16,6 +16,12 @@ const result: RaceResult = {
 };
 
 describe("ReplayView timing", () => {
+  it("maps internal replay progress to the displayed circuit lap count", () => {
+    expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 4))).toEqual([1, 2, 3, 3, 4]);
+    expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 5))).toEqual([1, 2, 3, 4, 5]);
+    expect([0, 0.2, 0.5, 0.8, 1].map((progress) => displayLapAtProgress(progress, 6))).toEqual([1, 2, 4, 5, 6]);
+  });
+
   it("keeps replay running until the last finisher reaches the line", () => {
     const times = finishTimes(result, [
       { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },

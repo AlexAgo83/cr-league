@@ -75,6 +75,10 @@ function raceProgressAt(time: number, raceDuration: number) {
   return raceDuration > 0 ? Math.min(1, Math.max(0, (time - START_HOLD_SECONDS) / raceDuration)) : 1;
 }
 
+export function displayLapAtProgress(progress: number, laps: number) {
+  return Math.max(1, Math.min(laps, Math.round(1 + Math.max(0, Math.min(1, progress)) * (laps - 1))));
+}
+
 export function finishTimes(result: RaceResult, trace: ReplayTracePoint[]) {
   const final = trace.at(-1);
   const leaderTime = Math.min(...result.classification.map((entry) => final?.times[entry.teamId] ?? Number.POSITIVE_INFINITY));
@@ -231,7 +235,8 @@ export function ReplayView({
     const progress = raceProgressAt(time, raceDuration);
     const raceTime = Math.max(0, time - START_HOLD_SECONDS);
     const tracePoint = tracePointAt(replayTrace, progress);
-    setLive((current) => (current.lap === tracePoint.lap && current.segment === tracePoint.segment ? current : { lap: tracePoint.lap, segment: tracePoint.segment }));
+    const displayLap = displayLapAtProgress(tracePoint.progress, circuit.laps);
+    setLive((current) => (current.lap === displayLap && current.segment === tracePoint.segment ? current : { lap: displayLap, segment: tracePoint.segment }));
     setCarProgress(carProgressAtRaceTime(result, replayTimes.times, raceTime, circuit.laps));
     const nextTower = liveClassification(result, replayTrace, progress);
     setLiveTower((current) => (current.map((entry) => entry.teamId).join("|") === nextTower.map((entry) => entry.teamId).join("|") ? current : nextTower));
@@ -249,17 +254,20 @@ export function ReplayView({
 
   // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.
   const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
-  const markerByLap = new Map<number, { texts: string[]; player: boolean }>();
+  const markerByLap = new Map<number, { texts: string[]; player: boolean; time: number }>();
   for (const event of keyMoments.filter((event) => event.severity === "major" || event.teamId === playerTeamId)) {
-    const marker = markerByLap.get(event.lap) ?? { texts: [], player: false };
-    marker.texts.push(`${tt("unit_lap")} ${event.lap} · ${eventReplayText(event, names, tt)}`);
+    const progress = event.lap / maxLap;
+    const displayLap = displayLapAtProgress(progress, circuit.laps);
+    const marker = markerByLap.get(displayLap) ?? { texts: [], player: false, time: raceTimeAtProgress(progress) };
+    marker.texts.push(`${tt("unit_lap")} ${displayLap} · ${eventReplayText(event, names, tt)}`);
     marker.player ||= event.teamId === playerTeamId;
-    markerByLap.set(event.lap, marker);
+    marker.time = Math.min(marker.time, raceTimeAtProgress(progress));
+    markerByLap.set(displayLap, marker);
   }
   const markers = [...markerByLap.entries()].map(([lap, marker]) => ({
     lap,
-    left: `${Math.min(96, Math.max(3, replayPercentAtRaceProgress(lap / maxLap)))}%`,
-    time: raceTimeAtProgress(lap / maxLap),
+    left: `${Math.min(96, Math.max(3, (marker.time / replayEnd) * 100))}%`,
+    time: marker.time,
     title: marker.texts.join("\n"),
     player: marker.player
   }));
@@ -384,7 +392,7 @@ export function ReplayView({
                     const card = momentCard(event, names, tt);
                     return (
                       <button type="button" className="replay-moment-button" title={card.text} onClick={() => seek(raceTimeAtProgress(event.lap / maxLap))}>
-                        <span className="lap-marker">L{event.lap}</span>
+                        <span className="lap-marker">L{displayLapAtProgress(event.lap / maxLap, circuit.laps)}</span>
                         <span className="moment-main">
                           <strong>
                             {card.icon} {card.context}

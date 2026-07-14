@@ -645,7 +645,7 @@ label small {
 
 .floating-notification button {
   align-items: center;
-  animation: notification-countdown 10s linear forwards;
+  animation: notification-countdown 5s linear forwards;
   background: conic-gradient(var(--color-telemetry) var(--notification-progress), rgb(255 255 255 / 0.12) 0deg);
   border: 0;
   border-radius: 999px;

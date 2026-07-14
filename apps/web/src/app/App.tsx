@@ -156,7 +156,7 @@ export function App() {
     notificationId.current = id;
     const tone: Notification["tone"] = status === "error" ? "error" : "info";
     setNotifications((items) => [...items, { id, text: message, tone }].slice(-5));
-    window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 10_000);
+    window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 5_000);
   }, [message, locale]);
 
   function dismissNotification(id: number) {

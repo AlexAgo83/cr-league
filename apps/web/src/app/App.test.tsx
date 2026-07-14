@@ -287,7 +287,7 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-language")).toBe("fr");
   });
 
-  it("auto-dismisses floating notifications after 10 seconds", async () => {
+  it("auto-dismisses floating notifications after 5 seconds", async () => {
     vi.useFakeTimers();
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
@@ -297,7 +297,7 @@ describe("App", () => {
 
     await act(async () => {});
     expect(screen.getByText("League created. Submit your race directive.")).toBeTruthy();
-    act(() => vi.advanceTimersByTime(10_000));
+    act(() => vi.advanceTimersByTime(5_000));
     expect(screen.queryByText("League created. Submit your race directive.")).toBe(null);
   });
 

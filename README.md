@@ -87,7 +87,7 @@ Create and resolve a demo league through the API:
 ```bash
 curl -X POST http://127.0.0.1:4874/leagues \
   -H "content-type: application/json" \
-  -d '{"name":"Office League","teamName":"Circle One"}'
+  -d '{"name":"Office League","teamName":"Volt Union"}'
 
 curl -X POST http://127.0.0.1:4874/leagues/<leagueId>/resolve
 ```

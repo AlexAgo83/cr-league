@@ -42,7 +42,7 @@ async function main() {
   });
 
   console.log(`Playtest league ${league.code}: ${league.id}`);
-  console.log("Human testers can join with team names: Circle One, Late Apex");
+  console.log("Human testers can join with team names: Volt Union, Late Apex");
 }
 
 try {

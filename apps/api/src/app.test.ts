@@ -81,12 +81,12 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Circle One" }
+      payload: { name: "Office League", teamName: "Volt Union" }
     });
     const created = createResponse.json();
     const leagueId = created.league.id;
     const claim = created.player;
-    const createdTeam = created.teams.find((team: { kind: string }) => team.kind === "human");
+    const createdTeam = created.teams.find((team: { id: string }) => team.id === claim.teamId);
     const teamId = createdTeam.id;
 
     const readResponse = await app.inject({
@@ -179,7 +179,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Circle One" }
+      payload: { name: "Office League", teamName: "Volt Union" }
     });
     const leagueId = createResponse.json().league.id;
 
@@ -209,7 +209,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Circle One" }
+      payload: { name: "Office League", teamName: "Volt Union" }
     });
     const code = createResponse.json().league.code;
 
@@ -238,7 +238,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Circle One" }
+      payload: { name: "Office League", teamName: "Volt Union" }
     });
     const created = createResponse.json();
     const leagueId = created.league.id;
@@ -253,7 +253,7 @@ describe("api app", () => {
     const duplicateResponse = await app.inject({
       method: "POST",
       url: "/leagues/join",
-      payload: { code, teamName: "Circle One" }
+      payload: { code, teamName: "Volt Union" }
     });
     await app.inject({
       method: "POST",
@@ -294,7 +294,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Circle One" }
+      payload: { name: "Office League", teamName: "Volt Union" }
     });
     const created = createResponse.json();
     const leagueId = created.league.id;
@@ -369,7 +369,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Circle One" }
+      payload: { name: "Office League", teamName: "Volt Union" }
     });
     const leagueId = createResponse.json().league.id;
     const deadline = new Date(Date.now() + 60_000).toISOString();
@@ -408,7 +408,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Circle One" }
+      payload: { name: "Office League", teamName: "Volt Union" }
     });
     const created = createResponse.json();
     const leagueId = created.league.id;

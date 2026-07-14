@@ -2,16 +2,16 @@
 > From version: 1.0.0
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 100%
+> Understanding: 90
+> Confidence: 85
+> Progress: 100
 > Complexity: Medium
 > Theme: Product theme
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 > Owner: codex
 
 # Context
-- Capture the Circle One / Circle Mobility inspiration as a product theme document.
+- Capture the compact urban micro-EV inspiration as a product theme document.
 - Keep the game fictional unless explicitly turned into an official branded project.
 - The output is documentation only.
 
@@ -39,7 +39,7 @@
 - request-AC4 -> This task. Proof: spec records public references and keeps the universe fictional unless branding is explicitly approved.
 - request-AC5 -> This task. Proof: validation commands are recorded below.
 - backlog-AC1 -> This task. Proof: `spec_014_theme_and_brand_inspiration` exists.
-- backlog-AC2 -> This task. Proof: spec defines the Circle One / Circle Mobility inspiration boundary.
+- backlog-AC2 -> This task. Proof: spec defines the compact urban micro-EV inspiration boundary.
 - backlog-AC3 -> This task. Proof: spec gives actionable guidance across product surfaces.
 - backlog-AC4 -> This task. Proof: validation commands are recorded below.
 
@@ -62,7 +62,7 @@
 
 # AI Context
 - Summary: Capture CR League theme and brand inspiration.
-- Keywords: theme, circle-one, circle-mobility, urban-micro-ev, visual-direction, copy
+- Keywords: theme, compact-urban-micro-ev, urban-micro-ev, visual-direction, copy
 - Use when: Reviewing CR League product theme, art direction, card vocabulary, vehicle design, or first-session copy.
 - Skip when: Work is unrelated to user-facing product/theme decisions.
 

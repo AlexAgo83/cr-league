@@ -17,7 +17,7 @@ async function main() {
   await prisma.team.createMany({
     data: DEMO_RACE_INPUT.participants.map((participant, index) => ({
       leagueId: league.id,
-      name: index === 0 ? "Circle One" : participant.teamName,
+      name: index === 0 ? "Volt Union" : participant.teamName,
       kind: participant.kind,
       claimCode: `DEMO01-${index}`,
       points: 0,

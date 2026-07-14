@@ -2,16 +2,16 @@
 > From version: 1.0.0
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 100%
+> Understanding: 90
+> Confidence: 85
+> Progress: 100
 > Complexity: Medium
 > Theme: Product theme
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
 
 # Problem
 - CR League has a strong loop but can still feel like a generic racing game unless its theme is sharpened.
-- The Circle One / Circle Mobility inspiration should give the game a distinctive urban micro-EV identity without turning it into a forced corporate product.
+- The compact urban micro-EV inspiration should give the game a distinctive urban micro-EV identity without turning it into a forced corporate product.
 
 # Scope
 - In:
@@ -32,7 +32,7 @@
 
 # Acceptance criteria
 - AC1: `spec_014_theme_and_brand_inspiration` exists.
-- AC2: The spec clearly states how Circle One / Circle Mobility should inspire CR League without forcing official branding.
+- AC2: The spec clearly states how compact urban micro-EV should inspire CR League without forcing official branding.
 - AC3: The spec gives actionable guidance for vehicles, tracks, cards, UI/copy, and art direction.
 - AC4: Logics validation passes.
 

@@ -6,10 +6,10 @@
 - Run `npm run playtest:seed`.
 - Share league code `PLAY01` with testers.
 - Use one browser profile per tester, or clear the saved team claim between testers.
-- Ask testers to join `PLAY01` with human team names, for example `Circle One` and `Late Apex`.
+- Ask testers to join `PLAY01` with human team names, for example `Volt Union` and `Late Apex`.
 
 ## Scenario
-1. Player A joins code `PLAY01` as `Circle One`.
+1. Player A joins code `PLAY01` as `Volt Union`.
 2. Player B joins code `PLAY01` as `Late Apex`.
 3. Set cadence to `Fast`.
 4. Each player submits a directive for GP 1.

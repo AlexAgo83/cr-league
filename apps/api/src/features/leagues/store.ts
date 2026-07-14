@@ -125,6 +125,7 @@ export type UpdateTeamLiveryInput = {
 export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   const code = createLeagueCode();
   const playerClaimCode = createClaimCode();
+  const playerTeamName = input.teamName?.trim() || DEMO_RACE_INPUT.participants[0]?.teamName || "Player Team";
   const league = await db.league.create({
     data: {
       name: input.name?.trim() || "CR League Demo",
@@ -135,7 +136,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   await db.team.createMany({
     data: DEMO_RACE_INPUT.participants.map((participant, index) => ({
       leagueId: league.id,
-      name: index === 0 ? input.teamName?.trim() || participant.teamName : participant.teamName,
+      name: index === 0 ? playerTeamName : participant.teamName,
       kind: participant.kind,
       claimCode: index === 0 ? playerClaimCode : createClaimCode(),
       points: 0,
@@ -158,7 +159,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   });
 
   const state = await getLeagueState(db, league.id);
-  const playerTeam = state?.teams.find((team) => team.kind === "human");
+  const playerTeam = state?.teams.find((team) => team.name === playerTeamName);
   return state && playerTeam ? withPlayer(state, playerTeam.id, playerClaimCode) : state;
 }
 

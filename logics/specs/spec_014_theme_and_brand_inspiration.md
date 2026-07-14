@@ -2,15 +2,15 @@
 > From version: 1.0.0
 > Schema version: 1.0
 > Status: Draft
-> Understanding: 90%
-> Confidence: 80%
+> Understanding: 90
+> Confidence: 80
 > Related request: `req_006_capture_cr_league_theme_and_brand_inspiration`
 > Related backlog: `item_012_capture_cr_league_theme_and_brand_inspiration`
 > Related task: `task_007_capture_cr_league_theme_and_brand_inspiration`
 > Related product: `prod_001_cr_league_product_brief`
 
 # Purpose
-Define how CR League should use Circle One / Circle Mobility as light inspiration.
+Define how CR League should use compact urban micro-EV as light inspiration.
 
 The goal is a distinctive product theme, not a forced corporate skin.
 
@@ -28,7 +28,7 @@ This is stronger than a generic motorsport game because it creates a clear lane:
 - playful competition rather than corporate education.
 
 # Inspiration Boundary
-Use Circle One / Circle Mobility as inspiration for:
+Use compact urban micro-EV as inspiration for:
 
 - compact electric vehicle silhouette;
 - urban mobility tone;
@@ -41,15 +41,15 @@ Do not assume official brand usage unless explicitly approved.
 
 Avoid by default:
 
-- using real Circle logos;
-- calling vehicles "Circle One" in-game;
+- using real partner logos;
+- calling vehicles by real partner or default team names in-game;
 - making the game a literal company simulator;
 - overloading the product with corporate mobility messaging;
 - making mechanics educational instead of fun.
 
 Recommended approach:
 
-- internal inspiration: Circle One / Circle Mobility;
+- internal inspiration: compact urban micro-EV;
 - player-facing universe: fictional urban racing league.
 
 # Product Theme
@@ -234,13 +234,13 @@ Example first GP:
 
 # V1 Product Decisions
 - CR League should use a fictional urban micro-EV league as its default theme.
-- Circle One / Circle Mobility is inspiration, not direct player-facing branding by default.
+- compact urban micro-EV is inspiration, not direct player-facing branding by default.
 - Vehicle and card vocabulary should lean electric urban mobility.
 - Tracks should be city routes, not classic racing circuits.
 - The first vertical slice should include at least one clearly urban circuit and one compact electric vehicle visual direction.
 
 # Non-goals
-- No official Circle branding without explicit decision.
+- No official partner branding without explicit decision.
 - No logo usage rules in this spec.
 - No legal/brand approval claims.
 - No sustainability education layer in V1.
@@ -249,11 +249,9 @@ Example first GP:
 
 # Open Questions
 - Should the game name remain CR League or evolve toward a more urban micro-EV name?
-- Should "Circle" appear anywhere as a subtle internal codename, or stay completely out of player-facing copy?
-- Should the first vehicle be visually close to the Circle One silhouette or only broadly inspired?
+- Should partner naming appear anywhere as a subtle internal codename, or stay completely out of player-facing copy?
+- Should the first vehicle be visually close to the compact urban micro-EV silhouette or only broadly inspired?
 - Should batteries be a real mechanic in V1 or just card/theme vocabulary at first?
 
 # References
-- Circle Mobility website: https://circle-mobility.com/
-- IAA Mobility exhibitor profile for Circle Mobility: https://exhibitors.iaa-mobility.com/exhibitordirectory/2023/list-of-exhibitors/exhibitordetails/circle-mobility/?elb=106.1100.2506.1.111
-- Startups Magazine article on Circle: https://startupsmagazine.co.uk/article-circle-game-changer-urban-mobility
+- Internal CR League product and art-direction docs.

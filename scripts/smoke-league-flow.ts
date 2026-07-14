@@ -29,7 +29,7 @@ const created = await request<LeagueState>("/leagues", {
   method: "POST",
   body: JSON.stringify({
     name: `Smoke League ${Date.now()}`,
-    teamName: "Circle One"
+    teamName: "Volt Union"
   })
 });
 

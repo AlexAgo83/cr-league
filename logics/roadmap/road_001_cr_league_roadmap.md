@@ -229,7 +229,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Private multiplayer without stable rejoin identity will become frustrating even with invite codes.
 - Async cadence can feel dead if the next action and deadline are not obvious.
 - A richer replay can become expensive if it turns into real-time simulation, 3D, or live routing before deterministic playback proves the need.
-- The prototype can drift from the Circle One / urban micro-EV tone if visual polish is postponed too long.
+- The prototype can drift from the compact urban micro-EV tone if visual polish is postponed too long.
 
 # References
 - Product brief(s): `prod_001_cr_league_product_brief`

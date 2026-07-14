@@ -91,7 +91,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("heading", { name: "Current GP" })).toBeVisible();
   await expect(page.getByText("0/2")).toBeVisible();
   await expect(page.locator(".championship-grid")).toBeVisible();
-  await expect(page.locator(".standings-table")).toContainText("Circle One");
+  await expect(page.locator(".standings-table")).toContainText("Volt Union");
   await expect(page.locator(".round-timeline")).toContainText("R1");
   await expect(page.locator(".championship-settings-panel")).toHaveCount(0);
   await page.getByRole("button", { name: "Profile menu" }).click();
@@ -119,7 +119,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     await expect(page.locator(".report-blocks")).toHaveCount(0);
     await expect(page.locator(".report-content-column > .report-key-moments")).toBeVisible();
     await expect(page.locator(".report-content-column > .report-rewards")).toBeVisible();
-    await expect(page.getByText(`${expectedCircuitTitle(expectedRound)}: Circle One wins.`).first()).toBeVisible();
+    await expect(page.getByText(`${expectedCircuitTitle(expectedRound)}: Volt Union wins.`).first()).toBeVisible();
 
     if (expectedRound < 3) {
       await page.getByRole("button", { name: "Race", exact: true }).click();
@@ -268,7 +268,7 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
     teams: [
       {
         id: "team_1",
-        name: "Circle One",
+        name: "Volt Union",
         kind: "human",
         points,
         credits,
@@ -328,7 +328,7 @@ function resultForRound(resultRound: number) {
       {
         position: 1,
         teamId: "team_1",
-        teamName: "Circle One",
+        teamName: "Volt Union",
         points: 25,
         credits: 150,
         positionChange: 1,
@@ -358,14 +358,14 @@ function resultForRound(resultRound: number) {
         severity: "major",
         positionDelta: 2,
         tags: ["card", "weather"],
-        replayText: `Silver Ridge GP ${resultRound}: Circle One wins.`,
-        reportText: "Circle One called the rain correctly."
+        replayText: `Silver Ridge GP ${resultRound}: Volt Union wins.`,
+        reportText: "Volt Union called the rain correctly."
       }
     ],
     consumedCards: [{ teamId: "team_1", cardId: "rain_grip" }],
     report: {
-      headline: `Silver Ridge GP ${resultRound}: Circle One wins.`,
-      blocks: [{ title: "Key moments", body: "Circle One called the rain correctly." }]
+      headline: `Silver Ridge GP ${resultRound}: Volt Union wins.`,
+      blocks: [{ title: "Key moments", body: "Volt Union called the rain correctly." }]
     }
   };
 }

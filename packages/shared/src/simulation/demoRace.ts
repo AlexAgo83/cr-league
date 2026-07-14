@@ -12,8 +12,8 @@ export const DEMO_RACE_INPUT: RaceInput = {
   },
   participants: [
     {
-      teamId: "circle",
-      teamName: "Circle Works",
+      teamId: "volt",
+      teamName: "Volt Works",
       kind: "human",
       standingsRank: 5,
       decision: {

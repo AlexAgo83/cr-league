@@ -37,7 +37,7 @@ const baseState = {
   teams: [
     {
       id: "team_1",
-      name: "Circle One",
+      name: "Volt Union",
       kind: "human",
       points: 0,
       credits: 0,
@@ -120,7 +120,7 @@ const resolvedState = {
         {
           position: 1,
           teamId: "team_1",
-          teamName: "Circle One",
+          teamName: "Volt Union",
           points: 25,
           credits: 150,
           positionChange: 1,
@@ -150,21 +150,21 @@ const resolvedState = {
           severity: "major",
           positionDelta: 2,
           tags: ["card", "weather"],
-          replayText: "Rain Grip triggers for Circle One",
-          reportText: "Circle One called the rain correctly."
+          replayText: "Rain Grip triggers for Volt Union",
+          reportText: "Volt Union called the rain correctly."
         }
       ],
       consumedCards: [{ teamId: "team_1", cardId: "rain_grip" }],
       report: {
-        headline: "Silver Ridge GP: Circle One wins.",
-        blocks: [{ title: "Key moments", body: "Circle One called the rain correctly." }]
+        headline: "Silver Ridge GP: Volt Union wins.",
+        blocks: [{ title: "Key moments", body: "Volt Union called the rain correctly." }]
       }
     }
   },
   teams: [
     {
       id: "team_1",
-      name: "Circle One",
+      name: "Volt Union",
       kind: "human",
       points: 25,
       credits: 150,
@@ -282,7 +282,7 @@ describe("App", () => {
     expect(screen.getAllByText("Round 1").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Current GP").length).toBeGreaterThan(1);
     expect(screen.getByText("0/2")).toBeTruthy();
-    expect(document.querySelector(".standings-table")?.textContent).toContain("Circle One");
+    expect(document.querySelector(".standings-table")?.textContent).toContain("Volt Union");
     expect(document.querySelector(".round-timeline")?.textContent).toContain("R1");
 
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
@@ -309,7 +309,7 @@ describe("App", () => {
     expect(document.querySelectorAll(".replay-weather").length).toBe(5);
     expect(document.querySelector(".replay-marker")?.getAttribute("title")).toContain("Rain Grip");
     fireEvent.click(document.querySelector(".replay-marker")!);
-    expect(document.querySelector(".replay-tower li")?.textContent).toContain("P1Circle One");
+    expect(document.querySelector(".replay-tower li")?.textContent).toContain("P1Volt Union");
     fireEvent.click(screen.getByRole("button", { name: /Restart/ }));
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("0%");
     fireEvent.click(screen.getByRole("button", { name: /L5.*Rain Grip/ }));
@@ -328,7 +328,7 @@ describe("App", () => {
 
     // Report view
     fireEvent.click(screen.getByRole("button", { name: "Report" }));
-    expect(screen.getByText("Paris Docklands Sprint: Circle One wins.")).toBeTruthy();
+    expect(screen.getByText("Paris Docklands Sprint: Volt Union wins.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();
     expect(screen.getByLabelText("Race phases")).toBeTruthy();
@@ -414,7 +414,7 @@ describe("App", () => {
         method: "POST",
         body: JSON.stringify({
           code: "ABC123",
-          teamName: "Circle One"
+          teamName: "Volt Union"
         })
       })
     );
@@ -450,7 +450,7 @@ describe("App", () => {
           leagueId: "league_1",
           leagueName: "Office League",
           leagueCode: "ABC123",
-          teamName: "Circle One"
+          teamName: "Volt Union"
         },
         {
           teamId: "team_3",
@@ -492,7 +492,7 @@ describe("App", () => {
           leagueId: "league_1",
           leagueName: "Office League",
           leagueCode: "ABC123",
-          teamName: "Circle One"
+          teamName: "Volt Union"
         }
       ])
     );
@@ -522,7 +522,7 @@ describe("App", () => {
           leagueId: "league_1",
           leagueName: "Office League",
           leagueCode: "ABC123",
-          teamName: "Circle One"
+          teamName: "Volt Union"
         }
       ])
     );

@@ -1625,19 +1625,34 @@ label small {
   border-radius: 6px;
   color: var(--livery-secondary);
   display: flex;
+  flex-direction: column;
   font-size: 0.78rem;
   font-weight: 900;
+  gap: 0;
   height: 28px;
   justify-content: center;
+  line-height: 1;
   transform: skewX(-10deg);
   width: 42px;
 }
 
-.standings-livery-plate span {
+.livery-plate-text {
   -webkit-text-stroke: 0.55px var(--livery-primary);
   paint-order: stroke fill;
   text-shadow: 0 1px 2px rgb(0 0 0 / 0.38);
   transform: skewX(10deg);
+}
+
+.livery-plate-stars {
+  display: block;
+  font-size: 0.42rem;
+  letter-spacing: 0;
+  line-height: 0.8;
+  max-width: 100%;
+  overflow: hidden;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 0.38);
+  transform: skewX(10deg);
+  white-space: nowrap;
 }
 
 .standings-team {
@@ -1854,20 +1869,24 @@ label small {
   border-radius: 7px;
   color: var(--livery-secondary);
   display: flex;
+  flex-direction: column;
   flex: 0 0 auto;
   font-size: 1.44rem;
   font-weight: 900;
+  gap: 0;
   height: 42px;
   justify-content: center;
+  line-height: 1;
   transform: skewX(-10deg);
   width: 62px;
 }
 
-.garage-livery-preview span {
+.garage-livery-preview .livery-plate-text {
   -webkit-text-stroke: 0.8px var(--livery-primary);
-  paint-order: stroke fill;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 0.38);
-  transform: skewX(10deg);
+}
+
+.garage-livery-preview .livery-plate-stars {
+  font-size: 0.58rem;
 }
 
 .garage-livery-visuals {

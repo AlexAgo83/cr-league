@@ -40,6 +40,29 @@ export function recommendedShopOffers(state: LeagueState, forecastPick: string) 
     .sort((left, right) => right.fit.score - left.fit.score || left.cardId.localeCompare(right.cardId));
 }
 
+export function seasonWinsByTeamId(state: LeagueState) {
+  const pointsBySeason = new Map<number, Map<string, number>>();
+  const resolvedBySeason = new Map<number, number>();
+
+  for (const grandPrix of state.grandPrixHistory) {
+    if (!grandPrix.result) continue;
+    resolvedBySeason.set(grandPrix.season, (resolvedBySeason.get(grandPrix.season) ?? 0) + 1);
+    const seasonPoints = pointsBySeason.get(grandPrix.season) ?? new Map<string, number>();
+    for (const entry of grandPrix.result.classification) {
+      seasonPoints.set(entry.teamId, (seasonPoints.get(entry.teamId) ?? 0) + entry.points);
+    }
+    pointsBySeason.set(grandPrix.season, seasonPoints);
+  }
+
+  const wins = new Map<string, number>();
+  for (const [season, seasonPoints] of pointsBySeason) {
+    if ((resolvedBySeason.get(season) ?? 0) < state.league.maxGrandPrixPerSeason) continue;
+    const winner = [...seasonPoints.entries()].sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))[0];
+    if (winner) wins.set(winner[0], (wins.get(winner[0]) ?? 0) + 1);
+  }
+  return wins;
+}
+
 export function describeDecision(decision: LeagueState["decisions"][number] | undefined, tt: Translator) {
   if (!decision) return tt("result_no_directive");
   const card = decision.cardId ? ` · ${tt(`card_${decision.cardId}` as TranslationKey)}` : "";

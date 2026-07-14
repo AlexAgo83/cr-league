@@ -28,6 +28,58 @@ const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardI
 const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 const PRIMARY_LIVERY_COLORS = ["#0f172a", "#1e1b4b", "#312e81", "#3f1d2d", "#1f2937", "#064e3b", "#451a03", "#172554"] as const;
 const SECONDARY_LIVERY_COLORS = ["#f8fafc", "#fde68a", "#bfdbfe", "#bbf7d0", "#fecdd3", "#ddd6fe", "#fed7aa", "#ccfbf1"] as const;
+const BOT_TEAM_NAMES = [
+  "Apex Foundry",
+  "Blackline GP",
+  "Blue Harpoon",
+  "Brake Point",
+  "Carbon Yard",
+  "Circuit Nord",
+  "Coastal Apex",
+  "Copperline",
+  "Corsa Nova",
+  "Delta Forge",
+  "Drift Union",
+  "Eagle Run",
+  "Eastbound",
+  "Falcon Works",
+  "Fastlane",
+  "Ferro Racing",
+  "Grid Seven",
+  "Harbor Sprint",
+  "Helio Corse",
+  "Iron Pulse",
+  "Jetstream",
+  "Kerbside",
+  "Lane Eight",
+  "Lunar Apex",
+  "Metro Veloce",
+  "Midnight GP",
+  "Monarch Racing",
+  "Neon Sector",
+  "Northstar",
+  "Nova Lane",
+  "Omega Works",
+  "Orbit Corse",
+  "Pacific Line",
+  "Piston Club",
+  "Polecraft",
+  "Quantum GP",
+  "Rapid Vale",
+  "Redshift",
+  "Ridge Motors",
+  "Silverline",
+  "Skyline Works",
+  "Slipstream",
+  "South Gate",
+  "Steel Apex",
+  "Stormline",
+  "Summit Corse",
+  "Torque House",
+  "Union Brake",
+  "Vector Lane",
+  "Westline"
+] as const;
 const DEFAULT_MAX_PLAYERS = 8;
 const MAX_PLAYERS_LIMIT = 16;
 const DEFAULT_QUALIFYING_ATTEMPTS = 3;
@@ -892,10 +944,11 @@ async function fillLeagueWithBots(db: Db, state: LeagueState) {
   const bots = Array.from({ length: missing }, (_, index) => {
     const participant = botTemplates[index % botTemplates.length];
     if (!participant) return null;
-    let name = participant.teamName;
+    const baseName = BOT_TEAM_NAMES[index % BOT_TEAM_NAMES.length] ?? participant.teamName;
+    let name = baseName;
     let suffix = 2;
     while (existingNames.has(name.toLowerCase())) {
-      name = `${participant.teamName} ${suffix}`;
+      name = `${baseName} ${suffix}`;
       suffix += 1;
     }
     existingNames.add(name.toLowerCase());

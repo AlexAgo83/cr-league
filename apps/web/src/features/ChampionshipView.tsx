@@ -1,5 +1,5 @@
 import type { TranslationKey } from "../i18n/index.js";
-import { statusLabel, type Translator } from "../app/helpers.js";
+import { seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import type { CSSProperties } from "react";
 
@@ -17,6 +17,7 @@ export function ChampionshipView({
   const leader = state.teams[0];
   const currentGrandPrix = state.currentGrandPrix;
   const sortedHistory = [...state.grandPrixHistory].sort((left, right) => left.season - right.season || left.round - right.round);
+  const seasonWins = seasonWinsByTeamId(state);
 
   return (
     <div className="view-stack championship-view">
@@ -71,7 +72,8 @@ export function ChampionshipView({
                     className="standings-livery-plate"
                     style={{ "--livery-primary": team.livery.primary, "--livery-secondary": team.livery.secondary } as CSSProperties & Record<string, string>}
                   >
-                    <span>{team.name.slice(0, 3).toUpperCase()}</span>
+                    <span className="livery-plate-text">{team.name.slice(0, 3).toUpperCase()}</span>
+                    {seasonWins.get(team.id) ? <span className="livery-plate-stars">{"★".repeat(seasonWins.get(team.id) ?? 0)}</span> : null}
                   </span>
                   <span className="standings-team">
                     {team.name}

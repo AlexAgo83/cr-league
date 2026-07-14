@@ -2,7 +2,7 @@ import type { CardId, RaceResult } from "@cr-league/shared";
 import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
-import { cardFit, countCards, recommendedShopOffers, type Translator } from "../app/helpers.js";
+import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { CardStatBadges } from "./CardStatBadges.js";
 import { MapCarShape } from "./CircuitMap.js";
@@ -58,6 +58,7 @@ export function GarageView({
   const shopOffers = recommendedShopOffers(state, forecastPick);
   const pendingBuy = shopOffers.find((item) => item.cardId === pendingBuyCardId);
   const pendingBuyAffordable = Boolean(pendingBuy && playerTeam.credits >= pendingBuy.price);
+  const seasonWins = seasonWinsByTeamId(state).get(playerTeam.id) ?? 0;
   const confirmBuy = () => {
     if (!pendingBuy || !pendingBuyAffordable) return;
     onBuyCard(pendingBuy.cardId);
@@ -74,7 +75,8 @@ export function GarageView({
           </div>
           <div className="garage-livery-visuals">
             <div className="garage-livery-preview" style={{ "--livery-primary": livery.primary, "--livery-secondary": livery.secondary } as CSSProperties & Record<string, string>}>
-              <span>{playerTeam.name.slice(0, 3).toUpperCase()}</span>
+              <span className="livery-plate-text">{playerTeam.name.slice(0, 3).toUpperCase()}</span>
+              {seasonWins ? <span className="livery-plate-stars">{"★".repeat(seasonWins)}</span> : null}
             </div>
             <svg className="garage-car-preview map-car" viewBox="-20 -14 40 28" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
               <MapCarShape />

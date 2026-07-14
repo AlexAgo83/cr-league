@@ -282,16 +282,16 @@ export function CircuitMap({
                 <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
                   <g className="map-car-marker" transform={`scale(${markerScale})`}>
                     <g className="map-car-shape" transform={pose ? `rotate(${pose.angle + drift})` : undefined}>
-                      <rect className="map-car-wheel" x="-12" y="-10" width="5" height="3" rx="1.2" />
-                      <rect className="map-car-wheel" x="-12" y="7" width="5" height="3" rx="1.2" />
-                      <rect className="map-car-wheel" x="7" y="-10" width="6" height="3" rx="1.2" />
-                      <rect className="map-car-wheel" x="7" y="7" width="6" height="3" rx="1.2" />
-                      <path className="map-car-body" d="M-17,-8H11Q18,-8 19,-1V1Q18,8 11,8H-17Q-20,8 -20,0Q-20,-8 -17,-8Z" />
-                      <path className="map-car-rear" d="M-17,-6H-9Q-12,-2 -12,0Q-12,2 -9,6H-17Q-18,6 -18,0Q-18,-6 -17,-6Z" />
-                      <path className="map-car-glass" d="M-7,-5H8Q13,-5 15,0Q13,5 8,5H-7Q-9,2 -9,0Q-9,-2 -7,-5Z" />
-                      <path className="map-car-windshield" d="M8,-4Q14,-2 16,0Q14,2 8,4Q10,0 8,-4Z" />
-                      <path className="map-car-light" d="M16,-5Q19,-4 19,-1L16,-2Z" />
-                      <path className="map-car-light" d="M16,5Q19,4 19,1L16,2Z" />
+                      <rect className="map-car-wheel" x="-10" y="-10" width="5" height="3" rx="1.2" />
+                      <rect className="map-car-wheel" x="-10" y="7" width="5" height="3" rx="1.2" />
+                      <rect className="map-car-wheel" x="5" y="-10" width="5" height="3" rx="1.2" />
+                      <rect className="map-car-wheel" x="5" y="7" width="5" height="3" rx="1.2" />
+                      <path className="map-car-body" d="M-13,-8H8Q14,-8 15,-1V1Q14,8 8,8H-13Q-16,8 -16,0Q-16,-8 -13,-8Z" />
+                      <path className="map-car-rear" d="M-13,-6H-7Q-10,-2 -10,0Q-10,2 -7,6H-13Q-14,6 -14,0Q-14,-6 -13,-6Z" />
+                      <path className="map-car-glass" d="M-5,-5H6Q11,-5 12,0Q11,5 6,5H-5Q-7,2 -7,0Q-7,-2 -5,-5Z" />
+                      <path className="map-car-windshield" d="M6,-4Q11,-2 13,0Q11,2 6,4Q8,0 6,-4Z" />
+                      <path className="map-car-light" d="M12,-5Q15,-4 15,-1L12,-2Z" />
+                      <path className="map-car-light" d="M12,5Q15,4 15,1L12,2Z" />
                     </g>
                     <text textAnchor="middle" dominantBaseline="central">
                       {car.label}

@@ -172,6 +172,8 @@
   "next_action_wait_for_directives": "Wait for directives",
   "next_action_resolve_grand_prix": "Resolve Grand Prix",
   "next_action_start_next_grand_prix": "Start next Grand Prix",
+  "next_gp_confirm_title": "Start the next race day?",
+  "next_gp_confirm_body": "This opens the next Grand Prix and moves every player back into preparation.",
   "team_bot": "bot",
   "team_you": "you",
   "team_player": "player",

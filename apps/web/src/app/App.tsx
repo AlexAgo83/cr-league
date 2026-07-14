@@ -116,6 +116,7 @@ export function App() {
   const [profileCodeOpen, setProfileCodeOpen] = useState(false);
   const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
   const [directiveConfirmOpen, setDirectiveConfirmOpen] = useState(false);
+  const [nextGrandPrixConfirmOpen, setNextGrandPrixConfirmOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
   const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
@@ -202,7 +203,7 @@ export function App() {
         ? { label: tt("action_launch_grand_prix"), action: resolveGrandPrix, disabled: status === "loading" || isResolved }
         : {
             label: tt("action_next_grand_prix"),
-            action: startNextGrandPrix,
+            action: () => setNextGrandPrixConfirmOpen(true),
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
 
@@ -334,6 +335,7 @@ export function App() {
 
   async function startNextGrandPrix() {
     if (!leagueState) return;
+    setNextGrandPrixConfirmOpen(false);
 
     await run(tt("status_starting_next_grand_prix"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/next-grand-prix`, {
@@ -694,6 +696,23 @@ export function App() {
             {tt("action_submit_directive")}
           </button>
           <button type="button" onClick={() => setDirectiveConfirmOpen(false)}>
+            {tt("action_close")}
+          </button>
+        </div>
+      </section>
+    </div>
+  ) : null;
+  const nextGrandPrixConfirmModal = nextGrandPrixConfirmOpen ? (
+    <div className="modal-overlay" onClick={() => setNextGrandPrixConfirmOpen(false)}>
+      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("next_gp_confirm_title")} onClick={(event) => event.stopPropagation()}>
+        <span className="section-kicker">{tt("action_next_grand_prix")}</span>
+        <h2>{tt("next_gp_confirm_title")}</h2>
+        <p>{tt("next_gp_confirm_body")}</p>
+        <div className="actions secondary-actions">
+          <button type="button" onClick={() => void startNextGrandPrix()} disabled={status === "loading"}>
+            {tt("action_next_grand_prix")}
+          </button>
+          <button type="button" onClick={() => setNextGrandPrixConfirmOpen(false)}>
             {tt("action_close")}
           </button>
         </div>
@@ -1094,6 +1113,7 @@ export function App() {
       {profileCodeModal}
       {profileLogoutModal}
       {directiveConfirmModal}
+      {nextGrandPrixConfirmModal}
       {leagueControlsOpen ? (
         <div className="modal-overlay" onClick={closeLeagueControls}>
           <section className="panel modal league-controls-modal" role="dialog" aria-modal="true" aria-label={tt("settings_title")} onClick={(event) => event.stopPropagation()}>

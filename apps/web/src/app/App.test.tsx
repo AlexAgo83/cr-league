@@ -410,6 +410,9 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Next GP" }).hasAttribute("disabled")).toBe(false);
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
+    expect(screen.getByRole("dialog", { name: "Start the next race day?" })).toBeTruthy();
+    expect(screen.getByText("This opens the next Grand Prix and moves every player back into preparation.")).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
     fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
     expect(await screen.findByText("Season 1 · Round 2/6")).toBeTruthy();
     expect(document.querySelector(".round-timeline")?.textContent).toContain("P1");

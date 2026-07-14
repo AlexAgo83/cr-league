@@ -1605,6 +1605,53 @@ button.primary-command {
     padding: 14px;
   }
 
+  .map-status {
+    border-radius: 6px;
+    gap: 1px;
+    left: 8px;
+    max-width: 96px;
+    padding: 6px 8px;
+    top: 8px;
+  }
+
+  .map-status .circuit-city {
+    font-size: 0.62rem;
+  }
+
+  .map-status strong {
+    font-size: 0.8rem;
+    line-height: 1.1;
+  }
+
+  .map-status small {
+    font-size: 0.68rem;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .circuit-map-stage > .map-traits-panel {
+    left: 8px;
+    min-width: 104px;
+    top: 82px;
+  }
+
+  .map-traits-panel {
+    border-radius: 6px;
+    gap: 3px;
+    padding: 6px 8px;
+  }
+
+  .map-traits-panel span {
+    font-size: 0.58rem;
+    gap: 6px;
+  }
+
+  .map-traits-panel strong {
+    font-size: 0.78rem;
+  }
+
   .hero-topline {
     align-items: flex-start;
     flex-direction: column;

@@ -635,7 +635,7 @@ label small {
 
 .floating-notification button {
   align-items: center;
-  background: rgb(255 255 255 / 0.08);
+  background: conic-gradient(var(--color-telemetry) 360deg, rgb(255 255 255 / 0.12) 0deg);
   border: 0;
   border-radius: 999px;
   color: inherit;
@@ -644,12 +644,36 @@ label small {
   justify-content: center;
   min-height: 0;
   padding: 0;
+  position: relative;
   width: 22px;
+}
+
+.floating-notification button::before {
+  background: rgb(13 19 26);
+  border-radius: inherit;
+  content: "";
+  inset: 2px;
+  position: absolute;
+}
+
+.floating-notification button::after {
+  content: "×";
+  position: relative;
+}
+
+.floating-notification button {
+  animation: notification-countdown 10s linear forwards;
 }
 
 .floating-notification.error {
   border-color: rgb(248 113 113 / 0.5);
   color: #fecaca;
+}
+
+@keyframes notification-countdown {
+  to {
+    background: conic-gradient(var(--color-telemetry) 0deg, rgb(255 255 255 / 0.12) 0deg);
+  }
 }
 
 .league-controls-modal {
@@ -1177,6 +1201,7 @@ label small {
 @media (prefers-reduced-motion: reduce) {
   .circuit-route-accent,
   .circuit-start-line,
+  .floating-notification button,
   .replay-map-controls .replay-playback-button.playing::after,
   .replay-map-controls .replay-playback-button.paused {
     animation: none;

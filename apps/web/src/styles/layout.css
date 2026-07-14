@@ -1235,6 +1235,54 @@ label small {
 
 /* ---------- Garage ---------- */
 
+.garage-grid {
+  align-items: start;
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+}
+
+.garage-team-panel,
+.garage-card-column {
+  display: grid;
+  gap: 16px;
+}
+
+.garage-team-heading {
+  align-items: start;
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+}
+
+.garage-team-heading h2 {
+  margin: 2px 0 0;
+}
+
+.garage-stats {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.garage-stats span {
+  background: var(--color-cockpit);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: grid;
+  gap: 2px;
+  padding: 12px;
+}
+
+.garage-stats strong {
+  font-size: 1.35rem;
+}
+
+.garage-stats small {
+  color: var(--color-muted);
+  font-size: 0.76rem;
+}
+
 .garage-summary {
   background: var(--color-cockpit);
   border: 1px solid var(--color-border);
@@ -1252,27 +1300,34 @@ label small {
   font-size: 0.8125rem;
 }
 
-.garage-livery-panel {
-  display: grid;
-  gap: 12px;
-}
-
 .garage-livery-preview {
   align-items: center;
   background: var(--livery-primary);
-  border: 4px solid var(--livery-secondary);
-  border-radius: 999px;
+  border: 5px solid var(--livery-secondary);
+  border-radius: 10px;
   color: #041018;
   display: flex;
-  font-size: 0.8rem;
+  flex: 0 0 auto;
+  font-size: 1rem;
   font-weight: 900;
-  height: 58px;
+  height: 82px;
   justify-content: center;
-  width: 58px;
+  transform: skewX(-10deg);
+  width: 110px;
+}
+
+.garage-livery-preview span {
+  transform: skewX(10deg);
+}
+
+.garage-name-fields {
+  align-items: end;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .garage-livery-fields {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: end;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
 }
 
 .garage-livery-fields input[type="color"] {
@@ -1292,14 +1347,47 @@ label small {
   color: var(--color-text);
   display: grid;
   gap: 4px;
+  grid-template-columns: minmax(0, 1fr) auto;
   justify-items: start;
   padding: 12px;
   text-align: left;
 }
 
+.card-shop button strong {
+  color: var(--color-accent);
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.card-shop button small {
+  grid-column: 1;
+}
+
 .card-shop button:not(:disabled):hover,
 .card-shop button:not(:disabled):focus-visible {
   border-color: var(--color-accent);
+}
+
+@media (max-width: 1040px) {
+  .garage-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 720px) {
+  .garage-name-fields,
+  .garage-livery-fields {
+    grid-template-columns: 1fr;
+  }
+
+  .garage-team-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .garage-livery-preview {
+    width: 100%;
+  }
 }
 
 /* ---------- Replay & report ---------- */

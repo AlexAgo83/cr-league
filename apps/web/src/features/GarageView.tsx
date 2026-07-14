@@ -55,19 +55,47 @@ export function GarageView({
   const shopOffers = recommendedShopOffers(state, forecastPick);
 
   return (
-    <div className="view-stack">
-      <section className="panel">
-        <h2>{tt("dashboard_my_team")}</h2>
-        <p>
-          {tt("league_your_team")} {playerTeam.name} · {playerTeam.points} {tt("unit_points")} · {playerTeam.credits} {tt("unit_credits")}
-        </p>
-        <div className="field-grid garage-livery-fields">
+    <div className="garage-grid">
+      <section className="panel garage-team-panel">
+        <div className="garage-team-heading">
+          <div>
+            <span className="section-kicker">{tt("dashboard_garage")}</span>
+            <h2>{tt("dashboard_my_team")}</h2>
+          </div>
+          <div className="garage-livery-preview" style={{ "--livery-primary": livery.primary, "--livery-secondary": livery.secondary } as CSSProperties & Record<string, string>}>
+            <span>{playerTeam.name.slice(0, 3).toUpperCase()}</span>
+          </div>
+        </div>
+        <div className="garage-stats">
+          <span>
+            <strong>{playerTeam.points}</strong>
+            <small>{tt("unit_points")}</small>
+          </span>
+          <span>
+            <strong>{playerTeam.credits}</strong>
+            <small>{tt("unit_credits")}</small>
+          </span>
+        </div>
+        <div className="field-grid garage-name-fields">
           <label>
             {tt("garage_team_name")}
             <input maxLength={32} value={teamName} onChange={(event) => setTeamName(event.target.value)} />
           </label>
           <button type="button" onClick={() => onUpdateTeamName(teamName)} disabled={loading || teamName.trim() === playerTeam.name}>
             {tt("garage_team_name_save")}
+          </button>
+        </div>
+        <div className="field-grid garage-livery-fields">
+          <label>
+            {tt("garage_livery_primary")}
+            <input type="color" value={livery.primary} onChange={(event) => setLivery({ ...livery, primary: event.target.value })} />
+          </label>
+          <label>
+            {tt("garage_livery_secondary")}
+            <input type="color" value={livery.secondary} onChange={(event) => setLivery({ ...livery, secondary: event.target.value })} />
+          </label>
+          <button type="button" onClick={() => onUpdateLivery(livery)} disabled={loading}>
+            {tt("garage_livery_save")}
           </button>
         </div>
         {isResolved && playerResult ? (
@@ -85,65 +113,46 @@ export function GarageView({
         ) : null}
       </section>
 
-      <section className="panel garage-livery-panel">
-        <h3>{tt("garage_livery")}</h3>
-        <div className="garage-livery-preview" style={{ "--livery-primary": livery.primary, "--livery-secondary": livery.secondary } as CSSProperties & Record<string, string>}>
-          <span>{playerTeam.name.slice(0, 3).toUpperCase()}</span>
-        </div>
-        <div className="field-grid garage-livery-fields">
-          <label>
-            {tt("garage_livery_primary")}
-            <input type="color" value={livery.primary} onChange={(event) => setLivery({ ...livery, primary: event.target.value })} />
-          </label>
-          <label>
-            {tt("garage_livery_secondary")}
-            <input type="color" value={livery.secondary} onChange={(event) => setLivery({ ...livery, secondary: event.target.value })} />
-          </label>
-        </div>
-        <button type="button" onClick={() => onUpdateLivery(livery)} disabled={loading}>
-          {tt("garage_livery_save")}
-        </button>
-      </section>
+      <div className="garage-card-column">
+        <section className="panel">
+          <h3>{tt("garage_inventory")}</h3>
+          <p>{tt("garage_between_gp_hint")}</p>
+          <ul className="card-inventory">
+            {ownedCardIds.length ? (
+              ownedCardIds.map((cardId) => (
+                <li key={cardId}>
+                  <span>
+                    {tt(`card_${cardId}` as TranslationKey)}
+                    <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
+                  </span>
+                  <strong>x{countCards(playerTeam.cards, cardId)}</strong>
+                </li>
+              ))
+            ) : (
+              <li>{tt("garage_empty_inventory")}</li>
+            )}
+          </ul>
+        </section>
 
-      <section className="panel">
-        <h3>{tt("garage_inventory")}</h3>
-        <p>{tt("garage_between_gp_hint")}</p>
-        <ul className="card-inventory">
-          {ownedCardIds.length ? (
-            ownedCardIds.map((cardId) => (
-              <li key={cardId}>
-                <span>
-                  {tt(`card_${cardId}` as TranslationKey)}
-                  <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
-                </span>
-                <strong>x{countCards(playerTeam.cards, cardId)}</strong>
-              </li>
-            ))
-          ) : (
-            <li>{tt("garage_empty_inventory")}</li>
-          )}
-        </ul>
-      </section>
-
-      <section className="panel">
-        <h3>{tt("garage_shop")}</h3>
-        {!isResolved ? <p className="garage-locked">{tt("garage_shop_locked")}</p> : null}
-        <div className="card-shop">
-          {shopOffers.map((item) => (
-            <button
-              key={item.cardId}
-              type="button"
-              onClick={() => onBuyCard(item.cardId)}
-              disabled={loading || !isResolved || playerTeam.credits < item.price}
-            >
-              <span>
-                {tt(`card_${item.cardId}` as TranslationKey)} · {item.price}
-              </span>
-              <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>
-            </button>
-          ))}
-        </div>
-      </section>
+        <section className="panel">
+          <h3>{tt("garage_shop")}</h3>
+          {!isResolved ? <p className="garage-locked">{tt("garage_shop_locked")}</p> : null}
+          <div className="card-shop">
+            {shopOffers.map((item) => (
+              <button
+                key={item.cardId}
+                type="button"
+                onClick={() => onBuyCard(item.cardId)}
+                disabled={loading || !isResolved || playerTeam.credits < item.price}
+              >
+                <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
+                <strong>{item.price}</strong>
+                <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
     </div>
   );
 }

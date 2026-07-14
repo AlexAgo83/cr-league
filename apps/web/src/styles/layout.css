@@ -195,6 +195,13 @@
   color: var(--color-telemetry);
 }
 
+.profile-league-summary {
+  align-items: center;
+  display: none;
+  gap: 8px;
+  justify-content: space-between;
+}
+
 /* ---------- Views ---------- */
 
 .view-container {
@@ -1525,8 +1532,13 @@ button.primary-command {
     min-width: 0;
   }
 
-  .brand .eyebrow {
+  .brand strong,
+  .brand > .invite-code {
     display: none;
+  }
+
+  .profile-league-summary {
+    display: flex;
   }
 
   .game-nav {

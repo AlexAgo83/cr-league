@@ -342,6 +342,10 @@ export function App() {
           </button>
           {profileOpen ? (
             <div className="profile-menu-panel">
+              <div className="profile-league-summary">
+                <strong>{leagueState.league.name}</strong>
+                <span className="invite-code">{leagueState.league.code}</span>
+              </div>
               <label>
                 {tt("language_label")}
                 <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>

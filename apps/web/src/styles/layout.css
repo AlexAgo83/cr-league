@@ -447,7 +447,7 @@ label small {
   transform: translateX(-50%);
 }
 
-.replay-map-status {
+.map-status {
   background: rgb(10 15 21 / 0.8);
   border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 8px;
@@ -460,11 +460,11 @@ label small {
   z-index: 2;
 }
 
-.replay-map-status strong {
+.map-status strong {
   font-size: 0.95rem;
 }
 
-.replay-map-status small {
+.map-status small {
   color: var(--color-muted);
   font-weight: 700;
 }

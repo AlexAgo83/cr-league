@@ -124,7 +124,7 @@ export function ReplayView({
               framed={false}
               overlay={
                 <>
-                  <div className="replay-map-status">
+                  <div className="map-status">
                     <span className="circuit-city">
                       {countryFlag(circuit.country)} {circuit.city}
                     </span>

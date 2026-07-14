@@ -312,6 +312,13 @@ export function App() {
     setMessage(tt("status_player_forgotten"));
   }
 
+  function addLeague() {
+    setLeagueState(null);
+    setGameView("drive");
+    setProfileOpen(false);
+    setMessage(tt("status_initial"));
+  }
+
   function changeLocale(nextLocale: Locale) {
     localStorage.setItem(LANGUAGE_KEY, nextLocale);
     setLocaleState(nextLocale);
@@ -378,6 +385,22 @@ export function App() {
               {tt("action_join_league")}
             </button>
           </div>
+          {savedClaims.length ? (
+            <div className="saved-leagues">
+              <span className="section-kicker">{tt("profile_saved_leagues")}</span>
+              <div className="saved-league-list">
+                {savedClaims.map((claim) => (
+                  <button key={claim.teamId} type="button" className="profile-menu-action" onClick={() => void switchLeague(claim.teamId)} disabled={status === "loading"}>
+                    <strong>{claim.leagueName}</strong>
+                    <small>
+                      {claim.teamName}
+                      {claim.leagueCode ? ` · ${claim.leagueCode}` : ""}
+                    </small>
+                  </button>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </section>
       </main>
     );
@@ -442,6 +465,9 @@ export function App() {
                   <option value="fr">{tt("language_fr")}</option>
                 </select>
               </label>
+              <button type="button" className="profile-menu-action" onClick={addLeague}>
+                {tt("action_add_league")}
+              </button>
               {leagueState.player ? (
                 <button
                   type="button"

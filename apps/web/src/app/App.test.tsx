@@ -482,6 +482,36 @@ describe("App", () => {
     );
   });
 
+  it("opens league adding without dropping saved claims", async () => {
+    localStorage.setItem(
+      "cr-league-player-claims",
+      JSON.stringify([
+        {
+          teamId: "team_1",
+          claimCode: "CLAIM123",
+          leagueId: "league_1",
+          leagueName: "Office League",
+          leagueCode: "ABC123",
+          teamName: "Circle One"
+        }
+      ])
+    );
+    localStorage.setItem("cr-league-active-player-claim", "team_1");
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+
+    expect(await screen.findByText("League rejoined.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Add league" }));
+
+    expect(screen.getByRole("button", { name: "Create league" })).toBeTruthy();
+    expect(screen.getByText("Saved leagues")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Office League/ }));
+
+    expect(await screen.findByText("ABC123")).toBeTruthy();
+  });
+
   it("clears a stale saved player claim", async () => {
     localStorage.setItem(
       "cr-league-player-claims",

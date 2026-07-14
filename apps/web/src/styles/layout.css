@@ -978,11 +978,40 @@ label small {
 
 @media (max-width: 720px) {
   .standings-table li {
+    grid-template-areas:
+      "rank team ready"
+      "rank points credits";
     grid-template-columns: 38px minmax(0, 1fr) auto;
   }
 
+  .standings-rank {
+    grid-area: rank;
+  }
+
+  .standings-team {
+    grid-area: team;
+  }
+
+  .ready-pill {
+    grid-area: ready;
+    justify-self: end;
+  }
+
   .standings-score {
-    grid-column: span 1;
+    align-items: baseline;
+    display: flex;
+    gap: 4px;
+    justify-items: start;
+    min-width: 0;
+  }
+
+  .standings-score:nth-of-type(3) {
+    grid-area: points;
+  }
+
+  .standings-score:nth-of-type(4) {
+    grid-area: credits;
+    justify-self: end;
   }
 }
 

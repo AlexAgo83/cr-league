@@ -112,7 +112,16 @@ export function ReplayView({
           cars={cars}
           svgRef={svgRef}
           overlay={
-            <div className="replay-progress" aria-hidden="true">
+            <>
+              <ol className="replay-tower">
+                {result.classification.slice(0, 6).map((entry) => (
+                  <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
+                    <strong>P{entry.position}</strong>
+                    <span>{entry.teamName}</span>
+                  </li>
+                ))}
+              </ol>
+              <div className="replay-progress" aria-hidden="true">
               <div ref={progressRef} className="replay-progress-fill" />
               {RACE_SEGMENTS.slice(1).map((segment, index) => (
                 <span key={segment} className="replay-tick" style={{ left: `${((index + 1) / RACE_SEGMENTS.length) * 100}%` }} />
@@ -125,7 +134,8 @@ export function ReplayView({
                   title={marker.title}
                 />
               ))}
-            </div>
+              </div>
+            </>
           }
         />
         <div className="actions replay-controls secondary-actions">

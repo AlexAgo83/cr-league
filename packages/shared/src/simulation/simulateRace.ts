@@ -23,6 +23,7 @@ const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
   late: 34,
   finish: 20
 };
+const REPLAY_TRACE_STEPS_PER_SEGMENT = 4;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -50,6 +51,7 @@ export function simulateRace(input: RaceInput): RaceResult {
       events.push(createWeatherEvent(events.length, segment, weather[segment], states[0]?.participant.teamId ?? ""));
     }
 
+    const beforeTimes = new Map(states.map((state) => [state.participant.teamId, state.elapsedTime]));
     for (const state of states) {
       applySegment(state, segment, weather[segment], input, prng.next);
       maybeAddCardEvent(state, segment, weather[segment], events, states);
@@ -57,7 +59,7 @@ export function simulateRace(input: RaceInput): RaceResult {
     }
 
     maybeAddFlavorEvent(segment, weather[segment], input, states, events, prng.next);
-    replayTrace.push(createReplayTracePoint(segment, (index + 1) / RACE_SEGMENTS.length, states, "time"));
+    replayTrace.push(...createReplayTraceSteps(segment, index, states, beforeTimes));
   }
 
   const classification = classify(states);
@@ -77,12 +79,26 @@ export function simulateRace(input: RaceInput): RaceResult {
   };
 }
 
-function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], mode: "grid" | "time"): ReplayTracePoint {
+function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, states: TeamState[], beforeTimes: Map<string, number>): ReplayTracePoint[] {
+  return Array.from({ length: REPLAY_TRACE_STEPS_PER_SEGMENT }, (_, index) => {
+    const ratio = (index + 1) / REPLAY_TRACE_STEPS_PER_SEGMENT;
+    const progress = (segmentIndex + ratio) / RACE_SEGMENTS.length;
+    const times = new Map(
+      states.map((state) => {
+        const before = beforeTimes.get(state.participant.teamId) ?? state.elapsedTime;
+        return [state.participant.teamId, before + (state.elapsedTime - before) * ratio];
+      })
+    );
+    return createReplayTracePoint(segment, progress, states, "time", times);
+  });
+}
+
+function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], mode: "grid" | "time", elapsedTimes = new Map<string, number>()): ReplayTracePoint {
   const sorted =
     mode === "grid"
       ? [...states].sort((left, right) => left.participant.standingsRank - right.participant.standingsRank)
-      : [...states].sort((left, right) => left.elapsedTime - right.elapsedTime || right.scores.score - left.scores.score);
-  const leaderTime = sorted[0]?.elapsedTime ?? 0;
+      : [...states].sort((left, right) => (elapsedTimes.get(left.participant.teamId) ?? left.elapsedTime) - (elapsedTimes.get(right.participant.teamId) ?? right.elapsedTime) || right.scores.score - left.scores.score);
+  const leaderTime = sorted[0] ? (elapsedTimes.get(sorted[0].participant.teamId) ?? sorted[0].elapsedTime) : 0;
 
   return {
     segment,
@@ -92,13 +108,13 @@ function createReplayTracePoint(segment: RaceSegment, progress: number, states: 
     times: Object.fromEntries(
       sorted.map((state) => [
         state.participant.teamId,
-        mode === "grid" ? 0 : Number(state.elapsedTime.toFixed(1))
+        mode === "grid" ? 0 : Number((elapsedTimes.get(state.participant.teamId) ?? state.elapsedTime).toFixed(1))
       ])
     ),
     gaps: Object.fromEntries(
       sorted.map((state) => [
         state.participant.teamId,
-        mode === "grid" ? 0 : Math.max(0, Number((state.elapsedTime - leaderTime).toFixed(1)))
+        mode === "grid" ? 0 : Math.max(0, Number(((elapsedTimes.get(state.participant.teamId) ?? state.elapsedTime) - leaderTime).toFixed(1)))
       ])
     )
   };

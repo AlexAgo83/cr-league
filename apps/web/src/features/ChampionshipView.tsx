@@ -6,11 +6,13 @@ export function ChampionshipView({
   state,
   playerTeamId,
   onOpenLeagueControls,
+  onReplayGrandPrix,
   tt
 }: {
   state: LeagueState;
   playerTeamId: string | undefined;
   onOpenLeagueControls: () => void;
+  onReplayGrandPrix: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
   tt: Translator;
 }) {
   const leader = state.teams[0];
@@ -92,8 +94,8 @@ export function ChampionshipView({
           <section className="panel championship-history-panel">
             <h3>{tt("league_history")}</h3>
             <ol className="round-timeline" aria-label={tt("league_history")}>
-              {sortedHistory.map((grandPrix) => (
-                <li key={grandPrix.id}>
+              {sortedHistory.map((grandPrix) => {
+                const chip = (
                   <span
                     className={`round-chip status-${
                       grandPrix.status === currentGrandPrix.status && grandPrix.season === currentGrandPrix.season && grandPrix.round === currentGrandPrix.round
@@ -103,9 +105,20 @@ export function ChampionshipView({
                   >
                     S{grandPrix.season} R{grandPrix.round}
                   </span>
-                  <small>{historyLabel(grandPrix, playerTeamId, tt)}</small>
-                </li>
-              ))}
+                );
+                return (
+                  <li key={grandPrix.id}>
+                    {grandPrix.result ? (
+                      <button type="button" className="round-history-button" onClick={() => onReplayGrandPrix(grandPrix)}>
+                        {chip}
+                      </button>
+                    ) : (
+                      chip
+                    )}
+                    <small>{historyLabel(grandPrix, playerTeamId, tt)}</small>
+                  </li>
+                );
+              })}
             </ol>
           </section>
         </div>

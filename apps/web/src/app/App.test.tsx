@@ -452,6 +452,9 @@ describe("App", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
     expect(await screen.findByText("Season 1 · Round 2/6")).toBeTruthy();
     expect(document.querySelector(".round-timeline")?.textContent).toContain("P1");
+    fireEvent.click(screen.getByRole("button", { name: "S1 R1" }));
+    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
     // League controls live in the championship view

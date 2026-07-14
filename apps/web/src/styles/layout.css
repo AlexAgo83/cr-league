@@ -1672,6 +1672,19 @@ label small {
   justify-items: center;
 }
 
+.round-history-button {
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  width: 100%;
+}
+
+.round-history-button:not(:disabled):hover .round-chip,
+.round-history-button:not(:disabled):focus-visible .round-chip {
+  background: rgb(22 199 132 / 0.14);
+  border-color: var(--color-accent);
+}
+
 .round-chip {
   align-items: center;
   background: rgb(10 15 21 / 0.52);

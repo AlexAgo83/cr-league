@@ -132,6 +132,7 @@ export function App() {
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [qualifyingOpen, setQualifyingOpen] = useState(false);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
+  const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileCodeOpen, setProfileCodeOpen] = useState(false);
   const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
@@ -1074,6 +1075,7 @@ export function App() {
             state={leagueState}
             playerTeamId={playerTeam?.id}
             onOpenLeagueControls={() => setLeagueControlsOpen(true)}
+            onReplayGrandPrix={setHistoryReplay}
             tt={tt}
           />
         ) : null}
@@ -1161,6 +1163,25 @@ export function App() {
       {profileLogoutModal}
       {directiveConfirmModal}
       {nextGrandPrixConfirmModal}
+      {historyReplay?.result ? (
+        <div className="modal-overlay" onClick={() => setHistoryReplay(null)}>
+          <section className="panel modal qualifying-modal" role="dialog" aria-modal="true" aria-label={tt("result_replay_title")} onClick={(event) => event.stopPropagation()}>
+            <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setHistoryReplay(null)}>
+              ×
+            </button>
+            <div className="qualifying-replay">
+              <ReplayView
+                result={historyReplay.result}
+                circuit={circuitForRound(historyReplay.round)}
+                playerTeamId={playerTeam?.id}
+                teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
+                traitImpacts={replayTraitImpacts}
+                tt={tt}
+              />
+            </div>
+          </section>
+        </div>
+      ) : null}
       {leagueControlsOpen ? (
         <div className="modal-overlay" onClick={closeLeagueControls}>
           <section className="panel modal league-controls-modal" role="dialog" aria-modal="true" aria-label={tt("settings_title")} onClick={(event) => event.stopPropagation()}>

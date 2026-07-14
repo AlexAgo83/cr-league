@@ -281,7 +281,18 @@ export function CircuitMap({
               return (
                 <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
                   <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                    <path className="map-car-body" d="M-15,-7 Q-8,-11 3,-10 L14,-4 Q17,0 14,4 L3,10 Q-8,11 -15,7 Q-12,0 -15,-7 Z" transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
+                    <g className="map-car-shape" transform={pose ? `rotate(${pose.angle + drift})` : undefined}>
+                      <rect className="map-car-wheel" x="-12" y="-10" width="5" height="3" rx="1.2" />
+                      <rect className="map-car-wheel" x="-12" y="7" width="5" height="3" rx="1.2" />
+                      <rect className="map-car-wheel" x="7" y="-10" width="6" height="3" rx="1.2" />
+                      <rect className="map-car-wheel" x="7" y="7" width="6" height="3" rx="1.2" />
+                      <path className="map-car-body" d="M-17,-8H11Q18,-8 19,-1V1Q18,8 11,8H-17Q-20,8 -20,0Q-20,-8 -17,-8Z" />
+                      <path className="map-car-rear" d="M-17,-6H-9Q-12,-2 -12,0Q-12,2 -9,6H-17Q-18,6 -18,0Q-18,-6 -17,-6Z" />
+                      <path className="map-car-glass" d="M-7,-5H8Q13,-5 15,0Q13,5 8,5H-7Q-9,2 -9,0Q-9,-2 -7,-5Z" />
+                      <path className="map-car-windshield" d="M8,-4Q14,-2 16,0Q14,2 8,4Q10,0 8,-4Z" />
+                      <path className="map-car-light" d="M16,-5Q19,-4 19,-1L16,-2Z" />
+                      <path className="map-car-light" d="M16,5Q19,4 19,1L16,2Z" />
+                    </g>
                     <text textAnchor="middle" dominantBaseline="central">
                       {car.label}
                     </text>

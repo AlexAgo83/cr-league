@@ -952,19 +952,40 @@ label small {
   stroke-width: 4;
 }
 
+.map-car-shape {
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.55));
+}
+
+.map-car-wheel {
+  fill: #9b98ab;
+}
+
 .map-car-body {
   fill: var(--car-primary, var(--color-telemetry));
   stroke: var(--car-secondary, #0a0f15);
-  stroke-width: 3;
+  stroke-width: 1.8;
 }
 
 .map-car.player .map-car-body {
   fill: var(--car-primary, var(--color-accent));
 }
 
+.map-car-rear {
+  fill: rgb(0 0 0 / 0.18);
+}
+
+.map-car-glass,
+.map-car-windshield {
+  fill: rgb(248 250 252 / 0.82);
+}
+
+.map-car-light {
+  fill: rgb(255 255 255 / 0.9);
+}
+
 .map-car text {
   fill: #f8fafc;
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 900;
   paint-order: stroke;
   pointer-events: none;

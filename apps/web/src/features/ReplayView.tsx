@@ -75,6 +75,24 @@ function raceProgressAt(time: number, raceDuration: number) {
   return raceDuration > 0 ? Math.min(1, Math.max(0, (time - START_HOLD_SECONDS) / raceDuration)) : 1;
 }
 
+export function finishTimes(result: RaceResult, trace: ReplayTracePoint[]) {
+  const final = trace.at(-1);
+  const leaderTime = Math.min(...result.classification.map((entry) => final?.times[entry.teamId] ?? Number.POSITIVE_INFINITY));
+  const hasTraceTimes = Number.isFinite(leaderTime) && leaderTime > 0;
+  const fallbackLeader = hasTraceTimes ? leaderTime : 14;
+  const times = Object.fromEntries(
+    result.classification.map((entry) => {
+      const finalTime = final?.times[entry.teamId];
+      return [entry.teamId, hasTraceTimes && finalTime && finalTime > 0 ? finalTime : fallbackLeader + (final?.gaps[entry.teamId] ?? entry.position - 1)];
+    })
+  );
+  return {
+    leader: Math.min(...Object.values(times)),
+    last: Math.max(...Object.values(times)),
+    times
+  };
+}
+
 function liveClassification(result: RaceResult, trace: ReplayTracePoint[], progress: number): RaceResult["classification"] {
   const from = tracePointAt(trace, progress);
   const gaps = traceGapsAt(trace, progress);
@@ -91,6 +109,15 @@ function carProgressAt(result: RaceResult, trace: ReplayTracePoint[], progress: 
     result.classification.map((entry) => {
       const raceLaps = progress * laps - ((gaps[entry.teamId] ?? 0) / totalTime) * laps;
       return [entry.teamId, Math.max(0, raceLaps)];
+    })
+  );
+}
+
+export function carProgressAtRaceTime(result: RaceResult, times: Record<string, number>, raceTime: number, laps: number) {
+  return Object.fromEntries(
+    result.classification.map((entry) => {
+      const finishTime = Math.max(1, times[entry.teamId] ?? 1);
+      return [entry.teamId, Math.min(laps, Math.max(0, (raceTime / finishTime) * laps))];
     })
   );
 }
@@ -139,19 +166,20 @@ export function ReplayView({
   const [carProgress, setCarProgress] = useState(() => carProgressAt(result, replayTrace, 0, circuit.laps));
   const names = teamNamesFromResult(result);
   const field = result.classification;
-  const finalGaps = replayTrace.at(-1)?.gaps ?? {};
+  const replayTimes = finishTimes(result, replayTrace);
   const cars: MapCar[] = field.map((entry, index) => ({
     id: entry.teamId,
     label: entry.teamName.slice(0, 3).toUpperCase(),
     player: entry.teamId === playerTeamId,
     delay: 0,
-    duration: 14 + (finalGaps[entry.teamId] ?? index) * 0.25,
+    duration: replayTimes.times[entry.teamId] ?? replayTimes.leader + index,
     progress: carProgress[entry.teamId] ?? 0,
     livery: teamLiveries[entry.teamId]
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
-  const raceDuration = Math.max(0, ...cars.map((car) => car.delay + circuit.laps * car.duration));
-  const replayEnd = START_HOLD_SECONDS + raceDuration + FINISH_HOLD_SECONDS;
+  const raceDuration = replayTimes.leader;
+  const lastFinishTime = replayTimes.last;
+  const replayEnd = START_HOLD_SECONDS + lastFinishTime + FINISH_HOLD_SECONDS;
   const raceTimeAtProgress = (progress: number) => START_HOLD_SECONDS + progress * raceDuration;
   const replayPercentAtRaceProgress = (progress: number) => (raceTimeAtProgress(progress) / replayEnd) * 100;
 
@@ -201,9 +229,10 @@ export function ReplayView({
 
   function updateLive(time: number) {
     const progress = raceProgressAt(time, raceDuration);
+    const raceTime = Math.max(0, time - START_HOLD_SECONDS);
     const tracePoint = tracePointAt(replayTrace, progress);
     setLive((current) => (current.lap === tracePoint.lap && current.segment === tracePoint.segment ? current : { lap: tracePoint.lap, segment: tracePoint.segment }));
-    setCarProgress(carProgressAt(result, replayTrace, progress, circuit.laps));
+    setCarProgress(carProgressAtRaceTime(result, replayTimes.times, raceTime, circuit.laps));
     const nextTower = liveClassification(result, replayTrace, progress);
     setLiveTower((current) => (current.map((entry) => entry.teamId).join("|") === nextTower.map((entry) => entry.teamId).join("|") ? current : nextTower));
   }

@@ -98,6 +98,16 @@ export function ReplayView({
 
   return (
     <div className="view-stack">
+      <section className="panel replay-circuit-panel">
+        <span className="section-kicker">{circuit.country}</span>
+        <h2>
+          {circuit.city} <span>{tt(circuit.layoutKey)}</span>
+        </h2>
+        <p>
+          {circuit.country} · {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
+        </p>
+      </section>
+
       <div className="replay-main-grid">
         <section className="panel replay-player-panel">
           <h2>{tt("result_replay_title")}</h2>
@@ -107,6 +117,7 @@ export function ReplayView({
             tt={tt}
             cars={cars}
             svgRef={svgRef}
+            showHeading={false}
             overlay={
               <>
                 <ol className="replay-tower">

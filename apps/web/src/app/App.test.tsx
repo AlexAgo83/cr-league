@@ -278,8 +278,12 @@ describe("App", () => {
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Result" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByText("Best -")).toBeTruthy();
+    expect(screen.getByText("Attempts left 3/3")).toBeTruthy();
+    expect(screen.getByText("Run a lap time before locking your directive to place your car on the grid.")).toBeTruthy();
+    expect(document.querySelector(".command-actions")?.textContent).not.toContain("Lap time");
 
-    // Qualifying modal from the chrono button
+    // Qualifying modal from the directive panel
     expect(screen.queryByText("Wait for directives")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Lap time" }));
     expect(screen.getByRole("heading", { name: "Run a lap time" })).toBeTruthy();

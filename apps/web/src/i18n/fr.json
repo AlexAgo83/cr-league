@@ -97,6 +97,8 @@
   "qualifying_explainer": "La voiture part seule avec la directive actuelle et la météo prévue. Ton meilleur temps fixe ta place sur la grille.",
   "qualifying_best": "Meilleur",
   "qualifying_attempts": "Essais",
+  "qualifying_remaining": "Essais restants",
+  "qualifying_suggestion": "Fais un chrono avant de verrouiller ta directive pour placer ta voiture sur la grille.",
   "briefing_track": "Profil de piste",
   "briefing_forecast": "Météo probable",
   "briefing_tip_prepare": "Choisis une directive adaptée à la piste et à la météo avant de lancer le GP.",

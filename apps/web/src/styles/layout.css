@@ -547,6 +547,27 @@ label small {
   max-width: 960px;
 }
 
+.qualifying-card {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.qualifying-card h2 {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+
+.qualifying-card div {
+  display: grid;
+  gap: 4px;
+}
+
+.qualifying-card button {
+  flex-shrink: 0;
+}
+
 .qualifying-replay {
   margin-top: 16px;
 }
@@ -1935,19 +1956,6 @@ button.result-toggle-command:hover {
   gap: 10px;
 }
 
-button.info-command {
-  background: transparent;
-  border: 1px solid var(--color-border);
-  color: var(--color-telemetry);
-  height: 44px;
-  padding: 0 14px;
-  white-space: nowrap;
-}
-
-button.info-command:hover {
-  border-color: var(--color-telemetry);
-}
-
 button.primary-command {
   flex-shrink: 0;
   font-size: 1rem;
@@ -2175,7 +2183,6 @@ button.primary-command {
     min-width: 0;
   }
 
-  button.info-command,
   .result-toggle-command {
     font-size: 0.82rem;
     height: 38px;

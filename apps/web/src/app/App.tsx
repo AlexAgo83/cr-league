@@ -120,6 +120,7 @@ export function App() {
   const playerQualifyingRun = qualifyingRuns.find((run) => run.teamId === playerTeam?.id) ?? null;
   const qualifyingAttemptsUsed = playerQualifyingRun?.attempts ?? 0;
   const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? form.qualifyingAttemptLimit;
+  const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
   const result = leagueState?.currentGrandPrix.result;
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
   const forecastPick = leagueState ? strongestForecast(leagueState.currentGrandPrix.forecast) : "dry";
@@ -844,14 +845,31 @@ export function App() {
                 }
               />
             </div>
-            <DirectivePanel
-              form={form}
-              setForm={setForm}
-              ownedCardIds={ownedCardIds}
-              selectedCardId={selectedCardId}
-              selectedCardFit={selectedCardFit}
-              tt={tt}
-            />
+            <div className="drive-content-column">
+              <DirectivePanel
+                form={form}
+                setForm={setForm}
+                ownedCardIds={ownedCardIds}
+                selectedCardId={selectedCardId}
+                selectedCardFit={selectedCardFit}
+                tt={tt}
+              />
+              <section className="panel qualifying-card">
+                <h2>{tt("action_qualifying")}</h2>
+                <div>
+                  <strong>
+                    {tt("qualifying_best")} {playerQualifyingRun ? `${playerQualifyingRun.time.toFixed(2)}s` : "-"}
+                  </strong>
+                  <small>
+                    {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
+                  </small>
+                  {!playerQualifyingRun ? <small>{tt("qualifying_suggestion")}</small> : null}
+                </div>
+                <button type="button" onClick={() => setQualifyingOpen(true)} disabled={isResolved || qualifyingAttemptsLeft <= 0}>
+                  {tt("action_qualifying")}
+                </button>
+              </section>
+            </div>
           </div>
         ) : null}
         {gameView === "championship" ? (
@@ -902,11 +920,6 @@ export function App() {
           <small className="command-hint">{tt(`command_hint_${deskState}` as TranslationKey)}</small>
         </div>
         <div className="command-actions">
-          {gameView === "drive" ? (
-            <button className="info-command" type="button" onClick={() => setQualifyingOpen(true)} disabled={isResolved}>
-              {tt("action_qualifying")}
-            </button>
-          ) : null}
           {gameView === "result" && result ? (
             <button
               className="result-toggle-command"

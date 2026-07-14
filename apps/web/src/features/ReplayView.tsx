@@ -60,6 +60,19 @@ function tracePointAt(trace: ReplayTracePoint[], progress: number) {
   return [...trace].reverse().find((point) => point.progress <= progress) ?? trace[0] ?? EMPTY_TRACE_POINT;
 }
 
+function traceGapsAt(trace: ReplayTracePoint[], progress: number) {
+  const from = tracePointAt(trace, progress);
+  const to = trace.find((point) => point.progress > progress) ?? from;
+  const span = to.progress - from.progress || 1;
+  const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
+  return Object.fromEntries(
+    Object.keys({ ...from.gaps, ...to.gaps }).map((teamId) => [
+      teamId,
+      (from.gaps[teamId] ?? 0) + ((to.gaps[teamId] ?? 0) - (from.gaps[teamId] ?? 0)) * ratio
+    ])
+  );
+}
+
 function raceProgressAt(time: number, raceDuration: number) {
   return raceDuration > 0 ? Math.min(1, Math.max(0, (time - START_HOLD_SECONDS) / raceDuration)) : 1;
 }
@@ -139,6 +152,18 @@ export function positionDeltas(currentOrder: string[], nextOrder: string[]) {
   );
 }
 
+export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[], progress: number, laps: number) {
+  const gaps = traceGapsAt(trace, progress);
+  const finalTimes = trace.at(-1)?.times ?? {};
+  const totalTime = Math.max(1, ...Object.values(finalTimes));
+  return Object.fromEntries(
+    result.classification.map((entry) => {
+      const raceLaps = progress * laps - ((gaps[entry.teamId] ?? 0) / totalTime) * laps;
+      return [entry.teamId, Math.max(0, raceLaps)];
+    })
+  );
+}
+
 function replaySnapshot(
   result: RaceResult,
   trace: ReplayTracePoint[],
@@ -148,7 +173,7 @@ function replaySnapshot(
   laps: number,
   currentOrder: string[] = []
 ) {
-  const carProgress = carProgressAtRaceTime(result, replayTimes.times, raceTime, laps);
+  const carProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps);
   const tower = liveClassificationByCarProgress(result, trace, progress, carProgress, currentOrder);
   return { carProgress, tower };
 }

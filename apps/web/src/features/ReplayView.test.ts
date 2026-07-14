@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { RaceResult, ReplayTracePoint } from "@cr-league/shared";
 import {
   carProgressAtRaceTime,
+  carProgressAtTrace,
   displayLapAtProgress,
   finishTimes,
   liveClassificationByCarProgress,
@@ -81,6 +82,18 @@ describe("ReplayView timing", () => {
       "last",
       "leader"
     ]);
+  });
+
+  it("uses replay trace gaps before finish instead of final pace", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["last", "leader"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "mid", lap: 3, progress: 0.5, order: ["last", "leader"], times: { leader: 50, last: 40 }, gaps: { leader: 10, last: 0 } },
+      { segment: "finish", lap: 5, progress: 1, order: ["leader", "last"], times: { leader: 100, last: 104 }, gaps: { leader: 0, last: 4 } }
+    ];
+    const progress = carProgressAtTrace(result, trace, 0.5, 5);
+
+    expect(progress.last ?? 0).toBeGreaterThan(progress.leader ?? 0);
+    expect(liveClassificationByCarProgress(result, trace, 0.5, progress, ["last", "leader"]).map((entry) => entry.teamId)).toEqual(["last", "leader"]);
   });
 });
 

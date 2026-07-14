@@ -714,15 +714,9 @@ label small {
 }
 
 .qualifying-card {
-  align-items: center;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(0, 1fr) auto;
-}
-
-.qualifying-card h2 {
-  grid-column: 1 / -1;
-  margin: 0;
+  min-height: 156px;
 }
 
 .qualifying-meta {
@@ -735,18 +729,19 @@ label small {
   background: rgb(10 15 21 / 0.52);
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 8px;
-  display: inline-flex;
-  justify-self: end;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 36px;
+  margin-top: auto;
   overflow: hidden;
+  width: 100%;
 }
 
 .qualifying-card button {
   background: transparent;
   border-radius: 0;
   color: var(--color-text);
-  flex-shrink: 0;
   min-height: 0;
-  padding: 7px 11px;
+  padding: 9px 11px;
 }
 
 .qualifying-actions button + button {
@@ -761,9 +756,9 @@ label small {
 
 .qualifying-card .icon-button {
   font-size: 1rem;
-  height: 32px;
+  height: 36px;
   padding: 0;
-  width: 32px;
+  width: 36px;
 }
 
 .qualifying-replay {

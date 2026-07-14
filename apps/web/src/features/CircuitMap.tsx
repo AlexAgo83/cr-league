@@ -41,6 +41,7 @@ const CLOSE_ENTER_DISTANCE = 2;
 const CLOSE_EXIT_DISTANCE = 6;
 const DRIFT_LOOKAHEAD = 0.012;
 const MAX_DRIFT_ANGLE = 14;
+const MAX_DRIFT_OFFSET = 8;
 type CameraZoomMode = "normal" | "traffic" | "close";
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
@@ -267,11 +268,17 @@ export function CircuitMap({
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
               const pose = car.progress === undefined ? null : poseOnRoute(points, car.progress);
               const drift = car.progress === undefined ? 0 : driftAngle(points, car.progress);
+              const driftOffset = pose
+                ? {
+                    x: Math.cos((pose.angle + 90) * Math.PI / 180) * (drift / MAX_DRIFT_ANGLE) * MAX_DRIFT_OFFSET,
+                    y: Math.sin((pose.angle + 90) * Math.PI / 180) * (drift / MAX_DRIFT_ANGLE) * MAX_DRIFT_OFFSET
+                  }
+                : { x: 0, y: 0 };
               const carStyle = car.livery
                 ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
                 : undefined;
               return (
-                <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
+                <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x + driftOffset.x} ${pose.y + driftOffset.y})` : undefined}>
                   <g className="map-car-marker" transform={`scale(${markerScale})`}>
                     <rect className="map-car-body" x="-15" y="-10" width="30" height="20" rx="6" transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
                     <text textAnchor="middle" dominantBaseline="central">

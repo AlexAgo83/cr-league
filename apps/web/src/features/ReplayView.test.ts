@@ -49,11 +49,23 @@ describe("ReplayView timing", () => {
   });
 
   it("scales visual replay time with race distance", () => {
-    const shortCircuit = { laps: 1, route: [{ lat: 0, lng: 0 }, { lat: 0, lng: 1 }] };
-    const longCircuit = { laps: 1, route: [{ lat: 0, lng: 0 }, { lat: 0, lng: 2 }] };
+    const shortCircuit = testCircuit(1, [{ lat: 0, lng: 0 }, { lat: 0, lng: 0.001 }]);
+    const longCircuit = testCircuit(1, [{ lat: 0, lng: 0 }, { lat: 0, lng: 0.002 }]);
     const times = { leader: 10, last: 12, times: { leader: 10, last: 12 } };
 
     expect(replayDistanceScale(longCircuit) / replayDistanceScale(shortCircuit)).toBeCloseTo(2);
     expect(scaleFinishTimes(times, 2)).toEqual({ leader: 20, last: 24, times: { leader: 20, last: 24 } });
   });
 });
+
+function testCircuit(laps: number, route: Array<{ lat: number; lng: number }>) {
+  return {
+    city: "Test",
+    country: "TT",
+    layoutKey: "city_circuit_map",
+    laps,
+    traits: { grip: 1, overtaking: 1, energy: 1 },
+    likelyWeather: "dry",
+    route
+  } as const;
+}

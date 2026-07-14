@@ -122,6 +122,14 @@ function pointOnRoute(points: Array<{ x: number; y: number }>, progress: number)
   return { x: pose.x, y: pose.y };
 }
 
+function routeLength(points: Array<{ x: number; y: number }>) {
+  return points.slice(1).reduce((sum, point, index) => sum + Math.hypot(point.x - points[index]!.x, point.y - points[index]!.y), 0);
+}
+
+export function circuitDisplayLength(circuit: CityCircuit) {
+  return routeLength(circuitScene(circuit).points);
+}
+
 function angleDelta(from: number, to: number) {
   return ((((to - from) % 360) + 540) % 360) - 180;
 }

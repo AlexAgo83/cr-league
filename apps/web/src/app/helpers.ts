@@ -37,8 +37,7 @@ export function cardFit(cardId: CardId, state: LeagueState, forecastPick: string
 export function recommendedShopOffers(state: LeagueState, forecastPick: string) {
   return state.cardShop
     .map((item) => ({ ...item, fit: cardFit(item.cardId, state, forecastPick) }))
-    .sort((left, right) => right.fit.score - left.fit.score || left.cardId.localeCompare(right.cardId))
-    .slice(0, 3);
+    .sort((left, right) => right.fit.score - left.fit.score || left.cardId.localeCompare(right.cardId));
 }
 
 export function describeDecision(decision: LeagueState["decisions"][number] | undefined, tt: Translator) {

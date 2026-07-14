@@ -66,7 +66,10 @@ const baseState = {
   ],
   cardShop: [
     { cardId: "rain_grip", price: 100 },
-    { cardId: "launch_boost", price: 100 }
+    { cardId: "launch_boost", price: 100 },
+    { cardId: "soft_tires", price: 100 },
+    { cardId: "qualifying_focus", price: 100 },
+    { cardId: "defensive_order", price: 100 }
   ],
   actionState: {
     submittedTeamIds: [],
@@ -443,6 +446,9 @@ describe("App", () => {
     expect(screen.getByText("Consumed Rain Grip")).toBeTruthy();
     expect(screen.getByText("No cards in inventory.")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Recommended offers" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Soft Tires/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Qualifying Lap/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Defensive Order/ })).toBeTruthy();
 
     // One command at a time
     expect(screen.queryByRole("button", { name: "Submit directive" })).toBe(null);

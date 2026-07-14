@@ -907,6 +907,10 @@ label small {
   z-index: 2;
 }
 
+.replay-map-panel .circuit-map-stage > .map-traits-panel {
+  bottom: 46px;
+}
+
 .map-qualifying-times {
   background: rgb(10 15 21 / 0.8);
   border: 1px solid rgb(255 255 255 / 0.12);
@@ -2453,6 +2457,10 @@ button.primary-command {
     bottom: 8px;
     left: 8px;
     min-width: 104px;
+  }
+
+  .replay-map-panel .circuit-map-stage > .map-traits-panel {
+    bottom: 38px;
   }
 
   .map-qualifying-times {

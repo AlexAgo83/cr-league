@@ -283,6 +283,9 @@ describe("App", () => {
     expect(document.querySelector(".replay-marker")?.getAttribute("title")).toContain("Rain Grip");
     fireEvent.click(document.querySelector(".replay-marker")!);
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("100%");
+    fireEvent.click(screen.getByRole("button", { name: /Restart/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Lap 5.*Rain Grip/ }));
+    expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("100%");
 
     // Replay playback controls
     fireEvent.click(screen.getByRole("button", { name: "Pause" }));

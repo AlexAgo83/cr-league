@@ -797,10 +797,25 @@ button.result-toggle-command:hover {
 
 .replay-timeline li {
   align-items: start;
-  grid-template-columns: auto 1fr;
 }
 
-.replay-timeline li small {
+.replay-moment-button {
+  background: transparent;
+  color: var(--color-text);
+  display: grid;
+  gap: 4px 10px;
+  grid-template-columns: auto 1fr;
+  padding: 0;
+  text-align: left;
+}
+
+.replay-moment-button:hover,
+.replay-moment-button:focus-visible {
+  color: var(--color-telemetry);
+}
+
+.replay-moment-button small {
+  color: var(--color-muted);
   grid-column: 2;
 }
 

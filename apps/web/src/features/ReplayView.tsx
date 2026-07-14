@@ -203,11 +203,13 @@ export function ReplayView({
           <ul className="events replay-timeline">
             {keyMoments.map((event) => (
               <li key={event.id} className={event.teamId === playerTeamId ? "player-event" : undefined}>
-                <span className="lap-marker">
-                  {tt("unit_lap")} {event.lap}
-                </span>
-                <strong>{eventReplayText(event, names, tt)}</strong>
-                <small>{event.severity === "major" ? tt("event_major") : tt("event_ambience")}</small>
+                <button type="button" className="replay-moment-button" onClick={() => seek((event.lap / maxLap) * replayEnd)}>
+                  <span className="lap-marker">
+                    {tt("unit_lap")} {event.lap}
+                  </span>
+                  <strong>{eventReplayText(event, names, tt)}</strong>
+                  <small>{event.severity === "major" ? tt("event_major") : tt("event_ambience")}</small>
+                </button>
               </li>
             ))}
           </ul>

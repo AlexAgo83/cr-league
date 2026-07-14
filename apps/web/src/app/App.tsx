@@ -1,7 +1,7 @@
 import { APP_NAME, type CardId } from "@cr-league/shared";
 import { useEffect, useMemo, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
-import { circuitForRound } from "./circuits.js";
+import { circuitForRound, countryFlag } from "./circuits.js";
 import { cardFit, strongestForecast } from "./helpers.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
@@ -339,11 +339,12 @@ export function App() {
           <div className="drive-grid">
             <section className="panel drive-map-panel">
               <div className="circuit-map-heading">
-                <span className="circuit-city">{currentCircuit.city}</span>
+                <span className="circuit-city">
+                  {countryFlag(currentCircuit.country)} {currentCircuit.city}
+                </span>
                 <strong>{tt(currentCircuit.layoutKey)}</strong>
                 <small>
-                  {currentCircuit.country} · {currentCircuit.laps} {tt("unit_laps")} ·{" "}
-                  {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
+                  {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
                 </small>
               </div>
               <CircuitMap circuit={currentCircuit} tt={tt} showHeading={false} framed={false} />

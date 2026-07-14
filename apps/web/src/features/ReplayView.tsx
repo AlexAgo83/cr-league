@@ -1,7 +1,7 @@
-import { RACE_SEGMENTS, type RaceResult } from "@cr-league/shared";
+import { RACE_SEGMENTS, type RaceResult, type RaceSegment } from "@cr-league/shared";
 import { useEffect, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
-import type { CityCircuit } from "../app/circuits.js";
+import { countryFlag, type CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
 import { CircuitMap, type MapCar } from "./CircuitMap.js";
 
@@ -23,6 +23,7 @@ export function ReplayView({
   const clock = useRef(0);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
+  const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const names = teamNamesFromResult(result);
   const field = result.classification.slice(0, 6);
   const cars: MapCar[] = field.map((entry, index) => ({
@@ -33,6 +34,7 @@ export function ReplayView({
     delay: 0,
     duration: 14 + index * 0.6
   }));
+  const playerCar = cars.find((car) => car.player) ?? cars[0];
   // Replay ends when the last car completes the race distance; the clock parks there on pause.
   const replayEnd = Math.max(0, ...cars.map((car) => car.delay + circuit.laps * car.duration));
 
@@ -50,6 +52,7 @@ export function ReplayView({
       last = now;
       svg.setCurrentTime(clock.current);
       if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
+      updateLive(clock.current);
       if (clock.current >= replayEnd) {
         setPlaying(false);
         return;
@@ -63,12 +66,22 @@ export function ReplayView({
     clock.current = Math.max(0, Math.min(time, replayEnd));
     svgRef.current?.setCurrentTime?.(clock.current);
     if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
+    updateLive(clock.current);
   }
 
   function restart() {
     seek(0);
     setPlaying(true);
   }
+
+  function updateLive(time: number) {
+    const progress = replayEnd > 0 ? time / replayEnd : 0;
+    const segment = RACE_SEGMENTS[Math.min(RACE_SEGMENTS.length - 1, Math.floor(progress * RACE_SEGMENTS.length))] ?? RACE_SEGMENTS[0];
+    const lapDuration = playerCar?.duration || replayEnd / circuit.laps || 1;
+    const lap = Math.min(circuit.laps, Math.floor(time / lapDuration) + 1);
+    setLive((current) => (current.lap === lap && current.segment === segment ? current : { lap, segment }));
+  }
+
   // Majors and player moments first pick, race notes as filler — then strict race order.
   const keyMoments = [
     ...result.events.filter((event) => event.severity === "major"),
@@ -95,19 +108,13 @@ export function ReplayView({
     title: marker.texts.join("\n"),
     player: marker.player
   }));
+  const liveWeather = result.resolvedWeather[live.segment];
 
   return (
     <div className="view-stack">
       <div className="replay-main-grid">
         <div className="replay-content-column">
           <section className="panel replay-map-panel">
-            <div className="circuit-map-heading">
-              <span className="circuit-city">{circuit.city}</span>
-              <strong>{tt(circuit.layoutKey)}</strong>
-              <small>
-                {circuit.country} · {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
-              </small>
-            </div>
             <CircuitMap
               circuit={circuit}
               tt={tt}
@@ -117,6 +124,16 @@ export function ReplayView({
               framed={false}
               overlay={
                 <>
+                  <div className="replay-map-status">
+                    <span className="circuit-city">
+                      {countryFlag(circuit.country)} {circuit.city}
+                    </span>
+                    <strong>{tt(circuit.layoutKey)}</strong>
+                    <small>
+                      {tt("unit_lap")} {live.lap}/{circuit.laps} · {WEATHER_ICONS[liveWeather]}{" "}
+                      {tt(`weather_${liveWeather}` as TranslationKey)}
+                    </small>
+                  </div>
                   <ol className="replay-tower">
                     {result.classification.slice(0, 6).map((entry) => (
                       <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>

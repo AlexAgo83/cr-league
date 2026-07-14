@@ -1,6 +1,6 @@
 import type { Ref } from "react";
 import type { TranslationKey } from "../i18n/index.js";
-import type { CityCircuit } from "../app/circuits.js";
+import { countryFlag, type CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
 
 export type MapCar = {
@@ -90,10 +90,12 @@ export function CircuitMap({
     <section className={framed ? "circuit-map" : "circuit-map circuit-map-unframed"} aria-label={tt("city_circuit_map")}>
       {showHeading ? (
         <div className="circuit-map-heading">
-          <span className="circuit-city">{circuit.city}</span>
+          <span className="circuit-city">
+            {countryFlag(circuit.country)} {circuit.city}
+          </span>
           <strong>{tt(circuit.layoutKey)}</strong>
           <small>
-            {circuit.country} · {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
+            {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
           </small>
         </div>
       ) : null}

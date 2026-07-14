@@ -447,6 +447,28 @@ label small {
   transform: translateX(-50%);
 }
 
+.replay-map-status {
+  background: rgb(10 15 21 / 0.8);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  display: grid;
+  gap: 3px;
+  left: 12px;
+  padding: 10px 12px;
+  position: absolute;
+  top: 12px;
+  z-index: 2;
+}
+
+.replay-map-status strong {
+  font-size: 0.95rem;
+}
+
+.replay-map-status small {
+  color: var(--color-muted);
+  font-weight: 700;
+}
+
 .replay-marker {
   background: var(--color-telemetry);
   border: 2px solid #0a0f15;

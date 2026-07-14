@@ -141,6 +141,9 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(replayMap).toHaveClass(/circuit-map-unframed/);
   await expect(replayMap).toHaveCSS("padding", "0px");
   await expect(replayMap).toHaveCSS("border-top-width", "0px");
+  await expect(mapPanel.locator(".replay-map-status")).toContainText("🇫🇷 Paris");
+  await expect(mapPanel.locator(".replay-map-status")).toContainText("Lap 1/5");
+  await expect(mapPanel.locator(".replay-map-status")).toContainText("Dry");
   await expect
     .poll(async () => momentsPanel.evaluate((element) => element.getBoundingClientRect().width))
     .toBeCloseTo(directiveWidth, 0);

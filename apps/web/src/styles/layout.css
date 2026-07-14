@@ -738,3 +738,460 @@ label small {
     max-width: calc(100% - 28px);
   }
 }
+
+/* Cockpit 0.3 visual pass */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background:
+    linear-gradient(180deg, rgb(56 189 248 / 0.08), transparent 280px),
+    var(--color-page);
+}
+
+.app-shell {
+  gap: 18px;
+  margin: 0 auto;
+  max-width: 1480px;
+}
+
+.hero {
+  align-items: end;
+  background: linear-gradient(90deg, rgb(31 41 51 / 0.96), rgb(21 27 34 / 0.84));
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  max-width: none;
+  padding: 18px;
+}
+
+.hero h1 {
+  font-size: 2.25rem;
+  margin: 0;
+}
+
+.hero p:last-child {
+  color: var(--color-muted);
+  font-size: 0.95rem;
+  margin-top: 6px;
+  max-width: 620px;
+}
+
+.hero-topline {
+  display: contents;
+}
+
+.eyebrow {
+  color: var(--color-telemetry);
+  margin: 0;
+}
+
+.language-select {
+  color: var(--color-muted);
+  grid-column: 2;
+  grid-row: 1 / span 2;
+}
+
+.play-grid {
+  align-items: start;
+  gap: 14px;
+  grid-template-columns: 72px repeat(12, minmax(0, 1fr));
+}
+
+.cockpit-rail {
+  align-self: stretch;
+  background: #10161d;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: grid;
+  gap: 8px;
+  grid-column: 1;
+  justify-items: center;
+  padding: 12px 8px;
+  position: sticky;
+  top: 18px;
+}
+
+.cockpit-rail a,
+.rail-mark {
+  align-items: center;
+  border-radius: 6px;
+  color: var(--color-muted);
+  display: flex;
+  font-size: 0.72rem;
+  font-weight: 900;
+  height: 44px;
+  justify-content: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  width: 100%;
+}
+
+.rail-mark {
+  background: var(--color-accent);
+  color: #06110c;
+}
+
+.cockpit-rail a {
+  border: 1px solid transparent;
+  writing-mode: vertical-rl;
+}
+
+.cockpit-rail a:hover,
+.cockpit-rail a:focus-visible {
+  border-color: var(--color-border);
+  color: var(--color-text);
+  outline: 0;
+}
+
+.panel {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: 0 18px 48px rgb(0 0 0 / 0.18);
+  color: var(--color-text);
+}
+
+.control-panel {
+  grid-column: 1 / -1;
+}
+
+.race-panel {
+  background: linear-gradient(180deg, #151b22, #10161d);
+  grid-column: 2 / span 8;
+}
+
+.league-panel {
+  grid-column: span 4;
+}
+
+.recap-panel,
+.report-panel {
+  grid-column: 2 / -1;
+}
+
+.result-panel,
+.moments-panel {
+  grid-column: span 4;
+}
+
+.visual-replay-panel {
+  grid-column: span 8;
+}
+
+.panel h2,
+.panel h3,
+.panel h4 {
+  color: var(--color-text);
+}
+
+.panel p,
+.status,
+label,
+label small {
+  color: var(--color-muted);
+}
+
+input,
+select {
+  background: #10161d;
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+button {
+  background: var(--color-accent);
+  color: #06110c;
+}
+
+button:disabled {
+  background: #2d3744;
+  color: #7f8a99;
+}
+
+button.primary-command:not(:disabled),
+.race-command-row .primary-command:not(:disabled) {
+  background: var(--color-accent);
+  color: #06110c;
+  font-size: 1rem;
+  min-height: 48px;
+}
+
+.race-actions.secondary-actions button:not(:disabled),
+.secondary-actions button:not(:disabled),
+.dashboard-actions button:not(:disabled) {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+}
+
+.race-actions.secondary-actions button:disabled,
+.secondary-actions button:disabled {
+  background: #1b2430;
+  border: 1px solid var(--color-border);
+  color: #6f7a88;
+}
+
+.panel-heading {
+  border-bottom: 1px solid var(--color-border);
+  margin: -2px 0 14px;
+  padding-bottom: 12px;
+}
+
+.section-kicker {
+  color: var(--color-telemetry);
+  letter-spacing: 0.08em;
+}
+
+.invite-code {
+  background: #10161d;
+  border: 1px solid var(--color-telemetry);
+  color: var(--color-telemetry);
+}
+
+.race-console {
+  background: #0d131a;
+  border-color: var(--color-border);
+  grid-template-columns: minmax(0, 1.1fr) minmax(260px, 0.9fr);
+}
+
+.race-console h3 {
+  font-size: 1.45rem;
+}
+
+.race-telemetry span,
+.race-state,
+.circuit-traits span,
+.replay-summary span {
+  border-radius: 6px;
+}
+
+.race-telemetry span {
+  background: rgb(56 189 248 / 0.1);
+  border-color: rgb(56 189 248 / 0.24);
+  color: #d9f4ff;
+}
+
+.race-state {
+  background: rgb(245 158 11 / 0.12);
+  border-color: rgb(245 158 11 / 0.42);
+  color: #fbbf24;
+}
+
+.state-ready {
+  background: rgb(22 199 132 / 0.12);
+  border-color: rgb(22 199 132 / 0.42);
+  color: var(--color-accent);
+}
+
+.state-resolved {
+  background: rgb(56 189 248 / 0.12);
+  border-color: rgb(56 189 248 / 0.42);
+  color: var(--color-telemetry);
+}
+
+.city-circuit-map,
+.replay-track {
+  background:
+    linear-gradient(90deg, rgb(255 255 255 / 0.03) 1px, transparent 1px),
+    linear-gradient(0deg, rgb(255 255 255 / 0.03) 1px, transparent 1px),
+    radial-gradient(circle at 70% 20%, rgb(56 189 248 / 0.12), transparent 32%),
+    #090e13;
+  background-size: 38px 38px, 38px 38px, auto, auto;
+  border-color: #253241;
+}
+
+.city-route-shadow {
+  stroke: #1f2937;
+  stroke-width: 22;
+}
+
+.city-route-line {
+  stroke: #0b0f14;
+  stroke-width: 12;
+}
+
+.city-route-accent {
+  stroke: var(--color-accent);
+  stroke-dasharray: 56 42;
+  stroke-width: 4;
+}
+
+.race-workbench {
+  grid-template-columns: minmax(240px, 0.8fr) minmax(0, 1.2fr);
+}
+
+.race-workbench > div,
+.dashboard-section,
+.recap-grid section,
+.classification li,
+.card-inventory li,
+.events li {
+  border-color: var(--color-border);
+}
+
+.race-command-row {
+  align-items: center;
+  background: #0d131a;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+  margin-top: 16px;
+  padding: 12px;
+}
+
+.race-command-row p {
+  margin: 0;
+}
+
+.dashboard-summary div,
+.garage-summary {
+  background: #10161d;
+  border-color: var(--color-border);
+}
+
+.dashboard-summary span,
+.dashboard-summary small,
+.standings-list small,
+.garage-summary span,
+.garage-locked,
+.card-inventory small,
+.card-shop small,
+.classification li span:last-child,
+.card-inventory strong,
+.events span,
+.replay-laps span,
+.replay-callouts span {
+  color: var(--color-muted);
+}
+
+.standings-list li.current-team,
+.events li.player-event,
+.replay-callouts li {
+  border-left-color: var(--color-accent);
+}
+
+.garage-section .card-shop button {
+  background: #10161d;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+.garage-section .card-shop button:not(:disabled):hover,
+.garage-section .card-shop button:not(:disabled):focus-visible {
+  border-color: var(--color-accent);
+}
+
+.result-panel,
+.moments-panel,
+.visual-replay-panel,
+.recap-panel,
+.report-panel {
+  background: #121922;
+}
+
+.visual-replay-panel {
+  gap: 12px;
+}
+
+.replay-track {
+  min-height: 430px;
+}
+
+.city-replay-track .city-circuit-map {
+  min-height: 300px;
+}
+
+.city-replay-track .city-circuit-map svg {
+  height: 300px;
+}
+
+.replay-car {
+  background: var(--color-telemetry);
+  border-color: #081018;
+  box-shadow: 0 0 18px rgb(56 189 248 / 0.32);
+}
+
+.replay-car.player {
+  background: var(--color-accent);
+  box-shadow: 0 0 18px rgb(22 199 132 / 0.34);
+}
+
+.replay-laps li {
+  border-top-color: #334151;
+}
+
+.lap-marker {
+  background: rgb(22 199 132 / 0.12);
+  border-color: rgb(22 199 132 / 0.38);
+  color: var(--color-accent);
+}
+
+.error {
+  color: #fca5a5;
+}
+
+@media (max-width: 1040px) {
+  .play-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .cockpit-rail {
+    display: none;
+  }
+
+  .race-panel,
+  .league-panel,
+  .recap-panel,
+  .report-panel,
+  .result-panel,
+  .moments-panel,
+  .visual-replay-panel {
+    grid-column: 1 / -1;
+  }
+
+  .race-workbench,
+  .race-console,
+  .race-command-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+.replay-controls button:not(:disabled) {
+  background: #10161d;
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+}
+
+@media (max-width: 860px) {
+  .hero {
+    align-items: stretch;
+    grid-template-columns: 1fr;
+  }
+
+  .hero-topline {
+    display: flex;
+  }
+
+  .language-select {
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .hero h1 {
+    font-size: 2rem;
+  }
+
+  .city-replay-track .city-circuit-map,
+  .replay-track {
+    min-height: 280px;
+  }
+
+  .city-replay-track .city-circuit-map svg {
+    height: 220px;
+  }
+}

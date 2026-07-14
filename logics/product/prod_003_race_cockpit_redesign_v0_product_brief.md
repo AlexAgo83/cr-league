@@ -117,6 +117,20 @@ flowchart LR
 - Existing unit, e2e, typecheck, lint, build, i18n, and Logics gates pass after implementation.
 - Desktop and mobile screenshots show no overlapping labels or unreadable text in the redesigned states.
 
+# Implementation wave - 2026-07-14
+- Shipped a dark Pit Wall Compact shell for the active league state: compact header, left cockpit rail on desktop, dark command surfaces, telemetry chips, timing-style rows, and subdued secondary controls.
+- Rebuilt the race desk action hierarchy so each state exposes one dominant command: submit directive, launch GP, or next GP.
+- Kept the existing API and state model; no new UI framework, map dependency, replay engine, or routing system was added.
+- Upgraded the city circuit and replay presentation with a larger dark route surface, visible moving cars, replay controls, and clearer event callouts.
+- Routed the new shell labels, command hints, GP status labels, report headings, and race-event summaries through EN/FR catalogs.
+- Localized the displayed race report/event text at the UI boundary so French playtests do not show raw English simulator prose in the redesigned result areas.
+- Captured visual QA screenshots in `~/Desktop/CRL/` for desktop and mobile briefing/replay states after the implementation pass.
+
+# Remaining limits
+- The replay is still a deterministic visual playback derived from resolved events, not a full sampled race timeline with scrubber and proven overtake curves.
+- The city circuits remain static stored SVG paths; Fleet Sim route reuse is still a product direction, not a runtime dependency.
+- Secondary setup/admin controls are visually calmer, but they have not been split into separate routed screens.
+
 # References
 - Product back-reference: `req_032_redesign_the_cr_league_race_cockpit_v0`
 - Task back-reference: `task_033_orchestrate_race_cockpit_redesign_v0`

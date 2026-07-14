@@ -263,14 +263,15 @@ describe("App", () => {
     expect(screen.getByText("Your card shaped the race. Keep one for moments where the track or forecast clearly matches it.")).toBeTruthy();
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("Lap 5");
     expect(screen.getByText("Key event")).toBeTruthy();
-    expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip triggers for Circle One");
+    expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip · Circle One profits from the weather call");
     expect(screen.getByText("Last GP")).toBeTruthy();
     expect(screen.getByText("+150 credits · +25 pts")).toBeTruthy();
     expect(screen.getByText("Consumed Rain Grip")).toBeTruthy();
     expect(screen.getByText("No cards in inventory.")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Recommended offers" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Submit directive" }).hasAttribute("disabled")).toBe(true);
-    expect(screen.getByRole("button", { name: "Launch GP" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.queryByRole("button", { name: "Submit directive" })).toBe(null);
+    expect(screen.queryByRole("button", { name: "Launch GP" })).toBe(null);
+    expect(screen.getByRole("button", { name: "Next GP" }).hasAttribute("disabled")).toBe(false);
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     expect((await screen.findAllByText("Round 2")).length).toBeGreaterThan(0);

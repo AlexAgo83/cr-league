@@ -208,6 +208,12 @@ export function App() {
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
   const leader = leagueState?.teams[0];
   const currentCircuit = leagueState ? circuitForRound(leagueState.currentGrandPrix.round) : CITY_CIRCUITS[0];
+  const primaryCommand =
+    deskState === "prepare"
+      ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }
+      : deskState === "ready"
+        ? { label: tt("action_launch_grand_prix"), action: resolveGrandPrix, disabled: status === "loading" || isResolved }
+        : { label: tt("action_next_grand_prix"), action: startNextGrandPrix, disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix };
 
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
@@ -379,7 +385,16 @@ export function App() {
       </section>
 
       <section className="play-grid" aria-label={tt("flow_label")}>
-        <article className={leagueState ? "panel race-panel" : "panel control-panel setup-panel"}>
+        {leagueState ? (
+          <aside className="cockpit-rail" aria-label={tt("cockpit_sections")}>
+            <span className="rail-mark">CRL</span>
+            <a href="#race-desk">{tt("rail_race")}</a>
+            <a href="#championship">{tt("rail_league")}</a>
+            {result ? <a href="#race-replay">{tt("rail_replay")}</a> : null}
+          </aside>
+        ) : null}
+
+        <article className={leagueState ? "panel race-panel" : "panel control-panel setup-panel"} id="race-desk">
           <div className="panel-heading">
             <div>
               <span className="section-kicker">{tt("race_desk_kicker")}</span>
@@ -511,16 +526,14 @@ export function App() {
                 </div>
               </section>
 
-              <div className="actions race-actions">
-                <button className={deskState === "prepare" ? "primary-command" : undefined} type="button" onClick={submitDirective} disabled={status === "loading" || isResolved}>
-                  {tt("action_submit_directive")}
+              <div className="race-command-row">
+                <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                  {primaryCommand.label}
                 </button>
-                <button className={deskState === "ready" ? "primary-command" : undefined} type="button" onClick={resolveGrandPrix} disabled={status === "loading" || isResolved}>
-                  {tt("action_launch_grand_prix")}
-                </button>
-                <button className={deskState === "resolved" ? "primary-command" : undefined} type="button" onClick={startNextGrandPrix} disabled={status === "loading" || !leagueState.actionState.canStartNextGrandPrix}>
-                  {tt("action_next_grand_prix")}
-                </button>
+                <p>{tt(`command_hint_${deskState}` as TranslationKey)}</p>
+              </div>
+
+              <div className="actions race-actions secondary-actions">
                 <button type="button" onClick={updateSettings} disabled={status === "loading"}>
                   {tt("action_update_settings")}
                 </button>
@@ -533,7 +546,7 @@ export function App() {
         </article>
 
         {leagueState ? (
-          <article className="panel league-panel">
+          <article className="panel league-panel" id="championship">
             <div className="panel-heading">
               <div>
                 <span className="section-kicker">{tt("championship_kicker")}</span>
@@ -547,7 +560,7 @@ export function App() {
                 <strong>
                   {tt("league_round")} {leagueState.currentGrandPrix.round}
                 </strong>
-                <small>{leagueState.currentGrandPrix.status}</small>
+                <small>{statusLabel(leagueState.currentGrandPrix.status, tt)}</small>
               </div>
               <div>
                 <span>{tt("dashboard_players")}</span>
@@ -655,7 +668,7 @@ export function App() {
                     <span>
                       {tt("league_round")} {grandPrix.round}
                     </span>
-                    <span>{grandPrix.status}</span>
+                    <span>{statusLabel(grandPrix.status, tt)}</span>
                   </li>
                 ))}
               </ol>
@@ -676,7 +689,7 @@ export function App() {
                 <div className="recap-grid">
                   <section>
                     <h3>{tt("result_difference")}</h3>
-                    <p>{majorEvents[0]?.reportText ?? result.report.headline}</p>
+                    <p>{majorEvents[0] ? eventReportText(majorEvents[0], tt) : resultHeadline(result, tt)}</p>
                   </section>
                   <section>
                     <h3>{tt("result_your_directive")}</h3>
@@ -692,7 +705,7 @@ export function App() {
 
             <article className="panel result-panel">
               <h2>{result.grandPrixName}</h2>
-              <p>{result.report.headline}</p>
+              <p>{resultHeadline(result, tt)}</p>
               <ol className="classification">
                 {result.classification.map((entry) => (
                   <li key={entry.teamId}>
@@ -718,7 +731,7 @@ export function App() {
                   .map((event) => (
                   <li key={event.id} className={event.teamId === playerTeam?.id ? "player-event" : undefined}>
                     <span className="lap-marker">{tt("unit_lap")} {event.lap}</span>
-                    <strong>{event.replayText}</strong>
+                    <strong>{eventReplayText(event, tt)}</strong>
                     <small>{event.severity === "major" ? tt("event_major") : tt("event_ambience")}</small>
                   </li>
                 ))}
@@ -727,7 +740,7 @@ export function App() {
 
             <article className="panel report-panel">
               <h2>{tt("result_race_report")}</h2>
-              {result.report.blocks.map((block) => (
+              {localizedReportBlocks(result, tt).map((block) => (
                 <section key={block.title}>
                   <h3>{block.title}</h3>
                   <p>{block.body}</p>
@@ -773,7 +786,7 @@ function VisualReplay({
   } as CSSProperties & Record<string, string>;
 
   return (
-    <article className="panel visual-replay-panel">
+    <article className="panel visual-replay-panel" id="race-replay">
       <h2>{tt("result_replay_title")}</h2>
       <p className="replay-explainer">{tt("result_replay_explainer")}</p>
       <div className="replay-summary">
@@ -828,7 +841,7 @@ function VisualReplay({
               <span>
                 {tt("unit_lap")} {event.lap}
               </span>
-              <strong>{event.replayText}</strong>
+              <strong>{eventReplayText(event, tt)}</strong>
             </li>
           ))}
         </ol>
@@ -952,4 +965,51 @@ function nextLesson(
   if (state?.currentGrandPrix.secondaryTrait === "high_wear") return tt("lesson_reliability");
   if (state?.currentGrandPrix.primaryTrait === "fast") return tt("lesson_speed");
   return tt("lesson_balanced");
+}
+
+type RaceEvent = RaceResult["events"][number];
+
+function resultHeadline(result: RaceResult, tt: (key: TranslationKey) => string) {
+  const winner = result.classification[0];
+  return winner ? `${result.grandPrixName}: ${winner.teamName} ${tt("report_wins")}.` : result.grandPrixName;
+}
+
+function localizedReportBlocks(result: RaceResult, tt: (key: TranslationKey) => string) {
+  const keyEvents = result.events.filter((event) => event.severity === "major").slice(0, 4);
+  return [
+    {
+      title: tt("report_key_moments"),
+      body: keyEvents.length ? keyEvents.map((event) => eventReportText(event, tt)).join(" ") : tt("report_clean_race")
+    },
+    {
+      title: tt("report_rewards"),
+      body: result.classification.map((entry) => `${entry.teamName}: ${entry.points} ${tt("unit_points")}, ${entry.credits} ${tt("unit_credits")}`).join(" · ")
+    }
+  ];
+}
+
+function eventReplayText(event: RaceEvent, tt: (key: TranslationKey) => string) {
+  if (event.type === "weather_change" || event.type === "race_note") return tt(`event_${event.type}` as TranslationKey);
+  if (event.cardId) return `${tt(`card_${event.cardId}` as TranslationKey)} · ${eventTeam(event)} ${tt(`event_${event.type}` as TranslationKey)}`;
+  return `${eventTeam(event)} ${tt(`event_${event.type}` as TranslationKey)}`;
+}
+
+function eventReportText(event: RaceEvent, tt: (key: TranslationKey) => string) {
+  const delta = event.positionDelta ? ` (${event.positionDelta > 0 ? "+" : ""}${event.positionDelta})` : "";
+  return `${eventReplayText(event, tt)}${delta}.`;
+}
+
+function eventTeam(event: RaceEvent) {
+  return (
+    event.replayText.split(" triggers for ")[1] ??
+    event.replayText.match(/: (.+?) wins\./)?.[1] ??
+    event.replayText.split(" finishes ")[0] ??
+    event.replayText.split(" hits ")[0] ??
+    "Course"
+  );
+}
+
+function statusLabel(status: string, tt: (key: TranslationKey) => string) {
+  if (status === "briefing" || status === "resolved") return tt(`gp_status_${status}` as TranslationKey);
+  return status;
 }

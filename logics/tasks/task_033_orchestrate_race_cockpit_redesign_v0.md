@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 95
-> Progress: 35%
+> Progress: 70%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -62,7 +62,17 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- 2026-07-14 wave:
+  - Implemented the Pit Wall Compact shell in the web app using the existing React/CSS/i18n setup.
+  - Added one-state-one-command behavior for the race desk: prepare submits, ready launches, resolved advances.
+  - Kept championship and garage as supporting panels while the race desk owns the first viewport.
+  - Expanded the replay/result surface with a larger city route map, moving cars, replay controls, localized callouts, and localized report blocks.
+  - Added EN/FR catalog coverage for shell navigation, command hints, GP statuses, report headings, and event summaries.
+  - Captured desktop and mobile screenshots in `~/Desktop/CRL/crl-cockpit-*-briefing.png` and `~/Desktop/CRL/crl-cockpit-*-replay.png`.
+- Remaining before closeout:
+  - Run the full validation suite after the Logics docs are refreshed.
+  - Decide whether the current animated replay is enough for 0.3, or whether the next slice should add a real sampled replay timeline/scrubber.
+  - Keep full external playtest feedback for a later wave; this pass only performed local browser visual QA.
 
 # AI Context
 - Summary: Orchestrate race cockpit redesign V0

@@ -90,9 +90,9 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
 
     await page.getByRole("button", { name: "Launch GP" }).click();
     await expect(page.getByText("Race resolved")).toBeVisible();
-    await expect(page.locator("p").filter({ hasText: `Silver Ridge GP ${expectedRound}: Circle One wins.` })).toBeVisible();
+    await expect(page.getByText("Silver Ridge GP: Circle One wins.").first()).toBeVisible();
     await expect(page.getByRole("heading", { name: "Race recap" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Visual replay" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
     await expect(page.getByLabel("Race replay by lap")).toBeVisible();
     await expect(page.getByText("Balanced · Weather · Rain Grip")).toBeVisible();
     await expect(page.locator(".replay-timeline").getByText("Lap 5")).toBeVisible();

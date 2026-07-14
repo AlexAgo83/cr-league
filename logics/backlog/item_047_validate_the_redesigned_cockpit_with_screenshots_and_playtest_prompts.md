@@ -3,8 +3,8 @@
 > Schema version: 1.0
 > Status: In progress
 > Understanding: 95
-> Confidence: 94
-> Progress: 35%
+> Confidence: 95
+> Progress: 70%
 > Complexity: Low
 > Theme: Validation and playtest readiness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -54,6 +54,14 @@
   - Are championship and garage helpful without distracting from the current GP?
 - Validation proof to record at closeout: unit tests, typecheck, lint, build, e2e or documented browser playtest, i18n validation/status, `logics-manager flow validate`, `logics-manager lint --require-status`, and `logics-manager audit --group-by-doc`.
 - Known remaining limits should be documented explicitly, especially if the replay remains static or if some secondary playtest/debug controls stay visually less polished.
+
+# Visual QA evidence - 2026-07-14
+- Captured French desktop briefing state: `~/Desktop/CRL/crl-cockpit-desktop-briefing.png`.
+- Captured French desktop resolved replay state: `~/Desktop/CRL/crl-cockpit-desktop-replay.png`.
+- Captured French mobile briefing state: `~/Desktop/CRL/crl-cockpit-mobile-briefing.png`.
+- Captured French mobile resolved replay state: `~/Desktop/CRL/crl-cockpit-mobile-replay.png`.
+- Inspected the first mobile pass and fixed the cramped two-column action block before recording the final evidence.
+- Inspected the resolved replay pass and replaced raw English simulator prose in redesigned result/event/report areas with catalog-backed display text.
 
 # AC Traceability
 - request-AC7 -> This backlog slice. Proof: AC1: Playtest docs ask whether the cockpit feels like a racing game rather than an admin dashboard.

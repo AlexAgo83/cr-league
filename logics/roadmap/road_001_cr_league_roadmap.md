@@ -91,7 +91,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 
 ## 0.3 - Playtest-ready game loop
 - Goal: Make the prototype worth testing with colleagues beyond a single technical demo.
-- Status: Planned; next implementation focus.
+- Status: Started; cockpit/replay visual pass in progress.
 - Scope:
   - 3-GP mini championship loop;
   - V2 race cockpit redesign with clear Course, Championship, Garage, and Result/Replay responsibilities;
@@ -110,6 +110,11 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Delivered foundation:
   - resolved GP recap panel explaining key difference, player directive, and next-GP lesson;
   - replay timeline now prioritizes player and key events before ambience notes;
+  - dark Pit Wall Compact shell with desktop rail, compact header, telemetry chips, timing rows, and calmer secondary controls;
+  - race desk now shows one dominant command per state instead of competing action buttons;
+  - city circuit and replay panels use larger dark route surfaces with visible moving cars and clearer callouts;
+  - French display now localizes redesigned report/event summaries instead of showing raw English simulator prose;
+  - desktop and mobile briefing/replay screenshots captured in `~/Desktop/CRL/`;
   - desktop Prepare/Ready desk states and mobile resolved state visually checked after the pit-wall pass;
   - guarded session restart and clearer championship dashboard visually checked on desktop and mobile.
 - Linked docs:

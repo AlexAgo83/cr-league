@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 95
-> Progress: 35%
+> Progress: 70%
 > Complexity: Medium
 > Theme: Race desk UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

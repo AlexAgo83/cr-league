@@ -344,6 +344,8 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Submit directive" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(document.querySelector(".command-context")?.textContent).not.toContain("Directive locked");
+    fireEvent.click(screen.getAllByRole("button", { name: "Close notification" }).at(-1)!);
+    expect(screen.queryByText("Directive locked. You can launch the Grand Prix.")).toBe(null);
     expect(screen.getByText("Ready to launch")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Lap time" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByText("Locked after directive")).toBeTruthy();

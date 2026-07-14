@@ -161,6 +161,7 @@
   "action_forget_team": "Forget team",
   "action_restart_league": "Restart session",
   "action_close": "Close",
+  "notification_close": "Close notification",
   "action_play": "Play",
   "action_pause": "Pause",
   "action_replay_restart": "Restart",

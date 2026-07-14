@@ -140,6 +140,10 @@ export function App() {
     return () => window.clearTimeout(timeout);
   }, [message, status, locale]);
 
+  function dismissNotification(id: number) {
+    setNotifications((items) => items.filter((item) => item.id !== id));
+  }
+
   useEffect(() => {
     if (!profileSession) return;
     const saved = getActiveClaim(savedClaims);
@@ -722,9 +726,12 @@ export function App() {
   const notificationStack = notifications.length ? (
     <div className="notification-stack" aria-live="polite">
       {notifications.map((notification) => (
-        <p key={notification.id} className={`floating-notification ${notification.tone}`}>
-          {notification.text}
-        </p>
+        <div key={notification.id} className={`floating-notification ${notification.tone}`}>
+          <p>{notification.text}</p>
+          <button type="button" aria-label={tt("notification_close")} onClick={() => dismissNotification(notification.id)}>
+            ×
+          </button>
+        </div>
       ))}
     </div>
   ) : null;

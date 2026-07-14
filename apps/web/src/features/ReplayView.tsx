@@ -55,6 +55,7 @@ export function ReplayView({
   const clock = useRef(0);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
+  const [driverFocus, setDriverFocus] = useState(false);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const names = teamNamesFromResult(result);
   const field = result.classification.slice(0, 6);
@@ -160,6 +161,7 @@ export function ReplayView({
             showHeading={false}
             framed={false}
             showTraits={false}
+            camera={{ enabled: driverFocus, car: playerCar, timeRef: clock }}
             overlay={
               <>
                 <div className="map-status">
@@ -184,6 +186,15 @@ export function ReplayView({
                   </button>
                   <button type="button" aria-label={tt("action_replay_restart")} title={tt("action_replay_restart")} onClick={restart}>
                     ↻
+                  </button>
+                  <button
+                    type="button"
+                    aria-label="Focus driver"
+                    title="Focus driver"
+                    className={driverFocus ? "active" : undefined}
+                    onClick={() => setDriverFocus(!driverFocus)}
+                  >
+                    ⌖
                   </button>
                   <select aria-label={tt("replay_speed")} value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
                     <option value={0.5}>×0.5</option>

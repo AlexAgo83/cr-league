@@ -1,4 +1,4 @@
-import type { Ref } from "react";
+import { useEffect, useRef, type Ref } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { countryFlag, type CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
@@ -26,6 +26,7 @@ const SAFE_AREA = {
   left: 125
 };
 const TILE_SIZE = 256;
+const FOCUS_ZOOM = 1.8;
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
   const scale = TILE_SIZE * 2 ** zoom;
@@ -90,6 +91,7 @@ export function CircuitMap({
   cars = [],
   svgRef,
   overlay,
+  camera,
   className,
   showHeading = true,
   framed = true,
@@ -100,12 +102,45 @@ export function CircuitMap({
   cars?: MapCar[];
   svgRef?: Ref<SVGSVGElement>;
   overlay?: React.ReactNode;
+  camera?: {
+    enabled: boolean;
+    car: MapCar | undefined;
+    timeRef: React.RefObject<number>;
+  };
   className?: string;
   showHeading?: boolean;
   framed?: boolean;
   showTraits?: boolean;
 }) {
   const { zoom, tiles, d, start } = circuitScene(circuit);
+  const cameraRef = useRef<SVGGElement>(null);
+  const routeRef = useRef<SVGPathElement>(null);
+
+  useEffect(() => {
+    const cameraGroup = cameraRef.current;
+    const route = routeRef.current;
+    const car = camera?.car;
+    if (!cameraGroup || !route || !camera?.enabled || !car) {
+      cameraGroup?.removeAttribute("transform");
+      return;
+    }
+
+    const length = route.getTotalLength();
+    const focusX = VIEW_WIDTH / 2;
+    const focusY = VIEW_HEIGHT / 2;
+    let frame = requestAnimationFrame(function tick() {
+      const elapsed = Math.max(0, camera.timeRef.current - car.delay);
+      const progress = camera.timeRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration;
+      const point = route.getPointAtLength(length * progress);
+      cameraGroup.setAttribute("transform", `translate(${focusX} ${focusY}) scale(${FOCUS_ZOOM}) translate(${-point.x} ${-point.y})`);
+      frame = requestAnimationFrame(tick);
+    });
+
+    return () => {
+      cancelAnimationFrame(frame);
+      cameraGroup.removeAttribute("transform");
+    };
+  }, [camera?.enabled, camera?.car, camera?.timeRef, circuit.laps]);
 
   return (
     <section
@@ -125,33 +160,35 @@ export function CircuitMap({
       ) : null}
       <div className="circuit-map-stage">
         <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
-          {tiles.map((tile) => (
-            <image
-              key={`${tile.x}-${tile.y}`}
-              className="circuit-map-tile"
-              href={`https://basemaps.cartocdn.com/dark_nolabels/${zoom}/${tile.x}/${tile.y}.png`}
-              x={tile.left}
-              y={tile.top}
-              width={TILE_SIZE}
-              height={TILE_SIZE}
-            />
-          ))}
-          <path className="circuit-route-glow" d={d} />
-          <path className="circuit-route-asphalt" d={d} />
-          <path className="circuit-route-edge" d={d} />
-          <path className="circuit-route-accent" d={d} />
-          <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />
-          {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
-          {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => (
-            <g key={car.id} className={car.player ? "map-car player" : "map-car"}>
-              <circle r="16" />
-              <text textAnchor="middle" dominantBaseline="central">
-                {car.label}
-              </text>
-              {/* Each car runs its laps then freezes on the finish line. */}
-              <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={circuit.laps} fill="freeze" />
-            </g>
-          ))}
+          <g ref={cameraRef} className="circuit-camera">
+            {tiles.map((tile) => (
+              <image
+                key={`${tile.x}-${tile.y}`}
+                className="circuit-map-tile"
+                href={`https://basemaps.cartocdn.com/dark_nolabels/${zoom}/${tile.x}/${tile.y}.png`}
+                x={tile.left}
+                y={tile.top}
+                width={TILE_SIZE}
+                height={TILE_SIZE}
+              />
+            ))}
+            <path ref={routeRef} className="circuit-route-glow" d={d} />
+            <path className="circuit-route-asphalt" d={d} />
+            <path className="circuit-route-edge" d={d} />
+            <path className="circuit-route-accent" d={d} />
+            <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />
+            {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
+            {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => (
+              <g key={car.id} className={car.player ? "map-car player" : "map-car"}>
+                <circle r="16" />
+                <text textAnchor="middle" dominantBaseline="central">
+                  {car.label}
+                </text>
+                {/* Each car runs its laps then freezes on the finish line. */}
+                <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={circuit.laps} fill="freeze" />
+              </g>
+            ))}
+          </g>
         </svg>
         <small className="map-attribution">© OSM · CARTO</small>
         {overlay}

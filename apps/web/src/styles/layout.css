@@ -536,6 +536,11 @@ label small {
   width: 30px;
 }
 
+.replay-map-controls button.active {
+  background: rgb(22 199 132 / 0.22);
+  color: var(--color-accent);
+}
+
 .replay-map-controls select {
   font-size: 0.75rem;
   font-weight: 800;

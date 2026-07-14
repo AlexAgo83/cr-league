@@ -107,6 +107,14 @@ export function replayDistanceScale(circuit: CityCircuit) {
   return (circuitDisplayLength(circuit) * circuit.laps) / REFERENCE_REPLAY_DISTANCE_PIXELS;
 }
 
+function circuitLengthMeters(circuit: Pick<CityCircuit, "route">) {
+  return circuit.route.slice(0, -1).reduce((sum, point, index) => {
+    const next = circuit.route[index + 1]!;
+    const metersPerLng = 111_320 * Math.cos((((point.lat + next.lat) / 2) * Math.PI) / 180);
+    return sum + Math.hypot((point.lng - next.lng) * metersPerLng, (point.lat - next.lat) * 111_320);
+  }, 0);
+}
+
 export function scaleFinishTimes(times: ReturnType<typeof finishTimes>, scale: number) {
   return {
     leader: times.leader * scale,
@@ -199,6 +207,7 @@ export function ReplayView({
     livery: teamLiveries[entry.teamId]
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
+  const circuitDistance = `${(circuitLengthMeters(circuit) / 1000).toFixed(1)} km`;
   const raceDuration = replayTimes.leader;
   const lastFinishTime = replayTimes.last;
   const replayEnd = START_HOLD_SECONDS + lastFinishTime + FINISH_HOLD_SECONDS;
@@ -321,6 +330,7 @@ export function ReplayView({
                     {tt("unit_lap")} {live.lap}/{circuit.laps} · {WEATHER_ICONS[liveWeather]}{" "}
                     {tt(`weather_${liveWeather}` as TranslationKey)}
                   </small>
+                  <small>{circuitDistance}</small>
                 </div>
                 <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, live.lap)} impacts={traitImpacts} tt={tt} />
                 <div className="replay-map-controls">

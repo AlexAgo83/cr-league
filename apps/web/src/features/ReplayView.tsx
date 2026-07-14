@@ -28,8 +28,8 @@ export function ReplayView({
     id: entry.teamId,
     label: entry.teamName.slice(0, 3).toUpperCase(),
     player: entry.teamId === playerTeamId,
-    // ponytail: cars evenly spaced along the loop, leader first — deterministic replay feel, not a physics sim.
-    delay: -((field.length - index) * (14 / field.length)),
+    // ponytail: everyone launches from the line at t=0; per-position lap times spread the field naturally.
+    delay: 0,
     duration: 14 + index * 0.6
   }));
   // Replay ends when the last car completes the race distance; the clock parks there on pause.

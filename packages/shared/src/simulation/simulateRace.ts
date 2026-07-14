@@ -181,14 +181,14 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
   }
 
   if (participant.decision.cardId === "soft_tires") {
-    scores.pace += 6;
+    scores.pace += 5;
     scores.aggression += 4;
-    scores.reliability -= 6;
+    scores.reliability -= 7;
   } else if (participant.decision.cardId === "defensive_order") {
-    scores.control += 8;
-    scores.reliability += 4;
-    scores.aggression -= 6;
-    scores.pace -= 2;
+    scores.control += 4;
+    scores.reliability += 3;
+    scores.aggression -= 8;
+    scores.pace -= 5;
   }
 }
 
@@ -341,13 +341,12 @@ function maybeAddCardEvent(
     state.resultTags.add("sponsor_bonus");
     events.push(createCardEvent(events.length, state, segment, "sponsor_payout", 0));
   } else if (cardId === "soft_tires" && segment === "early") {
-    state.scores.score += 10;
-    state.scores.reliability -= 4;
+    state.scores.score += 6;
+    state.scores.reliability -= 5;
     state.positionDelta += 1;
     state.resultTags.add("soft_tires");
     events.push(createCardEvent(events.length, state, segment, "card_triggered", 1));
   } else if (cardId === "defensive_order" && segment === "late") {
-    state.scores.score += 8;
     state.resultTags.add("defensive_order");
     events.push(createCardEvent(events.length, state, segment, "held_position", 0));
   }

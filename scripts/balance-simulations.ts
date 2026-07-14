@@ -179,7 +179,7 @@ function qualifyingTime(decision: RaceDecision, traits: RaceInput["traits"], wea
   const weatherPenalty = weather === "heavy_rain" ? 2.8 : weather === "light_rain" ? 1.2 : 0;
   const approachDelta = decision.approach === "aggressive" ? -1.1 : decision.approach === "prudent" ? 0.7 : 0;
   const prepDelta = decision.preparation === "speed" ? -1.2 : decision.preparation === "weather" && weather !== "dry" ? -1.4 : decision.preparation === "reliability" ? 0.4 : 0;
-  const cardDelta = decision.cardId === "qualifying_focus" ? -1.4 : decision.cardId === "launch_boost" ? -0.8 : decision.cardId === "rain_grip" && weather !== "dry" ? -0.7 : 0;
+  const cardDelta = decision.cardId === "qualifying_focus" ? -0.8 : decision.cardId === "launch_boost" ? -0.8 : decision.cardId === "rain_grip" && weather !== "dry" ? -0.7 : 0;
   return Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + (next() - 0.5) * 2.4);
 }
 

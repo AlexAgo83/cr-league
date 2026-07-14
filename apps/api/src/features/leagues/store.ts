@@ -919,7 +919,7 @@ function createQualifyingRuns(input: {
           : 0;
   const cardDelta =
     input.decision.cardId === "qualifying_focus"
-      ? -1.4
+      ? -0.8
       : input.decision.cardId === "launch_boost"
         ? -0.8
         : input.decision.cardId === "rain_grip" && weather !== "dry"

@@ -47,7 +47,20 @@ export function ChampionshipView({
           </div>
           <div>
             <span>{tt("dashboard_leader")}</span>
-            <strong>{leader?.name ?? "-"}</strong>
+            {leader ? (
+              <strong className="leader-team-line">
+                <span
+                  className="standings-livery-plate leader-livery-plate"
+                  style={{ "--livery-primary": leader.livery.primary, "--livery-secondary": leader.livery.secondary } as CSSProperties & Record<string, string>}
+                >
+                  <span className="livery-plate-text">{leader.name.slice(0, 3).toUpperCase()}</span>
+                  {seasonWins.get(leader.id) ? <span className="livery-plate-stars">{"★".repeat(seasonWins.get(leader.id) ?? 0)}</span> : null}
+                </span>
+                <span>{leader.name}</span>
+              </strong>
+            ) : (
+              <strong>-</strong>
+            )}
             <small>
               {leader?.points ?? 0} {tt("unit_points")}
             </small>

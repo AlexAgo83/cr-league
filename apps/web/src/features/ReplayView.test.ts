@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { RaceResult } from "@cr-league/shared";
-import { carProgressAtRaceTime, displayLapAtProgress, finishTimes, segmentAtProgress } from "./ReplayView.js";
+import { carProgressAtRaceTime, displayLapAtProgress, finishTimes, replayDistanceScale, scaleFinishTimes, segmentAtProgress } from "./ReplayView.js";
 
 const result: RaceResult = {
   grandPrixName: "Test GP",
@@ -46,5 +46,14 @@ describe("ReplayView timing", () => {
     expect(times).toEqual({ leader: 100, last: 104, times: { leader: 100, last: 104 } });
     expect(carProgressAtRaceTime(result, times.times, 100, 5)).toEqual({ leader: 5, last: 100 / 104 * 5 });
     expect(carProgressAtRaceTime(result, times.times, 104, 5)).toEqual({ leader: 5, last: 5 });
+  });
+
+  it("scales visual replay time with race distance", () => {
+    const shortCircuit = { laps: 1, route: [{ lat: 0, lng: 0 }, { lat: 0, lng: 1 }] };
+    const longCircuit = { laps: 1, route: [{ lat: 0, lng: 0 }, { lat: 0, lng: 2 }] };
+    const times = { leader: 10, last: 12, times: { leader: 10, last: 12 } };
+
+    expect(replayDistanceScale(longCircuit) / replayDistanceScale(shortCircuit)).toBeCloseTo(2);
+    expect(scaleFinishTimes(times, 2)).toEqual({ leader: 20, last: 24, times: { leader: 20, last: 24 } });
   });
 });

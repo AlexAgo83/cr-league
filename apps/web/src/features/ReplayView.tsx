@@ -13,6 +13,7 @@ const FINISH_HOLD_SECONDS = 1;
 const REPLAY_SPEED_KEY = "cr-league-replay-speed";
 const REPLAY_FOCUS_KEY = "cr-league-replay-focus";
 const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
+const REFERENCE_RACE_DISTANCE_METERS = 36_000;
 
 function savedReplaySpeed() {
   const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
@@ -102,6 +103,26 @@ export function finishTimes(result: RaceResult, trace: ReplayTracePoint[]) {
   };
 }
 
+export function circuitLengthMeters(circuit: Pick<CityCircuit, "route">) {
+  return circuit.route.slice(0, -1).reduce((sum, point, index) => {
+    const next = circuit.route[index + 1]!;
+    const metersPerLng = 111_320 * Math.cos((((point.lat + next.lat) / 2) * Math.PI) / 180);
+    return sum + Math.hypot((point.lng - next.lng) * metersPerLng, (point.lat - next.lat) * 111_320);
+  }, 0);
+}
+
+export function replayDistanceScale(circuit: Pick<CityCircuit, "route" | "laps">) {
+  return (circuitLengthMeters(circuit) * circuit.laps) / REFERENCE_RACE_DISTANCE_METERS;
+}
+
+export function scaleFinishTimes(times: ReturnType<typeof finishTimes>, scale: number) {
+  return {
+    leader: times.leader * scale,
+    last: times.last * scale,
+    times: Object.fromEntries(Object.entries(times.times).map(([teamId, time]) => [teamId, time * scale]))
+  };
+}
+
 function liveClassification(result: RaceResult, trace: ReplayTracePoint[], progress: number): RaceResult["classification"] {
   const from = tracePointAt(trace, progress);
   const gaps = traceGapsAt(trace, progress);
@@ -175,7 +196,7 @@ export function ReplayView({
   const [carProgress, setCarProgress] = useState(() => carProgressAt(result, replayTrace, 0, circuit.laps));
   const names = teamNamesFromResult(result);
   const field = result.classification;
-  const replayTimes = finishTimes(result, replayTrace);
+  const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
   const cars: MapCar[] = field.map((entry, index) => ({
     id: entry.teamId,
     label: String(Math.max(1, liveTower.findIndex((team) => team.teamId === entry.teamId) + 1)),

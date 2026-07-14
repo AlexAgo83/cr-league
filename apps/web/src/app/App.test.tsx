@@ -12,7 +12,7 @@ const baseState = {
     maxPlayers: 8,
     fillWithBots: true,
     qualifyingAttemptLimit: 3,
-    maxGrandPrixPerSeason: 3,
+    maxGrandPrixPerSeason: 6,
     preparationDeadlineAt: null
   },
   currentGrandPrix: {
@@ -289,7 +289,7 @@ describe("App", () => {
 
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
-    expect(screen.getByText("Season 1 · Round 1/3")).toBeTruthy();
+    expect(screen.getByText("Season 1 · Round 1/6")).toBeTruthy();
     expect(screen.getAllByText("Current GP").length).toBe(1);
     expect(document.querySelector(".current-gp-panel")).toBe(null);
     expect(screen.getByText("0/2")).toBeTruthy();
@@ -365,7 +365,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
-    expect(await screen.findByText("Season 1 · Round 2/3")).toBeTruthy();
+    expect(await screen.findByText("Season 1 · Round 2/6")).toBeTruthy();
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
     // League controls live in the championship view
@@ -381,7 +381,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Restart session" }));
     expect(await screen.findByText("Playtest session restarted.")).toBeTruthy();
-    expect(screen.getByText("Season 1 · Round 1/3")).toBeTruthy();
+    expect(screen.getByText("Season 1 · Round 1/6")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Forget team" }));
     expect(screen.getByText("Team claim forgotten.")).toBeTruthy();

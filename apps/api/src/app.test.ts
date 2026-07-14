@@ -156,7 +156,7 @@ describe("api app", () => {
 
     expect(createResponse.statusCode).toBe(200);
     expect(claim).toMatchObject({ teamId, claimCode: expect.any(String) });
-    expect(created.league).toMatchObject({ maxPlayers: 8, fillWithBots: true, qualifyingAttemptLimit: 3, maxGrandPrixPerSeason: 3 });
+    expect(created.league).toMatchObject({ maxPlayers: 8, fillWithBots: true, qualifyingAttemptLimit: 3, maxGrandPrixPerSeason: 6 });
     expect(createdTeam.cards).toEqual(["rain_grip"]);
     expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: 100 });
     expect(readResponse.statusCode).toBe(200);
@@ -570,7 +570,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union" }
+      payload: { name: "Office League", teamName: "Volt Union", maxGrandPrixPerSeason: 3 }
     });
     const created = createResponse.json();
     const leagueId = created.league.id;
@@ -622,6 +622,8 @@ describe("api app", () => {
 
     expect(nextSeasonResponse.statusCode).toBe(200);
     expect(nextSeasonResponse.json().currentGrandPrix).toMatchObject({ season: 2, round: 1, status: "briefing" });
+    expect(nextSeasonResponse.json().teams.reduce((total: number, team: { points: number }) => total + team.points, 0)).toBe(0);
+    expect(nextSeasonResponse.json().grandPrixHistory).toHaveLength(4);
     expect(state.grandPrixHistory.map((grandPrix: { round: number }) => grandPrix.round)).toEqual([3, 2, 1]);
     expect(state.teams.reduce((total: number, team: { points: number }) => total + team.points, 0)).toBeGreaterThan(0);
   });
@@ -707,7 +709,7 @@ function createMemoryDb(): PrismaClient {
           maxPlayers: 8,
           fillWithBots: true,
           qualifyingAttemptLimit: 3,
-          maxGrandPrixPerSeason: 3,
+          maxGrandPrixPerSeason: 6,
           preparationDeadlineAt: null,
           ...data
         };

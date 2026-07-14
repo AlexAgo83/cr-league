@@ -30,8 +30,8 @@ const DEFAULT_MAX_PLAYERS = 8;
 const MAX_PLAYERS_LIMIT = 16;
 const DEFAULT_QUALIFYING_ATTEMPTS = 3;
 const MAX_QUALIFYING_ATTEMPTS = 5;
-const DEFAULT_GRAND_PRIX_PER_SEASON = 3;
-const MAX_GRAND_PRIX_PER_SEASON = 12;
+const DEFAULT_GRAND_PRIX_PER_SEASON = 6;
+const MAX_GRAND_PRIX_PER_SEASON = 18;
 const TEAM_NAME_LIMIT = 32;
 const LEAGUE_NAME_LIMIT = 40;
 
@@ -332,7 +332,7 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
     include: {
       teams: { orderBy: [{ points: "desc" }, { name: "asc" }] },
       grandPrixes: {
-        orderBy: { round: "desc" },
+        orderBy: [{ season: "desc" }, { round: "desc" }],
         include: {
           decisions: true
         }
@@ -676,6 +676,9 @@ export async function startNextGrandPrix(db: Db, leagueId: string) {
       forecast: DEMO_RACE_INPUT.forecast
     }
   });
+  if (nextSeason !== grandPrix.season) {
+    await Promise.all(state.teams.map((team) => db.team.update({ where: { id: team.id }, data: { points: 0 } })));
+  }
 
   return getLeagueState(db, leagueId);
 }
@@ -924,7 +927,7 @@ function withPlayer(state: LeagueState, teamId: string, claimCode: string): Leag
 async function getCurrentGrandPrix(db: Db, leagueId: string) {
   return db.grandPrix.findFirst({
     where: { leagueId },
-    orderBy: { round: "desc" }
+    orderBy: [{ season: "desc" }, { round: "desc" }]
   });
 }
 

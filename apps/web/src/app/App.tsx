@@ -54,7 +54,7 @@ function createInitialForm(locale: Locale): FormState {
     maxPlayers: 8,
     fillWithBots: true,
     qualifyingAttemptLimit: 3,
-    maxGrandPrixPerSeason: 3,
+    maxGrandPrixPerSeason: 6,
     cadence: "manual",
     preparationDeadlineAt: "",
     approach: "balanced",
@@ -734,7 +734,7 @@ export function App() {
                         <input
                           type="number"
                           min="1"
-                          max="12"
+                          max="18"
                           value={form.maxGrandPrixPerSeason}
                           onChange={(event) => setForm({ ...form, maxGrandPrixPerSeason: Number(event.target.value) })}
                         />

@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 93
+> Confidence: 94
 > Progress: 0%
 > Complexity: Medium
 > Theme: Frontend maintainability
@@ -40,8 +40,9 @@
   - `ChampionshipPanel` for timing-screen standings and league context.
   - `GaragePanel` for credits, rewards, inventory, and purchasable cards.
   - `ResultView` for outcome, classification, explanation, key moments, and report.
-  - `RaceReadout` for the static replay/readout surface.
-  - `CityCircuitMap` only if the route rendering would otherwise bloat `RaceDesk` or `RaceReadout`.
+  - `RaceReplay` for deterministic time-based playback when the timeline exists.
+  - `RaceReadout` for the static fallback/readout surface when playback is not available.
+  - `CityCircuitMap` only if the route rendering would otherwise bloat `RaceDesk`, `RaceReplay`, or `RaceReadout`.
   - `StatusBadge` only if repeated state labels would otherwise duplicate markup.
 - Keep API calls, top-level loading/error state, and league/session orchestration in the app root unless moving them removes real duplication.
 - Do not add stores, contexts, factories, design-system folders, or generic UI primitives for one screen.

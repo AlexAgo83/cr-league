@@ -7,7 +7,7 @@
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Non-semantic edit: expanded DA implementation guidance without changing workflow links or request scope.
-> Confidence: 93
+> Confidence: 94
 
 # Overview
 Race Cockpit Redesign V0 turns the current functional prototype into a coherent game cockpit: a focused race desk, championship overview, garage, and result/replay surface that make CR League feel intentionally designed and understandable before adding more mechanics.
@@ -87,6 +87,15 @@ flowchart LR
 - Fleet Sim reuse boundary: inspect and borrow concepts from `../fleet-sim` such as Paris presets, `LatLng`, route geometry, and OSRM adapter shape. Do not copy the FleetMap UI wholesale; CR League needs a broadcast/racing cockpit map, not a fleet operations dashboard.
 - Rendering approach: render a simplified dark city-route silhouette inside the cockpit, with sector bands, weather/event markers, and player/team markers. Keep it readable at small sizes and honest about the available race data.
 - Future extension: if static routes become limiting, add an offline route generation/build step or OSRM-backed authoring tool that outputs stored circuit geometry. Runtime gameplay should not depend on a network routing service.
+
+# Race replay direction
+- Product intent: after a GP is resolved, the player should be able to watch cars move on the city circuit map, see overtakes happen, and scrub/play the race like a short replay.
+- Core distinction: CR League needs real-time playback, not real-time simulation. The race result remains computed first; the replay is a deterministic timeline generated from that result.
+- Circuit model: each circuit path is a closed or loopable route. A race is `laps` repetitions of the route, or a succession of route sectors that loops like laps.
+- Playback model: each team gets time samples with `t`, race `progress`, rank, and optional lane/offset. Cars are animated by interpolating progress along the stored route.
+- Overtakes: an overtake is visible when sampled progress/rank curves cross at a known time. It should also be listed as a replay event so the visual and text explanations agree.
+- Controls: V1 replay should support play, pause, restart, speed, and a simple timeline/scrubber if implementation cost stays contained.
+- Honesty rule: the replay can be smooth and time-based, but it must not imply physics, collisions, or lap precision that the simulation did not produce.
 
 # Product surface model
 - Setup/no league: keep it short and functional. It should not dominate the visual identity once a league exists.

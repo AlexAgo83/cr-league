@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 95
-> Confidence: 93
+> Confidence: 94
 > Progress: 0%
 > Complexity: Medium
 > Theme: Result comprehension
@@ -28,27 +28,33 @@
   - Canvas or 3D implementation.
 
 # Acceptance criteria
-- AC1: A resolved GP result view clearly labels outcome, classification, replay summary, key moments, and report.
-- AC2: The replay panel text explains what the user is looking at without relying on external instructions.
-- AC3: The current static replay does not visually imply precision that the data does not support.
-- AC4: Unit or e2e assertions cover the key result/replay labels in at least one locale.
+- AC1: A resolved GP result view clearly labels outcome, classification, animated replay, key moments, and report.
+- AC2: The replay panel text and controls explain what the user is watching without relying on external instructions.
+- AC3: The animated replay is deterministic and stays consistent with the resolved race result.
+- AC4: Unit or e2e assertions cover the key result/replay labels and at least one replay control in one locale.
 
 # Direction to carry into implementation
 - Follow the V2 result mockup direction for the resolved state: payoff panel first, final classification as timing screen, race readout lanes in the middle, and causal explanation cards below.
-- Rename or frame the static replay as `Race readout` or `Race summary` unless the implementation adds actual time-based replay controls. The label must set the right expectation.
+- If time-based controls are implemented, label the surface as `Race replay`. If not, label it as `Race readout` or `Race summary`. The label must set the right expectation.
 - Post-GP sequence:
   - Headline outcome: position, points, or podium/miss signal.
   - `Your race`: what the player's directive and card changed.
   - `Why`: the main causal factors from events, weather, track traits, or card effects.
   - `Classification`: final order as timing rows.
-  - `Race readout`: visual summary of phases/events without pretending to be precise telemetry.
+  - `Race replay`: animated cars on the city circuit when a deterministic playback timeline exists.
+  - `Race readout`: fallback visual summary of phases/events when the timeline is not implemented yet.
   - `Key moments`: readable event list.
   - `Report`: generated narrative text.
+- Replay data contract:
+  - A playback has `durationMs`, `cars`, and `events`.
+  - Each car has sampled points with `t`, route `progress`, `rank`, and optional visual offset.
+  - Events have `t`, `type`, `teamId`, label, and optional sector/progress.
+  - The final playback sample must match the resolved classification.
 - Visual readout rules:
-  - Prefer V2-style lanes, phase bands, and labeled team markers over large decorative track art for result explanation.
-  - When a city circuit route is available, use it as the visual anchor: show the simplified European city layout, then overlay sector/weather/event markers. Do not show full Leaflet controls in the result panel.
-  - Use lanes, phases, or event markers only when the data supports them.
-  - Avoid animated car movement or lap precision unless the simulation provides that contract.
+  - Prefer the city circuit route as the visual anchor: show the simplified European city layout, moving cars, sector/weather/event markers, and current replay time. Do not show full Leaflet controls in the result panel.
+  - Use interpolation along stored route geometry for movement. Do not add physics, collision, or live pathfinding.
+  - Show overtakes only when the playback timeline contains rank/progress changes that support them.
+  - If playback data is missing, fall back to V2-style lanes, phase bands, and labeled team markers rather than faking movement.
   - Empty/low-event races still need a clear explanation instead of an empty-looking panel.
 - French copy must avoid ambiguous English loanwords where a clear French label exists; verify the meaning with actual in-app context, not isolated translation keys.
 

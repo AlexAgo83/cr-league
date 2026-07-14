@@ -203,6 +203,27 @@ const settingsState = {
   }
 };
 
+const otherLeagueState = {
+  ...baseState,
+  league: {
+    ...baseState.league,
+    id: "league_2",
+    name: "Night League",
+    code: "NIGHT1"
+  },
+  teams: [
+    {
+      ...baseState.teams[0],
+      id: "team_3",
+      name: "Late Apex"
+    }
+  ],
+  player: {
+    teamId: "team_3",
+    claimCode: "CLAIM456"
+  }
+};
+
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
@@ -350,7 +371,8 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Forget team" }));
     expect(screen.getByText("Team claim forgotten.")).toBeTruthy();
-    expect(localStorage.getItem("cr-league-player-claim")).toBe(null);
+    expect(localStorage.getItem("cr-league-player-claims")).toBe("[]");
+    expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
     expect(fetch).toHaveBeenCalledTimes(6);
   });
 
@@ -396,10 +418,11 @@ describe("App", () => {
         })
       })
     );
-    expect(localStorage.getItem("cr-league-player-claim")).toBe(JSON.stringify(baseState.player));
+    expect(localStorage.getItem("cr-league-player-claims")).toContain("Office League");
+    expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_1");
   });
 
-  it("rejoins a saved player claim", async () => {
+  it("rejoins and migrates a saved player claim", async () => {
     localStorage.setItem("cr-league-player-claim", JSON.stringify(baseState.player));
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
 
@@ -413,10 +436,67 @@ describe("App", () => {
         body: JSON.stringify(baseState.player)
       })
     );
+    expect(localStorage.getItem("cr-league-player-claim")).toBe(null);
+    expect(localStorage.getItem("cr-league-player-claims")).toContain("Office League");
+  });
+
+  it("switches between saved league claims", async () => {
+    localStorage.setItem(
+      "cr-league-player-claims",
+      JSON.stringify([
+        {
+          teamId: "team_1",
+          claimCode: "CLAIM123",
+          leagueId: "league_1",
+          leagueName: "Office League",
+          leagueCode: "ABC123",
+          teamName: "Circle One"
+        },
+        {
+          teamId: "team_3",
+          claimCode: "CLAIM456",
+          leagueId: "league_2",
+          leagueName: "Night League",
+          leagueCode: "NIGHT1",
+          teamName: "Late Apex"
+        }
+      ])
+    );
+    localStorage.setItem("cr-league-active-player-claim", "team_1");
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(otherLeagueState));
+
+    render(<App />);
+
+    expect(await screen.findByText("League rejoined.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.change(screen.getByLabelText("Active league"), { target: { value: "team_3" } });
+
+    expect(await screen.findByText("NIGHT1")).toBeTruthy();
+    expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_3");
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://localhost:4874/leagues/rejoin",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ teamId: "team_3", claimCode: "CLAIM456" })
+      })
+    );
   });
 
   it("clears a stale saved player claim", async () => {
-    localStorage.setItem("cr-league-player-claim", JSON.stringify(baseState.player));
+    localStorage.setItem(
+      "cr-league-player-claims",
+      JSON.stringify([
+        {
+          teamId: "team_1",
+          claimCode: "CLAIM123",
+          leagueId: "league_1",
+          leagueName: "Office League",
+          leagueCode: "ABC123",
+          teamName: "Circle One"
+        }
+      ])
+    );
+    localStorage.setItem("cr-league-active-player-claim", "team_1");
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
       new Response(JSON.stringify({ message: "Team claim not found." }), {
         status: 404,
@@ -427,7 +507,8 @@ describe("App", () => {
     render(<App />);
 
     expect(await screen.findByText("Saved league no longer exists. Join the playtest again.")).toBeTruthy();
-    expect(localStorage.getItem("cr-league-player-claim")).toBe(null);
+    expect(localStorage.getItem("cr-league-player-claims")).toBe("[]");
+    expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
     expect(screen.getByRole("button", { name: "Join league" })).toBeTruthy();
   });
 });

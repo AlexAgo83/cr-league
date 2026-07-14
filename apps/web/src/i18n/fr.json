@@ -48,6 +48,7 @@
   "command_hint_resolved": "La course est analysée : passe au Grand Prix suivant.",
   "race_telemetry": "Télémétrie course",
   "settings_title": "Contrôle ligue",
+  "profile_league_switch": "Ligue active",
   "directive_title": "Directive course",
   "field_league": "Ligue",
   "field_join_code": "Code d'invitation",

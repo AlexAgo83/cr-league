@@ -199,6 +199,11 @@
   color: var(--color-telemetry);
 }
 
+.profile-menu-panel label {
+  display: grid;
+  gap: 6px;
+}
+
 .profile-league-summary {
   align-items: center;
   display: none;

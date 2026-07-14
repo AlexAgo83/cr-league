@@ -48,6 +48,7 @@
   "command_hint_resolved": "The race is reviewed: move to the next Grand Prix.",
   "race_telemetry": "Race telemetry",
   "settings_title": "League controls",
+  "profile_league_switch": "Active league",
   "directive_title": "Race directive",
   "field_league": "League",
   "field_join_code": "Join code",

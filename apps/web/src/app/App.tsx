@@ -12,7 +12,16 @@ import { ResultView, type ResultTab } from "../features/ResultView.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
 const PLAYER_CLAIM_KEY = "cr-league-player-claim";
+const PLAYER_CLAIMS_KEY = "cr-league-player-claims";
+const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
 const LANGUAGE_KEY = "cr-league-language";
+
+type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
+  leagueId: string;
+  leagueName: string;
+  leagueCode: string;
+  teamName: string;
+};
 
 function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
   const impacts: MapTraitImpacts = {};
@@ -60,21 +69,26 @@ export function App() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
+  const [savedClaims, setSavedClaims] = useState(loadPlayerClaims);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState(() => t("status_initial", locale));
 
   useEffect(() => {
-    const saved = localStorage.getItem(PLAYER_CLAIM_KEY);
+    const saved = getActiveClaim(savedClaims);
     if (!saved) return;
-    void run(tt("status_rejoining_league"), async () => {
-      const state = await api<LeagueState>("/leagues/rejoin", {
-        method: "POST",
-        body: saved
-      });
-      rememberPlayer(state);
-      setLeagueState(state);
-      setMessage(tt("status_league_rejoined"));
-    });
+    void run(
+      tt("status_rejoining_league"),
+      async () => {
+        const state = await api<LeagueState>("/leagues/rejoin", {
+          method: "POST",
+          body: JSON.stringify({ teamId: saved.teamId, claimCode: saved.claimCode })
+        });
+        rememberPlayer(state);
+        setLeagueState(state);
+        setMessage(tt("status_league_rejoined"));
+      },
+      saved.teamId
+    );
   }, []);
 
   const playerTeam = useMemo(
@@ -239,6 +253,27 @@ export function App() {
     });
   }
 
+  async function switchLeague(teamId: string) {
+    const claim = savedClaims.find((candidate) => candidate.teamId === teamId);
+    if (!claim || claim.teamId === leagueState?.player?.teamId) return;
+
+    await run(
+      tt("status_rejoining_league"),
+      async () => {
+        const state = await api<LeagueState>("/leagues/rejoin", {
+          method: "POST",
+          body: JSON.stringify({ teamId: claim.teamId, claimCode: claim.claimCode })
+        });
+        rememberPlayer(state);
+        setLeagueState(state);
+        setGameView("drive");
+        setProfileOpen(false);
+        setMessage(tt("status_league_rejoined"));
+      },
+      claim.teamId
+    );
+  }
+
   async function restartLeague() {
     if (!leagueState || !window.confirm(tt("restart_confirm"))) return;
 
@@ -251,7 +286,7 @@ export function App() {
     });
   }
 
-  async function run(nextMessage: string, action: () => Promise<void>) {
+  async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string) {
     setStatus("loading");
     setMessage(nextMessage);
 
@@ -261,7 +296,7 @@ export function App() {
     } catch (error) {
       setStatus("error");
       if (isStaleLeagueError(error)) {
-        localStorage.removeItem(PLAYER_CLAIM_KEY);
+        forgetClaim(staleClaimTeamId);
         setLeagueState(null);
         setMessage(tt("status_saved_league_expired"));
         return;
@@ -271,7 +306,7 @@ export function App() {
   }
 
   function forgetPlayer() {
-    localStorage.removeItem(PLAYER_CLAIM_KEY);
+    forgetClaim(leagueState?.player?.teamId);
     setLeagueState(null);
     setGameView("drive");
     setMessage(tt("status_player_forgotten"));
@@ -388,6 +423,18 @@ export function App() {
                 <strong>{leagueState.league.name}</strong>
                 <span className="invite-code">{leagueState.league.code}</span>
               </div>
+              {savedClaims.length > 1 ? (
+                <label>
+                  {tt("profile_league_switch")}
+                  <select value={leagueState.player?.teamId ?? ""} onChange={(event) => void switchLeague(event.target.value)}>
+                    {savedClaims.map((claim) => (
+                      <option key={claim.teamId} value={claim.teamId}>
+                        {claim.leagueName} · {claim.teamName}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              ) : null}
               <label>
                 {tt("language_label")}
                 <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
@@ -592,11 +639,20 @@ export function App() {
       ) : null}
     </main>
   );
-}
 
-function rememberPlayer(state: LeagueState) {
-  if (state.player) {
-    localStorage.setItem(PLAYER_CLAIM_KEY, JSON.stringify(state.player));
+  function rememberPlayer(state: LeagueState) {
+    const claim = claimFromState(state);
+    if (!claim) return;
+    const nextClaims = upsertPlayerClaim(loadPlayerClaims(), claim);
+    storePlayerClaims(nextClaims, claim.teamId);
+    setSavedClaims(nextClaims);
+  }
+
+  function forgetClaim(teamId?: string) {
+    const activeTeamId = teamId ?? leagueState?.player?.teamId ?? localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY);
+    const nextClaims = activeTeamId ? savedClaims.filter((claim) => claim.teamId !== activeTeamId) : savedClaims;
+    storePlayerClaims(nextClaims, nextClaims[0]?.teamId);
+    setSavedClaims(nextClaims);
   }
 }
 
@@ -624,5 +680,86 @@ class ApiError extends Error {
 }
 
 function isStaleLeagueError(error: unknown) {
-  return error instanceof ApiError && error.statusCode === 404 && localStorage.getItem(PLAYER_CLAIM_KEY);
+  return error instanceof ApiError && error.statusCode === 404 && localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY);
+}
+
+function claimFromState(state: LeagueState): StoredPlayerClaim | null {
+  const team = state.teams.find((candidate) => candidate.id === state.player?.teamId);
+  return state.player && team
+    ? {
+        ...state.player,
+        leagueId: state.league.id,
+        leagueName: state.league.name,
+        leagueCode: state.league.code,
+        teamName: team.name
+      }
+    : null;
+}
+
+function loadPlayerClaims(): StoredPlayerClaim[] {
+  const claims = parsePlayerClaims(localStorage.getItem(PLAYER_CLAIMS_KEY));
+  const oldClaim = parseLegacyClaim(localStorage.getItem(PLAYER_CLAIM_KEY));
+  if (!oldClaim) return claims;
+  localStorage.removeItem(PLAYER_CLAIM_KEY);
+  const migrated = upsertPlayerClaim(claims, oldClaim);
+  storePlayerClaims(migrated, oldClaim.teamId);
+  return migrated;
+}
+
+function parsePlayerClaims(raw: string | null): StoredPlayerClaim[] {
+  if (!raw) return [];
+  try {
+    const parsed = JSON.parse(raw) as StoredPlayerClaim[];
+    return Array.isArray(parsed) ? parsed.filter(isStoredPlayerClaim) : [];
+  } catch {
+    return [];
+  }
+}
+
+function parseLegacyClaim(raw: string | null): StoredPlayerClaim | null {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw) as Partial<StoredPlayerClaim>;
+    return typeof parsed.teamId === "string" && typeof parsed.claimCode === "string"
+      ? {
+          teamId: parsed.teamId,
+          claimCode: parsed.claimCode,
+          leagueId: parsed.leagueId ?? "",
+          leagueName: parsed.leagueName ?? "Saved league",
+          leagueCode: parsed.leagueCode ?? "",
+          teamName: parsed.teamName ?? "Team"
+        }
+      : null;
+  } catch {
+    return null;
+  }
+}
+
+function isStoredPlayerClaim(claim: Partial<StoredPlayerClaim>): claim is StoredPlayerClaim {
+  return (
+    typeof claim.teamId === "string" &&
+    typeof claim.claimCode === "string" &&
+    typeof claim.leagueId === "string" &&
+    typeof claim.leagueName === "string" &&
+    typeof claim.leagueCode === "string" &&
+    typeof claim.teamName === "string"
+  );
+}
+
+function upsertPlayerClaim(claims: StoredPlayerClaim[], claim: StoredPlayerClaim) {
+  return [claim, ...claims.filter((candidate) => candidate.teamId !== claim.teamId)];
+}
+
+function storePlayerClaims(claims: StoredPlayerClaim[], activeTeamId?: string) {
+  localStorage.setItem(PLAYER_CLAIMS_KEY, JSON.stringify(claims));
+  if (activeTeamId) {
+    localStorage.setItem(ACTIVE_PLAYER_CLAIM_KEY, activeTeamId);
+  } else {
+    localStorage.removeItem(ACTIVE_PLAYER_CLAIM_KEY);
+  }
+}
+
+function getActiveClaim(claims: StoredPlayerClaim[]) {
+  const activeTeamId = localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY);
+  return claims.find((claim) => claim.teamId === activeTeamId) ?? claims[0];
 }

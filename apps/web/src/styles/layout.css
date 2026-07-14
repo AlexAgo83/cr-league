@@ -944,6 +944,10 @@ label small {
   .replay-map-controls .replay-playback-button.paused {
     animation: none;
   }
+
+  .map-car-delta {
+    opacity: 0;
+  }
 }
 
 .circuit-start {
@@ -992,6 +996,26 @@ label small {
   stroke: rgb(0 0 0 / 0.88);
   stroke-linejoin: round;
   stroke-width: 3px;
+}
+
+.map-car-delta {
+  animation: map-car-delta-float 1s ease-out both;
+  font-size: 8px;
+}
+
+.map-car-delta.gain {
+  fill: var(--color-accent);
+}
+
+.map-car-delta.loss {
+  fill: #fb7185;
+}
+
+@keyframes map-car-delta-float {
+  to {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
 }
 
 /* ---------- Lists (standings, history, inventory, events) ---------- */

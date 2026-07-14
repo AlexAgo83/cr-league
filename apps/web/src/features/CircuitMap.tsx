@@ -13,6 +13,8 @@ export type MapCar = {
   duration: number;
   progress?: number;
   livery?: TeamLivery;
+  positionDelta?: number;
+  positionDeltaKey?: number;
 };
 
 export type MapTraitStats = {
@@ -296,6 +298,18 @@ export function CircuitMap({
                     <text textAnchor="middle" dominantBaseline="central">
                       {car.label}
                     </text>
+                    {car.positionDelta ? (
+                      <text
+                        key={`${car.id}-${car.positionDeltaKey}`}
+                        className={car.positionDelta > 0 ? "map-car-delta gain" : "map-car-delta loss"}
+                        x="18"
+                        y="-10"
+                        textAnchor="middle"
+                        dominantBaseline="central"
+                      >
+                        {car.positionDelta > 0 ? `+${car.positionDelta}` : car.positionDelta}
+                      </text>
+                    ) : null}
                   </g>
                   {car.progress === undefined ? (
                     <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={circuit.laps} fill="freeze" rotate="auto" />

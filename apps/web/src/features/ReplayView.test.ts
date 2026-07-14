@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { RaceResult } from "@cr-league/shared";
-import { carProgressAtRaceTime, displayLapAtProgress, finishTimes, replayDistanceScale, scaleFinishTimes, segmentAtProgress } from "./ReplayView.js";
+import { carProgressAtRaceTime, displayLapAtProgress, finishTimes, positionDeltas, replayDistanceScale, scaleFinishTimes, segmentAtProgress } from "./ReplayView.js";
 
 const result: RaceResult = {
   grandPrixName: "Test GP",
@@ -55,6 +55,10 @@ describe("ReplayView timing", () => {
 
     expect(replayDistanceScale(longCircuit) / replayDistanceScale(shortCircuit)).toBeCloseTo(2);
     expect(scaleFinishTimes(times, 2)).toEqual({ leader: 20, last: 24, times: { leader: 20, last: 24 } });
+  });
+
+  it("reports position gains as positive deltas", () => {
+    expect(positionDeltas(["leader", "last"], ["last", "leader"])).toEqual({ last: 1, leader: -1 });
   });
 });
 

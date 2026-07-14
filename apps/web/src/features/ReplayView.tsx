@@ -131,6 +131,16 @@ function liveClassification(result: RaceResult, trace: ReplayTracePoint[], progr
   });
 }
 
+export function positionDeltas(currentOrder: string[], nextOrder: string[]) {
+  return Object.fromEntries(
+    nextOrder.flatMap((teamId, nextIndex) => {
+      const currentIndex = currentOrder.indexOf(teamId);
+      const delta = currentIndex - nextIndex;
+      return currentIndex >= 0 && delta ? [[teamId, delta]] : [];
+    })
+  );
+}
+
 function carProgressAt(result: RaceResult, trace: ReplayTracePoint[], progress: number, laps: number) {
   const gaps = traceGapsAt(trace, progress);
   const finalTimes = trace.at(-1)?.times ?? {};
@@ -194,6 +204,8 @@ export function ReplayView({
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const [liveTower, setLiveTower] = useState(() => liveClassification(result, replayTrace, 0));
   const [carProgress, setCarProgress] = useState(() => carProgressAt(result, replayTrace, 0, circuit.laps));
+  const [positionPops, setPositionPops] = useState<Record<string, { delta: number; key: number }>>({});
+  const orderRef = useRef(liveTower.map((entry) => entry.teamId));
   const names = teamNamesFromResult(result);
   const field = result.classification;
   const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
@@ -204,7 +216,9 @@ export function ReplayView({
     delay: 0,
     duration: replayTimes.times[entry.teamId] ?? replayTimes.leader + index,
     progress: carProgress[entry.teamId] ?? 0,
-    livery: teamLiveries[entry.teamId]
+    livery: teamLiveries[entry.teamId],
+    positionDelta: positionPops[entry.teamId]?.delta,
+    positionDeltaKey: positionPops[entry.teamId]?.key
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
   const circuitDistance = `${(circuitLengthMeters(circuit) / 1000).toFixed(1)} km`;
@@ -250,15 +264,17 @@ export function ReplayView({
     clock.current = Math.max(0, Math.min(time, replayEnd));
     svgRef.current?.setCurrentTime?.(clock.current);
     if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
-    updateLive(clock.current);
+    setPositionPops({});
+    updateLive(clock.current, false);
   }
 
   function restart() {
+    setPositionPops({});
     seek(0);
     setPlaying(true);
   }
 
-  function updateLive(time: number) {
+  function updateLive(time: number, animatePositions = true) {
     const progress = raceProgressAt(time, raceDuration);
     const raceTime = Math.max(0, time - START_HOLD_SECONDS);
     const displayLap = displayLapAtProgress(progress, circuit.laps);
@@ -266,7 +282,18 @@ export function ReplayView({
     setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
     setCarProgress(carProgressAtRaceTime(result, replayTimes.times, raceTime, circuit.laps));
     const nextTower = liveClassification(result, replayTrace, progress);
-    setLiveTower((current) => (current.map((entry) => entry.teamId).join("|") === nextTower.map((entry) => entry.teamId).join("|") ? current : nextTower));
+    const nextOrder = nextTower.map((entry) => entry.teamId);
+    if (orderRef.current.join("|") !== nextOrder.join("|")) {
+      if (animatePositions) {
+        const deltas = positionDeltas(orderRef.current, nextOrder);
+        setPositionPops((current) => ({
+          ...current,
+          ...Object.fromEntries(Object.entries(deltas).map(([teamId, delta]) => [teamId, { delta, key: Math.round(time * 1000) }]))
+        }));
+      }
+      orderRef.current = nextOrder;
+      setLiveTower(nextTower);
+    }
   }
 
   // Majors and player moments first pick, race notes as filler — then strict race order.

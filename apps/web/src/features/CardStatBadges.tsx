@@ -26,6 +26,27 @@ const CARD_BADGES: Record<CardId, Array<{ trait: "grip" | "overtaking" | "energy
   defensive_order: [
     { trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" },
     { trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }
+  ],
+  adjustable_wing: [
+    { trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" },
+    { trait: "energy", sign: "-", icon: "⚡", label: "circuit_energy" }
+  ],
+  rain_mapping: [
+    { trait: "grip", sign: "+", icon: "◆", label: "circuit_grip" },
+    { trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }
+  ],
+  economy_mode: [
+    { trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" },
+    { trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }
+  ],
+  pit_relay: [{ trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" }],
+  hard_tires: [
+    { trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" },
+    { trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }
+  ],
+  calculated_attack: [
+    { trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" },
+    { trait: "grip", sign: "-", icon: "◆", label: "circuit_grip" }
   ]
 };
 
@@ -38,7 +59,13 @@ const CARD_INFO_BADGES: Partial<Record<CardId, TranslationKey>> = {
   fleet_sponsorship: "card_info_credits",
   soft_tires: "card_info_early",
   qualifying_focus: "card_info_chrono",
-  defensive_order: "card_info_defense"
+  defensive_order: "card_info_defense",
+  adjustable_wing: "card_info_attack",
+  rain_mapping: "card_info_weather",
+  economy_mode: "card_info_credits",
+  pit_relay: "card_info_defense",
+  hard_tires: "card_info_finish",
+  calculated_attack: "card_info_rival"
 };
 
 export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator }) {

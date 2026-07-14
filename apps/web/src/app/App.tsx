@@ -41,9 +41,9 @@ function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: 
   if (form.preparation === "reliability") add("energy", tt("preparation_reliability"));
   if (form.approach === "aggressive") add("overtaking", tt("approach_aggressive"));
   if (form.approach === "prudent") add("energy", tt("approach_prudent"));
-  if (selectedCardId === "rain_grip") add("grip", tt("field_card"));
-  if (selectedCardId === "launch_boost" || selectedCardId === "urban_draft" || selectedCardId === "soft_tires" || selectedCardId === "qualifying_focus") add("overtaking", tt("field_card"));
-  if (selectedCardId === "fleet_maintenance" || selectedCardId === "final_surge" || selectedCardId === "defensive_order") add("energy", tt("field_card"));
+  if (selectedCardId === "rain_grip" || selectedCardId === "rain_mapping") add("grip", tt("field_card"));
+  if (selectedCardId === "launch_boost" || selectedCardId === "urban_draft" || selectedCardId === "soft_tires" || selectedCardId === "qualifying_focus" || selectedCardId === "adjustable_wing" || selectedCardId === "calculated_attack") add("overtaking", tt("field_card"));
+  if (selectedCardId === "fleet_maintenance" || selectedCardId === "final_surge" || selectedCardId === "defensive_order" || selectedCardId === "economy_mode" || selectedCardId === "pit_relay" || selectedCardId === "hard_tires") add("energy", tt("field_card"));
 
   return impacts;
 }

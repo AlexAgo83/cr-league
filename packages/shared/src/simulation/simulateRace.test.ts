@@ -154,6 +154,36 @@ describe("simulateRace", () => {
     expect(result.events.some((event) => event.cardId === "defensive_order" && event.type === "held_position")).toBe(true);
   });
 
+  it("applies the extended race cards", () => {
+    const participants = [
+      { teamId: "wing", teamName: "Wing GP", cardId: "adjustable_wing" },
+      { teamId: "mapping", teamName: "Mapping GP", cardId: "rain_mapping" },
+      { teamId: "economy", teamName: "Economy GP", cardId: "economy_mode" },
+      { teamId: "relay", teamName: "Relay GP", cardId: "pit_relay" },
+      { teamId: "hard", teamName: "Hard GP", cardId: "hard_tires" },
+      { teamId: "attack", teamName: "Attack GP", cardId: "calculated_attack" }
+    ] as const;
+    const result = simulateRace({
+      ...baseRace,
+      seed: "extended-cards",
+      primaryTrait: "fast",
+      secondaryTrait: "urban",
+      forecast: { dry: 0, light_rain: 100, heavy_rain: 0 },
+      participants: participants.map((participant, index) => ({
+        teamId: participant.teamId,
+        teamName: participant.teamName,
+        kind: "human",
+        standingsRank: index + 1,
+        decision: { approach: "balanced", preparation: "speed", cardId: participant.cardId }
+      }))
+    });
+
+    for (const participant of participants) {
+      expect(result.consumedCards).toContainEqual({ teamId: participant.teamId, cardId: participant.cardId });
+      expect(result.events.some((event) => event.cardId === participant.cardId)).toBe(true);
+    }
+  });
+
   it("adds minor race notes to make replay less repetitive", () => {
     const result = simulateRace(baseRace);
 

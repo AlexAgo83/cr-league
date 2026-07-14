@@ -27,7 +27,13 @@ export type CardId =
   | "fleet_sponsorship"
   | "soft_tires"
   | "qualifying_focus"
-  | "defensive_order";
+  | "defensive_order"
+  | "adjustable_wing"
+  | "rain_mapping"
+  | "economy_mode"
+  | "pit_relay"
+  | "hard_tires"
+  | "calculated_attack";
 
 export type RaceDecision = {
   approach: RaceApproach;

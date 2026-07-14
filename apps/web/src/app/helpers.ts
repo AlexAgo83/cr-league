@@ -31,6 +31,12 @@ export function cardFit(cardId: CardId, state: LeagueState, forecastPick: string
   if (cardId === "soft_tires") return traits.includes("fast") ? { level: "recommended", score: 82 } : { level: "risky", score: 58 };
   if (cardId === "qualifying_focus") return { level: "recommended", score: 76 };
   if (cardId === "defensive_order") return traits.includes("high_wear") || traits.includes("technical") ? { level: "recommended", score: 84 } : { level: "low", score: 42 };
+  if (cardId === "adjustable_wing") return traits.includes("fast") || traits.includes("urban") ? { level: "recommended", score: 83 } : { level: "risky", score: 54 };
+  if (cardId === "rain_mapping") return hasRain || traits.includes("weather_sensitive") ? { level: "recommended", score: 81 } : { level: "risky", score: 48 };
+  if (cardId === "economy_mode") return { level: "risky", score: 57 };
+  if (cardId === "pit_relay") return traits.includes("technical") || traits.includes("high_wear") ? { level: "recommended", score: 79 } : { level: "low", score: 44 };
+  if (cardId === "hard_tires") return traits.includes("high_wear") ? { level: "recommended", score: 86 } : { level: "risky", score: 56 };
+  if (cardId === "calculated_attack") return traits.includes("urban") ? { level: "recommended", score: 80 } : { level: "risky", score: 52 };
   return { level: "risky", score: 52 };
 }
 

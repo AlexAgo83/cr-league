@@ -71,5 +71,47 @@ export const CARD_DEFINITIONS: Record<CardId, CardDefinition> = {
     family: "reliability",
     consumable: true,
     playerPromise: "Protect your position under pressure, but give up attacking edge."
+  },
+  adjustable_wing: {
+    id: "adjustable_wing",
+    name: "Adjustable Wing",
+    family: "attack",
+    consumable: true,
+    playerPromise: "Open the car up on fast or urban roads, at the cost of stability."
+  },
+  rain_mapping: {
+    id: "rain_mapping",
+    name: "Rain Mapping",
+    family: "weather",
+    consumable: true,
+    playerPromise: "Prepare the engine map for changing rain; wasted if the track stays dry."
+  },
+  economy_mode: {
+    id: "economy_mode",
+    name: "Economy Mode",
+    family: "economy",
+    consumable: true,
+    playerPromise: "Start conservatively and convert a strong finish into extra credits."
+  },
+  pit_relay: {
+    id: "pit_relay",
+    name: "Pit Relay",
+    family: "reliability",
+    consumable: true,
+    playerPromise: "The wall steadies the car through the late race when pressure rises."
+  },
+  hard_tires: {
+    id: "hard_tires",
+    name: "Hard Tires",
+    family: "reliability",
+    consumable: true,
+    playerPromise: "Give up launch bite for a stronger closing stint."
+  },
+  calculated_attack: {
+    id: "calculated_attack",
+    name: "Calculated Attack",
+    family: "rival",
+    consumable: true,
+    playerPromise: "Strike only when another car is close enough to pressure."
   }
 };

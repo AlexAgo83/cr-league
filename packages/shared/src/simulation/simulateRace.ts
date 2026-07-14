@@ -1,5 +1,5 @@
 import { CARD_DEFINITIONS } from "../cards/definitions.js";
-import { FLEET_SPONSORSHIP_CREDIT_BONUS, RACE_CREDITS_BY_POSITION, RACE_POINTS_BY_POSITION } from "../economy/constants.js";
+import { ECONOMY_MODE_CREDIT_BONUS, FLEET_SPONSORSHIP_CREDIT_BONUS, RACE_CREDITS_BY_POSITION, RACE_POINTS_BY_POSITION } from "../economy/constants.js";
 import type {
   CardId,
   ClassificationEntry,
@@ -54,7 +54,7 @@ export function simulateRace(input: RaceInput): RaceResult {
     const beforeTimes = new Map(states.map((state) => [state.participant.teamId, state.elapsedTime]));
     for (const state of states) {
       applySegment(state, segment, weather[segment], input, prng.next);
-      maybeAddCardEvent(state, segment, weather[segment], events, states);
+      maybeAddCardEvent(state, segment, weather[segment], input, events, states);
       maybeAddRiskEvent(state, segment, events, prng.next);
     }
 
@@ -193,6 +193,19 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.reliability += 3;
     scores.aggression -= 8;
     scores.pace -= 5;
+  } else if (participant.decision.cardId === "adjustable_wing") {
+    scores.pace += 3;
+    scores.aggression += 5;
+    scores.reliability -= 3;
+  } else if (participant.decision.cardId === "economy_mode") {
+    scores.pace -= 4;
+    scores.control += 3;
+  } else if (participant.decision.cardId === "hard_tires") {
+    scores.pace -= 4;
+    scores.reliability += 8;
+    scores.control += 2;
+  } else if (participant.decision.cardId === "calculated_attack") {
+    scores.aggression += 4;
   }
 }
 
@@ -304,6 +317,7 @@ function maybeAddCardEvent(
   state: TeamState,
   segment: RaceSegment,
   weather: Weather,
+  input: RaceInput,
   events: RaceEvent[],
   states: TeamState[]
 ) {
@@ -353,7 +367,51 @@ function maybeAddCardEvent(
   } else if (cardId === "defensive_order" && segment === "late") {
     state.resultTags.add("defensive_order");
     events.push(createCardEvent(events.length, state, segment, "held_position", 0));
+  } else if (cardId === "adjustable_wing" && segment === "early") {
+    const suitedCircuit = input.primaryTrait === "fast" || input.secondaryTrait === "fast" || input.primaryTrait === "urban" || input.secondaryTrait === "urban";
+    state.scores.score += suitedCircuit ? 12 : 5;
+    state.scores.reliability -= 2;
+    state.positionDelta += suitedCircuit ? 1 : 0;
+    state.resultTags.add("adjustable_wing");
+    events.push(createCardEvent(events.length, state, segment, "card_triggered", suitedCircuit ? 1 : 0));
+  } else if (cardId === "rain_mapping" && segment === "mid") {
+    const rained = weather !== "dry";
+    state.scores.score += rained ? 12 : -4;
+    state.positionDelta += rained ? 1 : 0;
+    state.resultTags.add(rained ? "rain_mapping" : "wrong_weather_bet");
+    events.push(createCardEvent(events.length, state, segment, rained ? "weather_gamble_paid" : "wrong_weather_bet", rained ? 1 : 0));
+  } else if (cardId === "economy_mode" && segment === "finish") {
+    state.resultTags.add("economy_mode");
+    events.push(createCardEvent(events.length, state, segment, "sponsor_payout", 0));
+  } else if (cardId === "pit_relay" && segment === "late") {
+    state.scores.score += 8;
+    state.scores.reliability += 3;
+    state.positionDelta += 1;
+    state.resultTags.add("pit_relay");
+    events.push(createCardEvent(events.length, state, segment, "held_position", 1));
+  } else if (cardId === "hard_tires" && segment === "late") {
+    state.scores.score += 10;
+    state.positionDelta += 1;
+    state.resultTags.add("hard_tires");
+    events.push(createCardEvent(events.length, state, segment, "late_push_gain", 1));
+  } else if (cardId === "calculated_attack" && segment === "mid") {
+    const target = carAhead(state, states);
+    const closeEnough = target && state.elapsedTime - target.elapsedTime <= 1.5;
+    if (closeEnough) {
+      state.scores.score += 12;
+      state.positionDelta += 1;
+      state.resultTags.add("calculated_attack");
+      events.push(createCardEvent(events.length, state, segment, "rival_overtake", 1, target.participant.teamId));
+    } else {
+      state.resultTags.add("calculated_attack_missed");
+      events.push(createCardEvent(events.length, state, segment, "card_triggered", 0));
+    }
   }
+}
+
+function carAhead(state: TeamState, states: TeamState[]) {
+  const sorted = [...states].sort((left, right) => left.elapsedTime - right.elapsedTime);
+  return sorted[sorted.findIndex((candidate) => candidate.participant.teamId === state.participant.teamId) - 1];
 }
 
 function maybeAddRiskEvent(state: TeamState, segment: RaceSegment, events: RaceEvent[], next: () => number) {
@@ -433,13 +491,14 @@ function classify(states: TeamState[]): ClassificationEntry[] {
     const position = index + 1;
     const baseCredits = RACE_CREDITS_BY_POSITION[index] ?? 100;
     const sponsorBonus = state.participant.decision.cardId === "fleet_sponsorship" ? FLEET_SPONSORSHIP_CREDIT_BONUS : 0;
+    const economyBonus = state.participant.decision.cardId === "economy_mode" && position <= 4 ? ECONOMY_MODE_CREDIT_BONUS : 0;
 
     return {
       position,
       teamId: state.participant.teamId,
       teamName: state.participant.teamName,
       points: RACE_POINTS_BY_POSITION[index] ?? 0,
-      credits: baseCredits + sponsorBonus,
+      credits: baseCredits + sponsorBonus + economyBonus,
       score: Number(state.scores.score.toFixed(2)),
       positionChange: state.participant.standingsRank - position + state.positionDelta,
       status: "finished",

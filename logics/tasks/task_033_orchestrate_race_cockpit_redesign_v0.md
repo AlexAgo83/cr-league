@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 95
-> Progress: 90%
+> Progress: 95%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -26,7 +26,7 @@
 # Execution direction
 - Start with `item_040` and `item_041`: lock the screen model and CSS vocabulary before changing JSX structure.
 - Use the V2 mockup direction as the visual baseline; do not implement the earlier coarse/blocky mockup as-is.
-- Treat real European city circuits as the intended map direction. Keep V0 cheap with stored/static route geometry; defer live Leaflet/OSRM runtime integration unless a static route catalog is proven insufficient.
+- Treat real European city circuits as the intended map direction. Keep V0 cheap with stored/static route geometry rendered as a stylized SVG route over a dark basemap (Carto `dark_nolabels` raster tiles with "© OpenStreetMap · © CARTO" attribution). Light osm.org tiles are explicitly out — they clash with the cockpit theme and violate the OSM tile usage policy. Defer live Leaflet/OSRM runtime integration unless a static route catalog is proven insufficient.
 - Seed the first catalog with six circuits only: Paris Docklands Sprint/Left Bank Loop, Amsterdam Canal Loop/Harbor Sprint, and Berlin Ring Sector/Mitte Dash.
 - Treat animated race playback as deterministic replay, not live simulation: generate or derive a timeline from the resolved result, then animate cars over the city circuit route.
 - Then implement the primary loop through `item_042`, because Course and the dominant action define whether the redesign works.
@@ -62,6 +62,16 @@
 - Run scaffold command tests.
 
 # Report
+- 2026-07-14 wave 2 (corrective — screen model and visual direction realignment):
+  - Root cause of the reported overlapping/broken screens: the previous wave kept every panel mounted in one DOM tree and simulated the six cockpit views with ~500 lines of absolute-positioned, `data-game-view`-scoped CSS. Panels collided at intermediate viewports; on mobile the replay and report views were fully covered by sibling panels.
+  - Replaced the CSS view-toggle model with real conditional React views (`item_040`, `item_046`): `App.tsx` now owns state/API/shell only, and `features/` holds `DriveView`, `DirectiveView`, `ChampionshipView`, `GarageView`, `ReplayView`, `ReportView` plus a shared `CircuitMap`. One view mounted at a time; overlap is structurally impossible.
+  - Rewrote `layout.css` from scratch (1627 → ~700 lines): the stacked light theme + "Cockpit 0.3 visual pass" duplication is gone; a single dark cockpit theme remains, with one accent (success green) and telemetry cyan (`item_041`).
+  - Replaced light osm.org raster tiles with a dark city basemap (Carto `dark_nolabels`, attribution "© OpenStreetMap · © CARTO" shown on the map) under the stylized SVG route — the on-theme version of the "city extraction" `item_041` mandated ("not a raw Leaflet/OSM map"). The six-circuit static catalog moved to `app/circuits.ts`.
+  - Kept one-state-one-command via a persistent bottom command bar (`item_042`); replay cars are evenly spaced along the route and only animate in the replay view (`item_044`).
+  - Localized event lines are now built from `RaceEvent.teamId` + the result classification instead of parsing `replayText` strings — fixes duplicated sentences like "hits a late mechanical scare hits a mechanical scare" (`item_044`).
+  - i18n (`item_045`): rewrote `fr.json` with proper accents/diacritics across all 205 keys, added `team_player` for non-local human teams (standings previously labeled every human "you"), fixed `language_fr` to "Français".
+  - Validation: `npm run typecheck`, `npm test` (21 passed), `npm run lint`, `npm run build`, `npm run test:e2e` (1 passed), `logics-manager i18n validate` all green. Desktop (1440px) and mobile (390px) screenshots captured for setup + all six views, before and after GP resolution (`item_047`); no overlap or clipped content observed.
+  - Unit and e2e tests were adapted to the navigation model (views are visited via the nav instead of asserting all panels at once); API behavior and state flow are unchanged.
 - 2026-07-14 wave:
   - Implemented the Pit Wall Compact shell in the web app using the existing React/CSS/i18n setup.
   - Added one-state-one-command behavior for the race desk: prepare submits, ready launches, resolved advances.

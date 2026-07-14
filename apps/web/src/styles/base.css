@@ -12,15 +12,9 @@ body {
   margin: 0;
 }
 
-h1 {
-  font-size: 3rem;
-  letter-spacing: 0;
-  line-height: 1;
-  margin: 0 0 16px;
-}
-
-@media (min-width: 720px) {
-  h1 {
-    font-size: 5rem;
-  }
+h1,
+h2,
+h3,
+h4 {
+  line-height: 1.15;
 }

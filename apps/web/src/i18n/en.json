@@ -109,6 +109,7 @@
   "next_action_start_next_grand_prix": "Start next Grand Prix",
   "team_bot": "bot",
   "team_you": "you",
+  "team_player": "player",
   "team_ready": "ready",
   "team_missing": "missing",
   "league_code": "Code",
@@ -200,5 +201,5 @@
   "unit_laps": "laps",
   "language_label": "Language",
   "language_en": "English",
-  "language_fr": "Francais"
+  "language_fr": "Français"
 }

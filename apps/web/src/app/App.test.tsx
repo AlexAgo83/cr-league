@@ -233,58 +233,81 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "CR League" })).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Create league" }));
+
+    // Drive view + topbar
     expect(await screen.findByText("ABC123")).toBeTruthy();
-    expect(screen.getAllByText("Round 1").length).toBeGreaterThan(0);
-    expect(screen.getByText("Pit wall")).toBeTruthy();
+    expect(screen.getByText("Wait for directives")).toBeTruthy();
     expect(screen.getByText("Prepare")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
-    expect(screen.getByText("Current GP")).toBeTruthy();
-    expect(screen.getAllByText("Fast").length).toBeGreaterThan(0);
+    expect(screen.getByText("Fast")).toBeTruthy();
     expect(screen.getByText("Weather sensitive")).toBeTruthy();
+    expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
+    expect(screen.getByRole("button", { name: "Replay" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.getByRole("button", { name: "Report" }).hasAttribute("disabled")).toBe(true);
+
+    // Championship view
+    fireEvent.click(screen.getByRole("button", { name: "Championship" }));
+    expect(screen.getAllByText("Round 1").length).toBeGreaterThan(0);
+    expect(screen.getByText("Current GP")).toBeTruthy();
+    expect(screen.getByText("0/2")).toBeTruthy();
+
+    // Directive view
+    fireEvent.click(screen.getByRole("button", { name: "Directive" }));
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
-    expect(screen.getByText("0/2")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(screen.getByText("Ready to launch")).toBeTruthy();
 
+    // Launch: auto-switches to the report view
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
     expect(await screen.findByText("Silver Ridge GP: Circle One wins.")).toBeTruthy();
     expect(screen.getByText("Race resolved")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(screen.getByText("Winner")).toBeTruthy();
-    expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
-    expect(screen.getByLabelText("Race replay by lap")).toBeTruthy();
-    expect(screen.getByText("Phase 1")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
     expect(screen.getByText("Balanced · Weather · Rain Grip")).toBeTruthy();
     expect(screen.getByText("Your card shaped the race. Keep one for moments where the track or forecast clearly matches it.")).toBeTruthy();
+
+    // Replay view
+    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
+    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(screen.getByText("Winner")).toBeTruthy();
+    expect(screen.getByLabelText("Race replay by lap")).toBeTruthy();
+    expect(screen.getByText("Phase 1")).toBeTruthy();
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("Lap 5");
     expect(screen.getByText("Key event")).toBeTruthy();
     expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip · Circle One profits from the weather call");
+
+    // Garage view
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     expect(screen.getByText("Last GP")).toBeTruthy();
     expect(screen.getByText("+150 credits · +25 pts")).toBeTruthy();
     expect(screen.getByText("Consumed Rain Grip")).toBeTruthy();
     expect(screen.getByText("No cards in inventory.")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Recommended offers" })).toBeTruthy();
+
+    // One command at a time
     expect(screen.queryByRole("button", { name: "Submit directive" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Launch GP" })).toBe(null);
     expect(screen.getByRole("button", { name: "Next GP" }).hasAttribute("disabled")).toBe(false);
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
     expect((await screen.findAllByText("Round 2")).length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Restart session" })).toBeTruthy();
 
+    // Settings live in the directive view
+    fireEvent.click(screen.getByRole("button", { name: "Directive" }));
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
     fireEvent.click(screen.getByRole("button", { name: "Update settings" }));
     expect(await screen.findByText("League settings updated.")).toBeTruthy();
 
+    fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     fireEvent.click(screen.getByRole("button", { name: "Restart session" }));
     expect(await screen.findByText("Playtest session restarted.")).toBeTruthy();
     expect(screen.getAllByText("Round 1").length).toBeGreaterThan(0);
 
+    fireEvent.click(screen.getByRole("button", { name: "Directive" }));
     fireEvent.click(screen.getByRole("button", { name: "Forget team" }));
     expect(screen.getByText("Team claim forgotten.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-player-claim")).toBe(null);
@@ -309,7 +332,8 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Create league" }));
 
-    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    fireEvent.click(await screen.findByRole("button", { name: "Replay" }));
+    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("No replay events were recorded for this GP.")).toBeTruthy();
   });
 

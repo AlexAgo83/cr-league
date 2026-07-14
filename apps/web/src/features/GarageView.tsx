@@ -57,8 +57,9 @@ export function GarageView({
 
   const shopOffers = recommendedShopOffers(state, forecastPick);
   const pendingBuy = shopOffers.find((item) => item.cardId === pendingBuyCardId);
+  const pendingBuyAffordable = Boolean(pendingBuy && playerTeam.credits >= pendingBuy.price);
   const confirmBuy = () => {
-    if (!pendingBuy) return;
+    if (!pendingBuy || !pendingBuyAffordable) return;
     onBuyCard(pendingBuy.cardId);
     setPendingBuyCardId(undefined);
   };
@@ -157,7 +158,7 @@ export function GarageView({
                 key={item.cardId}
                 type="button"
                 onClick={() => setPendingBuyCardId(item.cardId)}
-                disabled={loading || playerTeam.credits < item.price}
+                disabled={loading}
               >
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
                 <strong>{item.price}</strong>
@@ -183,9 +184,9 @@ export function GarageView({
               <small>{tt(`card_fit_${pendingBuy.fit.level}` as TranslationKey)}</small>
               <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
             </div>
-            <p>{tt("garage_buy_confirm_body")}</p>
+            <p>{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
             <div className="modal-actions">
-              <button type="button" onClick={confirmBuy} disabled={loading}>
+              <button type="button" onClick={confirmBuy} disabled={loading || !pendingBuyAffordable}>
                 {tt("garage_buy_confirm_action")}
               </button>
               <button type="button" onClick={() => setPendingBuyCardId(undefined)}>

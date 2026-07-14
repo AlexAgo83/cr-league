@@ -713,54 +713,6 @@ label small {
   position: relative;
 }
 
-.qualifying-card {
-  display: grid;
-  gap: 12px;
-  min-height: 156px;
-}
-
-.qualifying-meta {
-  display: grid;
-  gap: 4px;
-}
-
-.qualifying-actions {
-  align-items: center;
-  background: rgb(10 15 21 / 0.52);
-  border: 1px solid rgb(255 255 255 / 0.1);
-  border-radius: 8px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 36px;
-  margin-top: auto;
-  overflow: hidden;
-  width: 100%;
-}
-
-.qualifying-card button {
-  background: transparent;
-  border-radius: 0;
-  color: var(--color-text);
-  min-height: 0;
-  padding: 9px 11px;
-}
-
-.qualifying-actions button + button {
-  border-left: 1px solid rgb(255 255 255 / 0.1);
-}
-
-.qualifying-card button:not(:disabled):hover,
-.qualifying-card button:not(:disabled):focus-visible {
-  background: rgb(56 189 248 / 0.14);
-  color: var(--color-telemetry);
-}
-
-.qualifying-card .icon-button {
-  font-size: 1rem;
-  height: 36px;
-  padding: 0;
-  width: 36px;
-}
-
 .qualifying-replay {
   margin-top: 0;
 }
@@ -954,9 +906,48 @@ label small {
   z-index: 2;
 }
 
-.map-qualifying-times strong {
+.map-qualifying-times header {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.map-qualifying-times strong,
+.map-qualifying-toggle {
   font-size: 0.78rem;
   text-transform: uppercase;
+}
+
+.map-qualifying-times strong span {
+  color: var(--color-accent);
+  margin-left: 4px;
+}
+
+.map-qualifying-times header button,
+.map-qualifying-toggle {
+  align-items: center;
+  background: rgb(255 255 255 / 0.06);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 999px;
+  color: var(--text);
+  display: inline-flex;
+  font-weight: 900;
+  justify-content: center;
+}
+
+.map-qualifying-times header button {
+  height: 22px;
+  padding: 0;
+  width: 22px;
+}
+
+.map-qualifying-toggle {
+  padding: 7px 10px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 2;
 }
 
 .map-qualifying-times ol {
@@ -1492,6 +1483,17 @@ label small {
 
 .card-stat-badge.weakness {
   opacity: 0.68;
+}
+
+.card-info-badge {
+  border-color: rgb(250 204 21 / 0.3);
+  color: #fde68a;
+}
+
+.card-info-badge i {
+  background: rgb(250 204 21 / 0.14);
+  color: #facc15;
+  font-family: ui-sans-serif, system-ui, sans-serif;
 }
 
 .card-inventory {
@@ -2639,8 +2641,20 @@ button.primary-command {
     top: 8px;
   }
 
-  .map-qualifying-times strong {
+  .map-qualifying-times strong,
+  .map-qualifying-toggle {
     font-size: 0.58rem;
+  }
+
+  .map-qualifying-times header button {
+    height: 18px;
+    width: 18px;
+  }
+
+  .map-qualifying-toggle {
+    padding: 5px 7px;
+    right: 8px;
+    top: 8px;
   }
 
   .map-qualifying-times li {

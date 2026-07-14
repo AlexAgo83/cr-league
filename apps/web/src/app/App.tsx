@@ -18,6 +18,7 @@ const PLAYER_CLAIMS_KEY = "cr-league-player-claims";
 const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
 const PROFILE_SESSION_KEY = "cr-league-profile-session";
 const LANGUAGE_KEY = "cr-league-language";
+const QUALIFYING_LOCK_CARDS = new Set<CardId>(["qualifying_focus"]);
 
 type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueId: string;
@@ -132,6 +133,7 @@ export function App() {
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [qualifyingOpen, setQualifyingOpen] = useState(false);
   const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
+  const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -211,7 +213,7 @@ export function App() {
   const qualifyingAttemptsUsed = Math.max(0, ...playerQualifyingRuns.map((run) => run.attempts));
   const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? form.qualifyingAttemptLimit;
   const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
-  const qualifyingLockedCardId = playerQualifyingRuns.find((run) => run.decision?.cardId)?.decision?.cardId;
+  const qualifyingLockedCardId = playerQualifyingRuns.find((run) => run.decision?.cardId && QUALIFYING_LOCK_CARDS.has(run.decision.cardId))?.decision?.cardId;
   const result = leagueState?.currentGrandPrix.result;
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
   const qualifyingDisabled = status === "loading" || isResolved || Boolean(playerDecision) || qualifyingAttemptsLeft <= 0;
@@ -1058,24 +1060,37 @@ export function App() {
                       </small>
                     </div>
                     <MapTraitsPanel traits={currentCircuit.traits} impacts={directiveTraitImpacts} tt={tt} />
-                    <div className="map-qualifying-times">
-                      <strong>{tt("qualifying_times_title")}</strong>
-                      {qualifyingLeaderboard.length ? (
-                        <ol>
-                          {qualifyingLeaderboard.map((run) => (
-                            <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeam?.id ? "player" : undefined}>
-                              <span>
-                                {run.position}. {run.teamName}
-                                {run.lap ? ` · ${tt("unit_lap")} ${run.lap}` : ""}
-                              </span>
-                              <em>{run.time.toFixed(2)}s</em>
-                            </li>
-                          ))}
-                        </ol>
-                      ) : (
-                        <small>{tt("qualifying_times_empty")}</small>
-                      )}
-                    </div>
+                    {qualifyingPanelOpen ? (
+                      <div className="map-qualifying-times">
+                        <header>
+                          <strong>
+                            {tt("qualifying_times_title")} <span>{qualifyingAttemptsUsed}/{qualifyingAttemptLimit}</span>
+                          </strong>
+                          <button type="button" aria-label={`${tt("action_close")} ${tt("qualifying_times_title")}`} onClick={() => setQualifyingPanelOpen(false)}>
+                            ×
+                          </button>
+                        </header>
+                        {qualifyingLeaderboard.length ? (
+                          <ol>
+                            {qualifyingLeaderboard.map((run) => (
+                              <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeam?.id ? "player" : undefined}>
+                                <span>
+                                  {run.position}. {run.teamName}
+                                  {run.lap ? ` · ${tt("unit_lap")} ${run.lap}` : ""}
+                                </span>
+                                <em>{run.time.toFixed(2)}s</em>
+                              </li>
+                            ))}
+                          </ol>
+                        ) : (
+                          <small>{tt("qualifying_times_empty")}</small>
+                        )}
+                      </div>
+                    ) : (
+                      <button className="map-qualifying-toggle" type="button" onClick={() => setQualifyingPanelOpen(true)}>
+                        {tt("qualifying_times_title")} {qualifyingAttemptsUsed}/{qualifyingAttemptLimit}
+                      </button>
+                    )}
                   </>
                 }
               />
@@ -1091,18 +1106,6 @@ export function App() {
                 disabled={status === "loading" || Boolean(playerDecision) || isResolved}
                 tt={tt}
               />
-              <section className="panel qualifying-card">
-                <h2>{tt("action_qualifying")}</h2>
-                <div className="qualifying-meta">
-                  <strong>
-                    {tt("qualifying_best")} {playerQualifyingRun ? `${playerQualifyingRun.time.toFixed(2)}s` : "-"}
-                  </strong>
-                  <small>
-                    {playerDecision ? tt("qualifying_locked") : `${tt("qualifying_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`}
-                  </small>
-                  {!playerQualifyingRun ? <small>{tt("qualifying_suggestion")}</small> : null}
-                </div>
-              </section>
             </div>
           </div>
         ) : null}

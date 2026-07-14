@@ -29,7 +29,21 @@ const CARD_BADGES: Record<CardId, Array<{ trait: "grip" | "overtaking" | "energy
   ]
 };
 
+const CARD_INFO_BADGES: Partial<Record<CardId, TranslationKey>> = {
+  rain_grip: "card_info_weather",
+  fleet_maintenance: "card_info_save",
+  launch_boost: "card_info_start",
+  urban_draft: "card_info_rival",
+  final_surge: "card_info_finish",
+  fleet_sponsorship: "card_info_credits",
+  soft_tires: "card_info_early",
+  qualifying_focus: "card_info_chrono",
+  defensive_order: "card_info_defense"
+};
+
 export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator }) {
+  const infoLabel = CARD_INFO_BADGES[cardId];
+
   return (
     <span className="card-stat-badges">
       {CARD_BADGES[cardId].map((badge) => (
@@ -40,6 +54,12 @@ export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator 
           </span>
         </span>
       ))}
+      {infoLabel ? (
+        <span className="card-stat-badge card-info-badge">
+          <i aria-hidden="true">i</i>
+          <span>{tt(infoLabel)}</span>
+        </span>
+      ) : null}
     </span>
   );
 }

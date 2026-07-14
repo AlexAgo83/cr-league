@@ -333,11 +333,9 @@ describe("App", () => {
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Result" }).hasAttribute("disabled")).toBe(true);
-    expect(screen.getByText("Best -")).toBeTruthy();
-    expect(screen.getByText("Attempts left 3/3")).toBeTruthy();
-    expect(screen.getByText("Lap times")).toBeTruthy();
+    expect(screen.getAllByText("Lap times", { exact: false }).length).toBeGreaterThan(0);
+    expect(screen.getByText("0/3")).toBeTruthy();
     expect(screen.getByText("No lap times")).toBeTruthy();
-    expect(screen.getByText("Run a lap time before locking your directive to place your car on the grid.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replay last lap time" }).hasAttribute("disabled")).toBe(true);
     expect(document.querySelector(".command-actions")?.textContent).toContain("Lap time");
 
@@ -391,7 +389,6 @@ describe("App", () => {
       expect(select.hasAttribute("disabled")).toBe(true);
     }
     expect(screen.getByRole("button", { name: "Lap time" }).hasAttribute("disabled")).toBe(true);
-    expect(screen.getByText("Locked after directive")).toBeTruthy();
 
     // Launch: auto-switches to the result view
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));

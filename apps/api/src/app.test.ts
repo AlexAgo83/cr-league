@@ -397,7 +397,48 @@ describe("api app", () => {
     expect(secondRun.json().run.result.events).toHaveLength(2);
   });
 
-  it("locks the Grand Prix card after a qualifying run uses one", async () => {
+  it("locks the Grand Prix card after a qualifying card is used", async () => {
+    const db = createMemoryDb();
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", qualifyingAttemptLimit: 2 }
+    });
+    const created = createResponse.json();
+    await db.team.update({ where: { id: created.player.teamId }, data: { cards: ["rain_grip", "qualifying_focus"] } });
+    const basePayload = {
+      teamId: created.player.teamId,
+      approach: "balanced",
+      preparation: "weather",
+      laps: 1
+    };
+    const firstRun = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/qualifying`,
+      payload: { ...basePayload, cardId: "qualifying_focus" }
+    });
+    const secondRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload: basePayload });
+    const decisionResponse = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/decisions`, payload: basePayload });
+
+    await app.close();
+
+    expect(firstRun.statusCode).toBe(200);
+    expect(secondRun.statusCode).toBe(200);
+    expect(secondRun.json().run.decision.cardId).toBe("qualifying_focus");
+    expect(decisionResponse.statusCode).toBe(200);
+    expect(decisionResponse.json().decisions.find((decision: { teamId: string }) => decision.teamId === created.player.teamId).cardId).toBe("qualifying_focus");
+  });
+
+  it("does not lock race cards after a qualifying run", async () => {
     const app = await buildApp(
       {
         host: "127.0.0.1",
@@ -431,9 +472,9 @@ describe("api app", () => {
 
     expect(firstRun.statusCode).toBe(200);
     expect(secondRun.statusCode).toBe(200);
-    expect(secondRun.json().run.decision.cardId).toBe("rain_grip");
+    expect(secondRun.json().run.decision.cardId).toBeUndefined();
     expect(decisionResponse.statusCode).toBe(200);
-    expect(decisionResponse.json().decisions.find((decision: { teamId: string }) => decision.teamId === created.player.teamId).cardId).toBe("rain_grip");
+    expect(decisionResponse.json().decisions.find((decision: { teamId: string }) => decision.teamId === created.player.teamId).cardId).toBeNull();
   });
 
   it("rejects qualifying after the player submits a directive", async () => {

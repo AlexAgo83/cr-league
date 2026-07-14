@@ -23,6 +23,7 @@ type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | 
 
 const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
 const STARTER_CARDS: CardId[] = ["rain_grip"];
+const QUALIFYING_LOCK_CARDS = new Set<CardId>(["qualifying_focus"]);
 const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICES[cardId as CardId] }));
 const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 const BOT_LIVERY_COLORS = ["#38bdf8", "#f97316", "#a78bfa", "#f43f5e", "#facc15", "#22c55e", "#e879f9", "#fb7185"] as const;
@@ -874,7 +875,7 @@ function bestQualifyingRuns(runs: QualifyingRun[]) {
 }
 
 function qualifyingCardForTeam(runs: QualifyingRun[], teamId: string) {
-  return runs.find((run) => run.teamId === teamId && run.decision?.cardId)?.decision?.cardId;
+  return runs.find((run) => run.teamId === teamId && run.decision?.cardId && QUALIFYING_LOCK_CARDS.has(run.decision.cardId))?.decision?.cardId;
 }
 
 async function fillLeagueWithBots(db: Db, state: LeagueState) {

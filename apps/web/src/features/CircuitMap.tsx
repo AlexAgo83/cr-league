@@ -33,6 +33,8 @@ const SAFE_AREA = {
 };
 const TILE_SIZE = 256;
 const FOCUS_ZOOM = 2.55;
+const CLOSE_FOCUS_ZOOM = FOCUS_ZOOM * 2;
+const CLOSE_CAR_DISTANCE = 42;
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
   const scale = TILE_SIZE * 2 ** zoom;
@@ -147,7 +149,12 @@ export function CircuitMap({
   const { zoom, tiles, points, d, start } = circuitScene(circuit);
   const cameraRef = useRef<SVGGElement>(null);
   const routeRef = useRef<SVGPathElement>(null);
+  const carsRef = useRef(cars);
+  const pointsRef = useRef(points);
+  const zoomRef = useRef(FOCUS_ZOOM);
   const markerScale = camera?.enabled ? 1 / FOCUS_ZOOM : 1;
+  carsRef.current = cars;
+  pointsRef.current = points;
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
@@ -155,6 +162,7 @@ export function CircuitMap({
     const car = camera?.car;
     if (!cameraGroup || !route || !camera?.enabled || !car || !route.getTotalLength) {
       cameraGroup?.removeAttribute("transform");
+      zoomRef.current = FOCUS_ZOOM;
       return;
     }
 
@@ -164,8 +172,15 @@ export function CircuitMap({
     let frame = requestAnimationFrame(function tick() {
       const elapsed = Math.max(0, camera.timeRef.current - car.delay);
       const progress = car.progress ?? (camera.timeRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration);
-      const point = car.progress === undefined ? route.getPointAtLength(length * progress) : pointOnRoute(points, progress);
-      cameraGroup.setAttribute("transform", `translate(${focusX} ${focusY}) scale(${FOCUS_ZOOM}) translate(${-point.x} ${-point.y})`);
+      const point = car.progress === undefined ? route.getPointAtLength(length * progress) : pointOnRoute(pointsRef.current, progress);
+      const closeCar = carsRef.current.some((other) => {
+        if (other.id === car.id || other.progress === undefined) return false;
+        const otherPoint = pointOnRoute(pointsRef.current, other.progress);
+        return Math.hypot(otherPoint.x - point.x, otherPoint.y - point.y) < CLOSE_CAR_DISTANCE;
+      });
+      const targetZoom = closeCar ? CLOSE_FOCUS_ZOOM : FOCUS_ZOOM;
+      zoomRef.current += (targetZoom - zoomRef.current) * 0.08;
+      cameraGroup.setAttribute("transform", `translate(${focusX} ${focusY}) scale(${zoomRef.current}) translate(${-point.x} ${-point.y})`);
       frame = requestAnimationFrame(tick);
     });
 

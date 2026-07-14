@@ -444,8 +444,11 @@ describe("App", () => {
     expect(screen.getByText("Last GP")).toBeTruthy();
     expect(screen.getByText("+150 credits · +25 pts")).toBeTruthy();
     expect(screen.getByText("Consumed Rain Grip")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Cards" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Shop" }).getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Inventory" }));
     expect(screen.getByText("No cards in inventory.")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Recommended offers" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Shop" }));
     expect(screen.getByRole("button", { name: /Soft Tires/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Qualifying Lap/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Defensive Order/ })).toBeTruthy();

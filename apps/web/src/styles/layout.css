@@ -1825,7 +1825,7 @@ label small {
 }
 
 .garage-team-panel,
-.garage-card-column {
+.garage-card-panel {
   display: grid;
   gap: 16px;
 }
@@ -1839,6 +1839,45 @@ label small {
 
 .garage-team-heading h2 {
   margin: 2px 0 0;
+}
+
+.garage-card-heading {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.garage-card-heading h3 {
+  margin: 0;
+}
+
+.garage-card-toggle {
+  background: rgb(10 15 21 / 0.48);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+}
+
+.garage-card-toggle button {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--color-muted);
+  min-height: 32px;
+  padding: 6px 12px;
+}
+
+.garage-card-toggle button.active {
+  background: rgb(22 199 132 / 0.16);
+  color: var(--color-text);
+}
+
+.garage-card-toggle button:not(.active):hover,
+.garage-card-toggle button:not(.active):focus-visible {
+  color: var(--color-text);
 }
 
 .garage-stats {
@@ -2068,6 +2107,11 @@ label small {
 
   .garage-team-heading {
     align-items: center;
+  }
+
+  .garage-card-heading {
+    align-items: start;
+    flex-direction: column;
   }
 
   .garage-livery-preview {

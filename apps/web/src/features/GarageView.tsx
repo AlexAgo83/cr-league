@@ -7,6 +7,8 @@ import type { LeagueState } from "../app/types.js";
 import { CardStatBadges } from "./CardStatBadges.js";
 import { MapCarShape } from "./CircuitMap.js";
 
+type CardPanel = "inventory" | "shop";
+
 export function GarageView({
   state,
   playerTeam,
@@ -37,6 +39,7 @@ export function GarageView({
   const [livery, setLivery] = useState(playerTeam?.livery ?? { primary: "#16c784", secondary: "#38bdf8" });
   const [teamName, setTeamName] = useState(playerTeam?.name ?? "");
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
+  const [cardPanel, setCardPanel] = useState<CardPanel>(ownedCardIds.length ? "inventory" : "shop");
 
   useEffect(() => {
     if (playerTeam?.livery) setLivery(playerTeam.livery);
@@ -130,38 +133,42 @@ export function GarageView({
         ) : null}
       </section>
 
-      <div className="garage-card-column">
-        <section className="panel">
-          <h3>{tt("garage_inventory")}</h3>
-          <p>{tt("garage_between_gp_hint")}</p>
-          <ul className="card-inventory">
-            {ownedCardIds.length ? (
-              ownedCardIds.map((cardId) => (
-                <li key={cardId}>
-                  <span>
-                    {tt(`card_${cardId}` as TranslationKey)}
-                    <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
-                    <CardStatBadges cardId={cardId} tt={tt} />
-                  </span>
-                  <strong>x{countCards(playerTeam.cards, cardId)}</strong>
-                </li>
-              ))
-            ) : (
-              <li>{tt("garage_empty_inventory")}</li>
-            )}
-          </ul>
-        </section>
-
-        <section className="panel">
-          <h3>{tt("garage_shop")}</h3>
+      <section className="panel garage-card-panel">
+        <div className="garage-card-heading">
+          <h3>{tt("garage_cards")}</h3>
+          <div className="garage-card-toggle" aria-label={tt("garage_cards")}>
+            <button type="button" className={cardPanel === "inventory" ? "active" : undefined} aria-pressed={cardPanel === "inventory"} onClick={() => setCardPanel("inventory")}>
+              {tt("garage_inventory")}
+            </button>
+            <button type="button" className={cardPanel === "shop" ? "active" : undefined} aria-pressed={cardPanel === "shop"} onClick={() => setCardPanel("shop")}>
+              {tt("garage_shop")}
+            </button>
+          </div>
+        </div>
+        {cardPanel === "inventory" ? (
+          <>
+            <p>{tt("garage_between_gp_hint")}</p>
+            <ul className="card-inventory">
+              {ownedCardIds.length ? (
+                ownedCardIds.map((cardId) => (
+                  <li key={cardId}>
+                    <span>
+                      {tt(`card_${cardId}` as TranslationKey)}
+                      <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
+                      <CardStatBadges cardId={cardId} tt={tt} />
+                    </span>
+                    <strong>x{countCards(playerTeam.cards, cardId)}</strong>
+                  </li>
+                ))
+              ) : (
+                <li>{tt("garage_empty_inventory")}</li>
+              )}
+            </ul>
+          </>
+        ) : (
           <div className="card-shop">
             {shopOffers.map((item) => (
-              <button
-                key={item.cardId}
-                type="button"
-                onClick={() => setPendingBuyCardId(item.cardId)}
-                disabled={loading}
-              >
+              <button key={item.cardId} type="button" onClick={() => setPendingBuyCardId(item.cardId)} disabled={loading}>
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
                 <strong>{item.price}</strong>
                 <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>
@@ -169,8 +176,8 @@ export function GarageView({
               </button>
             ))}
           </div>
-        </section>
-      </div>
+        )}
+      </section>
       {pendingBuy ? (
         <div className="modal-overlay" onClick={() => setPendingBuyCardId(undefined)}>
           <section className="panel modal garage-buy-modal" role="dialog" aria-modal="true" aria-label={tt("garage_buy_confirm_title")} onClick={(event) => event.stopPropagation()}>

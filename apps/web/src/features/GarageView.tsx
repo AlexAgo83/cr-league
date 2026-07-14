@@ -5,6 +5,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import { cardFit, countCards, recommendedShopOffers, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { CardStatBadges } from "./CardStatBadges.js";
+import { MapCarShape } from "./CircuitMap.js";
 
 export function GarageView({
   state,
@@ -63,8 +64,13 @@ export function GarageView({
             <span className="section-kicker">{tt("dashboard_garage")}</span>
             <h2>{tt("dashboard_my_team")}</h2>
           </div>
-          <div className="garage-livery-preview" style={{ "--livery-primary": livery.primary, "--livery-secondary": livery.secondary } as CSSProperties & Record<string, string>}>
-            <span>{playerTeam.name.slice(0, 3).toUpperCase()}</span>
+          <div className="garage-livery-visuals">
+            <div className="garage-livery-preview" style={{ "--livery-primary": livery.primary, "--livery-secondary": livery.secondary } as CSSProperties & Record<string, string>}>
+              <span>{playerTeam.name.slice(0, 3).toUpperCase()}</span>
+            </div>
+            <svg className="garage-car-preview map-car" viewBox="-20 -14 40 28" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
+              <MapCarShape />
+            </svg>
           </div>
         </div>
         <div className="garage-stats">

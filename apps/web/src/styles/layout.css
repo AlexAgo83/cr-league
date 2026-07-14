@@ -1832,7 +1832,7 @@ label small {
   color: #041018;
   display: flex;
   flex: 0 0 auto;
-  font-size: 0.72rem;
+  font-size: 1.44rem;
   font-weight: 900;
   height: 42px;
   justify-content: center;
@@ -1844,6 +1844,19 @@ label small {
   -webkit-text-stroke: 0.8px #f8fafc;
   paint-order: stroke fill;
   transform: skewX(10deg);
+}
+
+.garage-livery-visuals {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.garage-car-preview {
+  filter: drop-shadow(0 4px 4px rgb(0 0 0 / 0.42));
+  height: 42px;
+  overflow: visible;
+  width: 62px;
 }
 
 .garage-name-fields {

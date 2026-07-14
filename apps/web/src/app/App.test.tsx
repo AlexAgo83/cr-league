@@ -339,7 +339,7 @@ describe("App", () => {
     expect(screen.getByText("No lap times")).toBeTruthy();
     expect(screen.getByText("Run a lap time before locking your directive to place your car on the grid.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replay last lap time" }).hasAttribute("disabled")).toBe(true);
-    expect(document.querySelector(".command-actions")?.textContent).not.toContain("Lap time");
+    expect(document.querySelector(".command-actions")?.textContent).toContain("Lap time");
 
     // Qualifying modal from the directive panel
     expect(screen.queryByText("Wait for directives")).toBe(null);

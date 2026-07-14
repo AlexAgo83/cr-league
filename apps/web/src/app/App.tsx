@@ -1075,21 +1075,6 @@ export function App() {
                   </small>
                   {!playerQualifyingRun ? <small>{tt("qualifying_suggestion")}</small> : null}
                 </div>
-                <div className="qualifying-actions">
-                  <button type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
-                    {tt("action_qualifying")}
-                  </button>
-                  <button
-                    type="button"
-                    className="icon-button"
-                    aria-label={tt("action_qualifying_history")}
-                    title={tt("action_qualifying_history")}
-                    onClick={openLastQualifyingRun}
-                    disabled={!lastQualifyingRun}
-                  >
-                    ◷
-                  </button>
-                </div>
               </section>
             </div>
           </div>
@@ -1150,6 +1135,23 @@ export function App() {
             >
               {tt(`result_tab_${resultTab === "report" ? "replay" : "report"}` as TranslationKey)}
             </button>
+          ) : null}
+          {gameView === "drive" ? (
+            <>
+              <button className="result-toggle-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
+                {tt("action_qualifying")}
+              </button>
+              <button
+                className="result-toggle-command command-icon-button"
+                type="button"
+                aria-label={tt("action_qualifying_history")}
+                title={tt("action_qualifying_history")}
+                onClick={openLastQualifyingRun}
+                disabled={!lastQualifyingRun}
+              >
+                ◷
+              </button>
+            </>
           ) : null}
           <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
             {primaryCommand.label}

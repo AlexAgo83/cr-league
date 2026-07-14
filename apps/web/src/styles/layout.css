@@ -1970,6 +1970,11 @@ button.result-toggle-command:hover {
   color: var(--color-text);
 }
 
+button.command-icon-button {
+  min-width: 48px;
+  padding-inline: 0;
+}
+
 .race-context-panel {
   align-items: baseline;
   background: rgb(15 23 33 / 0.72);
@@ -2674,6 +2679,11 @@ button.primary-command {
     min-height: 38px;
     min-width: 76px;
     padding-inline: 8px;
+  }
+
+  .command-icon-button {
+    min-width: 38px;
+    padding-inline: 0;
   }
 
   button.primary-command {

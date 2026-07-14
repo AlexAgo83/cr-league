@@ -115,6 +115,7 @@ export function CircuitMap({
   const { zoom, tiles, d, start } = circuitScene(circuit);
   const cameraRef = useRef<SVGGElement>(null);
   const routeRef = useRef<SVGPathElement>(null);
+  const markerScale = camera?.enabled ? 1 / FOCUS_ZOOM : 1;
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
@@ -180,10 +181,12 @@ export function CircuitMap({
             {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => (
               <g key={car.id} className={car.player ? "map-car player" : "map-car"}>
-                <circle r="16" />
-                <text textAnchor="middle" dominantBaseline="central">
-                  {car.label}
-                </text>
+                <g transform={`scale(${markerScale})`}>
+                  <circle r="16" />
+                  <text textAnchor="middle" dominantBaseline="central">
+                    {car.label}
+                  </text>
+                </g>
                 {/* Each car runs its laps then freezes on the finish line. */}
                 <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={circuit.laps} fill="freeze" />
               </g>

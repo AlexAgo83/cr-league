@@ -4,8 +4,8 @@
 > Related product: `prod_001_cr_league_product_brief`
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
-> Confidence: 95
-> Non-semantic edit: refreshed 0.3 cockpit/replay direction after race cockpit V1 framing.
+> Confidence: 96
+> Non-semantic edit: clarified pre-1.0 beta sequencing and renamed cockpit/replay seed away from V1.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1 without pretending the full game should be built in one pass.
@@ -95,7 +95,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Scope:
   - 3-GP mini championship loop;
   - V2 race cockpit redesign with clear Course, Championship, Garage, and Result/Replay responsibilities;
-  - static V1 city circuit catalog: Paris Docklands Sprint/Left Bank Loop, Amsterdam Canal Loop/Harbor Sprint, Berlin Ring Sector/Mitte Dash;
+  - static 0.3 city circuit seed: Paris Docklands Sprint/Left Bank Loop, Amsterdam Canal Loop/Harbor Sprint, Berlin Ring Sector/Mitte Dash;
   - city-circuit rendering from stored route geometry, without Leaflet/OSRM runtime dependencies;
   - deterministic animated race replay with cars moving on the circuit, simple controls, visible overtakes when supported by the generated timeline, and a static readout fallback;
   - replay/report UX pass that makes player choices legible;
@@ -144,9 +144,43 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - `item_005_define_balancing_and_retention_mechanics_for_social_leagues`
   - `spec_001_grand_prix_core_loop_and_simulation_v1`
 
+## 0.5 - Live beta foundation
+- Goal: Move from local/private playtests to a small live beta that can run without hand-holding.
+- Status: Planned.
+- Scope:
+  - hosted web/API/database environment;
+  - repeatable deploy and smoke checks;
+  - beta league creation/join/rejoin hardening;
+  - basic admin reset/support path;
+  - persisted short-season data that survives browser/device changes;
+  - explicit known-limits page for beta testers.
+- Exit signal:
+  - a small invited beta group can run a short league live without local dev tooling;
+  - deploy, rollback, smoke, and database backup expectations are documented.
+- Linked docs:
+  - `adr_001_cr_league_v1_static_pwa_api_architecture`
+  - `adr_004_data_security`
+  - `spec_016_implementation_roadmap`
+
+## 0.7 - Live beta season
+- Goal: Run a real beta season long enough to validate cadence, replay comprehension, economy pressure, and return behavior.
+- Status: Planned.
+- Scope:
+  - beta season setup and lifecycle;
+  - feedback capture after multiple GP cycles;
+  - balance tweaks based on observed card/replay/cadence behavior;
+  - notification or reminder approach if beta usage shows it is needed;
+  - polish only where beta feedback proves friction.
+- Exit signal:
+  - beta players complete a short season with enough feedback to decide what belongs in 1.0;
+  - remaining 1.0 work is known, not guessed.
+- Linked docs:
+  - `prod_001_cr_league_product_brief`
+  - `spec_016_implementation_roadmap`
+
 ## 1.0 - Private league V1
 - Goal: Ship a stable private-league experience that can run cheaply and be shared with non-gamer colleagues.
-- Status: Target.
+- Status: Post-beta target.
 - Scope:
   - production deploy path for static web app and dedicated API;
   - PostgreSQL schema and migration discipline for hosted environments;
@@ -171,7 +205,9 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Treat 0.2 as the next meaningful multiplayer step: private league session mechanics before economy depth.
 - Keep 0.3 focused on playtest truth, not polish for its own sake.
 - Defer 0.4 card/economy breadth until repeated-GP behavior exists.
-- Do not start 1.0 production hardening until the private-league loop has survived at least one real playtest.
+- Use 0.5 for live beta foundations before pretending the product is near 1.0.
+- Use 0.7 for a real beta season before locking the 1.0 scope.
+- Do not start 1.0 production hardening until the live beta has produced real usage feedback.
 
 # Next Recommended Requests
 - Add automatic deadline resolution only if manual operation becomes painful in playtest.

@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: In progress
 > Understanding: 95
-> Confidence: 95
+> Confidence: 96
 > Progress: 35%
 > Complexity: Medium
 > Theme: Result comprehension
@@ -51,7 +51,7 @@
   - Events have `t`, `type`, `teamId`, label, and optional sector/progress.
   - The final playback sample must match the resolved classification.
 - Circuit data contract:
-  - The V1 replay can assume the static circuit catalog contains city, country, layout, path geometry, sectors, laps, grip, overtaking, energy, and likely weather.
+  - The 0.3 replay can assume the static circuit catalog contains city, country, layout, path geometry, sectors, laps, grip, overtaking, energy, and likely weather.
   - Do not require runtime routing to render the replay.
 - Visual readout rules:
   - Prefer the city circuit route as the visual anchor: show the simplified European city layout, moving cars, sector/weather/event markers, and current replay time. Do not show full Leaflet controls in the result panel.

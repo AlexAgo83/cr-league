@@ -313,7 +313,7 @@ export function App() {
     <main className="app-shell game-shell">
       <header className="topbar">
         <div className="brand">
-          <span className="eyebrow">{APP_NAME}</span>
+          <img className="brand-icon" src="/favicon.svg" alt={APP_NAME} />
           <strong>{leagueState.league.name}</strong>
           <span className="invite-code">{leagueState.league.code}</span>
         </div>

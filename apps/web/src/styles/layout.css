@@ -89,8 +89,10 @@
   min-width: 0;
 }
 
-.brand .eyebrow {
-  font-size: 0.72rem;
+.brand-icon {
+  border-radius: 6px;
+  height: 28px;
+  width: 28px;
 }
 
 .brand strong {

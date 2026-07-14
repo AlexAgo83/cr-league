@@ -261,8 +261,8 @@ export function CircuitMap({
             ))}
             <path ref={routeRef} className="circuit-route-glow" d={d} />
             <path className="circuit-route-asphalt" d={d} />
-            {!hasCars ? <path className="circuit-route-edge" d={d} /> : null}
-            {!hasCars ? <path className="circuit-route-accent" d={d} /> : null}
+            <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={d} />
+            <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={d} />
             <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />
             {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {

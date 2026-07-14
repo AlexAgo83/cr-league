@@ -899,6 +899,10 @@ label small {
   stroke-width: 4;
 }
 
+.replay-muted-route {
+  opacity: 0.24;
+}
+
 @keyframes route-flow {
   to {
     stroke-dashoffset: -148;

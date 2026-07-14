@@ -611,6 +611,20 @@ label small {
   margin-bottom: 14px;
 }
 
+.replay-controls {
+  align-items: center;
+}
+
+.replay-speed {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+}
+
+.replay-speed select {
+  width: auto;
+}
+
 .replay-summary strong {
   color: var(--color-text);
 }

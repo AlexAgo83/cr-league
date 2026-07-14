@@ -1,5 +1,5 @@
 import { RACE_SEGMENTS, type RaceResult } from "@cr-league/shared";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
@@ -17,25 +17,33 @@ export function ReplayView({
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
+  const clock = useRef(0);
   const [playing, setPlaying] = useState(true);
+  const [speed, setSpeed] = useState(1);
   const names = teamNamesFromResult(result);
   const playerEntry = result.classification.find((entry) => entry.teamId === playerTeamId);
 
-  // ponytail: SMIL clock control; jsdom has no pauseAnimations, hence the guards.
-  function togglePlay() {
+  // SMIL has no playback-rate API, so the SVG clock is driven by hand:
+  // animations stay paused and a rAF loop advances setCurrentTime at `speed`.
+  // jsdom implements none of this, hence the guards.
+  useEffect(() => {
     const svg = svgRef.current;
-    if (playing) {
-      svg?.pauseAnimations?.();
-    } else {
-      svg?.unpauseAnimations?.();
-    }
-    setPlaying(!playing);
-  }
+    if (!svg?.pauseAnimations) return;
+    svg.pauseAnimations();
+    if (!playing) return;
+    let last = performance.now();
+    let frame = requestAnimationFrame(function tick(now: number) {
+      clock.current += ((now - last) / 1000) * speed;
+      last = now;
+      svg.setCurrentTime(clock.current);
+      frame = requestAnimationFrame(tick);
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [playing, speed]);
 
   function restart() {
-    const svg = svgRef.current;
-    svg?.setCurrentTime?.(0);
-    svg?.unpauseAnimations?.();
+    clock.current = 0;
+    svgRef.current?.setCurrentTime?.(0);
     setPlaying(true);
   }
   const winner = result.classification[0];
@@ -73,12 +81,21 @@ export function ReplayView({
         </div>
         <CircuitMap circuit={circuit} tt={tt} cars={cars} svgRef={svgRef} />
         <div className="actions replay-controls secondary-actions">
-          <button type="button" onClick={togglePlay}>
+          <button type="button" onClick={() => setPlaying(!playing)}>
             {playing ? tt("action_pause") : tt("action_play")}
           </button>
           <button type="button" onClick={restart}>
             {tt("action_replay_restart")}
           </button>
+          <label className="replay-speed">
+            {tt("replay_speed")}
+            <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
+              <option value={0.5}>×0.5</option>
+              <option value={1}>×1</option>
+              <option value={2}>×2</option>
+              <option value={4}>×4</option>
+            </select>
+          </label>
         </div>
         <ol className="replay-laps" aria-label={tt("result_replay_track_label")}>
           {RACE_SEGMENTS.map((segment, index) => (

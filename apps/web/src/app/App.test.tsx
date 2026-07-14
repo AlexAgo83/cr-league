@@ -287,6 +287,8 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Restart" }));
     expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Speed"), { target: { value: "2" } });
+    expect((screen.getByLabelText("Speed") as HTMLSelectElement).value).toBe("2");
 
     // Garage view
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));

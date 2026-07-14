@@ -21,7 +21,7 @@ Implemented:
 - `apps/web` Vite + React shell with playable demo league flow
 - `apps/api` Fastify API with health, simulation preview, and minimal league endpoints
 - `packages/shared` shared metadata, race domain types, demo race, and simulation engine
-- `prisma/schema.prisma` PostgreSQL league/team/Grand Prix/decision schema
+- `prisma/schema.prisma` PostgreSQL league/team/card inventory/Grand Prix/decision schema
 - TypeScript, ESLint, Vitest baseline
 - Logics product, gameplay, architecture, UX, implementation-contract, and roadmap docs
 
@@ -189,7 +189,8 @@ The detailed implementation-wave roadmap is:
 Current roadmap direction:
 
 - `0.1` playable vertical slice is mostly implemented;
-- `0.2` private league prototype foundation now includes manual cadence, readiness dashboard, rejoin, GP history, a seeded playtest fixture, a lightweight replay timeline, French UI switching, guided GP briefing, and more replay flavor.
+- `0.2` private league prototype foundation now includes manual cadence, readiness dashboard, rejoin, GP history, a seeded playtest fixture, a lightweight replay timeline, French UI switching, guided GP briefing, and more replay flavor;
+- `0.3` is now the next product risk: make repeated GP play feel like a game, with the first thin card inventory/shop hook already present as a bridge toward `0.4`.
 
 ## Contributing
 

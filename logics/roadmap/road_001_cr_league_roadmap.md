@@ -5,7 +5,7 @@
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
 > Confidence: 90
-> Non-semantic edit: refreshed 0.2/0.3 delivery notes after guided race weekend slice.
+> Non-semantic edit: refreshed 0.2/0.4 delivery notes after between-GP progression v0.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1 without pretending the full game should be built in one pass.
@@ -15,8 +15,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 # Current Position
 - Product discovery, core gameplay specs, architecture, device targets, theme direction, ADRs, repository governance, and implementation contracts are documented.
 - The monorepo foundation exists with Vite React, Fastify, Prisma, shared simulation package, tests, lint, build, and Logics validation.
-- The prototype can create a persisted demo league, submit a race directive, resolve a Grand Prix, show report/replay evidence, persist rewards, join an active league by invite code, rejoin a claimed team, advance to the next Grand Prix, configure cadence/deadline, show GP history/readiness, switch between English and French UI, show a guided GP briefing, and seed a manual private-league playtest session.
-- This is not yet a complete game loop: there is no automatic scheduler, notifications, card inventory economy, replay polish, full auth/permissions, or production deployment.
+- The prototype can create a persisted demo league, submit a race directive, resolve a Grand Prix, show report/replay evidence, persist rewards, join an active league by invite code, rejoin a claimed team, advance to the next Grand Prix, configure cadence/deadline, show GP history/readiness, switch between English and French UI, show a guided GP briefing, buy/hold/consume simple cards, and seed a manual private-league playtest session.
+- This is not yet a complete game loop: there is no automatic scheduler, notifications, deep card economy, replay polish, full auth/permissions, or production deployment.
 
 # Milestones
 ## 0.1 - Playable vertical slice
@@ -72,7 +72,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - lightweight lap-tagged replay timeline;
   - French language switcher;
   - GP briefing with track profile, likely weather, and directive hints;
-  - deterministic minor race notes for replay variety.
+  - deterministic minor race notes for replay variety;
+  - first thin card inventory/shop hook for between-GP progression.
 - Exit signal:
   - 2+ human players can join the same league, prepare for the same GP, and resolve a race with absent players defaulted;
   - a solo player can bypass waiting time with bots;
@@ -105,7 +106,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 
 ## 0.4 - Economy and card depth
 - Goal: Add enough card and currency depth for repeated sessions without burying the casual player.
-- Status: Planned.
+- Status: Started with a thin inventory/shop hook; deeper economy planned.
 - Scope:
   - inventory view;
   - buy/sell or draft-style card acquisition;
@@ -113,6 +114,12 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - catch-up mechanisms that help low-ranked players without making first place feel random;
   - card balance telemetry or at least structured playtest notes;
   - economy rules documented before broadening the card list.
+- Delivered foundation:
+  - `Team.cards` persisted as JSON;
+  - fixed 100-credit card purchase endpoint;
+  - owned-card validation on directive submission;
+  - consumed cards removed after GP resolution;
+  - minimal garage UI with inventory counts and buy buttons.
 - Exit signal:
   - players earn and spend credits across multiple GPs;
   - card choices create visible replay/report moments;
@@ -155,7 +162,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
 - Add automatic deadline resolution only if manual operation becomes painful in playtest.
 - Improve the dashboard layout after feedback from a real colleague session.
 - Add a first replay visualization pass from the stored event timeline.
-- Add card inventory and economy progression once repeated GP sessions are usable.
+- Expand card economy only after the thin garage loop has playtest feedback.
 
 # Risks
 - Building the card economy before a repeated-GP loop would tune the wrong game.

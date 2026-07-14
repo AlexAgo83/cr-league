@@ -101,16 +101,17 @@
 - Added English/French UI switching so local testers can play in French.
 - Added a guided GP briefing with current action, track profile, likely weather, and directive hints.
 - Added deterministic minor race notes to make the replay less repetitive without changing race balance.
-- Kept the slice intentionally thin: no inventory economy, no full visual track replay, and no new scheduler.
+- Added the first thin between-GP progression hook: persisted card inventory, fixed-price buying with credits, owned-card directive validation, and card consumption after GP resolution.
+- Remaining limits are intentional: no card selling, rarity, draft offers, catch-up economy tuning, full visual track replay, or scheduler.
 
 ## Backlog Candidates
 - Add guided pre-GP briefing and decision helper.
 - Expand race event variety and replay flavor.
 - Rework result screen into a race recap.
 - Add a first immersion pass for the race desk UI.
-- Add between-GP progression hooks before deep economy.
+- Tune and expand between-GP progression only after the thin garage loop has playtest feedback.
 
 ## Open Questions
 - Should the next slice prioritize guidance first, visual immersion first, or a combined thin slice?
 - How much race event noise is enough before it feels random or fake?
-- Should the first between-GP progression be card inventory, team morale, sponsor objectives, or car condition?
+- Should the next between-GP progression layer deepen card acquisition, team morale, sponsor objectives, or car condition?

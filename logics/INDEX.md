@@ -55,6 +55,7 @@
 | [req_023_add_automated_private_league_playtest_scenario](request/req_023_add_automated_private_league_playtest_scenario.md) | Add automated private league playtest scenario | Done |  |  | request/req_023_add_automated_private_league_playtest_scenario.md |
 | [req_024_prepare_private_league_playtest_kit](request/req_024_prepare_private_league_playtest_kit.md) | Prepare private league playtest kit | Done |  |  | request/req_024_prepare_private_league_playtest_kit.md |
 | [req_025_add_guided_race_weekend_experience](request/req_025_add_guided_race_weekend_experience.md) | Add guided race weekend experience | Done |  |  | request/req_025_add_guided_race_weekend_experience.md |
+| [req_026_add_between_gp_progression_v0](request/req_026_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done |  |  | request/req_026_add_between_gp_progression_v0.md |
 
 ## Backlog
 
@@ -91,6 +92,7 @@
 | [item_029_add_automated_private_league_playtest_scenario](backlog/item_029_add_automated_private_league_playtest_scenario.md) | Add automated private league playtest scenario | Done |  | 100% | backlog/item_029_add_automated_private_league_playtest_scenario.md |
 | [item_030_prepare_private_league_playtest_kit](backlog/item_030_prepare_private_league_playtest_kit.md) | Prepare private league playtest kit | Done |  | 100% | backlog/item_030_prepare_private_league_playtest_kit.md |
 | [item_031_add_guided_race_weekend_experience](backlog/item_031_add_guided_race_weekend_experience.md) | Add guided race weekend experience | Done |  | 100% | backlog/item_031_add_guided_race_weekend_experience.md |
+| [item_032_add_between_gp_progression_v0](backlog/item_032_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done |  | 100% | backlog/item_032_add_between_gp_progression_v0.md |
 
 ## Tasks
 
@@ -122,3 +124,4 @@
 | [task_024_add_automated_private_league_playtest_scenario](tasks/task_024_add_automated_private_league_playtest_scenario.md) | Add automated private league playtest scenario | Done | codex | 100% | tasks/task_024_add_automated_private_league_playtest_scenario.md |
 | [task_025_prepare_private_league_playtest_kit](tasks/task_025_prepare_private_league_playtest_kit.md) | Prepare private league playtest kit | Done | codex | 100% | tasks/task_025_prepare_private_league_playtest_kit.md |
 | [task_026_add_guided_race_weekend_experience](tasks/task_026_add_guided_race_weekend_experience.md) | Add guided race weekend experience | Done | codex | 100% | tasks/task_026_add_guided_race_weekend_experience.md |
+| [task_027_add_between_gp_progression_v0](tasks/task_027_add_between_gp_progression_v0.md) | Add between-GP progression v0 | Done | codex | 100% | tasks/task_027_add_between_gp_progression_v0.md |

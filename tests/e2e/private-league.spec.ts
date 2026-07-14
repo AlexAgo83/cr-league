@@ -5,12 +5,18 @@ let round = 1;
 let cadence = "manual";
 let currentStatus = "briefing";
 let hasDecision = false;
+let credits = 0;
+let points = 0;
+let cards: string[] = ["rain_grip"];
 
 test.beforeEach(() => {
   round = 1;
   cadence = "manual";
   currentStatus = "briefing";
   hasDecision = false;
+  credits = 0;
+  points = 0;
+  cards = ["rain_grip"];
 });
 
 test("plays a three Grand Prix private league loop", async ({ page }) => {
@@ -32,6 +38,14 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
     }
     if (path === "/leagues/league_1/resolve") {
       currentStatus = "resolved";
+      credits += 150;
+      points += 25;
+      cards = cards.filter((cardId) => cardId !== "rain_grip");
+      return route.fulfill({ json: leagueState(resultForRound(round)) });
+    }
+    if (path === "/leagues/league_1/cards/buy") {
+      credits -= 100;
+      cards = [...cards, "launch_boost"];
       return route.fulfill({ json: leagueState(resultForRound(round)) });
     }
     if (path === "/leagues/league_1/next-grand-prix") {
@@ -63,8 +77,13 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
     await page.getByRole("button", { name: "Launch GP" }).click();
     await expect(page.locator("p").filter({ hasText: `Silver Ridge GP ${expectedRound}: Circle One wins.` })).toBeVisible();
     await expect(page.getByText("Lap 5")).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Garage" })).toBeVisible();
 
     if (expectedRound < 3) {
+      if (expectedRound === 1) {
+        await page.getByRole("button", { name: "Launch Boost · 100" }).click();
+        await expect(page.getByText("Card added to your garage.")).toBeVisible();
+      }
       await page.getByRole("button", { name: "Next GP" }).click();
       await expect(page.getByText(`Code ABC123 · Round ${expectedRound + 1} · briefing`)).toBeVisible();
     }
@@ -113,8 +132,9 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
         id: "team_1",
         name: "Circle One",
         kind: "human",
-        points: result ? 25 * round : 0,
-        credits: result ? 150 * round : 0,
+        points,
+        credits,
+        cards,
         ready: hasDecision
       },
       {
@@ -123,8 +143,13 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
         kind: "bot",
         points: 0,
         credits: 0,
+        cards: [],
         ready: false
       }
+    ],
+    cardShop: [
+      { cardId: "rain_grip", price: 100 },
+      { cardId: "launch_boost", price: 100 }
     ],
     actionState: {
       submittedTeamIds: hasDecision ? ["team_1"] : [],

@@ -136,9 +136,8 @@ export function App() {
     notificationId.current = id;
     const tone: Notification["tone"] = status === "error" ? "error" : "info";
     setNotifications((items) => [...items, { id, text: message, tone }].slice(-5));
-    const timeout = window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 10_000);
-    return () => window.clearTimeout(timeout);
-  }, [message, status, locale]);
+    window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 10_000);
+  }, [message, locale]);
 
   function dismissNotification(id: number) {
     setNotifications((items) => items.filter((item) => item.id !== id));
@@ -728,9 +727,7 @@ export function App() {
       {notifications.map((notification) => (
         <div key={notification.id} className={`floating-notification ${notification.tone}`}>
           <p>{notification.text}</p>
-          <button type="button" aria-label={tt("notification_close")} onClick={() => dismissNotification(notification.id)}>
-            ×
-          </button>
+          <button type="button" aria-label={tt("notification_close")} onClick={() => dismissNotification(notification.id)} />
         </div>
       ))}
     </div>

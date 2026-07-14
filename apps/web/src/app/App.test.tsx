@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
 
@@ -263,6 +264,7 @@ const otherLeagueState = {
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
+  vi.useRealTimers();
   localStorage.clear();
 });
 
@@ -275,6 +277,20 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: /Créer profil/ })).toBeTruthy();
     expect(screen.getByText("Sauvegarder ton accès")).toBeTruthy();
     expect(localStorage.getItem("cr-league-language")).toBe("fr");
+  });
+
+  it("auto-dismisses floating notifications after 10 seconds", async () => {
+    vi.useFakeTimers();
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    await act(async () => {});
+    expect(screen.getByText("League created. Submit your race directive.")).toBeTruthy();
+    act(() => vi.advanceTimersByTime(10_000));
+    expect(screen.queryByText("League created. Submit your race directive.")).toBe(null);
   });
 
   it("plays through the demo league flow", async () => {

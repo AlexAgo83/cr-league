@@ -5,6 +5,8 @@ import type { CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
 import { CircuitMap, type MapCar } from "./CircuitMap.js";
 
+const WEATHER_ICONS = { dry: "☀️", light_rain: "🌦️", heavy_rain: "⛈️" } as const;
+
 export function ReplayView({
   result,
   circuit,
@@ -137,6 +139,16 @@ export function ReplayView({
               <div ref={progressRef} className="replay-progress-fill" />
               {RACE_SEGMENTS.slice(1).map((segment, index) => (
                 <span key={segment} className="replay-tick" style={{ left: `${((index + 1) / RACE_SEGMENTS.length) * 100}%` }} />
+              ))}
+              {RACE_SEGMENTS.map((segment, index) => (
+                <span
+                  key={segment}
+                  className="replay-weather"
+                  style={{ left: `${((index + 0.5) / RACE_SEGMENTS.length) * 100}%` }}
+                  title={tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
+                >
+                  {WEATHER_ICONS[result.resolvedWeather[segment]]}
+                </span>
               ))}
               {markers.map((marker) => (
                 <span

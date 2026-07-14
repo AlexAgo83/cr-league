@@ -100,7 +100,7 @@ export function ReplayView({
     <div className="view-stack">
       <div className="replay-main-grid">
         <div className="replay-content-column">
-          <section className="panel replay-player-panel">
+          <section className="panel replay-map-panel">
             <div className="circuit-map-heading">
               <span className="circuit-city">{circuit.city}</span>
               <strong>{tt(circuit.layoutKey)}</strong>

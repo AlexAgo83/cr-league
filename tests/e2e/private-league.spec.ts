@@ -1,4 +1,4 @@
-import { expect, test } from "@playwright/test";
+import { expect, type Page, test } from "@playwright/test";
 
 const player = { teamId: "team_1", claimCode: "CLAIM123" };
 let round = 1;
@@ -19,7 +19,7 @@ test.beforeEach(() => {
   cards = ["rain_grip"];
 });
 
-test("plays a three Grand Prix private league loop", async ({ page }) => {
+async function mockLeagueApi(page: Page) {
   await page.route("http://localhost:4874/**", async (route) => {
     const request = route.request();
     const url = new URL(request.url());
@@ -66,6 +66,19 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
 
     return route.fulfill({ status: 404, json: { message: "Unhandled mock route" } });
   });
+}
+
+async function resolveFirstGrandPrix(page: Page) {
+  await page.goto("/");
+  await page.getByRole("button", { name: "Create league" }).click();
+  await page.getByRole("button", { name: "Race", exact: true }).click();
+  await page.getByRole("button", { name: "Submit directive" }).click();
+  await page.getByRole("button", { name: "Launch GP" }).click();
+  await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
+}
+
+test("plays a three Grand Prix private league loop", async ({ page }) => {
+  await mockLeagueApi(page);
 
   await page.goto("/");
 
@@ -109,6 +122,48 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
 
   await page.getByRole("button", { name: "Championship", exact: true }).click();
   await expect(page.getByText("Round 3").first()).toBeVisible();
+});
+
+test("keeps replay layout zones separated", async ({ page }, testInfo) => {
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await mockLeagueApi(page);
+  await resolveFirstGrandPrix(page);
+
+  const mapPanel = page.locator(".replay-map-panel");
+  const copyPanel = page.locator(".replay-copy-panel");
+  const momentsPanel = page.locator(".replay-moments-panel");
+
+  await expect(mapPanel.locator(".circuit-map-stage")).toBeVisible();
+  await expect(mapPanel.locator(".replay-progress")).toBeVisible();
+  await expect(mapPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
+  await expect(copyPanel.getByRole("button", { name: "Pause" })).toBeVisible();
+  await expect(momentsPanel.getByRole("heading", { name: "Key moments" })).toBeVisible();
+
+  const desktop = await page.evaluate(() => {
+    const mapPanel = document.querySelector(".replay-map-panel")?.getBoundingClientRect();
+    const copyPanel = document.querySelector(".replay-copy-panel")?.getBoundingClientRect();
+    const momentsPanel = document.querySelector(".replay-moments-panel")?.getBoundingClientRect();
+    return {
+      copyBelowMap: Boolean(mapPanel && copyPanel && copyPanel.top > mapPanel.bottom),
+      momentsRightOfMap: Boolean(mapPanel && momentsPanel && momentsPanel.left > mapPanel.right),
+      momentsAlignedWithMap: Boolean(mapPanel && momentsPanel && Math.abs(momentsPanel.top - mapPanel.top) < 2)
+    };
+  });
+  expect(desktop).toEqual({ copyBelowMap: true, momentsRightOfMap: true, momentsAlignedWithMap: true });
+  await page.screenshot({ path: testInfo.outputPath("replay-layout-desktop.png"), fullPage: true });
+
+  await page.setViewportSize({ width: 390, height: 900 });
+  const mobile = await page.evaluate(() => {
+    const mapPanel = document.querySelector(".replay-map-panel")?.getBoundingClientRect();
+    const copyPanel = document.querySelector(".replay-copy-panel")?.getBoundingClientRect();
+    const momentsPanel = document.querySelector(".replay-moments-panel")?.getBoundingClientRect();
+    return {
+      copyBelowMap: Boolean(mapPanel && copyPanel && copyPanel.top > mapPanel.bottom),
+      momentsBelowCopy: Boolean(copyPanel && momentsPanel && momentsPanel.top > copyPanel.bottom)
+    };
+  });
+  expect(mobile).toEqual({ copyBelowMap: true, momentsBelowCopy: true });
+  await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 
 function expectedCircuitTitle(resultRound: number) {

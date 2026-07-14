@@ -907,6 +907,10 @@ label small {
   opacity: 0.28;
 }
 
+.replay-muted-glow {
+  opacity: 0.08;
+}
+
 @keyframes route-flow {
   to {
     stroke-dashoffset: -148;

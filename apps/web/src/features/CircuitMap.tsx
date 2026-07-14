@@ -259,7 +259,7 @@ export function CircuitMap({
                 height={TILE_SIZE}
               />
             ))}
-            <path ref={routeRef} className="circuit-route-glow" d={d} />
+            <path ref={routeRef} className={hasCars ? "circuit-route-glow replay-muted-glow" : "circuit-route-glow"} d={d} />
             <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={d} />
             <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={d} />
             <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={d} />

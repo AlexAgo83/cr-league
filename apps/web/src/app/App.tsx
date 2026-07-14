@@ -1,5 +1,5 @@
 import { APP_NAME, RACE_SEGMENTS, type CardId, type RaceDecision, type RaceResult } from "@cr-league/shared";
-import { useEffect, useMemo, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
@@ -1056,22 +1056,12 @@ function VisualReplay({
   round: number;
   tt: (key: TranslationKey) => string;
 }) {
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [speed, setSpeed] = useState(1);
   const circuit = circuitForRound(round);
   const playerEntry = result.classification.find((entry) => entry.teamId === playerTeamId) ?? result.classification[0];
   const winner = result.classification[0];
   const replayEvents = result.events
     .filter((event) => event.severity === "major" || event.teamId === playerTeamId || event.relatedTeamId === playerTeamId)
     .slice(0, 3);
-  const cars = result.classification.slice(0, 6).map((entry, index) => ({
-    entry,
-    delay: -(index * 0.72 + Math.max(0, entry.position - 1) * 0.18),
-    duration: 8 + entry.position * 0.55
-  }));
-  const playbackStyle = {
-    "--race-state": isPlaying ? "running" : "paused"
-  } as CSSProperties & Record<string, string>;
 
   return (
     <article className="panel visual-replay-panel" id="race-replay">
@@ -1087,39 +1077,16 @@ function VisualReplay({
           </span>
         ) : null}
       </div>
-      <div className="replay-controls" aria-label={tt("result_replay_controls")}>
-        <button type="button" onClick={() => setIsPlaying((value) => !value)}>
-          {isPlaying ? tt("action_pause_replay") : tt("action_play_replay")}
-        </button>
-        <button type="button" onClick={() => setSpeed((value) => (value === 1 ? 2 : 1))}>
-          {speed === 1 ? tt("action_replay_speed_fast") : tt("action_replay_speed_normal")}
-        </button>
-      </div>
-      <h3>{tt("result_replay_positions")}</h3>
-      <div className="replay-track city-replay-track" aria-label={tt("result_replay_track_label")} style={playbackStyle}>
-        <CityCircuitMap
-          circuit={circuit}
-          tt={tt}
-          compact
-          cars={cars.map(({ entry, delay, duration }) => ({
-            id: entry.teamId,
-            label: entry.teamName.slice(0, 3).toUpperCase(),
-            player: entry.teamId === playerTeamId,
-            delay,
-            duration: duration / speed
-          }))}
-        />
-        <ol className="replay-laps">
-          {RACE_SEGMENTS.slice(0, Math.min(RACE_SEGMENTS.length, circuit.laps)).map((segment, index) => (
-            <li key={segment}>
-              <strong>
-                {tt("result_replay_phase")} {index + 1}
-              </strong>
-              <span>{tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
+      <ol className="replay-laps" aria-label={tt("result_replay_track_label")}>
+        {RACE_SEGMENTS.slice(0, Math.min(RACE_SEGMENTS.length, circuit.laps)).map((segment, index) => (
+          <li key={segment}>
+            <strong>
+              {tt("result_replay_phase")} {index + 1}
+            </strong>
+            <span>{tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}</span>
+          </li>
+        ))}
+      </ol>
       {replayEvents.length > 0 ? (
         <ol className="replay-callouts">
           {replayEvents.map((event) => (

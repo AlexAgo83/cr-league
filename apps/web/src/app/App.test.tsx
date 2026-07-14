@@ -256,8 +256,8 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("Winner")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
-    expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Speed x2" })).toBeTruthy();
+    expect(screen.getByLabelText("Race replay by lap")).toBeTruthy();
+    expect(screen.getByText("Phase 1")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
     expect(screen.getByText("Balanced · Weather · Rain Grip")).toBeTruthy();
     expect(screen.getByText("Your card shaped the race. Keep one for moments where the track or forecast clearly matches it.")).toBeTruthy();

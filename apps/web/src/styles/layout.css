@@ -564,16 +564,6 @@ label small {
   gap: 16px;
 }
 
-.replay-controls {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.replay-controls button {
-  background: #111827;
-}
-
 .replay-summary {
   display: flex;
   flex-wrap: wrap;
@@ -587,64 +577,10 @@ label small {
   font-size: 0.875rem;
 }
 
-.visual-replay-panel h3 {
-  font-size: 0.95rem;
-  margin: 0;
-}
-
-.replay-track {
-  background: #0b1117;
-  border: 1px solid #263442;
-  border-radius: 8px;
-  display: grid;
-  gap: 14px;
-  min-height: 330px;
-  overflow: hidden;
-  padding: 14px;
-  position: relative;
-}
-
-.city-replay-track .city-circuit-map {
-  border: 0;
-  margin: 0;
-  min-height: 236px;
-  padding: 0;
-}
-
-.city-replay-track .city-circuit-map svg {
-  height: 236px;
-}
-
 .city-circuit-map.compact .city-circuit-heading {
   position: absolute;
   top: 0;
   z-index: 1;
-}
-
-.replay-car {
-  animation: replay-drive var(--race-duration, 9s) linear infinite;
-  animation-play-state: var(--race-state, running);
-  background: #38bdf8;
-  border: 2px solid #0b1117;
-  border-radius: 999px;
-  color: #031018;
-  display: grid;
-  font-size: 0.625rem;
-  font-weight: 900;
-  height: 26px;
-  offset-path: var(--race-path);
-  offset-rotate: 0deg;
-  place-items: center;
-  position: absolute;
-  width: 40px;
-  z-index: 2;
-}
-
-.replay-car.player {
-  background: #34d399;
-  color: #031009;
-  height: 30px;
-  width: 46px;
 }
 
 .replay-laps,
@@ -1384,8 +1320,7 @@ button.primary-command:not(:disabled),
   color: var(--color-telemetry);
 }
 
-.city-circuit-map,
-.replay-track {
+.city-circuit-map {
   background:
     #090e13;
   border-color: #253241;
@@ -1581,29 +1516,6 @@ button.primary-command:not(:disabled),
   gap: 12px;
 }
 
-.replay-track {
-  min-height: 430px;
-}
-
-.city-replay-track .city-circuit-map {
-  min-height: 300px;
-}
-
-.city-replay-track .city-map-stage {
-  min-height: 420px;
-}
-
-.replay-car {
-  background: var(--color-telemetry);
-  border-color: #081018;
-  box-shadow: 0 0 18px rgb(56 189 248 / 0.32);
-}
-
-.replay-car.player {
-  background: var(--color-accent);
-  box-shadow: 0 0 18px rgb(22 199 132 / 0.34);
-}
-
 .replay-laps li {
   border-top-color: #334151;
 }
@@ -1652,12 +1564,6 @@ button.primary-command:not(:disabled),
   }
 }
 
-.replay-controls button:not(:disabled) {
-  background: #10161d;
-  border: 1px solid var(--color-border);
-  color: var(--color-text);
-}
-
 @media (max-width: 860px) {
   .hero {
     align-items: stretch;
@@ -1690,8 +1596,7 @@ button.primary-command:not(:disabled),
   }
 
   .race-console,
-  .city-circuit-map,
-  .replay-track {
+  .city-circuit-map {
     padding: 12px;
   }
 
@@ -1716,13 +1621,7 @@ button.primary-command:not(:disabled),
     gap: 8px;
   }
 
-  .city-replay-track .city-circuit-map,
-  .replay-track {
-    min-height: 280px;
-  }
-
-  .city-map-stage,
-  .city-replay-track .city-map-stage {
+  .city-map-stage {
     min-height: 260px;
   }
 }

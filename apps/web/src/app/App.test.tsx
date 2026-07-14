@@ -325,9 +325,13 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
     expect((await screen.findAllByText("Round 2")).length).toBeGreaterThan(0);
-    expect(screen.getByRole("button", { name: "Restart session" })).toBeTruthy();
+    expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
-    // League controls live in the championship view
+    // League controls live in the profile menu modal
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(screen.getByLabelText("Language")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "League controls" }));
+    expect(screen.getByRole("dialog", { name: "League controls" })).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
     fireEvent.click(screen.getByRole("button", { name: "Update settings" }));
     expect(await screen.findByText("League settings updated.")).toBeTruthy();

@@ -86,6 +86,11 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.locator(".championship-grid")).toBeVisible();
   await expect(page.locator(".standings-table")).toContainText("Circle One");
   await expect(page.locator(".round-timeline")).toContainText("R1");
+  await expect(page.locator(".championship-settings-panel")).toHaveCount(0);
+  await page.getByRole("button", { name: "Profile menu" }).click();
+  await expect(page.getByRole("button", { name: "League controls" })).toBeVisible();
+  await expect(page.getByLabel("Language")).toBeVisible();
+  await page.getByRole("button", { name: "Profile menu" }).click();
   await page.screenshot({ path: testInfo.outputPath("championship-layout-desktop.png"), fullPage: true });
 
   await expect(page.getByLabel("League summary").getByText("Wait for directives")).toBeVisible();

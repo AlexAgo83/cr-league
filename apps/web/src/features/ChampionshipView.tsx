@@ -1,26 +1,14 @@
 import type { TranslationKey } from "../i18n/index.js";
 import { statusLabel, type Translator } from "../app/helpers.js";
-import type { FormState, LeagueState } from "../app/types.js";
+import type { LeagueState } from "../app/types.js";
 
 export function ChampionshipView({
   state,
   playerTeamId,
-  form,
-  setForm,
-  loading,
-  onUpdateSettings,
-  onForgetPlayer,
-  onRestartLeague,
   tt
 }: {
   state: LeagueState;
   playerTeamId: string | undefined;
-  form: FormState;
-  setForm: (form: FormState) => void;
-  loading: boolean;
-  onUpdateSettings: () => void;
-  onForgetPlayer: () => void;
-  onRestartLeague: () => void;
   tt: Translator;
 }) {
   const leader = state.teams[0];
@@ -119,39 +107,6 @@ export function ChampionshipView({
             </strong>
             <span>{statusLabel(currentGrandPrix.status, tt)}</span>
             <small>{tt(`next_action_${state.actionState.nextAction}` as TranslationKey)}</small>
-          </section>
-
-          <section className="panel championship-settings-panel">
-            <h3>{tt("settings_title")}</h3>
-            <div className="field-grid settings-fields">
-              <label>
-                {tt("field_cadence")}
-                <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
-                  <option value="manual">{tt("cadence_manual")}</option>
-                  <option value="fast">{tt("cadence_fast")}</option>
-                  <option value="weekly">{tt("cadence_weekly")}</option>
-                </select>
-              </label>
-              <label>
-                {tt("field_deadline")}
-                <input
-                  type="datetime-local"
-                  value={form.preparationDeadlineAt}
-                  onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })}
-                />
-              </label>
-            </div>
-            <div className="actions secondary-actions">
-              <button type="button" onClick={onUpdateSettings} disabled={loading}>
-                {tt("action_update_settings")}
-              </button>
-              <button type="button" onClick={onForgetPlayer} disabled={loading || !state.player}>
-                {tt("action_forget_team")}
-              </button>
-              <button type="button" onClick={onRestartLeague} disabled={loading}>
-                {tt("action_restart_league")}
-              </button>
-            </div>
           </section>
         </aside>
       </div>

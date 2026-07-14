@@ -39,6 +39,8 @@ export function App() {
   const tt = (key: TranslationKey) => t(key, locale);
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const [briefingOpen, setBriefingOpen] = useState(false);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState(() => t("status_initial", locale));
@@ -244,6 +246,11 @@ export function App() {
     }
   }
 
+  function closeLeagueControls() {
+    setLeagueControlsOpen(false);
+    setProfileOpen(false);
+  }
+
   if (!leagueState) {
     return (
       <main className="app-shell setup-shell">
@@ -323,15 +330,40 @@ export function App() {
             </button>
           ))}
         </nav>
-        <select
-          className="game-language"
-          aria-label={tt("language_label")}
-          value={locale}
-          onChange={(event) => changeLocale(event.target.value as Locale)}
-        >
-          <option value="en">{tt("language_en")}</option>
-          <option value="fr">{tt("language_fr")}</option>
-        </select>
+        <div className="profile-menu">
+          <button
+            type="button"
+            className="profile-menu-button"
+            aria-label={tt("profile_menu")}
+            aria-expanded={profileOpen}
+            onClick={() => setProfileOpen(!profileOpen)}
+          >
+            {playerTeam?.name.slice(0, 2).toUpperCase() ?? "CR"}
+          </button>
+          {profileOpen ? (
+            <div className="profile-menu-panel">
+              <label>
+                {tt("language_label")}
+                <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
+                  <option value="en">{tt("language_en")}</option>
+                  <option value="fr">{tt("language_fr")}</option>
+                </select>
+              </label>
+              {leagueState.player ? (
+                <button
+                  type="button"
+                  className="profile-menu-action"
+                  onClick={() => {
+                    setLeagueControlsOpen(true);
+                    setProfileOpen(false);
+                  }}
+                >
+                  {tt("settings_title")}
+                </button>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
       </header>
 
       <section className="view-container">
@@ -379,12 +411,6 @@ export function App() {
           <ChampionshipView
             state={leagueState}
             playerTeamId={playerTeam?.id}
-            form={form}
-            setForm={setForm}
-            loading={status === "loading"}
-            onUpdateSettings={updateSettings}
-            onForgetPlayer={forgetPlayer}
-            onRestartLeague={restartLeague}
             tt={tt}
           />
         ) : null}
@@ -468,6 +494,46 @@ export function App() {
             </div>
             <div className="actions">
               <button type="button" onClick={() => setBriefingOpen(false)}>
+                {tt("action_close")}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
+      {leagueControlsOpen ? (
+        <div className="modal-overlay" onClick={closeLeagueControls}>
+          <section className="panel modal league-controls-modal" role="dialog" aria-modal="true" aria-label={tt("settings_title")} onClick={(event) => event.stopPropagation()}>
+            <span className="section-kicker">{tt("championship_kicker")}</span>
+            <h2>{tt("settings_title")}</h2>
+            <div className="field-grid settings-fields">
+              <label>
+                {tt("field_cadence")}
+                <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
+                  <option value="manual">{tt("cadence_manual")}</option>
+                  <option value="fast">{tt("cadence_fast")}</option>
+                  <option value="weekly">{tt("cadence_weekly")}</option>
+                </select>
+              </label>
+              <label>
+                {tt("field_deadline")}
+                <input
+                  type="datetime-local"
+                  value={form.preparationDeadlineAt}
+                  onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })}
+                />
+              </label>
+            </div>
+            <div className="actions secondary-actions">
+              <button type="button" onClick={updateSettings} disabled={status === "loading"}>
+                {tt("action_update_settings")}
+              </button>
+              <button type="button" onClick={forgetPlayer} disabled={status === "loading" || !leagueState.player}>
+                {tt("action_forget_team")}
+              </button>
+              <button type="button" onClick={restartLeague} disabled={status === "loading"}>
+                {tt("action_restart_league")}
+              </button>
+              <button type="button" onClick={closeLeagueControls}>
                 {tt("action_close")}
               </button>
             </div>

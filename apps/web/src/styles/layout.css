@@ -724,9 +724,32 @@ label small {
 }
 
 .replay-map-controls button {
+  align-items: center;
+  display: inline-flex;
   font-size: 0.9rem;
+  justify-content: center;
   line-height: 1;
+  position: relative;
   width: 30px;
+}
+
+.replay-map-controls .replay-playback-button {
+  overflow: visible;
+}
+
+.replay-map-controls .replay-playback-button.playing::after {
+  animation: replay-spin 0.9s linear infinite;
+  border: 2px solid rgb(56 189 248 / 0.22);
+  border-top-color: var(--color-telemetry);
+  border-radius: 999px;
+  content: "";
+  inset: -3px;
+  pointer-events: none;
+  position: absolute;
+}
+
+.replay-map-controls .replay-playback-button.paused {
+  animation: replay-pulse 1.2s ease-in-out infinite;
 }
 
 .replay-map-controls button.active {
@@ -738,6 +761,19 @@ label small {
   font-size: 0.75rem;
   font-weight: 800;
   width: auto;
+}
+
+@keyframes replay-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes replay-pulse {
+  50% {
+    box-shadow: 0 0 0 4px rgb(56 189 248 / 0.18);
+    color: var(--color-telemetry);
+  }
 }
 
 .replay-marker {
@@ -848,7 +884,9 @@ label small {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .circuit-route-accent {
+  .circuit-route-accent,
+  .replay-map-controls .replay-playback-button.playing::after,
+  .replay-map-controls .replay-playback-button.paused {
     animation: none;
   }
 }

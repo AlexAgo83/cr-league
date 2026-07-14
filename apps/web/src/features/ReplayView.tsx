@@ -313,6 +313,7 @@ export function ReplayView({
                 <div className="replay-map-controls">
                   <button
                     type="button"
+                    className={playing ? "replay-playback-button playing" : "replay-playback-button paused"}
                     aria-label={playing ? tt("action_pause") : tt("action_play")}
                     title={playing ? tt("action_pause") : tt("action_play")}
                     onClick={() => (!playing && clock.current >= replayEnd ? restart() : setPlaying(!playing))}

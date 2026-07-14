@@ -951,9 +951,9 @@ label small {
 }
 
 .circuit-start {
-  fill: var(--color-text);
-  stroke: var(--color-cockpit);
-  stroke-width: 4;
+  fill: none;
+  stroke: var(--color-text);
+  stroke-width: 5;
 }
 
 .map-car-shape {
@@ -1000,7 +1000,8 @@ label small {
 
 .map-car-delta {
   animation: map-car-delta-float 1s ease-out both;
-  font-size: 8px;
+  font-size: 14px;
+  stroke-width: 4px;
 }
 
 .map-car-delta.gain {
@@ -1014,7 +1015,7 @@ label small {
 @keyframes map-car-delta-float {
   to {
     opacity: 0;
-    transform: translateY(-16px);
+    transform: translateY(-22px);
   }
 }
 

@@ -32,7 +32,7 @@ const SAFE_AREA = {
   left: 125
 };
 const TILE_SIZE = 256;
-const FOCUS_ZOOM = 2.15;
+const FOCUS_ZOOM = 2.55;
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
   const scale = TILE_SIZE * 2 ** zoom;

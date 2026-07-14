@@ -41,7 +41,7 @@
   "setup_create_hint": "Start a fresh championship.",
   "setup_join_hint": "Enter an invite code.",
   "drive_context_title": "Race prep",
-  "drive_context_explainer": "Read the circuit, set the directive, pick a card, then lock the plan.",
+  "drive_context_explainer": "Study the current GP, set your directive, pick a card, then lock the plan.",
   "cockpit_sections": "Cockpit sections",
   "rail_drive": "Race",
   "rail_championship": "Championship",

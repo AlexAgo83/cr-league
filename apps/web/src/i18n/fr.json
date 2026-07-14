@@ -41,7 +41,7 @@
   "setup_create_hint": "Lancer un championnat.",
   "setup_join_hint": "Entrer un code d'invitation.",
   "drive_context_title": "Préparation course",
-  "drive_context_explainer": "Lis le circuit, règle ta directive, choisis une carte, puis verrouille le plan.",
+  "drive_context_explainer": "Analyse le GP en cours, règle ta directive, choisis une carte, puis verrouille le plan.",
   "cockpit_sections": "Sections du cockpit",
   "rail_drive": "Course",
   "rail_championship": "Championnat",

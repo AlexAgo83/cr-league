@@ -263,7 +263,7 @@ describe("App", () => {
     expect(await screen.findByText("ABC123")).toBeTruthy();
     expect(screen.getByText("Prepare")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race prep" })).toBeTruthy();
-    expect(screen.getByText("Read the circuit, set the directive, pick a card, then lock the plan.")).toBeTruthy();
+    expect(screen.getByText("Study the current GP, set your directive, pick a card, then lock the plan.")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);

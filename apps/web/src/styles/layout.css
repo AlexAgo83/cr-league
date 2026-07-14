@@ -288,20 +288,30 @@ label small {
   color: var(--color-text);
 }
 
-/* ---------- Race console (drive view) ---------- */
+/* ---------- Briefing modal ---------- */
 
-.race-console {
-  display: grid;
-  gap: 16px;
+.modal-overlay {
+  align-items: center;
+  background: rgb(4 8 12 / 0.66);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 16px;
+  position: fixed;
+  z-index: 20;
 }
 
-.race-console h2 {
+.modal {
+  box-shadow: 0 24px 64px rgb(0 0 0 / 0.5);
+  max-height: calc(100dvh - 32px);
+  max-width: 480px;
+  overflow: auto;
+  width: 100%;
+}
+
+.modal h2 {
   font-size: 1.4rem;
   margin: 4px 0 8px;
-}
-
-.race-console p {
-  margin-bottom: 0;
 }
 
 .race-telemetry {
@@ -736,6 +746,31 @@ label small {
   background: rgb(56 189 248 / 0.12);
   border-color: rgb(56 189 248 / 0.42);
   color: var(--color-telemetry);
+}
+
+.command-actions {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+button.info-command {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  color: var(--color-telemetry);
+  font-family: Georgia, serif;
+  font-size: 1.05rem;
+  font-style: italic;
+  font-weight: 700;
+  height: 44px;
+  padding: 0;
+  width: 44px;
+}
+
+button.info-command:hover {
+  border-color: var(--color-telemetry);
 }
 
 button.primary-command {

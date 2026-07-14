@@ -100,6 +100,7 @@
   "action_update_settings": "Mettre à jour",
   "action_forget_team": "Oublier équipe",
   "action_restart_league": "Relancer session",
+  "action_close": "Fermer",
   "restart_confirm": "Relancer cette ligue depuis la manche 1 ? Les équipes restent inscrites, mais points, crédits, cartes, directives et historique GP sont remis à zéro.",
   "cadence_manual": "Manuelle",
   "cadence_fast": "Rapide",

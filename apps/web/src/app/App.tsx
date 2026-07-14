@@ -5,8 +5,8 @@ import { circuitForRound } from "./circuits.js";
 import { cardFit, strongestForecast } from "./helpers.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
+import { CircuitMap } from "../features/CircuitMap.js";
 import { DirectiveView } from "../features/DirectiveView.js";
-import { DriveView } from "../features/DriveView.js";
 import { GarageView } from "../features/GarageView.js";
 import { ReplayView } from "../features/ReplayView.js";
 import { ReportView } from "../features/ReportView.js";
@@ -38,6 +38,7 @@ export function App() {
   const [gameView, setGameView] = useState<GameView>("drive");
   const tt = (key: TranslationKey) => t(key, locale);
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
+  const [briefingOpen, setBriefingOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState(() => t("status_initial", locale));
@@ -334,7 +335,9 @@ export function App() {
 
       <section className="view-container">
         {gameView === "drive" ? (
-          <DriveView state={leagueState} circuit={currentCircuit} forecastPick={forecastPick} isResolved={isResolved} tt={tt} />
+          <div className="view-stack">
+            <CircuitMap circuit={currentCircuit} tt={tt} />
+          </div>
         ) : null}
         {gameView === "directive" ? (
           <DirectiveView
@@ -388,10 +391,51 @@ export function App() {
           <p className={status === "error" ? "status error" : "status"}>{message}</p>
           <small className="command-hint">{tt(`command_hint_${deskState}` as TranslationKey)}</small>
         </div>
-        <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-          {primaryCommand.label}
-        </button>
+        <div className="command-actions">
+          <button
+            className="info-command"
+            type="button"
+            aria-label={tt("briefing_next_action")}
+            onClick={() => setBriefingOpen(true)}
+          >
+            i
+          </button>
+          <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+            {primaryCommand.label}
+          </button>
+        </div>
       </footer>
+
+      {briefingOpen ? (
+        <div className="modal-overlay" onClick={() => setBriefingOpen(false)}>
+          <section
+            className="panel modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label={tt("briefing_next_action")}
+            onClick={(event) => event.stopPropagation()}
+          >
+            <span className="section-kicker">{tt("briefing_next_action")}</span>
+            <h2>{tt(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}</h2>
+            <p>{isResolved ? tt("briefing_tip_resolved") : tt("briefing_tip_prepare")}</p>
+            <div className="race-telemetry" aria-label={tt("race_telemetry")}>
+              <span>{tt(`trait_${leagueState.currentGrandPrix.primaryTrait}` as TranslationKey)}</span>
+              <span>{tt(`trait_${leagueState.currentGrandPrix.secondaryTrait}` as TranslationKey)}</span>
+              <span>
+                {tt(`weather_${forecastPick}` as TranslationKey)} {leagueState.currentGrandPrix.forecast[forecastPick]}%
+              </span>
+              <span>
+                {tt("dashboard_players")} {leagueState.actionState.submittedTeamIds.length}/{leagueState.teams.length}
+              </span>
+            </div>
+            <div className="actions">
+              <button type="button" onClick={() => setBriefingOpen(false)}>
+                {tt("action_close")}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </main>
   );
 }

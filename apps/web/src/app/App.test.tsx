@@ -236,13 +236,19 @@ describe("App", () => {
 
     // Drive view + topbar
     expect(await screen.findByText("ABC123")).toBeTruthy();
-    expect(screen.getByText("Wait for directives")).toBeTruthy();
     expect(screen.getByText("Prepare")).toBeTruthy();
-    expect(screen.getByText("Fast")).toBeTruthy();
-    expect(screen.getByText("Weather sensitive")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Replay" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByRole("button", { name: "Report" }).hasAttribute("disabled")).toBe(true);
+
+    // Briefing modal from the info button
+    expect(screen.queryByText("Wait for directives")).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Next action" }));
+    expect(screen.getByText("Wait for directives")).toBeTruthy();
+    expect(screen.getByText("Fast")).toBeTruthy();
+    expect(screen.getByText("Weather sensitive")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    expect(screen.queryByText("Wait for directives")).toBe(null);
 
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));

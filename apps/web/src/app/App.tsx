@@ -118,15 +118,17 @@ export function App() {
   );
   const playerDecision = leagueState?.decisions.find((decision) => decision.teamId === playerTeam?.id);
   const qualifyingRuns = leagueState?.currentGrandPrix.qualifyingRuns ?? [];
-  const playerQualifyingRun = qualifyingRuns.find((run) => run.teamId === playerTeam?.id) ?? null;
+  const playerQualifyingRuns = qualifyingRuns.filter((run) => run.teamId === playerTeam?.id);
+  const playerQualifyingRun = playerQualifyingRuns.reduce<QualifyingRun | null>((best, run) => (!best || run.time < best.time ? run : best), null);
   const qualifyingLeaderboard = [...qualifyingRuns]
     .sort((left, right) => left.time - right.time)
+    .slice(0, 8)
     .map((run, index) => ({
       ...run,
       position: index + 1,
       teamName: leagueState?.teams.find((team) => team.id === run.teamId)?.name ?? run.teamId
     }));
-  const qualifyingAttemptsUsed = playerQualifyingRun?.attempts ?? 0;
+  const qualifyingAttemptsUsed = Math.max(playerQualifyingRuns.length, ...playerQualifyingRuns.map((run) => run.attempts));
   const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? form.qualifyingAttemptLimit;
   const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
   const result = leagueState?.currentGrandPrix.result;

@@ -332,6 +332,38 @@ describe("api app", () => {
     expect(secondRun.statusCode).toBe(409);
   });
 
+  it("keeps every qualifying attempt for the timing board", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", qualifyingAttemptLimit: 2 }
+    });
+    const created = createResponse.json();
+    const payload = {
+      teamId: created.player.teamId,
+      approach: "balanced",
+      preparation: "weather"
+    };
+    const firstRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
+    const secondRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
+
+    await app.close();
+
+    expect(firstRun.statusCode).toBe(200);
+    expect(secondRun.statusCode).toBe(200);
+    expect(secondRun.json().run.attempts).toBe(2);
+    expect(secondRun.json().state.currentGrandPrix.qualifyingRuns.filter((run: { teamId: string }) => run.teamId === created.player.teamId)).toHaveLength(2);
+  });
+
   it("rejects qualifying after the player submits a directive", async () => {
     const app = await buildApp(
       {

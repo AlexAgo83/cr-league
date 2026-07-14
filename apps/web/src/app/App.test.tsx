@@ -210,15 +210,21 @@ const nextGrandPrixState = {
 const qualifyingRun = {
   teamId: "team_1",
   time: 72.42,
-  attempts: 1,
+  attempts: 2,
   result: resolvedState.currentGrandPrix.result
+};
+
+const slowerQualifyingRun = {
+  ...qualifyingRun,
+  time: 75.18,
+  attempts: 1
 };
 
 const qualifiedState = {
   ...baseState,
   currentGrandPrix: {
     ...baseState.currentGrandPrix,
-    qualifyingRuns: [qualifyingRun]
+    qualifyingRuns: [slowerQualifyingRun, qualifyingRun]
   }
 };
 
@@ -317,6 +323,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.queryByText("Run a lap time")).toBe(null);
     expect(screen.getByText("72.42s")).toBeTruthy();
+    expect(screen.getByText("75.18s")).toBeTruthy();
 
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
@@ -331,7 +338,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
     expect(screen.getByRole("dialog", { name: "Confirm directive" })).toBeTruthy();
-    expect(screen.getByText("You still have lap time attempts left. Submit the directive now? 2/3")).toBeTruthy();
+    expect(screen.getByText("You still have lap time attempts left. Submit the directive now? 1/3")).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "Submit directive" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(screen.getByText("Ready to launch")).toBeTruthy();

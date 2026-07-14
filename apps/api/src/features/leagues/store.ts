@@ -574,13 +574,14 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
     forecast: grandPrix.forecast as RaceInput["forecast"]
   });
   const runs = normalizeQualifyingRuns(grandPrix.qualifyingRuns);
-  const previous = runs.find((candidate) => candidate.teamId === team.id);
-  const attempts = (previous?.attempts ?? 0) + 1;
+  const teamRuns = runs.filter((candidate) => candidate.teamId === team.id);
+  const previousBest = teamRuns.reduce<QualifyingRun | null>((best, candidate) => (!best || candidate.time < best.time ? candidate : best), null);
+  const attempts = Math.max(teamRuns.length, ...teamRuns.map((candidate) => candidate.attempts)) + 1;
   if (attempts > state.league.qualifyingAttemptLimit) {
     throw new LeagueRuleError("No qualifying attempts left.");
   }
-  const nextBest = previous && previous.time <= run.time ? { ...previous, attempts } : { ...run, attempts };
-  const nextRuns = [...runs.filter((candidate) => candidate.teamId !== team.id), nextBest];
+  const nextRun = { ...run, attempts };
+  const nextRuns = [...runs, nextRun];
 
   await db.grandPrix.update({
     where: { id: grandPrix.id },
@@ -589,8 +590,8 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
 
   return {
     state: await getLeagueState(db, leagueId),
-    run: { ...run, attempts },
-    isBest: !previous || run.time < previous.time
+    run: nextRun,
+    isBest: !previousBest || run.time < previousBest.time
   };
 }
 
@@ -783,7 +784,7 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
 
 function buildParticipants(state: LeagueState): RaceParticipant[] {
   const baseRank = new Map(state.teams.map((team, index) => [team.id, index + 1]));
-  const qualifyingTime = new Map(state.currentGrandPrix.qualifyingRuns.map((run) => [run.teamId, run.time]));
+  const qualifyingTime = new Map(bestQualifyingRuns(state.currentGrandPrix.qualifyingRuns).map((run) => [run.teamId, run.time]));
   const qualifyingRank = new Map(
     [...state.teams]
       .sort(
@@ -817,6 +818,12 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
         : { ...demo.decision, defaulted: true }
     };
   });
+}
+
+function bestQualifyingRuns(runs: QualifyingRun[]) {
+  return [...runs]
+    .sort((left, right) => left.time - right.time)
+    .filter((run, index, sorted) => sorted.findIndex((candidate) => candidate.teamId === run.teamId) === index);
 }
 
 async function fillLeagueWithBots(db: Db, state: LeagueState) {

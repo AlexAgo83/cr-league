@@ -1,10 +1,10 @@
 ## item_043_redesign_championship_and_garage_as_supporting_panels - Redesign championship and garage as supporting panels
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 95%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Supporting game panels
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -52,6 +52,7 @@
 - request-AC5 -> This backlog slice. Proof: AC3: The garage does not show purchasable actions before they are valid.
 - request-AC7 -> This backlog slice. Proof: AC4: Existing e2e coverage still verifies the 3-GP loop and card purchase path.
 - request-AC8 -> This backlog slice. Proof: AC4: Existing e2e coverage still verifies the 3-GP loop and card purchase path.
+- request-AC6 -> This backlog slice. Evidence needed: The web implementation is split into practical components or helpers for the redesigned surfaces, without speculative abstractions or new dependencies.
 
 # Decision framing
 - Product framing: Not needed
@@ -72,3 +73,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_033_orchestrate_race_cockpit_redesign_v0`
+
+# Notes
+- Task `task_033_orchestrate_race_cockpit_redesign_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

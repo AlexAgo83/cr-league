@@ -1,10 +1,10 @@
 ## item_044_make_result_and_replay_presentation_unambiguous - Make result and replay presentation unambiguous
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 96
-> Progress: 95%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Result comprehension
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -67,6 +67,7 @@
 - request-AC5 -> This backlog slice. Proof: AC3: The current static replay does not visually imply precision that the data does not support.
 - request-AC7 -> This backlog slice. Proof: AC4: Unit or e2e assertions cover the key result/replay labels in at least one locale.
 - request-AC8 -> This backlog slice. Proof: AC4: Unit or e2e assertions cover the key result/replay labels in at least one locale.
+- request-AC6 -> This backlog slice. Evidence needed: The web implementation is split into practical components or helpers for the redesigned surfaces, without speculative abstractions or new dependencies.
 
 # Decision framing
 - Product framing: Not needed
@@ -87,3 +88,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_033_orchestrate_race_cockpit_redesign_v0`
+
+# Notes
+- Task `task_033_orchestrate_race_cockpit_redesign_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

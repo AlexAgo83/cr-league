@@ -1,10 +1,10 @@
 ## item_045_audit_and_harden_i18n_for_redesigned_surfaces - Audit and harden i18n for redesigned surfaces
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 95%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Localization quality
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -43,6 +43,10 @@
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: New cockpit, championship, garage, result, and replay labels exist in both EN and FR catalogs.
 - request-AC8 -> This backlog slice. Proof: AC2: French mode no longer shows English for the redesigned primary surfaces.
+- request-AC3 -> This backlog slice. Evidence needed: The race desk exposes a single obvious primary action per state and keeps the current GP status, player directive, and next action visible on desktop and mobile.
+- request-AC4 -> This backlog slice. Evidence needed: The result and replay area clearly distinguishes final classification, race explanation, replay/visual summary, and written report, with no ambiguous labels.
+- request-AC6 -> This backlog slice. Evidence needed: The web implementation is split into practical components or helpers for the redesigned surfaces, without speculative abstractions or new dependencies.
+- request-AC7 -> This backlog slice. Evidence needed: Desktop and mobile screenshots demonstrate that text does not overlap, core controls remain visible, and the app no longer reads as an unstructured admin page.
 
 # Decision framing
 - Product framing: Not needed
@@ -63,3 +67,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_033_orchestrate_race_cockpit_redesign_v0`
+
+# Notes
+- Task `task_033_orchestrate_race_cockpit_redesign_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

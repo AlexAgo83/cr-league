@@ -1,10 +1,10 @@
 ## item_041_establish_visual_direction_and_css_foundations - Establish visual direction and CSS foundations
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 96
-> Progress: 95%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Visual direction
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -55,6 +55,10 @@
 - request-AC2 -> This backlog slice. Proof: AC1: The CSS exposes a small set of named colors or variables for cockpit, surface, text, muted text, accent, warning, and success.
 - request-AC3 -> This backlog slice. Proof: AC2: The first viewport reads as a racing command cockpit rather than a neutral SaaS dashboard.
 - request-AC7 -> This backlog slice. Proof: AC3: Race states are visually distinct and labeled in text.
+- request-AC4 -> This backlog slice. Evidence needed: The result and replay area clearly distinguishes final classification, race explanation, replay/visual summary, and written report, with no ambiguous labels.
+- request-AC5 -> This backlog slice. Evidence needed: French and English UI copy come from the i18n catalogs for all redesigned surfaces, and a test or audit catches the main hardcoded-copy regressions.
+- request-AC6 -> This backlog slice. Evidence needed: The web implementation is split into practical components or helpers for the redesigned surfaces, without speculative abstractions or new dependencies.
+- request-AC8 -> This backlog slice. Evidence needed: Existing 3-GP e2e behavior and validation gates continue to pass after the redesign.
 
 # Decision framing
 - Product framing: Not needed
@@ -75,3 +79,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_033_orchestrate_race_cockpit_redesign_v0`
+
+# Notes
+- Task `task_033_orchestrate_race_cockpit_redesign_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

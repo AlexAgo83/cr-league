@@ -1,10 +1,10 @@
 ## item_042_rebuild_the_race_desk_around_one_clear_action - Rebuild the race desk around one clear action
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 95
-> Progress: 95%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Race desk UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -57,6 +57,8 @@
 - request-AC3 -> This backlog slice. Proof: AC2: The directive form remains usable and validated by the existing API flow.
 - request-AC5 -> This backlog slice. Proof: AC3: French mode shows French labels for the redesigned race desk controls and state text.
 - request-AC8 -> This backlog slice. Proof: AC4: Existing create, directive submit, resolve, and next-GP flows remain covered by unit or e2e tests.
+- request-AC6 -> This backlog slice. Evidence needed: The web implementation is split into practical components or helpers for the redesigned surfaces, without speculative abstractions or new dependencies.
+- request-AC7 -> This backlog slice. Evidence needed: Desktop and mobile screenshots demonstrate that text does not overlap, core controls remain visible, and the app no longer reads as an unstructured admin page.
 
 # Decision framing
 - Product framing: Not needed
@@ -77,3 +79,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_033_orchestrate_race_cockpit_redesign_v0`
+
+# Notes
+- Task `task_033_orchestrate_race_cockpit_redesign_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

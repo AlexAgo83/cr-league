@@ -1,10 +1,10 @@
 ## item_040_define_the_cockpit_information_architecture - Define the cockpit information architecture
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 92
-> Progress: 95%
+> Progress: 100%
 > Complexity: Medium
 > Theme: UX structure
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -51,6 +51,9 @@
 - request-AC3 -> This backlog slice. Proof: AC2: The plan defines desktop and mobile ordering for Course, Championship, Garage, and Result/Replay.
 - request-AC4 -> This backlog slice. Proof: AC3: The plan removes or consolidates at least one redundant panel from the current long stack.
 - request-AC7 -> This backlog slice. Proof: AC4: The plan names the post-GP information sequence: outcome first, explanation second, replay/report supporting evidence after.
+- request-AC5 -> This backlog slice. Evidence needed: French and English UI copy come from the i18n catalogs for all redesigned surfaces, and a test or audit catches the main hardcoded-copy regressions.
+- request-AC6 -> This backlog slice. Evidence needed: The web implementation is split into practical components or helpers for the redesigned surfaces, without speculative abstractions or new dependencies.
+- request-AC8 -> This backlog slice. Evidence needed: Existing 3-GP e2e behavior and validation gates continue to pass after the redesign.
 
 # Decision framing
 - Product framing: Not needed
@@ -71,3 +74,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_033_orchestrate_race_cockpit_redesign_v0`
+
+# Notes
+- Task `task_033_orchestrate_race_cockpit_redesign_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

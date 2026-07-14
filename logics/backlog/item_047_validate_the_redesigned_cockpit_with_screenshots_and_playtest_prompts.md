@@ -1,10 +1,10 @@
 ## item_047_validate_the_redesigned_cockpit_with_screenshots_and_playtest_prompts - Validate the redesigned cockpit with screenshots and playtest prompts
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 92
-> Progress: 90%
+> Progress: 100%
 > Complexity: Low
 > Theme: Validation and playtest readiness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -71,6 +71,10 @@
 # AC Traceability
 - request-AC7 -> This backlog slice. Proof: AC1: Playtest docs ask whether the cockpit feels like a racing game rather than an admin dashboard.
 - request-AC8 -> This backlog slice. Proof: AC2: Playtest docs ask whether the next action is obvious in each GP state.
+- request-AC3 -> This backlog slice. Evidence needed: The race desk exposes a single obvious primary action per state and keeps the current GP status, player directive, and next action visible on desktop and mobile.
+- request-AC4 -> This backlog slice. Evidence needed: The result and replay area clearly distinguishes final classification, race explanation, replay/visual summary, and written report, with no ambiguous labels.
+- request-AC5 -> This backlog slice. Evidence needed: French and English UI copy come from the i18n catalogs for all redesigned surfaces, and a test or audit catches the main hardcoded-copy regressions.
+- request-AC6 -> This backlog slice. Evidence needed: The web implementation is split into practical components or helpers for the redesigned surfaces, without speculative abstractions or new dependencies.
 
 # Decision framing
 - Product framing: Not needed
@@ -91,3 +95,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_033_orchestrate_race_cockpit_redesign_v0`
+
+# Notes
+- Task `task_033_orchestrate_race_cockpit_redesign_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

@@ -1,7 +1,7 @@
 ## req_032_redesign_the_cr_league_race_cockpit_v0 - Redesign the CR League race cockpit V0
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: High

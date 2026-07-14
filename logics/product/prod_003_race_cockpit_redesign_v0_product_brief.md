@@ -1,8 +1,8 @@
 ## prod_003_race_cockpit_redesign_v0_product_brief - Race Cockpit Redesign V0 Product Brief
 > Date: 2026-07-14
-> Status: Proposed
+> Status: Settled
 > Related request: `req_032_redesign_the_cr_league_race_cockpit_v0`
-> Related backlog: `item_040_define_the_cockpit_information_architecture`, `item_041_establish_visual_direction_and_css_foundations`, `item_042_rebuild_the_race_desk_around_one_clear_action`, `item_043_redesign_championship_and_garage_as_supporting_panels`, `item_044_make_result_and_replay_presentation_unambiguous`, `item_045_audit_and_harden_i18n_for_redesigned_surfaces`, `item_046_split_the_web_cockpit_into_practical_components`, `item_047_validate_the_redesigned_cockpit_with_screenshots_and_playtest_prompts`
+> Related backlog: `item_040_define_the_cockpit_information_architecture`
 > Related task: `task_033_orchestrate_race_cockpit_redesign_v0`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -136,5 +136,5 @@ flowchart LR
 - Secondary setup/admin controls are intentionally not first-viewport material anymore; they still need a cleaner dedicated management surface later.
 
 # References
-- Product back-reference: `req_032_redesign_the_cr_league_race_cockpit_v0`
+- Product back-reference: `item_040_define_the_cockpit_information_architecture`
 - Task back-reference: `task_033_orchestrate_race_cockpit_redesign_v0`

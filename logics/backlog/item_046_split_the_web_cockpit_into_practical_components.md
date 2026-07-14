@@ -1,10 +1,10 @@
 ## item_046_split_the_web_cockpit_into_practical_components - Split the web cockpit into practical components
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 94
-> Progress: 95%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Frontend maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -52,6 +52,10 @@
 # AC Traceability
 - request-AC6 -> This backlog slice. Proof: AC1: The app root is smaller and delegates redesigned surfaces to clearly named components or local helpers.
 - request-AC8 -> This backlog slice. Proof: AC2: Component boundaries map to product surfaces, not generic UI abstractions.
+- request-AC3 -> This backlog slice. Evidence needed: The race desk exposes a single obvious primary action per state and keeps the current GP status, player directive, and next action visible on desktop and mobile.
+- request-AC4 -> This backlog slice. Evidence needed: The result and replay area clearly distinguishes final classification, race explanation, replay/visual summary, and written report, with no ambiguous labels.
+- request-AC5 -> This backlog slice. Evidence needed: French and English UI copy come from the i18n catalogs for all redesigned surfaces, and a test or audit catches the main hardcoded-copy regressions.
+- request-AC7 -> This backlog slice. Evidence needed: Desktop and mobile screenshots demonstrate that text does not overlap, core controls remain visible, and the app no longer reads as an unstructured admin page.
 
 # Decision framing
 - Product framing: Not needed
@@ -72,3 +76,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_033_orchestrate_race_cockpit_redesign_v0`
+
+# Notes
+- Task `task_033_orchestrate_race_cockpit_redesign_v0` was finished via `logics-manager flow finish task` on 2026-07-14.

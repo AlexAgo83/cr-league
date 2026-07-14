@@ -1,0 +1,352 @@
+{
+  "budgets": {
+    "max_docs": 20,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_031_add_first_visual_race_replay_from_event_timeline item_037_design_visual_replay_v0_contract_and_layout item_038_implement_visual_replay_panel_in_the_web_app item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks task_032_orchestrate_visual_replay_v0 --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_037_design_visual_replay_v0_contract_and_layout",
+          "item_038_implement_visual_replay_panel_in_the_web_app",
+          "item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks"
+        ],
+        "prod": [
+          "prod_002_visual_replay_v0_product_brief"
+        ],
+        "req": [
+          "req_031_add_first_visual_race_replay_from_event_timeline"
+        ],
+        "task": [
+          "task_032_orchestrate_visual_replay_v0"
+        ]
+      },
+      "path": "logics/product/prod_002_visual_replay_v0_product_brief.md",
+      "ref": "prod_002_visual_replay_v0_product_brief",
+      "status": "Proposed",
+      "title": "Visual Replay V0 Product Brief"
+    },
+    {
+      "kind": "roadmap",
+      "linked_refs": {
+        "adr": [
+          "adr_001_cr_league_v1_static_pwa_api_architecture",
+          "adr_004_data_security",
+          "adr_006_accessibility",
+          "adr_007_i18n",
+          "adr_008_testing_quality"
+        ],
+        "item": [
+          "item_004_design_and_implement_the_v1_card_and_inventory_system",
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues",
+          "item_014_define_cr_league_implementation_roadmap",
+          "item_026_add_join_league_by_code_flow"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_008_define_cr_league_implementation_roadmap",
+          "req_009_scaffold_cr_league_monorepo_foundation",
+          "req_013_implement_cr_league_pure_simulation_core",
+          "req_014_add_cr_league_simulation_preview_api_and_screen",
+          "req_015_add_minimal_league_persistence_api",
+          "req_016_add_playable_demo_league_web_flow",
+          "req_017_prepare_real_postgresql_migration_and_seed_workflow",
+          "req_018_wire_web_copy_to_i18n_catalog",
+          "req_019_harden_current_grand_prix_state_rules",
+          "req_020_add_join_league_by_code_flow",
+          "req_021_build_private_league_prototype_foundation",
+          "req_022_add_private_league_cadence_and_dashboard",
+          "req_024_prepare_private_league_playtest_kit",
+          "req_025_add_guided_race_weekend_experience"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap"
+        ],
+        "spec": [
+          "spec_001_grand_prix_core_loop_and_simulation_v1",
+          "spec_016_implementation_roadmap"
+        ],
+        "task": [
+          "task_009_define_cr_league_implementation_roadmap",
+          "task_021_add_join_league_by_code_flow"
+        ]
+      },
+      "path": "logics/roadmap/road_001_cr_league_roadmap.md",
+      "ref": "road_001_cr_league_roadmap",
+      "status": "Accepted",
+      "title": "CR League Roadmap"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, add first visual race replay from event timeline, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Add first visual race replay from event timeline",
+        "use when": "You need to implement or review the scaffolded workflow for Add first visual race replay from event timeline."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_037_design_visual_replay_v0_contract_and_layout",
+          "item_038_implement_visual_replay_panel_in_the_web_app",
+          "item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks"
+        ],
+        "prod": [
+          "prod_002_visual_replay_v0_product_brief"
+        ],
+        "req": [
+          "req_031_add_first_visual_race_replay_from_event_timeline"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap"
+        ],
+        "spec": [
+          "spec_016_implementation_roadmap"
+        ]
+      },
+      "path": "logics/request/req_031_add_first_visual_race_replay_from_event_timeline.md",
+      "ref": "req_031_add_first_visual_race_replay_from_event_timeline",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Add first visual race replay from event timeline"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, design visual replay v0 contract and layout, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Design visual replay V0 contract and layout",
+        "use when": "Implementing the scaffolded slice for Design visual replay V0 contract and layout."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_037_design_visual_replay_v0_contract_and_layout"
+        ],
+        "prod": [
+          "prod_002_visual_replay_v0_product_brief"
+        ],
+        "req": [
+          "req_031_add_first_visual_race_replay_from_event_timeline"
+        ],
+        "task": [
+          "task_032_orchestrate_visual_replay_v0"
+        ]
+      },
+      "path": "logics/backlog/item_037_design_visual_replay_v0_contract_and_layout.md",
+      "ref": "item_037_design_visual_replay_v0_contract_and_layout",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Design visual replay V0 contract and layout"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, implement visual replay panel in the web app, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Implement visual replay panel in the web app",
+        "use when": "Implementing the scaffolded slice for Implement visual replay panel in the web app."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_038_implement_visual_replay_panel_in_the_web_app"
+        ],
+        "prod": [
+          "prod_002_visual_replay_v0_product_brief"
+        ],
+        "req": [
+          "req_031_add_first_visual_race_replay_from_event_timeline"
+        ],
+        "task": [
+          "task_032_orchestrate_visual_replay_v0"
+        ]
+      },
+      "path": "logics/backlog/item_038_implement_visual_replay_panel_in_the_web_app.md",
+      "ref": "item_038_implement_visual_replay_panel_in_the_web_app",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Implement visual replay panel in the web app"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, capture replay v0 playtest prompts and follow-up risks, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Capture replay V0 playtest prompts and follow-up risks",
+        "use when": "Implementing the scaffolded slice for Capture replay V0 playtest prompts and follow-up risks."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks"
+        ],
+        "prod": [
+          "prod_002_visual_replay_v0_product_brief"
+        ],
+        "req": [
+          "req_031_add_first_visual_race_replay_from_event_timeline"
+        ],
+        "task": [
+          "task_032_orchestrate_visual_replay_v0"
+        ]
+      },
+      "path": "logics/backlog/item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks.md",
+      "ref": "item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Capture replay V0 playtest prompts and follow-up risks"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate visual replay V0",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_037_design_visual_replay_v0_contract_and_layout",
+          "item_038_implement_visual_replay_panel_in_the_web_app",
+          "item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks"
+        ],
+        "prod": [
+          "prod_002_visual_replay_v0_product_brief"
+        ],
+        "req": [
+          "req_031_add_first_visual_race_replay_from_event_timeline"
+        ],
+        "task": [
+          "task_032_orchestrate_visual_replay_v0"
+        ]
+      },
+      "path": "logics/tasks/task_032_orchestrate_visual_replay_v0.md",
+      "ref": "task_032_orchestrate_visual_replay_v0",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate visual replay V0"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_037_design_visual_replay_v0_contract_and_layout",
+          "item_038_implement_visual_replay_panel_in_the_web_app",
+          "item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks"
+        ],
+        "prod": [
+          "prod_002_visual_replay_v0_product_brief"
+        ],
+        "req": [
+          "req_031_add_first_visual_race_replay_from_event_timeline"
+        ],
+        "task": [
+          "task_032_orchestrate_visual_replay_v0"
+        ]
+      },
+      "path": "logics/product/prod_002_visual_replay_v0_product_brief.md",
+      "ref": "prod_002_visual_replay_v0_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Visual Replay V0 Product Brief"
+    }
+  ],
+  "estimates": {
+    "char_count": 7347,
+    "companion_doc_count": 2,
+    "doc_count": 6
+  },
+  "generated_at": "2026-07-14T00:54:51Z",
+  "handoff": {
+    "companion_doc_count": 2,
+    "enabled": true,
+    "source_refs": [
+      "req_031_add_first_visual_race_replay_from_event_timeline",
+      "item_037_design_visual_replay_v0_contract_and_layout",
+      "item_038_implement_visual_replay_panel_in_the_web_app",
+      "item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks",
+      "task_032_orchestrate_visual_replay_v0"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 150,
+      "fr": 150
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_031_add_first_visual_race_replay_from_event_timeline,item_037_design_visual_replay_v0_contract_and_layout,item_038_implement_visual_replay_panel_in_the_web_app,item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks,task_032_orchestrate_visual_replay_v0",
+  "refs": [
+    "req_031_add_first_visual_race_replay_from_event_timeline",
+    "item_037_design_visual_replay_v0_contract_and_layout",
+    "item_038_implement_visual_replay_panel_in_the_web_app",
+    "item_039_capture_replay_v0_playtest_prompts_and_follow_up_risks",
+    "task_032_orchestrate_visual_replay_v0"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "Missing logics/release/contract.json."
+    ],
+    "configured": false,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Run logics-manager release discover --write, then review and promote logics/release/contract.draft.json to logics/release/contract.json.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "not_configured",
+    "target_version": null
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_032_orchestrate_visual_replay_v0.md",
+      "ref": "task_032_orchestrate_visual_replay_v0"
+    }
+  ]
+}

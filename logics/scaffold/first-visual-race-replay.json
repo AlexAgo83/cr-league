@@ -1,0 +1,181 @@
+{
+  "title": "Add first visual race replay from event timeline",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_001_cr_league_roadmap.md",
+    "logics/specs/spec_016_implementation_roadmap.md",
+    "docs/playtest/results/2026-07-14-private-league-technical-playtest.md",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/styles/layout.css",
+    "packages/shared/src/simulation.ts",
+    "tests/e2e/private-league.spec.ts",
+    "Recent commits: eecf2d4 Add playtest reset and league dashboard; ce4f135 Improve race desk immersion; 16f5bb3 Improve race recap readability."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Replay readability and race immersion",
+    "needs": [
+      "Add the first visual race replay so a resolved Grand Prix feels less like a report-only outcome.",
+      "Use the stored event timeline and classification data already returned by the simulation; do not add a rendering engine or new race mechanics.",
+      "Make the replay readable on desktop and mobile and keep it consistent with the existing lightweight pit-wall/dashboard visual direction.",
+      "Help testers understand race flow, key events, and decision impact faster than the current text-only timeline."
+    ],
+    "context": [
+      "The prototype currently has a playable private-league loop with create/join/rejoin, cadence, restart session, dashboard summary, guided race desk, race recap, event timeline, report, garage, cards, EN/FR switching, and e2e coverage.",
+      "The 2026-07-14 playtest feedback asked for more immersion and more visible race unfolding. Recent slices improved guidance, recap readability, dashboard clarity, and repeatable playtest operation.",
+      "The current replay is a lap-tagged text list under Key moments. It is useful but still does not sell the feeling of watching a race.",
+      "The next slice should be deliberately small: a simple top-down 2D/SVG or HTML/CSS track panel driven by existing event data is enough. Three.js, Pixi, physics, and AI-generated assets are out of scope for this pass.",
+      "The app should still pass the established gates: typecheck, unit tests, lint, build, e2e, i18n validation, and Logics validation."
+    ],
+    "acceptance_criteria": [
+      "AC1: A resolved Grand Prix shows a visual replay panel derived from existing result data.",
+      "AC2: The replay visualizes the player team, at least one rival or field marker, lap progression, and key race events.",
+      "AC3: The replay highlights player-related or major events without replacing the existing text recap/report.",
+      "AC4: The replay is readable on desktop and mobile with no overlapping labels or inaccessible hover-only controls.",
+      "AC5: The implementation uses existing React/CSS capabilities and does not introduce a rendering engine dependency.",
+      "AC6: EN/FR copy, unit or e2e assertions, visual screenshots, and Logics/docs updates cover the slice."
+    ]
+  },
+  "product": {
+    "title": "Visual Replay V0 Product Brief",
+    "overview": "Visual Replay V0 turns the stored event timeline into a small top-down race replay panel that makes a resolved Grand Prix feel observable, causal, and more immersive without requiring a full race engine.",
+    "goals": [
+      "Make the first few seconds after resolving a Grand Prix feel like watching a race outcome, not only reading a table.",
+      "Show a compact top-down track or lane metaphor that communicates progression, player team presence, and key moments.",
+      "Reinforce the existing race recap by visually pointing to events that already explain why the result happened.",
+      "Stay cheap and maintainable: use existing event/result data, React, semantic HTML, SVG or CSS, and deterministic rendering.",
+      "Validate whether a simple visual layer improves playtest comprehension before investing in animation-heavy replay or 3D."
+    ],
+    "non_goals": [
+      "Do not implement live racing, physics, collision, or real-time multiplayer viewing.",
+      "Do not add Three.js, Pixi, Canvas game loops, or generated art assets in this slice.",
+      "Do not change simulation balance or event generation rules unless a tiny display-only field is truly required.",
+      "Do not remove the text replay, race report, or recap; the visual replay should complement them.",
+      "Do not build a full broadcast mode, replay controls timeline editor, or cinematic sequence."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Design visual replay V0 contract and layout",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay UX",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5"
+      ],
+      "problem": [
+        "The current key-moments list explains events but does not make the race feel observed.",
+        "A replay visual can become expensive quickly if the first pass tries to simulate real movement instead of rendering existing result evidence."
+      ],
+      "scope_in": [
+        "Define the V0 replay metaphor: simple top-down track, lane strip, or lap ribbon.",
+        "Map existing result data to visual elements: player marker, rival/field marker, winner, lap markers, major events, and player-related events.",
+        "Decide which text remains in the visual panel and which remains in the existing recap/timeline.",
+        "Specify responsive behavior for desktop and mobile."
+      ],
+      "scope_out": [
+        "New simulation mechanics.",
+        "Animated physics or precise race positions.",
+        "Full art direction or generated assets.",
+        "New backend persistence shape unless existing data is insufficient."
+      ],
+      "acceptance_criteria": [
+        "AC1: The replay V0 contract can be implemented from `RaceResult` classification and events.",
+        "AC2: The chosen layout names what is displayed for player, winner, key event, and lap progression.",
+        "AC3: The layout keeps readable labels on desktop and mobile.",
+        "AC4: The plan explicitly avoids new rendering dependencies."
+      ]
+    },
+    {
+      "title": "Implement visual replay panel in the web app",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Frontend implementation",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6"
+      ],
+      "problem": [
+        "Resolved GP screens still rely mostly on text panels.",
+        "The visual replay needs to fit into the existing race recap/report flow without creating a separate page or UI framework."
+      ],
+      "scope_in": [
+        "Add a visual replay panel to the resolved GP area.",
+        "Render player and field/rival markers from classification data.",
+        "Render key event callouts from major and player-related events.",
+        "Keep the existing text timeline and report below or alongside the visual panel.",
+        "Add EN/FR copy for new labels.",
+        "Validate with unit/e2e coverage and visual screenshots."
+      ],
+      "scope_out": [
+        "Autoplay controls beyond a static or very lightweight CSS presentation.",
+        "Canvas game loop.",
+        "New replay API endpoints.",
+        "New npm dependencies."
+      ],
+      "acceptance_criteria": [
+        "AC1: A resolved GP displays the visual replay panel with player marker, field marker, winner/result context, and at least one event callout when events exist.",
+        "AC2: If there are no events, the panel degrades to a clear empty state instead of breaking layout.",
+        "AC3: The panel remains legible at mobile width and desktop width.",
+        "AC4: Unit or e2e tests assert the visual replay renders in the 3-GP flow.",
+        "AC5: `npm run typecheck`, `npm test`, `npm run lint`, `npm run build`, `npm run test:e2e`, `logics-manager i18n validate`, and `npm run logics:validate` pass."
+      ]
+    },
+    {
+      "title": "Capture replay V0 playtest prompts and follow-up risks",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Playtest readiness",
+      "request_acs": [
+        "AC3",
+        "AC4",
+        "AC6"
+      ],
+      "problem": [
+        "The team needs to know whether the simple visual replay actually improves comprehension before investing in richer replay work.",
+        "Without playtest prompts, feedback may collapse into generic visual polish comments."
+      ],
+      "scope_in": [
+        "Update the 3-GP playtest checklist with replay-specific observations.",
+        "Document what the V0 replay intentionally does not prove.",
+        "Add follow-up backlog notes for animation, richer event variety, or full replay only if testers ask for it."
+      ],
+      "scope_out": [
+        "Running the playtest itself.",
+        "Analytics instrumentation.",
+        "Replay balance changes."
+      ],
+      "acceptance_criteria": [
+        "AC1: Playtest docs ask whether the replay made the race easier to understand.",
+        "AC2: Playtest docs ask whether visual event callouts match the written recap.",
+        "AC3: Known limits document that replay V0 is not a full race simulation.",
+        "AC4: Roadmap/docs identify the next decision point after V0."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate visual replay V0",
+    "plan": [
+      "Read the current `RaceResult` shape and web resolved-GP rendering before changing UI.",
+      "Implement the smallest replay layout that uses existing classification and events.",
+      "Add EN/FR copy and keep all visible text in the i18n catalogs.",
+      "Validate with unit/e2e tests and visual screenshots for desktop and mobile.",
+      "Update playtest docs, roadmap/spec notes, and close Logics with concrete proof."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/first-visual-race-replay.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

@@ -1,5 +1,6 @@
 import {
   CARD_DEFINITIONS,
+  CARD_PRICES,
   DEMO_RACE_INPUT,
   simulateRace,
   type CardId,
@@ -22,8 +23,7 @@ type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | 
 
 const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
 const STARTER_CARDS: CardId[] = ["rain_grip"];
-const CARD_PRICE = 100;
-const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICE }));
+const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICES[cardId as CardId] }));
 const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 const BOT_LIVERY_COLORS = ["#38bdf8", "#f97316", "#a78bfa", "#f43f5e", "#facc15", "#22c55e", "#e879f9", "#fb7185"] as const;
 const DEFAULT_MAX_PLAYERS = 8;
@@ -418,14 +418,15 @@ export async function buyCard(db: Db, leagueId: string, input: { teamId?: string
   if (!team) {
     throw new LeagueRuleError("Team does not belong to this league.");
   }
-  if (team.credits < CARD_PRICE) {
+  const price = CARD_PRICES[input.cardId];
+  if (team.credits < price) {
     throw new LeagueRuleError("Not enough credits to buy this card.");
   }
 
   await db.team.update({
     where: { id: team.id },
     data: {
-      credits: { decrement: CARD_PRICE },
+      credits: { decrement: price },
       cards: appendCard(team.cards, input.cardId)
     }
   });
@@ -511,7 +512,12 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
   const state = await getLeagueState(db, leagueId);
   const team = state?.teams.find((candidate) => candidate.id === input.teamId);
   if (!state || !team) return null;
-  if (input.cardId && !team.cards.includes(input.cardId)) {
+  const lockedCardId = qualifyingCardForTeam(state.currentGrandPrix.qualifyingRuns, team.id);
+  if (lockedCardId && input.cardId && input.cardId !== lockedCardId) {
+    throw new LeagueRuleError("This Grand Prix card is already locked by your qualifying run.");
+  }
+  const cardId = lockedCardId ?? input.cardId;
+  if (cardId && !team.cards.includes(cardId)) {
     throw new LeagueRuleError("This card is not in your inventory.");
   }
 
@@ -525,7 +531,7 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
     update: {
       approach: input.approach,
       preparation: input.preparation,
-      cardId: input.cardId,
+      cardId,
       rivalTeamId: input.rivalTeamId,
       defaulted: input.defaulted ?? false
     },
@@ -534,7 +540,7 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
       teamId: input.teamId,
       approach: input.approach,
       preparation: input.preparation,
-      cardId: input.cardId,
+      cardId,
       rivalTeamId: input.rivalTeamId,
       defaulted: input.defaulted ?? false
     }
@@ -556,14 +562,19 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
   if (state.decisions.some((decision) => decision.teamId === team.id)) {
     throw new LeagueRuleError("Qualifying is closed after submitting your directive.");
   }
-  if (input.cardId && !team.cards.includes(input.cardId)) {
+  const lockedCardId = qualifyingCardForTeam(state.currentGrandPrix.qualifyingRuns, team.id);
+  if (lockedCardId && input.cardId && input.cardId !== lockedCardId) {
+    throw new LeagueRuleError("This Grand Prix card is already locked by your qualifying run.");
+  }
+  const cardId = lockedCardId ?? input.cardId;
+  if (cardId && !team.cards.includes(cardId)) {
     throw new LeagueRuleError("This card is not in your inventory.");
   }
 
   const decision: RaceDecision = {
     approach: input.approach,
     preparation: input.preparation,
-    cardId: input.cardId,
+    cardId,
     rivalTeamId: input.rivalTeamId
   };
   const runs = normalizeQualifyingRuns(grandPrix.qualifyingRuns);
@@ -829,18 +840,21 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
 }
 
 async function buyBotCards(db: Db, state: LeagueState, seed: string) {
+  const minCardPrice = Math.min(...Object.values(CARD_PRICES));
+
   await Promise.all(
     state.teams
-      .filter((team) => team.kind === "bot" && team.credits >= CARD_PRICE)
-      .map((team) =>
-        db.team.update({
+      .filter((team) => team.kind === "bot" && team.credits >= minCardPrice)
+      .map((team) => {
+        const cardId = randomCardId(`${seed}-${team.id}-${team.credits}-${team.cards.length}`);
+        return db.team.update({
           where: { id: team.id },
           data: {
-            credits: { decrement: CARD_PRICE },
-            cards: appendCard(team.cards, randomCardId(`${seed}-${team.id}-${team.credits}-${team.cards.length}`))
+            credits: { decrement: CARD_PRICES[cardId] },
+            cards: appendCard(team.cards, cardId)
           }
-        })
-      )
+        });
+      })
   );
 }
 
@@ -857,6 +871,10 @@ function bestQualifyingRuns(runs: QualifyingRun[]) {
   return [...runs]
     .sort((left, right) => left.time - right.time)
     .filter((run, index, sorted) => sorted.findIndex((candidate) => candidate.teamId === run.teamId) === index);
+}
+
+function qualifyingCardForTeam(runs: QualifyingRun[], teamId: string) {
+  return runs.find((run) => run.teamId === teamId && run.decision?.cardId)?.decision?.cardId;
 }
 
 async function fillLeagueWithBots(db: Db, state: LeagueState) {
@@ -919,9 +937,9 @@ function createQualifyingRuns(input: {
           : 0;
   const cardDelta =
     input.decision.cardId === "qualifying_focus"
-      ? -0.8
+      ? -0.3
       : input.decision.cardId === "launch_boost"
-        ? -0.8
+        ? -0.6
         : input.decision.cardId === "rain_grip" && weather !== "dry"
           ? -0.7
           : 0;
@@ -974,6 +992,7 @@ function createQualifyingResult(teamId: string, teamName: string, seed: string, 
         teamName,
         points: 0,
         credits: 0,
+        score: Number((300 - bestTime).toFixed(2)),
         positionChange: 0,
         status: "finished",
         resultTags: [decision.approach, decision.preparation]

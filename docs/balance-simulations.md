@@ -20,13 +20,15 @@ What it measures:
 - all approach/preparation/card combinations, including no card;
 - all city circuits by default;
 - deterministic qualifying grid estimate before each race;
-- average grid, average finish, win rate, podium rate, points, credits, and card trigger rate.
+- average grid, average finish, win rate, podium rate, points, internal score, credits, card price, credit margin, next-card affordability, GP-per-card estimate, and card trigger rate.
 
 Use the output this way:
 
 - `Top strategies` shows overpowered combinations.
 - `Bottom strategies` shows dead choices.
 - `Card summary` compares cards independent of approach/preparation.
+- `Economy summary` compares cards by credits minus card price, so economy cards can be checked against race sacrifice.
+- `Circuit summary` shows whether a circuit is much richer or poorer than the others.
 - `Outliers` flags strategies more than `--outlier` average points away from `balanced/speed/no_card`.
 
 The script reuses `simulateRace`; it is a balance smoke test, not a full league-season simulator.

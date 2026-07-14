@@ -211,12 +211,13 @@ export function App() {
   const qualifyingAttemptsUsed = Math.max(0, ...playerQualifyingRuns.map((run) => run.attempts));
   const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? form.qualifyingAttemptLimit;
   const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
+  const qualifyingLockedCardId = playerQualifyingRuns.find((run) => run.decision?.cardId)?.decision?.cardId;
   const result = leagueState?.currentGrandPrix.result;
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
   const qualifyingDisabled = status === "loading" || isResolved || Boolean(playerDecision) || qualifyingAttemptsLeft <= 0;
   const forecastPick = leagueState ? strongestForecast(leagueState.currentGrandPrix.forecast) : "dry";
   const ownedCardIds = useMemo(() => Array.from(new Set(playerTeam?.cards ?? [])), [playerTeam]);
-  const selectedCardId = ownedCardIds.includes(form.cardId as CardId) ? form.cardId : "";
+  const selectedCardId = qualifyingLockedCardId ?? (ownedCardIds.includes(form.cardId as CardId) ? form.cardId : "");
   const selectedCardFit = leagueState && selectedCardId ? cardFit(selectedCardId as CardId, leagueState, forecastPick) : null;
   const directiveTraitImpacts = traitImpacts(form, selectedCardId, tt);
   const replayTraitImpacts = playerDecision
@@ -1086,6 +1087,7 @@ export function App() {
                 ownedCardIds={ownedCardIds}
                 selectedCardId={selectedCardId}
                 selectedCardFit={selectedCardFit}
+                cardLocked={Boolean(qualifyingLockedCardId)}
                 disabled={status === "loading" || Boolean(playerDecision) || isResolved}
                 tt={tt}
               />

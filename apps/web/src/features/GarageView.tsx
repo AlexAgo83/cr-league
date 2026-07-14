@@ -36,6 +36,7 @@ export function GarageView({
 }) {
   const [livery, setLivery] = useState(playerTeam?.livery ?? { primary: "#16c784", secondary: "#38bdf8" });
   const [teamName, setTeamName] = useState(playerTeam?.name ?? "");
+  const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
 
   useEffect(() => {
     if (playerTeam?.livery) setLivery(playerTeam.livery);
@@ -55,6 +56,12 @@ export function GarageView({
   }
 
   const shopOffers = recommendedShopOffers(state, forecastPick);
+  const pendingBuy = shopOffers.find((item) => item.cardId === pendingBuyCardId);
+  const confirmBuy = () => {
+    if (!pendingBuy) return;
+    onBuyCard(pendingBuy.cardId);
+    setPendingBuyCardId(undefined);
+  };
 
   return (
     <div className="garage-grid">
@@ -149,7 +156,7 @@ export function GarageView({
               <button
                 key={item.cardId}
                 type="button"
-                onClick={() => onBuyCard(item.cardId)}
+                onClick={() => setPendingBuyCardId(item.cardId)}
                 disabled={loading || playerTeam.credits < item.price}
               >
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
@@ -161,6 +168,33 @@ export function GarageView({
           </div>
         </section>
       </div>
+      {pendingBuy ? (
+        <div className="modal-overlay" onClick={() => setPendingBuyCardId(undefined)}>
+          <section className="panel modal garage-buy-modal" role="dialog" aria-modal="true" aria-label={tt("garage_buy_confirm_title")} onClick={(event) => event.stopPropagation()}>
+            <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setPendingBuyCardId(undefined)}>
+              ×
+            </button>
+            <span className="section-kicker">{tt("garage_shop")}</span>
+            <h2>{tt(`card_${pendingBuy.cardId}` as TranslationKey)}</h2>
+            <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
+            <div className="garage-buy-card">
+              <strong>{pendingBuy.price}</strong>
+              <span>{tt("unit_credits")}</span>
+              <small>{tt(`card_fit_${pendingBuy.fit.level}` as TranslationKey)}</small>
+              <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
+            </div>
+            <p>{tt("garage_buy_confirm_body")}</p>
+            <div className="modal-actions">
+              <button type="button" onClick={confirmBuy} disabled={loading}>
+                {tt("garage_buy_confirm_action")}
+              </button>
+              <button type="button" onClick={() => setPendingBuyCardId(undefined)}>
+                {tt("action_close")}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
     </div>
   );
 }

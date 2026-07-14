@@ -10,6 +10,7 @@ export function DirectivePanel({
   ownedCardIds,
   selectedCardId,
   selectedCardFit,
+  cardLocked,
   disabled,
   tt
 }: {
@@ -18,6 +19,7 @@ export function DirectivePanel({
   ownedCardIds: CardId[];
   selectedCardId: FormState["cardId"];
   selectedCardFit: CardFit | null;
+  cardLocked?: boolean;
   disabled?: boolean;
   tt: Translator;
 }) {
@@ -45,7 +47,7 @@ export function DirectivePanel({
         </label>
         <label>
           {tt("field_card")}
-          <select value={selectedCardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })} disabled={disabled}>
+          <select value={selectedCardId} onChange={(event) => setForm({ ...form, cardId: event.target.value as FormState["cardId"] })} disabled={disabled || cardLocked}>
             <option value="">{tt("card_none")}</option>
             {ownedCardIds.map((cardId) => (
               <option key={cardId} value={cardId}>

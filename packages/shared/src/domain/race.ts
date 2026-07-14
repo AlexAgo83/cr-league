@@ -108,6 +108,7 @@ export type ClassificationEntry = {
   teamName: string;
   points: number;
   credits: number;
+  score: number;
   positionChange: number;
   status: "finished";
   resultTags: string[];

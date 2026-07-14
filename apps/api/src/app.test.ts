@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PrismaClient } from "@prisma/client";
+import { CARD_PRICES } from "@cr-league/shared";
 import { buildApp } from "./app.js";
 
 describe("api app", () => {
@@ -136,8 +137,10 @@ describe("api app", () => {
         cardId: "launch_boost"
       }
     });
-    const boughtTeam = buyResponse.json().teams.find((team: { id: string }) => team.id === teamId);
-    const botBeforeNext = resolved.teams.find((team: { id: string; kind: string; credits: number; cards: string[] }) => team.kind === "bot" && team.credits >= 100);
+    const boughtTeam = buyResponse.statusCode === 200 ? buyResponse.json().teams.find((team: { id: string }) => team.id === teamId) : undefined;
+    const botBeforeNext = resolved.teams.find(
+      (team: { id: string; kind: string; credits: number; cards: string[] }) => team.kind === "bot" && team.credits >= CARD_PRICES.rain_grip
+    );
     if (!botBeforeNext) throw new Error("Expected a bot with enough credits to buy a card.");
 
     const lateDecisionResponse = await app.inject({
@@ -170,10 +173,10 @@ describe("api app", () => {
       secondary: expect.stringMatching(/^#[0-9a-f]{6}$/i)
     });
     expect(createdTeam.livery.primary).not.toBe(createdTeam.livery.secondary);
-    expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: 100 });
-    expect(created.cardShop).toContainEqual({ cardId: "soft_tires", price: 100 });
-    expect(created.cardShop).toContainEqual({ cardId: "qualifying_focus", price: 100 });
-    expect(created.cardShop).toContainEqual({ cardId: "defensive_order", price: 100 });
+    expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: CARD_PRICES.rain_grip });
+    expect(created.cardShop).toContainEqual({ cardId: "soft_tires", price: CARD_PRICES.soft_tires });
+    expect(created.cardShop).toContainEqual({ cardId: "qualifying_focus", price: CARD_PRICES.qualifying_focus });
+    expect(created.cardShop).toContainEqual({ cardId: "defensive_order", price: CARD_PRICES.defensive_order });
     expect(readResponse.statusCode).toBe(200);
     expect(readResponse.json().league).toMatchObject({ id: leagueId, name: "Office League" });
     expect(joinResponse.statusCode).toBe(200);
@@ -210,14 +213,16 @@ describe("api app", () => {
       })
     });
     expect(resolvedTeam.cards).not.toContain("rain_grip");
-    expect(buyResponse.statusCode).toBe(200);
-    expect(boughtTeam.cards).toContain("launch_boost");
-    expect(boughtTeam.credits).toBe(resolvedTeam.credits - 100);
+    expect(buyResponse.statusCode).toBe(resolvedTeam.credits >= CARD_PRICES.launch_boost ? 200 : 409);
+    if (resolvedTeam.credits >= CARD_PRICES.launch_boost) {
+      expect(boughtTeam.cards).toContain("launch_boost");
+      expect(boughtTeam.credits).toBe(resolvedTeam.credits - CARD_PRICES.launch_boost);
+    }
     expect(lateDecisionResponse.statusCode).toBe(409);
     expect(secondResolveResponse.statusCode).toBe(409);
     expect(nextResponse.statusCode).toBe(200);
     expect(botAfterNext.cards).toHaveLength(botBeforeNext.cards.length + 1);
-    expect(botAfterNext.credits).toBe(botBeforeNext.credits - 100);
+    expect(botAfterNext.credits).toBeLessThan(botBeforeNext.credits);
   });
 
   it("creates and recovers a profile with linked league teams", async () => {
@@ -390,6 +395,45 @@ describe("api app", () => {
     expect(secondRun.json().run.time).toBeGreaterThan(70);
     expect(secondRun.json().run.result.replayTrace.at(-1).times[created.player.teamId]).toBe(20);
     expect(secondRun.json().run.result.events).toHaveLength(2);
+  });
+
+  it("locks the Grand Prix card after a qualifying run uses one", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", qualifyingAttemptLimit: 2 }
+    });
+    const created = createResponse.json();
+    const basePayload = {
+      teamId: created.player.teamId,
+      approach: "balanced",
+      preparation: "weather",
+      laps: 1
+    };
+    const firstRun = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/qualifying`,
+      payload: { ...basePayload, cardId: "rain_grip" }
+    });
+    const secondRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload: basePayload });
+    const decisionResponse = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/decisions`, payload: basePayload });
+
+    await app.close();
+
+    expect(firstRun.statusCode).toBe(200);
+    expect(secondRun.statusCode).toBe(200);
+    expect(secondRun.json().run.decision.cardId).toBe("rain_grip");
+    expect(decisionResponse.statusCode).toBe(200);
+    expect(decisionResponse.json().decisions.find((decision: { teamId: string }) => decision.teamId === created.player.teamId).cardId).toBe("rain_grip");
   });
 
   it("rejects qualifying after the player submits a directive", async () => {

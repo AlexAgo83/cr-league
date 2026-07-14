@@ -1,4 +1,5 @@
 import { CARD_DEFINITIONS } from "../cards/definitions.js";
+import { FLEET_SPONSORSHIP_CREDIT_BONUS, RACE_CREDITS_BY_POSITION, RACE_POINTS_BY_POSITION } from "../economy/constants.js";
 import type {
   CardId,
   ClassificationEntry,
@@ -14,8 +15,6 @@ import type {
 import { RACE_SEGMENTS } from "../domain/race.js";
 import { createPrng } from "./prng.js";
 
-const POINTS_BY_POSITION = [25, 18, 15, 12, 10, 8] as const;
-const CREDITS_BY_POSITION = [150, 130, 115, 105, 100, 100] as const;
 const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
   start: 18,
   early: 34,
@@ -148,27 +147,32 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
   const { approach, preparation } = participant.decision;
 
   if (approach === "prudent") {
-    scores.pace -= 4;
-    scores.control += 8;
-    scores.reliability += 8;
+    scores.pace -= 5;
+    scores.control += 7;
+    scores.reliability += 7;
     scores.aggression -= 8;
+  } else if (approach === "balanced") {
+    scores.control += 2;
+    scores.reliability += 2;
+    scores.weatherReadiness += 2;
   } else if (approach === "aggressive") {
     scores.pace += 8;
-    scores.control -= 6;
-    scores.reliability -= 6;
+    scores.control -= 5;
+    scores.reliability -= 5;
     scores.aggression += 10;
   }
 
   if (preparation === "speed") {
-    scores.pace += 8;
+    scores.pace += 5;
     scores.reliability -= 2;
   } else if (preparation === "reliability") {
-    scores.reliability += 10;
-    scores.control += 4;
-    scores.pace -= 2;
+    scores.reliability += 11;
+    scores.control += 5;
+    scores.pace -= 1;
   } else {
-    scores.weatherReadiness += 12;
-    scores.pace -= 2;
+    scores.weatherReadiness += 14;
+    scores.control += 1;
+    scores.pace -= 1;
   }
 
   if (participant.botArchetype === "rain_specialist") {
@@ -240,7 +244,7 @@ function applySegment(
   }
 
   if (state.participant.decision.cardId === "fleet_sponsorship") {
-    delta -= 4;
+    delta -= 0.75;
   }
 
   scores.score += delta;
@@ -313,8 +317,8 @@ function maybeAddCardEvent(
     state.resultTags.add(rained ? "weather_gamble" : "wrong_weather_bet");
     events.push(createCardEvent(events.length, state, segment, rained ? "weather_gamble_paid" : "wrong_weather_bet", rained ? 2 : -1));
   } else if (cardId === "launch_boost" && segment === "start") {
-    state.scores.score += 12;
-    state.scores.reliability -= 6;
+    state.scores.score += 18;
+    state.scores.reliability -= 3;
     state.positionDelta += 1;
     state.resultTags.add("launch_boost");
     events.push(createCardEvent(events.length, state, segment, "card_triggered", 1));
@@ -427,15 +431,16 @@ function classify(states: TeamState[]): ClassificationEntry[] {
 
   return sorted.map((state, index) => {
     const position = index + 1;
-    const baseCredits = CREDITS_BY_POSITION[index] ?? 100;
-    const sponsorBonus = state.participant.decision.cardId === "fleet_sponsorship" ? 50 : 0;
+    const baseCredits = RACE_CREDITS_BY_POSITION[index] ?? 100;
+    const sponsorBonus = state.participant.decision.cardId === "fleet_sponsorship" ? FLEET_SPONSORSHIP_CREDIT_BONUS : 0;
 
     return {
       position,
       teamId: state.participant.teamId,
       teamName: state.participant.teamName,
-      points: POINTS_BY_POSITION[index] ?? 0,
+      points: RACE_POINTS_BY_POSITION[index] ?? 0,
       credits: baseCredits + sponsorBonus,
+      score: Number(state.scores.score.toFixed(2)),
       positionChange: state.participant.standingsRank - position + state.positionDelta,
       status: "finished",
       resultTags: [...state.resultTags]

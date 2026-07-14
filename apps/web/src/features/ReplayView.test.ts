@@ -18,8 +18,8 @@ const result: RaceResult = {
   seed: "seed",
   resolvedWeather: { start: "dry", early: "dry", mid: "dry", late: "dry", finish: "dry" },
   classification: [
-    { position: 1, teamId: "leader", teamName: "Leader", points: 25, credits: 150, positionChange: 0, status: "finished", resultTags: [] },
-    { position: 2, teamId: "last", teamName: "Last", points: 18, credits: 100, positionChange: 0, status: "finished", resultTags: [] }
+    { position: 1, teamId: "leader", teamName: "Leader", points: 25, credits: 150, score: 280, positionChange: 0, status: "finished", resultTags: [] },
+    { position: 2, teamId: "last", teamName: "Last", points: 18, credits: 100, score: 260, positionChange: 0, status: "finished", resultTags: [] }
   ],
   events: [],
   consumedCards: [],

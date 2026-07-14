@@ -5,6 +5,7 @@ dist/
 .npm-cache/
 playwright-report/
 test-results/
+reports/
 .env
 *.tsbuildinfo
 .DS_Store

@@ -82,15 +82,15 @@ flowchart LR
 - Avoid: decorative blobs, generic gradients, oversized cards, full dark-blue monotony, fake precision in the replay, rough wireframe-like blocks, and visible explanatory copy that exists only because the UI is unclear.
 
 # City circuit direction
-- Product model: a city can host several circuits. Each circuit has a city, country, layout name, compact route geometry or simplified path, track traits, likely weather profile, and a short flavor label.
-- V0 implementation preference: start with a small static circuit catalog checked into CR League. Do not add live routing, Leaflet, OSRM calls, or a new map dependency unless the static catalog blocks the experience.
+- Product model: a city can host several circuits. Each circuit has a city, country, layout name, stored route geometry, track traits, likely weather profile, and a short flavor label.
+- V0 implementation preference: start with a small static circuit catalog checked into CR League. Author circuit geometry with a road-network router when useful, then store the sampled lat/lng route in the app; do not add live routing, Leaflet, OSRM runtime calls, or a new map dependency unless the static catalog blocks the experience.
 - 0.3 circuit seed:
   - Paris: `Docklands Sprint`, `Left Bank Loop`.
   - Amsterdam: `Canal Loop`, `Harbor Sprint`.
   - Berlin: `Ring Sector`, `Mitte Dash`.
 - Each 0.3 circuit should expose no more than three gameplay traits: grip, overtaking, and energy. Add a likely weather profile and lap count, but avoid a larger track-stat model until gameplay needs it.
 - Fleet Sim reuse boundary: inspect and borrow concepts from `../fleet-sim` such as Paris presets, `LatLng`, route geometry, and OSRM adapter shape. Do not copy the FleetMap UI wholesale; CR League needs a broadcast/racing cockpit map, not a fleet operations dashboard.
-- Rendering approach: render a simplified dark city-route silhouette inside the cockpit, with sector bands, weather/event markers, and player/team markers. Keep it readable at small sizes and honest about the available race data.
+- Rendering approach: render OSM map tiles, the stored route overlay, and car markers in the same SVG coordinate space so the cars visibly follow the circuit. Keep it readable at small sizes and honest about the available race data.
 - Future extension: if static routes become limiting, add an offline route generation/build step or OSRM-backed authoring tool that outputs stored circuit geometry. Runtime gameplay should not depend on a network routing service.
 
 # Race replay direction
@@ -127,10 +127,12 @@ flowchart LR
 - Captured visual QA screenshots in `~/Desktop/CRL/` for desktop and mobile briefing/replay states after the implementation pass.
 - Corrective layout pass removed the oversized desktop rail, widened the race cockpit, put the directive before league settings, and regenerated `*-v2.png` screenshots after the first visual QA showed the page still felt too stacked.
 - Follow-up map-first pass replaced the abstract SVG-only circuit with OpenStreetMap tiles plus projected lat/lng route overlays, removed league settings and secondary controls from the first viewport, and reduced championship/garage/standings to a compact summary strip below the race view.
+- Game-screen correction pass replaced hidden secondary content with an explicit cockpit rail: Course, Directive, Championship, Garage, Replay, and Report. Non-course views open as dedicated opaque cockpit panels instead of overlapping translucent cards, so features remain accessible without returning to a scrolling dashboard.
+- Route correction pass regenerated the six 0.3 seed circuits from OSRM road-network routes and stored sampled lat/lng geometry for Paris, Amsterdam, and Berlin layouts. Runtime remains static/offline from the app perspective; the visible circuit is no longer a hand-drawn polygon over the map.
 
 # Remaining limits
 - The replay is still a deterministic visual playback derived from resolved events, not a full sampled race timeline with scrubber and proven overtake curves.
-- The city circuits now use static stored lat/lng routes rendered over OSM tiles; Fleet Sim route-authoring reuse is still a product direction, not a runtime dependency.
+- The city circuits now use static stored lat/lng routes rendered over OSM tiles, with all six 0.3 seed layouts sampled from road-routed geometry; Fleet Sim route-authoring reuse is still a product direction, not a runtime dependency.
 - Secondary setup/admin controls are intentionally not first-viewport material anymore; they still need a cleaner dedicated management surface later.
 
 # References

@@ -739,6 +739,435 @@ label small {
   }
 }
 
+/* Game view: when a league exists, the app is a race screen, not a dashboard page. */
+.game-mode.app-shell {
+  gap: 0;
+  height: 100dvh;
+  max-width: none;
+  overflow: hidden;
+  padding: 0;
+}
+
+.game-mode .hero,
+.game-mode .recap-panel,
+.game-mode .result-panel,
+.game-mode .moments-panel,
+.game-mode .report-panel,
+.game-mode .visual-replay-panel {
+  display: none;
+}
+
+.game-mode .play-grid {
+  display: block;
+  height: 100dvh;
+  position: relative;
+}
+
+.game-mode .race-panel {
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  height: 100dvh;
+  overflow: hidden;
+  padding: 0;
+}
+
+.game-mode .race-panel::before {
+  display: none;
+}
+
+.game-mode .race-panel > .city-circuit-map {
+  border: 0;
+  border-radius: 0;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  z-index: 0;
+}
+
+.game-mode .race-panel > .city-circuit-map .city-circuit-heading,
+.game-mode .race-panel > .city-circuit-map .circuit-traits {
+  left: 24px;
+  position: absolute;
+  z-index: 5;
+}
+
+.game-mode .race-panel > .city-circuit-map .city-circuit-heading {
+  bottom: 164px;
+}
+
+.game-mode .race-panel > .city-circuit-map .circuit-traits {
+  bottom: 124px;
+}
+
+.game-mode .race-panel > .city-circuit-map .city-map-stage {
+  border-radius: 0;
+  height: 100dvh;
+  min-height: 0;
+  width: 100%;
+}
+
+.game-mode .city-map-tile {
+  opacity: 0.88;
+}
+
+.game-mode .city-map-stage::after {
+  background:
+    linear-gradient(90deg, rgb(5 10 15 / 0.78), transparent 22%, transparent 64%, rgb(5 10 15 / 0.72)),
+    linear-gradient(180deg, rgb(5 10 15 / 0.72), transparent 24%, transparent 60%, rgb(5 10 15 / 0.9));
+}
+
+.game-mode .panel-heading,
+.game-mode .status,
+.game-mode .game-nav,
+.game-mode .race-console,
+.game-mode .race-workbench,
+.game-mode .race-command-row,
+.game-mode .league-panel,
+.game-mode .recap-panel,
+.game-mode .result-panel,
+.game-mode .moments-panel,
+.game-mode .report-panel,
+.game-mode .visual-replay-panel {
+  position: absolute;
+  z-index: 6;
+}
+
+.game-mode .game-nav {
+  align-items: center;
+  background: rgb(8 13 19 / 0.84);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  display: flex;
+  gap: 6px;
+  left: 50%;
+  padding: 6px;
+  top: 20px;
+  transform: translateX(-50%);
+  z-index: 8;
+}
+
+.game-mode .game-nav button {
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgb(226 232 240 / 0.78);
+  min-height: 36px;
+  padding: 8px 10px;
+}
+
+.game-mode .game-nav button.active {
+  background: rgb(56 189 248 / 0.16);
+  border-color: rgb(56 189 248 / 0.42);
+  color: #d9f4ff;
+}
+
+.game-mode .game-nav button:disabled {
+  color: rgb(148 163 184 / 0.38);
+}
+
+.game-mode .game-language {
+  background: rgb(7 16 24 / 0.9);
+  border-color: rgb(56 189 248 / 0.34);
+  color: #d9f4ff;
+  font-weight: 800;
+  min-height: 36px;
+  padding: 6px 8px;
+  width: auto;
+}
+
+.game-mode .race-panel > .panel-heading {
+  display: none;
+}
+
+.game-mode .league-panel .panel-heading {
+  background: rgb(10 16 22 / 0.66);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  left: 24px;
+  margin: 0;
+  padding: 10px 12px;
+  top: 76px;
+  width: min(220px, calc(100vw - 48px));
+}
+
+.game-mode .league-panel .panel-heading h2 {
+  font-size: 1.15rem;
+  line-height: 1.05;
+}
+
+.game-mode .league-panel .panel-heading .section-kicker {
+  font-size: 0.72rem;
+}
+
+.game-mode .status {
+  display: none;
+}
+
+.game-mode .race-console {
+  background: rgb(8 13 19 / 0.76);
+  border-color: rgb(255 255 255 / 0.12);
+  left: 24px;
+  top: 86px;
+  width: min(390px, calc(100vw - 48px));
+}
+
+.game-mode .race-console h3 {
+  font-size: 1.12rem;
+  line-height: 1.1;
+}
+
+.game-mode .race-console p {
+  display: none;
+}
+
+.game-mode .race-telemetry {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.game-mode .race-workbench {
+  background: rgb(8 13 19 / 0.84);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  bottom: 24px;
+  display: none;
+  left: 24px;
+  padding: 14px;
+  width: min(650px, calc(100vw - 48px));
+}
+
+.game-mode[data-game-view="directive"] .race-workbench {
+  display: grid;
+}
+
+.game-mode .race-command-row {
+  background: rgb(8 13 19 / 0.86);
+  bottom: 24px;
+  grid-template-columns: 1fr;
+  margin: 0;
+  right: 24px;
+  width: min(340px, calc(100vw - 48px));
+}
+
+.game-mode .race-command-row p {
+  display: none;
+}
+
+.game-mode .race-panel > .city-circuit-map .city-circuit-heading,
+.game-mode .race-panel > .city-circuit-map .circuit-traits {
+  display: none;
+}
+
+.game-mode .league-panel {
+  background: rgb(8 13 19 / 0.74);
+  border-color: rgb(255 255 255 / 0.12);
+  display: none;
+  max-height: calc(100dvh - 44px);
+  overflow: hidden;
+  right: 24px;
+  top: 20px;
+  width: min(560px, calc(100vw - 48px));
+}
+
+.game-mode[data-game-view="championship"] .league-panel,
+.game-mode[data-game-view="garage"] .league-panel {
+  align-content: start;
+  background: #071018;
+  bottom: 0;
+  border: 0;
+  border-radius: 0;
+  display: block;
+  overflow: auto;
+  padding: 88px 24px 24px;
+  right: 0;
+  top: 0;
+  width: min(520px, 100vw);
+  z-index: 7;
+}
+
+.game-mode .league-panel .panel-heading {
+  position: static;
+  width: auto;
+}
+
+.game-mode[data-game-view="championship"] .race-command-row,
+.game-mode[data-game-view="garage"] .race-command-row,
+.game-mode[data-game-view="replay"] .race-command-row,
+.game-mode[data-game-view="report"] .race-command-row,
+.game-mode[data-game-view="replay"] .league-panel,
+.game-mode[data-game-view="report"] .league-panel {
+  display: none;
+}
+
+.game-mode .league-panel .dashboard-section,
+.game-mode .league-panel .dashboard-actions {
+  display: none;
+}
+
+.game-mode[data-game-view="championship"] .league-panel .standings-section,
+.game-mode[data-game-view="championship"] .league-panel .history-section,
+.game-mode[data-game-view="championship"] .league-panel .dashboard-actions,
+.game-mode[data-game-view="garage"] .league-panel .team-section,
+.game-mode[data-game-view="garage"] .league-panel .garage-section,
+.game-mode[data-game-view="garage"] .league-panel .dashboard-actions {
+  display: block;
+}
+
+.game-mode[data-game-view="replay"] .visual-replay-panel,
+.game-mode[data-game-view="replay"] .moments-panel,
+.game-mode[data-game-view="report"] .recap-panel,
+.game-mode[data-game-view="report"] .result-panel,
+.game-mode[data-game-view="report"] .report-panel {
+  background: #071018;
+  border: 0;
+  border-radius: 0;
+  display: block;
+  overflow: auto;
+  z-index: 7;
+}
+
+.game-mode[data-game-view="replay"] .visual-replay-panel,
+.game-mode[data-game-view="report"] .report-panel {
+  bottom: 0;
+  right: 0;
+  top: 0;
+  padding: 88px 24px 24px;
+  width: min(660px, 100vw);
+}
+
+.game-mode[data-game-view="replay"] .moments-panel,
+.game-mode[data-game-view="report"] .recap-panel,
+.game-mode[data-game-view="report"] .result-panel {
+  left: 24px;
+  width: min(520px, calc(100vw - 48px));
+}
+
+.game-mode[data-game-view="replay"] .moments-panel,
+.game-mode[data-game-view="report"] .recap-panel {
+  bottom: 0;
+  max-height: 40dvh;
+}
+
+.game-mode[data-game-view="report"] .result-panel {
+  top: 88px;
+  max-height: 38dvh;
+}
+
+.game-mode[data-game-view="directive"] .settings-block {
+  display: block;
+}
+
+.game-mode[data-game-view="championship"] .race-console,
+.game-mode[data-game-view="championship"] .race-panel > .panel-heading,
+.game-mode[data-game-view="garage"] .race-console,
+.game-mode[data-game-view="garage"] .race-panel > .panel-heading,
+.game-mode[data-game-view="directive"] .race-console,
+.game-mode[data-game-view="directive"] .race-panel > .panel-heading,
+.game-mode[data-game-view="replay"] .race-console,
+.game-mode[data-game-view="replay"] .race-panel > .panel-heading,
+.game-mode[data-game-view="report"] .race-console,
+.game-mode[data-game-view="report"] .race-panel > .panel-heading {
+  display: none;
+}
+
+@media (max-width: 920px) {
+  .game-mode.app-shell,
+  .game-mode .play-grid,
+  .game-mode .race-panel,
+  .game-mode .race-panel > .city-circuit-map .city-map-stage {
+    min-height: 100dvh;
+    height: 100dvh;
+  }
+
+  .game-mode .league-panel {
+    display: none;
+  }
+
+  .game-mode .game-nav {
+    border-radius: 0;
+    gap: 4px;
+    left: 0;
+    overflow-x: auto;
+    padding: 6px 8px;
+    right: 0;
+    top: 0;
+    transform: none;
+  }
+
+  .game-mode .game-nav button {
+    flex: 0 0 auto;
+    min-height: 34px;
+    padding: 7px 9px;
+  }
+
+  .game-mode .game-language {
+    flex: 0 0 auto;
+    min-height: 34px;
+    max-width: 112px;
+  }
+
+  .game-mode .panel-heading {
+    left: 12px;
+    top: 50px;
+    width: calc(100vw - 24px);
+  }
+
+  .game-mode .race-console {
+    display: none;
+  }
+
+  .game-mode .race-workbench {
+    bottom: 108px;
+    left: 12px;
+    width: calc(100vw - 24px);
+  }
+
+  .game-mode .directive-fields {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .game-mode .directive-fields small {
+    display: none;
+  }
+
+  .game-mode .race-command-row {
+    bottom: 12px;
+    grid-template-columns: 1fr;
+    left: 12px;
+    right: auto;
+    width: calc(100vw - 24px);
+  }
+
+  .game-mode .race-command-row p {
+    display: none;
+  }
+
+  .game-mode .race-panel > .city-circuit-map .city-circuit-heading,
+  .game-mode .race-panel > .city-circuit-map .circuit-traits {
+    display: none;
+  }
+
+  .game-mode[data-game-view="championship"] .league-panel,
+  .game-mode[data-game-view="garage"] .league-panel,
+  .game-mode[data-game-view="replay"] .visual-replay-panel,
+  .game-mode[data-game-view="replay"] .moments-panel,
+  .game-mode[data-game-view="report"] .recap-panel,
+  .game-mode[data-game-view="report"] .result-panel,
+  .game-mode[data-game-view="report"] .report-panel {
+    bottom: 0;
+    left: 0;
+    max-height: none;
+    padding: 64px 14px 18px;
+    right: 0;
+    top: 0;
+    width: auto;
+  }
+
+  .game-mode[data-game-view="directive"] .race-console {
+    display: none;
+  }
+}
+
 /* Cockpit 0.3 visual pass */
 html {
   scroll-behavior: smooth;
@@ -998,6 +1427,27 @@ button.primary-command:not(:disabled),
   position: absolute;
   width: 100%;
   z-index: 2;
+}
+
+.map-car-layer {
+  pointer-events: none;
+  z-index: 8;
+}
+
+.map-car circle {
+  fill: var(--color-telemetry);
+  stroke: #071018;
+  stroke-width: 5;
+}
+
+.map-car.player circle {
+  fill: var(--color-accent);
+}
+
+.map-car text {
+  fill: #041018;
+  font-size: 13px;
+  font-weight: 900;
 }
 
 .city-route-shadow {

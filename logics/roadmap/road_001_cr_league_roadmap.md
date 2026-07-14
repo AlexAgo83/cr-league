@@ -96,7 +96,7 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - 3-GP mini championship loop;
   - V2 race cockpit redesign with clear Course, Championship, Garage, and Result/Replay responsibilities;
   - static 0.3 city circuit seed: Paris Docklands Sprint/Left Bank Loop, Amsterdam Canal Loop/Harbor Sprint, Berlin Ring Sector/Mitte Dash;
-  - city-circuit rendering from stored route geometry, without Leaflet/OSRM runtime dependencies;
+  - city-circuit rendering from stored road-routed geometry, without Leaflet/OSRM runtime dependencies;
   - deterministic animated race replay with cars moving on the circuit, simple controls, visible overtakes when supported by the generated timeline, and a static readout fallback;
   - replay/report UX pass that makes player choices legible;
   - more race-event variety and non-impact flavor moments;
@@ -113,6 +113,8 @@ This roadmap is the release-level companion to `spec_016_implementation_roadmap`
   - dark Pit Wall Compact shell with desktop rail, compact header, telemetry chips, timing rows, and calmer secondary controls;
   - race desk now shows one dominant command per state instead of competing action buttons;
   - city circuit and replay panels use larger dark route surfaces with visible moving cars and clearer callouts;
+  - cockpit rail now exposes Course, Directive, Championship, Garage, Replay, and Report as dedicated game views instead of hiding secondary gameplay or stacking everything on one page;
+  - six 0.3 seed circuits now use stored OSRM-sampled road geometry for Paris, Amsterdam, and Berlin layouts;
   - French display now localizes redesigned report/event summaries instead of showing raw English simulator prose;
   - desktop and mobile briefing/replay screenshots captured in `~/Desktop/CRL/`;
   - desktop Prepare/Ready desk states and mobile resolved state visually checked after the pit-wall pass;

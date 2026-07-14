@@ -87,6 +87,7 @@ type CityCircuit = {
     energy: number;
   };
   likelyWeather: "dry" | "light_rain" | "heavy_rain";
+  layoutKey: TranslationKey;
   routePath: string;
   center: { lat: number; lng: number };
   zoom: number;
@@ -98,6 +99,7 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     city: "Paris",
     country: "FR",
     layout: "Docklands Sprint",
+    layoutKey: "circuit_docklands_sprint",
     laps: 5,
     traits: { grip: 64, overtaking: 72, energy: 58 },
     likelyWeather: "light_rain",
@@ -105,19 +107,50 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     center: { lat: 48.8568, lng: 2.3524 },
     zoom: 14,
     route: [
-      { lat: 48.8624, lng: 2.3332 },
-      { lat: 48.8665, lng: 2.3465 },
-      { lat: 48.8612, lng: 2.3656 },
-      { lat: 48.8526, lng: 2.3727 },
-      { lat: 48.8467, lng: 2.3562 },
-      { lat: 48.8505, lng: 2.3384 },
-      { lat: 48.8624, lng: 2.3332 }
+      { lat: 48.865689, lng: 2.333534 },
+      { lat: 48.864344, lng: 2.335015 },
+      { lat: 48.862711, lng: 2.33732 },
+      { lat: 48.861726, lng: 2.341033 },
+      { lat: 48.860818, lng: 2.340777 },
+      { lat: 48.858654, lng: 2.341612 },
+      { lat: 48.857588, lng: 2.345761 },
+      { lat: 48.857566, lng: 2.347689 },
+      { lat: 48.859992, lng: 2.349057 },
+      { lat: 48.86293, lng: 2.350711 },
+      { lat: 48.862771, lng: 2.353698 },
+      { lat: 48.860611, lng: 2.353171 },
+      { lat: 48.857551, lng: 2.351475 },
+      { lat: 48.856717, lng: 2.348955 },
+      { lat: 48.855374, lng: 2.352379 },
+      { lat: 48.853716, lng: 2.35672 },
+      { lat: 48.851661, lng: 2.356387 },
+      { lat: 48.848536, lng: 2.353618 },
+      { lat: 48.848583, lng: 2.348623 },
+      { lat: 48.846799, lng: 2.34891 },
+      { lat: 48.846581, lng: 2.346935 },
+      { lat: 48.846979, lng: 2.342504 },
+      { lat: 48.847629, lng: 2.340197 },
+      { lat: 48.849266, lng: 2.337834 },
+      { lat: 48.849058, lng: 2.334588 },
+      { lat: 48.847345, lng: 2.332487 },
+      { lat: 48.848224, lng: 2.332549 },
+      { lat: 48.847928, lng: 2.329484 },
+      { lat: 48.850406, lng: 2.327708 },
+      { lat: 48.851705, lng: 2.324343 },
+      { lat: 48.853508, lng: 2.319395 },
+      { lat: 48.854419, lng: 2.322111 },
+      { lat: 48.85574, lng: 2.325718 },
+      { lat: 48.857052, lng: 2.327554 },
+      { lat: 48.859672, lng: 2.329581 },
+      { lat: 48.863702, lng: 2.332052 },
+      { lat: 48.865689, lng: 2.333534 }
     ]
   },
   {
     city: "Paris",
     country: "FR",
     layout: "Left Bank Loop",
+    layoutKey: "circuit_left_bank_loop",
     laps: 6,
     traits: { grip: 70, overtaking: 55, energy: 62 },
     likelyWeather: "dry",
@@ -125,18 +158,53 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     center: { lat: 48.8492, lng: 2.3458 },
     zoom: 14,
     route: [
-      { lat: 48.8544, lng: 2.3238 },
-      { lat: 48.8582, lng: 2.3424 },
-      { lat: 48.8512, lng: 2.3664 },
-      { lat: 48.8425, lng: 2.3594 },
-      { lat: 48.8408, lng: 2.3372 },
-      { lat: 48.8544, lng: 2.3238 }
+      { lat: 48.865689, lng: 2.333534 },
+      { lat: 48.864732, lng: 2.33485 },
+      { lat: 48.863119, lng: 2.335671 },
+      { lat: 48.862383, lng: 2.338541 },
+      { lat: 48.861637, lng: 2.341185 },
+      { lat: 48.860801, lng: 2.340769 },
+      { lat: 48.858662, lng: 2.341566 },
+      { lat: 48.857963, lng: 2.344384 },
+      { lat: 48.857184, lng: 2.347292 },
+      { lat: 48.855662, lng: 2.348337 },
+      { lat: 48.853592, lng: 2.347114 },
+      { lat: 48.852176, lng: 2.346278 },
+      { lat: 48.850347, lng: 2.347554 },
+      { lat: 48.849671, lng: 2.350276 },
+      { lat: 48.852492, lng: 2.352161 },
+      { lat: 48.854456, lng: 2.351331 },
+      { lat: 48.855596, lng: 2.348296 },
+      { lat: 48.853476, lng: 2.347049 },
+      { lat: 48.851393, lng: 2.345817 },
+      { lat: 48.849687, lng: 2.34488 },
+      { lat: 48.84691, lng: 2.343366 },
+      { lat: 48.84541, lng: 2.344509 },
+      { lat: 48.845137, lng: 2.342444 },
+      { lat: 48.846906, lng: 2.342828 },
+      { lat: 48.847477, lng: 2.340831 },
+      { lat: 48.849077, lng: 2.339035 },
+      { lat: 48.849656, lng: 2.337296 },
+      { lat: 48.851231, lng: 2.333919 },
+      { lat: 48.85159, lng: 2.331117 },
+      { lat: 48.851747, lng: 2.32788 },
+      { lat: 48.851705, lng: 2.324343 },
+      { lat: 48.853056, lng: 2.319218 },
+      { lat: 48.854752, lng: 2.320757 },
+      { lat: 48.853443, lng: 2.326078 },
+      { lat: 48.855992, lng: 2.325887 },
+      { lat: 48.85765, lng: 2.327936 },
+      { lat: 48.859609, lng: 2.329426 },
+      { lat: 48.862144, lng: 2.330911 },
+      { lat: 48.864484, lng: 2.332635 },
+      { lat: 48.865689, lng: 2.333534 }
     ]
   },
   {
     city: "Amsterdam",
     country: "NL",
     layout: "Canal Loop",
+    layoutKey: "circuit_canal_loop",
     laps: 5,
     traits: { grip: 60, overtaking: 68, energy: 66 },
     likelyWeather: "light_rain",
@@ -144,18 +212,53 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     center: { lat: 52.371, lng: 4.895 },
     zoom: 14,
     route: [
-      { lat: 52.381, lng: 4.883 },
-      { lat: 52.379, lng: 4.904 },
-      { lat: 52.369, lng: 4.914 },
-      { lat: 52.361, lng: 4.896 },
-      { lat: 52.366, lng: 4.878 },
-      { lat: 52.381, lng: 4.883 }
+      { lat: 52.379467, lng: 4.884159 },
+      { lat: 52.380605, lng: 4.887707 },
+      { lat: 52.382033, lng: 4.890237 },
+      { lat: 52.382826, lng: 4.893503 },
+      { lat: 52.381244, lng: 4.89662 },
+      { lat: 52.378212, lng: 4.90496 },
+      { lat: 52.377388, lng: 4.912275 },
+      { lat: 52.376268, lng: 4.921465 },
+      { lat: 52.372911, lng: 4.918791 },
+      { lat: 52.371159, lng: 4.914953 },
+      { lat: 52.371264, lng: 4.912293 },
+      { lat: 52.370972, lng: 4.909716 },
+      { lat: 52.368841, lng: 4.904876 },
+      { lat: 52.369681, lng: 4.900954 },
+      { lat: 52.372023, lng: 4.900455 },
+      { lat: 52.376014, lng: 4.902525 },
+      { lat: 52.37541, lng: 4.903308 },
+      { lat: 52.372707, lng: 4.907823 },
+      { lat: 52.37151, lng: 4.910486 },
+      { lat: 52.369029, lng: 4.905502 },
+      { lat: 52.369733, lng: 4.903203 },
+      { lat: 52.369745, lng: 4.902901 },
+      { lat: 52.367992, lng: 4.903471 },
+      { lat: 52.366642, lng: 4.904621 },
+      { lat: 52.364402, lng: 4.902701 },
+      { lat: 52.361472, lng: 4.907712 },
+      { lat: 52.359449, lng: 4.906639 },
+      { lat: 52.358021, lng: 4.900324 },
+      { lat: 52.359453, lng: 4.898889 },
+      { lat: 52.361004, lng: 4.899406 },
+      { lat: 52.361996, lng: 4.89744 },
+      { lat: 52.363584, lng: 4.886978 },
+      { lat: 52.364593, lng: 4.889296 },
+      { lat: 52.373906, lng: 4.885319 },
+      { lat: 52.373926, lng: 4.882797 },
+      { lat: 52.372547, lng: 4.877205 },
+      { lat: 52.373206, lng: 4.876068 },
+      { lat: 52.374434, lng: 4.876597 },
+      { lat: 52.377715, lng: 4.879132 },
+      { lat: 52.379467, lng: 4.884159 }
     ]
   },
   {
     city: "Amsterdam",
     country: "NL",
     layout: "Harbor Sprint",
+    layoutKey: "circuit_harbor_sprint",
     laps: 4,
     traits: { grip: 58, overtaking: 78, energy: 52 },
     likelyWeather: "heavy_rain",
@@ -163,18 +266,53 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     center: { lat: 52.392, lng: 4.905 },
     zoom: 14,
     route: [
-      { lat: 52.401, lng: 4.882 },
-      { lat: 52.407, lng: 4.907 },
-      { lat: 52.395, lng: 4.928 },
-      { lat: 52.382, lng: 4.913 },
-      { lat: 52.385, lng: 4.889 },
-      { lat: 52.401, lng: 4.882 }
+      { lat: 52.398598, lng: 4.883962 },
+      { lat: 52.396724, lng: 4.880783 },
+      { lat: 52.394789, lng: 4.876891 },
+      { lat: 52.39472, lng: 4.872355 },
+      { lat: 52.393265, lng: 4.868449 },
+      { lat: 52.395143, lng: 4.862273 },
+      { lat: 52.399813, lng: 4.852025 },
+      { lat: 52.406252, lng: 4.856106 },
+      { lat: 52.420262, lng: 4.87107 },
+      { lat: 52.424034, lng: 4.880486 },
+      { lat: 52.423351, lng: 4.900877 },
+      { lat: 52.41782, lng: 4.910823 },
+      { lat: 52.411841, lng: 4.910481 },
+      { lat: 52.409114, lng: 4.915006 },
+      { lat: 52.404724, lng: 4.90789 },
+      { lat: 52.401983, lng: 4.910909 },
+      { lat: 52.399811, lng: 4.912235 },
+      { lat: 52.400243, lng: 4.919263 },
+      { lat: 52.396939, lng: 4.917939 },
+      { lat: 52.391843, lng: 4.916953 },
+      { lat: 52.38887, lng: 4.913112 },
+      { lat: 52.387163, lng: 4.913424 },
+      { lat: 52.385075, lng: 4.913844 },
+      { lat: 52.386079, lng: 4.92175 },
+      { lat: 52.389156, lng: 4.920236 },
+      { lat: 52.390961, lng: 4.920395 },
+      { lat: 52.389363, lng: 4.918989 },
+      { lat: 52.38412, lng: 4.91087 },
+      { lat: 52.372087, lng: 4.910913 },
+      { lat: 52.374915, lng: 4.904086 },
+      { lat: 52.376472, lng: 4.903195 },
+      { lat: 52.37865, lng: 4.903948 },
+      { lat: 52.382894, lng: 4.894108 },
+      { lat: 52.385413, lng: 4.893553 },
+      { lat: 52.38959, lng: 4.891185 },
+      { lat: 52.391106, lng: 4.885138 },
+      { lat: 52.39282, lng: 4.878874 },
+      { lat: 52.394898, lng: 4.877142 },
+      { lat: 52.396976, lng: 4.881269 },
+      { lat: 52.398598, lng: 4.883962 }
     ]
   },
   {
     city: "Berlin",
     country: "DE",
     layout: "Ring Sector",
+    layoutKey: "circuit_ring_sector",
     laps: 6,
     traits: { grip: 76, overtaking: 62, energy: 70 },
     likelyWeather: "dry",
@@ -182,18 +320,54 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     center: { lat: 52.515, lng: 13.377 },
     zoom: 14,
     route: [
-      { lat: 52.526, lng: 13.352 },
-      { lat: 52.528, lng: 13.384 },
-      { lat: 52.516, lng: 13.405 },
-      { lat: 52.503, lng: 13.392 },
-      { lat: 52.504, lng: 13.359 },
-      { lat: 52.526, lng: 13.352 }
+      { lat: 52.51634, lng: 13.378236 },
+      { lat: 52.516491, lng: 13.383069 },
+      { lat: 52.516682, lng: 13.386008 },
+      { lat: 52.516994, lng: 13.390834 },
+      { lat: 52.517236, lng: 13.393421 },
+      { lat: 52.517878, lng: 13.396203 },
+      { lat: 52.519165, lng: 13.396885 },
+      { lat: 52.519941, lng: 13.399287 },
+      { lat: 52.518396, lng: 13.400926 },
+      { lat: 52.51981, lng: 13.404992 },
+      { lat: 52.518235, lng: 13.407276 },
+      { lat: 52.516818, lng: 13.408779 },
+      { lat: 52.514765, lng: 13.406467 },
+      { lat: 52.51329, lng: 13.40684 },
+      { lat: 52.512213, lng: 13.409786 },
+      { lat: 52.512914, lng: 13.411346 },
+      { lat: 52.512497, lng: 13.411896 },
+      { lat: 52.51125, lng: 13.415176 },
+      { lat: 52.510361, lng: 13.415974 },
+      { lat: 52.506825, lng: 13.413222 },
+      { lat: 52.504174, lng: 13.411141 },
+      { lat: 52.503822, lng: 13.410156 },
+      { lat: 52.504333, lng: 13.407917 },
+      { lat: 52.502654, lng: 13.406536 },
+      { lat: 52.503252, lng: 13.404578 },
+      { lat: 52.503622, lng: 13.402839 },
+      { lat: 52.504899, lng: 13.398535 },
+      { lat: 52.506354, lng: 13.397759 },
+      { lat: 52.507157, lng: 13.39759 },
+      { lat: 52.506949, lng: 13.394234 },
+      { lat: 52.506741, lng: 13.390973 },
+      { lat: 52.506466, lng: 13.386623 },
+      { lat: 52.506888, lng: 13.385825 },
+      { lat: 52.508699, lng: 13.38488 },
+      { lat: 52.51116, lng: 13.383571 },
+      { lat: 52.511842, lng: 13.385866 },
+      { lat: 52.513578, lng: 13.386378 },
+      { lat: 52.51531, lng: 13.38609 },
+      { lat: 52.516939, lng: 13.385567 },
+      { lat: 52.51661, lng: 13.380594 },
+      { lat: 52.51634, lng: 13.378236 }
     ]
   },
   {
     city: "Berlin",
     country: "DE",
     layout: "Mitte Dash",
+    layoutKey: "circuit_mitte_dash",
     laps: 5,
     traits: { grip: 68, overtaking: 74, energy: 60 },
     likelyWeather: "dry",
@@ -201,12 +375,46 @@ const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     center: { lat: 52.521, lng: 13.405 },
     zoom: 14,
     route: [
-      { lat: 52.529, lng: 13.388 },
-      { lat: 52.532, lng: 13.411 },
-      { lat: 52.520, lng: 13.428 },
-      { lat: 52.509, lng: 13.412 },
-      { lat: 52.514, lng: 13.391 },
-      { lat: 52.529, lng: 13.388 }
+      { lat: 52.528823, lng: 13.391548 },
+      { lat: 52.528458, lng: 13.393512 },
+      { lat: 52.530511, lng: 13.394939 },
+      { lat: 52.531785, lng: 13.394256 },
+      { lat: 52.532488, lng: 13.397437 },
+      { lat: 52.533394, lng: 13.403704 },
+      { lat: 52.533217, lng: 13.407238 },
+      { lat: 52.532026, lng: 13.410925 },
+      { lat: 52.532727, lng: 13.412176 },
+      { lat: 52.530881, lng: 13.412965 },
+      { lat: 52.528786, lng: 13.416668 },
+      { lat: 52.528716, lng: 13.421477 },
+      { lat: 52.527884, lng: 13.425181 },
+      { lat: 52.526178, lng: 13.428643 },
+      { lat: 52.524196, lng: 13.430106 },
+      { lat: 52.521327, lng: 13.429472 },
+      { lat: 52.519127, lng: 13.428426 },
+      { lat: 52.518381, lng: 13.427669 },
+      { lat: 52.51577, lng: 13.426218 },
+      { lat: 52.512862, lng: 13.423558 },
+      { lat: 52.509901, lng: 13.421263 },
+      { lat: 52.510479, lng: 13.416065 },
+      { lat: 52.509095, lng: 13.412143 },
+      { lat: 52.506078, lng: 13.412638 },
+      { lat: 52.503743, lng: 13.410397 },
+      { lat: 52.504676, lng: 13.407043 },
+      { lat: 52.506497, lng: 13.400414 },
+      { lat: 52.507153, lng: 13.397524 },
+      { lat: 52.506847, lng: 13.392605 },
+      { lat: 52.507615, lng: 13.390404 },
+      { lat: 52.509907, lng: 13.390043 },
+      { lat: 52.512075, lng: 13.389614 },
+      { lat: 52.514025, lng: 13.389361 },
+      { lat: 52.515723, lng: 13.389024 },
+      { lat: 52.518447, lng: 13.388571 },
+      { lat: 52.520432, lng: 13.38825 },
+      { lat: 52.52367, lng: 13.38777 },
+      { lat: 52.526347, lng: 13.387297 },
+      { lat: 52.529058, lng: 13.388208 },
+      { lat: 52.528823, lng: 13.391548 }
     ]
   }
 ];
@@ -227,8 +435,11 @@ function createInitialForm(locale: Locale): FormState {
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(() => {
     const saved = localStorage.getItem(LANGUAGE_KEY);
-    return isLocale(saved) ? saved : "en";
+    if (isLocale(saved)) return saved;
+    const browserLocale = navigator.language.split("-")[0] ?? "en";
+    return isLocale(browserLocale) ? browserLocale : "en";
   });
+  const [gameView, setGameView] = useState<"drive" | "directive" | "championship" | "garage" | "replay" | "report">("drive");
   const tt = (key: TranslationKey) => t(key, locale);
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
@@ -272,6 +483,14 @@ export function App() {
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
   const leader = leagueState?.teams[0];
   const currentCircuit = leagueState ? circuitForRound(leagueState.currentGrandPrix.round) : CITY_CIRCUITS[0];
+  const liveMapCars =
+    result?.classification.slice(0, 6).map((entry, index) => ({
+      id: entry.teamId,
+      label: entry.teamName.slice(0, 3).toUpperCase(),
+      player: entry.teamId === playerTeam?.id,
+      delay: -(index * 0.68 + Math.max(0, entry.position - 1) * 0.14),
+      duration: 7.5 + entry.position * 0.45
+    })) ?? [];
   const primaryCommand =
     deskState === "prepare"
       ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }
@@ -432,7 +651,7 @@ export function App() {
   }
 
   return (
-    <main className="app-shell">
+    <main className={leagueState ? "app-shell game-mode" : "app-shell"} data-game-view={gameView}>
       <section className="hero" aria-labelledby="app-title">
         <div className="hero-topline">
           <p className="eyebrow">{tt("app_eyebrow")}</p>
@@ -494,6 +713,23 @@ export function App() {
 
           {leagueState ? (
             <>
+              <nav className="game-nav" aria-label={tt("cockpit_sections")}>
+                {(["drive", "directive", "championship", "garage", "replay", "report"] as const).map((view) => (
+                  <button
+                    key={view}
+                    type="button"
+                    className={gameView === view ? "active" : undefined}
+                    onClick={() => setGameView(view)}
+                    disabled={(view === "replay" || view === "report") && !result}
+                  >
+                    {tt(`rail_${view}` as TranslationKey)}
+                  </button>
+                ))}
+                <select className="game-language" aria-label={tt("language_label")} value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
+                  <option value="en">{tt("language_en")}</option>
+                  <option value="fr">{tt("language_fr")}</option>
+                </select>
+              </nav>
               <section className="race-console">
                 <div>
                   <span className="section-kicker">{tt("briefing_next_action")}</span>
@@ -502,7 +738,7 @@ export function App() {
                 </div>
                 <div className="race-telemetry" aria-label={tt("race_telemetry")}>
                   <span>{currentCircuit.city}</span>
-                  <span>{currentCircuit.layout}</span>
+                  <span>{tt(currentCircuit.layoutKey)}</span>
                   <span>
                     {currentCircuit.laps} {tt("unit_laps")}
                   </span>
@@ -513,7 +749,7 @@ export function App() {
                   </span>
                 </div>
               </section>
-              <CityCircuitMap circuit={currentCircuit} tt={tt} />
+              <CityCircuitMap circuit={currentCircuit} tt={tt} cars={liveMapCars} immersive />
 
               <section className="race-workbench" aria-label={tt("directive_workbench")}>
                 <div className="settings-block">
@@ -637,7 +873,7 @@ export function App() {
                 <small>{tt(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}</small>
               </div>
             </div>
-            <section className="dashboard-section">
+            <section className="dashboard-section team-section">
               <h3>{tt("dashboard_my_team")}</h3>
               <p>
                 {playerTeam
@@ -697,7 +933,7 @@ export function App() {
                 </div>
               </section>
             ) : null}
-            <section className="dashboard-section">
+            <section className="dashboard-section standings-section">
               <h3>{tt("dashboard_standings")}</h3>
               <ol className="classification standings-list">
                 {leagueState.teams.map((team, index) => (
@@ -715,7 +951,7 @@ export function App() {
                 ))}
               </ol>
             </section>
-            <section className="dashboard-section">
+            <section className="dashboard-section history-section">
               <h3>{tt("league_history")}</h3>
               <ol className="classification">
                 {leagueState.grandPrixHistory.map((grandPrix) => (
@@ -823,7 +1059,6 @@ function VisualReplay({
   const [isPlaying, setIsPlaying] = useState(true);
   const [speed, setSpeed] = useState(1);
   const circuit = circuitForRound(round);
-  const mapPath = projectedCircuitMap(circuit).path;
   const playerEntry = result.classification.find((entry) => entry.teamId === playerTeamId) ?? result.classification[0];
   const winner = result.classification[0];
   const replayEvents = result.events
@@ -834,10 +1069,7 @@ function VisualReplay({
     delay: -(index * 0.72 + Math.max(0, entry.position - 1) * 0.18),
     duration: 8 + entry.position * 0.55
   }));
-  const speedDuration = `${Math.max(3, 9 / speed)}s`;
   const playbackStyle = {
-    "--race-path": `path("${mapPath}")`,
-    "--race-duration": speedDuration,
     "--race-state": isPlaying ? "running" : "paused"
   } as CSSProperties & Record<string, string>;
 
@@ -865,20 +1097,18 @@ function VisualReplay({
       </div>
       <h3>{tt("result_replay_positions")}</h3>
       <div className="replay-track city-replay-track" aria-label={tt("result_replay_track_label")} style={playbackStyle}>
-        <CityCircuitMap circuit={circuit} tt={tt} compact />
-        {cars.map(({ entry, delay, duration }) => (
-          <span
-            key={entry.teamId}
-            className={`replay-car ${entry.teamId === playerTeamId ? "player" : ""}`}
-            style={{
-              animationDelay: `${delay}s`,
-              animationDuration: `${duration / speed}s`,
-              offsetPath: `path("${mapPath}")`
-            } as CSSProperties}
-          >
-            {entry.teamName.slice(0, 3).toUpperCase()}
-          </span>
-        ))}
+        <CityCircuitMap
+          circuit={circuit}
+          tt={tt}
+          compact
+          cars={cars.map(({ entry, delay, duration }) => ({
+            id: entry.teamId,
+            label: entry.teamName.slice(0, 3).toUpperCase(),
+            player: entry.teamId === playerTeamId,
+            delay,
+            duration: duration / speed
+          }))}
+        />
         <ol className="replay-laps">
           {RACE_SEGMENTS.slice(0, Math.min(RACE_SEGMENTS.length, circuit.laps)).map((segment, index) => (
             <li key={segment}>
@@ -908,32 +1138,59 @@ function VisualReplay({
   );
 }
 
-function CityCircuitMap({ circuit, tt, compact = false }: { circuit: CityCircuit; tt: (key: TranslationKey) => string; compact?: boolean }) {
-  const map = projectedCircuitMap(circuit);
+function CityCircuitMap({
+  circuit,
+  tt,
+  compact = false,
+  immersive = false,
+  cars = []
+}: {
+  circuit: CityCircuit;
+  tt: (key: TranslationKey) => string;
+  compact?: boolean;
+  immersive?: boolean;
+  cars?: Array<{ id: string; label: string; player: boolean; delay: number; duration: number }>;
+}) {
+  const immersiveSize = typeof window !== "undefined" && window.innerWidth < 700 ? { width: 900, height: 1600 } : { width: 1600, height: 900 };
+  const map = projectedCircuitMap(circuit, immersive ? { ...immersiveSize, fitRoute: true } : undefined);
+  const className = ["city-circuit-map", compact ? "compact" : "", immersive ? "immersive" : ""].filter(Boolean).join(" ");
 
   return (
-    <section className={compact ? "city-circuit-map compact" : "city-circuit-map"} aria-label={tt("city_circuit_map")}>
+    <section className={className} aria-label={tt("city_circuit_map")}>
       <div className="city-circuit-heading">
         <span>{circuit.city}</span>
-        <strong>{circuit.layout}</strong>
+        <strong>{tt(circuit.layoutKey)}</strong>
         <small>
           {circuit.country} · {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
         </small>
       </div>
       <div className="city-map-stage">
-        {map.tiles.map((tile) => (
-          <img
-            key={`${tile.x}-${tile.y}`}
-            alt=""
-            className="city-map-tile"
-            src={`https://tile.openstreetmap.org/${circuit.zoom}/${tile.x}/${tile.y}.png`}
-            style={{ left: tile.left, top: tile.top }}
-          />
-        ))}
-        <svg viewBox={`0 0 ${map.width} ${map.height}`} aria-hidden="true">
+        <svg className="city-map-svg" viewBox={`0 0 ${map.width} ${map.height}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+          {map.tiles.map((tile) => (
+            <image
+              key={`${tile.x}-${tile.y}`}
+              className="city-map-tile"
+              href={`https://tile.openstreetmap.org/${map.zoom}/${tile.x}/${tile.y}.png`}
+              x={tile.left}
+              y={tile.top}
+              width="256"
+              height="256"
+            />
+          ))}
           <path className="city-route-shadow" d={map.path} />
           <path className="city-route-line" d={map.path} />
           <path className="city-route-accent" d={map.path} />
+          {cars.length
+            ? cars.map((car) => (
+              <g key={car.id} className={`map-car ${car.player ? "player" : ""}`}>
+                <circle r="17" />
+                <text textAnchor="middle" dominantBaseline="central">
+                  {car.label}
+                </text>
+                <animateMotion path={map.path} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount="indefinite" />
+              </g>
+            ))
+            : null}
         </svg>
       </div>
       {!compact ? (
@@ -951,18 +1208,48 @@ function circuitForRound(round: number) {
   return CITY_CIRCUITS[(Math.max(1, round) - 1) % CITY_CIRCUITS.length] ?? CITY_CIRCUITS[0];
 }
 
-function projectedCircuitMap(circuit: CityCircuit) {
-  const width = 960;
-  const height = 520;
+function fittedRouteZoom(circuit: CityCircuit, width: number, height: number) {
+  for (let zoom = circuit.zoom + 1; zoom >= circuit.zoom - 2; zoom -= 1) {
+    const projection = circuit.route.map((point) => projectLatLng(point, zoom));
+    const bounds = projection.reduce(
+      (acc, point) => ({
+        minX: Math.min(acc.minX, point.x),
+        maxX: Math.max(acc.maxX, point.x),
+        minY: Math.min(acc.minY, point.y),
+        maxY: Math.max(acc.maxY, point.y)
+      }),
+      { minX: Number.POSITIVE_INFINITY, maxX: Number.NEGATIVE_INFINITY, minY: Number.POSITIVE_INFINITY, maxY: Number.NEGATIVE_INFINITY }
+    );
+    if (bounds.maxX - bounds.minX <= width * 0.76 && bounds.maxY - bounds.minY <= height * 0.7) {
+      return zoom;
+    }
+  }
+
+  return circuit.zoom - 2;
+}
+
+function projectedCircuitMap(circuit: CityCircuit, options: { width: number; height: number; zoom?: number; fitRoute?: boolean } = { width: 960, height: 520 }) {
+  const { width, height, fitRoute = false } = options;
+  const zoom = options.zoom ?? (fitRoute ? fittedRouteZoom(circuit, width, height) : circuit.zoom);
   const tileSize = 256;
-  const center = projectLatLng(circuit.center, circuit.zoom);
-  const points = circuit.route.map((point) => {
-    const projected = projectLatLng(point, circuit.zoom);
-    return {
-      x: projected.x - center.x + width / 2,
-      y: projected.y - center.y + height / 2
-    };
-  });
+  const routeProjection = circuit.route.map((point) => projectLatLng(point, zoom));
+  const bounds = routeProjection.reduce(
+    (acc, point) => ({
+      minX: Math.min(acc.minX, point.x),
+      maxX: Math.max(acc.maxX, point.x),
+      minY: Math.min(acc.minY, point.y),
+      maxY: Math.max(acc.maxY, point.y)
+    }),
+    { minX: Number.POSITIVE_INFINITY, maxX: Number.NEGATIVE_INFINITY, minY: Number.POSITIVE_INFINITY, maxY: Number.NEGATIVE_INFINITY }
+  );
+  const center = {
+    x: (bounds.minX + bounds.maxX) / 2,
+    y: (bounds.minY + bounds.maxY) / 2
+  };
+  const points = routeProjection.map((projected) => ({
+    x: projected.x - center.x + width / 2,
+    y: projected.y - center.y + height / 2
+  }));
   const minTileX = Math.floor((center.x - width / 2) / tileSize);
   const maxTileX = Math.floor((center.x + width / 2) / tileSize);
   const minTileY = Math.floor((center.y - height / 2) / tileSize);
@@ -983,6 +1270,7 @@ function projectedCircuitMap(circuit: CityCircuit) {
   return {
     width,
     height,
+    zoom,
     tiles,
     path: points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ")
   };

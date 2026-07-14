@@ -70,35 +70,45 @@ test("plays a three Grand Prix private league loop", async ({ page }) => {
   await page.goto("/");
 
   await page.getByRole("button", { name: "Create league" }).click();
+  await expect(page.getByRole("button", { name: "Race", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Directive", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Championship", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Garage", exact: true })).toBeVisible();
+  await page.getByRole("button", { name: "Championship", exact: true }).click();
   await expect(page.getByText("ABC123")).toBeVisible();
   await expect(page.getByText("Round 1").first()).toBeVisible();
-  await expect(page.getByText("Pit wall")).toBeVisible();
-  await expect(page.getByText("Prepare")).toBeVisible();
   await expect(page.getByText("Current GP")).toBeVisible();
   await expect(page.getByText("0/2")).toBeVisible();
 
   await expect(page.getByLabel("League summary").getByText("Wait for directives")).toBeVisible();
+  await page.getByRole("button", { name: "Race", exact: true }).click();
 
   for (const expectedRound of [1, 2, 3]) {
     await page.getByRole("button", { name: "Submit directive" }).click();
-    await expect(page.getByText("Directive locked. You can launch the Grand Prix.")).toBeVisible();
-    await expect(page.getByText("Ready to launch")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Launch GP" })).toBeVisible();
 
     await page.getByRole("button", { name: "Launch GP" }).click();
-    await expect(page.getByText("Race resolved")).toBeVisible();
-    await expect(page.getByText("Silver Ridge GP: Circle One wins.").first()).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Race recap" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Replay" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Report" })).toBeEnabled();
+    await expect(page.getByRole("button", { name: "Next GP" })).toBeVisible();
+    await page.getByRole("button", { name: "Replay" }).click();
     await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
     await expect(page.getByLabel("Race replay by lap")).toBeVisible();
-    await expect(page.getByText("Balanced · Weather · Rain Grip")).toBeVisible();
     await expect(page.locator(".replay-timeline").getByText("Lap 5")).toBeVisible();
+    await page.getByRole("button", { name: "Report" }).click();
+    await expect(page.getByRole("heading", { name: "Race report" })).toBeVisible();
+    await expect(page.getByText("Silver Ridge GP: Circle One wins.").first()).toBeVisible();
 
     if (expectedRound < 3) {
+      await page.getByRole("button", { name: "Race", exact: true }).click();
       await page.getByRole("button", { name: "Next GP" }).click();
+      await page.getByRole("button", { name: "Championship", exact: true }).click();
       await expect(page.getByText(`Round ${expectedRound + 1}`).first()).toBeVisible();
+      await page.getByRole("button", { name: "Race", exact: true }).click();
     }
   }
 
+  await page.getByRole("button", { name: "Championship", exact: true }).click();
   await expect(page.getByText("Round 3").first()).toBeVisible();
 });
 

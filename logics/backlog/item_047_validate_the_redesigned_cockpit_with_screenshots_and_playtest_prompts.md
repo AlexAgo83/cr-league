@@ -3,8 +3,8 @@
 > Schema version: 1.0
 > Status: In progress
 > Understanding: 95
-> Confidence: 95
-> Progress: 82%
+> Confidence: 92
+> Progress: 90%
 > Complexity: Low
 > Theme: Validation and playtest readiness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -64,6 +64,9 @@
 - Inspected the resolved replay pass and replaced raw English simulator prose in redesigned result/event/report areas with catalog-backed display text.
 - Rejected the first corrective visual pass as still too stacked, removed the desktop rail, widened the cockpit grid, moved directive controls before league settings, and captured replacement screenshots: `~/Desktop/CRL/crl-cockpit-desktop-briefing-v2.png`, `~/Desktop/CRL/crl-cockpit-desktop-replay-v2.png`, `~/Desktop/CRL/crl-cockpit-mobile-briefing-v2.png`, and `~/Desktop/CRL/crl-cockpit-mobile-replay-v2.png`.
 - Rejected the remaining dashboard feel after review, switched to a map-first race view with OSM tiles, removed first-viewport settings/secondary controls, compacted championship into a summary strip, and captured `~/Desktop/CRL/crl-cockpit-desktop-map-focus.png` plus `~/Desktop/CRL/crl-cockpit-mobile-map-focus.png`.
+- Rejected the hidden-content map pass because it made secondary gameplay inaccessible. Added an explicit cockpit rail for Course, Directive, Championship, Garage, Replay, and Report views; captured `~/Desktop/CRL/crl-cockpit-desktop-game-v5-race.png`, `~/Desktop/CRL/crl-cockpit-desktop-game-v5-garage.png`, `~/Desktop/CRL/crl-cockpit-desktop-game-v5-replay.png`, `~/Desktop/CRL/crl-cockpit-mobile-game-v5-race.png`, and `~/Desktop/CRL/crl-cockpit-mobile-game-v6-garage.png`.
+- Rejected translucent overlapping panels on mobile and converted non-course views to opaque cockpit panels so Garage/Championship/Replay/Report no longer sit unreadably over active race controls.
+- Replaced all six 0.3 seed circuit routes with sampled OSRM road-network geometry so Paris, Amsterdam, and Berlin GP layouts use road-following map routes instead of hand-drawn abstract loops.
 
 # AC Traceability
 - request-AC7 -> This backlog slice. Proof: AC1: Playtest docs ask whether the cockpit feels like a racing game rather than an admin dashboard.

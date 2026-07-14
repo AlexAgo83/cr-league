@@ -3,11 +3,16 @@ import {
   DEMO_RACE_INPUT,
   simulateRace,
   type CardId,
+  type QualifyingRun,
   type RaceDecision,
+  type RaceEvent,
   type RaceInput,
   type RaceParticipant,
+  type RaceResult,
+  type RaceSegment,
   type RaceTraits,
-  type TeamLivery
+  type TeamLivery,
+  type Weather
 } from "@cr-league/shared";
 import { createHash, randomBytes } from "node:crypto";
 import type { Prisma } from "@prisma/client";
@@ -70,6 +75,7 @@ export type LeagueState = {
     primaryTrait: RaceInput["primaryTrait"];
     secondaryTrait: RaceInput["secondaryTrait"];
     forecast: RaceInput["forecast"];
+    qualifyingRuns: QualifyingRun[];
     result: unknown;
   };
   grandPrixHistory: Array<{
@@ -115,6 +121,10 @@ export type LeagueState = {
 
 export type SubmitDecisionInput = RaceDecision & {
   teamId: string;
+};
+
+export type SubmitQualifyingInput = SubmitDecisionInput & {
+  traits?: unknown;
 };
 
 export type ResolveGrandPrixInput = {
@@ -323,6 +333,7 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
       secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
       forecast: grandPrix.forecast as RaceInput["forecast"],
+      qualifyingRuns: normalizeQualifyingRuns(grandPrix.qualifyingRuns),
       result: grandPrix.result
     },
     grandPrixHistory: league.grandPrixes.map((entry) => ({
@@ -496,6 +507,52 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
   return getLeagueState(db, leagueId);
 }
 
+export async function submitQualifyingRun(db: Db, leagueId: string, input: SubmitQualifyingInput) {
+  const grandPrix = await getCurrentGrandPrix(db, leagueId);
+  if (!grandPrix) return null;
+  if (grandPrix.status === "resolved") {
+    throw new LeagueRuleError("This Grand Prix is already resolved.");
+  }
+
+  const state = await getLeagueState(db, leagueId);
+  const team = state?.teams.find((candidate) => candidate.id === input.teamId);
+  if (!state || !team) return null;
+  if (input.cardId && !team.cards.includes(input.cardId)) {
+    throw new LeagueRuleError("This card is not in your inventory.");
+  }
+
+  const decision: RaceDecision = {
+    approach: input.approach,
+    preparation: input.preparation,
+    cardId: input.cardId,
+    rivalTeamId: input.rivalTeamId
+  };
+  const run = createQualifyingRun({
+    seed: `${grandPrix.seed}-${team.id}-${Date.now()}-${Math.random()}`,
+    teamId: team.id,
+    teamName: team.name,
+    decision,
+    primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
+    secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+    traits: normalizeRaceTraits(input.traits),
+    forecast: grandPrix.forecast as RaceInput["forecast"]
+  });
+  const runs = normalizeQualifyingRuns(grandPrix.qualifyingRuns);
+  const previous = runs.find((candidate) => candidate.teamId === team.id);
+  const nextRuns = previous && previous.time <= run.time ? runs : [...runs.filter((candidate) => candidate.teamId !== team.id), run];
+
+  await db.grandPrix.update({
+    where: { id: grandPrix.id },
+    data: { qualifyingRuns: nextRuns }
+  });
+
+  return {
+    state: await getLeagueState(db, leagueId),
+    run,
+    isBest: !previous || run.time < previous.time
+  };
+}
+
 export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: ResolveGrandPrixInput = {}) {
   const state = await getLeagueState(db, leagueId);
   const grandPrix = await getCurrentGrandPrix(db, leagueId);
@@ -623,6 +680,18 @@ function hasHumanDecision(state: LeagueState) {
 }
 
 function buildParticipants(state: LeagueState): RaceParticipant[] {
+  const baseRank = new Map(state.teams.map((team, index) => [team.id, index + 1]));
+  const qualifyingTime = new Map(state.currentGrandPrix.qualifyingRuns.map((run) => [run.teamId, run.time]));
+  const qualifyingRank = new Map(
+    [...state.teams]
+      .sort(
+        (left, right) =>
+          (qualifyingTime.get(left.id) ?? Number.POSITIVE_INFINITY) - (qualifyingTime.get(right.id) ?? Number.POSITIVE_INFINITY) ||
+          (baseRank.get(left.id) ?? 999) - (baseRank.get(right.id) ?? 999)
+      )
+      .map((team, index) => [team.id, index + 1])
+  );
+
   return state.teams.map((team, index) => {
     const demo = DEMO_RACE_INPUT.participants[index % DEMO_RACE_INPUT.participants.length];
     if (!demo) {
@@ -634,7 +703,7 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
       teamId: team.id,
       teamName: team.name,
       kind: team.kind === "bot" ? "bot" : "human",
-      standingsRank: index + 1,
+      standingsRank: qualifyingRank.get(team.id) ?? index + 1,
       botArchetype: demo.botArchetype,
       decision: decision
         ? {
@@ -646,6 +715,96 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
         : { ...demo.decision, defaulted: true }
     };
   });
+}
+
+function createQualifyingRun(input: {
+  seed: string;
+  teamId: string;
+  teamName: string;
+  decision: RaceDecision;
+  primaryTrait: RaceInput["primaryTrait"];
+  secondaryTrait: RaceInput["secondaryTrait"];
+  traits?: RaceTraits;
+  forecast: RaceInput["forecast"];
+}): QualifyingRun {
+  const weather = strongestForecast(input.forecast);
+  const traits = input.traits ?? { grip: 62, overtaking: 62, energy: 62 };
+  const traitBonus = (traits.grip + traits.overtaking + traits.energy - 180) / 18;
+  const weatherPenalty = weather === "heavy_rain" ? 2.8 : weather === "light_rain" ? 1.2 : 0;
+  const approachDelta = input.decision.approach === "aggressive" ? -1.1 : input.decision.approach === "prudent" ? 0.7 : 0;
+  const prepDelta =
+    input.decision.preparation === "speed"
+      ? -1.2
+      : input.decision.preparation === "weather" && weather !== "dry"
+        ? -1.4
+        : input.decision.preparation === "reliability"
+          ? 0.4
+          : 0;
+  const cardDelta = input.decision.cardId === "launch_boost" ? -0.8 : input.decision.cardId === "rain_grip" && weather !== "dry" ? -0.7 : 0;
+  const variance = (Math.random() - 0.5) * 2.4;
+  const time = Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + variance).toFixed(2));
+  const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, time, weather);
+
+  return {
+    teamId: input.teamId,
+    time,
+    decision: input.decision,
+    result,
+    createdAt: new Date().toISOString()
+  };
+}
+
+function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, time: number, weather: Weather): RaceResult {
+  const segments: RaceSegment[] = ["start", "early", "mid", "late", "finish"];
+  const event: RaceEvent = {
+    id: "qualifying_finish",
+    order: 0,
+    segment: "finish",
+    lap: 1,
+    type: "finish",
+    teamId,
+    severity: "minor",
+    positionDelta: 0,
+    tags: ["qualifying"],
+    replayText: `${teamName} boucle son chrono en ${time.toFixed(2)}s`,
+    reportText: `${teamName} signe un chrono en ${time.toFixed(2)}s.`
+  };
+
+  return {
+    grandPrixName: "Chrono",
+    seed,
+    resolvedWeather: Object.fromEntries(segments.map((segment) => [segment, weather])) as Record<RaceSegment, Weather>,
+    classification: [
+      {
+        position: 1,
+        teamId,
+        teamName,
+        points: 0,
+        credits: 0,
+        positionChange: 0,
+        status: "finished",
+        resultTags: [decision.approach, decision.preparation]
+      }
+    ],
+    events: [event],
+    replayTrace: Array.from({ length: 11 }, (_, index) => ({
+      segment: segments[Math.min(segments.length - 1, Math.floor((index / 10) * segments.length))] ?? "start",
+      lap: 1,
+      progress: index / 10,
+      order: [teamId],
+      times: { [teamId]: Number(((time * index) / 10).toFixed(1)) },
+      gaps: { [teamId]: 0 }
+    })),
+    consumedCards: [],
+    report: {
+      headline: `${teamName} ${time.toFixed(2)}s`,
+      blocks: []
+    }
+  };
+}
+
+function strongestForecast(forecast: RaceInput["forecast"]): Weather {
+  return (Object.entries(forecast).sort((left, right) => right[1] - left[1])[0]?.[0] ?? "dry") as Weather;
 }
 
 function buildActionState(teamIds: string[], grandPrixStatus: string, submittedTeamIds: string[], deadline: Date | null) {
@@ -771,6 +930,19 @@ function isCardId(value: string): value is CardId {
 
 function normalizeCards(value: Prisma.JsonValue): CardId[] {
   return Array.isArray(value) ? value.filter((cardId): cardId is CardId => typeof cardId === "string" && isCardId(cardId)) : [];
+}
+
+function normalizeQualifyingRuns(value: unknown): QualifyingRun[] {
+  return Array.isArray(value)
+    ? value.filter(
+        (run): run is QualifyingRun =>
+          Boolean(run) &&
+          typeof run === "object" &&
+          typeof (run as QualifyingRun).teamId === "string" &&
+          typeof (run as QualifyingRun).time === "number" &&
+          Boolean((run as QualifyingRun).result)
+      )
+    : [];
 }
 
 function normalizeLivery(value: unknown): TeamLivery {

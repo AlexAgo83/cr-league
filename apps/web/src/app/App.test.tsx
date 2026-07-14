@@ -270,14 +270,13 @@ describe("App", () => {
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Result" }).hasAttribute("disabled")).toBe(true);
 
-    // Briefing modal from the info button
+    // Qualifying modal from the chrono button
     expect(screen.queryByText("Wait for directives")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Race info" }));
-    expect(screen.getByText("Wait for directives")).toBeTruthy();
-    expect(screen.getByText("Fast")).toBeTruthy();
-    expect(screen.getByText("Weather sensitive")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Lap time" }));
+    expect(screen.getByRole("heading", { name: "Run a lap time" })).toBeTruthy();
+    expect(screen.getByText("Your best time sets your grid slot.", { exact: false })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    expect(screen.queryByText("Wait for directives")).toBe(null);
+    expect(screen.queryByText("Run a lap time")).toBe(null);
 
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));

@@ -66,6 +66,7 @@ model GrandPrix {
   primaryTrait   String
   secondaryTrait String
   forecast       Json
+  qualifyingRuns Json     @default("[]")
   status         String   @default("briefing")
   result         Json?
   createdAt      DateTime @default(now())

@@ -1,4 +1,4 @@
-import { APP_NAME, type CardId } from "@cr-league/shared";
+import { APP_NAME, type CardId, type QualifyingRun } from "@cr-league/shared";
 import { useEffect, useMemo, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { circuitForRound, countryFlag } from "./circuits.js";
@@ -9,6 +9,7 @@ import { ChampionshipView } from "../features/ChampionshipView.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
+import { ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
@@ -71,7 +72,8 @@ export function App() {
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
-  const [briefingOpen, setBriefingOpen] = useState(false);
+  const [qualifyingOpen, setQualifyingOpen] = useState(false);
+  const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileCodeOpen, setProfileCodeOpen] = useState(false);
   const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
@@ -110,6 +112,8 @@ export function App() {
     [leagueState]
   );
   const playerDecision = leagueState?.decisions.find((decision) => decision.teamId === playerTeam?.id);
+  const qualifyingRuns = leagueState?.currentGrandPrix.qualifyingRuns ?? [];
+  const playerQualifyingRun = qualifyingRuns.find((run) => run.teamId === playerTeam?.id) ?? null;
   const result = leagueState?.currentGrandPrix.result;
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
   const forecastPick = leagueState ? strongestForecast(leagueState.currentGrandPrix.forecast) : "dry";
@@ -184,6 +188,26 @@ export function App() {
       });
       setLeagueState(withCurrentPlayer(state));
       setMessage(tt("status_directive_locked"));
+    });
+  }
+
+  async function launchQualifyingRun() {
+    if (!leagueState || !playerTeam || isResolved) return;
+
+    await run(tt("status_qualifying_running"), async () => {
+      const response = await api<{ state: LeagueState; run: QualifyingRun; isBest: boolean }>(`/leagues/${leagueState.league.id}/qualifying`, {
+        method: "POST",
+        body: JSON.stringify({
+          teamId: playerTeam.id,
+          approach: form.approach,
+          preparation: form.preparation,
+          cardId: selectedCardId || undefined,
+          traits: currentCircuit.traits
+        })
+      });
+      setLeagueState(withCurrentPlayer(response.state));
+      setQualifyingResult(response.run);
+      setMessage(response.isBest ? tt("status_qualifying_best") : tt("status_qualifying_done"));
     });
   }
 
@@ -827,8 +851,8 @@ export function App() {
         </div>
         <div className="command-actions">
           {gameView === "drive" ? (
-            <button className="info-command" type="button" onClick={() => setBriefingOpen(true)}>
-              {tt("race_info")}
+            <button className="info-command" type="button" onClick={() => setQualifyingOpen(true)} disabled={isResolved}>
+              {tt("action_qualifying")}
             </button>
           ) : null}
           {gameView === "result" && result ? (
@@ -847,33 +871,40 @@ export function App() {
         </div>
       </footer>
 
-      {briefingOpen ? (
-        <div className="modal-overlay" onClick={() => setBriefingOpen(false)}>
-          <section
-            className="panel modal"
-            role="dialog"
-            aria-modal="true"
-            aria-label={tt("briefing_next_action")}
-            onClick={(event) => event.stopPropagation()}
-          >
-            <span className="section-kicker">{tt("briefing_next_action")}</span>
-            <h2>{tt(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}</h2>
-            <p>{isResolved ? tt("briefing_tip_resolved") : tt("briefing_tip_prepare")}</p>
+      {qualifyingOpen ? (
+        <div className="modal-overlay" onClick={() => setQualifyingOpen(false)}>
+          <section className="panel modal qualifying-modal" role="dialog" aria-modal="true" aria-label={tt("qualifying_title")} onClick={(event) => event.stopPropagation()}>
+            <span className="section-kicker">{tt("qualifying_kicker")}</span>
+            <h2>{tt("qualifying_title")}</h2>
+            <p>{tt("qualifying_explainer")}</p>
             <div className="race-telemetry" aria-label={tt("race_telemetry")}>
-              <span>{tt(`trait_${leagueState.currentGrandPrix.primaryTrait}` as TranslationKey)}</span>
-              <span>{tt(`trait_${leagueState.currentGrandPrix.secondaryTrait}` as TranslationKey)}</span>
+              <span>{tt(`approach_${form.approach}` as TranslationKey)}</span>
+              <span>{tt(`preparation_${form.preparation}` as TranslationKey)}</span>
+              <span>{tt(`weather_${forecastPick}` as TranslationKey)}</span>
               <span>
-                {tt(`weather_${forecastPick}` as TranslationKey)} {leagueState.currentGrandPrix.forecast[forecastPick]}%
-              </span>
-              <span>
-                {tt("dashboard_players")} {leagueState.actionState.submittedTeamIds.length}/{leagueState.teams.length}
+                {tt("qualifying_best")} {playerQualifyingRun ? `${playerQualifyingRun.time.toFixed(2)}s` : "—"}
               </span>
             </div>
             <div className="actions">
-              <button type="button" onClick={() => setBriefingOpen(false)}>
+              <button type="button" onClick={launchQualifyingRun} disabled={status === "loading" || isResolved}>
+                {tt("action_launch_qualifying")}
+              </button>
+              <button type="button" onClick={() => setQualifyingOpen(false)}>
                 {tt("action_close")}
               </button>
             </div>
+            {(qualifyingResult ?? playerQualifyingRun) ? (
+              <div className="qualifying-replay">
+                <ReplayView
+                  result={(qualifyingResult ?? playerQualifyingRun)!.result}
+                  circuit={currentCircuit}
+                  playerTeamId={playerTeam?.id}
+                  teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
+                  traitImpacts={directiveTraitImpacts}
+                  tt={tt}
+                />
+              </div>
+            ) : null}
           </section>
         </div>
       ) : null}

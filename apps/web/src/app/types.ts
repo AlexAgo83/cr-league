@@ -1,4 +1,4 @@
-import type { CardId, RaceDecision, RaceResult, TeamLivery } from "@cr-league/shared";
+import type { CardId, QualifyingRun, RaceDecision, RaceResult, TeamLivery } from "@cr-league/shared";
 
 export type LeagueState = {
   league: {
@@ -17,6 +17,7 @@ export type LeagueState = {
     primaryTrait: string;
     secondaryTrait: string;
     forecast: Record<string, number>;
+    qualifyingRuns: QualifyingRun[];
     result: RaceResult | null;
   };
   grandPrixHistory: Array<{

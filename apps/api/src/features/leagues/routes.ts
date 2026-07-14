@@ -13,6 +13,7 @@ import {
   resolveCurrentGrandPrix,
   startNextGrandPrix,
   submitDecision,
+  submitQualifyingRun,
   updateLeagueSettings,
   updateTeamLivery,
   updateTeamName
@@ -178,6 +179,23 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/qualifying", async (request, reply) => {
+    if (!isQualifyingBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected a team qualifying body." });
+    }
+
+    try {
+      const response = await submitQualifyingRun(db, request.params.leagueId, request.body);
+      if (!response?.state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return response;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
+  });
+
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/resolve", async (request, reply) => {
     try {
       const state = await resolveCurrentGrandPrix(db, request.params.leagueId, request.body ?? {});
@@ -279,4 +297,10 @@ function isDecisionBody(value: unknown): value is Parameters<typeof submitDecisi
     typeof candidate.approach === "string" &&
     typeof candidate.preparation === "string"
   );
+}
+
+function isQualifyingBody(value: unknown): value is Parameters<typeof submitQualifyingRun>[2] {
+  if (!isDecisionBody(value)) return false;
+  const candidate = value as Record<string, unknown>;
+  return candidate.traits === undefined || (typeof candidate.traits === "object" && candidate.traits !== null);
 }

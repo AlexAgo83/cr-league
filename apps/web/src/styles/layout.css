@@ -532,6 +532,22 @@ label small {
   max-width: 560px;
 }
 
+.qualifying-modal {
+  max-width: 960px;
+}
+
+.qualifying-replay {
+  margin-top: 16px;
+}
+
+.qualifying-replay .replay-main-grid {
+  grid-template-columns: 1fr;
+}
+
+.qualifying-replay .replay-moments-panel {
+  display: none;
+}
+
 .race-telemetry {
   display: flex;
   flex-wrap: wrap;

@@ -138,6 +138,14 @@ export type RaceResult = {
   };
 };
 
+export type QualifyingRun = {
+  teamId: string;
+  time: number;
+  decision: RaceDecision;
+  result: RaceResult;
+  createdAt: string;
+};
+
 export type InternalScores = {
   pace: number;
   control: number;

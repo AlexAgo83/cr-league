@@ -109,6 +109,17 @@ describe("api app", () => {
         cardId: "rain_grip"
       }
     });
+    const qualifyingResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/qualifying`,
+      payload: {
+        teamId,
+        approach: "aggressive",
+        preparation: "weather",
+        cardId: "rain_grip",
+        traits: { grip: 70, overtaking: 66, energy: 62 }
+      }
+    });
 
     const resolveResponse = await app.inject({
       method: "POST",
@@ -151,6 +162,20 @@ describe("api app", () => {
     expect(readResponse.json().league).toMatchObject({ id: leagueId, name: "Office League" });
     expect(joinResponse.statusCode).toBe(200);
     expect(decisionResponse.statusCode).toBe(200);
+    expect(qualifyingResponse.statusCode).toBe(200);
+    expect(qualifyingResponse.json()).toMatchObject({
+      isBest: true,
+      run: {
+        teamId,
+        time: expect.any(Number),
+        result: expect.objectContaining({ replayTrace: expect.any(Array) })
+      },
+      state: {
+        currentGrandPrix: {
+          qualifyingRuns: [expect.objectContaining({ teamId, time: expect.any(Number) })]
+        }
+      }
+    });
     expect(resolveResponse.statusCode).toBe(200);
     expect(resolved.currentGrandPrix).toMatchObject({
       status: "resolved",
@@ -592,6 +617,7 @@ function createMemoryDb(): PrismaClient {
     primaryTrait: string;
     secondaryTrait: string;
     forecast: unknown;
+    qualifyingRuns: unknown;
     status: string;
     result: unknown;
   };
@@ -741,8 +767,8 @@ function createMemoryDb(): PrismaClient {
       }
     },
     grandPrix: {
-      create: async ({ data }: { data: Omit<GrandPrixRow, "id" | "status" | "result"> }) => {
-        const grandPrix = { id: id("gp"), status: "briefing", result: null, ...data };
+      create: async ({ data }: { data: Omit<GrandPrixRow, "id" | "qualifyingRuns" | "status" | "result"> }) => {
+        const grandPrix = { id: id("gp"), qualifyingRuns: [], status: "briefing", result: null, ...data };
         grandPrixes.push(grandPrix);
         return grandPrix;
       },
@@ -750,11 +776,10 @@ function createMemoryDb(): PrismaClient {
         grandPrixes
           .filter((grandPrix) => grandPrix.leagueId === where.leagueId)
           .sort((left, right) => right.round - left.round)[0] ?? null,
-      update: async ({ where, data }: { where: { id: string }; data: { status: string; result: unknown } }) => {
+      update: async ({ where, data }: { where: { id: string }; data: Partial<Pick<GrandPrixRow, "qualifyingRuns" | "status" | "result">> }) => {
         const grandPrix = grandPrixes.find((candidate) => candidate.id === where.id);
         if (!grandPrix) throw new Error("Grand Prix not found");
-        grandPrix.status = data.status;
-        grandPrix.result = data.result;
+        Object.assign(grandPrix, data);
         return grandPrix;
       },
       deleteMany: async ({ where }: { where: { leagueId: string } }) => {

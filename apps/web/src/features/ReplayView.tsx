@@ -99,93 +99,88 @@ export function ReplayView({
   return (
     <div className="view-stack">
       <div className="replay-main-grid">
-        <div className="replay-content-column">
-          <section className="panel replay-circuit-panel">
-            <div className="circuit-map-heading">
-              <span className="circuit-city">{circuit.city}</span>
-              <strong>{tt(circuit.layoutKey)}</strong>
-              <small>
-                {circuit.country} · {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
-              </small>
-            </div>
-          </section>
-
-          <section className="panel replay-player-panel">
-            <h2>{tt("result_replay_title")}</h2>
-            <p className="replay-explainer">{tt("result_replay_explainer")}</p>
-            <CircuitMap
-              circuit={circuit}
-              tt={tt}
-              cars={cars}
-              svgRef={svgRef}
-              showHeading={false}
-              overlay={
-                <>
-                  <ol className="replay-tower">
-                    {result.classification.slice(0, 6).map((entry) => (
-                      <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
-                        <strong>P{entry.position}</strong>
-                        <span>{entry.teamName}</span>
-                      </li>
-                    ))}
-                  </ol>
-                  <div
-                    className="replay-progress"
-                    aria-hidden="true"
-                    onClick={(event) => {
-                      const rect = event.currentTarget.getBoundingClientRect();
-                      seek(((event.clientX - rect.left) / rect.width) * replayEnd);
-                    }}
-                  >
-                    <div ref={progressRef} className="replay-progress-fill" />
-                    {RACE_SEGMENTS.slice(1).map((segment, index) => (
-                      <span key={segment} className="replay-tick" style={{ left: `${((index + 1) / RACE_SEGMENTS.length) * 100}%` }} />
-                    ))}
-                    {RACE_SEGMENTS.map((segment, index) => (
-                      <span
-                        key={segment}
-                        className="replay-weather"
-                        style={{ left: `${((index + 0.5) / RACE_SEGMENTS.length) * 100}%` }}
-                        title={tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
-                      >
-                        {WEATHER_ICONS[result.resolvedWeather[segment]]}
-                      </span>
-                    ))}
-                    {markers.map((marker) => (
-                      <span
-                        key={marker.lap}
-                        className={marker.player ? "replay-marker player" : "replay-marker"}
-                        style={{ left: marker.left }}
-                        title={marker.title}
-                        onClick={(event) => {
-                          event.stopPropagation();
-                          seek(marker.time);
-                        }}
-                      />
-                    ))}
-                  </div>
-                </>
-              }
-            />
-            <div className="actions replay-controls secondary-actions">
-              <button type="button" onClick={() => (!playing && clock.current >= replayEnd ? restart() : setPlaying(!playing))}>
-                {playing ? tt("action_pause") : tt("action_play")}
-              </button>
-              <button type="button" onClick={restart}>
-                {tt("action_replay_restart")}
-              </button>
-              <label className="replay-speed">
-                {tt("replay_speed")}
-                <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
-                  <option value={0.5}>×0.5</option>
-                  <option value={1}>×1</option>
-                  <option value={2}>×2</option>
-                  <option value={4}>×4</option>
-                </select>
-              </label>
-            </div>
-          </section>
-        </div>
+        <section className="panel replay-circuit-panel">
+          <div className="circuit-map-heading">
+            <span className="circuit-city">{circuit.city}</span>
+            <strong>{tt(circuit.layoutKey)}</strong>
+            <small>
+              {circuit.country} · {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
+            </small>
+          </div>
+          <h2>{tt("result_replay_title")}</h2>
+          <p className="replay-explainer">{tt("result_replay_explainer")}</p>
+          <CircuitMap
+            circuit={circuit}
+            tt={tt}
+            cars={cars}
+            svgRef={svgRef}
+            showHeading={false}
+            overlay={
+              <>
+                <ol className="replay-tower">
+                  {result.classification.slice(0, 6).map((entry) => (
+                    <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
+                      <strong>P{entry.position}</strong>
+                      <span>{entry.teamName}</span>
+                    </li>
+                  ))}
+                </ol>
+                <div
+                  className="replay-progress"
+                  aria-hidden="true"
+                  onClick={(event) => {
+                    const rect = event.currentTarget.getBoundingClientRect();
+                    seek(((event.clientX - rect.left) / rect.width) * replayEnd);
+                  }}
+                >
+                  <div ref={progressRef} className="replay-progress-fill" />
+                  {RACE_SEGMENTS.slice(1).map((segment, index) => (
+                    <span key={segment} className="replay-tick" style={{ left: `${((index + 1) / RACE_SEGMENTS.length) * 100}%` }} />
+                  ))}
+                  {RACE_SEGMENTS.map((segment, index) => (
+                    <span
+                      key={segment}
+                      className="replay-weather"
+                      style={{ left: `${((index + 0.5) / RACE_SEGMENTS.length) * 100}%` }}
+                      title={tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
+                    >
+                      {WEATHER_ICONS[result.resolvedWeather[segment]]}
+                    </span>
+                  ))}
+                  {markers.map((marker) => (
+                    <span
+                      key={marker.lap}
+                      className={marker.player ? "replay-marker player" : "replay-marker"}
+                      style={{ left: marker.left }}
+                      title={marker.title}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        seek(marker.time);
+                      }}
+                    />
+                  ))}
+                </div>
+              </>
+            }
+          />
+          <div className="actions replay-controls secondary-actions">
+            <button type="button" onClick={() => (!playing && clock.current >= replayEnd ? restart() : setPlaying(!playing))}>
+              {playing ? tt("action_pause") : tt("action_play")}
+            </button>
+            <button type="button" onClick={restart}>
+              {tt("action_replay_restart")}
+            </button>
+            <label className="replay-speed">
+              {tt("replay_speed")}
+              <select value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
+                <option value={0.5}>×0.5</option>
+                <option value={1}>×1</option>
+                <option value={2}>×2</option>
+                <option value={4}>×4</option>
+              </select>
+            </label>
+          </div>
+        </section>
 
         <section className="panel replay-moments-panel">
           <h3>{tt("result_key_moments")}</h3>

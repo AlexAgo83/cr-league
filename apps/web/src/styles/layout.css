@@ -737,11 +737,6 @@ button.result-toggle-command:hover {
   grid-template-columns: minmax(0, 1.45fr) minmax(280px, 0.65fr);
 }
 
-.replay-content-column {
-  display: grid;
-  gap: 16px;
-}
-
 .replay-moments-panel {
   position: sticky;
   top: 92px;

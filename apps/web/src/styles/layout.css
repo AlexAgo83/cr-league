@@ -761,6 +761,61 @@ label small {
   z-index: 2;
 }
 
+.map-qualifying-times {
+  background: rgb(10 15 21 / 0.8);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  display: grid;
+  gap: 7px;
+  max-height: calc(100% - 24px);
+  min-width: 168px;
+  overflow: auto;
+  padding: 10px 12px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 2;
+}
+
+.map-qualifying-times strong {
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.map-qualifying-times ol {
+  display: grid;
+  gap: 5px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.map-qualifying-times li {
+  align-items: center;
+  color: var(--color-muted);
+  display: grid;
+  font-size: 0.72rem;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.map-qualifying-times li.player {
+  color: var(--text);
+}
+
+.map-qualifying-times span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-qualifying-times em,
+.map-qualifying-times small {
+  color: var(--color-accent);
+  font-style: normal;
+  font-weight: 900;
+}
+
 .map-traits-panel > span {
   align-items: baseline;
   color: var(--color-muted);
@@ -2132,6 +2187,25 @@ button.primary-command {
     left: 8px;
     min-width: 104px;
     top: 66px;
+  }
+
+  .map-qualifying-times {
+    border-radius: 6px;
+    gap: 3px;
+    max-width: 124px;
+    min-width: 0;
+    padding: 5px 7px;
+    right: 8px;
+    top: 8px;
+  }
+
+  .map-qualifying-times strong {
+    font-size: 0.58rem;
+  }
+
+  .map-qualifying-times li {
+    font-size: 0.54rem;
+    gap: 6px;
   }
 
   .map-traits-panel {

@@ -99,6 +99,8 @@
   "qualifying_attempts": "Attempts",
   "qualifying_remaining": "Attempts left",
   "qualifying_suggestion": "Run a lap time before locking your directive to place your car on the grid.",
+  "qualifying_times_title": "Lap times",
+  "qualifying_times_empty": "No lap times",
   "directive_confirm_title": "Confirm directive",
   "directive_confirm_no_qualifying": "You have not run a lap time yet. Submit the directive anyway?",
   "directive_confirm_remaining": "You still have lap time attempts left. Submit the directive now?",

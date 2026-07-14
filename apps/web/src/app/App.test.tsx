@@ -300,6 +300,8 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Result" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByText("Best -")).toBeTruthy();
     expect(screen.getByText("Attempts left 3/3")).toBeTruthy();
+    expect(screen.getByText("Lap times")).toBeTruthy();
+    expect(screen.getByText("No lap times")).toBeTruthy();
     expect(screen.getByText("Run a lap time before locking your directive to place your car on the grid.")).toBeTruthy();
     expect(document.querySelector(".command-actions")?.textContent).not.toContain("Lap time");
 
@@ -314,6 +316,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Run lap time" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.queryByText("Run a lap time")).toBe(null);
+    expect(screen.getByText("72.42s")).toBeTruthy();
 
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));

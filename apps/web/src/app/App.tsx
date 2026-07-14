@@ -119,6 +119,13 @@ export function App() {
   const playerDecision = leagueState?.decisions.find((decision) => decision.teamId === playerTeam?.id);
   const qualifyingRuns = leagueState?.currentGrandPrix.qualifyingRuns ?? [];
   const playerQualifyingRun = qualifyingRuns.find((run) => run.teamId === playerTeam?.id) ?? null;
+  const qualifyingLeaderboard = [...qualifyingRuns]
+    .sort((left, right) => left.time - right.time)
+    .map((run, index) => ({
+      ...run,
+      position: index + 1,
+      teamName: leagueState?.teams.find((team) => team.id === run.teamId)?.name ?? run.teamId
+    }));
   const qualifyingAttemptsUsed = playerQualifyingRun?.attempts ?? 0;
   const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? form.qualifyingAttemptLimit;
   const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
@@ -880,6 +887,23 @@ export function App() {
                       </small>
                     </div>
                     <MapTraitsPanel traits={currentCircuit.traits} impacts={directiveTraitImpacts} tt={tt} />
+                    <div className="map-qualifying-times">
+                      <strong>{tt("qualifying_times_title")}</strong>
+                      {qualifyingLeaderboard.length ? (
+                        <ol>
+                          {qualifyingLeaderboard.map((run) => (
+                            <li key={run.teamId} className={run.teamId === playerTeam?.id ? "player" : undefined}>
+                              <span>
+                                {run.position}. {run.teamName}
+                              </span>
+                              <em>{run.time.toFixed(2)}s</em>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <small>{tt("qualifying_times_empty")}</small>
+                      )}
+                    </div>
                   </>
                 }
               />

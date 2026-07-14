@@ -469,16 +469,18 @@ export function App() {
               {tt("action_add_league")}
             </button>
           ) : null}
-          <button
-            type="button"
-            className="profile-menu-action profile-menu-action-info"
-            onClick={() => {
-              setProfileCodeOpen(true);
-              setProfileOpen(false);
-            }}
-          >
-            {tt("action_copy_profile_code")}
-          </button>
+          {profileSession?.recoveryCode ? (
+            <button
+              type="button"
+              className="profile-menu-action profile-menu-action-info"
+              onClick={() => {
+                setProfileCodeOpen(true);
+                setProfileOpen(false);
+              }}
+            >
+              {tt("action_copy_profile_code")}
+            </button>
+          ) : null}
           <button
             type="button"
             className="profile-menu-action profile-menu-action-danger"
@@ -522,16 +524,20 @@ export function App() {
       <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("profile_code_title")} onClick={(event) => event.stopPropagation()}>
         <span className="section-kicker">{tt("profile_kicker")}</span>
         <h2>{tt("profile_code_title")}</h2>
-        <input
-          className="profile-code-input"
-          aria-label={tt("action_copy_profile_code")}
-          readOnly
-          value={profileSession?.recoveryCode ?? tt("status_profile_code_missing")}
-          onClick={(event) => {
-            event.currentTarget.select();
-            void copyProfileCode();
-          }}
-        />
+        {profileSession?.recoveryCode ? (
+          <input
+            className="profile-code-input"
+            aria-label={tt("action_copy_profile_code")}
+            readOnly
+            value={profileSession.recoveryCode}
+            onClick={(event) => {
+              event.currentTarget.select();
+              void copyProfileCode();
+            }}
+          />
+        ) : (
+          <p>{tt("status_profile_code_missing")}</p>
+        )}
         <div className="actions">
           <button type="button" onClick={() => setProfileCodeOpen(false)}>
             {tt("action_close")}

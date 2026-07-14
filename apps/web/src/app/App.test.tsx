@@ -443,6 +443,15 @@ describe("App", () => {
     expect(await screen.findByText("Profile code copied: ABCD1234")).toBeTruthy();
   });
 
+  it("hides profile code copy when the code is not stored locally", () => {
+    saveProfile({ recoveryCode: undefined });
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+
+    expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
+  });
+
   it("closes the profile menu when focus leaves it", async () => {
     saveProfile();
     render(<App />);
@@ -647,12 +656,13 @@ describe("App", () => {
   });
 });
 
-function saveProfile() {
+function saveProfile(overrides: Partial<{ recoveryCode: string | undefined }> = {}) {
   localStorage.setItem(
     "cr-league-profile-session",
     JSON.stringify({
       profile: { id: "profile_1", email: "pilot@example.test" },
       recoveryCode: "ABCD1234",
+      ...overrides,
       teams: []
     })
   );

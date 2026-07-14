@@ -137,7 +137,7 @@ export function CircuitMap({
             </g>
           ))}
         </svg>
-        <small className="map-attribution">© OpenStreetMap · © CARTO</small>
+        <small className="map-attribution">© OSM · CARTO</small>
         {overlay}
       </div>
       {showTraits ? <MapTraitsPanel traits={circuit.traits} tt={tt} /> : null}

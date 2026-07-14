@@ -398,14 +398,15 @@ label small {
 }
 
 .map-attribution {
-  background: rgb(10 15 21 / 0.7);
+  background: rgb(10 15 21 / 0.46);
   border-radius: 4px;
-  bottom: 4px;
-  color: var(--color-muted);
-  font-size: 0.65rem;
-  padding: 1px 6px;
+  bottom: 3px;
+  color: rgb(184 199 214 / 0.62);
+  font-size: 0.56rem;
+  line-height: 1;
+  padding: 2px 5px;
   position: absolute;
-  right: 4px;
+  right: 3px;
 }
 
 .replay-progress {

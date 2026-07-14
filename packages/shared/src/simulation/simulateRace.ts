@@ -24,6 +24,7 @@ const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
   finish: 20
 };
 const REPLAY_TRACE_STEPS_PER_SEGMENT = 10;
+const GRID_GAP_SECONDS = 0.25;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -135,7 +136,7 @@ function createTeamState(participant: RaceParticipant): TeamState {
   return {
     participant,
     scores,
-    elapsedTime: 0,
+    elapsedTime: Math.max(0, participant.standingsRank - 1) * GRID_GAP_SECONDS,
     positionDelta: 0,
     resultTags: new Set(),
     mechanicSaveAvailable: participant.decision.cardId === "fleet_maintenance",

@@ -100,6 +100,7 @@ describe("simulateRace", () => {
     expect(result.replayTrace?.[1]?.progress).toBe(0.02);
     expect(result.replayTrace?.[10]?.progress).toBe(0.2);
     expect(new Set(Object.values(result.replayTrace?.[0]?.gaps ?? {}))).toEqual(new Set([0]));
+    expect(result.replayTrace?.[1]?.times.atlas).toBeLessThan(result.replayTrace?.[1]?.times.redpeak ?? 0);
     expect(result.replayTrace?.at(-1)?.progress).toBe(1);
     expect(result.replayTrace?.at(-1)?.order).toEqual(result.classification.map((entry) => entry.teamId));
     expect(result.replayTrace?.at(-1)?.times[result.classification[0]!.teamId]).toBeGreaterThan(0);

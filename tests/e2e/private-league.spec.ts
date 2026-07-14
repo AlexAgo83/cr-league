@@ -124,9 +124,9 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
 
   const driveMap = page.locator(".drive-map-panel");
   await expect(driveMap).toHaveClass(/circuit-map/);
-  await expect(driveMap).not.toHaveClass(/circuit-map-unframed/);
-  await expect(driveMap).toHaveCSS("padding", "16px");
-  await expect(driveMap).toHaveCSS("border-top-width", "1px");
+  await expect(driveMap).toHaveClass(/circuit-map-unframed/);
+  await expect(driveMap).toHaveCSS("padding", "0px");
+  await expect(driveMap).toHaveCSS("border-top-width", "0px");
   await expect(page.locator(".drive-map-panel .map-status")).toContainText("🇫🇷 Paris");
   await expect(page.locator(".drive-map-panel .map-status")).toContainText("5 laps");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Grip");
@@ -143,9 +143,9 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   const replayMap = mapPanel;
 
   await expect(mapPanel.locator(".circuit-map-stage")).toBeVisible();
-  await expect(replayMap).not.toHaveClass(/circuit-map-unframed/);
-  await expect(replayMap).toHaveCSS("padding", "16px");
-  await expect(replayMap).toHaveCSS("border-top-width", "1px");
+  await expect(replayMap).toHaveClass(/circuit-map-unframed/);
+  await expect(replayMap).toHaveCSS("padding", "0px");
+  await expect(replayMap).toHaveCSS("border-top-width", "0px");
   await expect(mapPanel.locator(".map-status")).toContainText("🇫🇷 Paris");
   await expect(mapPanel.locator(".map-status")).toContainText("Lap 1/5");
   await expect(mapPanel.locator(".map-status")).toContainText("Dry");

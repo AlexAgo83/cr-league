@@ -342,6 +342,7 @@ export function App() {
               circuit={currentCircuit}
               tt={tt}
               showHeading={false}
+              framed={false}
               showTraits={false}
               overlay={
                 <>

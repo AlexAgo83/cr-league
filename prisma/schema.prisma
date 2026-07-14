@@ -13,6 +13,9 @@ model League {
   code                  String    @unique
   status                String    @default("active")
   cadence               String    @default("manual")
+  maxPlayers            Int       @default(8)
+  fillWithBots          Boolean   @default(true)
+  qualifyingAttemptLimit Int       @default(3)
   preparationDeadlineAt DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt

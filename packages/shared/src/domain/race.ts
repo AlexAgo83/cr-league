@@ -141,6 +141,7 @@ export type RaceResult = {
 export type QualifyingRun = {
   teamId: string;
   time: number;
+  attempts: number;
   decision: RaceDecision;
   result: RaceResult;
   createdAt: string;

@@ -9,6 +9,9 @@ const baseState = {
     code: "ABC123",
     status: "active",
     cadence: "manual",
+    maxPlayers: 8,
+    fillWithBots: true,
+    qualifyingAttemptLimit: 3,
     preparationDeadlineAt: null
   },
   currentGrandPrix: {
@@ -23,6 +26,7 @@ const baseState = {
       light_rain: 30,
       heavy_rain: 10
     },
+    qualifyingRuns: [],
     result: null
   },
   grandPrixHistory: [

@@ -51,6 +51,9 @@ function createInitialForm(locale: Locale): FormState {
     leagueName: randomLeagueName() || t("default_league_name", locale),
     joinCode: "",
     teamName: randomTeamName() || t("default_team_name", locale),
+    maxPlayers: 8,
+    fillWithBots: true,
+    qualifyingAttemptLimit: 3,
     cadence: "manual",
     preparationDeadlineAt: "",
     approach: "balanced",
@@ -114,6 +117,8 @@ export function App() {
   const playerDecision = leagueState?.decisions.find((decision) => decision.teamId === playerTeam?.id);
   const qualifyingRuns = leagueState?.currentGrandPrix.qualifyingRuns ?? [];
   const playerQualifyingRun = qualifyingRuns.find((run) => run.teamId === playerTeam?.id) ?? null;
+  const qualifyingAttemptsUsed = playerQualifyingRun?.attempts ?? 0;
+  const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? form.qualifyingAttemptLimit;
   const result = leagueState?.currentGrandPrix.result;
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
   const forecastPick = leagueState ? strongestForecast(leagueState.currentGrandPrix.forecast) : "dry";
@@ -146,7 +151,10 @@ export function App() {
         body: JSON.stringify({
           name: form.leagueName,
           teamName: form.teamName,
-          profileId: profileSession?.profile.id
+          profileId: profileSession?.profile.id,
+          maxPlayers: form.maxPlayers,
+          fillWithBots: form.fillWithBots,
+          qualifyingAttemptLimit: form.qualifyingAttemptLimit
         })
       });
       rememberPlayer(state);
@@ -697,6 +705,38 @@ export function App() {
                     {tt("field_team")}
                     <input maxLength={32} value={form.teamName} onChange={(event) => setForm({ ...form, teamName: event.target.value })} />
                   </label>
+                  {setupMode === "create" ? (
+                    <>
+                      <label>
+                        {tt("field_max_players")}
+                        <input
+                          type="number"
+                          min="2"
+                          max="16"
+                          value={form.maxPlayers}
+                          onChange={(event) => setForm({ ...form, maxPlayers: Number(event.target.value) })}
+                        />
+                      </label>
+                      <label>
+                        {tt("field_qualifying_attempts")}
+                        <input
+                          type="number"
+                          min="1"
+                          max="5"
+                          value={form.qualifyingAttemptLimit}
+                          onChange={(event) => setForm({ ...form, qualifyingAttemptLimit: Number(event.target.value) })}
+                        />
+                      </label>
+                      <label className="checkbox-field">
+                        <input
+                          type="checkbox"
+                          checked={form.fillWithBots}
+                          onChange={(event) => setForm({ ...form, fillWithBots: event.target.checked })}
+                        />
+                        {tt("field_fill_with_bots")}
+                      </label>
+                    </>
+                  ) : null}
                 </div>
                 <div className="actions primary-actions">
                   <button type="button" onClick={setupMode === "create" ? createLeague : joinLeague} disabled={status === "loading"}>
@@ -884,9 +924,12 @@ export function App() {
               <span>
                 {tt("qualifying_best")} {playerQualifyingRun ? `${playerQualifyingRun.time.toFixed(2)}s` : "—"}
               </span>
+              <span>
+                {tt("qualifying_attempts")} {qualifyingAttemptsUsed}/{qualifyingAttemptLimit}
+              </span>
             </div>
             <div className="actions">
-              <button type="button" onClick={launchQualifyingRun} disabled={status === "loading" || isResolved}>
+              <button type="button" onClick={launchQualifyingRun} disabled={status === "loading" || isResolved || qualifyingAttemptsUsed >= qualifyingAttemptLimit}>
                 {tt("action_launch_qualifying")}
               </button>
               <button type="button" onClick={() => setQualifyingOpen(false)}>

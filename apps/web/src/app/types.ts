@@ -7,6 +7,9 @@ export type LeagueState = {
     code: string;
     status: string;
     cadence: string;
+    maxPlayers: number;
+    fillWithBots: boolean;
+    qualifyingAttemptLimit: number;
     preparationDeadlineAt: string | null;
   };
   currentGrandPrix: {
@@ -85,6 +88,9 @@ export type FormState = {
   leagueName: string;
   joinCode: string;
   teamName: string;
+  maxPlayers: number;
+  fillWithBots: boolean;
+  qualifyingAttemptLimit: number;
   cadence: string;
   preparationDeadlineAt: string;
   approach: RaceDecision["approach"];

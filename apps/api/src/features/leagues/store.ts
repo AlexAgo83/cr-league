@@ -26,6 +26,10 @@ const CARD_PRICE = 100;
 const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICE }));
 const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 const BOT_LIVERY_COLORS = ["#38bdf8", "#f97316", "#a78bfa", "#f43f5e", "#facc15", "#22c55e", "#e879f9", "#fb7185"] as const;
+const DEFAULT_MAX_PLAYERS = 8;
+const MAX_PLAYERS_LIMIT = 16;
+const DEFAULT_QUALIFYING_ATTEMPTS = 3;
+const MAX_QUALIFYING_ATTEMPTS = 5;
 const TEAM_NAME_LIMIT = 32;
 const LEAGUE_NAME_LIMIT = 40;
 
@@ -40,6 +44,9 @@ export type CreateLeagueInput = {
   name?: string;
   teamName?: string;
   profileId?: string;
+  maxPlayers?: number;
+  fillWithBots?: boolean;
+  qualifyingAttemptLimit?: number;
 };
 
 export type JoinLeagueInput = {
@@ -65,6 +72,9 @@ export type LeagueState = {
     code: string;
     status: string;
     cadence: string;
+    maxPlayers: number;
+    fillWithBots: boolean;
+    qualifyingAttemptLimit: number;
     preparationDeadlineAt: string | null;
   };
   currentGrandPrix: {
@@ -208,26 +218,31 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
     throw new LeagueRuleError("Team name must be 3 to 32 readable characters.");
   }
   await ensureProfileExists(db, input.profileId);
+  const maxPlayers = clampInteger(input.maxPlayers, DEFAULT_MAX_PLAYERS, 2, MAX_PLAYERS_LIMIT);
+  const qualifyingAttemptLimit = clampInteger(input.qualifyingAttemptLimit, DEFAULT_QUALIFYING_ATTEMPTS, 1, MAX_QUALIFYING_ATTEMPTS);
 
   const league = await db.league.create({
     data: {
       name: leagueName || "CR League Demo",
-      code
+      code,
+      maxPlayers,
+      fillWithBots: input.fillWithBots ?? true,
+      qualifyingAttemptLimit
     }
   });
 
-  await db.team.createMany({
-    data: DEMO_RACE_INPUT.participants.map((participant, index) => ({
+  await db.team.create({
+    data: {
       leagueId: league.id,
-      profileId: index === 0 ? input.profileId : undefined,
-      name: index === 0 ? playerTeamName || DEMO_RACE_INPUT.participants[0]?.teamName || "Player Team" : participant.teamName,
-      kind: participant.kind,
-      claimCode: index === 0 ? playerClaimCode : createClaimCode(),
+      profileId: input.profileId,
+      name: playerTeamName || DEMO_RACE_INPUT.participants[0]?.teamName || "Player Team",
+      kind: "human",
+      claimCode: playerClaimCode,
       points: 0,
       credits: 0,
-      cards: index === 0 ? STARTER_CARDS : [],
-      livery: participant.kind === "bot" ? randomBotLivery() : DEFAULT_LIVERY
-    }))
+      cards: STARTER_CARDS,
+      livery: DEFAULT_LIVERY
+    }
   });
 
   await db.grandPrix.create({
@@ -243,7 +258,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   });
 
   const state = await getLeagueState(db, league.id);
-  const playerTeam = state?.teams.find((team) => team.name === playerTeamName);
+  const playerTeam = state?.teams.find((team) => team.kind === "human");
   return state && playerTeam ? withPlayer(state, playerTeam.id, playerClaimCode) : state;
 }
 
@@ -262,6 +277,9 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
   if (!state) return null;
   if (state.currentGrandPrix.status === "resolved") {
     throw new LeagueRuleError("This league is not accepting new teams after the Grand Prix is resolved.");
+  }
+  if (state.teams.length >= state.league.maxPlayers) {
+    throw new LeagueRuleError("This league is full.");
   }
   if (state.teams.some((team) => team.name.toLowerCase() === teamName.toLowerCase())) {
     throw new LeagueRuleError("This team name is already taken.");
@@ -323,6 +341,9 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       code: league.code,
       status: league.status,
       cadence: league.cadence,
+      maxPlayers: league.maxPlayers,
+      fillWithBots: league.fillWithBots,
+      qualifyingAttemptLimit: league.qualifyingAttemptLimit,
       preparationDeadlineAt: league.preparationDeadlineAt?.toISOString() ?? null
     },
     currentGrandPrix: {
@@ -539,7 +560,12 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
   });
   const runs = normalizeQualifyingRuns(grandPrix.qualifyingRuns);
   const previous = runs.find((candidate) => candidate.teamId === team.id);
-  const nextRuns = previous && previous.time <= run.time ? runs : [...runs.filter((candidate) => candidate.teamId !== team.id), run];
+  const attempts = (previous?.attempts ?? 0) + 1;
+  if (attempts > state.league.qualifyingAttemptLimit) {
+    throw new LeagueRuleError("No qualifying attempts left.");
+  }
+  const nextBest = previous && previous.time <= run.time ? { ...previous, attempts } : { ...run, attempts };
+  const nextRuns = [...runs.filter((candidate) => candidate.teamId !== team.id), nextBest];
 
   await db.grandPrix.update({
     where: { id: grandPrix.id },
@@ -548,7 +574,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
 
   return {
     state: await getLeagueState(db, leagueId),
-    run,
+    run: { ...run, attempts },
     isBest: !previous || run.time < previous.time
   };
 }
@@ -564,7 +590,16 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
     throw new LeagueRuleError("Submit your race directive before launching the Grand Prix.");
   }
 
-  const participants = buildParticipants(state);
+  if (state.league.fillWithBots) {
+    await fillLeagueWithBots(db, state);
+  }
+  const readyState = state.league.fillWithBots ? await getLeagueState(db, leagueId) : state;
+  if (!readyState) return null;
+  if (readyState.teams.length < 2) {
+    throw new LeagueRuleError("At least two teams are required to launch the Grand Prix.");
+  }
+
+  const participants = buildParticipants(readyState);
   const result = simulateRace({
     seed: grandPrix.seed,
     grandPrixName: grandPrix.name,
@@ -593,7 +628,7 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
     });
   }
   for (const consumed of result.consumedCards) {
-    const team = state.teams.find((candidate) => candidate.id === consumed.teamId);
+    const team = readyState.teams.find((candidate) => candidate.id === consumed.teamId);
     if (!team) continue;
     await db.team.update({
       where: { id: team.id },
@@ -717,6 +752,40 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
   });
 }
 
+async function fillLeagueWithBots(db: Db, state: LeagueState) {
+  const missing = Math.max(0, state.league.maxPlayers - state.teams.length);
+  if (!missing) return;
+
+  const existingNames = new Set(state.teams.map((team) => team.name.toLowerCase()));
+  const botTemplates = DEMO_RACE_INPUT.participants.filter((participant) => participant.kind === "bot");
+  const bots = Array.from({ length: missing }, (_, index) => {
+    const participant = botTemplates[index % botTemplates.length];
+    if (!participant) return null;
+    let name = participant.teamName;
+    let suffix = 2;
+    while (existingNames.has(name.toLowerCase())) {
+      name = `${participant.teamName} ${suffix}`;
+      suffix += 1;
+    }
+    existingNames.add(name.toLowerCase());
+    return { ...participant, teamName: name };
+  }).filter((participant): participant is (typeof botTemplates)[number] => Boolean(participant));
+  if (!bots.length) return;
+
+  await db.team.createMany({
+    data: bots.map((participant) => ({
+      leagueId: state.league.id,
+      name: participant.teamName,
+      kind: "bot",
+      claimCode: createClaimCode(),
+      points: 0,
+      credits: 0,
+      cards: [],
+      livery: randomBotLivery()
+    }))
+  });
+}
+
 function createQualifyingRun(input: {
   seed: string;
   teamId: string;
@@ -748,6 +817,7 @@ function createQualifyingRun(input: {
   return {
     teamId: input.teamId,
     time,
+    attempts: 1,
     decision: input.decision,
     result,
     createdAt: new Date().toISOString()
@@ -857,6 +927,10 @@ function clampTrait(value: number) {
   return Math.max(1, Math.min(99, Math.round(value)));
 }
 
+function clampInteger(value: unknown, fallback: number, min: number, max: number) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(min, Math.min(max, Math.round(value))) : fallback;
+}
+
 function createLeagueCode() {
   return Math.random().toString(36).slice(2, 8).toUpperCase();
 }
@@ -934,13 +1008,14 @@ function normalizeCards(value: Prisma.JsonValue): CardId[] {
 
 function normalizeQualifyingRuns(value: unknown): QualifyingRun[] {
   return Array.isArray(value)
-    ? value.filter(
-        (run): run is QualifyingRun =>
+    ? value.flatMap((run) =>
           Boolean(run) &&
           typeof run === "object" &&
           typeof (run as QualifyingRun).teamId === "string" &&
           typeof (run as QualifyingRun).time === "number" &&
           Boolean((run as QualifyingRun).result)
+            ? [{ ...(run as QualifyingRun), attempts: Math.max(1, Math.round((run as QualifyingRun).attempts ?? 1)) }]
+            : []
       )
     : [];
 }

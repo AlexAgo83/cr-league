@@ -464,6 +464,17 @@ label small {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
 }
 
+.checkbox-field {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+.checkbox-field input {
+  width: auto;
+}
+
 .saved-leagues {
   display: grid;
   gap: 10px;

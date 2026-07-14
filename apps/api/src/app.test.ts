@@ -156,6 +156,7 @@ describe("api app", () => {
 
     expect(createResponse.statusCode).toBe(200);
     expect(claim).toMatchObject({ teamId, claimCode: expect.any(String) });
+    expect(created.league).toMatchObject({ maxPlayers: 8, fillWithBots: true, qualifyingAttemptLimit: 3 });
     expect(createdTeam.cards).toEqual(["rain_grip"]);
     expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: 100 });
     expect(readResponse.statusCode).toBe(200);
@@ -168,6 +169,7 @@ describe("api app", () => {
       run: {
         teamId,
         time: expect.any(Number),
+        attempts: 1,
         result: expect.objectContaining({ replayTrace: expect.any(Array) })
       },
       state: {
@@ -177,6 +179,7 @@ describe("api app", () => {
       }
     });
     expect(resolveResponse.statusCode).toBe(200);
+    expect(resolved.teams).toHaveLength(8);
     expect(resolved.currentGrandPrix).toMatchObject({
       status: "resolved",
       result: expect.objectContaining({
@@ -264,6 +267,11 @@ describe("api app", () => {
     const created = createResponse.json();
     const leagueId = created.league.id;
     const teamId = created.player.teamId;
+    await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code: created.league.code, teamName: "Mika Blitz" }
+    });
 
     const renameResponse = await app.inject({
       method: "POST",
@@ -287,6 +295,37 @@ describe("api app", () => {
     expect(renameResponse.json().teams).toEqual(expect.arrayContaining([expect.objectContaining({ id: teamId, name: "Harbor Pulse" })]));
     expect(duplicateResponse.statusCode).toBe(409);
     expect(invalidResponse.statusCode).toBe(409);
+  });
+
+  it("limits qualifying attempts per league setting", async () => {
+    const app = await buildApp(
+      {
+        host: "127.0.0.1",
+        port: 0,
+        webOrigin: "http://localhost:4873"
+      },
+      { db: createMemoryDb() }
+    );
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", qualifyingAttemptLimit: 1 }
+    });
+    const created = createResponse.json();
+    const payload = {
+      teamId: created.player.teamId,
+      approach: "balanced",
+      preparation: "weather"
+    };
+    const firstRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
+    const secondRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
+
+    await app.close();
+
+    expect(firstRun.statusCode).toBe(200);
+    expect(firstRun.json().run.attempts).toBe(1);
+    expect(secondRun.statusCode).toBe(409);
   });
 
   it("rejects resolving before the player submits a directive", async () => {
@@ -589,6 +628,9 @@ function createMemoryDb(): PrismaClient {
     code: string;
     status: string;
     cadence: string;
+    maxPlayers: number;
+    fillWithBots: boolean;
+    qualifyingAttemptLimit: number;
     preparationDeadlineAt: Date | null;
   };
   type ProfileRow = {
@@ -642,8 +684,22 @@ function createMemoryDb(): PrismaClient {
 
   return {
     league: {
-      create: async ({ data }: { data: Pick<LeagueRow, "name" | "code"> & Partial<Pick<LeagueRow, "cadence" | "preparationDeadlineAt">> }) => {
-        const league = { id: id("league"), status: "active", cadence: "manual", preparationDeadlineAt: null, ...data };
+      create: async ({
+        data
+      }: {
+        data: Pick<LeagueRow, "name" | "code"> &
+          Partial<Pick<LeagueRow, "cadence" | "maxPlayers" | "fillWithBots" | "qualifyingAttemptLimit" | "preparationDeadlineAt">>;
+      }) => {
+        const league = {
+          id: id("league"),
+          status: "active",
+          cadence: "manual",
+          maxPlayers: 8,
+          fillWithBots: true,
+          qualifyingAttemptLimit: 3,
+          preparationDeadlineAt: null,
+          ...data
+        };
         leagues.push(league);
         return league;
       },

@@ -1,0 +1,237 @@
+{
+  "title": "Turn replay key moments into timed notifications",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/product/prod_003_race_cockpit_redesign_v0_product_brief.md",
+    "logics/roadmap/road_001_cr_league_roadmap.md",
+    "logics/specs/spec_016_implementation_roadmap.md",
+    "logics/architecture/adr_005_theme_design_system.md",
+    "logics/architecture/adr_006_accessibility.md",
+    "logics/architecture/adr_007_i18n.md",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/styles/layout.css",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/web/src/app/App.test.tsx",
+    "tests/e2e/private-league.spec.ts",
+    "Current replay issue: the permanent Key moments panel competes with the map and makes the replay feel like a dashboard instead of the main race spectacle.",
+    "Desired direction: remove the permanent Key moments panel from the replay view, let the map use the full replay width, surface key moments as timed replay notifications, and keep progress-bar markers for seeking."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Replay immersion and key moment presentation",
+    "needs": [
+      "Make the replay map the dominant full-width stage in the Result replay tab.",
+      "Remove the permanent Key moments side panel from the replay layout so the player watches the race instead of reading a dashboard list.",
+      "Show key moments as timed overlay notifications during playback, synchronized with replay time and seek behavior.",
+      "Keep existing progress-bar markers so players can jump back to important moments without the permanent panel.",
+      "Preserve the written analysis and durable key moment review in the Report tab rather than duplicating it in Replay.",
+      "Keep replay controls, tower, map status, trait chips, speed menu, focus mode, and timeline markers readable on desktop and mobile."
+    ],
+    "context": [
+      "The current `ReplayView` renders a `.replay-main-grid` containing a content column with the map and a permanent `.replay-moments-panel` list.",
+      "The current e2e layout test asserts that `.replay-moments-panel` sits to the right of the copy panel and has the same width as the directive panel. That test must be redesigned because the desired layout removes that panel.",
+      "The replay already computes `keyMoments`, `markers`, `momentCard`, `raceTimeAtProgress`, `clock`, `live`, and `seek`. These should be reused for notification timing and marker seeking.",
+      "The progress bar already renders `.replay-marker` dots with titles and `seek(marker.time)` handlers. These markers should remain as the compact persistent navigation surface.",
+      "The change should not alter simulation output, race result data, replay trace math, card effects, report content, or API contracts.",
+      "The smallest successful result is a full-width replay map with one transient moment notification at the relevant time, plus unchanged marker seeking and report access."
+    ],
+    "acceptance_criteria": [
+      "AC1: The Replay tab no longer renders the permanent `.replay-moments-panel` or equivalent side list of key moments.",
+      "AC2: The replay map area spans the available replay content width on desktop, while keeping replay copy/status information readable above or over the map.",
+      "AC3: Key moments appear as timed overlay notifications during playback, using the same event selection and text semantics as the current key moment list.",
+      "AC4: Seeking via progress-bar markers updates the visible notification or notification timing consistently with the selected moment.",
+      "AC5: The progress bar keeps visible marker dots for key/player moments and remains clickable for seeking.",
+      "AC6: Replay controls remain accessible and visually stable: play/pause, restart, focus driver, custom speed menu, tower, map status, and progress bar still work.",
+      "AC7: The Report tab remains the durable place for post-race explanation and written recap; no report content is removed.",
+      "AC8: Desktop and mobile layouts show no overlapping notification, tower, controls, map status, or progress bar text.",
+      "AC9: Updated unit/e2e tests verify the full-width replay layout, absence of the permanent key moments panel, timed notification behavior, marker seeking, and unchanged report access."
+    ]
+  },
+  "product": {
+    "title": "Full-Width Replay Moment Notifications Product Brief",
+    "overview": "Full-Width Replay Moment Notifications makes the race replay feel like the live spectacle of the Grand Prix: the map becomes the stage, key moments arrive as timed notifications, and the report remains the place for calm post-race analysis.",
+    "goals": [
+      "Make the replay tab feel immersive and race-first instead of dashboard-first.",
+      "Give the map the available width so movement, track, tower, and weather are easier to read.",
+      "Surface key events at the moment they happen, so players connect cause, lap, and position impact naturally.",
+      "Keep lightweight navigation through progress-bar markers for replaying important events.",
+      "Preserve the report tab as the durable analysis surface.",
+      "Keep the implementation cheap by reusing existing replay moment calculations and event text helpers."
+    ],
+    "non_goals": [
+      "Do not change the simulation model, race event generation, replay trace math, or result payloads.",
+      "Do not add a cinematic broadcast engine, voiceover, camera cuts, or animation library.",
+      "Do not remove the report tab or written recap.",
+      "Do not introduce a global toast system or reusable notification framework unless the local replay implementation becomes duplicated.",
+      "Do not redesign the entire result view beyond the replay tab layout and key moment presentation.",
+      "Do not add new dependencies."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Remove the permanent replay key moments panel",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Replay layout simplification",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC7",
+        "AC8"
+      ],
+      "problem": [
+        "The current permanent Key moments panel competes with the replay map and makes the replay feel like a dashboard.",
+        "The side panel consumes width that should belong to the race stage.",
+        "The same information is better handled transiently during replay and durably in the Report tab."
+      ],
+      "scope_in": [
+        "Remove `.replay-moments-panel` from the Replay tab layout.",
+        "Update `ReplayView.tsx` so key moments are no longer rendered as a permanent side list.",
+        "Update `layout.css` so the replay map/content area can span the full replay width.",
+        "Keep the replay copy panel and Report tab behavior intact.",
+        "Update tests that currently assert side-panel presence or alignment."
+      ],
+      "scope_out": [
+        "Removing key moments from the report.",
+        "Changing event selection semantics.",
+        "Changing replay trace or race result data.",
+        "Redesigning Championship, Garage, or directive surfaces."
+      ],
+      "acceptance_criteria": [
+        "AC1: `.replay-moments-panel` is no longer rendered in the Replay tab.",
+        "AC2: The replay map spans the full available replay content width on desktop.",
+        "AC3: Report tab still exposes post-race explanation and recap content.",
+        "AC4: Mobile layout does not leave an empty gap where the side panel used to be."
+      ]
+    },
+    {
+      "title": "Add timed replay moment notifications",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay event presentation",
+      "request_acs": [
+        "AC3",
+        "AC4",
+        "AC8",
+        "AC9"
+      ],
+      "problem": [
+        "Removing the side list would hide key event text unless the replay surfaces it another way.",
+        "Key moments make more sense when they appear at the lap/time where they happen.",
+        "Notifications must not overlap essential replay controls or make the map unreadable."
+      ],
+      "scope_in": [
+        "Reuse existing `keyMoments`, `momentCard`, `raceTimeAtProgress`, and `clock` data to derive the currently active notification.",
+        "Show a compact overlay notification with lap, context, team/text, and impact.",
+        "Display a notification when playback reaches a moment and when seeking directly to a marker.",
+        "Keep notification timing deterministic and local to `ReplayView`.",
+        "Add CSS for desktop and mobile notification placement that avoids map status, tower, controls, and progress bar."
+      ],
+      "scope_out": [
+        "Global toast service.",
+        "Notification queue for unrelated app events.",
+        "Voice/audio effects.",
+        "New animation package."
+      ],
+      "acceptance_criteria": [
+        "AC1: At least one key moment notification appears during replay playback.",
+        "AC2: Notification content uses the same event text semantics as the previous key moment list.",
+        "AC3: Seeking to a marker shows or updates the corresponding notification.",
+        "AC4: Notifications do not cover the playback controls or progress bar on desktop or mobile."
+      ]
+    },
+    {
+      "title": "Preserve marker seeking as the compact replay index",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Replay navigation",
+      "request_acs": [
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC9"
+      ],
+      "problem": [
+        "The side list currently doubles as a navigation surface for key moments.",
+        "After removing it, progress-bar markers become the only persistent key moment index.",
+        "Marker behavior must remain obvious and reliable enough for replay review."
+      ],
+      "scope_in": [
+        "Keep `.replay-marker` dots visible on the progress bar.",
+        "Preserve click-to-seek behavior for markers.",
+        "Ensure marker titles remain informative for hover/screen-reader-adjacent inspection.",
+        "Consider a minimal visual distinction for player-involved moments if current styling is insufficient.",
+        "Update e2e tests to click a marker and assert map/notification state changes."
+      ],
+      "scope_out": [
+        "Large timeline drawer.",
+        "Permanent event list replacement.",
+        "Scrubber redesign beyond marker reliability.",
+        "Keyboard shortcut system."
+      ],
+      "acceptance_criteria": [
+        "AC1: Marker dots remain visible after the side panel is removed.",
+        "AC2: Clicking a marker seeks the replay to that moment.",
+        "AC3: Player-involved moments remain distinguishable if they were distinguishable before.",
+        "AC4: Tests cover marker seeking after the layout change."
+      ]
+    },
+    {
+      "title": "Update replay layout QA and tests",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Validation and regression coverage",
+      "request_acs": [
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9"
+      ],
+      "problem": [
+        "The current e2e test explicitly expects the moments panel to exist and align beside the replay copy panel.",
+        "The new design needs different assertions: full-width map, no permanent side panel, notifications, markers, and report persistence.",
+        "Replay overlays are easy to regress visually without layout checks."
+      ],
+      "scope_in": [
+        "Update unit tests for replay controls and notification state where practical.",
+        "Update Playwright layout assertions for desktop and mobile replay map width.",
+        "Assert the permanent key moments panel is absent from Replay.",
+        "Assert notifications appear and marker seeking still works.",
+        "Run `npm run typecheck`, `npm run lint`, `npm test -- apps/web`, `npm run test:e2e -- --project=chromium`, `npm run build`, and `npm run logics:validate`.",
+        "Capture screenshots if layout checks are updated or if the implementation changes overlay placement materially."
+      ],
+      "scope_out": [
+        "Visual snapshot testing framework.",
+        "Cross-browser matrix beyond current Playwright Chromium unless failures demand it.",
+        "Manual playtest scripting beyond noting residual risk."
+      ],
+      "acceptance_criteria": [
+        "AC1: Existing replay control tests pass with the custom speed menu and notification overlay.",
+        "AC2: E2E verifies full-width replay layout and absence of `.replay-moments-panel`.",
+        "AC3: E2E verifies marker seek and notification behavior.",
+        "AC4: Full local validation gate passes before closeout."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate full-width replay moment notifications",
+    "plan": [
+      "Inspect `ReplayView.tsx`, `layout.css`, `App.test.tsx`, and `tests/e2e/private-league.spec.ts` before editing.",
+      "Remove the permanent replay key moments panel and simplify the replay grid so the map spans the available content width.",
+      "Derive the active replay moment notification from existing `keyMoments`, marker timing, `clock`, and `seek` behavior.",
+      "Add local replay notification markup and CSS, keeping it clear of controls, tower, map status, and progress bar.",
+      "Preserve progress-bar marker dots and marker click-to-seek behavior.",
+      "Update unit and e2e tests for the new replay layout and notification behavior.",
+      "Run focused replay checks first, then the full local validation gate required by the request."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/full-width-replay-moment-notifications.json",
+    "mode": "full",
+    "profile": "normal"
+  }
+}

@@ -1,0 +1,667 @@
+{
+  "budgets": {
+    "max_docs": 24,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_039_turn_replay_key_moments_into_timed_notifications item_071_remove_the_permanent_replay_key_moments_panel item_072_add_timed_replay_moment_notifications item_073_preserve_marker_seeking_as_the_compact_replay_index item_074_update_replay_layout_qa_and_tests task_040_orchestrate_full_width_replay_moment_notifications --mode full --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_029_add_automated_private_league_playtest_scenario"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_023_add_automated_private_league_playtest_scenario"
+        ],
+        "task": [
+          "task_024_add_automated_private_league_playtest_scenario"
+        ]
+      },
+      "path": "logics/product/prod_001_cr_league_product_brief.md",
+      "ref": "prod_001_cr_league_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make each Grand Prix feel like a short strategic bet rather than a driving challenge: players read the conditions, commit to a plan, optionally play a card, and then see whether the plan paid off.",
+          "- Create a game that works for private social leagues first, while still allowing immediate solo play with bots for onboarding, testing, and players who want to play at their own pace.",
+          "- Generate race stories that players can understand and retell: weather gambles, rival battles, card saves, mechanical failures, late comebacks, and visible consequences of pre-race choices.",
+          "- Keep the first version approachable for non-gamers by limiting mandatory pre-race decisions, providing strong defaults, and avoiding excessive configuration.",
+          "- Give engaged players more to think about through optional practice insights, card inventory planning, rival goals, and risk/reward tradeoffs without forcing casual players through heavy management screens.",
+          "- Use a cheap, robust asynchronous architecture: races can be scheduled, but simulation may happen lazily when the league is next accessed after the deadline."
+        ],
+        "Overview": [
+          "CR League is an asynchronous racing championship game where players manage a team, make a few strategic pre-race bets, play special cards, then watch a simulated Grand Prix produce a visual replay, report, rewards, and championship movement.",
+          "Short pitch:",
+          "> A private racing league game where you do not drive. You run a team, prepare each Grand Prix, play one special move, then watch the race replay reveal whether your plan was genius or a disaster.",
+          "The product should feel like a social strategy game wrapped in a racing championship. The player is a team principal, not a driver. The core pleasure is reading a pre-race briefing, making a small number of meaningful decisions, committing to a risk, and then getting a clear race story back.",
+          "The first playable version must prove one question before anything else:",
+          "> Does choosing a few pre-race directives create enough tension, understanding, and social story to make players want to come back for the next Grand Prix?"
+        ],
+        "References": [
+          "- Product back-reference: `item_029_add_automated_private_league_playtest_scenario`",
+          "- Task back-reference: `task_024_add_automated_private_league_playtest_scenario`"
+        ]
+      },
+      "status": "Settled",
+      "title": "CR League Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_040_define_the_cockpit_information_architecture"
+        ],
+        "prod": [
+          "prod_003_race_cockpit_redesign_v0_product_brief"
+        ],
+        "req": [
+          "req_032_redesign_the_cr_league_race_cockpit_v0"
+        ],
+        "task": [
+          "task_033_orchestrate_race_cockpit_redesign_v0"
+        ]
+      },
+      "path": "logics/product/prod_003_race_cockpit_redesign_v0_product_brief.md",
+      "ref": "prod_003_race_cockpit_redesign_v0_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make CR League feel like an asynchronous racing strategy game, not a generic operations dashboard.",
+          "- Give the player a clear first viewport: race state, next action, team status, and championship context.",
+          "- Create a compact visual language that can survive future features: dark pit-wall command surface, racing state accents, readable cards, and dense but calm information.",
+          "- Make the post-GP moment satisfying and legible by separating classification, explanation, replay summary, and race report.",
+          "- Raise i18n quality so French playtests do not encounter English fragments in redesigned areas.",
+          "- Keep the redesign cheap: no new UI framework, no design-token bureaucracy, no animation engine, and no new gameplay contracts."
+        ],
+        "Key product decisions": [
+          "- The primary product surface is a race cockpit, not a dashboard. The Course region owns the player's current action.",
+          "- Championship and Garage are supporting panels. They should be scannable and persistent without competing with the race command.",
+          "- The visual direction should be minimal but deliberate: dark pit-wall command area, neutral information surfaces, racing state accents, and dense game-readable cards.",
+          "- Circuits should be grounded in real European cities, with multiple named layouts per city over time. This gives the league a believable calendar without inventing fantasy tracks.",
+          "- Fleet Sim is a useful reference for city presets, `LatLng` route thinking, Leaflet/OSM rendering, and OSRM routing, but CR League should not embed a raw fleet-management map in the race cockpit.",
+          "- The result view should be a payoff sequence: outcome, player consequence, classification, replay summary, key moments, report."
+        ],
+        "Overview": [
+          "Race Cockpit Redesign V0 turns the current functional prototype into a coherent game cockpit: a focused race desk, championship overview, garage, and result/replay surface that make CR League feel intentionally designed and understandable before adding more mechanics."
+        ],
+        "References": [
+          "- Product back-reference: `item_040_define_the_cockpit_information_architecture`",
+          "- Task back-reference: `task_033_orchestrate_race_cockpit_redesign_v0`"
+        ]
+      },
+      "status": "Settled",
+      "title": "Race Cockpit Redesign V0 Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_071_remove_the_permanent_replay_key_moments_panel",
+          "item_072_add_timed_replay_moment_notifications",
+          "item_073_preserve_marker_seeking_as_the_compact_replay_index",
+          "item_074_update_replay_layout_qa_and_tests"
+        ],
+        "prod": [
+          "prod_010_full_width_replay_moment_notifications_product_brief"
+        ],
+        "req": [
+          "req_039_turn_replay_key_moments_into_timed_notifications"
+        ],
+        "task": [
+          "task_040_orchestrate_full_width_replay_moment_notifications"
+        ]
+      },
+      "path": "logics/product/prod_010_full_width_replay_moment_notifications_product_brief.md",
+      "ref": "prod_010_full_width_replay_moment_notifications_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make the replay tab feel immersive and race-first instead of dashboard-first.",
+          "- Give the map the available width so movement, track, tower, and weather are easier to read.",
+          "- Surface key events at the moment they happen, so players connect cause, lap, and position impact naturally.",
+          "- Keep lightweight navigation through progress-bar markers for replaying important events.",
+          "- Preserve the report tab as the durable analysis surface.",
+          "- Keep the implementation cheap by reusing existing replay moment calculations and event text helpers."
+        ],
+        "Key product decisions": [
+          "- Use structured input as the source of truth for generated docs.",
+          "- Keep generated write paths local and repo-bounded."
+        ],
+        "Overview": [
+          "Full-Width Replay Moment Notifications makes the race replay feel like the live spectacle of the Grand Prix: the map becomes the stage, key moments arrive as timed notifications, and the report remains the place for calm post-race analysis."
+        ],
+        "References": [
+          "- Product back-reference: `req_039_turn_replay_key_moments_into_timed_notifications`",
+          "- Task back-reference: `task_040_orchestrate_full_width_replay_moment_notifications`"
+        ]
+      },
+      "status": "Proposed",
+      "title": "Full-Width Replay Moment Notifications Product Brief"
+    },
+    {
+      "kind": "roadmap",
+      "linked_refs": {
+        "adr": [
+          "adr_001_cr_league_v1_static_pwa_api_architecture",
+          "adr_004_data_security",
+          "adr_006_accessibility",
+          "adr_007_i18n",
+          "adr_008_testing_quality"
+        ],
+        "item": [
+          "item_004_design_and_implement_the_v1_card_and_inventory_system",
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues",
+          "item_014_define_cr_league_implementation_roadmap",
+          "item_026_add_join_league_by_code_flow"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief",
+          "prod_003_race_cockpit_redesign_v0_product_brief"
+        ],
+        "req": [
+          "req_008_define_cr_league_implementation_roadmap",
+          "req_009_scaffold_cr_league_monorepo_foundation",
+          "req_013_implement_cr_league_pure_simulation_core",
+          "req_014_add_cr_league_simulation_preview_api_and_screen",
+          "req_015_add_minimal_league_persistence_api",
+          "req_016_add_playable_demo_league_web_flow",
+          "req_017_prepare_real_postgresql_migration_and_seed_workflow",
+          "req_018_wire_web_copy_to_i18n_catalog",
+          "req_019_harden_current_grand_prix_state_rules",
+          "req_020_add_join_league_by_code_flow",
+          "req_021_build_private_league_prototype_foundation",
+          "req_022_add_private_league_cadence_and_dashboard",
+          "req_024_prepare_private_league_playtest_kit",
+          "req_025_add_guided_race_weekend_experience",
+          "req_032_redesign_the_cr_league_race_cockpit_v0"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap",
+          "road_002_cr_league_roadmap_v2"
+        ],
+        "spec": [
+          "spec_001_grand_prix_core_loop_and_simulation_v1",
+          "spec_016_implementation_roadmap"
+        ],
+        "task": [
+          "task_009_define_cr_league_implementation_roadmap",
+          "task_021_add_join_league_by_code_flow"
+        ]
+      },
+      "path": "logics/roadmap/road_001_cr_league_roadmap.md",
+      "ref": "road_001_cr_league_roadmap",
+      "sections": {
+        "References": [
+          "- Product brief(s): `prod_001_cr_league_product_brief`",
+          "- Implementation roadmap spec: `spec_016_implementation_roadmap`",
+          "- Request(s): `req_008_define_cr_league_implementation_roadmap`, `req_020_add_join_league_by_code_flow`",
+          "- Backlog item(s): `item_014_define_cr_league_implementation_roadmap`, `item_026_add_join_league_by_code_flow`",
+          "- Task(s): `task_009_define_cr_league_implementation_roadmap`, `task_021_add_join_league_by_code_flow`"
+        ]
+      },
+      "status": "Superseded",
+      "title": "CR League Roadmap"
+    },
+    {
+      "kind": "architecture",
+      "linked_refs": {
+        "adr": [
+          "adr_005_theme_design_system"
+        ],
+        "item": [
+          "item_017_define_cr_league_engineering_adrs"
+        ],
+        "req": [
+          "req_011_define_cr_league_engineering_adrs"
+        ],
+        "spec": [
+          "spec_014_theme_and_brand_inspiration"
+        ],
+        "task": [
+          "task_012_define_cr_league_engineering_adrs"
+        ]
+      },
+      "path": "logics/architecture/adr_005_theme_design_system.md",
+      "ref": "adr_005_theme_design_system",
+      "sections": {},
+      "status": "Accepted",
+      "title": "Theme and Design System"
+    },
+    {
+      "kind": "architecture",
+      "linked_refs": {
+        "adr": [
+          "adr_006_accessibility"
+        ],
+        "item": [
+          "item_017_define_cr_league_engineering_adrs"
+        ],
+        "req": [
+          "req_011_define_cr_league_engineering_adrs"
+        ],
+        "spec": [
+          "spec_015_device_targets_and_responsive_ux"
+        ],
+        "task": [
+          "task_012_define_cr_league_engineering_adrs"
+        ]
+      },
+      "path": "logics/architecture/adr_006_accessibility.md",
+      "ref": "adr_006_accessibility",
+      "sections": {},
+      "status": "Accepted",
+      "title": "Accessibility"
+    },
+    {
+      "kind": "architecture",
+      "linked_refs": {
+        "adr": [
+          "adr_007_i18n"
+        ],
+        "item": [
+          "item_017_define_cr_league_engineering_adrs"
+        ],
+        "req": [
+          "req_011_define_cr_league_engineering_adrs"
+        ],
+        "task": [
+          "task_012_define_cr_league_engineering_adrs"
+        ]
+      },
+      "path": "logics/architecture/adr_007_i18n.md",
+      "ref": "adr_007_i18n",
+      "sections": {},
+      "status": "Accepted",
+      "title": "Internationalization"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, turn replay key moments into timed notifications, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Turn replay key moments into timed notifications",
+        "use when": "You need to implement or review the scaffolded workflow for Turn replay key moments into timed notifications."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "adr": [
+          "adr_005_theme_design_system",
+          "adr_006_accessibility",
+          "adr_007_i18n"
+        ],
+        "item": [
+          "item_071_remove_the_permanent_replay_key_moments_panel",
+          "item_072_add_timed_replay_moment_notifications",
+          "item_073_preserve_marker_seeking_as_the_compact_replay_index",
+          "item_074_update_replay_layout_qa_and_tests"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief",
+          "prod_003_race_cockpit_redesign_v0_product_brief",
+          "prod_010_full_width_replay_moment_notifications_product_brief"
+        ],
+        "req": [
+          "req_039_turn_replay_key_moments_into_timed_notifications"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap"
+        ],
+        "spec": [
+          "spec_016_implementation_roadmap"
+        ]
+      },
+      "path": "logics/request/req_039_turn_replay_key_moments_into_timed_notifications.md",
+      "ref": "req_039_turn_replay_key_moments_into_timed_notifications",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: The Replay tab no longer renders the permanent `.replay-moments-panel` or equivalent side list of key moments.",
+          "- AC2: The replay map area spans the available replay content width on desktop, while keeping replay copy/status information readable above or over the map.",
+          "- AC3: Key moments appear as timed overlay notifications during playback, using the same event selection and text semantics as the current key moment list.",
+          "- AC4: Seeking via progress-bar markers updates the visible notification or notification timing consistently with the selected moment.",
+          "- AC5: The progress bar keeps visible marker dots for key/player moments and remains clickable for seeking.",
+          "- AC6: Replay controls remain accessible and visually stable: play/pause, restart, focus driver, custom speed menu, tower, map status, and progress bar still work."
+        ],
+        "Needs": [
+          "- Make the replay map the dominant full-width stage in the Result replay tab.",
+          "- Remove the permanent Key moments side panel from the replay layout so the player watches the race instead of reading a dashboard list.",
+          "- Show key moments as timed overlay notifications during playback, synchronized with replay time and seek behavior.",
+          "- Keep existing progress-bar markers so players can jump back to important moments without the permanent panel.",
+          "- Preserve the written analysis and durable key moment review in the Report tab rather than duplicating it in Replay.",
+          "- Keep replay controls, tower, map status, trait chips, speed menu, focus mode, and timeline markers readable on desktop and mobile."
+        ]
+      },
+      "status": "Draft",
+      "title": "Turn replay key moments into timed notifications"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, remove the permanent replay key moments panel, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Remove the permanent replay key moments panel",
+        "use when": "Implementing the scaffolded slice for Remove the permanent replay key moments panel."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_071_remove_the_permanent_replay_key_moments_panel"
+        ],
+        "prod": [
+          "prod_010_full_width_replay_moment_notifications_product_brief"
+        ],
+        "req": [
+          "req_039_turn_replay_key_moments_into_timed_notifications"
+        ],
+        "task": [
+          "task_040_orchestrate_full_width_replay_moment_notifications"
+        ]
+      },
+      "path": "logics/backlog/item_071_remove_the_permanent_replay_key_moments_panel.md",
+      "ref": "item_071_remove_the_permanent_replay_key_moments_panel",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: `.replay-moments-panel` is no longer rendered in the Replay tab.",
+          "- AC2: The replay map spans the full available replay content width on desktop.",
+          "- AC3: Report tab still exposes post-race explanation and recap content.",
+          "- AC4: Mobile layout does not leave an empty gap where the side panel used to be."
+        ],
+        "Problem": [
+          "- The current permanent Key moments panel competes with the replay map and makes the replay feel like a dashboard.",
+          "- The side panel consumes width that should belong to the race stage.",
+          "- The same information is better handled transiently during replay and durably in the Report tab."
+        ]
+      },
+      "status": "Ready",
+      "title": "Remove the permanent replay key moments panel"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add timed replay moment notifications, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add timed replay moment notifications",
+        "use when": "Implementing the scaffolded slice for Add timed replay moment notifications."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_072_add_timed_replay_moment_notifications"
+        ],
+        "prod": [
+          "prod_010_full_width_replay_moment_notifications_product_brief"
+        ],
+        "req": [
+          "req_039_turn_replay_key_moments_into_timed_notifications"
+        ],
+        "task": [
+          "task_040_orchestrate_full_width_replay_moment_notifications"
+        ]
+      },
+      "path": "logics/backlog/item_072_add_timed_replay_moment_notifications.md",
+      "ref": "item_072_add_timed_replay_moment_notifications",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: At least one key moment notification appears during replay playback.",
+          "- AC2: Notification content uses the same event text semantics as the previous key moment list.",
+          "- AC3: Seeking to a marker shows or updates the corresponding notification.",
+          "- AC4: Notifications do not cover the playback controls or progress bar on desktop or mobile."
+        ],
+        "Problem": [
+          "- Removing the side list would hide key event text unless the replay surfaces it another way.",
+          "- Key moments make more sense when they appear at the lap/time where they happen.",
+          "- Notifications must not overlap essential replay controls or make the map unreadable."
+        ]
+      },
+      "status": "Ready",
+      "title": "Add timed replay moment notifications"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, preserve marker seeking as the compact replay index, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Preserve marker seeking as the compact replay index",
+        "use when": "Implementing the scaffolded slice for Preserve marker seeking as the compact replay index."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_073_preserve_marker_seeking_as_the_compact_replay_index"
+        ],
+        "prod": [
+          "prod_010_full_width_replay_moment_notifications_product_brief"
+        ],
+        "req": [
+          "req_039_turn_replay_key_moments_into_timed_notifications"
+        ],
+        "task": [
+          "task_040_orchestrate_full_width_replay_moment_notifications"
+        ]
+      },
+      "path": "logics/backlog/item_073_preserve_marker_seeking_as_the_compact_replay_index.md",
+      "ref": "item_073_preserve_marker_seeking_as_the_compact_replay_index",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Marker dots remain visible after the side panel is removed.",
+          "- AC2: Clicking a marker seeks the replay to that moment.",
+          "- AC3: Player-involved moments remain distinguishable if they were distinguishable before.",
+          "- AC4: Tests cover marker seeking after the layout change."
+        ],
+        "Problem": [
+          "- The side list currently doubles as a navigation surface for key moments.",
+          "- After removing it, progress-bar markers become the only persistent key moment index.",
+          "- Marker behavior must remain obvious and reliable enough for replay review."
+        ]
+      },
+      "status": "Ready",
+      "title": "Preserve marker seeking as the compact replay index"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate full-width replay moment notifications",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_071_remove_the_permanent_replay_key_moments_panel",
+          "item_072_add_timed_replay_moment_notifications",
+          "item_073_preserve_marker_seeking_as_the_compact_replay_index",
+          "item_074_update_replay_layout_qa_and_tests"
+        ],
+        "prod": [
+          "prod_010_full_width_replay_moment_notifications_product_brief"
+        ],
+        "req": [
+          "req_039_turn_replay_key_moments_into_timed_notifications"
+        ],
+        "task": [
+          "task_040_orchestrate_full_width_replay_moment_notifications"
+        ]
+      },
+      "path": "logics/tasks/task_040_orchestrate_full_width_replay_moment_notifications.md",
+      "ref": "task_040_orchestrate_full_width_replay_moment_notifications",
+      "schema_version": "1.0",
+      "sections": {
+        "Context": [
+          "- Orchestrate the scaffolded request chain and keep sibling implementation slices linked."
+        ],
+        "Validation": [
+          "- Run `python3 -m logics_manager lint --require-status`.",
+          "- Run scaffold command tests."
+        ]
+      },
+      "status": "Ready",
+      "title": "Orchestrate full-width replay moment notifications"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_071_remove_the_permanent_replay_key_moments_panel",
+          "item_072_add_timed_replay_moment_notifications",
+          "item_073_preserve_marker_seeking_as_the_compact_replay_index",
+          "item_074_update_replay_layout_qa_and_tests"
+        ],
+        "prod": [
+          "prod_010_full_width_replay_moment_notifications_product_brief"
+        ],
+        "req": [
+          "req_039_turn_replay_key_moments_into_timed_notifications"
+        ],
+        "task": [
+          "task_040_orchestrate_full_width_replay_moment_notifications"
+        ]
+      },
+      "path": "logics/product/prod_010_full_width_replay_moment_notifications_product_brief.md",
+      "ref": "prod_010_full_width_replay_moment_notifications_product_brief",
+      "schema_version": "1.0",
+      "sections": {},
+      "status": "Proposed",
+      "title": "Full-Width Replay Moment Notifications Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, update replay layout qa and tests, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Update replay layout QA and tests",
+        "use when": "Implementing the scaffolded slice for Update replay layout QA and tests."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_074_update_replay_layout_qa_and_tests"
+        ],
+        "prod": [
+          "prod_010_full_width_replay_moment_notifications_product_brief"
+        ],
+        "req": [
+          "req_039_turn_replay_key_moments_into_timed_notifications"
+        ],
+        "task": [
+          "task_040_orchestrate_full_width_replay_moment_notifications"
+        ]
+      },
+      "path": "logics/backlog/item_074_update_replay_layout_qa_and_tests.md",
+      "ref": "item_074_update_replay_layout_qa_and_tests",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Existing replay control tests pass with the custom speed menu and notification overlay.",
+          "- AC2: E2E verifies full-width replay layout and absence of `.replay-moments-panel`.",
+          "- AC3: E2E verifies marker seek and notification behavior.",
+          "- AC4: Full local validation gate passes before closeout."
+        ],
+        "Problem": [
+          "- The current e2e test explicitly expects the moments panel to exist and align beside the replay copy panel.",
+          "- The new design needs different assertions: full-width map, no permanent side panel, notifications, markers, and report persistence.",
+          "- Replay overlays are easy to regress visually without layout checks."
+        ]
+      },
+      "status": "Ready",
+      "title": "Update replay layout QA and tests"
+    }
+  ],
+  "estimates": {
+    "char_count": 21986,
+    "companion_doc_count": 7,
+    "doc_count": 7
+  },
+  "generated_at": "2026-07-15T22:36:47Z",
+  "handoff": {
+    "companion_doc_count": 7,
+    "enabled": true,
+    "source_refs": [
+      "req_039_turn_replay_key_moments_into_timed_notifications",
+      "item_071_remove_the_permanent_replay_key_moments_panel",
+      "item_072_add_timed_replay_moment_notifications",
+      "item_073_preserve_marker_seeking_as_the_compact_replay_index",
+      "item_074_update_replay_layout_qa_and_tests",
+      "task_040_orchestrate_full_width_replay_moment_notifications"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 387,
+      "fr": 387
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "full",
+  "profile": "normal",
+  "ref": "req_039_turn_replay_key_moments_into_timed_notifications,item_071_remove_the_permanent_replay_key_moments_panel,item_072_add_timed_replay_moment_notifications,item_073_preserve_marker_seeking_as_the_compact_replay_index,item_074_update_replay_layout_qa_and_tests,task_040_orchestrate_full_width_replay_moment_notifications",
+  "refs": [
+    "req_039_turn_replay_key_moments_into_timed_notifications",
+    "item_071_remove_the_permanent_replay_key_moments_panel",
+    "item_072_add_timed_replay_moment_notifications",
+    "item_073_preserve_marker_seeking_as_the_compact_replay_index",
+    "item_074_update_replay_layout_qa_and_tests",
+    "task_040_orchestrate_full_width_replay_moment_notifications"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "Missing logics/release/contract.json."
+    ],
+    "configured": false,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Run logics-manager release discover --write, then review and promote logics/release/contract.draft.json to logics/release/contract.json.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "not_configured",
+    "target_version": null
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_040_orchestrate_full_width_replay_moment_notifications.md",
+      "ref": "task_040_orchestrate_full_width_replay_moment_notifications"
+    }
+  ]
+}

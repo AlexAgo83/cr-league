@@ -26,6 +26,7 @@
 | [prod_007_ci_and_release_pipeline_product_brief](product/prod_007_ci_and_release_pipeline_product_brief.md) | CI and Release Pipeline Product Brief | Settled |  |  | product/prod_007_ci_and_release_pipeline_product_brief.md |
 | [prod_008_race_ceremony_and_season_narrative_product_brief](product/prod_008_race_ceremony_and_season_narrative_product_brief.md) | Race Ceremony and Season Narrative Product Brief | Settled |  |  | product/prod_008_race_ceremony_and_season_narrative_product_brief.md |
 | [prod_009_pit_wall_race_plan_product_brief](product/prod_009_pit_wall_race_plan_product_brief.md) | Pit Wall Race Plan Product Brief | Proposed |  |  | product/prod_009_pit_wall_race_plan_product_brief.md |
+| [prod_010_full_width_replay_moment_notifications_product_brief](product/prod_010_full_width_replay_moment_notifications_product_brief.md) | Full-Width Replay Moment Notifications Product Brief | Proposed |  |  | product/prod_010_full_width_replay_moment_notifications_product_brief.md |
 
 ## Roadmaps
 
@@ -77,6 +78,7 @@
 | [req_036_github_ci_render_blueprint_and_release_contract](request/req_036_github_ci_render_blueprint_and_release_contract.md) | GitHub CI, Render blueprint, and release contract | Done |  |  | request/req_036_github_ci_render_blueprint_and_release_contract.md |
 | [req_037_starting_grid_modal_and_season_narrative](request/req_037_starting_grid_modal_and_season_narrative.md) | Starting grid modal and season narrative | Done |  |  | request/req_037_starting_grid_modal_and_season_narrative.md |
 | [req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan](request/req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan.md) | Redesign the race directive into a clear pit wall plan | Draft |  |  | request/req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan.md |
+| [req_039_turn_replay_key_moments_into_timed_notifications](request/req_039_turn_replay_key_moments_into_timed_notifications.md) | Turn replay key moments into timed notifications | Draft |  |  | request/req_039_turn_replay_key_moments_into_timed_notifications.md |
 
 ## Backlog
 
@@ -152,6 +154,10 @@
 | [item_068_add_a_dynamic_pit_wall_plan_summary](backlog/item_068_add_a_dynamic_pit_wall_plan_summary.md) | Add a dynamic pit wall plan summary | Ready |  | 0% | backlog/item_068_add_a_dynamic_pit_wall_plan_summary.md |
 | [item_069_validate_directive_clarity_with_tests_and_screenshots](backlog/item_069_validate_directive_clarity_with_tests_and_screenshots.md) | Validate directive clarity with tests and screenshots | Ready |  | 0% | backlog/item_069_validate_directive_clarity_with_tests_and_screenshots.md |
 | [item_070_explain_circuit_traits_as_actionable_race_briefing](backlog/item_070_explain_circuit_traits_as_actionable_race_briefing.md) | Explain circuit traits as actionable race briefing | Ready |  | 0% | backlog/item_070_explain_circuit_traits_as_actionable_race_briefing.md |
+| [item_071_remove_the_permanent_replay_key_moments_panel](backlog/item_071_remove_the_permanent_replay_key_moments_panel.md) | Remove the permanent replay key moments panel | Ready |  | 0% | backlog/item_071_remove_the_permanent_replay_key_moments_panel.md |
+| [item_072_add_timed_replay_moment_notifications](backlog/item_072_add_timed_replay_moment_notifications.md) | Add timed replay moment notifications | Ready |  | 0% | backlog/item_072_add_timed_replay_moment_notifications.md |
+| [item_073_preserve_marker_seeking_as_the_compact_replay_index](backlog/item_073_preserve_marker_seeking_as_the_compact_replay_index.md) | Preserve marker seeking as the compact replay index | Ready |  | 0% | backlog/item_073_preserve_marker_seeking_as_the_compact_replay_index.md |
+| [item_074_update_replay_layout_qa_and_tests](backlog/item_074_update_replay_layout_qa_and_tests.md) | Update replay layout QA and tests | Ready |  | 0% | backlog/item_074_update_replay_layout_qa_and_tests.md |
 
 ## Tasks
 
@@ -195,4 +201,5 @@
 | [task_036_orchestrate_garage_inventory_card_consultation](tasks/task_036_orchestrate_garage_inventory_card_consultation.md) | Orchestrate garage inventory card consultation | Done | Codex | 100% | tasks/task_036_orchestrate_garage_inventory_card_consultation.md |
 | [task_037_orchestrate_ci_render_blueprint_and_release_contract](tasks/task_037_orchestrate_ci_render_blueprint_and_release_contract.md) | Orchestrate CI, Render blueprint, and release contract | Done | Codex | 100% | tasks/task_037_orchestrate_ci_render_blueprint_and_release_contract.md |
 | [task_038_orchestrate_starting_grid_and_season_narrative](tasks/task_038_orchestrate_starting_grid_and_season_narrative.md) | Orchestrate starting grid and season narrative | Done | Codex | 100% | tasks/task_038_orchestrate_starting_grid_and_season_narrative.md |
-| [task_039_orchestrate_pit_wall_race_plan_clarity](tasks/task_039_orchestrate_pit_wall_race_plan_clarity.md) | Orchestrate pit wall race plan clarity | Ready |  | 0% | tasks/task_039_orchestrate_pit_wall_race_plan_clarity.md |
+| [task_039_orchestrate_pit_wall_race_plan_clarity](tasks/task_039_orchestrate_pit_wall_race_plan_clarity.md) | Orchestrate pit wall race plan clarity | Ready |  | 0 | tasks/task_039_orchestrate_pit_wall_race_plan_clarity.md |
+| [task_040_orchestrate_full_width_replay_moment_notifications](tasks/task_040_orchestrate_full_width_replay_moment_notifications.md) | Orchestrate full-width replay moment notifications | Ready |  | 0% | tasks/task_040_orchestrate_full_width_replay_moment_notifications.md |

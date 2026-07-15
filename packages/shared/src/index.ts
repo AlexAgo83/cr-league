@@ -5,6 +5,7 @@ export type HealthStatus = {
   service: "api";
   status: "ok";
   version: string;
+  commit: string;
   timestamp: string;
 };
 

@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { PrismaClient } from "@prisma/client";
 import { CARD_PRICE } from "@cr-league/shared";
 import { buildApp } from "./app.js";
-import { APP_VERSION } from "./version.js";
+import { APP_COMMIT, APP_VERSION } from "./version.js";
 
 function createTestApp(db?: PrismaClient) {
   const config = {
@@ -29,7 +29,8 @@ describe("api app", () => {
       app: "CR League",
       service: "api",
       status: "ok",
-      version: APP_VERSION
+      version: APP_VERSION,
+      commit: APP_COMMIT
     });
   });
 

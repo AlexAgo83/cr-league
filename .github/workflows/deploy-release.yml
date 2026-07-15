@@ -136,6 +136,7 @@ jobs:
       - name: Deploy API and verify health
         env:
           RENDER_API_DEPLOY_HOOK_URL: ${{ secrets.RENDER_API_DEPLOY_HOOK_URL }}
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
           RELEASE_VERSION: ${{ steps.release.outputs.version }}
         run: |
           set -euo pipefail
@@ -145,25 +146,28 @@ jobs:
             exit 1
           fi
 
-          curl --fail-with-body --silent --show-error --request POST "$RENDER_API_DEPLOY_HOOK_URL"
+          curl --fail-with-body --silent --show-error --request POST "${RENDER_API_DEPLOY_HOOK_URL}?ref=${RELEASE_SHA}"
 
           for attempt in $(seq 1 30); do
-            version="$(curl --fail --silent --show-error "$API_HEALTH_URL" | jq -r '.version // ""')" || version=""
-            if [ "$version" = "$RELEASE_VERSION" ]; then
-              echo "API health reports ${version}."
+            health="$(curl --fail --silent --show-error "$API_HEALTH_URL")" || health=""
+            version="$(jq -r '.version // ""' <<< "${health:-{}}")"
+            commit="$(jq -r '.commit // ""' <<< "${health:-{}}")"
+            if [ "$version" = "$RELEASE_VERSION" ] && [ "$commit" = "$RELEASE_SHA" ]; then
+              echo "API health reports ${version} at ${commit}."
               exit 0
             fi
 
-            echo "API health returned '${version}', waiting for ${RELEASE_VERSION} (${attempt}/30)."
+            echo "API health returned ${version}@${commit}, waiting for ${RELEASE_VERSION}@${RELEASE_SHA} (${attempt}/30)."
             sleep 10
           done
 
-          echo "API health did not report ${RELEASE_VERSION}."
+          echo "API health did not report ${RELEASE_VERSION}@${RELEASE_SHA}."
           exit 1
 
       - name: Deploy web
         env:
           RENDER_WEB_DEPLOY_HOOK_URL: ${{ secrets.RENDER_WEB_DEPLOY_HOOK_URL }}
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
         run: |
           set -euo pipefail
 
@@ -172,7 +176,7 @@ jobs:
             exit 1
           fi
 
-          curl --fail-with-body --silent --show-error --request POST "$RENDER_WEB_DEPLOY_HOOK_URL"
+          curl --fail-with-body --silent --show-error --request POST "${RENDER_WEB_DEPLOY_HOOK_URL}?ref=${RELEASE_SHA}"
 
       - name: Mark deployment success
         if: success()

@@ -70,7 +70,7 @@
 | [req_032_redesign_the_cr_league_race_cockpit_v0](request/req_032_redesign_the_cr_league_race_cockpit_v0.md) | Redesign the CR League race cockpit V0 | Done |  |  | request/req_032_redesign_the_cr_league_race_cockpit_v0.md |
 | [req_033_over_engineering_cleanup_pass_1](request/req_033_over_engineering_cleanup_pass_1.md) | Over-engineering cleanup pass 1 | Ready |  |  | request/req_033_over_engineering_cleanup_pass_1.md |
 | [req_034_personalized_race_recap](request/req_034_personalized_race_recap.md) | Personalized race recap | Ready |  |  | request/req_034_personalized_race_recap.md |
-| [req_035_make_garage_inventory_cards_open_the_card_detail_modal](request/req_035_make_garage_inventory_cards_open_the_card_detail_modal.md) | Make garage inventory cards open the card detail modal | Draft |  |  | request/req_035_make_garage_inventory_cards_open_the_card_detail_modal.md |
+| [req_035_make_garage_inventory_cards_open_the_card_detail_modal](request/req_035_make_garage_inventory_cards_open_the_card_detail_modal.md) | Make garage inventory cards open the card detail modal | Ready |  |  | request/req_035_make_garage_inventory_cards_open_the_card_detail_modal.md |
 | [req_036_github_ci_render_blueprint_and_release_contract](request/req_036_github_ci_render_blueprint_and_release_contract.md) | GitHub CI, Render blueprint, and release contract | Ready |  |  | request/req_036_github_ci_render_blueprint_and_release_contract.md |
 
 ## Backlog

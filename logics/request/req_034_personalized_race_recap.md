@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90
-> Confidence: 85
+> Understanding: 92
+> Confidence: 88
 > Complexity: Medium
 > Theme: Post-race feedback quality
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -25,6 +25,7 @@
 - The simulation writes English reportText strings on events that the web ignores (it re-localizes from event type keys); the redesign should keep using typed event data, not parse those strings.
 - Owner decision (2026-07-15): no LLM-generated narrative — cost, latency, and a new dependency are out; parameterized templates over real data give most of the effect.
 - Constraint: changing GP traits/forecast per round changes simulation inputs, so existing unit/e2e tests that pin race outcomes may need their expectations re-derived (same PRNG, new inputs). This is expected and must be done consciously, not by loosening assertions.
+- Sequencing with sibling chains: run AFTER req_033 (over-engineering cleanup) — both touch apps/web/src/app/helpers.ts, the EN/FR catalogs (req_033 deletes ~30 dead keys, this request adds/replaces recap keys), and the report/replay views (req_033's item_053 hoists WEATHER_ICONS, which this request's ReportView rework must not duplicate). Running req_033 first avoids re-creating deleted keys and merge conflicts in the same files.
 
 # Acceptance criteria
 - AC1: Grand Prix identity varies per round: each round's primaryTrait, secondaryTrait, and forecast are derived deterministically from its circuit (shared rotation table), replacing the copied DEMO_RACE_INPUT constants, and league creation plus next-GP flows produce them consistently.

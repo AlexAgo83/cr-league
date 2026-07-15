@@ -1,10 +1,10 @@
 {
   "budgets": {
-    "max_docs": 20,
-    "max_docs_per_ref": 4
+    "max_docs": 40,
+    "max_docs_per_ref": 8
   },
   "changed_paths": [],
-  "command": "logics-manager sync context-pack req_034_personalized_race_recap item_054_derive_grand_prix_identity_from_the_circuit_rotation item_055_add_placeholder_interpolation_to_the_i18n_layer item_056_rebuild_the_three_recap_cards_on_player_race_data task_035_orchestrate_personalized_race_recap --mode summary-only --profile normal --handoff",
+  "command": "logics-manager sync context-pack req_034_personalized_race_recap item_054_derive_grand_prix_identity_from_the_circuit_rotation item_055_add_placeholder_interpolation_to_the_i18n_layer item_056_rebuild_the_three_recap_cards_on_player_race_data task_035_orchestrate_personalized_race_recap --mode summary-only --profile deep --handoff",
   "companion_docs": [
     {
       "kind": "product",
@@ -103,6 +103,145 @@
       "ref": "road_001_cr_league_roadmap",
       "status": "Accepted",
       "title": "CR League Roadmap"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_040_define_the_cockpit_information_architecture"
+        ],
+        "prod": [
+          "prod_003_race_cockpit_redesign_v0_product_brief"
+        ],
+        "req": [
+          "req_032_redesign_the_cr_league_race_cockpit_v0"
+        ],
+        "task": [
+          "task_033_orchestrate_race_cockpit_redesign_v0"
+        ]
+      },
+      "path": "logics/product/prod_003_race_cockpit_redesign_v0_product_brief.md",
+      "ref": "prod_003_race_cockpit_redesign_v0_product_brief",
+      "status": "Settled",
+      "title": "Race Cockpit Redesign V0 Product Brief"
+    },
+    {
+      "kind": "architecture",
+      "linked_refs": {
+        "adr": [
+          "adr_001_cr_league_v1_static_pwa_api_architecture"
+        ],
+        "item": [
+          "item_009_decide_cr_league_v1_application_architecture"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_003_decide_cr_league_v1_application_architecture"
+        ],
+        "spec": [
+          "spec_003_mvp_vertical_slice",
+          "spec_007_technical_architecture_v1"
+        ],
+        "task": [
+          "task_004_decide_cr_league_v1_application_architecture"
+        ]
+      },
+      "path": "logics/architecture/adr_001_cr_league_v1_static_pwa_api_architecture.md",
+      "ref": "adr_001_cr_league_v1_static_pwa_api_architecture",
+      "status": "Accepted",
+      "title": "CR League V1 static PWA API architecture"
+    },
+    {
+      "kind": "architecture",
+      "linked_refs": {
+        "adr": [
+          "adr_004_data_security"
+        ],
+        "item": [
+          "item_017_define_cr_league_engineering_adrs"
+        ],
+        "req": [
+          "req_011_define_cr_league_engineering_adrs"
+        ],
+        "spec": [
+          "spec_010_data_model_and_api_contract_v0"
+        ],
+        "task": [
+          "task_012_define_cr_league_engineering_adrs"
+        ]
+      },
+      "path": "logics/architecture/adr_004_data_security.md",
+      "ref": "adr_004_data_security",
+      "status": "Accepted",
+      "title": "Data and Security"
+    },
+    {
+      "kind": "architecture",
+      "linked_refs": {
+        "adr": [
+          "adr_006_accessibility"
+        ],
+        "item": [
+          "item_017_define_cr_league_engineering_adrs"
+        ],
+        "req": [
+          "req_011_define_cr_league_engineering_adrs"
+        ],
+        "spec": [
+          "spec_015_device_targets_and_responsive_ux"
+        ],
+        "task": [
+          "task_012_define_cr_league_engineering_adrs"
+        ]
+      },
+      "path": "logics/architecture/adr_006_accessibility.md",
+      "ref": "adr_006_accessibility",
+      "status": "Accepted",
+      "title": "Accessibility"
+    },
+    {
+      "kind": "architecture",
+      "linked_refs": {
+        "adr": [
+          "adr_007_i18n"
+        ],
+        "item": [
+          "item_017_define_cr_league_engineering_adrs"
+        ],
+        "req": [
+          "req_011_define_cr_league_engineering_adrs"
+        ],
+        "task": [
+          "task_012_define_cr_league_engineering_adrs"
+        ]
+      },
+      "path": "logics/architecture/adr_007_i18n.md",
+      "ref": "adr_007_i18n",
+      "status": "Accepted",
+      "title": "Internationalization"
+    },
+    {
+      "kind": "architecture",
+      "linked_refs": {
+        "adr": [
+          "adr_008_testing_quality"
+        ],
+        "item": [
+          "item_017_define_cr_league_engineering_adrs"
+        ],
+        "req": [
+          "req_011_define_cr_league_engineering_adrs"
+        ],
+        "task": [
+          "task_012_define_cr_league_engineering_adrs"
+        ]
+      },
+      "path": "logics/architecture/adr_008_testing_quality.md",
+      "ref": "adr_008_testing_quality",
+      "status": "Accepted",
+      "title": "Testing and Quality"
     }
   ],
   "docs": [
@@ -134,7 +273,7 @@
       "path": "logics/request/req_034_personalized_race_recap.md",
       "ref": "req_034_personalized_race_recap",
       "schema_version": "1.0",
-      "status": "Draft",
+      "status": "Ready",
       "title": "Personalized race recap"
     },
     {
@@ -222,6 +361,115 @@
       "title": "Rebuild the three recap cards on player race data"
     },
     {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_029_add_automated_private_league_playtest_scenario"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_023_add_automated_private_league_playtest_scenario"
+        ],
+        "task": [
+          "task_024_add_automated_private_league_playtest_scenario"
+        ]
+      },
+      "path": "logics/product/prod_001_cr_league_product_brief.md",
+      "ref": "prod_001_cr_league_product_brief",
+      "schema_version": "1.0",
+      "status": "Settled",
+      "title": "CR League Product Brief"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_054_derive_grand_prix_identity_from_the_circuit_rotation",
+          "item_055_add_placeholder_interpolation_to_the_i18n_layer",
+          "item_056_rebuild_the_three_recap_cards_on_player_race_data"
+        ],
+        "prod": [
+          "prod_005_personalized_race_recap_product_brief"
+        ],
+        "req": [
+          "req_034_personalized_race_recap"
+        ],
+        "task": [
+          "task_035_orchestrate_personalized_race_recap"
+        ]
+      },
+      "path": "logics/product/prod_005_personalized_race_recap_product_brief.md",
+      "ref": "prod_005_personalized_race_recap_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Personalized Race Recap Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "roadmap, milestones, versions, private-league, playtest, economy, release-plan",
+        "skip when": "You need execution details for a single backlog item or task.",
+        "summary": "Release-level roadmap for CR League from playable prototype to private league V1.",
+        "use when": "Planning or sequencing CR League product increments across multiple requests."
+      },
+      "kind": "roadmap",
+      "linked_refs": {
+        "adr": [
+          "adr_001_cr_league_v1_static_pwa_api_architecture",
+          "adr_004_data_security",
+          "adr_006_accessibility",
+          "adr_007_i18n",
+          "adr_008_testing_quality"
+        ],
+        "item": [
+          "item_004_design_and_implement_the_v1_card_and_inventory_system",
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues",
+          "item_014_define_cr_league_implementation_roadmap",
+          "item_026_add_join_league_by_code_flow"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief",
+          "prod_003_race_cockpit_redesign_v0_product_brief"
+        ],
+        "req": [
+          "req_008_define_cr_league_implementation_roadmap",
+          "req_009_scaffold_cr_league_monorepo_foundation",
+          "req_013_implement_cr_league_pure_simulation_core",
+          "req_014_add_cr_league_simulation_preview_api_and_screen",
+          "req_015_add_minimal_league_persistence_api",
+          "req_016_add_playable_demo_league_web_flow",
+          "req_017_prepare_real_postgresql_migration_and_seed_workflow",
+          "req_018_wire_web_copy_to_i18n_catalog",
+          "req_019_harden_current_grand_prix_state_rules",
+          "req_020_add_join_league_by_code_flow",
+          "req_021_build_private_league_prototype_foundation",
+          "req_022_add_private_league_cadence_and_dashboard",
+          "req_024_prepare_private_league_playtest_kit",
+          "req_025_add_guided_race_weekend_experience",
+          "req_032_redesign_the_cr_league_race_cockpit_v0"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap"
+        ],
+        "spec": [
+          "spec_001_grand_prix_core_loop_and_simulation_v1",
+          "spec_016_implementation_roadmap"
+        ],
+        "task": [
+          "task_009_define_cr_league_implementation_roadmap",
+          "task_021_add_join_league_by_code_flow"
+        ]
+      },
+      "path": "logics/roadmap/road_001_cr_league_roadmap.md",
+      "ref": "road_001_cr_league_roadmap",
+      "schema_version": "1.0",
+      "status": "Accepted",
+      "title": "CR League Roadmap"
+    },
+    {
       "ai_context": {
         "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
         "skip when": "Working on one isolated sibling slice.",
@@ -250,41 +498,16 @@
       "schema_version": "1.0",
       "status": "Ready",
       "title": "Orchestrate personalized race recap"
-    },
-    {
-      "ai_context": {},
-      "kind": "product",
-      "linked_refs": {
-        "item": [
-          "item_054_derive_grand_prix_identity_from_the_circuit_rotation",
-          "item_055_add_placeholder_interpolation_to_the_i18n_layer",
-          "item_056_rebuild_the_three_recap_cards_on_player_race_data"
-        ],
-        "prod": [
-          "prod_005_personalized_race_recap_product_brief"
-        ],
-        "req": [
-          "req_034_personalized_race_recap"
-        ],
-        "task": [
-          "task_035_orchestrate_personalized_race_recap"
-        ]
-      },
-      "path": "logics/product/prod_005_personalized_race_recap_product_brief.md",
-      "ref": "prod_005_personalized_race_recap_product_brief",
-      "schema_version": "1.0",
-      "status": "Proposed",
-      "title": "Personalized Race Recap Product Brief"
     }
   ],
   "estimates": {
-    "char_count": 7801,
-    "companion_doc_count": 3,
-    "doc_count": 6
+    "char_count": 13103,
+    "companion_doc_count": 9,
+    "doc_count": 8
   },
-  "generated_at": "2026-07-15T06:23:39Z",
+  "generated_at": "2026-07-15T06:38:17Z",
   "handoff": {
-    "companion_doc_count": 3,
+    "companion_doc_count": 9,
     "enabled": true,
     "source_refs": [
       "req_034_personalized_race_recap",
@@ -326,7 +549,7 @@
     "state": "valid"
   },
   "mode": "summary-only",
-  "profile": "normal",
+  "profile": "deep",
   "ref": "req_034_personalized_race_recap,item_054_derive_grand_prix_identity_from_the_circuit_rotation,item_055_add_placeholder_interpolation_to_the_i18n_layer,item_056_rebuild_the_three_recap_cards_on_player_race_data,task_035_orchestrate_personalized_race_recap",
   "refs": [
     "req_034_personalized_race_recap",

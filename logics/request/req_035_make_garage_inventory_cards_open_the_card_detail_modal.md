@@ -1,9 +1,9 @@
 ## req_035_make_garage_inventory_cards_open_the_card_detail_modal - Make garage inventory cards open the card detail modal
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Ready
+> Understanding: 90
+> Confidence: 85
 > Complexity: Low
 > Theme: Garage card UX
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -21,6 +21,7 @@
 - The desired change is a read-only version of that same modal for inventory cards: same card explanation and badges, no price/affordability/buy action.
 - The implementation should preserve the existing Inventory/Shop segmented control and current card buying behavior.
 - All visible copy must remain routed through the existing EN/FR i18n catalogs.
+- Sequencing with sibling chains: coordinate with req_033 (over-engineering cleanup) — its item_053 extracts a LiveryPlate component in GarageView, so both chains edit GarageView.tsx; prefer running req_033 first. req_033 also explicitly rejected a generic Modal wrapper: this request must reuse the existing shop card modal pattern in place, not introduce a modal abstraction.
 
 # Acceptance criteria
 - AC1: In Garage Inventory, each owned card row/card is keyboard- and pointer-clickable and opens a card detail modal.

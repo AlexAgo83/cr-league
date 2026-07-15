@@ -1,7 +1,7 @@
 ## req_035_make_garage_inventory_cards_open_the_card_detail_modal - Make garage inventory cards open the card detail modal
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90
 > Confidence: 85
 > Complexity: Low

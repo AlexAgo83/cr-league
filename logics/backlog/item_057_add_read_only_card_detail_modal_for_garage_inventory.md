@@ -1,10 +1,10 @@
 ## item_057_add_read_only_card_detail_modal_for_garage_inventory - Add read-only card detail modal for garage inventory
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Garage card UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -66,3 +66,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_036_orchestrate_garage_inventory_card_consultation` was finished via `logics-manager flow finish task` on 2026-07-15.

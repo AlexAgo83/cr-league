@@ -40,6 +40,7 @@ export function GarageView({
   const [livery, setLivery] = useState(playerTeam?.livery ?? { primary: "#16c784", secondary: "#38bdf8" });
   const [teamName, setTeamName] = useState(playerTeam?.name ?? "");
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
+  const [viewingCardId, setViewingCardId] = useState<CardId | undefined>();
   const [cardPanel, setCardPanel] = useState<CardPanel>(ownedCardIds.length ? "inventory" : "shop");
 
   useEffect(() => {
@@ -61,6 +62,7 @@ export function GarageView({
 
   const shopOffers = recommendedShopOffers(state, forecastPick);
   const pendingBuy = shopOffers.find((item) => item.cardId === pendingBuyCardId);
+  const viewingFit = viewingCardId ? cardFit(viewingCardId, state, forecastPick) : null;
   const pendingBuyAffordable = Boolean(pendingBuy && playerTeam.credits >= pendingBuy.price);
   const seasonWins = seasonWinsByTeamId(state).get(playerTeam.id) ?? 0;
   const confirmBuy = () => {
@@ -150,12 +152,14 @@ export function GarageView({
               {ownedCardIds.length ? (
                 ownedCardIds.map((cardId) => (
                   <li key={cardId}>
-                    <span>
-                      {tt(`card_${cardId}` as TranslationKey)}
-                      <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
-                      <CardStatBadges cardId={cardId} tt={tt} />
-                    </span>
-                    <strong>x{countCards(playerTeam.cards, cardId)}</strong>
+                    <button className="card-inventory-button" type="button" onClick={() => setViewingCardId(cardId)}>
+                      <span>
+                        {tt(`card_${cardId}` as TranslationKey)}
+                        <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
+                        <CardStatBadges cardId={cardId} tt={tt} />
+                      </span>
+                      <strong>x{countCards(playerTeam.cards, cardId)}</strong>
+                    </button>
                   </li>
                 ))
               ) : (
@@ -197,6 +201,27 @@ export function GarageView({
                 {tt("garage_buy_confirm_action")}
               </button>
               <button type="button" onClick={() => setPendingBuyCardId(undefined)}>
+                {tt("action_close")}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
+      {viewingCardId && viewingFit ? (
+        <div className="modal-overlay" onClick={() => setViewingCardId(undefined)}>
+          <section className="panel modal garage-buy-modal" role="dialog" aria-modal="true" aria-label={tt(`card_${viewingCardId}` as TranslationKey)} onClick={(event) => event.stopPropagation()}>
+            <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setViewingCardId(undefined)}>
+              ×
+            </button>
+            <span className="section-kicker">{tt("garage_inventory")}</span>
+            <h2>{tt(`card_${viewingCardId}` as TranslationKey)}</h2>
+            <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
+            <div className="garage-buy-card garage-detail-card">
+              <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>
+              <CardStatBadges cardId={viewingCardId} tt={tt} />
+            </div>
+            <div className="modal-actions">
+              <button type="button" onClick={() => setViewingCardId(undefined)}>
                 {tt("action_close")}
               </button>
             </div>

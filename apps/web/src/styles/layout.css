@@ -1424,6 +1424,29 @@ label small {
   gap: 3px;
 }
 
+.card-inventory-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+}
+
+.card-inventory-button > span {
+  display: grid;
+  gap: 3px;
+}
+
+.card-inventory-button:hover,
+.card-inventory-button:focus-visible {
+  color: var(--color-text);
+}
+
 .card-stat-badges {
   display: flex;
   flex-wrap: wrap;
@@ -2061,6 +2084,14 @@ label small {
 
 .garage-buy-card .card-stat-badges {
   grid-column: 1 / -1;
+}
+
+.garage-detail-card {
+  grid-template-columns: 1fr;
+}
+
+.garage-detail-card > small {
+  color: var(--color-muted);
 }
 
 .modal-actions {

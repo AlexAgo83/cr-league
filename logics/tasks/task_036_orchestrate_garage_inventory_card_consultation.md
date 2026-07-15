@@ -1,13 +1,14 @@
 ## task_036_orchestrate_garage_inventory_card_consultation - Orchestrate garage inventory card consultation
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: Codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -27,23 +28,31 @@
 - `item_057_add_read_only_card_detail_modal_for_garage_inventory`
 
 # Definition of Done (DoD)
-- [ ] Generated request, product, backlog, and task docs are present.
-- [ ] Context-pack handoff is available when requested.
-- [ ] Validation passes.
-- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+- [x] Generated request, product, backlog, and task docs are present.
+- [x] Context-pack handoff is available when requested.
+- [x] Validation passes.
+- [x] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
-- request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
-- request-AC4 -> This task. Proof: optional context-pack handoff is supported.
-- request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
-- request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC1 -> This task. Proof: Garage inventory card rows are rendered as keyboard- and pointer-clickable buttons that open a card detail dialog.
+- request-AC2 -> This task. Proof: the inventory dialog shows the same card name, localized hint, fit label, and CardStatBadges structure as the shop card explanation.
+- request-AC3 -> This task. Proof: the inventory dialog has no price, missing-credit copy, purchase confirmation copy, or buy button; covered by App.test.tsx.
+- request-AC4 -> This task. Proof: the shop dialog still shows purchase controls, affordability guard, close action, and loading-aware buy action; covered by App.test.tsx.
+- request-AC5 -> This task. Proof: empty inventory still renders the existing non-clickable empty state.
+- request-AC6 -> This task. Proof: no new visible copy was required; existing EN/FR keys cover the inventory and shop dialogs.
+- request-AC7 -> This task. Proof: App.test.tsx covers opening an inventory card modal without purchase controls and verifies the shop modal still shows purchase controls.
 
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- Finish workflow executed on 2026-07-15.
+- Linked backlog/request close verification passed.
 
 # Report
 - Implementation complete.
+- Finished on 2026-07-15.
+- Linked backlog item(s): `item_057_add_read_only_card_detail_modal_for_garage_inventory`
+- Related request(s): `req_035_make_garage_inventory_cards_open_the_card_detail_modal`
 
 # AI Context
 - Summary: Orchestrate garage inventory card consultation

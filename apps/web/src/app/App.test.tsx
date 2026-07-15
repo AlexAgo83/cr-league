@@ -304,6 +304,30 @@ describe("App", () => {
     expect(screen.queryByText("League created. Submit your race directive.")).toBe(null);
   });
 
+  it("opens owned garage cards read-only while preserving shop purchase controls", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Garage" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    expect(screen.getByRole("button", { name: "Inventory" }).getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
+    expect(screen.getByRole("dialog", { name: "Rain Grip" })).toBeTruthy();
+    expect(screen.getByText("Pays off if rain appears around mid-race.")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Buy card" })).toBe(null);
+    expect(screen.queryByText("This card will join your garage and can shape your next directive.")).toBe(null);
+    fireEvent.click(screen.getByRole("dialog", { name: "Rain Grip" }).querySelector(".modal-actions button")!);
+
+    fireEvent.click(screen.getByRole("button", { name: "Shop" }));
+    fireEvent.click(screen.getByRole("button", { name: /Soft Tires/ }));
+    expect(screen.getByRole("dialog", { name: "Confirm card purchase" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Buy card" })).toBeTruthy();
+    expect(screen.getByText("You do not have enough credits to buy this card yet.")).toBeTruthy();
+  });
+
   it("plays through the demo league flow", async () => {
     saveProfile();
     const fetch = vi

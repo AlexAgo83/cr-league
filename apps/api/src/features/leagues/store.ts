@@ -368,10 +368,6 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
 }
 
 export async function rejoinLeague(db: Db, input: RejoinLeagueInput = {}) {
-  if (!input.teamId || !input.claimCode) {
-    throw new LeagueRuleError("Team id and claim code are required.");
-  }
-
   const team = await db.team.findUnique({
     where: { id: input.teamId },
     include: { league: true }
@@ -460,7 +456,8 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
 }
 
 export async function buyCard(db: Db, leagueId: string, input: { teamId?: string; cardId?: string } = {}) {
-  if (!input.teamId || !input.cardId || !isCardId(input.cardId)) {
+  const cardId = input.cardId;
+  if (typeof cardId !== "string" || !isCardId(cardId)) {
     throw new LeagueRuleError("Expected a team and a valid card.");
   }
 
@@ -480,7 +477,7 @@ export async function buyCard(db: Db, leagueId: string, input: { teamId?: string
     where: { id: team.id },
     data: {
       credits: { decrement: price },
-      cards: appendCard(team.cards, input.cardId)
+      cards: appendCard(team.cards, cardId)
     }
   });
 
@@ -516,9 +513,6 @@ export async function updateLeagueSettings(db: Db, leagueId: string, input: Upda
 }
 
 export async function updateTeamLivery(db: Db, leagueId: string, input: UpdateTeamLiveryInput = {}) {
-  if (!input.teamId) {
-    throw new LeagueRuleError("Expected a team.");
-  }
   const livery = normalizeLivery(input.livery);
   const state = await getLeagueState(db, leagueId);
   const team = state?.teams.find((candidate) => candidate.id === input.teamId);
@@ -533,9 +527,6 @@ export async function updateTeamLivery(db: Db, leagueId: string, input: UpdateTe
 }
 
 export async function updateTeamName(db: Db, leagueId: string, input: UpdateTeamNameInput = {}) {
-  if (!input.teamId) {
-    throw new LeagueRuleError("Expected a team.");
-  }
   const name = normalizeDisplayName(input.name, TEAM_NAME_LIMIT);
   if (!name) {
     throw new LeagueRuleError("Team name must be 3 to 32 readable characters.");

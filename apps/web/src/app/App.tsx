@@ -1,5 +1,5 @@
 import { APP_NAME, type CardId, type QualifyingRun } from "@cr-league/shared";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitForRound, countryFlag } from "./circuits.js";
 import { cardFit, strongestForecast } from "./helpers.js";
@@ -113,6 +113,33 @@ function AmbientRaceBackground({ tt }: { tt: (key: TranslationKey) => string }) 
     <div className="ambient-race-background" aria-hidden="true">
       <CircuitMap className="ambient-race-map" circuit={circuit} tt={tt} cars={cars} camera={{ enabled: true, car: cars[0] }} showHeading={false} framed={false} showTraits={false} />
     </div>
+  );
+}
+
+function SetupShell({
+  children,
+  notificationStack,
+  profileCodeModal,
+  profileLogoutModal,
+  topbar,
+  tt
+}: {
+  children: ReactNode;
+  notificationStack: ReactNode;
+  profileCodeModal: ReactNode;
+  profileLogoutModal: ReactNode;
+  topbar: ReactNode;
+  tt: (key: TranslationKey) => string;
+}) {
+  return (
+    <main className="app-shell setup-shell">
+      <AmbientRaceBackground tt={tt} />
+      {topbar}
+      {children}
+      {notificationStack}
+      {profileCodeModal}
+      {profileLogoutModal}
+    </main>
   );
 }
 
@@ -813,10 +840,7 @@ export function App() {
 
   if (!profileSession) {
     return (
-      <main className="app-shell setup-shell">
-        <AmbientRaceBackground tt={tt} />
-        {setupTopbar}
-
+      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} profileCodeModal={profileCodeModal} profileLogoutModal={profileLogoutModal}>
         <section className="setup-grid setup-grid-single" aria-labelledby="profile-title">
           <div className="panel setup-main-panel">
             <div className="panel-heading">
@@ -865,19 +889,13 @@ export function App() {
             )}
           </div>
         </section>
-        {notificationStack}
-        {profileCodeModal}
-        {profileLogoutModal}
-      </main>
+      </SetupShell>
     );
   }
 
   if (!leagueState) {
     return (
-      <main className="app-shell setup-shell">
-        <AmbientRaceBackground tt={tt} />
-        {setupTopbar}
-
+      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} profileCodeModal={profileCodeModal} profileLogoutModal={profileLogoutModal}>
         <section className="setup-grid setup-grid-single" aria-label={tt("flow_label")}>
           <div className="panel setup-main-panel">
             <div className="panel-heading">
@@ -996,10 +1014,7 @@ export function App() {
             </div>
           </div>
         </section>
-        {notificationStack}
-        {profileCodeModal}
-        {profileLogoutModal}
-      </main>
+      </SetupShell>
     );
   }
 

@@ -1,8 +1,8 @@
 import type { CardId, RaceResult } from "@cr-league/shared";
-import type { TranslationKey } from "../i18n/index.js";
+import type { TranslationKey, TranslationParams } from "../i18n/index.js";
 import type { LeagueState } from "./types.js";
 
-export type Translator = (key: TranslationKey) => string;
+export type Translator = (key: TranslationKey, params?: TranslationParams) => string;
 
 export type RaceEvent = RaceResult["events"][number];
 export type SeasonStanding = {

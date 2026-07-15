@@ -154,7 +154,7 @@ export function App() {
   });
   const [gameView, setGameView] = useState<GameView>("drive");
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
-  const tt = (key: TranslationKey) => t(key, locale);
+  const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");

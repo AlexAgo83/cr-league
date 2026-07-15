@@ -300,6 +300,7 @@
   "result_your_directive": "Your directive",
   "result_next_lesson": "Next GP takeaway",
   "result_no_directive": "No directive was submitted.",
+  "recap_position_delta_gain": "Gained {delta} positions",
   "lesson_card_paid": "Your card shaped the race. Keep one for moments where the track or forecast clearly matches it.",
   "lesson_weather_paid": "Weather preparation matched the race conditions. Watch weather-sensitive tracks closely.",
   "lesson_reliability": "Reliability will matter on high-wear tracks. A safer setup can protect points.",

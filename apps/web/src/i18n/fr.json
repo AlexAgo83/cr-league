@@ -300,6 +300,7 @@
   "result_your_directive": "Ta directive",
   "result_next_lesson": "À retenir pour le prochain GP",
   "result_no_directive": "Aucune directive envoyée.",
+  "recap_position_delta_gain": "Gagne {delta} positions",
   "lesson_card_paid": "Ta carte a pesé sur la course. Garde-en une pour les moments où piste et météo collent clairement.",
   "lesson_weather_paid": "La préparation météo a collé aux conditions. Surveille les pistes sensibles à la météo.",
   "lesson_reliability": "La fiabilité comptera sur les pistes à forte usure. Un setup prudent peut protéger des points.",

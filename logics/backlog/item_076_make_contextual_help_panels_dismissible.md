@@ -1,10 +1,10 @@
 ## item_076_make_contextual_help_panels_dismissible - Make contextual help panels dismissible
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Contextual help controls
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -40,6 +40,10 @@
 - request-AC3 -> This backlog slice. Proof: AC3: Close buttons have accessible labels and keyboard focus styling.
 - request-AC5 -> This backlog slice. Proof: AC4: Closed panels do not leave awkward gaps or overlapping controls.
 - request-AC9 -> This backlog slice. Proof: AC4: Closed panels do not leave awkward gaps or overlapping controls.
+- request-AC6 -> This backlog slice. Evidence needed: Reset UI preferences handles existing replay preferences and season recap seen flags according to an explicit documented allowlist.
+- request-AC7 -> This backlog slice. Evidence needed: Reset UI preferences never removes `cr-league-profile-session`, `cr-league-player-claims`, `cr-league-active-player-claim`, league progress, player identity, or recovery code data.
+- request-AC8 -> This backlog slice. Evidence needed: Language reset behavior is an explicit product decision: either preserved during UI reset or intentionally reset with visible copy making that clear.
+- request-AC10 -> This backlog slice. Evidence needed: Unit/e2e tests cover panel dismissal persistence, reset re-show behavior, replay preference reset behavior, and preservation of durable profile/session data.
 
 # Decision framing
 - Product framing: Not needed
@@ -60,3 +64,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset`
+
+# Notes
+- Task `task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset` was finished via `logics-manager flow finish task` on 2026-07-16.

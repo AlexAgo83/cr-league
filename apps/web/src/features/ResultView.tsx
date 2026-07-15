@@ -16,6 +16,7 @@ export function ResultView({
   playerDecision,
   tab,
   traitImpacts,
+  preferencesResetSignal,
   tt
 }: {
   state: LeagueState;
@@ -25,6 +26,7 @@ export function ResultView({
   playerDecision: LeagueState["decisions"][number] | undefined;
   tab: ResultTab;
   traitImpacts: MapTraitImpacts;
+  preferencesResetSignal?: number;
   tt: Translator;
 }) {
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
@@ -33,7 +35,7 @@ export function ResultView({
     <div className="result-view">
       <div id={`result-${tab}-panel`}>
         {tab === "replay" ? (
-          <ReplayView result={result} circuit={circuit} playerTeamId={playerTeamId} teamLiveries={teamLiveries} traitImpacts={traitImpacts} tt={tt} />
+          <ReplayView result={result} circuit={circuit} playerTeamId={playerTeamId} teamLiveries={teamLiveries} traitImpacts={traitImpacts} preferencesResetSignal={preferencesResetSignal} tt={tt} />
         ) : (
           <ReportView
             state={state}

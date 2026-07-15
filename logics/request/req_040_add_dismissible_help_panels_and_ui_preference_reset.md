@@ -1,7 +1,7 @@
 ## req_040_add_dismissible_help_panels_and_ui_preference_reset - Add dismissible help panels and UI preference reset
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

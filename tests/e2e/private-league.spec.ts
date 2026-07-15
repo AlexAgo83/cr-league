@@ -108,9 +108,10 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("button", { name: "Manage league" })).toBeVisible();
   await expect(page.getByRole("button", { name: "League controls" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy profile code" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Reset UI preferences" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
   const menuButtons = await page.locator(".profile-menu-panel button").evaluateAll((buttons) => buttons.map((button) => button.textContent?.trim()));
-  expect(menuButtons).toEqual(["Manage league", "Copy profile code", "Sign out"]);
+  expect(menuButtons).toEqual(["Manage league", "Copy profile code", "Reset UI preferences", "Sign out"]);
   await expect(page.getByLabel("Language")).toBeVisible();
   await page.getByRole("button", { name: "Copy profile code" }).click();
   await expect(page.getByRole("dialog", { name: "Profile code" })).toBeVisible();

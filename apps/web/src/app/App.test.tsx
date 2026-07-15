@@ -704,6 +704,45 @@ describe("App", () => {
     expect(document.querySelector(".replay-progress")).toBeTruthy();
   });
 
+  it("resets only UI preferences from the profile menu", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(resolvedState));
+    localStorage.setItem("cr-league-language", "en");
+    localStorage.setItem("cr-league-replay-speed", "4");
+    localStorage.setItem("cr-league-replay-focus", "1");
+    localStorage.setItem("cr-league-season-recap:league_1:1", "1");
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    fireEvent.click(await screen.findByLabelText("Close 5. Grand Prix finished"));
+    expect(screen.queryByRole("heading", { name: "5. Grand Prix finished" })).toBe(null);
+
+    fireEvent.click(screen.getByRole("button", { name: "Result" }));
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    fireEvent.click(screen.getByLabelText("Close Race replay"));
+    expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
+    expect(localStorage.getItem("cr-league-dismissed-race-prep-help")).toBe("1");
+    expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe("1");
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Reset UI preferences" }));
+
+    expect(await screen.findByText("UI preferences reset. Help panels and replay preferences are back to default.")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    expect(screen.getByRole("heading", { name: "5. Grand Prix finished" })).toBeTruthy();
+    expect(localStorage.getItem("cr-league-dismissed-race-prep-help")).toBe(null);
+    expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe(null);
+    expect(localStorage.getItem("cr-league-replay-speed")).toBe(null);
+    expect(localStorage.getItem("cr-league-replay-focus")).toBe(null);
+    expect(localStorage.getItem("cr-league-season-recap:league_1:1")).toBe(null);
+    expect(localStorage.getItem("cr-league-language")).toBe("en");
+    expect(localStorage.getItem("cr-league-profile-session")).toContain("profile_1");
+    expect(localStorage.getItem("cr-league-player-claims")).toContain("team_1");
+    expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_1");
+  });
+
   it("joins a league by code", async () => {
     saveProfile();
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));

@@ -1,10 +1,10 @@
 ## item_077_add_reset_ui_preferences_to_the_profile_menu - Add Reset UI preferences to the Profile menu
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Preference recovery
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -42,6 +42,7 @@
 - request-AC7 -> This backlog slice. Proof: AC4: Activating it does not remove profile/session/player claim localStorage values.
 - request-AC8 -> This backlog slice. Proof: AC5: The user receives localized status feedback.
 - request-AC9 -> This backlog slice. Proof: AC5: The user receives localized status feedback.
+- request-AC10 -> This backlog slice. Evidence needed: Unit/e2e tests cover panel dismissal persistence, reset re-show behavior, replay preference reset behavior, and preservation of durable profile/session data.
 
 # Decision framing
 - Product framing: Not needed
@@ -62,3 +63,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset`
+
+# Notes
+- Task `task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset` was finished via `logics-manager flow finish task` on 2026-07-16.

@@ -1,10 +1,10 @@
 ## item_075_define_the_ui_preference_storage_boundary - Define the UI preference storage boundary
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Preference safety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -41,6 +41,7 @@
 - request-AC7 -> This backlog slice. Proof: AC4: No implementation path calls `localStorage.clear()`.
 - request-AC8 -> This backlog slice. Proof: AC4: No implementation path calls `localStorage.clear()`.
 - request-AC10 -> This backlog slice. Proof: AC4: No implementation path calls `localStorage.clear()`.
+- request-AC9 -> This backlog slice. Evidence needed: Close buttons and reset action are keyboard accessible, have clear accessible names, and do not rely on hardcoded visible copy.
 
 # Decision framing
 - Product framing: Not needed
@@ -61,3 +62,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset`
+
+# Notes
+- Task `task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset` was finished via `logics-manager flow finish task` on 2026-07-16.

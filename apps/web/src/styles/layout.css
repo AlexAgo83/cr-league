@@ -2564,6 +2564,25 @@ button.command-icon-button {
   margin: 0;
 }
 
+.context-panel-close {
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 999px;
+  color: var(--color-muted);
+  height: 28px;
+  line-height: 1;
+  margin-left: auto;
+  min-height: 0;
+  padding: 0;
+  width: 28px;
+}
+
+.context-panel-close:hover,
+.context-panel-close:focus-visible {
+  border-color: var(--color-telemetry);
+  color: var(--color-text);
+}
+
 .race-day-phase-panel {
   align-items: center;
 }

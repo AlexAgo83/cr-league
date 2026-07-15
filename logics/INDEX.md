@@ -27,7 +27,7 @@
 | [prod_008_race_ceremony_and_season_narrative_product_brief](product/prod_008_race_ceremony_and_season_narrative_product_brief.md) | Race Ceremony and Season Narrative Product Brief | Settled |  |  | product/prod_008_race_ceremony_and_season_narrative_product_brief.md |
 | [prod_009_pit_wall_race_plan_product_brief](product/prod_009_pit_wall_race_plan_product_brief.md) | Pit Wall Race Plan Product Brief | Settled |  |  | product/prod_009_pit_wall_race_plan_product_brief.md |
 | [prod_010_full_width_replay_moment_notifications_product_brief](product/prod_010_full_width_replay_moment_notifications_product_brief.md) | Full-Width Replay Moment Notifications Product Brief | Settled |  |  | product/prod_010_full_width_replay_moment_notifications_product_brief.md |
-| [prod_011_dismissible_help_panels_and_ui_preferences_product_brief](product/prod_011_dismissible_help_panels_and_ui_preferences_product_brief.md) | Dismissible Help Panels and UI Preferences Product Brief | Proposed |  |  | product/prod_011_dismissible_help_panels_and_ui_preferences_product_brief.md |
+| [prod_011_dismissible_help_panels_and_ui_preferences_product_brief](product/prod_011_dismissible_help_panels_and_ui_preferences_product_brief.md) | Dismissible Help Panels and UI Preferences Product Brief | Settled |  |  | product/prod_011_dismissible_help_panels_and_ui_preferences_product_brief.md |
 
 ## Roadmaps
 
@@ -80,7 +80,7 @@
 | [req_037_starting_grid_modal_and_season_narrative](request/req_037_starting_grid_modal_and_season_narrative.md) | Starting grid modal and season narrative | Done |  |  | request/req_037_starting_grid_modal_and_season_narrative.md |
 | [req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan](request/req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan.md) | Redesign the race directive into a clear pit wall plan | Done |  |  | request/req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan.md |
 | [req_039_turn_replay_key_moments_into_timed_notifications](request/req_039_turn_replay_key_moments_into_timed_notifications.md) | Turn replay key moments into timed notifications | Done |  |  | request/req_039_turn_replay_key_moments_into_timed_notifications.md |
-| [req_040_add_dismissible_help_panels_and_ui_preference_reset](request/req_040_add_dismissible_help_panels_and_ui_preference_reset.md) | Add dismissible help panels and UI preference reset | Draft |  |  | request/req_040_add_dismissible_help_panels_and_ui_preference_reset.md |
+| [req_040_add_dismissible_help_panels_and_ui_preference_reset](request/req_040_add_dismissible_help_panels_and_ui_preference_reset.md) | Add dismissible help panels and UI preference reset | Done |  |  | request/req_040_add_dismissible_help_panels_and_ui_preference_reset.md |
 
 ## Backlog
 
@@ -160,10 +160,10 @@
 | [item_072_add_timed_replay_moment_notifications](backlog/item_072_add_timed_replay_moment_notifications.md) | Add timed replay moment notifications | Done |  | 100% | backlog/item_072_add_timed_replay_moment_notifications.md |
 | [item_073_preserve_marker_seeking_as_the_compact_replay_index](backlog/item_073_preserve_marker_seeking_as_the_compact_replay_index.md) | Preserve marker seeking as the compact replay index | Done |  | 100% | backlog/item_073_preserve_marker_seeking_as_the_compact_replay_index.md |
 | [item_074_update_replay_layout_qa_and_tests](backlog/item_074_update_replay_layout_qa_and_tests.md) | Update replay layout QA and tests | Done |  | 100% | backlog/item_074_update_replay_layout_qa_and_tests.md |
-| [item_075_define_the_ui_preference_storage_boundary](backlog/item_075_define_the_ui_preference_storage_boundary.md) | Define the UI preference storage boundary | Ready |  | 0% | backlog/item_075_define_the_ui_preference_storage_boundary.md |
-| [item_076_make_contextual_help_panels_dismissible](backlog/item_076_make_contextual_help_panels_dismissible.md) | Make contextual help panels dismissible | Ready |  | 0% | backlog/item_076_make_contextual_help_panels_dismissible.md |
-| [item_077_add_reset_ui_preferences_to_the_profile_menu](backlog/item_077_add_reset_ui_preferences_to_the_profile_menu.md) | Add Reset UI preferences to the Profile menu | Ready |  | 0% | backlog/item_077_add_reset_ui_preferences_to_the_profile_menu.md |
-| [item_078_validate_preference_reset_and_panel_behavior](backlog/item_078_validate_preference_reset_and_panel_behavior.md) | Validate preference reset and panel behavior | Ready |  | 0% | backlog/item_078_validate_preference_reset_and_panel_behavior.md |
+| [item_075_define_the_ui_preference_storage_boundary](backlog/item_075_define_the_ui_preference_storage_boundary.md) | Define the UI preference storage boundary | Done |  | 100% | backlog/item_075_define_the_ui_preference_storage_boundary.md |
+| [item_076_make_contextual_help_panels_dismissible](backlog/item_076_make_contextual_help_panels_dismissible.md) | Make contextual help panels dismissible | Done |  | 100% | backlog/item_076_make_contextual_help_panels_dismissible.md |
+| [item_077_add_reset_ui_preferences_to_the_profile_menu](backlog/item_077_add_reset_ui_preferences_to_the_profile_menu.md) | Add Reset UI preferences to the Profile menu | Done |  | 100% | backlog/item_077_add_reset_ui_preferences_to_the_profile_menu.md |
+| [item_078_validate_preference_reset_and_panel_behavior](backlog/item_078_validate_preference_reset_and_panel_behavior.md) | Validate preference reset and panel behavior | Done |  | 100% | backlog/item_078_validate_preference_reset_and_panel_behavior.md |
 
 ## Tasks
 
@@ -209,4 +209,4 @@
 | [task_038_orchestrate_starting_grid_and_season_narrative](tasks/task_038_orchestrate_starting_grid_and_season_narrative.md) | Orchestrate starting grid and season narrative | Done | Codex | 100% | tasks/task_038_orchestrate_starting_grid_and_season_narrative.md |
 | [task_039_orchestrate_pit_wall_race_plan_clarity](tasks/task_039_orchestrate_pit_wall_race_plan_clarity.md) | Orchestrate pit wall race plan clarity | Done | codex | 100% | tasks/task_039_orchestrate_pit_wall_race_plan_clarity.md |
 | [task_040_orchestrate_full_width_replay_moment_notifications](tasks/task_040_orchestrate_full_width_replay_moment_notifications.md) | Orchestrate full-width replay moment notifications | Done | codex | 100% | tasks/task_040_orchestrate_full_width_replay_moment_notifications.md |
-| [task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset](tasks/task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset.md) | Orchestrate dismissible help panels and UI preference reset | Ready |  | 0% | tasks/task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset.md |
+| [task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset](tasks/task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset.md) | Orchestrate dismissible help panels and UI preference reset | Done | codex | 100% | tasks/task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset.md |

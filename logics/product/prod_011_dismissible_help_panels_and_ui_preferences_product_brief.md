@@ -1,8 +1,8 @@
 ## prod_011_dismissible_help_panels_and_ui_preferences_product_brief - Dismissible Help Panels and UI Preferences Product Brief
 > Date: 2026-07-16
-> Status: Proposed
+> Status: Settled
 > Related request: `req_040_add_dismissible_help_panels_and_ui_preference_reset`
-> Related backlog: `item_075_define_the_ui_preference_storage_boundary`, `item_076_make_contextual_help_panels_dismissible`, `item_077_add_reset_ui_preferences_to_the_profile_menu`, `item_078_validate_preference_reset_and_panel_behavior`
+> Related backlog: `item_075_define_the_ui_preference_storage_boundary`
 > Related task: `task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -59,5 +59,5 @@ flowchart LR
 - The implementation passes app validation and Logics closeout gates.
 
 # References
-- Product back-reference: `req_040_add_dismissible_help_panels_and_ui_preference_reset`
+- Product back-reference: `item_075_define_the_ui_preference_storage_boundary`
 - Task back-reference: `task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset`

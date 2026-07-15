@@ -10,7 +10,7 @@ import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/Ci
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
-import { ReplayView } from "../features/ReplayView.js";
+import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
@@ -19,6 +19,8 @@ const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
 const PROFILE_SESSION_KEY = "cr-league-profile-session";
 const LANGUAGE_KEY = "cr-league-language";
 const SEASON_RECAP_KEY_PREFIX = "cr-league-season-recap";
+const DISMISSED_RACE_PREP_HELP_KEY = "cr-league-dismissed-race-prep-help";
+const UI_PREFERENCE_KEYS = [DISMISSED_RACE_PREP_HELP_KEY, DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY] as const;
 
 type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueId: string;
@@ -165,6 +167,8 @@ export function App() {
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [racePrepHelpDismissed, setRacePrepHelpDismissed] = useState(() => localStorage.getItem(DISMISSED_RACE_PREP_HELP_KEY) === "1");
+  const [preferencesResetSignal, setPreferencesResetSignal] = useState(0);
   const [profileCodeOpen, setProfileCodeOpen] = useState(false);
   const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
   const [directiveConfirmOpen, setDirectiveConfirmOpen] = useState(false);
@@ -626,6 +630,18 @@ export function App() {
     }
   }
 
+  function resetUiPreferences() {
+    for (const key of UI_PREFERENCE_KEYS) localStorage.removeItem(key);
+    const seasonRecapKeys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index)).filter(
+      (key): key is string => key !== null && key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`)
+    );
+    for (const key of seasonRecapKeys) localStorage.removeItem(key);
+    setRacePrepHelpDismissed(false);
+    setPreferencesResetSignal((signal) => signal + 1);
+    setProfileOpen(false);
+    showStatus(tt("status_ui_preferences_reset"), "info", Boolean(leagueState));
+  }
+
   function closeLeagueControls() {
     setLeagueControlsOpen(false);
     setProfileOpen(false);
@@ -680,6 +696,9 @@ export function App() {
               {tt("action_copy_profile_code")}
             </button>
           ) : null}
+          <button type="button" className="profile-menu-action profile-menu-action-info" onClick={resetUiPreferences}>
+            {tt("action_reset_ui_preferences")}
+          </button>
           <button
             type="button"
             className="profile-menu-action profile-menu-action-danger"
@@ -1093,23 +1112,36 @@ export function App() {
         {gameView === "drive" ? (
           <div className="drive-grid">
             <div className="drive-content-column">
-              <section className="panel race-context-panel race-day-phase-panel">
-                <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
-                <p>
-                  {tt(`race_phase_${raceDayPhase}_body` as TranslationKey, {
-                    used: qualifyingAttemptsUsed,
-                    limit: qualifyingAttemptLimit,
-                    left: qualifyingAttemptsLeft
-                  })}
-                </p>
-                <div className="race-day-steps" aria-label={tt("race_day_steps")}>
-                  {["briefing", "chrono", "adjust", "locked", "gp"].map((step) => (
-                    <span key={step} className={step === raceDayPhase || (step === "gp" && raceDayPhase === "finished") ? "active" : undefined}>
-                      {tt(`race_step_${step}` as TranslationKey)}
-                    </span>
-                  ))}
-                </div>
-              </section>
+              {racePrepHelpDismissed ? null : (
+                <section className="panel race-context-panel race-day-phase-panel">
+                  <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
+                  <p>
+                    {tt(`race_phase_${raceDayPhase}_body` as TranslationKey, {
+                      used: qualifyingAttemptsUsed,
+                      limit: qualifyingAttemptLimit,
+                      left: qualifyingAttemptsLeft
+                    })}
+                  </p>
+                  <div className="race-day-steps" aria-label={tt("race_day_steps")}>
+                    {["briefing", "chrono", "adjust", "locked", "gp"].map((step) => (
+                      <span key={step} className={step === raceDayPhase || (step === "gp" && raceDayPhase === "finished") ? "active" : undefined}>
+                        {tt(`race_step_${step}` as TranslationKey)}
+                      </span>
+                    ))}
+                  </div>
+                  <button
+                    type="button"
+                    className="context-panel-close"
+                    aria-label={`${tt("action_close")} ${tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}`}
+                    onClick={() => {
+                      localStorage.setItem(DISMISSED_RACE_PREP_HELP_KEY, "1");
+                      setRacePrepHelpDismissed(true);
+                    }}
+                  >
+                    ×
+                  </button>
+                </section>
+              )}
               <CircuitMap
                 className="drive-map-panel"
                 circuit={currentCircuit}
@@ -1213,6 +1245,7 @@ export function App() {
             playerDecision={playerDecision}
             tab={resultTab}
             traitImpacts={replayTraitImpacts}
+            preferencesResetSignal={preferencesResetSignal}
             tt={tt}
           />
         ) : null}
@@ -1281,6 +1314,7 @@ export function App() {
                   towerEntries={qualifyingReplayEntries}
                   titleKey="qualifying_replay_title"
                   explainerKey="qualifying_replay_explainer"
+                  preferencesResetSignal={preferencesResetSignal}
                   tt={tt}
                 />
               </div>
@@ -1362,6 +1396,7 @@ export function App() {
                 playerTeamId={playerTeam?.id}
                 teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
                 traitImpacts={replayTraitImpacts}
+                preferencesResetSignal={preferencesResetSignal}
                 tt={tt}
               />
             </div>

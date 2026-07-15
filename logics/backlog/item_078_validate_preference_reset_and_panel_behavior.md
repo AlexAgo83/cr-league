@@ -1,10 +1,10 @@
 ## item_078_validate_preference_reset_and_panel_behavior - Validate preference reset and panel behavior
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Regression coverage
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -39,6 +39,7 @@
 - request-AC7 -> This backlog slice. Proof: AC4: Local validation gates pass before closeout.
 - request-AC9 -> This backlog slice. Proof: AC4: Local validation gates pass before closeout.
 - request-AC10 -> This backlog slice. Proof: AC4: Local validation gates pass before closeout.
+- request-AC8 -> This backlog slice. Evidence needed: Language reset behavior is an explicit product decision: either preserved during UI reset or intentionally reset with visible copy making that clear.
 
 # Decision framing
 - Product framing: Not needed
@@ -59,3 +60,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset`
+
+# Notes
+- Task `task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset` was finished via `logics-manager flow finish task` on 2026-07-16.

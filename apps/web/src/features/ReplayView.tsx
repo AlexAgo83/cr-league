@@ -9,8 +9,9 @@ import { WEATHER_ICONS } from "./weatherIcons.js";
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 const START_HOLD_SECONDS = 1;
 const FINISH_HOLD_SECONDS = 1;
-const REPLAY_SPEED_KEY = "cr-league-replay-speed";
-const REPLAY_FOCUS_KEY = "cr-league-replay-focus";
+export const REPLAY_SPEED_KEY = "cr-league-replay-speed";
+export const REPLAY_FOCUS_KEY = "cr-league-replay-focus";
+export const DISMISSED_REPLAY_HELP_KEY = "cr-league-dismissed-replay-help";
 const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
 const REFERENCE_REPLAY_DISTANCE_PIXELS = 9_000;
 const POSITION_CHANGE_MARGIN_LAPS = 0.015;
@@ -297,6 +298,7 @@ export function ReplayView({
   titleKey = "result_replay_title",
   explainerKey = "result_replay_explainer",
   towerEntries,
+  preferencesResetSignal = 0,
   tt
 }: {
   result: RaceResult;
@@ -307,6 +309,7 @@ export function ReplayView({
   titleKey?: TranslationKey;
   explainerKey?: TranslationKey;
   towerEntries?: ReplayTowerEntry[];
+  preferencesResetSignal?: number;
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -315,6 +318,7 @@ export function ReplayView({
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState<ReplaySpeed>(savedReplaySpeed);
   const [driverFocus, setDriverFocus] = useState(() => localStorage.getItem(REPLAY_FOCUS_KEY) === "1");
+  const [copyDismissed, setCopyDismissed] = useState(() => localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
   const replayTrace = result.replayTrace?.length ? result.replayTrace : fallbackReplayTrace(result);
   const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
   const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps);
@@ -379,6 +383,10 @@ export function ReplayView({
   useEffect(() => {
     localStorage.setItem(REPLAY_FOCUS_KEY, driverFocus ? "1" : "0");
   }, [driverFocus]);
+
+  useEffect(() => {
+    setCopyDismissed(localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
+  }, [preferencesResetSignal]);
 
   useEffect(() => () => positionPopTimers.current.forEach(window.clearTimeout), []);
 
@@ -475,10 +483,23 @@ export function ReplayView({
     <div className="view-stack">
       <div className="replay-main-grid">
         <div className="replay-content-column">
-          <section className="panel race-context-panel replay-copy-panel">
-            <h2>{tt(titleKey)}</h2>
-            <p>{tt(explainerKey)}</p>
-          </section>
+          {copyDismissed ? null : (
+            <section className="panel race-context-panel replay-copy-panel">
+              <h2>{tt(titleKey)}</h2>
+              <p>{tt(explainerKey)}</p>
+              <button
+                type="button"
+                className="context-panel-close"
+                aria-label={`${tt("action_close")} ${tt(titleKey)}`}
+                onClick={() => {
+                  localStorage.setItem(DISMISSED_REPLAY_HELP_KEY, "1");
+                  setCopyDismissed(true);
+                }}
+              >
+                ×
+              </button>
+            </section>
+          )}
 
           <CircuitMap
             className="replay-map-panel"

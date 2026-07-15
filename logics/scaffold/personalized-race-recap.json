@@ -1,0 +1,174 @@
+{
+  "title": "Personalized race recap",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/roadmap/road_001_cr_league_roadmap.md",
+    "apps/web/src/features/ReportView.tsx",
+    "apps/web/src/app/helpers.ts",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/i18n/index.ts",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/domain/race.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "Player feedback (2026-07-15): the race recap panel (result_recap_title) feels basic and stale — 'what made the difference' shows a generic fixed sentence, 'your directive' only echoes the player's own picks, and 'lesson for the next GP' repeats one of five canned sentences that reference the current GP instead of the next one."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Post-race feedback quality",
+    "needs": [
+      "Make the post-race recap speak about the player's race: what actually gained or lost them positions, whether their directive paid off, and what the next Grand Prix rewards.",
+      "Use the race data the simulation already produces (per-event positionDelta, lap, segment, resolved weather per phase, card triggers, final positionChange) instead of fixed sentences that ignore it.",
+      "Give each Grand Prix a real identity so trait-based advice can be true: derive each round's traits and forecast from its circuit instead of copying the same demo constants every round.",
+      "Evaluate the player's directive against what happened: preparation versus resolved weather, played card versus its triggered events, approach versus final result.",
+      "Make the 'next GP' lesson actually reference the next round's circuit and conditions, with enough template variety that three consecutive GPs do not read identically.",
+      "Support parameterized translation strings so copy can embed real values (segment, weather, position deltas, circuit names) in both EN and FR."
+    ],
+    "context": [
+      "The recap is built in ReportView.tsx from three helpers in apps/web/src/app/helpers.ts: the 'difference' card shows majorEvents[0] — the first major event of the whole field, not the player's — and weather_change events render the fixed string event_weather_change ('La météo change pendant la course') although the event carries segment and weather data.",
+      "describeDecision only echoes the picked approach/preparation/card; nextLesson is a five-branch if-chain of canned sentences (lesson_card_paid fires when ANY player-related event has a cardId, including a rival's card via relatedTeamId) and references the CURRENT GP's traits under a 'next GP' title.",
+      "Root cause of the stale feeling: startNextGrandPrix copies DEMO_RACE_INPUT.primaryTrait/secondaryTrait/forecast for every round (apps/api/src/features/leagues/store.ts:753), so every Grand Prix has identical traits and forecast. Trait-based advice cannot be relevant until GP identity varies.",
+      "The data to fix this exists client-side and in shared: CITY_CIRCUITS in apps/web/src/app/circuits.ts carries per-circuit traits {grip, overtaking, energy} and likelyWeather, and circuitForRound(round) is a deterministic modulo rotation — the web can compute the next round's circuit without an API change; the server needs the same table to vary GP inputs.",
+      "The i18n layer (apps/web/src/i18n/index.ts) is a plain key lookup with no interpolation; parameterized copy needs a small {placeholder} substitution added to t()/tt.",
+      "The simulation writes English reportText strings on events that the web ignores (it re-localizes from event type keys); the redesign should keep using typed event data, not parse those strings.",
+      "Owner decision (2026-07-15): no LLM-generated narrative — cost, latency, and a new dependency are out; parameterized templates over real data give most of the effect.",
+      "Constraint: changing GP traits/forecast per round changes simulation inputs, so existing unit/e2e tests that pin race outcomes may need their expectations re-derived (same PRNG, new inputs). This is expected and must be done consciously, not by loosening assertions."
+    ],
+    "acceptance_criteria": [
+      "AC1: Grand Prix identity varies per round: each round's primaryTrait, secondaryTrait, and forecast are derived deterministically from its circuit (shared rotation table), replacing the copied DEMO_RACE_INPUT constants, and league creation plus next-GP flows produce them consistently.",
+      "AC2: The circuit identity table (city, traits, likely weather, laps — not the route geometry) lives in packages/shared and is consumed by both the API (GP creation) and the web (display and next-GP lesson), with no duplicated table.",
+      "AC3: t() supports {placeholder} interpolation, is covered by a unit test, and existing non-parameterized keys keep working unchanged.",
+      "AC4: The 'difference' recap card shows the player's most impactful event (largest absolute positionDelta among the player's own events, with sensible fallbacks: player card trigger, then field-level weather shift with segment and new weather, then headline), phrased with the event's real data.",
+      "AC5: The 'directive' recap card adds a computed verdict: preparation judged against resolved weather across segments, played card judged against its triggered events and their deltas, approach judged against final positionChange — each verdict phrased from parameterized templates in EN and FR.",
+      "AC6: The 'next GP' lesson names the actual next round's circuit and its dominant trait or likely weather (via the deterministic rotation) and ties it to the main cause of the player's result this race; the card-attribution bug (rival cards counted via relatedTeamId) is fixed.",
+      "AC7: Template variety: each recap card draws from at least three parameterized variants per outcome family, and the same variant does not repeat on consecutive GPs for the same card when alternatives exist.",
+      "AC8: All new copy exists in both EN and FR catalogs with identical key sets; no hardcoded user-facing strings in the recap path.",
+      "AC9: Unit tests cover the new recap helpers (difference selection, directive verdict, next-GP lesson) with fixture race results; affected existing tests are re-derived, not weakened.",
+      "AC10: Typecheck, lint, unit tests, build, and e2e all pass; the 3-GP e2e loop still completes with varying GP traits."
+    ]
+  },
+  "product": {
+    "title": "Personalized Race Recap Product Brief",
+    "overview": "Turn the post-race recap from three static sentences into the payoff moment of the strategy loop: the player sees what their own choices did to their race, judged against real simulation data, and leaves with advice that is true for the specific circuit coming next.",
+    "goals": [
+      "Close the strategy feedback loop: pick a directive, watch the race, understand precisely whether the directive worked and why.",
+      "Give every Grand Prix a distinct identity (traits and forecast from its circuit) so preparation choices and advice have real stakes.",
+      "Kill recap repetition: parameterized template pools over real race data instead of five canned sentences.",
+      "Keep it cheap and local: no LLM, no new dependency, no new API endpoint — shared circuit data, a tiny i18n interpolation, and smarter selection over data the sim already emits."
+    ],
+    "non_goals": [
+      "No LLM-generated narrative (owner decision: cost, latency, dependency).",
+      "No new race mechanics, cards, or economy changes — GP identity variation reuses existing trait/forecast inputs the sim already accepts.",
+      "No redesign of the report layout, replay, or key-moments sections beyond the three recap cards.",
+      "No rewrite of the simulation's event/report pipeline; consume typed event data as-is.",
+      "No new locales or pluralization framework — {placeholder} substitution only."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Derive Grand Prix identity from the circuit rotation",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "GP identity ground truth",
+      "request_acs": ["AC1", "AC2", "AC9", "AC10"],
+      "problem": [
+        "startNextGrandPrix and league creation copy DEMO_RACE_INPUT.primaryTrait/secondaryTrait/forecast for every round, so all Grands Prix are mechanically identical.",
+        "The per-circuit identity data (traits, likelyWeather) already exists but lives web-side in apps/web/src/app/circuits.ts where the API cannot use it.",
+        "Trait-based recap advice, briefing telemetry, and preparation stakes are all hollow while GP inputs never vary."
+      ],
+      "scope_in": [
+        "Move the circuit identity table (city, country, layoutKey, laps, traits, likelyWeather) and circuitForRound rotation to packages/shared; keep route geometry web-side keyed by the same circuit identifier.",
+        "Map each circuit's identity to sim inputs: primaryTrait/secondaryTrait from its dominant trait scores, forecast from likelyWeather — one small deterministic mapping function with a unit test.",
+        "Use the mapping in league creation and startNextGrandPrix instead of DEMO_RACE_INPUT constants; keep seeds deterministic as they are.",
+        "Re-derive existing test expectations that pin race outcomes to the old constant inputs (same PRNG, new inputs); do not loosen assertions.",
+        "Verify the 3-GP e2e loop passes with varying traits."
+      ],
+      "scope_out": [
+        "New traits, weather types, or sim behavior changes.",
+        "Changing the rotation order or adding circuits.",
+        "Any recap copy change (later items)."
+      ],
+      "acceptance_criteria": [
+        "AC1: Two consecutive Grands Prix in a league have different trait/forecast inputs whenever their circuits differ.",
+        "AC2: The identity table exists once, in packages/shared, consumed by API and web; the web route geometry still renders CircuitMap unchanged.",
+        "AC3: The identity-to-sim-input mapping is deterministic and unit-tested.",
+        "AC4: All gates pass with expectations re-derived, including the 3-GP e2e loop."
+      ]
+    },
+    {
+      "title": "Add placeholder interpolation to the i18n layer",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Localization plumbing",
+      "request_acs": ["AC3", "AC8", "AC10"],
+      "problem": [
+        "t() in apps/web/src/i18n/index.ts is a plain catalog lookup; copy cannot embed real values (segments, deltas, circuit names), which forces fixed generic sentences."
+      ],
+      "scope_in": [
+        "Extend t()/tt with {placeholder} substitution from a params object; unknown placeholders render harmlessly (leave the token or empty) and are unit-tested.",
+        "Keep the TranslationKey type mechanism and existing call sites unchanged; params are an optional trailing argument.",
+        "Add a unit test covering substitution, missing params, and untouched legacy keys."
+      ],
+      "scope_out": [
+        "Pluralization, gender, ICU MessageFormat, or a library.",
+        "Migrating existing keys that need no parameters."
+      ],
+      "acceptance_criteria": [
+        "AC1: tt('key', {x: 1}) substitutes {x} in both locales; existing keys without placeholders behave exactly as before.",
+        "AC2: The behavior is unit-tested including the missing-param edge.",
+        "AC3: Typecheck and lint pass with the optional-params signature."
+      ]
+    },
+    {
+      "title": "Rebuild the three recap cards on player race data",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Recap content",
+      "request_acs": ["AC4", "AC5", "AC6", "AC7", "AC8", "AC9"],
+      "problem": [
+        "The 'difference' card shows the field's first major event with data-free copy; the 'directive' card echoes the player's picks without judging them; the 'lesson' card cycles five canned sentences about the current GP under a next-GP title, and counts rival cards as the player's via relatedTeamId."
+      ],
+      "scope_in": [
+        "Difference card: select the player's own event with the largest absolute positionDelta; fallbacks in order — player card trigger, field weather shift phrased with its segment and new weather, result headline.",
+        "Directive verdict: judge preparation against resolvedWeather across segments, the played card against its triggered events and deltas, and approach against final positionChange; render verdict plus evidence via parameterized templates.",
+        "Next-GP lesson: compute the next round's circuit via the shared rotation, name it and its dominant trait or likely weather, and tie the advice to the main cause of this race's result; fix the relatedTeamId card-attribution bug.",
+        "Template pools: at least three parameterized variants per outcome family per card, deterministically rotated (e.g. by round) so consecutive GPs differ; all copy in EN and FR with identical key sets.",
+        "Unit tests for the three helpers over fixture RaceResults (win with card, weather-bet loss, quiet race, rival-card race).",
+        "Remove the now-dead lesson_* and other replaced keys from both catalogs."
+      ],
+      "scope_out": [
+        "Layout or visual changes to ReportView beyond the card text.",
+        "Replay, key moments, phases, and rewards sections.",
+        "LLM narrative generation.",
+        "Server-side changes (covered by the GP identity item)."
+      ],
+      "acceptance_criteria": [
+        "AC1: With a fixture where the player gains positions from a card in the rain, the three cards name the card, the phase, the delta, and next circuit's identity — in both locales.",
+        "AC2: With a quiet race fixture, the cards degrade gracefully (headline fallback, 'held position' verdict, next-GP advice still specific).",
+        "AC3: A rival's card event no longer triggers the player's card lesson.",
+        "AC4: Three consecutive resolved GPs show non-identical recap copy for the same card family.",
+        "AC5: EN and FR key sets are identical and no user-facing string is hardcoded; helper unit tests pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate personalized race recap",
+    "plan": [
+      "Read ReportView.tsx, helpers.ts, i18n index, circuits.ts, simulateRace.ts event emission, and store.ts GP creation before changing anything.",
+      "Ship the GP identity item first — it changes sim inputs and test expectations, and the recap items depend on varied identities being real.",
+      "Ship the i18n interpolation item second (small, unblocks copy work).",
+      "Rebuild the three recap cards with template pools and unit tests; update EN/FR catalogs together and remove replaced keys.",
+      "Run typecheck, lint, unit tests, build, and the 3-GP e2e loop; verify recap copy in French visual QA before closeout.",
+      "Record validation proof and close the Logics chain."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/personalized-race-recap.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

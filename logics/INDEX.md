@@ -22,6 +22,7 @@
 | [prod_003_race_cockpit_redesign_v0_product_brief](product/prod_003_race_cockpit_redesign_v0_product_brief.md) | Race Cockpit Redesign V0 Product Brief | Settled |  |  | product/prod_003_race_cockpit_redesign_v0_product_brief.md |
 | [prod_004_over_engineering_cleanup_product_brief](product/prod_004_over_engineering_cleanup_product_brief.md) | Over-engineering Cleanup Product Brief | Settled |  |  | product/prod_004_over_engineering_cleanup_product_brief.md |
 | [prod_005_personalized_race_recap_product_brief](product/prod_005_personalized_race_recap_product_brief.md) | Personalized Race Recap Product Brief | Proposed |  |  | product/prod_005_personalized_race_recap_product_brief.md |
+| [prod_006_garage_inventory_card_consultation_product_brief](product/prod_006_garage_inventory_card_consultation_product_brief.md) | Garage Inventory Card Consultation Product Brief | Proposed |  |  | product/prod_006_garage_inventory_card_consultation_product_brief.md |
 
 ## Roadmaps
 
@@ -68,6 +69,7 @@
 | [req_032_redesign_the_cr_league_race_cockpit_v0](request/req_032_redesign_the_cr_league_race_cockpit_v0.md) | Redesign the CR League race cockpit V0 | Done |  |  | request/req_032_redesign_the_cr_league_race_cockpit_v0.md |
 | [req_033_over_engineering_cleanup_pass_1](request/req_033_over_engineering_cleanup_pass_1.md) | Over-engineering cleanup pass 1 | Ready |  |  | request/req_033_over_engineering_cleanup_pass_1.md |
 | [req_034_personalized_race_recap](request/req_034_personalized_race_recap.md) | Personalized race recap | Ready |  |  | request/req_034_personalized_race_recap.md |
+| [req_035_make_garage_inventory_cards_open_the_card_detail_modal](request/req_035_make_garage_inventory_cards_open_the_card_detail_modal.md) | Make garage inventory cards open the card detail modal | Draft |  |  | request/req_035_make_garage_inventory_cards_open_the_card_detail_modal.md |
 
 ## Backlog
 
@@ -129,6 +131,7 @@
 | [item_054_derive_grand_prix_identity_from_the_circuit_rotation](backlog/item_054_derive_grand_prix_identity_from_the_circuit_rotation.md) | Derive Grand Prix identity from the circuit rotation | Ready |  | 0% | backlog/item_054_derive_grand_prix_identity_from_the_circuit_rotation.md |
 | [item_055_add_placeholder_interpolation_to_the_i18n_layer](backlog/item_055_add_placeholder_interpolation_to_the_i18n_layer.md) | Add placeholder interpolation to the i18n layer | Ready |  | 0% | backlog/item_055_add_placeholder_interpolation_to_the_i18n_layer.md |
 | [item_056_rebuild_the_three_recap_cards_on_player_race_data](backlog/item_056_rebuild_the_three_recap_cards_on_player_race_data.md) | Rebuild the three recap cards on player race data | Ready |  | 0% | backlog/item_056_rebuild_the_three_recap_cards_on_player_race_data.md |
+| [item_057_add_read_only_card_detail_modal_for_garage_inventory](backlog/item_057_add_read_only_card_detail_modal_for_garage_inventory.md) | Add read-only card detail modal for garage inventory | Ready |  | 0% | backlog/item_057_add_read_only_card_detail_modal_for_garage_inventory.md |
 
 ## Tasks
 
@@ -169,3 +172,4 @@
 | [task_033_orchestrate_race_cockpit_redesign_v0](tasks/task_033_orchestrate_race_cockpit_redesign_v0.md) | Orchestrate race cockpit redesign V0 | Done |  | 100% | tasks/task_033_orchestrate_race_cockpit_redesign_v0.md |
 | [task_034_orchestrate_over_engineering_cleanup_pass_1](tasks/task_034_orchestrate_over_engineering_cleanup_pass_1.md) | Orchestrate over-engineering cleanup pass 1 | Ready |  | 0% | tasks/task_034_orchestrate_over_engineering_cleanup_pass_1.md |
 | [task_035_orchestrate_personalized_race_recap](tasks/task_035_orchestrate_personalized_race_recap.md) | Orchestrate personalized race recap | Ready |  | 0% | tasks/task_035_orchestrate_personalized_race_recap.md |
+| [task_036_orchestrate_garage_inventory_card_consultation](tasks/task_036_orchestrate_garage_inventory_card_consultation.md) | Orchestrate garage inventory card consultation | Ready |  | 0% | tasks/task_036_orchestrate_garage_inventory_card_consultation.md |

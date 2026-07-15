@@ -1,0 +1,127 @@
+{
+  "title": "Make garage inventory cards open the card detail modal",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/specs/spec_002_card_set_v1.md",
+    "logics/specs/spec_005_economy_v1.md",
+    "logics/specs/spec_016_implementation_roadmap.md",
+    "apps/web/src/features/GarageView.tsx",
+    "apps/web/src/features/CardStatBadges.tsx",
+    "apps/web/src/app/helpers.ts",
+    "apps/web/src/app/App.test.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/web/src/styles/layout.css",
+    "User request: in Garage, inventory cards should be clickable for consultation with the same modal as shop cards, without the purchase section."
+  ],
+  "request": {
+    "complexity": "Low",
+    "theme": "Garage card UX",
+    "needs": [
+      "Make owned inventory cards clickable so players can inspect what a card does without going to the shop.",
+      "Reuse the existing shop card detail modal presentation so card understanding is consistent between inventory and shop.",
+      "Remove purchase-specific controls from the inventory consultation flow while preserving the shop purchase confirmation flow.",
+      "Keep the implementation small: no new modal system, no new card data model, no new economy rules."
+    ],
+    "context": [
+      "`GarageView` currently renders inventory cards as list items with name, fit label, stat badges, and count.",
+      "`GarageView` already has shop buttons that open a card detail purchase modal through `pendingBuyCardId`.",
+      "The modal already shows card name, hint, price, fit, stat badges, affordability text, buy action, and close action.",
+      "The desired change is a read-only version of that same modal for inventory cards: same card explanation and badges, no price/affordability/buy action.",
+      "The implementation should preserve the existing Inventory/Shop segmented control and current card buying behavior.",
+      "All visible copy must remain routed through the existing EN/FR i18n catalogs."
+    ],
+    "acceptance_criteria": [
+      "AC1: In Garage Inventory, each owned card row/card is keyboard- and pointer-clickable and opens a card detail modal.",
+      "AC2: The inventory detail modal reuses the same card explanation structure as the shop modal: card name, localized hint, fit label when available, and `CardStatBadges`.",
+      "AC3: The inventory modal does not show price, missing-credit copy, purchase confirmation copy, or a buy button.",
+      "AC4: The Shop modal keeps its current purchase behavior, including price display, affordability guard, buy confirmation action, close action, and loading disabled state.",
+      "AC5: Empty inventory remains a non-clickable empty state.",
+      "AC6: EN/FR visible copy is covered by existing keys or new catalog keys in both locales.",
+      "AC7: Tests cover opening an inventory card modal and verify that no purchase action is shown there, while the shop modal still shows purchase controls."
+    ]
+  },
+  "product": {
+    "title": "Garage Inventory Card Consultation Product Brief",
+    "overview": "Inventory card consultation makes the Garage feel coherent: owned cards can be inspected with the same card-detail language as shop offers, without implying another purchase.",
+    "goals": [
+      "Help players understand owned cards before choosing them in race preparation.",
+      "Make Inventory and Shop use the same card explanation pattern.",
+      "Keep the Garage compact by opening details on demand instead of adding more inline text.",
+      "Preserve the current shop purchase flow and economy rules.",
+      "Improve accessibility by making owned cards discoverable through buttons with clear labels."
+    ],
+    "non_goals": [
+      "Do not add card selling, upgrading, rarity, crafting, or drag-and-drop inventory management.",
+      "Do not change card prices, card fit logic, card definitions, or economy balance.",
+      "Do not introduce a new reusable modal framework.",
+      "Do not change the directive card picker behavior.",
+      "Do not redesign the full Garage screen beyond the inventory-card click interaction."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add read-only card detail modal for garage inventory",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Garage card UX",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7"
+      ],
+      "problem": [
+        "Inventory cards currently show only a compact row with badges and count.",
+        "Players can inspect shop cards through a rich modal, but owned cards do not have the same consultation affordance.",
+        "This creates inconsistent card understanding between cards the player can buy and cards the player already owns."
+      ],
+      "scope_in": [
+        "Update `GarageView` so inventory card entries are rendered as clickable buttons when the player owns cards.",
+        "Track selected inventory card state separately from, or safely alongside, the current pending shop purchase state.",
+        "Reuse the existing shop-modal visual structure for card name, hint, fit, and stat badges.",
+        "Add a readonly modal mode or small helper inside `GarageView`; keep the change local unless extraction clearly reduces duplication.",
+        "Ensure inventory modal copy and aria labels are localized in EN and FR.",
+        "Add or update React tests in `App.test.tsx` to cover inventory consultation and shop purchase modal separation."
+      ],
+      "scope_out": [
+        "Selling or consuming cards from inventory.",
+        "Changing card selection for directives.",
+        "Changing card recommendations or shop offer generation.",
+        "Changing the API, Prisma schema, or shared card economy constants.",
+        "Adding a global modal abstraction."
+      ],
+      "acceptance_criteria": [
+        "AC1: Given the Garage inventory contains at least one owned card, clicking that card opens a modal with the localized card name and hint.",
+        "AC2: The inventory modal contains the same stat badges used by the inventory row/shop modal.",
+        "AC3: The inventory modal has a close control and closes through the overlay or close button.",
+        "AC4: The inventory modal does not contain the buy confirmation button, price, or missing-credit copy.",
+        "AC5: Clicking a shop card still opens the purchase modal with price and buy confirmation behavior.",
+        "AC6: Empty inventory still renders the existing empty message and no card-detail modal trigger.",
+        "AC7: `npm run typecheck` and `npm test -- apps/web/src/app/App.test.tsx` pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate garage inventory card consultation",
+    "plan": [
+      "Read `GarageView`, `CardStatBadges`, `helpers`, i18n catalogs, styles, and the existing Garage tests.",
+      "Implement the smallest local state change needed to open a read-only detail modal from inventory cards.",
+      "Reuse or lightly factor the existing shop card modal presentation so shop and inventory explain cards consistently.",
+      "Update EN/FR copy only if existing keys are insufficient.",
+      "Add focused tests for inventory modal consultation and shop purchase modal behavior.",
+      "Run typecheck and the focused web app test file, then update closeout evidence."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/garage-inventory-card-consultation.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

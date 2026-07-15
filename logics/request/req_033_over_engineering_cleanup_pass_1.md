@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90
-> Confidence: 85
+> Understanding: 95
+> Confidence: 90
 > Complexity: Medium
 > Theme: Code health and simplification
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -25,7 +25,8 @@
 - The shared package has zero runtime dependencies and its barrel currently re-exports internals (createPrng, Prng, InternalScores) no consumer imports.
 - A second audit pass (2026-07-15, CSS/views, App.tsx depth, prisma/store/tests) found 21 additional cleanups worth ~350 lines, headlined by prisma/seed.ts which is both dead and broken: it references the removed compound-unique key leagueId_round (now leagueId_season_round), so `prisma db seed` fails; scripts/seed-playtest-league.ts already covers seeding.
 - Pass-2 verified clean and out of scope: createMemoryDb and the integration mega-test (legitimate coverage), cadence (real product setting), all circuits.ts/nameSeeds.ts fields, ReplayView exported helpers (test seam), dynamic CSS classes (map-trait-*, status-*, state-*).
-- The legacy PLAYER_CLAIM_KEY localStorage migration in App.tsx is only removable if no real player still has the pre-PLAYER_CLAIMS_KEY format; the product is in private playtest, so this needs a one-line owner confirmation before deletion.
+- Owner decisions settled on 2026-07-15: (1) no real player predates PLAYER_CLAIMS_KEY — the game has no live players yet — so the legacy PLAYER_CLAIM_KEY migration path is confirmed deletable (AC15 unblocked); (2) the database is a disposable dev instance in Docker, so the RaceDecision.defaulted column drop can ship as a normal prisma migration with no data-preservation concern; (3) @grifhinz/logics-manager (npm, currently 2.19.1) must be added as a root devDependency so the logics:validate script works without a global install.
+- AC7 verification is already done: the web DOES render the fabricated qualifying result — App.tsx renders a full ReplayView with replayQualifyingRun.result inside the qualifying modal (App.tsx:1206). The qualifying-result finding is therefore invalid: createQualifyingResult feeds the qualifying replay feature. item_050 is closed with this proof; do not slim the shape.
 
 # Acceptance criteria
 - AC1: Dead i18n keys are removed from both EN and FR catalogs, and every remaining key is referenced by the web app.

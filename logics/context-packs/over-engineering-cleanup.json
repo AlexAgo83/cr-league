@@ -219,7 +219,7 @@
       "path": "logics/backlog/item_050_slim_the_qualifying_result_to_what_the_client_renders.md",
       "ref": "item_050_slim_the_qualifying_result_to_what_the_client_renders",
       "schema_version": "1.0",
-      "status": "Ready",
+      "status": "Done",
       "title": "Slim the qualifying result to what the client renders"
     },
     {
@@ -375,11 +375,11 @@
     }
   ],
   "estimates": {
-    "char_count": 11412,
+    "char_count": 11411,
     "companion_doc_count": 3,
     "doc_count": 10
   },
-  "generated_at": "2026-07-15T06:08:01Z",
+  "generated_at": "2026-07-15T06:14:57Z",
   "handoff": {
     "companion_doc_count": 3,
     "enabled": true,

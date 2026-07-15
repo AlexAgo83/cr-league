@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90
-> Confidence: 85
+> Understanding: 95
+> Confidence: 90
 > Progress: 0%
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -15,10 +15,11 @@
 # Plan
 - [ ] 1. Re-verify each audited finding against the current tree before cutting (references, dynamic access, test usage).
 - [ ] 2. Ship the two Low-complexity deletion/consolidation items first as one commit each, gates green.
-- [ ] 3. Run the qualifying-result verification and either implement the minimal shape or close the finding with proof.
+- [x] 3. Run the qualifying-result verification and either implement the minimal shape or close the finding with proof. (Done 2026-07-15: finding invalid — App.tsx:1206 renders ReplayView with replayQualifyingRun.result; item_050 closed.)
 - [ ] 4. Consolidate validation route by route with the API test suite as the contract.
-- [ ] 5. Ship the pass-2 slices: item_052 (dead code, dead CSS, broken prisma seed — get owner confirmation on the legacy PLAYER_CLAIM_KEY migration before deleting it) and item_053 (boilerplate consolidation).
-- [ ] 6. Run typecheck, lint, unit tests, build, and e2e; record proof in the Logics closeout.
+- [ ] 5. Ship the pass-2 slices: item_052 (dead code, dead CSS, broken prisma seed; legacy PLAYER_CLAIM_KEY deletion and the defaulted-column migration are owner-approved — dev DB is disposable Docker) and item_053 (boilerplate consolidation).
+- [ ] 6. Add @grifhinz/logics-manager as a root devDependency (owner decision, covered in item_052 scope).
+- [ ] 7. Run typecheck, lint, unit tests, build, and e2e; record proof in the Logics closeout.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.

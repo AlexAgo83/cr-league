@@ -1,10 +1,10 @@
 ## item_050_slim_the_qualifying_result_to_what_the_client_renders - Slim the qualifying result to what the client renders
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90
-> Confidence: 85
-> Progress: 0%
+> Status: Done
+> Understanding: 95
+> Confidence: 95
+> Progress: 100%
 > Complexity: Medium
 > Theme: Data shape honesty
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -21,6 +21,9 @@
 - Out:
   - Changing qualifying gameplay, scoring, or the number of runs.
   - Building a real qualifying replay.
+
+# Resolution (2026-07-15)
+Verification done: the finding is INVALID — the web renders the fabricated result. App.tsx passes `replayQualifyingRun.result` as the `result` prop of a full `ReplayView` inside the qualifying replay modal (apps/web/src/app/App.tsx:1206), so the replay trace, events, and derived fields produced by createQualifyingResult are the data model of the qualifying replay feature, not dead weight. `qualifyingReplayTower` (App.tsx:204) also consumes the runs for the tower entries. Nothing to change; item closed with this proof per AC2.
 
 # Acceptance criteria
 - AC1: A written verification note lists every consumer field of qualifyingRuns[].result.

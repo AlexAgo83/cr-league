@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90
-> Confidence: 85
+> Understanding: 95
+> Confidence: 90
 > Progress: 0%
 > Complexity: Low
 > Theme: Operator workflow and runtime integration
@@ -18,7 +18,9 @@ The second audit pass found dead weight the first pass missed: prisma/seed.ts is
   - Delete the dead CSS rules and tokens listed in AC11 from apps/web/src/styles/layout.css and tokens.css.
   - Drop CardDefinition.id and consumable from the type and all 15 card records; drop rivalTeamId from apps/web/src/app/types.ts; drop the RaceDecision.defaulted column with a migration and remove its write sites; pass null for bot claim codes.
   - Inline createReplayTracePoint's mode param, replace QUALIFYING_LOCK_CARDS with a direct comparison, collapse profileMenu's twin booleans, inline pointOnRoute.
-  - Ask the owner whether any live player predates PLAYER_CLAIMS_KEY; delete the legacy migration path only on confirmation.
+  - Delete the legacy PLAYER_CLAIM_KEY migration path in App.tsx (parseLegacyClaim, the migrate branch in loadPlayerClaims, the removeItem in forgetProfile) — owner confirmed on 2026-07-15 that no live player predates PLAYER_CLAIMS_KEY.
+  - Ship the RaceDecision.defaulted column drop as a normal prisma migration — owner confirmed the DB is a disposable dev instance in Docker.
+  - Add @grifhinz/logics-manager as a root devDependency (owner decision) so the logics:validate script no longer depends on a global install.
   - Re-verify each symbol has zero references before deleting.
 - Out:
   - Pass-1 findings (item_048/049/050/051).

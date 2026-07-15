@@ -378,20 +378,24 @@ export function App() {
     setQualifyingOpen(true);
   }
 
+  async function mutateLeague(loadingKey: TranslationKey, path: string, body: unknown, successKey: TranslationKey) {
+    await run(tt(loadingKey), async () => {
+      const state = await api<LeagueState>(path, {
+        method: "POST",
+        body: body === undefined ? undefined : JSON.stringify(body)
+      });
+      setLeagueState(withCurrentPlayer(state));
+      setMessage(tt(successKey));
+    });
+  }
+
   async function updateSettings() {
     if (!leagueState) return;
 
-    await run(tt("status_updating_settings"), async () => {
-      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/settings`, {
-        method: "POST",
-        body: JSON.stringify({
-          cadence: form.cadence,
-          preparationDeadlineAt: form.preparationDeadlineAt ? new Date(form.preparationDeadlineAt).toISOString() : null
-        })
-      });
-      setLeagueState(withCurrentPlayer(state));
-      setMessage(tt("status_settings_updated"));
-    });
+    await mutateLeague("status_updating_settings", `/leagues/${leagueState.league.id}/settings`, {
+      cadence: form.cadence,
+      preparationDeadlineAt: form.preparationDeadlineAt ? new Date(form.preparationDeadlineAt).toISOString() : null
+    }, "status_settings_updated");
   }
 
   async function resolveGrandPrix() {
@@ -429,33 +433,13 @@ export function App() {
   async function buyCard(cardId: CardId) {
     if (!leagueState || !playerTeam) return;
 
-    await run(tt("status_buying_card"), async () => {
-      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/cards/buy`, {
-        method: "POST",
-        body: JSON.stringify({
-          teamId: playerTeam.id,
-          cardId
-        })
-      });
-      setLeagueState(withCurrentPlayer(state));
-      setMessage(tt("status_card_bought"));
-    });
+    await mutateLeague("status_buying_card", `/leagues/${leagueState.league.id}/cards/buy`, { teamId: playerTeam.id, cardId }, "status_card_bought");
   }
 
   async function updateLivery(livery: LeagueState["teams"][number]["livery"]) {
     if (!leagueState || !playerTeam) return;
 
-    await run(tt("status_livery_updated"), async () => {
-      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/teams/livery`, {
-        method: "POST",
-        body: JSON.stringify({
-          teamId: playerTeam.id,
-          livery
-        })
-      });
-      setLeagueState(withCurrentPlayer(state));
-      setMessage(tt("status_livery_updated"));
-    });
+    await mutateLeague("status_livery_updated", `/leagues/${leagueState.league.id}/teams/livery`, { teamId: playerTeam.id, livery }, "status_livery_updated");
   }
 
   async function updateTeamName(name: string) {
@@ -532,13 +516,7 @@ export function App() {
   async function restartLeague() {
     if (!leagueState || !window.confirm(tt("restart_confirm"))) return;
 
-    await run(tt("status_restarting_league"), async () => {
-      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/restart`, {
-        method: "POST"
-      });
-      setLeagueState(withCurrentPlayer(state));
-      setMessage(tt("status_league_restarted"));
-    });
+    await mutateLeague("status_restarting_league", `/leagues/${leagueState.league.id}/restart`, undefined, "status_league_restarted");
   }
 
   async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string) {

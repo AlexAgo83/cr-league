@@ -1,0 +1,165 @@
+{
+  "title": "Starting grid modal and season narrative",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/roadmap/road_001_cr_league_roadmap.md",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/types.ts",
+    "apps/web/src/app/helpers.ts",
+    "apps/web/src/features/ChampionshipView.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/api/src/features/leagues/store.ts",
+    "Player feedback (2026-07-15): before launching the race there is no recap of the starting line; at the end of a season there is no recap of who won and the final standings; in the GP history the old GPs are visible but the season history is hard to see.",
+    "Code facts verified 2026-07-15: the starting grid is client-computable — the server ranks participants by best qualifying time with team-order fallback (buildParticipants -> standingsRank in apps/api/src/features/leagues/store.ts:863-873) and the web already holds qualifyingRuns plus a sorted qualifying leaderboard in App.tsx. Season rollover RESETS team points to zero with no snapshot (store.ts:758-760), so the season champion is recorded nowhere; however grandPrixHistory keeps every GP result with per-GP points per team, so any season's final standings are recomputable by summing classification points for that season's GPs."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Race ceremony and season narrative",
+    "needs": [
+      "Show a starting-grid recap before the race is launched: grid order, qualifying times, the player's team highlighted, and the GP conditions.",
+      "Celebrate the end of a season: who is champion, the podium, and the final standings, shown when the season rolls over.",
+      "Keep a persistent season record (palmares) so past champions remain visible after the rollover resets points.",
+      "Make the GP history navigable by season instead of one flat list."
+    ],
+    "context": [
+      "The starting grid needs no API change: replicate the server's ranking rule client-side (best qualifying time per team ascending, missing times fall back to team order — the exact comparator of buildParticipants) and reuse the qualifying leaderboard data already computed in App.tsx.",
+      "The race-launch flow already has a confirmation step; the grid recap enriches that existing confirmation rather than adding a new click.",
+      "Season standings derive from grandPrixHistory: sum each team's classification points across the season's resolved GPs. This is retroactive (works for seasons already played) and needs no schema change. Documented limit: if scoring ever gains bonuses outside GP classifications, a server-side season snapshot at rollover becomes the right tool — that is the upgrade path, not the current need (owner-approved YAGNI).",
+      "Season-end detection is client-side: the fetched state's currentGrandPrix.season being greater than the previously displayed season signals the rollover; localStorage remembers the last celebrated season per league so the champion modal shows once, not on every reload.",
+      "grandPrixHistory entries carry season and round, and teams are stable across seasons (only points reset), so team names and liveries resolve from the current state.",
+      "Sequencing with sibling chains: run AFTER req_033 (over-engineering cleanup) — both touch App.tsx modal code, ChampionshipView (item_053 extracts LiveryPlate there), and the i18n catalogs. req_033 explicitly rejected a generic Modal wrapper: reuse the existing modal-overlay pattern in place. Compatible with req_034 (it changes GP creation inputs server-side, not history shape); if req_034 ships first, GP names/traits vary per round, which this feature displays as-is.",
+      "restartLeague deletes all GPs, so the palmares empties on restart — acceptable and consistent with the rest of the app.",
+      "All new copy goes through the EN/FR catalogs; the repo convention is no hardcoded user-facing strings."
+    ],
+    "acceptance_criteria": [
+      "AC1: When the GP is ready to resolve, the launch confirmation shows the starting grid: positions P1..Pn ordered by the server's qualifying rule, each row with team livery, name, and best qualifying time (or a no-qualifying label), the player's row highlighted, plus the GP's circuit name, traits, and forecast.",
+      "AC2: The client grid order matches the server's buildParticipants ranking for the same inputs, proven by a unit test that mirrors the comparator including the no-time fallback.",
+      "AC3: A shared helper computes a season's final standings from grandPrixHistory (points summed per team for that season's resolved GPs) and is unit-tested with a multi-season fixture, including a season with a defaulted/missing result entry.",
+      "AC4: When the app detects a season rollover for a league, a season-recap modal shows the champion, the podium, the full final standings with the player's row highlighted, and the season number; it appears once per ended season per league (localStorage guard) and can be reopened from the palmares.",
+      "AC5: The Championship view gains a palmares: one line per completed season (season number, champion name and livery, GP count), derived from the same helper, visible without opening any modal.",
+      "AC6: The GP history is grouped by season with the most recent season expanded and older seasons collapsed; each season header shows the summary line and each entry keeps its current content and interactions (including history replay).",
+      "AC7: All new labels exist in EN and FR with identical key sets; no hardcoded user-facing copy.",
+      "AC8: Unit tests cover the grid helper, the season-standings helper, and the rollover detection; existing App tests still pass.",
+      "AC9: Typecheck, lint, unit tests, build, and e2e all pass; the 3-GP e2e loop is extended or complemented to assert the grid recap appears before launch."
+    ]
+  },
+  "product": {
+    "title": "Race Ceremony and Season Narrative Product Brief",
+    "overview": "Give the league loop its missing ceremonies: a starting-grid moment before every race so the qualifying effort pays off visibly, a champion celebration when a season ends, and a season-structured history so the league's story stays readable as it grows.",
+    "goals": [
+      "Make qualifying matter visibly: the grid recap is where the player sees their qualifying result turn into track position.",
+      "Give seasons a payoff: a champion, a podium, and a final table that survive the points reset.",
+      "Keep the league's past legible: seasons, not an ever-growing flat list of GPs.",
+      "Stay schema-free: everything derives from data the app already stores."
+    ],
+    "non_goals": [
+      "No server-side season archive table or API change — derived from grandPrixHistory until scoring outgrows it (documented upgrade path).",
+      "No new modal abstraction (req_033 decision) — reuse the existing modal-overlay pattern.",
+      "No trophies, badges, cross-league records, or hall-of-fame art.",
+      "No changes to scoring, rewards, or the rollover mechanics themselves.",
+      "No pagination or virtualization of history — collapsible season groups are enough at current scale."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Show the starting grid in the race launch confirmation",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Pre-race ceremony",
+      "request_acs": ["AC1", "AC2", "AC7", "AC8", "AC9"],
+      "problem": [
+        "Launching the race jumps straight from the directive to the result: the player never sees the starting line their qualifying earned, so qualifying feels disconnected from the race.",
+        "The server computes the grid (standingsRank from best qualifying times) but the web never shows it."
+      ],
+      "scope_in": [
+        "Add a grid-order helper in apps/web mirroring buildParticipants' comparator (best qualifying time ascending, team-order fallback for missing times), unit-tested against the server rule.",
+        "Enrich the existing race-launch confirmation with the grid list: P1..Pn, livery, team name, best time or no-qualifying label, player row highlighted, plus circuit name, traits, and forecast already available in state.",
+        "Route all new copy through EN/FR catalogs.",
+        "Extend or complement the e2e flow to assert the grid appears before launch."
+      ],
+      "scope_out": [
+        "Changing how the server builds participants or any qualifying mechanic.",
+        "A separate pre-race screen or extra confirmation step.",
+        "Grid animations."
+      ],
+      "acceptance_criteria": [
+        "AC1: With qualifying times present, the confirmation lists the field in server-identical order with times; without any qualifying, it falls back to team order with the no-qualifying label.",
+        "AC2: The player's row is visually highlighted and the GP conditions are shown in the same modal.",
+        "AC3: The grid helper unit test covers ties/missing times; EN and FR keys are complete.",
+        "AC4: All gates pass and the e2e asserts the grid recap."
+      ]
+    },
+    {
+      "title": "Derive season standings and celebrate the champion",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Season payoff",
+      "request_acs": ["AC3", "AC4", "AC5", "AC7", "AC8", "AC9"],
+      "problem": [
+        "Season rollover resets every team's points to zero with no snapshot, so the champion and final table vanish the moment the next season starts.",
+        "grandPrixHistory holds everything needed to reconstruct them, but nothing does."
+      ],
+      "scope_in": [
+        "Add a seasonStandings(history, season, teams) helper summing per-GP classification points per team for the season's resolved GPs, returning the ordered final table; unit-test with a multi-season fixture including edge cases (missing result, single-GP season).",
+        "Detect rollover client-side (fetched season > last seen season for the league) with a localStorage once-per-season guard, and show the season-recap modal: season number, champion with livery, podium, full standings with player highlighted.",
+        "Add the palmares block to ChampionshipView: one line per completed season (season, champion, GP count) from the same helper; clicking a line reopens the recap modal for that season.",
+        "Reuse the existing modal-overlay pattern; route all copy through EN/FR catalogs."
+      ],
+      "scope_out": [
+        "Server-side season archive, API changes, or scoring changes.",
+        "Cross-league or lifetime records.",
+        "Rewards or economy effects at season end."
+      ],
+      "acceptance_criteria": [
+        "AC1: For a league with two completed seasons, the palmares lists both champions and each recap modal shows the correct final table, matching hand-computed sums from history.",
+        "AC2: The champion modal fires once when the rollover is first seen and not on subsequent reloads, but stays reachable from the palmares.",
+        "AC3: The helper is unit-tested including a defaulted/missing result entry; EN/FR key sets are identical.",
+        "AC4: All gates pass."
+      ]
+    },
+    {
+      "title": "Group the GP history by season",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "History legibility",
+      "request_acs": ["AC6", "AC7", "AC8", "AC9"],
+      "problem": [
+        "grandPrixHistory renders as one flat list: with multiple seasons, finding a past season's races or telling seasons apart requires reading round numbers."
+      ],
+      "scope_in": [
+        "Group history entries by season in the Championship view: collapsible sections, most recent season expanded, older collapsed.",
+        "Season header shows the summary line (season number, champion when the season is complete, GP count) via the seasonStandings helper from the sibling item.",
+        "Keep each GP entry's current content and interactions intact, including opening the history replay.",
+        "Route new labels through EN/FR catalogs; use a native details/summary or the existing panel pattern — no new dependency."
+      ],
+      "scope_out": [
+        "Pagination, search, filters, or virtualization.",
+        "Changing what a GP history entry displays."
+      ],
+      "acceptance_criteria": [
+        "AC1: With two seasons of history, two season groups render, the current one expanded; collapsing/expanding works with keyboard and pointer.",
+        "AC2: History replay still opens from an entry inside a collapsed-then-expanded older season.",
+        "AC3: EN/FR keys complete; all gates pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate starting grid and season narrative",
+    "plan": [
+      "Read App.tsx (launch confirmation, qualifying leaderboard, modal patterns), ChampionshipView, store.ts buildParticipants and the rollover block, and the history rendering before writing code.",
+      "Confirm req_033 (cleanup) has shipped or coordinate on App.tsx/ChampionshipView/i18n files if running concurrently.",
+      "Ship the grid confirmation item first (smallest, independent).",
+      "Ship the season-standings helper with the champion modal and palmares next; the history grouping item consumes the same helper last.",
+      "Run typecheck, lint, unit tests, build, and e2e; verify FR copy and both modals in visual QA; record proof in the Logics closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/season-narrative-starting-grid.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

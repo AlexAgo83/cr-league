@@ -24,6 +24,7 @@
 | [prod_005_personalized_race_recap_product_brief](product/prod_005_personalized_race_recap_product_brief.md) | Personalized Race Recap Product Brief | Proposed |  |  | product/prod_005_personalized_race_recap_product_brief.md |
 | [prod_006_garage_inventory_card_consultation_product_brief](product/prod_006_garage_inventory_card_consultation_product_brief.md) | Garage Inventory Card Consultation Product Brief | Proposed |  |  | product/prod_006_garage_inventory_card_consultation_product_brief.md |
 | [prod_007_ci_and_release_pipeline_product_brief](product/prod_007_ci_and_release_pipeline_product_brief.md) | CI and Release Pipeline Product Brief | Proposed |  |  | product/prod_007_ci_and_release_pipeline_product_brief.md |
+| [prod_008_race_ceremony_and_season_narrative_product_brief](product/prod_008_race_ceremony_and_season_narrative_product_brief.md) | Race Ceremony and Season Narrative Product Brief | Proposed |  |  | product/prod_008_race_ceremony_and_season_narrative_product_brief.md |
 
 ## Roadmaps
 
@@ -72,6 +73,7 @@
 | [req_034_personalized_race_recap](request/req_034_personalized_race_recap.md) | Personalized race recap | Ready |  |  | request/req_034_personalized_race_recap.md |
 | [req_035_make_garage_inventory_cards_open_the_card_detail_modal](request/req_035_make_garage_inventory_cards_open_the_card_detail_modal.md) | Make garage inventory cards open the card detail modal | Ready |  |  | request/req_035_make_garage_inventory_cards_open_the_card_detail_modal.md |
 | [req_036_github_ci_render_blueprint_and_release_contract](request/req_036_github_ci_render_blueprint_and_release_contract.md) | GitHub CI, Render blueprint, and release contract | Ready |  |  | request/req_036_github_ci_render_blueprint_and_release_contract.md |
+| [req_037_starting_grid_modal_and_season_narrative](request/req_037_starting_grid_modal_and_season_narrative.md) | Starting grid modal and season narrative | Ready |  |  | request/req_037_starting_grid_modal_and_season_narrative.md |
 
 ## Backlog
 
@@ -138,6 +140,9 @@
 | [item_059_build_the_parallel_ci_workflow](backlog/item_059_build_the_parallel_ci_workflow.md) | Build the parallel CI workflow | Ready |  | 0% | backlog/item_059_build_the_parallel_ci_workflow.md |
 | [item_060_define_the_release_contract_and_version_verified_health](backlog/item_060_define_the_release_contract_and_version_verified_health.md) | Define the release contract and version-verified health | Ready |  | 0% | backlog/item_060_define_the_release_contract_and_version_verified_health.md |
 | [item_061_build_the_release_triggered_render_deploy_workflow](backlog/item_061_build_the_release_triggered_render_deploy_workflow.md) | Build the release-triggered Render deploy workflow | Ready |  | 0% | backlog/item_061_build_the_release_triggered_render_deploy_workflow.md |
+| [item_062_show_the_starting_grid_in_the_race_launch_confirmation](backlog/item_062_show_the_starting_grid_in_the_race_launch_confirmation.md) | Show the starting grid in the race launch confirmation | Ready |  | 0% | backlog/item_062_show_the_starting_grid_in_the_race_launch_confirmation.md |
+| [item_063_derive_season_standings_and_celebrate_the_champion](backlog/item_063_derive_season_standings_and_celebrate_the_champion.md) | Derive season standings and celebrate the champion | Ready |  | 0% | backlog/item_063_derive_season_standings_and_celebrate_the_champion.md |
+| [item_064_group_the_gp_history_by_season](backlog/item_064_group_the_gp_history_by_season.md) | Group the GP history by season | Ready |  | 0% | backlog/item_064_group_the_gp_history_by_season.md |
 
 ## Tasks
 
@@ -180,3 +185,4 @@
 | [task_035_orchestrate_personalized_race_recap](tasks/task_035_orchestrate_personalized_race_recap.md) | Orchestrate personalized race recap | Ready |  | 0% | tasks/task_035_orchestrate_personalized_race_recap.md |
 | [task_036_orchestrate_garage_inventory_card_consultation](tasks/task_036_orchestrate_garage_inventory_card_consultation.md) | Orchestrate garage inventory card consultation | Ready |  | 0% | tasks/task_036_orchestrate_garage_inventory_card_consultation.md |
 | [task_037_orchestrate_ci_render_blueprint_and_release_contract](tasks/task_037_orchestrate_ci_render_blueprint_and_release_contract.md) | Orchestrate CI, Render blueprint, and release contract | Ready |  | 0% | tasks/task_037_orchestrate_ci_render_blueprint_and_release_contract.md |
+| [task_038_orchestrate_starting_grid_and_season_narrative](tasks/task_038_orchestrate_starting_grid_and_season_narrative.md) | Orchestrate starting grid and season narrative | Ready |  | 0% | tasks/task_038_orchestrate_starting_grid_and_season_narrative.md |

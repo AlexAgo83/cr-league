@@ -1,10 +1,10 @@
 ## item_054_derive_grand_prix_identity_from_the_circuit_rotation - Derive Grand Prix identity from the circuit rotation
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 50%
+> Progress: 100%
 > Complexity: Medium
 > Theme: GP identity ground truth
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -37,6 +37,10 @@
 - request-AC2 -> This backlog slice. Proof: AC2: The identity table exists once, in packages/shared, consumed by API and web; the web route geometry still renders CircuitMap unchanged.
 - request-AC9 -> This backlog slice. Proof: AC3: The identity-to-sim-input mapping is deterministic and unit-tested.
 - request-AC10 -> This backlog slice. Proof: AC4: All gates pass with expectations re-derived, including the 3-GP e2e loop.
+- request-AC5 -> This backlog slice. Evidence needed: The 'directive' recap card adds a computed verdict: preparation judged against resolved weather across segments, played card judged against its triggered events and their deltas, approach judged against final positionChange — each verdict phrased from parameterized templates in EN and FR.
+- request-AC6 -> This backlog slice. Evidence needed: The 'next GP' lesson names the actual next round's circuit and its dominant trait or likely weather (via the deterministic rotation) and ties it to the main cause of the player's result this race; the card-attribution bug (rival cards counted via relatedTeamId) is fixed.
+- request-AC7 -> This backlog slice. Evidence needed: Template variety: each recap card draws from at least three parameterized variants per outcome family, and the same variant does not repeat on consecutive GPs for the same card when alternatives exist.
+- request-AC8 -> This backlog slice. Evidence needed: All new copy exists in both EN and FR catalogs with identical key sets; no hardcoded user-facing strings in the recap path.
 
 # Decision framing
 - Product framing: Not needed
@@ -57,3 +61,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_035_orchestrate_personalized_race_recap`
+
+# Notes
+- Task `task_035_orchestrate_personalized_race_recap` was finished via `logics-manager flow finish task` on 2026-07-15.

@@ -1189,7 +1189,6 @@ export function App() {
             circuit={currentCircuit}
             playerTeamId={playerTeam?.id}
             playerDecision={playerDecision}
-            forecastPick={forecastPick}
             tab={resultTab}
             traitImpacts={replayTraitImpacts}
             tt={tt}

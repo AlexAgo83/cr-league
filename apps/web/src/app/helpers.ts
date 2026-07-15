@@ -1,4 +1,4 @@
-import type { CardId, RaceResult } from "@cr-league/shared";
+import { RACE_SEGMENTS, circuitIdentityForRound, raceInputFromCircuit, type CardId, type RaceResult } from "@cr-league/shared";
 import type { TranslationKey, TranslationParams } from "../i18n/index.js";
 import type { LeagueState } from "./types.js";
 
@@ -130,24 +130,119 @@ export function seasonWinsByTeamId(state: LeagueState) {
   return wins;
 }
 
-export function describeDecision(decision: LeagueState["decisions"][number] | undefined, tt: Translator) {
-  if (!decision) return tt("result_no_directive");
-  const card = decision.cardId ? ` · ${tt(`card_${decision.cardId}` as TranslationKey)}` : "";
-  return `${tt(`approach_${decision.approach}` as TranslationKey)} · ${tt(`preparation_${decision.preparation}` as TranslationKey)}${card}`;
-}
-
-export function nextLesson(
-  state: LeagueState | null,
+export function raceRecapCards(
+  result: RaceResult,
+  state: LeagueState,
+  playerTeamId: string | undefined,
   decision: LeagueState["decisions"][number] | undefined,
-  events: RaceEvent[],
-  forecastPick: string,
+  raceTitle: string,
   tt: Translator
 ) {
-  if (events.some((event) => event.cardId)) return tt("lesson_card_paid");
-  if (decision?.preparation === "weather" && forecastPick !== "dry") return tt("lesson_weather_paid");
-  if (state?.currentGrandPrix.secondaryTrait === "high_wear") return tt("lesson_reliability");
-  if (state?.currentGrandPrix.primaryTrait === "fast") return tt("lesson_speed");
-  return tt("lesson_balanced");
+  return {
+    difference: recapDifference(result, playerTeamId, raceTitle, tt),
+    directive: recapDirective(result, playerTeamId, decision, state.currentGrandPrix.round, tt),
+    lesson: recapNextLesson(result, state, playerTeamId, decision, tt)
+  };
+}
+
+function recapDifference(result: RaceResult, playerTeamId: string | undefined, raceTitle: string, tt: Translator) {
+  const names = teamNamesFromResult(result);
+  const ownEvents = result.events.filter((event) => event.teamId === playerTeamId);
+  const impactful = [...ownEvents].sort((left, right) => Math.abs(right.positionDelta) - Math.abs(left.positionDelta))[0];
+  const variant = resultVariant(result);
+
+  if (impactful && impactful.positionDelta !== 0) {
+    return tt(pickRecapKey("recap_difference_event", variant), {
+      event: eventReplayText(impactful, names, tt),
+      lap: impactful.lap,
+      segment: tt(`segment_${impactful.segment}` as TranslationKey),
+      delta: signedDelta(impactful.positionDelta)
+    });
+  }
+
+  const cardEvent = ownEvents.find((event) => event.cardId);
+  if (cardEvent?.cardId) {
+    return tt(pickRecapKey("recap_difference_card", variant), {
+      card: tt(`card_${cardEvent.cardId}` as TranslationKey),
+      lap: cardEvent.lap,
+      segment: tt(`segment_${cardEvent.segment}` as TranslationKey)
+    });
+  }
+
+  const weatherEvent = result.events.find((event) => event.type === "weather_change");
+  if (weatherEvent) {
+    return tt(pickRecapKey("recap_difference_weather", variant), {
+      lap: weatherEvent.lap,
+      segment: tt(`segment_${weatherEvent.segment}` as TranslationKey),
+      weather: tt(`weather_${result.resolvedWeather[weatherEvent.segment]}` as TranslationKey)
+    });
+  }
+
+  return tt(pickRecapKey("recap_difference_headline", variant), { headline: resultHeadline(result, tt, raceTitle) });
+}
+
+function recapDirective(
+  result: RaceResult,
+  playerTeamId: string | undefined,
+  decision: LeagueState["decisions"][number] | undefined,
+  round: number,
+  tt: Translator
+) {
+  if (!decision) return tt("result_no_directive");
+  const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
+  const ownEvents = result.events.filter((event) => event.teamId === playerTeamId);
+  const hasRain = RACE_SEGMENTS.some((segment) => result.resolvedWeather[segment] !== "dry");
+  const variant = round % 3;
+  const prepKey =
+    decision.preparation === "weather" && hasRain
+      ? "recap_directive_prep_good"
+      : decision.preparation === "speed" && !hasRain
+        ? "recap_directive_prep_good"
+        : "recap_directive_prep_mixed";
+  const cardEvents = decision.cardId ? ownEvents.filter((event) => event.cardId === decision.cardId) : [];
+  const cardKey = decision.cardId ? (cardEvents.length ? "recap_directive_card_hit" : "recap_directive_card_miss") : "recap_directive_card_none";
+  const approachKey = (playerResult?.positionChange ?? 0) > 0 ? "recap_directive_approach_gain" : (playerResult?.positionChange ?? 0) < 0 ? "recap_directive_approach_loss" : "recap_directive_approach_hold";
+
+  return [
+    tt(pickRecapKey(prepKey, variant), {
+      preparation: tt(`preparation_${decision.preparation}` as TranslationKey),
+      weather: tt(`weather_${hasRain ? "light_rain" : "dry"}` as TranslationKey)
+    }),
+    tt(pickRecapKey(cardKey, variant), {
+      card: decision.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : "",
+      delta: signedDelta(cardEvents.reduce((total, event) => total + event.positionDelta, 0))
+    }),
+    tt(pickRecapKey(approachKey, variant), {
+      approach: tt(`approach_${decision.approach}` as TranslationKey),
+      delta: signedDelta(playerResult?.positionChange ?? 0)
+    })
+  ].join(" ");
+}
+
+function recapNextLesson(
+  result: RaceResult,
+  state: LeagueState,
+  playerTeamId: string | undefined,
+  decision: LeagueState["decisions"][number] | undefined,
+  tt: Translator
+) {
+  const ownCardEvent = decision?.cardId ? result.events.find((event) => event.teamId === playerTeamId && event.cardId === decision.cardId) : undefined;
+  const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
+  const nextRound = state.currentGrandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : state.currentGrandPrix.round + 1;
+  const nextCircuit = circuitIdentityForRound(nextRound);
+  const nextInput = raceInputFromCircuit(nextCircuit);
+  const variant = state.currentGrandPrix.round % 3;
+  const focus =
+    nextCircuit.likelyWeather !== "dry"
+      ? tt(`weather_${nextCircuit.likelyWeather}` as TranslationKey)
+      : tt(`trait_${nextInput.primaryTrait}` as TranslationKey);
+  const family = ownCardEvent ? "recap_lesson_card" : (playerResult?.positionChange ?? 0) < 0 ? "recap_lesson_recover" : "recap_lesson_prepare";
+
+  return tt(pickRecapKey(family, variant), {
+    circuit: `${nextCircuit.city} ${tt(nextCircuit.layoutKey as TranslationKey)}`,
+    focus,
+    card: decision?.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : ""
+  });
 }
 
 export function teamNamesFromResult(result: RaceResult) {
@@ -171,6 +266,19 @@ export function eventReportText(event: RaceEvent, names: Map<string, string>, tt
 export function resultHeadline(result: RaceResult, tt: Translator, title = result.grandPrixName) {
   const winner = result.classification[0];
   return winner ? `${title}: ${winner.teamName} ${tt("report_wins")}.` : title;
+}
+
+function signedDelta(delta: number) {
+  if (delta > 0) return `+${delta}`;
+  return String(delta);
+}
+
+function resultVariant(result: RaceResult) {
+  return Math.abs([...result.seed].reduce((total, char) => total + char.charCodeAt(0), 0)) % 3;
+}
+
+function pickRecapKey(prefix: string, variant: number) {
+  return `${prefix}_${variant % 3}` as TranslationKey;
 }
 
 export function statusLabel(status: string, tt: Translator) {

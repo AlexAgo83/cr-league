@@ -1,10 +1,10 @@
 ## item_056_rebuild_the_three_recap_cards_on_player_race_data - Rebuild the three recap cards on player race data
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 50%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Recap content
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -40,6 +40,7 @@
 - request-AC7 -> This backlog slice. Proof: AC4: Three consecutive resolved GPs show non-identical recap copy for the same card family.
 - request-AC8 -> This backlog slice. Proof: AC5: EN and FR key sets are identical and no user-facing string is hardcoded; helper unit tests pass.
 - request-AC9 -> This backlog slice. Proof: AC5: EN and FR key sets are identical and no user-facing string is hardcoded; helper unit tests pass.
+- request-AC10 -> This backlog slice. Evidence needed: Typecheck, lint, unit tests, build, and e2e all pass; the 3-GP e2e loop still completes with varying GP traits.
 
 # Decision framing
 - Product framing: Not needed
@@ -60,3 +61,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_035_orchestrate_personalized_race_recap`
+
+# Notes
+- Task `task_035_orchestrate_personalized_race_recap` was finished via `logics-manager flow finish task` on 2026-07-15.

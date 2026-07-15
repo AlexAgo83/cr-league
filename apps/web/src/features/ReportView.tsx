@@ -2,9 +2,8 @@ import { RACE_SEGMENTS, type RaceResult } from "@cr-league/shared";
 import type { CityCircuit } from "../app/circuits.js";
 import type { TranslationKey } from "../i18n/index.js";
 import {
-  describeDecision,
   eventReportText,
-  nextLesson,
+  raceRecapCards,
   resultHeadline,
   teamNamesFromResult,
   type Translator
@@ -18,7 +17,6 @@ export function ReportView({
   circuit,
   playerTeamId,
   playerDecision,
-  forecastPick,
   tt
 }: {
   state: LeagueState;
@@ -26,29 +24,28 @@ export function ReportView({
   circuit: CityCircuit;
   playerTeamId: string | undefined;
   playerDecision: LeagueState["decisions"][number] | undefined;
-  forecastPick: string;
   tt: Translator;
 }) {
   const names = teamNamesFromResult(result);
   const raceTitle = `${circuit.city} ${tt(circuit.layoutKey)}`;
   const majorEvents = result.events.filter((event) => event.severity === "major");
   const keyEvents = majorEvents.slice(0, 5);
-  const playerEvents = result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId);
+  const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt);
   const recap = [
     {
       className: "difference",
       title: tt("result_difference"),
-      body: majorEvents[0] ? eventReportText(majorEvents[0], names, tt) : resultHeadline(result, tt, raceTitle)
+      body: recapCards.difference
     },
     {
       className: "directive",
       title: tt("result_your_directive"),
-      body: describeDecision(playerDecision, tt)
+      body: recapCards.directive
     },
     {
       className: "lesson",
       title: tt("result_next_lesson"),
-      body: nextLesson(state, playerDecision, playerEvents, forecastPick, tt)
+      body: recapCards.lesson
     }
   ];
 

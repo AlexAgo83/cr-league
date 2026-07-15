@@ -1,7 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { completedSeasonSummaries, seasonStandings, seasonWinsByTeamId, startingGrid } from "./helpers.js";
+import { completedSeasonSummaries, raceRecapCards, seasonStandings, seasonWinsByTeamId, startingGrid } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import type { RaceResult } from "@cr-league/shared";
+import { t } from "../i18n/index.js";
 
 const result = (winnerId: string, runnerId = "team_2"): RaceResult => ({
   grandPrixName: "Test GP",
@@ -152,5 +153,79 @@ describe("seasonStandings", () => {
       [2, "team_2", 1],
       [1, "team_1", 2]
     ]);
+  });
+});
+
+describe("raceRecapCards", () => {
+  it("uses the player's most impactful card event and next circuit identity", () => {
+    const state = stateWithHistory([]);
+    state.league.maxGrandPrixPerSeason = 3;
+    state.currentGrandPrix.round = 1;
+    const race = result("team_1");
+    race.seed = "card-rain";
+    race.events = [
+      {
+        id: "evt_card",
+        order: 1,
+        segment: "mid",
+        lap: 3,
+        type: "card_triggered",
+        teamId: "team_1",
+        cardId: "rain_grip",
+        severity: "major",
+        positionDelta: 2,
+        tags: ["card"],
+        replayText: "",
+        reportText: ""
+      }
+    ];
+
+    const recap = raceRecapCards(race, state, "team_1", { teamId: "team_1", approach: "aggressive", preparation: "weather", cardId: "rain_grip" }, "Test GP", (key, params) =>
+      t(key, "en", params)
+    );
+
+    expect(recap.difference).toContain("Rain Grip");
+    expect(recap.difference).toContain("+2");
+    expect(recap.directive).toContain("Rain Grip");
+    expect(recap.lesson).toContain("Paris Left Bank Loop");
+  });
+
+  it("falls back gracefully for a quiet race", () => {
+    const state = stateWithHistory([]);
+    const recap = raceRecapCards(result("team_1"), state, "team_1", { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null }, "Test GP", (key, params) =>
+      t(key, "en", params)
+    );
+
+    expect(recap.difference).toContain("Test GP");
+    expect(recap.directive).toContain("kept you level");
+    expect(recap.lesson).toContain("Paris Left Bank Loop");
+  });
+
+  it("does not count a rival card as the player's card lesson", () => {
+    const state = stateWithHistory([]);
+    const race = result("team_1");
+    race.events = [
+      {
+        id: "evt_rival",
+        order: 1,
+        segment: "late",
+        lap: 4,
+        type: "card_triggered",
+        teamId: "team_2",
+        relatedTeamId: "team_1",
+        cardId: "rain_grip",
+        severity: "major",
+        positionDelta: 1,
+        tags: ["card"],
+        replayText: "",
+        reportText: ""
+      }
+    ];
+
+    const recap = raceRecapCards(race, state, "team_1", { teamId: "team_1", approach: "balanced", preparation: "weather", cardId: "rain_grip" }, "Test GP", (key, params) =>
+      t(key, "en", params)
+    );
+
+    expect(recap.lesson).not.toContain("Rain Grip");
   });
 });

@@ -1,7 +1,7 @@
 ## req_034_personalized_race_recap - Personalized race recap
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 92
 > Confidence: 88
 > Complexity: Medium

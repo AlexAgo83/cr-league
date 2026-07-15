@@ -14,7 +14,6 @@ export function ResultView({
   circuit,
   playerTeamId,
   playerDecision,
-  forecastPick,
   tab,
   traitImpacts,
   tt
@@ -24,7 +23,6 @@ export function ResultView({
   circuit: CityCircuit;
   playerTeamId: string | undefined;
   playerDecision: LeagueState["decisions"][number] | undefined;
-  forecastPick: string;
   tab: ResultTab;
   traitImpacts: MapTraitImpacts;
   tt: Translator;
@@ -43,7 +41,6 @@ export function ResultView({
             circuit={circuit}
             playerTeamId={playerTeamId}
             playerDecision={playerDecision}
-            forecastPick={forecastPick}
             tt={tt}
           />
         )}

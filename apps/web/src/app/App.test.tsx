@@ -495,8 +495,9 @@ describe("App", () => {
     expect(screen.getByText("Phase 1")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
-    expect(screen.getByText("Balanced · Weather · Rain Grip")).toBeTruthy();
-    expect(screen.getByText("Your card shaped the race. Keep one for moments where the track or forecast clearly matches it.")).toBeTruthy();
+    expect(screen.getByText(/Weather prep fit the race weather/)).toBeTruthy();
+    expect(screen.getByText(/Rain Grip produced/)).toBeTruthy();
+    expect(screen.getByText(/Paris Left Bank Loop/)).toBeTruthy();
 
     // Garage view
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));

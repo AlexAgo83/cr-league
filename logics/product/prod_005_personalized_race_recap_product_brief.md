@@ -1,8 +1,8 @@
 ## prod_005_personalized_race_recap_product_brief - Personalized Race Recap Product Brief
 > Date: 2026-07-15
-> Status: Proposed
+> Status: Settled
 > Related request: `req_034_personalized_race_recap`
-> Related backlog: `item_054_derive_grand_prix_identity_from_the_circuit_rotation`, `item_055_add_placeholder_interpolation_to_the_i18n_layer`, `item_056_rebuild_the_three_recap_cards_on_player_race_data`
+> Related backlog: `item_054_derive_grand_prix_identity_from_the_circuit_rotation`
 > Related task: `task_035_orchestrate_personalized_race_recap`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -50,5 +50,5 @@ flowchart LR
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_034_personalized_race_recap`
+- Product back-reference: `item_054_derive_grand_prix_identity_from_the_circuit_rotation`
 - Task back-reference: `task_035_orchestrate_personalized_race_recap`

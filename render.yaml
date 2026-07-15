@@ -30,7 +30,7 @@ services:
           property: connectionString
 
   - type: web
-    name: cr-league-web
+    name: cr-league
     runtime: static
     buildCommand: npm ci && npm run build -w @cr-league/shared && npm run build -w @cr-league/web
     staticPublishPath: apps/web/dist

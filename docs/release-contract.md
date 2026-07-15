@@ -10,7 +10,7 @@ CR League releases are promoted from immutable GitHub releases. Render auto depl
 4. Create a tag named `v<package.json version>`, for example `v0.1.1`.
 5. Publish a GitHub Release for that tag.
 
-The release workflow rejects a tag that does not exactly match `v<package.json version>` at the release commit. The `/health` endpoint returns the same package version so the workflow can verify the API deployment.
+The release workflow rejects a tag that does not exactly match `v<package.json version>` at the release commit. The `/health` endpoint returns the same package version and commit SHA so the workflow can verify the API deployment.
 
 ## Required GitHub secrets
 
@@ -36,7 +36,7 @@ For each release it:
 3. Waits for the `CI` workflow to succeed on the release commit.
 4. Creates a GitHub Deployment for the API service.
 5. Calls the Render API deploy hook.
-6. Polls production `/health` until the returned `version` equals the release tag without the leading `v`.
+6. Polls production `/health` until the returned `version` equals the release tag without the leading `v` and `commit` equals the release SHA.
 7. Calls the Render web deploy hook.
 8. Marks the GitHub Deployment as `success` or `failure`.
 

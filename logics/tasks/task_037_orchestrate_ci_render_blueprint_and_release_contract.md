@@ -7,6 +7,7 @@
 > Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
+> Non-semantic edit: refreshed Render static service name proof.
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 > Owner: Codex
 
@@ -37,7 +38,7 @@
 - [x] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
-- request-AC1 -> This task. Proof: `render.yaml` defines `cr-league-api` with Node runtime, `/health`, `npm ci`, `db:generate`, `db:deploy`, shared+api builds, `npm run start -w @cr-league/api`, and autoDeployTrigger off; it defines `cr-league-web` as a static service publishing `apps/web/dist`, with SPA rewrite, cache headers, nosniff, DENY frame policy, referrer policy, and autoDeployTrigger off.
+- request-AC1 -> This task. Proof: `render.yaml` defines `cr-league-api` with Node runtime, `/health`, `npm ci`, `db:generate`, `db:deploy`, shared+api builds, `npm run start -w @cr-league/api`, and autoDeployTrigger off; it defines `cr-league` as a static service publishing `apps/web/dist`, with SPA rewrite, cache headers, nosniff, DENY frame policy, referrer policy, and autoDeployTrigger off.
 - request-AC2 -> This task. Proof: `render.yaml` provisions `cr-league-db` and wires API `DATABASE_URL` from that database; `WEB_ORIGIN` and `VITE_API_BASE_URL` are `sync: false`, and no secret literal was committed.
 - request-AC3 -> This task. Proof: `.github/workflows/ci.yml` triggers on pull_request, push to main, and workflow_dispatch; defines parallel quality, unit matrix, e2e, build, and validate jobs; runs lint/typecheck/logics:validate, Vitest per workspace, Playwright chromium with always-uploaded report and failure artifacts, full build, npm cache, and PR-only cancel-in-progress.
 - request-AC4 -> This task. Proof: The `unit` job uses a three-entry matrix (`shared`, `api`, `web`) with no `needs`, so workspace unit tests run concurrently and only the validate aggregator waits for completion.

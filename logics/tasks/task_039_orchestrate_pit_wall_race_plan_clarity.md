@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 92
-> Confidence: 86
+> Understanding: 94
+> Confidence: 88
 > Progress: 0
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -11,16 +11,19 @@
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
+- The updated product direction is to make the beginning of a GP day legible as `Circuit briefing -> Directive tuning -> Qualifying chrono -> Plan locked -> Grand Prix`.
+- The implementation should reduce visible cognitive load by replacing scattered explanatory copy with one compact current objective; do not add another permanent tutorial panel.
 
 # Plan
 - [ ] 1. Inspect the current directive flow in `DirectivePanel.tsx`, `App.tsx`, `helpers.ts`, `CircuitMap.tsx`, `MapTraitsPanel`, i18n catalogs, and the existing tests before changing UI.
 - [ ] 2. Implement the smallest component-level redesign that replaces dropdown-first controls with visible decision cards while preserving existing form values and API payloads.
-- [ ] 3. Add actionable circuit-trait briefing so Grip, Overtaking, and Energy values get qualitative levels, concrete meaning, and directive tradeoff hints without changing map telemetry.
-- [ ] 4. Add EN/FR copy for the renamed pit wall plan, choice labels, consequences, card selection states, trait briefing, lock CTA, and dynamic plan summary.
-- [ ] 5. Update CSS in `layout.css` for directive cards, trait briefing, selected state, locked state, summary, mobile stacking, and readable compact layout.
-- [ ] 6. Update unit and Playwright tests for the new accessible controls, trait briefing, and plan summary.
-- [ ] 7. Run focused validation first, then the full local gate required by the request.
-- [ ] 8. Refresh Logics indicators/status through `logics-manager` only if workflow docs are edited during implementation.
+- [ ] 3. Add compact race-day phase framing so the player sees the current objective: read the circuit, test a chrono, adjust the directive, lock the plan, or launch the GP.
+- [ ] 4. Add actionable circuit-trait briefing so Grip, Overtaking, and Energy values get qualitative levels, concrete meaning, and directive tradeoff hints without changing map telemetry.
+- [ ] 5. Add EN/FR copy for the renamed pit wall plan, current objective, chrono purpose, choice labels, consequences, card selection states, trait briefing, lock CTA, and dynamic plan summary.
+- [ ] 6. Update CSS in `layout.css` for directive cards, trait briefing, selected state, locked state, current objective, summary, mobile stacking, and readable compact layout.
+- [ ] 7. Update unit and Playwright tests for the new accessible controls, trait briefing, chrono-purpose framing, phase transitions, and plan summary.
+- [ ] 8. Run focused validation first, then the full local gate required by the request.
+- [ ] 9. Refresh Logics indicators/status through `logics-manager` only if workflow docs are edited during implementation.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.

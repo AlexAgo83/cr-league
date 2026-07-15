@@ -9,16 +9,16 @@
 > Non-semantic edit: added the required overview Mermaid diagram after scaffold generation.
 
 # Overview
-Pit Wall Race Plan turns the confusing Race directive panel into a readable team-principal decision moment. The player should understand the circuit telemetry, choose a race posture, prepare for a risk, optionally spend a garage card, and confidently lock the plan before the Grand Prix.
+Pit Wall Race Plan turns the confusing start of a Grand Prix day into a readable team-principal loop. The player should understand the circuit telemetry, test a qualifying chrono, tune the race posture, optionally spend a garage card, lock the plan, and then launch the Grand Prix without needing another permanent help panel.
 
 ```mermaid
 flowchart LR
   Briefing[Read circuit briefing] --> Traits[Decode map traits]
-  Traits --> Approach[Choose race posture]
-  Approach --> Preparation[Choose preparation priority]
-  Preparation --> Card[Choose garage atout]
-  Card --> Summary[Read pit wall plan]
-  Summary --> Lock[Lock Grand Prix plan]
+  Traits --> Tune[Tune directive]
+  Tune --> Chrono[Test chrono]
+  Chrono --> Adjust[Adjust or confirm]
+  Adjust --> Lock[Lock plan]
+  Lock --> GP[Launch GP]
 ```
 
 # Goals
@@ -29,6 +29,9 @@ flowchart LR
 - Keep the existing simulation and API contracts unchanged so the work stays focused and low-risk.
 - Improve localized English/French wording for the race planning moment.
 - Leave the implementation easy to validate with current unit, Playwright, and Logics gates.
+- Make the early race-day loop visible as a compact phase sequence rather than a set of disconnected controls.
+- Explain qualifying chrono attempts as a way to test the current setup and improve grid position before the plan is locked.
+- Reduce visible clutter by replacing repeated explanatory panels with current-step framing and concise objective text.
 
 # Non-goals
 - Do not add new directive options, new race mechanics, new cards, or balance changes.
@@ -38,18 +41,26 @@ flowchart LR
 - Do not change API payload shapes or Prisma models.
 - Do not change circuit trait values, simulation balance, or the compact map telemetry indicators.
 - Do not create final marketing copy or brand identity assets.
+- Do not add a heavy tutorial, wizard, blocking onboarding modal, or another permanent help panel.
+- Do not turn the race-day sequence into a rigid stepper that prevents experienced players from acting quickly.
 
 # Scope and guardrails
-- In: scaffolded request, product, backlog, orchestration task, validation, and handoff context.
-- Out: unrelated workflow docs and implementation of generated tasks.
+- In: race-day phase framing, circuit briefing clarity, directive tuning clarity, qualifying chrono purpose, lock/launch transitions, localized copy, CSS, and regression tests.
+- Out: new mechanics, new race balance, server/API changes, long tutorial content, and unrelated cockpit/replay redesign.
+- Guardrail: prefer one compact current objective over adding another visible panel.
+- Guardrail: the full sequence should be understandable, but experienced players should still be able to move quickly.
 
 # Key product decisions
-- Use structured input as the source of truth for generated docs.
-- Keep generated write paths local and repo-bounded.
+- The root issue is not only unclear directive controls; it is an unclear Grand Prix day loop.
+- The desired sequence is `Circuit briefing -> Directive tuning -> Qualifying chrono -> Plan locked -> Grand Prix`.
+- Chrono attempts must be framed as setup validation and grid-position improvement, not as an isolated optional button.
+- Clarity should come from state, transitions, and concise objective copy rather than a new tutorial layer.
 
 # Success signals
-- Generated docs pass lint and audit without broad manual rewrites.
-- Context-pack output can be handed to an implementation agent directly.
+- A first-time player can say what they should do now, what chrono attempts are for, and when the plan becomes final.
+- The cockpit reads as calmer after the redesign because explanatory clutter is consolidated.
+- Existing create-league, qualifying, directive, launch-GP, and replay flows continue to pass validation.
+- Desktop and mobile screenshots show no new overlap or information crowding.
 
 # References
 - Product back-reference: `req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan`

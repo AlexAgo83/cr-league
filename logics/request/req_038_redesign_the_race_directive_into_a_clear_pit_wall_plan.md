@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Draft
-> Understanding: 92
-> Confidence: 86
+> Understanding: 94
+> Confidence: 88
 > Complexity: Medium
 > Theme: Race directive clarity and immersion
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -16,6 +16,8 @@
 - Add an understandable dynamic plan summary so a new player can read back the strategy before locking it.
 - Rename and restructure the primary command so the player understands that submitting the directive locks the race plan.
 - Improve French and English copy for this surface so the core decision feels immersive and localized.
+- Make the start of a Grand Prix day legible as one compact sequence: read the circuit, test a qualifying chrono, adjust the directive, lock the plan, then launch the GP.
+- Clarify by replacing scattered explanatory text with current-step framing and state transitions, not by adding another permanent information panel.
 
 # Context
 - The current `DirectivePanel` is technically functional but presents the core Grand Prix decision as three generic form fields: Approach, Preparation, and Card.
@@ -25,6 +27,8 @@
 - The implementation should preserve existing API contracts and internal values: `approach` remains `prudent | balanced | aggressive`, `preparation` remains `speed | reliability | weather`, and `cardId` remains optional.
 - The redesign should not add new race mechanics, new cards, new balance rules, a tutorial system, a component library, or broad routing changes.
 - This is a conversion and comprehension fix. The smallest successful result is a richer, more legible decision surface backed by current simulation inputs and existing validation gates.
+- The current beginning of a race day does not clearly tell the player where they have landed, what to do first, why chrono attempts matter, when the directive can still be adjusted, or when the plan becomes locked.
+- The desired experience is a visible but lightweight flow: `Circuit briefing -> Directive tuning -> Qualifying chrono -> Plan locked -> Grand Prix`, with one current objective instead of several competing help blocks.
 
 # Acceptance criteria
 - AC1: The directive surface is renamed and framed as a pit wall race plan, not a generic form, in both English and French.
@@ -37,6 +41,8 @@
 - AC8: Existing create-league, qualifying, submit-directive, launch-GP, and replay flows continue to pass unit/e2e validation.
 - AC9: Desktop and mobile layouts keep all directive controls readable, with no text overflow or overlapping controls.
 - AC10: Grip, Overtaking, and Energy remain visible on the map, and the race planning surface explains each value's qualitative level, concrete race meaning, and likely directive/card tradeoff.
+- AC11: The race-day start communicates the current phase and next action in a compact way covering circuit reading, chrono testing, directive adjustment, plan locking, and GP launch.
+- AC12: The implementation reduces visible cognitive load by consolidating or replacing existing explanatory clutter; it does not add a new permanent tutorial panel.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

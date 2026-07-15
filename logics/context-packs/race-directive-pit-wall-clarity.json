@@ -97,12 +97,14 @@
           "- AC1: Every current directive value has a plain-language label and consequence in EN/FR.",
           "- AC2: The primary CTA copy communicates that the plan will be locked.",
           "- AC3: The confirmation modal explains qualifying attempts left and lock consequence in EN/FR.",
-          "- AC4: No new player-facing copy is hardcoded inside `DirectivePanel.tsx`."
+          "- AC4: No new player-facing copy is hardcoded inside `DirectivePanel.tsx`.",
+          "- AC5: The race-day start exposes one compact current objective that makes chrono purpose and the next transition clear."
         ],
         "Problem": [
           "- The current labels Approach, Preparation, and Card are accurate but not explanatory enough for a new player.",
           "- The current hints describe each field in isolation, so players do not understand the combined race plan.",
-          "- The lock moment uses submit-style wording that does not clearly communicate consequence."
+          "- The lock moment uses submit-style wording that does not clearly communicate consequence.",
+          "- The start of the GP day does not clearly frame the sequence from circuit reading to chrono testing, directive adjustment, plan lock, and GP launch."
         ]
       },
       "status": "Ready",
@@ -222,7 +224,9 @@
       "schema_version": "1.0",
       "sections": {
         "Context": [
-          "- Orchestrate the scaffolded request chain and keep sibling implementation slices linked."
+          "- Orchestrate the scaffolded request chain and keep sibling implementation slices linked.",
+          "- The updated product direction is to make the beginning of a GP day legible as `Circuit briefing -> Directive tuning -> Qualifying chrono -> Plan locked -> Grand Prix`.",
+          "- The implementation should reduce visible cognitive load by replacing scattered explanatory copy with one compact current objective; do not add another permanent tutorial panel."
         ],
         "Validation": [
           "- Run `python3 -m logics_manager lint --require-status`.",
@@ -291,12 +295,14 @@
           "- AC1: The summary updates when approach, preparation, or card changes.",
           "- AC2: The summary is visible before the lock CTA on desktop and mobile.",
           "- AC3: The summary never promises a result; it describes intent and risk only.",
-          "- AC4: The summary remains visible in read-only form after the directive is locked."
+          "- AC4: The summary remains visible in read-only form after the directive is locked.",
+          "- AC5: The summary or adjacent phase line clearly states the current next action without adding a second permanent help panel."
         ],
         "Problem": [
           "- The current panel never reflects the player's full directive back as a coherent strategy.",
           "- A first-time player needs confirmation that the selected controls form one race plan.",
-          "- Without a summary, the confirmation modal has to carry too much meaning too late."
+          "- Without a summary, the confirmation modal has to carry too much meaning too late.",
+          "- The cockpit also needs to reflect the current GP-day phase so the player knows whether they should read, test, adjust, lock, or launch."
         ]
       },
       "status": "Ready",
@@ -332,12 +338,14 @@
           "- AC1: Tests cover choosing an approach, choosing a preparation, selecting no card or an owned card, and locking the directive.",
           "- AC2: At least one test verifies the dynamic plan summary changes after a directive choice changes.",
           "- AC3: E2E still covers the create profile, create league, submit directive, launch GP, and replay path.",
-          "- AC4: Validation commands pass locally before handoff or closeout."
+          "- AC4: Validation commands pass locally before handoff or closeout.",
+          "- AC5: Tests or screenshots cover the compact current-phase/objective line and confirm the layout does not become more crowded."
         ],
         "Problem": [
           "- The current flow is covered functionally, but the specific comprehension improvements need regression protection.",
           "- The redesign changes control shape, so tests that target selects or old labels will need updates.",
-          "- The issue was discovered in playtest, so desktop and mobile visual checks matter."
+          "- The issue was discovered in playtest, so desktop and mobile visual checks matter.",
+          "- The updated scope must prove the start-of-day sequence is clearer without increasing screen clutter."
         ]
       },
       "status": "Ready",
@@ -388,11 +396,11 @@
     }
   ],
   "estimates": {
-    "char_count": 15643,
+    "char_count": 16783,
     "companion_doc_count": 0,
     "doc_count": 9
   },
-  "generated_at": "2026-07-15T22:19:20Z",
+  "generated_at": "2026-07-15T22:49:40Z",
   "handoff": {
     "companion_doc_count": 0,
     "enabled": false,

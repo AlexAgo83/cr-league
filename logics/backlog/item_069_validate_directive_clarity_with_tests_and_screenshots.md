@@ -2,9 +2,9 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 92
+> Confidence: 87
+> Progress: 0
 > Complexity: Medium
 > Theme: Validation and QA
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -13,12 +13,16 @@
 - The current flow is covered functionally, but the specific comprehension improvements need regression protection.
 - The redesign changes control shape, so tests that target selects or old labels will need updates.
 - The issue was discovered in playtest, so desktop and mobile visual checks matter.
+- The updated scope must prove the start-of-day sequence is clearer without increasing screen clutter.
 
 # Scope
 - In:
   - Update unit tests for the directive surface copy, selected states, locked states, and plan summary.
   - Update Playwright flow selectors to use new accessible names.
+  - Verify the cockpit exposes the current GP-day phase and next action before and after chrono attempts.
+  - Verify chrono attempts are presented as setup testing and grid-position improvement before plan lock.
   - Run desktop and mobile screenshots or Playwright checks that confirm no overlap in the directive panel.
+  - Check that the redesign does not introduce a new permanent tutorial/help panel competing with the map and directive controls.
   - Run `npm run typecheck`, `npm run lint`, `npm test -- apps/web`, `npm run test:e2e -- --project=chromium`, `npm run build`, and `npm run logics:validate`.
   - Record residual risks if only automated checks are available and no human playtest has been rerun.
 - Out:
@@ -32,11 +36,14 @@
 - AC2: At least one test verifies the dynamic plan summary changes after a directive choice changes.
 - AC3: E2E still covers the create profile, create league, submit directive, launch GP, and replay path.
 - AC4: Validation commands pass locally before handoff or closeout.
+- AC5: Tests or screenshots cover the compact current-phase/objective line and confirm the layout does not become more crowded.
 
 # AC Traceability
 - request-AC7 -> This backlog slice. Proof: AC1: Tests cover choosing an approach, choosing a preparation, selecting no card or an owned card, and locking the directive.
 - request-AC8 -> This backlog slice. Proof: AC2: At least one test verifies the dynamic plan summary changes after a directive choice changes.
 - request-AC9 -> This backlog slice. Proof: AC3: E2E still covers the create profile, create league, submit directive, launch GP, and replay path.
+- request-AC11 -> This backlog slice. Proof: AC5: Tests or screenshots cover the compact current-phase/objective line and confirm the layout does not become more crowded.
+- request-AC12 -> This backlog slice. Proof: AC5: Tests or screenshots cover the compact current-phase/objective line and confirm the layout does not become more crowded.
 
 # Decision framing
 - Product framing: Not needed

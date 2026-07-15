@@ -23,7 +23,8 @@
     "apps/web/src/app/App.test.tsx",
     "tests/e2e/private-league.spec.ts",
     "Playtest feedback: a tester was immediately lost by the current Race directive panel and did not understand what to do, what each choice meant, or why the moment mattered.",
-    "Follow-up playtest feedback: the map trait indicators are also not understandable to a new player; Grip, Overtaking, and Energy need qualitative meaning and actionability without removing the compact telemetry."
+    "Follow-up playtest feedback: the map trait indicators are also not understandable to a new player; Grip, Overtaking, and Energy need qualitative meaning and actionability without removing the compact telemetry.",
+    "Follow-up product direction: the start of a GP day should read as a compact loop, not a new tutorial layer: circuit briefing, directive tuning, qualifying chrono, plan lock, then GP launch."
   ],
   "request": {
     "complexity": "Medium",
@@ -35,7 +36,9 @@
       "Explain the map trait indicators so Grip, Overtaking, and Energy become actionable race briefing inputs instead of unexplained numbers.",
       "Add an understandable dynamic plan summary so a new player can read back the strategy before locking it.",
       "Rename and restructure the primary command so the player understands that submitting the directive locks the race plan.",
-      "Improve French and English copy for this surface so the core decision feels immersive and localized."
+      "Improve French and English copy for this surface so the core decision feels immersive and localized.",
+      "Make the start of a Grand Prix day legible as one compact sequence: read the circuit, test a qualifying chrono, adjust the directive, lock the plan, then launch the GP.",
+      "Clarify by replacing scattered explanatory text with current-step framing and state transitions, not by adding another permanent information panel."
     ],
     "context": [
       "The current `DirectivePanel` is technically functional but presents the core Grand Prix decision as three generic form fields: Approach, Preparation, and Card.",
@@ -44,7 +47,9 @@
       "The map already displays Grip, Overtaking, and Energy telemetry, but playtest feedback now shows the values are not self-explanatory: players need qualitative meaning and decision impact near the directive.",
       "The implementation should preserve existing API contracts and internal values: `approach` remains `prudent | balanced | aggressive`, `preparation` remains `speed | reliability | weather`, and `cardId` remains optional.",
       "The redesign should not add new race mechanics, new cards, new balance rules, a tutorial system, a component library, or broad routing changes.",
-      "This is a conversion and comprehension fix. The smallest successful result is a richer, more legible decision surface backed by current simulation inputs and existing validation gates."
+      "This is a conversion and comprehension fix. The smallest successful result is a richer, more legible decision surface backed by current simulation inputs and existing validation gates.",
+      "The current beginning of a race day does not clearly tell the player where they have landed, what to do first, why chrono attempts matter, when the directive can still be adjusted, or when the plan becomes locked.",
+      "The desired experience is a visible but lightweight flow: `Circuit briefing -> Directive tuning -> Qualifying chrono -> Plan locked -> Grand Prix`, with one current objective instead of several competing help blocks."
     ],
     "acceptance_criteria": [
       "AC1: The directive surface is renamed and framed as a pit wall race plan, not a generic form, in both English and French.",
@@ -56,12 +61,14 @@
       "AC7: The redesign is localized through `apps/web/src/i18n/en.json` and `apps/web/src/i18n/fr.json` with no new hardcoded user-facing copy in the redesigned surface.",
       "AC8: Existing create-league, qualifying, submit-directive, launch-GP, and replay flows continue to pass unit/e2e validation.",
       "AC9: Desktop and mobile layouts keep all directive controls readable, with no text overflow or overlapping controls.",
-      "AC10: Grip, Overtaking, and Energy remain visible on the map, and the race planning surface explains each value's qualitative level, concrete race meaning, and likely directive/card tradeoff."
+      "AC10: Grip, Overtaking, and Energy remain visible on the map, and the race planning surface explains each value's qualitative level, concrete race meaning, and likely directive/card tradeoff.",
+      "AC11: The race-day start communicates the current phase and next action in a compact way covering circuit reading, chrono testing, directive adjustment, plan locking, and GP launch.",
+      "AC12: The implementation reduces visible cognitive load by consolidating or replacing existing explanatory clutter; it does not add a new permanent tutorial panel."
     ]
   },
   "product": {
     "title": "Pit Wall Race Plan Product Brief",
-    "overview": "Pit Wall Race Plan turns the confusing Race directive panel into a readable team-principal decision moment. The player should understand the circuit telemetry, choose a race posture, prepare for a risk, optionally spend a garage card, and confidently lock the plan before the Grand Prix.",
+    "overview": "Pit Wall Race Plan turns the confusing start of a Grand Prix day into a readable team-principal loop. The player should understand the circuit telemetry, test a qualifying chrono, tune the race posture, optionally spend a garage card, lock the plan, and then launch the Grand Prix without needing another permanent help panel.",
     "goals": [
       "Make the core Grand Prix decision understandable to a first-time private playtest user.",
       "Make directive choices feel like team-principal strategy rather than an admin form.",
@@ -69,7 +76,10 @@
       "Expose consequence in the UI: what the player is prioritizing, what risk they accept, and why a card fits or does not fit.",
       "Keep the existing simulation and API contracts unchanged so the work stays focused and low-risk.",
       "Improve localized English/French wording for the race planning moment.",
-      "Leave the implementation easy to validate with current unit, Playwright, and Logics gates."
+      "Leave the implementation easy to validate with current unit, Playwright, and Logics gates.",
+      "Make the early race-day loop visible as a compact phase sequence rather than a set of disconnected controls.",
+      "Explain qualifying chrono attempts as a way to test the current setup and improve grid position before the plan is locked.",
+      "Reduce visible clutter by replacing repeated explanatory panels with current-step framing and concise objective text."
     ],
     "non_goals": [
       "Do not add new directive options, new race mechanics, new cards, or balance changes.",
@@ -78,7 +88,9 @@
       "Do not introduce a UI component library, routing framework, animation package, or global state manager.",
       "Do not change API payload shapes or Prisma models.",
       "Do not change circuit trait values, simulation balance, or the compact map telemetry indicators.",
-      "Do not create final marketing copy or brand identity assets."
+      "Do not create final marketing copy or brand identity assets.",
+      "Do not add a heavy tutorial, wizard, blocking onboarding modal, or another permanent help panel.",
+      "Do not turn the race-day sequence into a rigid stepper that prevents experienced players from acting quickly."
     ]
   },
   "backlog_items": [
@@ -98,20 +110,24 @@
       "problem": [
         "The current labels Approach, Preparation, and Card are accurate but not explanatory enough for a new player.",
         "The current hints describe each field in isolation, so players do not understand the combined race plan.",
-        "The lock moment uses submit-style wording that does not clearly communicate consequence."
+        "The lock moment uses submit-style wording that does not clearly communicate consequence.",
+        "The start of the GP day does not clearly frame the sequence from circuit reading to chrono testing, directive adjustment, plan lock, and GP launch."
       ],
       "scope_in": [
         "Define player-facing labels for the existing approach values: prudent, balanced, and aggressive.",
         "Define player-facing labels for the existing preparation values: speed, reliability, and weather.",
         "Define short consequence copy for each choice: priority, upside, downside, and when to use it.",
         "Define plan-summary copy templates for common combinations without adding simulation logic.",
+        "Define compact current-step copy for the race-day sequence: read circuit, test chrono, adjust directive, lock plan, launch GP.",
         "Rename the panel and CTA to communicate a pit wall plan and lock action.",
+        "Explain chrono attempts as setup validation and grid-position improvement before the plan is final.",
         "Add all new copy to EN/FR i18n catalogs."
       ],
       "scope_out": [
         "New directive values.",
         "New simulation modifiers.",
         "Long tutorial text.",
+        "A new permanent tutorial panel.",
         "AI recommendations.",
         "Marketing copy outside the game UI."
       ],
@@ -119,7 +135,8 @@
         "AC1: Every current directive value has a plain-language label and consequence in EN/FR.",
         "AC2: The primary CTA copy communicates that the plan will be locked.",
         "AC3: The confirmation modal explains qualifying attempts left and lock consequence in EN/FR.",
-        "AC4: No new player-facing copy is hardcoded inside `DirectivePanel.tsx`."
+        "AC4: No new player-facing copy is hardcoded inside `DirectivePanel.tsx`.",
+        "AC5: The race-day start exposes one compact current objective that makes chrono purpose and the next transition clear."
       ]
     },
     {
@@ -211,25 +228,30 @@
       "problem": [
         "The current panel never reflects the player's full directive back as a coherent strategy.",
         "A first-time player needs confirmation that the selected controls form one race plan.",
-        "Without a summary, the confirmation modal has to carry too much meaning too late."
+        "Without a summary, the confirmation modal has to carry too much meaning too late.",
+        "The cockpit also needs to reflect the current GP-day phase so the player knows whether they should read, test, adjust, lock, or launch."
       ],
       "scope_in": [
         "Add a summary section inside the directive surface that names the selected approach, preparation, and card.",
         "Use one short sentence to explain the current plan's intent and risk.",
         "Mention whether qualifying attempts remain before the lock action when relevant.",
+        "Pair the plan summary with the current phase/objective so chrono attempts read as part of the same flow.",
+        "Keep this compact enough to replace scattered helper text rather than adding another block.",
         "Keep the summary deterministic and copy-driven; do not introduce new scoring or prediction math."
       ],
       "scope_out": [
         "Outcome prediction.",
         "Win probability.",
         "AI-generated recommendations.",
-        "Detailed race simulation preview."
+        "Detailed race simulation preview.",
+        "A full step-by-step tutorial component."
       ],
       "acceptance_criteria": [
         "AC1: The summary updates when approach, preparation, or card changes.",
         "AC2: The summary is visible before the lock CTA on desktop and mobile.",
         "AC3: The summary never promises a result; it describes intent and risk only.",
-        "AC4: The summary remains visible in read-only form after the directive is locked."
+        "AC4: The summary remains visible in read-only form after the directive is locked.",
+        "AC5: The summary or adjacent phase line clearly states the current next action without adding a second permanent help panel."
       ]
     },
     {
@@ -283,17 +305,23 @@
       "request_acs": [
         "AC7",
         "AC8",
-        "AC9"
+        "AC9",
+        "AC11",
+        "AC12"
       ],
       "problem": [
         "The current flow is covered functionally, but the specific comprehension improvements need regression protection.",
         "The redesign changes control shape, so tests that target selects or old labels will need updates.",
-        "The issue was discovered in playtest, so desktop and mobile visual checks matter."
+        "The issue was discovered in playtest, so desktop and mobile visual checks matter.",
+        "The updated scope must prove the start-of-day sequence is clearer without increasing screen clutter."
       ],
       "scope_in": [
         "Update unit tests for the directive surface copy, selected states, locked states, and plan summary.",
         "Update Playwright flow selectors to use new accessible names.",
+        "Verify the cockpit exposes the current GP-day phase and next action before and after chrono attempts.",
+        "Verify chrono attempts are presented as setup testing and grid-position improvement before plan lock.",
         "Run desktop and mobile screenshots or Playwright checks that confirm no overlap in the directive panel.",
+        "Check that the redesign does not introduce a new permanent tutorial/help panel competing with the map and directive controls.",
         "Run `npm run typecheck`, `npm run lint`, `npm test -- apps/web`, `npm run test:e2e -- --project=chromium`, `npm run build`, and `npm run logics:validate`.",
         "Record residual risks if only automated checks are available and no human playtest has been rerun."
       ],
@@ -307,7 +335,8 @@
         "AC1: Tests cover choosing an approach, choosing a preparation, selecting no card or an owned card, and locking the directive.",
         "AC2: At least one test verifies the dynamic plan summary changes after a directive choice changes.",
         "AC3: E2E still covers the create profile, create league, submit directive, launch GP, and replay path.",
-        "AC4: Validation commands pass locally before handoff or closeout."
+        "AC4: Validation commands pass locally before handoff or closeout.",
+        "AC5: Tests or screenshots cover the compact current-phase/objective line and confirm the layout does not become more crowded."
       ]
     }
   ],
@@ -316,10 +345,11 @@
     "plan": [
       "Inspect the current directive flow in `DirectivePanel.tsx`, `App.tsx`, `helpers.ts`, `CircuitMap.tsx`, `MapTraitsPanel`, i18n catalogs, and the existing tests before changing UI.",
       "Implement the smallest component-level redesign that replaces dropdown-first controls with visible decision cards while preserving existing form values and API payloads.",
+      "Add compact race-day phase framing so the player sees the current objective: read the circuit, test a chrono, adjust the directive, lock the plan, or launch the GP.",
       "Add actionable circuit-trait briefing so Grip, Overtaking, and Energy values get qualitative levels, concrete meaning, and directive tradeoff hints without changing map telemetry.",
-      "Add EN/FR copy for the renamed pit wall plan, choice labels, consequences, card selection states, trait briefing, lock CTA, and dynamic plan summary.",
-      "Update CSS in `layout.css` for directive cards, trait briefing, selected state, locked state, summary, mobile stacking, and readable compact layout.",
-      "Update unit and Playwright tests for the new accessible controls, trait briefing, and plan summary.",
+      "Add EN/FR copy for the renamed pit wall plan, current objective, chrono purpose, choice labels, consequences, card selection states, trait briefing, lock CTA, and dynamic plan summary.",
+      "Update CSS in `layout.css` for directive cards, trait briefing, selected state, locked state, current objective, summary, mobile stacking, and readable compact layout.",
+      "Update unit and Playwright tests for the new accessible controls, trait briefing, chrono-purpose framing, phase transitions, and plan summary.",
       "Run focused validation first, then the full local gate required by the request.",
       "Refresh Logics indicators/status through `logics-manager` only if workflow docs are edited during implementation."
     ]

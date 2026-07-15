@@ -1,0 +1,251 @@
+{
+  "title": "Add dismissible help panels and UI preference reset",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/product/prod_003_race_cockpit_redesign_v0_product_brief.md",
+    "logics/product/prod_009_pit_wall_race_plan_product_brief.md",
+    "logics/product/prod_010_full_width_replay_moment_notifications_product_brief.md",
+    "logics/architecture/adr_005_theme_design_system.md",
+    "logics/architecture/adr_006_accessibility.md",
+    "logics/architecture/adr_007_i18n.md",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/web/src/styles/layout.css",
+    "apps/web/src/app/App.test.tsx",
+    "tests/e2e/private-league.spec.ts",
+    "Current UX issue: contextual panels such as Race prep and Race replay remain visible forever even after the player understands them.",
+    "Desired direction: add small close controls to these panels, remember the dismissal locally, and add a Profile menu action that resets UI preferences without deleting the player profile or league state."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Dismissible contextual help and preference reset",
+    "needs": [
+      "Let players close recurring contextual explanation panels when they no longer need them.",
+      "Persist dismissed help panels locally so closed panels remain hidden after reload.",
+      "Add a Profile menu action to reset UI preferences and bring dismissed help panels back.",
+      "Define a safe boundary between UI preferences and durable player/profile/league data.",
+      "Keep language, replay speed, replay focus, and season recap seen flags in the reset policy only if the implementation deliberately documents that choice.",
+      "Keep the Race prep and Race replay surfaces clear, accessible, localized, and stable on desktop and mobile."
+    ],
+    "context": [
+      "`App.tsx` currently renders the Race prep contextual panel as `.race-context-panel` with `drive_context_title` and `drive_context_explainer`.",
+      "`ReplayView.tsx` currently renders the Race replay contextual panel as `.race-context-panel.replay-copy-panel` with `result_replay_title` and `result_replay_explainer` by default.",
+      "`App.tsx` already owns the Profile menu and destructive profile reset flow through `forgetProfile`; the new preference reset must be a separate non-destructive action.",
+      "Current localStorage keys include durable profile/session data: `cr-league-player-claims`, `cr-league-active-player-claim`, and `cr-league-profile-session`. These must not be removed by preference reset.",
+      "Current localStorage keys also include UI-ish preferences or seen state: `cr-league-language`, `cr-league-replay-speed`, `cr-league-replay-focus`, and dynamic `cr-league-season-recap:*` keys.",
+      "New dismissed-panel keys should be explicit and stable, for example `cr-league-dismissed-race-prep-help` and `cr-league-dismissed-replay-help`.",
+      "The reset should be implemented with an explicit allowlist or narrowly-scoped prefix handling, not broad `localStorage.clear()` or substring deletion.",
+      "The smallest successful result is two dismissible help panels, one safe Profile menu reset action, localized copy, and tests proving profile data survives the reset."
+    ],
+    "acceptance_criteria": [
+      "AC1: The Race prep contextual panel has an accessible close control that hides the panel without disrupting the map, directive, or cockpit layout.",
+      "AC2: The Race replay contextual panel has an accessible close control that hides the panel without disrupting replay controls, map, tower, or timeline layout.",
+      "AC3: Dismissing each panel is persisted in localStorage and the same panel remains hidden after page reload.",
+      "AC4: The Profile menu includes a non-destructive Reset UI preferences action with localized EN/FR copy.",
+      "AC5: Reset UI preferences clears dismissed help panel state and re-shows the Race prep and Race replay panels on the next render or reload.",
+      "AC6: Reset UI preferences handles existing replay preferences and season recap seen flags according to an explicit documented allowlist.",
+      "AC7: Reset UI preferences never removes `cr-league-profile-session`, `cr-league-player-claims`, `cr-league-active-player-claim`, league progress, player identity, or recovery code data.",
+      "AC8: Language reset behavior is an explicit product decision: either preserved during UI reset or intentionally reset with visible copy making that clear.",
+      "AC9: Close buttons and reset action are keyboard accessible, have clear accessible names, and do not rely on hardcoded visible copy.",
+      "AC10: Unit/e2e tests cover panel dismissal persistence, reset re-show behavior, replay preference reset behavior, and preservation of durable profile/session data."
+    ]
+  },
+  "product": {
+    "title": "Dismissible Help Panels and UI Preferences Product Brief",
+    "overview": "Dismissible Help Panels and UI Preferences lets CR League keep useful onboarding copy for new players while giving returning players a cleaner cockpit. Contextual panels can be closed and remembered, and the Profile menu provides a safe way to reset only UI preferences when the player wants guidance back.",
+    "goals": [
+      "Reduce repeated explanatory clutter for players who already understand Race prep and Race replay.",
+      "Keep contextual help available and recoverable instead of deleting it from the interface.",
+      "Make preference reset discoverable from the existing Profile menu.",
+      "Protect durable player, profile, recovery, and league data from accidental deletion.",
+      "Keep the implementation local and explicit by using stable localStorage keys and a small reset allowlist.",
+      "Maintain accessible, localized controls in English and French."
+    ],
+    "non_goals": [
+      "Do not redesign the Profile menu beyond adding the reset preference action.",
+      "Do not add accounts, server-side preference storage, database tables, or API endpoints.",
+      "Do not clear profile session, player claims, active player claim, recovery code, league progress, or race state.",
+      "Do not build a full settings screen or preference management framework.",
+      "Do not introduce a global toast, modal, state manager, or dependency for this feature.",
+      "Do not remove the contextual help copy from first-time player flows."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Define the UI preference storage boundary",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Preference safety",
+      "request_acs": [
+        "AC3",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC10"
+      ],
+      "problem": [
+        "The app stores both durable profile data and lightweight UI preferences in localStorage.",
+        "A reset action is useful only if it is clearly non-destructive.",
+        "Broad localStorage clearing would risk deleting profile, league, and recovery data."
+      ],
+      "scope_in": [
+        "Inventory the existing localStorage keys in `App.tsx` and `ReplayView.tsx`.",
+        "Define stable dismissed-panel keys for Race prep and Race replay help.",
+        "Create a small explicit UI preference allowlist or helper that covers only intended UI keys.",
+        "Handle dynamic `cr-league-season-recap:*` keys through a narrow prefix rule if they are included.",
+        "Make an explicit decision about whether `cr-league-language` is preserved or reset.",
+        "Document the reset boundary in code comments only where it prevents dangerous future edits."
+      ],
+      "scope_out": [
+        "Server-side preference persistence.",
+        "A generic settings registry.",
+        "Migration tooling for old preference keys.",
+        "Changing profile/session storage format."
+      ],
+      "acceptance_criteria": [
+        "AC1: The reset implementation has an explicit list of removable UI preference keys and prefixes.",
+        "AC2: Durable keys for profile session, player claims, and active player claim are visibly excluded.",
+        "AC3: Language behavior is intentional and covered by copy or tests.",
+        "AC4: No implementation path calls `localStorage.clear()`."
+      ]
+    },
+    {
+      "title": "Make contextual help panels dismissible",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Contextual help controls",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC5",
+        "AC9"
+      ],
+      "problem": [
+        "Race prep and Race replay explanatory panels are helpful on first use but become repeated clutter.",
+        "Players currently cannot close these panels without losing the underlying feature.",
+        "The close interaction must be small and clear without making the panels feel like modal dialogs."
+      ],
+      "scope_in": [
+        "Add a compact close button to the Race prep panel in `App.tsx`.",
+        "Add a compact close button to the Race replay panel in `ReplayView.tsx`.",
+        "Persist each dismissal with its own stable localStorage key.",
+        "Hide dismissed panels on initial render and after reload.",
+        "Use localized accessible labels for the close controls.",
+        "Style the close button to fit existing `.race-context-panel` cards on desktop and mobile."
+      ],
+      "scope_out": [
+        "Closing every panel in the application.",
+        "Replacing the panels with tooltips.",
+        "Adding animations or transitions beyond existing CSS conventions.",
+        "Changing the content or purpose of the Race prep and Race replay copy."
+      ],
+      "acceptance_criteria": [
+        "AC1: Race prep can be closed and stays hidden after reload.",
+        "AC2: Race replay can be closed and stays hidden after reload.",
+        "AC3: Close buttons have accessible labels and keyboard focus styling.",
+        "AC4: Closed panels do not leave awkward gaps or overlapping controls."
+      ]
+    },
+    {
+      "title": "Add Reset UI preferences to the Profile menu",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Preference recovery",
+      "request_acs": [
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9"
+      ],
+      "problem": [
+        "Dismissed contextual help needs a discoverable recovery path.",
+        "The Profile menu already contains language, league, recovery, and forget-profile actions, so it is the natural location for a non-destructive preference reset.",
+        "The reset action must be visually and behaviorally distinct from forgetting the profile."
+      ],
+      "scope_in": [
+        "Add a Profile menu action for resetting UI preferences.",
+        "Clear only the preference allowlist defined for this feature.",
+        "Immediately update in-memory state so dismissed panels can reappear without requiring a full reload where practical.",
+        "Reset replay speed/focus and season recap seen flags if included in the allowlist.",
+        "Show existing lightweight status feedback after reset.",
+        "Add localized EN/FR labels and status copy."
+      ],
+      "scope_out": [
+        "New settings page.",
+        "Confirmation modal unless the implementation proves accidental activation is likely.",
+        "Resetting profile, league, or recovery data.",
+        "Adding server APIs."
+      ],
+      "acceptance_criteria": [
+        "AC1: The Profile menu shows a Reset UI preferences action.",
+        "AC2: Activating it re-shows dismissed help panels.",
+        "AC3: Activating it does not open the destructive forget-profile dialog.",
+        "AC4: Activating it does not remove profile/session/player claim localStorage values.",
+        "AC5: The user receives localized status feedback."
+      ]
+    },
+    {
+      "title": "Validate preference reset and panel behavior",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Regression coverage",
+      "request_acs": [
+        "AC3",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "Persistence bugs are easy to miss because they require reload and localStorage assertions.",
+        "The most important failure mode is destructive: a UI reset must never remove profile or league data.",
+        "The feature touches both App-level cockpit UI and ReplayView state."
+      ],
+      "scope_in": [
+        "Add unit tests for dismissed-panel state and reset allowlist behavior where practical.",
+        "Add or update e2e coverage for closing Race prep, closing Race replay, reloading, and using Reset UI preferences.",
+        "Assert durable localStorage keys are preserved after reset.",
+        "Assert replay speed/focus behavior follows the documented reset policy.",
+        "Run `npm run typecheck`, `npm run lint`, `npm test -- apps/web`, relevant Playwright tests, `npm run build`, and Logics validation."
+      ],
+      "scope_out": [
+        "Browser matrix expansion beyond current project defaults.",
+        "Visual snapshot infrastructure.",
+        "Server integration tests for local-only preferences."
+      ],
+      "acceptance_criteria": [
+        "AC1: Tests prove each contextual panel remains hidden after dismissal and reload.",
+        "AC2: Tests prove Reset UI preferences brings contextual panels back.",
+        "AC3: Tests prove durable profile/session/player claim keys survive reset.",
+        "AC4: Local validation gates pass before closeout."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate dismissible help panels and UI preference reset",
+    "plan": [
+      "Inspect `App.tsx`, `ReplayView.tsx`, i18n catalogs, layout CSS, and existing tests before editing.",
+      "Define the UI preference reset boundary with explicit localStorage keys and narrow prefixes.",
+      "Add dismissed state and accessible close controls for the Race prep and Race replay contextual panels.",
+      "Add a non-destructive Reset UI preferences action to the Profile menu and update in-memory state after reset.",
+      "Add localized EN/FR copy for close labels, reset action, and status feedback.",
+      "Update unit and e2e tests for dismissal persistence, reset behavior, replay preference policy, and durable data preservation.",
+      "Run focused tests first, then full typecheck, lint, app tests, e2e coverage, build, and Logics validation."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/dismissible-help-panels-ui-preferences-reset.json",
+    "mode": "full",
+    "profile": "normal"
+  }
+}

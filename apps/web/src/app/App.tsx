@@ -2,13 +2,14 @@ import { APP_NAME, type CardId, type QualifyingRun } from "@cr-league/shared";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitForRound, countryFlag } from "./circuits.js";
-import { cardFit, strongestForecast } from "./helpers.js";
+import { cardFit, startingGrid, strongestForecast } from "./helpers.js";
 import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
+import { LiveryPlate } from "../features/LiveryPlate.js";
 import { ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 
@@ -165,6 +166,7 @@ export function App() {
   const [profileCodeOpen, setProfileCodeOpen] = useState(false);
   const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
   const [directiveConfirmOpen, setDirectiveConfirmOpen] = useState(false);
+  const [resolveConfirmOpen, setResolveConfirmOpen] = useState(false);
   const [nextGrandPrixConfirmOpen, setNextGrandPrixConfirmOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
@@ -259,11 +261,12 @@ export function App() {
   const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
   const currentCircuit = circuitForRound(leagueState?.currentGrandPrix.round ?? 1);
+  const startingGridEntries = leagueState ? startingGrid(leagueState) : [];
   const primaryCommand =
     deskState === "prepare"
       ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }
       : deskState === "ready"
-        ? { label: tt("action_launch_grand_prix"), action: resolveGrandPrix, disabled: status === "loading" || isResolved }
+        ? { label: tt("action_launch_grand_prix"), action: () => setResolveConfirmOpen(true), disabled: status === "loading" || isResolved }
         : {
             label: tt("action_next_grand_prix"),
             action: () => setNextGrandPrixConfirmOpen(true),
@@ -398,6 +401,7 @@ export function App() {
 
   async function resolveGrandPrix() {
     if (!leagueState) return;
+    setResolveConfirmOpen(false);
 
     await run(tt("status_resolving_grand_prix"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/resolve`, {
@@ -753,6 +757,46 @@ export function App() {
             {tt("action_submit_directive")}
           </button>
           <button type="button" onClick={() => setDirectiveConfirmOpen(false)}>
+            {tt("action_close")}
+          </button>
+        </div>
+      </section>
+    </div>
+  ) : null;
+  const resolveConfirmModal = resolveConfirmOpen ? (
+    <div className="modal-overlay" onClick={() => setResolveConfirmOpen(false)}>
+      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("launch_gp_confirm_title")} onClick={(event) => event.stopPropagation()}>
+        <span className="section-kicker">{tt("action_launch_grand_prix")}</span>
+        <h2>{tt("launch_gp_confirm_title")}</h2>
+        <p>{tt("launch_gp_confirm_body")}</p>
+        <div className="starting-grid-confirmation">
+          <div>
+            <span className="section-kicker">{tt("starting_grid_title")}</span>
+            <strong>{tt(currentCircuit.layoutKey)}</strong>
+            <small>
+              {countryFlag(currentCircuit.country)} {currentCircuit.city} · {tt("briefing_forecast")} {tt(`weather_${forecastPick}` as TranslationKey)}
+            </small>
+            <small>
+              {tt("circuit_grip")} {currentCircuit.traits.grip} · {tt("circuit_overtaking")} {currentCircuit.traits.overtaking} · {tt("circuit_energy")}{" "}
+              {currentCircuit.traits.energy}
+            </small>
+          </div>
+          <ol className="starting-grid-list">
+            {startingGridEntries.map((entry) => (
+              <li key={entry.team.id} className={entry.team.id === playerTeam?.id ? "current-team" : undefined}>
+                <span>P{entry.position}</span>
+                <LiveryPlate className="standings-livery-plate" livery={entry.team.livery} name={entry.team.name} />
+                <strong>{entry.team.name}</strong>
+                <small>{entry.bestTime === undefined ? tt("starting_grid_no_time") : `${entry.bestTime.toFixed(2)}s`}</small>
+              </li>
+            ))}
+          </ol>
+        </div>
+        <div className="actions secondary-actions">
+          <button type="button" onClick={() => void resolveGrandPrix()} disabled={status === "loading"}>
+            {tt("action_launch_grand_prix")}
+          </button>
+          <button type="button" onClick={() => setResolveConfirmOpen(false)}>
             {tt("action_close")}
           </button>
         </div>
@@ -1211,6 +1255,7 @@ export function App() {
       {profileCodeModal}
       {profileLogoutModal}
       {directiveConfirmModal}
+      {resolveConfirmModal}
       {qualifyingConfirmModal}
       {nextGrandPrixConfirmModal}
       {historyReplay?.result ? (

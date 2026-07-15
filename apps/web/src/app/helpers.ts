@@ -46,6 +46,28 @@ export function recommendedShopOffers(state: LeagueState, forecastPick: string) 
     .sort((left, right) => right.fit.score - left.fit.score || left.cardId.localeCompare(right.cardId));
 }
 
+export function startingGrid(state: LeagueState) {
+  const baseRank = new Map(state.teams.map((team, index) => [team.id, index + 1]));
+  const bestTime = new Map<string, number>();
+
+  for (const run of state.currentGrandPrix.qualifyingRuns) {
+    const current = bestTime.get(run.teamId);
+    if (current === undefined || run.time < current) bestTime.set(run.teamId, run.time);
+  }
+
+  return [...state.teams]
+    .sort(
+      (left, right) =>
+        (bestTime.get(left.id) ?? Number.POSITIVE_INFINITY) - (bestTime.get(right.id) ?? Number.POSITIVE_INFINITY) ||
+        (baseRank.get(left.id) ?? 999) - (baseRank.get(right.id) ?? 999)
+    )
+    .map((team, index) => ({
+      position: index + 1,
+      team,
+      bestTime: bestTime.get(team.id)
+    }));
+}
+
 export function seasonWinsByTeamId(state: LeagueState) {
   const pointsBySeason = new Map<number, Map<string, number>>();
   const resolvedBySeason = new Map<number, number>();

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { seasonWinsByTeamId } from "./helpers.js";
+import { seasonWinsByTeamId, startingGrid } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import type { RaceResult } from "@cr-league/shared";
 
@@ -77,5 +77,48 @@ describe("seasonWinsByTeamId", () => {
 
     expect(wins.get("team_1")).toBe(1);
     expect(wins.has("team_2")).toBe(false);
+  });
+});
+
+describe("startingGrid", () => {
+  it("orders best qualifying times first and falls back to team order", () => {
+    const state = stateWithHistory([]);
+    state.teams = [
+      { id: "team_1", name: "One", kind: "human", points: 0, credits: 0, cards: [], livery: { primary: "#111111", secondary: "#eeeeee" }, ready: true },
+      { id: "team_2", name: "Two", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#222222", secondary: "#eeeeee" }, ready: true },
+      { id: "team_3", name: "Three", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#333333", secondary: "#eeeeee" }, ready: true }
+    ];
+    state.currentGrandPrix.qualifyingRuns = [
+      {
+        teamId: "team_1",
+        attempts: 1,
+        time: 80,
+        decision: { approach: "balanced", preparation: "speed" },
+        result: result("team_1"),
+        createdAt: "2026-07-15T10:00:00.000Z"
+      },
+      {
+        teamId: "team_2",
+        attempts: 1,
+        time: 79,
+        decision: { approach: "balanced", preparation: "speed" },
+        result: result("team_2"),
+        createdAt: "2026-07-15T10:01:00.000Z"
+      },
+      {
+        teamId: "team_1",
+        attempts: 2,
+        time: 78,
+        decision: { approach: "balanced", preparation: "speed" },
+        result: result("team_1"),
+        createdAt: "2026-07-15T10:02:00.000Z"
+      }
+    ];
+
+    expect(startingGrid(state).map((entry) => [entry.position, entry.team.id, entry.bestTime])).toEqual([
+      [1, "team_1", 78],
+      [2, "team_2", 79],
+      [3, "team_3", undefined]
+    ]);
   });
 });

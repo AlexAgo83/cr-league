@@ -1,10 +1,10 @@
 ## item_063_derive_season_standings_and_celebrate_the_champion - Derive season standings and celebrate the champion
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Season payoff
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

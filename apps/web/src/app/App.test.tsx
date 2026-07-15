@@ -416,6 +416,12 @@ describe("App", () => {
 
     // Launch: auto-switches to the result view
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
+    const launchDialog = screen.getByRole("dialog", { name: "Launch Grand Prix?" });
+    expect(launchDialog.textContent).toContain("Starting grid");
+    expect(launchDialog.textContent).toContain("P1");
+    expect(launchDialog.textContent).toContain("Paris");
+    expect(launchDialog.textContent).toContain("Grip 64");
+    fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("Race finished")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Result" }).className).toContain("active");
@@ -561,6 +567,8 @@ describe("App", () => {
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
+    expect(screen.getByRole("dialog", { name: "Launch Grand Prix?" }).textContent).toContain("Starting grid");
+    fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
   });

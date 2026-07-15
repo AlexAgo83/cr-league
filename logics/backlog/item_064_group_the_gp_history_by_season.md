@@ -1,10 +1,10 @@
 ## item_064_group_the_gp_history_by_season - Group the GP history by season
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Low
 > Theme: History legibility
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

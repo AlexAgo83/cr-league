@@ -1,10 +1,10 @@
 ## item_062_show_the_starting_grid_in_the_race_launch_confirmation - Show the starting grid in the race launch confirmation
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Low
 > Theme: Pre-race ceremony
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -129,6 +129,11 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     await expect(page.getByRole("button", { name: "Launch GP" })).toBeVisible();
 
     await page.getByRole("button", { name: "Launch GP" }).click();
+    await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toBeVisible();
+    await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toContainText("Starting grid");
+    await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toContainText("Grip");
+    await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toContainText("Likely weather");
+    await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
     await expect(page.getByRole("button", { name: "Result" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Next GP" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
@@ -187,6 +192,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.getByRole("button", { name: "Submit directive" }).click();
   await page.getByRole("dialog", { name: "Confirm directive" }).getByRole("button", { name: "Submit directive" }).click();
   await page.getByRole("button", { name: "Launch GP" }).click();
+  await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
   await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
 
   const mapPanel = page.locator(".replay-map-panel");
@@ -297,6 +303,7 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
         light_rain: 30,
         heavy_rain: 10
       },
+      qualifyingRuns: [],
       result
     },
     grandPrixHistory: Array.from({ length: round }, (_, index) => {

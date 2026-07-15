@@ -1,10 +1,10 @@
 ## item_065_map_directive_choices_to_player_facing_race_plan_language - Map directive choices to player-facing race plan language
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 92
 > Confidence: 87
-> Progress: 0
+> Progress: 100%
 > Complexity: Low
 > Theme: UX copy and decision model
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -49,6 +49,9 @@
 - request-AC7 -> This backlog slice. Proof: AC4: No new player-facing copy is hardcoded inside `DirectivePanel.tsx`.
 - request-AC11 -> This backlog slice. Proof: AC5: The race-day start exposes one compact current objective that makes chrono purpose and the next transition clear.
 - request-AC12 -> This backlog slice. Proof: AC5: The race-day start exposes one compact current objective that makes chrono purpose and the next transition clear.
+- request-AC8 -> This backlog slice. Evidence needed: Existing create-league, qualifying, submit-directive, launch-GP, and replay flows continue to pass unit/e2e validation.
+- request-AC9 -> This backlog slice. Evidence needed: Desktop and mobile layouts keep all directive controls readable, with no text overflow or overlapping controls.
+- request-AC10 -> This backlog slice. Evidence needed: Grip, Overtaking, and Energy remain visible on the map, and the race planning surface explains each value's qualitative level, concrete race meaning, and likely directive/card tradeoff.
 
 # Decision framing
 - Product framing: Not needed
@@ -69,3 +72,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_039_orchestrate_pit_wall_race_plan_clarity`
+
+# Notes
+- Task `task_039_orchestrate_pit_wall_race_plan_clarity` was finished via `logics-manager flow finish task` on 2026-07-16.

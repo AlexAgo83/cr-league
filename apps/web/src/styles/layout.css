@@ -505,6 +505,126 @@ label small {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr));
 }
 
+.directive-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.directive-heading h2 {
+  margin-bottom: 0;
+}
+
+.directive-briefing {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.directive-briefing span,
+.choice-card,
+.directive-summary {
+  background: rgb(10 15 21 / 0.42);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+}
+
+.directive-briefing span {
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+}
+
+.directive-briefing strong,
+.directive-briefing em {
+  font-style: normal;
+}
+
+.directive-briefing em {
+  color: var(--color-accent);
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.directive-briefing small,
+.choice-card small,
+.directive-lock-note {
+  color: var(--color-muted);
+  line-height: 1.35;
+}
+
+.choice-group {
+  border: 0;
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+}
+
+.choice-group legend {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  font-weight: 800;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.choice-grid {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.card-choice-grid {
+  grid-template-columns: 1fr;
+}
+
+.choice-card {
+  color: var(--color-text);
+  display: grid;
+  gap: 5px;
+  min-height: 84px;
+  padding: 11px;
+  text-align: left;
+}
+
+.choice-card:not(:disabled):hover,
+.choice-card:not(:disabled):focus-visible,
+.choice-card.selected {
+  border-color: var(--color-accent);
+}
+
+.choice-card.selected {
+  background: rgb(22 199 132 / 0.14);
+}
+
+.choice-card .card-stat-badges {
+  margin-top: 2px;
+}
+
+.directive-summary {
+  border-color: rgb(56 189 248 / 0.35);
+  color: var(--color-text);
+  margin: 0;
+  padding: 12px;
+}
+
+.directive-lock-note {
+  margin: 0;
+}
+
+@media (max-width: 720px) {
+  .choice-grid,
+  .directive-briefing {
+    grid-template-columns: 1fr;
+  }
+
+  .race-day-steps {
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
 .setup-fields {
   grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
 }
@@ -2400,6 +2520,32 @@ button.command-icon-button {
   color: var(--color-muted);
   font-size: 0.82rem;
   margin: 0;
+}
+
+.race-day-phase-panel {
+  align-items: center;
+}
+
+.race-day-steps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-left: auto;
+}
+
+.race-day-steps span {
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
+.race-day-steps span.active {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
 }
 
 .replay-main-grid {

@@ -1,10 +1,10 @@
 ## item_069_validate_directive_clarity_with_tests_and_screenshots - Validate directive clarity with tests and screenshots
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 92
 > Confidence: 87
-> Progress: 0
+> Progress: 100%
 > Complexity: Medium
 > Theme: Validation and QA
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -44,6 +44,9 @@
 - request-AC9 -> This backlog slice. Proof: AC3: E2E still covers the create profile, create league, submit directive, launch GP, and replay path.
 - request-AC11 -> This backlog slice. Proof: AC5: Tests or screenshots cover the compact current-phase/objective line and confirm the layout does not become more crowded.
 - request-AC12 -> This backlog slice. Proof: AC5: Tests or screenshots cover the compact current-phase/objective line and confirm the layout does not become more crowded.
+- request-AC4 -> This backlog slice. Evidence needed: Garage card selection is visual and understandable: no card, owned cards, fit status, card stat badges, and a short reason are visible without opening a dropdown.
+- request-AC6 -> This backlog slice. Evidence needed: The primary command and confirmation copy make it clear that the directive locks the Grand Prix plan; qualifying remaining state remains visible before lock.
+- request-AC10 -> This backlog slice. Evidence needed: Grip, Overtaking, and Energy remain visible on the map, and the race planning surface explains each value's qualitative level, concrete race meaning, and likely directive/card tradeoff.
 
 # Decision framing
 - Product framing: Not needed
@@ -64,3 +67,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_039_orchestrate_pit_wall_race_plan_clarity`
+
+# Notes
+- Task `task_039_orchestrate_pit_wall_race_plan_clarity` was finished via `logics-manager flow finish task` on 2026-07-16.

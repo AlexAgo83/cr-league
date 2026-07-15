@@ -1,10 +1,10 @@
 ## item_067_make_garage_card_selection_readable_inside_the_race_plan - Make garage card selection readable inside the race plan
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Garage card clarity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -39,6 +39,10 @@
 - request-AC7 -> This backlog slice. Proof: AC3: Card fit status and card stat badges remain visible for selected or candidate cards.
 - request-AC8 -> This backlog slice. Proof: AC4: Empty inventory state is clear and does not block plan locking.
 - request-AC9 -> This backlog slice. Proof: AC4: Empty inventory state is clear and does not block plan locking.
+- request-AC6 -> This backlog slice. Evidence needed: The primary command and confirmation copy make it clear that the directive locks the Grand Prix plan; qualifying remaining state remains visible before lock.
+- request-AC10 -> This backlog slice. Evidence needed: Grip, Overtaking, and Energy remain visible on the map, and the race planning surface explains each value's qualitative level, concrete race meaning, and likely directive/card tradeoff.
+- request-AC11 -> This backlog slice. Evidence needed: The race-day start communicates the current phase and next action in a compact way covering circuit reading, chrono testing, directive adjustment, plan locking, and GP launch.
+- request-AC12 -> This backlog slice. Evidence needed: The implementation reduces visible cognitive load by consolidating or replacing existing explanatory clutter; it does not add a new permanent tutorial panel.
 
 # Decision framing
 - Product framing: Not needed
@@ -59,3 +63,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_039_orchestrate_pit_wall_race_plan_clarity`
+
+# Notes
+- Task `task_039_orchestrate_pit_wall_race_plan_clarity` was finished via `logics-manager flow finish task` on 2026-07-16.

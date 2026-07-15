@@ -1,8 +1,8 @@
 ## prod_009_pit_wall_race_plan_product_brief - Pit Wall Race Plan Product Brief
 > Date: 2026-07-16
-> Status: Proposed
+> Status: Settled
 > Related request: `req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan`
-> Related backlog: `item_065_map_directive_choices_to_player_facing_race_plan_language`, `item_066_replace_directive_dropdowns_with_decision_cards`, `item_067_make_garage_card_selection_readable_inside_the_race_plan`, `item_068_add_a_dynamic_pit_wall_plan_summary`, `item_069_validate_directive_clarity_with_tests_and_screenshots`, `item_070_explain_circuit_traits_as_actionable_race_briefing`
+> Related backlog: `item_065_map_directive_choices_to_player_facing_race_plan_language`
 > Related task: `task_039_orchestrate_pit_wall_race_plan_clarity`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -63,5 +63,5 @@ flowchart LR
 - Desktop and mobile screenshots show no new overlap or information crowding.
 
 # References
-- Product back-reference: `req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan`
+- Product back-reference: `item_065_map_directive_choices_to_player_facing_race_plan_language`
 - Task back-reference: `task_039_orchestrate_pit_wall_race_plan_clarity`

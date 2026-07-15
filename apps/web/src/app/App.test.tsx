@@ -380,8 +380,14 @@ describe("App", () => {
     await expectChampionshipCode("ABC123");
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByText("Prepare")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Race prep" })).toBeTruthy();
-    expect(screen.getByText("Study the current GP, set your directive, pick a card, then lock the plan.")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
+    expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
+    expect(screen.getByText("Balanced pace, Weather prep, Rain Grip. Test it in chrono, then lock it for the GP.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Preparation: Weather" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Card: Rain Grip" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByText("High overtaking rewards attack and launch cards.")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
@@ -414,6 +420,8 @@ describe("App", () => {
     expect(screen.getByText("72.42s")).toBeTruthy();
     expect(screen.getByText("75.18s")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replay last lap time" }).hasAttribute("disabled")).toBe(false);
+    expect(screen.getByRole("heading", { name: "3. Adjust the plan" })).toBeTruthy();
+    expect(screen.getByText("Chrono 1/3 is logged. Adjust the directive or lock the plan before the GP.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Replay last lap time" }));
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
@@ -429,17 +437,18 @@ describe("App", () => {
     expect(document.querySelector(".round-timeline")?.textContent).toContain("R1");
 
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
-    fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
-    expect(screen.getByRole("dialog", { name: "Confirm directive" })).toBeTruthy();
-    expect(screen.getByText("You still have lap time attempts left. Submit the directive now? 2/3")).toBeTruthy();
-    fireEvent.click(screen.getAllByRole("button", { name: "Submit directive" }).at(-1)!);
+    fireEvent.click(screen.getByRole("button", { name: "Lock plan" }));
+    expect(screen.getByRole("dialog", { name: "Lock race plan" })).toBeTruthy();
+    expect(screen.getByText("You still have chrono attempts left. Lock the plan now? 2/3")).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Lock plan" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(document.querySelector(".command-context")?.textContent).not.toContain("Directive locked");
     fireEvent.click(screen.getByText("Directive locked. You can launch the Grand Prix.").closest(".floating-notification")!.querySelector("button")!);
     expect(screen.queryByText("Directive locked. You can launch the Grand Prix.")).toBe(null);
     expect(screen.getByText("Ready to launch")).toBeTruthy();
-    for (const select of document.querySelectorAll(".directive-panel select")) {
-      expect(select.hasAttribute("disabled")).toBe(true);
+    expect(screen.getByRole("heading", { name: "4. Plan locked" })).toBeTruthy();
+    for (const button of document.querySelectorAll(".directive-panel button")) {
+      expect(button.hasAttribute("disabled")).toBe(true);
     }
     expect(screen.getByRole("button", { name: "Lap time" }).hasAttribute("disabled")).toBe(true);
 
@@ -515,7 +524,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: /Defensive Order/ })).toBeTruthy();
 
     // One command at a time
-    expect(screen.queryByRole("button", { name: "Submit directive" })).toBe(null);
+    expect(screen.queryByRole("button", { name: "Lock plan" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Launch GP" })).toBe(null);
     expect(screen.getByRole("button", { name: "Next GP" }).hasAttribute("disabled")).toBe(false);
 
@@ -592,8 +601,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
-    fireEvent.click(screen.getByRole("button", { name: "Submit directive" }));
-    fireEvent.click(screen.getAllByRole("button", { name: "Submit directive" }).at(-1)!);
+    fireEvent.click(screen.getByRole("button", { name: "Lock plan" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Lock plan" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 

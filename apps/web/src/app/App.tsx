@@ -263,6 +263,14 @@ export function App() {
   const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
   const currentCircuit = circuitForRound(leagueState?.currentGrandPrix.round ?? 1);
+  const raceDayPhase =
+    isResolved
+      ? "finished"
+      : playerDecision
+        ? "locked"
+        : qualifyingAttemptsUsed > 0 || qualifyingAttemptsLeft <= 0
+          ? "adjust"
+          : "briefing";
   const startingGridEntries = leagueState ? startingGrid(leagueState) : [];
   const completedSeasons = useMemo(() => (leagueState ? completedSeasonSummaries(leagueState) : []), [leagueState]);
   const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
@@ -1085,9 +1093,22 @@ export function App() {
         {gameView === "drive" ? (
           <div className="drive-grid">
             <div className="drive-content-column">
-              <section className="panel race-context-panel">
-                <h2>{tt("drive_context_title")}</h2>
-                <p>{tt("drive_context_explainer")}</p>
+              <section className="panel race-context-panel race-day-phase-panel">
+                <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
+                <p>
+                  {tt(`race_phase_${raceDayPhase}_body` as TranslationKey, {
+                    used: qualifyingAttemptsUsed,
+                    limit: qualifyingAttemptLimit,
+                    left: qualifyingAttemptsLeft
+                  })}
+                </p>
+                <div className="race-day-steps" aria-label={tt("race_day_steps")}>
+                  {["briefing", "chrono", "adjust", "locked", "gp"].map((step) => (
+                    <span key={step} className={step === raceDayPhase || (step === "gp" && raceDayPhase === "finished") ? "active" : undefined}>
+                      {tt(`race_step_${step}` as TranslationKey)}
+                    </span>
+                  ))}
+                </div>
               </section>
               <CircuitMap
                 className="drive-map-panel"
@@ -1150,6 +1171,7 @@ export function App() {
                 ownedCardIds={ownedCardIds}
                 selectedCardId={selectedCardId}
                 selectedCardFit={selectedCardFit}
+                circuitTraits={currentCircuit.traits}
                 cardLocked={Boolean(qualifyingLockedCardId)}
                 disabled={status === "loading" || Boolean(playerDecision) || isResolved}
                 tt={tt}

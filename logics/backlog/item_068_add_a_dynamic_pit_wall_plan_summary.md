@@ -1,10 +1,10 @@
 ## item_068_add_a_dynamic_pit_wall_plan_summary - Add a dynamic pit wall plan summary
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 92
 > Confidence: 87
-> Progress: 0
+> Progress: 100%
 > Complexity: Low
 > Theme: Decision feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -45,6 +45,8 @@
 - request-AC9 -> This backlog slice. Proof: AC4: The summary remains visible in read-only form after the directive is locked.
 - request-AC11 -> This backlog slice. Proof: AC5: The summary or adjacent phase line clearly states the current next action without adding a second permanent help panel.
 - request-AC12 -> This backlog slice. Proof: AC5: The summary or adjacent phase line clearly states the current next action without adding a second permanent help panel.
+- request-AC8 -> This backlog slice. Evidence needed: Existing create-league, qualifying, submit-directive, launch-GP, and replay flows continue to pass unit/e2e validation.
+- request-AC10 -> This backlog slice. Evidence needed: Grip, Overtaking, and Energy remain visible on the map, and the race planning surface explains each value's qualitative level, concrete race meaning, and likely directive/card tradeoff.
 
 # Decision framing
 - Product framing: Not needed
@@ -65,3 +67,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_039_orchestrate_pit_wall_race_plan_clarity`
+
+# Notes
+- Task `task_039_orchestrate_pit_wall_race_plan_clarity` was finished via `logics-manager flow finish task` on 2026-07-16.

@@ -124,8 +124,8 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await page.getByRole("button", { name: "Race", exact: true }).click();
 
   for (const expectedRound of [1, 2, 3]) {
-    await page.getByRole("button", { name: "Submit directive" }).click();
-    await page.getByRole("dialog", { name: "Confirm directive" }).getByRole("button", { name: "Submit directive" }).click();
+    await page.getByRole("button", { name: "Lock plan" }).click();
+    await page.getByRole("dialog", { name: "Lock race plan" }).getByRole("button", { name: "Lock plan" }).click();
     await expect(page.getByRole("button", { name: "Launch GP" })).toBeVisible();
 
     await page.getByRole("button", { name: "Launch GP" }).click();
@@ -184,13 +184,23 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Grip");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("64");
   await expect(page.locator(".drive-content-column > .race-context-panel")).toBeVisible();
+  await expect(page.getByRole("heading", { name: "1. Read the circuit" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Approach: Balanced" })).toHaveAttribute("aria-pressed", "true");
+  await page.screenshot({ path: testInfo.outputPath("drive-layout-desktop.png"), fullPage: true });
   const directiveWidth = await page.locator(".directive-panel").evaluate((element) => element.getBoundingClientRect().width);
   await expect
     .poll(async () => page.locator(".drive-content-column > .race-context-panel").evaluate((element) => element.getBoundingClientRect().width))
     .toBeCloseTo(await driveMap.evaluate((element) => element.getBoundingClientRect().width), 0);
 
-  await page.getByRole("button", { name: "Submit directive" }).click();
-  await page.getByRole("dialog", { name: "Confirm directive" }).getByRole("button", { name: "Submit directive" }).click();
+  await page.setViewportSize({ width: 390, height: 900 });
+  await expect(page.locator(".directive-panel")).toBeVisible();
+  await expect.poll(async () => page.locator(".directive-panel").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("drive-layout-mobile.png"), fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+
+  await page.getByRole("button", { name: "Lock plan" }).click();
+  await page.getByRole("dialog", { name: "Lock race plan" }).getByRole("button", { name: "Lock plan" }).click();
   await page.getByRole("button", { name: "Launch GP" }).click();
   await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
   await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();

@@ -1,10 +1,10 @@
 ## item_070_explain_circuit_traits_as_actionable_race_briefing - Explain circuit traits as actionable race briefing
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Circuit briefing clarity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -45,6 +45,9 @@
 - request-AC7 -> This backlog slice. Proof: AC6 requires EN/FR catalog coverage.
 - request-AC9 -> This backlog slice. Proof: AC1 keeps compact map telemetry while AC2-AC4 add readable explanation nearby.
 - request-AC10 -> This backlog slice. Proof: AC1-AC7 define circuit trait briefing acceptance.
+- request-AC8 -> This backlog slice. Evidence needed: Existing create-league, qualifying, submit-directive, launch-GP, and replay flows continue to pass unit/e2e validation.
+- request-AC11 -> This backlog slice. Evidence needed: The race-day start communicates the current phase and next action in a compact way covering circuit reading, chrono testing, directive adjustment, plan locking, and GP launch.
+- request-AC12 -> This backlog slice. Evidence needed: The implementation reduces visible cognitive load by consolidating or replacing existing explanatory clutter; it does not add a new permanent tutorial panel.
 
 # Decision framing
 - Product framing: Required because this converts simulation telemetry into player-facing briefing language.
@@ -65,3 +68,9 @@
 # Priority
 - Priority: High
 - Rationale: Playtest feedback shows the directive cannot become clear until players understand what the map trait numbers mean and how they inform the plan.
+
+# Tasks
+- `task_039_orchestrate_pit_wall_race_plan_clarity`
+
+# Notes
+- Task `task_039_orchestrate_pit_wall_race_plan_clarity` was finished via `logics-manager flow finish task` on 2026-07-16.

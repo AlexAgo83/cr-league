@@ -1,7 +1,7 @@
 ## req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan - Redesign the race directive into a clear pit wall plan
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 94
 > Confidence: 88
 > Complexity: Medium

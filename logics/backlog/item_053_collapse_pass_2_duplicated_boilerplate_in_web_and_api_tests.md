@@ -1,10 +1,10 @@
 ## item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests - Collapse pass-2 duplicated boilerplate in web and API tests
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90
 > Confidence: 85
-> Progress: 90%
+> Progress: 100%
 > Complexity: Low
 > Theme: Operator workflow and runtime integration
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -59,3 +59,4 @@ The same code is written by hand in multiple places: app.test.ts repeats the ide
 - Hybrid rationale: Derived from request `req_033_over_engineering_cleanup_pass_1` and kept bounded to one coherent delivery slice.
 - Source file: `logics/request/req_033_over_engineering_cleanup_pass_1.md`.
 - Generated locally by logics-manager.
+- Task `task_034_orchestrate_over_engineering_cleanup_pass_1` was finished via `logics-manager flow finish task` on 2026-07-15.

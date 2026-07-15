@@ -180,7 +180,7 @@ export function App() {
     const id = notificationId.current + 1;
     notificationId.current = id;
     queueMicrotask(() => {
-      setNotifications((items) => [...items, { id, text, tone }].slice(-5));
+      setNotifications((items) => (items.at(-1)?.text === text ? items : [...items, { id, text, tone }].slice(-5)));
       window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 5_000);
     });
   }
@@ -471,7 +471,7 @@ export function App() {
       setSavedClaims(claimsFromProfile(session));
       setSetupMode("choice");
       setProfileOpen(false);
-      showStatus(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`);
+      showStatus(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`, "info", false);
     });
   }
 
@@ -488,7 +488,7 @@ export function App() {
       setSavedClaims(claims);
       setSetupMode("choice");
       setProfileOpen(false);
-      showStatus(tt("status_profile_recovered"));
+      showStatus(tt("status_profile_recovered"), "info", false);
     });
   }
 
@@ -575,7 +575,7 @@ export function App() {
       input.remove();
     }
 
-    showStatus(`${tt("status_profile_code_copied")} ${code}`, "info", false);
+    showStatus(`${tt("status_profile_code_copied")} ${code}`, "info", Boolean(leagueState));
   }
 
   function forgetProfile() {

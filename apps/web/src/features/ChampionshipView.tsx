@@ -31,7 +31,7 @@ export function ChampionshipView({
         </div>
         <div className="dashboard-summary" aria-label={tt("dashboard_summary")}>
           <div className="current-race-summary">
-            <span>{tt("dashboard_current_gp")}</span>
+            <h3>{tt("dashboard_current_gp")}</h3>
             <strong>
               {tt("league_season")} {currentGrandPrix.season} · {tt("league_round")} {currentGrandPrix.round}/{state.league.maxGrandPrixPerSeason}
             </strong>

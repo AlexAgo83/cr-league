@@ -1550,9 +1550,15 @@ label small {
 }
 
 .dashboard-summary > div > span,
+.dashboard-summary > div > h3,
 .dashboard-summary small {
   color: var(--color-muted);
   font-size: 0.75rem;
+}
+
+.dashboard-summary > div > h3 {
+  font-weight: 400;
+  margin: 0;
 }
 
 .leader-team-line {

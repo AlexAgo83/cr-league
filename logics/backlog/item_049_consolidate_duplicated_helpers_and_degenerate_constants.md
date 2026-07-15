@@ -1,10 +1,10 @@
 ## item_049_consolidate_duplicated_helpers_and_degenerate_constants - Consolidate duplicated helpers and degenerate constants
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90
 > Confidence: 85
-> Progress: 90%
+> Progress: 100%
 > Complexity: Low
 > Theme: Deduplication
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -60,3 +60,6 @@
 
 # Tasks
 - `task_034_orchestrate_over_engineering_cleanup_pass_1`
+
+# Notes
+- Task `task_034_orchestrate_over_engineering_cleanup_pass_1` was finished via `logics-manager flow finish task` on 2026-07-15.

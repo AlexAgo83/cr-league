@@ -108,16 +108,16 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("button", { name: "Manage league" })).toBeVisible();
   await expect(page.getByRole("button", { name: "League controls" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy profile code" })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Forget profile" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
   const menuButtons = await page.locator(".profile-menu-panel button").evaluateAll((buttons) => buttons.map((button) => button.textContent?.trim()));
-  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "Forget profile"]);
+  expect(menuButtons).toEqual(["Manage league", "Copy profile code", "Sign out"]);
   await expect(page.getByLabel("Language")).toBeVisible();
   await page.getByRole("button", { name: "Copy profile code" }).click();
   await expect(page.getByRole("dialog", { name: "Profile code" })).toBeVisible();
   await expect(page.getByLabel("Copy profile code")).toHaveValue("ABCD1234");
   await page.getByLabel("Copy profile code").click();
   await expect(page.getByText("Profile code copied: ABCD1234")).toBeVisible();
-  await page.getByRole("button", { name: "Close" }).click();
+  await page.getByRole("dialog", { name: "Profile code" }).getByRole("button", { name: "Close", exact: true }).click();
   await page.screenshot({ path: testInfo.outputPath("championship-layout-desktop.png"), fullPage: true });
 
   await expect(page.getByLabel("League summary").getByText("Wait for directives")).toBeVisible();
@@ -125,6 +125,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
 
   for (const expectedRound of [1, 2, 3]) {
     await page.getByRole("button", { name: "Submit directive" }).click();
+    await page.getByRole("dialog", { name: "Confirm directive" }).getByRole("button", { name: "Submit directive" }).click();
     await expect(page.getByRole("button", { name: "Launch GP" })).toBeVisible();
 
     await page.getByRole("button", { name: "Launch GP" }).click();
@@ -144,6 +145,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     if (expectedRound < 3) {
       await page.getByRole("button", { name: "Race", exact: true }).click();
       await page.getByRole("button", { name: "Next GP" }).click();
+      await page.getByRole("dialog", { name: "Start the next race day?" }).getByRole("button", { name: "Next GP" }).click();
       await page.getByRole("button", { name: "Championship", exact: true }).click();
       await expect(page.getByText(`Round ${expectedRound + 1}`).first()).toBeVisible();
       await page.getByRole("button", { name: "Race", exact: true }).click();
@@ -183,6 +185,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     .toBeCloseTo(await driveMap.evaluate((element) => element.getBoundingClientRect().width), 0);
 
   await page.getByRole("button", { name: "Submit directive" }).click();
+  await page.getByRole("dialog", { name: "Confirm directive" }).getByRole("button", { name: "Submit directive" }).click();
   await page.getByRole("button", { name: "Launch GP" }).click();
   await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
 

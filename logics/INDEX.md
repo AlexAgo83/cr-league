@@ -65,7 +65,7 @@
 | [req_030_add_playtest_session_reset_and_league_dashboard_clarity](request/req_030_add_playtest_session_reset_and_league_dashboard_clarity.md) | Add playtest session reset and league dashboard clarity | Done |  |  | request/req_030_add_playtest_session_reset_and_league_dashboard_clarity.md |
 | [req_031_add_first_visual_race_replay_from_event_timeline](request/req_031_add_first_visual_race_replay_from_event_timeline.md) | Add first visual race replay from event timeline | Done |  |  | request/req_031_add_first_visual_race_replay_from_event_timeline.md |
 | [req_032_redesign_the_cr_league_race_cockpit_v0](request/req_032_redesign_the_cr_league_race_cockpit_v0.md) | Redesign the CR League race cockpit V0 | Done |  |  | request/req_032_redesign_the_cr_league_race_cockpit_v0.md |
-| [req_033_over_engineering_cleanup_pass_1](request/req_033_over_engineering_cleanup_pass_1.md) | Over-engineering cleanup pass 1 | Draft |  |  | request/req_033_over_engineering_cleanup_pass_1.md |
+| [req_033_over_engineering_cleanup_pass_1](request/req_033_over_engineering_cleanup_pass_1.md) | Over-engineering cleanup pass 1 | Ready |  |  | request/req_033_over_engineering_cleanup_pass_1.md |
 
 ## Backlog
 

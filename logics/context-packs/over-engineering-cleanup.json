@@ -135,7 +135,7 @@
       "path": "logics/request/req_033_over_engineering_cleanup_pass_1.md",
       "ref": "req_033_over_engineering_cleanup_pass_1",
       "schema_version": "1.0",
-      "status": "Draft",
+      "status": "Ready",
       "title": "Over-engineering cleanup pass 1"
     },
     {
@@ -379,7 +379,7 @@
     "companion_doc_count": 3,
     "doc_count": 10
   },
-  "generated_at": "2026-07-15T06:02:37Z",
+  "generated_at": "2026-07-15T06:08:01Z",
   "handoff": {
     "companion_doc_count": 3,
     "enabled": true,

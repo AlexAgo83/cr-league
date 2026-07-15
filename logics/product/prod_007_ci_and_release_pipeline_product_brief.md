@@ -1,8 +1,8 @@
 ## prod_007_ci_and_release_pipeline_product_brief - CI and Release Pipeline Product Brief
 > Date: 2026-07-15
-> Status: Proposed
+> Status: Settled
 > Related request: `req_036_github_ci_render_blueprint_and_release_contract`
-> Related backlog: `item_058_author_the_render_blueprint_for_api_web_and_database`, `item_059_build_the_parallel_ci_workflow`, `item_060_define_the_release_contract_and_version_verified_health`, `item_061_build_the_release_triggered_render_deploy_workflow`
+> Related backlog: `item_058_author_the_render_blueprint_for_api_web_and_database`
 > Related task: `task_037_orchestrate_ci_render_blueprint_and_release_contract`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -54,5 +54,5 @@ flowchart LR
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_036_github_ci_render_blueprint_and_release_contract`
+- Product back-reference: `item_058_author_the_render_blueprint_for_api_web_and_database`
 - Task back-reference: `task_037_orchestrate_ci_render_blueprint_and_release_contract`

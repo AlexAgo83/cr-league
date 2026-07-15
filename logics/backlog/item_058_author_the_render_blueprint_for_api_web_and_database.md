@@ -1,10 +1,10 @@
 ## item_058_author_the_render_blueprint_for_api_web_and_database - Author the Render blueprint for API, web, and database
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Infrastructure as code
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,12 @@
 - request-AC1 -> This backlog slice. Proof: AC1: render.yaml passes Render blueprint validation (or a documented schema check) and contains both services plus the database with autoDeployTrigger off on both services.
 - request-AC2 -> This backlog slice. Proof: AC2: The API buildCommand uses prisma migrate deploy, never db push, and no secret value appears in the file.
 - request-AC10 -> This backlog slice. Proof: AC3: Header and rewrite rules for the static site match the cp-wc-26 set (no-cache index.html, immutable assets, nosniff, DENY framing).
+- request-AC4 -> This backlog slice. Evidence needed: The unit lane's total wall-clock is bounded by the slowest workspace, verified by three concurrent jobs in the Actions run; no lane waits on another lane's completion except the aggregator.
+- request-AC5 -> This backlog slice. Evidence needed: GET /health on the API returns the application version read from package.json, and the value matches the root package.json version in a unit test.
+- request-AC6 -> This backlog slice. Evidence needed: deploy-release.yml triggers on release published (and workflow_dispatch fallback), verifies the tag equals v<package.json version>, polls the CI workflow conclusion for the release SHA until success (no test re-run), then POSTs RENDER_API_DEPLOY_HOOK_URL and RENDER_WEB_DEPLOY_HOOK_URL via curl --fail-with-body.
+- request-AC7 -> This backlog slice. Evidence needed: After triggering the API hook, the workflow polls /health up to 30 times at 10-second intervals until the reported version equals the release tag, records a GitHub Deployment marked success or failure accordingly, and fails the run on timeout or mismatch.
+- request-AC8 -> This backlog slice. Evidence needed: A release contract document (docs/) states the flow — bump version in root and workspace package.json together, add changelogs/CHANGELOGS_X_Y_Z.md, tag vX.Y.Z, publish the GitHub Release — and lists the two repository secrets to configure (the Render deploy hook URLs).
+- request-AC9 -> This backlog slice. Evidence needed: Workflows use least-privilege permissions (contents: read; deployments: write only where the Deployment is created) and reference no secrets in CI test jobs (dummy inline DATABASE_URL where Prisma generate needs one).
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +59,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_037_orchestrate_ci_render_blueprint_and_release_contract`
+
+# Notes
+- Task `task_037_orchestrate_ci_render_blueprint_and_release_contract` was finished via `logics-manager flow finish task` on 2026-07-15.

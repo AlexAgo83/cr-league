@@ -1,10 +1,10 @@
 ## item_060_define_the_release_contract_and_version_verified_health - Define the release contract and version-verified health
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 100%
 > Complexity: Low
 > Theme: Release contract
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,6 +32,10 @@
 - request-AC5 -> This backlog slice. Proof: AC1: GET /health returns { status, version } and the unit test pins version to the package.json value.
 - request-AC8 -> This backlog slice. Proof: AC2: docs/release-contract.md covers bump, changelog, tag, publish, secrets, and rollback, in under two pages.
 - request-AC10 -> This backlog slice. Proof: AC3: Root and workspace versions are identical after the change.
+- request-AC4 -> This backlog slice. Evidence needed: The unit lane's total wall-clock is bounded by the slowest workspace, verified by three concurrent jobs in the Actions run; no lane waits on another lane's completion except the aggregator.
+- request-AC6 -> This backlog slice. Evidence needed: deploy-release.yml triggers on release published (and workflow_dispatch fallback), verifies the tag equals v<package.json version>, polls the CI workflow conclusion for the release SHA until success (no test re-run), then POSTs RENDER_API_DEPLOY_HOOK_URL and RENDER_WEB_DEPLOY_HOOK_URL via curl --fail-with-body.
+- request-AC7 -> This backlog slice. Evidence needed: After triggering the API hook, the workflow polls /health up to 30 times at 10-second intervals until the reported version equals the release tag, records a GitHub Deployment marked success or failure accordingly, and fails the run on timeout or mismatch.
+- request-AC9 -> This backlog slice. Evidence needed: Workflows use least-privilege permissions (contents: read; deployments: write only where the Deployment is created) and reference no secrets in CI test jobs (dummy inline DATABASE_URL where Prisma generate needs one).
 
 # Decision framing
 - Product framing: Not needed
@@ -52,3 +56,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_037_orchestrate_ci_render_blueprint_and_release_contract`
+
+# Notes
+- Task `task_037_orchestrate_ci_render_blueprint_and_release_contract` was finished via `logics-manager flow finish task` on 2026-07-15.

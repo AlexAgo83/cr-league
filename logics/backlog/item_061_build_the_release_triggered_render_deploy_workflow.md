@@ -1,10 +1,10 @@
 ## item_061_build_the_release_triggered_render_deploy_workflow - Build the release-triggered Render deploy workflow
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Deploy automation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,8 @@
 - request-AC7 -> This backlog slice. Proof: AC2: A tag/package.json version mismatch fails the workflow before any gate.
 - request-AC9 -> This backlog slice. Proof: AC3: The workflow ends success only when production /health reports the released version; the GitHub Deployment reflects the same outcome.
 - request-AC10 -> This backlog slice. Proof: AC4: workflow_dispatch with a tag input reproduces the full flow for an existing release.
+- request-AC5 -> This backlog slice. Evidence needed: GET /health on the API returns the application version read from package.json, and the value matches the root package.json version in a unit test.
+- request-AC8 -> This backlog slice. Evidence needed: A release contract document (docs/) states the flow — bump version in root and workspace package.json together, add changelogs/CHANGELOGS_X_Y_Z.md, tag vX.Y.Z, publish the GitHub Release — and lists the two repository secrets to configure (the Render deploy hook URLs).
 
 # Decision framing
 - Product framing: Not needed
@@ -56,3 +58,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_037_orchestrate_ci_render_blueprint_and_release_contract`
+
+# Notes
+- Task `task_037_orchestrate_ci_render_blueprint_and_release_contract` was finished via `logics-manager flow finish task` on 2026-07-15.

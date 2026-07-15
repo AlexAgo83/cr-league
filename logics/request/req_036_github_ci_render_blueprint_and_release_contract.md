@@ -1,7 +1,7 @@
 ## req_036_github_ci_render_blueprint_and_release_contract - GitHub CI, Render blueprint, and release contract
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90
 > Confidence: 85
 > Complexity: Medium

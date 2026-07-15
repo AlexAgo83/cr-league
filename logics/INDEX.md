@@ -20,7 +20,7 @@
 | [prod_001_cr_league_product_brief](product/prod_001_cr_league_product_brief.md) | 8. Progression | Settled |  |  | product/prod_001_cr_league_product_brief.md |
 | [prod_002_visual_replay_v0_product_brief](product/prod_002_visual_replay_v0_product_brief.md) | Visual Replay V0 Product Brief | Settled |  |  | product/prod_002_visual_replay_v0_product_brief.md |
 | [prod_003_race_cockpit_redesign_v0_product_brief](product/prod_003_race_cockpit_redesign_v0_product_brief.md) | Race Cockpit Redesign V0 Product Brief | Settled |  |  | product/prod_003_race_cockpit_redesign_v0_product_brief.md |
-| [prod_004_over_engineering_cleanup_product_brief](product/prod_004_over_engineering_cleanup_product_brief.md) | Over-engineering Cleanup Product Brief | Proposed |  |  | product/prod_004_over_engineering_cleanup_product_brief.md |
+| [prod_004_over_engineering_cleanup_product_brief](product/prod_004_over_engineering_cleanup_product_brief.md) | Over-engineering Cleanup Product Brief | Settled |  |  | product/prod_004_over_engineering_cleanup_product_brief.md |
 
 ## Roadmaps
 
@@ -122,6 +122,8 @@
 | [item_049_consolidate_duplicated_helpers_and_degenerate_constants](backlog/item_049_consolidate_duplicated_helpers_and_degenerate_constants.md) | Consolidate duplicated helpers and degenerate constants | Ready |  | 0% | backlog/item_049_consolidate_duplicated_helpers_and_degenerate_constants.md |
 | [item_050_slim_the_qualifying_result_to_what_the_client_renders](backlog/item_050_slim_the_qualifying_result_to_what_the_client_renders.md) | Slim the qualifying result to what the client renders | Ready |  | 0% | backlog/item_050_slim_the_qualifying_result_to_what_the_client_renders.md |
 | [item_051_single_layer_validation_between_routes_and_store](backlog/item_051_single_layer_validation_between_routes_and_store.md) | Single-layer validation between routes and store | Ready |  | 0% | backlog/item_051_single_layer_validation_between_routes_and_store.md |
+| [item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed](backlog/item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed.md) | Delete pass-2 dead code, dead CSS, and the broken prisma seed | Ready |  | 0% | backlog/item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed.md |
+| [item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests](backlog/item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests.md) | Collapse pass-2 duplicated boilerplate in web and API tests | Ready |  | 0% | backlog/item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests.md |
 
 ## Tasks
 

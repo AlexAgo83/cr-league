@@ -2,8 +2,8 @@
 > From version: 0.1.0
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 90
+> Confidence: 85
 > Progress: 0%
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -17,7 +17,8 @@
 - [ ] 2. Ship the two Low-complexity deletion/consolidation items first as one commit each, gates green.
 - [ ] 3. Run the qualifying-result verification and either implement the minimal shape or close the finding with proof.
 - [ ] 4. Consolidate validation route by route with the API test suite as the contract.
-- [ ] 5. Run typecheck, lint, unit tests, build, and e2e; record proof in the Logics closeout.
+- [ ] 5. Ship the pass-2 slices: item_052 (dead code, dead CSS, broken prisma seed — get owner confirmation on the legacy PLAYER_CLAIM_KEY migration before deleting it) and item_053 (boilerplate consolidation).
+- [ ] 6. Run typecheck, lint, unit tests, build, and e2e; record proof in the Logics closeout.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.
@@ -27,6 +28,8 @@
 - `item_049_consolidate_duplicated_helpers_and_degenerate_constants`
 - `item_050_slim_the_qualifying_result_to_what_the_client_renders`
 - `item_051_single_layer_validation_between_routes_and_store`
+- `item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed`
+- `item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests`
 
 # Definition of Done (DoD)
 - [ ] Generated request, product, backlog, and task docs are present.

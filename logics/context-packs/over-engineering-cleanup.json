@@ -1,10 +1,10 @@
 {
   "budgets": {
-    "max_docs": 24,
-    "max_docs_per_ref": 4
+    "max_docs": 64,
+    "max_docs_per_ref": 8
   },
   "changed_paths": [],
-  "command": "logics-manager sync context-pack req_033_over_engineering_cleanup_pass_1 item_048_delete_dead_code_dead_i18n_keys_and_stray_files item_049_consolidate_duplicated_helpers_and_degenerate_constants item_050_slim_the_qualifying_result_to_what_the_client_renders item_051_single_layer_validation_between_routes_and_store task_034_orchestrate_over_engineering_cleanup_pass_1 --mode summary-only --profile normal --handoff",
+  "command": "logics-manager sync context-pack req_033_over_engineering_cleanup_pass_1 item_048_delete_dead_code_dead_i18n_keys_and_stray_files item_049_consolidate_duplicated_helpers_and_degenerate_constants item_050_slim_the_qualifying_result_to_what_the_client_renders item_051_single_layer_validation_between_routes_and_store item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests task_034_orchestrate_over_engineering_cleanup_pass_1 --mode summary-only --profile deep --handoff",
   "companion_docs": [
     {
       "kind": "product",
@@ -31,10 +31,7 @@
       "kind": "product",
       "linked_refs": {
         "item": [
-          "item_048_delete_dead_code_dead_i18n_keys_and_stray_files",
-          "item_049_consolidate_duplicated_helpers_and_degenerate_constants",
-          "item_050_slim_the_qualifying_result_to_what_the_client_renders",
-          "item_051_single_layer_validation_between_routes_and_store"
+          "item_048_delete_dead_code_dead_i18n_keys_and_stray_files"
         ],
         "prod": [
           "prod_004_over_engineering_cleanup_product_brief"
@@ -48,7 +45,7 @@
       },
       "path": "logics/product/prod_004_over_engineering_cleanup_product_brief.md",
       "ref": "prod_004_over_engineering_cleanup_product_brief",
-      "status": "Proposed",
+      "status": "Settled",
       "title": "Over-engineering Cleanup Product Brief"
     },
     {
@@ -120,7 +117,9 @@
           "item_048_delete_dead_code_dead_i18n_keys_and_stray_files",
           "item_049_consolidate_duplicated_helpers_and_degenerate_constants",
           "item_050_slim_the_qualifying_result_to_what_the_client_renders",
-          "item_051_single_layer_validation_between_routes_and_store"
+          "item_051_single_layer_validation_between_routes_and_store",
+          "item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed",
+          "item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests"
         ],
         "prod": [
           "prod_001_cr_league_product_brief",
@@ -225,63 +224,6 @@
     },
     {
       "ai_context": {
-        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
-        "skip when": "Working on one isolated sibling slice.",
-        "summary": "Orchestrate over-engineering cleanup pass 1",
-        "use when": "Coordinating implementation of a scaffolded request chain."
-      },
-      "kind": "task",
-      "linked_refs": {
-        "item": [
-          "item_048_delete_dead_code_dead_i18n_keys_and_stray_files",
-          "item_049_consolidate_duplicated_helpers_and_degenerate_constants",
-          "item_050_slim_the_qualifying_result_to_what_the_client_renders",
-          "item_051_single_layer_validation_between_routes_and_store"
-        ],
-        "prod": [
-          "prod_004_over_engineering_cleanup_product_brief"
-        ],
-        "req": [
-          "req_033_over_engineering_cleanup_pass_1"
-        ],
-        "task": [
-          "task_034_orchestrate_over_engineering_cleanup_pass_1"
-        ]
-      },
-      "path": "logics/tasks/task_034_orchestrate_over_engineering_cleanup_pass_1.md",
-      "ref": "task_034_orchestrate_over_engineering_cleanup_pass_1",
-      "schema_version": "1.0",
-      "status": "Ready",
-      "title": "Orchestrate over-engineering cleanup pass 1"
-    },
-    {
-      "ai_context": {},
-      "kind": "product",
-      "linked_refs": {
-        "item": [
-          "item_048_delete_dead_code_dead_i18n_keys_and_stray_files",
-          "item_049_consolidate_duplicated_helpers_and_degenerate_constants",
-          "item_050_slim_the_qualifying_result_to_what_the_client_renders",
-          "item_051_single_layer_validation_between_routes_and_store"
-        ],
-        "prod": [
-          "prod_004_over_engineering_cleanup_product_brief"
-        ],
-        "req": [
-          "req_033_over_engineering_cleanup_pass_1"
-        ],
-        "task": [
-          "task_034_orchestrate_over_engineering_cleanup_pass_1"
-        ]
-      },
-      "path": "logics/product/prod_004_over_engineering_cleanup_product_brief.md",
-      "ref": "prod_004_over_engineering_cleanup_product_brief",
-      "schema_version": "1.0",
-      "status": "Proposed",
-      "title": "Over-engineering Cleanup Product Brief"
-    },
-    {
-      "ai_context": {
         "keywords": "scaffolded-backlog, single-layer validation between routes and store, implementation-ready",
         "skip when": "The change belongs to another backlog slice.",
         "summary": "Single-layer validation between routes and store",
@@ -307,14 +249,137 @@
       "schema_version": "1.0",
       "status": "Ready",
       "title": "Single-layer validation between routes and store"
+    },
+    {
+      "ai_context": {
+        "keywords": "backlog-groom, request, delete pass-2 dead code, dead css, and the broken prisma seed, bounded slice",
+        "skip when": "Skip when the change is unrelated to this delivery slice or its linked request.",
+        "summary": "Delete pass-2 dead code, dead CSS, and the broken prisma seed",
+        "use when": "Use when implementing or reviewing the delivery slice for Delete pass-2 dead code, dead CSS, and the broken prisma seed."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed"
+        ],
+        "req": [
+          "req_033_over_engineering_cleanup_pass_1"
+        ]
+      },
+      "path": "logics/backlog/item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed.md",
+      "ref": "item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Delete pass-2 dead code, dead CSS, and the broken prisma seed"
+    },
+    {
+      "ai_context": {
+        "keywords": "backlog-groom, request, collapse pass-2 duplicated boilerplate in web and api tests, bounded slice",
+        "skip when": "Skip when the change is unrelated to this delivery slice or its linked request.",
+        "summary": "Collapse pass-2 duplicated boilerplate in web and API tests",
+        "use when": "Use when implementing or reviewing the delivery slice for Collapse pass-2 duplicated boilerplate in web and API tests."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests"
+        ],
+        "req": [
+          "req_033_over_engineering_cleanup_pass_1"
+        ]
+      },
+      "path": "logics/backlog/item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests.md",
+      "ref": "item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Collapse pass-2 duplicated boilerplate in web and API tests"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_029_add_automated_private_league_playtest_scenario"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_023_add_automated_private_league_playtest_scenario"
+        ],
+        "task": [
+          "task_024_add_automated_private_league_playtest_scenario"
+        ]
+      },
+      "path": "logics/product/prod_001_cr_league_product_brief.md",
+      "ref": "prod_001_cr_league_product_brief",
+      "schema_version": "1.0",
+      "status": "Settled",
+      "title": "CR League Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate over-engineering cleanup pass 1",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_048_delete_dead_code_dead_i18n_keys_and_stray_files",
+          "item_049_consolidate_duplicated_helpers_and_degenerate_constants",
+          "item_050_slim_the_qualifying_result_to_what_the_client_renders",
+          "item_051_single_layer_validation_between_routes_and_store",
+          "item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed",
+          "item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests"
+        ],
+        "prod": [
+          "prod_004_over_engineering_cleanup_product_brief"
+        ],
+        "req": [
+          "req_033_over_engineering_cleanup_pass_1"
+        ],
+        "task": [
+          "task_034_orchestrate_over_engineering_cleanup_pass_1"
+        ]
+      },
+      "path": "logics/tasks/task_034_orchestrate_over_engineering_cleanup_pass_1.md",
+      "ref": "task_034_orchestrate_over_engineering_cleanup_pass_1",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate over-engineering cleanup pass 1"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_048_delete_dead_code_dead_i18n_keys_and_stray_files"
+        ],
+        "prod": [
+          "prod_004_over_engineering_cleanup_product_brief"
+        ],
+        "req": [
+          "req_033_over_engineering_cleanup_pass_1"
+        ],
+        "task": [
+          "task_034_orchestrate_over_engineering_cleanup_pass_1"
+        ]
+      },
+      "path": "logics/product/prod_004_over_engineering_cleanup_product_brief.md",
+      "ref": "prod_004_over_engineering_cleanup_product_brief",
+      "schema_version": "1.0",
+      "status": "Settled",
+      "title": "Over-engineering Cleanup Product Brief"
     }
   ],
   "estimates": {
-    "char_count": 9222,
+    "char_count": 11412,
     "companion_doc_count": 3,
-    "doc_count": 7
+    "doc_count": 10
   },
-  "generated_at": "2026-07-14T23:27:33Z",
+  "generated_at": "2026-07-15T06:02:37Z",
   "handoff": {
     "companion_doc_count": 3,
     "enabled": true,
@@ -324,6 +389,8 @@
       "item_049_consolidate_duplicated_helpers_and_degenerate_constants",
       "item_050_slim_the_qualifying_result_to_what_the_client_renders",
       "item_051_single_layer_validation_between_routes_and_store",
+      "item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed",
+      "item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests",
       "task_034_orchestrate_over_engineering_cleanup_pass_1"
     ],
     "validation_summary_count": 1
@@ -359,14 +426,16 @@
     "state": "valid"
   },
   "mode": "summary-only",
-  "profile": "normal",
-  "ref": "req_033_over_engineering_cleanup_pass_1,item_048_delete_dead_code_dead_i18n_keys_and_stray_files,item_049_consolidate_duplicated_helpers_and_degenerate_constants,item_050_slim_the_qualifying_result_to_what_the_client_renders,item_051_single_layer_validation_between_routes_and_store,task_034_orchestrate_over_engineering_cleanup_pass_1",
+  "profile": "deep",
+  "ref": "req_033_over_engineering_cleanup_pass_1,item_048_delete_dead_code_dead_i18n_keys_and_stray_files,item_049_consolidate_duplicated_helpers_and_degenerate_constants,item_050_slim_the_qualifying_result_to_what_the_client_renders,item_051_single_layer_validation_between_routes_and_store,item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed,item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests,task_034_orchestrate_over_engineering_cleanup_pass_1",
   "refs": [
     "req_033_over_engineering_cleanup_pass_1",
     "item_048_delete_dead_code_dead_i18n_keys_and_stray_files",
     "item_049_consolidate_duplicated_helpers_and_degenerate_constants",
     "item_050_slim_the_qualifying_result_to_what_the_client_renders",
     "item_051_single_layer_validation_between_routes_and_store",
+    "item_052_delete_pass_2_dead_code_dead_css_and_the_broken_prisma_seed",
+    "item_053_collapse_pass_2_duplicated_boilerplate_in_web_and_api_tests",
     "task_034_orchestrate_over_engineering_cleanup_pass_1"
   ],
   "release": {

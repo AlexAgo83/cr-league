@@ -51,3 +51,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_034_orchestrate_over_engineering_cleanup_pass_1`

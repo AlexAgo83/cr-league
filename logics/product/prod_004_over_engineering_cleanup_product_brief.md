@@ -1,8 +1,8 @@
 ## prod_004_over_engineering_cleanup_product_brief - Over-engineering Cleanup Product Brief
 > Date: 2026-07-15
-> Status: Proposed
+> Status: Settled
 > Related request: `req_033_over_engineering_cleanup_pass_1`
-> Related backlog: `item_048_delete_dead_code_dead_i18n_keys_and_stray_files`, `item_049_consolidate_duplicated_helpers_and_degenerate_constants`, `item_050_slim_the_qualifying_result_to_what_the_client_renders`, `item_051_single_layer_validation_between_routes_and_store`
+> Related backlog: `item_048_delete_dead_code_dead_i18n_keys_and_stray_files`
 > Related task: `task_034_orchestrate_over_engineering_cleanup_pass_1`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -35,5 +35,5 @@ A deletion-first maintenance pass that removes dead code, dead translations, dup
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_033_over_engineering_cleanup_pass_1`
+- Product back-reference: `item_048_delete_dead_code_dead_i18n_keys_and_stray_files`
 - Task back-reference: `task_034_orchestrate_over_engineering_cleanup_pass_1`

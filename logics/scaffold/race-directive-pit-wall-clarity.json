@@ -1,0 +1,332 @@
+{
+  "title": "Redesign the race directive into a clear pit wall plan",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/roadmap/road_001_cr_league_roadmap.md",
+    "logics/specs/spec_016_implementation_roadmap.md",
+    "logics/architecture/adr_005_theme_design_system.md",
+    "logics/architecture/adr_006_accessibility.md",
+    "logics/architecture/adr_007_i18n.md",
+    "docs/playtest/private-league-3gp-checklist.md",
+    "apps/web/src/features/DirectivePanel.tsx",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/helpers.ts",
+    "apps/web/src/app/types.ts",
+    "apps/web/src/features/CardStatBadges.tsx",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/web/src/styles/layout.css",
+    "apps/web/src/app/App.test.tsx",
+    "tests/e2e/private-league.spec.ts",
+    "Playtest feedback: a tester was immediately lost by the current Race directive panel and did not understand what to do, what each choice meant, or why the moment mattered.",
+    "Follow-up playtest feedback: the map trait indicators are also not understandable to a new player; Grip, Overtaking, and Energy need qualitative meaning and actionability without removing the compact telemetry."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Race directive clarity and immersion",
+    "needs": [
+      "Transform the current Race directive form into a clear pit wall planning moment that tells the player what they are deciding and why it matters.",
+      "Replace abstract dropdowns with decision controls that expose intent, consequence, and current selection at a glance.",
+      "Make the relationship between the directive, qualifying attempts, the Grand Prix, the circuit traits, weather forecast, and garage card explicit without changing simulation rules.",
+      "Explain the map trait indicators so Grip, Overtaking, and Energy become actionable race briefing inputs instead of unexplained numbers.",
+      "Add an understandable dynamic plan summary so a new player can read back the strategy before locking it.",
+      "Rename and restructure the primary command so the player understands that submitting the directive locks the race plan.",
+      "Improve French and English copy for this surface so the core decision feels immersive and localized."
+    ],
+    "context": [
+      "The current `DirectivePanel` is technically functional but presents the core Grand Prix decision as three generic form fields: Approach, Preparation, and Card.",
+      "The current fields use `<select>` controls plus short hints. This is compact but too abstract for a first playtest: the tester did not understand what to do or what the choices changed.",
+      "The app already computes useful signals that can be reused: selected card fit via `cardFit`, circuit traits via `currentCircuit.traits`, forecast via `forecastPick`, card stat badges, qualifying attempts left, and race state.",
+      "The map already displays Grip, Overtaking, and Energy telemetry, but playtest feedback now shows the values are not self-explanatory: players need qualitative meaning and decision impact near the directive.",
+      "The implementation should preserve existing API contracts and internal values: `approach` remains `prudent | balanced | aggressive`, `preparation` remains `speed | reliability | weather`, and `cardId` remains optional.",
+      "The redesign should not add new race mechanics, new cards, new balance rules, a tutorial system, a component library, or broad routing changes.",
+      "This is a conversion and comprehension fix. The smallest successful result is a richer, more legible decision surface backed by current simulation inputs and existing validation gates."
+    ],
+    "acceptance_criteria": [
+      "AC1: The directive surface is renamed and framed as a pit wall race plan, not a generic form, in both English and French.",
+      "AC2: Approach choices are shown as selectable decision cards or segmented controls with plain-language intent and consequence, while preserving existing internal values.",
+      "AC3: Preparation choices are shown as selectable decision cards or segmented controls that explain which race condition they answer: pace, reliability, or weather.",
+      "AC4: Garage card selection is visual and understandable: no card, owned cards, fit status, card stat badges, and a short reason are visible without opening a dropdown.",
+      "AC5: A dynamic plan summary explains the selected approach, preparation, and card in one short race-strategy sentence before the player locks the plan.",
+      "AC6: The primary command and confirmation copy make it clear that the directive locks the Grand Prix plan; qualifying remaining state remains visible before lock.",
+      "AC7: The redesign is localized through `apps/web/src/i18n/en.json` and `apps/web/src/i18n/fr.json` with no new hardcoded user-facing copy in the redesigned surface.",
+      "AC8: Existing create-league, qualifying, submit-directive, launch-GP, and replay flows continue to pass unit/e2e validation.",
+      "AC9: Desktop and mobile layouts keep all directive controls readable, with no text overflow or overlapping controls.",
+      "AC10: Grip, Overtaking, and Energy remain visible on the map, and the race planning surface explains each value's qualitative level, concrete race meaning, and likely directive/card tradeoff."
+    ]
+  },
+  "product": {
+    "title": "Pit Wall Race Plan Product Brief",
+    "overview": "Pit Wall Race Plan turns the confusing Race directive panel into a readable team-principal decision moment. The player should understand the circuit telemetry, choose a race posture, prepare for a risk, optionally spend a garage card, and confidently lock the plan before the Grand Prix.",
+    "goals": [
+      "Make the core Grand Prix decision understandable to a first-time private playtest user.",
+      "Make directive choices feel like team-principal strategy rather than an admin form.",
+      "Turn map telemetry into understandable race briefing: what Grip, Overtaking, and Energy mean, and how they shape risk.",
+      "Expose consequence in the UI: what the player is prioritizing, what risk they accept, and why a card fits or does not fit.",
+      "Keep the existing simulation and API contracts unchanged so the work stays focused and low-risk.",
+      "Improve localized English/French wording for the race planning moment.",
+      "Leave the implementation easy to validate with current unit, Playwright, and Logics gates."
+    ],
+    "non_goals": [
+      "Do not add new directive options, new race mechanics, new cards, or balance changes.",
+      "Do not build a full tutorial, coach bot, onboarding quest, or step-by-step guided mode.",
+      "Do not redesign the entire cockpit, championship, garage, or replay surfaces in this request.",
+      "Do not introduce a UI component library, routing framework, animation package, or global state manager.",
+      "Do not change API payload shapes or Prisma models.",
+      "Do not change circuit trait values, simulation balance, or the compact map telemetry indicators.",
+      "Do not create final marketing copy or brand identity assets."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Map directive choices to player-facing race plan language",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "UX copy and decision model",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC5",
+        "AC6",
+        "AC7"
+      ],
+      "problem": [
+        "The current labels Approach, Preparation, and Card are accurate but not explanatory enough for a new player.",
+        "The current hints describe each field in isolation, so players do not understand the combined race plan.",
+        "The lock moment uses submit-style wording that does not clearly communicate consequence."
+      ],
+      "scope_in": [
+        "Define player-facing labels for the existing approach values: prudent, balanced, and aggressive.",
+        "Define player-facing labels for the existing preparation values: speed, reliability, and weather.",
+        "Define short consequence copy for each choice: priority, upside, downside, and when to use it.",
+        "Define plan-summary copy templates for common combinations without adding simulation logic.",
+        "Rename the panel and CTA to communicate a pit wall plan and lock action.",
+        "Add all new copy to EN/FR i18n catalogs."
+      ],
+      "scope_out": [
+        "New directive values.",
+        "New simulation modifiers.",
+        "Long tutorial text.",
+        "AI recommendations.",
+        "Marketing copy outside the game UI."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every current directive value has a plain-language label and consequence in EN/FR.",
+        "AC2: The primary CTA copy communicates that the plan will be locked.",
+        "AC3: The confirmation modal explains qualifying attempts left and lock consequence in EN/FR.",
+        "AC4: No new player-facing copy is hardcoded inside `DirectivePanel.tsx`."
+      ]
+    },
+    {
+      "title": "Replace directive dropdowns with decision cards",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Directive interaction design",
+      "request_acs": [
+        "AC2",
+        "AC3",
+        "AC8",
+        "AC9"
+      ],
+      "problem": [
+        "Dropdowns hide the available strategies and make the player compare options one at a time.",
+        "The current control shape makes the most important game decision feel like settings configuration.",
+        "The UI does not give enough visual feedback when a choice is selected or locked."
+      ],
+      "scope_in": [
+        "Render approach choices as visible selectable controls or cards, all visible at once.",
+        "Render preparation choices as visible selectable controls or cards, all visible at once.",
+        "Show selected state, disabled/locked state, and focus state clearly.",
+        "Keep the existing `setForm` updates and internal values unchanged.",
+        "Preserve keyboard and screen-reader access through semantic buttons or radios.",
+        "Update component tests or e2e selectors that currently assume `<select>` controls."
+      ],
+      "scope_out": [
+        "Changing the command bar architecture.",
+        "Adding animations beyond simple hover/focus states.",
+        "New drag-and-drop or carousel interactions.",
+        "Changing API request bodies."
+      ],
+      "acceptance_criteria": [
+        "AC1: A player can see all approach options and all preparation options without opening a dropdown.",
+        "AC2: The selected approach and preparation are visually clear on desktop and mobile.",
+        "AC3: Disabled/locked state prevents edits after directive lock while keeping the chosen plan readable.",
+        "AC4: Existing submit-directive flow still posts the same values to the API."
+      ]
+    },
+    {
+      "title": "Make garage card selection readable inside the race plan",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Garage card clarity",
+      "request_acs": [
+        "AC4",
+        "AC5",
+        "AC7",
+        "AC8",
+        "AC9"
+      ],
+      "problem": [
+        "The current card dropdown hides the player's inventory and does not make card spending feel like a strategic lever.",
+        "The fit badge and card stat badges exist but are visually subordinate to the form control.",
+        "Players may not understand that selecting no card is valid and sometimes desirable."
+      ],
+      "scope_in": [
+        "Render `No card` as an explicit save-resources option.",
+        "Render owned cards as selectable cards or rows with name, fit label, short reason, and `CardStatBadges`.",
+        "Show empty inventory copy when no cards are owned.",
+        "Keep qualifying lock behavior for `qualifying_focus` understandable when a card is locked by a qualifying run.",
+        "Use existing `cardFit`, card hints, and owned card IDs rather than new recommendation logic."
+      ],
+      "scope_out": [
+        "Changing the garage shop.",
+        "Adding card rarity or card art.",
+        "Adding new card effects.",
+        "Changing card ownership or consumption rules."
+      ],
+      "acceptance_criteria": [
+        "AC1: The no-card choice is visible and describes why saving a card can be valid.",
+        "AC2: Owned cards are selectable without a dropdown.",
+        "AC3: Card fit status and card stat badges remain visible for selected or candidate cards.",
+        "AC4: Empty inventory state is clear and does not block plan locking."
+      ]
+    },
+    {
+      "title": "Add a dynamic pit wall plan summary",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Decision feedback",
+      "request_acs": [
+        "AC1",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC9"
+      ],
+      "problem": [
+        "The current panel never reflects the player's full directive back as a coherent strategy.",
+        "A first-time player needs confirmation that the selected controls form one race plan.",
+        "Without a summary, the confirmation modal has to carry too much meaning too late."
+      ],
+      "scope_in": [
+        "Add a summary section inside the directive surface that names the selected approach, preparation, and card.",
+        "Use one short sentence to explain the current plan's intent and risk.",
+        "Mention whether qualifying attempts remain before the lock action when relevant.",
+        "Keep the summary deterministic and copy-driven; do not introduce new scoring or prediction math."
+      ],
+      "scope_out": [
+        "Outcome prediction.",
+        "Win probability.",
+        "AI-generated recommendations.",
+        "Detailed race simulation preview."
+      ],
+      "acceptance_criteria": [
+        "AC1: The summary updates when approach, preparation, or card changes.",
+        "AC2: The summary is visible before the lock CTA on desktop and mobile.",
+        "AC3: The summary never promises a result; it describes intent and risk only.",
+        "AC4: The summary remains visible in read-only form after the directive is locked."
+      ]
+    },
+    {
+      "title": "Explain circuit traits as actionable race briefing",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Circuit briefing clarity",
+      "request_acs": [
+        "AC2",
+        "AC3",
+        "AC5",
+        "AC7",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "The map currently exposes Grip, Overtaking, and Energy as raw numbers, but a new player cannot tell whether a value is weak, average, or strong.",
+        "The player cannot infer what each trait changes in the race simulation or which directive choice should react to it.",
+        "The trait indicators are useful telemetry, but there is no adjacent explanation that turns them into an actionable pit wall briefing."
+      ],
+      "scope_in": [
+        "Keep the current compact map trait indicators visible; do not remove or rename them as the primary telemetry chips.",
+        "Add a nearby briefing layer that explains each trait with a plain-language level such as weak, balanced, strong, or extreme.",
+        "Explain what each trait means concretely for a race plan: grip affects stability/weather sensitivity, overtaking affects attack opportunity, energy affects wear/endurance pressure.",
+        "Connect trait readings to the directive choices without prescribing a single answer: e.g. high overtaking supports attack, low energy makes reliability safer, rain plus grip risk makes weather prep more readable.",
+        "Add localized EN/FR copy for trait levels, trait meanings, and pit wall reading snippets.",
+        "Reuse existing `currentCircuit.traits`, `forecastPick`, `MapTraitsPanel`, `DirectivePanel`, and helper logic where possible."
+      ],
+      "scope_out": [
+        "Changing trait names or simulation values.",
+        "Changing circuit data or balance.",
+        "Adding probability predictions, win chance, or AI-generated recommendations.",
+        "Replacing the map indicators with a tutorial overlay.",
+        "Introducing new charting or tooltip dependencies."
+      ],
+      "acceptance_criteria": [
+        "AC1: Grip, Overtaking, and Energy still appear as compact map telemetry values.",
+        "AC2: Each trait value has a visible qualitative reading in the race planning surface, such as weak, medium, strong, or high-risk.",
+        "AC3: Each trait includes one concise explanation of what it changes in player decision terms.",
+        "AC4: The briefing links trait readings to current directive levers: approach, preparation, and card selection.",
+        "AC5: The briefing avoids deterministic advice or outcome promises; it frames tradeoffs and risk.",
+        "AC6: All new trait briefing copy is localized through EN/FR catalogs.",
+        "AC7: Tests cover at least one low/medium/high trait reading and verify that the directive surface displays the briefing."
+      ]
+    },
+    {
+      "title": "Validate directive clarity with tests and screenshots",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Validation and QA",
+      "request_acs": [
+        "AC7",
+        "AC8",
+        "AC9"
+      ],
+      "problem": [
+        "The current flow is covered functionally, but the specific comprehension improvements need regression protection.",
+        "The redesign changes control shape, so tests that target selects or old labels will need updates.",
+        "The issue was discovered in playtest, so desktop and mobile visual checks matter."
+      ],
+      "scope_in": [
+        "Update unit tests for the directive surface copy, selected states, locked states, and plan summary.",
+        "Update Playwright flow selectors to use new accessible names.",
+        "Run desktop and mobile screenshots or Playwright checks that confirm no overlap in the directive panel.",
+        "Run `npm run typecheck`, `npm run lint`, `npm test -- apps/web`, `npm run test:e2e -- --project=chromium`, `npm run build`, and `npm run logics:validate`.",
+        "Record residual risks if only automated checks are available and no human playtest has been rerun."
+      ],
+      "scope_out": [
+        "Formal usability study.",
+        "Analytics instrumentation.",
+        "Session replay tooling.",
+        "A/B testing."
+      ],
+      "acceptance_criteria": [
+        "AC1: Tests cover choosing an approach, choosing a preparation, selecting no card or an owned card, and locking the directive.",
+        "AC2: At least one test verifies the dynamic plan summary changes after a directive choice changes.",
+        "AC3: E2E still covers the create profile, create league, submit directive, launch GP, and replay path.",
+        "AC4: Validation commands pass locally before handoff or closeout."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate pit wall race plan clarity",
+    "plan": [
+      "Inspect the current directive flow in `DirectivePanel.tsx`, `App.tsx`, `helpers.ts`, `CircuitMap.tsx`, `MapTraitsPanel`, i18n catalogs, and the existing tests before changing UI.",
+      "Implement the smallest component-level redesign that replaces dropdown-first controls with visible decision cards while preserving existing form values and API payloads.",
+      "Add actionable circuit-trait briefing so Grip, Overtaking, and Energy values get qualitative levels, concrete meaning, and directive tradeoff hints without changing map telemetry.",
+      "Add EN/FR copy for the renamed pit wall plan, choice labels, consequences, card selection states, trait briefing, lock CTA, and dynamic plan summary.",
+      "Update CSS in `layout.css` for directive cards, trait briefing, selected state, locked state, summary, mobile stacking, and readable compact layout.",
+      "Update unit and Playwright tests for the new accessible controls, trait briefing, and plan summary.",
+      "Run focused validation first, then the full local gate required by the request.",
+      "Refresh Logics indicators/status through `logics-manager` only if workflow docs are edited during implementation."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/race-directive-pit-wall-clarity.json",
+    "mode": "full",
+    "profile": "normal"
+  }
+}

@@ -1,0 +1,480 @@
+{
+  "budgets": {
+    "max_docs": 32,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan item_065_map_directive_choices_to_player_facing_race_plan_language item_066_replace_directive_dropdowns_with_decision_cards item_067_make_garage_card_selection_readable_inside_the_race_plan item_068_add_a_dynamic_pit_wall_plan_summary item_069_validate_directive_clarity_with_tests_and_screenshots item_070_explain_circuit_traits_as_actionable_race_briefing task_039_orchestrate_pit_wall_race_plan_clarity --mode full --profile normal",
+  "companion_docs": [],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, redesign the race directive into a clear pit wall plan, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Redesign the race directive into a clear pit wall plan",
+        "use when": "You need to implement or review the scaffolded workflow for Redesign the race directive into a clear pit wall plan."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "adr": [
+          "adr_005_theme_design_system",
+          "adr_006_accessibility",
+          "adr_007_i18n"
+        ],
+        "item": [
+          "item_065_map_directive_choices_to_player_facing_race_plan_language",
+          "item_066_replace_directive_dropdowns_with_decision_cards",
+          "item_067_make_garage_card_selection_readable_inside_the_race_plan",
+          "item_068_add_a_dynamic_pit_wall_plan_summary",
+          "item_069_validate_directive_clarity_with_tests_and_screenshots",
+          "item_070_explain_circuit_traits_as_actionable_race_briefing"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief",
+          "prod_009_pit_wall_race_plan_product_brief"
+        ],
+        "req": [
+          "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap"
+        ],
+        "spec": [
+          "spec_016_implementation_roadmap"
+        ]
+      },
+      "path": "logics/request/req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan.md",
+      "ref": "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: The directive surface is renamed and framed as a pit wall race plan, not a generic form, in both English and French.",
+          "- AC2: Approach choices are shown as selectable decision cards or segmented controls with plain-language intent and consequence, while preserving existing internal values.",
+          "- AC3: Preparation choices are shown as selectable decision cards or segmented controls that explain which race condition they answer: pace, reliability, or weather.",
+          "- AC4: Garage card selection is visual and understandable: no card, owned cards, fit status, card stat badges, and a short reason are visible without opening a dropdown.",
+          "- AC5: A dynamic plan summary explains the selected approach, preparation, and card in one short race-strategy sentence before the player locks the plan.",
+          "- AC6: The primary command and confirmation copy make it clear that the directive locks the Grand Prix plan; qualifying remaining state remains visible before lock."
+        ],
+        "Needs": [
+          "- Transform the current Race directive form into a clear pit wall planning moment that tells the player what they are deciding and why it matters.",
+          "- Replace abstract dropdowns with decision controls that expose intent, consequence, and current selection at a glance.",
+          "- Make the relationship between the directive, qualifying attempts, the Grand Prix, the circuit traits, weather forecast, and garage card explicit without changing simulation rules.",
+          "- Explain the map trait indicators so Grip, Overtaking, and Energy become actionable race briefing inputs instead of unexplained numbers.",
+          "- Add an understandable dynamic plan summary so a new player can read back the strategy before locking it.",
+          "- Rename and restructure the primary command so the player understands that submitting the directive locks the race plan."
+        ]
+      },
+      "status": "Draft",
+      "title": "Redesign the race directive into a clear pit wall plan"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, map directive choices to player-facing race plan language, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Map directive choices to player-facing race plan language",
+        "use when": "Implementing the scaffolded slice for Map directive choices to player-facing race plan language."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_065_map_directive_choices_to_player_facing_race_plan_language"
+        ],
+        "prod": [
+          "prod_009_pit_wall_race_plan_product_brief"
+        ],
+        "req": [
+          "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan"
+        ],
+        "task": [
+          "task_039_orchestrate_pit_wall_race_plan_clarity"
+        ]
+      },
+      "path": "logics/backlog/item_065_map_directive_choices_to_player_facing_race_plan_language.md",
+      "ref": "item_065_map_directive_choices_to_player_facing_race_plan_language",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Every current directive value has a plain-language label and consequence in EN/FR.",
+          "- AC2: The primary CTA copy communicates that the plan will be locked.",
+          "- AC3: The confirmation modal explains qualifying attempts left and lock consequence in EN/FR.",
+          "- AC4: No new player-facing copy is hardcoded inside `DirectivePanel.tsx`."
+        ],
+        "Problem": [
+          "- The current labels Approach, Preparation, and Card are accurate but not explanatory enough for a new player.",
+          "- The current hints describe each field in isolation, so players do not understand the combined race plan.",
+          "- The lock moment uses submit-style wording that does not clearly communicate consequence."
+        ]
+      },
+      "status": "Ready",
+      "title": "Map directive choices to player-facing race plan language"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, replace directive dropdowns with decision cards, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Replace directive dropdowns with decision cards",
+        "use when": "Implementing the scaffolded slice for Replace directive dropdowns with decision cards."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_066_replace_directive_dropdowns_with_decision_cards"
+        ],
+        "prod": [
+          "prod_009_pit_wall_race_plan_product_brief"
+        ],
+        "req": [
+          "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan"
+        ],
+        "task": [
+          "task_039_orchestrate_pit_wall_race_plan_clarity"
+        ]
+      },
+      "path": "logics/backlog/item_066_replace_directive_dropdowns_with_decision_cards.md",
+      "ref": "item_066_replace_directive_dropdowns_with_decision_cards",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: A player can see all approach options and all preparation options without opening a dropdown.",
+          "- AC2: The selected approach and preparation are visually clear on desktop and mobile.",
+          "- AC3: Disabled/locked state prevents edits after directive lock while keeping the chosen plan readable.",
+          "- AC4: Existing submit-directive flow still posts the same values to the API."
+        ],
+        "Problem": [
+          "- Dropdowns hide the available strategies and make the player compare options one at a time.",
+          "- The current control shape makes the most important game decision feel like settings configuration.",
+          "- The UI does not give enough visual feedback when a choice is selected or locked."
+        ]
+      },
+      "status": "Ready",
+      "title": "Replace directive dropdowns with decision cards"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, make garage card selection readable inside the race plan, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Make garage card selection readable inside the race plan",
+        "use when": "Implementing the scaffolded slice for Make garage card selection readable inside the race plan."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_067_make_garage_card_selection_readable_inside_the_race_plan"
+        ],
+        "prod": [
+          "prod_009_pit_wall_race_plan_product_brief"
+        ],
+        "req": [
+          "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan"
+        ],
+        "task": [
+          "task_039_orchestrate_pit_wall_race_plan_clarity"
+        ]
+      },
+      "path": "logics/backlog/item_067_make_garage_card_selection_readable_inside_the_race_plan.md",
+      "ref": "item_067_make_garage_card_selection_readable_inside_the_race_plan",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: The no-card choice is visible and describes why saving a card can be valid.",
+          "- AC2: Owned cards are selectable without a dropdown.",
+          "- AC3: Card fit status and card stat badges remain visible for selected or candidate cards.",
+          "- AC4: Empty inventory state is clear and does not block plan locking."
+        ],
+        "Problem": [
+          "- The current card dropdown hides the player's inventory and does not make card spending feel like a strategic lever.",
+          "- The fit badge and card stat badges exist but are visually subordinate to the form control.",
+          "- Players may not understand that selecting no card is valid and sometimes desirable."
+        ]
+      },
+      "status": "Ready",
+      "title": "Make garage card selection readable inside the race plan"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate pit wall race plan clarity",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_065_map_directive_choices_to_player_facing_race_plan_language",
+          "item_066_replace_directive_dropdowns_with_decision_cards",
+          "item_067_make_garage_card_selection_readable_inside_the_race_plan",
+          "item_068_add_a_dynamic_pit_wall_plan_summary",
+          "item_069_validate_directive_clarity_with_tests_and_screenshots",
+          "item_070_explain_circuit_traits_as_actionable_race_briefing"
+        ],
+        "prod": [
+          "prod_009_pit_wall_race_plan_product_brief"
+        ],
+        "req": [
+          "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan"
+        ],
+        "task": [
+          "task_039_orchestrate_pit_wall_race_plan_clarity"
+        ]
+      },
+      "path": "logics/tasks/task_039_orchestrate_pit_wall_race_plan_clarity.md",
+      "ref": "task_039_orchestrate_pit_wall_race_plan_clarity",
+      "schema_version": "1.0",
+      "sections": {
+        "Context": [
+          "- Orchestrate the scaffolded request chain and keep sibling implementation slices linked."
+        ],
+        "Validation": [
+          "- Run `python3 -m logics_manager lint --require-status`.",
+          "- Run scaffold command tests."
+        ]
+      },
+      "status": "Ready",
+      "title": "Orchestrate pit wall race plan clarity"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_065_map_directive_choices_to_player_facing_race_plan_language",
+          "item_066_replace_directive_dropdowns_with_decision_cards",
+          "item_067_make_garage_card_selection_readable_inside_the_race_plan",
+          "item_068_add_a_dynamic_pit_wall_plan_summary",
+          "item_069_validate_directive_clarity_with_tests_and_screenshots",
+          "item_070_explain_circuit_traits_as_actionable_race_briefing"
+        ],
+        "prod": [
+          "prod_009_pit_wall_race_plan_product_brief"
+        ],
+        "req": [
+          "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan"
+        ],
+        "task": [
+          "task_039_orchestrate_pit_wall_race_plan_clarity"
+        ]
+      },
+      "path": "logics/product/prod_009_pit_wall_race_plan_product_brief.md",
+      "ref": "prod_009_pit_wall_race_plan_product_brief",
+      "schema_version": "1.0",
+      "sections": {},
+      "status": "Proposed",
+      "title": "Pit Wall Race Plan Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add a dynamic pit wall plan summary, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add a dynamic pit wall plan summary",
+        "use when": "Implementing the scaffolded slice for Add a dynamic pit wall plan summary."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_068_add_a_dynamic_pit_wall_plan_summary"
+        ],
+        "prod": [
+          "prod_009_pit_wall_race_plan_product_brief"
+        ],
+        "req": [
+          "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan"
+        ],
+        "task": [
+          "task_039_orchestrate_pit_wall_race_plan_clarity"
+        ]
+      },
+      "path": "logics/backlog/item_068_add_a_dynamic_pit_wall_plan_summary.md",
+      "ref": "item_068_add_a_dynamic_pit_wall_plan_summary",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: The summary updates when approach, preparation, or card changes.",
+          "- AC2: The summary is visible before the lock CTA on desktop and mobile.",
+          "- AC3: The summary never promises a result; it describes intent and risk only.",
+          "- AC4: The summary remains visible in read-only form after the directive is locked."
+        ],
+        "Problem": [
+          "- The current panel never reflects the player's full directive back as a coherent strategy.",
+          "- A first-time player needs confirmation that the selected controls form one race plan.",
+          "- Without a summary, the confirmation modal has to carry too much meaning too late."
+        ]
+      },
+      "status": "Ready",
+      "title": "Add a dynamic pit wall plan summary"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, validate directive clarity with tests and screenshots, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Validate directive clarity with tests and screenshots",
+        "use when": "Implementing the scaffolded slice for Validate directive clarity with tests and screenshots."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_069_validate_directive_clarity_with_tests_and_screenshots"
+        ],
+        "prod": [
+          "prod_009_pit_wall_race_plan_product_brief"
+        ],
+        "req": [
+          "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan"
+        ],
+        "task": [
+          "task_039_orchestrate_pit_wall_race_plan_clarity"
+        ]
+      },
+      "path": "logics/backlog/item_069_validate_directive_clarity_with_tests_and_screenshots.md",
+      "ref": "item_069_validate_directive_clarity_with_tests_and_screenshots",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Tests cover choosing an approach, choosing a preparation, selecting no card or an owned card, and locking the directive.",
+          "- AC2: At least one test verifies the dynamic plan summary changes after a directive choice changes.",
+          "- AC3: E2E still covers the create profile, create league, submit directive, launch GP, and replay path.",
+          "- AC4: Validation commands pass locally before handoff or closeout."
+        ],
+        "Problem": [
+          "- The current flow is covered functionally, but the specific comprehension improvements need regression protection.",
+          "- The redesign changes control shape, so tests that target selects or old labels will need updates.",
+          "- The issue was discovered in playtest, so desktop and mobile visual checks matter."
+        ]
+      },
+      "status": "Ready",
+      "title": "Validate directive clarity with tests and screenshots"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, circuit traits, map telemetry, pit wall briefing, implementation-ready",
+        "skip when": "The change is only about replay visuals, card economy, or unrelated cockpit layout.",
+        "summary": "Explain circuit traits as actionable race briefing",
+        "use when": "Implementing trait explanation or map telemetry comprehension inside the pit wall race plan redesign."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_070_explain_circuit_traits_as_actionable_race_briefing"
+        ],
+        "prod": [
+          "prod_009_pit_wall_race_plan_product_brief"
+        ],
+        "req": [
+          "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan"
+        ],
+        "task": [
+          "task_039_orchestrate_pit_wall_race_plan_clarity"
+        ]
+      },
+      "path": "logics/backlog/item_070_explain_circuit_traits_as_actionable_race_briefing.md",
+      "ref": "item_070_explain_circuit_traits_as_actionable_race_briefing",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Grip, Overtaking, and Energy still appear as compact map telemetry values.",
+          "- AC2: Each trait value has a visible qualitative reading in the race planning surface, such as weak, medium, strong, or high-risk.",
+          "- AC3: Each trait includes one concise explanation of what it changes in player decision terms.",
+          "- AC4: The briefing links trait readings to current directive levers: approach, preparation, and card selection.",
+          "- AC5: The briefing avoids deterministic advice or outcome promises; it frames tradeoffs and risk.",
+          "- AC6: All new trait briefing copy is localized through EN/FR catalogs."
+        ],
+        "Problem": [
+          "- The map currently exposes Grip, Overtaking, and Energy as raw numbers, but a new player cannot tell whether a value is weak, average, or strong.",
+          "- The player cannot infer what each trait changes in the race simulation or which directive choice should react to it.",
+          "- The trait indicators are useful telemetry, but there is no adjacent explanation that turns them into an actionable pit wall briefing."
+        ]
+      },
+      "status": "Ready",
+      "title": "Explain circuit traits as actionable race briefing"
+    }
+  ],
+  "estimates": {
+    "char_count": 15643,
+    "companion_doc_count": 0,
+    "doc_count": 9
+  },
+  "generated_at": "2026-07-15T22:19:20Z",
+  "handoff": {
+    "companion_doc_count": 0,
+    "enabled": false,
+    "source_refs": [
+      "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan",
+      "item_065_map_directive_choices_to_player_facing_race_plan_language",
+      "item_066_replace_directive_dropdowns_with_decision_cards",
+      "item_067_make_garage_card_selection_readable_inside_the_race_plan",
+      "item_068_add_a_dynamic_pit_wall_plan_summary",
+      "item_069_validate_directive_clarity_with_tests_and_screenshots",
+      "item_070_explain_circuit_traits_as_actionable_race_briefing",
+      "task_039_orchestrate_pit_wall_race_plan_clarity"
+    ],
+    "validation_summary_count": 0
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 387,
+      "fr": 387
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "full",
+  "profile": "normal",
+  "ref": "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan,item_065_map_directive_choices_to_player_facing_race_plan_language,item_066_replace_directive_dropdowns_with_decision_cards,item_067_make_garage_card_selection_readable_inside_the_race_plan,item_068_add_a_dynamic_pit_wall_plan_summary,item_069_validate_directive_clarity_with_tests_and_screenshots,item_070_explain_circuit_traits_as_actionable_race_briefing,task_039_orchestrate_pit_wall_race_plan_clarity",
+  "refs": [
+    "req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan",
+    "item_065_map_directive_choices_to_player_facing_race_plan_language",
+    "item_066_replace_directive_dropdowns_with_decision_cards",
+    "item_067_make_garage_card_selection_readable_inside_the_race_plan",
+    "item_068_add_a_dynamic_pit_wall_plan_summary",
+    "item_069_validate_directive_clarity_with_tests_and_screenshots",
+    "item_070_explain_circuit_traits_as_actionable_race_briefing",
+    "task_039_orchestrate_pit_wall_race_plan_clarity"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "Missing logics/release/contract.json."
+    ],
+    "configured": false,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Run logics-manager release discover --write, then review and promote logics/release/contract.draft.json to logics/release/contract.json.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "not_configured",
+    "target_version": null
+  },
+  "validation_summary": []
+}

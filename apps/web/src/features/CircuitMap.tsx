@@ -219,7 +219,8 @@ export function CircuitMap({
     const focusX = VIEW_WIDTH / 2;
     const focusY = VIEW_HEIGHT / 2;
     const startedAt = performance.now();
-    let frame = requestAnimationFrame(function tick() {
+    let frame = 0;
+    const tick = () => {
       clockRef.current = camera.timeRef?.current ?? (performance.now() - startedAt) / 1000;
       const elapsed = Math.max(0, clockRef.current - car.delay);
       const progress = car.progress ?? (car.repeatCount !== "indefinite" && clockRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration);
@@ -246,7 +247,8 @@ export function CircuitMap({
       cameraGroup.querySelectorAll<SVGGElement>(".map-car-marker").forEach((marker) => marker.setAttribute("transform", `scale(${1 / zoomRef.current})`));
       cameraGroup.setAttribute("transform", `translate(${focusX} ${focusY}) scale(${zoomRef.current}) translate(${-point.x} ${-point.y})`);
       frame = requestAnimationFrame(tick);
-    });
+    };
+    tick();
 
     return () => {
       cancelAnimationFrame(frame);

@@ -211,6 +211,35 @@ const nextGrandPrixState = {
   ]
 };
 
+const seasonTwoState = {
+  ...baseState,
+  league: {
+    ...baseState.league,
+    maxGrandPrixPerSeason: 1
+  },
+  currentGrandPrix: {
+    ...baseState.currentGrandPrix,
+    id: "gp_2",
+    season: 2,
+    round: 1
+  },
+  grandPrixHistory: [
+    {
+      ...baseState.grandPrixHistory[0],
+      status: "resolved",
+      result: resolvedState.currentGrandPrix.result
+    },
+    {
+      id: "gp_2",
+      name: "Silver Ridge GP",
+      season: 2,
+      round: 1,
+      status: "briefing",
+      result: null
+    }
+  ]
+};
+
 const qualifyingRun = {
   teamId: "team_1",
   time: 72.42,
@@ -571,6 +600,36 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
+  });
+
+  it("celebrates a season rollover once and reopens the recap from palmares", async () => {
+    saveProfile();
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(seasonTwoState));
+
+    render(<App />);
+
+    createLeagueFromSetup();
+    const recap = await screen.findByRole("dialog", { name: "Season recap" });
+    expect(recap.textContent).toContain("Season 1");
+    expect(recap.textContent).toContain("Champion");
+    expect(recap.textContent).toContain("Volt Union");
+    expect(recap.textContent).toContain("Final standings");
+    expect(localStorage.getItem("cr-league-season-recap:league_1:1")).toBe("seen");
+
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "Championship" }));
+    expect(screen.getByRole("heading", { name: "Palmares" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Season 1/ }).textContent).toContain("Volt Union");
+    expect(document.querySelectorAll(".season-history-group").length).toBe(2);
+    fireEvent.click(screen.getByRole("button", { name: /Season 1/ }));
+    expect(screen.getByRole("dialog", { name: "Season recap" })).toBeTruthy();
+
+    cleanup();
+    fetch.mockResolvedValueOnce(response(seasonTwoState));
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Race" });
+    expect(screen.queryByRole("dialog", { name: "Season recap" })).toBe(null);
   });
 
   it("shows and copies the saved profile code from the profile menu", async () => {

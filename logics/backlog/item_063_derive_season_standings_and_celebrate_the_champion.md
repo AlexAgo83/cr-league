@@ -1,10 +1,10 @@
 ## item_063_derive_season_standings_and_celebrate_the_champion - Derive season standings and celebrate the champion
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 35%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Season payoff
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -37,6 +37,7 @@
 - request-AC7 -> This backlog slice. Proof: AC4: All gates pass.
 - request-AC8 -> This backlog slice. Proof: AC4: All gates pass.
 - request-AC9 -> This backlog slice. Proof: AC4: All gates pass.
+- request-AC6 -> This backlog slice. Evidence needed: The GP history is grouped by season with the most recent season expanded and older seasons collapsed; each season header shows the summary line and each entry keeps its current content and interactions (including history replay).
 
 # Decision framing
 - Product framing: Not needed
@@ -57,3 +58,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_038_orchestrate_starting_grid_and_season_narrative`
+
+# Notes
+- Task `task_038_orchestrate_starting_grid_and_season_narrative` was finished via `logics-manager flow finish task` on 2026-07-15.

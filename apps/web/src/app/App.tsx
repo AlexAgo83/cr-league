@@ -2,7 +2,7 @@ import { APP_NAME, type CardId, type QualifyingRun } from "@cr-league/shared";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitForRound, countryFlag } from "./circuits.js";
-import { cardFit, startingGrid, strongestForecast } from "./helpers.js";
+import { cardFit, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
 import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
@@ -18,6 +18,7 @@ const PLAYER_CLAIMS_KEY = "cr-league-player-claims";
 const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
 const PROFILE_SESSION_KEY = "cr-league-profile-session";
 const LANGUAGE_KEY = "cr-league-language";
+const SEASON_RECAP_KEY_PREFIX = "cr-league-season-recap";
 
 type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueId: string;
@@ -162,6 +163,7 @@ export function App() {
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
+  const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [profileCodeOpen, setProfileCodeOpen] = useState(false);
   const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
@@ -262,6 +264,8 @@ export function App() {
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
   const currentCircuit = circuitForRound(leagueState?.currentGrandPrix.round ?? 1);
   const startingGridEntries = leagueState ? startingGrid(leagueState) : [];
+  const completedSeasons = useMemo(() => (leagueState ? completedSeasonSummaries(leagueState) : []), [leagueState]);
+  const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
   const primaryCommand =
     deskState === "prepare"
       ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }
@@ -272,6 +276,16 @@ export function App() {
             action: () => setNextGrandPrixConfirmOpen(true),
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
+
+  useEffect(() => {
+    if (!leagueState) return;
+    const endedSeason = leagueState.currentGrandPrix.season - 1;
+    if (endedSeason < 1 || !completedSeasons.some((season) => season.season === endedSeason)) return;
+    const key = seasonRecapStorageKey(leagueState.league.id, endedSeason);
+    if (localStorage.getItem(key)) return;
+    localStorage.setItem(key, "seen");
+    setSeasonRecapSeason(endedSeason);
+  }, [completedSeasons, leagueState]);
 
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
@@ -1148,6 +1162,7 @@ export function App() {
             state={leagueState}
             playerTeamId={playerTeam?.id}
             onReplayGrandPrix={setHistoryReplay}
+            onOpenSeasonRecap={setSeasonRecapSeason}
             tt={tt}
           />
         ) : null}
@@ -1258,6 +1273,61 @@ export function App() {
       {resolveConfirmModal}
       {qualifyingConfirmModal}
       {nextGrandPrixConfirmModal}
+      {seasonRecap ? (
+        <div className="modal-overlay" onClick={() => setSeasonRecapSeason(null)}>
+          <section className="panel modal season-recap-modal" role="dialog" aria-modal="true" aria-label={tt("season_recap_title")} onClick={(event) => event.stopPropagation()}>
+            <span className="section-kicker">
+              {tt("league_season")} {seasonRecap.season}
+            </span>
+            <h2>{tt("season_recap_title")}</h2>
+            <div className="season-champion-card">
+              <span>{tt("season_champion")}</span>
+              <strong>
+                {seasonRecap.champion.livery ? (
+                  <LiveryPlate className="standings-livery-plate leader-livery-plate" livery={seasonRecap.champion.livery} name={seasonRecap.champion.teamName} />
+                ) : null}
+                {seasonRecap.champion.teamName}
+              </strong>
+              <small>
+                {seasonRecap.champion.points} {tt("unit_points")} · {seasonRecap.gpCount} {tt("season_gp_count")}
+              </small>
+            </div>
+            <div className="season-recap-grid">
+              <section>
+                <h3>{tt("season_podium")}</h3>
+                <ol className="season-podium-list">
+                  {seasonRecap.standings.slice(0, 3).map((entry) => (
+                    <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "current-team" : undefined}>
+                      <strong>P{entry.position}</strong>
+                      {entry.livery ? <LiveryPlate className="standings-livery-plate" livery={entry.livery} name={entry.teamName} /> : null}
+                      <span>{entry.teamName}</span>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+              <section>
+                <h3>{tt("season_final_standings")}</h3>
+                <ol className="season-standings-list">
+                  {seasonRecap.standings.map((entry) => (
+                    <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "current-team" : undefined}>
+                      <strong>P{entry.position}</strong>
+                      <span>{entry.teamName}</span>
+                      <small>
+                        {entry.points} {tt("unit_points")}
+                      </small>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+            </div>
+            <div className="actions secondary-actions">
+              <button type="button" onClick={() => setSeasonRecapSeason(null)}>
+                {tt("action_close")}
+              </button>
+            </div>
+          </section>
+        </div>
+      ) : null}
       {historyReplay?.result ? (
         <div className="modal-overlay" onClick={() => setHistoryReplay(null)}>
           <section className="panel modal qualifying-modal" role="dialog" aria-modal="true" aria-label={tt("result_replay_title")} onClick={(event) => event.stopPropagation()}>
@@ -1394,6 +1464,10 @@ function loadProfileSession(): ProfileSession | null {
   } catch {
     return null;
   }
+}
+
+function seasonRecapStorageKey(leagueId: string, season: number) {
+  return `${SEASON_RECAP_KEY_PREFIX}:${leagueId}:${season}`;
 }
 
 function storeProfileSession(session: ProfileSession) {

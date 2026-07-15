@@ -1,10 +1,10 @@
 ## item_064_group_the_gp_history_by_season - Group the GP history by season
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 35%
+> Progress: 100%
 > Complexity: Low
 > Theme: History legibility
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,6 +32,8 @@
 - request-AC7 -> This backlog slice. Proof: AC2: History replay still opens from an entry inside a collapsed-then-expanded older season.
 - request-AC8 -> This backlog slice. Proof: AC3: EN/FR keys complete; all gates pass.
 - request-AC9 -> This backlog slice. Proof: AC3: EN/FR keys complete; all gates pass.
+- request-AC4 -> This backlog slice. Evidence needed: When the app detects a season rollover for a league, a season-recap modal shows the champion, the podium, the full final standings with the player's row highlighted, and the season number; it appears once per ended season per league (localStorage guard) and can be reopened from the palmares.
+- request-AC5 -> This backlog slice. Evidence needed: The Championship view gains a palmares: one line per completed season (season number, champion name and livery, GP count), derived from the same helper, visible without opening any modal.
 
 # Decision framing
 - Product framing: Not needed
@@ -52,3 +54,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_038_orchestrate_starting_grid_and_season_narrative`
+
+# Notes
+- Task `task_038_orchestrate_starting_grid_and_season_narrative` was finished via `logics-manager flow finish task` on 2026-07-15.

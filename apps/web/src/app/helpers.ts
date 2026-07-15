@@ -5,6 +5,19 @@ import type { LeagueState } from "./types.js";
 export type Translator = (key: TranslationKey) => string;
 
 export type RaceEvent = RaceResult["events"][number];
+export type SeasonStanding = {
+  position: number;
+  teamId: string;
+  teamName: string;
+  livery: LeagueState["teams"][number]["livery"] | undefined;
+  points: number;
+};
+export type CompletedSeasonSummary = {
+  season: number;
+  gpCount: number;
+  standings: SeasonStanding[];
+  champion: SeasonStanding;
+};
 
 export function strongestForecast(forecast: Record<string, number>) {
   return Object.entries(forecast).reduce((best, current) => (current[1] > best[1] ? current : best), ["dry", 0])[0];
@@ -68,25 +81,51 @@ export function startingGrid(state: LeagueState) {
     }));
 }
 
-export function seasonWinsByTeamId(state: LeagueState) {
-  const pointsBySeason = new Map<number, Map<string, number>>();
-  const resolvedBySeason = new Map<number, number>();
+export function seasonStandings(state: LeagueState, season: number): SeasonStanding[] {
+  const teamRank = new Map(state.teams.map((team, index) => [team.id, index]));
+  const teams = new Map(state.teams.map((team) => [team.id, team]));
+  const points = new Map(state.teams.map((team) => [team.id, 0]));
+  const names = new Map(state.teams.map((team) => [team.id, team.name]));
 
   for (const grandPrix of state.grandPrixHistory) {
-    if (!grandPrix.result) continue;
-    resolvedBySeason.set(grandPrix.season, (resolvedBySeason.get(grandPrix.season) ?? 0) + 1);
-    const seasonPoints = pointsBySeason.get(grandPrix.season) ?? new Map<string, number>();
+    if (grandPrix.season !== season || !grandPrix.result) continue;
     for (const entry of grandPrix.result.classification) {
-      seasonPoints.set(entry.teamId, (seasonPoints.get(entry.teamId) ?? 0) + entry.points);
+      points.set(entry.teamId, (points.get(entry.teamId) ?? 0) + entry.points);
+      names.set(entry.teamId, entry.teamName);
     }
-    pointsBySeason.set(grandPrix.season, seasonPoints);
   }
 
+  return [...points.entries()]
+    .sort((left, right) => right[1] - left[1] || (teamRank.get(left[0]) ?? 999) - (teamRank.get(right[0]) ?? 999) || (names.get(left[0]) ?? left[0]).localeCompare(names.get(right[0]) ?? right[0]))
+    .map(([teamId, score], index) => ({
+      position: index + 1,
+      teamId,
+      teamName: names.get(teamId) ?? teamId,
+      livery: teams.get(teamId)?.livery,
+      points: score
+    }));
+}
+
+export function completedSeasonSummaries(state: LeagueState): CompletedSeasonSummary[] {
+  const seasons = new Map<number, number>();
+  for (const grandPrix of state.grandPrixHistory) {
+    if (grandPrix.season >= state.currentGrandPrix.season || !grandPrix.result) continue;
+    seasons.set(grandPrix.season, (seasons.get(grandPrix.season) ?? 0) + 1);
+  }
+
+  const summaries: CompletedSeasonSummary[] = [];
+  for (const [season, gpCount] of seasons) {
+    const standings = seasonStandings(state, season);
+    const champion = standings[0];
+    if (champion) summaries.push({ season, gpCount, standings, champion });
+  }
+  return summaries.sort((left, right) => right.season - left.season);
+}
+
+export function seasonWinsByTeamId(state: LeagueState) {
   const wins = new Map<string, number>();
-  for (const [season, seasonPoints] of pointsBySeason) {
-    if ((resolvedBySeason.get(season) ?? 0) < state.league.maxGrandPrixPerSeason) continue;
-    const winner = [...seasonPoints.entries()].sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))[0];
-    if (winner) wins.set(winner[0], (wins.get(winner[0]) ?? 0) + 1);
+  for (const season of completedSeasonSummaries(state)) {
+    wins.set(season.champion.teamId, (wins.get(season.champion.teamId) ?? 0) + 1);
   }
   return wins;
 }

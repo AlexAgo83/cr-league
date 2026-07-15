@@ -289,11 +289,16 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
       code: "ABC123",
       status: "active",
       cadence,
+      maxPlayers: 2,
+      fillWithBots: true,
+      qualifyingAttemptLimit: 3,
+      maxGrandPrixPerSeason: 6,
       preparationDeadlineAt: null
     },
     currentGrandPrix: {
       id: `gp_${round}`,
       name: "Silver Ridge GP",
+      season: 1,
       round,
       status: currentStatus,
       primaryTrait: "fast",
@@ -311,6 +316,7 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
       return {
         id: `gp_${historyRound}`,
         name: "Silver Ridge GP",
+        season: 1,
         round: historyRound,
         status: historyRound === round ? currentStatus : "resolved",
         result: historyRound === round ? result : resultForRound(historyRound)

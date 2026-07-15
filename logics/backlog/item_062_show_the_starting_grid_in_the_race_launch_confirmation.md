@@ -1,10 +1,10 @@
 ## item_062_show_the_starting_grid_in_the_race_launch_confirmation - Show the starting grid in the race launch confirmation
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 35%
+> Progress: 100%
 > Complexity: Low
 > Theme: Pre-race ceremony
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,8 @@
 - request-AC7 -> This backlog slice. Proof: AC3: The grid helper unit test covers ties/missing times; EN and FR keys are complete.
 - request-AC8 -> This backlog slice. Proof: AC4: All gates pass and the e2e asserts the grid recap.
 - request-AC9 -> This backlog slice. Proof: AC4: All gates pass and the e2e asserts the grid recap.
+- request-AC5 -> This backlog slice. Evidence needed: The Championship view gains a palmares: one line per completed season (season number, champion name and livery, GP count), derived from the same helper, visible without opening any modal.
+- request-AC6 -> This backlog slice. Evidence needed: The GP history is grouped by season with the most recent season expanded and older seasons collapsed; each season header shows the summary line and each entry keeps its current content and interactions (including history replay).
 
 # Decision framing
 - Product framing: Not needed
@@ -56,3 +58,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_038_orchestrate_starting_grid_and_season_narrative`
+
+# Notes
+- Task `task_038_orchestrate_starting_grid_and_season_narrative` was finished via `logics-manager flow finish task` on 2026-07-15.

@@ -1,7 +1,7 @@
 ## req_037_starting_grid_modal_and_season_narrative - Starting grid modal and season narrative
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90
 > Confidence: 85
 > Complexity: Medium

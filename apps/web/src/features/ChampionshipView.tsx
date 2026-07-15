@@ -1,5 +1,5 @@
 import type { TranslationKey } from "../i18n/index.js";
-import { seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
+import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 
@@ -7,16 +7,21 @@ export function ChampionshipView({
   state,
   playerTeamId,
   onReplayGrandPrix,
+  onOpenSeasonRecap,
   tt
 }: {
   state: LeagueState;
   playerTeamId: string | undefined;
   onReplayGrandPrix: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
+  onOpenSeasonRecap: (season: number) => void;
   tt: Translator;
 }) {
   const leader = state.teams[0];
   const currentGrandPrix = state.currentGrandPrix;
   const sortedHistory = [...state.grandPrixHistory].sort((left, right) => left.season - right.season || left.round - right.round);
+  const historyBySeason = groupHistoryBySeason(sortedHistory);
+  const completedSeasons = completedSeasonSummaries(state);
+  const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
 
   return (
@@ -95,35 +100,72 @@ export function ChampionshipView({
             </ol>
           </section>
 
+          {completedSeasons.length ? (
+            <section className="panel championship-palmares-panel">
+              <h3>{tt("season_palmares")}</h3>
+              <ol className="palmares-list">
+                {completedSeasons.map((season) => (
+                  <li key={season.season}>
+                    <button type="button" className="palmares-button" onClick={() => onOpenSeasonRecap(season.season)}>
+                      <span>{season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} /> : null}</span>
+                      <strong>
+                        {tt("league_season")} {season.season}
+                      </strong>
+                      <span>{season.champion.teamName}</span>
+                      <small>
+                        {season.gpCount} {tt("season_gp_count")}
+                      </small>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ) : null}
+
           <section className="panel championship-history-panel">
             <h3>{tt("league_history")}</h3>
-            <ol className="round-timeline" aria-label={tt("league_history")}>
-              {sortedHistory.map((grandPrix) => {
-                const chip = (
-                  <span
-                    className={`round-chip status-${
-                      grandPrix.status === currentGrandPrix.status && grandPrix.season === currentGrandPrix.season && grandPrix.round === currentGrandPrix.round
-                        ? "current"
-                        : grandPrix.status
-                    }`}
-                  >
-                    S{grandPrix.season} R{grandPrix.round}
-                  </span>
-                );
+            <div className="season-history-groups" aria-label={tt("league_history")}>
+              {historyBySeason.map(([season, grandPrixList]) => {
+                const summary = completedBySeason.get(season);
                 return (
-                  <li key={grandPrix.id}>
-                    {grandPrix.result ? (
-                      <button type="button" className="round-history-button" onClick={() => onReplayGrandPrix(grandPrix)}>
-                        {chip}
-                      </button>
-                    ) : (
-                      chip
-                    )}
-                    <small>{historyLabel(grandPrix, playerTeamId, tt)}</small>
-                  </li>
+                  <details key={season} className="season-history-group" open={season === currentGrandPrix.season}>
+                    <summary>
+                      <strong>
+                        {tt("league_season")} {season}
+                      </strong>
+                      <small>{summary ? `${summary.champion.teamName} · ${summary.gpCount} ${tt("season_gp_count")}` : tt("season_current")}</small>
+                    </summary>
+                    <ol className="round-timeline">
+                      {grandPrixList.map((grandPrix) => {
+                        const chip = (
+                          <span
+                            className={`round-chip status-${
+                              grandPrix.status === currentGrandPrix.status && grandPrix.season === currentGrandPrix.season && grandPrix.round === currentGrandPrix.round
+                                ? "current"
+                                : grandPrix.status
+                            }`}
+                          >
+                            S{grandPrix.season} R{grandPrix.round}
+                          </span>
+                        );
+                        return (
+                          <li key={grandPrix.id}>
+                            {grandPrix.result ? (
+                              <button type="button" className="round-history-button" onClick={() => onReplayGrandPrix(grandPrix)}>
+                                {chip}
+                              </button>
+                            ) : (
+                              chip
+                            )}
+                            <small>{historyLabel(grandPrix, playerTeamId, tt)}</small>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  </details>
                 );
               })}
-            </ol>
+            </div>
           </section>
         </div>
       </div>
@@ -134,4 +176,12 @@ export function ChampionshipView({
 function historyLabel(grandPrix: LeagueState["grandPrixHistory"][number], playerTeamId: string | undefined, tt: Translator) {
   const position = playerTeamId ? grandPrix.result?.classification.find((entry) => entry.teamId === playerTeamId)?.position : undefined;
   return position ? `P${position}` : statusLabel(grandPrix.status, tt);
+}
+
+function groupHistoryBySeason(history: LeagueState["grandPrixHistory"]) {
+  const groups = new Map<number, LeagueState["grandPrixHistory"]>();
+  for (const grandPrix of history) {
+    groups.set(grandPrix.season, [...(groups.get(grandPrix.season) ?? []), grandPrix]);
+  }
+  return [...groups.entries()].sort((left, right) => right[0] - left[0]);
 }

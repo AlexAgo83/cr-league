@@ -3,7 +3,6 @@ databases:
     databaseName: cr_league
     user: cr_league
     region: frankfurt
-    plan: starter
 
 services:
   - type: web

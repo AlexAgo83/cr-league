@@ -175,19 +175,24 @@ export function App() {
   const [message, setMessage] = useState(() => t("status_initial", locale));
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const notificationId = useRef(0);
-  const lastNotification = useRef("");
-  const lastCommandHint = useRef("");
 
-  useEffect(() => {
-    if (message === t("status_initial", locale)) return;
-    if (message === lastNotification.current) return;
-    lastNotification.current = message;
+  function pushNotification(text: string, tone: Notification["tone"] = "info") {
     const id = notificationId.current + 1;
     notificationId.current = id;
-    const tone: Notification["tone"] = status === "error" ? "error" : "info";
-    setNotifications((items) => [...items, { id, text: message, tone }].slice(-5));
-    window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 5_000);
-  }, [message, locale]);
+    queueMicrotask(() => {
+      setNotifications((items) => [...items, { id, text, tone }].slice(-5));
+      window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 5_000);
+    });
+  }
+
+  function showStatus(text: string, tone: Notification["tone"] = "info", notify = true) {
+    setMessage(text);
+    if (notify && text !== t("status_initial", locale)) pushNotification(text, tone);
+  }
+
+  function pushCommandHint(nextDeskState: "prepare" | "ready" | "resolved") {
+    pushNotification(t(`command_hint_${nextDeskState}` as TranslationKey, locale));
+  }
 
   function dismissNotification(id: number) {
     setNotifications((items) => items.filter((item) => item.id !== id));
@@ -206,7 +211,8 @@ export function App() {
         });
         rememberPlayer(state);
         setLeagueState(state);
-        setMessage(tt("status_league_rejoined"));
+        showStatus(tt("status_league_rejoined"));
+        pushCommandHint("prepare");
       },
       saved.teamId
     );
@@ -264,17 +270,6 @@ export function App() {
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
 
-  useEffect(() => {
-    if (!leagueState) return;
-    const text = t(`command_hint_${deskState}` as TranslationKey, locale);
-    if (text === lastCommandHint.current) return;
-    lastCommandHint.current = text;
-    const id = notificationId.current + 1;
-    notificationId.current = id;
-    setNotifications((items) => [...items, { id, text, tone: "info" as const }].slice(-5));
-    window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 5_000);
-  }, [deskState, leagueState, locale]);
-
   async function createLeague() {
     await run(tt("status_creating_league"), async () => {
       const state = await api<LeagueState>("/leagues", {
@@ -292,7 +287,8 @@ export function App() {
       rememberPlayer(state);
       setLeagueState(state);
       setGameView("drive");
-      setMessage(tt("status_league_created"));
+      showStatus(tt("status_league_created"));
+      pushCommandHint("prepare");
     });
   }
 
@@ -309,7 +305,8 @@ export function App() {
       rememberPlayer(state);
       setLeagueState(state);
       setGameView("drive");
-      setMessage(tt("status_league_joined"));
+      showStatus(tt("status_league_joined"));
+      pushCommandHint("prepare");
     });
   }
 
@@ -336,7 +333,8 @@ export function App() {
         })
       });
       setLeagueState(withCurrentPlayer(state));
-      setMessage(tt("status_directive_locked"));
+      showStatus(tt("status_directive_locked"));
+      pushCommandHint("ready");
     });
   }
 
@@ -357,7 +355,7 @@ export function App() {
       });
       setLeagueState(withCurrentPlayer(response.state));
       setQualifyingResult(response.run);
-      setMessage(response.isBest ? tt("status_qualifying_best") : tt("status_qualifying_done"));
+      showStatus(response.isBest ? tt("status_qualifying_best") : tt("status_qualifying_done"));
     });
   }
 
@@ -385,7 +383,7 @@ export function App() {
         body: body === undefined ? undefined : JSON.stringify(body)
       });
       setLeagueState(withCurrentPlayer(state));
-      setMessage(tt(successKey));
+      showStatus(tt(successKey));
     });
   }
 
@@ -412,7 +410,8 @@ export function App() {
       setLeagueState(withCurrentPlayer(state));
       setGameView("result");
       setResultTab("replay");
-      setMessage(tt("status_grand_prix_resolved"));
+      showStatus(tt("status_grand_prix_resolved"));
+      pushCommandHint("resolved");
     });
   }
 
@@ -426,7 +425,8 @@ export function App() {
       });
       setLeagueState(withCurrentPlayer(state));
       setGameView("drive");
-      setMessage(tt("status_next_grand_prix_started"));
+      showStatus(tt("status_next_grand_prix_started"));
+      pushCommandHint("prepare");
     });
   }
 
@@ -456,7 +456,7 @@ export function App() {
       const nextState = withCurrentPlayer(state);
       setLeagueState(nextState);
       rememberPlayer(nextState);
-      setMessage(tt("status_team_name_updated"));
+      showStatus(tt("status_team_name_updated"));
     });
   }
 
@@ -471,7 +471,7 @@ export function App() {
       setSavedClaims(claimsFromProfile(session));
       setSetupMode("choice");
       setProfileOpen(false);
-      setMessage(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`);
+      showStatus(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`);
     });
   }
 
@@ -488,7 +488,7 @@ export function App() {
       setSavedClaims(claims);
       setSetupMode("choice");
       setProfileOpen(false);
-      setMessage(tt("status_profile_recovered"));
+      showStatus(tt("status_profile_recovered"));
     });
   }
 
@@ -507,7 +507,8 @@ export function App() {
         setLeagueState(state);
         setGameView("drive");
         setProfileOpen(false);
-        setMessage(tt("status_league_rejoined"));
+        showStatus(tt("status_league_rejoined"));
+        pushCommandHint("prepare");
       },
       claim.teamId
     );
@@ -521,7 +522,7 @@ export function App() {
 
   async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string) {
     setStatus("loading");
-    setMessage(nextMessage);
+    showStatus(nextMessage);
 
     try {
       await action();
@@ -531,10 +532,10 @@ export function App() {
       if (isStaleLeagueError(error)) {
         forgetClaim(staleClaimTeamId);
         setLeagueState(null);
-        setMessage(tt("status_saved_league_expired"));
+        showStatus(tt("status_saved_league_expired"), "error", false);
         return;
       }
-      setMessage(error instanceof Error ? error.message : tt("status_api_unavailable"));
+      showStatus(error instanceof Error ? error.message : tt("status_api_unavailable"), "error");
     }
   }
 
@@ -542,7 +543,7 @@ export function App() {
     forgetClaim(leagueState?.player?.teamId);
     setLeagueState(null);
     setGameView("drive");
-    setMessage(tt("status_player_forgotten"));
+    showStatus(tt("status_player_forgotten"));
   }
 
   function addLeague() {
@@ -550,13 +551,13 @@ export function App() {
     setGameView("drive");
     setSetupMode("choice");
     setProfileOpen(false);
-    setMessage(tt("status_initial"));
+    showStatus(tt("status_initial"));
   }
 
   async function copyProfileCode() {
     const code = profileSession?.recoveryCode;
     if (!code) {
-      setMessage(tt("status_profile_code_missing"));
+      showStatus(tt("status_profile_code_missing"), "error", false);
       return;
     }
 
@@ -574,7 +575,7 @@ export function App() {
       input.remove();
     }
 
-    setMessage(`${tt("status_profile_code_copied")} ${code}`);
+    showStatus(`${tt("status_profile_code_copied")} ${code}`, "info", false);
   }
 
   function forgetProfile() {
@@ -588,7 +589,7 @@ export function App() {
     setSetupMode("choice");
     setSavedClaims([]);
     storePlayerClaims([], undefined);
-    setMessage(tt("status_initial"));
+    showStatus(tt("status_initial"));
   }
 
   function changeLocale(nextLocale: Locale) {

@@ -1,58 +1,99 @@
 # CR League
 
-Tactical urban micro-EV racing league prototype.
+[![CI](https://github.com/AlexAgo83/cr-league/actions/workflows/ci.yml/badge.svg)](https://github.com/AlexAgo83/cr-league/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/AlexAgo83/cr-league?include_prereleases&label=release)](https://github.com/AlexAgo83/cr-league/releases)
+[![API](https://img.shields.io/website?label=api%20health&url=https%3A%2F%2Fcr-league-api.onrender.com%2Fhealth)](https://cr-league-api.onrender.com/health)
+[![App](https://img.shields.io/website?label=app&url=https%3A%2F%2Fcr-league.onrender.com)](https://cr-league.onrender.com)
+[![License: MIT](https://img.shields.io/badge/license-MIT-111827.svg)](LICENSE)
 
-CR League is a private-league racing game where the player acts as a team principal rather than a driver. The current repository contains a Vite React PWA, Fastify API, shared TypeScript simulation package, Prisma/PostgreSQL schema, balance simulation kit, and Logics planning corpus.
+CR League is a private racing league where you do not drive the car. You run the team.
+
+Build a garage, read the circuit, choose a race directive, spend cards, watch the city replay, and live with the consequences across a short asynchronous championship. It is designed for small private groups: a few friends, an office league, or a playtest room where every Grand Prix creates a new story.
+
+## The Fantasy
+
+You are the team principal on a compact urban EV grid.
+
+Every round asks the same tense question: do you chase pole, protect energy, gamble on weather, or save resources for the next Grand Prix? The game compresses the best parts of motorsport management into a fast private-league loop:
+
+- create or join a league with a lightweight profile;
+- claim a team and tune its livery;
+- run qualifying attempts before locking your directive;
+- spend cards from the garage to shape risk and reward;
+- launch the Grand Prix and watch a replayed race report;
+- carry points, credits, and history into the next round.
+
+## Live Preview
+
+- App: [cr-league.onrender.com](https://cr-league.onrender.com)
+- API health: [cr-league-api.onrender.com/health](https://cr-league-api.onrender.com/health)
+- Release contract: [docs/release-contract.md](docs/release-contract.md)
+
+Production uses a static Render site, a Fastify API, and a shared PostgreSQL database with a dedicated `cr_league` schema.
+
+## Gameplay Loop
+
+```mermaid
+flowchart LR
+  Profile[Create or recover profile] --> League[Create or join league]
+  League --> Briefing[Read circuit and forecast]
+  Briefing --> Qualifying[Run qualifying attempts]
+  Qualifying --> Directive[Lock approach, prep, and card]
+  Directive --> Race[Resolve Grand Prix]
+  Race --> Replay[Animated replay and report]
+  Replay --> Garage[Credits, cards, livery]
+  Garage --> Briefing
+```
+
+## What Is Built
+
+CR League is already a playable vertical slice with persistence:
+
+- profile creation, recovery code, league switching, and saved claims;
+- private league create, join, rejoin, restart, and next-Grand-Prix flows;
+- manual cadence with settings, readiness states, and guarded race actions;
+- qualifying attempts, best-lap history, and replay support;
+- seeded city-circuit race simulation with weather, traits, events, and reports;
+- garage inventory, card shop, prices, credits, livery editing, and team rename;
+- season history, championship standings, replayable past Grand Prix, and rollover;
+- English/French UI baseline and responsive cockpit layouts.
+
+Still intentionally light:
+
+- no full account authentication;
+- no public matchmaking;
+- no automated deadline scheduler or notifications;
+- no live-ops tooling beyond the current private-playtest workflow.
+
+## Architecture
 
 ```mermaid
 flowchart LR
   Web[Vite React PWA] --> API[Fastify API]
   API --> DB[(PostgreSQL schema cr_league)]
-  API --> Sim[Seeded race and qualifying simulation]
-  Sim --> Events[Race events and report]
-  Events --> Web
+  API --> Sim[Shared deterministic simulation]
+  Sim --> Race[Qualifying, events, replay, report]
+  Race --> Web
 ```
 
-## Current Status
-
-Implemented:
-
-- npm workspace monorepo
-- `apps/web` Vite + React app with profile setup, pit-wall setup, race cockpit, championship, garage, replay, report, and responsive layouts
-- `apps/api` Fastify API with health, simulation preview, lightweight profile recovery, league, qualifying, card, team, settings, restart, and next-GP endpoints
-- `packages/shared` shared metadata, race domain types, city circuits, card catalogue, economy constants, and simulation engine
-- `prisma/schema.prisma` PostgreSQL league/team/profile/card inventory/Grand Prix/decision schema with seasons, qualifying runs, liveries, and league setup limits
-- TypeScript, ESLint, Vitest baseline
-- Logics product, gameplay, architecture, UX, implementation-contract, and roadmap docs
-- balance simulation scripts and reports under `scripts/` and `reports/balance/`
-
-Not implemented yet:
-
-- full authentication
-- production deployment config
-- automatic deadline resolution/notifications
-- public matchmaking or live beta operations
+- `apps/web`: React 19 + Vite frontend, cockpit, garage, replay, and profile flows.
+- `apps/api`: Fastify API, health, profile, league, qualifying, card, team, settings, restart, and progression endpoints.
+- `packages/shared`: app metadata, race contracts, card catalogue, economy constants, circuits, and simulation engine.
+- `prisma`: PostgreSQL schema and migrations targeting a dedicated `cr_league` schema.
+- `logics`: product, architecture, roadmap, request, backlog, and task corpus.
+- `docs`: playtest scripts, balance notes, release contract, and UI notes.
+- `reports/balance`: generated balance simulation outputs.
 
 ## Tech Stack
 
 - **Frontend:** React 19, Vite, TypeScript
 - **API:** Fastify, TypeScript
-- **Shared package:** TypeScript workspace package under `packages/shared`
-- **Database target:** PostgreSQL with Prisma, dedicated schema `cr_league`
-- **Workflow:** Logics corpus under `logics/`
+- **Database:** PostgreSQL, Prisma, schema-scoped deployment
+- **Testing:** Vitest, Playwright, ESLint, TypeScript project builds
+- **Delivery:** GitHub Actions, Render Blueprint, release health verification
+- **Planning:** Logics corpus under `logics/`
 
-## Repository Topology
-
-- `apps/web`: PWA frontend app and game screens
-- `apps/api`: Fastify API with simulation and league routes
-- `packages/shared`: shared app metadata, race domain contracts, and simulation engine
-- `prisma`: Prisma schema
-- `logics`: product, architecture, specs, requests, backlog, and task docs
-- `changelogs`: curated release notes
-- `docs`: playtest, balance, and UI-zone notes
-- `reports/balance`: generated balance simulation outputs
-
-## Getting Started
+## Quick Start
 
 Install dependencies:
 
@@ -60,19 +101,37 @@ Install dependencies:
 npm install
 ```
 
-Start the web app:
+Prepare local config:
 
 ```bash
-npm run dev:web
+cp .env.example .env
 ```
 
-Start the API:
+Use a schema-scoped database URL:
+
+```env
+DATABASE_URL="postgresql://user:password@localhost:5432/cr_league?schema=cr_league"
+API_HOST="127.0.0.1"
+API_PORT="4874"
+WEB_ORIGIN="http://localhost:4873"
+VITE_API_BASE_URL="http://localhost:4874"
+```
+
+Prepare Prisma:
+
+```bash
+npm run db:generate
+npm run db:migrate
+```
+
+Run the app:
 
 ```bash
 npm run dev:api
+npm run dev:web
 ```
 
-Open the playable demo flow:
+Open:
 
 ```text
 http://localhost:4873/
@@ -82,86 +141,9 @@ Check the API:
 
 ```bash
 curl http://127.0.0.1:4874/health
-curl -X POST http://127.0.0.1:4874/simulation/preview
 ```
 
-Create and resolve a demo league through the API:
-
-```bash
-curl -X POST http://127.0.0.1:4874/profiles \
-  -H "content-type: application/json" \
-  -d '{"email":"pilot@example.test"}'
-
-curl -X POST http://127.0.0.1:4874/leagues \
-  -H "content-type: application/json" \
-  -d '{"name":"Office League","teamName":"Volt Union","profileId":"<profileId>"}'
-
-curl -X POST http://127.0.0.1:4874/leagues/<leagueId>/resolve
-```
-
-Run the real API + PostgreSQL smoke flow after the API is started:
-
-```bash
-npm run smoke:league
-```
-
-Prepare a reusable private-league playtest fixture:
-
-```bash
-npm run playtest:seed
-```
-
-This creates league code `PLAY01` with bot teams. Human testers should first create or recover a lightweight profile, then join that code from separate browser profiles. Use [docs/playtest/private-league-3gp-checklist.md](docs/playtest/private-league-3gp-checklist.md) for the manual 3-GP script and feedback prompts. The in-app `Restart session` action resets a league to round 1 while keeping joined teams and claims.
-
-Run the balance kit:
-
-```bash
-npm run balance:sim -- --runs 300 --limit 10 --json reports/balance/latest.json
-```
-
-See [docs/balance-simulations.md](docs/balance-simulations.md) for what the output measures.
-
-## Configuration
-
-Copy the example environment file when local runtime config is needed:
-
-```bash
-cp .env.example .env
-```
-
-Current variables:
-
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/cr_league?schema=cr_league"
-API_HOST="127.0.0.1"
-API_PORT="4874"
-WEB_ORIGIN="http://localhost:4873"
-```
-
-Prepare the local PostgreSQL schema:
-
-```bash
-npm run db:generate
-npm run db:migrate
-npm run db:seed
-```
-
-For hosted or non-interactive environments, use:
-
-```bash
-npm run db:deploy
-```
-
-Rules:
-
-- never commit `.env`;
-- never use `schema=public`;
-- frontend `VITE_*` values are public by design when added later;
-- secrets belong in backend/runtime environment, not in source files.
-
-## Validation
-
-Run the local quality gate:
+## Useful Scripts
 
 ```bash
 npm run typecheck
@@ -169,21 +151,56 @@ npm run build
 npm test
 npm run test:e2e
 npm run lint
-npm run db:generate
 npm run logics:validate
 ```
 
-`npm install` may use a local cache if the global npm cache is unhealthy:
+Seed a private playtest league:
 
 ```bash
-npm install --cache .npm-cache
+npm run playtest:seed
 ```
 
-`.npm-cache/` is ignored by Git.
+This creates league code `PLAY01` with bot teams. Use [docs/playtest/private-league-3gp-checklist.md](docs/playtest/private-league-3gp-checklist.md) for the manual three-Grand-Prix playtest script.
+
+Run balance simulations:
+
+```bash
+npm run balance:sim -- --runs 300 --limit 10 --json reports/balance/latest.json
+```
+
+See [docs/balance-simulations.md](docs/balance-simulations.md) for the metrics.
+
+## Render Configuration
+
+The Blueprint creates:
+
+- `cr-league`: static site at `https://cr-league.onrender.com`;
+- `cr-league-api`: API at `https://cr-league-api.onrender.com`.
+
+Runtime values stay in Render:
+
+```text
+WEB_ORIGIN=https://cr-league.onrender.com
+VITE_API_BASE_URL=https://cr-league-api.onrender.com
+DATABASE_URL=postgresql://.../alex_db_mnb8?schema=cr_league
+```
+
+Rules:
+
+- never commit `.env`;
+- never use `schema=public`;
+- `VITE_*` values are public and end up in the browser bundle;
+- database URLs and other secrets belong only in backend/runtime environment variables.
+
+## Release Contract
+
+Releases are immutable GitHub releases. The deploy workflow verifies that package versions match the tag, triggers Render deploy hooks, and polls `/health` until production reports the expected version and commit.
+
+Details: [docs/release-contract.md](docs/release-contract.md)
 
 ## Logics Workflow
 
-The project planning and delivery memory lives under `logics/`.
+The delivery corpus lives under `logics/`.
 
 Useful commands:
 
@@ -193,20 +210,12 @@ logics-manager lint --require-status
 logics-manager audit --group-by-doc
 ```
 
-The current release roadmap is:
-
-- `logics/roadmap/road_001_cr_league_roadmap.md`
-
-The detailed implementation-wave roadmap is:
-
-- `logics/specs/spec_016_implementation_roadmap.md`
-
 Current roadmap direction:
 
-- `0.1` playable vertical slice is implemented;
-- `0.2` private league prototype foundation is implemented for local/private playtests: lightweight profile recovery, create/join/rejoin, manual cadence, readiness, GP history, restart, seed fixture, i18n, and guarded state rules;
-- `0.3` playtest game loop is now the active polish lane: guided race prep, qualifying attempts with replay, animated road-routed city replays, compact profile/pit-wall entry screens, championship history replay, season rollover, garage, cards, and balance checks are present but still need real playtest validation;
-- `0.4` economy/card depth has started with inventory/shop, 15 cards, prices, credits, recommendations, and a balance simulation kit; broader progression should wait for playtest signal.
+- `0.1`: playable vertical slice implemented;
+- `0.2`: private league prototype foundation implemented;
+- `0.3`: playtest game loop polish is active;
+- `0.4`: economy and card depth has started, with broader progression waiting for playtest signal.
 
 ## Contributing
 
@@ -218,4 +227,4 @@ See [SECURITY.md](SECURITY.md).
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

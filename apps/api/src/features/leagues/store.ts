@@ -3,6 +3,8 @@ import {
   CARD_PRICE,
   DEMO_RACE_INPUT,
   clampTrait,
+  circuitIdentityForRound,
+  raceInputFromCircuit,
   simulateRace,
   type CardId,
   type QualifyingRun,
@@ -282,6 +284,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   const maxPlayers = clampInteger(input.maxPlayers, DEFAULT_MAX_PLAYERS, 2, MAX_PLAYERS_LIMIT);
   const qualifyingAttemptLimit = clampInteger(input.qualifyingAttemptLimit, DEFAULT_QUALIFYING_ATTEMPTS, 1, MAX_QUALIFYING_ATTEMPTS);
   const maxGrandPrixPerSeason = clampInteger(input.maxGrandPrixPerSeason, DEFAULT_GRAND_PRIX_PER_SEASON, 1, MAX_GRAND_PRIX_PER_SEASON);
+  const openingRaceInput = raceInputFromCircuit(circuitIdentityForRound(1));
 
   const league = await db.league.create({
     data: {
@@ -315,9 +318,9 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
       season: 1,
       round: 1,
       seed: `${DEMO_RACE_INPUT.seed}-${league.id}`,
-      primaryTrait: DEMO_RACE_INPUT.primaryTrait,
-      secondaryTrait: DEMO_RACE_INPUT.secondaryTrait,
-      forecast: DEMO_RACE_INPUT.forecast
+      primaryTrait: openingRaceInput.primaryTrait,
+      secondaryTrait: openingRaceInput.secondaryTrait,
+      forecast: openingRaceInput.forecast
     }
   });
 
@@ -728,6 +731,7 @@ export async function startNextGrandPrix(db: Db, leagueId: string) {
   if (!state) return null;
   const nextSeason = grandPrix.round >= state.league.maxGrandPrixPerSeason ? grandPrix.season + 1 : grandPrix.season;
   const nextRound = grandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : grandPrix.round + 1;
+  const nextRaceInput = raceInputFromCircuit(circuitIdentityForRound(nextRound));
 
   await buyBotCards(db, state, `${leagueId}-s${nextSeason}-r${nextRound}`);
 
@@ -738,9 +742,9 @@ export async function startNextGrandPrix(db: Db, leagueId: string) {
       season: nextSeason,
       round: nextRound,
       seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-s${nextSeason}-r${nextRound}`,
-      primaryTrait: DEMO_RACE_INPUT.primaryTrait,
-      secondaryTrait: DEMO_RACE_INPUT.secondaryTrait,
-      forecast: DEMO_RACE_INPUT.forecast
+      primaryTrait: nextRaceInput.primaryTrait,
+      secondaryTrait: nextRaceInput.secondaryTrait,
+      forecast: nextRaceInput.forecast
     }
   });
   if (nextSeason !== grandPrix.season) {

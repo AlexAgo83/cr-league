@@ -1,10 +1,10 @@
 ## item_056_rebuild_the_three_recap_cards_on_player_race_data - Rebuild the three recap cards on player race data
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Recap content
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

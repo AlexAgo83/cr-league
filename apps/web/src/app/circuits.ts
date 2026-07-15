@@ -1,3 +1,4 @@
+import { CITY_CIRCUIT_IDENTITIES } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 
 export type CityCircuit = {
@@ -22,12 +23,7 @@ export function countryFlag(country: string) {
 
 export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
   {
-    city: "Paris",
-    country: "FR",
-    layoutKey: "circuit_docklands_sprint",
-    laps: 5,
-    traits: { grip: 64, overtaking: 72, energy: 58 },
-    likelyWeather: "light_rain",
+    ...CITY_CIRCUIT_IDENTITIES[0],
     route: [
       { lat: 48.869936, lng: 2.32246 },
       { lat: 48.869811, lng: 2.322398 },
@@ -373,12 +369,7 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     ]
   },
   {
-    city: "Paris",
-    country: "FR",
-    layoutKey: "circuit_left_bank_loop",
-    laps: 6,
-    traits: { grip: 70, overtaking: 55, energy: 62 },
-    likelyWeather: "dry",
+    ...CITY_CIRCUIT_IDENTITIES[1],
     route: [
       { lat: 48.857955, lng: 2.328147 },
       { lat: 48.858194, lng: 2.328316 },
@@ -615,12 +606,7 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     ]
   },
   {
-    city: "Amsterdam",
-    country: "NL",
-    layoutKey: "circuit_canal_loop",
-    laps: 5,
-    traits: { grip: 60, overtaking: 68, energy: 66 },
-    likelyWeather: "light_rain",
+    ...CITY_CIRCUIT_IDENTITIES[2],
     route: [
       { lat: 52.369966, lng: 4.900763 },
       { lat: 52.370059, lng: 4.900727 },
@@ -1332,12 +1318,7 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     ]
   },
   {
-    city: "Amsterdam",
-    country: "NL",
-    layoutKey: "circuit_harbor_sprint",
-    laps: 4,
-    traits: { grip: 58, overtaking: 78, energy: 52 },
-    likelyWeather: "heavy_rain",
+    ...CITY_CIRCUIT_IDENTITIES[3],
     route: [
       { lat: 52.377811, lng: 4.936139 },
       { lat: 52.377997, lng: 4.935094 },
@@ -1580,12 +1561,7 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     ]
   },
   {
-    city: "Berlin",
-    country: "DE",
-    layoutKey: "circuit_ring_sector",
-    laps: 6,
-    traits: { grip: 76, overtaking: 62, energy: 70 },
-    likelyWeather: "dry",
+    ...CITY_CIRCUIT_IDENTITIES[4],
     route: [
       { lat: 52.543812, lng: 13.427056 },
       { lat: 52.54402, lng: 13.42716 },
@@ -2063,12 +2039,7 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     ]
   },
   {
-    city: "Berlin",
-    country: "DE",
-    layoutKey: "circuit_mitte_dash",
-    laps: 5,
-    traits: { grip: 68, overtaking: 74, energy: 60 },
-    likelyWeather: "dry",
+    ...CITY_CIRCUIT_IDENTITIES[5],
     route: [
       { lat: 52.5274, lng: 13.416255 },
       { lat: 52.527446, lng: 13.416293 },
@@ -2581,12 +2552,7 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     ]
   },
   {
-    city: "Rome",
-    country: "IT",
-    layoutKey: "circuit_rome_tiber_loop",
-    laps: 5,
-    traits: { grip: 58, overtaking: 74, energy: 62 },
-    likelyWeather: "dry",
+    ...CITY_CIRCUIT_IDENTITIES[6],
     route: [
       { lat: 41.89789, lng: 12.474408 },
       { lat: 41.897888, lng: 12.474383 },
@@ -3009,12 +2975,7 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     ]
   },
   {
-    city: "Lisbon",
-    country: "PT",
-    layoutKey: "circuit_lisbon_baixa_loop",
-    laps: 5,
-    traits: { grip: 54, overtaking: 78, energy: 57 },
-    likelyWeather: "dry",
+    ...CITY_CIRCUIT_IDENTITIES[7],
     route: [
       { lat: 38.712906, lng: -9.138992 },
       { lat: 38.712835, lng: -9.138964 },
@@ -3482,12 +3443,7 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     ]
   },
   {
-    city: "Vienna",
-    country: "AT",
-    layoutKey: "circuit_vienna_ring_loop",
-    laps: 5,
-    traits: { grip: 70, overtaking: 66, energy: 72 },
-    likelyWeather: "light_rain",
+    ...CITY_CIRCUIT_IDENTITIES[8],
     route: [
       { lat: 48.208139, lng: 16.377098 },
       { lat: 48.208087, lng: 16.377264 },
@@ -4069,12 +4025,7 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     ]
   },
   {
-    city: "Porto",
-    country: "PT",
-    layoutKey: "circuit_porto_boavista_loop",
-    laps: 5,
-    traits: { grip: 56, overtaking: 76, energy: 60 },
-    likelyWeather: "light_rain",
+    ...CITY_CIRCUIT_IDENTITIES[9],
     route: [
       { lat: 41.165388, lng: -8.627601 },
       { lat: 41.165041, lng: -8.62771 },
@@ -4363,12 +4314,7 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
     ]
   },
   {
-    city: "Madrid",
-    country: "ES",
-    layoutKey: "circuit_madrid_centro_loop",
-    laps: 5,
-    traits: { grip: 62, overtaking: 80, energy: 55 },
-    likelyWeather: "dry",
+    ...CITY_CIRCUIT_IDENTITIES[10],
     route: [
       { lat: 40.420984, lng: -3.70211 },
       { lat: 40.421581, lng: -3.701902 },

@@ -1,10 +1,10 @@
 ## item_055_add_placeholder_interpolation_to_the_i18n_layer - Add placeholder interpolation to the i18n layer
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Low
 > Theme: Localization plumbing
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

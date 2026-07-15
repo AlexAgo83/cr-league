@@ -158,6 +158,11 @@ describe("api app", () => {
     expect(createResponse.statusCode).toBe(200);
     expect(claim).toMatchObject({ teamId, claimCode: expect.any(String) });
     expect(created.league).toMatchObject({ maxPlayers: 8, fillWithBots: true, qualifyingAttemptLimit: 3, maxGrandPrixPerSeason: 6 });
+    expect(created.currentGrandPrix).toMatchObject({
+      primaryTrait: "weather_sensitive",
+      secondaryTrait: "fast",
+      forecast: { dry: 35, light_rain: 50, heavy_rain: 15 }
+    });
     expect(createdTeam.cards).toEqual(["rain_grip"]);
     expect(createdTeam.livery).toMatchObject({
       primary: expect.stringMatching(/^#[0-9a-f]{6}$/i),
@@ -214,6 +219,11 @@ describe("api app", () => {
     expect(lateDecisionResponse.statusCode).toBe(409);
     expect(secondResolveResponse.statusCode).toBe(409);
     expect(nextResponse.statusCode).toBe(200);
+    expect(nextResponse.json().currentGrandPrix).toMatchObject({
+      primaryTrait: "technical",
+      secondaryTrait: "urban",
+      forecast: { dry: 70, light_rain: 20, heavy_rain: 10 }
+    });
     expect(botAfterNext.cards).toHaveLength(botBeforeNext.cards.length + 1);
     expect(botAfterNext.credits).toBeLessThan(botBeforeNext.credits);
   });

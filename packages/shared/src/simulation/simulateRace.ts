@@ -3,7 +3,6 @@ import { ECONOMY_MODE_CREDIT_BONUS, FLEET_SPONSORSHIP_CREDIT_BONUS, RACE_CREDITS
 import type {
   CardId,
   ClassificationEntry,
-  InternalScores,
   RaceEvent,
   RaceInput,
   RaceParticipant,
@@ -12,7 +11,7 @@ import type {
   ReplayTracePoint,
   Weather
 } from "../domain/race.js";
-import { RACE_SEGMENTS } from "../domain/race.js";
+import { RACE_SEGMENTS, clampTrait } from "../domain/race.js";
 import { createPrng } from "./prng.js";
 
 const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
@@ -35,6 +34,15 @@ type TeamState = {
   consumedCard?: CardId;
 };
 
+type InternalScores = {
+  pace: number;
+  control: number;
+  reliability: number;
+  weatherReadiness: number;
+  aggression: number;
+  score: number;
+};
+
 export function simulateRace(input: RaceInput): RaceResult {
   if (input.participants.length < 2) {
     throw new Error("A race needs at least two participants.");
@@ -44,7 +52,7 @@ export function simulateRace(input: RaceInput): RaceResult {
   const weather = resolveWeather(input.forecast, prng.pickWeighted);
   const states = input.participants.map(createTeamState);
   const events: RaceEvent[] = [];
-  const replayTrace: ReplayTracePoint[] = [createReplayTracePoint("start", 0, states, "grid")];
+  const replayTrace: ReplayTracePoint[] = [createReplayTracePoint("start", 0, states)];
 
   for (const [index, segment] of RACE_SEGMENTS.entries()) {
     if (segment !== "start" && weather[segment] !== weather[previousSegment(segment)]) {
@@ -89,16 +97,18 @@ function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, stat
         return [state.participant.teamId, before + (state.elapsedTime - before) * ratio];
       })
     );
-    return createReplayTracePoint(segment, progress, states, "time", times);
+    return createReplayTracePoint(segment, progress, states, times);
   });
 }
 
-function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], mode: "grid" | "time", elapsedTimes = new Map<string, number>()): ReplayTracePoint {
+function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], elapsedTimes?: Map<string, number>): ReplayTracePoint {
+  const isGrid = !elapsedTimes;
+  const timesByTeam = elapsedTimes ?? new Map<string, number>();
   const sorted =
-    mode === "grid"
+    isGrid
       ? [...states].sort((left, right) => left.participant.standingsRank - right.participant.standingsRank)
-      : [...states].sort((left, right) => (elapsedTimes.get(left.participant.teamId) ?? left.elapsedTime) - (elapsedTimes.get(right.participant.teamId) ?? right.elapsedTime) || right.scores.score - left.scores.score);
-  const leaderTime = sorted[0] ? (elapsedTimes.get(sorted[0].participant.teamId) ?? sorted[0].elapsedTime) : 0;
+      : [...states].sort((left, right) => (timesByTeam.get(left.participant.teamId) ?? left.elapsedTime) - (timesByTeam.get(right.participant.teamId) ?? right.elapsedTime) || right.scores.score - left.scores.score);
+  const leaderTime = sorted[0] ? (timesByTeam.get(sorted[0].participant.teamId) ?? sorted[0].elapsedTime) : 0;
 
   return {
     segment,
@@ -108,13 +118,13 @@ function createReplayTracePoint(segment: RaceSegment, progress: number, states: 
     times: Object.fromEntries(
       sorted.map((state) => [
         state.participant.teamId,
-        mode === "grid" ? 0 : Number((elapsedTimes.get(state.participant.teamId) ?? state.elapsedTime).toFixed(1))
+        isGrid ? 0 : Number((timesByTeam.get(state.participant.teamId) ?? state.elapsedTime).toFixed(1))
       ])
     ),
     gaps: Object.fromEntries(
       sorted.map((state) => [
         state.participant.teamId,
-        mode === "grid" ? 0 : Math.max(0, Number(((elapsedTimes.get(state.participant.teamId) ?? state.elapsedTime) - leaderTime).toFixed(1)))
+        isGrid ? 0 : Math.max(0, Number(((timesByTeam.get(state.participant.teamId) ?? state.elapsedTime) - leaderTime).toFixed(1)))
       ])
     )
   };
@@ -293,10 +303,6 @@ function traitsFromTags(input: RaceInput) {
   }
 
   return profile;
-}
-
-function clampTrait(value: number) {
-  return Math.max(1, Math.min(99, Math.round(value)));
 }
 
 function circuitFit(state: TeamState, input: RaceInput) {

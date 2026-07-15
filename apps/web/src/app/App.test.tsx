@@ -630,9 +630,21 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_1");
   });
 
-  it("rejoins and migrates a saved player claim", async () => {
+  it("rejoins a saved player claim", async () => {
     saveProfile();
-    localStorage.setItem("cr-league-player-claim", JSON.stringify(baseState.player));
+    localStorage.setItem(
+      "cr-league-player-claims",
+      JSON.stringify([
+        {
+          ...baseState.player,
+          leagueId: baseState.league.id,
+          leagueName: baseState.league.name,
+          leagueCode: baseState.league.code,
+          teamName: "Volt Union"
+        }
+      ])
+    );
+    localStorage.setItem("cr-league-active-player-claim", baseState.player.teamId);
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
 
     render(<App />);
@@ -645,7 +657,6 @@ describe("App", () => {
         body: JSON.stringify(baseState.player)
       })
     );
-    expect(localStorage.getItem("cr-league-player-claim")).toBe(null);
     expect(localStorage.getItem("cr-league-player-claims")).toContain("Office League");
   });
 

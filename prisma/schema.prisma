@@ -92,7 +92,6 @@ model RaceDecision {
   preparation  String
   cardId       String?
   rivalTeamId  String?
-  defaulted    Boolean  @default(false)
   submittedAt  DateTime @default(now())
 
   grandPrix GrandPrix @relation(fields: [grandPrixId], references: [id], onDelete: Cascade)

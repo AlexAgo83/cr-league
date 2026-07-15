@@ -1,7 +1,8 @@
 import {
   CARD_DEFINITIONS,
-  CARD_PRICES,
+  CARD_PRICE,
   DEMO_RACE_INPUT,
+  clampTrait,
   simulateRace,
   type CardId,
   type QualifyingRun,
@@ -16,15 +17,13 @@ import {
   type Weather
 } from "@cr-league/shared";
 import { createHash, randomBytes } from "node:crypto";
-import type { Prisma } from "@prisma/client";
-import type { PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@prisma/client";
 
 type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | "profile">;
 
 const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
 const STARTER_CARDS: CardId[] = ["rain_grip"];
-const QUALIFYING_LOCK_CARDS = new Set<CardId>(["qualifying_focus"]);
-const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICES[cardId as CardId] }));
+const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICE }));
 const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 const PRIMARY_LIVERY_COLORS = ["#0f172a", "#1e1b4b", "#312e81", "#3f1d2d", "#1f2937", "#064e3b", "#451a03", "#172554"] as const;
 const SECONDARY_LIVERY_COLORS = ["#f8fafc", "#fde68a", "#bfdbfe", "#bbf7d0", "#fecdd3", "#ddd6fe", "#fed7aa", "#ccfbf1"] as const;
@@ -472,7 +471,7 @@ export async function buyCard(db: Db, leagueId: string, input: { teamId?: string
   if (!team) {
     throw new LeagueRuleError("Team does not belong to this league.");
   }
-  const price = CARD_PRICES[input.cardId];
+  const price = CARD_PRICE;
   if (team.credits < price) {
     throw new LeagueRuleError("Not enough credits to buy this card.");
   }
@@ -586,8 +585,7 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
       approach: input.approach,
       preparation: input.preparation,
       cardId,
-      rivalTeamId: input.rivalTeamId,
-      defaulted: input.defaulted ?? false
+      rivalTeamId: input.rivalTeamId
     },
     create: {
       grandPrixId: grandPrix.id,
@@ -595,8 +593,7 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
       approach: input.approach,
       preparation: input.preparation,
       cardId,
-      rivalTeamId: input.rivalTeamId,
-      defaulted: input.defaulted ?? false
+      rivalTeamId: input.rivalTeamId
     }
   });
 
@@ -892,23 +889,21 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
             cardId: (decision.cardId ?? undefined) as RaceDecision["cardId"],
             rivalTeamId: decision.rivalTeamId ?? undefined
           }
-        : { ...demo.decision, cardId: defaultCardForTeam(team, demo.decision.cardId), defaulted: true }
+        : { ...demo.decision, cardId: defaultCardForTeam(team, demo.decision.cardId) }
     };
   });
 }
 
 async function buyBotCards(db: Db, state: LeagueState, seed: string) {
-  const minCardPrice = Math.min(...Object.values(CARD_PRICES));
-
   await Promise.all(
     state.teams
-      .filter((team) => team.kind === "bot" && team.credits >= minCardPrice)
+      .filter((team) => team.kind === "bot" && team.credits >= CARD_PRICE)
       .map((team) => {
         const cardId = randomCardId(`${seed}-${team.id}-${team.credits}-${team.cards.length}`);
         return db.team.update({
           where: { id: team.id },
           data: {
-            credits: { decrement: CARD_PRICES[cardId] },
+            credits: { decrement: CARD_PRICE },
             cards: appendCard(team.cards, cardId)
           }
         });
@@ -932,7 +927,7 @@ function bestQualifyingRuns(runs: QualifyingRun[]) {
 }
 
 function qualifyingCardForTeam(runs: QualifyingRun[], teamId: string) {
-  return runs.find((run) => run.teamId === teamId && run.decision?.cardId && QUALIFYING_LOCK_CARDS.has(run.decision.cardId))?.decision?.cardId;
+  return runs.find((run) => run.teamId === teamId && run.decision?.cardId === "qualifying_focus")?.decision?.cardId;
 }
 
 async function fillLeagueWithBots(db: Db, state: LeagueState) {
@@ -962,7 +957,7 @@ async function fillLeagueWithBots(db: Db, state: LeagueState) {
       leagueId: state.league.id,
       name: participant.teamName,
       kind: "bot",
-      claimCode: createClaimCode(),
+      claimCode: null,
       points: 0,
       credits: 0,
       cards: [],
@@ -1126,10 +1121,6 @@ function normalizeRaceTraits(value: unknown): RaceTraits | undefined {
     overtaking: clampTrait(overtaking),
     energy: clampTrait(energy)
   };
-}
-
-function clampTrait(value: number) {
-  return Math.max(1, Math.min(99, Math.round(value)));
 }
 
 function clampInteger(value: unknown, fallback: number, min: number, max: number) {

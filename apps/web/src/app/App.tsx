@@ -13,12 +13,10 @@ import { ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
-const PLAYER_CLAIM_KEY = "cr-league-player-claim";
 const PLAYER_CLAIMS_KEY = "cr-league-player-claims";
 const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
 const PROFILE_SESSION_KEY = "cr-league-profile-session";
 const LANGUAGE_KEY = "cr-league-language";
-const QUALIFYING_LOCK_CARDS = new Set<CardId>(["qualifying_focus"]);
 
 type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueId: string;
@@ -197,7 +195,6 @@ export function App() {
   const playerDecision = leagueState?.decisions.find((decision) => decision.teamId === playerTeam?.id);
   const qualifyingRuns = leagueState?.currentGrandPrix.qualifyingRuns ?? [];
   const playerQualifyingRuns = qualifyingRuns.filter((run) => run.teamId === playerTeam?.id);
-  const playerQualifyingRun = playerQualifyingRuns.reduce<QualifyingRun | null>((best, run) => (!best || run.time < best.time ? run : best), null);
   const lastQualifyingRun = latestQualifyingRun(playerQualifyingRuns);
   const currentQualifyingResult = qualifyingResult && playerQualifyingRuns.some((run) => run.teamId === qualifyingResult.teamId && run.attempts === qualifyingResult.attempts) ? qualifyingResult : null;
   const replayQualifyingRun = currentQualifyingResult ?? lastQualifyingRun;
@@ -213,7 +210,7 @@ export function App() {
   const qualifyingAttemptsUsed = Math.max(0, ...playerQualifyingRuns.map((run) => run.attempts));
   const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? form.qualifyingAttemptLimit;
   const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
-  const qualifyingLockedCardId = playerQualifyingRuns.find((run) => run.decision?.cardId && QUALIFYING_LOCK_CARDS.has(run.decision.cardId))?.decision?.cardId;
+  const qualifyingLockedCardId = playerQualifyingRuns.find((run) => run.decision?.cardId === "qualifying_focus")?.decision?.cardId;
   const result = leagueState?.currentGrandPrix.result;
   const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
   const qualifyingDisabled = status === "loading" || isResolved || Boolean(playerDecision) || qualifyingAttemptsLeft <= 0;
@@ -577,7 +574,6 @@ export function App() {
 
   function forgetProfile() {
     localStorage.removeItem(PROFILE_SESSION_KEY);
-    localStorage.removeItem(PLAYER_CLAIM_KEY);
     setProfileSession(null);
     setLeagueState(null);
     setProfileLogoutOpen(false);
@@ -1347,13 +1343,7 @@ function claimFromState(state: LeagueState): StoredPlayerClaim | null {
 }
 
 function loadPlayerClaims(): StoredPlayerClaim[] {
-  const claims = parsePlayerClaims(localStorage.getItem(PLAYER_CLAIMS_KEY));
-  const oldClaim = parseLegacyClaim(localStorage.getItem(PLAYER_CLAIM_KEY));
-  if (!oldClaim) return claims;
-  localStorage.removeItem(PLAYER_CLAIM_KEY);
-  const migrated = upsertPlayerClaim(claims, oldClaim);
-  storePlayerClaims(migrated, oldClaim.teamId);
-  return migrated;
+  return parsePlayerClaims(localStorage.getItem(PLAYER_CLAIMS_KEY));
 }
 
 function loadProfileSession(): ProfileSession | null {
@@ -1389,25 +1379,6 @@ function parsePlayerClaims(raw: string | null): StoredPlayerClaim[] {
     return Array.isArray(parsed) ? parsed.filter(isStoredPlayerClaim) : [];
   } catch {
     return [];
-  }
-}
-
-function parseLegacyClaim(raw: string | null): StoredPlayerClaim | null {
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw) as Partial<StoredPlayerClaim>;
-    return typeof parsed.teamId === "string" && typeof parsed.claimCode === "string"
-      ? {
-          teamId: parsed.teamId,
-          claimCode: parsed.claimCode,
-          leagueId: parsed.leagueId ?? "",
-          leagueName: parsed.leagueName ?? "Saved league",
-          leagueCode: parsed.leagueCode ?? "",
-          teamName: parsed.teamName ?? "Team"
-        }
-      : null;
-  } catch {
-    return null;
   }
 }
 

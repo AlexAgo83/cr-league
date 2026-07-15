@@ -1,6 +1,5 @@
-export type Prng = {
+type Prng = {
   next: () => number;
-  int: (min: number, max: number) => number;
   pickWeighted: <T extends string>(weights: Record<T, number>) => T;
 };
 
@@ -14,7 +13,6 @@ export function createPrng(seed: string): Prng {
 
   return {
     next,
-    int: (min, max) => Math.floor(next() * (max - min + 1)) + min,
     pickWeighted: (weights) => {
       const entries = Object.entries(weights) as Array<[keyof typeof weights, number]>;
       const total = entries.reduce((sum, [, weight]) => sum + Math.max(0, weight), 0);

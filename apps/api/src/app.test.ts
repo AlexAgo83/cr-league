@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PrismaClient } from "@prisma/client";
-import { CARD_PRICES } from "@cr-league/shared";
+import { CARD_PRICE } from "@cr-league/shared";
 import { buildApp } from "./app.js";
 
 describe("api app", () => {
@@ -140,7 +140,7 @@ describe("api app", () => {
     });
     const boughtTeam = buyResponse.statusCode === 200 ? buyResponse.json().teams.find((team: { id: string }) => team.id === teamId) : undefined;
     const botBeforeNext = resolved.teams.find(
-      (team: { id: string; kind: string; credits: number; cards: string[] }) => team.kind === "bot" && team.credits >= CARD_PRICES.rain_grip
+      (team: { id: string; kind: string; credits: number; cards: string[] }) => team.kind === "bot" && team.credits >= CARD_PRICE
     );
     if (!botBeforeNext) throw new Error("Expected a bot with enough credits to buy a card.");
 
@@ -176,10 +176,10 @@ describe("api app", () => {
     expect(createdTeam.livery.primary).not.toBe(createdTeam.livery.secondary);
     expect(new Set(createdBots.map((team: { name: string }) => team.name.toLowerCase())).size).toBe(createdBots.length);
     expect(new Set(createdBots.map((team: { livery: { primary: string; secondary: string } }) => `${team.livery.primary}:${team.livery.secondary}`)).size).toBe(createdBots.length);
-    expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: CARD_PRICES.rain_grip });
-    expect(created.cardShop).toContainEqual({ cardId: "soft_tires", price: CARD_PRICES.soft_tires });
-    expect(created.cardShop).toContainEqual({ cardId: "qualifying_focus", price: CARD_PRICES.qualifying_focus });
-    expect(created.cardShop).toContainEqual({ cardId: "defensive_order", price: CARD_PRICES.defensive_order });
+    expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: CARD_PRICE });
+    expect(created.cardShop).toContainEqual({ cardId: "soft_tires", price: CARD_PRICE });
+    expect(created.cardShop).toContainEqual({ cardId: "qualifying_focus", price: CARD_PRICE });
+    expect(created.cardShop).toContainEqual({ cardId: "defensive_order", price: CARD_PRICE });
     expect(readResponse.statusCode).toBe(200);
     expect(readResponse.json().league).toMatchObject({ id: leagueId, name: "Office League" });
     expect(joinResponse.statusCode).toBe(200);
@@ -216,10 +216,10 @@ describe("api app", () => {
       })
     });
     expect(resolvedTeam.cards).not.toContain("rain_grip");
-    expect(buyResponse.statusCode).toBe(resolvedTeam.credits >= CARD_PRICES.launch_boost ? 200 : 409);
-    if (resolvedTeam.credits >= CARD_PRICES.launch_boost) {
+    expect(buyResponse.statusCode).toBe(resolvedTeam.credits >= CARD_PRICE ? 200 : 409);
+    if (resolvedTeam.credits >= CARD_PRICE) {
       expect(boughtTeam.cards).toContain("launch_boost");
-      expect(boughtTeam.credits).toBe(resolvedTeam.credits - CARD_PRICES.launch_boost);
+      expect(boughtTeam.credits).toBe(resolvedTeam.credits - CARD_PRICE);
     }
     expect(lateDecisionResponse.statusCode).toBe(409);
     expect(secondResolveResponse.statusCode).toBe(409);
@@ -863,7 +863,6 @@ function createMemoryDb(): PrismaClient {
     preparation: string;
     cardId: string | null;
     rivalTeamId: string | null;
-    defaulted: boolean;
   };
 
   const leagues: LeagueRow[] = [];
@@ -1072,7 +1071,6 @@ function createMemoryDb(): PrismaClient {
           ...create,
           cardId: create.cardId ?? null,
           rivalTeamId: create.rivalTeamId ?? null,
-          defaulted: create.defaulted ?? false
         };
         decisions.push(decision);
         return decision;

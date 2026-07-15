@@ -40,7 +40,6 @@ export type RaceDecision = {
   preparation: TechnicalPreparation;
   cardId?: CardId;
   rivalTeamId?: string;
-  defaulted?: boolean;
 };
 
 export type RaceParticipant = {
@@ -76,8 +75,6 @@ export type RaceInput = {
 };
 
 export type RaceEventType =
-  | "strong_start"
-  | "poor_start"
   | "weather_change"
   | "weather_gamble_paid"
   | "wrong_weather_bet"
@@ -86,7 +83,6 @@ export type RaceEventType =
   | "mechanical_scare"
   | "mechanic_save"
   | "late_push_gain"
-  | "late_push_failure"
   | "sponsor_payout"
   | "held_position"
   | "race_note"
@@ -158,11 +154,6 @@ export type QualifyingRun = {
   createdAt: string;
 };
 
-export type InternalScores = {
-  pace: number;
-  control: number;
-  reliability: number;
-  weatherReadiness: number;
-  aggression: number;
-  score: number;
-};
+export function clampTrait(value: number) {
+  return Math.max(1, Math.min(99, Math.round(value)));
+}

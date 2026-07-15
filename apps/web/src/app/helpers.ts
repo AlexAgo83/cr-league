@@ -112,21 +112,6 @@ export function resultHeadline(result: RaceResult, tt: Translator, title = resul
   return winner ? `${title}: ${winner.teamName} ${tt("report_wins")}.` : title;
 }
 
-export function localizedReportBlocks(result: RaceResult, tt: Translator) {
-  const names = teamNamesFromResult(result);
-  const keyEvents = result.events.filter((event) => event.severity === "major").slice(0, 4);
-  return [
-    {
-      title: tt("report_key_moments"),
-      body: keyEvents.length ? keyEvents.map((event) => eventReportText(event, names, tt)).join(" ") : tt("report_clean_race")
-    },
-    {
-      title: tt("report_rewards"),
-      body: result.classification.map((entry) => `${entry.teamName}: ${entry.points} ${tt("unit_points")}, ${entry.credits} ${tt("unit_credits")}`).join(" · ")
-    }
-  ];
-}
-
 export function statusLabel(status: string, tt: Translator) {
   if (status === "briefing" || status === "resolved") return tt(`gp_status_${status}` as TranslationKey);
   return status;

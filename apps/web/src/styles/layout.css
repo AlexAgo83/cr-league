@@ -100,13 +100,6 @@
   max-width: 560px;
 }
 
-.hero-topline {
-  align-items: center;
-  display: flex;
-  gap: 16px;
-  justify-content: space-between;
-}
-
 .setup-topbar {
   align-items: center;
   background: transparent;
@@ -196,15 +189,6 @@
   color: var(--color-muted);
   font-weight: 600;
   line-height: 1.35;
-}
-
-.eyebrow {
-  color: var(--color-telemetry);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  margin: 0;
-  text-transform: uppercase;
 }
 
 .language-select {
@@ -372,13 +356,6 @@
 .profile-menu-panel label {
   display: grid;
   gap: 6px;
-}
-
-.profile-league-summary {
-  align-items: center;
-  display: none;
-  gap: 8px;
-  justify-content: space-between;
 }
 
 /* ---------- Views ---------- */
@@ -743,22 +720,6 @@ label small {
 
 .qualifying-replay .replay-moments-panel {
   display: none;
-}
-
-.race-telemetry {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-}
-
-.race-telemetry span {
-  background: rgb(56 189 248 / 0.1);
-  border: 1px solid rgb(56 189 248 / 0.24);
-  border-radius: 6px;
-  color: #d9f4ff;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  padding: 5px 10px;
 }
 
 /* ---------- Circuit map ---------- */
@@ -1453,13 +1414,11 @@ label small {
 
 .classification li span:last-child,
 .card-inventory strong,
-.events span,
-.standings-list small {
+.events span {
   color: var(--color-muted);
   font-size: 0.875rem;
 }
 
-.standings-list li > span:first-child,
 .card-inventory li > span {
   display: grid;
   gap: 3px;
@@ -1934,7 +1893,6 @@ label small {
 }
 
 .garage-summary span,
-.garage-locked,
 .card-inventory small,
 .card-shop small {
   color: var(--color-muted);
@@ -2559,11 +2517,6 @@ button.command-icon-button {
   margin: 0;
 }
 
-.command-hint {
-  color: var(--color-muted);
-  display: none;
-}
-
 .race-state {
   border: 1px solid;
   border-radius: 999px;
@@ -2607,12 +2560,6 @@ button.primary-command {
 }
 
 /* ---------- Responsive ---------- */
-
-@media (min-width: 861px) {
-  .command-hint {
-    display: block;
-  }
-}
 
 @media (max-width: 860px) {
   .app-shell {
@@ -2666,10 +2613,6 @@ button.primary-command {
     display: none;
   }
 
-  .profile-league-summary {
-    display: flex;
-  }
-
   .profile-menu {
     grid-column: 3;
     grid-row: 1;
@@ -2708,8 +2651,7 @@ button.primary-command {
     min-width: 0;
   }
 
-  .command-context .status,
-  .command-hint {
+  .command-context .status {
     display: none;
   }
 
@@ -2857,12 +2799,6 @@ button.primary-command {
 
   .replay-tower-team {
     max-width: 66px;
-  }
-
-  .hero-topline {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 8px;
   }
 
   .command-bar {

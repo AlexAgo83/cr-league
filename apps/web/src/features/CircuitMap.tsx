@@ -120,11 +120,6 @@ function poseOnRoute(points: Array<{ x: number; y: number }>, progress: number) 
   return { ...points[0]!, angle: 0 };
 }
 
-function pointOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
-  const pose = poseOnRoute(points, progress);
-  return { x: pose.x, y: pose.y };
-}
-
 function routeLength(points: Array<{ x: number; y: number }>) {
   return points.slice(1).reduce((sum, point, index) => sum + Math.hypot(point.x - points[index]!.x, point.y - points[index]!.y), 0);
 }
@@ -228,11 +223,11 @@ export function CircuitMap({
       clockRef.current = camera.timeRef?.current ?? (performance.now() - startedAt) / 1000;
       const elapsed = Math.max(0, clockRef.current - car.delay);
       const progress = car.progress ?? (car.repeatCount !== "indefinite" && clockRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration);
-      const point = car.progress === undefined ? route.getPointAtLength(length * progress) : pointOnRoute(pointsRef.current, progress);
+      const point = car.progress === undefined ? route.getPointAtLength(length * progress) : poseOnRoute(pointsRef.current, progress);
       const nearestCarDistance = Math.min(
         ...carsRef.current.map((other) => {
           if (other.id === car.id || other.progress === undefined) return Number.POSITIVE_INFINITY;
-          const otherPoint = pointOnRoute(pointsRef.current, other.progress);
+          const otherPoint = poseOnRoute(pointsRef.current, other.progress);
           return Math.hypot(otherPoint.x - point.x, otherPoint.y - point.y);
         })
       );

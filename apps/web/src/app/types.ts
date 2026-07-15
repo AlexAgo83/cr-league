@@ -63,7 +63,6 @@ export type LeagueState = {
     approach: RaceDecision["approach"];
     preparation: RaceDecision["preparation"];
     cardId: RaceDecision["cardId"] | null;
-    rivalTeamId: string | null;
   }>;
 };
 

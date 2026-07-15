@@ -1,10 +1,10 @@
 ## item_048_delete_dead_code_dead_i18n_keys_and_stray_files - Delete dead code, dead i18n keys, and stray files
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 0%
+> Progress: 10%
 > Complexity: Low
 > Theme: Dead code removal
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

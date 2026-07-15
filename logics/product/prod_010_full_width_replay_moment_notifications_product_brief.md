@@ -1,8 +1,8 @@
 ## prod_010_full_width_replay_moment_notifications_product_brief - Full-Width Replay Moment Notifications Product Brief
 > Date: 2026-07-16
-> Status: Proposed
+> Status: Settled
 > Related request: `req_039_turn_replay_key_moments_into_timed_notifications`
-> Related backlog: `item_071_remove_the_permanent_replay_key_moments_panel`, `item_072_add_timed_replay_moment_notifications`, `item_073_preserve_marker_seeking_as_the_compact_replay_index`, `item_074_update_replay_layout_qa_and_tests`
+> Related backlog: `item_071_remove_the_permanent_replay_key_moments_panel`
 > Related task: `task_040_orchestrate_full_width_replay_moment_notifications`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -48,5 +48,5 @@ flowchart LR
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_039_turn_replay_key_moments_into_timed_notifications`
+- Product back-reference: `item_071_remove_the_permanent_replay_key_moments_panel`
 - Task back-reference: `task_040_orchestrate_full_width_replay_moment_notifications`

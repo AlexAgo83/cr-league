@@ -1,10 +1,10 @@
 ## item_072_add_timed_replay_moment_notifications - Add timed replay moment notifications
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay event presentation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,9 @@
 - request-AC4 -> This backlog slice. Proof: AC2: Notification content uses the same event text semantics as the previous key moment list.
 - request-AC8 -> This backlog slice. Proof: AC3: Seeking to a marker shows or updates the corresponding notification.
 - request-AC9 -> This backlog slice. Proof: AC4: Notifications do not cover the playback controls or progress bar on desktop or mobile.
+- request-AC5 -> This backlog slice. Evidence needed: The progress bar keeps visible marker dots for key/player moments and remains clickable for seeking.
+- request-AC6 -> This backlog slice. Evidence needed: Replay controls remain accessible and visually stable: play/pause, restart, focus driver, custom speed menu, tower, map status, and progress bar still work.
+- request-AC7 -> This backlog slice. Evidence needed: The Report tab remains the durable place for post-race explanation and written recap; no report content is removed.
 
 # Decision framing
 - Product framing: Not needed
@@ -58,3 +61,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_040_orchestrate_full_width_replay_moment_notifications`
+
+# Notes
+- Task `task_040_orchestrate_full_width_replay_moment_notifications` was finished via `logics-manager flow finish task` on 2026-07-16.

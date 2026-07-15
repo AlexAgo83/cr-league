@@ -1,10 +1,10 @@
 ## item_074_update_replay_layout_qa_and_tests - Update replay layout QA and tests
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Validation and regression coverage
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,7 @@
 - request-AC7 -> This backlog slice. Proof: AC2: E2E verifies full-width replay layout and absence of `.replay-moments-panel`.
 - request-AC8 -> This backlog slice. Proof: AC3: E2E verifies marker seek and notification behavior.
 - request-AC9 -> This backlog slice. Proof: AC4: Full local validation gate passes before closeout.
+- request-AC5 -> This backlog slice. Evidence needed: The progress bar keeps visible marker dots for key/player moments and remains clickable for seeking.
 
 # Decision framing
 - Product framing: Not needed
@@ -58,3 +59,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_040_orchestrate_full_width_replay_moment_notifications`
+
+# Notes
+- Task `task_040_orchestrate_full_width_replay_moment_notifications` was finished via `logics-manager flow finish task` on 2026-07-16.

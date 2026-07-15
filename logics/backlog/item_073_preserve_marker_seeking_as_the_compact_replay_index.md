@@ -1,10 +1,10 @@
 ## item_073_preserve_marker_seeking_as_the_compact_replay_index - Preserve marker seeking as the compact replay index
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Replay navigation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,8 @@
 - request-AC5 -> This backlog slice. Proof: AC2: Clicking a marker seeks the replay to that moment.
 - request-AC6 -> This backlog slice. Proof: AC3: Player-involved moments remain distinguishable if they were distinguishable before.
 - request-AC9 -> This backlog slice. Proof: AC4: Tests cover marker seeking after the layout change.
+- request-AC7 -> This backlog slice. Evidence needed: The Report tab remains the durable place for post-race explanation and written recap; no report content is removed.
+- request-AC8 -> This backlog slice. Evidence needed: Desktop and mobile layouts show no overlapping notification, tower, controls, map status, or progress bar text.
 
 # Decision framing
 - Product framing: Not needed
@@ -58,3 +60,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_040_orchestrate_full_width_replay_moment_notifications`
+
+# Notes
+- Task `task_040_orchestrate_full_width_replay_moment_notifications` was finished via `logics-manager flow finish task` on 2026-07-16.

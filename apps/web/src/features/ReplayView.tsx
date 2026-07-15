@@ -17,6 +17,7 @@ const POSITION_CHANGE_MARGIN_LAPS = 0.015;
 const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_STEP = 0.012;
+const MOMENT_NOTIFICATION_SECONDS = 3;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
 
@@ -319,6 +320,7 @@ export function ReplayView({
   const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const [snapshot, setSnapshot] = useState(initialSnapshot);
+  const [activeMomentId, setActiveMomentId] = useState<string | null>(null);
   const snapshotRef = useRef(initialSnapshot);
   const [positionPops, setPositionPops] = useState<Record<string, { delta: number; key: number }>>({});
   const orderRef = useRef(initialSnapshot.tower.map((entry) => entry.teamId));
@@ -397,6 +399,7 @@ export function ReplayView({
   }
 
   function updateLive(time: number, animatePositions = true) {
+    setActiveMomentId(activeMomentIdAt(time));
     const progress = raceProgressAt(time, raceDuration);
     const raceTime = Math.max(0, time - START_HOLD_SECONDS);
     const displayLap = displayLapAtProgress(progress, circuit.laps);
@@ -457,6 +460,16 @@ export function ReplayView({
     player: marker.player
   }));
   const liveWeather = result.resolvedWeather[live.segment];
+  const activeMoment = keyMoments.find((event) => event.id === activeMomentId);
+  const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
+
+  function eventTime(event: RaceEvent) {
+    return raceTimeAtProgress(event.lap / maxLap);
+  }
+
+  function activeMomentIdAt(time: number) {
+    return keyMoments.find((event) => Math.abs(eventTime(event) - time) <= MOMENT_NOTIFICATION_SECONDS)?.id ?? null;
+  }
 
   return (
     <div className="view-stack">
@@ -491,6 +504,18 @@ export function ReplayView({
                   <small>{circuitDistance}</small>
                 </div>
                 <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, live.lap)} impacts={traitImpacts} tt={tt} />
+                {activeMoment && activeMomentCard ? (
+                  <div className={activeMoment.teamId === playerTeamId ? "replay-moment-notification player" : "replay-moment-notification"} role="status" aria-live="polite">
+                    <span className="lap-marker">L{displayLapAtProgress(activeMoment.lap / maxLap, circuit.laps)}</span>
+                    <span className="moment-main">
+                      <strong>
+                        {activeMomentCard.icon} {activeMomentCard.context}
+                      </strong>
+                      <small>{activeMomentCard.team || activeMomentCard.text}</small>
+                    </span>
+                    <span className="moment-impact">{activeMomentCard.impact}</span>
+                  </div>
+                ) : null}
                 <div className="replay-map-controls">
                   <button
                     type="button"
@@ -580,35 +605,6 @@ export function ReplayView({
             }
           />
         </div>
-
-        <section className="panel replay-moments-panel">
-          <h3>{tt("result_key_moments")}</h3>
-          {keyMoments.length ? (
-            <ul className="events replay-timeline">
-              {keyMoments.map((event) => (
-                <li key={event.id} className={event.teamId === playerTeamId ? "player-event" : undefined}>
-                  {(() => {
-                    const card = momentCard(event, names, tt);
-                    return (
-                      <button type="button" className="replay-moment-button" title={card.text} onClick={() => seek(raceTimeAtProgress(event.lap / maxLap))}>
-                        <span className="lap-marker">L{displayLapAtProgress(event.lap / maxLap, circuit.laps)}</span>
-                        <span className="moment-main">
-                          <strong>
-                            {card.icon} {card.context}
-                          </strong>
-                          <small>{card.team || card.text}</small>
-                        </span>
-                        <span className="moment-impact">{card.impact}</span>
-                      </button>
-                    );
-                  })()}
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="replay-empty">{tt("result_replay_empty")}</p>
-          )}
-        </section>
       </div>
     </div>
   );

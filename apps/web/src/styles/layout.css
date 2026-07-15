@@ -1340,6 +1340,48 @@ label small {
   box-shadow: 0 0 8px rgb(22 199 132 / 0.8);
 }
 
+.replay-moment-notification {
+  align-items: center;
+  background: rgb(10 15 21 / 0.86);
+  border: 1px solid rgb(56 189 248 / 0.38);
+  border-radius: 8px;
+  bottom: 58px;
+  color: var(--color-text);
+  display: grid;
+  gap: 8px;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  left: 50%;
+  max-width: min(560px, calc(100% - 24px));
+  padding: 9px 10px;
+  position: absolute;
+  transform: translateX(-50%);
+  width: max-content;
+  z-index: 4;
+}
+
+.replay-moment-notification.player {
+  border-color: rgb(22 199 132 / 0.52);
+}
+
+.replay-moment-notification .moment-main {
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+
+.replay-moment-notification small {
+  color: var(--color-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.replay-moment-notification .moment-impact {
+  color: var(--color-accent);
+  font-weight: 900;
+  white-space: nowrap;
+}
+
 .replay-tower {
   background: rgb(10 15 21 / 0.78);
   border: 1px solid rgb(255 255 255 / 0.12);
@@ -2552,18 +2594,13 @@ button.command-icon-button {
   align-items: start;
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr);
+  grid-template-columns: 1fr;
 }
 
 .drive-content-column,
 .replay-content-column {
   display: grid;
   gap: 16px;
-}
-
-.replay-moments-panel {
-  position: sticky;
-  top: 92px;
 }
 
 .report-phases-list {
@@ -3264,10 +3301,6 @@ button.primary-command {
 
   .replay-main-grid {
     grid-template-columns: 1fr;
-  }
-
-  .replay-moments-panel {
-    position: static;
   }
 
   .report-side-recap {

@@ -1,10 +1,10 @@
 ## item_071_remove_the_permanent_replay_key_moments_panel - Remove the permanent replay key moments panel
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Replay layout simplification
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,9 @@
 - request-AC2 -> This backlog slice. Proof: AC2: The replay map spans the full available replay content width on desktop.
 - request-AC7 -> This backlog slice. Proof: AC3: Report tab still exposes post-race explanation and recap content.
 - request-AC8 -> This backlog slice. Proof: AC4: Mobile layout does not leave an empty gap where the side panel used to be.
+- request-AC5 -> This backlog slice. Evidence needed: The progress bar keeps visible marker dots for key/player moments and remains clickable for seeking.
+- request-AC6 -> This backlog slice. Evidence needed: Replay controls remain accessible and visually stable: play/pause, restart, focus driver, custom speed menu, tower, map status, and progress bar still work.
+- request-AC9 -> This backlog slice. Evidence needed: Updated unit/e2e tests verify the full-width replay layout, absence of the permanent key moments panel, timed notification behavior, marker seeking, and unchanged report access.
 
 # Decision framing
 - Product framing: Not needed
@@ -58,3 +61,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_040_orchestrate_full_width_replay_moment_notifications`
+
+# Notes
+- Task `task_040_orchestrate_full_width_replay_moment_notifications` was finished via `logics-manager flow finish task` on 2026-07-16.

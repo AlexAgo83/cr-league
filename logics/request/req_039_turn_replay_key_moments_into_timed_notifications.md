@@ -1,7 +1,7 @@
 ## req_039_turn_replay_key_moments_into_timed_notifications - Turn replay key moments into timed notifications
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

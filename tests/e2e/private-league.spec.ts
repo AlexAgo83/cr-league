@@ -138,7 +138,8 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     await expect(page.getByRole("button", { name: "Next GP" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Report" })).toBeVisible();
-    await expect(page.locator(".replay-timeline").getByText(`L${expectedCircuitLaps(expectedRound)}`)).toBeVisible();
+    await expect(page.locator(".replay-moments-panel")).toHaveCount(0);
+    await expect(page.locator(".replay-marker").first()).toBeVisible();
     await page.getByRole("button", { name: "Report" }).click();
     await expect(page.getByRole("heading", { name: expectedCircuitTitle(expectedRound) })).toBeVisible();
     await expect(page.getByLabel("Race phases")).toBeVisible();
@@ -188,7 +189,6 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Approach: Balanced" })).toHaveAttribute("aria-pressed", "true");
   await page.screenshot({ path: testInfo.outputPath("drive-layout-desktop.png"), fullPage: true });
-  const directiveWidth = await page.locator(".directive-panel").evaluate((element) => element.getBoundingClientRect().width);
   await expect
     .poll(async () => page.locator(".drive-content-column > .race-context-panel").evaluate((element) => element.getBoundingClientRect().width))
     .toBeCloseTo(await driveMap.evaluate((element) => element.getBoundingClientRect().width), 0);
@@ -207,7 +207,6 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
 
   const mapPanel = page.locator(".replay-map-panel");
   const copyPanel = page.locator(".replay-copy-panel");
-  const momentsPanel = page.locator(".replay-moments-panel");
   const replayMap = mapPanel;
 
   await expect(mapPanel.locator(".circuit-map-stage")).toBeVisible();
@@ -228,40 +227,40 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".map-car.player > g").first()).toHaveAttribute("transform", /scale\(0\.[0-9]+/);
   await expect.poll(async () => mapPanel.locator(".circuit-camera").getAttribute("transform")).not.toBeNull();
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Speed ×1" })).toBeVisible();
+  await expect(page.locator(".replay-moments-panel")).toHaveCount(0);
   await expect
-    .poll(async () => momentsPanel.evaluate((element) => element.getBoundingClientRect().width))
-    .toBeCloseTo(directiveWidth, 0);
+    .poll(async () => mapPanel.evaluate((element) => element.getBoundingClientRect().width))
+    .toBeCloseTo(await copyPanel.evaluate((element) => element.getBoundingClientRect().width), 0);
   await expect(mapPanel.locator(".replay-progress")).toBeVisible();
   await mapPanel.locator(".replay-marker").click();
+  await expect(mapPanel.locator(".replay-moment-notification")).toContainText("Rain Grip");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("59");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("50");
   await expect(copyPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
-  await expect(momentsPanel.getByRole("heading", { name: "Key moments" })).toBeVisible();
 
   const desktop = await page.evaluate(() => {
     const mapPanel = document.querySelector(".replay-map-panel")?.getBoundingClientRect();
     const copyPanel = document.querySelector(".replay-copy-panel")?.getBoundingClientRect();
-    const momentsPanel = document.querySelector(".replay-moments-panel")?.getBoundingClientRect();
     return {
       mapBelowCopy: Boolean(mapPanel && copyPanel && mapPanel.top > copyPanel.bottom),
-      momentsRightOfCopy: Boolean(copyPanel && momentsPanel && momentsPanel.left > copyPanel.right),
-      momentsAlignedWithCopy: Boolean(copyPanel && momentsPanel && Math.abs(momentsPanel.top - copyPanel.top) < 2)
+      noMomentsPanel: !document.querySelector(".replay-moments-panel"),
+      mapSameWidthAsCopy: Boolean(mapPanel && copyPanel && Math.abs(mapPanel.width - copyPanel.width) < 2)
     };
   });
-  expect(desktop).toEqual({ mapBelowCopy: true, momentsRightOfCopy: true, momentsAlignedWithCopy: true });
+  expect(desktop).toEqual({ mapBelowCopy: true, noMomentsPanel: true, mapSameWidthAsCopy: true });
   await page.screenshot({ path: testInfo.outputPath("replay-layout-desktop.png"), fullPage: true });
 
   await page.setViewportSize({ width: 390, height: 900 });
   const mobile = await page.evaluate(() => {
     const mapPanel = document.querySelector(".replay-map-panel")?.getBoundingClientRect();
     const copyPanel = document.querySelector(".replay-copy-panel")?.getBoundingClientRect();
-    const momentsPanel = document.querySelector(".replay-moments-panel")?.getBoundingClientRect();
     return {
       mapBelowCopy: Boolean(mapPanel && copyPanel && mapPanel.top > copyPanel.bottom),
-      momentsBelowMap: Boolean(mapPanel && momentsPanel && momentsPanel.top > mapPanel.bottom)
+      noMomentsPanel: !document.querySelector(".replay-moments-panel"),
+      noMapOverflow: Boolean(mapPanel && mapPanel.width <= document.documentElement.clientWidth)
     };
   });
-  expect(mobile).toEqual({ mapBelowCopy: true, momentsBelowMap: true });
+  expect(mobile).toEqual({ mapBelowCopy: true, noMomentsPanel: true, noMapOverflow: true });
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 
@@ -269,10 +268,6 @@ function expectedCircuitTitle(resultRound: number) {
   if (resultRound === 1) return "Paris Docklands Sprint";
   if (resultRound === 2) return "Paris Left Bank Loop";
   return "Amsterdam Canal Loop";
-}
-
-function expectedCircuitLaps(resultRound: number) {
-  return resultRound === 2 ? 6 : 5;
 }
 
 async function createProfile(page: Page) {

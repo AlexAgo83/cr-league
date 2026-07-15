@@ -468,9 +468,7 @@ describe("App", () => {
     expect(document.querySelector(".command-bar")?.textContent).not.toContain("The race is reviewed: move to the next Grand Prix.");
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
-    expect(document.querySelector(".replay-timeline")?.textContent).toContain("L5");
-    expect(document.querySelector(".replay-timeline")?.textContent).toContain("Rain Grip");
-    expect(document.querySelector(".replay-timeline")?.textContent).toContain("+2 pos");
+    expect(document.querySelector(".replay-moments-panel")).toBe(null);
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Mika Blitz");
 
     // Timeline markers carry the key moments and seek on click
@@ -478,11 +476,11 @@ describe("App", () => {
     expect(document.querySelectorAll(".replay-weather").length).toBe(5);
     expect(document.querySelector(".replay-marker")?.getAttribute("title")).toContain("Rain Grip");
     fireEvent.click(document.querySelector(".replay-marker")!);
+    expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("Rain Grip");
+    expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("+2 pos");
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Volt Union");
     fireEvent.click(screen.getByRole("button", { name: /Restart/ }));
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("0%");
-    fireEvent.click(screen.getByRole("button", { name: /L5.*Rain Grip/ }));
-    expect(Number.parseFloat((document.querySelector(".replay-progress-fill") as HTMLElement).style.width)).toBeLessThan(100);
 
     // Replay playback controls
     fireEvent.click(screen.getByRole("button", { name: "Pause" }));
@@ -702,7 +700,8 @@ describe("App", () => {
 
     fireEvent.click(await screen.findByRole("button", { name: "Result" }));
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(screen.getByText("No replay events were recorded for this GP.")).toBeTruthy();
+    expect(document.querySelector(".replay-moments-panel")).toBe(null);
+    expect(document.querySelector(".replay-progress")).toBeTruthy();
   });
 
   it("joins a league by code", async () => {

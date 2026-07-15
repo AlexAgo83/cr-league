@@ -1,10 +1,10 @@
 ## item_061_build_the_release_triggered_render_deploy_workflow - Build the release-triggered Render deploy workflow
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 70%
 > Complexity: Medium
 > Theme: Deploy automation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -4,6 +4,7 @@ export type HealthStatus = {
   app: typeof APP_NAME;
   service: "api";
   status: "ok";
+  version: string;
   timestamp: string;
 };
 

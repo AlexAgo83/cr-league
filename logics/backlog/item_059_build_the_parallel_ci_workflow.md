@@ -1,10 +1,10 @@
 ## item_059_build_the_parallel_ci_workflow - Build the parallel CI workflow
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 70%
 > Complexity: Medium
 > Theme: Continuous integration
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

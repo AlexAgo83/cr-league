@@ -1,0 +1,202 @@
+name: Deploy Release
+
+on:
+  release:
+    types:
+      - published
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to deploy, for example v0.1.0.
+        required: true
+        type: string
+
+permissions:
+  actions: read
+  contents: read
+  deployments: write
+
+concurrency:
+  group: production-release
+  cancel-in-progress: false
+
+env:
+  API_HEALTH_URL: https://cr-league-api.onrender.com/health
+
+jobs:
+  deploy:
+    name: Deploy release
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Resolve release
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          release_tag="${{ github.event.inputs.release_tag || github.event.release.tag_name || '' }}"
+          if [ -z "$release_tag" ]; then
+            release_tag="$(gh release list --limit 1 --json tagName --jq '.[0].tagName')"
+          fi
+
+          if ! git rev-parse -q --verify "refs/tags/${release_tag}" >/dev/null; then
+            git fetch --tags --force
+          fi
+
+          release_sha="$(git rev-list -n 1 "$release_tag")"
+          version="${release_tag#v}"
+
+          echo "tag=${release_tag}" >> "$GITHUB_OUTPUT"
+          echo "sha=${release_sha}" >> "$GITHUB_OUTPUT"
+          echo "version=${version}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify package versions
+        env:
+          RELEASE_TAG: ${{ steps.release.outputs.tag }}
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
+        run: |
+          set -euo pipefail
+
+          expected="${RELEASE_TAG#v}"
+          if [ "v${expected}" != "$RELEASE_TAG" ]; then
+            echo "Release tag must start with v."
+            exit 1
+          fi
+
+          for package_file in package.json apps/api/package.json apps/web/package.json packages/shared/package.json; do
+            version="$(git show "${RELEASE_SHA}:${package_file}" | node -e 'let body = ""; process.stdin.on("data", chunk => body += chunk); process.stdin.on("end", () => console.log(JSON.parse(body).version));')"
+            if [ "$version" != "$expected" ]; then
+              echo "${package_file} version ${version} does not match ${RELEASE_TAG}."
+              exit 1
+            fi
+          done
+
+      - name: Wait for CI on release commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
+        run: |
+          set -euo pipefail
+
+          deadline=$((SECONDS + 1800))
+          while [ "$SECONDS" -lt "$deadline" ]; do
+            runs="$(gh run list --workflow ci.yml --commit "$RELEASE_SHA" --json conclusion,databaseId,status,url --limit 20)"
+            success_url="$(jq -r '.[] | select(.status == "completed" and .conclusion == "success") | .url' <<< "$runs" | head -n 1)"
+            failed_url="$(jq -r '.[] | select(.status == "completed" and (.conclusion != "success" and .conclusion != "skipped")) | .url' <<< "$runs" | head -n 1)"
+
+            if [ -n "$success_url" ]; then
+              echo "CI succeeded: ${success_url}"
+              exit 0
+            fi
+            if [ -n "$failed_url" ]; then
+              echo "CI failed: ${failed_url}"
+              exit 1
+            fi
+
+            echo "Waiting for CI on ${RELEASE_SHA}..."
+            sleep 30
+          done
+
+          echo "Timed out waiting for CI on ${RELEASE_SHA}."
+          exit 1
+
+      - name: Create deployment
+        id: deployment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_SHA: ${{ steps.release.outputs.sha }}
+        run: |
+          set -euo pipefail
+
+          deployment_id="$(gh api \
+            --method POST \
+            "repos/${GITHUB_REPOSITORY}/deployments" \
+            -f ref="$RELEASE_SHA" \
+            -f environment=production \
+            -f description="CR League production release" \
+            -f auto_merge=false \
+            -f required_contexts[] \
+            --jq '.id')"
+
+          gh api \
+            --method POST \
+            "repos/${GITHUB_REPOSITORY}/deployments/${deployment_id}/statuses" \
+            -f state=in_progress \
+            -f environment=production \
+            -f log_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+          echo "id=${deployment_id}" >> "$GITHUB_OUTPUT"
+
+      - name: Deploy API and verify health
+        env:
+          RENDER_API_DEPLOY_HOOK_URL: ${{ secrets.RENDER_API_DEPLOY_HOOK_URL }}
+          RELEASE_VERSION: ${{ steps.release.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$RENDER_API_DEPLOY_HOOK_URL" ]; then
+            echo "Missing RENDER_API_DEPLOY_HOOK_URL secret."
+            exit 1
+          fi
+
+          curl --fail-with-body --silent --show-error --request POST "$RENDER_API_DEPLOY_HOOK_URL"
+
+          for attempt in $(seq 1 30); do
+            version="$(curl --fail --silent --show-error "$API_HEALTH_URL" | jq -r '.version // ""')" || version=""
+            if [ "$version" = "$RELEASE_VERSION" ]; then
+              echo "API health reports ${version}."
+              exit 0
+            fi
+
+            echo "API health returned '${version}', waiting for ${RELEASE_VERSION} (${attempt}/30)."
+            sleep 10
+          done
+
+          echo "API health did not report ${RELEASE_VERSION}."
+          exit 1
+
+      - name: Deploy web
+        env:
+          RENDER_WEB_DEPLOY_HOOK_URL: ${{ secrets.RENDER_WEB_DEPLOY_HOOK_URL }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$RENDER_WEB_DEPLOY_HOOK_URL" ]; then
+            echo "Missing RENDER_WEB_DEPLOY_HOOK_URL secret."
+            exit 1
+          fi
+
+          curl --fail-with-body --silent --show-error --request POST "$RENDER_WEB_DEPLOY_HOOK_URL"
+
+      - name: Mark deployment success
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOYMENT_ID: ${{ steps.deployment.outputs.id }}
+        run: |
+          gh api \
+            --method POST \
+            "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}/statuses" \
+            -f state=success \
+            -f environment=production \
+            -f environment_url="$API_HEALTH_URL" \
+            -f log_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null
+
+      - name: Mark deployment failure
+        if: failure() && steps.deployment.outputs.id != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DEPLOYMENT_ID: ${{ steps.deployment.outputs.id }}
+        run: |
+          gh api \
+            --method POST \
+            "repos/${GITHUB_REPOSITORY}/deployments/${DEPLOYMENT_ID}/statuses" \
+            -f state=failure \
+            -f environment=production \
+            -f log_url="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" >/dev/null

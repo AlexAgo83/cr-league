@@ -1,0 +1,63 @@
+databases:
+  - name: cr-league-db
+    databaseName: cr_league
+    user: cr_league
+    region: frankfurt
+    plan: starter
+
+services:
+  - type: web
+    name: cr-league-api
+    runtime: node
+    region: frankfurt
+    plan: starter
+    buildCommand: npm ci && npm run db:generate && npm run db:deploy && npm run build -w @cr-league/shared && npm run build -w @cr-league/api
+    startCommand: npm run start -w @cr-league/api
+    autoDeployTrigger: off
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: API_HOST
+        value: 0.0.0.0
+      - key: API_PORT
+        value: "10000"
+      - key: WEB_ORIGIN
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: cr-league-db
+          property: connectionString
+
+  - type: web
+    name: cr-league-web
+    runtime: static
+    buildCommand: npm ci && npm run build -w @cr-league/shared && npm run build -w @cr-league/web
+    staticPublishPath: apps/web/dist
+    autoDeployTrigger: off
+    pullRequestPreviewsEnabled: true
+    envVars:
+      - key: NODE_VERSION
+        value: "20"
+      - key: VITE_API_BASE_URL
+        sync: false
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /index.html
+        name: Cache-Control
+        value: no-cache
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: Referrer-Policy
+        value: strict-origin-when-cross-origin
+      - path: /*
+        name: X-Frame-Options
+        value: DENY

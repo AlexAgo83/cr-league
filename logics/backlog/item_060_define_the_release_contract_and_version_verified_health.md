@@ -1,10 +1,10 @@
 ## item_060_define_the_release_contract_and_version_verified_health - Define the release contract and version-verified health
 > From version: 0.1.0
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 70%
 > Complexity: Low
 > Theme: Release contract
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

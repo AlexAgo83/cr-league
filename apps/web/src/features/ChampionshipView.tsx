@@ -1,7 +1,7 @@
 import type { TranslationKey } from "../i18n/index.js";
 import { seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
-import type { CSSProperties } from "react";
+import { LiveryPlate } from "./LiveryPlate.js";
 
 export function ChampionshipView({
   state,
@@ -49,13 +49,7 @@ export function ChampionshipView({
             <span>{tt("dashboard_leader")}</span>
             {leader ? (
               <strong className="leader-team-line">
-                <span
-                  className="standings-livery-plate leader-livery-plate"
-                  style={{ "--livery-primary": leader.livery.primary, "--livery-secondary": leader.livery.secondary } as CSSProperties & Record<string, string>}
-                >
-                  <span className="livery-plate-text">{leader.name.slice(0, 3).toUpperCase()}</span>
-                  <PlateStars count={seasonWins.get(leader.id) ?? 0} />
-                </span>
+                <LiveryPlate className="standings-livery-plate leader-livery-plate" livery={leader.livery} name={leader.name} wins={seasonWins.get(leader.id) ?? 0} />
                 <span>{leader.name}</span>
               </strong>
             ) : (
@@ -68,7 +62,6 @@ export function ChampionshipView({
           <div>
             <span>{tt("league_cadence")}</span>
             <strong>{tt(`cadence_${state.league.cadence}` as TranslationKey)}</strong>
-            <small>{tt(`next_action_${state.actionState.nextAction}` as TranslationKey)}</small>
           </div>
         </div>
       </section>
@@ -81,13 +74,7 @@ export function ChampionshipView({
               {state.teams.map((team, index) => (
                 <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
                   <strong className="standings-rank">P{index + 1}</strong>
-                  <span
-                    className="standings-livery-plate"
-                    style={{ "--livery-primary": team.livery.primary, "--livery-secondary": team.livery.secondary } as CSSProperties & Record<string, string>}
-                  >
-                    <span className="livery-plate-text">{team.name.slice(0, 3).toUpperCase()}</span>
-                    <PlateStars count={seasonWins.get(team.id) ?? 0} />
-                  </span>
+                  <LiveryPlate className="standings-livery-plate" livery={team.livery} name={team.name} wins={seasonWins.get(team.id) ?? 0} />
                   <span className="standings-team">
                     {team.name}
                     <small>{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</small>
@@ -142,11 +129,6 @@ export function ChampionshipView({
       </div>
     </div>
   );
-}
-
-function PlateStars({ count }: { count: number }) {
-  const stars = "★".repeat(Math.min(count, 5));
-  return stars ? <span className="livery-plate-stars">{stars}</span> : null;
 }
 
 function historyLabel(grandPrix: LeagueState["grandPrixHistory"][number], playerTeamId: string | undefined, tt: Translator) {

@@ -10,8 +10,7 @@ import {
   type Translator
 } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
-
-const WEATHER_ICONS = { dry: "☀️", light_rain: "🌦️", heavy_rain: "⛈️" } as const;
+import { WEATHER_ICONS } from "./weatherIcons.js";
 
 export function ReportView({
   state,

@@ -6,6 +6,7 @@ import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, type Tr
 import type { LeagueState } from "../app/types.js";
 import { CardStatBadges } from "./CardStatBadges.js";
 import { MapCarShape } from "./CircuitMap.js";
+import { LiveryPlate } from "./LiveryPlate.js";
 
 type CardPanel = "inventory" | "shop";
 
@@ -77,10 +78,7 @@ export function GarageView({
             <h2>{tt("dashboard_my_team")}</h2>
           </div>
           <div className="garage-livery-visuals">
-            <div className="garage-livery-preview" style={{ "--livery-primary": livery.primary, "--livery-secondary": livery.secondary } as CSSProperties & Record<string, string>}>
-              <span className="livery-plate-text">{playerTeam.name.slice(0, 3).toUpperCase()}</span>
-              {seasonWins ? <span className="livery-plate-stars">{"★".repeat(Math.min(seasonWins, 5))}</span> : null}
-            </div>
+            <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
             <svg className="garage-car-preview map-car" viewBox="-20 -14 40 28" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
               <MapCarShape />
             </svg>

@@ -5,8 +5,7 @@ import { countryFlag, type CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
 import type { RaceEvent } from "../app/helpers.js";
 import { CircuitMap, MapTraitsPanel, circuitDisplayLength, type MapCar, type MapTraitImpacts, type MapTraitStats } from "./CircuitMap.js";
-
-const WEATHER_ICONS = { dry: "☀️", light_rain: "🌦️", heavy_rain: "⛈️" } as const;
+import { WEATHER_ICONS } from "./weatherIcons.js";
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 const START_HOLD_SECONDS = 1;
 const FINISH_HOLD_SECONDS = 1;

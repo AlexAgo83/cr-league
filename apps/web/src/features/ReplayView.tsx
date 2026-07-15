@@ -1,5 +1,5 @@
 import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
-import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { type CSSProperties, useEffect, useId, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { countryFlag, type CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
@@ -18,10 +18,51 @@ const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_STEP = 0.012;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
+type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
 
-function savedReplaySpeed() {
+function savedReplaySpeed(): ReplaySpeed {
   const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
-  return REPLAY_SPEEDS.includes(saved as (typeof REPLAY_SPEEDS)[number]) ? saved : 1;
+  return REPLAY_SPEEDS.includes(saved as ReplaySpeed) ? (saved as ReplaySpeed) : 1;
+}
+
+function ReplaySpeedMenu({ speed, setSpeed, tt }: { speed: ReplaySpeed; setSpeed: (speed: ReplaySpeed) => void; tt: Translator }) {
+  const [open, setOpen] = useState(false);
+  const listId = useId();
+
+  return (
+    <div className="replay-speed-menu" onBlur={(event) => !event.currentTarget.contains(event.relatedTarget) && setOpen(false)}>
+      <button
+        type="button"
+        className={open ? "replay-speed-trigger active" : "replay-speed-trigger"}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={listId}
+        aria-label={`${tt("replay_speed")} ×${speed}`}
+        onClick={() => setOpen((current) => !current)}
+      >
+        ×{speed}
+      </button>
+      {open ? (
+        <div id={listId} className="replay-speed-options" role="listbox" aria-label={tt("replay_speed")}>
+          {REPLAY_SPEEDS.map((option) => (
+            <button
+              key={option}
+              type="button"
+              role="option"
+              aria-selected={option === speed}
+              className={option === speed ? "selected" : undefined}
+              onClick={() => {
+                setSpeed(option);
+                setOpen(false);
+              }}
+            >
+              ×{option}
+            </button>
+          ))}
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 function clampStat(value: number) {
@@ -271,7 +312,7 @@ export function ReplayView({
   const progressRef = useRef<HTMLDivElement>(null);
   const clock = useRef(0);
   const [playing, setPlaying] = useState(true);
-  const [speed, setSpeed] = useState(savedReplaySpeed);
+  const [speed, setSpeed] = useState<ReplaySpeed>(savedReplaySpeed);
   const [driverFocus, setDriverFocus] = useState(() => localStorage.getItem(REPLAY_FOCUS_KEY) === "1");
   const replayTrace = result.replayTrace?.length ? result.replayTrace : fallbackReplayTrace(result);
   const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
@@ -478,13 +519,7 @@ export function ReplayView({
                       <circle cx="12" cy="12" r="3" />
                     </svg>
                   </button>
-                  <select aria-label={tt("replay_speed")} value={speed} onChange={(event) => setSpeed(Number(event.target.value))}>
-                    {REPLAY_SPEEDS.map((option) => (
-                      <option key={option} value={option}>
-                        ×{option}
-                      </option>
-                    ))}
-                  </select>
+                  <ReplaySpeedMenu speed={speed} setSpeed={setSpeed} tt={tt} />
                 </div>
                 <ol className="replay-tower">
                   {tower.map((entry, index) => (

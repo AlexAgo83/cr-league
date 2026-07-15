@@ -217,7 +217,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Focus driver" })).toHaveClass(/active/);
   await expect(mapPanel.locator(".map-car.player > g").first()).toHaveAttribute("transform", /scale\(0\.[0-9]+/);
   await expect.poll(async () => mapPanel.locator(".circuit-camera").getAttribute("transform")).not.toBeNull();
-  await expect(mapPanel.locator(".replay-map-controls").getByLabel("Speed")).toHaveValue("1");
+  await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Speed ×1" })).toBeVisible();
   await expect
     .poll(async () => momentsPanel.evaluate((element) => element.getBoundingClientRect().width))
     .toBeCloseTo(directiveWidth, 0);

@@ -1074,8 +1074,7 @@ label small {
   z-index: 2;
 }
 
-.replay-map-controls button,
-.replay-map-controls select {
+.replay-map-controls button {
   background: rgb(255 255 255 / 0.07);
   border: 0;
   border-radius: 999px;
@@ -1129,10 +1128,59 @@ label small {
   color: var(--color-accent);
 }
 
-.replay-map-controls select {
+.replay-speed-menu {
+  position: relative;
+}
+
+.replay-map-controls .replay-speed-trigger {
   font-size: 0.75rem;
   font-weight: 800;
+  min-width: 38px;
   width: auto;
+}
+
+.replay-map-controls .replay-speed-trigger.active,
+.replay-speed-options button.selected {
+  background: rgb(56 189 248 / 0.2);
+  color: var(--color-telemetry);
+}
+
+.replay-speed-options {
+  background: rgb(10 15 21 / 0.96);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 10px;
+  box-shadow: 0 18px 36px rgb(0 0 0 / 0.34);
+  display: grid;
+  gap: 4px;
+  left: 50%;
+  min-width: 54px;
+  padding: 5px;
+  position: absolute;
+  top: calc(100% + 8px);
+  transform: translateX(-50%);
+  z-index: 5;
+}
+
+.replay-speed-options::before {
+  background: rgb(10 15 21 / 0.96);
+  border-left: 1px solid rgb(255 255 255 / 0.14);
+  border-top: 1px solid rgb(255 255 255 / 0.14);
+  content: "";
+  height: 8px;
+  left: 50%;
+  position: absolute;
+  top: -5px;
+  transform: translateX(-50%) rotate(45deg);
+  width: 8px;
+}
+
+.replay-speed-options button {
+  border-radius: 7px;
+  font-size: 0.76rem;
+  font-weight: 900;
+  height: 28px;
+  position: relative;
+  width: 44px;
 }
 
 @keyframes replay-spin {

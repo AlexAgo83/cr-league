@@ -482,8 +482,9 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Focus driver" }));
     expect(localStorage.getItem("cr-league-replay-focus")).toBe("1");
-    fireEvent.change(screen.getByLabelText("Speed"), { target: { value: "2" } });
-    expect((screen.getByLabelText("Speed") as HTMLSelectElement).value).toBe("2");
+    fireEvent.click(screen.getByRole("button", { name: "Speed ×1" }));
+    fireEvent.click(screen.getByRole("option", { name: "×2" }));
+    expect(screen.getByRole("button", { name: "Speed ×2" })).toBeTruthy();
     expect(localStorage.getItem("cr-league-replay-speed")).toBe("2");
 
     // Report view

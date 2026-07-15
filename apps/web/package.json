@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite --port 4873",
-    "build": "tsc -b && vite build",
+    "build": "tsc -b && node scripts/validate-api-base-url.mjs && vite build",
     "preview": "vite preview",
     "typecheck": "tsc -b --pretty false",
     "test": "vitest run"

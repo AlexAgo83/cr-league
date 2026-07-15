@@ -30,7 +30,8 @@
 
 | Doc | Title | Status | Owner | Progress | Path |
 |---|---|---|---|---|---|
-| [1.0](roadmap/road_001_cr_league_roadmap.md) | Private league V1 | Accepted |  |  | roadmap/road_001_cr_league_roadmap.md |
+| [1.0](roadmap/road_001_cr_league_roadmap.md) | Private league V1 | Superseded |  |  | roadmap/road_001_cr_league_roadmap.md |
+| [1.0](roadmap/road_002_cr_league_roadmap_v2.md) | Private league V1 | Accepted |  |  | roadmap/road_002_cr_league_roadmap_v2.md |
 
 ## Requests
 

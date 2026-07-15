@@ -1,6 +1,7 @@
 ## road_001_cr_league_roadmap - CR League Roadmap
 > Date: 2026-07-14
-> Status: Accepted
+> Status: Superseded
+> Superseded by: `road_002_cr_league_roadmap_v2` (2026-07-15) — kept for the 0.1/0.2 delivered detail and milestone history.
 > Related product: `prod_001_cr_league_product_brief`
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.

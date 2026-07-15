@@ -1,0 +1,202 @@
+{
+  "title": "GitHub CI, Render blueprint, and release contract",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/roadmap/road_001_cr_league_roadmap.md",
+    "package.json",
+    "vitest.config.ts",
+    "playwright.config.ts",
+    "prisma/schema.prisma",
+    "apps/api/src/features/health/routes.ts",
+    "apps/api/src/config.ts",
+    "tests/e2e/private-league.spec.ts",
+    "changelogs/",
+    "Pattern source (local disk, read-only): /Users/alexandreagostini/Documents/cp-wc-26/render.yaml and .github/workflows/deploy-release.yml — closest Render setup: node API + static web blueprint, autoDeployTrigger off, release-published deploy via deploy-hook curl, post-deploy /health version-match poll gate.",
+    "Pattern source (local disk, read-only): /Users/alexandreagostini/Documents/electrical-plan-editor/.github/workflows/ci.yml and render-release-deploy.yml — split CI lanes (quality/unit/ui-sharded/e2e/build) with an if-always aggregator job, PR-only cancel-in-progress concurrency, deploy workflow that polls CI success on the release SHA before curling the Render deploy hook.",
+    "Pattern source (local disk, read-only): /Users/alexandreagostini/Documents/logics-manager/.github/workflows/release.yml — tag/package.json version-match check and await-ci polling via gh run list instead of re-running tests."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "CI/CD and release engineering",
+    "needs": [
+      "Add a GitHub Actions CI that runs on every PR and push to main, with genuinely parallel test lanes so wall-clock time tracks the slowest lane, not the sum.",
+      "Add a Render blueprint (render.yaml) describing the API and web services so the production environment is reproducible from the repo.",
+      "Define a release contract: how a version is cut, what must be true before it deploys, and how the deploy is verified after the fact.",
+      "Make the release workflow trigger Render deploys via deploy hooks from CI, never via Render auto-deploy on push.",
+      "Verify deploys by polling the API health endpoint until the running version matches the released tag."
+    ],
+    "context": [
+      "The stack matches cp-wc-26 almost exactly: npm-workspaces monorepo (apps/api Fastify, apps/web React+Vite static, packages/shared), Node 20+, ESM, TypeScript project references, Prisma 6 on PostgreSQL. cp-wc-26's render.yaml and deploy-release.yml transfer nearly verbatim.",
+      "One deliberate divergence from cp-wc-26: cr-league has a real migrations history (prisma/migrations, 10 migrations) and a db:deploy script, so the Render build must run `prisma migrate deploy`, NOT `prisma db push`.",
+      "Test surface today: ~2200 lines of fast vitest (jsdom) across three workspaces, and 2 Playwright e2e tests that mock the API with page.route — the e2e job needs no Postgres and no API server, only the Vite dev server Playwright already starts. Test sharding (electrical-plan-editor style --shard matrix) is deliberately NOT adopted yet: a 3-workspace matrix gives real parallelism at this size; the unit lane can move to vitest --shard later without touching other lanes.",
+      "The API health endpoint exists (apps/api/src/features/health/routes.ts) but does not expose a version field; the post-deploy gate needs it. Root package.json version is 0.1.0 and workspace versions must stay in sync with it (cp-wc-26 convention: version single-sourced, tag vX.Y.Z matches package.json).",
+      "The repo already has a curated changelogs/ directory (cp-wc-26 convention: one markdown file per version) — the release contract formalizes it rather than adding release automation tooling (no changesets/semantic-release, consistent with all sibling projects).",
+      "Owner defaults (overridable at implementation review, not blockers): provision the production PostgreSQL as a Render database inside the blueprint (self-contained; switch DATABASE_URL to a dashboard secret if an external DB is preferred later), and run `prisma migrate deploy` inside the API buildCommand (free-tier compatible; preDeployCommand is a paid Render feature).",
+      "Branch strategy: main-only with tag/release-driven deploys (the cdx-manager/logics-manager/electrical-plan-editor camp), not a release branch. Publishing a GitHub Release vX.Y.Z is the one and only deploy trigger; workflow_dispatch is the manual fallback.",
+      "CI must keep running the existing gates: lint, typecheck, unit tests, build, e2e, and logics:validate (which requires the @grifhinz/logics-manager devDependency that req_033/item_052 adds — coordinate if req_033 has not shipped yet)."
+    ],
+    "acceptance_criteria": [
+      "AC1: render.yaml describes two services — API (runtime node, healthCheckPath /health, buildCommand running npm ci, prisma generate, prisma migrate deploy, shared+api builds; startCommand node dist/server.js) and web (runtime static, staticPublishPath apps/web/dist, SPA rewrite to index.html, no-cache on index.html, immutable 1-year cache on assets, nosniff/deny frame/referrer security headers) — both with autoDeployTrigger off.",
+      "AC2: The blueprint provisions a Render PostgreSQL database and wires DATABASE_URL from it; all other secrets (WEB_ORIGIN, VITE_API_BASE_URL) are declared sync: false; no secret value is committed.",
+      "AC3: ci.yml runs on pull_request, push to main, and workflow_dispatch with five parallel lanes — quality (lint, typecheck, logics:validate), unit (matrix over the three workspaces running vitest per workspace), e2e (Playwright chromium with playwright-report always uploaded and traces on failure), build (full npm run build), and a validate aggregator with if: always() that fails if any lane failed — plus npm caching and cancel-in-progress concurrency scoped to PRs.",
+      "AC4: The unit lane's total wall-clock is bounded by the slowest workspace, verified by three concurrent jobs in the Actions run; no lane waits on another lane's completion except the aggregator.",
+      "AC5: GET /health on the API returns the application version read from package.json, and the value matches the root package.json version in a unit test.",
+      "AC6: deploy-release.yml triggers on release published (and workflow_dispatch fallback), verifies the tag equals v<package.json version>, polls the CI workflow conclusion for the release SHA until success (no test re-run), then POSTs RENDER_API_DEPLOY_HOOK_URL and RENDER_WEB_DEPLOY_HOOK_URL via curl --fail-with-body.",
+      "AC7: After triggering the API hook, the workflow polls /health up to 30 times at 10-second intervals until the reported version equals the release tag, records a GitHub Deployment marked success or failure accordingly, and fails the run on timeout or mismatch.",
+      "AC8: A release contract document (docs/) states the flow — bump version in root and workspace package.json together, add changelogs/CHANGELOGS_X_Y_Z.md, tag vX.Y.Z, publish the GitHub Release — and lists the two repository secrets to configure (the Render deploy hook URLs).",
+      "AC9: Workflows use least-privilege permissions (contents: read; deployments: write only where the Deployment is created) and reference no secrets in CI test jobs (dummy inline DATABASE_URL where Prisma generate needs one).",
+      "AC10: Typecheck, lint, unit tests, build, and e2e pass locally, and the ci.yml lanes are green on the first PR that introduces them."
+    ]
+  },
+  "product": {
+    "title": "CI and Release Pipeline Product Brief",
+    "overview": "Give cr-league the same production discipline as its sibling projects: every change validated by a parallel CI before merge, a reproducible Render environment described in the repo, and a release contract where publishing a GitHub Release is the single gesture that deploys — gated by CI success before and version-verified health after.",
+    "goals": [
+      "Sub-slowest-lane CI wall-clock: quality, per-workspace unit tests, e2e, and build all run concurrently.",
+      "One-gesture releases: publish a vX.Y.Z GitHub Release and the pipeline does the rest — CI gate, Render hooks, health verification.",
+      "No deploy ambiguity: Render auto-deploy stays off; the only path to production is a published release whose CI passed.",
+      "Reuse proven in-house patterns (cp-wc-26 blueprint and deploy gate, electrical-plan-editor CI lanes and aggregator, logics-manager version checks) instead of inventing new ones."
+    ],
+    "non_goals": [
+      "No release automation tooling (changesets, semantic-release, release-please) — version bumps and changelogs stay manual and curated, consistent with every sibling project.",
+      "No test sharding yet — the per-workspace matrix is enough at the current suite size; sharding is the documented upgrade path.",
+      "No staging environment, PR preview backend, or blue-green deploys.",
+      "No Docker production image — Render builds from source via the blueprint.",
+      "No cron/scheduled workflows in this request."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Author the Render blueprint for API, web, and database",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Infrastructure as code",
+      "request_acs": ["AC1", "AC2", "AC10"],
+      "problem": [
+        "Production topology exists nowhere in the repo; standing up or reproducing the environment is manual dashboard work.",
+        "cp-wc-26 proved the exact blueprint shape for this stack, but it uses prisma db push while cr-league has a real migration history that must be respected."
+      ],
+      "scope_in": [
+        "Write render.yaml with the API service (node runtime, region, plan, healthCheckPath /health, autoDeployTrigger off, buildCommand: npm ci && prisma generate && prisma migrate deploy && shared+api builds, startCommand: npm run start -w @cr-league/api), mirroring cp-wc-26's structure.",
+        "Add the web static service: buildCommand building shared+web, staticPublishPath apps/web/dist, SPA rewrite, cp-wc-26's cache and security headers, pullRequestPreviewsEnabled true, autoDeployTrigger off.",
+        "Provision a Render PostgreSQL database in the blueprint and reference its connection string as the API's DATABASE_URL (owner default; leave a comment noting the external-DB alternative via sync: false).",
+        "Declare WEB_ORIGIN and VITE_API_BASE_URL as sync: false env vars; NODE_VERSION and API_HOST/API_PORT as plaintext.",
+        "Verify apps/api start script serves /health with the configured host/port on Render's expected port convention."
+      ],
+      "scope_out": [
+        "Actually creating the Render services or database (dashboard/one-click blueprint apply is an operator action).",
+        "Dockerfiles, staging environments, custom domains."
+      ],
+      "acceptance_criteria": [
+        "AC1: render.yaml passes Render blueprint validation (or a documented schema check) and contains both services plus the database with autoDeployTrigger off on both services.",
+        "AC2: The API buildCommand uses prisma migrate deploy, never db push, and no secret value appears in the file.",
+        "AC3: Header and rewrite rules for the static site match the cp-wc-26 set (no-cache index.html, immutable assets, nosniff, DENY framing)."
+      ]
+    },
+    {
+      "title": "Build the parallel CI workflow",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Continuous integration",
+      "request_acs": ["AC3", "AC4", "AC9", "AC10"],
+      "problem": [
+        "The repo has no CI: lint, typecheck, tests, build, and logics validation only run when someone remembers to run them locally.",
+        "A single sequential job would serialize ~5 independent gates; the electrical-plan-editor lane pattern bounds wall-clock by the slowest lane instead."
+      ],
+      "scope_in": [
+        "Create .github/workflows/ci.yml triggered on pull_request, push to main, and workflow_dispatch, with concurrency cancel-in-progress scoped to PRs and permissions contents: read.",
+        "Lane quality: npm ci, prisma generate with a dummy inline DATABASE_URL, lint, typecheck, logics:validate.",
+        "Lane unit: matrix over [shared, api, web] running vitest for that workspace only (root vitest config filtered by path), fail-fast false.",
+        "Lane e2e: Playwright install --with-deps chromium, npm run test:e2e (webServer starts the Vite dev server; API is mocked by the spec), upload playwright-report always (14d retention) and traces/videos on failure.",
+        "Lane build: full npm run build across workspaces.",
+        "Aggregator job validate with needs on all lanes and if: always(), failing unless every lane succeeded — the single required status check for branch protection.",
+        "npm caching via setup-node cache: npm in every job; Node version pinned to 20.",
+        "Document in the workflow file that the unit lane upgrades to vitest --shard when suite growth warrants it."
+      ],
+      "scope_out": [
+        "Test sharding, OS/runtime matrices, coverage reporting, integration-test lane with real Postgres (no such suite exists yet).",
+        "Branch protection configuration itself (operator action; the contract doc names the check to require)."
+      ],
+      "acceptance_criteria": [
+        "AC1: A PR run shows quality, three unit matrix jobs, e2e, and build executing concurrently, with validate aggregating.",
+        "AC2: Failing any single lane fails validate; cancelling is scoped so main pushes are never cancelled by newer PR pushes.",
+        "AC3: No repository secret is referenced anywhere in ci.yml.",
+        "AC4: All lanes are green on the introducing PR."
+      ]
+    },
+    {
+      "title": "Define the release contract and version-verified health",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Release contract",
+      "request_acs": ["AC5", "AC8", "AC10"],
+      "problem": [
+        "Nothing defines what a release IS for cr-league: no version discipline, no changelog gate, and /health cannot prove which build is running.",
+        "The deploy verification gate (cp-wc-26 pattern) is impossible until /health reports a version."
+      ],
+      "scope_in": [
+        "Expose the application version in GET /health, read once from the API package.json at startup, with a unit test asserting the field matches.",
+        "Keep root and workspace package.json versions in sync at the current version; add the check to the contract doc (and optionally a tiny npm script that diffs them).",
+        "Write docs/release-contract.md: version bump procedure, changelogs/CHANGELOGS_X_Y_Z.md requirement, tag vX.Y.Z convention, GitHub Release publication as the deploy trigger, required repository secrets (RENDER_API_DEPLOY_HOOK_URL, RENDER_WEB_DEPLOY_HOOK_URL), and the branch-protection check name (validate).",
+        "State the rollback procedure: re-publish the previous release (re-triggers hooks with the old tag) — verify this is truthful for Render deploy hooks and document accordingly."
+      ],
+      "scope_out": [
+        "Automated version bumping or changelog generation.",
+        "Signing, provenance, or package publishing (nothing is published to a registry)."
+      ],
+      "acceptance_criteria": [
+        "AC1: GET /health returns { status, version } and the unit test pins version to the package.json value.",
+        "AC2: docs/release-contract.md covers bump, changelog, tag, publish, secrets, and rollback, in under two pages.",
+        "AC3: Root and workspace versions are identical after the change."
+      ]
+    },
+    {
+      "title": "Build the release-triggered Render deploy workflow",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Deploy automation",
+      "request_acs": ["AC6", "AC7", "AC9", "AC10"],
+      "problem": [
+        "Without a gated deploy workflow, deploying means clicking in the Render dashboard, with no guarantee CI passed on what ships and no proof the new build actually took."
+      ],
+      "scope_in": [
+        "Create .github/workflows/deploy-release.yml triggered on release published plus workflow_dispatch (tag input for the fallback), permissions contents: read + deployments: write.",
+        "Step 1 — contract check: fail unless the release tag equals v<root package.json version> at the release SHA (logics-manager pattern).",
+        "Step 2 — CI gate: poll the CI workflow run conclusion for the release SHA via gh run list until success, with a 30-minute deadline (electrical-plan-editor pattern); never re-run tests.",
+        "Step 3 — trigger deploys: curl --fail-with-body -X POST the two Render deploy hook secrets, API first, then web.",
+        "Step 4 — verify: poll the production /health up to 30x10s until its version equals the tag (strip the v), creating a GitHub Deployment and marking it in_progress then success/failure (cp-wc-26 pattern verbatim); fail the workflow on timeout or version mismatch.",
+        "Document the production /health URL as a workflow env var at the top of the file, not hardcoded mid-script."
+      ],
+      "scope_out": [
+        "Web-side post-deploy verification beyond the hook POST succeeding (static site has no health endpoint).",
+        "Notifications (Teams/Slack) — can be added later following the electrical-plan-editor teams-release-notification pattern.",
+        "Configuring the repository secrets (operator action, listed in the contract doc)."
+      ],
+      "acceptance_criteria": [
+        "AC1: Publishing a release whose CI failed (or has not finished within the deadline) never POSTs a deploy hook.",
+        "AC2: A tag/package.json version mismatch fails the workflow before any gate.",
+        "AC3: The workflow ends success only when production /health reports the released version; the GitHub Deployment reflects the same outcome.",
+        "AC4: workflow_dispatch with a tag input reproduces the full flow for an existing release."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate CI, Render blueprint, and release contract",
+    "plan": [
+      "Read the referenced cp-wc-26, electrical-plan-editor, and logics-manager files on local disk before writing any YAML — the request adopts their patterns deliberately.",
+      "Ship the release-contract item first (health version + docs) — both workflows depend on it.",
+      "Ship ci.yml second and open the introducing PR to watch the five lanes run concurrently.",
+      "Ship render.yaml and deploy-release.yml together — the deploy workflow references the blueprint's services and hooks.",
+      "Hand the operator checklist at closeout: apply the blueprint on Render, create the two deploy-hook secrets, set the sync:false env vars, require the validate check on main.",
+      "Run all local gates and record proof in the Logics closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/ci-render-release.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

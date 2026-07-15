@@ -3,13 +3,18 @@ import type { PrismaClient } from "@prisma/client";
 import { CARD_PRICE } from "@cr-league/shared";
 import { buildApp } from "./app.js";
 
+function createTestApp(db?: PrismaClient) {
+  const config = {
+    host: "127.0.0.1",
+    port: 0,
+    webOrigin: "http://localhost:4873"
+  };
+  return db ? buildApp(config, { db }) : buildApp(config);
+}
+
 describe("api app", () => {
   it("responds to health checks", async () => {
-    const app = await buildApp({
-      host: "127.0.0.1",
-      port: 0,
-      webOrigin: "http://localhost:4873"
-    });
+    const app = await createTestApp();
 
     const response = await app.inject({
       method: "GET",
@@ -27,11 +32,7 @@ describe("api app", () => {
   });
 
   it("returns a demo simulation preview", async () => {
-    const app = await buildApp({
-      host: "127.0.0.1",
-      port: 0,
-      webOrigin: "http://localhost:4873"
-    });
+    const app = await createTestApp();
 
     const response = await app.inject({
       method: "POST",
@@ -52,11 +53,7 @@ describe("api app", () => {
   });
 
   it("rejects invalid simulation preview input", async () => {
-    const app = await buildApp({
-      host: "127.0.0.1",
-      port: 0,
-      webOrigin: "http://localhost:4873"
-    });
+    const app = await createTestApp();
 
     const response = await app.inject({
       method: "POST",
@@ -70,14 +67,7 @@ describe("api app", () => {
   });
 
   it("creates, updates, and resolves a persisted demo league", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -229,14 +219,7 @@ describe("api app", () => {
   });
 
   it("creates and recovers a profile with linked league teams", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const profileResponse = await app.inject({
       method: "POST",
@@ -284,14 +267,7 @@ describe("api app", () => {
   });
 
   it("renames a team with readable unique names only", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -332,14 +308,7 @@ describe("api app", () => {
   });
 
   it("limits qualifying attempts per league setting", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -364,14 +333,7 @@ describe("api app", () => {
   });
 
   it("keeps every qualifying attempt for the timing board", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -402,14 +364,7 @@ describe("api app", () => {
 
   it("locks the Grand Prix card after a qualifying card is used", async () => {
     const db = createMemoryDb();
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db }
-    );
+    const app = await createTestApp(db);
 
     const createResponse = await app.inject({
       method: "POST",
@@ -442,14 +397,7 @@ describe("api app", () => {
   });
 
   it("does not lock race cards after a qualifying run", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -481,14 +429,7 @@ describe("api app", () => {
   });
 
   it("rejects qualifying after the player submits a directive", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -511,14 +452,7 @@ describe("api app", () => {
   });
 
   it("rejects resolving before the player submits a directive", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -541,14 +475,7 @@ describe("api app", () => {
   });
 
   it("lets a player join an active league by code", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -570,14 +497,7 @@ describe("api app", () => {
   });
 
   it("rejects unknown, duplicate, and closed league joins", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -626,14 +546,7 @@ describe("api app", () => {
   });
 
   it("rejoins a claimed team, advances to the next Grand Prix, and can resolve with default decisions", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -701,14 +614,7 @@ describe("api app", () => {
   });
 
   it("updates private league cadence and preparation deadline", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",
@@ -740,14 +646,7 @@ describe("api app", () => {
   });
 
   it("runs a three Grand Prix private league scenario", async () => {
-    const app = await buildApp(
-      {
-        host: "127.0.0.1",
-        port: 0,
-        webOrigin: "http://localhost:4873"
-      },
-      { db: createMemoryDb() }
-    );
+    const app = await createTestApp(createMemoryDb());
 
     const createResponse = await app.inject({
       method: "POST",

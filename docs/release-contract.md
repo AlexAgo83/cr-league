@@ -21,7 +21,7 @@ Configure these repository secrets before the first production release:
 
 The CI workflow does not read production secrets. Render owns runtime secrets in the blueprint:
 
-- `DATABASE_URL` comes from the managed Render PostgreSQL database.
+- `DATABASE_URL` is entered in Render and points to the existing `alex-db` PostgreSQL database with `?schema=cr_league`.
 - `WEB_ORIGIN` is entered in Render.
 - `VITE_API_BASE_URL` is entered in Render.
 

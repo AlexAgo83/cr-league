@@ -39,7 +39,7 @@
 
 # AC Traceability
 - request-AC1 -> This task. Proof: `render.yaml` defines `cr-league-api` with Node runtime, `/health`, `npm ci`, `db:generate`, `db:deploy`, shared+api builds, `npm run start -w @cr-league/api`, and autoDeployTrigger off; it defines `cr-league` as a static service publishing `apps/web/dist`, with SPA rewrite, cache headers, nosniff, DENY frame policy, referrer policy, and autoDeployTrigger off.
-- request-AC2 -> This task. Proof: `render.yaml` provisions `cr-league-db` and wires API `DATABASE_URL` from that database; `WEB_ORIGIN` and `VITE_API_BASE_URL` are `sync: false`, and no secret literal was committed.
+- request-AC2 -> This task. Proof: `render.yaml` does not provision a new database; API `DATABASE_URL` is declared `sync: false` so Render uses the existing `alex-db` database with the dedicated `cr_league` schema, `WEB_ORIGIN` and `VITE_API_BASE_URL` are also `sync: false`, and no secret literal was committed.
 - request-AC3 -> This task. Proof: `.github/workflows/ci.yml` triggers on pull_request, push to main, and workflow_dispatch; defines parallel quality, unit matrix, e2e, build, and validate jobs; runs lint/typecheck/logics:validate, Vitest per workspace, Playwright chromium with always-uploaded report and failure artifacts, full build, npm cache, and PR-only cancel-in-progress.
 - request-AC4 -> This task. Proof: The `unit` job uses a three-entry matrix (`shared`, `api`, `web`) with no `needs`, so workspace unit tests run concurrently and only the validate aggregator waits for completion.
 - request-AC5 -> This task. Proof: `apps/api/src/version.ts` reads the root `package.json` version once through `createRequire`, `/health` returns it, and `apps/api/src/app.test.ts` asserts the response version equals `APP_VERSION`.
@@ -55,6 +55,7 @@
 - Implemented render.yaml, CI workflow, release deployment workflow, versioned /health endpoint, release contract docs, and health version test. Local validation passed: npm run typecheck; npm run lint; npm run build; npm test; npm run test:e2e; ruby YAML parse for render.yaml and workflow YAML; npm run logics:validate.
 - Finish workflow executed on 2026-07-15.
 - Linked backlog/request close verification passed.
+- Non-semantic edit: refreshed Render database proof to reference the existing `alex-db` schema setup.
 
 # Report
 - Implementation complete.

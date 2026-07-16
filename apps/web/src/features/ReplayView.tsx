@@ -299,6 +299,8 @@ export function ReplayView({
   explainerKey = "result_replay_explainer",
   towerEntries,
   preferencesResetSignal = 0,
+  onClose,
+  closeLabel,
   tt
 }: {
   result: RaceResult;
@@ -310,6 +312,8 @@ export function ReplayView({
   explainerKey?: TranslationKey;
   towerEntries?: ReplayTowerEntry[];
   preferencesResetSignal?: number;
+  onClose?: () => void;
+  closeLabel?: string;
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -570,6 +574,11 @@ export function ReplayView({
                     </svg>
                   </button>
                   <ReplaySpeedMenu speed={speed} setSpeed={setSpeed} tt={tt} />
+                  {onClose ? (
+                    <button type="button" className="replay-close-button" aria-label={closeLabel ?? tt("action_close")} title={closeLabel ?? tt("action_close")} onClick={onClose}>
+                      ×
+                    </button>
+                  ) : null}
                 </div>
                 <ol className="replay-tower">
                   {tower.map((entry, index) => (

@@ -840,10 +840,6 @@ label small {
   gap: 10px;
 }
 
-.qualifying-replay-inline > button {
-  justify-self: end;
-}
-
 .qualifying-replay-inline .replay-main-grid {
   grid-template-columns: 1fr;
 }
@@ -1256,6 +1252,21 @@ label small {
 .replay-map-controls button.active {
   background: rgb(22 199 132 / 0.22);
   color: var(--color-accent);
+}
+
+.replay-map-controls .replay-close-button {
+  background: rgb(239 68 68 / 0.18);
+  border-color: rgb(248 113 113 / 0.45);
+  color: #fecaca;
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.replay-map-controls .replay-close-button:hover,
+.replay-map-controls .replay-close-button:focus-visible {
+  background: rgb(239 68 68 / 0.28);
+  border-color: rgb(248 113 113 / 0.72);
+  color: #fff;
 }
 
 .replay-speed-menu {

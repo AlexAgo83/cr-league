@@ -1150,9 +1150,6 @@ export function App() {
               </section>
               {currentQualifyingResult ? (
                 <div className="qualifying-replay-inline drive-map-panel">
-                  <button className="result-toggle-command" type="button" onClick={() => setQualifyingResult(null)}>
-                    {tt("action_back_to_circuit")}
-                  </button>
                   <ReplayView
                     result={currentQualifyingResult.result}
                     circuit={currentCircuit}
@@ -1163,6 +1160,8 @@ export function App() {
                     titleKey="qualifying_replay_title"
                     explainerKey="qualifying_replay_explainer"
                     preferencesResetSignal={preferencesResetSignal}
+                    onClose={() => setQualifyingResult(null)}
+                    closeLabel={tt("action_back_to_circuit")}
                     tt={tt}
                   />
                 </div>

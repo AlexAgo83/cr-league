@@ -418,7 +418,7 @@ describe("App", () => {
     expect(document.querySelector(".replay-tower")?.textContent).toContain("Lap 2");
     expect(document.querySelector(".replay-tower")?.textContent).toContain("72.42s");
     expect(document.querySelector(".replay-tower")?.textContent).not.toContain("Mika Blitz");
-    expect(screen.getByRole("button", { name: "Back to circuit" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("replay-close-button");
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     expect(screen.queryByRole("heading", { name: "Lap time replay" })).toBe(null);
     expect(screen.getByText("72.42s")).toBeTruthy();

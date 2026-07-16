@@ -377,14 +377,18 @@ export function ReplayView({
   }, [playing, speed, replayEnd]);
 
   useEffect(() => {
-    localStorage.setItem(REPLAY_SPEED_KEY, String(speed));
+    if (speed === 1) localStorage.removeItem(REPLAY_SPEED_KEY);
+    else localStorage.setItem(REPLAY_SPEED_KEY, String(speed));
   }, [speed]);
 
   useEffect(() => {
-    localStorage.setItem(REPLAY_FOCUS_KEY, driverFocus ? "1" : "0");
+    if (driverFocus) localStorage.setItem(REPLAY_FOCUS_KEY, "1");
+    else localStorage.removeItem(REPLAY_FOCUS_KEY);
   }, [driverFocus]);
 
   useEffect(() => {
+    setSpeed(savedReplaySpeed());
+    setDriverFocus(localStorage.getItem(REPLAY_FOCUS_KEY) === "1");
     setCopyDismissed(localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
   }, [preferencesResetSignal]);
 

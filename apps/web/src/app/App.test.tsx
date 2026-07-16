@@ -720,6 +720,8 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Result" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Speed ×4" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Focus driver" }).className).toContain("active");
     fireEvent.click(screen.getByLabelText("Close Race replay"));
     expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
     expect(localStorage.getItem("cr-league-dismissed-race-prep-help")).toBe("1");
@@ -730,6 +732,8 @@ describe("App", () => {
 
     expect(await screen.findByText("UI preferences reset. Help panels and replay preferences are back to default.")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Speed ×1" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Focus driver" }).className).not.toContain("active");
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "5. Grand Prix finished" })).toBeTruthy();
     expect(localStorage.getItem("cr-league-dismissed-race-prep-help")).toBe(null);

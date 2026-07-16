@@ -1149,23 +1149,6 @@ export function App() {
         {gameView === "drive" && (!result || !resultOpen) ? (
           <div className="drive-grid">
             <div className="drive-content-column">
-              <section className="panel race-context-panel race-day-phase-panel">
-                <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
-                <p>
-                  {tt(`race_phase_${raceDayPhase}_body` as TranslationKey, {
-                    used: qualifyingAttemptsUsed,
-                    limit: qualifyingAttemptLimit,
-                    left: qualifyingAttemptsLeft
-                  })}
-                </p>
-                <div className="race-day-steps" aria-label={tt("race_day_steps")}>
-                  {["briefing", "adjust", "locked", "gp"].map((step) => (
-                    <span key={step} className={step === raceDayPhase || (step === "gp" && raceDayPhase === "finished") ? "active" : undefined}>
-                      {tt(`race_step_${step}` as TranslationKey)}
-                    </span>
-                  ))}
-                </div>
-              </section>
               {!result && currentQualifyingResult ? (
                 <div className="qualifying-replay-inline drive-map-panel">
                   <ReplayView
@@ -1203,6 +1186,23 @@ export function App() {
                         </small>
                       </div>
                       <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />
+                      <div className="map-workflow-panel">
+                        <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
+                        <p>
+                          {tt(`race_phase_${raceDayPhase}_body` as TranslationKey, {
+                            used: qualifyingAttemptsUsed,
+                            limit: qualifyingAttemptLimit,
+                            left: qualifyingAttemptsLeft
+                          })}
+                        </p>
+                        <div className="race-day-steps" aria-label={tt("race_day_steps")}>
+                          {["briefing", "adjust", "locked", "gp"].map((step) => (
+                            <span key={step} className={step === raceDayPhase || (step === "gp" && raceDayPhase === "finished") ? "active" : undefined}>
+                              {tt(`race_step_${step}` as TranslationKey)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                       {result ? (
                         <div className="map-final-classification">
                           <strong>{tt("result_final_classification")}</strong>

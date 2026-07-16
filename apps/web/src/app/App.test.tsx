@@ -393,6 +393,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(document.querySelector(".command-bar")).toBe(null);
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
+    expect(document.querySelector(".map-workflow-panel")?.textContent).toContain("1. Read the circuit");
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
     expect(screen.queryByRole("heading", { name: "Tune the race plan" })).toBe(null);
@@ -469,6 +470,7 @@ describe("App", () => {
     expect(screen.queryByText("Directive locked. You can launch the Grand Prix.")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "3. Plan locked" })).toBeTruthy();
+    expect(document.querySelector(".map-workflow-panel")?.textContent).toContain("3. Plan locked");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).not.toContain("75.18s");
@@ -495,6 +497,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Mika Blitz");

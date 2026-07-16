@@ -982,6 +982,45 @@ label small {
   font-weight: 700;
 }
 
+.map-workflow-panel {
+  align-items: center;
+  background: rgb(15 23 33 / 0.76);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  bottom: 12px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  left: 12px;
+  padding: 10px 12px;
+  position: absolute;
+  right: 12px;
+  z-index: 2;
+}
+
+.map-workflow-panel h2 {
+  color: var(--color-telemetry);
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  margin: 0;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.map-workflow-panel p {
+  color: var(--color-muted);
+  font-size: 0.82rem;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-workflow-panel .race-day-steps {
+  flex-wrap: nowrap;
+  margin-left: 0;
+}
+
 .map-traits-panel {
   background: rgb(10 15 21 / 0.76);
   border: 1px solid rgb(255 255 255 / 0.1);
@@ -997,6 +1036,10 @@ label small {
   min-width: 132px;
   position: absolute;
   z-index: 2;
+}
+
+.drive-map-panel .circuit-map-stage > .map-traits-panel {
+  bottom: 62px;
 }
 
 .replay-map-panel .circuit-map-stage > .map-traits-panel {
@@ -1067,7 +1110,7 @@ label small {
 
 .map-race-actions {
   align-items: flex-end;
-  bottom: 12px;
+  bottom: 62px;
   flex-direction: column;
   position: absolute;
   right: 12px;
@@ -3166,10 +3209,36 @@ button.primary-command {
     white-space: nowrap;
   }
 
+  .map-workflow-panel {
+    bottom: 8px;
+    gap: 5px;
+    left: 8px;
+    padding: 6px 7px;
+    right: 8px;
+  }
+
+  .map-workflow-panel h2 {
+    font-size: 0.62rem;
+  }
+
+  .map-workflow-panel p {
+    font-size: 0.58rem;
+    line-height: 1.15;
+  }
+
+  .map-workflow-panel .race-day-steps span {
+    font-size: 0.5rem;
+    padding: 2px 5px;
+  }
+
   .circuit-map-stage > .map-traits-panel {
     bottom: 8px;
     left: 8px;
     min-width: 104px;
+  }
+
+  .drive-map-panel .circuit-map-stage > .map-traits-panel {
+    bottom: 44px;
   }
 
   .replay-map-panel .circuit-map-stage > .map-traits-panel {
@@ -3205,7 +3274,7 @@ button.primary-command {
   }
 
   .map-race-actions {
-    bottom: 8px;
+    bottom: 44px;
     right: 8px;
   }
 

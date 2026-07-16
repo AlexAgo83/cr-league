@@ -2614,6 +2614,25 @@ button.command-icon-button {
   color: var(--color-accent);
 }
 
+.race-phase-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.race-phase-actions button.result-toggle-command,
+.race-phase-actions button.primary-command {
+  min-height: 36px;
+}
+
+.race-phase-actions button.primary-command {
+  font-size: 0.9rem;
+  min-width: 132px;
+}
+
+.race-phase-actions button.command-icon-button {
+  min-width: 36px;
+}
+
 .replay-main-grid {
   align-items: start;
   display: grid;

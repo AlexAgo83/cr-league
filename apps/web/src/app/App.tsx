@@ -288,6 +288,7 @@ export function App() {
             action: () => setNextGrandPrixConfirmOpen(true),
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
+  const drivePhasePanelVisible = gameView === "drive" && !racePrepHelpDismissed;
 
   useEffect(() => {
     if (!leagueState) return;
@@ -1129,6 +1130,29 @@ export function App() {
                       </span>
                     ))}
                   </div>
+                  <div className="race-phase-actions">
+                    {deskState === "prepare" ? (
+                      <>
+                        <button className="result-toggle-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
+                          {tt("action_qualifying")}
+                        </button>
+                        <button
+                          className="result-toggle-command command-icon-button"
+                          type="button"
+                          aria-label={tt("action_qualifying_history")}
+                          title={tt("action_qualifying_history")}
+                          onClick={openLastQualifyingRun}
+                          disabled={!lastQualifyingRun}
+                        >
+                          ◷
+                        </button>
+                      </>
+                    ) : (
+                      <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                        {primaryCommand.label}
+                      </button>
+                    )}
+                  </div>
                   <button
                     type="button"
                     className="context-panel-close"
@@ -1253,52 +1277,54 @@ export function App() {
         ) : null}
       </section>
 
-      <footer className="command-bar">
-        <div className="command-context">
-          <span className={`race-state state-${deskState}`}>
-            <span className="race-state-label">{tt(`race_state_${deskState}` as TranslationKey)}</span>
-          </span>
-        </div>
-        <div className="command-actions">
-          {gameView === "result" && result ? (
-            <button
-              className="result-toggle-command"
-              type="button"
-              aria-controls={`result-${resultTab === "report" ? "replay" : "report"}-panel`}
-              onClick={() => setResultTab(resultTab === "report" ? "replay" : "report")}
-            >
-              {tt(`result_tab_${resultTab === "report" ? "replay" : "report"}` as TranslationKey)}
-            </button>
-          ) : null}
-          {gameView === "drive" ? (
-            <>
-              <button className="result-toggle-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
-                {tt("action_qualifying")}
-              </button>
+      {drivePhasePanelVisible ? null : (
+        <footer className="command-bar">
+          <div className="command-context">
+            <span className={`race-state state-${deskState}`}>
+              <span className="race-state-label">{tt(`race_state_${deskState}` as TranslationKey)}</span>
+            </span>
+          </div>
+          <div className="command-actions">
+            {gameView === "result" && result ? (
               <button
-                className="result-toggle-command command-icon-button"
+                className="result-toggle-command"
                 type="button"
-                aria-label={tt("action_qualifying_history")}
-                title={tt("action_qualifying_history")}
-                onClick={openLastQualifyingRun}
-                disabled={!lastQualifyingRun}
+                aria-controls={`result-${resultTab === "report" ? "replay" : "report"}-panel`}
+                onClick={() => setResultTab(resultTab === "report" ? "replay" : "report")}
               >
-                ◷
+                {tt(`result_tab_${resultTab === "report" ? "replay" : "report"}` as TranslationKey)}
               </button>
-            </>
-          ) : null}
-          {gameView === "championship" ? (
-            <button className="result-toggle-command" type="button" onClick={() => setLeagueControlsOpen(true)}>
-              {tt("settings_title")}
-            </button>
-          ) : null}
-          {gameView === "plan" || gameView === "result" || deskState !== "prepare" ? (
-            <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-              {primaryCommand.label}
-            </button>
-          ) : null}
-        </div>
-      </footer>
+            ) : null}
+            {gameView === "drive" ? (
+              <>
+                <button className="result-toggle-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
+                  {tt("action_qualifying")}
+                </button>
+                <button
+                  className="result-toggle-command command-icon-button"
+                  type="button"
+                  aria-label={tt("action_qualifying_history")}
+                  title={tt("action_qualifying_history")}
+                  onClick={openLastQualifyingRun}
+                  disabled={!lastQualifyingRun}
+                >
+                  ◷
+                </button>
+              </>
+            ) : null}
+            {gameView === "championship" ? (
+              <button className="result-toggle-command" type="button" onClick={() => setLeagueControlsOpen(true)}>
+                {tt("settings_title")}
+              </button>
+            ) : null}
+            {gameView === "plan" || gameView === "result" || deskState !== "prepare" ? (
+              <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                {primaryCommand.label}
+              </button>
+            ) : null}
+          </div>
+        </footer>
+      )}
       {notificationStack}
 
       {qualifyingOpen ? (

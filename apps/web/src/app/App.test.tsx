@@ -379,7 +379,7 @@ describe("App", () => {
     // Drive view: map first, plan tuning lives in its own cockpit section.
     await expectChampionshipCode("ABC123");
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
-    expect(screen.getByText("Prepare")).toBeTruthy();
+    expect(document.querySelector(".command-bar")).toBe(null);
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
@@ -399,9 +399,9 @@ describe("App", () => {
     expect(screen.getByText("0/3")).toBeTruthy();
     expect(screen.getByText("No lap times")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replay last lap time" }).hasAttribute("disabled")).toBe(true);
-    expect(document.querySelector(".command-actions")?.textContent).toContain("Lap time");
+    expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Lap time");
 
-    // Qualifying modal from the directive panel
+    // Qualifying modal from the race phase panel
     expect(screen.queryByText("Wait for directives")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Lap time" }));
     expect(screen.getByRole("dialog", { name: "Run a lap time?" })).toBeTruthy();
@@ -456,7 +456,8 @@ describe("App", () => {
       expect(button.hasAttribute("disabled")).toBe(true);
     }
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
-    expect(screen.getByRole("button", { name: "Lap time" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.queryByRole("button", { name: "Lap time" })).toBe(null);
+    expect(screen.getByRole("button", { name: "Launch GP" })).toBeTruthy();
 
     // Launch: auto-switches to the result view
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));

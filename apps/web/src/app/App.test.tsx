@@ -376,22 +376,25 @@ describe("App", () => {
 
     createLeagueFromSetup();
 
-    // Drive view: map + directive panel side by side
+    // Drive view: map first, plan tuning lives in its own cockpit section.
     await expectChampionshipCode("ABC123");
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByText("Prepare")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
+    expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
+    expect(screen.queryByRole("heading", { name: "Tune the race plan" })).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(screen.getByText("Balanced pace, Weather prep, Rain Grip. Test it in chrono, then lock it for the GP.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByRole("button", { name: "Preparation: Weather" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByRole("button", { name: "Card: Rain Grip" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByText("High overtaking rewards attack and launch cards.")).toBeTruthy();
-    expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
     expect(screen.getByRole("button", { name: "Result" }).hasAttribute("disabled")).toBe(true);
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getAllByText("Lap times", { exact: false }).length).toBeGreaterThan(0);
     expect(screen.getByText("0/3")).toBeTruthy();
     expect(screen.getByText("No lap times")).toBeTruthy();
@@ -436,7 +439,7 @@ describe("App", () => {
     expect(document.querySelector(".standings-table")?.textContent).toContain("Volt Union");
     expect(document.querySelector(".round-timeline")?.textContent).toContain("R1");
 
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     fireEvent.click(screen.getByRole("button", { name: "Lock plan" }));
     expect(screen.getByRole("dialog", { name: "Lock race plan" })).toBeTruthy();
     expect(screen.getByText("You still have chrono attempts left. Lock the plan now? 2/3")).toBeTruthy();
@@ -446,10 +449,13 @@ describe("App", () => {
     fireEvent.click(screen.getByText("Directive locked. You can launch the Grand Prix.").closest(".floating-notification")!.querySelector("button")!);
     expect(screen.queryByText("Directive locked. You can launch the Grand Prix.")).toBe(null);
     expect(screen.getByText("Ready to launch")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "4. Plan locked" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     for (const button of document.querySelectorAll(".directive-panel button")) {
       expect(button.hasAttribute("disabled")).toBe(true);
     }
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("button", { name: "Lap time" }).hasAttribute("disabled")).toBe(true);
 
     // Launch: auto-switches to the result view
@@ -596,7 +602,7 @@ describe("App", () => {
 
     createLeagueFromSetup();
     await expectChampionshipCode("ABC123");
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
     fireEvent.click(screen.getByRole("button", { name: "Lock plan" }));

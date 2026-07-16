@@ -82,9 +82,9 @@ export type ProfileSession = {
   }>;
 };
 
-export type GameView = "drive" | "championship" | "garage" | "result";
+export type GameView = "drive" | "plan" | "championship" | "garage" | "result";
 
-export const GAME_VIEWS: GameView[] = ["drive", "championship", "garage", "result"];
+export const GAME_VIEWS: GameView[] = ["drive", "plan", "championship", "garage", "result"];
 
 export type FormState = {
   leagueName: string;

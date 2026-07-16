@@ -1196,19 +1196,21 @@ export function App() {
                 }
               />
             </div>
-            <div className="drive-content-column">
-              <DirectivePanel
-                form={form}
-                setForm={setForm}
-                ownedCardIds={ownedCardIds}
-                selectedCardId={selectedCardId}
-                selectedCardFit={selectedCardFit}
-                circuitTraits={currentCircuit.traits}
-                cardLocked={Boolean(qualifyingLockedCardId)}
-                disabled={status === "loading" || Boolean(playerDecision) || isResolved}
-                tt={tt}
-              />
-            </div>
+          </div>
+        ) : null}
+        {gameView === "plan" ? (
+          <div className="plan-view">
+            <DirectivePanel
+              form={form}
+              setForm={setForm}
+              ownedCardIds={ownedCardIds}
+              selectedCardId={selectedCardId}
+              selectedCardFit={selectedCardFit}
+              circuitTraits={currentCircuit.traits}
+              cardLocked={Boolean(qualifyingLockedCardId)}
+              disabled={status === "loading" || Boolean(playerDecision) || isResolved}
+              tt={tt}
+            />
           </div>
         ) : null}
         {gameView === "championship" ? (
@@ -1290,9 +1292,11 @@ export function App() {
               {tt("settings_title")}
             </button>
           ) : null}
-          <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-            {primaryCommand.label}
-          </button>
+          {gameView === "plan" || gameView === "result" || deskState !== "prepare" ? (
+            <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+              {primaryCommand.label}
+            </button>
+          ) : null}
         </div>
       </footer>
       {notificationStack}

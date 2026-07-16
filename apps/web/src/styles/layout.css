@@ -141,7 +141,7 @@
 }
 
 .setup-grid-single {
-  grid-template-columns: minmax(0, 720px);
+  grid-template-columns: minmax(0, 560px);
   justify-content: center;
 }
 

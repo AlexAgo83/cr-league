@@ -120,7 +120,7 @@ jobs:
             -f ref="$RELEASE_SHA" \
             -f environment=production \
             -f description="CR League production release" \
-            -f auto_merge=false \
+            -F auto_merge=false \
             -f required_contexts[] \
             --jq '.id')"
 

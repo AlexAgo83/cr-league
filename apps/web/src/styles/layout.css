@@ -384,6 +384,7 @@
 .plan-view {
   margin: 0 auto;
   max-width: 860px;
+  position: relative;
 }
 
 @media (max-width: 1040px) {

@@ -396,15 +396,20 @@ describe("App", () => {
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
     expect(screen.queryByRole("heading", { name: "Tune the race plan" })).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    expect(screen.queryByRole("button", { name: "Plan" })).toBe(null);
+    expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Edit planNew lap time");
+    fireEvent.click(screen.getByRole("button", { name: "Edit plan" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
+    expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("report-close-button");
     expect(screen.getByText("Balanced pace, Weather prep, Rain Grip. Test it in chrono, then lock it for the GP.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByRole("button", { name: "Preparation: Weather" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByRole("button", { name: "Card: Rain Grip" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByText("High overtaking rewards attack and launch cards.")).toBeTruthy();
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
-    expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Result" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getAllByText("Lap times", { exact: false }).length).toBeGreaterThan(0);
@@ -467,11 +472,6 @@ describe("App", () => {
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).not.toContain("75.18s");
-    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
-    for (const button of document.querySelectorAll(".directive-panel button")) {
-      expect(button.hasAttribute("disabled")).toBe(true);
-    }
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.queryByRole("button", { name: "Lap time" })).toBe(null);
     expect(screen.getByRole("button", { name: "Launch GP" })).toBeTruthy();
 

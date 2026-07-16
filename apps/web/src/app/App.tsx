@@ -1115,7 +1115,7 @@ export function App() {
             <button
               key={view}
               type="button"
-              className={gameView === view ? "active" : undefined}
+              className={gameView === view || (gameView === "plan" && view === "drive") ? "active" : undefined}
               onClick={() => {
                 setGameView(view);
                 if (view === "drive" && result) setResultOpen(false);
@@ -1281,6 +1281,9 @@ export function App() {
                         <div className="race-phase-actions map-race-actions">
                           {deskState === "prepare" ? (
                             <>
+                              <button className="primary-command" type="button" onClick={() => setGameView("plan")}>
+                                {tt("action_edit_plan")}
+                              </button>
                               <button className="primary-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
                                 {tt("action_qualifying")}
                               </button>
@@ -1312,6 +1315,9 @@ export function App() {
         ) : null}
         {gameView === "plan" ? (
           <div className="plan-view">
+            <button type="button" className="report-close-button" aria-label={tt("action_back_to_circuit")} title={tt("action_back_to_circuit")} onClick={() => setGameView("drive")}>
+              ×
+            </button>
             <DirectivePanel
               form={form}
               setForm={setForm}

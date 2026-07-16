@@ -433,7 +433,7 @@ export function App() {
         })
       });
       setLeagueState(withCurrentPlayer(state));
-      setGameView("result");
+      setGameView("drive");
       setResultTab("replay");
       showStatus(tt("status_grand_prix_resolved"));
       pushCommandHint("resolved");
@@ -883,7 +883,7 @@ export function App() {
             type="button"
             onClick={() => {
               setNextGrandPrixConfirmOpen(false);
-              setGameView("result");
+              setGameView("drive");
               setResultTab("report");
             }}
             disabled={!result}
@@ -1102,7 +1102,6 @@ export function App() {
               type="button"
               className={gameView === view ? "active" : undefined}
               onClick={() => setGameView(view)}
-              disabled={view === "result" && !result}
             >
               <span className="nav-label-full">{tt(`rail_${view}` as TranslationKey)}</span>
               <span className="nav-label-short" aria-hidden="true">
@@ -1115,7 +1114,22 @@ export function App() {
       </header>
 
       <section className="view-container">
-        {gameView === "drive" ? (
+        {gameView === "drive" && result ? (
+          <ResultView
+            state={leagueState}
+            result={result}
+            circuit={currentCircuit}
+            playerTeamId={playerTeam?.id}
+            playerDecision={playerDecision}
+            tab={resultTab}
+            traitImpacts={replayTraitImpacts}
+            preferencesResetSignal={preferencesResetSignal}
+            onToggleTab={() => setResultTab(resultTab === "report" ? "replay" : "report")}
+            primaryAction={primaryCommand}
+            tt={tt}
+          />
+        ) : null}
+        {gameView === "drive" && !result ? (
           <div className="drive-grid">
             <div className="drive-content-column">
               <section className="panel race-context-panel race-day-phase-panel">
@@ -1273,21 +1287,6 @@ export function App() {
             onBuyCard={buyCard}
             onUpdateLivery={updateLivery}
             onUpdateTeamName={updateTeamName}
-            tt={tt}
-          />
-        ) : null}
-        {gameView === "result" && result ? (
-          <ResultView
-            state={leagueState}
-            result={result}
-            circuit={currentCircuit}
-            playerTeamId={playerTeam?.id}
-            playerDecision={playerDecision}
-            tab={resultTab}
-            traitImpacts={replayTraitImpacts}
-            preferencesResetSignal={preferencesResetSignal}
-            onToggleTab={() => setResultTab(resultTab === "report" ? "replay" : "report")}
-            primaryAction={primaryCommand}
             tt={tt}
           />
         ) : null}

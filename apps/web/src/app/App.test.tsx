@@ -393,7 +393,7 @@ describe("App", () => {
     expect(screen.getByText("High overtaking rewards attack and launch cards.")).toBeTruthy();
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     expect(screen.getAllByText("Rain Grip").length).toBeGreaterThan(0);
-    expect(screen.getByRole("button", { name: "Result" }).hasAttribute("disabled")).toBe(true);
+    expect(screen.queryByRole("button", { name: "Result" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getAllByText("Lap times", { exact: false }).length).toBeGreaterThan(0);
     expect(screen.getByText("0/3")).toBeTruthy();
@@ -458,7 +458,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Lap time" })).toBe(null);
     expect(screen.getByRole("button", { name: "Launch GP" })).toBeTruthy();
 
-    // Launch: auto-switches to the result view
+    // Launch: Course becomes the race replay.
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
     const launchDialog = screen.getByRole("dialog", { name: "Launch Grand Prix?" });
     expect(launchDialog.textContent).toContain("Starting grid");
@@ -467,7 +467,7 @@ describe("App", () => {
     expect(launchDialog.textContent).toContain("Grip 64");
     fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Result" }).className).toContain("active");
+    expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
@@ -528,7 +528,7 @@ describe("App", () => {
     // One command at a time
     expect(screen.queryByRole("button", { name: "Lock plan" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Launch GP" })).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Result" }));
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("button", { name: "Next GP" }).hasAttribute("disabled")).toBe(false);
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
@@ -701,7 +701,7 @@ describe("App", () => {
 
     createLeagueFromSetup();
 
-    fireEvent.click(await screen.findByRole("button", { name: "Result" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
     expect(document.querySelector(".replay-progress")).toBeTruthy();
@@ -718,7 +718,7 @@ describe("App", () => {
     render(<App />);
     createLeagueFromSetup();
 
-    fireEvent.click(await screen.findByRole("button", { name: "Result" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Race" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Speed ×4" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Focus driver" }).className).toContain("active");

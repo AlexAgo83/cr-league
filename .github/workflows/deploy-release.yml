@@ -152,7 +152,7 @@ jobs:
           fi
 
           health_matches_release() {
-            health="$(curl --fail --silent --show-error "$API_HEALTH_URL")" || return 1
+            health="$(curl --connect-timeout 10 --max-time 30 --fail --silent --show-error "$API_HEALTH_URL")" || return 1
             jq -e . >/dev/null 2>&1 <<< "${health:-{}}" || return 1
             version="$(jq -r '.version // ""' <<< "${health:-{}}")"
             commit="$(jq -r '.commit // ""' <<< "${health:-{}}")"
@@ -168,7 +168,7 @@ jobs:
           echo "Render API deploy response: ${deploy_response}"
 
           for attempt in $(seq 1 60); do
-            health="$(curl --fail --silent --show-error "$API_HEALTH_URL")" || health="{}"
+            health="$(curl --connect-timeout 10 --max-time 30 --fail --silent --show-error "$API_HEALTH_URL")" || health="{}"
             if ! jq -e . >/dev/null 2>&1 <<< "${health:-{}}"; then
               echo "API health returned non-JSON, waiting for ${RELEASE_VERSION}@${RELEASE_SHA} (${attempt}/60)."
               sleep 10
@@ -205,7 +205,7 @@ jobs:
             separator="&"
           fi
 
-          deploy_response="$(curl --fail-with-body --silent --show-error --request POST "${RENDER_WEB_DEPLOY_HOOK_URL}${separator}ref=${RELEASE_SHA}")"
+          deploy_response="$(curl --connect-timeout 10 --max-time 60 --fail-with-body --silent --show-error --request POST "${RENDER_WEB_DEPLOY_HOOK_URL}${separator}ref=${RELEASE_SHA}")"
           echo "Render web deploy response: ${deploy_response}"
 
       - name: Mark deployment success

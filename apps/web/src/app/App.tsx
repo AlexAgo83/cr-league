@@ -1148,32 +1148,6 @@ export function App() {
                     </span>
                   ))}
                 </div>
-                <div className="race-phase-actions">
-                  {deskState === "prepare" ? (
-                    <>
-                      <button className="primary-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
-                        {tt("action_qualifying")}
-                      </button>
-                      <button
-                        className="result-toggle-command command-icon-button"
-                        type="button"
-                        aria-label={tt("action_qualifying_history")}
-                        title={tt("action_qualifying_history")}
-                        onClick={openLastQualifyingRun}
-                        disabled={!lastQualifyingRun}
-                      >
-                        ◷
-                      </button>
-                      <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                        {primaryCommand.label}
-                      </button>
-                    </>
-                  ) : (
-                    <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                      {primaryCommand.label}
-                    </button>
-                  )}
-                </div>
               </section>
               {currentQualifyingResult ? (
                 <div className="qualifying-replay-inline drive-map-panel">
@@ -1243,6 +1217,32 @@ export function App() {
                           {tt("qualifying_times_title")} {qualifyingAttemptsUsed}/{qualifyingAttemptLimit}
                         </button>
                       )}
+                      <div className="race-phase-actions map-race-actions">
+                        {deskState === "prepare" ? (
+                          <>
+                            <button className="primary-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
+                              {tt("action_qualifying")}
+                            </button>
+                            <button
+                              className="result-toggle-command command-icon-button"
+                              type="button"
+                              aria-label={tt("action_qualifying_history")}
+                              title={tt("action_qualifying_history")}
+                              onClick={openLastQualifyingRun}
+                              disabled={!lastQualifyingRun}
+                            >
+                              ◷
+                            </button>
+                            <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                              {primaryCommand.label}
+                            </button>
+                          </>
+                        ) : (
+                          <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                            {primaryCommand.label}
+                          </button>
+                        )}
+                      </div>
                     </>
                   }
                 />

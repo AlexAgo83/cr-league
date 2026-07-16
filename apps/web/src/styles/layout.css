@@ -1057,6 +1057,15 @@ label small {
   z-index: 2;
 }
 
+.map-race-actions {
+  align-items: flex-end;
+  bottom: 12px;
+  flex-direction: column;
+  position: absolute;
+  right: 12px;
+  z-index: 2;
+}
+
 .map-qualifying-times ol {
   display: grid;
   gap: 5px;
@@ -3153,6 +3162,11 @@ button.primary-command {
     padding: 5px 7px;
     right: 8px;
     top: 8px;
+  }
+
+  .map-race-actions {
+    bottom: 8px;
+    right: 8px;
   }
 
   .map-qualifying-times li {

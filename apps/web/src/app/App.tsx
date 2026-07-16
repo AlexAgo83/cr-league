@@ -1118,7 +1118,7 @@ export function App() {
                   })}
                 </p>
                 <div className="race-day-steps" aria-label={tt("race_day_steps")}>
-                  {["briefing", "chrono", "adjust", "locked", "gp"].map((step) => (
+                  {["briefing", "adjust", "locked", "gp"].map((step) => (
                     <span key={step} className={step === raceDayPhase || (step === "gp" && raceDayPhase === "finished") ? "active" : undefined}>
                       {tt(`race_step_${step}` as TranslationKey)}
                     </span>

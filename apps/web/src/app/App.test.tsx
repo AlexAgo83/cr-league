@@ -424,7 +424,7 @@ describe("App", () => {
     expect(screen.getByText("72.42s")).toBeTruthy();
     expect(screen.getByText("75.18s")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replay last lap time" }).hasAttribute("disabled")).toBe(false);
-    expect(screen.getByRole("heading", { name: "3. Adjust the plan" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "2. Chrono / plan" })).toBeTruthy();
     expect(screen.getByText("Chrono 1/3 is logged. Adjust the directive or lock the plan before the GP.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Replay last lap time" }));
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
@@ -451,7 +451,7 @@ describe("App", () => {
     expect(screen.queryByText("Directive locked. You can launch the Grand Prix.")).toBe(null);
     expect(screen.getByText("Ready to launch")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
-    expect(screen.getByRole("heading", { name: "4. Plan locked" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "3. Plan locked" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     for (const button of document.querySelectorAll(".directive-panel button")) {
       expect(button.hasAttribute("disabled")).toBe(true);
@@ -739,7 +739,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Speed ×1" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Focus driver" }).className).not.toContain("active");
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
-    expect(screen.getByRole("heading", { name: "5. Grand Prix finished" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe(null);
     expect(localStorage.getItem("cr-league-replay-speed")).toBe(null);
     expect(localStorage.getItem("cr-league-replay-focus")).toBe(null);

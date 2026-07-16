@@ -151,10 +151,16 @@ jobs:
             separator="&"
           fi
 
-          curl --fail-with-body --silent --show-error --request POST "${RENDER_API_DEPLOY_HOOK_URL}${separator}ref=${RELEASE_SHA}"
+          deploy_response="$(curl --fail-with-body --silent --show-error --request POST "${RENDER_API_DEPLOY_HOOK_URL}${separator}ref=${RELEASE_SHA}")"
+          echo "Render API deploy response: ${deploy_response}"
 
-          for attempt in $(seq 1 30); do
-            health="$(curl --fail --silent --show-error "$API_HEALTH_URL")" || health=""
+          for attempt in $(seq 1 60); do
+            health="$(curl --fail --silent --show-error "$API_HEALTH_URL")" || health="{}"
+            if ! jq -e . >/dev/null 2>&1 <<< "${health:-{}}"; then
+              echo "API health returned non-JSON, waiting for ${RELEASE_VERSION}@${RELEASE_SHA} (${attempt}/60)."
+              sleep 10
+              continue
+            fi
             version="$(jq -r '.version // ""' <<< "${health:-{}}")"
             commit="$(jq -r '.commit // ""' <<< "${health:-{}}")"
             if [ "$version" = "$RELEASE_VERSION" ] && [ "$commit" = "$RELEASE_SHA" ]; then
@@ -162,7 +168,7 @@ jobs:
               exit 0
             fi
 
-            echo "API health returned ${version}@${commit}, waiting for ${RELEASE_VERSION}@${RELEASE_SHA} (${attempt}/30)."
+            echo "API health returned ${version}@${commit}, waiting for ${RELEASE_VERSION}@${RELEASE_SHA} (${attempt}/60)."
             sleep 10
           done
 
@@ -186,7 +192,8 @@ jobs:
             separator="&"
           fi
 
-          curl --fail-with-body --silent --show-error --request POST "${RENDER_WEB_DEPLOY_HOOK_URL}${separator}ref=${RELEASE_SHA}"
+          deploy_response="$(curl --fail-with-body --silent --show-error --request POST "${RENDER_WEB_DEPLOY_HOOK_URL}${separator}ref=${RELEASE_SHA}")"
+          echo "Render web deploy response: ${deploy_response}"
 
       - name: Mark deployment success
         if: success()

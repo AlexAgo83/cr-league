@@ -92,10 +92,10 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
 
   await createLeague(page);
   await expect(page.getByRole("button", { name: "Race", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Plan", exact: true })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Plan", exact: true })).toHaveCount(0);
   await expect(page.getByRole("button", { name: "Championship", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Garage", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Result" })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Result" })).toHaveCount(0);
   await page.getByRole("button", { name: "Championship", exact: true }).click();
   await expect(page.getByText("ABC123")).toBeVisible();
   await expect(page.getByText("Round 1").first()).toBeVisible();
@@ -136,12 +136,12 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toContainText("Grip");
     await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toContainText("Likely weather");
     await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
-    await expect(page.getByRole("button", { name: "Result" })).toBeEnabled();
-    await expect(page.getByRole("button", { name: "Next GP" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Report" })).toBeVisible();
     await expect(page.locator(".replay-moments-panel")).toHaveCount(0);
     await expect(page.locator(".replay-marker").first()).toBeVisible();
+    await page.getByRole("button", { name: "Back to circuit" }).click();
+    await expect(page.getByRole("button", { name: "Next GP" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Report" })).toBeVisible();
     await page.getByRole("button", { name: "Report" }).click();
     await expect(page.getByRole("heading", { name: expectedCircuitTitle(expectedRound) })).toBeVisible();
     await expect(page.getByLabel("Race phases")).toBeVisible();
@@ -185,15 +185,21 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(page.locator(".drive-map-panel .map-status")).toContainText("5 laps");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Grip");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("64");
-  await expect(page.locator(".drive-content-column > .race-context-panel")).toBeVisible();
+  await expect(page.locator(".drive-map-panel .map-workflow-panel")).toBeVisible();
   await expect(page.getByRole("heading", { name: "1. Read the circuit" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toHaveCount(0);
   await page.screenshot({ path: testInfo.outputPath("drive-layout-desktop.png"), fullPage: true });
   await expect
-    .poll(async () => page.locator(".drive-content-column > .race-context-panel").evaluate((element) => element.getBoundingClientRect().width))
-    .toBeCloseTo(await driveMap.evaluate((element) => element.getBoundingClientRect().width), 0);
+    .poll(async () =>
+      page.locator(".drive-map-panel .map-workflow-panel").evaluate((element) => {
+        const panel = element.getBoundingClientRect();
+        const map = element.closest(".drive-map-panel")?.getBoundingClientRect();
+        return map ? panel.width / map.width : 0;
+      })
+    )
+    .toBeGreaterThan(0.95);
 
-  await page.getByRole("button", { name: "Plan", exact: true }).click();
+  await page.getByRole("button", { name: "Edit plan" }).click();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Approach: Balanced" })).toHaveAttribute("aria-pressed", "true");
   await page.setViewportSize({ width: 390, height: 900 });

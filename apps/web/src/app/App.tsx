@@ -159,7 +159,6 @@ export function App() {
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
-  const [qualifyingOpen, setQualifyingOpen] = useState(false);
   const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
@@ -394,14 +393,13 @@ export function App() {
 
   function startQualifyingRunConfirmed() {
     setQualifyingConfirmOpen(false);
-    setQualifyingOpen(true);
+    setQualifyingResult(null);
     void launchQualifyingRun();
   }
 
   function openLastQualifyingRun() {
     if (!lastQualifyingRun) return;
     setQualifyingResult(lastQualifyingRun);
-    setQualifyingOpen(true);
   }
 
   async function mutateLeague(loadingKey: TranslationKey, path: string, body: unknown, successKey: TranslationKey) {
@@ -1150,59 +1148,79 @@ export function App() {
                   )}
                 </div>
               </section>
-              <CircuitMap
-                className="drive-map-panel"
-                circuit={currentCircuit}
-                tt={tt}
-                showHeading={false}
-                framed={false}
-                showTraits={false}
-                overlay={
-                  <>
-                    <div className="map-status">
-                      <span className="circuit-city">
-                        {countryFlag(currentCircuit.country)} {currentCircuit.city}
-                      </span>
-                      <strong>{tt(currentCircuit.layoutKey)}</strong>
-                      <small>
-                        {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
-                      </small>
-                    </div>
-                    <MapTraitsPanel traits={currentCircuit.traits} impacts={directiveTraitImpacts} tt={tt} />
-                    {qualifyingPanelOpen ? (
-                      <div className="map-qualifying-times">
-                        <header>
-                          <strong>
-                            {tt("qualifying_times_title")} <span>{qualifyingAttemptsUsed}/{qualifyingAttemptLimit}</span>
-                          </strong>
-                          <button type="button" aria-label={`${tt("action_close")} ${tt("qualifying_times_title")}`} onClick={() => setQualifyingPanelOpen(false)}>
-                            ×
-                          </button>
-                        </header>
-                        {qualifyingLeaderboard.length ? (
-                          <ol>
-                            {qualifyingLeaderboard.map((run) => (
-                              <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeam?.id ? "player" : undefined}>
-                                <span>
-                                  {run.position}. {run.teamName}
-                                  {run.lap ? ` · ${tt("unit_lap")} ${run.lap}` : ""}
-                                </span>
-                                <em>{run.time.toFixed(2)}s</em>
-                              </li>
-                            ))}
-                          </ol>
-                        ) : (
-                          <small>{tt("qualifying_times_empty")}</small>
-                        )}
+              {currentQualifyingResult ? (
+                <div className="qualifying-replay-inline drive-map-panel">
+                  <button className="result-toggle-command" type="button" onClick={() => setQualifyingResult(null)}>
+                    {tt("action_back_to_circuit")}
+                  </button>
+                  <ReplayView
+                    result={currentQualifyingResult.result}
+                    circuit={currentCircuit}
+                    playerTeamId={playerTeam?.id}
+                    teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
+                    traitImpacts={directiveTraitImpacts}
+                    towerEntries={qualifyingReplayEntries}
+                    titleKey="qualifying_replay_title"
+                    explainerKey="qualifying_replay_explainer"
+                    preferencesResetSignal={preferencesResetSignal}
+                    tt={tt}
+                  />
+                </div>
+              ) : (
+                <CircuitMap
+                  className="drive-map-panel"
+                  circuit={currentCircuit}
+                  tt={tt}
+                  showHeading={false}
+                  framed={false}
+                  showTraits={false}
+                  overlay={
+                    <>
+                      <div className="map-status">
+                        <span className="circuit-city">
+                          {countryFlag(currentCircuit.country)} {currentCircuit.city}
+                        </span>
+                        <strong>{tt(currentCircuit.layoutKey)}</strong>
+                        <small>
+                          {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
+                        </small>
                       </div>
-                    ) : (
-                      <button className="map-qualifying-toggle" type="button" onClick={() => setQualifyingPanelOpen(true)}>
-                        {tt("qualifying_times_title")} {qualifyingAttemptsUsed}/{qualifyingAttemptLimit}
-                      </button>
-                    )}
-                  </>
-                }
-              />
+                      <MapTraitsPanel traits={currentCircuit.traits} impacts={directiveTraitImpacts} tt={tt} />
+                      {qualifyingPanelOpen ? (
+                        <div className="map-qualifying-times">
+                          <header>
+                            <strong>
+                              {tt("qualifying_times_title")} <span>{qualifyingAttemptsUsed}/{qualifyingAttemptLimit}</span>
+                            </strong>
+                            <button type="button" aria-label={`${tt("action_close")} ${tt("qualifying_times_title")}`} onClick={() => setQualifyingPanelOpen(false)}>
+                              ×
+                            </button>
+                          </header>
+                          {qualifyingLeaderboard.length ? (
+                            <ol>
+                              {qualifyingLeaderboard.map((run) => (
+                                <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeam?.id ? "player" : undefined}>
+                                  <span>
+                                    {run.position}. {run.teamName}
+                                    {run.lap ? ` · ${tt("unit_lap")} ${run.lap}` : ""}
+                                  </span>
+                                  <em>{run.time.toFixed(2)}s</em>
+                                </li>
+                              ))}
+                            </ol>
+                          ) : (
+                            <small>{tt("qualifying_times_empty")}</small>
+                          )}
+                        </div>
+                      ) : (
+                        <button className="map-qualifying-toggle" type="button" onClick={() => setQualifyingPanelOpen(true)}>
+                          {tt("qualifying_times_title")} {qualifyingAttemptsUsed}/{qualifyingAttemptLimit}
+                        </button>
+                      )}
+                    </>
+                  }
+                />
+              )}
             </div>
           </div>
         ) : null}
@@ -1294,31 +1312,6 @@ export function App() {
       )}
       {notificationStack}
 
-      {qualifyingOpen ? (
-        <div className="modal-overlay" onClick={() => setQualifyingOpen(false)}>
-          <section className="panel modal qualifying-modal" role="dialog" aria-modal="true" aria-label={tt("qualifying_replay_title")} onClick={(event) => event.stopPropagation()}>
-            <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setQualifyingOpen(false)}>
-              ×
-            </button>
-            {replayQualifyingRun ? (
-              <div className="qualifying-replay">
-                <ReplayView
-                  result={replayQualifyingRun.result}
-                  circuit={currentCircuit}
-                  playerTeamId={playerTeam?.id}
-                  teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
-                  traitImpacts={directiveTraitImpacts}
-                  towerEntries={qualifyingReplayEntries}
-                  titleKey="qualifying_replay_title"
-                  explainerKey="qualifying_replay_explainer"
-                  preferencesResetSignal={preferencesResetSignal}
-                  tt={tt}
-                />
-              </div>
-            ) : null}
-          </section>
-        </div>
-      ) : null}
       {profileCodeModal}
       {profileLogoutModal}
       {directiveConfirmModal}

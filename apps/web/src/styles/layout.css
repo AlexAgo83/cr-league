@@ -835,15 +835,20 @@ label small {
   position: relative;
 }
 
-.qualifying-replay {
-  margin-top: 0;
+.qualifying-replay-inline {
+  display: grid;
+  gap: 10px;
 }
 
-.qualifying-replay .replay-main-grid {
+.qualifying-replay-inline > button {
+  justify-self: end;
+}
+
+.qualifying-replay-inline .replay-main-grid {
   grid-template-columns: 1fr;
 }
 
-.qualifying-replay .replay-moments-panel {
+.qualifying-replay-inline .replay-moments-panel {
   display: none;
 }
 

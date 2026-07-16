@@ -217,6 +217,7 @@
   "action_add_league": "Manage league",
   "action_start_league": "Start league",
   "action_back": "Back",
+  "action_back_to_circuit": "Back to circuit",
   "action_create_profile": "Create profile",
   "action_recover_profile": "Recover profile",
   "action_copy_profile_code": "Copy profile code",

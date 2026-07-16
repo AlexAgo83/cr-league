@@ -418,8 +418,9 @@ describe("App", () => {
     expect(document.querySelector(".replay-tower")?.textContent).toContain("Lap 2");
     expect(document.querySelector(".replay-tower")?.textContent).toContain("72.42s");
     expect(document.querySelector(".replay-tower")?.textContent).not.toContain("Mika Blitz");
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    expect(screen.queryByText("Run a lap time")).toBe(null);
+    expect(screen.getByRole("button", { name: "Back to circuit" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    expect(screen.queryByRole("heading", { name: "Lap time replay" })).toBe(null);
     expect(screen.getByText("72.42s")).toBeTruthy();
     expect(screen.getByText("75.18s")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replay last lap time" }).hasAttribute("disabled")).toBe(false);
@@ -427,7 +428,7 @@ describe("App", () => {
     expect(screen.getByText("Chrono 1/3 is logged. Adjust the directive or lock the plan before the GP.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Replay last lap time" }));
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
 
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));

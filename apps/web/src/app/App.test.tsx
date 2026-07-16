@@ -87,6 +87,10 @@ const baseState = {
 
 const decidedState = {
   ...baseState,
+  currentGrandPrix: {
+    ...baseState.currentGrandPrix,
+    qualifyingRuns: []
+  },
   actionState: {
     submittedTeamIds: ["team_1"],
     missingTeamIds: ["team_2"],
@@ -271,6 +275,14 @@ const qualifiedState = {
   }
 };
 
+const decidedStateWithQualifying = {
+  ...decidedState,
+  currentGrandPrix: {
+    ...decidedState.currentGrandPrix,
+    qualifyingRuns: [rivalQualifyingRun, slowerQualifyingRun, qualifyingRun]
+  }
+};
+
 const settingsState = {
   ...baseState,
   league: {
@@ -363,7 +375,7 @@ describe("App", () => {
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(response(baseState))
       .mockResolvedValueOnce(response({ state: qualifiedState, run: qualifyingRun, isBest: true }))
-      .mockResolvedValueOnce(response(decidedState))
+      .mockResolvedValueOnce(response(decidedStateWithQualifying))
       .mockResolvedValueOnce(response(resolvedState))
       .mockResolvedValueOnce(response(nextGrandPrixState))
       .mockResolvedValueOnce(response(settingsState))
@@ -398,15 +410,15 @@ describe("App", () => {
     expect(screen.getAllByText("Lap times", { exact: false }).length).toBeGreaterThan(0);
     expect(screen.getByText("0/3")).toBeTruthy();
     expect(screen.getByText("No lap times")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Replay last lap time" }).hasAttribute("disabled")).toBe(true);
-    expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Lap time");
+    expect(screen.getByRole("button", { name: "Last lap time" }).hasAttribute("disabled")).toBe(true);
+    expect(document.querySelector(".race-phase-actions")?.textContent).toContain("New lap time");
 
     // Qualifying modal from the race phase panel
     expect(screen.queryByText("Wait for directives")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Lap time" }));
+    fireEvent.click(screen.getByRole("button", { name: "New lap time" }));
     expect(screen.getByRole("dialog", { name: "Run a lap time?" })).toBeTruthy();
     expect(screen.getByText("This attempt uses your current directive and the forecast conditions. Attempts left 3/3")).toBeTruthy();
-    fireEvent.click(screen.getAllByRole("button", { name: "Lap time" }).at(-1)!);
+    fireEvent.click(screen.getAllByRole("button", { name: "New lap time" }).at(-1)!);
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
     expect(screen.getByText("Relive this run lap by lap:", { exact: false })).toBeTruthy();
@@ -423,10 +435,10 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "Lap time replay" })).toBe(null);
     expect(screen.getByText("72.42s")).toBeTruthy();
     expect(screen.getByText("75.18s")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Replay last lap time" }).hasAttribute("disabled")).toBe(false);
+    expect(screen.getByRole("button", { name: "Last lap time" }).hasAttribute("disabled")).toBe(false);
     expect(screen.getByRole("heading", { name: "2. Chrono / plan" })).toBeTruthy();
     expect(screen.getByText("Chrono 1/3 is logged. Adjust the directive or lock the plan before the GP.")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Replay last lap time" }));
+    fireEvent.click(screen.getByRole("button", { name: "Last lap time" }));
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
 
@@ -450,6 +462,9 @@ describe("App", () => {
     expect(screen.queryByText("Directive locked. You can launch the Grand Prix.")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "3. Plan locked" })).toBeTruthy();
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).not.toContain("75.18s");
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     for (const button of document.querySelectorAll(".directive-panel button")) {
       expect(button.hasAttribute("disabled")).toBe(true);

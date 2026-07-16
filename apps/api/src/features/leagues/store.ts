@@ -591,6 +591,14 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
     }
   });
 
+  const lockedState = await getLeagueState(db, leagueId);
+  if (!lockedState) return null;
+  if (lockedState.league.fillWithBots) {
+    await fillLeagueWithBots(db, lockedState);
+  }
+  const readyState = lockedState.league.fillWithBots ? await getLeagueState(db, leagueId) : lockedState;
+  if (readyState) await ensureBotQualifyingRuns(db, grandPrix, readyState);
+
   return getLeagueState(db, leagueId);
 }
 

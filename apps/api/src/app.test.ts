@@ -115,6 +115,7 @@ describe("api app", () => {
         cardId: "rain_grip"
       }
     });
+    const decisionQualifyingTeamIds = new Set(decisionResponse.json().currentGrandPrix.qualifyingRuns.map((run: { teamId: string }) => run.teamId));
 
     const resolveResponse = await app.inject({
       method: "POST",
@@ -201,6 +202,9 @@ describe("api app", () => {
         }
       }
     });
+    for (const botTeam of createdBots) {
+      expect(decisionQualifyingTeamIds.has(botTeam.id)).toBe(true);
+    }
     expect(resolveResponse.statusCode).toBe(200);
     expect(resolved.teams).toHaveLength(8);
     const qualifyingTeamIds = new Set(resolved.currentGrandPrix.qualifyingRuns.map((run: { teamId: string }) => run.teamId));
@@ -462,6 +466,36 @@ describe("api app", () => {
 
     expect(decisionResponse.statusCode).toBe(200);
     expect(qualifyingResponse.statusCode).toBe(409);
+  });
+
+  it("adds missing bot qualifying runs when the directive is locked", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const botIds = created.teams.filter((team: { kind: string }) => team.kind === "bot").map((team: { id: string }) => team.id);
+
+    const decisionResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/decisions`,
+      payload: {
+        teamId: created.player.teamId,
+        approach: "balanced",
+        preparation: "weather"
+      }
+    });
+
+    await app.close();
+
+    expect(decisionResponse.statusCode).toBe(200);
+    const runTeamIds = new Set(decisionResponse.json().currentGrandPrix.qualifyingRuns.map((run: { teamId: string }) => run.teamId));
+    for (const botId of botIds) {
+      expect(runTeamIds.has(botId)).toBe(true);
+    }
   });
 
   it("rejects resolving before the player submits a directive", async () => {

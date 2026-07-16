@@ -69,6 +69,15 @@ function latestQualifyingRun(runs: QualifyingRun[]) {
   );
 }
 
+function bestQualifyingRuns(runs: QualifyingRun[]) {
+  const best = new Map<string, QualifyingRun>();
+  for (const run of runs) {
+    const current = best.get(run.teamId);
+    if (!current || run.time < current.time) best.set(run.teamId, run);
+  }
+  return [...best.values()];
+}
+
 function createInitialForm(locale: Locale): FormState {
   return {
     leagueName: randomLeagueName() || t("default_league_name", locale),
@@ -238,7 +247,8 @@ export function App() {
   const currentQualifyingResult = qualifyingResult && playerQualifyingRuns.some((run) => run.teamId === qualifyingResult.teamId && run.attempts === qualifyingResult.attempts) ? qualifyingResult : null;
   const replayQualifyingRun = currentQualifyingResult ?? lastQualifyingRun;
   const qualifyingReplayEntries = qualifyingReplayTower(replayQualifyingRun, qualifyingRuns, tt);
-  const qualifyingLeaderboard = [...qualifyingRuns]
+  const qualifyingLeaderboardRuns = playerDecision ? bestQualifyingRuns(qualifyingRuns) : qualifyingRuns;
+  const qualifyingLeaderboard = [...qualifyingLeaderboardRuns]
     .sort((left, right) => left.time - right.time)
     .slice(0, 10)
     .map((run, index) => ({
@@ -359,6 +369,7 @@ export function App() {
         })
       });
       setLeagueState(withCurrentPlayer(state));
+      setQualifyingResult(null);
       showStatus(tt("status_directive_locked"));
       pushCommandHint("ready");
     });

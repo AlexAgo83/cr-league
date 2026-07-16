@@ -472,6 +472,13 @@ describe("App", () => {
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).not.toContain("75.18s");
+    expect(document.querySelector(".race-phase-actions")?.textContent).toContain("View planLaunch GP");
+    fireEvent.click(screen.getByRole("button", { name: "View plan" }));
+    expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
+    for (const button of document.querySelectorAll(".directive-panel button")) {
+      expect(button.hasAttribute("disabled")).toBe(true);
+    }
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     expect(screen.queryByRole("button", { name: "Lap time" })).toBe(null);
     expect(screen.getByRole("button", { name: "Launch GP" })).toBeTruthy();
 

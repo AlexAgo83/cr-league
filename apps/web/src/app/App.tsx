@@ -1300,9 +1300,16 @@ export function App() {
                               </button>
                             </>
                           ) : (
-                            <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                              {primaryCommand.label}
-                            </button>
+                            <>
+                              {deskState === "ready" ? (
+                                <button className="primary-command" type="button" onClick={() => setGameView("plan")}>
+                                  {tt("action_view_plan")}
+                                </button>
+                              ) : null}
+                              <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                                {primaryCommand.label}
+                              </button>
+                            </>
                           )}
                         </div>
                       )}

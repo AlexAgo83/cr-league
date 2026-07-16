@@ -225,6 +225,7 @@
   "action_forget_profile": "Sign out",
   "action_submit_directive": "Lock plan",
   "action_edit_plan": "Edit plan",
+  "action_view_plan": "View plan",
   "action_launch_grand_prix": "Launch GP",
   "action_qualifying": "New lap time",
   "action_qualifying_history": "Review lap time",

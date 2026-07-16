@@ -2790,6 +2790,31 @@ button.command-icon-button {
   background: linear-gradient(135deg, rgb(22 199 132 / 0.12), rgb(56 189 248 / 0.08)), var(--color-panel);
   display: grid;
   gap: 16px;
+  position: relative;
+}
+
+.report-close-button {
+  background: rgb(239 68 68 / 0.18);
+  border: 1px solid rgb(248 113 113 / 0.45);
+  border-radius: 999px;
+  color: #fecaca;
+  font-size: 1rem;
+  font-weight: 900;
+  height: 30px;
+  line-height: 1;
+  min-height: 0;
+  padding: 0;
+  position: absolute;
+  right: 14px;
+  top: 14px;
+  width: 30px;
+}
+
+.report-close-button:hover,
+.report-close-button:focus-visible {
+  background: rgb(239 68 68 / 0.28);
+  border-color: rgb(248 113 113 / 0.72);
+  color: #fff;
 }
 
 .report-hero h2 {

@@ -17,6 +17,7 @@ export function ReportView({
   circuit,
   playerTeamId,
   playerDecision,
+  onClose,
   tt
 }: {
   state: LeagueState;
@@ -24,6 +25,7 @@ export function ReportView({
   circuit: CityCircuit;
   playerTeamId: string | undefined;
   playerDecision: LeagueState["decisions"][number] | undefined;
+  onClose?: () => void;
   tt: Translator;
 }) {
   const names = teamNamesFromResult(result);
@@ -57,6 +59,11 @@ export function ReportView({
           <h2>{raceTitle}</h2>
           <p>{resultHeadline(result, tt, raceTitle)}</p>
         </div>
+        {onClose ? (
+          <button type="button" className="report-close-button" aria-label={tt("action_back_to_circuit")} title={tt("action_back_to_circuit")} onClick={onClose}>
+            ×
+          </button>
+        ) : null}
         <ol className="report-podium">
           {result.classification.map((entry) => (
             <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>

@@ -18,9 +18,7 @@ export function ResultView({
   tab,
   traitImpacts,
   preferencesResetSignal,
-  onToggleTab,
   onClose,
-  primaryAction,
   tt
 }: {
   state: LeagueState;
@@ -31,41 +29,26 @@ export function ResultView({
   tab: ResultTab;
   traitImpacts: MapTraitImpacts;
   preferencesResetSignal?: number;
-  onToggleTab: () => void;
   onClose?: () => void;
-  primaryAction?: { label: string; action: () => void; disabled: boolean };
   tt: Translator;
 }) {
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
 
   return (
     <div className="result-view">
-      <section className="panel race-context-panel race-day-phase-panel">
-        <h2>{tt("race_phase_finished_title")}</h2>
-        <p>{tt("race_phase_finished_body")}</p>
-        <div className="race-day-steps" aria-label={tt("race_day_steps")}>
-          {["briefing", "adjust", "locked", "gp"].map((step) => (
-            <span key={step} className={step === "gp" ? "active" : undefined}>
-              {tt(`race_step_${step}` as TranslationKey)}
-            </span>
-          ))}
-        </div>
-        <div className="race-phase-actions">
-          <button
-            className="result-toggle-command"
-            type="button"
-            aria-controls={`result-${tab === "report" ? "replay" : "report"}-panel`}
-            onClick={onToggleTab}
-          >
-            {tt(`result_tab_${tab === "report" ? "replay" : "report"}`)}
-          </button>
-          {primaryAction ? (
-            <button className="primary-command" type="button" onClick={primaryAction.action} disabled={primaryAction.disabled}>
-              {primaryAction.label}
-            </button>
-          ) : null}
-        </div>
-      </section>
+      {tab === "replay" ? (
+        <section className="panel race-context-panel race-day-phase-panel">
+          <h2>{tt("race_phase_finished_title")}</h2>
+          <p>{tt("race_phase_finished_body")}</p>
+          <div className="race-day-steps" aria-label={tt("race_day_steps")}>
+            {["briefing", "adjust", "locked", "gp"].map((step) => (
+              <span key={step} className={step === "gp" ? "active" : undefined}>
+                {tt(`race_step_${step}` as TranslationKey)}
+              </span>
+            ))}
+          </div>
+        </section>
+      ) : null}
       <div id={`result-${tab}-panel`}>
         {tab === "replay" ? (
           <ReplayView
@@ -86,6 +69,7 @@ export function ResultView({
             circuit={circuit}
             playerTeamId={playerTeamId}
             playerDecision={playerDecision}
+            onClose={onClose}
             tt={tt}
           />
         )}

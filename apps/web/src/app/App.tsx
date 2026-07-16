@@ -1105,7 +1105,10 @@ export function App() {
               key={view}
               type="button"
               className={gameView === view ? "active" : undefined}
-              onClick={() => setGameView(view)}
+              onClick={() => {
+                setGameView(view);
+                if (view === "drive" && result) setResultOpen(false);
+              }}
             >
               <span className="nav-label-full">{tt(`rail_${view}` as TranslationKey)}</span>
               <span className="nav-label-short" aria-hidden="true">
@@ -1128,9 +1131,7 @@ export function App() {
             tab={resultTab}
             traitImpacts={replayTraitImpacts}
             preferencesResetSignal={preferencesResetSignal}
-            onToggleTab={() => setResultTab(resultTab === "report" ? "replay" : "report")}
             onClose={() => setResultOpen(false)}
-            primaryAction={primaryCommand}
             tt={tt}
           />
         ) : null}

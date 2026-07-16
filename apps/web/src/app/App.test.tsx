@@ -469,8 +469,8 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
-    expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Mika Blitz");
@@ -505,12 +505,13 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Next GP" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Replay" }));
-    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
 
     // Report view
     fireEvent.click(screen.getByRole("button", { name: "Report" }));
     expect(screen.getByText("Paris Docklands Sprint: Volt Union wins.")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Replay" })).toBe(null);
     expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();
     expect(screen.getByLabelText("Race phases")).toBeTruthy();
     expect(screen.getByText("Phase 1")).toBeTruthy();
@@ -519,6 +520,9 @@ describe("App", () => {
     expect(screen.getByText(/Weather prep fit the race weather/)).toBeTruthy();
     expect(screen.getByText(/Rain Grip produced/)).toBeTruthy();
     expect(screen.getByText(/Paris Left Bank Loop/)).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
 
     // Garage view
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
@@ -538,13 +542,14 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Lock plan" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Launch GP" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Next GP" }).hasAttribute("disabled")).toBe(false);
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     expect(screen.getByRole("dialog", { name: "Start the next race day?" })).toBeTruthy();
     expect(screen.getByText("This opens the next Grand Prix and moves every player back into preparation.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
     fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
@@ -710,8 +715,7 @@ describe("App", () => {
 
     createLeagueFromSetup();
 
-    fireEvent.click(await screen.findByRole("button", { name: "Race" }));
-    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
     expect(document.querySelector(".replay-progress")).toBeTruthy();
   });
@@ -727,7 +731,6 @@ describe("App", () => {
     render(<App />);
     createLeagueFromSetup();
 
-    fireEvent.click(await screen.findByRole("button", { name: "Race" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Speed ×4" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Focus driver" }).className).toContain("active");

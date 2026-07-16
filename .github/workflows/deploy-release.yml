@@ -151,7 +151,20 @@ jobs:
             separator="&"
           fi
 
-          deploy_response="$(curl --fail-with-body --silent --show-error --request POST "${RENDER_API_DEPLOY_HOOK_URL}${separator}ref=${RELEASE_SHA}")"
+          health_matches_release() {
+            health="$(curl --fail --silent --show-error "$API_HEALTH_URL")" || return 1
+            jq -e . >/dev/null 2>&1 <<< "${health:-{}}" || return 1
+            version="$(jq -r '.version // ""' <<< "${health:-{}}")"
+            commit="$(jq -r '.commit // ""' <<< "${health:-{}}")"
+            [ "$version" = "$RELEASE_VERSION" ] && [ "$commit" = "$RELEASE_SHA" ]
+          }
+
+          if health_matches_release; then
+            echo "API health already reports ${RELEASE_VERSION} at ${RELEASE_SHA}."
+            exit 0
+          fi
+
+          deploy_response="$(curl --connect-timeout 10 --max-time 60 --fail-with-body --silent --show-error --request POST "${RENDER_API_DEPLOY_HOOK_URL}${separator}ref=${RELEASE_SHA}")"
           echo "Render API deploy response: ${deploy_response}"
 
           for attempt in $(seq 1 60); do

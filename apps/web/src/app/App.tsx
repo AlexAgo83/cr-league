@@ -19,8 +19,7 @@ const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
 const PROFILE_SESSION_KEY = "cr-league-profile-session";
 const LANGUAGE_KEY = "cr-league-language";
 const SEASON_RECAP_KEY_PREFIX = "cr-league-season-recap";
-const DISMISSED_RACE_PREP_HELP_KEY = "cr-league-dismissed-race-prep-help";
-const UI_PREFERENCE_KEYS = [DISMISSED_RACE_PREP_HELP_KEY, DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY] as const;
+const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY] as const;
 
 type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueId: string;
@@ -167,7 +166,6 @@ export function App() {
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [racePrepHelpDismissed, setRacePrepHelpDismissed] = useState(() => localStorage.getItem(DISMISSED_RACE_PREP_HELP_KEY) === "1");
   const [preferencesResetSignal, setPreferencesResetSignal] = useState(0);
   const [profileCodeOpen, setProfileCodeOpen] = useState(false);
   const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
@@ -288,7 +286,7 @@ export function App() {
             action: () => setNextGrandPrixConfirmOpen(true),
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
-  const drivePhasePanelVisible = gameView === "drive" && !racePrepHelpDismissed;
+  const drivePhasePanelVisible = gameView === "drive";
 
   useEffect(() => {
     if (!leagueState) return;
@@ -637,7 +635,6 @@ export function App() {
       (key): key is string => key !== null && key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`)
     );
     for (const key of seasonRecapKeys) localStorage.removeItem(key);
-    setRacePrepHelpDismissed(false);
     setPreferencesResetSignal((signal) => signal + 1);
     setProfileOpen(false);
     showStatus(tt("status_ui_preferences_reset"), "info", Boolean(leagueState));
@@ -1113,59 +1110,46 @@ export function App() {
         {gameView === "drive" ? (
           <div className="drive-grid">
             <div className="drive-content-column">
-              {racePrepHelpDismissed ? null : (
-                <section className="panel race-context-panel race-day-phase-panel">
-                  <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
-                  <p>
-                    {tt(`race_phase_${raceDayPhase}_body` as TranslationKey, {
-                      used: qualifyingAttemptsUsed,
-                      limit: qualifyingAttemptLimit,
-                      left: qualifyingAttemptsLeft
-                    })}
-                  </p>
-                  <div className="race-day-steps" aria-label={tt("race_day_steps")}>
-                    {["briefing", "chrono", "adjust", "locked", "gp"].map((step) => (
-                      <span key={step} className={step === raceDayPhase || (step === "gp" && raceDayPhase === "finished") ? "active" : undefined}>
-                        {tt(`race_step_${step}` as TranslationKey)}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="race-phase-actions">
-                    {deskState === "prepare" ? (
-                      <>
-                        <button className="result-toggle-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
-                          {tt("action_qualifying")}
-                        </button>
-                        <button
-                          className="result-toggle-command command-icon-button"
-                          type="button"
-                          aria-label={tt("action_qualifying_history")}
-                          title={tt("action_qualifying_history")}
-                          onClick={openLastQualifyingRun}
-                          disabled={!lastQualifyingRun}
-                        >
-                          ◷
-                        </button>
-                      </>
-                    ) : (
-                      <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                        {primaryCommand.label}
+              <section className="panel race-context-panel race-day-phase-panel">
+                <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
+                <p>
+                  {tt(`race_phase_${raceDayPhase}_body` as TranslationKey, {
+                    used: qualifyingAttemptsUsed,
+                    limit: qualifyingAttemptLimit,
+                    left: qualifyingAttemptsLeft
+                  })}
+                </p>
+                <div className="race-day-steps" aria-label={tt("race_day_steps")}>
+                  {["briefing", "chrono", "adjust", "locked", "gp"].map((step) => (
+                    <span key={step} className={step === raceDayPhase || (step === "gp" && raceDayPhase === "finished") ? "active" : undefined}>
+                      {tt(`race_step_${step}` as TranslationKey)}
+                    </span>
+                  ))}
+                </div>
+                <div className="race-phase-actions">
+                  {deskState === "prepare" ? (
+                    <>
+                      <button className="result-toggle-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
+                        {tt("action_qualifying")}
                       </button>
-                    )}
-                  </div>
-                  <button
-                    type="button"
-                    className="context-panel-close"
-                    aria-label={`${tt("action_close")} ${tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}`}
-                    onClick={() => {
-                      localStorage.setItem(DISMISSED_RACE_PREP_HELP_KEY, "1");
-                      setRacePrepHelpDismissed(true);
-                    }}
-                  >
-                    ×
-                  </button>
-                </section>
-              )}
+                      <button
+                        className="result-toggle-command command-icon-button"
+                        type="button"
+                        aria-label={tt("action_qualifying_history")}
+                        title={tt("action_qualifying_history")}
+                        onClick={openLastQualifyingRun}
+                        disabled={!lastQualifyingRun}
+                      >
+                        ◷
+                      </button>
+                    </>
+                  ) : (
+                    <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                      {primaryCommand.label}
+                    </button>
+                  )}
+                </div>
+              </section>
               <CircuitMap
                 className="drive-map-panel"
                 circuit={currentCircuit}
@@ -1294,23 +1278,6 @@ export function App() {
               >
                 {tt(`result_tab_${resultTab === "report" ? "replay" : "report"}` as TranslationKey)}
               </button>
-            ) : null}
-            {gameView === "drive" ? (
-              <>
-                <button className="result-toggle-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
-                  {tt("action_qualifying")}
-                </button>
-                <button
-                  className="result-toggle-command command-icon-button"
-                  type="button"
-                  aria-label={tt("action_qualifying_history")}
-                  title={tt("action_qualifying_history")}
-                  onClick={openLastQualifyingRun}
-                  disabled={!lastQualifyingRun}
-                >
-                  ◷
-                </button>
-              </>
             ) : null}
             {gameView === "championship" ? (
               <button className="result-toggle-command" type="button" onClick={() => setLeagueControlsOpen(true)}>

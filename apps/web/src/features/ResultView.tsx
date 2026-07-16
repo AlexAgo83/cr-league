@@ -17,6 +17,8 @@ export function ResultView({
   tab,
   traitImpacts,
   preferencesResetSignal,
+  onToggleTab,
+  primaryAction,
   tt
 }: {
   state: LeagueState;
@@ -27,12 +29,29 @@ export function ResultView({
   tab: ResultTab;
   traitImpacts: MapTraitImpacts;
   preferencesResetSignal?: number;
+  onToggleTab: () => void;
+  primaryAction?: { label: string; action: () => void; disabled: boolean };
   tt: Translator;
 }) {
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
 
   return (
     <div className="result-view">
+      <div className="result-actions">
+        <button
+          className="result-toggle-command"
+          type="button"
+          aria-controls={`result-${tab === "report" ? "replay" : "report"}-panel`}
+          onClick={onToggleTab}
+        >
+          {tt(`result_tab_${tab === "report" ? "replay" : "report"}`)}
+        </button>
+        {primaryAction ? (
+          <button className="primary-command" type="button" onClick={primaryAction.action} disabled={primaryAction.disabled}>
+            {primaryAction.label}
+          </button>
+        ) : null}
+      </div>
       <div id={`result-${tab}-panel`}>
         {tab === "replay" ? (
           <ReplayView result={result} circuit={circuit} playerTeamId={playerTeamId} teamLiveries={teamLiveries} traitImpacts={traitImpacts} preferencesResetSignal={preferencesResetSignal} tt={tt} />

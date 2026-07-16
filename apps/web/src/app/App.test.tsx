@@ -440,16 +440,14 @@ describe("App", () => {
     expect(document.querySelector(".standings-table")?.textContent).toContain("Volt Union");
     expect(document.querySelector(".round-timeline")?.textContent).toContain("R1");
 
-    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     fireEvent.click(screen.getByRole("button", { name: "Lock plan" }));
     expect(screen.getByRole("dialog", { name: "Lock race plan" })).toBeTruthy();
     expect(screen.getByText("You still have chrono attempts left. Lock the plan now? 2/3")).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "Lock plan" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
-    expect(document.querySelector(".command-context")?.textContent).not.toContain("Directive locked");
     fireEvent.click(screen.getByText("Directive locked. You can launch the Grand Prix.").closest(".floating-notification")!.querySelector("button")!);
     expect(screen.queryByText("Directive locked. You can launch the Grand Prix.")).toBe(null);
-    expect(screen.getByText("Ready to launch")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "3. Plan locked" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
@@ -469,11 +467,9 @@ describe("App", () => {
     expect(launchDialog.textContent).toContain("Grip 64");
     fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(screen.getByText("Race finished")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Result" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
-    expect(document.querySelector(".command-bar")?.textContent).not.toContain("The race is reviewed: move to the next Grand Prix.");
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
@@ -532,12 +528,13 @@ describe("App", () => {
     // One command at a time
     expect(screen.queryByRole("button", { name: "Lock plan" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Launch GP" })).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Result" }));
     expect(screen.getByRole("button", { name: "Next GP" }).hasAttribute("disabled")).toBe(false);
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     expect(screen.getByRole("dialog", { name: "Start the next race day?" })).toBeTruthy();
     expect(screen.getByText("This opens the next Grand Prix and moves every player back into preparation.")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Report" }));
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
@@ -549,13 +546,11 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
-    // League controls live in the bottom action bar on the championship view.
+    // League controls live in the profile menu.
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     expect(screen.getByLabelText("Language")).toBeTruthy();
-    expect(document.querySelector(".profile-menu-panel")?.textContent).not.toContain("League controls");
-    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(document.querySelector(".profile-menu-panel")?.textContent).toContain("League controls");
     expect(document.querySelector(".championship-overview")?.textContent).not.toContain("League controls");
-    expect(document.querySelector(".command-actions")?.textContent).toContain("League controls");
     fireEvent.click(screen.getByRole("button", { name: "League controls" }));
     expect(screen.getByRole("dialog", { name: "League controls" })).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
@@ -604,7 +599,7 @@ describe("App", () => {
 
     createLeagueFromSetup();
     await expectChampionshipCode("ABC123");
-    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
     fireEvent.click(screen.getByRole("button", { name: "Lock plan" }));

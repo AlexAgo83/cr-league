@@ -112,7 +112,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("button", { name: "Reset UI preferences" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
   const menuButtons = await page.locator(".profile-menu-panel button").evaluateAll((buttons) => buttons.map((button) => button.textContent?.trim()));
-  expect(menuButtons).toEqual(["Manage league", "Copy profile code", "Reset UI preferences", "Sign out"]);
+  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "Reset UI preferences", "Sign out"]);
   await expect(page.getByLabel("Language")).toBeVisible();
   await page.getByRole("button", { name: "Copy profile code" }).click();
   await expect(page.getByRole("dialog", { name: "Profile code" })).toBeVisible();
@@ -125,7 +125,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByLabel("League summary").getByText("Wait for directives")).toBeVisible();
 
   for (const expectedRound of [1, 2, 3]) {
-    await page.getByRole("button", { name: "Plan", exact: true }).click();
+    await page.getByRole("button", { name: "Race", exact: true }).click();
     await page.getByRole("button", { name: "Lock plan" }).click();
     await page.getByRole("dialog", { name: "Lock race plan" }).getByRole("button", { name: "Lock plan" }).click();
     await expect(page.getByRole("button", { name: "Launch GP" })).toBeVisible();
@@ -202,6 +202,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.screenshot({ path: testInfo.outputPath("drive-layout-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
 
+  await page.getByRole("button", { name: "Race", exact: true }).click();
   await page.getByRole("button", { name: "Lock plan" }).click();
   await page.getByRole("dialog", { name: "Lock race plan" }).getByRole("button", { name: "Lock plan" }).click();
   await page.getByRole("button", { name: "Launch GP" }).click();

@@ -285,8 +285,6 @@ export function App() {
             action: () => setNextGrandPrixConfirmOpen(true),
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
-  const drivePhasePanelVisible = gameView === "drive";
-
   useEffect(() => {
     if (!leagueState) return;
     const endedSeason = leagueState.currentGrandPrix.season - 1;
@@ -678,6 +676,18 @@ export function App() {
           {showManageLeague ? (
             <button type="button" className="profile-menu-action" onClick={addLeague}>
               {tt("action_add_league")}
+            </button>
+          ) : null}
+          {leagueState ? (
+            <button
+              type="button"
+              className="profile-menu-action"
+              onClick={() => {
+                setLeagueControlsOpen(true);
+                setProfileOpen(false);
+              }}
+            >
+              {tt("settings_title")}
             </button>
           ) : null}
           {profileSession?.recoveryCode ? (
@@ -1140,6 +1150,9 @@ export function App() {
                       >
                         ◷
                       </button>
+                      <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                        {primaryCommand.label}
+                      </button>
                     </>
                   ) : (
                     <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
@@ -1273,42 +1286,13 @@ export function App() {
             tab={resultTab}
             traitImpacts={replayTraitImpacts}
             preferencesResetSignal={preferencesResetSignal}
+            onToggleTab={() => setResultTab(resultTab === "report" ? "replay" : "report")}
+            primaryAction={primaryCommand}
             tt={tt}
           />
         ) : null}
       </section>
 
-      {drivePhasePanelVisible ? null : (
-        <footer className="command-bar">
-          <div className="command-context">
-            <span className={`race-state state-${deskState}`}>
-              <span className="race-state-label">{tt(`race_state_${deskState}` as TranslationKey)}</span>
-            </span>
-          </div>
-          <div className="command-actions">
-            {gameView === "result" && result ? (
-              <button
-                className="result-toggle-command"
-                type="button"
-                aria-controls={`result-${resultTab === "report" ? "replay" : "report"}-panel`}
-                onClick={() => setResultTab(resultTab === "report" ? "replay" : "report")}
-              >
-                {tt(`result_tab_${resultTab === "report" ? "replay" : "report"}` as TranslationKey)}
-              </button>
-            ) : null}
-            {gameView === "championship" ? (
-              <button className="result-toggle-command" type="button" onClick={() => setLeagueControlsOpen(true)}>
-                {tt("settings_title")}
-              </button>
-            ) : null}
-            {gameView === "plan" || gameView === "result" || deskState !== "prepare" ? (
-              <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                {primaryCommand.label}
-              </button>
-            ) : null}
-          </div>
-        </footer>
-      )}
       {notificationStack}
 
       {profileCodeModal}

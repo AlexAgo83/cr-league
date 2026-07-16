@@ -497,6 +497,15 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("option", { name: "×2" }));
     expect(screen.getByRole("button", { name: "Speed ×2" })).toBeTruthy();
     expect(localStorage.getItem("cr-league-replay-speed")).toBe("2");
+    expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("replay-close-button");
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
+    expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Next GP" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
+    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
 
     // Report view
     fireEvent.click(screen.getByRole("button", { name: "Report" }));

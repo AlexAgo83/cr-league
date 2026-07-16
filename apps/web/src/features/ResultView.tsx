@@ -19,6 +19,7 @@ export function ResultView({
   traitImpacts,
   preferencesResetSignal,
   onToggleTab,
+  onClose,
   primaryAction,
   tt
 }: {
@@ -31,6 +32,7 @@ export function ResultView({
   traitImpacts: MapTraitImpacts;
   preferencesResetSignal?: number;
   onToggleTab: () => void;
+  onClose?: () => void;
   primaryAction?: { label: string; action: () => void; disabled: boolean };
   tt: Translator;
 }) {
@@ -66,7 +68,17 @@ export function ResultView({
       </section>
       <div id={`result-${tab}-panel`}>
         {tab === "replay" ? (
-          <ReplayView result={result} circuit={circuit} playerTeamId={playerTeamId} teamLiveries={teamLiveries} traitImpacts={traitImpacts} preferencesResetSignal={preferencesResetSignal} tt={tt} />
+          <ReplayView
+            result={result}
+            circuit={circuit}
+            playerTeamId={playerTeamId}
+            teamLiveries={teamLiveries}
+            traitImpacts={traitImpacts}
+            preferencesResetSignal={preferencesResetSignal}
+            onClose={onClose}
+            closeLabel={tt("action_back_to_circuit")}
+            tt={tt}
+          />
         ) : (
           <ReportView
             state={state}

@@ -155,6 +155,7 @@ export function App() {
   });
   const [gameView, setGameView] = useState<GameView>("drive");
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
+  const [resultOpen, setResultOpen] = useState(true);
   const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
@@ -435,6 +436,7 @@ export function App() {
       setLeagueState(withCurrentPlayer(state));
       setGameView("drive");
       setResultTab("replay");
+      setResultOpen(true);
       showStatus(tt("status_grand_prix_resolved"));
       pushCommandHint("resolved");
     });
@@ -450,6 +452,7 @@ export function App() {
       });
       setLeagueState(withCurrentPlayer(state));
       setGameView("drive");
+      setResultOpen(false);
       showStatus(tt("status_next_grand_prix_started"));
       pushCommandHint("prepare");
     });
@@ -885,6 +888,7 @@ export function App() {
               setNextGrandPrixConfirmOpen(false);
               setGameView("drive");
               setResultTab("report");
+              setResultOpen(true);
             }}
             disabled={!result}
           >
@@ -1114,7 +1118,7 @@ export function App() {
       </header>
 
       <section className="view-container">
-        {gameView === "drive" && result ? (
+        {gameView === "drive" && result && resultOpen ? (
           <ResultView
             state={leagueState}
             result={result}
@@ -1125,11 +1129,12 @@ export function App() {
             traitImpacts={replayTraitImpacts}
             preferencesResetSignal={preferencesResetSignal}
             onToggleTab={() => setResultTab(resultTab === "report" ? "replay" : "report")}
+            onClose={() => setResultOpen(false)}
             primaryAction={primaryCommand}
             tt={tt}
           />
         ) : null}
-        {gameView === "drive" && !result ? (
+        {gameView === "drive" && (!result || !resultOpen) ? (
           <div className="drive-grid">
             <div className="drive-content-column">
               <section className="panel race-context-panel race-day-phase-panel">
@@ -1149,7 +1154,7 @@ export function App() {
                   ))}
                 </div>
               </section>
-              {currentQualifyingResult ? (
+              {!result && currentQualifyingResult ? (
                 <div className="qualifying-replay-inline drive-map-panel">
                   <ReplayView
                     result={currentQualifyingResult.result}
@@ -1185,8 +1190,8 @@ export function App() {
                           {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
                         </small>
                       </div>
-                      <MapTraitsPanel traits={currentCircuit.traits} impacts={directiveTraitImpacts} tt={tt} />
-                      {qualifyingPanelOpen ? (
+                      <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />
+                      {!result && qualifyingPanelOpen ? (
                         <div className="map-qualifying-times">
                           <header>
                             <strong>
@@ -1212,37 +1217,65 @@ export function App() {
                             <small>{tt("qualifying_times_empty")}</small>
                           )}
                         </div>
-                      ) : (
+                      ) : !result ? (
                         <button className="map-qualifying-toggle" type="button" onClick={() => setQualifyingPanelOpen(true)}>
                           {tt("qualifying_times_title")} {qualifyingAttemptsUsed}/{qualifyingAttemptLimit}
                         </button>
-                      )}
-                      <div className="race-phase-actions map-race-actions">
-                        {deskState === "prepare" ? (
-                          <>
-                            <button className="primary-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
-                              {tt("action_qualifying")}
-                            </button>
-                            <button
-                              className="result-toggle-command command-icon-button"
-                              type="button"
-                              aria-label={tt("action_qualifying_history")}
-                              title={tt("action_qualifying_history")}
-                              onClick={openLastQualifyingRun}
-                              disabled={!lastQualifyingRun}
-                            >
-                              ◷
-                            </button>
-                            <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                              {primaryCommand.label}
-                            </button>
-                          </>
-                        ) : (
+                      ) : null}
+                      {result ? (
+                        <div className="race-phase-actions map-race-actions">
+                          <button
+                            className="result-toggle-command"
+                            type="button"
+                            onClick={() => {
+                              setResultTab("replay");
+                              setResultOpen(true);
+                            }}
+                          >
+                            {tt("result_tab_replay")}
+                          </button>
+                          <button
+                            className="result-toggle-command"
+                            type="button"
+                            onClick={() => {
+                              setResultTab("report");
+                              setResultOpen(true);
+                            }}
+                          >
+                            {tt("result_tab_report")}
+                          </button>
                           <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
                             {primaryCommand.label}
                           </button>
-                        )}
-                      </div>
+                        </div>
+                      ) : (
+                        <div className="race-phase-actions map-race-actions">
+                          {deskState === "prepare" ? (
+                            <>
+                              <button className="primary-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
+                                {tt("action_qualifying")}
+                              </button>
+                              <button
+                                className="result-toggle-command command-icon-button"
+                                type="button"
+                                aria-label={tt("action_qualifying_history")}
+                                title={tt("action_qualifying_history")}
+                                onClick={openLastQualifyingRun}
+                                disabled={!lastQualifyingRun}
+                              >
+                                ◷
+                              </button>
+                              <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                                {primaryCommand.label}
+                              </button>
+                            </>
+                          ) : (
+                            <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                              {primaryCommand.label}
+                            </button>
+                          )}
+                        </div>
+                      )}
                     </>
                   }
                 />

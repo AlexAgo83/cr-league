@@ -2656,13 +2656,6 @@ button.command-icon-button {
   grid-template-columns: 1fr;
 }
 
-.result-actions {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-bottom: 12px;
-}
-
 .drive-content-column,
 .replay-content-column {
   display: grid;
@@ -3231,10 +3224,6 @@ button.primary-command {
     min-height: 38px;
     min-width: 76px;
     padding-inline: 8px;
-  }
-
-  .result-actions {
-    flex-wrap: wrap;
   }
 
   .command-icon-button {

@@ -1137,7 +1137,7 @@ export function App() {
                 <div className="race-phase-actions">
                   {deskState === "prepare" ? (
                     <>
-                      <button className="result-toggle-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
+                      <button className="primary-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
                         {tt("action_qualifying")}
                       </button>
                       <button

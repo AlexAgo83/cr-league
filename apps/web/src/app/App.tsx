@@ -1285,7 +1285,7 @@ export function App() {
                                 {tt("action_qualifying")}
                               </button>
                               <button
-                                className="result-toggle-command"
+                                className="primary-command"
                                 type="button"
                                 onClick={openLastQualifyingRun}
                                 disabled={!lastQualifyingRun}

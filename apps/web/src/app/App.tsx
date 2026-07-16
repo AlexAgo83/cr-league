@@ -1203,6 +1203,23 @@ export function App() {
                         </small>
                       </div>
                       <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />
+                      {result ? (
+                        <div className="map-final-classification">
+                          <strong>{tt("result_final_classification")}</strong>
+                          <ol>
+                            {result.classification.map((entry) => (
+                              <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "player" : undefined}>
+                                <span>
+                                  {entry.position}. {entry.teamName}
+                                </span>
+                                <em>
+                                  {entry.points} {tt("unit_points")}
+                                </em>
+                              </li>
+                            ))}
+                          </ol>
+                        </div>
+                      ) : null}
                       {!result && qualifyingPanelOpen ? (
                         <div className="map-qualifying-times">
                           <header>
@@ -1268,14 +1285,12 @@ export function App() {
                                 {tt("action_qualifying")}
                               </button>
                               <button
-                                className="result-toggle-command command-icon-button"
+                                className="result-toggle-command"
                                 type="button"
-                                aria-label={tt("action_qualifying_history")}
-                                title={tt("action_qualifying_history")}
                                 onClick={openLastQualifyingRun}
                                 disabled={!lastQualifyingRun}
                               >
-                                ◷
+                                {tt("action_qualifying_history")}
                               </button>
                               <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
                                 {primaryCommand.label}

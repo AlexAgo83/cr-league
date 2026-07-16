@@ -436,6 +436,7 @@ describe("App", () => {
     expect(screen.getByText("72.42s")).toBeTruthy();
     expect(screen.getByText("75.18s")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Last lap time" }).hasAttribute("disabled")).toBe(false);
+    expect(screen.getByRole("button", { name: "Last lap time" }).className).not.toContain("command-icon-button");
     expect(screen.getByRole("heading", { name: "2. Chrono / plan" })).toBeTruthy();
     expect(screen.getByText("Chrono 1/3 is logged. Adjust the directive or lock the plan before the GP.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Last lap time" }));
@@ -516,6 +517,9 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
+    expect(document.querySelectorAll(".map-final-classification li").length).toBe(resolvedState.currentGrandPrix.result.classification.length);
+    expect(document.querySelector(".map-final-classification")?.textContent).toContain("Volt Union");
+    expect(document.querySelector(".map-final-classification")?.textContent).toContain("25 pts");
     expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Next GP" })).toBeTruthy();

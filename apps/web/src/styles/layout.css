@@ -369,6 +369,11 @@
   gap: 16px;
 }
 
+.result-view {
+  display: grid;
+  gap: 16px;
+}
+
 .drive-grid {
   align-items: start;
   display: grid;
@@ -997,7 +1002,8 @@ label small {
   bottom: 46px;
 }
 
-.map-qualifying-times {
+.map-qualifying-times,
+.map-final-classification {
   background: rgb(10 15 21 / 0.8);
   border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 8px;
@@ -1021,6 +1027,7 @@ label small {
 }
 
 .map-qualifying-times strong,
+.map-final-classification strong,
 .map-qualifying-toggle {
   font-size: 0.78rem;
   text-transform: uppercase;
@@ -1066,7 +1073,8 @@ label small {
   z-index: 2;
 }
 
-.map-qualifying-times ol {
+.map-qualifying-times ol,
+.map-final-classification ol {
   display: grid;
   gap: 5px;
   list-style: none;
@@ -1074,7 +1082,8 @@ label small {
   padding: 0;
 }
 
-.map-qualifying-times li {
+.map-qualifying-times li,
+.map-final-classification li {
   align-items: center;
   color: var(--color-muted);
   display: grid;
@@ -1083,18 +1092,21 @@ label small {
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
-.map-qualifying-times li.player {
+.map-qualifying-times li.player,
+.map-final-classification li.player {
   color: var(--text);
 }
 
-.map-qualifying-times span {
+.map-qualifying-times span,
+.map-final-classification span {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .map-qualifying-times em,
-.map-qualifying-times small {
+.map-qualifying-times small,
+.map-final-classification em {
   color: var(--color-accent);
   font-style: normal;
   font-weight: 900;
@@ -3163,7 +3175,8 @@ button.primary-command {
     bottom: 38px;
   }
 
-  .map-qualifying-times {
+  .map-qualifying-times,
+  .map-final-classification {
     border-radius: 6px;
     gap: 3px;
     max-width: 124px;
@@ -3174,6 +3187,7 @@ button.primary-command {
   }
 
   .map-qualifying-times strong,
+  .map-final-classification strong,
   .map-qualifying-toggle {
     font-size: 0.58rem;
   }
@@ -3194,7 +3208,8 @@ button.primary-command {
     right: 8px;
   }
 
-  .map-qualifying-times li {
+  .map-qualifying-times li,
+  .map-final-classification li {
     font-size: 0.54rem;
     gap: 6px;
   }

@@ -146,7 +146,12 @@ jobs:
             exit 1
           fi
 
-          curl --fail-with-body --silent --show-error --request POST "${RENDER_API_DEPLOY_HOOK_URL}?ref=${RELEASE_SHA}"
+          separator="?"
+          if [[ "$RENDER_API_DEPLOY_HOOK_URL" == *"?"* ]]; then
+            separator="&"
+          fi
+
+          curl --fail-with-body --silent --show-error --request POST "${RENDER_API_DEPLOY_HOOK_URL}${separator}ref=${RELEASE_SHA}"
 
           for attempt in $(seq 1 30); do
             health="$(curl --fail --silent --show-error "$API_HEALTH_URL")" || health=""
@@ -176,7 +181,12 @@ jobs:
             exit 1
           fi
 
-          curl --fail-with-body --silent --show-error --request POST "${RENDER_WEB_DEPLOY_HOOK_URL}?ref=${RELEASE_SHA}"
+          separator="?"
+          if [[ "$RENDER_WEB_DEPLOY_HOOK_URL" == *"?"* ]]; then
+            separator="&"
+          fi
+
+          curl --fail-with-body --silent --show-error --request POST "${RENDER_WEB_DEPLOY_HOOK_URL}${separator}ref=${RELEASE_SHA}"
 
       - name: Mark deployment success
         if: success()

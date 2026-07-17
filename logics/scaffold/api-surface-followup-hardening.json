@@ -1,0 +1,195 @@
+{
+  "title": "API surface follow-up hardening",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_041_api_integrity_hardening_from_repo_review.md",
+    "logics/tasks/task_042_orchestrate_api_integrity_hardening.md",
+    "apps/api/src/app.ts",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/features/simulation/routes.ts",
+    "apps/api/src/app.test.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/types.ts",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "Review follow-up from 2026-07-17: league-level mutations are not authority-gated, Fastify logs make test output noisy, /simulation/preview validates only the shallow RaceInput shape, and claim/recovery secrets are stored client-side in localStorage by prototype design."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "API surface hardening",
+    "needs": [
+      "Add a minimal league administration authority check to settings, resolve, next-grand-prix, and restart endpoints.",
+      "Keep test output readable by making Fastify logging configurable and disabled in injected tests.",
+      "Harden /simulation/preview input validation enough that malformed enums, forecasts, and participants return 400 instead of reaching simulateRace.",
+      "Document and test the current localStorage secret boundary so future agents do not accidentally treat claimCode or recoveryCode as secure authentication.",
+      "Coordinate with req_041 so team ownership and league administration use the smallest compatible proof model rather than two competing auth designs."
+    ],
+    "context": [
+      "req_041 covers team-scoped claimCode checks, atomic Grand Prix resolution, atomic card purchases, create-league errors, crypto codes, and lint reproducibility.",
+      "The remaining authority gap is league-level: /leagues/:leagueId/settings, /resolve, /next-grand-prix, and /restart currently accept only leagueId and no owner/admin proof.",
+      "There is no full account or session system; profiles and team claims are prototype persistence aids. The lazy solution should reuse existing profileId/team claim data before inventing new auth.",
+      "Fastify is constructed with logger: true in buildApp, so npm test passes but emits noisy request logs.",
+      "/simulation/preview currently checks seed, grandPrixName, trait strings, forecast truthiness, and participant count only; it does not validate trait enum values, forecast weights, decision values, participant fields, or card/rival shape.",
+      "The web stores profile session and player claims in localStorage. That is acceptable for the prototype only if the boundary is explicit and tests protect against accidental broad localStorage clearing."
+    ],
+    "acceptance_criteria": [
+      "AC1: League-level mutations require a minimal admin proof tied to the league creator or an existing human team claim; missing or wrong proof cannot change league settings, resolve a GP, advance a GP, or restart a league.",
+      "AC2: The chosen admin proof model is documented in code/tests and does not add JWT, OAuth, server sessions, or a new auth dependency.",
+      "AC3: buildApp accepts a logger option or test-friendly dependency flag, and API tests run without Fastify request logs unless explicitly enabled.",
+      "AC4: /simulation/preview rejects malformed RaceInput values for trait enums, forecast numbers, participant shape, and decision values with 400.",
+      "AC5: Valid demo preview and valid custom preview payloads still return RaceResult unchanged.",
+      "AC6: A short docs note or Logics closeout note states that claimCode/recoveryCode in localStorage are prototype secrets, with the upgrade path to server sessions when the game needs real account security.",
+      "AC7: Tests cover admin proof rejection, quiet test logging, invalid simulation preview payloads, and localStorage boundary safety.",
+      "AC8: npm run typecheck, npm test, npm run build, npm run logics:validate, and npm run lint pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "API Surface Follow-up Hardening Product Brief",
+    "overview": "A companion hardening pass for the API surfaces not covered by the first integrity corpus: league-level authority, quieter tests, stricter simulation preview input validation, and explicit handling of prototype client-side secrets.",
+    "goals": [
+      "Prevent arbitrary callers from performing league administration actions with only a league id.",
+      "Keep API test output useful by default while retaining logs for local debugging.",
+      "Reject malformed simulation preview inputs at the route boundary.",
+      "Make the current localStorage secret model explicit so future work upgrades it deliberately."
+    ],
+    "non_goals": [
+      "Do not build a full authentication or authorization framework.",
+      "Do not add external validation libraries.",
+      "Do not redesign profile recovery or stored claims.",
+      "Do not change race simulation behavior for valid inputs.",
+      "Do not normalize client preferences or move them server-side."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add minimal admin proof to league-level mutations",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "League authority",
+      "request_acs": ["AC1", "AC2", "AC7", "AC8"],
+      "problem": [
+        "League-level mutations currently require only a leagueId.",
+        "Any caller with a league id can change settings, resolve the race, advance to the next GP, or restart the league."
+      ],
+      "scope_in": [
+        "Choose the smallest admin proof compatible with existing data: prefer the creating human team's claimCode or a profile-linked owner if already available after inspecting schema and creation flow.",
+        "Add body guards and store checks for /settings, /resolve, /next-grand-prix, and /restart.",
+        "Update the web client to include the current player's admin proof for these actions.",
+        "Make non-owner/non-admin human teams unable to perform league-level actions if the chosen model distinguishes owner from participant.",
+        "Add API tests for missing proof, wrong proof, non-admin proof, and valid proof for representative admin endpoints."
+      ],
+      "scope_out": [
+        "JWT, cookies, OAuth, server sessions, invite roles, permissions tables, or admin UI redesign.",
+        "Changing GET /leagues/:leagueId visibility.",
+        "Changing team-scoped claimCode work already covered by req_041 except where shared helpers reduce code."
+      ],
+      "acceptance_criteria": [
+        "AC1: Each listed endpoint rejects unauthorized requests before mutation.",
+        "AC2: A valid current-player proof keeps existing league flows working from the web app.",
+        "AC3: The implementation uses one shared helper or clearly tiny route-local checks; no new auth framework exists.",
+        "AC4: Tests name the chosen owner/admin rule so future agents know the contract."
+      ]
+    },
+    {
+      "title": "Make Fastify logging configurable for tests",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Test ergonomics",
+      "request_acs": ["AC3", "AC7", "AC8"],
+      "problem": [
+        "buildApp always sets Fastify logger to true.",
+        "Injected API tests pass but fill stdout with request logs, hiding useful failures."
+      ],
+      "scope_in": [
+        "Add a minimal logger option to ApiConfig or AppDependencies.",
+        "Keep production/dev logging enabled by default.",
+        "Set logger false in createTestApp or equivalent test helper.",
+        "Add or adjust a small test only if needed to lock the default/test behavior."
+      ],
+      "scope_out": [
+        "Changing log format, log transport, pino config, or adding log dependencies.",
+        "Suppressing application errors."
+      ],
+      "acceptance_criteria": [
+        "AC1: npm test no longer emits normal Fastify request logs from app.inject tests.",
+        "AC2: Running the API server normally still enables logging unless explicitly disabled."
+      ]
+    },
+    {
+      "title": "Harden simulation preview input validation",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Route validation",
+      "request_acs": ["AC4", "AC5", "AC7", "AC8"],
+      "problem": [
+        "/simulation/preview accepts shallow objects with arbitrary trait strings, forecast shape, and participant internals.",
+        "Malformed payloads can reach simulateRace and produce misleading output or runtime errors."
+      ],
+      "scope_in": [
+        "Validate primaryTrait and secondaryTrait against the RaceTrait values used by the shared domain.",
+        "Validate forecast has finite non-negative dry/light_rain/heavy_rain numeric weights with at least one positive weight.",
+        "Validate participants have required teamId, teamName, kind, standingsRank, and decision fields.",
+        "Validate decision approach/preparation/cardId/rivalTeamId values against existing domain/card definitions.",
+        "Keep the validation as small route-local helpers or shared domain type guards if an existing shared helper already fits.",
+        "Add tests for representative invalid payloads and one valid custom payload."
+      ],
+      "scope_out": [
+        "Adding zod/yup/io-ts or schema generation.",
+        "Changing simulateRace internals or race balancing.",
+        "Supporting partial custom preview payloads."
+      ],
+      "acceptance_criteria": [
+        "AC1: Invalid enum, forecast, participant, and decision values return 400.",
+        "AC2: Demo preview with no body still works.",
+        "AC3: A valid full RaceInput payload still returns a RaceResult."
+      ]
+    },
+    {
+      "title": "Document prototype localStorage secret boundary",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Security boundary",
+      "request_acs": ["AC6", "AC7", "AC8"],
+      "problem": [
+        "claimCode and recoveryCode are stored in localStorage as prototype convenience secrets.",
+        "Without an explicit boundary, future agents may either overtrust them as secure auth or accidentally clear them with broad preference reset code."
+      ],
+      "scope_in": [
+        "Add a short docs note or implementation closeout section explaining that localStorage claim/recovery codes are prototype-grade secrets.",
+        "State the upgrade path: server-side sessions or account auth before public multi-user security is required.",
+        "Ensure existing preference reset/forget flows do not clear claim/recovery data except through explicit profile/league forget actions.",
+        "Add or keep tests that durable profile/session/player claim keys survive UI preference reset."
+      ],
+      "scope_out": [
+        "Moving secrets out of localStorage in this pass.",
+        "Encrypting localStorage values.",
+        "Building account management."
+      ],
+      "acceptance_criteria": [
+        "AC1: The prototype security limitation is documented where future implementation agents will see it.",
+        "AC2: Tests protect durable localStorage keys from accidental broad clearing.",
+        "AC3: No new visible UI exposes claimCode or recoveryCode beyond existing profile/recovery flows."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate API surface follow-up hardening",
+    "plan": [
+      "Read req_041 and its task first so this work reuses the same proof model where possible.",
+      "Implement the Fastify logger option first because it makes subsequent API test output readable.",
+      "Design the minimal admin proof after inspecting league creation, profile linkage, and stored claims; document the rule in tests.",
+      "Apply admin proof to settings, resolve, next-grand-prix, and restart with focused route tests.",
+      "Harden simulation preview validation with small helpers and representative invalid-payload tests.",
+      "Document the localStorage secret boundary and verify preference reset safety.",
+      "Run typecheck, tests, build, lint, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/api-surface-followup-hardening.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

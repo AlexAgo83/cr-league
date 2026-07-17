@@ -1,0 +1,388 @@
+{
+  "budgets": {
+    "max_docs": 24,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_043_api_surface_follow_up_hardening item_088_add_minimal_admin_proof_to_league_level_mutations item_089_make_fastify_logging_configurable_for_tests item_090_harden_simulation_preview_input_validation item_091_document_prototype_localstorage_secret_boundary task_044_orchestrate_api_surface_follow_up_hardening --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_088_add_minimal_admin_proof_to_league_level_mutations",
+          "item_089_make_fastify_logging_configurable_for_tests",
+          "item_090_harden_simulation_preview_input_validation",
+          "item_091_document_prototype_localstorage_secret_boundary"
+        ],
+        "prod": [
+          "prod_014_api_surface_follow_up_hardening_product_brief"
+        ],
+        "req": [
+          "req_043_api_surface_follow_up_hardening"
+        ],
+        "task": [
+          "task_044_orchestrate_api_surface_follow_up_hardening"
+        ]
+      },
+      "path": "logics/product/prod_014_api_surface_follow_up_hardening_product_brief.md",
+      "ref": "prod_014_api_surface_follow_up_hardening_product_brief",
+      "status": "Proposed",
+      "title": "API Surface Follow-up Hardening Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_079_require_claim_codes_for_team_mutations",
+          "item_080_make_grand_prix_resolution_idempotent_and_transactional",
+          "item_081_make_card_purchases_atomic",
+          "item_082_handle_create_league_validation_errors_consistently",
+          "item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry",
+          "item_084_restore_lint_reproducibility_from_a_clean_tree"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/product/prod_012_api_integrity_hardening_product_brief.md",
+      "ref": "prod_012_api_integrity_hardening_product_brief",
+      "status": "Proposed",
+      "title": "API Integrity Hardening Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, api surface follow-up hardening, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "API surface follow-up hardening",
+        "use when": "You need to implement or review the scaffolded workflow for API surface follow-up hardening."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_088_add_minimal_admin_proof_to_league_level_mutations",
+          "item_089_make_fastify_logging_configurable_for_tests",
+          "item_090_harden_simulation_preview_input_validation",
+          "item_091_document_prototype_localstorage_secret_boundary"
+        ],
+        "prod": [
+          "prod_014_api_surface_follow_up_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review",
+          "req_043_api_surface_follow_up_hardening"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/request/req_043_api_surface_follow_up_hardening.md",
+      "ref": "req_043_api_surface_follow_up_hardening",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "API surface follow-up hardening"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, api integrity hardening from repo review, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "API integrity hardening from repo review",
+        "use when": "You need to implement or review the scaffolded workflow for API integrity hardening from repo review."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_079_require_claim_codes_for_team_mutations",
+          "item_080_make_grand_prix_resolution_idempotent_and_transactional",
+          "item_081_make_card_purchases_atomic",
+          "item_082_handle_create_league_validation_errors_consistently",
+          "item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry",
+          "item_084_restore_lint_reproducibility_from_a_clean_tree"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ]
+      },
+      "path": "logics/request/req_041_api_integrity_hardening_from_repo_review.md",
+      "ref": "req_041_api_integrity_hardening_from_repo_review",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "API integrity hardening from repo review"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add minimal admin proof to league-level mutations, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add minimal admin proof to league-level mutations",
+        "use when": "Implementing the scaffolded slice for Add minimal admin proof to league-level mutations."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_088_add_minimal_admin_proof_to_league_level_mutations"
+        ],
+        "prod": [
+          "prod_014_api_surface_follow_up_hardening_product_brief"
+        ],
+        "req": [
+          "req_043_api_surface_follow_up_hardening"
+        ],
+        "task": [
+          "task_044_orchestrate_api_surface_follow_up_hardening"
+        ]
+      },
+      "path": "logics/backlog/item_088_add_minimal_admin_proof_to_league_level_mutations.md",
+      "ref": "item_088_add_minimal_admin_proof_to_league_level_mutations",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Add minimal admin proof to league-level mutations"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, make fastify logging configurable for tests, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Make Fastify logging configurable for tests",
+        "use when": "Implementing the scaffolded slice for Make Fastify logging configurable for tests."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_089_make_fastify_logging_configurable_for_tests"
+        ],
+        "prod": [
+          "prod_014_api_surface_follow_up_hardening_product_brief"
+        ],
+        "req": [
+          "req_043_api_surface_follow_up_hardening"
+        ],
+        "task": [
+          "task_044_orchestrate_api_surface_follow_up_hardening"
+        ]
+      },
+      "path": "logics/backlog/item_089_make_fastify_logging_configurable_for_tests.md",
+      "ref": "item_089_make_fastify_logging_configurable_for_tests",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Make Fastify logging configurable for tests"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate API surface follow-up hardening",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_088_add_minimal_admin_proof_to_league_level_mutations",
+          "item_089_make_fastify_logging_configurable_for_tests",
+          "item_090_harden_simulation_preview_input_validation",
+          "item_091_document_prototype_localstorage_secret_boundary"
+        ],
+        "prod": [
+          "prod_014_api_surface_follow_up_hardening_product_brief"
+        ],
+        "req": [
+          "req_043_api_surface_follow_up_hardening"
+        ],
+        "task": [
+          "task_044_orchestrate_api_surface_follow_up_hardening"
+        ]
+      },
+      "path": "logics/tasks/task_044_orchestrate_api_surface_follow_up_hardening.md",
+      "ref": "task_044_orchestrate_api_surface_follow_up_hardening",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate API surface follow-up hardening"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_088_add_minimal_admin_proof_to_league_level_mutations",
+          "item_089_make_fastify_logging_configurable_for_tests",
+          "item_090_harden_simulation_preview_input_validation",
+          "item_091_document_prototype_localstorage_secret_boundary"
+        ],
+        "prod": [
+          "prod_014_api_surface_follow_up_hardening_product_brief"
+        ],
+        "req": [
+          "req_043_api_surface_follow_up_hardening"
+        ],
+        "task": [
+          "task_044_orchestrate_api_surface_follow_up_hardening"
+        ]
+      },
+      "path": "logics/product/prod_014_api_surface_follow_up_hardening_product_brief.md",
+      "ref": "prod_014_api_surface_follow_up_hardening_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "API Surface Follow-up Hardening Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, harden simulation preview input validation, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Harden simulation preview input validation",
+        "use when": "Implementing the scaffolded slice for Harden simulation preview input validation."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_090_harden_simulation_preview_input_validation"
+        ],
+        "prod": [
+          "prod_014_api_surface_follow_up_hardening_product_brief"
+        ],
+        "req": [
+          "req_043_api_surface_follow_up_hardening"
+        ],
+        "task": [
+          "task_044_orchestrate_api_surface_follow_up_hardening"
+        ]
+      },
+      "path": "logics/backlog/item_090_harden_simulation_preview_input_validation.md",
+      "ref": "item_090_harden_simulation_preview_input_validation",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Harden simulation preview input validation"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, document prototype localstorage secret boundary, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Document prototype localStorage secret boundary",
+        "use when": "Implementing the scaffolded slice for Document prototype localStorage secret boundary."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_091_document_prototype_localstorage_secret_boundary"
+        ],
+        "prod": [
+          "prod_014_api_surface_follow_up_hardening_product_brief"
+        ],
+        "req": [
+          "req_043_api_surface_follow_up_hardening"
+        ],
+        "task": [
+          "task_044_orchestrate_api_surface_follow_up_hardening"
+        ]
+      },
+      "path": "logics/backlog/item_091_document_prototype_localstorage_secret_boundary.md",
+      "ref": "item_091_document_prototype_localstorage_secret_boundary",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Document prototype localStorage secret boundary"
+    }
+  ],
+  "estimates": {
+    "char_count": 8892,
+    "companion_doc_count": 2,
+    "doc_count": 8
+  },
+  "generated_at": "2026-07-17T17:58:22Z",
+  "handoff": {
+    "companion_doc_count": 2,
+    "enabled": true,
+    "source_refs": [
+      "req_043_api_surface_follow_up_hardening",
+      "item_088_add_minimal_admin_proof_to_league_level_mutations",
+      "item_089_make_fastify_logging_configurable_for_tests",
+      "item_090_harden_simulation_preview_input_validation",
+      "item_091_document_prototype_localstorage_secret_boundary",
+      "task_044_orchestrate_api_surface_follow_up_hardening"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 422,
+      "fr": 422
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_043_api_surface_follow_up_hardening,item_088_add_minimal_admin_proof_to_league_level_mutations,item_089_make_fastify_logging_configurable_for_tests,item_090_harden_simulation_preview_input_validation,item_091_document_prototype_localstorage_secret_boundary,task_044_orchestrate_api_surface_follow_up_hardening",
+  "refs": [
+    "req_043_api_surface_follow_up_hardening",
+    "item_088_add_minimal_admin_proof_to_league_level_mutations",
+    "item_089_make_fastify_logging_configurable_for_tests",
+    "item_090_harden_simulation_preview_input_validation",
+    "item_091_document_prototype_localstorage_secret_boundary",
+    "task_044_orchestrate_api_surface_follow_up_hardening"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "Missing logics/release/contract.json."
+    ],
+    "configured": false,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Run logics-manager release discover --write, then review and promote logics/release/contract.draft.json to logics/release/contract.json.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "not_configured",
+    "target_version": null
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_044_orchestrate_api_surface_follow_up_hardening.md",
+      "ref": "task_044_orchestrate_api_surface_follow_up_hardening"
+    }
+  ]
+}

@@ -50,8 +50,8 @@
 
 .ambient-race-background::after {
   background:
-    radial-gradient(circle at 50% 42%, rgb(10 15 21 / 0.1), rgb(10 15 21 / 0.78) 68%),
-    linear-gradient(180deg, rgb(10 15 21 / 0.35), rgb(10 15 21 / 0.88));
+    radial-gradient(circle at 50% 42%, rgb(16 14 18 / 0.1), rgb(16 14 18 / 0.78) 68%),
+    linear-gradient(180deg, rgb(16 14 18 / 0.35), rgb(16 14 18 / 0.88));
   content: "";
   inset: 0;
   position: absolute;
@@ -84,6 +84,7 @@
   background: linear-gradient(135deg, var(--color-surface), var(--color-cockpit));
   border: 1px solid var(--color-border);
   border-radius: var(--radius);
+  clip-path: var(--chamfer);
   padding: 24px;
 }
 
@@ -146,9 +147,9 @@
 }
 
 .setup-main-panel {
-  background: rgb(13 19 26 / 0.84);
-  border-color: rgb(255 255 255 / 0.16);
-  border-top: 3px solid var(--color-telemetry);
+  background: rgb(18 16 20 / 0.86);
+  border-color: rgb(255 255 255 / 0.12);
+  border-top: 3px solid var(--color-accent);
   box-shadow: 0 24px 72px rgb(0 0 0 / 0.34);
   backdrop-filter: blur(10px);
 }
@@ -177,7 +178,7 @@
 }
 
 .setup-choice:hover {
-  border-color: var(--color-telemetry);
+  border-color: var(--color-accent);
   color: var(--color-text);
 }
 
@@ -236,9 +237,9 @@
 
 .invite-code {
   background: var(--color-cockpit);
-  border: 1px solid var(--color-telemetry);
-  border-radius: 6px;
-  color: var(--color-telemetry);
+  border: 1px solid var(--color-border);
+  border-radius: 2px;
+  color: var(--color-muted);
   font-size: 0.8125rem;
   font-weight: 800;
   letter-spacing: 0.08em;
@@ -256,9 +257,12 @@
 .game-nav button {
   background: transparent;
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 0;
   color: var(--color-muted);
+  font-size: 1.1em;
+  font-style: normal;
   font-weight: 700;
+  letter-spacing: 0.12em;
   min-height: 38px;
   padding: 8px 12px;
 }
@@ -272,14 +276,14 @@
 }
 
 .game-nav button.active {
-  background: rgb(56 189 248 / 0.14);
-  border-color: rgb(56 189 248 / 0.4);
-  color: #d9f4ff;
+  background: linear-gradient(var(--color-accent), var(--color-accent)) left bottom / 100% 3px no-repeat;
+  border-color: transparent;
+  color: var(--color-text);
 }
 
 .game-nav button:disabled {
   background: transparent;
-  color: rgb(148 163 184 / 0.35);
+  color: rgb(164 158 147 / 0.35);
 }
 
 .profile-menu {
@@ -301,8 +305,8 @@
 
 .profile-menu-button:hover,
 .profile-menu-button[aria-expanded="true"] {
-  border-color: var(--color-telemetry);
-  color: var(--color-telemetry);
+  border-color: var(--color-accent);
+  color: var(--color-text);
 }
 
 .profile-menu-panel {
@@ -328,8 +332,8 @@
 }
 
 .profile-menu-action:hover {
-  border-color: var(--color-telemetry);
-  color: var(--color-telemetry);
+  border-color: var(--color-accent);
+  color: var(--color-text);
 }
 
 .profile-menu-action-info {
@@ -435,11 +439,12 @@
 }
 
 .section-kicker {
-  color: var(--color-telemetry);
+  color: var(--color-accent);
   display: block;
-  font-size: 0.75rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
   text-transform: uppercase;
 }
 
@@ -457,28 +462,48 @@
 button,
 input,
 select {
-  border-radius: 6px;
+  border-radius: 2px;
   font: inherit;
 }
 
 button {
   background: var(--color-accent);
   border: 0;
-  color: #06110c;
+  clip-path: var(--chamfer-sm);
+  color: var(--color-accent-ink);
   cursor: pointer;
-  font-weight: 700;
-  padding: 11px 16px;
+  font-family: var(--font-display);
+  font-size: 1.05em;
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  padding: 10px 18px 12px 16px;
+  text-transform: uppercase;
 }
 
 button:disabled {
-  background: #2d3744;
-  color: #7f8a99;
+  background: #2b262c;
+  color: #7c756f;
   cursor: not-allowed;
+}
+
+/* Non-CTA buttons keep the body voice. */
+.choice-card,
+.setup-choice,
+.profile-menu-action,
+.saved-league-list button {
+  clip-path: none;
+  font-family: var(--font-sans);
+  font-size: 1em;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
 .secondary-button:not(:disabled) {
   background: transparent;
   border: 1px solid var(--color-border);
+  clip-path: none;
   color: var(--color-muted);
 }
 
@@ -534,7 +559,7 @@ label small {
 .directive-briefing span,
 .choice-card,
 .directive-summary {
-  background: rgb(10 15 21 / 0.42);
+  background: rgb(16 14 18 / 0.42);
   border: 1px solid var(--color-border);
   border-radius: 8px;
 }
@@ -606,7 +631,7 @@ label small {
 }
 
 .choice-card.selected {
-  background: rgb(22 199 132 / 0.14);
+  background: rgb(255 77 0 / 0.1);
 }
 
 .choice-card .card-stat-badges {
@@ -614,7 +639,7 @@ label small {
 }
 
 .directive-summary {
-  border-color: rgb(56 189 248 / 0.35);
+  border-color: var(--color-border);
   color: var(--color-text);
   margin: 0;
   padding: 12px;
@@ -752,7 +777,7 @@ label small {
 .floating-notification {
   align-items: start;
   background: rgb(13 19 26 / 0.94);
-  border: 1px solid rgb(56 189 248 / 0.34);
+  border: 1px solid rgb(255 77 0 / 0.34);
   border-radius: 8px;
   box-shadow: 0 14px 40px rgb(0 0 0 / 0.34);
   color: var(--color-text);
@@ -820,7 +845,7 @@ label small {
 .modal-close-button {
   align-items: center;
   background: rgb(15 23 42 / 0.82);
-  border: 1px solid rgb(148 163 184 / 0.26);
+  border: 1px solid rgb(164 158 147 / 0.26);
   border-radius: 999px;
   color: var(--text);
   cursor: pointer;
@@ -892,8 +917,8 @@ label small {
 }
 
 .circuit-map-stage {
-  background: #0a0f15;
-  border: 1px solid rgb(92 142 166 / 0.42);
+  background: #121014;
+  border: 1px solid rgb(255 255 255 / 0.14);
   border-radius: 6px;
   overflow: hidden;
   position: relative;
@@ -910,10 +935,10 @@ label small {
 }
 
 .map-attribution {
-  background: rgb(10 15 21 / 0.46);
+  background: rgb(16 14 18 / 0.46);
   border-radius: 4px;
   bottom: 3px;
-  color: rgb(184 199 214 / 0.62);
+  color: rgb(196 190 180 / 0.62);
   font-size: 0.56rem;
   line-height: 1;
   padding: 2px 5px;
@@ -922,7 +947,7 @@ label small {
 }
 
 .replay-progress {
-  background: rgb(10 15 21 / 0.6);
+  background: rgb(16 14 18 / 0.6);
   cursor: pointer;
   border-radius: 999px;
   bottom: 24px;
@@ -935,7 +960,7 @@ label small {
 }
 
 .replay-progress-fill {
-  background: linear-gradient(90deg, rgb(22 199 132 / 0.55), var(--color-accent));
+  background: linear-gradient(90deg, rgb(255 77 0 / 0.55), var(--color-accent));
   border-radius: 999px;
   height: 100%;
   width: 0%;
@@ -950,7 +975,7 @@ label small {
 }
 
 .replay-weather {
-  background: rgb(10 15 21 / 0.66);
+  background: rgb(16 14 18 / 0.66);
   border-radius: 6px;
   bottom: 13px;
   font-size: 0.8rem;
@@ -961,7 +986,7 @@ label small {
 }
 
 .map-status {
-  background: rgb(10 15 21 / 0.8);
+  background: rgb(16 14 18 / 0.8);
   border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 8px;
   display: grid;
@@ -984,7 +1009,7 @@ label small {
 
 .map-workflow-panel {
   align-items: center;
-  background: rgb(15 23 33 / 0.76);
+  background: rgb(18 16 20 / 0.76);
   border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 8px;
   bottom: 12px;
@@ -999,9 +1024,11 @@ label small {
 }
 
 .map-workflow-panel h2 {
-  color: var(--color-telemetry);
-  font-size: 0.9rem;
-  letter-spacing: 0.04em;
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-style: normal;
+  letter-spacing: 0.14em;
   margin: 0;
   text-transform: uppercase;
   white-space: nowrap;
@@ -1022,7 +1049,7 @@ label small {
 }
 
 .map-traits-panel {
-  background: rgb(10 15 21 / 0.76);
+  background: rgb(16 14 18 / 0.76);
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 8px;
   display: grid;
@@ -1048,7 +1075,7 @@ label small {
 
 .map-qualifying-times,
 .map-final-classification {
-  background: rgb(10 15 21 / 0.8);
+  background: rgb(16 14 18 / 0.8);
   border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 8px;
   display: grid;
@@ -1178,23 +1205,23 @@ label small {
 }
 
 .map-trait-grip i {
-  background: rgb(34 197 94 / 0.18);
-  color: #22c55e;
+  background: rgb(255 122 64 / 0.18);
+  color: #ff7a40;
 }
 
 .map-trait-grip {
-  --trait-fill: rgb(34 197 94 / 0.32);
-  --trait-tone: #22c55e;
+  --trait-fill: rgb(255 122 64 / 0.32);
+  --trait-tone: #ff7a40;
 }
 
 .map-trait-overtaking i {
-  background: rgb(56 189 248 / 0.18);
-  color: #38bdf8;
+  background: rgb(241 237 228 / 0.16);
+  color: #f1ede4;
 }
 
 .map-trait-overtaking {
-  --trait-fill: rgb(56 189 248 / 0.3);
-  --trait-tone: #38bdf8;
+  --trait-fill: rgb(241 237 228 / 0.28);
+  --trait-tone: #f1ede4;
 }
 
 .map-trait-energy i {
@@ -1242,7 +1269,7 @@ label small {
 }
 
 .map-traits-panel em {
-  background: rgb(22 199 132 / 0.16);
+  background: rgb(255 77 0 / 0.16);
   border-radius: 999px;
   color: var(--color-accent);
   font-size: 0.58rem;
@@ -1252,7 +1279,7 @@ label small {
 
 .replay-map-controls {
   align-items: center;
-  background: rgb(10 15 21 / 0.68);
+  background: rgb(16 14 18 / 0.68);
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 999px;
   display: flex;
@@ -1291,7 +1318,7 @@ label small {
 
 .replay-map-controls .replay-playback-button.playing::after {
   animation: replay-spin 0.9s linear infinite;
-  border: 2px solid rgb(56 189 248 / 0.22);
+  border: 2px solid rgb(255 77 0 / 0.22);
   border-top-color: var(--color-telemetry);
   border-radius: 999px;
   content: "";
@@ -1315,7 +1342,7 @@ label small {
 }
 
 .replay-map-controls button.active {
-  background: rgb(22 199 132 / 0.22);
+  background: rgb(255 77 0 / 0.22);
   color: var(--color-accent);
 }
 
@@ -1347,12 +1374,12 @@ label small {
 
 .replay-map-controls .replay-speed-trigger.active,
 .replay-speed-options button.selected {
-  background: rgb(56 189 248 / 0.2);
-  color: var(--color-telemetry);
+  background: rgb(255 77 0 / 0.28);
+  color: var(--color-text);
 }
 
 .replay-speed-options {
-  background: rgb(10 15 21 / 0.96);
+  background: rgb(16 14 18 / 0.96);
   border: 1px solid rgb(255 255 255 / 0.14);
   border-radius: 10px;
   box-shadow: 0 18px 36px rgb(0 0 0 / 0.34);
@@ -1368,7 +1395,7 @@ label small {
 }
 
 .replay-speed-options::before {
-  background: rgb(10 15 21 / 0.96);
+  background: rgb(16 14 18 / 0.96);
   border-left: 1px solid rgb(255 255 255 / 0.14);
   border-top: 1px solid rgb(255 255 255 / 0.14);
   content: "";
@@ -1397,16 +1424,16 @@ label small {
 
 @keyframes replay-pulse {
   50% {
-    box-shadow: 0 0 0 4px rgb(56 189 248 / 0.18);
+    box-shadow: 0 0 0 4px rgb(255 77 0 / 0.18);
     color: var(--color-telemetry);
   }
 }
 
 .replay-marker {
   background: var(--color-telemetry);
-  border: 2px solid #0a0f15;
+  border: 2px solid #121014;
   border-radius: 50%;
-  box-shadow: 0 0 8px rgb(56 189 248 / 0.7);
+  box-shadow: 0 0 8px rgb(255 77 0 / 0.7);
   cursor: pointer;
   height: 13px;
   position: absolute;
@@ -1423,13 +1450,13 @@ label small {
 
 .replay-marker.player {
   background: var(--color-accent);
-  box-shadow: 0 0 8px rgb(22 199 132 / 0.8);
+  box-shadow: 0 0 8px rgb(255 77 0 / 0.8);
 }
 
 .replay-moment-notification {
   align-items: center;
-  background: rgb(10 15 21 / 0.86);
-  border: 1px solid rgb(56 189 248 / 0.38);
+  background: rgb(16 14 18 / 0.86);
+  border: 1px solid rgb(255 77 0 / 0.38);
   border-radius: 8px;
   bottom: 58px;
   color: var(--color-text);
@@ -1446,7 +1473,7 @@ label small {
 }
 
 .replay-moment-notification.player {
-  border-color: rgb(22 199 132 / 0.52);
+  border-color: rgb(255 77 0 / 0.52);
 }
 
 .replay-moment-notification .moment-main {
@@ -1469,7 +1496,7 @@ label small {
 }
 
 .replay-tower {
-  background: rgb(10 15 21 / 0.78);
+  background: rgb(16 14 18 / 0.78);
   border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 8px;
   display: grid;
@@ -1497,8 +1524,8 @@ label small {
   background: var(--livery-primary);
   border: 2px solid var(--livery-secondary);
   border-radius: 999px;
-  box-shadow: 0 0 0 1px rgb(10 15 21 / 0.7);
-  color: #f8fafc;
+  box-shadow: 0 0 0 1px rgb(16 14 18 / 0.7);
+  color: #f1ede4;
   display: inline-flex;
   flex: 0 0 auto;
   font-size: 0.58rem;
@@ -1541,17 +1568,17 @@ label small {
 }
 
 .circuit-route-glow {
-  stroke: rgb(22 199 132 / 0.16);
+  stroke: rgb(255 77 0 / 0.16);
   stroke-width: 22;
 }
 
 .circuit-route-asphalt {
-  stroke: #232e3b;
+  stroke: #2a2530;
   stroke-width: 12;
 }
 
 .circuit-route-edge {
-  stroke: #f8fafc;
+  stroke: #f1ede4;
   stroke-width: 2.5;
   stroke-dasharray: 1 14;
 }
@@ -1611,7 +1638,7 @@ label small {
 
 @keyframes start-line-flash {
   50% {
-    filter: drop-shadow(0 0 6px rgb(56 189 248 / 0.7));
+    filter: drop-shadow(0 0 6px rgb(255 77 0 / 0.7));
     opacity: 0.72;
     stroke: var(--color-telemetry);
   }
@@ -1627,7 +1654,7 @@ label small {
 
 .map-car-body {
   fill: var(--car-primary, var(--color-telemetry));
-  stroke: var(--car-secondary, #0a0f15);
+  stroke: var(--car-secondary, #121014);
   stroke-width: 1.8;
 }
 
@@ -1649,7 +1676,7 @@ label small {
 }
 
 .map-car text {
-  fill: #f8fafc;
+  fill: #f1ede4;
   font-size: 9px;
   font-weight: 900;
   paint-order: stroke;
@@ -1864,7 +1891,7 @@ label small {
 }
 
 .dashboard-summary .current-race-summary {
-  border-color: rgb(56 189 248 / 0.42);
+  border-color: rgb(255 77 0 / 0.42);
   box-shadow: inset 3px 0 0 var(--color-telemetry);
 }
 
@@ -1917,7 +1944,7 @@ label small {
 
 .standings-table li {
   align-items: center;
-  background: rgb(10 15 21 / 0.32);
+  background: rgb(16 14 18 / 0.32);
   border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: 8px;
   display: grid;
@@ -1927,7 +1954,7 @@ label small {
 }
 
 .standings-table li.current-team {
-  border-color: rgb(22 199 132 / 0.5);
+  border-color: rgb(255 77 0 / 0.5);
   box-shadow: inset 3px 0 0 var(--color-accent);
 }
 
@@ -2000,7 +2027,7 @@ label small {
 }
 
 .ready-pill.ready {
-  background: rgb(22 199 132 / 0.12);
+  background: rgb(255 77 0 / 0.12);
   color: var(--color-accent);
 }
 
@@ -2027,7 +2054,7 @@ label small {
 
 .palmares-button {
   align-items: center;
-  background: rgb(10 15 21 / 0.32);
+  background: rgb(16 14 18 / 0.32);
   border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: 8px;
   color: inherit;
@@ -2041,7 +2068,7 @@ label small {
 
 .palmares-button:hover,
 .palmares-button:focus-visible {
-  border-color: rgb(22 199 132 / 0.5);
+  border-color: rgb(255 77 0 / 0.5);
 }
 
 .palmares-button small {
@@ -2054,7 +2081,7 @@ label small {
 }
 
 .season-history-group {
-  background: rgb(10 15 21 / 0.24);
+  background: rgb(16 14 18 / 0.24);
   border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: 8px;
   padding: 10px;
@@ -2100,13 +2127,13 @@ label small {
 
 .round-history-button:not(:disabled):hover .round-chip,
 .round-history-button:not(:disabled):focus-visible .round-chip {
-  background: rgb(22 199 132 / 0.14);
+  background: rgb(255 77 0 / 0.14);
   border-color: var(--color-accent);
 }
 
 .round-chip {
   align-items: center;
-  background: rgb(10 15 21 / 0.52);
+  background: rgb(16 14 18 / 0.52);
   border: 1px solid var(--color-border);
   border-radius: 8px;
   color: var(--color-text);
@@ -2119,13 +2146,13 @@ label small {
 }
 
 .round-chip.status-resolved {
-  border-color: rgb(22 199 132 / 0.42);
+  border-color: rgb(255 77 0 / 0.42);
   color: var(--color-accent);
 }
 
 .round-chip.status-current {
-  background: rgb(56 189 248 / 0.16);
-  border-color: rgb(56 189 248 / 0.48);
+  background: rgb(255 77 0 / 0.16);
+  border-color: rgb(255 77 0 / 0.48);
   color: var(--color-telemetry);
 }
 
@@ -2163,7 +2190,7 @@ label small {
 .season-podium-list li,
 .season-standings-list li {
   align-items: center;
-  background: rgb(10 15 21 / 0.32);
+  background: rgb(16 14 18 / 0.32);
   border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: 8px;
   display: grid;
@@ -2181,7 +2208,7 @@ label small {
 
 .season-podium-list li.current-team,
 .season-standings-list li.current-team {
-  border-color: rgb(22 199 132 / 0.5);
+  border-color: rgb(255 77 0 / 0.5);
   box-shadow: inset 3px 0 0 var(--color-accent);
 }
 
@@ -2288,7 +2315,7 @@ label small {
 }
 
 .garage-card-toggle {
-  background: rgb(10 15 21 / 0.48);
+  background: rgb(16 14 18 / 0.48);
   border: 1px solid var(--color-border);
   border-radius: 999px;
   display: flex;
@@ -2306,7 +2333,7 @@ label small {
 }
 
 .garage-card-toggle button.active {
-  background: rgb(22 199 132 / 0.16);
+  background: rgb(255 77 0 / 0.16);
   color: var(--color-text);
 }
 
@@ -2486,9 +2513,9 @@ label small {
 
 .garage-buy-card {
   background:
-    linear-gradient(135deg, rgb(56 189 248 / 0.18), transparent 46%),
+    linear-gradient(135deg, rgb(255 77 0 / 0.18), transparent 46%),
     var(--color-cockpit);
-  border: 1px solid rgb(56 189 248 / 0.28);
+  border: 1px solid rgb(255 77 0 / 0.28);
   border-radius: 8px;
   display: grid;
   gap: 6px;
@@ -2628,7 +2655,7 @@ button.command-icon-button {
 
 .race-context-panel {
   align-items: baseline;
-  background: rgb(15 23 33 / 0.72);
+  background: rgb(18 16 20 / 0.72);
   display: flex;
   flex-wrap: wrap;
   gap: 4px 14px;
@@ -2768,7 +2795,7 @@ button.command-icon-button {
 
 .replay-timeline li {
   align-items: start;
-  background: rgb(10 15 21 / 0.34);
+  background: rgb(16 14 18 / 0.34);
   border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: 8px;
   padding: 0;
@@ -2779,8 +2806,8 @@ button.command-icon-button {
 }
 
 .replay-timeline li.player-event {
-  background: linear-gradient(90deg, rgb(22 199 132 / 0.14), rgb(10 15 21 / 0.34));
-  border-color: rgb(22 199 132 / 0.36);
+  background: linear-gradient(90deg, rgb(255 77 0 / 0.14), rgb(16 14 18 / 0.34));
+  border-color: rgb(255 77 0 / 0.36);
   padding-left: 0;
 }
 
@@ -2798,7 +2825,7 @@ button.command-icon-button {
 
 .replay-moment-button:hover,
 .replay-moment-button:focus-visible {
-  background: rgb(56 189 248 / 0.08);
+  background: rgb(255 77 0 / 0.08);
   color: var(--color-telemetry);
 }
 
@@ -2832,8 +2859,8 @@ button.command-icon-button {
 }
 
 .moment-impact {
-  background: rgb(56 189 248 / 0.1);
-  border: 1px solid rgb(56 189 248 / 0.18);
+  background: rgb(255 77 0 / 0.1);
+  border: 1px solid rgb(255 77 0 / 0.18);
   border-radius: 5px;
   color: var(--color-telemetry);
   font-size: 0.62rem;
@@ -2843,7 +2870,7 @@ button.command-icon-button {
 }
 
 .report-hero {
-  background: linear-gradient(135deg, rgb(22 199 132 / 0.12), rgb(56 189 248 / 0.08)), var(--color-panel);
+  background: linear-gradient(135deg, rgb(255 77 0 / 0.12), rgb(255 77 0 / 0.08)), var(--color-surface);
   display: grid;
   gap: 16px;
   position: relative;
@@ -2896,7 +2923,7 @@ button.command-icon-button {
 }
 
 .report-podium li {
-  background: rgb(10 15 21 / 0.45);
+  background: rgb(16 14 18 / 0.45);
   border: 1px solid var(--color-border);
   border-radius: 8px;
   display: grid;
@@ -2905,7 +2932,7 @@ button.command-icon-button {
 }
 
 .report-podium li.current-team {
-  border-color: rgb(22 199 132 / 0.5);
+  border-color: rgb(255 77 0 / 0.5);
   box-shadow: inset 0 3px 0 var(--color-accent);
 }
 
@@ -2938,8 +2965,8 @@ button.command-icon-button {
 
 .lap-marker {
   align-self: start;
-  background: rgb(22 199 132 / 0.12);
-  border: 1px solid rgb(22 199 132 / 0.38);
+  background: rgb(255 77 0 / 0.12);
+  border: 1px solid rgb(255 77 0 / 0.38);
   border-radius: 999px;
   color: var(--color-accent);
   display: inline-flex;
@@ -2963,11 +2990,11 @@ button.command-icon-button {
 }
 
 .recap-card.difference {
-  border-color: rgb(56 189 248 / 0.42);
+  border-color: rgb(255 77 0 / 0.42);
 }
 
 .recap-card.directive {
-  border-color: rgb(22 199 132 / 0.42);
+  border-color: rgb(255 77 0 / 0.42);
 }
 
 .recap-card.lesson {
@@ -3002,7 +3029,7 @@ button.command-icon-button {
 
 .report-key-moments li {
   align-items: start;
-  background: rgb(10 15 21 / 0.32);
+  background: rgb(16 14 18 / 0.32);
   border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: 8px;
   display: grid;
@@ -3028,7 +3055,7 @@ button.command-icon-button {
 
 .report-rewards li {
   align-items: center;
-  background: rgb(10 15 21 / 0.32);
+  background: rgb(16 14 18 / 0.32);
   border: 1px solid rgb(255 255 255 / 0.08);
   border-radius: 8px;
   display: grid;
@@ -3038,14 +3065,14 @@ button.command-icon-button {
 }
 
 .report-rewards li.current-team {
-  border-color: rgb(22 199 132 / 0.5);
+  border-color: rgb(255 77 0 / 0.5);
   box-shadow: inset 3px 0 0 var(--color-accent);
 }
 
 .report-rewards li > strong {
   align-items: center;
-  background: rgb(22 199 132 / 0.12);
-  border: 1px solid rgb(22 199 132 / 0.34);
+  background: rgb(255 77 0 / 0.12);
+  border: 1px solid rgb(255 77 0 / 0.34);
   border-radius: 999px;
   color: var(--color-accent);
   display: inline-flex;
@@ -3434,4 +3461,111 @@ button.primary-command {
   .report-rewards dd {
     font-size: 0.78rem;
   }
+}
+
+
+/* ---------- Pit Wall numerals ---------- */
+
+.standings-score strong,
+.garage-stats strong,
+.dashboard-summary strong,
+.map-qualifying-times em,
+.map-qualifying-times small,
+.report-rewards dd,
+.replay-tower-value {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.03em;
+}
+
+.standings-rank {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-style: italic;
+  font-weight: 800;
+}
+
+/* ---------- Chalk paper material (documents: championship, garage, report) ---------- */
+
+.championship-view,
+.garage-grid,
+.report-view {
+  --color-surface: var(--color-paper);
+  --color-cockpit: #e2dccb;
+  --color-text: var(--color-ink);
+  --color-muted: var(--color-ink-muted);
+  --color-border: var(--color-paper-line);
+  --color-telemetry: var(--color-ink-muted);
+  --color-accent: #c53a00;
+  --color-danger-text: #a1170f;
+  color: var(--color-ink);
+}
+
+.championship-view .panel,
+.garage-grid .panel,
+.report-view .panel {
+  border: 0;
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.35);
+  clip-path: var(--chamfer);
+}
+
+/* dark translucent chips become print tints on paper */
+.championship-view .standings-table li,
+.championship-view .palmares-button,
+.championship-view .season-history-group,
+.championship-view .season-podium-list li,
+.championship-view .season-standings-list li,
+.championship-view .round-chip,
+.report-view .report-podium li,
+.report-view .report-key-moments li,
+.report-view .report-rewards li,
+.report-view .replay-timeline li {
+  background: rgb(23 21 26 / 0.05);
+  border-color: rgb(23 21 26 / 0.16);
+}
+
+.garage-grid .garage-card-toggle {
+  background: rgb(23 21 26 / 0.08);
+}
+
+.garage-grid .garage-livery-fields input[type="color"] {
+  border-color: rgb(23 21 26 / 0.3);
+}
+
+.championship-view .ready-pill.missing {
+  background: rgb(146 95 0 / 0.16);
+  color: #7c5200;
+}
+
+.report-view .report-close-button {
+  background: rgb(161 23 15 / 0.12);
+  border-color: rgb(161 23 15 / 0.4);
+  color: #a1170f;
+}
+
+.report-view .report-close-button:hover,
+.report-view .report-close-button:focus-visible {
+  background: rgb(161 23 15 / 0.2);
+  color: #7c110b;
+}
+
+.championship-view button:focus-visible,
+.garage-grid button:focus-visible,
+.report-view button:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+
+.championship-view .card-info-badge,
+.garage-grid .card-info-badge,
+.report-view .card-info-badge {
+  border-color: rgb(124 82 0 / 0.5);
+  color: #7c5200;
+}
+
+.championship-view .card-info-badge i,
+.garage-grid .card-info-badge i,
+.report-view .card-info-badge i {
+  color: #7c5200;
 }

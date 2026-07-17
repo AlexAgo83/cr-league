@@ -1,7 +1,7 @@
 ## req_042_adopt_the_pit_wall_visual_identity_across_the_web_app - Adopt the Pit Wall visual identity across the web app
 > From version: 0.3.5
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

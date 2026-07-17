@@ -1,8 +1,8 @@
 ## prod_013_pit_wall_visual_identity_product_brief - Pit Wall Visual Identity Product Brief
 > Date: 2026-07-17
-> Status: Proposed
+> Status: Settled
 > Related request: `req_042_adopt_the_pit_wall_visual_identity_across_the_web_app`
-> Related backlog: `item_085_pit_wall_foundation_tokens_self_hosted_type_chamfer_utility`, `item_086_asphalt_pass_live_surfaces_cockpit_buttons_circuit_route`, `item_087_chalk_paper_pass_standings_race_report_garage_sheets`
+> Related backlog: `item_085_pit_wall_foundation_tokens_self_hosted_type_chamfer_utility`
 > Related task: `task_043_orchestrate_the_pit_wall_visual_identity_rollout`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -37,5 +37,5 @@ The Pit Wall identity replaces the recognizable AI-dashboard look with a night-r
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_042_adopt_the_pit_wall_visual_identity_across_the_web_app`
+- Product back-reference: `item_085_pit_wall_foundation_tokens_self_hosted_type_chamfer_utility`
 - Task back-reference: `task_043_orchestrate_the_pit_wall_visual_identity_rollout`

@@ -29,7 +29,8 @@
 | [prod_010_full_width_replay_moment_notifications_product_brief](product/prod_010_full_width_replay_moment_notifications_product_brief.md) | Full-Width Replay Moment Notifications Product Brief | Settled |  |  | product/prod_010_full_width_replay_moment_notifications_product_brief.md |
 | [prod_011_dismissible_help_panels_and_ui_preferences_product_brief](product/prod_011_dismissible_help_panels_and_ui_preferences_product_brief.md) | Dismissible Help Panels and UI Preferences Product Brief | Settled |  |  | product/prod_011_dismissible_help_panels_and_ui_preferences_product_brief.md |
 | [prod_012_api_integrity_hardening_product_brief](product/prod_012_api_integrity_hardening_product_brief.md) | API Integrity Hardening Product Brief | Proposed |  |  | product/prod_012_api_integrity_hardening_product_brief.md |
-| [prod_013_pit_wall_visual_identity_product_brief](product/prod_013_pit_wall_visual_identity_product_brief.md) | Pit Wall Visual Identity Product Brief | Proposed |  |  | product/prod_013_pit_wall_visual_identity_product_brief.md |
+| [prod_013_pit_wall_visual_identity_product_brief](product/prod_013_pit_wall_visual_identity_product_brief.md) | Pit Wall Visual Identity Product Brief | Settled |  |  | product/prod_013_pit_wall_visual_identity_product_brief.md |
+| [prod_014_api_surface_follow_up_hardening_product_brief](product/prod_014_api_surface_follow_up_hardening_product_brief.md) | API Surface Follow-up Hardening Product Brief | Proposed |  |  | product/prod_014_api_surface_follow_up_hardening_product_brief.md |
 
 ## Roadmaps
 
@@ -84,7 +85,8 @@
 | [req_039_turn_replay_key_moments_into_timed_notifications](request/req_039_turn_replay_key_moments_into_timed_notifications.md) | Turn replay key moments into timed notifications | Done |  |  | request/req_039_turn_replay_key_moments_into_timed_notifications.md |
 | [req_040_add_dismissible_help_panels_and_ui_preference_reset](request/req_040_add_dismissible_help_panels_and_ui_preference_reset.md) | Add dismissible help panels and UI preference reset | Done |  |  | request/req_040_add_dismissible_help_panels_and_ui_preference_reset.md |
 | [req_041_api_integrity_hardening_from_repo_review](request/req_041_api_integrity_hardening_from_repo_review.md) | API integrity hardening from repo review | Draft |  |  | request/req_041_api_integrity_hardening_from_repo_review.md |
-| [req_042_adopt_the_pit_wall_visual_identity_across_the_web_app](request/req_042_adopt_the_pit_wall_visual_identity_across_the_web_app.md) | Adopt the Pit Wall visual identity across the web app | Draft |  |  | request/req_042_adopt_the_pit_wall_visual_identity_across_the_web_app.md |
+| [req_042_adopt_the_pit_wall_visual_identity_across_the_web_app](request/req_042_adopt_the_pit_wall_visual_identity_across_the_web_app.md) | Adopt the Pit Wall visual identity across the web app | Done |  |  | request/req_042_adopt_the_pit_wall_visual_identity_across_the_web_app.md |
+| [req_043_api_surface_follow_up_hardening](request/req_043_api_surface_follow_up_hardening.md) | API surface follow-up hardening | Draft |  |  | request/req_043_api_surface_follow_up_hardening.md |
 
 ## Backlog
 
@@ -174,9 +176,13 @@
 | [item_082_handle_create_league_validation_errors_consistently](backlog/item_082_handle_create_league_validation_errors_consistently.md) | Handle create-league validation errors consistently | Ready |  | 0% | backlog/item_082_handle_create_league_validation_errors_consistently.md |
 | [item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry](backlog/item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry.md) | Use crypto-backed league and claim codes with collision retry | Ready |  | 0% | backlog/item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry.md |
 | [item_084_restore_lint_reproducibility_from_a_clean_tree](backlog/item_084_restore_lint_reproducibility_from_a_clean_tree.md) | Restore lint reproducibility from a clean tree | Ready |  | 0% | backlog/item_084_restore_lint_reproducibility_from_a_clean_tree.md |
-| [item_085_pit_wall_foundation_tokens_self_hosted_type_chamfer_utility](backlog/item_085_pit_wall_foundation_tokens_self_hosted_type_chamfer_utility.md) | Pit Wall foundation: tokens, self-hosted type, chamfer utility | Ready |  | 0% | backlog/item_085_pit_wall_foundation_tokens_self_hosted_type_chamfer_utility.md |
-| [item_086_asphalt_pass_live_surfaces_cockpit_buttons_circuit_route](backlog/item_086_asphalt_pass_live_surfaces_cockpit_buttons_circuit_route.md) | Asphalt pass: live surfaces, cockpit, buttons, circuit route | Ready |  | 0% | backlog/item_086_asphalt_pass_live_surfaces_cockpit_buttons_circuit_route.md |
-| [item_087_chalk_paper_pass_standings_race_report_garage_sheets](backlog/item_087_chalk_paper_pass_standings_race_report_garage_sheets.md) | Chalk-paper pass: standings, race report, garage sheets | Ready |  | 0% | backlog/item_087_chalk_paper_pass_standings_race_report_garage_sheets.md |
+| [item_085_pit_wall_foundation_tokens_self_hosted_type_chamfer_utility](backlog/item_085_pit_wall_foundation_tokens_self_hosted_type_chamfer_utility.md) | Pit Wall foundation: tokens, self-hosted type, chamfer utility | Done |  | 100% | backlog/item_085_pit_wall_foundation_tokens_self_hosted_type_chamfer_utility.md |
+| [item_086_asphalt_pass_live_surfaces_cockpit_buttons_circuit_route](backlog/item_086_asphalt_pass_live_surfaces_cockpit_buttons_circuit_route.md) | Asphalt pass: live surfaces, cockpit, buttons, circuit route | Done |  | 100% | backlog/item_086_asphalt_pass_live_surfaces_cockpit_buttons_circuit_route.md |
+| [item_087_chalk_paper_pass_standings_race_report_garage_sheets](backlog/item_087_chalk_paper_pass_standings_race_report_garage_sheets.md) | Chalk-paper pass: standings, race report, garage sheets | Done |  | 100% | backlog/item_087_chalk_paper_pass_standings_race_report_garage_sheets.md |
+| [item_088_add_minimal_admin_proof_to_league_level_mutations](backlog/item_088_add_minimal_admin_proof_to_league_level_mutations.md) | Add minimal admin proof to league-level mutations | Ready |  | 0% | backlog/item_088_add_minimal_admin_proof_to_league_level_mutations.md |
+| [item_089_make_fastify_logging_configurable_for_tests](backlog/item_089_make_fastify_logging_configurable_for_tests.md) | Make Fastify logging configurable for tests | Ready |  | 0% | backlog/item_089_make_fastify_logging_configurable_for_tests.md |
+| [item_090_harden_simulation_preview_input_validation](backlog/item_090_harden_simulation_preview_input_validation.md) | Harden simulation preview input validation | Ready |  | 0% | backlog/item_090_harden_simulation_preview_input_validation.md |
+| [item_091_document_prototype_localstorage_secret_boundary](backlog/item_091_document_prototype_localstorage_secret_boundary.md) | Document prototype localStorage secret boundary | Ready |  | 0% | backlog/item_091_document_prototype_localstorage_secret_boundary.md |
 
 ## Tasks
 
@@ -224,4 +230,5 @@
 | [task_040_orchestrate_full_width_replay_moment_notifications](tasks/task_040_orchestrate_full_width_replay_moment_notifications.md) | Orchestrate full-width replay moment notifications | Done | codex | 100% | tasks/task_040_orchestrate_full_width_replay_moment_notifications.md |
 | [task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset](tasks/task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset.md) | Orchestrate dismissible help panels and UI preference reset | Done | codex | 100% | tasks/task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset.md |
 | [task_042_orchestrate_api_integrity_hardening](tasks/task_042_orchestrate_api_integrity_hardening.md) | Orchestrate API integrity hardening | Ready |  | 0% | tasks/task_042_orchestrate_api_integrity_hardening.md |
-| [task_043_orchestrate_the_pit_wall_visual_identity_rollout](tasks/task_043_orchestrate_the_pit_wall_visual_identity_rollout.md) | Orchestrate the Pit Wall visual identity rollout | Ready |  | 0% | tasks/task_043_orchestrate_the_pit_wall_visual_identity_rollout.md |
+| [task_043_orchestrate_the_pit_wall_visual_identity_rollout](tasks/task_043_orchestrate_the_pit_wall_visual_identity_rollout.md) | Orchestrate the Pit Wall visual identity rollout | Done | Claude (Fable 5) | 100% | tasks/task_043_orchestrate_the_pit_wall_visual_identity_rollout.md |
+| [task_044_orchestrate_api_surface_follow_up_hardening](tasks/task_044_orchestrate_api_surface_follow_up_hardening.md) | Orchestrate API surface follow-up hardening | Ready |  | 0% | tasks/task_044_orchestrate_api_surface_follow_up_hardening.md |

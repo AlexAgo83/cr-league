@@ -1,14 +1,27 @@
+/* Pit Wall identity tokens — warm asphalt ground, chalk text, one signal accent. */
 :root {
-  --color-page: #0b0f14;
-  --color-cockpit: #10161d;
-  --color-surface: #151c24;
-  --color-text: #f8fafc;
-  --color-muted: #9ca3af;
-  --color-border: #2c3846;
-  --color-accent: #16c784;
-  --color-danger-text: #fca5a5;
-  --color-telemetry: #38bdf8;
-  --radius: 10px;
+  --color-page: #121014;
+  --color-cockpit: #17151a;
+  --color-surface: #1b181d;
+  --color-surface-2: #221e24;
+  --color-text: #f1ede4;
+  --color-muted: #a49e93;
+  --color-border: #37323a;
+  --color-accent: #ff4d00;
+  --color-accent-soft: #ff7a40;
+  --color-accent-ink: #121014;
+  --color-danger-text: #ff8a7a;
+  --color-telemetry: #a49e93;
+  --color-valid: #3ecf6e;
+  --color-wet: #5aa7ff;
+  --color-paper: #ece7da;
+  --color-paper-line: #c9c2b2;
+  --color-ink: #17151a;
+  --color-ink-muted: #6d6759;
+  --radius: 0px;
+  --chamfer: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  --chamfer-sm: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
   --space-page: 20px;
-  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Barlow", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Barlow Condensed", "Avenir Next Condensed", "Arial Narrow", var(--font-sans);
 }

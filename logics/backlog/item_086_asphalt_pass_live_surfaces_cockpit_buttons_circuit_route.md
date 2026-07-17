@@ -1,10 +1,10 @@
 ## item_086_asphalt_pass_live_surfaces_cockpit_buttons_circuit_route - Asphalt pass: live surfaces, cockpit, buttons, circuit route
 > From version: 0.3.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Visual identity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -39,6 +39,7 @@
 - request-AC8 -> This backlog slice. Proof: AC4: Keyboard focus is visible on tabs, plan cards, and buttons; body text on asphalt meets WCAG AA.
 - request-AC9 -> This backlog slice. Proof: AC5: `npm run typecheck`, `npm test`, `npm run build`, and the Playwright suite pass.
 - request-AC10 -> This backlog slice. Proof: AC5: `npm run typecheck`, `npm test`, `npm run build`, and the Playwright suite pass.
+- request-AC6 -> This backlog slice. Evidence needed: Championship standings, race report, and garage sheet surfaces render on the chalk-paper material with ink text while live surfaces stay on asphalt.
 
 # Decision framing
 - Product framing: Not needed
@@ -59,3 +60,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_043_orchestrate_the_pit_wall_visual_identity_rollout`
+
+# Notes
+- Task `task_043_orchestrate_the_pit_wall_visual_identity_rollout` was finished via `logics-manager flow finish task` on 2026-07-17.

@@ -1,10 +1,10 @@
 ## item_087_chalk_paper_pass_standings_race_report_garage_sheets - Chalk-paper pass: standings, race report, garage sheets
 > From version: 0.3.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Visual identity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -58,3 +58,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_043_orchestrate_the_pit_wall_visual_identity_rollout`
+
+# Notes
+- Task `task_043_orchestrate_the_pit_wall_visual_identity_rollout` was finished via `logics-manager flow finish task` on 2026-07-17.

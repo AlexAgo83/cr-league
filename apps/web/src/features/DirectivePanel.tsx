@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CardFit, Translator } from "../app/helpers.js";
@@ -10,9 +11,53 @@ type TraitStats = {
   energy: number;
 };
 
+type TraitKey = "grip" | "overtaking" | "energy";
+type ImpactBadge = { trait: TraitKey; sign: "+" | "-"; icon: string; label: TranslationKey };
+
 const APPROACHES = ["prudent", "balanced", "aggressive"] as const;
 const PREPARATIONS = ["speed", "reliability", "weather"] as const;
 const TRAITS = ["grip", "overtaking", "energy"] as const;
+
+const TRAIT_ICON: Record<TraitKey, string> = { grip: "◆", overtaking: "↗", energy: "⚡" };
+const TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
+  grip: "circuit_grip",
+  overtaking: "circuit_overtaking",
+  energy: "circuit_energy"
+};
+
+// Player-facing read of what each directive choice shifts, mirrored from the race
+// simulation's applyDecision() and expressed on the grip/attack/endurance vocabulary
+// the map already uses. UI hint only — no balance logic lives here.
+function badge(trait: TraitKey, sign: "+" | "-"): ImpactBadge {
+  return { trait, sign, icon: TRAIT_ICON[trait], label: TRAIT_LABEL[trait] };
+}
+
+const APPROACH_BADGES: Record<(typeof APPROACHES)[number], ImpactBadge[]> = {
+  prudent: [badge("grip", "+"), badge("energy", "+"), badge("overtaking", "-")],
+  balanced: [badge("grip", "+"), badge("energy", "+")],
+  aggressive: [badge("overtaking", "+"), badge("grip", "-"), badge("energy", "-")]
+};
+
+const PREPARATION_BADGES: Record<(typeof PREPARATIONS)[number], ImpactBadge[]> = {
+  speed: [badge("overtaking", "+"), badge("energy", "-")],
+  reliability: [badge("energy", "+"), badge("grip", "+")],
+  weather: [badge("grip", "+")]
+};
+
+function ImpactBadges({ badges, tt }: { badges: ImpactBadge[]; tt: Translator }) {
+  return (
+    <span className="card-stat-badges">
+      {badges.map((entry) => (
+        <span key={`${entry.sign}-${entry.trait}`} className={`card-stat-badge map-trait-${entry.trait} ${entry.sign === "-" ? "weakness" : "bonus"}`}>
+          <i aria-hidden="true">{entry.icon}</i>
+          <span>
+            {entry.sign} {tt(entry.label)}
+          </span>
+        </span>
+      ))}
+    </span>
+  );
+}
 
 export function DirectivePanel({
   form,
@@ -46,13 +91,22 @@ export function DirectivePanel({
       </header>
 
       <div className="directive-briefing" aria-label={tt("directive_track_read")}>
-        {TRAITS.map((trait) => (
-          <span key={trait}>
-            <strong>{tt(`map_trait_${trait}` as TranslationKey)}</strong>
-            <em>{tt(`trait_level_${traitLevel(circuitTraits[trait])}` as TranslationKey)}</em>
-            <small>{tt(`trait_brief_${trait}` as TranslationKey)}</small>
-          </span>
-        ))}
+        {TRAITS.map((trait) => {
+          const value = Math.max(0, Math.min(100, Math.round(circuitTraits[trait])));
+          return (
+            <span key={trait} className={`directive-trait map-trait-${trait}`}>
+              <span className="directive-trait-head">
+                <strong>{tt(`map_trait_${trait}` as TranslationKey)}</strong>
+                <b className="directive-trait-value type-chrono">{value}</b>
+              </span>
+              <span className="directive-trait-gauge" role="presentation">
+                <i style={{ "--trait-value": `${value}%` } as CSSProperties} />
+              </span>
+              <em>{tt(`trait_level_${traitLevel(circuitTraits[trait])}` as TranslationKey)}</em>
+              <small>{tt(`trait_brief_${trait}` as TranslationKey)}</small>
+            </span>
+          );
+        })}
       </div>
 
       <fieldset className="choice-group">
@@ -62,6 +116,7 @@ export function DirectivePanel({
             <button key={approach} type="button" className={form.approach === approach ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_approach")}: ${tt(`approach_${approach}` as TranslationKey)}`} aria-pressed={form.approach === approach} onClick={() => setForm({ ...form, approach })} disabled={disabled}>
               <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
               <small>{tt(`approach_${approach}_hint` as TranslationKey)}</small>
+              <ImpactBadges badges={APPROACH_BADGES[approach]} tt={tt} />
             </button>
           ))}
         </div>
@@ -74,6 +129,7 @@ export function DirectivePanel({
             <button key={preparation} type="button" className={form.preparation === preparation ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_preparation")}: ${tt(`preparation_${preparation}` as TranslationKey)}`} aria-pressed={form.preparation === preparation} onClick={() => setForm({ ...form, preparation })} disabled={disabled}>
               <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
               <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
+              <ImpactBadges badges={PREPARATION_BADGES[preparation]} tt={tt} />
             </button>
           ))}
         </div>

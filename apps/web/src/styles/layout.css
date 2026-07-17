@@ -712,6 +712,10 @@ label small {
   margin-top: 16px;
 }
 
+.modal .actions {
+  justify-content: flex-end;
+}
+
 .secondary-actions button:not(:disabled) {
   background: transparent;
   border: 1px solid var(--color-border);

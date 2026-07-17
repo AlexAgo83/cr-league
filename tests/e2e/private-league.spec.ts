@@ -232,10 +232,12 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".map-car.player").first()).toHaveAttribute("style", /--car-primary: #c51697/);
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Pause" })).toBeVisible();
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Restart" })).toBeVisible();
-  await mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Focus driver" }).click();
-  await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Focus driver" })).toHaveClass(/active/);
+  const focusButton = mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Focus driver" });
+  await expect(focusButton).toHaveClass(/active/);
   await expect(mapPanel.locator(".map-car.player > g").first()).toHaveAttribute("transform", /scale\(0\.[0-9]+/);
   await expect.poll(async () => mapPanel.locator(".circuit-camera").getAttribute("transform")).not.toBeNull();
+  await focusButton.click();
+  await expect(focusButton).not.toHaveClass(/active/);
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Speed ×1" })).toBeVisible();
   await expect(page.locator(".replay-moments-panel")).toHaveCount(0);
   await expect

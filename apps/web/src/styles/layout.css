@@ -982,7 +982,7 @@ label small {
   position: relative;
 }
 
-.circuit-map-stage svg {
+.circuit-map-stage > svg {
   display: block;
   height: auto;
   width: 100%;
@@ -1169,7 +1169,7 @@ label small {
   left: 12px;
   min-width: 132px;
   position: absolute;
-  z-index: 2;
+  z-index: 4;
 }
 
 .drive-map-panel .circuit-map-stage > .map-traits-panel {
@@ -1177,7 +1177,7 @@ label small {
 }
 
 .replay-map-panel .circuit-map-stage > .map-traits-panel {
-  bottom: 46px;
+  bottom: 64px;
 }
 
 .map-qualifying-times,
@@ -1396,7 +1396,7 @@ label small {
   position: absolute;
   top: 12px;
   transform: translateX(-50%);
-  z-index: 2;
+  z-index: 20;
 }
 
 .replay-map-controls button {
@@ -1499,7 +1499,7 @@ label small {
   position: absolute;
   top: calc(100% + 8px);
   transform: translateX(-50%);
-  z-index: 5;
+  z-index: 30;
 }
 
 .replay-speed-options::before {
@@ -3254,6 +3254,13 @@ button.primary-command {
     padding-bottom: 92px;
   }
 
+  .game-shell.map-screen {
+    height: 100dvh;
+    max-width: none;
+    overflow: hidden;
+    padding: 0;
+  }
+
   .topbar {
     align-items: center;
     display: grid;
@@ -3261,6 +3268,33 @@ button.primary-command {
     gap: 6px;
     padding: 8px;
     top: 8px;
+  }
+
+  .map-screen .topbar {
+    left: 12px;
+    position: fixed;
+    right: 12px;
+    z-index: 60;
+  }
+
+  .map-screen .view-container {
+    inset: 0;
+    position: fixed;
+    z-index: 1;
+  }
+
+  .map-screen .result-view,
+  .map-screen .result-view > div,
+  .map-screen .view-stack,
+  .map-screen .replay-main-grid,
+  .map-screen .replay-content-column,
+  .map-screen .drive-grid,
+  .map-screen .drive-content-column {
+    height: 100%;
+  }
+
+  .map-screen .replay-copy-panel {
+    display: none;
   }
 
   .setup-topbar {
@@ -3333,12 +3367,41 @@ button.primary-command {
     padding: 14px;
   }
 
-  .circuit-map-stage svg {
+  .game-shell .view-container,
+  .game-shell .result-view,
+  .game-shell .drive-grid,
+  .game-shell .drive-content-column,
+  .game-shell .replay-main-grid {
+    min-height: 0;
+  }
+
+  .game-shell .drive-map-panel,
+  .game-shell .replay-map-panel {
+    margin-left: 0;
+    margin-right: 0;
+    min-height: 100dvh;
+    width: 100%;
+  }
+
+  .game-shell .drive-map-panel .circuit-map-stage,
+  .game-shell .replay-map-panel .circuit-map-stage {
+    border: 0;
+    border-radius: 0;
+    min-height: inherit;
+  }
+
+  .circuit-map-stage > svg {
     height: min(84vw, 520px);
     left: 50%;
     min-width: 100%;
     position: relative;
     transform: translateX(-50%);
+    width: auto;
+  }
+
+  .game-shell .drive-map-panel .circuit-map-stage > svg,
+  .game-shell .replay-map-panel .circuit-map-stage > svg {
+    height: 100%;
     width: auto;
   }
 
@@ -3401,7 +3464,7 @@ button.primary-command {
   }
 
   .replay-map-panel .circuit-map-stage > .map-traits-panel {
-    bottom: 38px;
+    bottom: 66px;
   }
 
   .map-qualifying-times,

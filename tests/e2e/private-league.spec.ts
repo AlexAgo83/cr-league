@@ -199,6 +199,12 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     )
     .toBeGreaterThan(0.95);
 
+  await page.setViewportSize({ width: 390, height: 900 });
+  await expect.poll(async () => page.locator(".drive-map-panel").evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(900);
+  await expect.poll(async () => page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight + 1)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("drive-map-mobile.png"), fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 1000 });
+
   await page.getByRole("button", { name: "Edit plan" }).click();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Approach: Balanced" })).toHaveAttribute("aria-pressed", "true");
@@ -239,7 +245,20 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect.poll(async () => mapPanel.locator(".circuit-camera").getAttribute("transform")).not.toBeNull();
   await focusButton.click();
   await expect(focusButton).not.toHaveClass(/active/);
-  await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Speed ×1" })).toBeVisible();
+  const speedButton = mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Speed ×1" });
+  await expect(speedButton).toBeVisible();
+  await speedButton.click();
+  await expect(mapPanel.locator(".replay-speed-options")).toBeVisible();
+  await expect
+    .poll(async () =>
+      mapPanel.evaluate(() => {
+        const options = document.querySelector(".replay-speed-options");
+        const traits = document.querySelector(".replay-map-panel .map-traits-panel");
+        return options && traits ? Number(getComputedStyle(options).zIndex) > Number(getComputedStyle(traits).zIndex) : false;
+      })
+    )
+    .toBe(true);
+  await mapPanel.locator(".replay-speed-options").getByRole("option", { name: "×1" }).click();
   await expect(page.locator(".replay-moments-panel")).toHaveCount(0);
   await expect
     .poll(async () => mapPanel.evaluate((element) => element.getBoundingClientRect().width))
@@ -270,10 +289,17 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     return {
       mapBelowCopy: Boolean(mapPanel && copyPanel && mapPanel.top > copyPanel.bottom),
       noMomentsPanel: !document.querySelector(".replay-moments-panel"),
-      noMapOverflow: Boolean(mapPanel && mapPanel.width <= document.documentElement.clientWidth)
+      noMapOverflow: Boolean(mapPanel && mapPanel.width <= document.documentElement.clientWidth),
+      mapFillsMobileViewport: Boolean(mapPanel && mapPanel.height >= window.innerHeight),
+      pageDoesNotScroll: document.documentElement.scrollHeight <= window.innerHeight + 1,
+      statsAboveWeather: (() => {
+        const traits = document.querySelector(".replay-map-panel .map-traits-panel");
+        const weather = document.querySelector(".replay-weather");
+        return traits && weather ? Number(getComputedStyle(traits).zIndex) > Number(getComputedStyle(weather).zIndex) : false;
+      })()
     };
   });
-  expect(mobile).toEqual({ mapBelowCopy: true, noMomentsPanel: true, noMapOverflow: true });
+  expect(mobile).toEqual({ mapBelowCopy: false, noMomentsPanel: true, noMapOverflow: true, mapFillsMobileViewport: true, pageDoesNotScroll: true, statsAboveWeather: true });
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 

@@ -1132,8 +1132,10 @@ export function App() {
     );
   }
 
+  const isMapScreen = gameView === "drive" && (!result || !resultOpen || resultTab === "replay");
+
   return (
-    <main className="app-shell game-shell">
+    <main className={isMapScreen ? "app-shell game-shell map-screen" : "app-shell game-shell"}>
       <header className="topbar">
         <div className="brand">
           <img className="brand-icon" src="/favicon.svg" alt={APP_NAME} />

@@ -354,7 +354,7 @@ describe("App", () => {
     await screen.findByRole("button", { name: "Garage" });
 
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
-    expect(screen.getByRole("tab", { name: "My team" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("tab", { name: "Shop" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("tab", { name: "Inventory" }));
     fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
     expect(screen.getByRole("dialog", { name: "Rain Grip" })).toBeTruthy();
@@ -567,13 +567,13 @@ describe("App", () => {
 
     // Garage view
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    expect(screen.getByRole("heading", { name: "Shop" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "Shop" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.click(screen.getByRole("tab", { name: "My team" }));
     expect(screen.getByText("Last GP")).toBeTruthy();
     expect(screen.getByText("+150 credits · +25 pts")).toBeTruthy();
     expect(screen.getByText("Consumed Rain Grip")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
-    expect(screen.getByRole("heading", { name: "Shop" })).toBeTruthy();
-    expect(screen.getByRole("tab", { name: "Shop" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("tab", { name: "Inventory" }));
     expect(screen.getByText("No cards in inventory.")).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));

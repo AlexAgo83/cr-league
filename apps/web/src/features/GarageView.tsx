@@ -41,7 +41,7 @@ export function GarageView({
   const [teamName, setTeamName] = useState(playerTeam?.name ?? "");
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
   const [viewingCardId, setViewingCardId] = useState<CardId | undefined>();
-  const [cardPanel, setCardPanel] = useState<CardPanel>("team");
+  const [cardPanel, setCardPanel] = useState<CardPanel>("shop");
 
   useEffect(() => {
     if (playerTeam?.livery) setLivery(playerTeam.livery);

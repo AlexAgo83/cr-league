@@ -1,4 +1,4 @@
-import { APP_NAME, type CardId, type QualifyingRun } from "@cr-league/shared";
+import { APP_NAME, APP_VERSION, type CardId, type QualifyingRun } from "@cr-league/shared";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitForRound } from "./circuits.js";
@@ -686,13 +686,6 @@ export function App() {
               </select>
             </label>
           ) : null}
-          <label>
-            {tt("language_label")}
-            <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
-              <option value="en">{tt("language_en")}</option>
-              <option value="fr">{tt("language_fr")}</option>
-            </select>
-          </label>
           {showManageLeague ? (
             <button type="button" className="profile-menu-action" onClick={addLeague}>
               {tt("action_add_league")}
@@ -722,6 +715,13 @@ export function App() {
               {tt("action_copy_profile_code")}
             </button>
           ) : null}
+          <label>
+            {tt("language_label")}
+            <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
+              <option value="en">{tt("language_en")}</option>
+              <option value="fr">{tt("language_fr")}</option>
+            </select>
+          </label>
           <button type="button" className="profile-menu-action profile-menu-action-info" onClick={resetUiPreferences}>
             {tt("action_reset_ui_preferences")}
           </button>
@@ -735,6 +735,7 @@ export function App() {
           >
             {tt("action_forget_profile")}
           </button>
+          <small className="profile-menu-version">v{APP_VERSION}</small>
         </div>
       ) : null}
     </div>

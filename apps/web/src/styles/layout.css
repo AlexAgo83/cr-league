@@ -147,11 +147,8 @@
 }
 
 .setup-main-panel {
-  background: rgb(18 16 20 / 0.86);
-  border-color: rgb(255 255 255 / 0.12);
-  border-top: 3px solid var(--color-accent);
-  box-shadow: 0 24px 72px rgb(0 0 0 / 0.34);
-  backdrop-filter: blur(10px);
+  max-width: 560px;
+  width: 100%;
 }
 
 .setup-main-panel h1 {
@@ -167,8 +164,8 @@
 }
 
 .setup-choice {
-  background: var(--color-cockpit);
-  border: 1px solid var(--color-border);
+  background: rgb(23 21 26 / 0.05);
+  border: 1px solid rgb(23 21 26 / 0.16);
   color: var(--color-text);
   display: grid;
   gap: 8px;
@@ -360,6 +357,11 @@
 .profile-menu-panel label {
   display: grid;
   gap: 6px;
+}
+
+.profile-menu-version {
+  color: var(--color-muted);
+  text-align: right;
 }
 
 /* ---------- Views ---------- */
@@ -3362,12 +3364,6 @@ button.primary-command {
     padding-bottom: 92px;
   }
 
-  .game-shell:has(.plan-view),
-  .game-shell:has(.championship-view),
-  .game-shell:has(.garage-grid) {
-    background: var(--color-paper);
-  }
-
   .game-shell.map-screen {
     height: 100dvh;
     max-width: none;
@@ -3811,7 +3807,8 @@ button.primary-command {
 .championship-view,
 .garage-grid,
 .report-view,
-.plan-view {
+.plan-view,
+.setup-main-panel {
   --color-surface: var(--color-paper);
   --color-cockpit: #e2dccb;
   --color-text: var(--color-ink);
@@ -3826,7 +3823,8 @@ button.primary-command {
 .championship-view .panel,
 .garage-grid .panel,
 .report-view .panel,
-.plan-view .panel {
+.plan-view .panel,
+.setup-main-panel {
   border: 0;
   box-shadow: 0 2px 0 rgb(0 0 0 / 0.35);
   clip-path: var(--chamfer);
@@ -3845,7 +3843,8 @@ button.primary-command {
 .report-view .replay-timeline li,
 .plan-view .directive-briefing span,
 .plan-view .choice-card,
-.plan-view .directive-summary {
+.plan-view .directive-summary,
+.setup-main-panel .setup-choice {
   background: rgb(23 21 26 / 0.05);
   border-color: rgb(23 21 26 / 0.16);
 }

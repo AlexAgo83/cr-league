@@ -84,7 +84,7 @@ export type ProfileSession = {
 
 export type GameView = "drive" | "plan" | "championship" | "garage";
 
-export const GAME_VIEWS: GameView[] = ["drive", "championship", "garage"];
+export const GAME_VIEWS: GameView[] = ["drive", "plan", "championship", "garage"];
 
 export type FormState = {
   leagueName: string;

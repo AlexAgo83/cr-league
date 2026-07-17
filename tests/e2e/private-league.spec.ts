@@ -92,7 +92,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
 
   await createLeague(page);
   await expect(page.getByRole("button", { name: "Race", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Plan", exact: true })).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Plan", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Championship", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Garage", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Result" })).toHaveCount(0);

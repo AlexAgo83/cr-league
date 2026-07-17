@@ -397,19 +397,25 @@ describe("App", () => {
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
     expect(screen.queryByRole("heading", { name: "Tune the race plan" })).toBe(null);
-    expect(screen.queryByRole("button", { name: "Plan" })).toBe(null);
+    expect(screen.getByRole("button", { name: "Plan" })).toBeTruthy();
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Edit planNew lap time");
     fireEvent.click(screen.getByRole("button", { name: "Edit plan" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
-    expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("report-close-button");
-    expect(screen.getByText("Balanced pace, Weather prep, Rain Grip. Test it in chrono, then lock it for the GP.")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getByRole("button", { name: "Preparation: Weather" }).getAttribute("aria-pressed")).toBe("true");
-    expect(screen.getByRole("button", { name: "Card: Rain Grip" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Plan" }).className).toContain("active");
+    // The switcher doubles as the plan summary: each tab shows the current pick.
+    expect(screen.getByRole("tab", { name: "Approach: Balanced" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "Preparation: Weather" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "Card: Rain Grip" })).toBeTruthy();
     expect(screen.getByText("High overtaking rewards attack and launch cards.")).toBeTruthy();
+    // Approach sub-screen is shown first.
+    expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");
+    // Preparation choices only appear on their sub-screen.
+    fireEvent.click(screen.getByRole("tab", { name: "Preparation: Weather" }));
+    expect(screen.getByRole("button", { name: "Preparation: Weather" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Card: Rain Grip" }));
+    expect(screen.getByRole("button", { name: "Card: Rain Grip" }).getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Result" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
@@ -477,10 +483,10 @@ describe("App", () => {
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("View planLaunch GP");
     fireEvent.click(screen.getByRole("button", { name: "View plan" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
-    for (const button of document.querySelectorAll(".directive-panel button")) {
+    for (const button of document.querySelectorAll(".directive-panel .choice-card")) {
       expect(button.hasAttribute("disabled")).toBe(true);
     }
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.queryByRole("button", { name: "Lap time" })).toBe(null);
     expect(screen.getByRole("button", { name: "Launch GP" })).toBeTruthy();
 

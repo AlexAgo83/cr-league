@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CardFit, Translator } from "../app/helpers.js";
@@ -82,6 +82,13 @@ export function DirectivePanel({
 }) {
   const cardChoices = ["", ...ownedCardIds] as Array<"" | CardId>;
   const selectedCardLabel = selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none");
+  const [step, setStep] = useState<"approach" | "preparation" | "card">("approach");
+
+  const steps = [
+    { key: "approach" as const, label: tt("field_approach"), value: tt(`approach_${form.approach}` as TranslationKey) },
+    { key: "preparation" as const, label: tt("field_preparation"), value: tt(`preparation_${form.preparation}` as TranslationKey) },
+    { key: "card" as const, label: tt("field_card"), value: selectedCardLabel }
+  ];
 
   return (
     <section className="panel directive-panel">
@@ -109,60 +116,64 @@ export function DirectivePanel({
         })}
       </div>
 
-      <fieldset className="choice-group">
-        <legend>{tt("field_approach")}</legend>
-        <div className="choice-grid">
-          {APPROACHES.map((approach) => (
-            <button key={approach} type="button" className={form.approach === approach ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_approach")}: ${tt(`approach_${approach}` as TranslationKey)}`} aria-pressed={form.approach === approach} onClick={() => setForm({ ...form, approach })} disabled={disabled}>
-              <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
-              <small>{tt(`approach_${approach}_hint` as TranslationKey)}</small>
-              <ImpactBadges badges={APPROACH_BADGES[approach]} tt={tt} />
-            </button>
-          ))}
-        </div>
-      </fieldset>
+      <div className="plan-steps" role="tablist" aria-label={tt("directive_title")}>
+        {steps.map((entry) => (
+          <button key={entry.key} type="button" role="tab" aria-selected={step === entry.key} aria-label={`${entry.label}: ${entry.value}`} className={step === entry.key ? "plan-step active" : "plan-step"} onClick={() => setStep(entry.key)}>
+            <span className="plan-step-label">{entry.label}</span>
+            <span className="plan-step-value">{entry.value}</span>
+          </button>
+        ))}
+      </div>
 
-      <fieldset className="choice-group">
-        <legend>{tt("field_preparation")}</legend>
-        <div className="choice-grid">
-          {PREPARATIONS.map((preparation) => (
-            <button key={preparation} type="button" className={form.preparation === preparation ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_preparation")}: ${tt(`preparation_${preparation}` as TranslationKey)}`} aria-pressed={form.preparation === preparation} onClick={() => setForm({ ...form, preparation })} disabled={disabled}>
-              <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
-              <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
-              <ImpactBadges badges={PREPARATION_BADGES[preparation]} tt={tt} />
-            </button>
-          ))}
-        </div>
-      </fieldset>
-
-      <fieldset className="choice-group">
-        <legend>{tt("field_card")}</legend>
-        <div className="choice-grid card-choice-grid">
-          {cardChoices.map((cardId) => {
-            const selected = selectedCardId === cardId;
-            return (
-              <button key={cardId || "none"} type="button" className={selected ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_card")}: ${cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}`} aria-pressed={selected} onClick={() => setForm({ ...form, cardId })} disabled={disabled || cardLocked}>
-                <strong>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</strong>
-                <small>
-                  {cardId && selectedCardFit && selected ? `${tt(`card_fit_${selectedCardFit.level}` as TranslationKey)} · ` : ""}
-                  {cardId ? tt(`card_${cardId}_hint` as TranslationKey) : tt("card_none_hint")}
-                </small>
-                {cardId ? <CardStatBadges cardId={cardId} tt={tt} /> : null}
+      {step === "approach" ? (
+        <fieldset className="choice-group" aria-label={tt("field_approach")}>
+          <div className="choice-grid">
+            {APPROACHES.map((approach) => (
+              <button key={approach} type="button" className={form.approach === approach ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_approach")}: ${tt(`approach_${approach}` as TranslationKey)}`} aria-pressed={form.approach === approach} onClick={() => setForm({ ...form, approach })} disabled={disabled}>
+                <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
+                <small>{tt(`approach_${approach}_hint` as TranslationKey)}</small>
+                <ImpactBadges badges={APPROACH_BADGES[approach]} tt={tt} />
               </button>
-            );
-          })}
-        </div>
-      </fieldset>
+            ))}
+          </div>
+        </fieldset>
+      ) : null}
 
-      <p className="directive-summary">
-        {tt("directive_plan_summary", {
-          approach: tt(`approach_${form.approach}` as TranslationKey),
-          preparation: tt(`preparation_${form.preparation}` as TranslationKey),
-          card: selectedCardLabel
-        })}
-      </p>
-      {cardLocked ? <p className="directive-lock-note">{tt("directive_card_locked")}</p> : null}
-      {ownedCardIds.length ? null : <p className="directive-lock-note">{tt("garage_empty_inventory")}</p>}
+      {step === "preparation" ? (
+        <fieldset className="choice-group" aria-label={tt("field_preparation")}>
+          <div className="choice-grid">
+            {PREPARATIONS.map((preparation) => (
+              <button key={preparation} type="button" className={form.preparation === preparation ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_preparation")}: ${tt(`preparation_${preparation}` as TranslationKey)}`} aria-pressed={form.preparation === preparation} onClick={() => setForm({ ...form, preparation })} disabled={disabled}>
+                <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
+                <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
+                <ImpactBadges badges={PREPARATION_BADGES[preparation]} tt={tt} />
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      ) : null}
+
+      {step === "card" ? (
+        <fieldset className="choice-group" aria-label={tt("field_card")}>
+          <div className="choice-grid card-choice-grid">
+            {cardChoices.map((cardId) => {
+              const selected = selectedCardId === cardId;
+              return (
+                <button key={cardId || "none"} type="button" className={selected ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_card")}: ${cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}`} aria-pressed={selected} onClick={() => setForm({ ...form, cardId })} disabled={disabled || cardLocked}>
+                  <strong>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</strong>
+                  <small>
+                    {cardId && selectedCardFit && selected ? `${tt(`card_fit_${selectedCardFit.level}` as TranslationKey)} · ` : ""}
+                    {cardId ? tt(`card_${cardId}_hint` as TranslationKey) : tt("card_none_hint")}
+                  </small>
+                  {cardId ? <CardStatBadges cardId={cardId} tt={tt} /> : null}
+                </button>
+              );
+            })}
+          </div>
+          {cardLocked ? <p className="directive-lock-note">{tt("directive_card_locked")}</p> : null}
+          {ownedCardIds.length ? null : <p className="directive-lock-note">{tt("garage_empty_inventory")}</p>}
+        </fieldset>
+      ) : null}
     </section>
   );
 }

@@ -3713,3 +3713,74 @@ button.primary-command {
   background: rgb(23 21 26 / 0.1);
   color: var(--color-ink-muted);
 }
+
+
+/* ---------- Plan sub-screen switcher (Approach / Preparation / Card) ---------- */
+
+.plan-steps {
+  border-bottom: 1px solid var(--color-border);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.plan-step {
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  clip-path: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  display: grid;
+  font-family: var(--font-sans);
+  font-style: normal;
+  gap: 3px;
+  justify-items: start;
+  letter-spacing: normal;
+  margin-bottom: -1px;
+  min-width: 0;
+  padding: 10px 8px;
+  text-align: left;
+  text-transform: none;
+}
+
+.plan-step:not(.active):hover,
+.plan-step:not(.active):focus-visible {
+  color: var(--color-text);
+}
+
+.plan-step-label {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.plan-step-value {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.plan-step:not(.active) .plan-step-value {
+  color: var(--color-muted);
+}
+
+.plan-step.active {
+  border-bottom-color: var(--color-accent);
+}
+
+.plan-step.active .plan-step-label {
+  color: var(--color-accent);
+}

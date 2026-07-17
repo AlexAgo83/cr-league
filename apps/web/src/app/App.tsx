@@ -1115,7 +1115,7 @@ export function App() {
             <button
               key={view}
               type="button"
-              className={gameView === view || (gameView === "plan" && view === "drive") ? "active" : undefined}
+              className={gameView === view ? "active" : undefined}
               onClick={() => {
                 setGameView(view);
                 if (view === "drive" && result) setResultOpen(false);
@@ -1322,9 +1322,6 @@ export function App() {
         ) : null}
         {gameView === "plan" ? (
           <div className="plan-view">
-            <button type="button" className="report-close-button" aria-label={tt("action_back_to_circuit")} title={tt("action_back_to_circuit")} onClick={() => setGameView("drive")}>
-              ×
-            </button>
             <DirectivePanel
               form={form}
               setForm={setForm}

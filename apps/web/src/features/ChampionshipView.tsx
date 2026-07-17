@@ -1,3 +1,4 @@
+import { useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
@@ -23,6 +24,13 @@ export function ChampionshipView({
   const completedSeasons = completedSeasonSummaries(state);
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
+  const [recordTab, setRecordTab] = useState<"standings" | "palmares" | "history">("standings");
+  const recordTabs = [
+    { key: "standings" as const, label: tt("dashboard_standings") },
+    { key: "palmares" as const, label: tt("season_palmares") },
+    { key: "history" as const, label: tt("league_history") }
+  ];
+  const activeRecordLabel = recordTabs.find((tab) => tab.key === recordTab)?.label ?? tt("dashboard_standings");
 
   return (
     <div className="view-stack championship-view">
@@ -72,9 +80,19 @@ export function ChampionshipView({
       </section>
 
       <div className="championship-grid">
-        <div className="championship-main-column">
-          <section className="panel championship-standings-panel">
-            <h3>{tt("dashboard_standings")}</h3>
+        <section className="panel championship-record-panel">
+          <header className="championship-record-header">
+            <h3>{activeRecordLabel}</h3>
+            <div className="championship-record-switch" role="tablist" aria-label={tt("championship_kicker")}>
+              {recordTabs.map((tab) => (
+                <button key={tab.key} type="button" role="tab" aria-selected={recordTab === tab.key} className={recordTab === tab.key ? "active" : undefined} onClick={() => setRecordTab(tab.key)}>
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </header>
+
+          {recordTab === "standings" ? (
             <ol className="standings-table">
               {state.teams.map((team, index) => (
                 <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
@@ -98,32 +116,28 @@ export function ChampionshipView({
                 </li>
               ))}
             </ol>
-          </section>
-
-          {completedSeasons.length ? (
-            <section className="panel championship-palmares-panel">
-              <h3>{tt("season_palmares")}</h3>
-              <ol className="palmares-list">
-                {completedSeasons.map((season) => (
-                  <li key={season.season}>
-                    <button type="button" className="palmares-button" onClick={() => onOpenSeasonRecap(season.season)}>
-                      <span>{season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} /> : null}</span>
-                      <strong>
-                        {tt("league_season")} {season.season}
-                      </strong>
-                      <span>{season.champion.teamName}</span>
-                      <small>
-                        {season.gpCount} {tt("season_gp_count")}
-                      </small>
-                    </button>
-                  </li>
-                ))}
-              </ol>
-            </section>
           ) : null}
 
-          <section className="panel championship-history-panel">
-            <h3>{tt("league_history")}</h3>
+          {recordTab === "palmares" ? (
+            <ol className="palmares-list">
+              {completedSeasons.map((season) => (
+                <li key={season.season}>
+                  <button type="button" className="palmares-button" onClick={() => onOpenSeasonRecap(season.season)}>
+                    <span>{season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} /> : null}</span>
+                    <strong>
+                      {tt("league_season")} {season.season}
+                    </strong>
+                    <span>{season.champion.teamName}</span>
+                    <small>
+                      {season.gpCount} {tt("season_gp_count")}
+                    </small>
+                  </button>
+                </li>
+              ))}
+            </ol>
+          ) : null}
+
+          {recordTab === "history" ? (
             <div className="season-history-groups" aria-label={tt("league_history")}>
               {historyBySeason.map(([season, grandPrixList]) => {
                 const summary = completedBySeason.get(season);
@@ -166,8 +180,8 @@ export function ChampionshipView({
                 );
               })}
             </div>
-          </section>
-        </div>
+          ) : null}
+        </section>
       </div>
     </div>
   );

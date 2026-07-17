@@ -354,7 +354,8 @@ describe("App", () => {
     await screen.findByRole("button", { name: "Garage" });
 
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
-    expect(screen.getByRole("button", { name: "Inventory" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("tab", { name: "My team" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.click(screen.getByRole("tab", { name: "Inventory" }));
     fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
     expect(screen.getByRole("dialog", { name: "Rain Grip" })).toBeTruthy();
     expect(screen.getByText("Pays off if rain appears around mid-race.")).toBeTruthy();
@@ -362,7 +363,7 @@ describe("App", () => {
     expect(screen.queryByText("This card will join your garage and can shape your next directive.")).toBe(null);
     fireEvent.click(screen.getByRole("dialog", { name: "Rain Grip" }).querySelector(".modal-actions button")!);
 
-    fireEvent.click(screen.getByRole("button", { name: "Shop" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
     fireEvent.click(screen.getByRole("button", { name: /Soft Tires/ }));
     expect(screen.getByRole("dialog", { name: "Confirm card purchase" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Buy card" })).toBeTruthy();
@@ -407,6 +408,7 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "Preparation: Weather" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Card: Rain Grip" })).toBeTruthy();
     expect(screen.getByText("High overtaking rewards attack and launch cards.")).toBeTruthy();
+    expect([...document.querySelectorAll(".directive-trait-modifier")].map((element) => element.textContent)).toEqual(["+3", "-1", "+1"]);
     // Approach sub-screen is shown first.
     expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");
     // Preparation choices only appear on their sub-screen.
@@ -464,7 +466,9 @@ describe("App", () => {
     expect(screen.getByText("0/2")).toBeTruthy();
     expect(document.querySelector(".championship-overview")?.textContent).toContain("ABC123");
     expect(document.querySelector(".standings-table")?.textContent).toContain("Volt Union");
+    fireEvent.click(screen.getByRole("tab", { name: "Grand Prix history" }));
     expect(document.querySelector(".round-timeline")?.textContent).toContain("R1");
+    fireEvent.click(screen.getByRole("tab", { name: "Standings" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     fireEvent.click(screen.getByRole("button", { name: "Lock plan" }));
@@ -566,11 +570,13 @@ describe("App", () => {
     expect(screen.getByText("Last GP")).toBeTruthy();
     expect(screen.getByText("+150 credits · +25 pts")).toBeTruthy();
     expect(screen.getByText("Consumed Rain Grip")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Cards" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Shop" }).getAttribute("aria-pressed")).toBe("true");
-    fireEvent.click(screen.getByRole("button", { name: "Inventory" }));
+    expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
+    expect(screen.getByRole("heading", { name: "Shop" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "Shop" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.click(screen.getByRole("tab", { name: "Inventory" }));
     expect(screen.getByText("No cards in inventory.")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Shop" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
     expect(screen.getByRole("button", { name: /Soft Tires/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Qualifying Lap/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Defensive Order/ })).toBeTruthy();
@@ -591,6 +597,7 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
     fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
     expect(await screen.findByText("Season 1 · Round 2/6")).toBeTruthy();
+    fireEvent.click(screen.getByRole("tab", { name: "Grand Prix history" }));
     expect(document.querySelector(".round-timeline")?.textContent).toContain("P1");
     fireEvent.click(screen.getByRole("button", { name: "S1 R1" }));
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
@@ -681,9 +688,13 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
+    expect(screen.getByRole("heading", { name: "Standings" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("tab", { name: "Palmares" }));
     expect(screen.getByRole("heading", { name: "Palmares" })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Season 1/ }).textContent).toContain("Volt Union");
+    fireEvent.click(screen.getByRole("tab", { name: "Grand Prix history" }));
     expect(document.querySelectorAll(".season-history-group").length).toBe(2);
+    fireEvent.click(screen.getByRole("tab", { name: "Palmares" }));
     fireEvent.click(screen.getByRole("button", { name: /Season 1/ }));
     expect(screen.getByRole("dialog", { name: "Season recap" })).toBeTruthy();
 

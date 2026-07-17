@@ -391,6 +391,12 @@
   position: relative;
 }
 
+.championship-view {
+  margin: 0 auto;
+  max-width: 860px;
+  width: 100%;
+}
+
 @media (max-width: 1040px) {
   .drive-grid {
     grid-template-columns: 1fr;
@@ -1992,7 +1998,7 @@ label small {
   clip-path: var(--chamfer);
   display: grid;
   gap: 1px;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .dashboard-summary div {
@@ -2046,6 +2052,45 @@ label small {
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(0, 1.35fr) minmax(260px, 0.65fr);
+}
+
+.championship-record-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.championship-record-header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.championship-record-header h3 {
+  margin: 0;
+}
+
+.championship-record-switch {
+  background: rgb(23 21 26 / 0.08);
+  border: 1px solid rgb(23 21 26 / 0.16);
+  display: inline-flex;
+  flex: 0 0 auto;
+  justify-self: end;
+  padding: 3px;
+}
+
+.championship-record-switch button {
+  background: transparent;
+  border: 0;
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  min-height: 30px;
+  padding: 5px 9px;
+}
+
+.championship-record-switch button.active {
+  background: var(--color-accent);
+  color: #fff;
 }
 
 .standings-table {
@@ -2347,9 +2392,22 @@ label small {
 }
 
 @media (max-width: 720px) {
-  .palmares-button,
+  .dashboard-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .season-recap-grid {
     grid-template-columns: 1fr;
+  }
+
+  .championship-record-header {
+    align-items: start;
+    display: grid;
+  }
+
+  .championship-record-switch {
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   .season-history-group summary {
@@ -2399,13 +2457,22 @@ label small {
   }
 }
 
+@media (max-width: 440px) {
+  .dashboard-summary {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* ---------- Garage ---------- */
 
 .garage-grid {
   align-items: start;
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(280px, 0.85fr) minmax(0, 1.15fr);
+  grid-template-columns: 1fr;
+  margin: 0 auto;
+  max-width: 860px;
+  width: 100%;
 }
 
 .garage-team-panel,
@@ -2437,26 +2504,25 @@ label small {
 }
 
 .garage-card-toggle {
-  background: color-mix(in srgb, var(--color-text) 8%, transparent);
-  border: 1px solid var(--color-border);
-  clip-path: var(--chamfer-sm);
-  display: flex;
-  gap: 2px;
-  padding: 2px;
+  background: rgb(23 21 26 / 0.08);
+  border: 1px solid rgb(23 21 26 / 0.16);
+  display: inline-flex;
+  flex: 0 0 auto;
+  padding: 3px;
 }
 
 .garage-card-toggle button {
   background: transparent;
   border: 0;
-  border-radius: 0;
   color: var(--color-muted);
+  font-size: 0.72rem;
   min-height: 30px;
-  padding: 5px 15px;
+  padding: 5px 9px;
 }
 
 .garage-card-toggle button.active {
   background: var(--color-accent);
-  color: var(--color-accent-ink);
+  color: #fff;
 }
 
 .garage-card-toggle button:not(.active):hover,
@@ -2638,6 +2704,24 @@ label small {
   position: relative;
 }
 
+.garage-buy-modal .modal-close-button {
+  background: rgb(23 21 26 / 0.06);
+  border: 1px solid rgb(23 21 26 / 0.24);
+  border-radius: 999px;
+  clip-path: none;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.garage-buy-modal .modal-close-button:hover,
+.garage-buy-modal .modal-close-button:focus-visible {
+  background: rgb(197 58 0 / 0.12);
+  border-color: rgb(197 58 0 / 0.5);
+  color: var(--color-accent);
+}
+
 .garage-buy-modal > p {
   color: var(--color-muted);
   line-height: 1.5;
@@ -2650,8 +2734,8 @@ label small {
   border: 1px solid rgb(255 77 0 / 0.28);
   border-radius: 8px;
   display: grid;
-  gap: 6px;
-  grid-template-columns: auto 1fr;
+  gap: 8px;
+  grid-template-columns: auto auto minmax(0, 1fr);
   margin: 14px 0;
   padding: 14px;
 }
@@ -2668,16 +2752,40 @@ label small {
   color: var(--color-muted);
 }
 
+.garage-buy-card > small {
+  grid-column: 1 / -1;
+}
+
 .garage-buy-card .card-stat-badges {
   grid-column: 1 / -1;
 }
 
 .garage-detail-card {
+  background: rgb(23 21 26 / 0.07);
+  border-color: rgb(197 58 0 / 0.48);
+  gap: 10px;
   grid-template-columns: 1fr;
+  padding: 16px;
 }
 
 .garage-detail-card > small {
-  color: var(--color-muted);
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.garage-detail-card .card-stat-badges {
+  gap: 8px;
+}
+
+.garage-detail-card .card-stat-badge {
+  background: rgb(236 231 218 / 0.62);
+  border-color: rgb(23 21 26 / 0.28);
+  font-size: 0.86rem;
+  padding: 5px 9px;
 }
 
 .modal-actions {
@@ -3252,6 +3360,12 @@ button.primary-command {
 
   .game-shell {
     padding-bottom: 92px;
+  }
+
+  .game-shell:has(.plan-view),
+  .game-shell:has(.championship-view),
+  .game-shell:has(.garage-grid) {
+    background: var(--color-paper);
   }
 
   .game-shell.map-screen {
@@ -3829,11 +3943,33 @@ button.primary-command {
   justify-content: space-between;
 }
 
+.directive-trait-head span {
+  background: transparent;
+  border: 0;
+}
+
+.directive-trait-score {
+  align-items: baseline;
+  display: inline-flex;
+  gap: 6px;
+}
+
 .directive-trait-value {
   color: var(--color-text);
   font-size: 1.55rem;
   font-weight: 500;
   line-height: 1;
+}
+
+.directive-trait-modifier {
+  color: var(--trait-tone);
+  font-size: 0.92rem;
+  line-height: 1;
+}
+
+.directive-trait-modifier.weakness,
+.directive-trait-modifier.neutral {
+  color: var(--color-muted);
 }
 
 .directive-trait-gauge {

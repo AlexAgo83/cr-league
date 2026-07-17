@@ -102,8 +102,14 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("heading", { name: "Current GP" })).toBeVisible();
   await expect(page.getByText("0/2")).toBeVisible();
   await expect(page.locator(".championship-grid")).toBeVisible();
+  await expect(page.locator(".championship-view")).toHaveCSS("max-width", "860px");
+  await expect
+    .poll(async () => page.locator(".dashboard-summary").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length))
+    .toBe(4);
   await expect(page.locator(".standings-table")).toContainText("Volt Union");
+  await page.getByRole("tab", { name: "Grand Prix history" }).click();
   await expect(page.locator(".round-timeline")).toContainText("R1");
+  await page.getByRole("tab", { name: "Standings" }).click();
   await expect(page.locator(".championship-settings-panel")).toHaveCount(0);
   await page.getByRole("button", { name: "Profile menu" }).click();
   await expect(page.getByRole("button", { name: "Manage league" })).toBeVisible();
@@ -324,10 +330,48 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 
+test("matches mobile document backgrounds to panels", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 900 });
+  await mockLeagueApi(page);
+  await page.goto("/");
+  await createProfile(page);
+  await createLeague(page);
+
+  await expectDocumentBackground(page, 1, ".plan-view .panel");
+  await expectDocumentBackground(page, 2, ".championship-overview");
+  await expect
+    .poll(async () => page.locator(".dashboard-summary").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length))
+    .toBe(1);
+  await expectDocumentBackground(page, 3, ".garage-grid .panel");
+  await expect(page.locator(".garage-grid")).toHaveCSS("max-width", "860px");
+  await expect(page.locator(".garage-grid > .panel")).toHaveCount(1);
+  await expect(page.getByRole("heading", { name: "My team" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "My team" })).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: "Inventory" }).click();
+  await expect(page.getByRole("heading", { name: "Inventory" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Inventory" })).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: "Shop" }).click();
+  await expect(page.getByRole("heading", { name: "Shop" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Shop" })).toHaveAttribute("aria-selected", "true");
+});
+
 function expectedCircuitTitle(resultRound: number) {
   if (resultRound === 1) return "Paris Docklands Sprint";
   if (resultRound === 2) return "Paris Left Bank Loop";
   return "Amsterdam Canal Loop";
+}
+
+async function expectDocumentBackground(page: Page, navIndex: number, panelSelector: string) {
+  await page.locator(".game-nav button").nth(navIndex).click();
+  await expect(page.locator(panelSelector).first()).toBeVisible();
+  await expect
+    .poll(async () =>
+      page.locator(".game-shell").evaluate((shell, selector) => {
+        const panel = document.querySelector(selector);
+        return panel ? getComputedStyle(shell).backgroundColor === getComputedStyle(panel).backgroundColor : false;
+      }, panelSelector)
+    )
+    .toBe(true);
 }
 
 async function createProfile(page: Page) {

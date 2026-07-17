@@ -3,7 +3,7 @@ import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CardFit, Translator } from "../app/helpers.js";
 import type { FormState } from "../app/types.js";
-import { CardStatBadges } from "./CardStatBadges.js";
+import { CARD_BADGES, CardStatBadges } from "./CardStatBadges.js";
 import { VisualIcon } from "./VisualIcon.js";
 
 type TraitStats = {
@@ -61,6 +61,25 @@ function ImpactBadges({ badges, tt }: { badges: ImpactBadge[]; tt: Translator })
   );
 }
 
+function directiveModifiers(form: FormState, selectedCardId: FormState["cardId"]) {
+  const modifiers: Record<TraitKey, number> = { grip: 0, overtaking: 0, energy: 0 };
+  const add = (entry: ImpactBadge) => {
+    modifiers[entry.trait] += entry.sign === "+" ? 1 : -1;
+  };
+
+  APPROACH_BADGES[form.approach].forEach(add);
+  PREPARATION_BADGES[form.preparation].forEach(add);
+  if (selectedCardId) CARD_BADGES[selectedCardId].forEach(add);
+
+  return modifiers;
+}
+
+function signedModifier(value: number) {
+  if (value > 0) return `+${value}`;
+  if (value < 0) return `${value}`;
+  return "±0";
+}
+
 export function DirectivePanel({
   form,
   setForm,
@@ -85,6 +104,7 @@ export function DirectivePanel({
   const cardChoices = ["", ...ownedCardIds] as Array<"" | CardId>;
   const selectedCardLabel = selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none");
   const [step, setStep] = useState<"approach" | "preparation" | "card">("approach");
+  const modifiers = directiveModifiers(form, selectedCardId);
 
   const steps = [
     { key: "approach" as const, label: tt("field_approach"), value: tt(`approach_${form.approach}` as TranslationKey) },
@@ -102,11 +122,15 @@ export function DirectivePanel({
       <div className="directive-briefing" aria-label={tt("directive_track_read")}>
         {TRAITS.map((trait) => {
           const value = Math.max(0, Math.min(100, Math.round(circuitTraits[trait])));
+          const modifier = modifiers[trait];
           return (
             <span key={trait} className={`directive-trait map-trait-${trait}`}>
               <span className="directive-trait-head">
                 <strong>{tt(`map_trait_${trait}` as TranslationKey)}</strong>
-                <b className="directive-trait-value type-chrono">{value}</b>
+                <b className="directive-trait-score">
+                  <span className="directive-trait-value type-chrono">{value}</span>
+                  <span className={`directive-trait-modifier type-chrono ${modifier > 0 ? "bonus" : modifier < 0 ? "weakness" : "neutral"}`}>{signedModifier(modifier)}</span>
+                </b>
               </span>
               <span className="directive-trait-gauge" role="presentation">
                 <i style={{ "--trait-value": `${value}%` } as CSSProperties} />

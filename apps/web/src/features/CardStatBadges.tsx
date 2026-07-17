@@ -3,7 +3,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import type { Translator } from "../app/helpers.js";
 import { VisualIcon } from "./VisualIcon.js";
 
-const CARD_BADGES: Record<CardId, Array<{ trait: "grip" | "overtaking" | "energy"; sign: "+" | "-"; label: TranslationKey }>> = {
+export const CARD_BADGES: Record<CardId, Array<{ trait: "grip" | "overtaking" | "energy"; sign: "+" | "-"; label: TranslationKey }>> = {
   rain_grip: [
     { trait: "grip", sign: "+", label: "circuit_grip" },
     { trait: "overtaking", sign: "-", label: "circuit_overtaking" }

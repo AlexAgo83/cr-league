@@ -8,7 +8,7 @@ import { CardStatBadges } from "./CardStatBadges.js";
 import { MapCarShape } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 
-type CardPanel = "inventory" | "shop";
+type CardPanel = "team" | "inventory" | "shop";
 
 export function GarageView({
   state,
@@ -41,7 +41,7 @@ export function GarageView({
   const [teamName, setTeamName] = useState(playerTeam?.name ?? "");
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
   const [viewingCardId, setViewingCardId] = useState<CardId | undefined>();
-  const [cardPanel, setCardPanel] = useState<CardPanel>(ownedCardIds.length ? "inventory" : "shop");
+  const [cardPanel, setCardPanel] = useState<CardPanel>("team");
 
   useEffect(() => {
     if (playerTeam?.livery) setLivery(playerTeam.livery);
@@ -64,6 +64,7 @@ export function GarageView({
   const pendingBuy = shopOffers.find((item) => item.cardId === pendingBuyCardId);
   const viewingFit = viewingCardId ? cardFit(viewingCardId, state, forecastPick) : null;
   const pendingBuyAffordable = Boolean(pendingBuy && playerTeam.credits >= pendingBuy.price);
+  const panelTitle = cardPanel === "team" ? tt("dashboard_my_team") : cardPanel === "inventory" ? tt("garage_inventory") : tt("garage_shop");
   const seasonWins = seasonWinsByTeamId(state).get(playerTeam.id) ?? 0;
   const confirmBuy = () => {
     if (!pendingBuy || !pendingBuyAffordable) return;
@@ -73,81 +74,83 @@ export function GarageView({
 
   return (
     <div className="garage-grid">
-      <section className="panel garage-team-panel">
-        <div className="garage-team-heading">
-          <div>
-            <span className="section-kicker">{tt("dashboard_garage")}</span>
-            <h2>{tt("dashboard_my_team")}</h2>
-          </div>
-          <div className="garage-livery-visuals">
-            <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
-            <svg className="garage-car-preview map-car" viewBox="-20 -14 40 28" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
-              <MapCarShape />
-            </svg>
-          </div>
-        </div>
-        <div className="garage-stats">
-          <span>
-            <strong>{playerTeam.points}</strong>
-            <small>{tt("unit_points")}</small>
-          </span>
-          <span>
-            <strong>{playerTeam.credits}</strong>
-            <small>{tt("unit_credits")}</small>
-          </span>
-        </div>
-        <div className="field-grid garage-name-fields">
-          <label>
-            {tt("garage_team_name")}
-            <input maxLength={32} value={teamName} onChange={(event) => setTeamName(event.target.value)} />
-          </label>
-          <button type="button" onClick={() => onUpdateTeamName(teamName)} disabled={loading || teamName.trim() === playerTeam.name}>
-            {tt("garage_team_name_save")}
-          </button>
-        </div>
-        <div className="field-grid garage-livery-fields">
-          <label>
-            <span>{tt("garage_livery_primary")}</span>
-            <input type="color" value={livery.primary} aria-label={tt("garage_livery_primary")} onChange={(event) => setLivery({ ...livery, primary: event.target.value })} />
-          </label>
-          <label>
-            <span>{tt("garage_livery_secondary")}</span>
-            <input type="color" value={livery.secondary} aria-label={tt("garage_livery_secondary")} onChange={(event) => setLivery({ ...livery, secondary: event.target.value })} />
-          </label>
-          <button type="button" onClick={() => onUpdateLivery(livery)} disabled={loading}>
-            {tt("garage_livery_save")}
-          </button>
-        </div>
-        {isResolved && playerResult ? (
-          <div className="garage-summary">
-            <strong>{tt("garage_last_gp")}</strong>
-            <span>
-              +{playerResult.credits} {tt("unit_credits")} · +{playerResult.points} {tt("unit_points")}
-            </span>
-            <span>
-              {consumedCardIds.length
-                ? `${tt("garage_consumed")} ${consumedCardIds.map((cardId) => tt(`card_${cardId}` as TranslationKey)).join(", ")}`
-                : tt("garage_no_card_consumed")}
-            </span>
-          </div>
-        ) : null}
-      </section>
-
       <section className="panel garage-card-panel">
         <div className="garage-card-heading">
-          <h3>{tt("garage_cards")}</h3>
-          <div className="garage-card-toggle" aria-label={tt("garage_cards")}>
-            <button type="button" className={cardPanel === "inventory" ? "active" : undefined} aria-pressed={cardPanel === "inventory"} onClick={() => setCardPanel("inventory")}>
+          <div>
+            <span className="section-kicker">{tt("dashboard_garage")}</span>
+            <h3>{panelTitle}</h3>
+          </div>
+          <div className="garage-card-toggle" role="tablist" aria-label={tt("dashboard_garage")}>
+            <button type="button" role="tab" className={cardPanel === "inventory" ? "active" : undefined} aria-selected={cardPanel === "inventory"} onClick={() => setCardPanel("inventory")}>
               {tt("garage_inventory")}
             </button>
-            <button type="button" className={cardPanel === "shop" ? "active" : undefined} aria-pressed={cardPanel === "shop"} onClick={() => setCardPanel("shop")}>
+            <button type="button" role="tab" className={cardPanel === "shop" ? "active" : undefined} aria-selected={cardPanel === "shop"} onClick={() => setCardPanel("shop")}>
               {tt("garage_shop")}
+            </button>
+            <button type="button" role="tab" className={cardPanel === "team" ? "active" : undefined} aria-selected={cardPanel === "team"} onClick={() => setCardPanel("team")}>
+              {tt("dashboard_my_team")}
             </button>
           </div>
         </div>
+        {cardPanel === "team" ? (
+          <div className="garage-team-panel">
+            <div className="garage-team-heading">
+              <div className="garage-livery-visuals">
+                <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
+                <svg className="garage-car-preview map-car" viewBox="-20 -14 40 28" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
+                  <MapCarShape />
+                </svg>
+              </div>
+            </div>
+            <div className="garage-stats">
+              <span>
+                <strong>{playerTeam.points}</strong>
+                <small>{tt("unit_points")}</small>
+              </span>
+              <span>
+                <strong>{playerTeam.credits}</strong>
+                <small>{tt("unit_credits")}</small>
+              </span>
+            </div>
+            <div className="field-grid garage-name-fields">
+              <label>
+                {tt("garage_team_name")}
+                <input maxLength={32} value={teamName} onChange={(event) => setTeamName(event.target.value)} />
+              </label>
+              <button type="button" onClick={() => onUpdateTeamName(teamName)} disabled={loading || teamName.trim() === playerTeam.name}>
+                {tt("garage_team_name_save")}
+              </button>
+            </div>
+            <div className="field-grid garage-livery-fields">
+              <label>
+                <span>{tt("garage_livery_primary")}</span>
+                <input type="color" value={livery.primary} aria-label={tt("garage_livery_primary")} onChange={(event) => setLivery({ ...livery, primary: event.target.value })} />
+              </label>
+              <label>
+                <span>{tt("garage_livery_secondary")}</span>
+                <input type="color" value={livery.secondary} aria-label={tt("garage_livery_secondary")} onChange={(event) => setLivery({ ...livery, secondary: event.target.value })} />
+              </label>
+              <button type="button" onClick={() => onUpdateLivery(livery)} disabled={loading}>
+                {tt("garage_livery_save")}
+              </button>
+            </div>
+            {isResolved && playerResult ? (
+              <div className="garage-summary">
+                <strong>{tt("garage_last_gp")}</strong>
+                <span>
+                  +{playerResult.credits} {tt("unit_credits")} · +{playerResult.points} {tt("unit_points")}
+                </span>
+                <span>
+                  {consumedCardIds.length
+                    ? `${tt("garage_consumed")} ${consumedCardIds.map((cardId) => tt(`card_${cardId}` as TranslationKey)).join(", ")}`
+                    : tt("garage_no_card_consumed")}
+                </span>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
         {cardPanel === "inventory" ? (
           <>
-            <p>{tt("garage_between_gp_hint")}</p>
             <ul className="card-inventory">
               {ownedCardIds.length ? (
                 ownedCardIds.map((cardId) => (
@@ -167,7 +170,8 @@ export function GarageView({
               )}
             </ul>
           </>
-        ) : (
+        ) : null}
+        {cardPanel === "shop" ? (
           <div className="card-shop">
             {shopOffers.map((item) => (
               <button key={item.cardId} type="button" onClick={() => setPendingBuyCardId(item.cardId)} disabled={loading}>
@@ -178,7 +182,7 @@ export function GarageView({
               </button>
             ))}
           </div>
-        )}
+        ) : null}
       </section>
       {pendingBuy ? (
         <div className="modal-overlay" onClick={() => setPendingBuyCardId(undefined)}>

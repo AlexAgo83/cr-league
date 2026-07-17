@@ -3373,17 +3373,21 @@ button.primary-command {
 
   .topbar {
     align-items: center;
+    border-width: 0 0 1px;
+    border-radius: 0;
     display: grid;
     grid-template-columns: auto minmax(0, 1fr) auto;
     gap: 6px;
+    margin: -12px -12px 0;
     padding: 8px;
-    top: 8px;
+    top: 0;
+    width: calc(100% + 24px);
   }
 
   .map-screen .topbar {
-    left: 12px;
-    position: fixed;
-    right: 12px;
+    margin: 0;
+    position: sticky;
+    width: 100%;
     z-index: 60;
   }
 

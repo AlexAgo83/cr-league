@@ -28,6 +28,7 @@
 | [prod_009_pit_wall_race_plan_product_brief](product/prod_009_pit_wall_race_plan_product_brief.md) | Pit Wall Race Plan Product Brief | Settled |  |  | product/prod_009_pit_wall_race_plan_product_brief.md |
 | [prod_010_full_width_replay_moment_notifications_product_brief](product/prod_010_full_width_replay_moment_notifications_product_brief.md) | Full-Width Replay Moment Notifications Product Brief | Settled |  |  | product/prod_010_full_width_replay_moment_notifications_product_brief.md |
 | [prod_011_dismissible_help_panels_and_ui_preferences_product_brief](product/prod_011_dismissible_help_panels_and_ui_preferences_product_brief.md) | Dismissible Help Panels and UI Preferences Product Brief | Settled |  |  | product/prod_011_dismissible_help_panels_and_ui_preferences_product_brief.md |
+| [prod_012_api_integrity_hardening_product_brief](product/prod_012_api_integrity_hardening_product_brief.md) | API Integrity Hardening Product Brief | Proposed |  |  | product/prod_012_api_integrity_hardening_product_brief.md |
 
 ## Roadmaps
 
@@ -81,6 +82,7 @@
 | [req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan](request/req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan.md) | Redesign the race directive into a clear pit wall plan | Done |  |  | request/req_038_redesign_the_race_directive_into_a_clear_pit_wall_plan.md |
 | [req_039_turn_replay_key_moments_into_timed_notifications](request/req_039_turn_replay_key_moments_into_timed_notifications.md) | Turn replay key moments into timed notifications | Done |  |  | request/req_039_turn_replay_key_moments_into_timed_notifications.md |
 | [req_040_add_dismissible_help_panels_and_ui_preference_reset](request/req_040_add_dismissible_help_panels_and_ui_preference_reset.md) | Add dismissible help panels and UI preference reset | Done |  |  | request/req_040_add_dismissible_help_panels_and_ui_preference_reset.md |
+| [req_041_api_integrity_hardening_from_repo_review](request/req_041_api_integrity_hardening_from_repo_review.md) | API integrity hardening from repo review | Draft |  |  | request/req_041_api_integrity_hardening_from_repo_review.md |
 
 ## Backlog
 
@@ -164,6 +166,12 @@
 | [item_076_make_contextual_help_panels_dismissible](backlog/item_076_make_contextual_help_panels_dismissible.md) | Make contextual help panels dismissible | Done |  | 100% | backlog/item_076_make_contextual_help_panels_dismissible.md |
 | [item_077_add_reset_ui_preferences_to_the_profile_menu](backlog/item_077_add_reset_ui_preferences_to_the_profile_menu.md) | Add Reset UI preferences to the Profile menu | Done |  | 100% | backlog/item_077_add_reset_ui_preferences_to_the_profile_menu.md |
 | [item_078_validate_preference_reset_and_panel_behavior](backlog/item_078_validate_preference_reset_and_panel_behavior.md) | Validate preference reset and panel behavior | Done |  | 100% | backlog/item_078_validate_preference_reset_and_panel_behavior.md |
+| [item_079_require_claim_codes_for_team_mutations](backlog/item_079_require_claim_codes_for_team_mutations.md) | Require claim codes for team mutations | Ready |  | 0% | backlog/item_079_require_claim_codes_for_team_mutations.md |
+| [item_080_make_grand_prix_resolution_idempotent_and_transactional](backlog/item_080_make_grand_prix_resolution_idempotent_and_transactional.md) | Make Grand Prix resolution idempotent and transactional | Ready |  | 0% | backlog/item_080_make_grand_prix_resolution_idempotent_and_transactional.md |
+| [item_081_make_card_purchases_atomic](backlog/item_081_make_card_purchases_atomic.md) | Make card purchases atomic | Ready |  | 0% | backlog/item_081_make_card_purchases_atomic.md |
+| [item_082_handle_create_league_validation_errors_consistently](backlog/item_082_handle_create_league_validation_errors_consistently.md) | Handle create-league validation errors consistently | Ready |  | 0% | backlog/item_082_handle_create_league_validation_errors_consistently.md |
+| [item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry](backlog/item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry.md) | Use crypto-backed league and claim codes with collision retry | Ready |  | 0% | backlog/item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry.md |
+| [item_084_restore_lint_reproducibility_from_a_clean_tree](backlog/item_084_restore_lint_reproducibility_from_a_clean_tree.md) | Restore lint reproducibility from a clean tree | Ready |  | 0% | backlog/item_084_restore_lint_reproducibility_from_a_clean_tree.md |
 
 ## Tasks
 
@@ -210,3 +218,4 @@
 | [task_039_orchestrate_pit_wall_race_plan_clarity](tasks/task_039_orchestrate_pit_wall_race_plan_clarity.md) | Orchestrate pit wall race plan clarity | Done | codex | 100% | tasks/task_039_orchestrate_pit_wall_race_plan_clarity.md |
 | [task_040_orchestrate_full_width_replay_moment_notifications](tasks/task_040_orchestrate_full_width_replay_moment_notifications.md) | Orchestrate full-width replay moment notifications | Done | codex | 100% | tasks/task_040_orchestrate_full_width_replay_moment_notifications.md |
 | [task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset](tasks/task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset.md) | Orchestrate dismissible help panels and UI preference reset | Done | codex | 100% | tasks/task_041_orchestrate_dismissible_help_panels_and_ui_preference_reset.md |
+| [task_042_orchestrate_api_integrity_hardening](tasks/task_042_orchestrate_api_integrity_hardening.md) | Orchestrate API integrity hardening | Ready |  | 0% | tasks/task_042_orchestrate_api_integrity_hardening.md |

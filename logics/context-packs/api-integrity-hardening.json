@@ -1,0 +1,396 @@
+{
+  "budgets": {
+    "max_docs": 32,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_041_api_integrity_hardening_from_repo_review item_079_require_claim_codes_for_team_mutations item_080_make_grand_prix_resolution_idempotent_and_transactional item_081_make_card_purchases_atomic item_082_handle_create_league_validation_errors_consistently item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry item_084_restore_lint_reproducibility_from_a_clean_tree task_042_orchestrate_api_integrity_hardening --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_079_require_claim_codes_for_team_mutations",
+          "item_080_make_grand_prix_resolution_idempotent_and_transactional",
+          "item_081_make_card_purchases_atomic",
+          "item_082_handle_create_league_validation_errors_consistently",
+          "item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry",
+          "item_084_restore_lint_reproducibility_from_a_clean_tree"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/product/prod_012_api_integrity_hardening_product_brief.md",
+      "ref": "prod_012_api_integrity_hardening_product_brief",
+      "status": "Proposed",
+      "title": "API Integrity Hardening Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, api integrity hardening from repo review, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "API integrity hardening from repo review",
+        "use when": "You need to implement or review the scaffolded workflow for API integrity hardening from repo review."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_079_require_claim_codes_for_team_mutations",
+          "item_080_make_grand_prix_resolution_idempotent_and_transactional",
+          "item_081_make_card_purchases_atomic",
+          "item_082_handle_create_league_validation_errors_consistently",
+          "item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry",
+          "item_084_restore_lint_reproducibility_from_a_clean_tree"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ]
+      },
+      "path": "logics/request/req_041_api_integrity_hardening_from_repo_review.md",
+      "ref": "req_041_api_integrity_hardening_from_repo_review",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "API integrity hardening from repo review"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, require claim codes for team mutations, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Require claim codes for team mutations",
+        "use when": "Implementing the scaffolded slice for Require claim codes for team mutations."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_079_require_claim_codes_for_team_mutations"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/backlog/item_079_require_claim_codes_for_team_mutations.md",
+      "ref": "item_079_require_claim_codes_for_team_mutations",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Require claim codes for team mutations"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, make grand prix resolution idempotent and transactional, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Make Grand Prix resolution idempotent and transactional",
+        "use when": "Implementing the scaffolded slice for Make Grand Prix resolution idempotent and transactional."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_080_make_grand_prix_resolution_idempotent_and_transactional"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/backlog/item_080_make_grand_prix_resolution_idempotent_and_transactional.md",
+      "ref": "item_080_make_grand_prix_resolution_idempotent_and_transactional",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Make Grand Prix resolution idempotent and transactional"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, make card purchases atomic, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Make card purchases atomic",
+        "use when": "Implementing the scaffolded slice for Make card purchases atomic."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_081_make_card_purchases_atomic"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/backlog/item_081_make_card_purchases_atomic.md",
+      "ref": "item_081_make_card_purchases_atomic",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Make card purchases atomic"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate API integrity hardening",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_079_require_claim_codes_for_team_mutations",
+          "item_080_make_grand_prix_resolution_idempotent_and_transactional",
+          "item_081_make_card_purchases_atomic",
+          "item_082_handle_create_league_validation_errors_consistently",
+          "item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry",
+          "item_084_restore_lint_reproducibility_from_a_clean_tree"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/tasks/task_042_orchestrate_api_integrity_hardening.md",
+      "ref": "task_042_orchestrate_api_integrity_hardening",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate API integrity hardening"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_079_require_claim_codes_for_team_mutations",
+          "item_080_make_grand_prix_resolution_idempotent_and_transactional",
+          "item_081_make_card_purchases_atomic",
+          "item_082_handle_create_league_validation_errors_consistently",
+          "item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry",
+          "item_084_restore_lint_reproducibility_from_a_clean_tree"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/product/prod_012_api_integrity_hardening_product_brief.md",
+      "ref": "prod_012_api_integrity_hardening_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "API Integrity Hardening Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, handle create-league validation errors consistently, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Handle create-league validation errors consistently",
+        "use when": "Implementing the scaffolded slice for Handle create-league validation errors consistently."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_082_handle_create_league_validation_errors_consistently"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/backlog/item_082_handle_create_league_validation_errors_consistently.md",
+      "ref": "item_082_handle_create_league_validation_errors_consistently",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Handle create-league validation errors consistently"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, use crypto-backed league and claim codes with collision retry, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Use crypto-backed league and claim codes with collision retry",
+        "use when": "Implementing the scaffolded slice for Use crypto-backed league and claim codes with collision retry."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/backlog/item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry.md",
+      "ref": "item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Use crypto-backed league and claim codes with collision retry"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, restore lint reproducibility from a clean tree, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Restore lint reproducibility from a clean tree",
+        "use when": "Implementing the scaffolded slice for Restore lint reproducibility from a clean tree."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_084_restore_lint_reproducibility_from_a_clean_tree"
+        ],
+        "prod": [
+          "prod_012_api_integrity_hardening_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review"
+        ],
+        "task": [
+          "task_042_orchestrate_api_integrity_hardening"
+        ]
+      },
+      "path": "logics/backlog/item_084_restore_lint_reproducibility_from_a_clean_tree.md",
+      "ref": "item_084_restore_lint_reproducibility_from_a_clean_tree",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Restore lint reproducibility from a clean tree"
+    }
+  ],
+  "estimates": {
+    "char_count": 9084,
+    "companion_doc_count": 1,
+    "doc_count": 9
+  },
+  "generated_at": "2026-07-17T17:44:03Z",
+  "handoff": {
+    "companion_doc_count": 1,
+    "enabled": true,
+    "source_refs": [
+      "req_041_api_integrity_hardening_from_repo_review",
+      "item_079_require_claim_codes_for_team_mutations",
+      "item_080_make_grand_prix_resolution_idempotent_and_transactional",
+      "item_081_make_card_purchases_atomic",
+      "item_082_handle_create_league_validation_errors_consistently",
+      "item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry",
+      "item_084_restore_lint_reproducibility_from_a_clean_tree",
+      "task_042_orchestrate_api_integrity_hardening"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 422,
+      "fr": 422
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_041_api_integrity_hardening_from_repo_review,item_079_require_claim_codes_for_team_mutations,item_080_make_grand_prix_resolution_idempotent_and_transactional,item_081_make_card_purchases_atomic,item_082_handle_create_league_validation_errors_consistently,item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry,item_084_restore_lint_reproducibility_from_a_clean_tree,task_042_orchestrate_api_integrity_hardening",
+  "refs": [
+    "req_041_api_integrity_hardening_from_repo_review",
+    "item_079_require_claim_codes_for_team_mutations",
+    "item_080_make_grand_prix_resolution_idempotent_and_transactional",
+    "item_081_make_card_purchases_atomic",
+    "item_082_handle_create_league_validation_errors_consistently",
+    "item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry",
+    "item_084_restore_lint_reproducibility_from_a_clean_tree",
+    "task_042_orchestrate_api_integrity_hardening"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "Missing logics/release/contract.json."
+    ],
+    "configured": false,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Run logics-manager release discover --write, then review and promote logics/release/contract.draft.json to logics/release/contract.json.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "not_configured",
+    "target_version": null
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_042_orchestrate_api_integrity_hardening.md",
+      "ref": "task_042_orchestrate_api_integrity_hardening"
+    }
+  ]
+}

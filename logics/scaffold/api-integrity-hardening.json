@@ -1,0 +1,248 @@
+{
+  "title": "API integrity hardening from repo review",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "package.json",
+    "eslint.config.js",
+    "prisma/schema.prisma",
+    "apps/api/src/app.ts",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/app.test.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/types.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "Review findings from 2026-07-17: team mutations trust teamId without claimCode, Grand Prix resolution is non-atomic, card purchases can double-spend under concurrency, /leagues creation leaks LeagueRuleError as 500, league and claim codes use Math.random, and lint currently fails only because of an untracked .shot-tmp.mjs scratch file."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "API security and data integrity",
+    "needs": [
+      "Require proof of team ownership for every player-controlled mutation instead of trusting teamId alone.",
+      "Make Grand Prix resolution idempotent under concurrent requests so rewards and card consumption apply once.",
+      "Make card purchasing atomic so concurrent buys cannot overspend credits or lose inventory writes.",
+      "Return client-safe status codes for league creation validation errors, matching the rest of the league API.",
+      "Use cryptographically strong random bytes for league codes and team claim codes, with collision handling where the database has unique constraints.",
+      "Keep lint reproducible from a clean checkout by removing or ignoring transient local scratch artifacts."
+    ],
+    "context": [
+      "The API currently exposes claimCode only in LeagueState.player and uses it for /leagues/rejoin; all subsequent player mutations post teamId only.",
+      "Routes affected by ownership checks include /cards/buy, /teams/livery, /teams/name, /decisions, /qualifying, and any future team-scoped mutation.",
+      "resolveCurrentGrandPrix reads the current GrandPrix, checks status, updates status/result, then increments team points and credits and removes consumed cards outside a transaction.",
+      "buyCard reads state, checks credits, then updates credits and JSON cards from a stale in-memory copy.",
+      "The Prisma schema has unique constraints for League.code, Team.claimCode, GrandPrix league/season/round, and RaceDecision grandPrix/team; use these constraints instead of adding speculative app-side registries.",
+      "Existing fast API tests use an in-memory Prisma-shaped fake and cover the happy paths; concurrency tests may need either a tiny focused fake hook or a real transaction-backed test if the fake cannot model races honestly.",
+      "Ponytail constraint: prefer one shared guard/helper and Prisma transactions/conditional updates over new auth frameworks or broad abstractions."
+    ],
+    "acceptance_criteria": [
+      "AC1: Every player-controlled team mutation requires and verifies claimCode for the submitted team; missing or wrong claimCode returns 404 or 409 consistently with existing rejoin/error semantics.",
+      "AC2: The web client includes claimCode in team mutation payloads without exposing it anywhere new in visible UI.",
+      "AC3: Concurrent calls to resolve the same Grand Prix cannot apply points, credits, or card consumption more than once; a second resolver receives a conflict or returns the already-resolved state without duplicate rewards.",
+      "AC4: Concurrent card purchases cannot reduce credits below zero, cannot lose an appended card update, and cannot buy when the pre-update balance is insufficient.",
+      "AC5: /leagues catches LeagueRuleError from createDemoLeague and returns the same client-safe error style as the other league endpoints.",
+      "AC6: League codes and claim codes are generated with crypto random bytes and collision retries that respect the existing unique database constraints.",
+      "AC7: npm run typecheck, npm test, npm run build, npm run logics:validate, and npm run lint pass from a clean worktree.",
+      "AC8: Focused tests cover wrong/missing claimCode, duplicate Grand Prix resolution, card double-spend prevention, create-league validation errors, and deterministic code collision retry behavior where feasible."
+    ]
+  },
+  "product": {
+    "title": "API Integrity Hardening Product Brief",
+    "overview": "A narrow hardening pass that closes the repo-review findings around player mutation authorization, concurrent economy writes, concurrent Grand Prix resolution, validation error handling, secure code generation, and lint reproducibility.",
+    "goals": [
+      "Make team ownership explicit at the API boundary without introducing a full authentication system.",
+      "Use the database as the consistency boundary for race resolution and purchases.",
+      "Keep endpoint behavior predictable: malformed or invalid user input never becomes a 500.",
+      "Replace weak random identifiers with crypto-backed codes and simple collision retry.",
+      "Leave the repo with all existing quality gates green."
+    ],
+    "non_goals": [
+      "Do not add user accounts, sessions, JWT, OAuth, or a permissions framework.",
+      "Do not redesign the LeagueState response or profile recovery flow beyond the claimCode payload requirement.",
+      "Do not replace JSON card inventory with a normalized inventory table in this pass unless atomic purchase cannot be made correct otherwise.",
+      "Do not change gameplay balance, card prices, race scoring, or UI layout.",
+      "Do not add dependencies for validation or locking."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Require claim codes for team mutations",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Team ownership",
+      "request_acs": ["AC1", "AC2", "AC8"],
+      "problem": [
+        "The server trusts teamId for player-controlled mutations after initial rejoin.",
+        "Anyone who can observe or guess a team id in a league can update another team's livery/name, buy cards for it, submit qualifying runs, or lock directives."
+      ],
+      "scope_in": [
+        "Add claimCode to the route body guards and store inputs for card buying, team livery, team name, directive submission, and qualifying submission.",
+        "Implement one small shared store-level ownership check that verifies the team belongs to the league and the submitted claimCode matches its stored claimCode.",
+        "Update App.tsx mutation payloads to send leagueState.player.claimCode for the current player team.",
+        "Preserve bot/internal code paths by keeping bot actions server-side and not requiring a claimCode for server-generated bot decisions.",
+        "Add API tests for missing claimCode, wrong claimCode, and a correct claimCode on at least one representative mutation, then cover the remaining routes with minimal assertions."
+      ],
+      "scope_out": [
+        "Adding login sessions or Authorization headers.",
+        "Changing /leagues/rejoin response shape except as needed to keep the current player claim attached.",
+        "Protecting league-level owner/admin settings; this pass only covers team-scoped player mutations."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every listed mutation rejects missing or wrong claimCode before changing data.",
+        "AC2: Correct claimCode keeps existing successful flows green.",
+        "AC3: The web sends claimCode from stored player state and does not render it outside the existing recovery/profile affordances.",
+        "AC4: Existing API and web tests are updated only where the endpoint contract changed."
+      ]
+    },
+    {
+      "title": "Make Grand Prix resolution idempotent and transactional",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race integrity",
+      "request_acs": ["AC3", "AC8"],
+      "problem": [
+        "resolveCurrentGrandPrix checks grandPrix.status before writing, then applies rewards and card consumption in separate updates.",
+        "Two concurrent resolve requests can both observe briefing status and both apply the same race rewards."
+      ],
+      "scope_in": [
+        "Wrap resolution in a Prisma transaction or equivalent DB-level consistency boundary.",
+        "Claim the Grand Prix with an updateMany or conditional update that only succeeds when status is not resolved.",
+        "Apply result persistence, points, credits, and consumed card removal exactly once after the claim succeeds.",
+        "Return a conflict or reload the resolved state for a losing concurrent resolver; choose the smaller behavior that fits current route semantics and tests.",
+        "Add a focused regression test that simulates two resolve calls and proves rewards are not duplicated."
+      ],
+      "scope_out": [
+        "Changing simulation determinism or result classification.",
+        "Introducing queues, locks, or background jobs.",
+        "Reworking the season advancement flow unless a direct race with resolution is discovered."
+      ],
+      "acceptance_criteria": [
+        "AC1: Two concurrent resolves for one Grand Prix produce one set of rewards and one consumed-card removal.",
+        "AC2: Already resolved Grand Prix still returns a conflict in the normal single-request path unless the chosen idempotent behavior is deliberately documented in tests.",
+        "AC3: The transaction does not leave a Grand Prix marked resolved without matching team reward updates."
+      ]
+    },
+    {
+      "title": "Make card purchases atomic",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Economy integrity",
+      "request_acs": ["AC4", "AC8"],
+      "problem": [
+        "buyCard performs read-check-write on credits and cards outside a transaction.",
+        "Concurrent purchases can spend the same credits twice or overwrite one JSON card append with a stale cards array."
+      ],
+      "scope_in": [
+        "Move buyCard into a transaction or conditional update that verifies credits are sufficient at write time.",
+        "Ensure card append uses the latest persisted card list inside the same consistency boundary.",
+        "Return the existing not-enough-credits LeagueRuleError when the conditional update loses due to insufficient balance.",
+        "Add a regression test for two concurrent purchases when only one purchase should be affordable.",
+        "Keep CARD_PRICE and existing inventory JSON unless a minimal table change is strictly required for correctness."
+      ],
+      "scope_out": [
+        "Per-card pricing changes.",
+        "Inventory normalization for reporting or history.",
+        "Purchase receipts or audit logs."
+      ],
+      "acceptance_criteria": [
+        "AC1: The balance can never go below zero through buyCard.",
+        "AC2: Two affordable concurrent purchases both persist their cards or one fails cleanly if only one is affordable; no stale overwrite loses a card.",
+        "AC3: Existing buy-card behavior and error messages remain stable for normal requests."
+      ]
+    },
+    {
+      "title": "Handle create-league validation errors consistently",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "API error handling",
+      "request_acs": ["AC5", "AC8"],
+      "problem": [
+        "/leagues directly calls createDemoLeague without catching LeagueRuleError.",
+        "Invalid league name, invalid team name, or missing profile can bubble as 500 even though sibling routes map LeagueRuleError to a client-safe conflict."
+      ],
+      "scope_in": [
+        "Wrap /leagues in the same try/catch pattern used by /profiles, /leagues/join, and other league routes.",
+        "Add tests for invalid league name, invalid team name, and unknown profileId.",
+        "Keep response format aligned with existing { error: 'Conflict', message } bodies unless a 400 is already clearly expected by tests."
+      ],
+      "scope_out": [
+        "Refactoring all route error handling into a generic wrapper unless the diff is smaller than duplicating this one catch.",
+        "Changing createDemoLeague validation rules."
+      ],
+      "acceptance_criteria": [
+        "AC1: Invalid create-league business inputs return client-safe 4xx responses, not 500.",
+        "AC2: Successful league creation response is unchanged."
+      ]
+    },
+    {
+      "title": "Use crypto-backed league and claim codes with collision retry",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Identifier generation",
+      "request_acs": ["AC6", "AC8"],
+      "problem": [
+        "createLeagueCode and createClaimCode use Math.random for join/rejoin secrets.",
+        "League.code and Team.claimCode are unique in the schema, but creation does not deliberately retry on rare collisions."
+      ],
+      "scope_in": [
+        "Replace Math.random code generation with randomBytes-based base36/hex or another compact uppercase alphabet.",
+        "Retry league creation on unique League.code collisions a small fixed number of times.",
+        "Retry team claim-code generation on unique Team.claimCode collisions a small fixed number of times where codes are created.",
+        "Keep recoveryCode generation as-is unless the implementation can share a tiny helper without adding complexity.",
+        "Add tests by stubbing or injecting the code generator only if it stays small; otherwise test the pure generator format and document that Prisma unique constraints cover collisions."
+      ],
+      "scope_out": [
+        "Human-friendly word codes.",
+        "Long-lived token rotation or claim revocation.",
+        "Adding dependencies for nanoid/uuid."
+      ],
+      "acceptance_criteria": [
+        "AC1: No join or claim secret uses Math.random.",
+        "AC2: Generated code formats stay uppercase and compatible with existing UI expectations.",
+        "AC3: Unique-constraint collisions are retried or intentionally surfaced as a 409 after bounded attempts."
+      ]
+    },
+    {
+      "title": "Restore lint reproducibility from a clean tree",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Tooling hygiene",
+      "request_acs": ["AC7"],
+      "problem": [
+        "npm run lint currently fails in the reviewed workspace only because ESLint picks up an untracked .shot-tmp.mjs scratch file.",
+        "Transient local files should not make standard repo gates fail for the next agent."
+      ],
+      "scope_in": [
+        "Remove the local scratch file if it is still present and not user-owned work, or add a narrow ignore for known generated screenshot scratch files if the workflow creates them repeatedly.",
+        "Do not hide real source files from lint.",
+        "Run npm run lint after the cleanup."
+      ],
+      "scope_out": [
+        "Broad dotfile ignores that could mask committed config mistakes.",
+        "Changing lint rules unrelated to this failure."
+      ],
+      "acceptance_criteria": [
+        "AC1: npm run lint passes in a clean checkout.",
+        "AC2: The ignore/delete choice is documented in the implementation closeout."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate API integrity hardening",
+    "plan": [
+      "Start by reading the current routes/store/tests and confirming the reviewed findings still reproduce.",
+      "Implement create-league error handling and secure code generation first because they are small and unblock safer tests.",
+      "Add claimCode to team mutation contracts and update the web client in the smallest compatible diff.",
+      "Harden buyCard with an atomic write path and focused double-spend regression coverage.",
+      "Harden resolveCurrentGrandPrix with a transaction/conditional claim and focused duplicate-resolution regression coverage.",
+      "Clean the lint scratch artifact or narrow ignore, then run typecheck, tests, build, lint, and logics validation.",
+      "Record any deliberate simplification in the task closeout, especially if JSON inventory remains instead of a normalized table."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/api-integrity-hardening.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

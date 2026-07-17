@@ -9,7 +9,7 @@ import {
   type Translator
 } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
-import { WEATHER_ICONS } from "./weatherIcons.js";
+import { VisualIcon } from "./VisualIcon.js";
 
 export function ReportView({
   state,
@@ -88,7 +88,7 @@ export function ReportView({
                     {tt("result_replay_phase")} {index + 1}
                   </strong>
                   <span>
-                    {WEATHER_ICONS[result.resolvedWeather[segment]]} {tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
+                    <VisualIcon name={result.resolvedWeather[segment]} /> {tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
                   </span>
                 </li>
               ))}

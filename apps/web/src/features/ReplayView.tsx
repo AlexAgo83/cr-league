@@ -1,11 +1,11 @@
 import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
 import { type CSSProperties, useEffect, useId, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
-import { countryFlag, type CityCircuit } from "../app/circuits.js";
+import type { CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
 import type { RaceEvent } from "../app/helpers.js";
 import { CircuitMap, MapTraitsPanel, circuitDisplayLength, type MapCar, type MapTraitImpacts, type MapTraitStats } from "./CircuitMap.js";
-import { WEATHER_ICONS } from "./weatherIcons.js";
+import { CountryBadge, VisualIcon, type VisualIconName } from "./VisualIcon.js";
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 const START_HOLD_SECONDS = 1;
 const FINISH_HOLD_SECONDS = 1;
@@ -280,8 +280,9 @@ function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator
     : event.severity === "major"
       ? tt("event_major")
       : tt("event_ambience");
+  const icon: VisualIconName = event.tags.includes("weather") || event.type === "weather_change" ? "light_rain" : event.cardId ? "card" : event.positionDelta > 0 ? "position" : "dot";
   return {
-    icon: event.tags.includes("weather") || event.type === "weather_change" ? "🌦" : event.cardId ? "◆" : event.positionDelta > 0 ? "↗" : "•",
+    icon,
     context,
     team,
     text: eventReplayText(event, names, tt),
@@ -523,12 +524,15 @@ export function ReplayView({
               <>
                 <div className="map-status">
                   <span className="circuit-city">
-                    {countryFlag(circuit.country)} {circuit.city}
+                    <CountryBadge country={circuit.country} /> {circuit.city}
                   </span>
                   <strong>{tt(circuit.layoutKey)}</strong>
                   <small>
-                    {tt("unit_lap")} {live.lap}/{circuit.laps} · {WEATHER_ICONS[liveWeather]}{" "}
-                    {tt(`weather_${liveWeather}` as TranslationKey)}
+                    {tt("unit_lap")} {live.lap}/{circuit.laps}
+                  </small>
+                  <small className="map-weather-readout">
+                    <VisualIcon name={liveWeather} />
+                    <span>{tt(`weather_${liveWeather}` as TranslationKey)}</span>
                   </small>
                   <small>{circuitDistance}</small>
                 </div>
@@ -538,7 +542,7 @@ export function ReplayView({
                     <span className="lap-marker">L{displayLapAtProgress(activeMoment.lap / maxLap, circuit.laps)}</span>
                     <span className="moment-main">
                       <strong>
-                        {activeMomentCard.icon} {activeMomentCard.context}
+                        <VisualIcon name={activeMomentCard.icon} /> {activeMomentCard.context}
                       </strong>
                       <small>{activeMomentCard.team || activeMomentCard.text}</small>
                     </span>
@@ -619,7 +623,7 @@ export function ReplayView({
                       style={{ left: `${replayPercentAtRaceProgress((index + 0.5) / RACE_SEGMENTS.length)}%` }}
                       title={tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
                     >
-                      {WEATHER_ICONS[result.resolvedWeather[segment]]}
+                      <VisualIcon name={result.resolvedWeather[segment]} />
                     </span>
                   ))}
                   {markers.map((marker) => (

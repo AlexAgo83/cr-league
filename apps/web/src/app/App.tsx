@@ -1,7 +1,7 @@
 import { APP_NAME, type CardId, type QualifyingRun } from "@cr-league/shared";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
-import { CITY_CIRCUITS, circuitForRound, countryFlag } from "./circuits.js";
+import { CITY_CIRCUITS, circuitForRound } from "./circuits.js";
 import { cardFit, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
 import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
@@ -12,6 +12,7 @@ import { GarageView } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
+import { CountryBadge } from "../features/VisualIcon.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
 const PLAYER_CLAIMS_KEY = "cr-league-player-claims";
@@ -186,6 +187,7 @@ export function App() {
   const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
   const [profileForm, setProfileForm] = useState({ email: "", recoveryCode: "" });
   const [savedClaims, setSavedClaims] = useState(loadPlayerClaims);
+  const [savedLeagueIndex, setSavedLeagueIndex] = useState(0);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState(() => t("status_initial", locale));
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -212,6 +214,10 @@ export function App() {
   function dismissNotification(id: number) {
     setNotifications((items) => items.filter((item) => item.id !== id));
   }
+
+  useEffect(() => {
+    setSavedLeagueIndex((index) => Math.min(index, Math.max(0, savedClaims.length - 1)));
+  }, [savedClaims.length]);
 
   useEffect(() => {
     if (!profileSession) return;
@@ -835,7 +841,7 @@ export function App() {
             <span className="section-kicker">{tt("starting_grid_title")}</span>
             <strong>{tt(currentCircuit.layoutKey)}</strong>
             <small>
-              {countryFlag(currentCircuit.country)} {currentCircuit.city} · {tt("briefing_forecast")} {tt(`weather_${forecastPick}` as TranslationKey)}
+              <CountryBadge country={currentCircuit.country} /> {currentCircuit.city} · {tt("briefing_forecast")} {tt(`weather_${forecastPick}` as TranslationKey)}
             </small>
             <small>
               {tt("circuit_grip")} {currentCircuit.traits.grip} · {tt("circuit_overtaking")} {currentCircuit.traits.overtaking} · {tt("circuit_energy")}{" "}
@@ -962,7 +968,7 @@ export function App() {
                     </label>
                   ) : null}
                 </div>
-                <div className="actions primary-actions">
+                <div className="actions primary-actions profile-form-actions">
                   <button type="button" onClick={profileMode === "create" ? createProfileSession : recoverProfileSession} disabled={status === "loading"}>
                     {profileMode === "create" ? tt("action_create_profile") : tt("action_recover_profile")}
                   </button>
@@ -1068,7 +1074,7 @@ export function App() {
                     </>
                   ) : null}
                 </div>
-                <div className="actions primary-actions">
+                <div className="actions primary-actions setup-form-actions">
                   <button type="button" onClick={setupMode === "create" ? createLeague : joinLeague} disabled={status === "loading"}>
                     {setupMode === "create" ? tt("action_start_league") : tt("action_join_league")}
                   </button>
@@ -1079,24 +1085,47 @@ export function App() {
               </>
             )}
 
-            <div className="saved-leagues saved-leagues-compact">
-              <span className="section-kicker">{tt("profile_saved_leagues")}</span>
-              {savedClaims.length ? (
-                <div className="saved-league-list">
-                  {savedClaims.map((claim) => (
-                    <button key={claim.teamId} type="button" className="profile-menu-action" onClick={() => void switchLeague(claim.teamId)} disabled={status === "loading"}>
-                      <strong>{claim.leagueName}</strong>
-                      <small>
-                        {claim.teamName}
-                        {claim.leagueCode ? ` · ${claim.leagueCode}` : ""}
-                      </small>
+            {setupMode === "choice" ? (
+              <div className="saved-leagues saved-leagues-compact">
+                <span className="section-kicker">{tt("profile_saved_leagues")}</span>
+                {savedClaims.length ? (
+                  <div className="saved-league-carousel">
+                    <button
+                      type="button"
+                      className="saved-league-arrow"
+                      aria-label={tt("action_previous_saved_league")}
+                      disabled={status === "loading" || savedClaims.length < 2}
+                      onClick={() => setSavedLeagueIndex((index) => (index + savedClaims.length - 1) % savedClaims.length)}
+                    >
+                      {"<"}
                     </button>
-                  ))}
-                </div>
-              ) : (
-                <p className="saved-leagues-empty">{tt("profile_saved_leagues_empty")}</p>
-              )}
-            </div>
+                    {(() => {
+                      const claim = savedClaims[savedLeagueIndex] ?? savedClaims[0]!;
+                      return (
+                        <button type="button" className="profile-menu-action saved-league-card" onClick={() => void switchLeague(claim.teamId)} disabled={status === "loading"}>
+                          <strong>{claim.leagueName}</strong>
+                          <small>
+                            {claim.teamName}
+                            {claim.leagueCode ? ` · ${claim.leagueCode}` : ""}
+                          </small>
+                        </button>
+                      );
+                    })()}
+                    <button
+                      type="button"
+                      className="saved-league-arrow"
+                      aria-label={tt("action_next_saved_league")}
+                      disabled={status === "loading" || savedClaims.length < 2}
+                      onClick={() => setSavedLeagueIndex((index) => (index + 1) % savedClaims.length)}
+                    >
+                      {">"}
+                    </button>
+                  </div>
+                ) : (
+                  <p className="saved-leagues-empty">{tt("profile_saved_leagues_empty")}</p>
+                )}
+              </div>
+            ) : null}
           </div>
         </section>
       </SetupShell>
@@ -1178,7 +1207,7 @@ export function App() {
                     <>
                       <div className="map-status">
                         <span className="circuit-city">
-                          {countryFlag(currentCircuit.country)} {currentCircuit.city}
+                          <CountryBadge country={currentCircuit.country} /> {currentCircuit.city}
                         </span>
                         <strong>{tt(currentCircuit.layoutKey)}</strong>
                         <small>

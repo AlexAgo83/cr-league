@@ -4,6 +4,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import type { CardFit, Translator } from "../app/helpers.js";
 import type { FormState } from "../app/types.js";
 import { CardStatBadges } from "./CardStatBadges.js";
+import { VisualIcon } from "./VisualIcon.js";
 
 type TraitStats = {
   grip: number;
@@ -12,13 +13,12 @@ type TraitStats = {
 };
 
 type TraitKey = "grip" | "overtaking" | "energy";
-type ImpactBadge = { trait: TraitKey; sign: "+" | "-"; icon: string; label: TranslationKey };
+type ImpactBadge = { trait: TraitKey; sign: "+" | "-"; label: TranslationKey };
 
 const APPROACHES = ["prudent", "balanced", "aggressive"] as const;
 const PREPARATIONS = ["speed", "reliability", "weather"] as const;
 const TRAITS = ["grip", "overtaking", "energy"] as const;
 
-const TRAIT_ICON: Record<TraitKey, string> = { grip: "◆", overtaking: "↗", energy: "⚡" };
 const TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
   grip: "circuit_grip",
   overtaking: "circuit_overtaking",
@@ -29,7 +29,7 @@ const TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
 // simulation's applyDecision() and expressed on the grip/attack/endurance vocabulary
 // the map already uses. UI hint only — no balance logic lives here.
 function badge(trait: TraitKey, sign: "+" | "-"): ImpactBadge {
-  return { trait, sign, icon: TRAIT_ICON[trait], label: TRAIT_LABEL[trait] };
+  return { trait, sign, label: TRAIT_LABEL[trait] };
 }
 
 const APPROACH_BADGES: Record<(typeof APPROACHES)[number], ImpactBadge[]> = {
@@ -49,7 +49,9 @@ function ImpactBadges({ badges, tt }: { badges: ImpactBadge[]; tt: Translator })
     <span className="card-stat-badges">
       {badges.map((entry) => (
         <span key={`${entry.sign}-${entry.trait}`} className={`card-stat-badge map-trait-${entry.trait} ${entry.sign === "-" ? "weakness" : "bonus"}`}>
-          <i aria-hidden="true">{entry.icon}</i>
+          <i aria-hidden="true">
+            <VisualIcon name={entry.trait} />
+          </i>
           <span>
             {entry.sign} {tt(entry.label)}
           </span>

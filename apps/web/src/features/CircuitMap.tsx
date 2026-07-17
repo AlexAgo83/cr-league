@@ -2,8 +2,9 @@ import { useEffect, useRef, type Ref } from "react";
 import type { CSSProperties } from "react";
 import type { TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
-import { countryFlag, type CityCircuit } from "../app/circuits.js";
+import type { CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
+import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
 export type MapCar = {
   id: string;
@@ -264,7 +265,7 @@ export function CircuitMap({
       {showHeading ? (
         <div className="circuit-map-heading">
           <span className="circuit-city">
-            {countryFlag(circuit.country)} {circuit.city}
+            <CountryBadge country={circuit.country} /> {circuit.city}
           </span>
           <strong>{tt(circuit.layoutKey)}</strong>
           <small>
@@ -356,10 +357,10 @@ export function MapCarShape({ transform }: { transform?: string }) {
 }
 
 export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitStats; tt: Translator; impacts?: MapTraitImpacts }) {
-  const rows: Array<{ key: keyof MapTraitStats; label: TranslationKey; hint: TranslationKey; icon: string }> = [
-    { key: "grip", label: "circuit_grip", hint: "circuit_grip_hint", icon: "◆" },
-    { key: "overtaking", label: "circuit_overtaking", hint: "circuit_overtaking_hint", icon: "↗" },
-    { key: "energy", label: "circuit_energy", hint: "circuit_energy_hint", icon: "⚡" }
+  const rows: Array<{ key: keyof MapTraitStats; label: TranslationKey; hint: TranslationKey }> = [
+    { key: "grip", label: "circuit_grip", hint: "circuit_grip_hint" },
+    { key: "overtaking", label: "circuit_overtaking", hint: "circuit_overtaking_hint" },
+    { key: "energy", label: "circuit_energy", hint: "circuit_energy_hint" }
   ];
 
   return (
@@ -368,7 +369,9 @@ export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitS
         const rowImpacts = impacts[row.key] ?? [];
         return (
           <span key={row.key} className={`map-trait-${row.key}`} title={[tt(row.hint), ...rowImpacts].join("\n")}>
-            <i aria-hidden="true">{row.icon}</i>
+            <i aria-hidden="true">
+              <VisualIcon name={row.key} />
+            </i>
             <strong className="map-trait-value" style={{ "--trait-value": `${traits[row.key]}%` } as CSSProperties & Record<string, string>}>
               <span>{traits[row.key]}</span>
             </strong>

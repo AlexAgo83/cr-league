@@ -221,6 +221,8 @@
   "action_create_profile": "Créer profil",
   "action_recover_profile": "Récupérer profil",
   "action_copy_profile_code": "Copier code profil",
+  "action_previous_saved_league": "Ligue sauvegardée précédente",
+  "action_next_saved_league": "Ligue sauvegardée suivante",
   "action_reset_ui_preferences": "Réinitialiser préférences UI",
   "action_forget_profile": "Se déconnecter",
   "action_submit_directive": "Verrouiller plan",

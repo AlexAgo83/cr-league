@@ -1,52 +1,53 @@
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { Translator } from "../app/helpers.js";
+import { VisualIcon } from "./VisualIcon.js";
 
-const CARD_BADGES: Record<CardId, Array<{ trait: "grip" | "overtaking" | "energy"; sign: "+" | "-"; icon: string; label: TranslationKey }>> = {
+const CARD_BADGES: Record<CardId, Array<{ trait: "grip" | "overtaking" | "energy"; sign: "+" | "-"; label: TranslationKey }>> = {
   rain_grip: [
-    { trait: "grip", sign: "+", icon: "◆", label: "circuit_grip" },
-    { trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }
+    { trait: "grip", sign: "+", label: "circuit_grip" },
+    { trait: "overtaking", sign: "-", label: "circuit_overtaking" }
   ],
-  fleet_maintenance: [{ trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" }],
+  fleet_maintenance: [{ trait: "energy", sign: "+", label: "circuit_energy" }],
   launch_boost: [
-    { trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" },
-    { trait: "energy", sign: "-", icon: "⚡", label: "circuit_energy" }
+    { trait: "overtaking", sign: "+", label: "circuit_overtaking" },
+    { trait: "energy", sign: "-", label: "circuit_energy" }
   ],
-  urban_draft: [{ trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" }],
+  urban_draft: [{ trait: "overtaking", sign: "+", label: "circuit_overtaking" }],
   final_surge: [
-    { trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" },
-    { trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" }
+    { trait: "energy", sign: "+", label: "circuit_energy" },
+    { trait: "overtaking", sign: "+", label: "circuit_overtaking" }
   ],
-  fleet_sponsorship: [{ trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }],
+  fleet_sponsorship: [{ trait: "overtaking", sign: "-", label: "circuit_overtaking" }],
   soft_tires: [
-    { trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" },
-    { trait: "energy", sign: "-", icon: "⚡", label: "circuit_energy" }
+    { trait: "overtaking", sign: "+", label: "circuit_overtaking" },
+    { trait: "energy", sign: "-", label: "circuit_energy" }
   ],
-  qualifying_focus: [{ trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" }],
+  qualifying_focus: [{ trait: "overtaking", sign: "+", label: "circuit_overtaking" }],
   defensive_order: [
-    { trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" },
-    { trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }
+    { trait: "energy", sign: "+", label: "circuit_energy" },
+    { trait: "overtaking", sign: "-", label: "circuit_overtaking" }
   ],
   adjustable_wing: [
-    { trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" },
-    { trait: "energy", sign: "-", icon: "⚡", label: "circuit_energy" }
+    { trait: "overtaking", sign: "+", label: "circuit_overtaking" },
+    { trait: "energy", sign: "-", label: "circuit_energy" }
   ],
   rain_mapping: [
-    { trait: "grip", sign: "+", icon: "◆", label: "circuit_grip" },
-    { trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }
+    { trait: "grip", sign: "+", label: "circuit_grip" },
+    { trait: "overtaking", sign: "-", label: "circuit_overtaking" }
   ],
   economy_mode: [
-    { trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" },
-    { trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }
+    { trait: "energy", sign: "+", label: "circuit_energy" },
+    { trait: "overtaking", sign: "-", label: "circuit_overtaking" }
   ],
-  pit_relay: [{ trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" }],
+  pit_relay: [{ trait: "energy", sign: "+", label: "circuit_energy" }],
   hard_tires: [
-    { trait: "energy", sign: "+", icon: "⚡", label: "circuit_energy" },
-    { trait: "overtaking", sign: "-", icon: "↗", label: "circuit_overtaking" }
+    { trait: "energy", sign: "+", label: "circuit_energy" },
+    { trait: "overtaking", sign: "-", label: "circuit_overtaking" }
   ],
   calculated_attack: [
-    { trait: "overtaking", sign: "+", icon: "↗", label: "circuit_overtaking" },
-    { trait: "grip", sign: "-", icon: "◆", label: "circuit_grip" }
+    { trait: "overtaking", sign: "+", label: "circuit_overtaking" },
+    { trait: "grip", sign: "-", label: "circuit_grip" }
   ]
 };
 
@@ -75,7 +76,7 @@ export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator 
     <span className="card-stat-badges">
       {CARD_BADGES[cardId].map((badge) => (
         <span key={`${badge.sign}-${badge.trait}`} className={`card-stat-badge map-trait-${badge.trait} ${badge.sign === "-" ? "weakness" : "bonus"}`}>
-          <i aria-hidden="true">{badge.icon}</i>
+          <i aria-hidden="true"><VisualIcon name={badge.trait} /></i>
           <span>
             {badge.sign} {tt(badge.label)}
           </span>

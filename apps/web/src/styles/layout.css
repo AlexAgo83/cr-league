@@ -163,7 +163,7 @@
 .setup-choice-grid {
   display: grid;
   gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1fr;
 }
 
 .setup-choice {
@@ -487,6 +487,43 @@ button:disabled {
   cursor: not-allowed;
 }
 
+.visual-icon {
+  display: inline-block;
+  fill: none;
+  height: 1em;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  vertical-align: -0.12em;
+  width: 1em;
+}
+
+.visual-icon-grip,
+.visual-icon-energy,
+.visual-icon-dot {
+  fill: currentColor;
+}
+
+.country-badge {
+  align-items: center;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 4px;
+  color: var(--color-accent);
+  display: inline-flex;
+  font-family: var(--font-display);
+  font-size: 0.68em;
+  font-style: italic;
+  font-weight: 900;
+  justify-content: center;
+  letter-spacing: 0.06em;
+  line-height: 1;
+  min-width: 2.35em;
+  padding: 0.22em 0.35em;
+  vertical-align: 0.08em;
+}
+
 /* Non-CTA buttons keep the body voice. */
 .choice-card,
 .setup-choice,
@@ -682,16 +719,27 @@ label small {
   gap: 10px;
 }
 
-.saved-league-list {
-  display: flex;
-  flex-wrap: wrap;
+.saved-league-carousel {
+  align-items: stretch;
+  display: grid;
   gap: 8px;
+  grid-template-columns: 40px minmax(0, 1fr) 40px;
 }
 
-.saved-league-list button {
+.saved-league-card {
   display: grid;
   gap: 4px;
-  min-width: min(100%, 168px);
+  min-width: 0;
+  width: 100%;
+}
+
+.saved-league-arrow {
+  align-items: center;
+  clip-path: none;
+  display: inline-flex;
+  justify-content: center;
+  min-width: 0;
+  padding: 0;
 }
 
 .saved-leagues-empty {
@@ -713,6 +761,11 @@ label small {
 }
 
 .modal .actions {
+  justify-content: flex-end;
+}
+
+.profile-form-actions,
+.setup-form-actions {
   justify-content: flex-end;
 }
 
@@ -980,14 +1033,26 @@ label small {
 }
 
 .replay-weather {
+  align-items: center;
   background: rgb(16 14 18 / 0.66);
-  border-radius: 6px;
-  bottom: 13px;
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: 999px;
+  bottom: 12px;
+  color: var(--color-text);
+  display: inline-flex;
   font-size: 0.8rem;
+  height: 24px;
+  justify-content: center;
   line-height: 1.3;
-  padding: 1px 5px;
   position: absolute;
   transform: translateX(-50%);
+  width: 24px;
+  z-index: 3;
+}
+
+.replay-weather .visual-icon {
+  height: 16px;
+  width: 16px;
 }
 
 .map-status {
@@ -997,6 +1062,7 @@ label small {
   display: grid;
   gap: 3px;
   left: 12px;
+  min-width: 128px;
   padding: 10px 12px;
   position: absolute;
   top: 12px;
@@ -1008,8 +1074,44 @@ label small {
 }
 
 .map-status small {
+  align-items: center;
   color: var(--color-muted);
+  display: flex;
+  flex-wrap: wrap;
   font-weight: 700;
+  gap: 5px;
+}
+
+.map-status .map-weather-readout {
+  align-items: center;
+  display: inline-grid;
+  gap: 4px;
+  grid-template-columns: 16px max-content;
+  white-space: nowrap;
+}
+
+.map-status .visual-icon,
+.report-phases-list .visual-icon,
+.replay-moment-notification .visual-icon {
+  flex: 0 0 auto;
+  height: 16px;
+  width: 16px;
+}
+
+.map-status .visual-icon {
+  color: var(--color-text);
+}
+
+.visual-icon-dry {
+  color: #f6c453;
+}
+
+.visual-icon-light_rain {
+  color: #9fd3ff;
+}
+
+.visual-icon-heavy_rain {
+  color: #c7b6ff;
 }
 
 .map-workflow-panel {
@@ -2001,15 +2103,23 @@ label small {
 }
 
 .livery-plate-stars {
-  display: block;
+  display: inline-flex;
+  gap: 2px;
   font-size: 0.42rem;
-  letter-spacing: 0;
   line-height: 0.8;
   max-width: 100%;
   overflow: hidden;
   text-shadow: 0 1px 2px rgb(0 0 0 / 0.38);
   transform: skewX(10deg);
   white-space: nowrap;
+}
+
+.livery-plate-stars i {
+  background: currentColor;
+  clip-path: polygon(50% 0, 62% 36%, 100% 36%, 70% 58%, 82% 100%, 50% 74%, 18% 100%, 30% 58%, 0 36%, 38% 36%);
+  display: block;
+  height: 0.75em;
+  width: 0.75em;
 }
 
 .leader-livery-plate {

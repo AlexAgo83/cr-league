@@ -15,12 +15,6 @@ export type CityCircuit = {
   route: Array<{ lat: number; lng: number }>;
 };
 
-export function countryFlag(country: string) {
-  return country
-    .toUpperCase()
-    .replace(/[A-Z]/g, (letter) => String.fromCodePoint(127397 + letter.charCodeAt(0)));
-}
-
 export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
   {
     ...CITY_CIRCUIT_IDENTITIES[0],

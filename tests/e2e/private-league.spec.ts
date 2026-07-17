@@ -202,6 +202,13 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await expect.poll(async () => page.locator(".drive-map-panel").evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(900);
   await expect.poll(async () => page.evaluate(() => document.documentElement.scrollHeight <= window.innerHeight + 1)).toBe(true);
+  await expect.poll(async () =>
+    page.evaluate(() => {
+      const header = document.querySelector(".topbar")?.getBoundingClientRect();
+      const status = document.querySelector(".drive-map-panel .map-status")?.getBoundingClientRect();
+      return Boolean(header && status && status.top >= header.bottom);
+    })
+  ).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("drive-map-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
 
@@ -292,6 +299,12 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
       noMapOverflow: Boolean(mapPanel && mapPanel.width <= document.documentElement.clientWidth),
       mapFillsMobileViewport: Boolean(mapPanel && mapPanel.height >= window.innerHeight),
       pageDoesNotScroll: document.documentElement.scrollHeight <= window.innerHeight + 1,
+      topOverlaysBelowHeader: (() => {
+        const header = document.querySelector(".topbar")?.getBoundingClientRect();
+        const status = document.querySelector(".replay-map-panel .map-status")?.getBoundingClientRect();
+        const controls = document.querySelector(".replay-map-controls")?.getBoundingClientRect();
+        return Boolean(header && status && controls && status.top >= header.bottom && controls.top >= header.bottom);
+      })(),
       statsAboveWeather: (() => {
         const traits = document.querySelector(".replay-map-panel .map-traits-panel");
         const weather = document.querySelector(".replay-weather");
@@ -299,7 +312,15 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
       })()
     };
   });
-  expect(mobile).toEqual({ mapBelowCopy: false, noMomentsPanel: true, noMapOverflow: true, mapFillsMobileViewport: true, pageDoesNotScroll: true, statsAboveWeather: true });
+  expect(mobile).toEqual({
+    mapBelowCopy: false,
+    noMomentsPanel: true,
+    noMapOverflow: true,
+    mapFillsMobileViewport: true,
+    pageDoesNotScroll: true,
+    topOverlaysBelowHeader: true,
+    statsAboveWeather: true
+  });
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 

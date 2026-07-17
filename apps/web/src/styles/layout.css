@@ -3283,6 +3283,18 @@ button.primary-command {
     z-index: 1;
   }
 
+  .map-screen .map-status,
+  .map-screen .map-qualifying-times,
+  .map-screen .map-qualifying-toggle,
+  .map-screen .map-final-classification,
+  .map-screen .replay-map-controls {
+    top: 68px;
+  }
+
+  .map-screen .replay-tower {
+    top: 114px;
+  }
+
   .map-screen .result-view,
   .map-screen .result-view > div,
   .map-screen .view-stack,

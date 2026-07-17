@@ -1319,7 +1319,7 @@ label small {
 .replay-map-controls .replay-playback-button.playing::after {
   animation: replay-spin 0.9s linear infinite;
   border: 2px solid rgb(255 77 0 / 0.22);
-  border-top-color: var(--color-telemetry);
+  border-top-color: var(--color-accent);
   border-radius: 999px;
   content: "";
   inset: -3px;
@@ -1425,7 +1425,7 @@ label small {
 @keyframes replay-pulse {
   50% {
     box-shadow: 0 0 0 4px rgb(255 77 0 / 0.18);
-    color: var(--color-telemetry);
+    color: var(--color-accent);
   }
 }
 
@@ -3568,4 +3568,18 @@ button.primary-command {
 .garage-grid .card-info-badge i,
 .report-view .card-info-badge i {
   color: #7c5200;
+}
+
+
+/* Round icon buttons: no CTA chamfer clip (it would crop circles and the play spinner ring). */
+.replay-map-controls button,
+.replay-speed-options button,
+.profile-menu-button,
+.context-panel-close,
+.report-close-button,
+.map-qualifying-times header button,
+.map-qualifying-toggle,
+.garage-card-toggle button,
+.round-history-button {
+  clip-path: none;
 }

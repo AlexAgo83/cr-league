@@ -1,0 +1,201 @@
+{
+  "title": "Adopt the Pit Wall visual identity across the web app",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "apps/web/index.html",
+    "apps/web/src/styles/tokens.css",
+    "apps/web/src/styles/base.css",
+    "apps/web/src/styles/layout.css",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/ChampionshipView.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "apps/web/src/features/ReportView.tsx",
+    "apps/web/src/app/App.tsx",
+    "Approved art direction pitch (visual reference): https://claude.ai/code/artifact/a8e7df23-a69b-46ad-ad84-26fdab20a9f3",
+    "User request: replace the generic dark-SaaS look (Inter stack, blue-slate surfaces, emerald/cyan accents, rounded cards) with the approved Pit Wall identity: warm asphalt ground, chalk-white text, single signal-orange accent #FF4D00, chalk-paper material for document screens, self-hosted Barlow / Barlow Condensed type, chamfered corners, orange dashed circuit route. CSS-first refactor: rework tokens.css and retouch layout.css without changing component structure."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Visual identity",
+    "needs": [
+      "Replace the current generic dashboard palette (blue-slate #0b0f14 ground, emerald #16c784 accent, cyan #38bdf8 telemetry) with the Pit Wall palette: warm asphalt ground, chalk text, one signal-orange accent, and semantic-only green (locked/valid) and blue (rain/weather).",
+      "Introduce a real typographic identity: Barlow Condensed (italic caps) for display, headings, labels, and tabular race numerals; Barlow for running text; both self-hosted with an open license, no CDN request at runtime.",
+      "Replace the rounded-card shape language with the Pit Wall shape language: chamfered corners on panels, team-color side spines, chevron cues on primary actions.",
+      "Split the UI into two materials: dark asphalt for live surfaces (map, race cockpit, telemetry) and light chalk-paper for document surfaces (standings, race reports, garage sheets).",
+      "Recolor the circuit route on the map from green to dashed signal orange while keeping the OSM dark basemap as the scene background.",
+      "Keep the refactor CSS-first: tokens.css rework plus targeted layout.css retouches; component structure, i18n flow, and game logic stay untouched."
+    ],
+    "context": [
+      "`tokens.css` currently defines the whole theme: blue-slate surfaces, `--color-accent: #16c784`, `--color-telemetry: #38bdf8`, `--radius: 10px`, and an Inter-first font stack that is never actually loaded (system fallback renders today).",
+      "`layout.css` (~60 KB) holds all component styling in plain CSS with ~77 `border-radius` usages; there is no CSS-in-JS and no utility framework, so the identity swap is mostly a token and selector pass.",
+      "The circuit route is drawn by `CircuitMap.tsx` through CSS classes (`circuit-route-glow`, `circuit-route-asphalt`, `circuit-route-edge`, `circuit-route-accent`, `circuit-start-line`), so the route recolor is CSS-only.",
+      "Team livery colors are player-chosen and rendered via CSS variables (`--livery-primary`/`--livery-secondary`); default fallbacks currently reuse the accent colors #16c784/#38bdf8.",
+      "The approved pitch defines the token set: asphalt #121014 page, carbon #1B181D panels, chalk #F1EDE4 text, signal #FF4D00 accent, paper #ECE7DA document ground, ink #17151A document text, semantic green #3ECF6E and wet-blue #5AA7FF.",
+      "The signal-orange accent must never be assignable to a team livery so the accent keeps meaning; livery pickers stay free otherwise.",
+      "`apps/web/index.html` has `theme-color` #111827 which should follow the new asphalt ground."
+    ],
+    "acceptance_criteria": [
+      "AC1: tokens.css exposes the Pit Wall palette (asphalt page, carbon surfaces, chalk text, signal #FF4D00 accent, paper + ink document tokens, semantic green and wet-blue) and no UI element still renders the old emerald #16c784 or cyan #38bdf8 as a theme color (livery data values excluded).",
+      "AC2: Barlow and Barlow Condensed are self-hosted (npm package or local woff2, OFL license), applied via tokens (`--font-display`, `--font-sans`), and no runtime request goes to a font CDN.",
+      "AC3: Headings, navigation tabs, section labels, and race numerals render in Barlow Condensed with the pitch treatment (italic caps display, spaced caps labels, tabular numerals for times and points); running text renders in Barlow.",
+      "AC4: Panels use chamfered corners instead of rounded corners on the main surfaces (hero, cockpit panels, modals, buttons); primary action buttons use the signal accent with chevron affordance.",
+      "AC5: The circuit route renders as a dashed signal-orange line over the dark basemap in briefing, replay, and ambient background variants; cars and liveries remain legible.",
+      "AC6: Championship standings, race report, and garage sheet surfaces render on the chalk-paper material with ink text while live surfaces stay on asphalt.",
+      "AC7: Green appears only for locked/valid states and blue only for weather/rain information.",
+      "AC8: Component structure is unchanged: no TSX restructuring beyond className/style-value touch-ups, i18n catalogs untouched except if a label case change requires it.",
+      "AC9: `npm run typecheck`, `npm test`, and `npm run build` pass; existing Playwright e2e still passes.",
+      "AC10: Accessibility holds: text/background contrast on both materials meets WCAG AA for body text, and focus states remain visible on the new surfaces."
+    ]
+  },
+  "product": {
+    "title": "Pit Wall Visual Identity Product Brief",
+    "overview": "The Pit Wall identity replaces the recognizable AI-dashboard look with a night-racing visual language of its own: asphalt and chalk materials, one signal-orange accent, road-signage condensed type, and chamfered panel shapes. The identity makes the two worlds of the game legible at a glance — the live race on asphalt, the team paperwork on chalk paper — while keeping player team liveries as the only other source of color.",
+    "goals": [
+      "Give CR League a distinctive, ownable visual identity that no longer reads as a generic SaaS dashboard.",
+      "Make the game's two modes — live racing and team paperwork — instantly distinguishable through material (asphalt vs chalk paper).",
+      "Concentrate color meaning: one brand accent (signal orange), semantic green/blue only, team liveries as the sole free color input.",
+      "Ship the identity as a CSS-first refactor with self-hosted open-license fonts and no new runtime dependencies.",
+      "Keep the dark OSM city map as the hero of the live screens and stage it better with the new route treatment."
+    ],
+    "non_goals": [
+      "Do not redesign screen layouts, information architecture, or navigation.",
+      "Do not restructure React components or introduce a styling framework.",
+      "Do not change game rules, balance, API, or persistence.",
+      "Do not add a light/dark theme toggle; the identity commits to its two fixed materials.",
+      "Do not rebrand the name, logo mark beyond the type treatment, or produce marketing assets."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Pit Wall foundation: tokens, self-hosted type, chamfer utility",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Visual identity",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC8",
+        "AC9"
+      ],
+      "problem": [
+        "The theme is defined by generic dashboard tokens (blue-slate surfaces, emerald accent, cyan telemetry, 10px radius) in tokens.css.",
+        "The Inter-first font stack is never loaded, so the app renders in system fonts with no typographic identity.",
+        "There is no display/label/numeral type role system, so every text renders in the same voice."
+      ],
+      "scope_in": [
+        "Rework `tokens.css` to the Pit Wall palette: `--color-page` asphalt #121014, `--color-surface` carbon #1B181D, `--color-text` chalk #F1EDE4, `--color-accent` signal #FF4D00, new `--color-paper` #ECE7DA and `--color-ink` #17151A, semantic `--color-valid` #3ECF6E and `--color-wet` #5AA7FF, muted and border tones biased warm.",
+        "Add Barlow (400/600) and Barlow Condensed (500/700 + italic 600/800) as self-hosted woff2 (e.g. fontsource packages in the web workspace), wired through `--font-sans` and a new `--font-display`.",
+        "Define reusable type-role rules in base.css or layout.css: display (condensed italic caps), label (condensed spaced caps), chrono (condensed tabular-nums), body.",
+        "Add a chamfer utility (clip-path) and set `--radius` strategy for the new shape language.",
+        "Update `apps/web/index.html` theme-color to the asphalt ground.",
+        "Map old token references in layout.css to the new token names where a straight rename suffices."
+      ],
+      "scope_out": [
+        "Per-screen restyling passes (handled by the following items).",
+        "Any TSX structural change.",
+        "New i18n keys."
+      ],
+      "acceptance_criteria": [
+        "AC1: tokens.css contains the full Pit Wall token set and no longer defines #16c784 or #38bdf8.",
+        "AC2: The app loads Barlow and Barlow Condensed from self-hosted files; the network panel shows no font CDN request.",
+        "AC3: A visible heading renders in Barlow Condensed italic caps and body text in Barlow, confirmed on the setup screen.",
+        "AC4: A chamfer utility class exists and is applied to at least the hero/setup panel as proof.",
+        "AC5: `npm run typecheck`, `npm test`, and `npm run build` pass."
+      ]
+    },
+    {
+      "title": "Asphalt pass: live surfaces, cockpit, buttons, circuit route",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Visual identity",
+      "request_acs": [
+        "AC4",
+        "AC5",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "Live screens (race cockpit, map, telemetry, plan editor, replay) still carry the rounded-card dashboard look after the token swap.",
+        "The circuit route renders in the old green accent and competes with team liveries for meaning."
+      ],
+      "scope_in": [
+        "Retouch layout.css for live surfaces: topbar and tabs (condensed caps, skewed active underline), primary/ghost buttons (signal accent, chamfer cut, chevron cue), plan cards (left spine selection state instead of full border), telemetry stat rows (condensed numerals, thin bars), lap-time chrono display.",
+        "Recolor `circuit-route-accent` / `circuit-route-glow` / `circuit-start-line` and related classes to the dashed signal-orange treatment over the dark basemap, including ambient background and replay variants.",
+        "Sweep remaining `border-radius` usages on live panels to the chamfer or square treatment.",
+        "Keep green only on locked/valid indicators and blue only on weather chips across live screens.",
+        "Verify focus-visible states and AA contrast on the new asphalt surfaces."
+      ],
+      "scope_out": [
+        "Document screens (standings, report, garage) — next item.",
+        "CircuitMap geometry, camera, or car-marker logic.",
+        "Livery picker behavior (players keep free colors; defaults may stay)."
+      ],
+      "acceptance_criteria": [
+        "AC1: Race cockpit, plan editor, and replay render on asphalt/carbon surfaces with chamfered panels and signal-orange primary actions.",
+        "AC2: The circuit route is dashed signal orange in briefing, replay, and ambient variants; screenshot evidence attached at closeout.",
+        "AC3: No live-screen element uses green or blue outside locked/valid and weather semantics.",
+        "AC4: Keyboard focus is visible on tabs, plan cards, and buttons; body text on asphalt meets WCAG AA.",
+        "AC5: `npm run typecheck`, `npm test`, `npm run build`, and the Playwright suite pass."
+      ]
+    },
+    {
+      "title": "Chalk-paper pass: standings, race report, garage sheets",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Visual identity",
+      "request_acs": [
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "Championship standings, race reports, and the garage all render on the same dark surface as live screens, so the 'team paperwork' fantasy has no material of its own.",
+        "Tables and sheets lack the print-like treatment (ink on chalk, condensed tabular numerals, position plates) defined in the pitch."
+      ],
+      "scope_in": [
+        "Restyle ChampionshipView standings and Grand Prix history as chalk-paper sheets: `--color-paper` ground, `--color-ink` text, condensed table headers, tabular numerals, signal-tint row highlight for the player, team-color position plates.",
+        "Restyle ReportView race reports on the paper material with the same table language.",
+        "Restyle GarageView as a garage sheet: paper ground for the team/inventory panels while shop actions keep the signal accent.",
+        "Ensure paper surfaces embed cleanly in the dark shell (chamfered sheet edges, spacing against asphalt).",
+        "Verify AA contrast for ink-on-paper and highlight rows."
+      ],
+      "scope_out": [
+        "Any change to standings, report, or garage data and logic.",
+        "Modals and live overlays already covered by the asphalt pass.",
+        "New document types."
+      ],
+      "acceptance_criteria": [
+        "AC1: Standings, race report, and garage sheets render on the chalk-paper material with ink text inside the dark shell.",
+        "AC2: The player's row in standings uses the signal-tint highlight and position plates use team colors, never the signal accent.",
+        "AC3: Points, credits, and lap times in tables render with tabular numerals in the condensed face.",
+        "AC4: Ink-on-paper text meets WCAG AA; focus states are visible on paper surfaces.",
+        "AC5: `npm run typecheck`, `npm test`, `npm run build`, and the Playwright suite pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate the Pit Wall visual identity rollout",
+    "plan": [
+      "Read tokens.css, base.css, layout.css, index.html, CircuitMap.tsx, ChampionshipView.tsx, ReportView.tsx, GarageView.tsx, and the approved pitch reference before touching styles.",
+      "Land the foundation first: Pit Wall tokens, self-hosted Barlow/Barlow Condensed, type roles, chamfer utility; verify the app still builds and renders before any screen pass.",
+      "Run the asphalt pass on live surfaces (topbar, cockpit, plan editor, telemetry, buttons, circuit route recolor) as one reviewable CSS change set.",
+      "Run the chalk-paper pass on document surfaces (standings, report, garage) as a second change set.",
+      "Sweep for leftovers: old hex values, stray border-radius on themed panels, green/blue outside semantic use.",
+      "Capture before/after screenshots of the setup screen, race cockpit, plan editor, championship, and garage as closeout evidence.",
+      "Run typecheck, unit tests, build, and the Playwright e2e suite; record results in the task closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/pit-wall-visual-identity.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

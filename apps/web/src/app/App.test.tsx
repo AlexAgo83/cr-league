@@ -547,6 +547,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Next GP" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Replay" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(document.querySelector('image[href="/assets/cars/idle.png"]')).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
 
     // Report view

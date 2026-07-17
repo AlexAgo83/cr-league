@@ -46,6 +46,25 @@ const CLOSE_EXIT_DISTANCE = 6;
 const DRIFT_LOOKAHEAD = 0.012;
 const MAX_DRIFT_ANGLE = 14;
 type CameraZoomMode = "normal" | "traffic" | "close";
+type CarSprite = "idle" | "boost" | "brake";
+
+const CAR_SPRITES: Record<CarSprite, string> = {
+  idle: "/assets/cars/idle.png",
+  boost: "/assets/cars/boost.png",
+  brake: "/assets/cars/brake.png"
+};
+const CAR_SPRITE_ANCHOR: Record<CarSprite, { x: number; y: number }> = {
+  idle: { x: 0, y: 0 },
+  boost: { x: 1, y: 0 },
+  brake: { x: 4, y: 0 }
+};
+const CAR_SPRITE_BOX = { x: -12, y: -18, width: 24, height: 36 };
+
+function spriteForCar(car: MapCar): CarSprite {
+  if ((car.positionDelta ?? 0) > 0) return "boost";
+  if ((car.positionDelta ?? 0) < 0) return "brake";
+  return "idle";
+}
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
   const scale = TILE_SIZE * 2 ** zoom;
@@ -300,13 +319,14 @@ export function CircuitMap({
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
               const pose = car.progress === undefined ? null : poseOnRoute(points, car.progress);
               const drift = car.progress === undefined ? 0 : driftAngle(points, car.progress);
+              const sprite = spriteForCar(car);
               const carStyle = car.livery
                 ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
                 : undefined;
               return (
                 <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
                   <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                    <MapCarShape transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
+                    <MapCarSprite sprite={sprite} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift + 90})` : "rotate(90)"} />
                     <text textAnchor="middle" dominantBaseline="central">
                       {car.label}
                     </text>
@@ -314,8 +334,8 @@ export function CircuitMap({
                       <text
                         key={`${car.id}-${car.positionDeltaKey}`}
                         className={car.positionDelta > 0 ? "map-car-delta gain" : "map-car-delta loss"}
-                        x="34"
-                        y="-20"
+                        x="24"
+                        y="-16"
                         textAnchor="middle"
                         dominantBaseline="central"
                       >
@@ -352,6 +372,22 @@ export function MapCarShape({ transform }: { transform?: string }) {
       <path className="map-car-windshield" d="M6,-4Q11,-2 13,0Q11,2 6,4Q8,0 6,-4Z" />
       <path className="map-car-light" d="M12,-5Q15,-4 15,-1L12,-2Z" />
       <path className="map-car-light" d="M12,5Q15,4 15,1L12,2Z" />
+    </g>
+  );
+}
+
+function MapCarSprite({ maskId, sprite, transform }: { maskId: string; sprite: CarSprite; transform?: string }) {
+  const anchor = CAR_SPRITE_ANCHOR[sprite];
+
+  return (
+    <g className="map-car-sprite" transform={transform}>
+      <defs>
+        <mask id={maskId} className="map-car-tint-mask">
+          <image href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
+        </mask>
+      </defs>
+      <image href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
+      <rect className="map-car-tint" x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
     </g>
   );
 }

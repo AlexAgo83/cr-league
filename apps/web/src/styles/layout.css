@@ -37,9 +37,10 @@
 }
 
 .ambient-race-background {
+  background: url("/assets/stand.png") center / cover no-repeat;
   bottom: 0;
   left: 0;
-  opacity: 0.26;
+  opacity: 0.54;
   overflow: hidden;
   pointer-events: none;
   position: fixed;
@@ -58,6 +59,7 @@
 }
 
 .ambient-race-map {
+  display: none;
   height: 100%;
   transform: scale(1.18);
 }
@@ -1760,8 +1762,18 @@ label small {
   }
 }
 
-.map-car-shape {
+.map-car-shape,
+.map-car-sprite {
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.55));
+}
+
+.map-car-tint-mask {
+  mask-type: alpha;
+}
+
+.map-car-tint {
+  fill: var(--car-primary, var(--color-accent));
+  opacity: 0.28;
 }
 
 .map-car-wheel {

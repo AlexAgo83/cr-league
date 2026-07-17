@@ -6,9 +6,20 @@
 > Related task: `task_043_orchestrate_the_pit_wall_visual_identity_rollout`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Confidence: 90
+> Non-semantic edit: Added the missing overview Mermaid diagram required by workflow audit.
 
 # Overview
 The Pit Wall identity replaces the recognizable AI-dashboard look with a night-racing visual language of its own: asphalt and chalk materials, one signal-orange accent, road-signage condensed type, and chamfered panel shapes. The identity makes the two worlds of the game legible at a glance — the live race on asphalt, the team paperwork on chalk paper — while keeping player team liveries as the only other source of color.
+
+```mermaid
+flowchart LR
+  Asphalt[Asphalt race screens] --> Identity[Pit Wall identity]
+  Paper[Chalk paper documents] --> Identity
+  Accent[Signal orange accent] --> Identity
+  Liveries[Player liveries] --> Identity
+  Identity --> App[Distinct CR League UI]
+```
 
 # Goals
 - Give CR League a distinctive, ownable visual identity that no longer reads as a generic SaaS dashboard.

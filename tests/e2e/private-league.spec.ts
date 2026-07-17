@@ -176,6 +176,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await createProfile(page);
   await createLeague(page);
   await page.getByRole("button", { name: "Garage", exact: true }).click();
+  await page.getByRole("tab", { name: "My team" }).click();
   await page.getByLabel("Primary").fill("#c51697");
   await page.getByLabel("Secondary").fill("#633af8");
   await page.getByRole("button", { name: "Save colors" }).click();
@@ -330,29 +331,29 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 
-test("matches mobile document backgrounds to panels", async ({ page }) => {
+test("keeps mobile document pages on the app background", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await mockLeagueApi(page);
   await page.goto("/");
   await createProfile(page);
   await createLeague(page);
 
-  await expectDocumentBackground(page, 1, ".plan-view .panel");
-  await expectDocumentBackground(page, 2, ".championship-overview");
+  await expectDocumentBackgroundToDiffer(page, 1, ".plan-view .panel");
+  await expectDocumentBackgroundToDiffer(page, 2, ".championship-overview");
   await expect
     .poll(async () => page.locator(".dashboard-summary").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length))
     .toBe(1);
-  await expectDocumentBackground(page, 3, ".garage-grid .panel");
+  await expectDocumentBackgroundToDiffer(page, 3, ".garage-grid .panel");
   await expect(page.locator(".garage-grid")).toHaveCSS("max-width", "860px");
   await expect(page.locator(".garage-grid > .panel")).toHaveCount(1);
-  await expect(page.getByRole("heading", { name: "My team" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "My team" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("heading", { name: "Shop" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Shop" })).toHaveAttribute("aria-selected", "true");
   await page.getByRole("tab", { name: "Inventory" }).click();
   await expect(page.getByRole("heading", { name: "Inventory" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Inventory" })).toHaveAttribute("aria-selected", "true");
-  await page.getByRole("tab", { name: "Shop" }).click();
-  await expect(page.getByRole("heading", { name: "Shop" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "Shop" })).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: "My team" }).click();
+  await expect(page.getByRole("heading", { name: "My team" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "My team" })).toHaveAttribute("aria-selected", "true");
 });
 
 function expectedCircuitTitle(resultRound: number) {
@@ -361,14 +362,14 @@ function expectedCircuitTitle(resultRound: number) {
   return "Amsterdam Canal Loop";
 }
 
-async function expectDocumentBackground(page: Page, navIndex: number, panelSelector: string) {
+async function expectDocumentBackgroundToDiffer(page: Page, navIndex: number, panelSelector: string) {
   await page.locator(".game-nav button").nth(navIndex).click();
   await expect(page.locator(panelSelector).first()).toBeVisible();
   await expect
     .poll(async () =>
       page.locator(".game-shell").evaluate((shell, selector) => {
         const panel = document.querySelector(selector);
-        return panel ? getComputedStyle(shell).backgroundColor === getComputedStyle(panel).backgroundColor : false;
+        return panel ? getComputedStyle(shell).backgroundColor !== getComputedStyle(panel).backgroundColor : false;
       }, panelSelector)
     )
     .toBe(true);

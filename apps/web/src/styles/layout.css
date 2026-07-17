@@ -1137,7 +1137,7 @@ label small {
 }
 
 .map-race-actions {
-  align-items: flex-end;
+  align-items: stretch;
   bottom: 62px;
   flex-direction: column;
   position: absolute;

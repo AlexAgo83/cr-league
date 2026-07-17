@@ -524,8 +524,9 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Restart" }));
     expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
+    // Focus is on by default; clicking turns it off and persists that.
     fireEvent.click(screen.getByRole("button", { name: "Focus driver" }));
-    expect(localStorage.getItem("cr-league-replay-focus")).toBe("1");
+    expect(localStorage.getItem("cr-league-replay-focus")).toBe("0");
     fireEvent.click(screen.getByRole("button", { name: "Speed ×1" }));
     fireEvent.click(screen.getByRole("option", { name: "×2" }));
     expect(screen.getByRole("button", { name: "Speed ×2" })).toBeTruthy();
@@ -761,7 +762,7 @@ describe("App", () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(resolvedState));
     localStorage.setItem("cr-league-language", "en");
     localStorage.setItem("cr-league-replay-speed", "4");
-    localStorage.setItem("cr-league-replay-focus", "1");
+    localStorage.setItem("cr-league-replay-focus", "0");
     localStorage.setItem("cr-league-season-recap:league_1:1", "1");
 
     render(<App />);
@@ -769,7 +770,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Speed ×4" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Focus driver" }).className).toContain("active");
+    expect(screen.getByRole("button", { name: "Focus driver" }).className).not.toContain("active");
     fireEvent.click(screen.getByLabelText("Close Race replay"));
     expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
     expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe("1");
@@ -780,7 +781,7 @@ describe("App", () => {
     expect(await screen.findByText("UI preferences reset. Help panels and replay preferences are back to default.")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Speed ×1" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Focus driver" }).className).not.toContain("active");
+    expect(screen.getByRole("button", { name: "Focus driver" }).className).toContain("active");
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe(null);

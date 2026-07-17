@@ -3502,7 +3502,8 @@ button.primary-command {
 
 .championship-view,
 .garage-grid,
-.report-view {
+.report-view,
+.plan-view {
   --color-surface: var(--color-paper);
   --color-cockpit: #e2dccb;
   --color-text: var(--color-ink);
@@ -3516,7 +3517,8 @@ button.primary-command {
 
 .championship-view .panel,
 .garage-grid .panel,
-.report-view .panel {
+.report-view .panel,
+.plan-view .panel {
   border: 0;
   box-shadow: 0 2px 0 rgb(0 0 0 / 0.35);
   clip-path: var(--chamfer);
@@ -3532,7 +3534,10 @@ button.primary-command {
 .report-view .report-podium li,
 .report-view .report-key-moments li,
 .report-view .report-rewards li,
-.report-view .replay-timeline li {
+.report-view .replay-timeline li,
+.plan-view .directive-briefing span,
+.plan-view .choice-card,
+.plan-view .directive-summary {
   background: rgb(23 21 26 / 0.05);
   border-color: rgb(23 21 26 / 0.16);
 }
@@ -3562,9 +3567,25 @@ button.primary-command {
   color: #7c110b;
 }
 
+.plan-view .report-close-button {
+  background: #b2231a;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  color: #fff;
+  font-size: 1.15rem;
+  z-index: 2;
+}
+
+.plan-view .report-close-button:hover,
+.plan-view .report-close-button:focus-visible {
+  background: #cc2a1e;
+  border-color: #fff;
+  color: #fff;
+}
+
 .championship-view button:focus-visible,
 .garage-grid button:focus-visible,
-.report-view button:focus-visible {
+.report-view button:focus-visible,
+.plan-view button:focus-visible {
   outline: 2px solid var(--color-ink);
   outline-offset: 2px;
 }
@@ -3572,14 +3593,16 @@ button.primary-command {
 
 .championship-view .card-info-badge,
 .garage-grid .card-info-badge,
-.report-view .card-info-badge {
+.report-view .card-info-badge,
+.plan-view .card-info-badge {
   border-color: rgb(124 82 0 / 0.5);
   color: #7c5200;
 }
 
 .championship-view .card-info-badge i,
 .garage-grid .card-info-badge i,
-.report-view .card-info-badge i {
+.report-view .card-info-badge i,
+.plan-view .card-info-badge i {
   color: #7c5200;
 }
 

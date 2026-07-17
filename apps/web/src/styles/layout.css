@@ -1347,17 +1347,18 @@ label small {
 }
 
 .replay-map-controls .replay-close-button {
-  background: rgb(239 68 68 / 0.18);
-  border-color: rgb(248 113 113 / 0.45);
-  color: #fecaca;
-  font-size: 1rem;
-  font-weight: 900;
+  background: rgb(214 40 40 / 0.92);
+  border: 1px solid rgb(255 138 122 / 0.65);
+  color: #fff;
+  font-size: 1.35rem;
+  font-weight: 700;
+  margin-left: 6px;
 }
 
 .replay-map-controls .replay-close-button:hover,
 .replay-map-controls .replay-close-button:focus-visible {
-  background: rgb(239 68 68 / 0.28);
-  border-color: rgb(248 113 113 / 0.72);
+  background: rgb(232 52 52 / 1);
+  border-color: #fff;
   color: #fff;
 }
 

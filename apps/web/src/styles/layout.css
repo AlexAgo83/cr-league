@@ -1463,18 +1463,27 @@ label small {
 
 .circuit-weather-light_rain .circuit-map-stage::before,
 .circuit-weather-heavy_rain .circuit-map-stage::before {
-  background: linear-gradient(180deg, rgb(56 189 248 / 0.16), rgb(15 23 42 / 0.18));
+  background:
+    radial-gradient(circle at 24% 18%, rgb(125 211 252 / 0.12), transparent 34%),
+    linear-gradient(180deg, rgb(56 189 248 / 0.08), rgb(15 23 42 / 0.14));
   opacity: 1;
 }
 
 .circuit-weather-light_rain .circuit-map-stage::after,
 .circuit-weather-heavy_rain .circuit-map-stage::after {
-  background: repeating-linear-gradient(105deg, rgb(191 219 254 / 0.22) 0 1px, transparent 1px 12px);
-  opacity: 0.32;
+  animation: map-rain-drift 4.8s ease-in-out infinite;
+  background:
+    linear-gradient(112deg, transparent 0 30%, rgb(219 234 254 / 0.1) 42%, transparent 54%),
+    linear-gradient(112deg, transparent 0 58%, rgb(125 211 252 / 0.08) 68%, transparent 78%);
+  filter: blur(10px);
+  inset: -26%;
+  opacity: 0.38;
+  transform: translate3d(-4%, -6%, 0);
 }
 
 .circuit-weather-heavy_rain .circuit-map-stage::after {
-  opacity: 0.56;
+  animation-duration: 3.6s;
+  opacity: 0.52;
 }
 
 .circuit-map-stage > svg {
@@ -2354,9 +2363,17 @@ label small {
   }
 }
 
+@keyframes map-rain-drift {
+  50% {
+    transform: translate3d(4%, 6%, 0);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .circuit-route-accent,
   .circuit-start-line,
+  .circuit-weather-light_rain .circuit-map-stage::after,
+  .circuit-weather-heavy_rain .circuit-map-stage::after,
   .floating-notification button,
   .replay-map-controls .replay-playback-button.playing::after,
   .replay-map-controls .replay-playback-button.paused {

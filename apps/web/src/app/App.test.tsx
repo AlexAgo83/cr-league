@@ -398,6 +398,47 @@ describe("App", () => {
     expect(await screen.findByRole("dialog", { name: "Use the garage for the next GP" })).toBeTruthy();
   });
 
+  it("summarizes the player payoff after a resolved grand prix", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(resolvedState));
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    await closeLeagueIntro();
+
+    const payoff = screen.getByLabelText("What you gained");
+    expect(payoff.textContent).toContain("P1");
+    expect(payoff.textContent).toContain("+1");
+    expect(payoff.textContent).toContain("+25 pts");
+    expect(payoff.textContent).toContain("+150 credits");
+    expect(payoff.textContent).toContain("Rain Grip");
+  });
+
+  it("shows an explicit no-card payoff when no race card was consumed", async () => {
+    saveProfile();
+    const noCardState = {
+      ...resolvedState,
+      currentGrandPrix: {
+        ...resolvedState.currentGrandPrix,
+        result: {
+          ...resolvedState.currentGrandPrix.result,
+          consumedCards: []
+        }
+      }
+    };
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(noCardState));
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    await closeLeagueIntro();
+
+    expect(screen.getByLabelText("What you gained").textContent).toContain("No card spent");
+  });
+
   it("opens garage onboarding before the current GP is resolved", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));

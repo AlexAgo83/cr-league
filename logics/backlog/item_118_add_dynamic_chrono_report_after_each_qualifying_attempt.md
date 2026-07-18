@@ -1,10 +1,10 @@
 ## item_118_add_dynamic_chrono_report_after_each_qualifying_attempt - Add dynamic chrono report after each qualifying attempt
 > From version: 0.3.7
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Chrono learning loop
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

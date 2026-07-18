@@ -1,10 +1,10 @@
 ## item_123_add_post_replay_payoff_recap - Add post-replay payoff recap
 > From version: 0.3.7
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Post-race payoff
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

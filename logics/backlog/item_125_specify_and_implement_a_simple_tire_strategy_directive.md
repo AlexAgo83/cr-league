@@ -1,10 +1,10 @@
 ## item_125_specify_and_implement_a_simple_tire_strategy_directive - Specify and implement a simple tire strategy directive
 > From version: 0.3.7
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: High
 > Theme: Plan strategy depth
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

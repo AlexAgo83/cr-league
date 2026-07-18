@@ -1,10 +1,10 @@
 ## item_121_add_weather_visual_states_to_the_circuit_map - Add weather visual states to the circuit map
 > From version: 0.3.7
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Map atmosphere
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

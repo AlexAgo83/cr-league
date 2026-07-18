@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { act } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
@@ -392,6 +392,21 @@ describe("App", () => {
     expect(screen.queryByRole("dialog", { name: "Use the garage for the next GP" })).toBe(null);
 
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+
+    expect(await screen.findByRole("dialog", { name: "Use the garage for the next GP" })).toBeTruthy();
+  });
+
+  it("opens garage onboarding before the current GP is resolved", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
+    const raceIntro = await screen.findByRole("dialog", { name: "Read the race desk" });
+    fireEvent.click(within(raceIntro).getByRole("button", { name: "Got it" }));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
 
     expect(await screen.findByRole("dialog", { name: "Use the garage for the next GP" })).toBeTruthy();

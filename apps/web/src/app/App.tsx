@@ -384,8 +384,8 @@ export function App() {
     if (!leagueState || onboardingHelp) return;
     if (gameView === "drive" && raceDayPhase === "briefing") openOnboardingHelp("race");
     if (gameView === "plan") openOnboardingHelp("plan");
-    if (gameView === "garage" && isResolved) openOnboardingHelp("garage");
-  }, [gameView, isResolved, leagueState, onboardingHelp, preferencesResetSignal, raceDayPhase]);
+    if (gameView === "garage") openOnboardingHelp("garage");
+  }, [gameView, leagueState, onboardingHelp, preferencesResetSignal, raceDayPhase]);
 
   useEffect(() => {
     if (!leagueState) {
@@ -985,6 +985,7 @@ export function App() {
     <Modal label={tt("directive_confirm_title")} onClose={() => setDirectiveConfirmOpen(false)}>
       <span className="section-kicker">{tt("qualifying_kicker")}</span>
       <h2>{tt("directive_confirm_title")}</h2>
+      <img className="modal-hero-image" src="/assets/crl/send-plan-modal.png" alt="" />
       <p>
         {qualifyingAttemptsUsed === 0
           ? tt("directive_confirm_no_qualifying")
@@ -1004,6 +1005,7 @@ export function App() {
     <Modal label={tt("launch_gp_confirm_title")} onClose={() => setResolveConfirmOpen(false)}>
       <span className="section-kicker">{tt("action_launch_grand_prix")}</span>
       <h2>{tt("launch_gp_confirm_title")}</h2>
+      <img className="modal-hero-image" src="/assets/crl/launch-gp-modal.png" alt="" />
       <p>{tt("launch_gp_confirm_body")}</p>
       <div className="starting-grid-confirmation">
         <div>
@@ -1042,6 +1044,7 @@ export function App() {
     <Modal label={tt("qualifying_confirm_title")} onClose={() => setQualifyingConfirmOpen(false)}>
       <span className="section-kicker">{tt("qualifying_kicker")}</span>
       <h2>{tt("qualifying_confirm_title")}</h2>
+      <img className="modal-hero-image" src="/assets/crl/qualifying-modal.png" alt="" />
       <p>
         {tt("qualifying_confirm_body")} {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
       </p>
@@ -1059,6 +1062,7 @@ export function App() {
     <Modal label={tt("next_gp_confirm_title")} onClose={() => setNextGrandPrixConfirmOpen(false)}>
       <span className="section-kicker">{tt("action_next_grand_prix")}</span>
       <h2>{tt("next_gp_confirm_title")}</h2>
+      <img className="modal-hero-image" src="/assets/crl/next-gp-modal.png" alt="" />
       <p>{tt("next_gp_confirm_body")}</p>
       <div className="actions secondary-actions">
         <button type="button" onClick={() => void startNextGrandPrix()} disabled={status === "loading"}>
@@ -1122,6 +1126,7 @@ export function App() {
                 </h1>
               </div>
             </div>
+            <img className="setup-panel-image" src="/assets/crl/profile-arrival.png" alt="" />
             <p className={status === "error" ? "status error" : "status"}>{message === tt("status_initial") ? tt("profile_intro") : message}</p>
             {profileMode === "choice" ? (
               <div className="setup-choice-grid">
@@ -1186,6 +1191,7 @@ export function App() {
                 <h1>{setupMode === "create" ? tt("setup_create_title") : setupMode === "join" ? tt("setup_join_title") : tt("race_desk_title")}</h1>
               </div>
             </div>
+            <img className="setup-panel-image" src="/assets/crl/league-arrival.png" alt="" />
             <p className={status === "error" ? "status error" : "status"}>{message}</p>
 
             {setupMode === "choice" ? (

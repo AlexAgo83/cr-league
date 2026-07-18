@@ -527,6 +527,24 @@
   margin-bottom: 0;
 }
 
+.setup-panel-image,
+.modal-hero-image {
+  aspect-ratio: 16 / 9;
+  background: #050505;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.setup-panel-image {
+  border: 1px solid var(--color-border);
+}
+
+.setup-panel-image {
+  margin: 12px 0 16px;
+  max-height: 180px;
+}
+
 .section-kicker {
   color: var(--color-accent);
   display: block;
@@ -780,6 +798,16 @@ label small {
   margin: 0;
 }
 
+.directive-briefing-panel {
+  --color-text: #f8f3e8;
+  --color-muted: rgb(248 243 232 / 0.78);
+  background:
+    linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.42)),
+    url("/assets/crl/plan-header.png") center / cover no-repeat;
+  color: var(--color-text);
+  overflow: hidden;
+}
+
 @media (max-width: 720px) {
   .choice-grid,
   .directive-briefing {
@@ -917,6 +945,12 @@ label small {
 .modal h2 {
   font-size: 1.4rem;
   margin: 4px 0 8px;
+}
+
+.modal-hero-image {
+  border: 1px solid rgb(255 255 255 / 0.12);
+  margin: 12px 0;
+  max-height: 180px;
 }
 
 .notification-stack {
@@ -2286,13 +2320,32 @@ label small {
 
 .championship-overview {
   align-items: center;
+  --color-text: #f8f3e8;
+  --color-muted: rgb(248 243 232 / 0.78);
+  background:
+    linear-gradient(90deg, rgb(16 14 18 / 0.9), rgb(16 14 18 / 0.38)),
+    url("/assets/crl/championship-header.png") center / cover no-repeat;
+  color: var(--color-text);
   display: grid;
   gap: 16px;
   grid-template-columns: minmax(180px, 0.5fr) minmax(0, 1.5fr);
+  overflow: hidden;
 }
 
 .championship-overview h2 {
   margin: 0;
+}
+
+.championship-overview .invite-code {
+  background: rgb(16 14 18 / 0.64);
+  border-color: rgb(248 243 232 / 0.24);
+  color: var(--color-text);
+}
+
+.championship-overview .dashboard-summary {
+  --color-text: var(--color-ink);
+  --color-muted: var(--color-ink-muted);
+  color: var(--color-text);
 }
 
 .championship-meta {

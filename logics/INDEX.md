@@ -33,7 +33,7 @@
 | [prod_014_api_surface_follow_up_hardening_product_brief](product/prod_014_api_surface_follow_up_hardening_product_brief.md) | API Surface Follow-up Hardening Product Brief | Settled |  |  | product/prod_014_api_surface_follow_up_hardening_product_brief.md |
 | [prod_015_repo_review_remediation_pass_3_product_brief](product/prod_015_repo_review_remediation_pass_3_product_brief.md) | Repo Review Remediation Pass 3 Product Brief | Settled |  |  | product/prod_015_repo_review_remediation_pass_3_product_brief.md |
 | [prod_016_repo_review_remediation_pass_4_product_brief](product/prod_016_repo_review_remediation_pass_4_product_brief.md) | Repo Review Remediation Pass 4 Product Brief | Settled |  |  | product/prod_016_repo_review_remediation_pass_4_product_brief.md |
-| [prod_017_coherent_race_replay_and_simulation_realism_product_brief](product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md) | Coherent Race Replay And Simulation Realism Product Brief | Proposed |  |  | product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md |
+| [prod_017_coherent_race_replay_and_simulation_realism_product_brief](product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md) | Coherent Race Replay And Simulation Realism Product Brief | Settled |  |  | product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md |
 
 ## Roadmaps
 
@@ -201,9 +201,9 @@
 | [item_101_replay_scrubber_interaction_polish](backlog/item_101_replay_scrubber_interaction_polish.md) | Replay scrubber interaction polish | Done |  | 100% | backlog/item_101_replay_scrubber_interaction_polish.md |
 | [item_102_small_correctness_edges_across_web_and_shared](backlog/item_102_small_correctness_edges_across_web_and_shared.md) | Small correctness edges across web and shared | Done |  | 100% | backlog/item_102_small_correctness_edges_across_web_and_shared.md |
 | [item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups](backlog/item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups.md) | Deferred debt sweep: risk-path tests, script and config cleanups | Done |  | 100% | backlog/item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups.md |
-| [item_104_audit_and_normalize_circuit_race_distances](backlog/item_104_audit_and_normalize_circuit_race_distances.md) | Audit and normalize circuit race distances | Ready |  | 0% | backlog/item_104_audit_and_normalize_circuit_race_distances.md |
-| [item_105_define_the_replay_staging_contract](backlog/item_105_define_the_replay_staging_contract.md) | Define the replay staging contract | Ready |  | 0% | backlog/item_105_define_the_replay_staging_contract.md |
-| [item_106_implement_arcade_plausible_replay_movement](backlog/item_106_implement_arcade_plausible_replay_movement.md) | Implement arcade-plausible replay movement | Ready |  | 0% | backlog/item_106_implement_arcade_plausible_replay_movement.md |
+| [item_104_audit_and_normalize_circuit_race_distances](backlog/item_104_audit_and_normalize_circuit_race_distances.md) | Audit and normalize circuit race distances | Ready |  | 0 | backlog/item_104_audit_and_normalize_circuit_race_distances.md |
+| [item_105_define_the_replay_staging_contract](backlog/item_105_define_the_replay_staging_contract.md) | Define the replay staging contract | Ready |  | 0 | backlog/item_105_define_the_replay_staging_contract.md |
+| [item_106_implement_arcade_plausible_replay_movement](backlog/item_106_implement_arcade_plausible_replay_movement.md) | Implement arcade-plausible replay movement | Ready |  | 0 | backlog/item_106_implement_arcade_plausible_replay_movement.md |
 | [item_107_validate_replay_realism_with_tests_and_playtest_prompts](backlog/item_107_validate_replay_realism_with_tests_and_playtest_prompts.md) | Validate replay realism with tests and playtest prompts | Ready |  | 0% | backlog/item_107_validate_replay_realism_with_tests_and_playtest_prompts.md |
 
 ## Tasks
@@ -256,4 +256,4 @@
 | [task_044_orchestrate_api_surface_follow_up_hardening](tasks/task_044_orchestrate_api_surface_follow_up_hardening.md) | Orchestrate API surface follow-up hardening | Done | codex-work4 | 100% | tasks/task_044_orchestrate_api_surface_follow_up_hardening.md |
 | [task_045_orchestrate_repo_review_remediation_pass_3](tasks/task_045_orchestrate_repo_review_remediation_pass_3.md) | Orchestrate repo review remediation pass 3 | Done | claude | 100% | tasks/task_045_orchestrate_repo_review_remediation_pass_3.md |
 | [task_046_orchestrate_repo_review_remediation_pass_4](tasks/task_046_orchestrate_repo_review_remediation_pass_4.md) | Orchestrate repo review remediation pass 4 | Done | claude | 100% | tasks/task_046_orchestrate_repo_review_remediation_pass_4.md |
-| [task_047_orchestrate_coherent_replay_realism_and_circuit_normalization](tasks/task_047_orchestrate_coherent_replay_realism_and_circuit_normalization.md) | Orchestrate coherent replay realism and circuit normalization | Ready |  | 0% | tasks/task_047_orchestrate_coherent_replay_realism_and_circuit_normalization.md |
+| [task_047_orchestrate_coherent_replay_realism_and_circuit_normalization](tasks/task_047_orchestrate_coherent_replay_realism_and_circuit_normalization.md) | Orchestrate coherent replay realism and circuit normalization | Ready |  | 0 | tasks/task_047_orchestrate_coherent_replay_realism_and_circuit_normalization.md |

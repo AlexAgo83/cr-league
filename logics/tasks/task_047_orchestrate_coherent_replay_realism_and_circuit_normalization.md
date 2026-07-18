@@ -2,9 +2,9 @@
 > From version: 0.3.6
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 95
+> Confidence: 90
+> Progress: 0
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -13,14 +13,16 @@
 - This task coordinates the implementation of `req_046_make_race_simulation_and_replay_feel_coherent_across_circuits`.
 - Start from the current five-segment simulation trace, the React/SVG replay map, and the existing circuit route/lap data.
 - The first implementation wave must measure current circuit distance drift before changing laps, scaling, or replay animation behavior.
+- Normalization should bias toward larger, more flowing circuits rather than using the shortest or twistiest layouts as the target feel.
 - Keep simulation truth separate from replay presentation: final classification, reports, rewards, and consumed cards remain deterministic outcome data.
+- Replay tuning must include a readable plan/debug output so the implementation agent can inspect scripted beats directly.
 
 # Plan
 - [ ] 1. Read the current simulation, replay, circuit, map, and tests before editing: `simulateRace.ts`, `race.ts`, `circuits.ts`, `ReplayView.tsx`, `CircuitMap.tsx`, and replay/private-league tests.
-- [ ] 2. Add the circuit audit command first and capture the current outliers so lap or scaling changes are evidence-based.
-- [ ] 3. Choose the target perceived total-distance band, then normalize lap counts or replay scaling while keeping shared and web circuit data aligned.
-- [ ] 4. Define the replay staging contract before implementation, separating simulation truth from presentation-only beats.
-- [ ] 5. Implement deterministic replay staging and integrate it into `ReplayView` with staged overtake movement, tower agreement, marker seeking, and finish-order preservation.
+- [ ] 2. Add the circuit audit command first and capture route length, lap count, total distance, and a simple twistiness/complexity signal so lap or scaling changes are evidence-based.
+- [ ] 3. Choose the target perceived total-distance band, bias it toward larger and more flowing circuits, then normalize lap counts or replay scaling while keeping shared and web circuit data aligned.
+- [ ] 4. Define the replay staging contract before implementation, separating simulation truth from presentation-only beats and including a readable plan/debug output.
+- [ ] 5. Implement deterministic replay staging and integrate it into `ReplayView` with detailed staged overtake movement, tower agreement, marker seeking, and finish-order preservation.
 - [ ] 6. Validate shortest, longest, wettest, and high-overtaking circuits with focused tests and visual screenshots on desktop and mobile.
 - [ ] 7. Update specs, playtest prompts, and Logics proof, then run typecheck, lint, unit tests, build, e2e, i18n validation if copy changed, and Logics validation.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
@@ -35,8 +37,8 @@
 
 # Definition of Done (DoD)
 - [ ] Circuit audit command and output contract are implemented and documented.
-- [ ] Circuit lap counts or replay scaling are normalized against the selected target band.
-- [ ] Replay staging contract is implemented or documented before presentation integration.
+- [ ] Circuit lap counts or replay scaling are normalized against the selected target band, with a documented bias toward larger and less twisty routes.
+- [ ] Replay staging contract is implemented or documented before presentation integration, including readable debug or fixture output.
 - [ ] Replay movement stages overtakes and preserves final classification deterministically.
 - [ ] Representative circuit extremes are validated with tests and desktop/mobile visual checks.
 - [ ] Affected specs/docs and Logics closeout proof are updated.

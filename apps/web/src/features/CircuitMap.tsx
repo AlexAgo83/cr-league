@@ -46,7 +46,7 @@ const CLOSE_EXIT_DISTANCE = 6;
 const DRIFT_LOOKAHEAD = 0.012;
 const MAX_DRIFT_ANGLE = 14;
 type CameraZoomMode = "normal" | "traffic" | "close";
-type CarSprite = "idle" | "boost" | "brake";
+export type CarSprite = "idle" | "boost" | "brake";
 
 const CAR_SPRITES: Record<CarSprite, string> = {
   idle: "/assets/cars/idle.png",
@@ -359,24 +359,7 @@ export function CircuitMap({
   );
 }
 
-export function MapCarShape({ transform }: { transform?: string }) {
-  return (
-    <g className="map-car-shape" transform={transform}>
-      <rect className="map-car-wheel" x="-10" y="-10" width="5" height="3" rx="1.2" />
-      <rect className="map-car-wheel" x="-10" y="7" width="5" height="3" rx="1.2" />
-      <rect className="map-car-wheel" x="5" y="-10" width="5" height="3" rx="1.2" />
-      <rect className="map-car-wheel" x="5" y="7" width="5" height="3" rx="1.2" />
-      <path className="map-car-body" d="M-13,-8H8Q14,-8 15,-1V1Q14,8 8,8H-13Q-16,8 -16,0Q-16,-8 -13,-8Z" />
-      <path className="map-car-rear" d="M-13,-6H-7Q-10,-2 -10,0Q-10,2 -7,6H-13Q-14,6 -14,0Q-14,-6 -13,-6Z" />
-      <path className="map-car-glass" d="M-5,-5H6Q11,-5 12,0Q11,5 6,5H-5Q-7,2 -7,0Q-7,-2 -5,-5Z" />
-      <path className="map-car-windshield" d="M6,-4Q11,-2 13,0Q11,2 6,4Q8,0 6,-4Z" />
-      <path className="map-car-light" d="M12,-5Q15,-4 15,-1L12,-2Z" />
-      <path className="map-car-light" d="M12,5Q15,4 15,1L12,2Z" />
-    </g>
-  );
-}
-
-function MapCarSprite({ maskId, sprite, transform }: { maskId: string; sprite: CarSprite; transform?: string }) {
+export function MapCarSprite({ maskId, sprite, transform }: { maskId: string; sprite: CarSprite; transform?: string }) {
   const anchor = CAR_SPRITE_ANCHOR[sprite];
 
   return (

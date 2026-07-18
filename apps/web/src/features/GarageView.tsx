@@ -5,7 +5,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { CardStatBadges } from "./CardStatBadges.js";
-import { MapCarShape } from "./CircuitMap.js";
+import { MapCarSprite } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
 
@@ -98,8 +98,8 @@ export function GarageView({
             <div className="garage-team-heading">
               <div className="garage-livery-visuals">
                 <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
-                <svg className="garage-car-preview map-car" viewBox="-20 -14 40 28" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
-                  <MapCarShape />
+                <svg className="garage-car-preview map-car" viewBox="-20 -24 40 48" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
+                  <MapCarSprite sprite="idle" maskId="garage-car-preview-mask" transform="scale(1.45)" />
                 </svg>
               </div>
             </div>

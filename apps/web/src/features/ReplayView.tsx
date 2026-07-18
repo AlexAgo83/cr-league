@@ -529,6 +529,8 @@ export function ReplayView({
   const positionPopTimers = useRef<number[]>([]);
   const names = teamNamesFromResult(result);
   const field = result.classification;
+  const activeMoment = result.events.find((event) => event.id === activeMomentId);
+  const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
   const cars: MapCar[] = field.map((entry, index) => ({
     id: entry.teamId,
     label: String(Math.max(1, snapshot.tower.findIndex((team) => team.teamId === entry.teamId) + 1)),
@@ -538,7 +540,8 @@ export function ReplayView({
     progress: snapshot.carProgress[entry.teamId] ?? 0,
     livery: teamLiveries[entry.teamId],
     positionDelta: positionPops[entry.teamId]?.delta,
-    positionDeltaKey: positionPops[entry.teamId]?.key
+    positionDeltaKey: positionPops[entry.teamId]?.key,
+    eventLabel: activeMoment?.teamId === entry.teamId && activeMomentCard ? activeMomentCard.context : undefined
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
   const tower: ReplayTowerEntry[] = towerEntries ?? snapshot.tower.map((entry) => ({ teamId: entry.teamId, teamName: entry.teamName, value: "" }));
@@ -678,8 +681,6 @@ export function ReplayView({
   const activeDirectorCopy = activeDirectorBeat ? directorBeatCopy(activeDirectorBeat, names, tt) : null;
   const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId);
   const latestPlayerBeat = [...directorBeats].reverse().find((beat) => beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId);
-  const activeMoment = keyMoments.find((event) => event.id === activeMomentId);
-  const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
   const seekValueText = `${tt("unit_lap")} ${live.lap}/${circuit.laps}, ${Math.round(clock.current)}s`;
 
   function eventTime(event: RaceEvent) {
@@ -699,6 +700,7 @@ export function ReplayView({
             circuit={circuit}
             tt={tt}
             cars={cars}
+            weather={liveWeather}
             svgRef={svgRef}
             showHeading={false}
             framed={false}

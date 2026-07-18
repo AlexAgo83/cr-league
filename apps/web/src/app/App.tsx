@@ -1,4 +1,4 @@
-import { APP_NAME, APP_VERSION, type CardId, type QualifyingRun } from "@cr-league/shared";
+import { APP_NAME, APP_VERSION, type CardId, type QualifyingRun, type Weather } from "@cr-league/shared";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitForRound } from "./circuits.js";
@@ -1636,6 +1636,7 @@ export function App() {
                   showHeading={false}
                   framed={false}
                   showTraits={false}
+                  weather={forecastPick as Weather}
                   overlay={
                     <>
                       <div className="map-info-stack">

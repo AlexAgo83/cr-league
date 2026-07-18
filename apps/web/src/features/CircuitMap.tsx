@@ -1,6 +1,6 @@
 import { useEffect, useRef, type Ref } from "react";
 import type { CSSProperties } from "react";
-import type { TeamLivery } from "@cr-league/shared";
+import type { TeamLivery, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
@@ -16,6 +16,7 @@ export type MapCar = {
   livery?: TeamLivery;
   positionDelta?: number;
   positionDeltaKey?: number;
+  eventLabel?: string;
   repeatCount?: number | "indefinite";
 };
 
@@ -206,7 +207,8 @@ export function CircuitMap({
   className,
   showHeading = true,
   framed = true,
-  showTraits = true
+  showTraits = true,
+  weather
 }: {
   circuit: CityCircuit;
   tt: Translator;
@@ -222,6 +224,7 @@ export function CircuitMap({
   showHeading?: boolean;
   framed?: boolean;
   showTraits?: boolean;
+  weather?: Weather;
 }) {
   const { zoom, tiles, points, d, start } = circuitScene(circuit);
   const cameraRef = useRef<SVGGElement>(null);
@@ -291,7 +294,7 @@ export function CircuitMap({
 
   return (
     <section
-      className={`${framed ? "circuit-map" : "circuit-map circuit-map-unframed"}${className ? ` ${className}` : ""}`}
+      className={`${framed ? "circuit-map" : "circuit-map circuit-map-unframed"}${className ? ` ${className}` : ""}${weather ? ` circuit-weather-${weather}` : ""}`}
       aria-label={tt("city_circuit_map")}
     >
       {showHeading ? (
@@ -353,6 +356,11 @@ export function CircuitMap({
                         dominantBaseline="central"
                       >
                         {car.positionDelta > 0 ? `+${car.positionDelta}` : car.positionDelta}
+                      </text>
+                    ) : null}
+                    {car.eventLabel ? (
+                      <text className="map-car-event" x="0" y="-34" textAnchor="middle">
+                        {car.eventLabel}
                       </text>
                     ) : null}
                   </g>

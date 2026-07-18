@@ -1448,10 +1448,41 @@ label small {
   position: relative;
 }
 
+.circuit-map-stage::before,
+.circuit-map-stage::after {
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 1;
+}
+
+.circuit-map-stage::before {
+  opacity: 0;
+}
+
+.circuit-weather-light_rain .circuit-map-stage::before,
+.circuit-weather-heavy_rain .circuit-map-stage::before {
+  background: linear-gradient(180deg, rgb(56 189 248 / 0.16), rgb(15 23 42 / 0.18));
+  opacity: 1;
+}
+
+.circuit-weather-light_rain .circuit-map-stage::after,
+.circuit-weather-heavy_rain .circuit-map-stage::after {
+  background: repeating-linear-gradient(105deg, rgb(191 219 254 / 0.22) 0 1px, transparent 1px 12px);
+  opacity: 0.32;
+}
+
+.circuit-weather-heavy_rain .circuit-map-stage::after {
+  opacity: 0.56;
+}
+
 .circuit-map-stage > svg {
   display: block;
   height: auto;
+  position: relative;
   width: 100%;
+  z-index: 0;
 }
 
 .circuit-map-tile {
@@ -2432,6 +2463,16 @@ label small {
 
 .map-car-delta.loss {
   fill: #fb7185;
+}
+
+.map-car-event {
+  fill: #fff7ed;
+  font-size: 11px;
+  font-weight: 900;
+  paint-order: stroke;
+  stroke: rgb(17 16 20 / 0.94);
+  stroke-linejoin: round;
+  stroke-width: 7px;
 }
 
 @keyframes map-car-delta-float {

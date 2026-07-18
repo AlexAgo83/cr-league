@@ -728,6 +728,8 @@ describe("App", () => {
     fireEvent.click(document.querySelector(".replay-marker")!);
     expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("Rain Grip");
     expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("+2 pos");
+    expect(document.querySelector(".replay-map-panel")?.className).toContain("circuit-weather-light_rain");
+    expect(document.querySelector(".map-car-event")?.textContent).toContain("Rain Grip");
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Volt Union");
     fireEvent.click(screen.getByRole("button", { name: /Restart/ }));
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("0%");

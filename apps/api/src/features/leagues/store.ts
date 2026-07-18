@@ -524,6 +524,41 @@ export async function buyCard(db: Db, leagueId: string, input: { teamId?: string
   return getLeagueState(db, leagueId);
 }
 
+export async function sellCard(db: Db, leagueId: string, input: { teamId?: string; claimCode?: string; cardId?: string } = {}) {
+  const cardId = input.cardId;
+  if (typeof cardId !== "string" || !isCardId(cardId)) {
+    throw new LeagueRuleError("Expected a team and a valid card.");
+  }
+
+  const state = await getLeagueState(db, leagueId);
+  if (!state) return null;
+
+  const team = await requireTeamClaim(db, leagueId, input);
+  if (state.decisions.some((decision) => decision.teamId === team.id && decision.cardId === cardId)) {
+    throw new LeagueRuleError("This card is already used in your current plan.");
+  }
+  if (qualifyingCardForTeam(state.currentGrandPrix.qualifyingRuns, team.id) === cardId) {
+    throw new LeagueRuleError("This card is already locked by your qualifying run.");
+  }
+
+  await runWrite(db, async (tx) => {
+    const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
+    const cards = freshTeam && freshTeam.leagueId === leagueId ? normalizeCards(freshTeam.cards) : [];
+    if (!freshTeam || !cards.includes(cardId)) {
+      throw new LeagueRuleError("This card is not in your inventory.");
+    }
+    await tx.team.update({
+      where: { id: freshTeam.id },
+      data: {
+        credits: { increment: CARD_PRICE / 2 },
+        cards: removeOneCard(cards, cardId)
+      }
+    });
+  });
+
+  return getLeagueState(db, leagueId);
+}
+
 export async function updateLeagueSettings(db: Db, leagueId: string, input: UpdateLeagueSettingsInput = {}) {
   await requireAdminClaim(db, leagueId, input);
   const data: { cadence?: string; preparationDeadlineAt?: Date | null } = {};

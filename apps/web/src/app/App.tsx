@@ -507,6 +507,16 @@ export function App() {
     }, "status_card_bought");
   }
 
+  async function sellCard(cardId: CardId) {
+    if (!leagueState || !playerTeam) return;
+
+    await mutateLeague("status_selling_card", `/leagues/${leagueState.league.id}/cards/sell`, {
+      teamId: playerTeam.id,
+      claimCode: leagueState.player?.claimCode,
+      cardId
+    }, "status_card_sold");
+  }
+
   async function updateLivery(livery: LeagueState["teams"][number]["livery"]) {
     if (!leagueState || !playerTeam) return;
 
@@ -1474,6 +1484,7 @@ export function App() {
             isResolved={isResolved}
             loading={status === "loading"}
             onBuyCard={buyCard}
+            onSellCard={sellCard}
             onUpdateLivery={updateLivery}
             onUpdateTeamName={updateTeamName}
             tt={tt}

@@ -11,6 +11,7 @@ import {
   rejoinLeague,
   restartLeague,
   resolveCurrentGrandPrix,
+  sellCard,
   startNextGrandPrix,
   submitDecision,
   submitQualifyingRun,
@@ -127,6 +128,23 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
 
     try {
       const state = await buyCard(db, request.params.leagueId, request.body);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return sendLeagueRuleError(reply, error);
+      }
+      throw error;
+    }
+  });
+
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cards/sell", async (request, reply) => {
+    if (!isBuyCardBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and card id." });
+    }
+
+    try {
+      const state = await sellCard(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
       return state;
     } catch (error) {

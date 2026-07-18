@@ -266,6 +266,46 @@ describe("api app", () => {
     expect(botAfterNext.credits).toBeLessThan(botBeforeNext.credits);
   });
 
+  it("sells an unused card for half price but rejects cards locked in a plan", async () => {
+    const app = await createTestApp(createMemoryDb());
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Sell League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const claim = created.player;
+    const payload = { teamId: claim.teamId, claimCode: claim.claimCode, cardId: "rain_grip" };
+
+    const sellResponse = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/cards/sell`, payload });
+    const soldTeam = sellResponse.json().teams.find((team: { id: string }) => team.id === claim.teamId);
+    const sellAgainResponse = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/cards/sell`, payload });
+
+    const lockedCreateResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Locked League", teamName: "Volt Union" }
+    });
+    const locked = lockedCreateResponse.json();
+    const lockedClaim = locked.player;
+    const lockedPayload = { teamId: lockedClaim.teamId, claimCode: lockedClaim.claimCode, cardId: "rain_grip" };
+    await app.inject({
+      method: "POST",
+      url: `/leagues/${locked.league.id}/decisions`,
+      payload: { ...lockedPayload, approach: "balanced", preparation: "weather" }
+    });
+    const lockedSellResponse = await app.inject({ method: "POST", url: `/leagues/${locked.league.id}/cards/sell`, payload: lockedPayload });
+
+    await app.close();
+
+    expect(CARD_PRICE % 2).toBe(0);
+    expect(sellResponse.statusCode).toBe(200);
+    expect(soldTeam.cards).toEqual([]);
+    expect(soldTeam.credits).toBe(CARD_PRICE / 2);
+    expect(sellAgainResponse.statusCode).toBe(409);
+    expect(lockedSellResponse.statusCode).toBe(409);
+  });
+
   it("creates and recovers a profile with linked league teams", async () => {
     const app = await createTestApp(createMemoryDb());
 

@@ -65,11 +65,11 @@ const baseState = {
     }
   ],
   cardShop: [
-    { cardId: "rain_grip", price: 100 },
-    { cardId: "launch_boost", price: 100 },
-    { cardId: "soft_tires", price: 100 },
-    { cardId: "qualifying_focus", price: 100 },
-    { cardId: "defensive_order", price: 100 }
+    { cardId: "rain_grip", price: 120 },
+    { cardId: "launch_boost", price: 120 },
+    { cardId: "soft_tires", price: 120 },
+    { cardId: "qualifying_focus", price: 120 },
+    { cardId: "defensive_order", price: 120 }
   ],
   actionState: {
     submittedTeamIds: [],
@@ -345,9 +345,13 @@ describe("App", () => {
     expect(screen.queryByText("League created. Submit your race directive.")).toBe(null);
   });
 
-  it("opens owned garage cards read-only while preserving shop purchase controls", async () => {
+  it("sells owned garage cards while preserving shop purchase controls", async () => {
     saveProfile();
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+    const soldState = {
+      ...baseState,
+      teams: [{ ...baseState.teams[0], credits: 60, cards: [] }, baseState.teams[1]]
+    };
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(soldState));
 
     render(<App />);
     createLeagueFromSetup();
@@ -361,7 +365,13 @@ describe("App", () => {
     expect(screen.getByText("Pays off if rain appears around mid-race.")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Buy card" })).toBe(null);
     expect(screen.queryByText("This card will join your garage and can shape your next directive.")).toBe(null);
-    fireEvent.click(screen.getByRole("dialog", { name: "Rain Grip" }).querySelector(".modal-actions button")!);
+    fireEvent.click(screen.getByRole("button", { name: "Sell for 60 credits" }));
+    await act(async () => {});
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://localhost:4874/leagues/league_1/cards/sell",
+      expect.objectContaining({ method: "POST", body: JSON.stringify({ teamId: "team_1", claimCode: "CLAIM123", cardId: "rain_grip" }) })
+    );
+    expect(screen.getByText("Card sold.")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
     fireEvent.click(screen.getByRole("button", { name: /Soft Tires/ }));

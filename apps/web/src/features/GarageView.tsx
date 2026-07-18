@@ -21,6 +21,7 @@ export function GarageView({
   isResolved,
   loading,
   onBuyCard,
+  onSellCard,
   onUpdateLivery,
   onUpdateTeamName,
   tt
@@ -34,6 +35,7 @@ export function GarageView({
   isResolved: boolean;
   loading: boolean;
   onBuyCard: (cardId: CardId) => void;
+  onSellCard: (cardId: CardId) => void;
   onUpdateLivery: (livery: LeagueState["teams"][number]["livery"]) => void;
   onUpdateTeamName: (name: string) => void;
   tt: Translator;
@@ -64,6 +66,12 @@ export function GarageView({
   const shopOffers = recommendedShopOffers(state, forecastPick);
   const pendingBuy = shopOffers.find((item) => item.cardId === pendingBuyCardId);
   const viewingFit = viewingCardId ? cardFit(viewingCardId, state, forecastPick) : null;
+  const viewingSellPrice = (state.cardShop.find((item) => item.cardId === viewingCardId)?.price ?? 0) / 2;
+  const viewingCardLocked = Boolean(
+    viewingCardId &&
+      (state.decisions.some((decision) => decision.teamId === playerTeam.id && decision.cardId === viewingCardId) ||
+        state.currentGrandPrix.qualifyingRuns.some((run) => run.teamId === playerTeam.id && run.decision?.cardId === viewingCardId))
+  );
   const pendingBuyAffordable = Boolean(pendingBuy && playerTeam.credits >= pendingBuy.price);
   const panelTitle = cardPanel === "team" ? tt("dashboard_my_team") : cardPanel === "inventory" ? tt("garage_inventory") : tt("garage_shop");
   const seasonWins = seasonWinsByTeamId(state).get(playerTeam.id) ?? 0;
@@ -223,6 +231,16 @@ export function GarageView({
             <CardStatBadges cardId={viewingCardId} tt={tt} />
           </div>
           <div className="modal-actions">
+            <button
+              type="button"
+              onClick={() => {
+                onSellCard(viewingCardId);
+                setViewingCardId(undefined);
+              }}
+              disabled={loading || viewingSellPrice <= 0 || viewingCardLocked}
+            >
+              {tt("garage_sell_card_action", { price: viewingSellPrice })}
+            </button>
             <button type="button" onClick={() => setViewingCardId(undefined)}>
               {tt("action_close")}
             </button>

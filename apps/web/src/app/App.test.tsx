@@ -441,9 +441,9 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "Run a lap time" })).toBe(null);
     expect(screen.queryByText("Your best time sets your grid slot.", { exact: false })).toBe(null);
     expect(screen.queryByRole("button", { name: "Run lap time" })).toBe(null);
-    expect(document.querySelector(".replay-tower")?.textContent).toContain("Lap 1");
+    expect(document.querySelector(".replay-tower")?.textContent).toContain("Attempt 1 · lap 1");
     expect(document.querySelector(".replay-tower")?.textContent).toContain("75.18s");
-    expect(document.querySelector(".replay-tower")?.textContent).toContain("Lap 2");
+    expect(document.querySelector(".replay-tower")?.textContent).toContain("Attempt 1 · lap 2");
     expect(document.querySelector(".replay-tower")?.textContent).toContain("72.42s");
     expect(document.querySelector(".replay-tower")?.textContent).not.toContain("Mika Blitz");
     expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("replay-close-button");
@@ -451,6 +451,7 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "Lap time replay" })).toBe(null);
     expect(screen.getByText("72.42s")).toBeTruthy();
     expect(screen.getByText("75.18s")).toBeTruthy();
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 2");
     expect(screen.getByRole("button", { name: "Review lap time" }).hasAttribute("disabled")).toBe(false);
     expect(screen.getByRole("button", { name: "Review lap time" }).className).toContain("primary-command");
     expect(screen.getByRole("heading", { name: "2. Chrono / plan" })).toBeTruthy();

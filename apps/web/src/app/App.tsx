@@ -52,7 +52,7 @@ function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: 
   return impacts;
 }
 
-function qualifyingReplayTower(run: QualifyingRun | null, runs: QualifyingRun[], tt: (key: TranslationKey) => string) {
+function qualifyingReplayTower(run: QualifyingRun | null, runs: QualifyingRun[], tt: (key: TranslationKey, params?: Record<string, string | number>) => string) {
   if (!run) return [];
   return runs
     .filter((lapRun) => lapRun.teamId === run.teamId && lapRun.attempts === run.attempts)
@@ -60,7 +60,7 @@ function qualifyingReplayTower(run: QualifyingRun | null, runs: QualifyingRun[],
     .map((lapRun, index) => ({
       id: `${lapRun.teamId}-${lapRun.attempts}-${lapRun.lap ?? index + 1}`,
       teamId: lapRun.teamId,
-      teamName: `${tt("unit_lap")} ${lapRun.lap ?? index + 1}`,
+      teamName: tt("qualifying_replay_lap_label", { attempt: lapRun.attempts, lap: lapRun.lap ?? index + 1 }),
       value: `${lapRun.time.toFixed(2)}s`
     }));
 }
@@ -1321,7 +1321,7 @@ export function App() {
                                 <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeam?.id ? "player" : undefined}>
                                   <span>
                                     {run.position}. {run.teamName}
-                                    {run.lap ? ` · ${tt("unit_lap")} ${run.lap}` : ""}
+                                    {run.attempts ? ` · ${tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}` : ""}
                                   </span>
                                   <em>{run.time.toFixed(2)}s</em>
                                 </li>

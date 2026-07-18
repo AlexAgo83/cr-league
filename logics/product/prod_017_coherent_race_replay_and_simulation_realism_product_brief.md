@@ -1,6 +1,6 @@
 ## prod_017_coherent_race_replay_and_simulation_realism_product_brief - Coherent Race Replay And Simulation Realism Product Brief
 > Date: 2026-07-18
-> Status: Proposed
+> Status: Settled
 > Related request: `req_046_make_race_simulation_and_replay_feel_coherent_across_circuits`
 > Related backlog: `item_104_audit_and_normalize_circuit_race_distances`, `item_105_define_the_replay_staging_contract`, `item_106_implement_arcade_plausible_replay_movement`, `item_107_validate_replay_realism_with_tests_and_playtest_prompts`
 > Related task: `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`

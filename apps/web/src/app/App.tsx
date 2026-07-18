@@ -554,7 +554,6 @@ export function App() {
       setGameView("drive");
       setResultTab("replay");
       setResultOpen(true);
-      showStatus(tt("status_grand_prix_resolved"));
       pushCommandHint("resolved");
     });
   }
@@ -1116,18 +1115,15 @@ export function App() {
         profileLogoutModal={profileLogoutModal}
         preferencesResetModal={preferencesResetModal}
       >
-        <section className="setup-grid setup-grid-single" aria-labelledby="profile-title">
-          <div className="panel setup-main-panel">
-            <div className="panel-heading">
-              <div>
-                <span className="section-kicker">{tt("profile_kicker")}</span>
-                <h1 id="profile-title">
-                  {profileMode === "create" ? tt("profile_create_title") : profileMode === "recover" ? tt("profile_recover_title") : tt("profile_title")}
-                </h1>
-              </div>
-            </div>
-            <img className="setup-panel-image" src="/assets/crl/profile-arrival.png" alt="" />
+        <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="profile-title">
+          <div className="panel setup-main-panel setup-hero-panel profile-hero-panel">
+            <span className="section-kicker">{tt("profile_kicker")}</span>
+            <h1 id="profile-title">
+              {profileMode === "create" ? tt("profile_create_title") : profileMode === "recover" ? tt("profile_recover_title") : tt("profile_title")}
+            </h1>
             <p className={status === "error" ? "status error" : "status"}>{message === tt("status_initial") ? tt("profile_intro") : message}</p>
+          </div>
+          <div className="panel setup-main-panel setup-form-panel">
             {profileMode === "choice" ? (
               <div className="setup-choice-grid">
                 <button type="button" className="setup-choice" onClick={() => setProfileMode("create")}>
@@ -1183,16 +1179,13 @@ export function App() {
         {gameView === "changelog" ? (
           <ChangelogView currentVersion={APP_VERSION} tt={tt} />
         ) : (
-        <section className="setup-grid setup-grid-single" aria-label={tt("flow_label")}>
-          <div className="panel setup-main-panel">
-            <div className="panel-heading">
-              <div>
-                <span className="section-kicker">{tt("race_desk_kicker")}</span>
-                <h1>{setupMode === "create" ? tt("setup_create_title") : setupMode === "join" ? tt("setup_join_title") : tt("race_desk_title")}</h1>
-              </div>
-            </div>
-            <img className="setup-panel-image" src="/assets/crl/league-arrival.png" alt="" />
+        <section className="setup-grid setup-grid-single setup-grid-split" aria-label={tt("flow_label")}>
+          <div className="panel setup-main-panel setup-hero-panel league-hero-panel">
+            <span className="section-kicker">{tt("race_desk_kicker")}</span>
+            <h1>{setupMode === "create" ? tt("setup_create_title") : setupMode === "join" ? tt("setup_join_title") : tt("race_desk_title")}</h1>
             <p className={status === "error" ? "status error" : "status"}>{message}</p>
+          </div>
+          <div className="panel setup-main-panel setup-form-panel">
 
             {setupMode === "choice" ? (
               <div className="setup-choice-grid">

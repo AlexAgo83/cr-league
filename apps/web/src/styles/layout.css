@@ -155,6 +155,10 @@
   justify-content: center;
 }
 
+.setup-grid-split {
+  gap: 0;
+}
+
 .setup-main-panel {
   max-width: 560px;
   width: 100%;
@@ -164,6 +168,21 @@
   font-size: 1.8rem;
   line-height: 1.1;
   margin: 0;
+}
+
+.setup-hero-panel {
+  --color-text: #f8f3e8;
+  --color-muted: rgb(248 243 232 / 0.78);
+  border-bottom: 0;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  color: var(--color-text);
+  min-height: 210px;
+}
+
+.setup-form-panel {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
 }
 
 .setup-choice-grid {
@@ -497,6 +516,18 @@
   padding: 20px;
 }
 
+.profile-hero-panel {
+  background:
+    linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.38)),
+    url("/assets/crl/profile-arrival.png") center / cover no-repeat;
+}
+
+.league-hero-panel {
+  background:
+    linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.38)),
+    url("/assets/crl/league-arrival.png") center / cover no-repeat;
+}
+
 .panel h2,
 .panel h3,
 .panel h4 {
@@ -527,22 +558,12 @@
   margin-bottom: 0;
 }
 
-.setup-panel-image,
 .modal-hero-image {
   aspect-ratio: 16 / 9;
   background: #050505;
   display: block;
   object-fit: cover;
   width: 100%;
-}
-
-.setup-panel-image {
-  border: 1px solid var(--color-border);
-}
-
-.setup-panel-image {
-  margin: 12px 0 16px;
-  max-height: 180px;
 }
 
 .section-kicker {
@@ -3551,8 +3572,7 @@ button.command-icon-button {
 }
 
 .report-hero .report-headline,
-.report-hero .report-podium,
-.report-hero .report-close-button {
+.report-hero .report-podium {
   position: relative;
   z-index: 1;
 }
@@ -3569,9 +3589,10 @@ button.command-icon-button {
   min-height: 0;
   padding: 0;
   position: absolute;
-  right: 14px;
-  top: 14px;
+  right: 20px;
+  top: 20px;
   width: 30px;
+  z-index: 2;
 }
 
 .report-close-button:hover,
@@ -4374,7 +4395,7 @@ button.primary-command {
 .garage-grid,
 .report-view,
 .plan-view,
-.setup-main-panel {
+.setup-form-panel {
   --color-surface: var(--color-paper);
   --color-cockpit: #e2dccb;
   --color-text: var(--color-ink);
@@ -4390,7 +4411,7 @@ button.primary-command {
 .garage-grid .panel,
 .report-view .panel,
 .plan-view .panel,
-.setup-main-panel {
+.setup-form-panel {
   border: 0;
   box-shadow: 0 2px 0 rgb(0 0 0 / 0.35);
   clip-path: var(--chamfer);

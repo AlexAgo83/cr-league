@@ -728,6 +728,10 @@ label small {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
+.directive-choice-grid {
+  grid-template-columns: 1fr;
+}
+
 .card-choice-grid {
   grid-template-columns: 1fr;
 }

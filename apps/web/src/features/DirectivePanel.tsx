@@ -153,7 +153,7 @@ export function DirectivePanel({
 
       {step === "approach" ? (
         <fieldset className="choice-group" aria-label={tt("field_approach")}>
-          <div className="choice-grid">
+          <div className="choice-grid directive-choice-grid">
             {APPROACHES.map((approach) => (
               <button key={approach} type="button" className={form.approach === approach ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_approach")}: ${tt(`approach_${approach}` as TranslationKey)}`} aria-pressed={form.approach === approach} onClick={() => setForm({ ...form, approach })} disabled={disabled}>
                 <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
@@ -167,7 +167,7 @@ export function DirectivePanel({
 
       {step === "preparation" ? (
         <fieldset className="choice-group" aria-label={tt("field_preparation")}>
-          <div className="choice-grid">
+          <div className="choice-grid directive-choice-grid">
             {PREPARATIONS.map((preparation) => (
               <button key={preparation} type="button" className={form.preparation === preparation ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_preparation")}: ${tt(`preparation_${preparation}` as TranslationKey)}`} aria-pressed={form.preparation === preparation} onClick={() => setForm({ ...form, preparation })} disabled={disabled}>
                 <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>

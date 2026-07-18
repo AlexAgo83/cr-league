@@ -410,9 +410,11 @@ describe("App", () => {
     expect(screen.getByText("High overtaking rewards attack and launch cards.")).toBeTruthy();
     expect([...document.querySelectorAll(".directive-trait-modifier")].map((element) => element.textContent)).toEqual(["+3", "-1", "+1"]);
     // Approach sub-screen is shown first.
+    expect(document.querySelector(".choice-grid")?.className).toContain("directive-choice-grid");
     expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");
     // Preparation choices only appear on their sub-screen.
     fireEvent.click(screen.getByRole("tab", { name: "Preparation: Weather" }));
+    expect(document.querySelector(".choice-grid")?.className).toContain("directive-choice-grid");
     expect(screen.getByRole("button", { name: "Preparation: Weather" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Card: Rain Grip" }));

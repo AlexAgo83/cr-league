@@ -350,6 +350,7 @@ export function App() {
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
   const [qualifyingCommandClicked, setQualifyingCommandClicked] = useState(false);
+  const [directiveCommandClicked, setDirectiveCommandClicked] = useState(false);
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
@@ -526,6 +527,7 @@ export function App() {
 
   useEffect(() => {
     setQualifyingCommandClicked(false);
+    setDirectiveCommandClicked(false);
   }, [currentGrandPrixKey]);
 
   useEffect(() => {
@@ -587,6 +589,7 @@ export function App() {
 
   async function submitDirective() {
     if (!leagueState || !playerTeam) return;
+    setDirectiveCommandClicked(true);
     if (qualifyingAttemptsUsed === 0 || qualifyingAttemptsLeft > 0) {
       setDirectiveConfirmOpen(true);
       return;
@@ -1781,7 +1784,12 @@ export function App() {
                               >
                                 {tt("action_qualifying_history")}
                               </button>
-                              <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                              <button
+                                className={`primary-command${!directiveCommandClicked ? " highlight-command" : ""}`}
+                                type="button"
+                                onClick={primaryCommand.action}
+                                disabled={primaryCommand.disabled}
+                              >
                                 {primaryCommand.label}
                               </button>
                             </>

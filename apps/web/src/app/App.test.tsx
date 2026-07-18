@@ -625,7 +625,7 @@ describe("App", () => {
     // Qualifying modal from the race phase panel
     expect(screen.queryByText("Wait for directives")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "New lap time" }));
-    expect(document.querySelector(".race-phase-actions button.highlight-command")).toBe(null);
+    expect([...document.querySelectorAll(".race-phase-actions button.highlight-command")].map((button) => button.textContent)).not.toContain("New lap time");
     expect(screen.getByRole("dialog", { name: "Run a lap time?" })).toBeTruthy();
     expect(screen.getByText("This attempt uses your current directive and the forecast conditions. Attempts left 3/3")).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "New lap time" }).at(-1)!);
@@ -685,7 +685,9 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Standings" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    expect(screen.getByRole("button", { name: "Send plan" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
+    expect(document.querySelector(".race-phase-actions button.highlight-command")).toBe(null);
     expect(screen.getByRole("dialog", { name: "Send race plan" })).toBeTruthy();
     expect(screen.getByText("You still have chrono attempts left. Send the plan now? 2/3")).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "Send plan" }).at(-1)!);

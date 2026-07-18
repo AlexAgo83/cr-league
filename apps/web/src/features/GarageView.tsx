@@ -229,6 +229,7 @@ export function GarageView({
           </button>
           <span className="section-kicker">{tt("garage_shop")}</span>
           <h2>{tt(`card_${pendingBuy.cardId}` as TranslationKey)}</h2>
+          <img className="modal-hero-image" src="/assets/crl/garage-buy-modal.png" alt="" />
           <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
             <strong>{pendingBuy.price}</strong>
@@ -254,6 +255,7 @@ export function GarageView({
           </button>
           <span className="section-kicker">{tt("garage_inventory")}</span>
           <h2>{tt(`card_${viewingCardId}` as TranslationKey)}</h2>
+          <img className="modal-hero-image" src="/assets/crl/garage-sell-modal.png" alt="" />
           <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card garage-detail-card">
             <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>

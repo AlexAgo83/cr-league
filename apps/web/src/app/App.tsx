@@ -1312,7 +1312,10 @@ export function App() {
                     </button>
                   </div>
                 ) : (
-                  <p className="saved-leagues-empty">{tt("profile_saved_leagues_empty")}</p>
+                  <div className="saved-leagues-empty">
+                    <img src="/assets/crl/saved-leagues-empty.png" alt="" />
+                    <p>{tt("profile_saved_leagues_empty")}</p>
+                  </div>
                 )}
               </div>
             ) : null}
@@ -1621,6 +1624,7 @@ export function App() {
             {tt("league_season")} {seasonRecap.season}
           </span>
           <h2>{tt("season_recap_title")}</h2>
+          <img className="modal-hero-image" src="/assets/crl/season-recap-modal.png" alt="" />
           <div className="season-champion-card">
             <span>{tt("season_champion")}</span>
             <strong>

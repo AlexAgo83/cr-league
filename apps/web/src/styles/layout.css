@@ -921,6 +921,26 @@ label small {
 }
 
 .saved-leagues-empty {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+}
+
+.saved-leagues-empty img,
+.record-hero-image {
+  aspect-ratio: 16 / 9;
+  background: #050505;
+  display: block;
+  object-fit: cover;
+  width: 100%;
+}
+
+.saved-leagues-empty img {
+  border: 1px solid var(--color-border);
+  max-height: 150px;
+}
+
+.saved-leagues-empty p {
   color: var(--color-muted);
   margin: 0;
 }
@@ -1474,6 +1494,12 @@ label small {
   right: 12px;
   top: 12px;
   z-index: 2;
+}
+
+.map-final-classification {
+  background:
+    linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.46)),
+    url("/assets/crl/completed-gp-panel.png") center / cover no-repeat;
 }
 
 .map-qualifying-times header {
@@ -2648,6 +2674,11 @@ label small {
 
 .palmares-button small {
   color: var(--color-muted);
+}
+
+.record-hero-image {
+  border: 1px solid var(--color-border);
+  max-height: 220px;
 }
 
 .season-history-groups {

@@ -117,22 +117,25 @@ export function ChampionshipView({
           ) : null}
 
           {recordTab === "palmares" ? (
-            <ol className="palmares-list">
-              {completedSeasons.map((season) => (
-                <li key={season.season}>
-                  <button type="button" className="palmares-button" onClick={() => onOpenSeasonRecap(season.season)}>
-                    <span>{season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} /> : null}</span>
-                    <strong>
-                      {tt("league_season")} {season.season}
-                    </strong>
-                    <span>{season.champion.teamName}</span>
-                    <small>
-                      {season.gpCount} {tt("season_gp_count")}
-                    </small>
-                  </button>
-                </li>
-              ))}
-            </ol>
+            <>
+              <img className="record-hero-image" src="/assets/crl/hall-of-fame.png" alt="" />
+              <ol className="palmares-list">
+                {completedSeasons.map((season) => (
+                  <li key={season.season}>
+                    <button type="button" className="palmares-button" onClick={() => onOpenSeasonRecap(season.season)}>
+                      <span>{season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} /> : null}</span>
+                      <strong>
+                        {tt("league_season")} {season.season}
+                      </strong>
+                      <span>{season.champion.teamName}</span>
+                      <small>
+                        {season.gpCount} {tt("season_gp_count")}
+                      </small>
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </>
           ) : null}
 
           {recordTab === "history" ? (

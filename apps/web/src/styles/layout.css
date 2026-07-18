@@ -425,6 +425,11 @@
   gap: 2px;
 }
 
+.changelog-entry.panel {
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
 .changelog-entry header span {
   color: var(--color-accent);
   font-family: var(--font-display);

@@ -1041,6 +1041,9 @@ export function App() {
         profileCodeModal={profileCodeModal}
         profileLogoutModal={profileLogoutModal}
       >
+        {gameView === "changelog" ? (
+          <ChangelogView currentVersion={APP_VERSION} tt={tt} />
+        ) : (
         <section className="setup-grid setup-grid-single" aria-label={tt("flow_label")}>
           <div className="panel setup-main-panel">
             <div className="panel-heading">
@@ -1182,6 +1185,7 @@ export function App() {
             ) : null}
           </div>
         </section>
+        )}
       </SetupShell>
     );
   }

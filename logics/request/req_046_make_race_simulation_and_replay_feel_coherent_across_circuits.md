@@ -2,8 +2,8 @@
 > From version: 0.3.6
 > Schema version: 1.0
 > Status: Draft
-> Understanding: 95
-> Confidence: 90
+> Understanding: 96
+> Confidence: 91
 > Complexity: High
 > Theme: Race simulation realism and replay coherence
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -13,6 +13,7 @@
 - Normalize circuit pacing so different city routes remain distinct but do not produce wildly different replay lengths, lap counts, or perceived race duration.
 - Prefer longer, more flowing circuit profiles when normalization needs a bias: short or very twisty routes should not become the reference feel for the championship.
 - Separate race outcome truth from replay presentation so the simulation stays deterministic while the replay can stage overtakes, gaps, and momentum more convincingly.
+- Enrich `RaceResult` with deterministic race facts if the current payload is too sparse for a convincing replay: finer gaps, order-change facts, pressure windows, momentum shifts, and event-to-replay metadata are acceptable.
 - Audit the current circuit geometry and lap counts with a repeatable tool before changing balance-sensitive values.
 - Give implementation agents a way to inspect replay scripts themselves through deterministic debug output, fixtures, or a small readable replay-plan dump.
 - Keep the work development-ready for another AI: clear files, scope, acceptance criteria, risks, validation gates, and staged implementation order.
@@ -26,16 +27,18 @@
 - A quick display-distance sample showed a large spread in total visual race distance: Paris Left Bank Loop is roughly 3.1 times Berlin Mitte Dash after applying current lap counts.
 - Circuit normalization should not blindly equalize every route. Larger circuits and routes with fewer sharp turns should be favored as the target feel because they better support readable replay spacing, camera tracking, and overtakes.
 - The desired feel is arcade-plausible, not a full racing physics model. Scripted passing beats, close-follow moments, and presentation-only interpolation are in scope if the final classification and event semantics remain deterministic.
+- `RaceResult` may grow to expose replay-useful race facts, but it must not contain UI animation instructions, CSS concepts, camera choreography, or display-only easing values.
 
 # Acceptance criteria
 - AC1: A documented circuit audit reports per-circuit display route length, configured laps, total display distance, recommended laps, and outliers, with a repeatable command checked into the repo.
 - AC2: Circuit lap counts or replay distance scaling are adjusted so normal race routes land inside an agreed target band for perceived total race distance, favoring longer and less twisty routes as the reference feel, with explicit exceptions if any route intentionally remains shorter or tighter.
 - AC3: The race outcome model remains deterministic and keeps final classification, rewards, consumed cards, report text, and event semantics stable unless a change is deliberately documented.
-- AC4: A presentation-layer replay script or staging adapter converts `RaceResult` plus circuit context into deterministic replay beats for starts, pace phases, close-follow phases, attack setup, overtakes, defense, gap rebuild, weather changes, key events, and finish order.
-- AC5: Replay overtakes are visually staged as approach, overlap or offset, order swap, and settle phases instead of abrupt rank jumps or disconnected car positions, and the script can be inspected through a readable debug dump or deterministic fixture.
-- AC6: Replay behavior is consistent across at least the shortest, longest, most technical, and wettest circuits in the rotation, with desktop and mobile screenshots or e2e checks showing no broken framing or overlapping labels.
-- AC7: Unit tests cover circuit normalization math, replay script determinism, final-order preservation, and at least one multi-overtake trace.
-- AC8: Existing gates still pass: typecheck, lint, unit tests, build, e2e replay/private-league checks, i18n validation if copy changes, and Logics validation.
+- AC4: `RaceResult` is enriched when needed with deterministic replay-useful race facts, such as finer gaps, order-change facts, pressure windows, attack/defense context, momentum shifts, and event-to-replay metadata, without storing UI animation instructions.
+- AC5: A presentation-layer replay script or staging adapter converts `RaceResult` plus circuit context into deterministic replay beats for starts, pace phases, close-follow phases, attack setup, overtakes, defense, gap rebuild, weather changes, key events, and finish order.
+- AC6: Replay overtakes are visually staged as approach, overlap or offset, order swap, and settle phases instead of abrupt rank jumps or disconnected car positions, and the script can be inspected through a readable debug dump or deterministic fixture.
+- AC7: Replay behavior is consistent across at least the shortest, longest, most technical, and wettest circuits in the rotation, with desktop and mobile screenshots or e2e checks showing no broken framing or overlapping labels.
+- AC8: Unit tests cover circuit normalization math, RaceResult enrichment determinism, replay script determinism, final-order preservation, and at least one multi-overtake trace.
+- AC9: Existing gates still pass: typecheck, lint, unit tests, build, e2e replay/private-league checks, i18n validation if copy changes, and Logics validation.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

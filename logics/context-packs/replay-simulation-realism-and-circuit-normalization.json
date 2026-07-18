@@ -46,17 +46,17 @@
           "- AC1: A documented circuit audit reports per-circuit display route length, configured laps, total display distance, recommended laps, and outliers, with a repeatable command checked into the repo.",
           "- AC2: Circuit lap counts or replay distance scaling are adjusted so normal race routes land inside an agreed target band for perceived total race distance, favoring longer and less twisty routes as the reference feel, with explicit exceptions if any route intentionally remains shorter or tighter.",
           "- AC3: The race outcome model remains deterministic and keeps final classification, rewards, consumed cards, report text, and event semantics stable unless a change is deliberately documented.",
-          "- AC4: A presentation-layer replay script or staging adapter converts `RaceResult` plus circuit context into deterministic replay beats for starts, pace phases, close-follow phases, attack setup, overtakes, defense, gap rebuild, weather changes, key events, and finish order.",
-          "- AC5: Replay overtakes are visually staged as approach, overlap or offset, order swap, and settle phases instead of abrupt rank jumps or disconnected car positions, and the script can be inspected through a readable debug dump or deterministic fixture.",
-          "- AC6: Replay behavior is consistent across at least the shortest, longest, most technical, and wettest circuits in the rotation, with desktop and mobile screenshots or e2e checks showing no broken framing or overlapping labels."
+          "- AC4: `RaceResult` is enriched when needed with deterministic replay-useful race facts, such as finer gaps, order-change facts, pressure windows, attack/defense context, momentum shifts, and event-to-replay metadata, without storing UI animation instructions.",
+          "- AC5: A presentation-layer replay script or staging adapter converts `RaceResult` plus circuit context into deterministic replay beats for starts, pace phases, close-follow phases, attack setup, overtakes, defense, gap rebuild, weather changes, key events, and finish order.",
+          "- AC6: Replay overtakes are visually staged as approach, overlap or offset, order swap, and settle phases instead of abrupt rank jumps or disconnected car positions, and the script can be inspected through a readable debug dump or deterministic fixture."
         ],
         "Needs": [
           "- Make the visual replay feel like a believable arcade race rather than a raw interpolation of classification math.",
           "- Normalize circuit pacing so different city routes remain distinct but do not produce wildly different replay lengths, lap counts, or perceived race duration.",
           "- Prefer longer, more flowing circuit profiles when normalization needs a bias: short or very twisty routes should not become the reference feel for the championship.",
           "- Separate race outcome truth from replay presentation so the simulation stays deterministic while the replay can stage overtakes, gaps, and momentum more convincingly.",
-          "- Audit the current circuit geometry and lap counts with a repeatable tool before changing balance-sensitive values.",
-          "- Give implementation agents a way to inspect replay scripts themselves through deterministic debug output, fixtures, or a small readable replay-plan dump."
+          "- Enrich `RaceResult` with deterministic race facts if the current payload is too sparse for a convincing replay: finer gaps, order-change facts, pressure windows, momentum shifts, and event-to-replay metadata are acceptable.",
+          "- Audit the current circuit geometry and lap counts with a repeatable tool before changing balance-sensitive values."
         ]
       },
       "status": "Draft",
@@ -134,15 +134,17 @@
         "Acceptance criteria": [
           "- AC1: The contract names the input data, output beat shape, timing fields, participant references, phase labels, and deterministic seed/source rules.",
           "- AC2: The contract states which fields are simulation truth and which are presentation-only.",
-          "- AC3: At least one trace order change maps to a staged overtake beat with setup, close-gap, overlap or offset, swap, defend or counter, and settle windows.",
-          "- AC4: The final replay beat order matches `RaceResult.classification`.",
-          "- AC5: The implementation location is justified as shared-domain helper, web replay helper, or another bounded module, and the generated replay plan is readable through a deterministic fixture or debug output."
+          "- AC3: The contract decides whether `RaceResult` needs enrichment and, if yes, names only deterministic race facts rather than UI animation data.",
+          "- AC4: At least one trace order change or enriched order-change fact maps to a staged overtake beat with setup, close-gap, overlap or offset, swap, defend or counter, and settle windows.",
+          "- AC5: The final replay beat order matches `RaceResult.classification`.",
+          "- AC6: The implementation location is justified as shared-domain helper, web replay helper, or another bounded module, and the generated replay plan is readable through a deterministic fixture or debug output."
         ],
         "Problem": [
           "- The current replay uses simulation trace snapshots directly, so presentation artifacts can leak into perceived race realism.",
           "- Better overtakes require short scripted phases, but those phases should not mutate the simulation result.",
           "- Without a contract, replay improvements risk mixing display-only animation logic into `simulateRace`.",
-          "- The implementation agent needs a human-readable way to inspect replay plans, otherwise tuning staged overtakes becomes guesswork inside the UI."
+          "- The implementation agent needs a human-readable way to inspect replay plans, otherwise tuning staged overtakes becomes guesswork inside the UI.",
+          "- The current `RaceResult` may not expose enough race facts to stage a believable replay without inferring too much in the UI."
         ]
       },
       "status": "Ready",
@@ -176,17 +178,18 @@
       "sections": {
         "Acceptance criteria": [
           "- AC1: Overtakes in replay are visually staged instead of appearing as instantaneous rank jumps.",
-          "- AC2: The tower, car markers, active notification, and progress bar agree about the currently staged race moment.",
-          "- AC3: Seeking before, during, and after an overtake shows stable deterministic state.",
-          "- AC4: Replay finish order always matches `RaceResult.classification`.",
-          "- AC5: Desktop and mobile replay screenshots show no broken camera framing, clipped cars, or overlapping labels across representative circuits.",
-          "- AC6: A developer or implementation agent can inspect a deterministic replay plan without relying only on visual playback."
+          "- AC2: Any `RaceResult` enrichment is deterministic, covered by tests, and contains race facts rather than UI animation instructions.",
+          "- AC3: The tower, car markers, active notification, and progress bar agree about the currently staged race moment.",
+          "- AC4: Seeking before, during, and after an overtake shows stable deterministic state.",
+          "- AC5: Replay finish order always matches `RaceResult.classification`.",
+          "- AC6: Desktop and mobile replay screenshots show no broken camera framing, clipped cars, or overlapping labels across representative circuits."
         ],
         "Problem": [
           "- Current car movement can make rank changes feel abrupt because progress and order are interpolated from sparse segment snapshots.",
           "- Different circuits can amplify those artifacts through path length, camera framing, and lap count differences.",
           "- Players should read overtakes and gaps as a coherent race story even if the model remains arcade-like.",
-          "- The implementation should be tunable by reading the generated replay plan, not only by manually watching a finished replay."
+          "- The implementation should be tunable by reading the generated replay plan, not only by manually watching a finished replay.",
+          "- If the current `RaceResult` is too sparse, the replay should be fed by deterministic race-fact enrichment instead of UI-side guessing."
         ]
       },
       "status": "Ready",
@@ -341,7 +344,7 @@
           "- The first implementation wave must measure current circuit distance drift before changing laps, scaling, or replay animation behavior.",
           "- Normalization should bias toward larger, more flowing circuits rather than using the shortest or twistiest layouts as the target feel.",
           "- Keep simulation truth separate from replay presentation: final classification, reports, rewards, and consumed cards remain deterministic outcome data.",
-          "- Replay tuning must include a readable plan/debug output so the implementation agent can inspect scripted beats directly."
+          "- If the current `RaceResult` is too sparse, enrich it with deterministic race facts before making the replay layer infer too much."
         ],
         "Validation": [
           "- Run `npm run typecheck`.",
@@ -379,16 +382,16 @@
       "ref": "prod_017_coherent_race_replay_and_simulation_realism_product_brief",
       "schema_version": "1.0",
       "sections": {},
-      "status": "Settled",
+      "status": "Proposed",
       "title": "Coherent Race Replay And Simulation Realism Product Brief"
     }
   ],
   "estimates": {
-    "char_count": 16899,
+    "char_count": 17470,
     "companion_doc_count": 0,
     "doc_count": 10
   },
-  "generated_at": "2026-07-18T12:37:56Z",
+  "generated_at": "2026-07-18T12:43:36Z",
   "handoff": {
     "companion_doc_count": 0,
     "enabled": false,

@@ -2,8 +2,8 @@
 > From version: 0.3.6
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 95
-> Confidence: 90
+> Understanding: 96
+> Confidence: 91
 > Progress: 0
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -15,14 +15,15 @@
 - The first implementation wave must measure current circuit distance drift before changing laps, scaling, or replay animation behavior.
 - Normalization should bias toward larger, more flowing circuits rather than using the shortest or twistiest layouts as the target feel.
 - Keep simulation truth separate from replay presentation: final classification, reports, rewards, and consumed cards remain deterministic outcome data.
+- If the current `RaceResult` is too sparse, enrich it with deterministic race facts before making the replay layer infer too much.
 - Replay tuning must include a readable plan/debug output so the implementation agent can inspect scripted beats directly.
 
 # Plan
 - [ ] 1. Read the current simulation, replay, circuit, map, and tests before editing: `simulateRace.ts`, `race.ts`, `circuits.ts`, `ReplayView.tsx`, `CircuitMap.tsx`, and replay/private-league tests.
 - [ ] 2. Add the circuit audit command first and capture route length, lap count, total distance, and a simple twistiness/complexity signal so lap or scaling changes are evidence-based.
 - [ ] 3. Choose the target perceived total-distance band, bias it toward larger and more flowing circuits, then normalize lap counts or replay scaling while keeping shared and web circuit data aligned.
-- [ ] 4. Define the replay staging contract before implementation, separating simulation truth from presentation-only beats and including a readable plan/debug output.
-- [ ] 5. Implement deterministic replay staging and integrate it into `ReplayView` with detailed staged overtake movement, tower agreement, marker seeking, and finish-order preservation.
+- [ ] 4. Define the replay staging contract before implementation, including whether `RaceResult` needs deterministic race-fact enrichment and where the boundary with presentation-only beats sits.
+- [ ] 5. Add minimal `RaceResult` enrichment if needed, then implement deterministic replay staging and integrate it into `ReplayView` with detailed staged overtake movement, tower agreement, marker seeking, and finish-order preservation.
 - [ ] 6. Validate shortest, longest, wettest, and high-overtaking circuits with focused tests and visual screenshots on desktop and mobile.
 - [ ] 7. Update specs, playtest prompts, and Logics proof, then run typecheck, lint, unit tests, build, e2e, i18n validation if copy changed, and Logics validation.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
@@ -38,7 +39,8 @@
 # Definition of Done (DoD)
 - [ ] Circuit audit command and output contract are implemented and documented.
 - [ ] Circuit lap counts or replay scaling are normalized against the selected target band, with a documented bias toward larger and less twisty routes.
-- [ ] Replay staging contract is implemented or documented before presentation integration, including readable debug or fixture output.
+- [ ] Replay staging contract is implemented or documented before presentation integration, including the `RaceResult` enrichment decision and readable debug or fixture output.
+- [ ] Any `RaceResult` enrichment is deterministic, domain-level, and avoids UI animation details.
 - [ ] Replay movement stages overtakes and preserves final classification deterministically.
 - [ ] Representative circuit extremes are validated with tests and desktop/mobile visual checks.
 - [ ] Affected specs/docs and Logics closeout proof are updated.

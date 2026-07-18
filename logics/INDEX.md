@@ -33,7 +33,7 @@
 | [prod_014_api_surface_follow_up_hardening_product_brief](product/prod_014_api_surface_follow_up_hardening_product_brief.md) | API Surface Follow-up Hardening Product Brief | Settled |  |  | product/prod_014_api_surface_follow_up_hardening_product_brief.md |
 | [prod_015_repo_review_remediation_pass_3_product_brief](product/prod_015_repo_review_remediation_pass_3_product_brief.md) | Repo Review Remediation Pass 3 Product Brief | Settled |  |  | product/prod_015_repo_review_remediation_pass_3_product_brief.md |
 | [prod_016_repo_review_remediation_pass_4_product_brief](product/prod_016_repo_review_remediation_pass_4_product_brief.md) | Repo Review Remediation Pass 4 Product Brief | Settled |  |  | product/prod_016_repo_review_remediation_pass_4_product_brief.md |
-| [prod_017_coherent_race_replay_and_simulation_realism_product_brief](product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md) | Coherent Race Replay And Simulation Realism Product Brief | Settled |  |  | product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md |
+| [prod_017_coherent_race_replay_and_simulation_realism_product_brief](product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md) | Coherent Race Replay And Simulation Realism Product Brief | Proposed |  |  | product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md |
 
 ## Roadmaps
 

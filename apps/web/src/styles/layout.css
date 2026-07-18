@@ -896,7 +896,7 @@ label small {
   justify-content: center;
   padding: 16px;
   position: fixed;
-  z-index: 20;
+  z-index: 100;
 }
 
 .modal {
@@ -913,7 +913,8 @@ label small {
 }
 
 .notification-stack {
-  align-items: flex-start;
+  align-items: center;
+  bottom: 16px;
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -921,7 +922,6 @@ label small {
   max-width: 1200px;
   pointer-events: none;
   position: fixed;
-  top: 96px;
   transform: translateX(-50%);
   width: calc(100% - var(--space-page) * 2);
   z-index: 60;
@@ -3256,49 +3256,46 @@ button.command-icon-button {
   min-width: 36px;
 }
 
-.qualifying-result-panel {
-  align-self: end;
-  background: rgb(18 16 20 / 0.82);
-  margin: auto 16px 16px;
-  max-width: 720px;
-}
-
-.qualifying-result-panel .panel-heading strong {
-  color: var(--color-accent);
-  font-size: clamp(2rem, 5vw, 3.4rem);
-  line-height: 1;
-}
-
-.qualifying-result-stats {
+.replay-overlay-stack {
+  align-items: stretch;
+  bottom: 74px;
   display: grid;
-  gap: 10px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 16px;
+  gap: 8px;
+  position: absolute;
+  right: 12px;
+  width: min(260px, calc(100% - 24px));
+  z-index: 3;
 }
 
-.qualifying-result-stats span {
-  background: rgb(255 255 255 / 0.06);
-  border: 1px solid rgb(255 255 255 / 0.1);
+.replay-overlay-actions {
+  align-items: stretch;
+  background: rgb(16 14 18 / 0.82);
+  border: 1px solid rgb(255 255 255 / 0.14);
   border-radius: 8px;
   display: grid;
-  gap: 4px;
-  padding: 10px;
+  gap: 8px;
+  padding: 9px 10px;
 }
 
-.qualifying-result-stats small {
-  color: var(--color-muted);
+.replay-overlay-stack .replay-director-panel {
+  bottom: auto;
+  left: auto;
+  max-width: none;
+  position: static;
+  right: auto;
+  transform: none;
+  width: 100%;
+}
+
+.replay-overlay-actions span {
+  color: var(--color-accent);
   font-size: 0.72rem;
-  font-weight: 800;
+  font-weight: 900;
   text-transform: uppercase;
 }
 
-.qualifying-result-stats strong {
-  font-size: 1.05rem;
-}
-
-.qualifying-result-actions {
-  flex-wrap: wrap;
-  margin-top: 16px;
+.replay-overlay-actions button {
+  min-height: 36px;
 }
 
 .replay-main-grid {
@@ -3682,6 +3679,14 @@ button.primary-command {
     padding-bottom: 92px;
   }
 
+  .notification-stack {
+    align-items: flex-start;
+    bottom: 16px;
+    left: 12px;
+    transform: none;
+    width: calc(100% - 24px);
+  }
+
   .game-shell.map-screen {
     height: 100dvh;
     max-width: none;
@@ -3834,6 +3839,32 @@ button.primary-command {
     min-height: inherit;
   }
 
+  .starting-grid-list li {
+    align-items: center;
+    grid-template-areas:
+      "pos team plate"
+      "pos time plate";
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+  }
+
+  .starting-grid-list li > span {
+    grid-area: pos;
+  }
+
+  .starting-grid-list li > .standings-livery-plate {
+    grid-area: plate;
+  }
+
+  .starting-grid-list li > strong {
+    grid-area: team;
+    line-height: 1.1;
+    min-width: 0;
+  }
+
+  .starting-grid-list li > small {
+    grid-area: time;
+  }
+
   .circuit-map-stage > svg {
     height: min(84vw, 520px);
     left: 50%;
@@ -3894,7 +3925,7 @@ button.primary-command {
 
   .map-workflow-panel {
     align-items: start;
-    bottom: 86px;
+    bottom: 8px;
     gap: 7px;
     grid-template-columns: 1fr;
     left: 8px;
@@ -3965,13 +3996,20 @@ button.primary-command {
   }
 
   .map-race-actions {
-    bottom: 8px;
-    left: 8px;
+    align-items: flex-end;
+    bottom: 118px;
+    flex-direction: column;
+    left: auto;
+    overflow: visible;
     right: 8px;
   }
 
   .map-race-actions button {
-    width: 100%;
+    flex: 0 0 auto;
+    min-height: 34px;
+    min-width: 132px;
+    padding: 7px 10px;
+    width: 132px;
   }
 
   .map-qualifying-times li,

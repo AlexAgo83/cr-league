@@ -494,27 +494,22 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "New lap time" }).at(-1)!);
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
     expect(JSON.parse((fetch.mock.calls[1]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123" });
-    expect(screen.getByRole("heading", { name: "Qualifying result" })).toBeTruthy();
-    expect(screen.getByText("Lap time logged")).toBeTruthy();
-    expect(screen.getByText("P2")).toBeTruthy();
-    expect(screen.getByText("1/3")).toBeTruthy();
-    expect(screen.getByText("Lap 2")).toBeTruthy();
-    expect(screen.queryByRole("heading", { name: "Lap time replay" })).toBe(null);
+    expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
+    expect(screen.getByText("Relive this run lap by lap:", { exact: false })).toBeTruthy();
+    expect(document.querySelector(".replay-overlay-actions")?.textContent).toContain("72.42s · P2 · 1/3");
     expect(screen.queryByRole("heading", { name: "Run a lap time" })).toBe(null);
     expect(screen.queryByText("Your best time sets your grid slot.", { exact: false })).toBe(null);
     expect(screen.queryByRole("button", { name: "Run lap time" })).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Review lap time" }));
-    expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
-    expect(screen.getByText("Relive this run lap by lap:", { exact: false })).toBeTruthy();
+    expect(screen.queryByText("Track note")).toBe(null);
+    expect(screen.queryByText("Race pace settles")).toBe(null);
     expect(document.querySelector(".replay-tower")?.textContent).toContain("Attempt 1 · lap 1");
     expect(document.querySelector(".replay-tower")?.textContent).toContain("75.18s");
     expect(document.querySelector(".replay-tower")?.textContent).toContain("Attempt 1 · lap 2");
     expect(document.querySelector(".replay-tower")?.textContent).toContain("72.42s");
     expect(document.querySelector(".replay-tower")?.textContent).not.toContain("Mika Blitz");
-    expect(screen.getByRole("button", { name: "Back to result" }).className).toContain("replay-close-button");
-    fireEvent.click(screen.getByRole("button", { name: "Back to result" }));
-    expect(screen.queryByRole("heading", { name: "Lap time replay" })).toBe(null);
+    expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("replay-close-button");
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    expect(screen.queryByRole("heading", { name: "Lap time replay" })).toBe(null);
     expect(screen.getByText("72.42s")).toBeTruthy();
     expect(screen.getByText("75.18s")).toBeTruthy();
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 2");
@@ -524,7 +519,6 @@ describe("App", () => {
     expect(screen.getByText("Chrono 1/3 is logged. Adjust the directive or lock the plan before the GP.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Review lap time" }));
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Back to result" }));
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
 
     // Championship view

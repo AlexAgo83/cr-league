@@ -1,5 +1,5 @@
 import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
-import { type CSSProperties, useEffect, useId, useRef, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
@@ -469,6 +469,7 @@ export function ReplayView({
   preferencesResetSignal = 0,
   onClose,
   closeLabel,
+  overlayActions,
   tt
 }: {
   result: RaceResult;
@@ -483,6 +484,7 @@ export function ReplayView({
   preferencesResetSignal?: number;
   onClose?: () => void;
   closeLabel?: string;
+  overlayActions?: ReactNode;
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -625,7 +627,7 @@ export function ReplayView({
   const keyMoments = [
     ...result.events.filter((event) => event.severity === "major"),
     ...result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId),
-    ...result.events.filter((event) => event.severity === "minor" && event.type === "race_note")
+    ...(overlayActions ? [] : result.events.filter((event) => event.severity === "minor" && event.type === "race_note"))
   ]
     .filter((event, index, events) => events.findIndex((candidate) => candidate.id === event.id) === index)
     .slice(0, 8)
@@ -731,15 +733,16 @@ export function ReplayView({
                     <span className="moment-impact">{activeMomentCard.impact}</span>
                   </div>
                 ) : null}
-                <div className="replay-info-stack">
-                  {activeDirectorBeat && activeDirectorCopy ? (
+                {!overlayActions ? (
+                  <div className="replay-info-stack">
+                    {activeDirectorBeat && activeDirectorCopy ? (
                     <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
                       <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
                       <strong>{activeDirectorCopy.title}</strong>
                       <small>{activeDirectorCopy.detail}</small>
                     </div>
-                  ) : null}
-                  {playerContext ? (
+                    ) : null}
+                    {playerContext ? (
                     <div className="replay-player-focus-panel">
                       <span>{tt("replay_player_focus")}</span>
                       <strong>
@@ -753,8 +756,9 @@ export function ReplayView({
                       </small>
                       {latestPlayerBeat ? <small>{directorBeatCopy(latestPlayerBeat, names, tt).detail}</small> : null}
                     </div>
-                  ) : null}
-                </div>
+                    ) : null}
+                  </div>
+                ) : null}
                 <div className="replay-map-controls">
                   <button
                     type="button"
@@ -790,6 +794,18 @@ export function ReplayView({
                     </button>
                   ) : null}
                 </div>
+                {overlayActions ? (
+                  <div className="replay-overlay-stack">
+                    {activeDirectorBeat && activeDirectorCopy ? (
+                      <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
+                        <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
+                        <strong>{activeDirectorCopy.title}</strong>
+                        <small>{activeDirectorCopy.detail}</small>
+                      </div>
+                    ) : null}
+                    <div className="replay-overlay-actions">{overlayActions}</div>
+                  </div>
+                ) : null}
                 <ol className="replay-tower">
                   {tower.map((entry, index) => (
                     <li

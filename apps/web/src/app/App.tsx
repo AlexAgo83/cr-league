@@ -181,7 +181,6 @@ export function App() {
   const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
-  const [qualifyingReplayOpen, setQualifyingReplayOpen] = useState(false);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -424,7 +423,6 @@ export function App() {
       });
       setLeagueState(withCurrentPlayer(response.state));
       setQualifyingResult(response.run);
-      setQualifyingReplayOpen(false);
       showStatus(response.isBest ? tt("status_qualifying_best") : tt("status_qualifying_done"));
     });
   }
@@ -437,14 +435,12 @@ export function App() {
   function startQualifyingRunConfirmed() {
     setQualifyingConfirmOpen(false);
     setQualifyingResult(null);
-    setQualifyingReplayOpen(false);
     void launchQualifyingRun();
   }
 
   function openLastQualifyingRun() {
     if (!lastQualifyingRun) return;
     setQualifyingResult(lastQualifyingRun);
-    setQualifyingReplayOpen(true);
   }
 
   async function mutateLeague(loadingKey: TranslationKey, path: string, body: unknown, successKey: TranslationKey) {
@@ -1297,60 +1293,33 @@ export function App() {
             <div className="drive-content-column">
               {!result && currentQualifyingResult ? (
                 <div className="qualifying-replay-inline drive-map-panel">
-                  {qualifyingReplayOpen ? (
-                    <ReplayView
-                      result={currentQualifyingResult.result}
-                      circuit={currentCircuit}
-                      playerTeamId={playerTeam?.id}
-                      teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
-                      traitImpacts={directiveTraitImpacts}
-                      towerEntries={qualifyingReplayEntries}
-                      titleKey="qualifying_replay_title"
-                      explainerKey="qualifying_replay_explainer"
-                      preferencesResetSignal={preferencesResetSignal}
-                      onClose={() => setQualifyingReplayOpen(false)}
-                      closeLabel={tt("action_back_to_result")}
-                      tt={tt}
-                    />
-                  ) : (
-                    <section className="panel qualifying-result-panel" aria-labelledby="qualifying-result-title">
-                      <div className="panel-heading">
-                        <div>
-                          <span className="section-kicker">{tt("qualifying_result_kicker")}</span>
-                          <h2 id="qualifying-result-title">{tt("qualifying_result_title")}</h2>
-                        </div>
-                        <strong>{currentQualifyingResult.time.toFixed(2)}s</strong>
-                      </div>
-                      <div className="qualifying-result-stats">
+                  <ReplayView
+                    result={currentQualifyingResult.result}
+                    circuit={currentCircuit}
+                    playerTeamId={playerTeam?.id}
+                    teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
+                    traitImpacts={directiveTraitImpacts}
+                    towerEntries={qualifyingReplayEntries}
+                    titleKey="qualifying_replay_title"
+                    explainerKey="qualifying_replay_explainer"
+                    preferencesResetSignal={preferencesResetSignal}
+                    onClose={() => setQualifyingResult(null)}
+                    closeLabel={tt("action_back_to_circuit")}
+                    overlayActions={
+                      <>
                         <span>
-                          <small>{tt("qualifying_result_rank")}</small>
-                          <strong>P{Math.max(1, currentQualifyingRank)}</strong>
+                          {currentQualifyingResult.time.toFixed(2)}s · P{Math.max(1, currentQualifyingRank)} · {currentQualifyingResult.attempts}/{qualifyingAttemptLimit}
                         </span>
-                        <span>
-                          <small>{tt("qualifying_result_attempt")}</small>
-                          <strong>{currentQualifyingResult.attempts}/{qualifyingAttemptLimit}</strong>
-                        </span>
-                        <span>
-                          <small>{tt("qualifying_result_best_lap")}</small>
-                          <strong>{tt("qualifying_result_lap_value", { lap: currentQualifyingResult.lap ?? 1 })}</strong>
-                        </span>
-                      </div>
-                      <div className="actions primary-actions qualifying-result-actions">
-                        <button className="primary-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
+                        <button type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
                           {tt("action_qualifying")}
                         </button>
-                        <button className="primary-command" type="button" onClick={() => setQualifyingReplayOpen(true)}>
-                          {tt("action_qualifying_history")}
-                        </button>
-                        <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                        <button type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
                           {primaryCommand.label}
                         </button>
-                        <button type="button" className="secondary-button" onClick={() => setQualifyingResult(null)}>
-                          {tt("action_back_to_circuit")}
-                        </button>
-                      </div>
-                    </section>
-                  )}
+                      </>
+                    }
+                    tt={tt}
+                  />
                 </div>
               ) : (
                 <CircuitMap

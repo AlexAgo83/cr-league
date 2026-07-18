@@ -1,7 +1,7 @@
 ## req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility - Repo review remediation pass 3: league ownership, robustness, and web accessibility
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

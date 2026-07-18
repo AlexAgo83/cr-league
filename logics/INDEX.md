@@ -31,7 +31,7 @@
 | [prod_012_api_integrity_hardening_product_brief](product/prod_012_api_integrity_hardening_product_brief.md) | API Integrity Hardening Product Brief | Settled |  |  | product/prod_012_api_integrity_hardening_product_brief.md |
 | [prod_013_pit_wall_visual_identity_product_brief](product/prod_013_pit_wall_visual_identity_product_brief.md) | Pit Wall Visual Identity Product Brief | Settled |  |  | product/prod_013_pit_wall_visual_identity_product_brief.md |
 | [prod_014_api_surface_follow_up_hardening_product_brief](product/prod_014_api_surface_follow_up_hardening_product_brief.md) | API Surface Follow-up Hardening Product Brief | Settled |  |  | product/prod_014_api_surface_follow_up_hardening_product_brief.md |
-| [prod_015_repo_review_remediation_pass_3_product_brief](product/prod_015_repo_review_remediation_pass_3_product_brief.md) | Repo Review Remediation Pass 3 Product Brief | Proposed |  |  | product/prod_015_repo_review_remediation_pass_3_product_brief.md |
+| [prod_015_repo_review_remediation_pass_3_product_brief](product/prod_015_repo_review_remediation_pass_3_product_brief.md) | Repo Review Remediation Pass 3 Product Brief | Settled |  |  | product/prod_015_repo_review_remediation_pass_3_product_brief.md |
 
 ## Roadmaps
 
@@ -88,7 +88,7 @@
 | [req_041_api_integrity_hardening_from_repo_review](request/req_041_api_integrity_hardening_from_repo_review.md) | API integrity hardening from repo review | Done |  |  | request/req_041_api_integrity_hardening_from_repo_review.md |
 | [req_042_adopt_the_pit_wall_visual_identity_across_the_web_app](request/req_042_adopt_the_pit_wall_visual_identity_across_the_web_app.md) | Adopt the Pit Wall visual identity across the web app | Done |  |  | request/req_042_adopt_the_pit_wall_visual_identity_across_the_web_app.md |
 | [req_043_api_surface_follow_up_hardening](request/req_043_api_surface_follow_up_hardening.md) | API surface follow-up hardening | Done |  |  | request/req_043_api_surface_follow_up_hardening.md |
-| [req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility](request/req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility.md) | Repo review remediation pass 3: league ownership, robustness, and web accessibility | Draft |  |  | request/req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility.md |
+| [req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility](request/req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility.md) | Repo review remediation pass 3: league ownership, robustness, and web accessibility | Done |  |  | request/req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility.md |
 
 ## Backlog
 
@@ -185,12 +185,12 @@
 | [item_089_make_fastify_logging_configurable_for_tests](backlog/item_089_make_fastify_logging_configurable_for_tests.md) | Make Fastify logging configurable for tests | Done |  | 100% | backlog/item_089_make_fastify_logging_configurable_for_tests.md |
 | [item_090_harden_simulation_preview_input_validation](backlog/item_090_harden_simulation_preview_input_validation.md) | Harden simulation preview input validation | Done |  | 100% | backlog/item_090_harden_simulation_preview_input_validation.md |
 | [item_091_document_prototype_localstorage_secret_boundary](backlog/item_091_document_prototype_localstorage_secret_boundary.md) | Document prototype localStorage secret boundary | Done |  | 100% | backlog/item_091_document_prototype_localstorage_secret_boundary.md |
-| [item_092_add_league_owner_and_gate_admin_mutations_on_it](backlog/item_092_add_league_owner_and_gate_admin_mutations_on_it.md) | Add league owner and gate admin mutations on it | Ready |  | 0% | backlog/item_092_add_league_owner_and_gate_admin_mutations_on_it.md |
-| [item_093_validate_persisted_decisions_and_cap_preview_participants](backlog/item_093_validate_persisted_decisions_and_cap_preview_participants.md) | Validate persisted decisions and cap preview participants | Ready |  | 0% | backlog/item_093_validate_persisted_decisions_and_cap_preview_participants.md |
-| [item_094_make_concurrent_league_write_paths_safe](backlog/item_094_make_concurrent_league_write_paths_safe.md) | Make concurrent league write paths safe | Ready |  | 0% | backlog/item_094_make_concurrent_league_write_paths_safe.md |
-| [item_095_fix_balance_script_imports_and_typecheck_scripts_directory](backlog/item_095_fix_balance_script_imports_and_typecheck_scripts_directory.md) | Fix balance script imports and typecheck scripts directory | Ready |  | 0% | backlog/item_095_fix_balance_script_imports_and_typecheck_scripts_directory.md |
-| [item_096_web_accessibility_and_numeric_input_clamping](backlog/item_096_web_accessibility_and_numeric_input_clamping.md) | Web accessibility and numeric input clamping | Ready |  | 0% | backlog/item_096_web_accessibility_and_numeric_input_clamping.md |
-| [item_097_test_prng_determinism_and_reward_math](backlog/item_097_test_prng_determinism_and_reward_math.md) | Test PRNG determinism and reward math | Ready |  | 0% | backlog/item_097_test_prng_determinism_and_reward_math.md |
+| [item_092_add_league_owner_and_gate_admin_mutations_on_it](backlog/item_092_add_league_owner_and_gate_admin_mutations_on_it.md) | Add league owner and gate admin mutations on it | Done |  | 100% | backlog/item_092_add_league_owner_and_gate_admin_mutations_on_it.md |
+| [item_093_validate_persisted_decisions_and_cap_preview_participants](backlog/item_093_validate_persisted_decisions_and_cap_preview_participants.md) | Validate persisted decisions and cap preview participants | Done |  | 100% | backlog/item_093_validate_persisted_decisions_and_cap_preview_participants.md |
+| [item_094_make_concurrent_league_write_paths_safe](backlog/item_094_make_concurrent_league_write_paths_safe.md) | Make concurrent league write paths safe | Done |  | 100% | backlog/item_094_make_concurrent_league_write_paths_safe.md |
+| [item_095_fix_balance_script_imports_and_typecheck_scripts_directory](backlog/item_095_fix_balance_script_imports_and_typecheck_scripts_directory.md) | Fix balance script imports and typecheck scripts directory | Done |  | 100% | backlog/item_095_fix_balance_script_imports_and_typecheck_scripts_directory.md |
+| [item_096_web_accessibility_and_numeric_input_clamping](backlog/item_096_web_accessibility_and_numeric_input_clamping.md) | Web accessibility and numeric input clamping | Done |  | 100% | backlog/item_096_web_accessibility_and_numeric_input_clamping.md |
+| [item_097_test_prng_determinism_and_reward_math](backlog/item_097_test_prng_determinism_and_reward_math.md) | Test PRNG determinism and reward math | Done |  | 100% | backlog/item_097_test_prng_determinism_and_reward_math.md |
 
 ## Tasks
 
@@ -240,4 +240,4 @@
 | [task_042_orchestrate_api_integrity_hardening](tasks/task_042_orchestrate_api_integrity_hardening.md) | Orchestrate API integrity hardening | Done | codex-work4 | 100% | tasks/task_042_orchestrate_api_integrity_hardening.md |
 | [task_043_orchestrate_the_pit_wall_visual_identity_rollout](tasks/task_043_orchestrate_the_pit_wall_visual_identity_rollout.md) | Orchestrate the Pit Wall visual identity rollout | Done | Claude (Fable 5) | 100% | tasks/task_043_orchestrate_the_pit_wall_visual_identity_rollout.md |
 | [task_044_orchestrate_api_surface_follow_up_hardening](tasks/task_044_orchestrate_api_surface_follow_up_hardening.md) | Orchestrate API surface follow-up hardening | Done | codex-work4 | 100% | tasks/task_044_orchestrate_api_surface_follow_up_hardening.md |
-| [task_045_orchestrate_repo_review_remediation_pass_3](tasks/task_045_orchestrate_repo_review_remediation_pass_3.md) | Orchestrate repo review remediation pass 3 | Ready |  | 0% | tasks/task_045_orchestrate_repo_review_remediation_pass_3.md |
+| [task_045_orchestrate_repo_review_remediation_pass_3](tasks/task_045_orchestrate_repo_review_remediation_pass_3.md) | Orchestrate repo review remediation pass 3 | Done | claude | 100% | tasks/task_045_orchestrate_repo_review_remediation_pass_3.md |

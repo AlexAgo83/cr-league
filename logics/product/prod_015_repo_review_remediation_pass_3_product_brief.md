@@ -1,14 +1,23 @@
 ## prod_015_repo_review_remediation_pass_3_product_brief - Repo Review Remediation Pass 3 Product Brief
 > Date: 2026-07-18
-> Status: Proposed
+> Status: Settled
 > Related request: `req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility`
-> Related backlog: `item_092_add_league_owner_and_gate_admin_mutations_on_it`, `item_093_validate_persisted_decisions_and_cap_preview_participants`, `item_094_make_concurrent_league_write_paths_safe`, `item_095_fix_balance_script_imports_and_typecheck_scripts_directory`, `item_096_web_accessibility_and_numeric_input_clamping`, `item_097_test_prng_determinism_and_reward_math`
+> Related backlog: `item_092_add_league_owner_and_gate_admin_mutations_on_it`
 > Related task: `task_045_orchestrate_repo_review_remediation_pass_3`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
 A third hardening pass driven by a full-repo review: close the league-authority gap left by the previous pass with a real owner concept, make the persisted decision path and concurrent write paths as strict as the preview path, bring scripts under the typecheck build, and fix the web app's accessibility and input-validation fundamentals.
+
+```mermaid
+flowchart LR
+  Owner[League owner] --> Admin[Admin mutations]
+  Validation[Decision validation] --> Scoring[Trusted scoring]
+  Transactions[Transactional writes] --> Consistency[Consistent league state]
+  Typecheck[Scripts typecheck] --> CI[Honest build]
+  A11y[Accessible modals and scrubber] --> Players[Keyboard and SR players]
+```
 
 # Goals
 - Only the league owner can perform destructive league administration.
@@ -37,5 +46,5 @@ A third hardening pass driven by a full-repo review: close the league-authority 
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility`
+- Product back-reference: `item_092_add_league_owner_and_gate_admin_mutations_on_it`
 - Task back-reference: `task_045_orchestrate_repo_review_remediation_pass_3`

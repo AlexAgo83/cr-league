@@ -145,7 +145,8 @@ describe("ReplayView timing", () => {
     ];
 
     expect(gridStartCarProgress(result, trace, 0).leader ?? 0).toBeGreaterThan(gridStartCarProgress(result, trace, 0).last ?? 0);
-    expect(applyGridStart(result, trace, { leader: 0, last: 0 }, 0).leader ?? 0).toBeGreaterThan(0);
+    expect(applyGridStart(result, trace, { leader: 0, last: 0 }, 0).leader ?? 0).toBeLessThan(0);
+    expect(applyGridStart(result, trace, { leader: 0, last: 0 }, 0).last ?? 0).toBeLessThan(applyGridStart(result, trace, { leader: 0, last: 0 }, 0).leader ?? 0);
     expect(applyGridStart(result, trace, { leader: 5, last: 5 }, 1)).toEqual({ leader: 5, last: 5 });
   });
 

@@ -325,7 +325,7 @@ export function gridStartCarProgress(result: RaceResult, trace: ReplayTracePoint
   const spacing = 0.018;
   const base = 0.012;
   const fade = Math.max(0, 1 - progress / GRID_START_PROGRESS);
-  return Object.fromEntries(startOrder.map((teamId, index) => [teamId, (base + (startOrder.length - index - 1) * spacing) * fade]));
+  return Object.fromEntries(startOrder.map((teamId, index) => [teamId, -(base + index * spacing) * fade]));
 }
 
 export function applyGridStart(
@@ -336,7 +336,7 @@ export function applyGridStart(
 ) {
   if (progress >= GRID_START_PROGRESS) return carProgress;
   const grid = gridStartCarProgress(result, trace, progress);
-  return Object.fromEntries(result.classification.map((entry) => [entry.teamId, Math.max(carProgress[entry.teamId] ?? 0, grid[entry.teamId] ?? 0)]));
+  return Object.fromEntries(result.classification.map((entry) => [entry.teamId, (carProgress[entry.teamId] ?? 0) + (grid[entry.teamId] ?? 0)]));
 }
 
 export function buildRaceDirectorBeats(result: RaceResult, trace: ReplayTracePoint[], plan: ReplayPlan, laps: number, playerTeamId?: string, mode: "race" | "qualifying" = "race"): ReplayDirectorBeat[] {

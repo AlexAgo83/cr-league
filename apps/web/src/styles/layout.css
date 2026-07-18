@@ -1207,6 +1207,26 @@ label small {
   z-index: 2;
 }
 
+.map-info-stack {
+  display: contents;
+}
+
+.map-info-stack > .map-traits-panel {
+  bottom: 12px;
+  left: 12px;
+  min-width: 132px;
+  position: absolute;
+  z-index: 4;
+}
+
+.drive-map-panel .map-info-stack > .map-traits-panel {
+  bottom: 62px;
+}
+
+.replay-map-panel .map-info-stack > .map-traits-panel {
+  bottom: 64px;
+}
+
 .map-status strong {
   font-size: 0.95rem;
 }
@@ -1717,7 +1737,6 @@ label small {
   background: rgb(16 14 18 / 0.86);
   border: 1px solid rgb(255 77 0 / 0.38);
   border-radius: 8px;
-  bottom: 58px;
   color: var(--color-text);
   display: grid;
   gap: 8px;
@@ -1726,6 +1745,7 @@ label small {
   max-width: min(560px, calc(100% - 24px));
   padding: 9px 10px;
   position: absolute;
+  top: 58px;
   transform: translateX(-50%);
   width: max-content;
   z-index: 4;
@@ -1767,9 +1787,14 @@ label small {
   z-index: 3;
 }
 
+.replay-info-stack {
+  display: contents;
+}
+
 .replay-director-panel {
   bottom: 74px;
-  left: 12px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .replay-player-focus-panel {
@@ -3833,6 +3858,23 @@ button.primary-command {
     top: 8px;
   }
 
+  .map-info-stack {
+    display: grid;
+    gap: 8px;
+    left: 8px;
+    position: absolute;
+    top: 68px;
+    z-index: 4;
+  }
+
+  .map-info-stack > .map-status,
+  .map-info-stack > .map-traits-panel {
+    bottom: auto;
+    left: auto;
+    position: static;
+    top: auto;
+  }
+
   .map-status .circuit-city {
     font-size: 0.56rem;
   }
@@ -3883,17 +3925,15 @@ button.primary-command {
   }
 
   .circuit-map-stage > .map-traits-panel {
-    bottom: 8px;
-    left: 8px;
     min-width: 104px;
   }
 
   .drive-map-panel .circuit-map-stage > .map-traits-panel {
-    bottom: 44px;
+    bottom: auto;
   }
 
   .replay-map-panel .circuit-map-stage > .map-traits-panel {
-    bottom: 66px;
+    bottom: auto;
   }
 
   .map-qualifying-times,
@@ -3975,6 +4015,11 @@ button.primary-command {
     transform: none;
   }
 
+  .replay-moment-notification {
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   .replay-tower {
     border-radius: 6px;
     gap: 2px;
@@ -3985,16 +4030,39 @@ button.primary-command {
 
   .replay-director-panel,
   .replay-player-focus-panel {
-    bottom: 64px;
-    left: 8px;
-    max-width: calc(50% - 12px);
     padding: 7px 8px;
-    right: auto;
+  }
+
+  .replay-info-stack {
+    align-items: flex-end;
+    bottom: 64px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+    pointer-events: none;
+    position: absolute;
+    right: 8px;
+    width: min(260px, calc(100% - 24px));
+    z-index: 3;
+  }
+
+  .replay-director-panel {
+    max-width: 100%;
   }
 
   .replay-player-focus-panel {
+    max-width: 100%;
+  }
+
+  .replay-info-stack .replay-director-panel,
+  .replay-info-stack .replay-player-focus-panel {
+    bottom: auto;
     left: auto;
-    right: 8px;
+    pointer-events: auto;
+    position: static;
+    right: auto;
+    transform: none;
+    width: 100%;
   }
 
   .replay-director-panel strong,

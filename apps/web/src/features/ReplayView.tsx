@@ -702,21 +702,23 @@ export function ReplayView({
             camera={{ enabled: driverFocus, car: playerCar, timeRef: clock }}
             overlay={
               <>
-                <div className="map-status">
-                  <span className="circuit-city">
-                    <CountryBadge country={circuit.country} /> {circuit.city}
-                  </span>
-                  <strong>{tt(circuit.layoutKey)}</strong>
-                  <small>
-                    {tt("unit_lap")} {live.lap}/{circuit.laps}
-                  </small>
-                  <small className="map-weather-readout">
-                    <VisualIcon name={liveWeather} />
-                    <span>{tt(`weather_${liveWeather}` as TranslationKey)}</span>
-                  </small>
-                  <small>{circuitDistance}</small>
+                <div className="map-info-stack">
+                  <div className="map-status">
+                    <span className="circuit-city">
+                      <CountryBadge country={circuit.country} /> {circuit.city}
+                    </span>
+                    <strong>{tt(circuit.layoutKey)}</strong>
+                    <small>
+                      {tt("unit_lap")} {live.lap}/{circuit.laps}
+                    </small>
+                    <small className="map-weather-readout">
+                      <VisualIcon name={liveWeather} />
+                      <span>{tt(`weather_${liveWeather}` as TranslationKey)}</span>
+                    </small>
+                    <small>{circuitDistance}</small>
+                  </div>
+                  <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, live.lap)} impacts={traitImpacts} tt={tt} />
                 </div>
-                <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, live.lap)} impacts={traitImpacts} tt={tt} />
                 {activeMoment && activeMomentCard ? (
                   <div className={activeMoment.teamId === playerTeamId ? "replay-moment-notification player" : "replay-moment-notification"} role="status" aria-live="polite">
                     <span className="lap-marker">L{displayLapAtProgress(activeMoment.lap / maxLap, circuit.laps)}</span>
@@ -729,28 +731,30 @@ export function ReplayView({
                     <span className="moment-impact">{activeMomentCard.impact}</span>
                   </div>
                 ) : null}
-                {activeDirectorBeat && activeDirectorCopy ? (
-                  <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
-                    <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
-                    <strong>{activeDirectorCopy.title}</strong>
-                    <small>{activeDirectorCopy.detail}</small>
-                  </div>
-                ) : null}
-                {playerContext ? (
-                  <div className="replay-player-focus-panel">
-                    <span>{tt("replay_player_focus")}</span>
-                    <strong>
-                      P{playerContext.position} {playerContext.delta ? `(${playerContext.delta > 0 ? "+" : ""}${playerContext.delta})` : ""}
-                    </strong>
-                    <small>
-                      {tt("replay_player_gaps", {
-                        ahead: playerContext.gapAhead === undefined ? "-" : `${playerContext.gapAhead.toFixed(1)}s`,
-                        behind: playerContext.gapBehind === undefined ? "-" : `${playerContext.gapBehind.toFixed(1)}s`
-                      })}
-                    </small>
-                    {latestPlayerBeat ? <small>{directorBeatCopy(latestPlayerBeat, names, tt).detail}</small> : null}
-                  </div>
-                ) : null}
+                <div className="replay-info-stack">
+                  {activeDirectorBeat && activeDirectorCopy ? (
+                    <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
+                      <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
+                      <strong>{activeDirectorCopy.title}</strong>
+                      <small>{activeDirectorCopy.detail}</small>
+                    </div>
+                  ) : null}
+                  {playerContext ? (
+                    <div className="replay-player-focus-panel">
+                      <span>{tt("replay_player_focus")}</span>
+                      <strong>
+                        P{playerContext.position} {playerContext.delta ? `(${playerContext.delta > 0 ? "+" : ""}${playerContext.delta})` : ""}
+                      </strong>
+                      <small>
+                        {tt("replay_player_gaps", {
+                          ahead: playerContext.gapAhead === undefined ? "-" : `${playerContext.gapAhead.toFixed(1)}s`,
+                          behind: playerContext.gapBehind === undefined ? "-" : `${playerContext.gapBehind.toFixed(1)}s`
+                        })}
+                      </small>
+                      {latestPlayerBeat ? <small>{directorBeatCopy(latestPlayerBeat, names, tt).detail}</small> : null}
+                    </div>
+                  ) : null}
+                </div>
                 <div className="replay-map-controls">
                   <button
                     type="button"

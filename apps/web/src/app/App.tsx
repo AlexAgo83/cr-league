@@ -1362,16 +1362,18 @@ export function App() {
                   showTraits={false}
                   overlay={
                     <>
-                      <div className="map-status">
-                        <span className="circuit-city">
-                          <CountryBadge country={currentCircuit.country} /> {currentCircuit.city}
-                        </span>
-                        <strong>{tt(currentCircuit.layoutKey)}</strong>
-                        <small>
-                          {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
-                        </small>
+                      <div className="map-info-stack">
+                        <div className="map-status">
+                          <span className="circuit-city">
+                            <CountryBadge country={currentCircuit.country} /> {currentCircuit.city}
+                          </span>
+                          <strong>{tt(currentCircuit.layoutKey)}</strong>
+                          <small>
+                            {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
+                          </small>
+                        </div>
+                        <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />
                       </div>
-                      <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />
                       <div className="map-workflow-panel">
                         <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
                         <p>

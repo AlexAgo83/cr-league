@@ -854,10 +854,16 @@ label small {
 .directive-briefing-panel,
 .championship-overview,
 .garage-overview {
-  min-height: 430px;
+  min-height: 300px;
 }
 
 @media (max-width: 720px) {
+  .directive-briefing-panel,
+  .championship-overview,
+  .garage-overview {
+    min-height: 430px;
+  }
+
   .choice-grid,
   .directive-briefing {
     grid-template-columns: 1fr;

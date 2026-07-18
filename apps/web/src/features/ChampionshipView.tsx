@@ -88,29 +88,32 @@ export function ChampionshipView({
           </header>
 
           {recordTab === "standings" ? (
-            <ol className="standings-table">
-              {state.teams.map((team, index) => (
-                <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
-                  <strong className="standings-rank">P{index + 1}</strong>
-                  <LiveryPlate className="standings-livery-plate" livery={team.livery} name={team.name} wins={seasonWins.get(team.id) ?? 0} />
-                  <span className="standings-team">
-                    {team.name}
-                    <small>{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</small>
-                  </span>
-                  <span className={team.ready ? "ready-pill ready" : "ready-pill missing"}>
-                    {team.ready ? tt("team_ready") : tt("team_missing")}
-                  </span>
-                  <span className="standings-score standings-points">
-                    <strong>{team.points}</strong>
-                    <small>{tt("unit_points")}</small>
-                  </span>
-                  <span className="standings-score standings-credits">
-                    <strong>{team.credits}</strong>
-                    <small>{tt("unit_credits")}</small>
-                  </span>
-                </li>
-              ))}
-            </ol>
+            <>
+              <img className="record-hero-image" src="/assets/crl/standings-hero.png" alt="" />
+              <ol className="standings-table">
+                {state.teams.map((team, index) => (
+                  <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
+                    <strong className="standings-rank">P{index + 1}</strong>
+                    <LiveryPlate className="standings-livery-plate" livery={team.livery} name={team.name} wins={seasonWins.get(team.id) ?? 0} />
+                    <span className="standings-team">
+                      {team.name}
+                      <small>{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</small>
+                    </span>
+                    <span className={team.ready ? "ready-pill ready" : "ready-pill missing"}>
+                      {team.ready ? tt("team_ready") : tt("team_missing")}
+                    </span>
+                    <span className="standings-score standings-points">
+                      <strong>{team.points}</strong>
+                      <small>{tt("unit_points")}</small>
+                    </span>
+                    <span className="standings-score standings-credits">
+                      <strong>{team.credits}</strong>
+                      <small>{tt("unit_credits")}</small>
+                    </span>
+                  </li>
+                ))}
+              </ol>
+            </>
           ) : null}
 
           {recordTab === "palmares" ? (
@@ -136,48 +139,51 @@ export function ChampionshipView({
           ) : null}
 
           {recordTab === "history" ? (
-            <div className="season-history-groups" aria-label={tt("league_history")}>
-              {historyBySeason.map(([season, grandPrixList]) => {
-                const summary = completedBySeason.get(season);
-                return (
-                  <details key={season} className="season-history-group" open={season === currentGrandPrix.season}>
-                    <summary>
-                      <strong>
-                        {tt("league_season")} {season}
-                      </strong>
-                      <small>{summary ? `${summary.champion.teamName} · ${summary.gpCount} ${tt("season_gp_count")}` : tt("season_current")}</small>
-                    </summary>
-                    <ol className="round-timeline">
-                      {grandPrixList.map((grandPrix) => {
-                        const chip = (
-                          <span
-                            className={`round-chip status-${
-                              grandPrix.status === currentGrandPrix.status && grandPrix.season === currentGrandPrix.season && grandPrix.round === currentGrandPrix.round
-                                ? "current"
-                                : grandPrix.status
-                            }`}
-                          >
-                            S{grandPrix.season} R{grandPrix.round}
-                          </span>
-                        );
-                        return (
-                          <li key={grandPrix.id}>
-                            {grandPrix.result ? (
-                              <button type="button" className="round-history-button" onClick={() => onReplayGrandPrix(grandPrix)}>
-                                {chip}
-                              </button>
-                            ) : (
-                              chip
-                            )}
-                            <small>{historyLabel(grandPrix, playerTeamId, tt)}</small>
-                          </li>
-                        );
-                      })}
-                    </ol>
-                  </details>
-                );
-              })}
-            </div>
+            <>
+              <img className="record-hero-image" src="/assets/crl/gp-history-hero.png" alt="" />
+              <div className="season-history-groups" aria-label={tt("league_history")}>
+                {historyBySeason.map(([season, grandPrixList]) => {
+                  const summary = completedBySeason.get(season);
+                  return (
+                    <details key={season} className="season-history-group" open={season === currentGrandPrix.season}>
+                      <summary>
+                        <strong>
+                          {tt("league_season")} {season}
+                        </strong>
+                        <small>{summary ? `${summary.champion.teamName} · ${summary.gpCount} ${tt("season_gp_count")}` : tt("season_current")}</small>
+                      </summary>
+                      <ol className="round-timeline">
+                        {grandPrixList.map((grandPrix) => {
+                          const chip = (
+                            <span
+                              className={`round-chip status-${
+                                grandPrix.status === currentGrandPrix.status && grandPrix.season === currentGrandPrix.season && grandPrix.round === currentGrandPrix.round
+                                  ? "current"
+                                  : grandPrix.status
+                              }`}
+                            >
+                              S{grandPrix.season} R{grandPrix.round}
+                            </span>
+                          );
+                          return (
+                            <li key={grandPrix.id}>
+                              {grandPrix.result ? (
+                                <button type="button" className="round-history-button" onClick={() => onReplayGrandPrix(grandPrix)}>
+                                  {chip}
+                                </button>
+                              ) : (
+                                chip
+                              )}
+                              <small>{historyLabel(grandPrix, playerTeamId, tt)}</small>
+                            </li>
+                          );
+                        })}
+                      </ol>
+                    </details>
+                  );
+                })}
+              </div>
+            </>
           ) : null}
         </section>
       </div>

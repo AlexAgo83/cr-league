@@ -11,10 +11,20 @@ import { Modal } from "./Modal.js";
 
 type CardPanel = "team" | "inventory" | "shop";
 export const GARAGE_PANEL_KEY = "cr-league-garage-panel";
+const MAX_PRIMARY_LIVERY_CHANNEL = 120;
+const MIN_SECONDARY_LIVERY_CHANNEL = 150;
 
 function savedCardPanel(): CardPanel {
   const saved = localStorage.getItem(GARAGE_PANEL_KEY);
   return saved === "team" || saved === "shop" ? saved : "inventory";
+}
+
+function boundedLiveryColor(color: string, mode: "primary" | "secondary") {
+  return `#${[1, 3, 5].map((index) => {
+    const channel = Number.parseInt(color.slice(index, index + 2), 16);
+    const bounded = mode === "primary" ? Math.min(channel, MAX_PRIMARY_LIVERY_CHANNEL) : Math.max(channel, MIN_SECONDARY_LIVERY_CHANNEL);
+    return bounded.toString(16).padStart(2, "0");
+  }).join("")}`;
 }
 
 export function GarageView({
@@ -143,11 +153,11 @@ export function GarageView({
             <div className="field-grid garage-livery-fields">
               <label>
                 <span>{tt("garage_livery_primary")}</span>
-                <input type="color" value={livery.primary} aria-label={tt("garage_livery_primary")} onChange={(event) => setLivery({ ...livery, primary: event.target.value })} />
+                <input type="color" value={livery.primary} aria-label={tt("garage_livery_primary")} onChange={(event) => setLivery({ ...livery, primary: boundedLiveryColor(event.target.value, "primary") })} />
               </label>
               <label>
                 <span>{tt("garage_livery_secondary")}</span>
-                <input type="color" value={livery.secondary} aria-label={tt("garage_livery_secondary")} onChange={(event) => setLivery({ ...livery, secondary: event.target.value })} />
+                <input type="color" value={livery.secondary} aria-label={tt("garage_livery_secondary")} onChange={(event) => setLivery({ ...livery, secondary: boundedLiveryColor(event.target.value, "secondary") })} />
               </label>
               <button type="button" onClick={() => onUpdateLivery(livery)} disabled={loading}>
                 {tt("garage_livery_save")}

@@ -33,6 +33,8 @@ const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardI
 const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 const PRIMARY_LIVERY_COLORS = ["#0f172a", "#1e1b4b", "#312e81", "#3f1d2d", "#1f2937", "#064e3b", "#451a03", "#172554"] as const;
 const SECONDARY_LIVERY_COLORS = ["#f8fafc", "#fde68a", "#bfdbfe", "#bbf7d0", "#fecdd3", "#ddd6fe", "#fed7aa", "#ccfbf1"] as const;
+const MAX_PRIMARY_LIVERY_CHANNEL = 120;
+const MIN_SECONDARY_LIVERY_CHANNEL = 150;
 const BOT_TEAM_NAMES = [
   "Apex Foundry",
   "Blackline GP",
@@ -1410,9 +1412,17 @@ function normalizeLivery(value: unknown): TeamLivery {
   if (!value || typeof value !== "object") return DEFAULT_LIVERY;
   const livery = value as Partial<Record<keyof TeamLivery, unknown>>;
   return {
-    primary: typeof livery.primary === "string" && isHexColor(livery.primary) ? livery.primary : DEFAULT_LIVERY.primary,
-    secondary: typeof livery.secondary === "string" && isHexColor(livery.secondary) ? livery.secondary : DEFAULT_LIVERY.secondary
+    primary: typeof livery.primary === "string" && isHexColor(livery.primary) ? darkenPrimaryLiveryColor(livery.primary) : DEFAULT_LIVERY.primary,
+    secondary: typeof livery.secondary === "string" && isHexColor(livery.secondary) ? lightenSecondaryLiveryColor(livery.secondary) : DEFAULT_LIVERY.secondary
   };
+}
+
+function darkenPrimaryLiveryColor(color: string) {
+  return `#${[1, 3, 5].map((index) => Math.min(Number.parseInt(color.slice(index, index + 2), 16), MAX_PRIMARY_LIVERY_CHANNEL).toString(16).padStart(2, "0")).join("")}`;
+}
+
+function lightenSecondaryLiveryColor(color: string) {
+  return `#${[1, 3, 5].map((index) => Math.max(Number.parseInt(color.slice(index, index + 2), 16), MIN_SECONDARY_LIVERY_CHANNEL).toString(16).padStart(2, "0")).join("")}`;
 }
 
 function randomLivery(): TeamLivery {

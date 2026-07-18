@@ -391,6 +391,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("tab", { name: "My team" }));
+    fireEvent.change(screen.getByLabelText("Primary"), { target: { value: "#ffffff" } });
+    fireEvent.change(screen.getByLabelText("Secondary"), { target: { value: "#000000" } });
+    expect((screen.getByLabelText("Primary") as HTMLInputElement).value).toBe("#787878");
+    expect((screen.getByLabelText("Secondary") as HTMLInputElement).value).toBe("#969696");
     expect(localStorage.getItem("cr-league-garage-panel")).toBe("team");
 
     cleanup();

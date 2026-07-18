@@ -306,6 +306,33 @@ describe("api app", () => {
     expect(lockedSellResponse.statusCode).toBe(409);
   });
 
+  it("keeps custom livery colors in dark-primary and light-secondary ranges", async () => {
+    const app = await createTestApp(createMemoryDb());
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Livery League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const claim = created.player;
+
+    const updateResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/teams/livery`,
+      payload: {
+        teamId: claim.teamId,
+        claimCode: claim.claimCode,
+        livery: { primary: "#ffffff", secondary: "#000000" }
+      }
+    });
+    const updatedTeam = updateResponse.json().teams.find((team: { id: string }) => team.id === claim.teamId);
+
+    await app.close();
+
+    expect(updateResponse.statusCode).toBe(200);
+    expect(updatedTeam.livery).toEqual({ primary: "#787878", secondary: "#969696" });
+  });
+
   it("creates and recovers a profile with linked league teams", async () => {
     const app = await createTestApp(createMemoryDb());
 

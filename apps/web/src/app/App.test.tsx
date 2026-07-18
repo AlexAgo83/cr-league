@@ -869,7 +869,8 @@ describe("App", () => {
 
     render(<App />);
 
-    expect(await screen.findByText("League rejoined.")).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
+    expect(document.querySelector(".notification-stack")).toBe(null);
     expect(fetch).toHaveBeenCalledWith(
       "http://localhost:4874/leagues/rejoin",
       expect.objectContaining({
@@ -908,7 +909,7 @@ describe("App", () => {
 
     render(<App />);
 
-    expect(await screen.findByText("League rejoined.")).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.change(screen.getByLabelText("Active league"), { target: { value: "team_3" } });
 
@@ -943,7 +944,7 @@ describe("App", () => {
 
     render(<App />);
 
-    expect(await screen.findByText("League rejoined.")).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.click(screen.getByRole("button", { name: "Manage league" }));
 

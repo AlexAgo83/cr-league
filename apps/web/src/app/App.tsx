@@ -238,10 +238,10 @@ export function App() {
         });
         rememberPlayer(state);
         setLeagueState(state);
-        showStatus(tt("status_league_rejoined"));
-        pushCommandHint("prepare");
+        showStatus(tt("status_league_rejoined"), "info", false);
       },
-      saved.teamId
+      saved.teamId,
+      false
     );
   }, []);
 
@@ -595,9 +595,9 @@ export function App() {
     }, "status_league_restarted");
   }
 
-  async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string) {
+  async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify = true) {
     setStatus("loading");
-    showStatus(nextMessage);
+    showStatus(nextMessage, "info", notify);
 
     try {
       await action();
@@ -611,7 +611,7 @@ export function App() {
         return;
       }
       setTechnicalError(error instanceof Error ? error.message : String(error));
-      showStatus(error instanceof TypeError ? tt("status_api_unavailable") : tt("status_request_failed"), "error");
+      showStatus(error instanceof TypeError ? tt("status_api_unavailable") : tt("status_request_failed"), "error", notify);
     }
   }
 

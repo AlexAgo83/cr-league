@@ -164,6 +164,16 @@ describe("ReplayView timing", () => {
     expect(beats.at(-1)?.type).toBe("final");
   });
 
+  it("uses chrono-specific director beats for qualifying replays", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader"], times: { leader: 0 }, gaps: { leader: 0 } },
+      { segment: "finish", lap: 3, progress: 1, order: ["leader"], times: { leader: 30 }, gaps: { leader: 0 } }
+    ];
+    const beats = buildRaceDirectorBeats(result, trace, buildReplayPlan(result, trace), 3, "leader", "qualifying");
+
+    expect(beats.map((beat) => beat.type)).toEqual(["qualifying_start", "qualifying_pace", "qualifying_final"]);
+  });
+
   it("exposes player replay context with position trend and nearby gaps", () => {
     const trace: ReplayTracePoint[] = [
       { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },

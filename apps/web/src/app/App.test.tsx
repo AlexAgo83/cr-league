@@ -534,10 +534,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Standings" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
-    fireEvent.click(screen.getByRole("button", { name: "Lock plan" }));
-    expect(screen.getByRole("dialog", { name: "Lock race plan" })).toBeTruthy();
-    expect(screen.getByText("You still have chrono attempts left. Lock the plan now? 2/3")).toBeTruthy();
-    fireEvent.click(screen.getAllByRole("button", { name: "Lock plan" }).at(-1)!);
+    fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
+    expect(screen.getByRole("dialog", { name: "Send race plan" })).toBeTruthy();
+    expect(screen.getByText("You still have chrono attempts left. Send the plan now? 2/3")).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Send plan" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(JSON.parse((fetch.mock.calls[2]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123" });
     fireEvent.click(screen.getByText("Directive locked. You can launch the Grand Prix.").closest(".floating-notification")!.querySelector("button")!);
@@ -647,7 +647,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: /Defensive Order/ })).toBeTruthy();
 
     // One command at a time
-    expect(screen.queryByRole("button", { name: "Lock plan" })).toBe(null);
+    expect(screen.queryByRole("button", { name: "Send plan" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Launch GP" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
@@ -726,8 +726,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
-    fireEvent.click(screen.getByRole("button", { name: "Lock plan" }));
-    fireEvent.click(screen.getAllByRole("button", { name: "Lock plan" }).at(-1)!);
+    fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Send plan" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
@@ -740,11 +740,18 @@ describe("App", () => {
 
   it("celebrates a season rollover once and reopens the recap from palmares", async () => {
     saveProfile();
-    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(seasonTwoState));
+    const fetch = vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(response(resolvedState))
+      .mockResolvedValueOnce(response(seasonTwoState));
 
     render(<App />);
 
     createLeagueFromSetup();
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(screen.queryByRole("dialog", { name: "Season recap" })).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
     const recap = await screen.findByRole("dialog", { name: "Season recap" });
     expect(recap.textContent).toContain("Season 1");
     expect(recap.textContent).toContain("Champion");
@@ -770,6 +777,18 @@ describe("App", () => {
     createLeagueFromSetup();
     await screen.findByRole("button", { name: "Race" });
     expect(screen.queryByRole("dialog", { name: "Season recap" })).toBe(null);
+  });
+
+  it("does not auto-open an old season recap when loading an existing later season", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(seasonTwoState));
+
+    render(<App />);
+
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Race" });
+    expect(screen.queryByRole("dialog", { name: "Season recap" })).toBe(null);
+    expect(localStorage.getItem("cr-league-season-recap:league_1:1")).toBe(null);
   });
 
   it("shows and copies the saved profile code from the profile menu", async () => {

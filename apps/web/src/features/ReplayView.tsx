@@ -25,7 +25,7 @@ type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: 
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
 export type ReplayDirectorBeat = {
   id: string;
-  type: "grid_start" | "overtake" | "player" | "pack" | "weather" | "final";
+  type: "grid_start" | "overtake" | "player" | "pack" | "weather" | "final" | "qualifying_start" | "qualifying_pace" | "qualifying_final";
   progress: number;
   lap: number;
   teamId?: string;
@@ -339,7 +339,21 @@ export function applyGridStart(
   return Object.fromEntries(result.classification.map((entry) => [entry.teamId, Math.max(carProgress[entry.teamId] ?? 0, grid[entry.teamId] ?? 0)]));
 }
 
-export function buildRaceDirectorBeats(result: RaceResult, trace: ReplayTracePoint[], plan: ReplayPlan, laps: number, playerTeamId?: string): ReplayDirectorBeat[] {
+export function buildRaceDirectorBeats(result: RaceResult, trace: ReplayTracePoint[], plan: ReplayPlan, laps: number, playerTeamId?: string, mode: "race" | "qualifying" = "race"): ReplayDirectorBeat[] {
+  if (mode === "qualifying") {
+    const beats: ReplayDirectorBeat[] = [
+      { id: "qualifying-start", type: "qualifying_start", progress: 0, lap: 1 },
+      { id: "qualifying-pace", type: "qualifying_pace", progress: 0.5, lap: displayLapAtProgress(0.5, laps), teamId: playerTeamId ?? result.classification[0]?.teamId },
+      { id: "qualifying-final", type: "qualifying_final", progress: 1, lap: displayLapAtProgress(1, laps), teamId: playerTeamId ?? result.classification[0]?.teamId }
+    ];
+    const weatherChange = RACE_SEGMENTS.find((segment, index) => index > 0 && result.resolvedWeather[segment] !== result.resolvedWeather[RACE_SEGMENTS[index - 1]!]);
+    if (weatherChange) {
+      const progress = Math.max(0.2, RACE_SEGMENTS.indexOf(weatherChange) / RACE_SEGMENTS.length);
+      beats.splice(-1, 0, { id: `weather-${weatherChange}`, type: "weather", progress, lap: displayLapAtProgress(progress, laps), weather: result.resolvedWeather[weatherChange] });
+    }
+    return beats.sort((left, right) => left.progress - right.progress);
+  }
+
   const beats: ReplayDirectorBeat[] = [
     { id: "grid-start", type: "grid_start", progress: 0, lap: 1 }
   ];
@@ -448,6 +462,9 @@ function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator
 function directorBeatCopy(beat: ReplayDirectorBeat, names: Map<string, string>, tt: Translator) {
   const team = beat.teamId ? names.get(beat.teamId) ?? beat.teamId : "";
   const related = beat.relatedTeamId ? names.get(beat.relatedTeamId) ?? beat.relatedTeamId : "";
+  if (beat.type === "qualifying_start") return { title: tt("replay_director_qualifying_start"), detail: tt("replay_director_qualifying_start_detail") };
+  if (beat.type === "qualifying_pace") return { title: tt("replay_director_qualifying_pace"), detail: tt("replay_director_qualifying_pace_detail", { team }) };
+  if (beat.type === "qualifying_final") return { title: tt("replay_director_qualifying_final"), detail: tt("replay_director_qualifying_final_detail", { team }) };
   if (beat.type === "grid_start") return { title: tt("replay_director_grid_start"), detail: tt("replay_director_grid_detail") };
   if (beat.type === "player") return { title: tt("replay_director_player"), detail: tt("replay_director_overtake_detail", { team, related, from: beat.fromPosition ?? "-", to: beat.toPosition ?? "-" }) };
   if (beat.type === "overtake") return { title: tt("replay_director_overtake"), detail: tt("replay_director_overtake_detail", { team, related, from: beat.fromPosition ?? "-", to: beat.toPosition ?? "-" }) };
@@ -498,7 +515,8 @@ export function ReplayView({
   const [copyDismissed, setCopyDismissed] = useState(() => localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
   const replayTrace = result.replayTrace?.length ? result.replayTrace : fallbackReplayTrace(result);
   const replayPlan = buildReplayPlan(result, replayTrace);
-  const directorBeats = buildRaceDirectorBeats(result, replayTrace, replayPlan, circuit.laps, playerTeamId);
+  const replayMode = titleKey === "qualifying_replay_title" ? "qualifying" : "race";
+  const directorBeats = buildRaceDirectorBeats(result, replayTrace, replayPlan, circuit.laps, playerTeamId, replayMode);
   const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
   const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, replayPlan);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
@@ -674,24 +692,6 @@ export function ReplayView({
     <div className="view-stack">
       <div className="replay-main-grid">
         <div className="replay-content-column">
-          {showIntro && !copyDismissed ? (
-            <section className="panel race-context-panel replay-copy-panel">
-              <h2>{tt(titleKey)}</h2>
-              <p>{tt(explainerKey)}</p>
-              <button
-                type="button"
-                className="context-panel-close"
-                aria-label={`${tt("action_close")} ${tt(titleKey)}`}
-                onClick={() => {
-                  localStorage.setItem(DISMISSED_REPLAY_HELP_KEY, "1");
-                  setCopyDismissed(true);
-                }}
-              >
-                ×
-              </button>
-            </section>
-          ) : null}
-
           <CircuitMap
             className="replay-map-panel"
             circuit={circuit}
@@ -897,6 +897,23 @@ export function ReplayView({
               </>
             }
           />
+          {showIntro && !copyDismissed ? (
+            <section className="panel race-context-panel replay-copy-panel">
+              <h2>{tt(titleKey)}</h2>
+              <p>{tt(explainerKey)}</p>
+              <button
+                type="button"
+                className="context-panel-close"
+                aria-label={`${tt("action_close")} ${tt(titleKey)}`}
+                onClick={() => {
+                  localStorage.setItem(DISMISSED_REPLAY_HELP_KEY, "1");
+                  setCopyDismissed(true);
+                }}
+              >
+                ×
+              </button>
+            </section>
+          ) : null}
         </div>
       </div>
     </div>

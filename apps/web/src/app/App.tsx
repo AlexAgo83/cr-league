@@ -183,6 +183,7 @@ export function App() {
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
+  const previousSeasonRef = useRef<number | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [preferencesResetSignal, setPreferencesResetSignal] = useState(0);
   const [preferencesResetOpen, setPreferencesResetOpen] = useState(false);
@@ -324,8 +325,15 @@ export function App() {
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
   useEffect(() => {
-    if (!leagueState) return;
-    const endedSeason = leagueState.currentGrandPrix.season - 1;
+    if (!leagueState) {
+      previousSeasonRef.current = null;
+      return;
+    }
+    const currentSeason = leagueState.currentGrandPrix.season;
+    const previousSeason = previousSeasonRef.current;
+    previousSeasonRef.current = currentSeason;
+    const endedSeason = currentSeason - 1;
+    if (previousSeason === null || currentSeason <= previousSeason) return;
     if (endedSeason < 1 || !completedSeasons.some((season) => season.season === endedSeason)) return;
     const key = seasonRecapStorageKey(leagueState.league.id, endedSeason);
     if (localStorage.getItem(key)) return;

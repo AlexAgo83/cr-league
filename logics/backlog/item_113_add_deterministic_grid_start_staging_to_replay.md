@@ -1,10 +1,10 @@
 ## item_113_add_deterministic_grid_start_staging_to_replay - Add deterministic grid start staging to replay
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay start clarity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -62,3 +62,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_049_orchestrate_replay_spectacle_fun_pass`
+
+# Notes
+- Task `task_049_orchestrate_replay_spectacle_fun_pass` was finished via `logics-manager flow finish task` on 2026-07-18.

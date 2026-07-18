@@ -1,10 +1,10 @@
 ## item_112_lead_onboarding_with_the_league_promise_before_profile_mechanics - Lead onboarding with the league promise before profile mechanics
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 80%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Onboarding
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -61,3 +61,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_048_orchestrate_first_session_ux_polish_from_playtest_findings`
+
+# Notes
+- Task `task_048_orchestrate_first_session_ux_polish_from_playtest_findings` was finished via `logics-manager flow finish task` on 2026-07-18.

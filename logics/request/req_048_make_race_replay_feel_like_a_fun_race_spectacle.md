@@ -1,7 +1,7 @@
 ## req_048_make_race_replay_feel_like_a_fun_race_spectacle - Make race replay feel like a fun race spectacle
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: High

@@ -1,10 +1,10 @@
 ## item_109_make_mobile_race_guidance_readable_without_shrinking_the_circuit - Make mobile race guidance readable without shrinking the circuit
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 80%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Mobile race UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -42,6 +42,7 @@
 - request-AC8 -> This backlog slice. Proof: AC4: E2E or component tests assert mobile guidance text is not clipped or inaccessible.
 - request-AC9 -> This backlog slice. Proof: AC5: Desktop Race remains visually unchanged or has only intentional minor spacing improvements.
 - request-AC10 -> This backlog slice. Proof: AC5: Desktop Race remains visually unchanged or has only intentional minor spacing improvements.
+- request-AC6 -> This backlog slice. Evidence needed: The first-session onboarding frames the player goal before profile mechanics: starting a league is the primary path, recovery stays available, and the profile/recovery requirement is explained as saving access rather than as the product headline.
 
 # Decision framing
 - Product framing: Not needed
@@ -62,3 +63,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_048_orchestrate_first_session_ux_polish_from_playtest_findings`
+
+# Notes
+- Task `task_048_orchestrate_first_session_ux_polish_from_playtest_findings` was finished via `logics-manager flow finish task` on 2026-07-18.

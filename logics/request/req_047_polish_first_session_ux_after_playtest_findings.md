@@ -1,7 +1,7 @@
 ## req_047_polish_first_session_ux_after_playtest_findings - Polish first-session UX after playtest findings
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: High

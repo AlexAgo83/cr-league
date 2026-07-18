@@ -1,10 +1,10 @@
 ## item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback - Replace stale notification stacking with command lifecycle feedback
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 80%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Feedback and trust
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -43,6 +43,7 @@
 - request-AC8 -> This backlog slice. Proof: AC4: Automated tests cover at least one success lifecycle and one error lifecycle.
 - request-AC9 -> This backlog slice. Proof: AC5: Existing notification copy remains localized in English and French.
 - request-AC10 -> This backlog slice. Proof: AC5: Existing notification copy remains localized in English and French.
+- request-AC6 -> This backlog slice. Evidence needed: The first-session onboarding frames the player goal before profile mechanics: starting a league is the primary path, recovery stays available, and the profile/recovery requirement is explained as saving access rather than as the product headline.
 
 # Decision framing
 - Product framing: Not needed
@@ -63,3 +64,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_048_orchestrate_first_session_ux_polish_from_playtest_findings`
+
+# Notes
+- Task `task_048_orchestrate_first_session_ux_polish_from_playtest_findings` was finished via `logics-manager flow finish task` on 2026-07-18.

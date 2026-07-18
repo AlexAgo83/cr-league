@@ -1,10 +1,10 @@
 ## item_110_replace_automatic_chrono_replay_with_a_compact_qualifying_result_flow - Replace automatic chrono replay with a compact qualifying result flow
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 80%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Qualifying flow
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -41,6 +41,7 @@
 - request-AC8 -> This backlog slice. Proof: AC3: Users can run another attempt directly from the compact panel while attempts remain.
 - request-AC9 -> This backlog slice. Proof: AC4: Users can explicitly open the lap replay and close it back to the Race screen.
 - request-AC10 -> This backlog slice. Proof: AC5: Tests cover the default compact result path and explicit replay path.
+- request-AC6 -> This backlog slice. Evidence needed: The first-session onboarding frames the player goal before profile mechanics: starting a league is the primary path, recovery stays available, and the profile/recovery requirement is explained as saving access rather than as the product headline.
 
 # Decision framing
 - Product framing: Not needed
@@ -61,3 +62,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_048_orchestrate_first_session_ux_polish_from_playtest_findings`
+
+# Notes
+- Task `task_048_orchestrate_first_session_ux_polish_from_playtest_findings` was finished via `logics-manager flow finish task` on 2026-07-18.

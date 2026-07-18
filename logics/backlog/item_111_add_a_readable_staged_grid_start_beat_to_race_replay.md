@@ -1,10 +1,10 @@
 ## item_111_add_a_readable_staged_grid_start_beat_to_race_replay - Add a readable staged grid-start beat to race replay
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 80%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay clarity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -41,6 +41,7 @@
 - request-AC8 -> This backlog slice. Proof: AC3: Seeking before, during, and after the start beat gives stable positions and tower state.
 - request-AC9 -> This backlog slice. Proof: AC4: Replay finish order and final classification remain unchanged.
 - request-AC10 -> This backlog slice. Proof: AC5: Tests or screenshots prove desktop and mobile replay starts are readable.
+- request-AC6 -> This backlog slice. Evidence needed: The first-session onboarding frames the player goal before profile mechanics: starting a league is the primary path, recovery stays available, and the profile/recovery requirement is explained as saving access rather than as the product headline.
 
 # Decision framing
 - Product framing: Not needed
@@ -61,3 +62,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_048_orchestrate_first_session_ux_polish_from_playtest_findings`
+
+# Notes
+- Task `task_048_orchestrate_first_session_ux_polish_from_playtest_findings` was finished via `logics-manager flow finish task` on 2026-07-18.

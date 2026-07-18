@@ -1,10 +1,10 @@
 ## item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches - Validate replay spectacle across circuits and quiet stretches
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay playtest validation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -39,6 +39,8 @@
 - request-AC8 -> This backlog slice. Proof: AC2: Proof includes replay start, mid-race action, quiet stretch, and player focus state.
 - request-AC9 -> This backlog slice. Proof: AC3: E2E or unit tests cover deterministic behavior for generated beats and highlights.
 - request-AC10 -> This backlog slice. Proof: AC4: Full local gate commands and outcomes are recorded in task closeout.
+- request-AC5 -> This backlog slice. Evidence needed: Quiet replay stretches produce deterministic truthful rhythm beats derived from trace gaps/order/weather/events, without inventing fake overtakes or fake outcomes.
+- request-AC6 -> This backlog slice. Evidence needed: Replay spectacle remains deterministic from the same `RaceResult` plus circuit: no random UI beats, no local-clock-dependent storytelling, and no simulation truth mutation.
 
 # Decision framing
 - Product framing: Not needed
@@ -59,3 +61,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_049_orchestrate_replay_spectacle_fun_pass`
+
+# Notes
+- Task `task_049_orchestrate_replay_spectacle_fun_pass` was finished via `logics-manager flow finish task` on 2026-07-18.

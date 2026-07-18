@@ -1,8 +1,8 @@
 ## prod_019_replay_spectacle_fun_pass_product_brief - Replay Spectacle Fun Pass Product Brief
 > Date: 2026-07-18
-> Status: Proposed
+> Status: Settled
 > Related request: `req_048_make_race_replay_feel_like_a_fun_race_spectacle`
-> Related backlog: `item_113_add_deterministic_grid_start_staging_to_replay`, `item_114_generate_race_director_beats_from_replay_facts_and_trace`, `item_115_show_player_race_focus_context_during_replay`, `item_116_add_overtake_and_position_change_highlights`, `item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches`
+> Related backlog: `item_113_add_deterministic_grid_start_staging_to_replay`
 > Related task: `task_049_orchestrate_replay_spectacle_fun_pass`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -59,5 +59,5 @@ flowchart LR
 - Validation covers at least four circuits and records full gate results.
 
 # References
-- Product back-reference: `req_048_make_race_replay_feel_like_a_fun_race_spectacle`
+- Product back-reference: `item_113_add_deterministic_grid_start_staging_to_replay`
 - Task back-reference: `task_049_orchestrate_replay_spectacle_fun_pass`

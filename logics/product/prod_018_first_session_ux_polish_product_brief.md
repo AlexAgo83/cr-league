@@ -1,8 +1,8 @@
 ## prod_018_first_session_ux_polish_product_brief - First Session UX Polish Product Brief
 > Date: 2026-07-18
-> Status: Proposed
+> Status: Settled
 > Related request: `req_047_polish_first_session_ux_after_playtest_findings`
-> Related backlog: `item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback`, `item_109_make_mobile_race_guidance_readable_without_shrinking_the_circuit`, `item_110_replace_automatic_chrono_replay_with_a_compact_qualifying_result_flow`, `item_111_add_a_readable_staged_grid_start_beat_to_race_replay`, `item_112_lead_onboarding_with_the_league_promise_before_profile_mechanics`
+> Related backlog: `item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback`
 > Related task: `task_048_orchestrate_first_session_ux_polish_from_playtest_findings`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -60,5 +60,5 @@ flowchart LR
 - Typecheck, lint, unit tests, build, e2e, i18n validation, and Logics validation pass at closeout.
 
 # References
-- Product back-reference: `req_047_polish_first_session_ux_after_playtest_findings`
+- Product back-reference: `item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback`
 - Task back-reference: `task_048_orchestrate_first_session_ux_polish_from_playtest_findings`

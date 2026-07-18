@@ -1,10 +1,10 @@
 ## item_114_generate_race_director_beats_from_replay_facts_and_trace - Generate race-director beats from replay facts and trace
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay storytelling
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -42,6 +42,7 @@
 - request-AC8 -> This backlog slice. Proof: AC4: Generated beats include enough team ids/progress/lap context for UI highlighting.
 - request-AC9 -> This backlog slice. Proof: AC5: Tests cover action beats, quiet fallback beats, and no contradictory fake events.
 - request-AC10 -> This backlog slice. Proof: AC5: Tests cover action beats, quiet fallback beats, and no contradictory fake events.
+- request-AC7 -> This backlog slice. Evidence needed: The overlay layout does not obscure replay controls, tower, timeline, car cluster, or mobile map framing at desktop and 390px mobile widths.
 
 # Decision framing
 - Product framing: Not needed
@@ -62,3 +63,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_049_orchestrate_replay_spectacle_fun_pass`
+
+# Notes
+- Task `task_049_orchestrate_replay_spectacle_fun_pass` was finished via `logics-manager flow finish task` on 2026-07-18.

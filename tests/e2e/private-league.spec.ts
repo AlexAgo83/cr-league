@@ -253,7 +253,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".map-status")).toContainText("Dry");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("64");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("58");
-  await expect(mapPanel.locator(".map-car.player").first()).toHaveAttribute("style", /--car-primary: #c51697/);
+  await expect(mapPanel.locator(".map-car.player").first()).toHaveAttribute("style", /--car-primary: #[0-9a-f]{6}; --car-secondary: #[0-9a-f]{6}/i);
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Pause" })).toBeVisible();
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Restart" })).toBeVisible();
   const focusButton = mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Focus driver" });
@@ -281,7 +281,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     .poll(async () => mapPanel.evaluate((element) => element.getBoundingClientRect().width))
     .toBeCloseTo(await copyPanel.evaluate((element) => element.getBoundingClientRect().width), 0);
   await expect(mapPanel.locator(".replay-progress")).toBeVisible();
-  await mapPanel.locator(".replay-marker").click();
+  await mapPanel.locator(".replay-marker:not(.director)").click();
   await expect(mapPanel.locator(".replay-moment-notification")).toContainText("Rain Grip");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("59");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("Attack");

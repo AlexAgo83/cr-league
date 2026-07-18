@@ -95,15 +95,15 @@ export function GarageView({
         </div>
         {cardPanel === "team" ? (
           <div className="garage-team-panel">
-            <div className="garage-team-heading">
-              <div className="garage-livery-visuals">
-                <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
-                <svg className="garage-car-preview map-car" viewBox="-20 -24 40 48" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
-                  <MapCarSprite sprite="idle" maskId="garage-car-preview-mask" transform="scale(1.45)" />
-                </svg>
-              </div>
-            </div>
             <div className="garage-stats">
+              <span className="garage-livery-visuals">
+                <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
+                <span className="garage-car-stage">
+                  <svg className="garage-car-preview map-car" viewBox="-20 -24 40 48" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
+                    <MapCarSprite sprite="idle" maskId="garage-car-preview-mask" transform="scale(1.45)" />
+                  </svg>
+                </span>
+              </span>
               <span>
                 <strong>{playerTeam.points}</strong>
                 <small>{tt("unit_points")}</small>

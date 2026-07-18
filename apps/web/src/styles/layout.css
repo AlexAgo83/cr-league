@@ -2661,16 +2661,19 @@ label small {
   clip-path: var(--chamfer);
   display: grid;
   gap: 1px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(220px, auto) repeat(2, minmax(0, 1fr));
 }
 
-.garage-stats span {
+.garage-stats > span {
   background: var(--color-surface);
   border: 0;
   border-radius: 0;
+  padding: 12px 14px;
+}
+
+.garage-stats > span:not(.garage-livery-visuals) {
   display: grid;
   gap: 2px;
-  padding: 12px 14px;
 }
 
 .garage-stats strong {
@@ -2728,13 +2731,22 @@ label small {
 .garage-livery-visuals {
   align-items: center;
   display: flex;
-  gap: 10px;
+  gap: 18px;
+  padding-right: 22px;
+}
+
+.garage-car-stage {
+  align-items: center;
+  display: flex;
+  min-width: 76px;
 }
 
 .garage-car-preview {
   filter: drop-shadow(0 4px 4px rgb(0 0 0 / 0.42));
   height: 42px;
   overflow: visible;
+  position: relative;
+  z-index: 1;
   width: 62px;
 }
 

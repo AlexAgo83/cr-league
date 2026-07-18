@@ -1,0 +1,304 @@
+{
+  "title": "Polish first-session UX after playtest findings",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/product/prod_002_visual_replay_v0_product_brief.md",
+    "logics/product/prod_010_full_width_replay_moment_notifications_product_brief.md",
+    "logics/product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md",
+    "logics/specs/spec_001_grand_prix_core_loop_and_simulation_v1.md",
+    "logics/specs/spec_004_race_report_and_replay_ux.md",
+    "logics/specs/spec_016_implementation_roadmap.md",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/App.test.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "apps/web/src/features/DirectivePanel.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/web/src/styles/layout.css",
+    "tests/e2e/private-league.spec.ts",
+    "Playtest diagnostic: stale progress toasts such as `Creating profile...`, `Creating league...`, `Locking race plan...`, and `Resolving Grand Prix...` remain visible after success and stack over primary content.",
+    "Playtest diagnostic: on desktop, stacked notifications cover race step copy, garage cards, and replay controls; on mobile they consume a large bottom band.",
+    "Playtest diagnostic: mobile Race keeps the circuit impressive, but the bottom step instruction truncates to text such as `Check the tra...`.",
+    "Playtest diagnostic: running a qualifying lap opens the full lap replay immediately, which is attractive once but slows down repeated 3-attempt chrono play.",
+    "Playtest diagnostic: replay starts with cars visually clustered under the start line instead of a readable staged grid start.",
+    "Playtest diagnostic: onboarding is visually clean but starts with profile/account mechanics before the user sees the racing-league promise."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "First-session UX polish",
+    "needs": [
+      "Remove stale and contradictory notifications so the UI never says an old loading action is still happening after a later success.",
+      "Keep operational feedback visible without covering race controls, replay timeline, mobile guidance, or garage cards.",
+      "Make mobile race guidance readable without shrinking the circuit into a dense dashboard.",
+      "Make repeated qualifying attempts faster by showing a compact result state first and keeping full lap replay as an explicit option.",
+      "Make the replay start read like a race start, with a short staged grid/launch moment before cars collapse into normal race spacing.",
+      "Make the first-session flow sell the racing-league fantasy before asking for profile mechanics, while preserving recovery and saved-league behavior.",
+      "Keep the work development-ready for another AI: scoped files, acceptance criteria, validation gates, and playtest proof."
+    ],
+    "context": [
+      "`apps/web/src/app/App.tsx` owns `notifications`, `pushNotification`, `showStatus`, and the shared `run` wrapper used by profile, league, directive, qualifying, resolve, garage, and settings actions.",
+      "Notifications currently live in `.notification-stack` and each notification auto-dismisses after a fixed timeout, but pending and success messages are independent entries instead of replacing each other.",
+      "`SetupShell` and the authenticated app both render the same notification stack, so notification placement affects onboarding, setup, race, garage, replay, and modal states.",
+      "`RaceView` content inside `App.tsx` renders the map workflow panel, race-day step labels, qualifying panel, primary commands, and mobile-bottom dense controls.",
+      "Qualifying currently uses `qualifyingConfirmModal`, `startQualifyingRun`, `qualifyingResult`, inline `ReplayView` for `currentQualifyingResult`, and the `action_qualifying_history` button.",
+      "`ReplayView.tsx` now builds deterministic replay plans and moves replay cars from trace/facts, but the initial field still appears visually crowded around the start line.",
+      "The product uses React, SVG, CSS, and existing tests; no new UI framework, toast library, animation engine, or physics system is needed.",
+      "Copy is localized through `apps/web/src/i18n/en.json` and `apps/web/src/i18n/fr.json`, so new user-facing text must update both locales and pass i18n validation.",
+      "The desired result is a more polished first session, not a wholesale redesign of the app shell, garage, race algorithm, or replay architecture."
+    ],
+    "acceptance_criteria": [
+      "AC1: Notifications use a clear lifecycle: one pending notification per command is replaced by success or error, stale pending messages never remain after success, success messages auto-dismiss, and errors remain dismissible until the user closes them.",
+      "AC2: Notification placement and stacking no longer obscure primary race controls, replay timeline, mobile step guidance, modal actions, or garage card rows on desktop and mobile.",
+      "AC3: The mobile Race screen presents the active step title and instruction without truncating essential copy, using a compact expandable/bottom-sheet pattern or another equally readable mobile pattern.",
+      "AC4: After a qualifying lap, the default state is a compact result summary with best time/rank/attempt context and primary actions for another attempt, replay, or lock plan; full lap replay opens only when explicitly requested.",
+      "AC5: Replay has a deterministic staged grid-start phase: cars begin in readable grid positions, a short launch beat separates the field, and the existing replay order/final classification remain unchanged.",
+      "AC6: The first-session onboarding frames the player goal before profile mechanics: starting a league is the primary path, recovery stays available, and the profile/recovery requirement is explained as saving access rather than as the product headline.",
+      "AC7: Existing accessibility basics remain intact: notifications use appropriate live regions, modals remain labelled and focusable, mobile expandable guidance is reachable by keyboard/screen reader, and duplicated button labels in modals do not create ambiguous accessible actions.",
+      "AC8: Tests cover notification lifecycle replacement, mobile guidance readability, qualifying compact-result flow, replay grid-start determinism, and onboarding path copy/CTA behavior.",
+      "AC9: Existing gates still pass: typecheck, lint, unit tests, build, e2e private-league/replay checks, i18n validation, and Logics validation.",
+      "AC10: Playtest proof is recorded with desktop and mobile screenshots or scripted e2e observations for onboarding, Race mobile, qualifying result, replay start, and garage with notifications active."
+    ]
+  },
+  "product": {
+    "title": "First Session UX Polish Product Brief",
+    "overview": "This polish pass turns the current playable CR League first session into a cleaner, more confident experience: feedback stops contradicting itself, mobile instructions stay readable, repeated chronos move faster, replay starts read like a race, and onboarding leads with the league fantasy before account mechanics.",
+    "goals": [
+      "Make command feedback feel trustworthy by replacing stale loading messages instead of stacking them.",
+      "Preserve the strong cockpit/map visual identity while keeping controls and guidance readable on desktop and mobile.",
+      "Reduce friction in the first Grand Prix loop, especially repeated qualifying attempts.",
+      "Make replay starts immediately understandable before the field transitions into staged race movement.",
+      "Make new players understand the core promise of creating and running a racing league before asking them to manage access.",
+      "Keep implementation small and local to existing React, CSS, i18n, and test surfaces."
+    ],
+    "non_goals": [
+      "Do not redesign the entire app navigation, garage economy, card system, or race simulation.",
+      "Do not add a third-party toast/notification library, animation library, or routing framework.",
+      "Do not remove profile recovery, saved league claims, invite-code joining, or existing local preferences.",
+      "Do not make formal visual-regression infrastructure mandatory for this pass.",
+      "Do not change race outcomes, rewards, standings, card consumption, or replay fact generation semantics."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Replace stale notification stacking with command lifecycle feedback",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Feedback and trust",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "Playtest showed stale pending notifications remaining visible after later success messages, for example `Creating profile...` under `Profile created...`.",
+        "The notification stack overlays race step copy, replay timeline, modal backdrops, and garage cards, creating the strongest impression of UI bug even when commands succeed.",
+        "The current implementation treats pending and success feedback as independent toasts, so every command can add noise instead of updating one lifecycle."
+      ],
+      "scope_in": [
+        "Refactor the existing `notifications` model in `apps/web/src/app/App.tsx` to support lifecycle entries such as pending, success, and error without adding a dependency.",
+        "Update the shared `run` wrapper so pending feedback is created or replaced for a command and then converted to success/error or dismissed.",
+        "Keep errors persistent and dismissible; auto-dismiss success messages after a short timeout; avoid toasting `status_initial`.",
+        "Cap visible notification count to the smallest useful number and prefer one active command notification over a stack of historical loading messages.",
+        "Move or adapt `.notification-stack` in `apps/web/src/styles/layout.css` so it does not cover primary controls, replay timeline, mobile bottom guidance, modal buttons, or garage card rows.",
+        "Preserve `aria-live` behavior with calmer announcements for status updates and assertive behavior only for errors if practical.",
+        "Update unit/e2e tests that currently expect old notification behavior."
+      ],
+      "scope_out": [
+        "Adding a third-party toast library.",
+        "Persisting notifications across reloads.",
+        "Building a notification center or history drawer.",
+        "Changing backend command responses only for notification needs."
+      ],
+      "acceptance_criteria": [
+        "AC1: A pending command notification is replaced or removed when the command succeeds, so stale loading messages cannot remain below success messages.",
+        "AC2: Errors remain visible until dismissal and include the existing user-safe error behavior.",
+        "AC3: Desktop and mobile screenshots show notifications not covering Race primary commands, replay timeline, modal actions, or garage cards.",
+        "AC4: Automated tests cover at least one success lifecycle and one error lifecycle.",
+        "AC5: Existing notification copy remains localized in English and French."
+      ]
+    },
+    {
+      "title": "Make mobile race guidance readable without shrinking the circuit",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Mobile race UX",
+      "request_acs": [
+        "AC2",
+        "AC3",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "On mobile, the Race map is visually strong but the active instruction truncates to text like `Check the tra...`.",
+        "The current bottom workflow strip competes with the map, command buttons, and timeline-style controls.",
+        "Players need to know what to do next without losing the spectacle of the circuit."
+      ],
+      "scope_in": [
+        "Replace the mobile-only truncated instruction strip with a compact active-step control that can expand into the full instruction.",
+        "Keep the active step title visible at all times and make the full instruction one tap or keyboard action away.",
+        "Use existing CSS/React patterns in `App.tsx` and `layout.css`; no new disclosure component dependency.",
+        "Ensure the expanded state does not cover the primary CTA without a clear close/collapse action.",
+        "Keep desktop workflow panel behavior unchanged unless a small shared simplification is cleaner.",
+        "Update i18n copy if a new button label such as `Details` or `Hide` is needed."
+      ],
+      "scope_out": [
+        "Redesigning the entire Race screen.",
+        "Reducing the circuit to a small static card.",
+        "Adding gesture-only interactions that are inaccessible to keyboard users.",
+        "Changing race-day phase semantics."
+      ],
+      "acceptance_criteria": [
+        "AC1: At 390px mobile width, the active step title and a readable path to the full instruction are visible without ellipsis on essential copy.",
+        "AC2: Expanded guidance can be opened and closed by mouse/touch and keyboard.",
+        "AC3: Race primary commands remain reachable while guidance is collapsed, and no notification overlaps the collapsed guidance after the notification fix.",
+        "AC4: E2E or component tests assert mobile guidance text is not clipped or inaccessible.",
+        "AC5: Desktop Race remains visually unchanged or has only intentional minor spacing improvements."
+      ]
+    },
+    {
+      "title": "Replace automatic chrono replay with a compact qualifying result flow",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Qualifying flow",
+      "request_acs": [
+        "AC4",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "After each qualifying lap, the full lap replay opens automatically, which interrupts users who want to run two or three attempts quickly.",
+        "The full replay is useful, but it should be an explicit review action rather than the default result state after every chrono.",
+        "The first-session flow needs a clear next action: run another attempt if attempts remain, replay if desired, or lock the plan when ready."
+      ],
+      "scope_in": [
+        "Change `startQualifyingRun` and the `qualifyingResult` UI so successful runs land on a compact result summary instead of immediately opening inline `ReplayView`.",
+        "Show the latest attempt time, best time context, approximate grid rank, attempts used/left, and whether it is a new best.",
+        "Make the primary action `New lap time` while attempts remain; offer `Replay run` as a secondary action; offer `Lock plan` when appropriate.",
+        "Keep `Review lap time` for reopening the latest or best qualifying replay.",
+        "Preserve support for the existing `qualifyingReplayTower` and lap replay view when explicitly opened.",
+        "Update English and French copy for the compact result labels and actions."
+      ],
+      "scope_out": [
+        "Changing qualifying simulation math.",
+        "Changing max attempt rules or bot qualifying behavior.",
+        "Removing qualifying replay entirely.",
+        "Adding a new page or route for qualifying history."
+      ],
+      "acceptance_criteria": [
+        "AC1: Completing a qualifying run shows a compact result panel by default and does not open the full replay automatically.",
+        "AC2: The compact panel shows latest attempt time, best/standing context, and attempts remaining.",
+        "AC3: Users can run another attempt directly from the compact panel while attempts remain.",
+        "AC4: Users can explicitly open the lap replay and close it back to the Race screen.",
+        "AC5: Tests cover the default compact result path and explicit replay path."
+      ]
+    },
+    {
+      "title": "Add a readable staged grid-start beat to race replay",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Replay clarity",
+      "request_acs": [
+        "AC5",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "Playtest showed replay cars visually clustered under the start line at the beginning of a resolved Grand Prix.",
+        "The replay is more time-real and cinematic after recent work, but the first seconds still read as a pile of cars instead of a race start.",
+        "A simple deterministic start beat can improve clarity without changing race outcome or adding physics."
+      ],
+      "scope_in": [
+        "Extend the existing replay plan/presentation layer in `ReplayView.tsx` to include a deterministic grid-start window before normal trace-driven movement.",
+        "Render starting cars with readable position offsets or staged progress offsets for the first seconds of replay.",
+        "Add a short launch/separation phase so cars transition from grid positions into existing replay movement smoothly.",
+        "Keep final classification, replay facts, tower order, events, and marker seeking deterministic and unchanged after the start window.",
+        "Update `ReplayView.test.ts` or related tests to cover start beat determinism and transition bounds.",
+        "Capture desktop/mobile replay-start screenshots or add e2e assertions for no car-label overlap at the start."
+      ],
+      "scope_out": [
+        "Adding countdown audio or a 3D/canvas renderer.",
+        "Changing the race trace generated by simulation.",
+        "Changing qualifying grid calculation.",
+        "Making a full formation lap."
+      ],
+      "acceptance_criteria": [
+        "AC1: At replay progress near zero, cars are separated enough to read their positions rather than fully stacked.",
+        "AC2: The transition from staged grid positions into normal replay movement is deterministic and bounded.",
+        "AC3: Seeking before, during, and after the start beat gives stable positions and tower state.",
+        "AC4: Replay finish order and final classification remain unchanged.",
+        "AC5: Tests or screenshots prove desktop and mobile replay starts are readable."
+      ]
+    },
+    {
+      "title": "Lead onboarding with the league promise before profile mechanics",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Onboarding",
+      "request_acs": [
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "The first screen is visually clean but asks users to create or recover a profile before they have seen the racing-league promise.",
+        "The current headline is about saving access, which is necessary but not the most compelling first product message.",
+        "The first-session path should feel like starting a league, with profile creation framed as access recovery and continuity."
+      ],
+      "scope_in": [
+        "Update the unauthenticated onboarding layout in `App.tsx` so the primary action is starting a league or creating a league profile, with recovery still available as a secondary path.",
+        "Reframe copy so profile creation is explained as saving the user's racing league and recovery code, not as the main product goal.",
+        "Keep profile creation and recovery behavior unchanged under the hood.",
+        "Make the primary CTA visually stronger than the secondary recover action using existing button/card styles.",
+        "Keep saved/recovered profile and saved-league flows intact after onboarding.",
+        "Update English and French localization and tests for the new first-screen copy."
+      ],
+      "scope_out": [
+        "Allowing anonymous leagues without profile/session data.",
+        "Adding marketing pages, screenshots, or external assets.",
+        "Changing backend profile APIs.",
+        "Removing recovery code display."
+      ],
+      "acceptance_criteria": [
+        "AC1: The first screen headline/value proposition describes starting or running a racing league before discussing profile mechanics.",
+        "AC2: The primary CTA leads into the existing create-profile path and recovery remains clearly available.",
+        "AC3: Recovery code display remains visible after profile creation and is not lost during league creation.",
+        "AC4: Existing tests for language switching, profile creation, recovery, and saved league claims are updated and pass.",
+        "AC5: Desktop and mobile onboarding screenshots show CTA hierarchy clearly."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate first-session UX polish from playtest findings",
+    "plan": [
+      "Read `App.tsx`, notification CSS, Race mobile layout CSS, qualifying state flow, `ReplayView.tsx`, onboarding copy, i18n files, and current App/e2e tests before editing.",
+      "Fix notification lifecycle and placement first, because stale stacked toasts distort every other playtest screen.",
+      "Polish mobile Race guidance once notification overlap is removed, keeping the circuit prominent while making step instructions readable.",
+      "Replace automatic qualifying replay with the compact result flow, then keep explicit replay review working.",
+      "Add the deterministic replay grid-start beat in the existing replay presentation layer without changing simulation truth.",
+      "Update onboarding copy/CTA hierarchy while preserving profile recovery and saved-league flows.",
+      "Run focused tests after each wave, then the full gate: typecheck, lint, unit tests, build, e2e, i18n validation, and Logics validation.",
+      "Record playtest proof with desktop/mobile screenshots or e2e observations for the five user-facing fixes."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/playtest-ux-polish-notifications-mobile-chrono-replay-onboarding.json",
+    "mode": "full",
+    "profile": "deep"
+  }
+}

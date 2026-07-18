@@ -14,9 +14,12 @@ Covers work started after `0.3.7`.
 - Added live event labels next to the affected car during replay moments.
 - Started new human teams with credits and no starter card, so the first card becomes an intentional garage choice.
 - Reframed the three preparation choices as tire prep in the race plan UI.
+- Kept the mobile replay map full-screen by hiding the payoff recap during the focused replay view.
 
 ## Engineering
 
+- Updated package versions to `0.3.8` across root, web, API, and shared workspaces.
+- Kept internal workspace dependency versions aligned with `0.3.8`.
 - Updated API league creation, joining, and restart flows for the starter-credit economy.
 - Updated API and web tests around explicit card buying, chrono reports, and tire-prep copy.
 - Kept the implementation on existing `QualifyingRun`, `RaceResult`, card shop, and replay data instead of adding new persistence.
@@ -25,5 +28,7 @@ Covers work started after `0.3.7`.
 
 - `npm run lint`
 - `npm run typecheck`
-- `npm test -- App`
-- `npm test -- apps/api/src/app.test.ts`
+- `npm run test`
+- `npm run build`
+- `npm run test:e2e -- --project=chromium`
+- `npm run logics:validate`

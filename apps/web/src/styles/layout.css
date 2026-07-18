@@ -4337,6 +4337,10 @@ button.primary-command {
     display: none;
   }
 
+  .map-screen .race-payoff-recap {
+    display: none;
+  }
+
   .setup-topbar {
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);

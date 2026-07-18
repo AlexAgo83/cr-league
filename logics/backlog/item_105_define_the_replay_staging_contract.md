@@ -1,10 +1,10 @@
 ## item_105_define_the_replay_staging_contract - Define the replay staging contract
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 97
 > Confidence: 93
-> Progress: 0
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -71,3 +71,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization` was finished via `logics-manager flow finish task` on 2026-07-18.

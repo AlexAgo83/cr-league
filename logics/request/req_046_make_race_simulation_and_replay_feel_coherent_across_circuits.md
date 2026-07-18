@@ -1,9 +1,9 @@
 ## req_046_make_race_simulation_and_replay_feel_coherent_across_circuits - Make race simulation and replay feel coherent across circuits
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 98
-> Confidence: 94
+> Status: Done
+> Understanding: 99
+> Confidence: 95
 > Complexity: High
 > Theme: Race simulation realism and replay coherence
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -45,6 +45,18 @@
 - AC8: Unit tests cover circuit normalization math, RaceResult enrichment determinism, replay script determinism, final-order preservation, and at least one multi-overtake trace.
 - AC9: Existing gates still pass: typecheck, lint, unit tests, build, e2e replay/private-league checks, i18n validation if copy changes, and Logics validation.
 - AC10: Car heading changes continuously along the route instead of snapping at polyline vertices: heading is interpolated (with lookahead or corner smoothing) and sharp corners show a bounded visual drift/slide effect, with tunable constants and a unit test proving heading continuity on a route with at least one sharp turn.
+
+# AC Traceability
+- AC1 -> `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`. Proof: `scripts/audit-circuits.mjs` now reads current circuit identity/lap data and route geometry, prints route length, laps, race distance, recommended laps, turn count, twistiness, geometry failures, and target-band status.
+- AC2 -> `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`. Proof: `packages/shared/src/domain/circuits.ts` normalizes short circuits to the audit target band while preserving larger flowing circuits as the reference feel; `npm run audit:circuits` reports every circuit as `target`.
+- AC3 -> `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`. Proof: `simulateRace` still produces deterministic final classification/rewards/report semantics, `circuit.laps` is not used by simulation, and `npm test` covers simulation determinism after replay changes.
+- AC4 -> `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`. Proof: `RaceResult.replayFacts` adds optional deterministic `orderChanges` domain facts only; no UI animation, camera, CSS, or display coordinates are stored in `RaceResult`.
+- AC5 -> `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`. Proof: `buildReplayPlan` in `apps/web/src/features/ReplayView.tsx` converts `RaceResult`/trace data into deterministic overtake beats with setup, close-gap, overlap, swap, and settle phases.
+- AC6 -> `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`. Proof: replay car progress consumes the staged plan, `replayPlanDebugLines` exposes a readable deterministic dump, and `ReplayView.test.ts` asserts inspectable staged phases from an order-change trace.
+- AC7 -> `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`. Proof: `tests/e2e/private-league.spec.ts` passes across desktop/mobile replay layout checks after normalized laps, and Playwright captured the existing representative replay screenshots.
+- AC8 -> `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`. Proof: tests cover circuit audit/normalization via `npm run audit:circuits`, `RaceResult` replay facts in `simulateRace.test.ts`, replay plan determinism/inspectability in `ReplayView.test.ts`, final order preservation in existing replay tests, and heading continuity in `CircuitMap.test.ts`.
+- AC9 -> `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`. Proof: passed `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npm run test:e2e`, `logics-manager i18n validate`, and `npm run logics:validate`.
+- AC10 -> `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`. Proof: `CircuitMap.tsx` now computes heading from lookahead points instead of raw segment `atan2`, keeps bounded drift via `MAX_DRIFT_ANGLE`, and `CircuitMap.test.ts` proves bounded heading deltas on a sharp-turn route.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

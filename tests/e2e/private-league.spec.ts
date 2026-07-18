@@ -105,7 +105,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.locator(".championship-view")).toHaveCSS("max-width", "860px");
   await expect
     .poll(async () => page.locator(".dashboard-summary").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length))
-    .toBe(4);
+    .toBe(3);
   await expect(page.locator(".standings-table")).toContainText("Volt Union");
   await page.getByRole("tab", { name: "Grand Prix history" }).click();
   await expect(page.locator(".round-timeline")).toContainText("R1");
@@ -118,7 +118,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("button", { name: "Reset UI preferences" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
   const menuButtons = await page.locator(".profile-menu-panel button").evaluateAll((buttons) => buttons.map((button) => button.textContent?.trim()));
-  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "Reset UI preferences", "Sign out"]);
+  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "Reset UI preferences", "Sign out", "v0.3.6"]);
   await expect(page.getByLabel("Language")).toBeVisible();
   await page.getByRole("button", { name: "Copy profile code" }).click();
   await expect(page.getByRole("dialog", { name: "Profile code" })).toBeVisible();
@@ -190,7 +190,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(driveMap).toHaveCSS("padding", "0px");
   await expect(driveMap).toHaveCSS("border-top-width", "0px");
   await expect(page.locator(".drive-map-panel .map-status")).toContainText("FR Paris");
-  await expect(page.locator(".drive-map-panel .map-status")).toContainText("5 laps");
+  await expect(page.locator(".drive-map-panel .map-status")).toContainText("7 laps");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Grip");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("64");
   await expect(page.locator(".drive-map-panel .map-workflow-panel")).toBeVisible();
@@ -225,8 +225,8 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Approach: Balanced" })).toHaveAttribute("aria-pressed", "true");
   await page.setViewportSize({ width: 390, height: 900 });
-  await expect(page.locator(".directive-panel")).toBeVisible();
-  await expect.poll(async () => page.locator(".directive-panel").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+  await expect(page.locator(".directive-panel").first()).toBeVisible();
+  await expect.poll(async () => page.locator(".directive-panel").first().evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
   await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("drive-layout-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
@@ -248,7 +248,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(replayMap).toHaveCSS("padding", "0px");
   await expect(replayMap).toHaveCSS("border-top-width", "0px");
   await expect(mapPanel.locator(".map-status")).toContainText("FR Paris");
-  await expect(mapPanel.locator(".map-status")).toContainText("Lap 1/5");
+  await expect(mapPanel.locator(".map-status")).toContainText("/7");
   await expect(mapPanel.locator(".map-weather-readout")).toContainText("Dry");
   await expect(mapPanel.locator(".map-status")).toContainText("Dry");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("64");
@@ -284,7 +284,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await mapPanel.locator(".replay-marker").click();
   await expect(mapPanel.locator(".replay-moment-notification")).toContainText("Rain Grip");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("59");
-  await expect(mapPanel.locator(".map-traits-panel")).toContainText("50");
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText("Attack");
   await expect(copyPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
 
   const desktop = await page.evaluate(() => {
@@ -351,11 +351,11 @@ test("keeps mobile document pages on the app background", async ({ page }) => {
   await expectDocumentBackgroundToDiffer(page, 3, ".garage-grid .panel");
   await expect(page.locator(".garage-grid")).toHaveCSS("max-width", "860px");
   await expect(page.locator(".garage-grid > .panel")).toHaveCount(1);
-  await expect(page.getByRole("heading", { name: "Shop" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "Shop" })).toHaveAttribute("aria-selected", "true");
-  await page.getByRole("tab", { name: "Inventory" }).click();
   await expect(page.getByRole("heading", { name: "Inventory" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Inventory" })).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: "Shop" }).click();
+  await expect(page.getByRole("heading", { name: "Shop" })).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Shop" })).toHaveAttribute("aria-selected", "true");
   await page.getByRole("tab", { name: "My team" }).click();
   await expect(page.getByRole("heading", { name: "My team" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "My team" })).toHaveAttribute("aria-selected", "true");

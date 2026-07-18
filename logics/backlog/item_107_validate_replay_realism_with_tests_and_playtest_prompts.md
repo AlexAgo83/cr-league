@@ -1,10 +1,10 @@
 ## item_107_validate_replay_realism_with_tests_and_playtest_prompts - Validate replay realism with tests and playtest prompts
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 91
 > Confidence: 86
-> Progress: 0
+> Progress: 100%
 > Complexity: Medium
 > Theme: Validation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -62,3 +62,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization` was finished via `logics-manager flow finish task` on 2026-07-18.

@@ -8,6 +8,7 @@ import type {
   RaceParticipant,
   RaceResult,
   RaceSegment,
+  RaceReplayFacts,
   ReplayTracePoint,
   Weather
 } from "../domain/race.js";
@@ -80,11 +81,35 @@ export function simulateRace(input: RaceInput): RaceResult {
     classification,
     events: events.map((event, order) => ({ ...event, id: `evt_${String(order + 1).padStart(3, "0")}`, order })),
     replayTrace,
+    replayFacts: buildReplayFacts(replayTrace),
     consumedCards: states
       .filter((state): state is TeamState & { consumedCard: CardId } => Boolean(state.consumedCard))
       .map((state) => ({ teamId: state.participant.teamId, cardId: state.consumedCard })),
     report: buildReport(input.grandPrixName, classification, events)
   };
+}
+
+function buildReplayFacts(trace: ReplayTracePoint[]): RaceReplayFacts {
+  const orderChanges = trace.slice(1).flatMap((point, index) => {
+    const previous = trace[index]!;
+    return point.order.flatMap((teamId, toIndex) => {
+      const fromIndex = previous.order.indexOf(teamId);
+      if (fromIndex === -1 || fromIndex <= toIndex) return [];
+      return previous.order.slice(toIndex, fromIndex).map((overtakenTeamId) => ({
+        type: "order_change" as const,
+        segment: point.segment,
+        lap: point.lap,
+        progress: point.progress,
+        overtakingTeamId: teamId,
+        overtakenTeamId,
+        fromPosition: fromIndex + 1,
+        toPosition: toIndex + 1,
+        gapSeconds: Number((point.gaps[teamId] ?? 0).toFixed(1))
+      }));
+    });
+  });
+
+  return { version: 1, orderChanges };
 }
 
 function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, states: TeamState[], beforeTimes: Map<string, number>): ReplayTracePoint[] {

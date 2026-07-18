@@ -1,10 +1,10 @@
 ## item_104_audit_and_normalize_circuit_race_distances - Audit and normalize circuit race distances
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 97
 > Confidence: 93
-> Progress: 0
+> Progress: 100%
 > Complexity: Medium
 > Theme: Circuit pacing
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -63,3 +63,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization` was finished via `logics-manager flow finish task` on 2026-07-18.

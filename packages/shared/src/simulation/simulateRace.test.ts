@@ -107,6 +107,8 @@ describe("simulateRace", () => {
     expect(result.replayTrace?.at(-1)?.order).toEqual(result.classification.map((entry) => entry.teamId));
     expect(result.replayTrace?.at(-1)?.times[result.classification[0]!.teamId]).toBeGreaterThan(0);
     expect(result.replayTrace?.at(-1)?.gaps[result.classification[0]!.teamId]).toBe(0);
+    expect(result.replayFacts?.version).toBe(1);
+    expect(result.replayFacts?.orderChanges.every((fact) => fact.type === "order_change" && fact.progress >= 0 && fact.progress <= 1)).toBe(true);
     expect(result.consumedCards).toEqual(
       expect.arrayContaining([
         { teamId: "alice", cardId: "rain_grip" },

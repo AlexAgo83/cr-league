@@ -3,10 +3,12 @@ import type { RaceResult, ReplayTracePoint } from "@cr-league/shared";
 import {
   carProgressAtRaceTime,
   carProgressAtTrace,
+  buildReplayPlan,
   displayLapAtProgress,
   finishTimes,
   liveClassificationByCarProgress,
   positionDeltas,
+  replayPlanDebugLines,
   replayDistanceScale,
   scaleFinishTimes,
   segmentAtProgress,
@@ -118,6 +120,18 @@ describe("ReplayView timing", () => {
 
     expect(before.leader ?? 0).toBeGreaterThan(before.last ?? 0);
     expect(after.last ?? 0).toBeGreaterThan(after.leader ?? 0);
+  });
+
+  it("builds an inspectable staged replay plan from trace order changes", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "early", lap: 2, progress: 0.2, order: ["last", "leader"], times: { leader: 10, last: 10 }, gaps: { leader: 0, last: 0 } }
+    ];
+    const plan = buildReplayPlan(result, trace);
+
+    expect(plan.source).toBe("trace");
+    expect(plan.overtakes[0]?.phases.map((phase) => phase.phase)).toEqual(["setup", "close_gap", "overlap", "swap", "settle"]);
+    expect(replayPlanDebugLines(plan)[0]).toContain("last->leader");
   });
 
   it("keeps dense trace overtakes on a minimum visual transition", () => {

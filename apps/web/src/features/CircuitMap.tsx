@@ -44,6 +44,7 @@ const TRAFFIC_EXIT_DISTANCE = 60;
 const CLOSE_ENTER_DISTANCE = 2;
 const CLOSE_EXIT_DISTANCE = 6;
 const DRIFT_LOOKAHEAD = 0.012;
+const HEADING_LOOKAHEAD = 0.006;
 const MAX_DRIFT_ANGLE = 14;
 type CameraZoomMode = "normal" | "traffic" | "close";
 export type CarSprite = "idle" | "boost" | "brake";
@@ -115,7 +116,19 @@ function circuitScene(circuit: CityCircuit) {
   };
 }
 
-function poseOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
+export function poseOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
+  const point = pointOnRoute(points, progress);
+  if (!point) return { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
+  const before = pointOnRoute(points, progress - HEADING_LOOKAHEAD);
+  const after = pointOnRoute(points, progress + HEADING_LOOKAHEAD);
+  const angle =
+    before && after && Math.hypot(after.x - before.x, after.y - before.y) > 0.1
+      ? Math.atan2(after.y - before.y, after.x - before.x) * 180 / Math.PI
+      : point.angle;
+  return { ...point, angle };
+}
+
+function pointOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
   if (!points.length) return { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
   const segments = points.slice(1).map((point, index) => ({
     from: points[index]!,
@@ -164,11 +177,11 @@ export function circuitDisplayLength(circuit: CityCircuit) {
   return routeLength(circuitScene(circuit).points);
 }
 
-function angleDelta(from: number, to: number) {
+export function angleDelta(from: number, to: number) {
   return ((((to - from) % 360) + 540) % 360) - 180;
 }
 
-function driftAngle(points: Array<{ x: number; y: number }>, progress: number) {
+export function driftAngle(points: Array<{ x: number; y: number }>, progress: number) {
   const before = poseOnRoute(points, progress - DRIFT_LOOKAHEAD).angle;
   const after = poseOnRoute(points, progress + DRIFT_LOOKAHEAD).angle;
   return Math.max(-MAX_DRIFT_ANGLE, Math.min(MAX_DRIFT_ANGLE, angleDelta(before, after) * 0.45));

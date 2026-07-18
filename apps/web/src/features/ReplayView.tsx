@@ -1,4 +1,4 @@
-import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
+import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
 import { type CSSProperties, useEffect, useId, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
@@ -22,6 +22,15 @@ const MOMENT_NOTIFICATION_SECONDS = 3;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
+export type ReplayBeatPhase = "setup" | "close_gap" | "overlap" | "swap" | "settle";
+export type ReplayOvertakeBeat = ReplayOrderChangeFact & {
+  kind: "overtake";
+  phases: Array<{ phase: ReplayBeatPhase; from: number; to: number }>;
+};
+export type ReplayPlan = {
+  source: "facts" | "trace" | "fallback";
+  overtakes: ReplayOvertakeBeat[];
+};
 
 function savedReplaySpeed(): ReplaySpeed {
   const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
@@ -124,15 +133,72 @@ function traceGapsAt(trace: ReplayTracePoint[], progress: number) {
   );
 }
 
-function traceRankTargetsAt(trace: ReplayTracePoint[], progress: number) {
+export function buildReplayPlan(result: RaceResult, trace: ReplayTracePoint[]): ReplayPlan {
+  const factChanges = result.replayFacts?.orderChanges ?? [];
+  const orderChanges = factChanges.length ? factChanges : orderChangesFromTrace(trace);
+  return {
+    source: factChanges.length ? "facts" : orderChanges.length ? "trace" : "fallback",
+    overtakes: orderChanges.map((change) => ({
+      ...change,
+      kind: "overtake",
+      phases: replayBeatPhases(change.progress)
+    }))
+  };
+}
+
+export function replayPlanDebugLines(plan: ReplayPlan) {
+  return plan.overtakes.map(
+    (beat) =>
+      `${beat.progress.toFixed(3)} L${beat.lap} ${beat.overtakingTeamId}->${beat.overtakenTeamId} P${beat.fromPosition}->P${beat.toPosition} ${beat.phases.map((phase) => phase.phase).join("/")}`
+  );
+}
+
+function replayBeatPhases(progress: number) {
+  const start = Math.max(0, progress - MIN_RANK_TRANSITION_PROGRESS * 0.45);
+  const end = Math.min(1, start + MIN_RANK_TRANSITION_PROGRESS);
+  const span = end - start || MIN_RANK_TRANSITION_PROGRESS;
+  const at = (from: number, to: number) => ({ from: start + span * from, to: start + span * to });
+  return [
+    { phase: "setup" as const, ...at(0, 0.18) },
+    { phase: "close_gap" as const, ...at(0.18, 0.42) },
+    { phase: "overlap" as const, ...at(0.42, 0.62) },
+    { phase: "swap" as const, ...at(0.62, 0.76) },
+    { phase: "settle" as const, ...at(0.76, 1) }
+  ];
+}
+
+function orderChangesFromTrace(trace: ReplayTracePoint[]): ReplayOrderChangeFact[] {
+  return trace.slice(1).flatMap((point, index) => {
+    const previous = trace[index]!;
+    return point.order.flatMap((teamId, toIndex) => {
+      const fromIndex = previous.order.indexOf(teamId);
+      if (fromIndex === -1 || fromIndex <= toIndex) return [];
+      return previous.order.slice(toIndex, fromIndex).map((overtakenTeamId) => ({
+        type: "order_change" as const,
+        segment: point.segment,
+        lap: point.lap,
+        progress: point.progress,
+        overtakingTeamId: teamId,
+        overtakenTeamId,
+        fromPosition: fromIndex + 1,
+        toPosition: toIndex + 1,
+        gapSeconds: point.gaps[teamId] ?? 0
+      }));
+    });
+  });
+}
+
+function traceRankTargetsAt(trace: ReplayTracePoint[], progress: number, plan?: ReplayPlan) {
   const transition = trace.slice(1).map((point, index) => ({ from: trace[index]!, to: point })).find(({ from, to }) => {
     const span = Math.max(to.progress - from.progress, MIN_RANK_TRANSITION_PROGRESS);
     return !sameOrder(from.order, to.order) && progress >= from.progress && progress < Math.min(1, from.progress + span);
   });
+  const staged = plan?.overtakes.find((beat) => progress >= beat.phases[0]!.from && progress < beat.phases.at(-1)!.to);
   const from = transition?.from ?? tracePointAt(trace, progress);
   const to = transition?.to ?? from;
-  const span = transition ? Math.max(to.progress - from.progress, MIN_RANK_TRANSITION_PROGRESS) : 1;
-  const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
+  const fromProgress = staged?.phases[0]?.from ?? from.progress;
+  const toProgress = staged?.phases.at(-1)?.to ?? (transition ? Math.max(to.progress, from.progress + MIN_RANK_TRANSITION_PROGRESS) : from.progress + 1);
+  const ratio = Math.min(1, Math.max(0, (progress - fromProgress) / (toProgress - fromProgress || 1)));
   const eased = ratio * ratio * (3 - 2 * ratio);
   return Object.fromEntries(
     Array.from(new Set([...from.order, ...to.order])).map((teamId) => {
@@ -226,9 +292,9 @@ export function positionDeltas(currentOrder: string[], nextOrder: string[]) {
   );
 }
 
-export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[], progress: number, laps: number) {
+export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[], progress: number, laps: number, plan?: ReplayPlan) {
   const gaps = traceGapsAt(trace, progress);
-  const rankTargets = traceRankTargetsAt(trace, progress);
+  const rankTargets = traceRankTargetsAt(trace, progress, plan);
   const finalTimes = trace.at(-1)?.times ?? {};
   const totalTime = Math.max(1, ...Object.values(finalTimes));
   return Object.fromEntries(
@@ -248,9 +314,10 @@ function replaySnapshot(
   raceTime: number,
   progress: number,
   laps: number,
+  plan?: ReplayPlan,
   currentOrder: string[] = []
 ) {
-  const carProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps);
+  const carProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan);
   const tower = liveClassificationByCarProgress(result, trace, progress, carProgress, currentOrder);
   return { carProgress, tower };
 }
@@ -334,8 +401,9 @@ export function ReplayView({
   const [driverFocus, setDriverFocus] = useState(() => localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
   const [copyDismissed, setCopyDismissed] = useState(() => localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
   const replayTrace = result.replayTrace?.length ? result.replayTrace : fallbackReplayTrace(result);
+  const replayPlan = buildReplayPlan(result, replayTrace);
   const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
-  const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps);
+  const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, replayPlan);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [activeMomentId, setActiveMomentId] = useState<string | null>(null);
@@ -433,7 +501,7 @@ export function ReplayView({
     const displayLap = displayLapAtProgress(progress, circuit.laps);
     const segment = segmentAtProgress(progress);
     setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
-    const targetSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, orderRef.current);
+    const targetSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, orderRef.current);
     const carProgress = animatePositions ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress) : targetSnapshot.carProgress;
     const nextTower = liveClassificationByCarProgress(result, replayTrace, progress, carProgress, orderRef.current);
     const nextSnapshot = { carProgress, tower: nextTower };

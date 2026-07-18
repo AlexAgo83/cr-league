@@ -2,8 +2,10 @@
 import { readFileSync, writeFileSync } from "node:fs";
 
 const sourcePath = "apps/web/src/app/circuits.ts";
+const identitiesPath = "packages/shared/src/domain/circuits.ts";
 const args = process.argv.slice(2);
 const geojsonPath = valueAfter("--geojson");
+const targetBandRatio = 0.25;
 
 const thresholds = {
   closureGapMeters: 120,
@@ -14,7 +16,8 @@ const thresholds = {
   crossings: 0
 };
 
-const circuits = parseCircuits(readFileSync(sourcePath, "utf8"));
+const identities = parseIdentities(readFileSync(identitiesPath, "utf8"));
+const circuits = parseCircuits(readFileSync(sourcePath, "utf8"), identities);
 
 if (circuits.length === 0) {
   console.error(`No circuits found in ${sourcePath}`);
@@ -22,16 +25,26 @@ if (circuits.length === 0) {
 }
 
 const reports = circuits.map((circuit) => auditCircuit(circuit));
+const target = targetDistance(reports);
 
 console.log("Circuit audit");
 for (const report of reports) {
   const status = report.failures.length === 0 ? "ok" : "bad";
+  const recommendedLaps = Math.max(1, Math.round(target.center / Math.max(1, report.lengthMeters)));
+  const totalDistanceMeters = report.lengthMeters * report.laps;
+  const pacingStatus = totalDistanceMeters < target.min ? "short" : totalDistanceMeters > target.max ? "long" : "target";
   console.log(
     [
       status.padEnd(3),
       `${report.city}/${report.layoutKey}`.padEnd(39),
       `${report.pointCount} pts`.padStart(8),
-      `${formatMeters(report.lengthMeters)} total`.padStart(13),
+      `${report.laps} laps`.padStart(7),
+      `${formatMeters(report.lengthMeters)} route`.padStart(13),
+      `${formatMeters(totalDistanceMeters)} race`.padStart(13),
+      `${recommendedLaps} rec`.padStart(6),
+      `${report.turns} turns`.padStart(8),
+      `${Math.round(report.twistiness)}° twist`.padStart(10),
+      pacingStatus.padStart(6),
       `${Math.round(report.closureGapMeters)}m close`.padStart(12),
       `${Math.round(report.maxSegmentMeters)}m max`.padStart(9),
       `${report.crossings} cross`.padStart(8),
@@ -44,6 +57,7 @@ for (const report of reports) {
     console.log(`     - ${failure}`);
   }
 }
+console.log(`Target race distance: ${formatMeters(target.min)}-${formatMeters(target.max)} (center ${formatMeters(target.center)})`);
 
 if (geojsonPath) {
   writeFileSync(geojsonPath, `${JSON.stringify(toGeoJson(reports), null, 2)}\n`);
@@ -59,13 +73,21 @@ function valueAfter(flag) {
   return index === -1 ? undefined : args[index + 1];
 }
 
-function parseCircuits(source) {
-  const circuitPattern =
-    /\{\s*city:\s*"(?<city>[^"]+)",[\s\S]*?country:\s*"(?<country>[^"]+)",[\s\S]*?layoutKey:\s*"(?<layoutKey>[^"]+)",[\s\S]*?route:\s*\[(?<route>[\s\S]*?)\n\s*\]\s*\}/g;
-  return [...source.matchAll(circuitPattern)].map((match) => ({
+function parseIdentities(source) {
+  const identityPattern =
+    /\{\s*city:\s*"(?<city>[^"]+)",\s*country:\s*"(?<country>[^"]+)",\s*layoutKey:\s*"(?<layoutKey>[^"]+)",\s*laps:\s*(?<laps>\d+),[\s\S]*?likelyWeather:\s*"(?<weather>[^"]+)"\s*\}/g;
+  return [...source.matchAll(identityPattern)].map((match) => ({
     city: match.groups.city,
     country: match.groups.country,
     layoutKey: match.groups.layoutKey,
+    laps: Number(match.groups.laps)
+  }));
+}
+
+function parseCircuits(source, identitySources) {
+  const circuitPattern = /\{\s*\.\.\.CITY_CIRCUIT_IDENTITIES\[(?<index>\d+)\],[\s\S]*?route:\s*\[(?<route>[\s\S]*?)\n\s*\]\s*\}/g;
+  return [...source.matchAll(circuitPattern)].map((match) => ({
+    ...identitySources[Number(match.groups.index)],
     points: [...match.groups.route.matchAll(/\{\s*lat:\s*(-?\d+(?:\.\d+)?),\s*lng:\s*(-?\d+(?:\.\d+)?)\s*\}/g)].map(
       ([, lat, lng]) => ({ lat: Number(lat), lng: Number(lng) })
     )
@@ -76,6 +98,7 @@ function auditCircuit(circuit) {
   const segments = toSegments(circuit.points);
   const crossings = countCrossings(segments);
   const directUturns = countDirectUturns(segments);
+  const { turns, twistiness } = measureTurns(segments);
   const { reverseReuseMeters, sameDirectionReuseMeters } = measureReuse(segments);
   const segmentLengths = segments.map((segment) => segment.length);
   const lengthMeters = segmentLengths.reduce((sum, length) => sum + length, 0);
@@ -110,10 +133,27 @@ function auditCircuit(circuit) {
     maxSegmentMeters,
     crossings,
     directUturns,
+    turns,
+    twistiness,
     reverseReuseMeters,
     sameDirectionReuseMeters,
     failures
   };
+}
+
+function targetDistance(reports) {
+  const longest = [...reports].sort((left, right) => right.lengthMeters * right.laps - left.lengthMeters * left.laps).slice(0, 3);
+  const center = median(longest.map((report) => report.lengthMeters * report.laps));
+  return {
+    center,
+    min: center * (1 - targetBandRatio),
+    max: center * (1 + targetBandRatio)
+  };
+}
+
+function median(values) {
+  const sorted = [...values].sort((left, right) => left - right);
+  return sorted[Math.floor(sorted.length / 2)] ?? 1;
 }
 
 function toSegments(points) {
@@ -151,6 +191,14 @@ function countDirectUturns(segments) {
     const next = segments[index + 1];
     return segment.length > 12 && next.length > 12 && angleDelta(segment.angle, next.angle) > 2.65;
   }).length;
+}
+
+function measureTurns(segments) {
+  const deltas = segments.slice(0, -1).map((segment, index) => angleDelta(segment.angle, segments[index + 1].angle) * 180 / Math.PI);
+  return {
+    turns: deltas.filter((delta) => delta >= 35).length,
+    twistiness: deltas.reduce((sum, delta) => sum + delta, 0)
+  };
 }
 
 function measureReuse(segments) {
@@ -228,6 +276,10 @@ function toGeoJson(reports) {
         country: report.country,
         layoutKey: report.layoutKey,
         lengthMeters: Math.round(report.lengthMeters),
+        laps: report.laps,
+        totalDistanceMeters: Math.round(report.lengthMeters * report.laps),
+        turns: report.turns,
+        twistiness: Math.round(report.twistiness),
         closureGapMeters: Math.round(report.closureGapMeters),
         maxSegmentMeters: Math.round(report.maxSegmentMeters),
         crossings: report.crossings,

@@ -134,6 +134,23 @@ export type ReplayTracePoint = {
   gaps: Record<string, number>;
 };
 
+export type ReplayOrderChangeFact = {
+  type: "order_change";
+  segment: RaceSegment;
+  lap: number;
+  progress: number;
+  overtakingTeamId: string;
+  overtakenTeamId: string;
+  fromPosition: number;
+  toPosition: number;
+  gapSeconds: number;
+};
+
+export type RaceReplayFacts = {
+  version: 1;
+  orderChanges: ReplayOrderChangeFact[];
+};
+
 export type RaceResult = {
   grandPrixName: string;
   seed: string;
@@ -141,6 +158,7 @@ export type RaceResult = {
   classification: ClassificationEntry[];
   events: RaceEvent[];
   replayTrace?: ReplayTracePoint[];
+  replayFacts?: RaceReplayFacts;
   consumedCards: Array<{ teamId: string; cardId: CardId }>;
   report: {
     headline: string;

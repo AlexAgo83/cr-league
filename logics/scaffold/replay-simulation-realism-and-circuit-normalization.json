@@ -1,0 +1,247 @@
+{
+  "title": "Make race simulation and replay feel coherent across circuits",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/product/prod_002_visual_replay_v0_product_brief.md",
+    "logics/product/prod_010_full_width_replay_moment_notifications_product_brief.md",
+    "logics/specs/spec_001_grand_prix_core_loop_and_simulation_v1.md",
+    "logics/specs/spec_004_race_report_and_replay_ux.md",
+    "logics/specs/spec_011_simulation_algorithm_v0.md",
+    "logics/specs/spec_016_implementation_roadmap.md",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/ReplayView.test.ts",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/App.test.tsx",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/domain/circuits.ts",
+    "packages/shared/src/domain/circuits.test.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/simulation/simulateRace.test.ts",
+    "tests/e2e/private-league.spec.ts",
+    "Current diagnostic: `simulateRace` emits a five-segment `replayTrace`; `ReplayView` turns it into replay movement using `circuit.laps`, `circuitDisplayLength`, `replayDistanceScale`, trace gaps, and rank transitions.",
+    "Current diagnostic: display-distance sampling reported total visual distances from about 3235 units for Berlin Mitte Dash to about 10155 units for Paris Left Bank Loop, so circuits do not currently feel comparable in replay length.",
+    "Current diagnostic: scripted/arcade overtakes are acceptable, but order changes should feel staged instead of teleporting between unrelated circuit progress states."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Race simulation realism and replay coherence",
+    "needs": [
+      "Make the visual replay feel like a believable arcade race rather than a raw interpolation of classification math.",
+      "Normalize circuit pacing so different city routes remain distinct but do not produce wildly different replay lengths, lap counts, or perceived race duration.",
+      "Separate race outcome truth from replay presentation so the simulation stays deterministic while the replay can stage overtakes, gaps, and momentum more convincingly.",
+      "Audit the current circuit geometry and lap counts with a repeatable tool before changing balance-sensitive values.",
+      "Keep the work development-ready for another AI: clear files, scope, acceptance criteria, risks, validation gates, and staged implementation order."
+    ],
+    "context": [
+      "The product now has a playable asynchronous championship loop, a visual replay map, timed replay notifications, circuit maps, garage progression, and validation coverage.",
+      "The current simulation in `packages/shared/src/simulation/simulateRace.ts` decides standings through five race segments and emits `ReplayTracePoint` snapshots with progress, order, times, and gaps.",
+      "The current replay in `apps/web/src/features/ReplayView.tsx` derives live position, tower order, progress markers, weather markers, car progress, and camera state from the simulation trace plus `CityCircuit.laps`.",
+      "The current map in `apps/web/src/features/CircuitMap.tsx` projects city routes and places cars on the route path by progress. It does not own race outcome logic.",
+      "The current circuit identities in `packages/shared/src/domain/circuits.ts` define lap counts and traits, while `apps/web/src/app/circuits.ts` owns the detailed display routes. These two sources must stay aligned.",
+      "A quick display-distance sample showed a large spread in total visual race distance: Paris Left Bank Loop is roughly 3.1 times Berlin Mitte Dash after applying current lap counts.",
+      "The desired feel is arcade-plausible, not a full racing physics model. Scripted passing beats, close-follow moments, and presentation-only interpolation are in scope if the final classification and event semantics remain deterministic."
+    ],
+    "acceptance_criteria": [
+      "AC1: A documented circuit audit reports per-circuit display route length, configured laps, total display distance, recommended laps, and outliers, with a repeatable command checked into the repo.",
+      "AC2: Circuit lap counts or replay distance scaling are adjusted so normal race routes land inside an agreed target band for perceived total race distance, with explicit exceptions if any route intentionally remains shorter or longer.",
+      "AC3: The race outcome model remains deterministic and keeps final classification, rewards, consumed cards, report text, and event semantics stable unless a change is deliberately documented.",
+      "AC4: A presentation-layer replay script or staging adapter converts `RaceResult` plus circuit context into deterministic replay beats for starts, close-follow phases, overtakes, gaps, weather changes, and finish order.",
+      "AC5: Replay overtakes are visually staged as approach, overlap or offset, order swap, and settle phases instead of abrupt rank jumps or disconnected car positions.",
+      "AC6: Replay behavior is consistent across at least the shortest, longest, most technical, and wettest circuits in the rotation, with desktop and mobile screenshots or e2e checks showing no broken framing or overlapping labels.",
+      "AC7: Unit tests cover circuit normalization math, replay script determinism, final-order preservation, and at least one multi-overtake trace.",
+      "AC8: Existing gates still pass: typecheck, lint, unit tests, build, e2e replay/private-league checks, i18n validation if copy changes, and Logics validation."
+    ]
+  },
+  "product": {
+    "title": "Coherent Race Replay And Simulation Realism Product Brief",
+    "overview": "Coherent Race Replay And Simulation Realism upgrades CR League's post-race spectacle from a technically correct trace viewer into a believable arcade race presentation: circuits keep distinct identities, race lengths feel comparable, and overtakes are staged from deterministic result data without adding a physics engine.",
+    "goals": [
+      "Make every resolved Grand Prix feel like the same sport, even when the city route shape changes.",
+      "Keep simulation truth, rewards, and reports deterministic while allowing a richer presentation layer for replay movement.",
+      "Normalize circuit lap counts or replay scaling from measured route distance instead of manual guesswork.",
+      "Make overtakes and gaps readable through scripted arcade beats that match the final result.",
+      "Preserve the existing lightweight React/SVG map stack and avoid a new rendering engine unless proven necessary later.",
+      "Give future AI contributors a clear implementation path, measurable acceptance criteria, and validation commands."
+    ],
+    "non_goals": [
+      "Do not build a full physics model, tire simulation, collision model, racing line solver, or real-time race AI.",
+      "Do not change the player economy, rewards, card inventory rules, league cadence, or persistence model as part of this slice.",
+      "Do not add Three.js, Pixi, Canvas game-loop infrastructure, audio, video, or cinematic broadcast tooling.",
+      "Do not rewrite the map route data wholesale unless the audit proves a specific circuit route is unusable.",
+      "Do not make replay presentation random; the same race result and circuit must produce the same replay script.",
+      "Do not remove reports, classification, replay notifications, progress markers, or current result review surfaces."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Audit and normalize circuit race distances",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Circuit pacing",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC6",
+        "AC7"
+      ],
+      "problem": [
+        "Circuit routes currently have very different display lengths, and configured laps do not compensate enough.",
+        "Replay duration and perceived race scale can differ by circuit in ways that feel accidental rather than like track identity.",
+        "Manual lap tweaks are risky because route geometry lives in the web app while lap identities also exist in shared domain data."
+      ],
+      "scope_in": [
+        "Add a small repo command or script that imports current circuits and reports route length, configured laps, total display distance, recommended laps, and target-band status.",
+        "Choose and document a target perceived total-distance band for normal circuits, based on current route measurements and replay readability.",
+        "Adjust lap counts, replay scaling constants, or both so the rotation feels comparable without making every circuit identical.",
+        "Keep `packages/shared/src/domain/circuits.ts` and `apps/web/src/app/circuits.ts` aligned after any lap-count change.",
+        "Add unit coverage for the normalization helper or audit output where practical."
+      ],
+      "scope_out": [
+        "Changing circuit route geometry for aesthetic reasons only.",
+        "Adding a map provider or external distance service.",
+        "Changing circuit traits unless a documented coupling requires it.",
+        "Changing race rewards, season scoring, or league progression."
+      ],
+      "acceptance_criteria": [
+        "AC1: A repeatable command prints every circuit with route length, laps, total distance, recommended laps, and status.",
+        "AC2: The shortest and longest current circuits are explicitly covered by the audit output.",
+        "AC3: Configured race distances land in the selected target band or list an intentional exception with rationale.",
+        "AC4: Shared circuit identities and web route circuits expose the same lap count for each rotation entry.",
+        "AC5: Tests fail if future circuit data drifts outside the accepted band without updating the contract."
+      ]
+    },
+    {
+      "title": "Define the replay staging contract",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay architecture",
+      "request_acs": [
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC7"
+      ],
+      "problem": [
+        "The current replay uses simulation trace snapshots directly, so presentation artifacts can leak into perceived race realism.",
+        "Better overtakes require short scripted phases, but those phases should not mutate the simulation result.",
+        "Without a contract, replay improvements risk mixing display-only animation logic into `simulateRace`."
+      ],
+      "scope_in": [
+        "Create or document a deterministic replay staging model that consumes `RaceResult`, `ReplayTracePoint[]`, and circuit metadata.",
+        "Define beat types for grid/start, pacing, close-follow, overtake, settle, weather shift, key event, and finish.",
+        "Specify how beats preserve final classification, event timing semantics, and progress marker behavior.",
+        "Define how rank transitions are detected from trace order changes and converted into staged overtake windows.",
+        "Keep the contract small enough to implement in shared or web code without a new dependency."
+      ],
+      "scope_out": [
+        "Changing `RaceResult` persistence shape unless the adapter cannot be local.",
+        "Adding a backend replay endpoint.",
+        "Replacing the existing event timeline or report text.",
+        "Building a replay editor or content-authoring DSL."
+      ],
+      "acceptance_criteria": [
+        "AC1: The contract names the input data, output beat shape, timing fields, and deterministic seed/source rules.",
+        "AC2: The contract states which fields are simulation truth and which are presentation-only.",
+        "AC3: At least one trace order change maps to a staged overtake beat with approach, swap, and settle windows.",
+        "AC4: The final replay beat order matches `RaceResult.classification`.",
+        "AC5: The implementation location is justified as shared-domain helper, web replay helper, or another bounded module."
+      ]
+    },
+    {
+      "title": "Implement arcade-plausible replay movement",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Replay implementation",
+      "request_acs": [
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8"
+      ],
+      "problem": [
+        "Current car movement can make rank changes feel abrupt because progress and order are interpolated from sparse segment snapshots.",
+        "Different circuits can amplify those artifacts through path length, camera framing, and lap count differences.",
+        "Players should read overtakes and gaps as a coherent race story even if the model remains arcade-like."
+      ],
+      "scope_in": [
+        "Build the replay staging adapter from the agreed contract.",
+        "Update `ReplayView.tsx` and related helpers so car progress, tower order, moment notifications, and marker seeking consume staged replay data where appropriate.",
+        "Stage overtakes visually with short approach, side-by-side or lane-offset, swap, and settle phases.",
+        "Keep weather markers, active moment notifications, focus driver, camera, speed menu, replay progress, and report access working.",
+        "Ensure shortest, longest, wet, technical, and high-overtaking circuits still frame cars and labels correctly on desktop and mobile."
+      ],
+      "scope_out": [
+        "Changing race winner selection outside the existing simulation model.",
+        "Adding new car art, audio, 3D, or animation libraries.",
+        "Redesigning the whole result screen.",
+        "Changing league API contracts unless required by tests and explicitly documented."
+      ],
+      "acceptance_criteria": [
+        "AC1: Overtakes in replay are visually staged instead of appearing as instantaneous rank jumps.",
+        "AC2: The tower, car markers, active notification, and progress bar agree about the currently staged race moment.",
+        "AC3: Seeking before, during, and after an overtake shows stable deterministic state.",
+        "AC4: Replay finish order always matches `RaceResult.classification`.",
+        "AC5: Desktop and mobile replay screenshots show no broken camera framing, clipped cars, or overlapping labels across representative circuits."
+      ]
+    },
+    {
+      "title": "Validate replay realism with tests and playtest prompts",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Validation",
+      "request_acs": [
+        "AC6",
+        "AC7",
+        "AC8"
+      ],
+      "problem": [
+        "Replay realism is partly qualitative, so unit tests alone will not prove the experience feels better.",
+        "The implementation also needs deterministic guardrails so future changes do not reintroduce circuit-specific pacing artifacts.",
+        "Another AI needs explicit validation commands and observation prompts to close the work confidently."
+      ],
+      "scope_in": [
+        "Add unit tests for circuit distance normalization, replay staging determinism, final-order preservation, and multi-overtake behavior.",
+        "Update e2e replay checks to cover at least one representative resolved Grand Prix with staged movement and marker seeking.",
+        "Capture desktop and mobile screenshots for shortest, longest, and wet circuits, or document why automated coverage uses deterministic fixtures instead.",
+        "Update playtest notes or docs with prompts that ask whether the replay now feels coherent across circuits and whether overtakes read clearly.",
+        "Run the full local validation gate and record proof in Logics closeout."
+      ],
+      "scope_out": [
+        "Formal visual-regression infrastructure.",
+        "Large manual playtest execution.",
+        "Analytics instrumentation.",
+        "Balancing player card strength or economy outcomes."
+      ],
+      "acceptance_criteria": [
+        "AC1: Tests cover replay script determinism from the same result and circuit.",
+        "AC2: Tests cover that final replay order equals final classification after one or more staged overtakes.",
+        "AC3: Tests or screenshots cover representative circuit extremes.",
+        "AC4: Documentation includes qualitative playtest prompts for replay coherence and arcade-plausible overtakes.",
+        "AC5: Validation proof lists the exact commands run and any residual risk."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate coherent replay realism and circuit normalization",
+    "plan": [
+      "Read the current simulation, replay, circuit, map, and tests before editing: `simulateRace.ts`, `race.ts`, `circuits.ts`, `ReplayView.tsx`, `CircuitMap.tsx`, and replay/private-league tests.",
+      "Add the circuit audit command first and capture the current outliers so lap or scaling changes are evidence-based.",
+      "Choose the target perceived total-distance band, then normalize lap counts or replay scaling while keeping shared and web circuit data aligned.",
+      "Define the replay staging contract before implementation, separating simulation truth from presentation-only beats.",
+      "Implement deterministic replay staging and integrate it into `ReplayView` with staged overtake movement, tower agreement, marker seeking, and finish-order preservation.",
+      "Validate shortest, longest, wettest, and high-overtaking circuits with focused tests and visual screenshots on desktop and mobile.",
+      "Update specs, playtest prompts, and Logics proof, then run typecheck, lint, unit tests, build, e2e, i18n validation if copy changed, and Logics validation."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/replay-simulation-realism-and-circuit-normalization.json",
+    "mode": "full",
+    "profile": "deep"
+  }
+}

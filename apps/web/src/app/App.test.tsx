@@ -249,6 +249,8 @@ const qualifyingRun = {
   time: 72.42,
   lap: 2,
   attempts: 1,
+  decision: { approach: "balanced", preparation: "weather", cardId: "rain_grip" },
+  createdAt: "2026-07-18T12:00:00.000Z",
   result: resolvedState.currentGrandPrix.result
 };
 
@@ -264,7 +266,9 @@ const rivalQualifyingRun = {
   teamId: "team_2",
   time: 68.33,
   lap: 1,
-  attempts: 1
+  attempts: 1,
+  decision: { approach: "aggressive", preparation: "speed" },
+  createdAt: "2026-07-18T12:01:00.000Z"
 };
 
 const qualifiedState = {
@@ -647,6 +651,15 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Review lap time" }).className).toContain("primary-command");
     expect(screen.getByRole("heading", { name: "2. Chrono / plan" })).toBeTruthy();
     expect(screen.getByText("Chrono 1/3 is logged. Adjust the directive or lock the plan before the GP.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    expect(screen.getByRole("heading", { name: "Understand the lap time" })).toBeTruthy();
+    expect(screen.getByLabelText("Understand the lap time").textContent).toContain("72.42s");
+    expect(screen.getByLabelText("Understand the lap time").textContent).toContain("75.18s");
+    expect(screen.getByLabelText("Understand the lap time").textContent).toContain("P2");
+    expect(screen.getByLabelText("Understand the lap time").textContent).toContain("Best run");
+    fireEvent.click(screen.getAllByRole("button", { name: "Review lap time" }).at(0)!);
+    expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     fireEvent.click(screen.getByRole("button", { name: "Review lap time" }));
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));

@@ -53,6 +53,13 @@ type SetupMode = "choice" | "create" | "join";
 type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
 type OnboardingHelpTopic = keyof typeof ONBOARDING_HELP_KEYS;
 type StandardOnboardingHelpTopic = Exclude<OnboardingHelpTopic, "leagueIntro">;
+type ChronoReport = {
+  best: QualifyingRun | null;
+  latest: QualifyingRun | null;
+  deltaLabel: string;
+  gridLabel: string;
+  suggestion: string;
+};
 const SCREEN_ONBOARDING_HELP_TOPICS = ["race", "plan", "garage"] as const satisfies readonly OnboardingHelpTopic[];
 
 function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
@@ -100,6 +107,58 @@ function bestQualifyingRuns(runs: QualifyingRun[]) {
     if (!current || run.time < current.time) best.set(run.teamId, run);
   }
   return [...best.values()];
+}
+
+function buildChronoReport(input: {
+  runs: QualifyingRun[];
+  gridPosition: number;
+  attemptsLeft: number;
+  attemptLimit: number;
+  forecastPick: string;
+  form: FormState;
+  selectedCardId: string;
+  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
+}): ChronoReport {
+  const best = input.runs.reduce<QualifyingRun | null>((current, run) => (!current || run.time < current.time ? run : current), null);
+  const latest = latestQualifyingRun(input.runs);
+  const delta = best && latest ? latest.time - best.time : 0;
+  const deltaLabel = !best ? input.tt("chrono_report_delta_empty") : Math.abs(delta) < 0.005 ? input.tt("chrono_report_delta_best") : `+${delta.toFixed(2)}s`;
+  return {
+    best,
+    latest,
+    deltaLabel,
+    gridLabel: best && input.gridPosition > 0 ? `P${input.gridPosition}` : input.tt("starting_grid_no_time"),
+    suggestion: chronoReportSuggestion(input, best, latest)
+  };
+}
+
+function chronoReportSuggestion(
+  input: {
+    runs: QualifyingRun[];
+    attemptsLeft: number;
+    attemptLimit: number;
+    forecastPick: string;
+    form: FormState;
+    selectedCardId: string;
+    tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
+  },
+  best: QualifyingRun | null,
+  latest: QualifyingRun | null
+) {
+  if (!best) return input.tt("chrono_report_suggestion_first_run");
+  if (input.attemptsLeft <= 0) return input.tt("chrono_report_suggestion_lock_best");
+  const bestCard = best.decision.cardId ?? "";
+  const currentChanged = best.decision.approach !== input.form.approach || best.decision.preparation !== input.form.preparation || bestCard !== input.selectedCardId;
+  if (latest && latest.time > best.time + 0.15) {
+    return input.tt("chrono_report_suggestion_return_best", {
+      approach: input.tt(`approach_${best.decision.approach}` as TranslationKey),
+      preparation: input.tt(`preparation_${best.decision.preparation}` as TranslationKey)
+    });
+  }
+  if (currentChanged) return input.tt("chrono_report_suggestion_compare_current", { left: input.attemptsLeft, limit: input.attemptLimit });
+  if (input.forecastPick !== "dry" && input.form.preparation !== "weather") return input.tt("chrono_report_suggestion_weather");
+  if (input.form.preparation !== "speed") return input.tt("chrono_report_suggestion_speed");
+  return input.tt("chrono_report_suggestion_lock_best");
 }
 
 function createInitialForm(locale: Locale): FormState {
@@ -430,6 +489,17 @@ export function App() {
           ? "adjust"
           : "briefing";
   const startingGridEntries = leagueState ? startingGrid(leagueState) : [];
+  const playerGridPosition = startingGridEntries.find((entry) => entry.team.id === playerTeam?.id)?.position ?? 0;
+  const chronoReport = buildChronoReport({
+    runs: playerQualifyingRuns,
+    gridPosition: playerGridPosition,
+    attemptsLeft: qualifyingAttemptsLeft,
+    attemptLimit: qualifyingAttemptLimit,
+    forecastPick,
+    form,
+    selectedCardId: selectedCardId ?? "",
+    tt
+  });
   const completedSeasons = useMemo(() => (leagueState ? completedSeasonSummaries(leagueState) : []), [leagueState]);
   const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
   const primaryCommand =
@@ -1716,6 +1786,65 @@ export function App() {
         ) : null}
         {gameView === "plan" ? (
           <div className="plan-view">
+            <section className="panel chrono-report-panel" aria-label={tt("chrono_report_title")}>
+              <header className="chrono-report-header">
+                <div>
+                  <span className="section-kicker">{tt("chrono_report_kicker")}</span>
+                  <h2>{tt("chrono_report_title")}</h2>
+                </div>
+                <p>{chronoReport.suggestion}</p>
+              </header>
+              <div className="chrono-report-stats">
+                <div>
+                  <span>{tt("qualifying_best")}</span>
+                  <strong>{chronoReport.best ? `${chronoReport.best.time.toFixed(2)}s` : "--"}</strong>
+                </div>
+                <div>
+                  <span>{tt("qualifying_result_rank")}</span>
+                  <strong>{chronoReport.gridLabel}</strong>
+                </div>
+                <div>
+                  <span>{tt("chrono_report_delta")}</span>
+                  <strong>{chronoReport.deltaLabel}</strong>
+                </div>
+                <div>
+                  <span>{tt("qualifying_remaining")}</span>
+                  <strong>
+                    {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
+                  </strong>
+                </div>
+              </div>
+              <div className="chrono-report-history">
+                <strong>{tt("chrono_report_history_title")}</strong>
+                {playerQualifyingRuns.length ? (
+                  <ol>
+                    {[...playerQualifyingRuns]
+                      .sort((left, right) => right.attempts - left.attempts || (right.lap ?? 0) - (left.lap ?? 0))
+                      .map((run) => (
+                        <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`}>
+                          <span>
+                            {tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })} · {tt(`approach_${run.decision.approach}` as TranslationKey)} ·{" "}
+                            {tt(`preparation_${run.decision.preparation}` as TranslationKey)}
+                          </span>
+                          <em>{run.time.toFixed(2)}s</em>
+                          <button
+                            type="button"
+                            className="secondary-button"
+                            onClick={() => {
+                              setQualifyingResult(run);
+                              setGameView("drive");
+                            }}
+                          >
+                            {tt("action_qualifying_history")}
+                          </button>
+                        </li>
+                      ))}
+                  </ol>
+                ) : (
+                  <p>{tt("chrono_report_history_empty")}</p>
+                )}
+              </div>
+            </section>
             <DirectivePanel
               form={form}
               setForm={setForm}

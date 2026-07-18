@@ -771,6 +771,94 @@ label small {
   gap: 14px;
 }
 
+.chrono-report-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.chrono-report-header {
+  align-items: start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+}
+
+.chrono-report-header h2,
+.chrono-report-header p {
+  margin: 0;
+}
+
+.chrono-report-header p {
+  color: var(--color-muted);
+  line-height: 1.4;
+}
+
+.chrono-report-stats {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.chrono-report-stats > div {
+  background: rgb(16 14 18 / 0.42);
+  border: 1px solid var(--color-border);
+  display: grid;
+  gap: 3px;
+  padding: 10px;
+}
+
+.chrono-report-stats span,
+.chrono-report-history > strong {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.chrono-report-stats strong {
+  font-size: 1.06rem;
+}
+
+.chrono-report-history {
+  display: grid;
+  gap: 8px;
+}
+
+.chrono-report-history ol {
+  display: grid;
+  gap: 7px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.chrono-report-history li {
+  align-items: center;
+  background: rgb(255 255 255 / 0.045);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  padding: 8px 10px;
+}
+
+.chrono-report-history li span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chrono-report-history li em {
+  color: var(--color-accent);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.chrono-report-history p {
+  color: var(--color-muted);
+  margin: 0;
+}
+
 .directive-heading h2 {
   margin-bottom: 0;
 }
@@ -2993,6 +3081,15 @@ label small {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .chrono-report-header,
+  .chrono-report-history li {
+    grid-template-columns: 1fr;
+  }
+
+  .chrono-report-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .dashboard-summary {
     grid-template-columns: 1fr;
   }
@@ -3106,6 +3203,10 @@ label small {
 
 @media (max-width: 440px) {
   .race-payoff-recap dl {
+    grid-template-columns: 1fr;
+  }
+
+  .chrono-report-stats {
     grid-template-columns: 1fr;
   }
 

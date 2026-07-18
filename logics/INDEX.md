@@ -35,6 +35,7 @@
 | [prod_016_repo_review_remediation_pass_4_product_brief](product/prod_016_repo_review_remediation_pass_4_product_brief.md) | Repo Review Remediation Pass 4 Product Brief | Settled |  |  | product/prod_016_repo_review_remediation_pass_4_product_brief.md |
 | [prod_017_coherent_race_replay_and_simulation_realism_product_brief](product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md) | Coherent Race Replay And Simulation Realism Product Brief | Settled |  |  | product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md |
 | [prod_018_first_session_ux_polish_product_brief](product/prod_018_first_session_ux_polish_product_brief.md) | First Session UX Polish Product Brief | Proposed |  |  | product/prod_018_first_session_ux_polish_product_brief.md |
+| [prod_019_replay_spectacle_fun_pass_product_brief](product/prod_019_replay_spectacle_fun_pass_product_brief.md) | Replay Spectacle Fun Pass Product Brief | Proposed |  |  | product/prod_019_replay_spectacle_fun_pass_product_brief.md |
 
 ## Roadmaps
 
@@ -95,6 +96,7 @@
 | [req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish](request/req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish.md) | Repo review remediation pass 4: ownership resilience, race-window closure, and replay polish | Done |  |  | request/req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish.md |
 | [req_046_make_race_simulation_and_replay_feel_coherent_across_circuits](request/req_046_make_race_simulation_and_replay_feel_coherent_across_circuits.md) | Make race simulation and replay feel coherent across circuits | Done |  |  | request/req_046_make_race_simulation_and_replay_feel_coherent_across_circuits.md |
 | [req_047_polish_first_session_ux_after_playtest_findings](request/req_047_polish_first_session_ux_after_playtest_findings.md) | Polish first-session UX after playtest findings | Draft |  |  | request/req_047_polish_first_session_ux_after_playtest_findings.md |
+| [req_048_make_race_replay_feel_like_a_fun_race_spectacle](request/req_048_make_race_replay_feel_like_a_fun_race_spectacle.md) | Make race replay feel like a fun race spectacle | Draft |  |  | request/req_048_make_race_replay_feel_like_a_fun_race_spectacle.md |
 
 ## Backlog
 
@@ -212,6 +214,11 @@
 | [item_110_replace_automatic_chrono_replay_with_a_compact_qualifying_result_flow](backlog/item_110_replace_automatic_chrono_replay_with_a_compact_qualifying_result_flow.md) | Replace automatic chrono replay with a compact qualifying result flow | Ready |  | 0% | backlog/item_110_replace_automatic_chrono_replay_with_a_compact_qualifying_result_flow.md |
 | [item_111_add_a_readable_staged_grid_start_beat_to_race_replay](backlog/item_111_add_a_readable_staged_grid_start_beat_to_race_replay.md) | Add a readable staged grid-start beat to race replay | Ready |  | 0% | backlog/item_111_add_a_readable_staged_grid_start_beat_to_race_replay.md |
 | [item_112_lead_onboarding_with_the_league_promise_before_profile_mechanics](backlog/item_112_lead_onboarding_with_the_league_promise_before_profile_mechanics.md) | Lead onboarding with the league promise before profile mechanics | Ready |  | 0% | backlog/item_112_lead_onboarding_with_the_league_promise_before_profile_mechanics.md |
+| [item_113_add_deterministic_grid_start_staging_to_replay](backlog/item_113_add_deterministic_grid_start_staging_to_replay.md) | Add deterministic grid start staging to replay | Ready |  | 0% | backlog/item_113_add_deterministic_grid_start_staging_to_replay.md |
+| [item_114_generate_race_director_beats_from_replay_facts_and_trace](backlog/item_114_generate_race_director_beats_from_replay_facts_and_trace.md) | Generate race-director beats from replay facts and trace | Ready |  | 0% | backlog/item_114_generate_race_director_beats_from_replay_facts_and_trace.md |
+| [item_115_show_player_race_focus_context_during_replay](backlog/item_115_show_player_race_focus_context_during_replay.md) | Show player race focus context during replay | Ready |  | 0% | backlog/item_115_show_player_race_focus_context_during_replay.md |
+| [item_116_add_overtake_and_position_change_highlights](backlog/item_116_add_overtake_and_position_change_highlights.md) | Add overtake and position-change highlights | Ready |  | 0% | backlog/item_116_add_overtake_and_position_change_highlights.md |
+| [item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches](backlog/item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches.md) | Validate replay spectacle across circuits and quiet stretches | Ready |  | 0% | backlog/item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches.md |
 
 ## Tasks
 
@@ -265,3 +272,4 @@
 | [task_046_orchestrate_repo_review_remediation_pass_4](tasks/task_046_orchestrate_repo_review_remediation_pass_4.md) | Orchestrate repo review remediation pass 4 | Done | claude | 100% | tasks/task_046_orchestrate_repo_review_remediation_pass_4.md |
 | [task_047_orchestrate_coherent_replay_realism_and_circuit_normalization](tasks/task_047_orchestrate_coherent_replay_realism_and_circuit_normalization.md) | Orchestrate coherent replay realism and circuit normalization | Done | codex-work4 | 100% | tasks/task_047_orchestrate_coherent_replay_realism_and_circuit_normalization.md |
 | [task_048_orchestrate_first_session_ux_polish_from_playtest_findings](tasks/task_048_orchestrate_first_session_ux_polish_from_playtest_findings.md) | Orchestrate first-session UX polish from playtest findings | Ready |  | 0% | tasks/task_048_orchestrate_first_session_ux_polish_from_playtest_findings.md |
+| [task_049_orchestrate_replay_spectacle_fun_pass](tasks/task_049_orchestrate_replay_spectacle_fun_pass.md) | Orchestrate replay spectacle fun pass | Ready |  | 0% | tasks/task_049_orchestrate_replay_spectacle_fun_pass.md |

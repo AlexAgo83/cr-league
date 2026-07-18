@@ -1,0 +1,977 @@
+{
+  "budgets": {
+    "max_docs": 56,
+    "max_docs_per_ref": 8
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_048_make_race_replay_feel_like_a_fun_race_spectacle item_113_add_deterministic_grid_start_staging_to_replay item_114_generate_race_director_beats_from_replay_facts_and_trace item_115_show_player_race_focus_context_during_replay item_116_add_overtake_and_position_change_highlights item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches task_049_orchestrate_replay_spectacle_fun_pass --mode full --profile deep --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_037_design_visual_replay_v0_contract_and_layout"
+        ],
+        "prod": [
+          "prod_002_visual_replay_v0_product_brief"
+        ],
+        "req": [
+          "req_031_add_first_visual_race_replay_from_event_timeline"
+        ],
+        "task": [
+          "task_032_orchestrate_visual_replay_v0"
+        ]
+      },
+      "path": "logics/product/prod_002_visual_replay_v0_product_brief.md",
+      "ref": "prod_002_visual_replay_v0_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make the first few seconds after resolving a Grand Prix feel like watching a race outcome, not only reading a table.",
+          "- Show a compact top-down track or lane metaphor that communicates progression, player team presence, and key moments.",
+          "- Reinforce the existing race recap by visually pointing to events that already explain why the result happened.",
+          "- Stay cheap and maintainable: use existing event/result data, React, semantic HTML, SVG or CSS, and deterministic rendering.",
+          "- Validate whether a simple visual layer improves playtest comprehension before investing in animation-heavy replay or 3D."
+        ],
+        "Key product decisions": [
+          "- Start with a static or very lightly animated replay metaphor before investing in richer replay technology.",
+          "- Treat existing `RaceResult` data as the source of truth: classification and events should drive the panel.",
+          "- Keep the text recap, key-moments list, and race report because the visual panel is an aid, not the full explanation.",
+          "- Prefer boring React, semantic HTML, SVG, and CSS over a rendering dependency in V0."
+        ],
+        "Overview": [
+          "Visual Replay V0 turns the stored event timeline into a small top-down race replay panel that makes a resolved Grand Prix feel observable, causal, and more immersive without requiring a full race engine."
+        ],
+        "References": [
+          "- Product back-reference: `item_037_design_visual_replay_v0_contract_and_layout`",
+          "- Task back-reference: `task_032_orchestrate_visual_replay_v0`"
+        ]
+      },
+      "status": "Settled",
+      "title": "Visual Replay V0 Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_104_audit_and_normalize_circuit_race_distances",
+          "item_105_define_the_replay_staging_contract",
+          "item_106_implement_arcade_plausible_replay_movement",
+          "item_107_validate_replay_realism_with_tests_and_playtest_prompts"
+        ],
+        "prod": [
+          "prod_017_coherent_race_replay_and_simulation_realism_product_brief"
+        ],
+        "req": [
+          "req_046_make_race_simulation_and_replay_feel_coherent_across_circuits"
+        ],
+        "task": [
+          "task_047_orchestrate_coherent_replay_realism_and_circuit_normalization"
+        ]
+      },
+      "path": "logics/product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md",
+      "ref": "prod_017_coherent_race_replay_and_simulation_realism_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make every resolved Grand Prix feel like the same sport, even when the city route shape changes.",
+          "- Keep simulation truth, rewards, and reports deterministic while allowing a richer presentation layer for replay movement.",
+          "- Enrich race output with replay-useful deterministic facts when the current `RaceResult` is too sparse, without turning it into an animation or UI contract.",
+          "- Normalize circuit lap counts or replay scaling from measured route distance and route complexity instead of manual guesswork.",
+          "- Favor larger, more flowing circuit profiles as the target replay feel instead of compressing the championship around the shortest or twistiest routes.",
+          "- Make overtakes and gaps readable through detailed scripted arcade beats that match the final result."
+        ],
+        "Key product decisions": [
+          "- Simulation output remains the source of truth for final classification, report semantics, rewards, and consumed cards.",
+          "- `RaceResult` may expose more race facts for replay, but those facts must remain deterministic domain data.",
+          "- Replay staging is presentation-only: it may shape timing and movement, but it must not change the race outcome.",
+          "- UI animation details belong in the replay staging/view layer, not in `RaceResult`.",
+          "- Circuit normalization starts from measured route display distance and route complexity instead of subjective lap-count tweaking.",
+          "- When two normalization targets both work, choose the one closer to the larger and more flowing circuits."
+        ],
+        "Overview": [
+          "Coherent Race Replay And Simulation Realism upgrades CR League's post-race spectacle from a technically correct trace viewer into a believable arcade race presentation: circuits keep distinct identities, race lengths feel comparable, and overtakes are staged from deterministic result data without adding a physics engine."
+        ],
+        "References": [
+          "- Product back-reference: `req_046_make_race_simulation_and_replay_feel_coherent_across_circuits`",
+          "- Task back-reference: `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`"
+        ]
+      },
+      "status": "Settled",
+      "title": "Coherent Race Replay And Simulation Realism Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_113_add_deterministic_grid_start_staging_to_replay",
+          "item_114_generate_race_director_beats_from_replay_facts_and_trace",
+          "item_115_show_player_race_focus_context_during_replay",
+          "item_116_add_overtake_and_position_change_highlights",
+          "item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches"
+        ],
+        "prod": [
+          "prod_019_replay_spectacle_fun_pass_product_brief"
+        ],
+        "req": [
+          "req_048_make_race_replay_feel_like_a_fun_race_spectacle"
+        ],
+        "task": [
+          "task_049_orchestrate_replay_spectacle_fun_pass"
+        ]
+      },
+      "path": "logics/product/prod_019_replay_spectacle_fun_pass_product_brief.md",
+      "ref": "prod_019_replay_spectacle_fun_pass_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make the first seconds of replay immediately read as a race start.",
+          "- Help players understand why positions are changing without reading the full report.",
+          "- Make the player team's story visible even when the player is not leading.",
+          "- Create small high-impact visual moments around overtakes, card effects, weather windows, pressure, and final laps.",
+          "- Keep every spectacle element deterministic and derived from existing race facts, trace, events, and circuit context.",
+          "- Reuse the existing React/SVG replay stack and keep the implementation light."
+        ],
+        "Key product decisions": [
+          "- Use structured input as the source of truth for generated docs.",
+          "- Keep generated write paths local and repo-bounded."
+        ],
+        "Overview": [
+          "Replay Spectacle Fun Pass makes CR League's resolved GP replay feel like a small race broadcast instead of a passive telemetry map: starts are staged, action is called out, the player's race is legible, overtakes pop, and quiet phases still carry tension through truthful deterministic beats."
+        ],
+        "References": [
+          "- Product back-reference: `req_048_make_race_replay_feel_like_a_fun_race_spectacle`",
+          "- Task back-reference: `task_049_orchestrate_replay_spectacle_fun_pass`"
+        ]
+      },
+      "status": "Proposed",
+      "title": "Replay Spectacle Fun Pass Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_029_add_automated_private_league_playtest_scenario"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_023_add_automated_private_league_playtest_scenario"
+        ],
+        "task": [
+          "task_024_add_automated_private_league_playtest_scenario"
+        ]
+      },
+      "path": "logics/product/prod_001_cr_league_product_brief.md",
+      "ref": "prod_001_cr_league_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make each Grand Prix feel like a short strategic bet rather than a driving challenge: players read the conditions, commit to a plan, optionally play a card, and then see whether the plan paid off.",
+          "- Create a game that works for private social leagues first, while still allowing immediate solo play with bots for onboarding, testing, and players who want to play at their own pace.",
+          "- Generate race stories that players can understand and retell: weather gambles, rival battles, card saves, mechanical failures, late comebacks, and visible consequences of pre-race choices.",
+          "- Keep the first version approachable for non-gamers by limiting mandatory pre-race decisions, providing strong defaults, and avoiding excessive configuration.",
+          "- Give engaged players more to think about through optional practice insights, card inventory planning, rival goals, and risk/reward tradeoffs without forcing casual players through heavy management screens.",
+          "- Use a cheap, robust asynchronous architecture: races can be scheduled, but simulation may happen lazily when the league is next accessed after the deadline."
+        ],
+        "Overview": [
+          "CR League is an asynchronous racing championship game where players manage a team, make a few strategic pre-race bets, play special cards, then watch a simulated Grand Prix produce a visual replay, report, rewards, and championship movement.",
+          "Short pitch:",
+          "> A private racing league game where you do not drive. You run a team, prepare each Grand Prix, play one special move, then watch the race replay reveal whether your plan was genius or a disaster.",
+          "The product should feel like a social strategy game wrapped in a racing championship. The player is a team principal, not a driver. The core pleasure is reading a pre-race briefing, making a small number of meaningful decisions, committing to a risk, and then getting a clear race story back.",
+          "The first playable version must prove one question before anything else:",
+          "> Does choosing a few pre-race directives create enough tension, understanding, and social story to make players want to come back for the next Grand Prix?"
+        ],
+        "References": [
+          "- Product back-reference: `item_029_add_automated_private_league_playtest_scenario`",
+          "- Task back-reference: `task_024_add_automated_private_league_playtest_scenario`"
+        ]
+      },
+      "status": "Settled",
+      "title": "CR League Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_071_remove_the_permanent_replay_key_moments_panel"
+        ],
+        "prod": [
+          "prod_010_full_width_replay_moment_notifications_product_brief"
+        ],
+        "req": [
+          "req_039_turn_replay_key_moments_into_timed_notifications"
+        ],
+        "task": [
+          "task_040_orchestrate_full_width_replay_moment_notifications"
+        ]
+      },
+      "path": "logics/product/prod_010_full_width_replay_moment_notifications_product_brief.md",
+      "ref": "prod_010_full_width_replay_moment_notifications_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make the replay tab feel immersive and race-first instead of dashboard-first.",
+          "- Give the map the available width so movement, track, tower, and weather are easier to read.",
+          "- Surface key events at the moment they happen, so players connect cause, lap, and position impact naturally.",
+          "- Keep lightweight navigation through progress-bar markers for replaying important events.",
+          "- Preserve the report tab as the durable analysis surface.",
+          "- Keep the implementation cheap by reusing existing replay moment calculations and event text helpers."
+        ],
+        "Key product decisions": [
+          "- Use structured input as the source of truth for generated docs.",
+          "- Keep generated write paths local and repo-bounded."
+        ],
+        "Overview": [
+          "Full-Width Replay Moment Notifications makes the race replay feel like the live spectacle of the Grand Prix: the map becomes the stage, key moments arrive as timed notifications, and the report remains the place for calm post-race analysis.",
+          "```mermaid",
+          "flowchart LR",
+          "  Replay[Replay tab] --> Map[Full-width race map]",
+          "  Map --> Moment[Timed moment notification]",
+          "  Moment --> Marker[Progress marker seek]"
+        ],
+        "References": [
+          "- Product back-reference: `item_071_remove_the_permanent_replay_key_moments_panel`",
+          "- Task back-reference: `task_040_orchestrate_full_width_replay_moment_notifications`"
+        ]
+      },
+      "status": "Settled",
+      "title": "Full-Width Replay Moment Notifications Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback",
+          "item_109_make_mobile_race_guidance_readable_without_shrinking_the_circuit",
+          "item_110_replace_automatic_chrono_replay_with_a_compact_qualifying_result_flow",
+          "item_111_add_a_readable_staged_grid_start_beat_to_race_replay",
+          "item_112_lead_onboarding_with_the_league_promise_before_profile_mechanics"
+        ],
+        "prod": [
+          "prod_018_first_session_ux_polish_product_brief"
+        ],
+        "req": [
+          "req_047_polish_first_session_ux_after_playtest_findings"
+        ],
+        "task": [
+          "task_048_orchestrate_first_session_ux_polish_from_playtest_findings"
+        ]
+      },
+      "path": "logics/product/prod_018_first_session_ux_polish_product_brief.md",
+      "ref": "prod_018_first_session_ux_polish_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make command feedback feel trustworthy by replacing stale loading messages instead of stacking them.",
+          "- Preserve the strong cockpit/map visual identity while keeping controls and guidance readable on desktop and mobile.",
+          "- Reduce friction in the first Grand Prix loop, especially repeated qualifying attempts.",
+          "- Make replay starts immediately understandable before the field transitions into staged race movement.",
+          "- Make new players understand the core promise of creating and running a racing league before asking them to manage access.",
+          "- Keep implementation small and local to existing React, CSS, i18n, and test surfaces."
+        ],
+        "Key product decisions": [
+          "- Command feedback should behave like one lifecycle per command, not a historical stack of toasts.",
+          "- Mobile Race should keep the circuit large, but the next instruction must remain readable through a compact expandable pattern.",
+          "- Qualifying replay is valuable but should be explicit after a run; the default post-run state should help the player decide whether to run again, review, or lock.",
+          "- Replay grid start belongs in the presentation layer and must not change simulation truth or final classification.",
+          "- Onboarding should lead with \"start/run a racing league\"; profile creation is framed as saving access to that league."
+        ],
+        "Overview": [
+          "This polish pass turns the current playable CR League first session into a cleaner, more confident experience: feedback stops contradicting itself, mobile instructions stay readable, repeated chronos move faster, replay starts read like a race, and onboarding leads with the league fantasy before account mechanics."
+        ],
+        "References": [
+          "- Product back-reference: `req_047_polish_first_session_ux_after_playtest_findings`",
+          "- Task back-reference: `task_048_orchestrate_first_session_ux_polish_from_playtest_findings`"
+        ]
+      },
+      "status": "Proposed",
+      "title": "First Session UX Polish Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, make race replay feel like a fun race spectacle, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Make race replay feel like a fun race spectacle",
+        "use when": "You need to implement or review the scaffolded workflow for Make race replay feel like a fun race spectacle."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback",
+          "item_111_add_a_readable_staged_grid_start_beat_to_race_replay",
+          "item_113_add_deterministic_grid_start_staging_to_replay",
+          "item_114_generate_race_director_beats_from_replay_facts_and_trace",
+          "item_115_show_player_race_focus_context_during_replay",
+          "item_116_add_overtake_and_position_change_highlights",
+          "item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches"
+        ],
+        "prod": [
+          "prod_002_visual_replay_v0_product_brief",
+          "prod_017_coherent_race_replay_and_simulation_realism_product_brief",
+          "prod_019_replay_spectacle_fun_pass_product_brief"
+        ],
+        "req": [
+          "req_046_make_race_simulation_and_replay_feel_coherent_across_circuits",
+          "req_047_polish_first_session_ux_after_playtest_findings",
+          "req_048_make_race_replay_feel_like_a_fun_race_spectacle"
+        ],
+        "spec": [
+          "spec_004_race_report_and_replay_ux",
+          "spec_011_simulation_algorithm_v0"
+        ]
+      },
+      "path": "logics/request/req_048_make_race_replay_feel_like_a_fun_race_spectacle.md",
+      "ref": "req_048_make_race_replay_feel_like_a_fun_race_spectacle",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Replay starts with a deterministic grid-start beat: cars begin separated in readable grid positions, launch over a short window, and transition into existing replay movement without changing classification.",
+          "- AC2: A race-director panel or equivalent lightweight overlay surfaces the current meaningful beat with concise copy, such as attack, defense, gap opening, pack compact, weather phase, final lap pressure, or player-specific event.",
+          "- AC3: Player focus context is visible when a player team exists: current position, gain/loss from start, gap ahead, gap behind, and latest player-relevant event are available without opening the report.",
+          "- AC4: Overtakes and position changes get clear visual emphasis: local car/tower/timeline cues make the position change readable without relying only on watching car movement.",
+          "- AC5: Quiet replay stretches produce deterministic truthful rhythm beats derived from trace gaps/order/weather/events, without inventing fake overtakes or fake outcomes.",
+          "- AC6: Replay spectacle remains deterministic from the same `RaceResult` plus circuit: no random UI beats, no local-clock-dependent storytelling, and no simulation truth mutation."
+        ],
+        "Needs": [
+          "- Turn the replay from a technically readable animated map into a fun race spectacle that tells what is happening.",
+          "- Add a deterministic grid-start presentation so the first seconds feel like a race launch rather than a crowded marker stack.",
+          "- Add a lightweight race-director layer that narrates meaningful action without replacing the visual replay.",
+          "- Make the player's race legible through focus context: current position, gap ahead/behind, last player event, and gain/loss from start.",
+          "- Make overtakes and position changes visibly exciting through local badges, tower pulses, timeline cues, and clear `P5 -> P4` style feedback.",
+          "- Fill quiet stretches with truthful rhythm beats so the replay still has tension when there is no major event."
+        ]
+      },
+      "status": "Draft",
+      "title": "Make race replay feel like a fun race spectacle"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, make race simulation and replay feel coherent across circuits, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Make race simulation and replay feel coherent across circuits",
+        "use when": "You need to implement or review the scaffolded workflow for Make race simulation and replay feel coherent across circuits."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_104_audit_and_normalize_circuit_race_distances",
+          "item_105_define_the_replay_staging_contract",
+          "item_106_implement_arcade_plausible_replay_movement",
+          "item_107_validate_replay_realism_with_tests_and_playtest_prompts"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief",
+          "prod_002_visual_replay_v0_product_brief",
+          "prod_010_full_width_replay_moment_notifications_product_brief",
+          "prod_017_coherent_race_replay_and_simulation_realism_product_brief"
+        ],
+        "req": [
+          "req_046_make_race_simulation_and_replay_feel_coherent_across_circuits"
+        ],
+        "spec": [
+          "spec_001_grand_prix_core_loop_and_simulation_v1",
+          "spec_004_race_report_and_replay_ux",
+          "spec_011_simulation_algorithm_v0",
+          "spec_016_implementation_roadmap"
+        ],
+        "task": [
+          "task_047_orchestrate_coherent_replay_realism_and_circuit_normalization"
+        ]
+      },
+      "path": "logics/request/req_046_make_race_simulation_and_replay_feel_coherent_across_circuits.md",
+      "ref": "req_046_make_race_simulation_and_replay_feel_coherent_across_circuits",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: A documented circuit audit reports per-circuit display route length, configured laps, total display distance, recommended laps, and outliers, with a repeatable command checked into the repo.",
+          "- AC2: Circuit lap counts or replay distance scaling are adjusted so normal race routes land inside an agreed target band for perceived total race distance, favoring longer and less twisty routes as the reference feel, with explicit exceptions if any route intentionally remains shorter or tighter.",
+          "- AC3: The race outcome model remains deterministic and keeps final classification, rewards, consumed cards, report text, and event semantics stable unless a change is deliberately documented.",
+          "- AC4: `RaceResult` is enriched when needed with deterministic replay-useful race facts, such as finer gaps, order-change facts, pressure windows, attack/defense context, momentum shifts, and event-to-replay metadata, without storing UI animation instructions.",
+          "- AC5: A presentation-layer replay script or staging adapter converts `RaceResult` plus circuit context into deterministic replay beats for starts, pace phases, close-follow phases, attack setup, overtakes, defense, gap rebuild, weather changes, key events, and finish order.",
+          "- AC6: Replay overtakes are visually staged as approach, overlap or offset, order swap, and settle phases instead of abrupt rank jumps or disconnected car positions, and the script can be inspected through a readable debug dump or deterministic fixture."
+        ],
+        "Needs": [
+          "- Make the visual replay feel like a believable arcade race rather than a raw interpolation of classification math.",
+          "- Normalize circuit pacing so different city routes remain distinct but do not produce wildly different replay lengths, lap counts, or perceived race duration.",
+          "- Prefer longer, more flowing circuit profiles when normalization needs a bias: short or very twisty routes should not become the reference feel for the championship.",
+          "- Separate race outcome truth from replay presentation so the simulation stays deterministic while the replay can stage overtakes, gaps, and momentum more convincingly.",
+          "- Enrich `RaceResult` with deterministic race facts if the current payload is too sparse for a convincing replay: finer gaps, order-change facts, pressure windows, momentum shifts, and event-to-replay metadata are acceptable.",
+          "- Audit the current circuit geometry and lap counts with a repeatable tool before changing balance-sensitive values."
+        ]
+      },
+      "status": "Done",
+      "title": "Make race simulation and replay feel coherent across circuits"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, polish first-session ux after playtest findings, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Polish first-session UX after playtest findings",
+        "use when": "You need to implement or review the scaffolded workflow for Polish first-session UX after playtest findings."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback",
+          "item_109_make_mobile_race_guidance_readable_without_shrinking_the_circuit",
+          "item_110_replace_automatic_chrono_replay_with_a_compact_qualifying_result_flow",
+          "item_111_add_a_readable_staged_grid_start_beat_to_race_replay",
+          "item_112_lead_onboarding_with_the_league_promise_before_profile_mechanics"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief",
+          "prod_002_visual_replay_v0_product_brief",
+          "prod_010_full_width_replay_moment_notifications_product_brief",
+          "prod_017_coherent_race_replay_and_simulation_realism_product_brief",
+          "prod_018_first_session_ux_polish_product_brief"
+        ],
+        "req": [
+          "req_047_polish_first_session_ux_after_playtest_findings"
+        ],
+        "spec": [
+          "spec_001_grand_prix_core_loop_and_simulation_v1",
+          "spec_004_race_report_and_replay_ux",
+          "spec_016_implementation_roadmap"
+        ]
+      },
+      "path": "logics/request/req_047_polish_first_session_ux_after_playtest_findings.md",
+      "ref": "req_047_polish_first_session_ux_after_playtest_findings",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Notifications use a clear lifecycle: one pending notification per command is replaced by success or error, stale pending messages never remain after success, success messages auto-dismiss, and errors remain dismissible until the user closes them.",
+          "- AC2: Notification placement and stacking no longer obscure primary race controls, replay timeline, mobile step guidance, modal actions, or garage card rows on desktop and mobile.",
+          "- AC3: The mobile Race screen presents the active step title and instruction without truncating essential copy, using a compact expandable/bottom-sheet pattern or another equally readable mobile pattern.",
+          "- AC4: After a qualifying lap, the default state is a compact result summary with best time/rank/attempt context and primary actions for another attempt, replay, or lock plan; full lap replay opens only when explicitly requested.",
+          "- AC5: Replay has a deterministic staged grid-start phase: cars begin in readable grid positions, a short launch beat separates the field, and the existing replay order/final classification remain unchanged.",
+          "- AC6: The first-session onboarding frames the player goal before profile mechanics: starting a league is the primary path, recovery stays available, and the profile/recovery requirement is explained as saving access rather than as the product headline."
+        ],
+        "Needs": [
+          "- Remove stale and contradictory notifications so the UI never says an old loading action is still happening after a later success.",
+          "- Keep operational feedback visible without covering race controls, replay timeline, mobile guidance, or garage cards.",
+          "- Make mobile race guidance readable without shrinking the circuit into a dense dashboard.",
+          "- Make repeated qualifying attempts faster by showing a compact result state first and keeping full lap replay as an explicit option.",
+          "- Make the replay start read like a race start, with a short staged grid/launch moment before cars collapse into normal race spacing.",
+          "- Make the first-session flow sell the racing-league fantasy before asking for profile mechanics, while preserving recovery and saved-league behavior."
+        ]
+      },
+      "status": "Draft",
+      "title": "Polish first-session UX after playtest findings"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, replace stale notification stacking with command lifecycle feedback, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Replace stale notification stacking with command lifecycle feedback",
+        "use when": "Implementing the scaffolded slice for Replace stale notification stacking with command lifecycle feedback."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback"
+        ],
+        "prod": [
+          "prod_018_first_session_ux_polish_product_brief"
+        ],
+        "req": [
+          "req_047_polish_first_session_ux_after_playtest_findings"
+        ],
+        "task": [
+          "task_048_orchestrate_first_session_ux_polish_from_playtest_findings"
+        ]
+      },
+      "path": "logics/backlog/item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback.md",
+      "ref": "item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: A pending command notification is replaced or removed when the command succeeds, so stale loading messages cannot remain below success messages.",
+          "- AC2: Errors remain visible until dismissal and include the existing user-safe error behavior.",
+          "- AC3: Desktop and mobile screenshots show notifications not covering Race primary commands, replay timeline, modal actions, or garage cards.",
+          "- AC4: Automated tests cover at least one success lifecycle and one error lifecycle.",
+          "- AC5: Existing notification copy remains localized in English and French."
+        ],
+        "Problem": [
+          "- Playtest showed stale pending notifications remaining visible after later success messages, for example `Creating profile...` under `Profile created...`.",
+          "- The notification stack overlays race step copy, replay timeline, modal backdrops, and garage cards, creating the strongest impression of UI bug even when commands succeed.",
+          "- The current implementation treats pending and success feedback as independent toasts, so every command can add noise instead of updating one lifecycle."
+        ]
+      },
+      "status": "Ready",
+      "title": "Replace stale notification stacking with command lifecycle feedback"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add a readable staged grid-start beat to race replay, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add a readable staged grid-start beat to race replay",
+        "use when": "Implementing the scaffolded slice for Add a readable staged grid-start beat to race replay."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_111_add_a_readable_staged_grid_start_beat_to_race_replay"
+        ],
+        "prod": [
+          "prod_018_first_session_ux_polish_product_brief"
+        ],
+        "req": [
+          "req_047_polish_first_session_ux_after_playtest_findings"
+        ],
+        "task": [
+          "task_048_orchestrate_first_session_ux_polish_from_playtest_findings"
+        ]
+      },
+      "path": "logics/backlog/item_111_add_a_readable_staged_grid_start_beat_to_race_replay.md",
+      "ref": "item_111_add_a_readable_staged_grid_start_beat_to_race_replay",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: At replay progress near zero, cars are separated enough to read their positions rather than fully stacked.",
+          "- AC2: The transition from staged grid positions into normal replay movement is deterministic and bounded.",
+          "- AC3: Seeking before, during, and after the start beat gives stable positions and tower state.",
+          "- AC4: Replay finish order and final classification remain unchanged.",
+          "- AC5: Tests or screenshots prove desktop and mobile replay starts are readable."
+        ],
+        "Problem": [
+          "- Playtest showed replay cars visually clustered under the start line at the beginning of a resolved Grand Prix.",
+          "- The replay is more time-real and cinematic after recent work, but the first seconds still read as a pile of cars instead of a race start.",
+          "- A simple deterministic start beat can improve clarity without changing race outcome or adding physics."
+        ]
+      },
+      "status": "Ready",
+      "title": "Add a readable staged grid-start beat to race replay"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add deterministic grid start staging to replay, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add deterministic grid start staging to replay",
+        "use when": "Implementing the scaffolded slice for Add deterministic grid start staging to replay."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_111_add_a_readable_staged_grid_start_beat_to_race_replay",
+          "item_113_add_deterministic_grid_start_staging_to_replay"
+        ],
+        "prod": [
+          "prod_019_replay_spectacle_fun_pass_product_brief"
+        ],
+        "req": [
+          "req_048_make_race_replay_feel_like_a_fun_race_spectacle"
+        ],
+        "task": [
+          "task_049_orchestrate_replay_spectacle_fun_pass"
+        ]
+      },
+      "path": "logics/backlog/item_113_add_deterministic_grid_start_staging_to_replay.md",
+      "ref": "item_113_add_deterministic_grid_start_staging_to_replay",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: At replay progress zero, at least the field's first visible cluster is separated enough to read multiple cars instead of one stack.",
+          "- AC2: Seeking inside the start window gives stable deterministic positions.",
+          "- AC3: After the start window, car progress converges into the existing replay movement without jumps larger than the documented transition bound.",
+          "- AC4: Tower order and final classification remain unchanged.",
+          "- AC5: Desktop and mobile screenshots or e2e checks show a readable race start."
+        ],
+        "Problem": [
+          "- Replay starts currently look like a crowded marker around the start line, not a race launch.",
+          "- The first seconds set the tone for the replay, so a weak start makes the whole replay feel technical instead of fun.",
+          "- The fix belongs in presentation timing, not in simulation trace generation."
+        ]
+      },
+      "status": "Ready",
+      "title": "Add deterministic grid start staging to replay"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, generate race-director beats from replay facts and trace, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Generate race-director beats from replay facts and trace",
+        "use when": "Implementing the scaffolded slice for Generate race-director beats from replay facts and trace."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_114_generate_race_director_beats_from_replay_facts_and_trace"
+        ],
+        "prod": [
+          "prod_019_replay_spectacle_fun_pass_product_brief"
+        ],
+        "req": [
+          "req_048_make_race_replay_feel_like_a_fun_race_spectacle"
+        ],
+        "task": [
+          "task_049_orchestrate_replay_spectacle_fun_pass"
+        ]
+      },
+      "path": "logics/backlog/item_114_generate_race_director_beats_from_replay_facts_and_trace.md",
+      "ref": "item_114_generate_race_director_beats_from_replay_facts_and_trace",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Given the same result and trace, the beat builder returns identical ordered beats.",
+          "- AC2: Order-change facts produce overtake/position-change beats.",
+          "- AC3: Quiet trace windows produce truthful rhythm beats such as compact pack, leader gap, weather phase, or final-lap pressure when applicable.",
+          "- AC4: Generated beats include enough team ids/progress/lap context for UI highlighting.",
+          "- AC5: Tests cover action beats, quiet fallback beats, and no contradictory fake events."
+        ],
+        "Problem": [
+          "- Several replay stretches are visually stable but narratively flat: the map moves, but the player does not know what to care about.",
+          "- Action becomes fun when a visible event explains it, as seen when `Launch Boost +1 pos` appeared during playtest.",
+          "- The replay needs truthful beats for both action and quiet periods without inventing fake race outcomes."
+        ]
+      },
+      "status": "Ready",
+      "title": "Generate race-director beats from replay facts and trace"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, show player race focus context during replay, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Show player race focus context during replay",
+        "use when": "Implementing the scaffolded slice for Show player race focus context during replay."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_115_show_player_race_focus_context_during_replay"
+        ],
+        "prod": [
+          "prod_019_replay_spectacle_fun_pass_product_brief"
+        ],
+        "req": [
+          "req_048_make_race_replay_feel_like_a_fun_race_spectacle"
+        ],
+        "task": [
+          "task_049_orchestrate_replay_spectacle_fun_pass"
+        ]
+      },
+      "path": "logics/backlog/item_115_show_player_race_focus_context_during_replay.md",
+      "ref": "item_115_show_player_race_focus_context_during_replay",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: When a player team exists, replay exposes current position and start-to-current gain/loss.",
+          "- AC2: Gap ahead and gap behind are shown when they can be derived; leader/last edge cases degrade cleanly.",
+          "- AC3: Latest player-relevant director beat or event appears when available.",
+          "- AC4: Turning off focus-driver behavior does not remove all player context unless explicitly scoped and documented.",
+          "- AC5: Tests cover context calculations for player leader, player midfield, and player last."
+        ],
+        "Problem": [
+          "- When the player team is near the back, the tower shows the position but the replay does not explain whether the player is gaining, losing, pressuring, or isolated.",
+          "- Players need their own race story visible without opening the report or manually comparing tower changes.",
+          "- The existing focus-driver control can center the map, but it does not provide enough race context."
+        ]
+      },
+      "status": "Ready",
+      "title": "Show player race focus context during replay"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate replay spectacle fun pass",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_113_add_deterministic_grid_start_staging_to_replay",
+          "item_114_generate_race_director_beats_from_replay_facts_and_trace",
+          "item_115_show_player_race_focus_context_during_replay",
+          "item_116_add_overtake_and_position_change_highlights",
+          "item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches"
+        ],
+        "prod": [
+          "prod_019_replay_spectacle_fun_pass_product_brief"
+        ],
+        "req": [
+          "req_048_make_race_replay_feel_like_a_fun_race_spectacle"
+        ],
+        "task": [
+          "task_049_orchestrate_replay_spectacle_fun_pass"
+        ]
+      },
+      "path": "logics/tasks/task_049_orchestrate_replay_spectacle_fun_pass.md",
+      "ref": "task_049_orchestrate_replay_spectacle_fun_pass",
+      "schema_version": "1.0",
+      "sections": {
+        "Context": [
+          "- Orchestrate the scaffolded request chain and keep sibling implementation slices linked."
+        ],
+        "Validation": [
+          "- Run `python3 -m logics_manager lint --require-status`.",
+          "- Run scaffold command tests."
+        ]
+      },
+      "status": "Ready",
+      "title": "Orchestrate replay spectacle fun pass"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_113_add_deterministic_grid_start_staging_to_replay",
+          "item_114_generate_race_director_beats_from_replay_facts_and_trace",
+          "item_115_show_player_race_focus_context_during_replay",
+          "item_116_add_overtake_and_position_change_highlights",
+          "item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches"
+        ],
+        "prod": [
+          "prod_019_replay_spectacle_fun_pass_product_brief"
+        ],
+        "req": [
+          "req_048_make_race_replay_feel_like_a_fun_race_spectacle"
+        ],
+        "task": [
+          "task_049_orchestrate_replay_spectacle_fun_pass"
+        ]
+      },
+      "path": "logics/product/prod_019_replay_spectacle_fun_pass_product_brief.md",
+      "ref": "prod_019_replay_spectacle_fun_pass_product_brief",
+      "schema_version": "1.0",
+      "sections": {},
+      "status": "Proposed",
+      "title": "Replay Spectacle Fun Pass Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add overtake and position-change highlights, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add overtake and position-change highlights",
+        "use when": "Implementing the scaffolded slice for Add overtake and position-change highlights."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_116_add_overtake_and_position_change_highlights"
+        ],
+        "prod": [
+          "prod_019_replay_spectacle_fun_pass_product_brief"
+        ],
+        "req": [
+          "req_048_make_race_replay_feel_like_a_fun_race_spectacle"
+        ],
+        "task": [
+          "task_049_orchestrate_replay_spectacle_fun_pass"
+        ]
+      },
+      "path": "logics/backlog/item_116_add_overtake_and_position_change_highlights.md",
+      "ref": "item_116_add_overtake_and_position_change_highlights",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: At least one overtake beat creates a visible car/tower/timeline highlight.",
+          "- AC2: Seeking into and out of the beat window deterministically shows/hides the highlight.",
+          "- AC3: Player-relevant position changes are visually distinguishable from neutral field changes.",
+          "- AC4: Highlight labels are localized and concise.",
+          "- AC5: Tests cover highlight mapping and seek behavior."
+        ],
+        "Problem": [
+          "- Overtakes may happen in the replay plan, but they are easy to miss unless the viewer watches the right car at the right second.",
+          "- The tower, timeline, and car markers should briefly reinforce important position changes.",
+          "- Small highlights can create excitement without adding a heavy animation system."
+        ]
+      },
+      "status": "Ready",
+      "title": "Add overtake and position-change highlights"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, validate replay spectacle across circuits and quiet stretches, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Validate replay spectacle across circuits and quiet stretches",
+        "use when": "Implementing the scaffolded slice for Validate replay spectacle across circuits and quiet stretches."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches"
+        ],
+        "prod": [
+          "prod_019_replay_spectacle_fun_pass_product_brief"
+        ],
+        "req": [
+          "req_048_make_race_replay_feel_like_a_fun_race_spectacle"
+        ],
+        "task": [
+          "task_049_orchestrate_replay_spectacle_fun_pass"
+        ]
+      },
+      "path": "logics/backlog/item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches.md",
+      "ref": "item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Validation covers at least four circuits including one short/technical and one longer flowing route.",
+          "- AC2: Proof includes replay start, mid-race action, quiet stretch, and player focus state.",
+          "- AC3: E2E or unit tests cover deterministic behavior for generated beats and highlights.",
+          "- AC4: Full local gate commands and outcomes are recorded in task closeout.",
+          "- AC5: Any remaining UX risk is documented with a clear follow-up boundary."
+        ],
+        "Problem": [
+          "- Replay fun is partly qualitative, and circuit shape changes how much action is visible.",
+          "- The playtest showed stronger engagement on Amsterdam Canal than Paris Left Bank because visible beats were clearer.",
+          "- Implementation needs a repeatable validation script/checklist so another AI can prove the replay is more fun without relying only on one lucky race."
+        ]
+      },
+      "status": "Ready",
+      "title": "Validate replay spectacle across circuits and quiet stretches"
+    }
+  ],
+  "estimates": {
+    "char_count": 40758,
+    "companion_doc_count": 6,
+    "doc_count": 12
+  },
+  "generated_at": "2026-07-18T13:56:34Z",
+  "handoff": {
+    "companion_doc_count": 6,
+    "enabled": true,
+    "source_refs": [
+      "req_048_make_race_replay_feel_like_a_fun_race_spectacle",
+      "item_113_add_deterministic_grid_start_staging_to_replay",
+      "item_114_generate_race_director_beats_from_replay_facts_and_trace",
+      "item_115_show_player_race_focus_context_during_replay",
+      "item_116_add_overtake_and_position_change_highlights",
+      "item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches",
+      "task_049_orchestrate_replay_spectacle_fun_pass"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 441,
+      "fr": 441
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "full",
+  "profile": "deep",
+  "ref": "req_048_make_race_replay_feel_like_a_fun_race_spectacle,item_113_add_deterministic_grid_start_staging_to_replay,item_114_generate_race_director_beats_from_replay_facts_and_trace,item_115_show_player_race_focus_context_during_replay,item_116_add_overtake_and_position_change_highlights,item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches,task_049_orchestrate_replay_spectacle_fun_pass",
+  "refs": [
+    "req_048_make_race_replay_feel_like_a_fun_race_spectacle",
+    "item_113_add_deterministic_grid_start_staging_to_replay",
+    "item_114_generate_race_director_beats_from_replay_facts_and_trace",
+    "item_115_show_player_race_focus_context_during_replay",
+    "item_116_add_overtake_and_position_change_highlights",
+    "item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches",
+    "task_049_orchestrate_replay_spectacle_fun_pass"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "version_metadata: missing required evidence",
+      "changelog: missing required evidence",
+      "local_validation: missing required evidence",
+      "git_push: missing required evidence",
+      "ci: missing required evidence",
+      "github_release: missing required evidence",
+      "production_deployment: missing required evidence"
+    ],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "version_metadata: missing required evidence",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "pending"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "preparing",
+    "target_version": "0.3.6"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_049_orchestrate_replay_spectacle_fun_pass.md",
+      "ref": "task_049_orchestrate_replay_spectacle_fun_pass"
+    }
+  ]
+}

@@ -1,0 +1,275 @@
+{
+  "title": "Make race replay feel like a fun race spectacle",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_002_visual_replay_v0_product_brief.md",
+    "logics/product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md",
+    "logics/request/req_046_make_race_simulation_and_replay_feel_coherent_across_circuits.md",
+    "logics/request/req_047_polish_first_session_ux_after_playtest_findings.md",
+    "logics/backlog/item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback.md",
+    "logics/backlog/item_111_add_a_readable_staged_grid_start_beat_to_race_replay.md",
+    "logics/specs/spec_004_race_report_and_replay_ux.md",
+    "logics/specs/spec_011_simulation_algorithm_v0.md",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/ReplayView.test.ts",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/App.test.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/web/src/styles/layout.css",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "tests/e2e/private-league.spec.ts",
+    "Playtest diagnostic: four resolved GP replays were reviewed across Paris Docklands, Paris Left Bank, Amsterdam Canal, and Amsterdam Harbor.",
+    "Playtest diagnostic: replay is stable and readable as telemetry, but not yet consistently fun as a race spectacle.",
+    "Playtest diagnostic: Amsterdam Canal became more engaging when `Launch Boost +1 pos` appeared; visible race moments create the strongest fun.",
+    "Playtest diagnostic: starts still read as a clustered car under the start line rather than a race grid launch.",
+    "Playtest diagnostic: when the player is P8, the tower shows the position but the replay does not explain the player's race, gaps, pressure, or losses.",
+    "Playtest diagnostic: quiet replay stretches need non-misleading race-director beats such as pack compact, leader escaping, battle for P3, weather phase, or final lap pressure.",
+    "Dependency diagnostic: stale global notifications currently cover replay controls and should be resolved by `item_108` before or alongside spectacle overlays."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Replay spectacle and race storytelling",
+    "needs": [
+      "Turn the replay from a technically readable animated map into a fun race spectacle that tells what is happening.",
+      "Add a deterministic grid-start presentation so the first seconds feel like a race launch rather than a crowded marker stack.",
+      "Add a lightweight race-director layer that narrates meaningful action without replacing the visual replay.",
+      "Make the player's race legible through focus context: current position, gap ahead/behind, last player event, and gain/loss from start.",
+      "Make overtakes and position changes visibly exciting through local badges, tower pulses, timeline cues, and clear `P5 -> P4` style feedback.",
+      "Fill quiet stretches with truthful rhythm beats so the replay still has tension when there is no major event.",
+      "Keep the implementation deterministic and presentation-only: no race outcome, reward, card, report, or simulation semantics should change.",
+      "Avoid a new rendering engine or dependency; use existing React, SVG, CSS, replay facts, and tests.",
+      "Coordinate with the open first-session UX corpus: global stale notifications must not cover replay spectacle elements."
+    ],
+    "context": [
+      "`ReplayView.tsx` already receives `RaceResult`, `ReplayTracePoint[]`, team liveries, player team id, and circuit data.",
+      "`ReplayView.tsx` already builds deterministic `ReplayPlan` overtakes from `RaceResult.replayFacts.orderChanges` or trace order changes.",
+      "`ReplayView.tsx` already renders a tower, map cars, timeline markers, active moment notifications, focus driver control, speed control, and replay progress.",
+      "`CircuitMap.tsx` renders cars on projected SVG routes with livery, label, progress, and camera/focus behavior.",
+      "`RaceResult.replayFacts` currently exposes deterministic order-change facts only; additional replay-useful facts are acceptable only if they remain domain facts and optional.",
+      "The previous replay realism pass normalized circuit pacing and smoothed car heading, so this pass should focus on storytelling and spectacle rather than route normalization.",
+      "`item_111_add_a_readable_staged_grid_start_beat_to_race_replay` in the first-session UX corpus overlaps with this request; this request should either consume that item or supersede it with a fuller replay-spectacle implementation.",
+      "`item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback` should be completed before final replay playtest because global notifications currently cover timeline and controls.",
+      "No new audio, 3D, canvas renderer, replay editor, analytics, or external assets are needed for this pass."
+    ],
+    "acceptance_criteria": [
+      "AC1: Replay starts with a deterministic grid-start beat: cars begin separated in readable grid positions, launch over a short window, and transition into existing replay movement without changing classification.",
+      "AC2: A race-director panel or equivalent lightweight overlay surfaces the current meaningful beat with concise copy, such as attack, defense, gap opening, pack compact, weather phase, final lap pressure, or player-specific event.",
+      "AC3: Player focus context is visible when a player team exists: current position, gain/loss from start, gap ahead, gap behind, and latest player-relevant event are available without opening the report.",
+      "AC4: Overtakes and position changes get clear visual emphasis: local car/tower/timeline cues make the position change readable without relying only on watching car movement.",
+      "AC5: Quiet replay stretches produce deterministic truthful rhythm beats derived from trace gaps/order/weather/events, without inventing fake overtakes or fake outcomes.",
+      "AC6: Replay spectacle remains deterministic from the same `RaceResult` plus circuit: no random UI beats, no local-clock-dependent storytelling, and no simulation truth mutation.",
+      "AC7: The overlay layout does not obscure replay controls, tower, timeline, car cluster, or mobile map framing at desktop and 390px mobile widths.",
+      "AC8: Tests cover grid-start determinism, race-director beat generation, player focus context, overtake highlight mapping, quiet rhythm beat fallback, and final-order preservation.",
+      "AC9: Existing gates still pass: typecheck, lint, unit tests, build, e2e replay/private-league checks, i18n validation if copy changes, and Logics validation.",
+      "AC10: Playtest proof is recorded with screenshots or scripted observations across at least four circuits, including a short/technical route and a longer flowing route, showing start, mid-race action, quiet stretch, and player focus."
+    ]
+  },
+  "product": {
+    "title": "Replay Spectacle Fun Pass Product Brief",
+    "overview": "Replay Spectacle Fun Pass makes CR League's resolved GP replay feel like a small race broadcast instead of a passive telemetry map: starts are staged, action is called out, the player's race is legible, overtakes pop, and quiet phases still carry tension through truthful deterministic beats.",
+    "goals": [
+      "Make the first seconds of replay immediately read as a race start.",
+      "Help players understand why positions are changing without reading the full report.",
+      "Make the player team's story visible even when the player is not leading.",
+      "Create small high-impact visual moments around overtakes, card effects, weather windows, pressure, and final laps.",
+      "Keep every spectacle element deterministic and derived from existing race facts, trace, events, and circuit context.",
+      "Reuse the existing React/SVG replay stack and keep the implementation light."
+    ],
+    "non_goals": [
+      "Do not change race outcomes, rewards, scoring, card consumption, qualifying math, or simulation balancing.",
+      "Do not build a full broadcast system, commentator script engine, audio layer, timeline editor, replay editor, or analytics stack.",
+      "Do not add Three.js, Canvas, Pixi, or a third-party animation/notification library.",
+      "Do not duplicate the global notification cleanup from `item_108`; treat it as a dependency for final visual quality.",
+      "Do not make fake race events that contradict the result, trace, report, or final classification."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add deterministic grid start staging to replay",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay start clarity",
+      "request_acs": ["AC1", "AC6", "AC7", "AC8", "AC9", "AC10"],
+      "problem": [
+        "Replay starts currently look like a crowded marker around the start line, not a race launch.",
+        "The first seconds set the tone for the replay, so a weak start makes the whole replay feel technical instead of fun.",
+        "The fix belongs in presentation timing, not in simulation trace generation."
+      ],
+      "scope_in": [
+        "Add a deterministic grid-start window to `ReplayView.tsx` or its local replay-plan helpers.",
+        "Render cars with readable progress/offset separation at progress near zero.",
+        "Transition from staged grid positions into existing trace-driven movement over a short bounded window.",
+        "Keep tower order and final classification semantics unchanged.",
+        "Add tests for deterministic start positions, transition bounds, and final-order preservation.",
+        "Coordinate with `item_111_add_a_readable_staged_grid_start_beat_to_race_replay`; either implement this backlog as the fuller version or mark that item consumed/superseded during closeout."
+      ],
+      "scope_out": [
+        "Changing qualifying grid calculation.",
+        "Changing `simulateRace` trace points solely for presentation.",
+        "Adding countdown audio, start lights art, or a formation lap.",
+        "Replacing the current SVG route renderer."
+      ],
+      "acceptance_criteria": [
+        "AC1: At replay progress zero, at least the field's first visible cluster is separated enough to read multiple cars instead of one stack.",
+        "AC2: Seeking inside the start window gives stable deterministic positions.",
+        "AC3: After the start window, car progress converges into the existing replay movement without jumps larger than the documented transition bound.",
+        "AC4: Tower order and final classification remain unchanged.",
+        "AC5: Desktop and mobile screenshots or e2e checks show a readable race start."
+      ]
+    },
+    {
+      "title": "Generate race-director beats from replay facts and trace",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay storytelling",
+      "request_acs": ["AC2", "AC5", "AC6", "AC8", "AC9", "AC10"],
+      "problem": [
+        "Several replay stretches are visually stable but narratively flat: the map moves, but the player does not know what to care about.",
+        "Action becomes fun when a visible event explains it, as seen when `Launch Boost +1 pos` appeared during playtest.",
+        "The replay needs truthful beats for both action and quiet periods without inventing fake race outcomes."
+      ],
+      "scope_in": [
+        "Add a deterministic race-director beat builder that consumes `RaceResult`, replay trace, replay facts, player team id, and weather/event data.",
+        "Support beat categories such as start, overtake, attack, defense, gap opens, gap closes, pack compact, leader escaping, weather phase, card effect, final lap pressure, and finish.",
+        "Prefer existing `RaceResult.events`, `replayFacts.orderChanges`, trace order, trace gaps, weather markers, and classification data before adding any new data.",
+        "Expose a readable debug helper or test snapshot for generated beats.",
+        "Keep copy concise and localizable through `en.json` and `fr.json`.",
+        "Use fallback rhythm beats when no major action exists in a window, but only when backed by trace/order/gap/weather state."
+      ],
+      "scope_out": [
+        "Building a large scripting DSL.",
+        "Persisting director beats in the database unless a later implementation proves it necessary.",
+        "Adding long commentary paragraphs.",
+        "Changing report copy or race event semantics."
+      ],
+      "acceptance_criteria": [
+        "AC1: Given the same result and trace, the beat builder returns identical ordered beats.",
+        "AC2: Order-change facts produce overtake/position-change beats.",
+        "AC3: Quiet trace windows produce truthful rhythm beats such as compact pack, leader gap, weather phase, or final-lap pressure when applicable.",
+        "AC4: Generated beats include enough team ids/progress/lap context for UI highlighting.",
+        "AC5: Tests cover action beats, quiet fallback beats, and no contradictory fake events."
+      ]
+    },
+    {
+      "title": "Show player race focus context during replay",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Player replay comprehension",
+      "request_acs": ["AC3", "AC6", "AC7", "AC8", "AC9", "AC10"],
+      "problem": [
+        "When the player team is near the back, the tower shows the position but the replay does not explain whether the player is gaining, losing, pressuring, or isolated.",
+        "Players need their own race story visible without opening the report or manually comparing tower changes.",
+        "The existing focus-driver control can center the map, but it does not provide enough race context."
+      ],
+      "scope_in": [
+        "Add a compact player focus panel or integrate equivalent context into the existing replay UI.",
+        "Show current player position, gain/loss from start, gap ahead, gap behind, and latest player-relevant beat/event.",
+        "Derive gaps and positions from replay trace/tower state, not from new simulation behavior.",
+        "Respect existing focus-driver preference and do not force player focus if the user turns it off.",
+        "Keep desktop and mobile layouts compact and non-overlapping.",
+        "Add tests for player context calculation, including leader, midfield, and last-place cases."
+      ],
+      "scope_out": [
+        "Adding per-driver telemetry charts.",
+        "Changing the classification table.",
+        "Adding persistent player replay analytics.",
+        "Changing player scoring or reward display."
+      ],
+      "acceptance_criteria": [
+        "AC1: When a player team exists, replay exposes current position and start-to-current gain/loss.",
+        "AC2: Gap ahead and gap behind are shown when they can be derived; leader/last edge cases degrade cleanly.",
+        "AC3: Latest player-relevant director beat or event appears when available.",
+        "AC4: Turning off focus-driver behavior does not remove all player context unless explicitly scoped and documented.",
+        "AC5: Tests cover context calculations for player leader, player midfield, and player last."
+      ]
+    },
+    {
+      "title": "Add overtake and position-change highlights",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay action feedback",
+      "request_acs": ["AC4", "AC6", "AC7", "AC8", "AC9", "AC10"],
+      "problem": [
+        "Overtakes may happen in the replay plan, but they are easy to miss unless the viewer watches the right car at the right second.",
+        "The tower, timeline, and car markers should briefly reinforce important position changes.",
+        "Small highlights can create excitement without adding a heavy animation system."
+      ],
+      "scope_in": [
+        "Map replay overtake/director beats to visual highlights near cars, tower rows, and timeline markers.",
+        "Use concise labels such as `P5 -> P4`, `Attack`, `Defense`, or `+1 pos` when backed by replay facts/events.",
+        "Pulse or accent changed tower rows during the beat window.",
+        "Add timeline cues for overtake and player-relevant beats.",
+        "Keep highlight timing deterministic and tied to replay progress, including seeking.",
+        "Ensure highlights do not obscure the car cluster or map controls on desktop/mobile."
+      ],
+      "scope_out": [
+        "Adding particle systems or complex animation libraries.",
+        "Highlighting every minor gap change.",
+        "Changing how tower order is computed.",
+        "Adding sound effects."
+      ],
+      "acceptance_criteria": [
+        "AC1: At least one overtake beat creates a visible car/tower/timeline highlight.",
+        "AC2: Seeking into and out of the beat window deterministically shows/hides the highlight.",
+        "AC3: Player-relevant position changes are visually distinguishable from neutral field changes.",
+        "AC4: Highlight labels are localized and concise.",
+        "AC5: Tests cover highlight mapping and seek behavior."
+      ]
+    },
+    {
+      "title": "Validate replay spectacle across circuits and quiet stretches",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Replay playtest validation",
+      "request_acs": ["AC7", "AC8", "AC9", "AC10"],
+      "problem": [
+        "Replay fun is partly qualitative, and circuit shape changes how much action is visible.",
+        "The playtest showed stronger engagement on Amsterdam Canal than Paris Left Bank because visible beats were clearer.",
+        "Implementation needs a repeatable validation script/checklist so another AI can prove the replay is more fun without relying only on one lucky race."
+      ],
+      "scope_in": [
+        "Add or update e2e/playtest checks that resolve and inspect replays across at least four circuits.",
+        "Capture proof for start, mid-race action, quiet stretch, player focus, and finish/result return.",
+        "Record residual risks, especially if global notification cleanup from `item_108` is still pending.",
+        "Run full validation gates and Logics closeout proof.",
+        "Update relevant docs/specs with replay spectacle behavior and validation prompts."
+      ],
+      "scope_out": [
+        "Formal screenshot diff infrastructure.",
+        "Manual testing of every city circuit.",
+        "Analytics instrumentation.",
+        "Balancing race event frequency."
+      ],
+      "acceptance_criteria": [
+        "AC1: Validation covers at least four circuits including one short/technical and one longer flowing route.",
+        "AC2: Proof includes replay start, mid-race action, quiet stretch, and player focus state.",
+        "AC3: E2E or unit tests cover deterministic behavior for generated beats and highlights.",
+        "AC4: Full local gate commands and outcomes are recorded in task closeout.",
+        "AC5: Any remaining UX risk is documented with a clear follow-up boundary."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate replay spectacle fun pass",
+    "plan": [
+      "Read `ReplayView.tsx`, `CircuitMap.tsx`, replay tests, `RaceResult`/simulation domain types, i18n files, replay/private-league e2e, and the open first-session UX corpus before editing.",
+      "Confirm whether `item_108` notification cleanup is complete; if not, account for it as a visual dependency and avoid designing spectacle under stale global toasts.",
+      "Implement grid-start staging first, because it fixes the first seconds of every replay and has a narrow deterministic surface.",
+      "Build the race-director beat generator from existing replay facts, trace gaps/order, events, weather, and classification, with a readable test/debug output.",
+      "Add player focus context derived from replay state and director beats.",
+      "Map overtakes and position changes to small visual highlights on cars, tower rows, and timeline markers.",
+      "Validate across at least four circuits and record screenshots or scripted observations for start, action, quiet stretch, player focus, and result return.",
+      "Update docs/specs/Logics proof and run typecheck, lint, unit tests, build, e2e, i18n validation, and Logics validation."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/replay-spectacle-fun-pass.json",
+    "mode": "full",
+    "profile": "deep"
+  }
+}

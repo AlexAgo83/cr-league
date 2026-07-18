@@ -2450,9 +2450,10 @@ label small {
 }
 
 .dashboard-summary div {
-  background: rgb(16 14 18 / 0.42);
-  border: 1px solid var(--color-border);
+  background: rgb(16 14 18 / 0.32);
+  border: 0;
   border-radius: 0;
+  box-shadow: inset 0 0 0 1px rgb(255 77 0 / 0.18);
   display: grid;
   gap: 3px;
   min-width: 0;
@@ -3022,8 +3023,9 @@ label small {
 }
 
 .garage-overview .garage-stats > span {
-  background: rgb(16 14 18 / 0.42);
-  border: 1px solid var(--color-border);
+  background: rgb(16 14 18 / 0.32);
+  border: 0;
+  box-shadow: inset 0 0 0 1px rgb(255 77 0 / 0.18);
 }
 
 .garage-team-heading {
@@ -4611,17 +4613,39 @@ button.primary-command {
 .card-choice-grid .choice-card,
 .card-inventory-button,
 .card-shop button {
-  background:
-    linear-gradient(90deg, rgb(236 231 218 / 0.9), rgb(236 231 218 / 0.72)),
-    url("/assets/crl/card-workbench.png") center / cover no-repeat;
+  background: linear-gradient(90deg, rgb(236 231 218 / 0.94), rgb(236 231 218 / 0.78));
   border: 1px solid rgb(23 21 26 / 0.16);
   color: var(--color-ink);
+  overflow: hidden;
+  position: relative;
+}
+
+.card-choice-grid .choice-card::after,
+.card-inventory-button::after,
+.card-shop button::after {
+  background: url("/assets/crl/card-frame.png") center / 260% 180% no-repeat;
+  content: "";
+  inset: 0 0 0 auto;
+  mask-image: linear-gradient(90deg, transparent, #000 42%);
+  opacity: 0.1;
+  pointer-events: none;
+  position: absolute;
+  width: 46%;
+}
+
+.card-choice-grid .choice-card:first-child::after {
+  display: none;
+}
+
+.card-choice-grid .choice-card > *,
+.card-inventory-button > *,
+.card-shop button > * {
+  position: relative;
+  z-index: 1;
 }
 
 .card-choice-grid .choice-card.selected {
-  background:
-    linear-gradient(90deg, rgb(236 231 218 / 0.86), color-mix(in srgb, var(--color-accent) 18%, rgb(236 231 218 / 0.68))),
-    url("/assets/crl/card-workbench.png") center / cover no-repeat;
+  background: linear-gradient(90deg, rgb(236 231 218 / 0.9), color-mix(in srgb, var(--color-accent) 18%, rgb(236 231 218 / 0.72)));
 }
 
 .card-inventory-button {

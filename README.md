@@ -1,27 +1,67 @@
 # CR League
 
+<p align="center">
+  <a href="https://cr-league.onrender.com">
+    <img src="docs/assets/readme/replay-desktop.png" alt="CR League race replay showing the Paris Docklands Sprint circuit, two cars, weather, traits, event markers, and replay controls." width="960">
+  </a>
+</p>
+
 [![CI](https://github.com/AlexAgo83/cr-league/actions/workflows/ci.yml/badge.svg)](https://github.com/AlexAgo83/cr-league/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/AlexAgo83/cr-league?include_prereleases&label=release)](https://github.com/AlexAgo83/cr-league/releases)
 [![API](https://img.shields.io/website?label=api%20health&url=https%3A%2F%2Fcr-league-api.onrender.com%2Fhealth)](https://cr-league-api.onrender.com/health)
 [![App](https://img.shields.io/website?label=app&url=https%3A%2F%2Fcr-league.onrender.com)](https://cr-league.onrender.com)
 [![License: MIT](https://img.shields.io/badge/license-MIT-111827.svg)](LICENSE)
 
-CR League is a private racing league where you do not drive the car. You run the team.
+**A private motorsport league where you do not drive the car. You run the team.**
 
-Build a garage, read the circuit, choose a race directive, spend cards, watch the city replay, and live with the consequences across a short asynchronous championship. It is designed for small private groups: a few friends, an office league, or a playtest room where every Grand Prix creates a new story.
+CR League turns a small group into a compact team-principal championship: read the circuit, gamble on weather, spend garage cards, lock a race directive, then watch the city replay decide who was clever and who just got lucky.
 
-## The Fantasy
+Built for office leagues, friend groups, and playtest rooms where every Grand Prix leaves a story for the next round.
 
-You are the team principal on a compact urban EV grid.
+<p>
+  <a href="https://cr-league.onrender.com"><strong>Play the live build</strong></a>
+  ·
+  <a href="https://cr-league-api.onrender.com/health">API health</a>
+  ·
+  <a href="docs/release-contract.md">Release contract</a>
+</p>
 
-Every round asks the same tense question: do you chase pole, protect energy, gamble on weather, or save resources for the next Grand Prix? The game compresses the best parts of motorsport management into a fast private-league loop:
+## Why It Works
 
-- create or join a league with a lightweight profile;
-- claim a team and tune its livery;
-- run qualifying attempts before locking your directive;
-- spend cards from the garage to shape risk and reward;
-- launch the Grand Prix and watch a replayed race report;
-- carry points, credits, and history into the next round.
+Every round asks one sharp question: do you chase pole, protect energy, gamble on weather, or save resources for the next Grand Prix?
+
+| Moment | What the player does |
+| --- | --- |
+| **Briefing** | Read the city circuit, weather odds, traits, and championship pressure. |
+| **Qualifying** | Run limited lap attempts before the race plan is locked. |
+| **Directive** | Pick approach, preparation, rival pressure, and one card from the garage. |
+| **Replay** | Watch the race unfold with event markers, gaps, weather, and report copy. |
+| **Progression** | Carry points, credits, cards, livery, and history into the next round. |
+
+## Screenshots
+
+<table>
+  <tr>
+    <td width="58%">
+      <img src="docs/assets/readme/cockpit-desktop.png" alt="CR League race cockpit with Paris circuit map, lap timing, traits, and race plan actions.">
+    </td>
+    <td width="42%">
+      <img src="docs/assets/readme/plan-mobile.png" alt="CR League mobile race plan panel with approach, preparation, and directive controls.">
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Race cockpit</strong><br>Full-width circuit reading, lap timing, qualifying, and launch controls.</td>
+    <td><strong>Mobile plan</strong><br>The same race directive loop is usable on a phone.</td>
+  </tr>
+  <tr>
+    <td colspan="2">
+      <img src="docs/assets/readme/championship-desktop.png" alt="CR League championship dashboard with standings, current GP, timeline, and league controls.">
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2"><strong>Private championship hub</strong><br>League code, standings, round history, settings, and progression in one cockpit.</td>
+  </tr>
+</table>
 
 ## Live Preview
 

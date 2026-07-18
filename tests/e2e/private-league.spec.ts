@@ -126,6 +126,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await page.getByLabel("Copy profile code").click();
   await expect(page.getByText("Profile code copied: ABCD1234")).toBeVisible();
   await page.getByRole("dialog", { name: "Profile code" }).getByRole("button", { name: "Close", exact: true }).click();
+  await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("championship-layout-desktop.png"), fullPage: true });
 
   await expect(page.getByLabel("League summary").getByText("Wait for directives")).toBeVisible();
@@ -195,6 +196,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(page.locator(".drive-map-panel .map-workflow-panel")).toBeVisible();
   await expect(page.getByRole("heading", { name: "1. Read the circuit" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toHaveCount(0);
+  await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("drive-layout-desktop.png"), fullPage: true });
   await expect
     .poll(async () =>
@@ -225,6 +227,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await expect(page.locator(".directive-panel")).toBeVisible();
   await expect.poll(async () => page.locator(".directive-panel").evaluate((element) => element.scrollWidth <= element.clientWidth)).toBe(true);
+  await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("drive-layout-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
 
@@ -294,6 +297,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     };
   });
   expect(desktop).toEqual({ mapBelowCopy: true, noMomentsPanel: true, mapSameWidthAsCopy: true });
+  await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("replay-layout-desktop.png"), fullPage: true });
 
   await page.setViewportSize({ width: 390, height: 900 });
@@ -328,6 +332,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     topOverlaysBelowHeader: true,
     statsAboveWeather: true
   });
+  await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 
@@ -389,6 +394,10 @@ async function createProfile(page: Page) {
 async function createLeague(page: Page) {
   await page.getByRole("button", { name: "Create league" }).click();
   await page.getByRole("button", { name: "Start league" }).click();
+}
+
+async function hideReadmeNoise(page: Page) {
+  await page.addStyleTag({ content: ".notification-stack { display: none !important; }" });
 }
 
 function leagueState(result: ReturnType<typeof resultForRound> | null = null) {

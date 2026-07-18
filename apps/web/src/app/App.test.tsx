@@ -663,6 +663,7 @@ describe("App", () => {
     expect(screen.getByLabelText("Understand the lap time").textContent).toContain("75.18s");
     expect(screen.getByLabelText("Understand the lap time").textContent).toContain("P2");
     expect(screen.getByLabelText("Understand the lap time").textContent).toContain("Best run");
+    expect(document.querySelector(".chrono-report-image")?.getAttribute("src")).toBe("/assets/crl/onboarding-chrono.png");
     fireEvent.click(screen.getAllByRole("button", { name: "Review lap time" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Chrono report" }));

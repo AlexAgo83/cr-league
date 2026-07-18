@@ -303,6 +303,7 @@ export function ReplayView({
   traitImpacts = {},
   titleKey = "result_replay_title",
   explainerKey = "result_replay_explainer",
+  showIntro = true,
   towerEntries,
   preferencesResetSignal = 0,
   onClose,
@@ -316,6 +317,7 @@ export function ReplayView({
   traitImpacts?: MapTraitImpacts;
   titleKey?: TranslationKey;
   explainerKey?: TranslationKey;
+  showIntro?: boolean;
   towerEntries?: ReplayTowerEntry[];
   preferencesResetSignal?: number;
   onClose?: () => void;
@@ -502,7 +504,7 @@ export function ReplayView({
     <div className="view-stack">
       <div className="replay-main-grid">
         <div className="replay-content-column">
-          {copyDismissed ? null : (
+          {showIntro && !copyDismissed ? (
             <section className="panel race-context-panel replay-copy-panel">
               <h2>{tt(titleKey)}</h2>
               <p>{tt(explainerKey)}</p>
@@ -518,7 +520,7 @@ export function ReplayView({
                 ×
               </button>
             </section>
-          )}
+          ) : null}
 
           <CircuitMap
             className="replay-map-panel"

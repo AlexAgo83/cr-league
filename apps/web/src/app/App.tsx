@@ -1569,6 +1569,7 @@ export function App() {
               teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
               traitImpacts={replayTraitImpacts}
               preferencesResetSignal={preferencesResetSignal}
+              showIntro={false}
               tt={tt}
             />
           </div>

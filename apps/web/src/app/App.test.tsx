@@ -380,6 +380,22 @@ describe("App", () => {
     expect(screen.getByText("You do not have enough credits to buy this card yet.")).toBeTruthy();
   });
 
+  it("hides replay explainer copy when opening a replay from Grand Prix history", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(nextGrandPrixState));
+
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Championship" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Championship" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Grand Prix history" }));
+    fireEvent.click(screen.getByRole("button", { name: /S1 R1/ }));
+
+    expect(screen.getByRole("dialog", { name: "Race replay" })).toBeTruthy();
+    expect(screen.queryByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBe(null);
+  });
+
   it("plays through the demo league flow", async () => {
     saveProfile();
     const fetch = vi
@@ -618,7 +634,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Grand Prix history" }));
     expect(document.querySelector(".round-timeline")?.textContent).toContain("P1");
     fireEvent.click(screen.getByRole("button", { name: "S1 R1" }));
-    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(screen.getByRole("dialog", { name: "Race replay" })).toBeTruthy();
+    expect(screen.queryByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 

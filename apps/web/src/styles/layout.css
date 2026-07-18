@@ -2123,7 +2123,7 @@ label small {
   clip-path: var(--chamfer);
   display: grid;
   gap: 1px;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: 1.2fr minmax(0, 1fr) minmax(0, 0.8fr);
 }
 
 .dashboard-summary div {

@@ -52,13 +52,6 @@ export function ChampionshipView({
             <small>{tt(`next_action_${state.actionState.nextAction}` as TranslationKey)}</small>
           </div>
           <div>
-            <span>{tt("dashboard_players")}</span>
-            <strong>
-              {state.actionState.submittedTeamIds.length}/{state.teams.length}
-            </strong>
-            <small>{tt("league_ready")}</small>
-          </div>
-          <div>
             <span>{tt("dashboard_leader")}</span>
             {leader ? (
               <strong className="leader-team-line">
@@ -72,9 +65,14 @@ export function ChampionshipView({
               {leader?.points ?? 0} {tt("unit_points")}
             </small>
           </div>
-          <div>
-            <span>{tt("league_cadence")}</span>
-            <strong>{tt(`cadence_${state.league.cadence}` as TranslationKey)}</strong>
+          <div className="league-flow-summary">
+            <span>{tt("dashboard_players")}</span>
+            <strong>
+              {state.actionState.submittedTeamIds.length}/{state.teams.length}
+            </strong>
+            <small>
+              {tt("league_ready")} · {tt(`cadence_${state.league.cadence}` as TranslationKey)}
+            </small>
           </div>
         </div>
       </section>

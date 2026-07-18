@@ -1,0 +1,254 @@
+{
+  "title": "Repo review remediation pass 3: league ownership, robustness, and web accessibility",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_041_api_integrity_hardening_from_repo_review.md",
+    "logics/request/req_043_api_surface_follow_up_hardening.md",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/features/simulation/routes.ts",
+    "apps/api/src/app.test.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "packages/shared/src/index.ts",
+    "packages/shared/src/simulation/prng.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "scripts/balance-simulations.ts",
+    "prisma/schema.prisma",
+    "tsconfig.json",
+    "Full-repo review from 2026-07-18: the req_043 admin proof accepted any team claim, so every league member can restart or resolve a league; the persisted decision path skips the enum validation added to /simulation/preview; qualifyingRuns, bot fill, and next-grand-prix have lost-update or duplicate-write races; scripts/ is outside the typecheck build and balance-simulations.ts imports symbols that shared does not export; web modals lack focus management and the replay scrubber is keyboard-inaccessible."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Repo review remediation",
+    "needs": [
+      "Introduce a real league owner (League.ownerTeamId) so league-level mutations require the owner's claim, not any member's claim.",
+      "Validate approach, preparation, cardId, and rivalTeamId on the persisted submitDecision path with the same rules already applied to /simulation/preview, and cap the preview participants array.",
+      "Make the concurrent write paths safe: transactional qualifyingRuns append, idempotent bot fill, and idempotent transactional startNextGrandPrix.",
+      "Fix scripts/balance-simulations.ts imports and bring scripts/ under the typecheck build so such breakage is caught by CI.",
+      "Give web modals native focus management (focus on open, Escape to close, focus restore) and replace the replay scrubber with a native range input; clamp league-config numeric inputs before submit.",
+      "Add focused tests for the deterministic PRNG and the credit/points reward math."
+    ],
+    "context": [
+      "req_041 hardened the atomic money paths (buyCard, resolveCurrentGrandPrix) with guarded updateMany writes; those patterns are good and should be reused.",
+      "req_043 added requireAdminClaim, but it delegates to requireTeamClaim, so any human team in a league can call settings, resolve, next-grand-prix, and restart. The schema has no owner concept yet.",
+      "submitDecision stores approach and preparation as raw strings (store.ts around line 581) while /simulation/preview validates them against APPROACHES and PREPARATIONS; the persisted path is the one that feeds real league scoring.",
+      "submitQualifyingRun and ensureBotQualifyingRuns do read-modify-write on the qualifyingRuns JSON column without a transaction, so overlapping submissions silently drop runs; fillLeagueWithBots can double-create bots and 500 on the unique constraint; startNextGrandPrix is neither idempotent nor transactional.",
+      "tsconfig.json project references cover only packages/shared, apps/api, and apps/web; scripts/balance-simulations.ts imports CARD_PRICES and createPrng which packages/shared/src/index.ts does not export, and nothing catches it.",
+      "The web app has no focus management: modals declare role=dialog aria-modal but have no Escape handling, focus trap, or focus restore; the replay scrubber is a click-only div with aria-hidden; league-config numeric inputs submit 0 or NaN when cleared.",
+      "The shared PRNG and the reward math in classify (fleet sponsorship bonus, economy mode top-4 bonus) have no unit tests despite being balance-affecting."
+    ],
+    "acceptance_criteria": [
+      "AC1: League has an ownerTeamId set at creation to the first human team, and settings, resolve, next-grand-prix, and restart reject any non-owner claim with 403 while the owner's existing web flows keep working.",
+      "AC2: submitDecision rejects invalid approach, preparation, cardId, and rivalTeamId values with 400 using the same allowed sets as /simulation/preview, and /simulation/preview rejects participants arrays larger than the maximum league size.",
+      "AC3: Concurrent qualifying submissions cannot lose runs (transactional append), duplicate bot fill cannot 500 (first writer wins, second is a no-op), and startNextGrandPrix claims the transition with a guarded conditional write inside one transaction so double calls and mid-way failures leave consistent state.",
+      "AC4: scripts/balance-simulations.ts compiles and runs against the real shared exports, and npm run typecheck covers scripts/.",
+      "AC5: Modals focus their dialog on open, close on Escape, restore focus on close via one small shared component with no new dependency; the replay scrubber is a native range input that is keyboard and screen-reader operable; league-config numeric fields clamp to their min/max before submit.",
+      "AC6: Unit tests cover PRNG determinism and weighted-pick edge cases, and assert exact credits/points for the sponsorship and economy-mode reward branches.",
+      "AC7: npm run typecheck, npm test, npm run build, npm run lint, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Repo Review Remediation Pass 3 Product Brief",
+    "overview": "A third hardening pass driven by a full-repo review: close the league-authority gap left by the previous pass with a real owner concept, make the persisted decision path and concurrent write paths as strict as the preview path, bring scripts under the typecheck build, and fix the web app's accessibility and input-validation fundamentals.",
+    "goals": [
+      "Only the league owner can perform destructive league administration.",
+      "Persisted league decisions are validated as strictly as preview inputs.",
+      "Concurrent submissions and double-clicks cannot lose data or crash with 500s.",
+      "The typecheck build covers every TypeScript entry point in the repo.",
+      "Modals and the replay scrubber are keyboard and screen-reader operable."
+    ],
+    "non_goals": [
+      "Do not build accounts, sessions, JWT, or a roles/permissions system beyond a single owner reference.",
+      "Do not add validation, focus-trap, or state-management dependencies.",
+      "Do not migrate qualifyingRuns out of its JSON column in this pass.",
+      "Do not change race simulation behavior for valid inputs.",
+      "Do not decompose App.tsx or redesign existing UI beyond the listed accessibility fixes."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add league owner and gate admin mutations on it",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "League authority",
+      "request_acs": ["AC1", "AC7"],
+      "problem": [
+        "requireAdminClaim delegates to requireTeamClaim, so any human team claim in a league passes the admin check.",
+        "Any league member can restart a league (wiping Grand Prix history), resolve races, advance the season, or change settings."
+      ],
+      "scope_in": [
+        "Add League.ownerTeamId to the Prisma schema with a migration; set it when the creating human team is created.",
+        "Backfill ownerTeamId for existing leagues to the earliest-created human team in the migration.",
+        "Change requireAdminClaim to verify the claimed team is the league owner and return 403 otherwise.",
+        "Keep the web client working: the creator's stored claim already identifies the owner, so no new UI is required beyond surfacing the 403 error message.",
+        "Add API tests: non-owner member claim rejected on settings, resolve, next-grand-prix, and restart; owner claim accepted."
+      ],
+      "scope_out": [
+        "Roles, permissions tables, ownership transfer flows, or multi-admin support.",
+        "Changing team-scoped endpoints already gated by requireTeamClaim."
+      ],
+      "acceptance_criteria": [
+        "AC1: A member team's valid claim is rejected with 403 on all four admin endpoints.",
+        "AC2: The owner's claim succeeds and existing owner flows in the web app work unchanged.",
+        "AC3: Existing leagues get a backfilled owner via the migration."
+      ]
+    },
+    {
+      "title": "Validate persisted decisions and cap preview participants",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Input validation",
+      "request_acs": ["AC2", "AC7"],
+      "problem": [
+        "submitDecision stores approach and preparation as arbitrary strings that are later blind-cast into simulateRace, corrupting league scoring on invalid values.",
+        "cardId and rivalTeamId are not checked against card definitions or league membership.",
+        "/simulation/preview requires at least 2 participants but has no upper bound, allowing expensive CPU work from a public route."
+      ],
+      "scope_in": [
+        "Reuse or extract the APPROACHES/PREPARATIONS validation already used by /simulation/preview into a shared helper and apply it in submitDecision.",
+        "Validate cardId against card definitions and team inventory, and rivalTeamId against the league's teams.",
+        "Cap /simulation/preview participants at the maximum allowed league size and return 400 above it.",
+        "Add API tests for invalid approach, preparation, cardId, rivalTeamId, and an oversized preview participants array."
+      ],
+      "scope_out": [
+        "Schema validation libraries.",
+        "Rate limiting or authentication on the preview route.",
+        "Changing valid-input behavior."
+      ],
+      "acceptance_criteria": [
+        "AC1: Invalid enum, card, or rival values on submitDecision return 400 and persist nothing.",
+        "AC2: Oversized preview participant arrays return 400.",
+        "AC3: Valid decision submissions and valid previews behave unchanged."
+      ]
+    },
+    {
+      "title": "Make concurrent league write paths safe",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Concurrency",
+      "request_acs": ["AC3", "AC7"],
+      "problem": [
+        "submitQualifyingRun and ensureBotQualifyingRuns read the qualifyingRuns JSON array, append, and write it back without a transaction, so overlapping writes silently drop runs and defeat the attempt limit.",
+        "fillLeagueWithBots can run twice concurrently, hitting the leagueId+name unique constraint and returning an unhandled 500.",
+        "startNextGrandPrix mutates bot credits, creates the next Grand Prix, and resets points in separate writes with no idempotence guard, so double calls 500 and partial failures leave inconsistent state."
+      ],
+      "scope_in": [
+        "Wrap qualifyingRuns read+append+write in a transaction that re-reads the Grand Prix row inside it, reusing the existing runWrite/transaction helpers from req_041.",
+        "Make fillLeagueWithBots idempotent: catch the unique-constraint conflict, re-read the team count, and treat the first writer as the winner.",
+        "Guard startNextGrandPrix with a conditional updateMany claim on the resolved status (mirroring resolveCurrentGrandPrix) and run the bot purchases, Grand Prix creation, and points reset in one transaction.",
+        "Move the season-rollover points reset into that same transaction as a single updateMany.",
+        "Add tests that exercise double submission and double next-grand-prix calls where the test harness allows, at minimum asserting idempotent outcomes on sequential repeat calls."
+      ],
+      "scope_out": [
+        "Migrating qualifyingRuns to a dedicated table.",
+        "Advisory locks or queue infrastructure.",
+        "Changing the card-consumption snapshot behavior beyond re-reading inside the existing resolve transaction if trivially reachable."
+      ],
+      "acceptance_criteria": [
+        "AC1: Repeated or concurrent qualifying submissions never drop a previously stored run and the attempt limit holds.",
+        "AC2: Duplicate bot-fill attempts return success without duplicate bots or 500s.",
+        "AC3: Calling next-grand-prix twice yields one new Grand Prix and one consistent points state."
+      ]
+    },
+    {
+      "title": "Fix balance script imports and typecheck scripts directory",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Build integrity",
+      "request_acs": ["AC4", "AC7"],
+      "problem": [
+        "scripts/balance-simulations.ts imports CARD_PRICES and createPrng, which packages/shared/src/index.ts does not export, so the balance tool cannot run.",
+        "scripts/ is outside the tsconfig project references, so this breakage is invisible to npm run typecheck and CI."
+      ],
+      "scope_in": [
+        "Export createPrng (and ECONOMY_MODE_CREDIT_BONUS for consistency) from packages/shared/src/index.ts.",
+        "Change the script to use the existing flat CARD_PRICE constant instead of the nonexistent per-card price map.",
+        "Add a scripts/tsconfig.json and include it in the root typecheck (project reference or a dedicated typecheck script wired into npm run typecheck).",
+        "Run the balance script once to confirm it executes end to end."
+      ],
+      "scope_out": [
+        "Introducing per-card pricing.",
+        "Rewriting audit-circuits.mjs regex parsing (acceptable as-is for a dev tool).",
+        "Adding tests for scripts."
+      ],
+      "acceptance_criteria": [
+        "AC1: npm run balance:sim executes without import errors.",
+        "AC2: npm run typecheck fails if a script references a nonexistent shared export."
+      ]
+    },
+    {
+      "title": "Web accessibility and numeric input clamping",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Web accessibility",
+      "request_acs": ["AC5", "AC7"],
+      "problem": [
+        "Modals declare role=dialog and aria-modal but never move focus, trap Tab, close on Escape, or restore focus, so keyboard and screen-reader users cannot operate them.",
+        "The replay scrubber is a click-only div marked aria-hidden with click-only seek markers, making seeking impossible without a mouse.",
+        "League-config numeric inputs submit 0 or NaN when a field is cleared because values are read with Number() and never clamped."
+      ],
+      "scope_in": [
+        "Create one small shared Modal component (native focus handling: focus dialog on open, Escape to close, Tab trap, restore focus on close) and migrate the existing modals in App.tsx and GarageView.tsx to it.",
+        "Replace the replay progress div with a native range input bound to the replay position, remove aria-hidden, and make seek markers focusable buttons or ticks on the range.",
+        "Clamp maxPlayers, qualifyingAttemptLimit, and maxGrandPrixPerSeason to their min/max bounds before submit, rejecting NaN.",
+        "Add a component test for Escape-close and focus restore, and one for the clamp helper."
+      ],
+      "scope_out": [
+        "Focus-trap or dialog libraries.",
+        "A full accessibility audit or redesign beyond the listed fixes.",
+        "Restyling the replay view."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every modal closes on Escape, holds focus while open, and returns focus to its trigger on close.",
+        "AC2: The replay scrubber is operable with arrow keys and announced by assistive technology.",
+        "AC3: Clearing a league-config numeric field cannot submit 0 or NaN outside the allowed range."
+      ]
+    },
+    {
+      "title": "Test PRNG determinism and reward math",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Test coverage",
+      "request_acs": ["AC6", "AC7"],
+      "problem": [
+        "The deterministic PRNG that every simulation output depends on has no unit tests.",
+        "The credit/points reward branches in classify (fleet sponsorship bonus, economy-mode top-4 bonus) are never asserted, so balance regressions would ship silently."
+      ],
+      "scope_in": [
+        "Add prng tests: same seed yields the same sequence, different seeds diverge, and pickWeighted handles zero and all-zero weights via its fallback path.",
+        "Add reward tests asserting exact credits and points for a sponsorship participant and for economy-mode finishers at position 4 versus position 5.",
+        "Keep both as plain vitest files next to the code under test."
+      ],
+      "scope_out": [
+        "Testing weather resolution, narrative events, or flavor text.",
+        "Property-based testing frameworks or coverage tooling."
+      ],
+      "acceptance_criteria": [
+        "AC1: PRNG tests fail if determinism or the weighted-pick fallback breaks.",
+        "AC2: Reward tests pin the exact credit and points values for the sponsorship and economy-mode branches."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate repo review remediation pass 3",
+    "plan": [
+      "Read req_041 and req_043 plus their tasks first; reuse the guarded updateMany and transaction patterns they established.",
+      "Fix the balance script exports and scripts typecheck first so the build is honest before touching runtime code.",
+      "Add League.ownerTeamId with migration and backfill, then tighten requireAdminClaim and cover it with owner/non-owner tests.",
+      "Apply persisted-decision validation and the preview participants cap with shared helpers and route tests.",
+      "Make the three concurrent write paths transactional and idempotent, reusing the resolve claim pattern for next-grand-prix.",
+      "Build the shared Modal component, migrate existing modals, replace the replay scrubber with a native range input, and clamp league-config numeric inputs.",
+      "Add PRNG and reward unit tests.",
+      "Run typecheck, tests, build, lint, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/repo-review-remediation-pass-3.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

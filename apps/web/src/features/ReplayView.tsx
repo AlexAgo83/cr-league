@@ -19,9 +19,22 @@ const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_STEP = 0.012;
 const MOMENT_NOTIFICATION_SECONDS = 3;
+const GRID_START_PROGRESS = 0.1;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
+export type ReplayDirectorBeat = {
+  id: string;
+  type: "grid_start" | "overtake" | "player" | "pack" | "weather" | "final";
+  progress: number;
+  lap: number;
+  teamId?: string;
+  relatedTeamId?: string;
+  fromPosition?: number;
+  toPosition?: number;
+  weather?: Weather;
+  gapSeconds?: number;
+};
 export type ReplayBeatPhase = "setup" | "close_gap" | "overlap" | "swap" | "settle";
 export type ReplayOvertakeBeat = ReplayOrderChangeFact & {
   kind: "overtake";
@@ -307,6 +320,75 @@ export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[]
   );
 }
 
+export function gridStartCarProgress(result: RaceResult, trace: ReplayTracePoint[], progress: number) {
+  const startOrder = trace[0]?.order.length ? trace[0].order : [...result.classification].sort((left, right) => left.position + left.positionChange - (right.position + right.positionChange)).map((entry) => entry.teamId);
+  const spacing = 0.018;
+  const base = 0.012;
+  const fade = Math.max(0, 1 - progress / GRID_START_PROGRESS);
+  return Object.fromEntries(startOrder.map((teamId, index) => [teamId, (base + (startOrder.length - index - 1) * spacing) * fade]));
+}
+
+export function applyGridStart(
+  result: RaceResult,
+  trace: ReplayTracePoint[],
+  carProgress: Record<string, number>,
+  progress: number
+) {
+  if (progress >= GRID_START_PROGRESS) return carProgress;
+  const grid = gridStartCarProgress(result, trace, progress);
+  return Object.fromEntries(result.classification.map((entry) => [entry.teamId, Math.max(carProgress[entry.teamId] ?? 0, grid[entry.teamId] ?? 0)]));
+}
+
+export function buildRaceDirectorBeats(result: RaceResult, trace: ReplayTracePoint[], plan: ReplayPlan, laps: number, playerTeamId?: string): ReplayDirectorBeat[] {
+  const beats: ReplayDirectorBeat[] = [
+    { id: "grid-start", type: "grid_start", progress: 0, lap: 1 }
+  ];
+  for (const change of plan.overtakes.slice(0, 8)) {
+    beats.push({
+      id: `overtake-${change.overtakingTeamId}-${change.overtakenTeamId}-${change.progress.toFixed(3)}`,
+      type: change.overtakingTeamId === playerTeamId || change.overtakenTeamId === playerTeamId ? "player" : "overtake",
+      progress: change.progress,
+      lap: displayLapAtProgress(change.progress, laps),
+      teamId: change.overtakingTeamId,
+      relatedTeamId: change.overtakenTeamId,
+      fromPosition: change.fromPosition,
+      toPosition: change.toPosition,
+      gapSeconds: change.gapSeconds
+    });
+  }
+  const weatherChange = RACE_SEGMENTS.find((segment, index) => index > 0 && result.resolvedWeather[segment] !== result.resolvedWeather[RACE_SEGMENTS[index - 1]!]);
+  if (weatherChange) {
+    const progress = Math.max(0.2, RACE_SEGMENTS.indexOf(weatherChange) / RACE_SEGMENTS.length);
+    beats.push({ id: `weather-${weatherChange}`, type: "weather", progress, lap: displayLapAtProgress(progress, laps), weather: result.resolvedWeather[weatherChange] });
+  }
+  const quietTrace = trace.find((point, index) => index > 0 && point.progress > 0.35 && point.progress < 0.75 && Math.abs((point.gaps[point.order[1] ?? ""] ?? 99) - (point.gaps[point.order[0] ?? ""] ?? 0)) <= 1.5);
+  if (quietTrace) beats.push({ id: `pack-${quietTrace.progress.toFixed(3)}`, type: "pack", progress: quietTrace.progress, lap: displayLapAtProgress(quietTrace.progress, laps), gapSeconds: quietTrace.gaps[quietTrace.order[1] ?? ""] });
+  beats.push({ id: "final-pressure", type: "final", progress: 1, lap: displayLapAtProgress(1, laps), teamId: result.classification[0]?.teamId });
+  return beats
+    .filter((beat, index, all) => all.findIndex((candidate) => candidate.id === beat.id) === index)
+    .sort((left, right) => left.progress - right.progress);
+}
+
+export function playerReplayContext(result: RaceResult, trace: ReplayTracePoint[], progress: number, playerTeamId?: string) {
+  if (!playerTeamId) return null;
+  const order = tracePointAt(trace, progress).order.length ? tracePointAt(trace, progress).order : result.classification.map((entry) => entry.teamId);
+  const startOrder = trace[0]?.order.length ? trace[0].order : order;
+  const gaps = traceGapsAt(trace, progress);
+  const index = order.indexOf(playerTeamId);
+  if (index < 0) return null;
+  const startIndex = Math.max(0, startOrder.indexOf(playerTeamId));
+  const aheadId = order[index - 1];
+  const behindId = order[index + 1];
+  return {
+    position: index + 1,
+    delta: startIndex - index,
+    gapAhead: aheadId ? Math.max(0, (gaps[playerTeamId] ?? 0) - (gaps[aheadId] ?? 0)) : undefined,
+    gapBehind: behindId ? Math.max(0, (gaps[behindId] ?? 0) - (gaps[playerTeamId] ?? 0)) : undefined,
+    aheadId,
+    behindId
+  };
+}
+
 function replaySnapshot(
   result: RaceResult,
   trace: ReplayTracePoint[],
@@ -317,7 +399,8 @@ function replaySnapshot(
   plan?: ReplayPlan,
   currentOrder: string[] = []
 ) {
-  const carProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan);
+  const baseProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan);
+  const carProgress = applyGridStart(result, trace, baseProgress, progress);
   const tower = liveClassificationByCarProgress(result, trace, progress, carProgress, currentOrder);
   return { carProgress, tower };
 }
@@ -362,6 +445,17 @@ function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator
   };
 }
 
+function directorBeatCopy(beat: ReplayDirectorBeat, names: Map<string, string>, tt: Translator) {
+  const team = beat.teamId ? names.get(beat.teamId) ?? beat.teamId : "";
+  const related = beat.relatedTeamId ? names.get(beat.relatedTeamId) ?? beat.relatedTeamId : "";
+  if (beat.type === "grid_start") return { title: tt("replay_director_grid_start"), detail: tt("replay_director_grid_detail") };
+  if (beat.type === "player") return { title: tt("replay_director_player"), detail: tt("replay_director_overtake_detail", { team, related, from: beat.fromPosition ?? "-", to: beat.toPosition ?? "-" }) };
+  if (beat.type === "overtake") return { title: tt("replay_director_overtake"), detail: tt("replay_director_overtake_detail", { team, related, from: beat.fromPosition ?? "-", to: beat.toPosition ?? "-" }) };
+  if (beat.type === "pack") return { title: tt("replay_director_pack"), detail: tt("replay_director_pack_detail", { gap: (beat.gapSeconds ?? 0).toFixed(1) }) };
+  if (beat.type === "weather") return { title: tt("replay_director_weather"), detail: tt("replay_director_weather_detail", { weather: tt(`weather_${beat.weather ?? "dry"}` as TranslationKey) }) };
+  return { title: tt("replay_director_final"), detail: tt("replay_director_final_detail", { team }) };
+}
+
 export function ReplayView({
   result,
   circuit,
@@ -402,6 +496,7 @@ export function ReplayView({
   const [copyDismissed, setCopyDismissed] = useState(() => localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
   const replayTrace = result.replayTrace?.length ? result.replayTrace : fallbackReplayTrace(result);
   const replayPlan = buildReplayPlan(result, replayTrace);
+  const directorBeats = buildRaceDirectorBeats(result, replayTrace, replayPlan, circuit.laps, playerTeamId);
   const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
   const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, replayPlan);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
@@ -556,6 +651,11 @@ export function ReplayView({
     player: marker.player
   }));
   const liveWeather = result.resolvedWeather[live.segment];
+  const currentRaceProgress = raceProgressAt(clock.current, raceDuration);
+  const activeDirectorBeat = [...directorBeats].reverse().find((beat) => beat.progress <= currentRaceProgress) ?? directorBeats[0];
+  const activeDirectorCopy = activeDirectorBeat ? directorBeatCopy(activeDirectorBeat, names, tt) : null;
+  const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId);
+  const latestPlayerBeat = [...directorBeats].reverse().find((beat) => beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId);
   const activeMoment = keyMoments.find((event) => event.id === activeMomentId);
   const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
   const seekValueText = `${tt("unit_lap")} ${live.lap}/${circuit.laps}, ${Math.round(clock.current)}s`;
@@ -629,6 +729,28 @@ export function ReplayView({
                     <span className="moment-impact">{activeMomentCard.impact}</span>
                   </div>
                 ) : null}
+                {activeDirectorBeat && activeDirectorCopy ? (
+                  <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
+                    <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
+                    <strong>{activeDirectorCopy.title}</strong>
+                    <small>{activeDirectorCopy.detail}</small>
+                  </div>
+                ) : null}
+                {playerContext ? (
+                  <div className="replay-player-focus-panel">
+                    <span>{tt("replay_player_focus")}</span>
+                    <strong>
+                      P{playerContext.position} {playerContext.delta ? `(${playerContext.delta > 0 ? "+" : ""}${playerContext.delta})` : ""}
+                    </strong>
+                    <small>
+                      {tt("replay_player_gaps", {
+                        ahead: playerContext.gapAhead === undefined ? "-" : `${playerContext.gapAhead.toFixed(1)}s`,
+                        behind: playerContext.gapBehind === undefined ? "-" : `${playerContext.gapBehind.toFixed(1)}s`
+                      })}
+                    </small>
+                    {latestPlayerBeat ? <small>{directorBeatCopy(latestPlayerBeat, names, tt).detail}</small> : null}
+                  </div>
+                ) : null}
                 <div className="replay-map-controls">
                   <button
                     type="button"
@@ -666,7 +788,14 @@ export function ReplayView({
                 </div>
                 <ol className="replay-tower">
                   {tower.map((entry, index) => (
-                    <li key={entry.id ?? entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
+                    <li
+                      key={entry.id ?? entry.teamId}
+                      className={[
+                        entry.teamId === playerTeamId ? "player" : "",
+                        positionPops[entry.teamId]?.delta ? "position-change" : "",
+                        (positionPops[entry.teamId]?.delta ?? 0) > 0 ? "gain" : (positionPops[entry.teamId]?.delta ?? 0) < 0 ? "loss" : ""
+                      ].filter(Boolean).join(" ") || undefined}
+                    >
                       <span
                         className="replay-tower-livery"
                         aria-label={`P${index + 1}`}
@@ -681,6 +810,7 @@ export function ReplayView({
                       </span>
                       <span className="replay-tower-team">{entry.teamName}</span>
                       {entry.value ? <span className="replay-tower-value">{entry.value}</span> : null}
+                      {positionPops[entry.teamId]?.delta ? <span className="replay-tower-delta">{positionPops[entry.teamId]!.delta > 0 ? `+${positionPops[entry.teamId]!.delta}` : positionPops[entry.teamId]!.delta}</span> : null}
                     </li>
                   ))}
                 </ol>
@@ -730,6 +860,17 @@ export function ReplayView({
                       title={marker.title}
                       aria-label={marker.title}
                       onClick={() => seek(marker.time)}
+                    />
+                  ))}
+                  {directorBeats.slice(1, -1).map((beat) => (
+                    <button
+                      key={beat.id}
+                      type="button"
+                      className={`replay-marker director ${beat.type}`}
+                      style={{ left: `${Math.min(96, Math.max(3, replayPercentAtRaceProgress(beat.progress)))}%` }}
+                      title={directorBeatCopy(beat, names, tt).detail}
+                      aria-label={directorBeatCopy(beat, names, tt).detail}
+                      onClick={() => seek(raceTimeAtProgress(beat.progress))}
                     />
                   ))}
                 </div>

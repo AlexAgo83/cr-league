@@ -3,10 +3,14 @@ import type { RaceResult, ReplayTracePoint } from "@cr-league/shared";
 import {
   carProgressAtRaceTime,
   carProgressAtTrace,
+  applyGridStart,
   buildReplayPlan,
+  buildRaceDirectorBeats,
   displayLapAtProgress,
   finishTimes,
+  gridStartCarProgress,
   liveClassificationByCarProgress,
+  playerReplayContext,
   positionDeltas,
   replayPlanDebugLines,
   replayDistanceScale,
@@ -132,6 +136,42 @@ describe("ReplayView timing", () => {
     expect(plan.source).toBe("trace");
     expect(plan.overtakes[0]?.phases.map((phase) => phase.phase)).toEqual(["setup", "close_gap", "overlap", "swap", "settle"]);
     expect(replayPlanDebugLines(plan)[0]).toContain("last->leader");
+  });
+
+  it("applies a deterministic readable grid start without changing final order", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "finish", lap: 5, progress: 1, order: ["leader", "last"], times: { leader: 100, last: 104 }, gaps: { leader: 0, last: 4 } }
+    ];
+
+    expect(gridStartCarProgress(result, trace, 0).leader ?? 0).toBeGreaterThan(gridStartCarProgress(result, trace, 0).last ?? 0);
+    expect(applyGridStart(result, trace, { leader: 0, last: 0 }, 0).leader ?? 0).toBeGreaterThan(0);
+    expect(applyGridStart(result, trace, { leader: 5, last: 5 }, 1)).toEqual({ leader: 5, last: 5 });
+  });
+
+  it("generates deterministic race-director beats from replay facts and quiet trace", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "mid", lap: 3, progress: 0.5, order: ["last", "leader"], times: { leader: 50, last: 49 }, gaps: { leader: 1, last: 0 } },
+      { segment: "finish", lap: 5, progress: 1, order: ["leader", "last"], times: { leader: 100, last: 104 }, gaps: { leader: 0, last: 4 } }
+    ];
+    const plan = buildReplayPlan(result, trace);
+    const beats = buildRaceDirectorBeats(result, trace, plan, 5, "last");
+
+    expect(beats.map((beat) => beat.type)).toContain("grid_start");
+    expect(beats.map((beat) => beat.type)).toContain("player");
+    expect(beats.map((beat) => beat.type)).toContain("pack");
+    expect(beats.at(-1)?.type).toBe("final");
+  });
+
+  it("exposes player replay context with position trend and nearby gaps", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "mid", lap: 3, progress: 0.5, order: ["last", "leader"], times: { leader: 50, last: 49 }, gaps: { leader: 1, last: 0 } }
+    ];
+
+    expect(playerReplayContext(result, trace, 0.5, "last")).toMatchObject({ position: 1, delta: 1, gapBehind: 1 });
+    expect(playerReplayContext(result, trace, 0.5, undefined)).toBe(null);
   });
 
   it("keeps dense trace overtakes on a minimum visual transition", () => {

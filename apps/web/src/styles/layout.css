@@ -1701,6 +1701,17 @@ label small {
   box-shadow: 0 0 8px rgb(255 77 0 / 0.8);
 }
 
+.replay-marker.director {
+  background: #f1ede4;
+  height: 9px;
+  width: 9px;
+  z-index: 2;
+}
+
+.replay-marker.director.player {
+  background: var(--color-accent);
+}
+
 .replay-moment-notification {
   align-items: center;
   background: rgb(16 14 18 / 0.86);
@@ -1743,6 +1754,50 @@ label small {
   white-space: nowrap;
 }
 
+.replay-director-panel,
+.replay-player-focus-panel {
+  background: rgb(16 14 18 / 0.82);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 8px;
+  display: grid;
+  gap: 3px;
+  max-width: min(320px, calc(100% - 24px));
+  padding: 9px 11px;
+  position: absolute;
+  z-index: 3;
+}
+
+.replay-director-panel {
+  bottom: 74px;
+  left: 12px;
+}
+
+.replay-player-focus-panel {
+  bottom: 74px;
+  right: 12px;
+}
+
+.replay-director-panel span,
+.replay-player-focus-panel span {
+  color: var(--color-accent);
+  font-size: 0.66rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.replay-director-panel strong,
+.replay-player-focus-panel strong {
+  color: var(--color-text);
+  font-size: 0.92rem;
+}
+
+.replay-director-panel small,
+.replay-player-focus-panel small {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+
 .replay-tower {
   background: rgb(16 14 18 / 0.78);
   border: 1px solid rgb(255 255 255 / 0.12);
@@ -1764,7 +1819,20 @@ label small {
   display: grid;
   font-size: 0.78rem;
   gap: 8px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
+}
+
+.replay-tower li.position-change {
+  border-color: rgb(255 255 255 / 0.22);
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.replay-tower li.gain {
+  background: rgb(22 199 132 / 0.16);
+}
+
+.replay-tower li.loss {
+  background: rgb(248 113 113 / 0.14);
 }
 
 .replay-tower-livery {
@@ -1803,6 +1871,13 @@ label small {
 
 .replay-tower-value {
   color: var(--color-accent);
+  font-weight: 900;
+}
+
+.replay-tower-delta {
+  border-radius: 999px;
+  color: var(--color-text);
+  font-size: 0.62rem;
   font-weight: 900;
 }
 
@@ -3906,6 +3981,30 @@ button.primary-command {
     padding: 4px 6px;
     right: 8px;
     top: 54px;
+  }
+
+  .replay-director-panel,
+  .replay-player-focus-panel {
+    bottom: 64px;
+    left: 8px;
+    max-width: calc(50% - 12px);
+    padding: 7px 8px;
+    right: auto;
+  }
+
+  .replay-player-focus-panel {
+    left: auto;
+    right: 8px;
+  }
+
+  .replay-director-panel strong,
+  .replay-player-focus-panel strong {
+    font-size: 0.76rem;
+  }
+
+  .replay-director-panel small,
+  .replay-player-focus-panel small {
+    font-size: 0.62rem;
   }
 
   .replay-tower li {

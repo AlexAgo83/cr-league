@@ -1,38 +1,13 @@
 import type { Translator } from "../app/helpers.js";
 
-const CHANGELOGS = [
-  {
-    version: "0.3.6",
-    title: "Visual identity and mobile polish",
-    highlights: [
-      "Chalk-paper setup and profile screens.",
-      "Sticky mobile topbar and cleaner document backgrounds.",
-      "Garage opens on Shop by default.",
-      "Raster race-map car sprites tinted by team livery.",
-      "Release contract and stronger e2e coverage."
-    ]
-  },
-  {
-    version: "0.3.5",
-    title: "Playtest cockpit polish",
-    highlights: [
-      "Race plan moved to a dedicated cockpit screen.",
-      "Replay and report kept inside the Race flow.",
-      "Race actions moved onto the map.",
-      "Inline chrono replay and final classification on the circuit.",
-      "Bot qualifying runs before plan lock."
-    ]
-  },
-  {
-    version: "0.1.0",
-    title: "Initial foundation",
-    highlights: [
-      "Product, gameplay, theme, responsive UX, architecture, and roadmap captured through Logics.",
-      "Vite React web app, Fastify API, shared simulation package, and Prisma/PostgreSQL schema.",
-      "Private-league playtest loop with replay, report, i18n, garage, card inventory, and restart flow."
-    ]
-  }
-] as const;
+const changelogFiles = import.meta.glob("../../../../changelogs/CHANGELOGS_*.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
+
+const CHANGELOGS = Object.entries(changelogFiles)
+  .map(([path, text]) => {
+    const version = path.match(/CHANGELOGS_(\d+_\d+_\d+)\.md$/)?.[1]?.replaceAll("_", ".") ?? "0.0.0";
+    return { version, title: titleOf(text, version), lines: bodyLines(text) };
+  })
+  .sort((left, right) => compareVersions(left.version, right.version));
 
 export function ChangelogView({ currentVersion, tt }: { currentVersion: string; tt: Translator }) {
   return (
@@ -49,14 +24,56 @@ export function ChangelogView({ currentVersion, tt }: { currentVersion: string; 
               <span>v{entry.version}</span>
               <h3>{entry.title}</h3>
             </header>
-            <ul>
-              {entry.highlights.map((highlight) => (
-                <li key={highlight}>{highlight}</li>
-              ))}
-            </ul>
+            <ChangelogBody lines={entry.lines} />
           </article>
         ))}
       </div>
     </div>
   );
+}
+
+function ChangelogBody({ lines }: { lines: string[] }) {
+  return (
+    <div className="changelog-body">
+      {lines.map((line, index) => {
+        const key = `${index}-${line}`;
+        if (line.startsWith("## ")) return <h4 key={key}>{line.slice(3)}</h4>;
+        if (line.startsWith("- ")) return <p key={key} className="changelog-bullet">{cleanInline(line.slice(2))}</p>;
+        return <p key={key}>{cleanInline(line)}</p>;
+      })}
+    </div>
+  );
+}
+
+function titleOf(text: string, version: string) {
+  return bodyLines(text).find((line) => !line.startsWith("## ") && !line.startsWith("- "))?.replace(/\s+release for CR League\.$/i, "") ?? `CR League ${version}`;
+}
+
+function bodyLines(text: string) {
+  let skip = false;
+  return text
+    .split(/\r?\n/)
+    .filter((line) => {
+      if (line.startsWith("# ")) return false;
+      if (/^##\s+Validation\s*$/i.test(line)) {
+        skip = true;
+        return false;
+      }
+      if (skip && line.startsWith("## ")) skip = false;
+      return !skip && line.trim();
+    });
+}
+
+function cleanInline(text: string) {
+  return text.replace(/`([^`]+)`/g, "$1");
+}
+
+function compareVersions(left: string, right: string) {
+  const leftParts = left.split(".").map(Number);
+  const rightParts = right.split(".").map(Number);
+  for (let index = 0; index < 3; index += 1) {
+    const diff = (rightParts[index] ?? 0) - (leftParts[index] ?? 0);
+    if (diff) return diff;
+  }
+  return 0;
 }

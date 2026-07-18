@@ -434,10 +434,30 @@
   text-transform: uppercase;
 }
 
-.changelog-entry ul {
+.changelog-body {
   color: var(--color-muted);
   margin: 10px 0 0;
+}
+
+.changelog-body h4 {
+  color: var(--color-text);
+  font-size: 0.95rem;
+  margin: 16px 0 6px;
+}
+
+.changelog-body p {
+  margin: 6px 0;
+}
+
+.changelog-body .changelog-bullet {
   padding-left: 18px;
+  position: relative;
+}
+
+.changelog-body .changelog-bullet::before {
+  content: "-";
+  left: 0;
+  position: absolute;
 }
 
 .championship-view {

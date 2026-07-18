@@ -2,8 +2,8 @@
 > From version: 0.3.6
 > Schema version: 1.0
 > Status: Draft
-> Understanding: 96
-> Confidence: 91
+> Understanding: 97
+> Confidence: 93
 > Complexity: High
 > Theme: Race simulation realism and replay coherence
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -15,6 +15,7 @@
 - Separate race outcome truth from replay presentation so the simulation stays deterministic while the replay can stage overtakes, gaps, and momentum more convincingly.
 - Enrich `RaceResult` with deterministic race facts if the current payload is too sparse for a convincing replay: finer gaps, order-change facts, pressure windows, momentum shifts, and event-to-replay metadata are acceptable.
 - Audit the current circuit geometry and lap counts with a repeatable tool before changing balance-sensitive values.
+- Smooth car heading through direction changes: cars currently snap to each polyline segment's angle at route vertices, which reads as brutal, unrealistic turns; heading should interpolate continuously along the route with a visual drift/slide effect at sharp corners so cornering feels natural and arcade-plausible.
 - Give implementation agents a way to inspect replay scripts themselves through deterministic debug output, fixtures, or a small readable replay-plan dump.
 - Keep the work development-ready for another AI: clear files, scope, acceptance criteria, risks, validation gates, and staged implementation order.
 
@@ -28,6 +29,9 @@
 - Circuit normalization should not blindly equalize every route. Larger circuits and routes with fewer sharp turns should be favored as the target feel because they better support readable replay spacing, camera tracking, and overtakes.
 - The desired feel is arcade-plausible, not a full racing physics model. Scripted passing beats, close-follow moments, and presentation-only interpolation are in scope if the final classification and event semantics remain deterministic.
 - `RaceResult` may grow to expose replay-useful race facts, but it must not contain UI animation instructions, CSS concepts, camera choreography, or display-only easing values.
+- `RaceResult.replayTrace` is already optional and older persisted races rely on a fallback trace in `ReplayView`, so any enrichment field must be optional and the replay must degrade gracefully for already-resolved Grands Prix.
+- `replayDistanceScale` in `ReplayView` already normalizes perceived replay duration to a reference distance, so the audit must establish whether the measured distance spread shows up as duration drift or as on-screen car-speed differences before deciding what to normalize.
+- `CircuitMap.tsx` already has a partial drift mechanism (`DRIFT_LOOKAHEAD`, `MAX_DRIFT_ANGLE`, `angleDelta`) applied as a rotation offset, but the base car angle comes from a per-segment `atan2` in `poseOnRoute`, so heading still snaps at polyline vertices. The fix is presentation-only (smoother heading interpolation plus tuned drift) and belongs in the map/replay view layer, never in `RaceResult`.
 
 # Acceptance criteria
 - AC1: A documented circuit audit reports per-circuit display route length, configured laps, total display distance, recommended laps, and outliers, with a repeatable command checked into the repo.
@@ -39,6 +43,7 @@
 - AC7: Replay behavior is consistent across at least the shortest, longest, most technical, and wettest circuits in the rotation, with desktop and mobile screenshots or e2e checks showing no broken framing or overlapping labels.
 - AC8: Unit tests cover circuit normalization math, RaceResult enrichment determinism, replay script determinism, final-order preservation, and at least one multi-overtake trace.
 - AC9: Existing gates still pass: typecheck, lint, unit tests, build, e2e replay/private-league checks, i18n validation if copy changes, and Logics validation.
+- AC10: Car heading changes continuously along the route instead of snapping at polyline vertices: heading is interpolated (with lookahead or corner smoothing) and sharp corners show a bounded visual drift/slide effect, with tunable constants and a unit test proving heading continuity on a route with at least one sharp turn.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.
@@ -48,7 +53,7 @@
 
 # Companion docs
 - Product brief(s): `prod_017_coherent_race_replay_and_simulation_realism_product_brief`
-- Architecture decision(s): (none yet)
+- Architecture decision(s): recorded in the `item_105_define_the_replay_staging_contract` staging contract doc (no separate ADR)
 
 # References
 - AGENTS.md

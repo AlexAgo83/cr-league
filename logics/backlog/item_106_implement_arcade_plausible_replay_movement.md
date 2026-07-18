@@ -2,8 +2,8 @@
 > From version: 0.3.6
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 96
-> Confidence: 91
+> Understanding: 97
+> Confidence: 92
 > Progress: 0
 > Complexity: High
 > Theme: Replay implementation
@@ -21,9 +21,11 @@
   - Build the replay staging adapter from the agreed contract.
   - Add minimal `RaceResult` enrichment only when the staging contract proves the existing trace is not enough.
   - Keep enriched fields as race facts: gap snapshots, order changes, pressure windows, momentum shifts, attack/defense context, and event replay metadata.
+  - Degrade gracefully on legacy persisted `RaceResult` payloads (no `replayTrace`, no enrichment): staged replay falls back to a simpler deterministic plan instead of breaking already-resolved races.
   - Add the smallest practical readable inspection path for staged replay output, such as a fixture snapshot, debug helper, or test dump.
   - Update `ReplayView.tsx` and related helpers so car progress, tower order, moment notifications, and marker seeking consume staged replay data where appropriate.
   - Stage overtakes visually with setup, close-gap, side-by-side or lane-offset, swap, defend/counter, and settle phases.
+  - Smooth car heading through direction changes: replace the per-segment `atan2` snap in `CircuitMap.tsx`'s `poseOnRoute` with continuous heading interpolation along the route (lookahead averaging or corner smoothing), and tune the existing drift mechanism (`DRIFT_LOOKAHEAD`, `MAX_DRIFT_ANGLE`) so sharp corners read as a bounded, natural drift/slide instead of a brutal rotation jump. Keep the constants tunable and the behavior deterministic and presentation-only.
   - Keep weather markers, active moment notifications, focus driver, camera, speed menu, replay progress, and report access working.
   - Ensure shortest, longest, wet, technical, and high-overtaking circuits still frame cars and labels correctly on desktop and mobile.
 - Out:
@@ -41,14 +43,15 @@
 - AC5: Replay finish order always matches `RaceResult.classification`.
 - AC6: Desktop and mobile replay screenshots show no broken camera framing, clipped cars, or overlapping labels across representative circuits.
 - AC7: A developer or implementation agent can inspect a deterministic replay plan without relying only on visual playback.
+- AC8: Car heading is continuous along the route: a unit test on a route with at least one sharp turn proves heading changes stay under a bounded per-step delta, and the drift offset at corners stays within its configured maximum.
 
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC2: Any `RaceResult` enrichment is deterministic, covered by tests, and contains race facts rather than UI animation instructions.
-- request-AC5 -> This backlog slice. Proof: AC1: Overtakes in replay are visually staged instead of appearing as instantaneous rank jumps.
-- request-AC6 -> This backlog slice. Proof: AC3: The tower, car markers, active notification, and progress bar agree about the currently staged race moment.
+- request-AC5 -> This backlog slice. Proof: AC1 and AC3: overtakes are visually staged instead of instantaneous rank jumps, and tower, car markers, notification, and progress bar agree about the staged moment.
+- request-AC6 -> This backlog slice. Proof: AC4 and AC7: seeking around an overtake shows stable deterministic state, and the deterministic replay plan is inspectable without relying only on visual playback.
 - request-AC7 -> This backlog slice. Proof: AC6: Desktop and mobile replay screenshots show no broken camera framing, clipped cars, or overlapping labels across representative circuits.
-- request-AC8 -> This backlog slice. Proof: AC5: Replay finish order always matches `RaceResult.classification`.
-- request-AC9 -> This backlog slice. Proof: AC7: A developer or implementation agent can inspect a deterministic replay plan without relying only on visual playback.
+- request-AC8 -> This backlog slice. Proof: AC2 and AC5: enrichment determinism is covered by tests and replay finish order always matches `RaceResult.classification`.
+- request-AC10 -> This backlog slice. Proof: AC8: car heading is continuous along the route, with a unit test proving bounded per-step heading deltas and drift within its configured maximum on a sharp-turn route.
 
 # Decision framing
 - Product framing: Not needed

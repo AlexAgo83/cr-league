@@ -4,7 +4,7 @@
 > Related request: `req_046_make_race_simulation_and_replay_feel_coherent_across_circuits`
 > Related backlog: `item_104_audit_and_normalize_circuit_race_distances`, `item_105_define_the_replay_staging_contract`, `item_106_implement_arcade_plausible_replay_movement`, `item_107_validate_replay_realism_with_tests_and_playtest_prompts`
 > Related task: `task_047_orchestrate_coherent_replay_realism_and_circuit_normalization`
-> Related architecture: (none yet)
+> Related architecture: recorded in the `item_105_define_the_replay_staging_contract` staging contract doc (no separate ADR)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
@@ -29,6 +29,7 @@ flowchart LR
 - Normalize circuit lap counts or replay scaling from measured route distance and route complexity instead of manual guesswork.
 - Favor larger, more flowing circuit profiles as the target replay feel instead of compressing the championship around the shortest or twistiest routes.
 - Make overtakes and gaps readable through detailed scripted arcade beats that match the final result.
+- Make cornering feel natural: continuous car heading along the route with a bounded visual drift/slide at sharp corners, instead of brutal per-segment rotation snaps.
 - Preserve the existing lightweight React/SVG map stack and avoid a new rendering engine unless proven necessary later.
 - Give future AI contributors a clear implementation path, measurable acceptance criteria, and validation commands.
 
@@ -58,11 +59,13 @@ flowchart LR
 - When two normalization targets both work, choose the one closer to the larger and more flowing circuits.
 - Arcade-scripted overtakes are acceptable when deterministic and visually readable.
 - Replay scripts should expose a readable debug or fixture view so tuning does not depend only on watching the UI.
+- Enrichment fields are optional and legacy persisted results keep a working replay through graceful degradation; enriched payload size stays under a documented budget because `RaceResult` is stored and served as-is.
 - The current React/SVG map stack remains the default technology boundary unless a later request proves it insufficient.
 
 # Success signals
 - The measured spread between shortest and longest perceived race distance is intentionally bounded or documented as an exception.
 - Players can watch a pass happen through setup, close gap, overlap or offset, swap, defend or counter, and settle phases instead of a sudden ranking jump.
+- Cars turn smoothly through corners with a natural drift feel; no visible heading snap at route vertices on any rotation circuit.
 - Implementation agents can inspect the replay plan directly and understand why a pass, gap, or weather beat appears at a given moment.
 - New replay facts in `RaceResult`, if added, are testable, deterministic, and explain race-story beats without encoding display animation.
 - Short, long, wet, technical, and high-overtaking circuits all frame the replay clearly on desktop and mobile.

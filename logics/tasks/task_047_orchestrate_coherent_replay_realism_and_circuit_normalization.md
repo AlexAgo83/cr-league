@@ -2,8 +2,8 @@
 > From version: 0.3.6
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 96
-> Confidence: 91
+> Understanding: 97
+> Confidence: 93
 > Progress: 0
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -17,6 +17,8 @@
 - Keep simulation truth separate from replay presentation: final classification, reports, rewards, and consumed cards remain deterministic outcome data.
 - If the current `RaceResult` is too sparse, enrich it with deterministic race facts before making the replay layer infer too much.
 - Replay tuning must include a readable plan/debug output so the implementation agent can inspect scripted beats directly.
+- Backward compatibility is mandatory: `RaceResult.replayTrace` is already optional and older persisted races rely on `fallbackReplayTrace`; enrichment fields must be optional and staging must degrade gracefully so already-resolved Grands Prix keep a working replay.
+- The audit must distinguish duration drift from on-screen speed differences: `replayDistanceScale` in `ReplayView.tsx` already normalizes perceived duration to a reference distance, so the 3.1x distance spread may manifest as car speed, not replay length.
 
 # Plan
 - [ ] 1. Read the current simulation, replay, circuit, map, and tests before editing: `simulateRace.ts`, `race.ts`, `circuits.ts`, `ReplayView.tsx`, `CircuitMap.tsx`, and replay/private-league tests.
@@ -24,6 +26,7 @@
 - [ ] 3. Choose the target perceived total-distance band, bias it toward larger and more flowing circuits, then normalize lap counts or replay scaling while keeping shared and web circuit data aligned.
 - [ ] 4. Define the replay staging contract before implementation, including whether `RaceResult` needs deterministic race-fact enrichment and where the boundary with presentation-only beats sits.
 - [ ] 5. Add minimal `RaceResult` enrichment if needed, then implement deterministic replay staging and integrate it into `ReplayView` with detailed staged overtake movement, tower agreement, marker seeking, and finish-order preservation.
+- [ ] 5b. Smooth car heading through direction changes: replace the per-segment `atan2` snap in `CircuitMap.tsx` `poseOnRoute` with continuous heading interpolation and tune the existing `DRIFT_LOOKAHEAD`/`MAX_DRIFT_ANGLE` drift so sharp corners read as a natural bounded drift/slide (presentation-only, deterministic, tunable constants).
 - [ ] 6. Validate shortest, longest, wettest, and high-overtaking circuits with focused tests and visual screenshots on desktop and mobile.
 - [ ] 7. Update specs, playtest prompts, and Logics proof, then run typecheck, lint, unit tests, build, e2e, i18n validation if copy changed, and Logics validation.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
@@ -42,6 +45,7 @@
 - [ ] Replay staging contract is implemented or documented before presentation integration, including the `RaceResult` enrichment decision and readable debug or fixture output.
 - [ ] Any `RaceResult` enrichment is deterministic, domain-level, and avoids UI animation details.
 - [ ] Replay movement stages overtakes and preserves final classification deterministically.
+- [ ] Car heading is continuous through direction changes with a bounded drift effect at sharp corners, proven by a heading-continuity unit test.
 - [ ] Representative circuit extremes are validated with tests and desktop/mobile visual checks.
 - [ ] Affected specs/docs and Logics closeout proof are updated.
 - [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
@@ -50,11 +54,13 @@
 - request-AC1 -> This task. Proof deferred until the audit command and report are committed.
 - request-AC2 -> This task. Proof deferred until the target band and lap/scaling normalization are committed.
 - request-AC3 -> This task. Proof deferred until simulation determinism tests pass after replay changes.
-- request-AC4 -> This task. Proof deferred until replay staging beats are implemented or documented.
-- request-AC5 -> This task. Proof deferred until staged overtake movement is visible and tested.
-- request-AC6 -> This task. Proof deferred until representative circuit screenshots or e2e checks are recorded.
-- request-AC7 -> This task. Proof deferred until normalization and replay staging tests are committed.
-- request-AC8 -> This task. Proof deferred until the full validation gate is recorded.
+- request-AC4 -> This task. Proof deferred until the `RaceResult` enrichment decision (and any implementation) is committed with optional, legacy-safe fields.
+- request-AC5 -> This task. Proof deferred until the staging adapter emits deterministic replay beats from result and circuit context.
+- request-AC6 -> This task. Proof deferred until staged overtake movement and the readable debug dump or fixture are visible and tested.
+- request-AC7 -> This task. Proof deferred until representative circuit screenshots or e2e checks are recorded on desktop and mobile.
+- request-AC8 -> This task. Proof deferred until normalization, enrichment determinism, staging determinism, final-order, and multi-overtake tests are committed.
+- request-AC9 -> This task. Proof deferred until the full validation gate (typecheck, lint, unit, build, e2e, i18n if needed, Logics) is recorded.
+- request-AC10 -> This task. Proof deferred until heading interpolation and corner drift are implemented in `CircuitMap.tsx` with a heading-continuity unit test committed.
 
 # Validation
 - Run `npm run typecheck`.
@@ -77,4 +83,4 @@
 # Links
 - Request: `req_046_make_race_simulation_and_replay_feel_coherent_across_circuits`
 - Product brief(s): `prod_017_coherent_race_replay_and_simulation_realism_product_brief`
-- Architecture decision(s): (none yet)
+- Architecture decision(s): recorded in the `item_105_define_the_replay_staging_contract` staging contract doc (no separate ADR)

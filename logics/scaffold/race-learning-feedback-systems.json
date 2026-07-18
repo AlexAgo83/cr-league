@@ -1,0 +1,321 @@
+{
+  "title": "Race learning and feedback systems",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/roadmap/road_001_cr_league_roadmap.md",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/helpers.ts",
+    "apps/web/src/features/DirectivePanel.tsx",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/ResultView.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "User feedback (2026-07-18): players want a dynamic qualifying report, navigable chrono session history, plan suggestions based on the best chrono configuration, weather-influenced map visuals, visible replay events near cars, a clear post-replay gains/losses recap, no starter inventory card with more starting credits instead, and a richer tire preparation choice."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Race learning, feedback, and strategy clarity",
+    "needs": [
+      "Make chrono attempts teach the player something, not just produce a lap time.",
+      "Let players browse previous chrono attempts and compare their tested configurations.",
+      "Carry the best chrono evidence into final plan validation so the app can suggest a stronger configuration before the player locks the plan.",
+      "Make weather visible on the map so forecast and resolved conditions feel embodied, not only textual.",
+      "Make replay events visible near cars so the map feels alive while the replay runs.",
+      "After the replay, show a compact race payoff recap: what the player gained, lost, spent, and learned.",
+      "Rebalance the first session so players start with credits and choose their first card deliberately instead of receiving a card by default.",
+      "Explore a simple tire-preparation choice in Plan without bloating the current directive loop."
+    ],
+    "context": [
+      "Qualifying already exists as `/leagues/:leagueId/qualifying` and stores `currentGrandPrix.qualifyingRuns`; the web derives `playerQualifyingRuns`, `lastQualifyingRun`, `qualifyingLeaderboard`, and `qualifyingReplayEntries` in `App.tsx`.",
+      "A `QualifyingRun` already contains the tested `decision` plus a `result`, so the UI can compare lap times and configurations without inventing a new domain object.",
+      "Final plan validation already routes through confirmation modals in `App.tsx`; this is the lowest-friction place to surface best-chrono suggestions.",
+      "`CircuitMap` already receives circuit identity and cars; weather is currently textual in map status and does not alter the visual treatment.",
+      "`ReplayView` already has animated cars, replay live state, and race event data; rendering short event callouts near cars should reuse existing event timestamps and car positions instead of adding a new replay engine.",
+      "`ResultView` and report helpers already display replay/report content and race rewards; the missing piece is a compact payoff summary immediately after replay completion or beside the report entry point.",
+      "New league teams currently start with zero credits in `apps/api/src/features/leagues/store.ts`, while tests and fixtures often seed cards such as `rain_grip`; the starter economy must be changed deliberately with fixture updates.",
+      "`DirectivePanel` has a three-step directive loop: approach, preparation, card. Existing preparations are speed, reliability, and weather; tire strategy can be added as a fourth directive field only if the simulation and copy stay simple."
+    ],
+    "acceptance_criteria": [
+      "AC1: After every chrono attempt, the player can read a dynamic chrono report with lap time, tested configuration, circuit/weather context, comparison to the player's best attempt, and one actionable interpretation.",
+      "AC2: The player can navigate chrono session history for the current GP and distinguish best/current/older attempts without losing the main race desk flow.",
+      "AC3: Before final plan submission, the app suggests the best observed chrono configuration when it differs from the current plan and lets the player understand the tradeoff without forcing auto-apply.",
+      "AC4: Map visuals reflect weather states in a lightweight, readable way across desktop and mobile, without hiding route, cars, or controls.",
+      "AC5: Replay events can appear as short visual callouts near the affected car(s), keyed from real simulation events and bounded so the map stays legible.",
+      "AC6: After replay completion, the player sees a payoff recap containing position change, points, credits, card spend/consumption, and championship movement when available.",
+      "AC7: New leagues start without an inventory card and with a deliberate starting credit balance that lets the player choose an early card; tests and fixtures reflect the new economy.",
+      "AC8: Tire strategy is specified as a small, testable mechanic with three choices (soft/medium/hard or equivalent), clear effects, and no speculative tire-management system.",
+      "AC9: EN and FR copy exists for every new player-facing string; no hardcoded user-facing strings are introduced.",
+      "AC10: Typecheck, lint, unit tests, build, and affected E2E flows pass for each shipped item."
+    ]
+  },
+  "product": {
+    "title": "Race Learning and Feedback Systems Product Brief",
+    "overview": "Turn each Grand Prix day into a clearer learning loop: test configurations through chrono attempts, understand what worked, lock a plan with evidence, watch a more expressive race, then receive a concrete payoff summary that guides the next decision.",
+    "goals": [
+      "Make chrono attempts meaningful by explaining what each tested configuration proved or failed to prove.",
+      "Help players lock plans from evidence rather than guesswork.",
+      "Make the race map and replay more alive without rewriting the simulation or rendering stack.",
+      "Make post-race payoff immediately understandable after replay time investment.",
+      "Improve first-session agency by moving the first card choice into the garage economy.",
+      "Keep tire strategy small and readable if added."
+    ],
+    "non_goals": [
+      "No AI-generated coaching or LLM dependency.",
+      "No new full telemetry dashboard outside the current race desk/report surfaces.",
+      "No replay engine rewrite.",
+      "No complex tire degradation model, pit-stop strategy, stint planning, or per-lap tire simulation in this corpus.",
+      "No economy overhaul beyond starter credits/card inventory and the tests required by that change.",
+      "No new locales."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add dynamic chrono report after each qualifying attempt",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Chrono learning loop",
+      "request_acs": ["AC1", "AC9", "AC10"],
+      "problem": [
+        "Chrono attempts currently produce a time and replay data, but the player does not get a clear interpretation of whether the tested setup was good, bad, or situational.",
+        "The decision and result data already exist on each `QualifyingRun`; the UI is underusing them."
+      ],
+      "scope_in": [
+        "Build a chrono report model from the latest `QualifyingRun`: lap time, attempt/lap number, tested approach/preparation/card, likely weather, circuit traits, and delta versus player best.",
+        "Render the report near the current chrono result area in the race desk using existing panel/modal patterns.",
+        "Add one concise interpretation sentence chosen from data: better than best, slower than best, weather-aligned, trait-misaligned, card helped, or no clear signal.",
+        "Add EN/FR strings and focused React tests for report rendering and fallback states."
+      ],
+      "scope_out": [
+        "Persisting new data server-side.",
+        "Full telemetry charts.",
+        "AI recommendations.",
+        "Changing qualifying simulation."
+      ],
+      "acceptance_criteria": [
+        "AC1: After a chrono attempt, the latest attempt report is visible with time, config, comparison, and interpretation.",
+        "AC2: If there is only one attempt, comparison copy says it is the reference attempt rather than showing a fake delta.",
+        "AC3: The report handles a missing card cleanly.",
+        "AC4: EN/FR copy and focused tests are included."
+      ]
+    },
+    {
+      "title": "Make chrono session history navigable",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Chrono learning loop",
+      "request_acs": ["AC2", "AC9", "AC10"],
+      "problem": [
+        "Players can run multiple chronos, but cannot easily revisit each attempt and compare the setups that produced those times."
+      ],
+      "scope_in": [
+        "Add a compact attempt navigator for the current player's chrono sessions on the current GP.",
+        "Use existing `playerQualifyingRuns` ordering and mark best, selected, and latest attempts.",
+        "Selecting an attempt updates the chrono report and existing qualifying replay preview when available.",
+        "Keep the UI usable on mobile with stable dimensions and no large table."
+      ],
+      "scope_out": [
+        "Cross-GP chrono archive.",
+        "Server pagination.",
+        "Export/share of chrono sessions."
+      ],
+      "acceptance_criteria": [
+        "AC1: With at least two attempts, the player can select each attempt and see its config/report.",
+        "AC2: The best attempt is visually marked and remains identifiable after selecting another attempt.",
+        "AC3: Mobile layout does not overflow the race desk.",
+        "AC4: Tests cover selection and best marker behavior."
+      ]
+    },
+    {
+      "title": "Suggest the best chrono-backed configuration before plan lock",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Plan validation",
+      "request_acs": ["AC3", "AC9", "AC10"],
+      "problem": [
+        "The player can lock a final plan that ignores their best chrono evidence, and the app does not help them connect chrono learning to the final directive."
+      ],
+      "scope_in": [
+        "Compute the player's best chrono run for the current GP and compare its decision to the current form.",
+        "In the Send Plan confirmation modal, show an evidence card when the best chrono config differs from the current plan.",
+        "Explain what would change: approach, preparation, card, or no-card choice.",
+        "Provide a small action to apply the best chrono config if local state can be safely updated before submit; otherwise show guidance only.",
+        "Add tests for matching config (no warning), differing config (suggestion shown), and optional apply action if implemented."
+      ],
+      "scope_out": [
+        "Automatic plan replacement without user action.",
+        "Optimization beyond observed chrono runs.",
+        "New API endpoint."
+      ],
+      "acceptance_criteria": [
+        "AC1: The plan confirmation modal surfaces the best chrono setup when it differs from the current plan.",
+        "AC2: If the current plan already matches the best chrono setup, the modal confirms that the plan matches observed evidence.",
+        "AC3: The player can still submit their chosen plan.",
+        "AC4: Tests cover the modal states."
+      ]
+    },
+    {
+      "title": "Add weather visual states to the circuit map",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Map atmosphere",
+      "request_acs": ["AC4", "AC9", "AC10"],
+      "problem": [
+        "Weather is currently readable as text but not visible in the map, so rain and dry conditions do not feel materially different."
+      ],
+      "scope_in": [
+        "Add lightweight CSS/SVG overlays in `CircuitMap` for dry, light rain, and heavy rain.",
+        "Use likely weather for pre-race views and resolved/current replay weather where available.",
+        "Ensure overlays do not obscure route, cars, map controls, or trait panels.",
+        "Add visual regression-oriented E2E or DOM tests for weather classes and mobile non-overlap."
+      ],
+      "scope_out": [
+        "Particle system dependency.",
+        "Per-pixel canvas weather simulation.",
+        "Changing simulation weather odds."
+      ],
+      "acceptance_criteria": [
+        "AC1: Dry, light rain, and heavy rain map states have distinct class-driven visual treatments.",
+        "AC2: The route and moving cars remain visible in all weather states.",
+        "AC3: Mobile map layout remains non-overlapping.",
+        "AC4: Tests verify state class selection and at least one mobile layout guard."
+      ]
+    },
+    {
+      "title": "Render replay event callouts near cars",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Replay spectacle",
+      "request_acs": ["AC5", "AC9", "AC10"],
+      "problem": [
+        "Replay events are listed in copy, but the map itself does not show what is happening around cars, making the race feel less alive."
+      ],
+      "scope_in": [
+        "Render short-lived event callouts near affected cars during replay playback using existing event lap/order timing and car positions.",
+        "Support a small event label set: attack, defense, card, weather, error, gain/loss.",
+        "Cap simultaneous callouts and duration so labels do not clutter the map.",
+        "Respect replay pause/scrub behavior; callouts should follow current replay time, not real time only.",
+        "Add tests for callout selection, timing window, and cap behavior."
+      ],
+      "scope_out": [
+        "New replay physics.",
+        "Complex collision avoidance.",
+        "Animated cutscenes or full event icons asset pack."
+      ],
+      "acceptance_criteria": [
+        "AC1: During replay, a qualifying event with a teamId produces a visible callout near that team's car during its timing window.",
+        "AC2: Pausing or scrubbing updates callout visibility based on replay time.",
+        "AC3: No more than the configured cap of callouts appears at once.",
+        "AC4: Tests cover timing and cap logic."
+      ]
+    },
+    {
+      "title": "Add post-replay payoff recap",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Post-race payoff",
+      "request_acs": ["AC6", "AC9", "AC10"],
+      "problem": [
+        "After watching the replay, the player does not immediately see the practical payoff of the GP: what they gained, lost, spent, and how it affected the season."
+      ],
+      "scope_in": [
+        "Add a compact payoff recap shown when replay finishes and available in the report view.",
+        "Include final position, position change, points, credits, consumed card(s), championship movement when computable, and one short lesson/follow-up.",
+        "Reuse existing result classification, consumedCards, playerDecision, and standings data; do not add a new API response unless a field is truly missing.",
+        "Add EN/FR strings and tests for win, loss, consumed-card, and no-card cases."
+      ],
+      "scope_out": [
+        "Replacing the existing report.",
+        "Season recap redesign.",
+        "New reward types."
+      ],
+      "acceptance_criteria": [
+        "AC1: After replay completion, the player can see a payoff recap without hunting through tables.",
+        "AC2: The recap includes points and credits gained, and consumed cards if any.",
+        "AC3: If championship movement cannot be computed, the recap omits it cleanly.",
+        "AC4: Tests cover the main reward/spend states."
+      ]
+    },
+    {
+      "title": "Start new leagues with credits instead of a starter card",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Starter economy",
+      "request_acs": ["AC7", "AC9", "AC10"],
+      "problem": [
+        "Starting with an inventory card introduces the card mechanic before the player has chosen it, while starting with credits would make the garage/shop loop more intentional."
+      ],
+      "scope_in": [
+        "Change new human team defaults to empty `cards` and a deliberate starting credit amount sufficient to buy at least one early card if desired.",
+        "Update API tests, web fixtures, E2E mocks, and onboarding/help copy that assume a starter card.",
+        "Ensure the first-plan card picker handles empty inventory gracefully.",
+        "Keep bot starter behavior aligned or explicitly documented if bots differ."
+      ],
+      "scope_out": [
+        "Changing card prices broadly.",
+        "Adding starter card selection flow.",
+        "Full economy rebalance."
+      ],
+      "acceptance_criteria": [
+        "AC1: A newly created human team has no cards and has starting credits.",
+        "AC2: The garage shop is usable immediately with the starting credit balance.",
+        "AC3: Plan view handles no-card inventory without broken controls.",
+        "AC4: API, unit, and E2E fixtures are updated."
+      ]
+    },
+    {
+      "title": "Specify and implement a simple tire strategy directive",
+      "priority": "Low",
+      "complexity": "High",
+      "theme": "Plan strategy depth",
+      "request_acs": ["AC8", "AC9", "AC10"],
+      "problem": [
+        "Players asked for more preparation depth around tires, but adding tire choice directly risks bloating the currently simple directive loop."
+      ],
+      "scope_in": [
+        "Define a minimal tire strategy field with exactly three choices: soft, medium, hard.",
+        "Soft: stronger chrono/start, weaker late endurance; medium: neutral; hard: weaker start, stronger finish/endurance.",
+        "Thread the field through shared decision types, API validation/storage, simulation scoring, `DirectivePanel`, plan confirmation, replay/report copy, and tests.",
+        "Keep copy clear that this is a tire strategy, not a full pit-stop model."
+      ],
+      "scope_out": [
+        "Pit stops.",
+        "Tire wear per lap.",
+        "Compound inventory.",
+        "Multiple tire selections per GP.",
+        "Weather-specific tire variants."
+      ],
+      "acceptance_criteria": [
+        "AC1: The player can choose soft/medium/hard in Plan and the choice persists in submitted decisions.",
+        "AC2: Simulation applies the simple start/finish tradeoff and tests prove each option changes expected scoring in the intended direction.",
+        "AC3: Existing decisions without tireStrategy are migrated or default safely.",
+        "AC4: EN/FR copy and affected UI/API/shared tests are updated."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate race learning and feedback systems",
+    "plan": [
+      "Read current qualifying, replay, result, garage economy, directive, map, and simulation paths before starting implementation.",
+      "Ship post-replay payoff recap first because it is high value and uses existing result data.",
+      "Ship chrono report and chrono history together or sequentially, then add plan-lock suggestions once chrono evidence is visible.",
+      "Ship weather map visuals and replay event callouts as separate visual passes with E2E layout checks.",
+      "Ship starter economy after verifying first-session copy and no-card plan behavior.",
+      "Treat tire strategy as the last item because it touches shared types, API validation, simulation, UI, and tests.",
+      "For each backlog item, update EN/FR copy, run focused tests, then run typecheck, lint, unit tests, build, and affected E2E before closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/race-learning-feedback-systems.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

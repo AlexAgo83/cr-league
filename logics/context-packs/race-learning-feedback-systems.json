@@ -1,0 +1,598 @@
+{
+  "budgets": {
+    "max_docs": 40,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_049_race_learning_and_feedback_systems item_118_add_dynamic_chrono_report_after_each_qualifying_attempt item_119_make_chrono_session_history_navigable item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock item_121_add_weather_visual_states_to_the_circuit_map item_122_render_replay_event_callouts_near_cars item_123_add_post_replay_payoff_recap item_124_start_new_leagues_with_credits_instead_of_a_starter_card item_125_specify_and_implement_a_simple_tire_strategy_directive task_050_orchestrate_race_learning_and_feedback_systems --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_029_add_automated_private_league_playtest_scenario"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_023_add_automated_private_league_playtest_scenario"
+        ],
+        "task": [
+          "task_024_add_automated_private_league_playtest_scenario"
+        ]
+      },
+      "path": "logics/product/prod_001_cr_league_product_brief.md",
+      "ref": "prod_001_cr_league_product_brief",
+      "status": "Settled",
+      "title": "CR League Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_118_add_dynamic_chrono_report_after_each_qualifying_attempt",
+          "item_119_make_chrono_session_history_navigable",
+          "item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock",
+          "item_121_add_weather_visual_states_to_the_circuit_map",
+          "item_122_render_replay_event_callouts_near_cars",
+          "item_123_add_post_replay_payoff_recap",
+          "item_124_start_new_leagues_with_credits_instead_of_a_starter_card",
+          "item_125_specify_and_implement_a_simple_tire_strategy_directive"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/product/prod_020_race_learning_and_feedback_systems_product_brief.md",
+      "ref": "prod_020_race_learning_and_feedback_systems_product_brief",
+      "status": "Proposed",
+      "title": "Race Learning and Feedback Systems Product Brief"
+    },
+    {
+      "kind": "roadmap",
+      "linked_refs": {
+        "adr": [
+          "adr_001_cr_league_v1_static_pwa_api_architecture",
+          "adr_004_data_security",
+          "adr_006_accessibility",
+          "adr_007_i18n",
+          "adr_008_testing_quality"
+        ],
+        "item": [
+          "item_004_design_and_implement_the_v1_card_and_inventory_system",
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues",
+          "item_014_define_cr_league_implementation_roadmap",
+          "item_026_add_join_league_by_code_flow"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief",
+          "prod_003_race_cockpit_redesign_v0_product_brief"
+        ],
+        "req": [
+          "req_008_define_cr_league_implementation_roadmap",
+          "req_009_scaffold_cr_league_monorepo_foundation",
+          "req_013_implement_cr_league_pure_simulation_core",
+          "req_014_add_cr_league_simulation_preview_api_and_screen",
+          "req_015_add_minimal_league_persistence_api",
+          "req_016_add_playable_demo_league_web_flow",
+          "req_017_prepare_real_postgresql_migration_and_seed_workflow",
+          "req_018_wire_web_copy_to_i18n_catalog",
+          "req_019_harden_current_grand_prix_state_rules",
+          "req_020_add_join_league_by_code_flow",
+          "req_021_build_private_league_prototype_foundation",
+          "req_022_add_private_league_cadence_and_dashboard",
+          "req_024_prepare_private_league_playtest_kit",
+          "req_025_add_guided_race_weekend_experience",
+          "req_032_redesign_the_cr_league_race_cockpit_v0"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap",
+          "road_002_cr_league_roadmap_v2"
+        ],
+        "spec": [
+          "spec_001_grand_prix_core_loop_and_simulation_v1",
+          "spec_016_implementation_roadmap"
+        ],
+        "task": [
+          "task_009_define_cr_league_implementation_roadmap",
+          "task_021_add_join_league_by_code_flow"
+        ]
+      },
+      "path": "logics/roadmap/road_001_cr_league_roadmap.md",
+      "ref": "road_001_cr_league_roadmap",
+      "status": "Superseded",
+      "title": "CR League Roadmap"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, race learning and feedback systems, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Race learning and feedback systems",
+        "use when": "You need to implement or review the scaffolded workflow for Race learning and feedback systems."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_118_add_dynamic_chrono_report_after_each_qualifying_attempt",
+          "item_119_make_chrono_session_history_navigable",
+          "item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock",
+          "item_121_add_weather_visual_states_to_the_circuit_map",
+          "item_122_render_replay_event_callouts_near_cars",
+          "item_123_add_post_replay_payoff_recap",
+          "item_124_start_new_leagues_with_credits_instead_of_a_starter_card",
+          "item_125_specify_and_implement_a_simple_tire_strategy_directive"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief",
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap"
+        ]
+      },
+      "path": "logics/request/req_049_race_learning_and_feedback_systems.md",
+      "ref": "req_049_race_learning_and_feedback_systems",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Race learning and feedback systems"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add dynamic chrono report after each qualifying attempt, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add dynamic chrono report after each qualifying attempt",
+        "use when": "Implementing the scaffolded slice for Add dynamic chrono report after each qualifying attempt."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_118_add_dynamic_chrono_report_after_each_qualifying_attempt"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/backlog/item_118_add_dynamic_chrono_report_after_each_qualifying_attempt.md",
+      "ref": "item_118_add_dynamic_chrono_report_after_each_qualifying_attempt",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Add dynamic chrono report after each qualifying attempt"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, make chrono session history navigable, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Make chrono session history navigable",
+        "use when": "Implementing the scaffolded slice for Make chrono session history navigable."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_119_make_chrono_session_history_navigable"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/backlog/item_119_make_chrono_session_history_navigable.md",
+      "ref": "item_119_make_chrono_session_history_navigable",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Make chrono session history navigable"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, suggest the best chrono-backed configuration before plan lock, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Suggest the best chrono-backed configuration before plan lock",
+        "use when": "Implementing the scaffolded slice for Suggest the best chrono-backed configuration before plan lock."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/backlog/item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock.md",
+      "ref": "item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Suggest the best chrono-backed configuration before plan lock"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate race learning and feedback systems",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_118_add_dynamic_chrono_report_after_each_qualifying_attempt",
+          "item_119_make_chrono_session_history_navigable",
+          "item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock",
+          "item_121_add_weather_visual_states_to_the_circuit_map",
+          "item_122_render_replay_event_callouts_near_cars",
+          "item_123_add_post_replay_payoff_recap",
+          "item_124_start_new_leagues_with_credits_instead_of_a_starter_card",
+          "item_125_specify_and_implement_a_simple_tire_strategy_directive"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/tasks/task_050_orchestrate_race_learning_and_feedback_systems.md",
+      "ref": "task_050_orchestrate_race_learning_and_feedback_systems",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate race learning and feedback systems"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_118_add_dynamic_chrono_report_after_each_qualifying_attempt",
+          "item_119_make_chrono_session_history_navigable",
+          "item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock",
+          "item_121_add_weather_visual_states_to_the_circuit_map",
+          "item_122_render_replay_event_callouts_near_cars",
+          "item_123_add_post_replay_payoff_recap",
+          "item_124_start_new_leagues_with_credits_instead_of_a_starter_card",
+          "item_125_specify_and_implement_a_simple_tire_strategy_directive"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/product/prod_020_race_learning_and_feedback_systems_product_brief.md",
+      "ref": "prod_020_race_learning_and_feedback_systems_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Race Learning and Feedback Systems Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add weather visual states to the circuit map, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add weather visual states to the circuit map",
+        "use when": "Implementing the scaffolded slice for Add weather visual states to the circuit map."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_121_add_weather_visual_states_to_the_circuit_map"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/backlog/item_121_add_weather_visual_states_to_the_circuit_map.md",
+      "ref": "item_121_add_weather_visual_states_to_the_circuit_map",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Add weather visual states to the circuit map"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, render replay event callouts near cars, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Render replay event callouts near cars",
+        "use when": "Implementing the scaffolded slice for Render replay event callouts near cars."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_122_render_replay_event_callouts_near_cars"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/backlog/item_122_render_replay_event_callouts_near_cars.md",
+      "ref": "item_122_render_replay_event_callouts_near_cars",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Render replay event callouts near cars"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add post-replay payoff recap, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add post-replay payoff recap",
+        "use when": "Implementing the scaffolded slice for Add post-replay payoff recap."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_123_add_post_replay_payoff_recap"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/backlog/item_123_add_post_replay_payoff_recap.md",
+      "ref": "item_123_add_post_replay_payoff_recap",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Add post-replay payoff recap"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, start new leagues with credits instead of a starter card, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Start new leagues with credits instead of a starter card",
+        "use when": "Implementing the scaffolded slice for Start new leagues with credits instead of a starter card."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_124_start_new_leagues_with_credits_instead_of_a_starter_card"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/backlog/item_124_start_new_leagues_with_credits_instead_of_a_starter_card.md",
+      "ref": "item_124_start_new_leagues_with_credits_instead_of_a_starter_card",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Start new leagues with credits instead of a starter card"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, specify and implement a simple tire strategy directive, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Specify and implement a simple tire strategy directive",
+        "use when": "Implementing the scaffolded slice for Specify and implement a simple tire strategy directive."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_125_specify_and_implement_a_simple_tire_strategy_directive"
+        ],
+        "prod": [
+          "prod_020_race_learning_and_feedback_systems_product_brief"
+        ],
+        "req": [
+          "req_049_race_learning_and_feedback_systems"
+        ],
+        "task": [
+          "task_050_orchestrate_race_learning_and_feedback_systems"
+        ]
+      },
+      "path": "logics/backlog/item_125_specify_and_implement_a_simple_tire_strategy_directive.md",
+      "ref": "item_125_specify_and_implement_a_simple_tire_strategy_directive",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Specify and implement a simple tire strategy directive"
+    }
+  ],
+  "estimates": {
+    "char_count": 13842,
+    "companion_doc_count": 3,
+    "doc_count": 11
+  },
+  "generated_at": "2026-07-18T20:46:00Z",
+  "handoff": {
+    "companion_doc_count": 3,
+    "enabled": true,
+    "source_refs": [
+      "req_049_race_learning_and_feedback_systems",
+      "item_118_add_dynamic_chrono_report_after_each_qualifying_attempt",
+      "item_119_make_chrono_session_history_navigable",
+      "item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock",
+      "item_121_add_weather_visual_states_to_the_circuit_map",
+      "item_122_render_replay_event_callouts_near_cars",
+      "item_123_add_post_replay_payoff_recap",
+      "item_124_start_new_leagues_with_credits_instead_of_a_starter_card",
+      "item_125_specify_and_implement_a_simple_tire_strategy_directive",
+      "task_050_orchestrate_race_learning_and_feedback_systems"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 512,
+      "fr": 512
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_049_race_learning_and_feedback_systems,item_118_add_dynamic_chrono_report_after_each_qualifying_attempt,item_119_make_chrono_session_history_navigable,item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock,item_121_add_weather_visual_states_to_the_circuit_map,item_122_render_replay_event_callouts_near_cars,item_123_add_post_replay_payoff_recap,item_124_start_new_leagues_with_credits_instead_of_a_starter_card,item_125_specify_and_implement_a_simple_tire_strategy_directive,task_050_orchestrate_race_learning_and_feedback_systems",
+  "refs": [
+    "req_049_race_learning_and_feedback_systems",
+    "item_118_add_dynamic_chrono_report_after_each_qualifying_attempt",
+    "item_119_make_chrono_session_history_navigable",
+    "item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock",
+    "item_121_add_weather_visual_states_to_the_circuit_map",
+    "item_122_render_replay_event_callouts_near_cars",
+    "item_123_add_post_replay_payoff_recap",
+    "item_124_start_new_leagues_with_credits_instead_of_a_starter_card",
+    "item_125_specify_and_implement_a_simple_tire_strategy_directive",
+    "task_050_orchestrate_race_learning_and_feedback_systems"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "version_metadata: evidence targets a different commit",
+      "changelog: evidence targets a different commit",
+      "local_validation: evidence targets a different commit",
+      "git_push: evidence targets a different commit",
+      "ci: evidence targets a different commit"
+    ],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "version_metadata: evidence targets a different commit",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "blocked",
+    "target_version": "0.3.7"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_050_orchestrate_race_learning_and_feedback_systems.md",
+      "ref": "task_050_orchestrate_race_learning_and_feedback_systems"
+    }
+  ]
+}

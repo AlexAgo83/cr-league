@@ -1066,7 +1066,7 @@ label small {
 
 .notification-stack {
   align-items: center;
-  bottom: 16px;
+  bottom: calc(16px + env(safe-area-inset-bottom));
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -1079,15 +1079,10 @@ label small {
   z-index: 60;
 }
 
-.game-shell > .notification-stack {
-  bottom: auto;
-  top: calc(56px + var(--space-page));
-}
-
 .setup-shell > .notification-stack {
+  bottom: calc(16px + env(safe-area-inset-bottom));
   position: fixed;
   top: auto;
-  bottom: 16px;
 }
 
 .floating-notification {
@@ -4033,10 +4028,10 @@ button.primary-command {
   }
 
   .notification-stack {
-    align-items: flex-start;
-    bottom: 16px;
-    left: 12px;
-    transform: none;
+    align-items: center;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
     width: calc(100% - 24px);
   }
 

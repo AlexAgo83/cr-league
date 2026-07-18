@@ -2,7 +2,7 @@
   "app_eyebrow": "Urban micro-EV racing league",
   "app_intro": "Create or join a private league, set your directive, then launch the Grand Prix.",
   "flow_label": "Demo league flow",
-  "status_initial": "Build a private Grand Prix league, invite the grid, and race one decision at a time.",
+  "status_initial": "Create your private championship, invite the drivers, then play each Grand Prix from the pit wall.",
   "status_creating_league": "Creating league...",
   "status_league_created": "League created. Submit your race directive.",
   "status_joining_league": "Joining league...",

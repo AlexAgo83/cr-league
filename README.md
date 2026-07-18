@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://cr-league.onrender.com">
-    <img src="docs/assets/readme/replay-desktop.png" alt="CR League race replay showing the Paris Docklands Sprint circuit, two cars, weather, traits, event markers, and replay controls." width="960">
+    <img src="docs/assets/readme/market-replay.png" alt="CR League live race replay with a city circuit, timing controls, leaderboard, track traits, and race director callout." width="960">
   </a>
 </p>
 
@@ -12,11 +12,13 @@
 [![App](https://img.shields.io/website?label=app&url=https%3A%2F%2Fcr-league.onrender.com)](https://cr-league.onrender.com)
 [![License: MIT](https://img.shields.io/badge/license-MIT-111827.svg)](LICENSE)
 
-**A private motorsport league where you do not drive the car. You run the team.**
+**Create a private Grand Prix league. Run the team. Watch the race answer your decisions.**
 
-CR League turns a small group into a compact team-principal championship: read the circuit, gamble on weather, spend garage cards, lock a race directive, then watch the city replay decide who was clever and who just got lucky.
+CR League is a multiplayer race-strategy game for small groups. Every player owns a team, reads the same circuit briefing, gambles on weather, spends garage cards, and locks one race plan before the Grand Prix launches.
 
-Built for office leagues, friend groups, and playtest rooms where every Grand Prix leaves a story for the next round.
+You do not steer the car. You make the calls from the pit wall: protect the tires, attack early, prep for rain, save credits, burn a card, or hold the garage for the next round. Then the replay turns those choices into overtakes, mistakes, rewards, and grudges for the next GP.
+
+Built for office leagues, friend groups, Discord servers, and playtest rooms where a championship should take minutes to run and still leave everyone with a story.
 
 <p>
   <a href="https://cr-league.onrender.com"><strong>Play the live build</strong></a>
@@ -26,41 +28,55 @@ Built for office leagues, friend groups, and playtest rooms where every Grand Pr
   <a href="docs/release-contract.md">Release contract</a>
 </p>
 
-## Why It Works
+## The Pitch
 
-Every round asks one sharp question: do you chase pole, protect energy, gamble on weather, or save resources for the next Grand Prix?
+CR League compresses the fantasy of running a motorsport team into a short asynchronous loop:
 
-| Moment | What the player does |
+| Phase | Player fantasy |
 | --- | --- |
-| **Briefing** | Read the city circuit, weather odds, traits, and championship pressure. |
-| **Qualifying** | Run limited lap attempts before the race plan is locked. |
-| **Directive** | Pick approach, preparation, rival pressure, and one card from the garage. |
-| **Replay** | Watch the race unfold with event markers, gaps, weather, and report copy. |
-| **Progression** | Carry points, credits, cards, livery, and history into the next round. |
+| **Read the track** | Spot what the circuit rewards: grip, attack, endurance, weather, timing. |
+| **Set the plan** | Choose the risk profile, preparation focus, and one card that can swing the GP. |
+| **Launch the race** | Review the grid, send the field away, and let the simulation expose the tradeoffs. |
+| **Watch the replay** | Follow the cars, timing, incidents, weather beats, and race director moments. |
+| **Build the season** | Score points, earn credits, buy cards, tune identity, and carry history forward. |
 
-## Screenshots
+## Why Players Come Back
+
+- **One decision is enough to matter.** Each GP is readable without becoming a spreadsheet.
+- **The replay creates receipts.** Players see when their plan helped, failed, or got rescued by chaos.
+- **The garage adds memory.** Credits and cards make the next race feel connected to the last one.
+- **The league becomes social.** Standings, palmares, GP history, and team identity give every group its own lore.
+- **It works for casual rooms.** No wheel, reflexes, or long session required.
+
+## Product Tour
 
 <table>
   <tr>
-    <td width="58%">
-      <img src="docs/assets/readme/cockpit-desktop.png" alt="CR League race cockpit with Paris circuit map, lap timing, traits, and race plan actions.">
-    </td>
-    <td width="42%">
-      <img src="docs/assets/readme/plan-mobile.png" alt="CR League mobile race plan panel with approach, preparation, and directive controls.">
+    <td colspan="2">
+      <img src="docs/assets/readme/market-plan.png" alt="CR League plan screen with track briefing, grip, overtaking, energy, and race plan choices.">
     </td>
   </tr>
   <tr>
-    <td><strong>Race cockpit</strong><br>Full-width circuit reading, lap timing, qualifying, and launch controls.</td>
-    <td><strong>Mobile plan</strong><br>The same race directive loop is usable on a phone.</td>
+    <td colspan="2"><strong>Plan from the pit wall</strong><br>Read the track traits, pick an approach, prep for the right signal, and decide whether the next GP deserves a card.</td>
+  </tr>
+  <tr>
+    <td width="50%">
+      <img src="docs/assets/readme/market-championship.png" alt="CR League championship screen with current GP, leader, players, standings, palmares, and Grand Prix history tabs.">
+    </td>
+    <td width="50%">
+      <img src="docs/assets/readme/market-garage.png" alt="CR League garage shop with team header, points, credits, and strategy cards for sale.">
+    </td>
+  </tr>
+  <tr>
+    <td><strong>Run the championship</strong><br>Track leaders, readiness, standings, palmares, and every GP in the season arc.</td>
+    <td><strong>Build the garage</strong><br>Turn results into credits, buy situational cards, and shape the team between races.</td>
   </tr>
   <tr>
     <td colspan="2">
-      <img src="docs/assets/readme/championship-desktop.png" alt="CR League championship dashboard with standings, current GP, timeline, and league controls.">
+      <img src="docs/assets/readme/market-report.png" alt="CR League race report with finishing order, race phases, rewards, and personalized race recap.">
     </td>
   </tr>
-  <tr>
-    <td colspan="2"><strong>Private championship hub</strong><br>League code, standings, round history, settings, and progression in one cockpit.</td>
-  </tr>
+  <tr><td colspan="2"><strong>Debrief the result</strong><br>Race phases, rewards, movement, and recap copy explain why the GP broke the way it did.</td></tr>
 </table>
 
 ## Live Preview
@@ -71,7 +87,7 @@ Every round asks one sharp question: do you chase pole, protect energy, gamble o
 
 Production uses a static Render site, a Fastify API, and a shared PostgreSQL database with a dedicated `cr_league` schema.
 
-## Gameplay Loop
+## Game Loop
 
 ```mermaid
 flowchart LR
@@ -85,9 +101,9 @@ flowchart LR
   Garage --> Briefing
 ```
 
-## What Is Built
+## What Ships Today
 
-CR League is already a playable vertical slice with persistence:
+CR League is already playable end to end:
 
 - profile creation, recovery code, league switching, and saved claims;
 - private league create, join, rejoin, restart, and next-Grand-Prix flows;
@@ -254,7 +270,7 @@ Current roadmap direction:
 
 - `0.1`: playable vertical slice implemented;
 - `0.2`: private league prototype foundation implemented;
-- `0.3`: playtest game loop polish is active;
+- `0.3`: playtest game loop polish has reached setup/release-readiness patch `0.3.7`;
 - `0.4`: economy and card depth has started, with broader progression waiting for playtest signal.
 
 ## Contributing

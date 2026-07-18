@@ -13,3 +13,7 @@ This file names layout zones that must stay stable across visual changes.
 - `report-phases`: race phase weather summary.
 - `report-blocks`: rewards and key moments report content.
 - `report-side-recap`: race recap side panel. Desktop: right column. Mobile: stacked below report content.
+
+## Global Feedback
+
+- `notification-stack`: toast stack fixed bottom-center on setup and cockpit screens. It must stay clear of modal actions, replay controls, and mobile safe-area insets.

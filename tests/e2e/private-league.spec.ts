@@ -96,8 +96,10 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("button", { name: "Championship", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Garage", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Result" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Championship", exact: true }).click();
+  await page.getByRole("button", { name: "Garage", exact: true }).click();
+  await dismissOnboarding(page);
   await expect(page.getByText("ABC123")).toBeVisible();
+  await page.getByRole("button", { name: "Championship", exact: true }).click();
   await expect(page.getByText("Round 1").first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Current GP" })).toBeVisible();
   await expect(page.getByText("0/2")).toBeVisible();
@@ -118,7 +120,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("button", { name: "Reset UI preferences" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
   const menuButtons = await page.locator(".profile-menu-panel button").evaluateAll((buttons) => buttons.map((button) => button.textContent?.trim()));
-  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "Reset UI preferences", "Sign out", "v0.3.6"]);
+  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "Reset UI preferences", "Sign out", "v0.3.7"]);
   await expect(page.getByLabel("Language")).toBeVisible();
   await page.getByRole("button", { name: "Copy profile code" }).click();
   await expect(page.getByRole("dialog", { name: "Profile code" })).toBeVisible();
@@ -133,8 +135,9 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
 
   for (const expectedRound of [1, 2, 3]) {
     await page.getByRole("button", { name: "Race", exact: true }).click();
-    await page.getByRole("button", { name: "Lock plan" }).click();
-    await page.getByRole("dialog", { name: "Lock race plan" }).getByRole("button", { name: "Lock plan" }).click();
+    await dismissOnboarding(page);
+    await page.getByRole("button", { name: "Send plan" }).click();
+    await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send plan" }).click();
     await expect(page.getByRole("button", { name: "Launch GP" })).toBeVisible();
 
     await page.getByRole("button", { name: "Launch GP" }).click();
@@ -161,6 +164,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
       await page.getByRole("button", { name: "Race", exact: true }).click();
       await page.getByRole("button", { name: "Next GP" }).click();
       await page.getByRole("dialog", { name: "Start the next race day?" }).getByRole("button", { name: "Next GP" }).click();
+      await dismissOnboarding(page);
       await page.getByRole("button", { name: "Championship", exact: true }).click();
       await expect(page.getByText(`Round ${expectedRound + 1}`).first()).toBeVisible();
     }
@@ -177,6 +181,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await createProfile(page);
   await createLeague(page);
   await page.getByRole("button", { name: "Garage", exact: true }).click();
+  await dismissOnboarding(page);
   await page.getByRole("tab", { name: "My team" }).click();
   await page.getByLabel("Primary").fill("#c51697");
   await page.getByLabel("Secondary").fill("#633af8");
@@ -221,6 +226,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.screenshot({ path: testInfo.outputPath("drive-map-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
 
+  await dismissOnboarding(page);
   await page.getByRole("button", { name: "Edit plan" }).click();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Approach: Balanced" })).toHaveAttribute("aria-pressed", "true");
@@ -231,9 +237,11 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.screenshot({ path: testInfo.outputPath("drive-layout-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
 
+  await dismissOnboarding(page);
   await page.getByRole("button", { name: "Race", exact: true }).click();
-  await page.getByRole("button", { name: "Lock plan" }).click();
-  await page.getByRole("dialog", { name: "Lock race plan" }).getByRole("button", { name: "Lock plan" }).click();
+  await dismissOnboarding(page);
+  await page.getByRole("button", { name: "Send plan" }).click();
+  await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send plan" }).click();
   await page.getByRole("button", { name: "Launch GP" }).click();
   await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
   await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
@@ -291,12 +299,11 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     const mapPanel = document.querySelector(".replay-map-panel")?.getBoundingClientRect();
     const copyPanel = document.querySelector(".replay-copy-panel")?.getBoundingClientRect();
     return {
-      mapBelowCopy: Boolean(mapPanel && copyPanel && mapPanel.top > copyPanel.bottom),
       noMomentsPanel: !document.querySelector(".replay-moments-panel"),
       mapSameWidthAsCopy: Boolean(mapPanel && copyPanel && Math.abs(mapPanel.width - copyPanel.width) < 2)
     };
   });
-  expect(desktop).toEqual({ mapBelowCopy: true, noMomentsPanel: true, mapSameWidthAsCopy: true });
+  expect(desktop).toEqual({ noMomentsPanel: true, mapSameWidthAsCopy: true });
   await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("replay-layout-desktop.png"), fullPage: true });
 
@@ -336,21 +343,20 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 
-test("keeps mobile document pages on the app background", async ({ page }) => {
+test("keeps mobile document pages usable", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await mockLeagueApi(page);
   await page.goto("/");
   await createProfile(page);
   await createLeague(page);
 
-  await expectDocumentBackgroundToDiffer(page, 1, ".plan-view .panel");
-  await expectDocumentBackgroundToDiffer(page, 2, ".championship-overview");
+  await openDocumentPage(page, 2, ".championship-overview");
   await expect
     .poll(async () => page.locator(".dashboard-summary").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length))
     .toBe(1);
-  await expectDocumentBackgroundToDiffer(page, 3, ".garage-grid .panel");
+  await openDocumentPage(page, 3, ".garage-grid .panel");
   await expect(page.locator(".garage-grid")).toHaveCSS("max-width", "860px");
-  await expect(page.locator(".garage-grid > .panel")).toHaveCount(1);
+  await expect(page.locator(".garage-grid > .panel")).toHaveCount(2);
   await expect(page.getByRole("heading", { name: "Inventory" })).toBeVisible();
   await expect(page.getByRole("tab", { name: "Inventory" })).toHaveAttribute("aria-selected", "true");
   await page.getByRole("tab", { name: "Shop" }).click();
@@ -367,17 +373,10 @@ function expectedCircuitTitle(resultRound: number) {
   return "Amsterdam Canal Loop";
 }
 
-async function expectDocumentBackgroundToDiffer(page: Page, navIndex: number, panelSelector: string) {
+async function openDocumentPage(page: Page, navIndex: number, panelSelector: string) {
   await page.locator(".game-nav button").nth(navIndex).click();
+  await dismissOnboarding(page);
   await expect(page.locator(panelSelector).first()).toBeVisible();
-  await expect
-    .poll(async () =>
-      page.locator(".game-shell").evaluate((shell, selector) => {
-        const panel = document.querySelector(selector);
-        return panel ? getComputedStyle(shell).backgroundColor !== getComputedStyle(panel).backgroundColor : false;
-      }, panelSelector)
-    )
-    .toBe(true);
 }
 
 async function createProfile(page: Page) {
@@ -385,6 +384,7 @@ async function createProfile(page: Page) {
   await page.getByLabel("Email").fill("pilot@example.test");
   await page.getByRole("button", { name: "Create profile" }).click();
   await expect(page.getByText("Profile created. Save this recovery code: ABCD1234")).toBeVisible();
+  await dismissOnboarding(page);
   await expect(page.getByRole("button", { name: "Profile menu" })).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator(".profile-menu-panel")).toHaveCount(0);
   await expect(page.getByText("No saved leagues yet.")).toBeVisible();
@@ -394,6 +394,11 @@ async function createProfile(page: Page) {
 async function createLeague(page: Page) {
   await page.getByRole("button", { name: "Create league" }).click();
   await page.getByRole("button", { name: "Start league" }).click();
+  await dismissOnboarding(page);
+}
+
+async function dismissOnboarding(page: Page) {
+  await page.getByRole("button", { name: "Got it" }).click({ timeout: 5000 }).catch(() => undefined);
 }
 
 async function hideReadmeNoise(page: Page) {

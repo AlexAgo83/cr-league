@@ -938,11 +938,11 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
-    fireEvent.click(screen.getByRole("button", { name: "v0.3.6" }));
+    fireEvent.click(screen.getByRole("button", { name: "v0.3.7" }));
 
     expect(screen.getByRole("heading", { name: "What's new" })).toBeTruthy();
-    expect(screen.getByText("Current local version: v0.3.6.")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Visual identity and mobile polish" })).toBeTruthy();
+    expect(screen.getByText("Current local version: v0.3.7.")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Setup and release-readiness polish" })).toBeTruthy();
   });
 
   it("closes the profile menu when focus leaves it", async () => {

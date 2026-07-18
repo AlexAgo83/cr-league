@@ -2,7 +2,7 @@
   "app_eyebrow": "Championnat urbain de micro-EV",
   "app_intro": "Crée ou rejoins une ligue privée, fixe ta directive, puis lance le Grand Prix.",
   "flow_label": "Parcours de ligue démo",
-  "status_initial": "Monte une ligue Grand Prix privee, invite la grille et joue chaque course decision par decision.",
+  "status_initial": "Crée ton championnat privé, invite les pilotes, puis joue chaque Grand Prix comme un choix de muret.",
   "status_creating_league": "Création de la ligue...",
   "status_league_created": "Ligue créée. Envoie ta directive de course.",
   "status_joining_league": "Connexion à la ligue...",

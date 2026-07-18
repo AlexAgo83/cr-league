@@ -4,6 +4,8 @@
 > Related product: `prod_001_cr_league_product_brief`
 > Related request: `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
+> Confidence: 90
+> Non-semantic edit: 2026-07-18 release roadmap wording refresh.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -17,12 +19,12 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Insertion rule: a new feature idea = a new patch under the closest active theme. A new minor is created only for a genuinely new theme.
 - Version labels are planning targets, not release promises.
 
-# Current Position (2026-07-15)
+# Current Position (2026-07-18)
 - 0.1 (vertical slice) and 0.2 (private league prototype) are implemented; their detail is preserved in `road_001` and the specs.
 - The prototype runs the full private-league loop: profiles, invite codes, qualifying, directives, resolution, animated replay, reports, seasons, garage with a 15-card economy, EN/FR, balance simulations.
 - Five request chains are scaffolded, validated, and ready to dev with handoff context packs: `req_033` (code cleanup), `req_034` (personalized recap + GP identity), `req_035` (garage card consultation), `req_036` (CI, Render blueprint, release contract), `req_037` (starting grid + season narrative).
 - Cross-chain sequencing is encoded in the request docs: `req_033` ships first (shared files and the logics-manager devDependency the CI needs); `req_034`/`req_035`/`req_037` follow on the web side; `req_036` is independent of the gameplay chains.
-- Not yet real: hosted environment, CI, automatic scheduler, notifications, full auth, and multi-person playtest evidence for the current balance.
+- Hosted environment, CI, release contract, and versioned release flow are now real. Still not real: automatic scheduler, full auth, and multi-person playtest evidence for the current balance.
 
 # Milestones
 ## 0.1 - Playable vertical slice
@@ -39,7 +41,10 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
   - 0.3.2 — Garage card consultation: inventory cards open the read-only detail modal. (`req_035`, ready to dev)
   - 0.3.3 — Starting grid and season narrative: pre-launch grid recap, season champion celebration, palmares, season-grouped history. (`req_037`, ready to dev)
   - 0.3.4 — Personalized race recap: per-circuit GP identity, i18n interpolation, recap cards built from the player's race data. (`req_034`, ready to dev)
-  - 0.3.5+ — Open slots for playtest feedback (cockpit iterations already landed pre-scheme are recorded in `road_001`/changelogs).
+  - 0.3.5 — Visual identity and mobile polish. Shipped in `changelogs/CHANGELOGS_0_3_5.md`.
+  - 0.3.6 — Cockpit/setup visual identity and release contract alignment. Shipped in `changelogs/CHANGELOGS_0_3_6.md`.
+  - 0.3.7 — First-session setup polish: compact Profile/League choices, saved-league cell styling, bottom-centered notifications, clearer Race Desk copy. Shipped in `changelogs/CHANGELOGS_0_3_7.md`.
+  - 0.3.8+ — Open slots for playtest feedback.
 - Exit signal:
   - 3 to 5 testers complete a 3-GP session on the polished loop;
   - feedback answers whether choices feel causal, recaps feel personal, and seasons feel like arcs;
@@ -48,9 +53,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 ## 0.4 - Ship rails
 - Goal: Make releases a one-gesture, verified operation: parallel CI on every change, a reproducible Render environment in the repo, and version tags that deploy themselves.
-- Status: Corpus ready to dev (pulled forward from road_001's 0.5 because the chain is scaffolded and everything after benefits).
+- Status: Implemented for the current release path.
 - Planned patches:
-  - 0.4.0 — CI, Render blueprint, and release contract: parallel test lanes, render.yaml (API + static web + Postgres), release-published deploy via Render hooks with CI gate and /health version verification. First real deployed tag. (`req_036`, ready to dev)
+  - 0.4.0 — CI, Render blueprint, and release contract: parallel test lanes, render.yaml (API + static web + Postgres), release-published deploy via Render hooks with CI gate and /health version verification. Shipped.
   - 0.4.x — Open slots: integration-test CI lane against real Postgres, beta league hardening, admin reset/support path, known-limits page for testers.
 - Exit signal:
   - publishing a GitHub Release vX.Y.Z is the only deploy path and ends with production /health reporting that version;

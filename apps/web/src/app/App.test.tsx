@@ -377,6 +377,45 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-help-profile-code")).toBe("1");
   });
 
+  it("shows onboarding help again after returning when opt-out is unchecked", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(resolvedState));
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    fireEvent.click(screen.getByLabelText("Close Race replay"));
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    expect(await screen.findByRole("dialog", { name: "Use the garage for the next GP" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Got it" }));
+    expect(screen.queryByRole("dialog", { name: "Use the garage for the next GP" })).toBe(null);
+
+    fireEvent.click(screen.getByRole("button", { name: "Championship" }));
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+
+    expect(await screen.findByRole("dialog", { name: "Use the garage for the next GP" })).toBeTruthy();
+  });
+
+  it("reset UI preferences reopens onboarding help on the current screen", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(resolvedState));
+    localStorage.setItem("cr-league-help-garage", "1");
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    fireEvent.click(screen.getByLabelText("Close Race replay"));
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    expect(screen.queryByRole("dialog", { name: "Use the garage for the next GP" })).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Reset UI preferences" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Reset UI preferences" }).at(-1)!);
+
+    expect(await screen.findByRole("dialog", { name: "Use the garage for the next GP" })).toBeTruthy();
+  });
+
   it("sells owned garage cards while preserving shop purchase controls", async () => {
     saveProfile();
     const soldState = {

@@ -258,7 +258,7 @@ export function App() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [onboardingHelp, setOnboardingHelp] = useState<OnboardingHelpTopic | null>(null);
   const notificationId = useRef(0);
-  const shownOnboardingHelp = useRef(new Set<OnboardingHelpTopic>());
+  const snoozedOnboardingHelp = useRef(new Set<OnboardingHelpTopic>());
 
   function pushNotification(text: string, tone: Notification["tone"] = "info", persistent = tone === "error") {
     const id = notificationId.current + 1;
@@ -385,7 +385,7 @@ export function App() {
     if (gameView === "drive" && raceDayPhase === "briefing") openOnboardingHelp("race");
     if (gameView === "plan") openOnboardingHelp("plan");
     if (gameView === "garage" && isResolved) openOnboardingHelp("garage");
-  }, [gameView, isResolved, leagueState, onboardingHelp, raceDayPhase]);
+  }, [gameView, isResolved, leagueState, onboardingHelp, preferencesResetSignal, raceDayPhase]);
 
   useEffect(() => {
     if (!leagueState) {
@@ -775,7 +775,7 @@ export function App() {
       (key): key is string => key !== null && key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`)
     );
     for (const key of seasonRecapKeys) localStorage.removeItem(key);
-    shownOnboardingHelp.current.clear();
+    snoozedOnboardingHelp.current.clear();
     setPreferencesResetSignal((signal) => signal + 1);
     setPreferencesResetOpen(false);
     setProfileOpen(false);
@@ -1342,6 +1342,7 @@ export function App() {
               className={gameView === view ? "active" : undefined}
               onClick={() => {
                 clearTransientNotifications();
+                snoozedOnboardingHelp.current.clear();
                 setGameView(view);
                 if (view === "drive" && result) setResultOpen(false);
               }}
@@ -1749,13 +1750,13 @@ export function App() {
   }
 
   function openOnboardingHelp(topic: OnboardingHelpTopic) {
-    if (localStorage.getItem(ONBOARDING_HELP_KEYS[topic]) || shownOnboardingHelp.current.has(topic)) return;
-    shownOnboardingHelp.current.add(topic);
+    if (localStorage.getItem(ONBOARDING_HELP_KEYS[topic]) || snoozedOnboardingHelp.current.has(topic)) return;
     setOnboardingHelp(topic);
   }
 
   function closeOnboardingHelp(topic: OnboardingHelpTopic, dismiss: boolean) {
     if (dismiss) localStorage.setItem(ONBOARDING_HELP_KEYS[topic], "1");
+    else snoozedOnboardingHelp.current.add(topic);
     setOnboardingHelp(null);
   }
 }

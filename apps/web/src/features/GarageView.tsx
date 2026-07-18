@@ -195,7 +195,10 @@ export function GarageView({
                   </li>
                 ))
               ) : (
-                <li>{tt("garage_empty_inventory")}</li>
+                <li className="garage-empty-inventory">
+                  <img src="/assets/crl/garage-empty.png" alt="" />
+                  <span>{tt("garage_empty_inventory")}</span>
+                </li>
               )}
             </ul>
           </>

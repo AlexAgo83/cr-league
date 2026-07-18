@@ -22,7 +22,18 @@ const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
 const PROFILE_SESSION_KEY = "cr-league-profile-session";
 const LANGUAGE_KEY = "cr-league-language";
 const SEASON_RECAP_KEY_PREFIX = "cr-league-season-recap";
-const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY] as const;
+const ONBOARDING_HELP_KEYS = {
+  profileCode: "cr-league-help-profile-code",
+  race: "cr-league-help-race",
+  plan: "cr-league-help-plan",
+  garage: "cr-league-help-garage"
+} as const;
+const ONBOARDING_HELP_IMAGES = {
+  race: "/assets/crl/track-briefing.png",
+  plan: "/assets/crl/strategy-cards.png",
+  garage: "/assets/crl/garage-empty.png"
+} as const;
+const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
 
 type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueId: string;
@@ -33,6 +44,7 @@ type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
 type ProfileMode = "choice" | "create" | "recover";
 type SetupMode = "choice" | "create" | "join";
 type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
+type OnboardingHelpTopic = keyof typeof ONBOARDING_HELP_KEYS;
 
 function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
   const impacts: MapTraitImpacts = {};
@@ -164,6 +176,48 @@ function SetupShell({
   );
 }
 
+function OnboardingHelpModal({
+  topic,
+  recoveryCode,
+  onClose,
+  tt
+}: {
+  topic: OnboardingHelpTopic;
+  recoveryCode?: string;
+  onClose: (dismiss: boolean) => void;
+  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
+}) {
+  const [dismiss, setDismiss] = useState(false);
+  const items = topic === "profileCode" ? [] : [1, 2, 3].map((index) => tt(`onboarding_${topic}_item_${index}` as TranslationKey));
+  const image = topic === "profileCode" ? undefined : ONBOARDING_HELP_IMAGES[topic];
+
+  return (
+    <Modal label={tt(`onboarding_${topic}_title` as TranslationKey)} onClose={() => onClose(dismiss)}>
+      <span className="section-kicker">{tt("onboarding_kicker")}</span>
+      <h2>{tt(`onboarding_${topic}_title` as TranslationKey)}</h2>
+      {image ? <img className="onboarding-image" src={image} alt="" /> : null}
+      <p>{tt(`onboarding_${topic}_body` as TranslationKey)}</p>
+      {recoveryCode ? <strong className="onboarding-code">{recoveryCode}</strong> : null}
+      {items.length ? (
+        <ul className="onboarding-list">
+          {items.map((item) => (
+            <li key={item}>{item}</li>
+          ))}
+        </ul>
+      ) : null}
+      <label className="checkbox-field onboarding-dismiss">
+        <input type="checkbox" checked={dismiss} onChange={(event) => setDismiss(event.target.checked)} />
+        {tt(`onboarding_${topic}_dismiss` as TranslationKey)}
+      </label>
+      <div className="actions secondary-actions">
+        <button type="button" onClick={() => onClose(dismiss)}>
+          {tt("action_got_it")}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(() => {
     const saved = localStorage.getItem(LANGUAGE_KEY);
@@ -202,7 +256,9 @@ export function App() {
   const [message, setMessage] = useState(() => t("status_initial", locale));
   const [technicalError, setTechnicalError] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [onboardingHelp, setOnboardingHelp] = useState<OnboardingHelpTopic | null>(null);
   const notificationId = useRef(0);
+  const shownOnboardingHelp = useRef(new Set<OnboardingHelpTopic>());
 
   function pushNotification(text: string, tone: Notification["tone"] = "info", persistent = tone === "error") {
     const id = notificationId.current + 1;
@@ -324,6 +380,13 @@ export function App() {
             action: () => setNextGrandPrixConfirmOpen(true),
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
+  useEffect(() => {
+    if (!leagueState || onboardingHelp) return;
+    if (gameView === "drive" && raceDayPhase === "briefing") openOnboardingHelp("race");
+    if (gameView === "plan") openOnboardingHelp("plan");
+    if (gameView === "garage" && isResolved) openOnboardingHelp("garage");
+  }, [gameView, isResolved, leagueState, onboardingHelp, raceDayPhase]);
+
   useEffect(() => {
     if (!leagueState) {
       previousSeasonRef.current = null;
@@ -577,6 +640,7 @@ export function App() {
       setSetupMode("choice");
       setProfileOpen(false);
       showStatus(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`, "info", false);
+      openOnboardingHelp("profileCode");
     });
   }
 
@@ -711,6 +775,7 @@ export function App() {
       (key): key is string => key !== null && key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`)
     );
     for (const key of seasonRecapKeys) localStorage.removeItem(key);
+    shownOnboardingHelp.current.clear();
     setPreferencesResetSignal((signal) => signal + 1);
     setPreferencesResetOpen(false);
     setProfileOpen(false);
@@ -1027,6 +1092,14 @@ export function App() {
       ))}
     </div>
   ) : null;
+  const onboardingHelpModal = onboardingHelp ? (
+    <OnboardingHelpModal
+      topic={onboardingHelp}
+      recoveryCode={onboardingHelp === "profileCode" ? profileSession?.recoveryCode : undefined}
+      onClose={(dismiss) => closeOnboardingHelp(onboardingHelp, dismiss)}
+      tt={tt}
+    />
+  ) : null;
 
   if (!profileSession) {
     return (
@@ -1247,6 +1320,7 @@ export function App() {
           </div>
         </section>
         )}
+        {onboardingHelpModal}
       </SetupShell>
     );
   }
@@ -1267,6 +1341,7 @@ export function App() {
               type="button"
               className={gameView === view ? "active" : undefined}
               onClick={() => {
+                clearTransientNotifications();
                 setGameView(view);
                 if (view === "drive" && result) setResultOpen(false);
               }}
@@ -1530,6 +1605,7 @@ export function App() {
       </section>
 
       {notificationStack}
+      {onboardingHelpModal}
 
       {errorModal}
       {profileCodeModal}
@@ -1670,6 +1746,17 @@ export function App() {
     const nextClaims = activeTeamId ? savedClaims.filter((claim) => claim.teamId !== activeTeamId) : savedClaims;
     storePlayerClaims(nextClaims, nextClaims[0]?.teamId);
     setSavedClaims(nextClaims);
+  }
+
+  function openOnboardingHelp(topic: OnboardingHelpTopic) {
+    if (localStorage.getItem(ONBOARDING_HELP_KEYS[topic]) || shownOnboardingHelp.current.has(topic)) return;
+    shownOnboardingHelp.current.add(topic);
+    setOnboardingHelp(topic);
+  }
+
+  function closeOnboardingHelp(topic: OnboardingHelpTopic, dismiss: boolean) {
+    if (dismiss) localStorage.setItem(ONBOARDING_HELP_KEYS[topic], "1");
+    setOnboardingHelp(null);
   }
 }
 

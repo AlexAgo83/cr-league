@@ -346,6 +346,37 @@ describe("App", () => {
     expect(screen.queryByText("League created. Submit your race directive.")).toBe(null);
   });
 
+  it("keeps one-shot help reusable unless the player opts out", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ profile: { id: "profile_1", email: "pilot@example.test" }, recoveryCode: "ABCD1234", teams: [] }));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Create profile/ }));
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create profile" }));
+
+    const checkbox = await screen.findByLabelText("I saved this code");
+    expect((checkbox as HTMLInputElement).checked).toBe(false);
+    expect(localStorage.getItem("cr-league-help-profile-code")).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Got it" }));
+    expect(localStorage.getItem("cr-league-help-profile-code")).toBe(null);
+  });
+
+  it("dismisses one-shot help only when the player checks the opt-out", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ profile: { id: "profile_1", email: "pilot@example.test" }, recoveryCode: "ABCD1234", teams: [] }));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Create profile/ }));
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
+    fireEvent.click(screen.getByRole("button", { name: "Create profile" }));
+
+    fireEvent.click(await screen.findByLabelText("I saved this code"));
+    fireEvent.click(screen.getByRole("button", { name: "Got it" }));
+
+    expect(localStorage.getItem("cr-league-help-profile-code")).toBe("1");
+  });
+
   it("sells owned garage cards while preserving shop purchase controls", async () => {
     saveProfile();
     const soldState = {
@@ -875,6 +906,10 @@ describe("App", () => {
     localStorage.setItem("cr-league-replay-speed", "4");
     localStorage.setItem("cr-league-replay-focus", "0");
     localStorage.setItem("cr-league-garage-panel", "team");
+    localStorage.setItem("cr-league-help-race", "1");
+    localStorage.setItem("cr-league-help-plan", "1");
+    localStorage.setItem("cr-league-help-garage", "1");
+    localStorage.setItem("cr-league-help-profile-code", "1");
     localStorage.setItem("cr-league-season-recap:league_1:1", "1");
 
     render(<App />);
@@ -903,6 +938,10 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-replay-speed")).toBe(null);
     expect(localStorage.getItem("cr-league-replay-focus")).toBe(null);
     expect(localStorage.getItem("cr-league-garage-panel")).toBe(null);
+    expect(localStorage.getItem("cr-league-help-race")).toBe(null);
+    expect(localStorage.getItem("cr-league-help-plan")).toBe(null);
+    expect(localStorage.getItem("cr-league-help-garage")).toBe(null);
+    expect(localStorage.getItem("cr-league-help-profile-code")).toBe(null);
     expect(localStorage.getItem("cr-league-season-recap:league_1:1")).toBe(null);
     expect(localStorage.getItem("cr-league-language")).toBe("en");
     expect(localStorage.getItem("cr-league-profile-session")).toContain("profile_1");

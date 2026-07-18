@@ -36,7 +36,7 @@
 | [prod_017_coherent_race_replay_and_simulation_realism_product_brief](product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md) | Coherent Race Replay And Simulation Realism Product Brief | Settled |  |  | product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md |
 | [prod_018_first_session_ux_polish_product_brief](product/prod_018_first_session_ux_polish_product_brief.md) | First Session UX Polish Product Brief | Settled |  |  | product/prod_018_first_session_ux_polish_product_brief.md |
 | [prod_019_replay_spectacle_fun_pass_product_brief](product/prod_019_replay_spectacle_fun_pass_product_brief.md) | Replay Spectacle Fun Pass Product Brief | Settled |  |  | product/prod_019_replay_spectacle_fun_pass_product_brief.md |
-| [prod_020_race_learning_and_feedback_systems_product_brief](product/prod_020_race_learning_and_feedback_systems_product_brief.md) | Race Learning and Feedback Systems Product Brief | Proposed |  |  | product/prod_020_race_learning_and_feedback_systems_product_brief.md |
+| [prod_020_race_learning_and_feedback_systems_product_brief](product/prod_020_race_learning_and_feedback_systems_product_brief.md) | Race Learning and Feedback Systems Product Brief | Settled |  |  | product/prod_020_race_learning_and_feedback_systems_product_brief.md |
 
 ## Roadmaps
 
@@ -98,7 +98,7 @@
 | [req_046_make_race_simulation_and_replay_feel_coherent_across_circuits](request/req_046_make_race_simulation_and_replay_feel_coherent_across_circuits.md) | Make race simulation and replay feel coherent across circuits | Done |  |  | request/req_046_make_race_simulation_and_replay_feel_coherent_across_circuits.md |
 | [req_047_polish_first_session_ux_after_playtest_findings](request/req_047_polish_first_session_ux_after_playtest_findings.md) | Polish first-session UX after playtest findings | Done |  |  | request/req_047_polish_first_session_ux_after_playtest_findings.md |
 | [req_048_make_race_replay_feel_like_a_fun_race_spectacle](request/req_048_make_race_replay_feel_like_a_fun_race_spectacle.md) | Make race replay feel like a fun race spectacle | Done |  |  | request/req_048_make_race_replay_feel_like_a_fun_race_spectacle.md |
-| [req_049_race_learning_and_feedback_systems](request/req_049_race_learning_and_feedback_systems.md) | Race learning and feedback systems | Draft |  |  | request/req_049_race_learning_and_feedback_systems.md |
+| [req_049_race_learning_and_feedback_systems](request/req_049_race_learning_and_feedback_systems.md) | Race learning and feedback systems | Done |  |  | request/req_049_race_learning_and_feedback_systems.md |
 
 ## Backlog
 
@@ -221,14 +221,14 @@
 | [item_115_show_player_race_focus_context_during_replay](backlog/item_115_show_player_race_focus_context_during_replay.md) | Show player race focus context during replay | Done |  | 100% | backlog/item_115_show_player_race_focus_context_during_replay.md |
 | [item_116_add_overtake_and_position_change_highlights](backlog/item_116_add_overtake_and_position_change_highlights.md) | Add overtake and position-change highlights | Done |  | 100% | backlog/item_116_add_overtake_and_position_change_highlights.md |
 | [item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches](backlog/item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches.md) | Validate replay spectacle across circuits and quiet stretches | Done |  | 100% | backlog/item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches.md |
-| [item_118_add_dynamic_chrono_report_after_each_qualifying_attempt](backlog/item_118_add_dynamic_chrono_report_after_each_qualifying_attempt.md) | Add dynamic chrono report after each qualifying attempt | Ready |  | 0% | backlog/item_118_add_dynamic_chrono_report_after_each_qualifying_attempt.md |
-| [item_119_make_chrono_session_history_navigable](backlog/item_119_make_chrono_session_history_navigable.md) | Make chrono session history navigable | Ready |  | 0% | backlog/item_119_make_chrono_session_history_navigable.md |
-| [item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock](backlog/item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock.md) | Suggest the best chrono-backed configuration before plan lock | Ready |  | 0% | backlog/item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock.md |
-| [item_121_add_weather_visual_states_to_the_circuit_map](backlog/item_121_add_weather_visual_states_to_the_circuit_map.md) | Add weather visual states to the circuit map | Ready |  | 0% | backlog/item_121_add_weather_visual_states_to_the_circuit_map.md |
-| [item_122_render_replay_event_callouts_near_cars](backlog/item_122_render_replay_event_callouts_near_cars.md) | Render replay event callouts near cars | Ready |  | 0% | backlog/item_122_render_replay_event_callouts_near_cars.md |
-| [item_123_add_post_replay_payoff_recap](backlog/item_123_add_post_replay_payoff_recap.md) | Add post-replay payoff recap | Ready |  | 0% | backlog/item_123_add_post_replay_payoff_recap.md |
-| [item_124_start_new_leagues_with_credits_instead_of_a_starter_card](backlog/item_124_start_new_leagues_with_credits_instead_of_a_starter_card.md) | Start new leagues with credits instead of a starter card | Ready |  | 0% | backlog/item_124_start_new_leagues_with_credits_instead_of_a_starter_card.md |
-| [item_125_specify_and_implement_a_simple_tire_strategy_directive](backlog/item_125_specify_and_implement_a_simple_tire_strategy_directive.md) | Specify and implement a simple tire strategy directive | Ready |  | 0% | backlog/item_125_specify_and_implement_a_simple_tire_strategy_directive.md |
+| [item_118_add_dynamic_chrono_report_after_each_qualifying_attempt](backlog/item_118_add_dynamic_chrono_report_after_each_qualifying_attempt.md) | Add dynamic chrono report after each qualifying attempt | Done |  | 100% | backlog/item_118_add_dynamic_chrono_report_after_each_qualifying_attempt.md |
+| [item_119_make_chrono_session_history_navigable](backlog/item_119_make_chrono_session_history_navigable.md) | Make chrono session history navigable | Done |  | 100% | backlog/item_119_make_chrono_session_history_navigable.md |
+| [item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock](backlog/item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock.md) | Suggest the best chrono-backed configuration before plan lock | Done |  | 100% | backlog/item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock.md |
+| [item_121_add_weather_visual_states_to_the_circuit_map](backlog/item_121_add_weather_visual_states_to_the_circuit_map.md) | Add weather visual states to the circuit map | Done |  | 100% | backlog/item_121_add_weather_visual_states_to_the_circuit_map.md |
+| [item_122_render_replay_event_callouts_near_cars](backlog/item_122_render_replay_event_callouts_near_cars.md) | Render replay event callouts near cars | Done |  | 100% | backlog/item_122_render_replay_event_callouts_near_cars.md |
+| [item_123_add_post_replay_payoff_recap](backlog/item_123_add_post_replay_payoff_recap.md) | Add post-replay payoff recap | Done |  | 100% | backlog/item_123_add_post_replay_payoff_recap.md |
+| [item_124_start_new_leagues_with_credits_instead_of_a_starter_card](backlog/item_124_start_new_leagues_with_credits_instead_of_a_starter_card.md) | Start new leagues with credits instead of a starter card | Done |  | 100% | backlog/item_124_start_new_leagues_with_credits_instead_of_a_starter_card.md |
+| [item_125_specify_and_implement_a_simple_tire_strategy_directive](backlog/item_125_specify_and_implement_a_simple_tire_strategy_directive.md) | Specify and implement a simple tire strategy directive | Done |  | 100% | backlog/item_125_specify_and_implement_a_simple_tire_strategy_directive.md |
 
 ## Tasks
 
@@ -283,4 +283,4 @@
 | [task_047_orchestrate_coherent_replay_realism_and_circuit_normalization](tasks/task_047_orchestrate_coherent_replay_realism_and_circuit_normalization.md) | Orchestrate coherent replay realism and circuit normalization | Done | codex-work4 | 100% | tasks/task_047_orchestrate_coherent_replay_realism_and_circuit_normalization.md |
 | [task_048_orchestrate_first_session_ux_polish_from_playtest_findings](tasks/task_048_orchestrate_first_session_ux_polish_from_playtest_findings.md) | Orchestrate first-session UX polish from playtest findings | Done | codex-work4 | 100% | tasks/task_048_orchestrate_first_session_ux_polish_from_playtest_findings.md |
 | [task_049_orchestrate_replay_spectacle_fun_pass](tasks/task_049_orchestrate_replay_spectacle_fun_pass.md) | Orchestrate replay spectacle fun pass | Done | codex-work4 | 100% | tasks/task_049_orchestrate_replay_spectacle_fun_pass.md |
-| [task_050_orchestrate_race_learning_and_feedback_systems](tasks/task_050_orchestrate_race_learning_and_feedback_systems.md) | Orchestrate race learning and feedback systems | Ready |  | 0% | tasks/task_050_orchestrate_race_learning_and_feedback_systems.md |
+| [task_050_orchestrate_race_learning_and_feedback_systems](tasks/task_050_orchestrate_race_learning_and_feedback_systems.md) | Orchestrate race learning and feedback systems | Done | codex | 100% | tasks/task_050_orchestrate_race_learning_and_feedback_systems.md |

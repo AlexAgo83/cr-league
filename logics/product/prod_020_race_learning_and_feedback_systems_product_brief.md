@@ -1,8 +1,8 @@
 ## prod_020_race_learning_and_feedback_systems_product_brief - Race Learning and Feedback Systems Product Brief
 > Date: 2026-07-18
-> Status: Proposed
+> Status: Settled
 > Related request: `req_049_race_learning_and_feedback_systems`
-> Related backlog: `item_118_add_dynamic_chrono_report_after_each_qualifying_attempt`, `item_119_make_chrono_session_history_navigable`, `item_120_suggest_the_best_chrono_backed_configuration_before_plan_lock`, `item_121_add_weather_visual_states_to_the_circuit_map`, `item_122_render_replay_event_callouts_near_cars`, `item_123_add_post_replay_payoff_recap`, `item_124_start_new_leagues_with_credits_instead_of_a_starter_card`, `item_125_specify_and_implement_a_simple_tire_strategy_directive`
+> Related backlog: `item_118_add_dynamic_chrono_report_after_each_qualifying_attempt`
 > Related task: `task_050_orchestrate_race_learning_and_feedback_systems`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -62,5 +62,5 @@ flowchart LR
 - Each backlog item can be developed independently with focused tests and shared final gates.
 
 # References
-- Product back-reference: `req_049_race_learning_and_feedback_systems`
+- Product back-reference: `item_118_add_dynamic_chrono_report_after_each_qualifying_attempt`
 - Task back-reference: `task_050_orchestrate_race_learning_and_feedback_systems`

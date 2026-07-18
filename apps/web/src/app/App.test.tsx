@@ -418,6 +418,7 @@ describe("App", () => {
     expect(payoff.textContent).toContain("+25 pts");
     expect(payoff.textContent).toContain("+150 credits");
     expect(payoff.textContent).toContain("Rain Grip");
+    expect(payoff.textContent).toContain("P1 (Held position)");
   });
 
   it("shows an explicit no-card payoff when no race card was consumed", async () => {

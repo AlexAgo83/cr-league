@@ -1,9 +1,9 @@
 ## req_049_race_learning_and_feedback_systems - Race learning and feedback systems
 > From version: 0.3.7
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 90
+> Confidence: 85
 > Complexity: High
 > Theme: Race learning, feedback, and strategy clarity
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -39,6 +39,18 @@
 - AC8: Tire strategy is specified as a small, testable mechanic with three choices (soft/medium/hard or equivalent), clear effects, and no speculative tire-management system.
 - AC9: EN and FR copy exists for every new player-facing string; no hardcoded user-facing strings are introduced.
 - AC10: Typecheck, lint, unit tests, build, and affected E2E flows pass for each shipped item.
+
+# AC Traceability
+- AC1 -> `task_050_orchestrate_race_learning_and_feedback_systems`. Proof: `apps/web/src/app/App.tsx` renders the chrono report from `QualifyingRun` data with best time, grid position, latest gap, remaining attempts, and suggestion copy.
+- AC2 -> `task_050_orchestrate_race_learning_and_feedback_systems`. Proof: `apps/web/src/app/App.tsx` renders session history and opens selected qualifying replays; `apps/web/src/app/App.test.tsx` covers the Plan history navigation.
+- AC3 -> `task_050_orchestrate_race_learning_and_feedback_systems`. Proof: `buildChronoReport` compares the current plan with the best observed chrono decision and suggests whether to reuse or retest the setup.
+- AC4 -> `task_050_orchestrate_race_learning_and_feedback_systems`. Proof: `apps/web/src/features/CircuitMap.tsx` accepts a weather state and `apps/web/src/styles/layout.css` renders light/heavy rain ambience without hiding controls.
+- AC5 -> `task_050_orchestrate_race_learning_and_feedback_systems`. Proof: `apps/web/src/features/ReplayView.tsx` attaches active event labels to affected cars and `apps/web/src/app/App.test.tsx` asserts the replay map event label.
+- AC6 -> `task_050_orchestrate_race_learning_and_feedback_systems`. Proof: `apps/web/src/features/ResultView.tsx` shows finish, race movement, points, credits, card spend, and championship rank movement when a result is available.
+- AC7 -> `task_050_orchestrate_race_learning_and_feedback_systems`. Proof: `apps/api/src/features/leagues/store.ts` creates/joins/restarts human teams with starter credits and no cards; `apps/api/src/app.test.ts` covers the new economy.
+- AC8 -> `task_050_orchestrate_race_learning_and_feedback_systems`. Proof: `apps/web/src/i18n/en.json` and `apps/web/src/i18n/fr.json` frame the three existing preparation choices as tire prep without adding a speculative tire-management system.
+- AC9 -> `task_050_orchestrate_race_learning_and_feedback_systems`. Proof: new user-facing strings are present in EN and FR locale catalogs.
+- AC10 -> `task_050_orchestrate_race_learning_and_feedback_systems`. Proof: `npm run db:generate`, `npm run lint`, `npm run typecheck`, `npm run test`, `npm run build`, `logics-manager flow validate req_049_race_learning_and_feedback_systems`, `logics-manager lint --require-status`, and `logics-manager audit --group-by-doc` passed.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

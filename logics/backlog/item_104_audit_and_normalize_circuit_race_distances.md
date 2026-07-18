@@ -2,8 +2,8 @@
 > From version: 0.3.6
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 96
-> Confidence: 92
+> Understanding: 97
+> Confidence: 93
 > Progress: 0
 > Complexity: Medium
 > Theme: Circuit pacing
@@ -20,6 +20,8 @@
   - Add a small repo command or script that imports current circuits and reports route length, configured laps, total display distance, recommended laps, and target-band status.
   - Measure both perceived replay duration and on-screen car speed per circuit: `replayDistanceScale` in `apps/web/src/features/ReplayView.tsx` already normalizes duration to a reference distance, so the audit must establish whether the 3.1x distance spread manifests as duration drift or as on-screen speed differences before choosing what to normalize.
   - Include a simple route-complexity signal in the audit, such as point count, turn count, or direction-change score, so long flowing circuits can be distinguished from short twisty ones.
+  - Flag degenerate route geometry in the audit: zero-length segments, duplicated consecutive points, and turns sharper than a chosen threshold — heading interpolation and `atan2` are unstable exactly there, and `apps/web/src/app/circuits.ts` is ~4700 lines of hand-entered points.
+  - Document one deliberate consequence: `laps` is not read by `simulateRace` (verified), so normalization changes no race outcome, but already-persisted races replay with the new lap counts because the replay reads current circuit data — accepted and recorded as the req AC3 documented exception.
   - Choose and document a target perceived total-distance band for normal circuits, biased toward larger and less twisty routes when choosing the reference feel. Default unless the audit contradicts it: plus or minus 25 percent around the median total display distance of the three longest circuits; circuits outside the band are normalized or documented as intentional exceptions.
   - Adjust lap counts, replay scaling constants, or both so the rotation feels comparable without making every circuit identical.
   - Keep `packages/shared/src/domain/circuits.ts` and `apps/web/src/app/circuits.ts` aligned after any lap-count change.

@@ -2,8 +2,8 @@
 > From version: 0.3.6
 > Schema version: 1.0
 > Status: Draft
-> Understanding: 97
-> Confidence: 93
+> Understanding: 98
+> Confidence: 94
 > Complexity: High
 > Theme: Race simulation realism and replay coherence
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -32,6 +32,7 @@
 - `RaceResult.replayTrace` is already optional and older persisted races rely on a fallback trace in `ReplayView`, so any enrichment field must be optional and the replay must degrade gracefully for already-resolved Grands Prix.
 - `replayDistanceScale` in `ReplayView` already normalizes perceived replay duration to a reference distance, so the audit must establish whether the measured distance spread shows up as duration drift or as on-screen car-speed differences before deciding what to normalize.
 - `CircuitMap.tsx` already has a partial drift mechanism (`DRIFT_LOOKAHEAD`, `MAX_DRIFT_ANGLE`, `angleDelta`) applied as a rotation offset, but the base car angle comes from a per-segment `atan2` in `poseOnRoute`, so heading still snaps at polyline vertices. The fix is presentation-only (smoother heading interpolation plus tuned drift) and belongs in the map/replay view layer, never in `RaceResult`.
+- Verified: `circuit.laps` is not read by `simulateRace`, so lap normalization changes no race outcome. Consequence to document: already-persisted races replay with the new lap counts because the replay reads current circuit data — this perceived-pacing change on old replays is the accepted, documented exception under AC3.
 
 # Acceptance criteria
 - AC1: A documented circuit audit reports per-circuit display route length, configured laps, total display distance, recommended laps, and outliers, with a repeatable command checked into the repo.

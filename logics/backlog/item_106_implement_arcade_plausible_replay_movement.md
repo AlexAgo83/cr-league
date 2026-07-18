@@ -2,8 +2,8 @@
 > From version: 0.3.6
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 97
-> Confidence: 92
+> Understanding: 98
+> Confidence: 93
 > Progress: 0
 > Complexity: High
 > Theme: Replay implementation
@@ -26,6 +26,8 @@
   - Update `ReplayView.tsx` and related helpers so car progress, tower order, moment notifications, and marker seeking consume staged replay data where appropriate.
   - Stage overtakes visually with setup, close-gap, side-by-side or lane-offset, swap, defend/counter, and settle phases.
   - Smooth car heading through direction changes: replace the per-segment `atan2` snap in `CircuitMap.tsx`'s `poseOnRoute` with continuous heading interpolation along the route (lookahead averaging or corner smoothing), and tune the existing drift mechanism (`DRIFT_LOOKAHEAD`, `MAX_DRIFT_ANGLE`) so sharp corners read as a bounded, natural drift/slide instead of a brutal rotation jump. Keep the constants tunable and the behavior deterministic and presentation-only.
+  - Cover both animation paths in `CircuitMap.tsx`: replay cars use the pose-based transform (`poseOnRoute` + `rotate`), but pose-less cars fall back to SMIL `<animateMotion rotate="auto">`; either smooth both paths or explicitly scope the fix to the pose path with a documented rationale, so no car keeps snapping at vertices.
+  - Respect a frame budget: the replay runs on a `requestAnimationFrame` loop in `ReplayView.tsx`, so precompute staging beats and heading tables outside the rAF tick, memoize per-route data, and verify no perceptible smoothness regression on mobile.
   - Keep weather markers, active moment notifications, focus driver, camera, speed menu, replay progress, and report access working.
   - Ensure shortest, longest, wet, technical, and high-overtaking circuits still frame cars and labels correctly on desktop and mobile.
 - Out:

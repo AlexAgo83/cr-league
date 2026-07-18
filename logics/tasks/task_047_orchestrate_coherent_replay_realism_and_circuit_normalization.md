@@ -2,8 +2,8 @@
 > From version: 0.3.6
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 97
-> Confidence: 93
+> Understanding: 98
+> Confidence: 94
 > Progress: 0
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -19,6 +19,7 @@
 - Replay tuning must include a readable plan/debug output so the implementation agent can inspect scripted beats directly.
 - Backward compatibility is mandatory: `RaceResult.replayTrace` is already optional and older persisted races rely on `fallbackReplayTrace`; enrichment fields must be optional and staging must degrade gracefully so already-resolved Grands Prix keep a working replay.
 - The audit must distinguish duration drift from on-screen speed differences: `replayDistanceScale` in `ReplayView.tsx` already normalizes perceived duration to a reference distance, so the 3.1x distance spread may manifest as car speed, not replay length.
+- Heading smoothing must account for both animation paths in `CircuitMap.tsx` (pose-based transform and the SMIL `animateMotion` fallback), flag degenerate route geometry before interpolating, precompute heavy work outside the `requestAnimationFrame` loop, and record the accepted consequence that persisted races replay with new lap counts.
 
 # Plan
 - [ ] 1. Read the current simulation, replay, circuit, map, and tests before editing: `simulateRace.ts`, `race.ts`, `circuits.ts`, `ReplayView.tsx`, `CircuitMap.tsx`, and replay/private-league tests.

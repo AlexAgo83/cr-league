@@ -94,6 +94,8 @@
   "profile_league_switch": "Ligue active",
   "profile_saved_leagues": "Ligues sauvegardées",
   "profile_saved_leagues_empty": "Aucune ligue sauvegardée.",
+  "preferences_reset_title": "Réinitialiser les préférences UI ?",
+  "preferences_reset_confirm": "Cela restaure les aides, la vitesse du replay, le focus replay et les récaps de saison masqués sur cet appareil. Ton profil, tes ligues et tes écuries restent sauvegardés.",
   "error_modal_kicker": "Incident technique",
   "error_modal_title": "Action bloquée",
   "error_modal_body": "L'action n'a pas pu aboutir. Le détail technique est masqué, mais tu peux le copier pour le support.",

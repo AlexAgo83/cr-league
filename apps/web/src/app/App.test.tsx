@@ -807,6 +807,9 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.click(screen.getByRole("button", { name: "Reset UI preferences" }));
+    expect(screen.getByRole("dialog", { name: "Reset UI preferences?" })).toBeTruthy();
+    expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe("1");
+    fireEvent.click(screen.getAllByRole("button", { name: "Reset UI preferences" }).at(-1)!);
 
     expect(await screen.findByText("UI preferences reset. Help panels and replay preferences are back to default.")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();

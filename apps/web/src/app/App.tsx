@@ -135,6 +135,7 @@ function SetupShell({
   children,
   errorModal,
   notificationStack,
+  preferencesResetModal,
   profileCodeModal,
   profileLogoutModal,
   topbar,
@@ -143,6 +144,7 @@ function SetupShell({
   children: ReactNode;
   errorModal: ReactNode;
   notificationStack: ReactNode;
+  preferencesResetModal: ReactNode;
   profileCodeModal: ReactNode;
   profileLogoutModal: ReactNode;
   topbar: ReactNode;
@@ -155,6 +157,7 @@ function SetupShell({
       {children}
       {notificationStack}
       {errorModal}
+      {preferencesResetModal}
       {profileCodeModal}
       {profileLogoutModal}
     </main>
@@ -182,6 +185,7 @@ export function App() {
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const [preferencesResetSignal, setPreferencesResetSignal] = useState(0);
+  const [preferencesResetOpen, setPreferencesResetOpen] = useState(false);
   const [profileCodeOpen, setProfileCodeOpen] = useState(false);
   const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
   const [directiveConfirmOpen, setDirectiveConfirmOpen] = useState(false);
@@ -677,6 +681,7 @@ export function App() {
     );
     for (const key of seasonRecapKeys) localStorage.removeItem(key);
     setPreferencesResetSignal((signal) => signal + 1);
+    setPreferencesResetOpen(false);
     setProfileOpen(false);
     showStatus(tt("status_ui_preferences_reset"), "info", Boolean(leagueState));
   }
@@ -747,7 +752,14 @@ export function App() {
               <option value="fr">{tt("language_fr")}</option>
             </select>
           </label>
-          <button type="button" className="profile-menu-action profile-menu-action-info" onClick={resetUiPreferences}>
+          <button
+            type="button"
+            className="profile-menu-action profile-menu-action-info"
+            onClick={() => {
+              setPreferencesResetOpen(true);
+              setProfileOpen(false);
+            }}
+          >
             {tt("action_reset_ui_preferences")}
           </button>
           <button
@@ -835,6 +847,22 @@ export function App() {
           {tt("action_forget_profile")}
         </button>
         <button type="button" onClick={() => setProfileLogoutOpen(false)}>
+          {tt("action_close")}
+        </button>
+      </div>
+    </Modal>
+  ) : null;
+
+  const preferencesResetModal = preferencesResetOpen ? (
+    <Modal label={tt("preferences_reset_title")} onClose={() => setPreferencesResetOpen(false)}>
+      <span className="section-kicker">{tt("profile_kicker")}</span>
+      <h2>{tt("preferences_reset_title")}</h2>
+      <p>{tt("preferences_reset_confirm")}</p>
+      <div className="actions secondary-actions">
+        <button type="button" className="danger-button" onClick={resetUiPreferences}>
+          {tt("action_reset_ui_preferences")}
+        </button>
+        <button type="button" onClick={() => setPreferencesResetOpen(false)}>
           {tt("action_close")}
         </button>
       </div>
@@ -978,6 +1006,7 @@ export function App() {
         errorModal={errorModal}
         profileCodeModal={profileCodeModal}
         profileLogoutModal={profileLogoutModal}
+        preferencesResetModal={preferencesResetModal}
       >
         <section className="setup-grid setup-grid-single" aria-labelledby="profile-title">
           <div className="panel setup-main-panel">
@@ -1040,6 +1069,7 @@ export function App() {
         errorModal={errorModal}
         profileCodeModal={profileCodeModal}
         profileLogoutModal={profileLogoutModal}
+        preferencesResetModal={preferencesResetModal}
       >
         {gameView === "changelog" ? (
           <ChangelogView currentVersion={APP_VERSION} tt={tt} />
@@ -1457,6 +1487,7 @@ export function App() {
       {errorModal}
       {profileCodeModal}
       {profileLogoutModal}
+      {preferencesResetModal}
       {directiveConfirmModal}
       {resolveConfirmModal}
       {qualifyingConfirmModal}

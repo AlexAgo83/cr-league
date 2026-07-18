@@ -94,6 +94,8 @@
   "profile_league_switch": "Active league",
   "profile_saved_leagues": "Saved leagues",
   "profile_saved_leagues_empty": "No saved leagues yet.",
+  "preferences_reset_title": "Reset UI preferences?",
+  "preferences_reset_confirm": "This restores help panels, replay speed, replay focus, and dismissed season recaps on this device. Your profile, leagues, and teams stay saved.",
   "error_modal_kicker": "Technical issue",
   "error_modal_title": "Action blocked",
   "error_modal_body": "The action could not be completed. The technical detail is hidden, but you can copy it for support.",

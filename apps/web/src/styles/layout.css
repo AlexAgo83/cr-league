@@ -851,6 +851,12 @@ label small {
   overflow: hidden;
 }
 
+.directive-briefing-panel,
+.championship-overview,
+.garage-overview {
+  min-height: 430px;
+}
+
 @media (max-width: 720px) {
   .choice-grid,
   .directive-briefing {
@@ -2388,7 +2394,7 @@ label small {
 /* ---------- Championship summary ---------- */
 
 .championship-overview {
-  align-items: center;
+  align-items: stretch;
   --color-text: #f8f3e8;
   --color-muted: rgb(248 243 232 / 0.78);
   background:
@@ -2397,7 +2403,7 @@ label small {
   color: var(--color-text);
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(180px, 0.5fr) minmax(0, 1.5fr);
+  grid-template-columns: 1fr;
   overflow: hidden;
 }
 
@@ -2406,6 +2412,12 @@ label small {
 }
 
 .championship-overview .invite-code {
+  background: rgb(16 14 18 / 0.64);
+  border-color: rgb(248 243 232 / 0.24);
+  color: var(--color-text);
+}
+
+.garage-overview .invite-code {
   background: rgb(16 14 18 / 0.64);
   border-color: rgb(248 243 232 / 0.24);
   color: var(--color-text);
@@ -2426,23 +2438,19 @@ label small {
 }
 
 .dashboard-summary {
-  background: rgb(16 14 18 / 0.3);
-  border: 1px solid rgb(248 243 232 / 0.14);
-  clip-path: var(--chamfer);
   display: grid;
   gap: 8px;
-  grid-template-columns: 1.2fr minmax(0, 1fr) minmax(0, 0.8fr);
-  padding: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .dashboard-summary div {
-  background: rgb(248 243 232 / 0.12);
-  border: 1px solid rgb(248 243 232 / 0.16);
+  background: rgb(16 14 18 / 0.42);
+  border: 1px solid var(--color-border);
   border-radius: 0;
   display: grid;
   gap: 3px;
   min-width: 0;
-  padding: 12px 14px;
+  padding: 10px;
 }
 
 .dashboard-summary .current-race-summary {
@@ -2832,7 +2840,7 @@ label small {
 
 @media (max-width: 720px) {
   .dashboard-summary {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .season-recap-modal {
@@ -2967,7 +2975,7 @@ label small {
 }
 
 .garage-overview {
-  align-items: center;
+  align-items: stretch;
   --color-text: #f8f3e8;
   --color-muted: rgb(248 243 232 / 0.72);
   background:
@@ -2976,7 +2984,7 @@ label small {
   color: var(--color-text);
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(180px, 0.5fr) minmax(0, 1.5fr);
+  grid-template-columns: 1fr;
   overflow: hidden;
 }
 
@@ -2985,15 +2993,12 @@ label small {
 }
 
 .garage-overview .garage-stats {
-  background: rgb(16 14 18 / 0.3);
-  border: 1px solid rgb(248 243 232 / 0.14);
   gap: 8px;
-  padding: 8px;
 }
 
 .garage-overview .garage-stats > span {
-  background: rgb(248 243 232 / 0.12);
-  border: 1px solid rgb(248 243 232 / 0.16);
+  background: rgb(16 14 18 / 0.42);
+  border: 1px solid var(--color-border);
 }
 
 .garage-team-heading {
@@ -3046,12 +3051,9 @@ label small {
 }
 
 .garage-stats {
-  background: var(--color-border);
-  border: 1px solid var(--color-border);
-  clip-path: var(--chamfer);
   display: grid;
-  gap: 1px;
-  grid-template-columns: minmax(220px, auto) repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .garage-stats > span {
@@ -3184,12 +3186,8 @@ label small {
 }
 
 @media (max-width: 720px) {
-  .garage-overview {
-    grid-template-columns: 1fr;
-  }
-
   .garage-stats {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: 1fr;
   }
 
   .garage-livery-visuals {
@@ -3197,11 +3195,11 @@ label small {
   }
 
   .garage-overview .garage-stats {
-    grid-template-columns: minmax(128px, 1fr) repeat(2, minmax(62px, 0.45fr));
+    grid-template-columns: 1fr;
   }
 
   .garage-overview .garage-livery-visuals {
-    grid-column: auto;
+    grid-column: 1 / -1;
     padding-right: 10px;
   }
 }
@@ -3395,6 +3393,10 @@ label small {
 
 .starting-grid-list li.current-team {
   color: var(--color-accent);
+}
+
+.starting-grid-more-button {
+  justify-self: start;
 }
 
 @media (max-width: 1040px) {
@@ -4579,6 +4581,26 @@ button.primary-command {
 .setup-main-panel .setup-choice {
   background: rgb(23 21 26 / 0.05);
   border-color: rgb(23 21 26 / 0.16);
+}
+
+.card-choice-grid .choice-card,
+.card-inventory-button,
+.card-shop button {
+  background:
+    linear-gradient(90deg, rgb(236 231 218 / 0.9), rgb(236 231 218 / 0.72)),
+    url("/assets/crl/card-workbench.png") center / cover no-repeat;
+  border: 1px solid rgb(23 21 26 / 0.16);
+  color: var(--color-ink);
+}
+
+.card-choice-grid .choice-card.selected {
+  background:
+    linear-gradient(90deg, rgb(236 231 218 / 0.86), color-mix(in srgb, var(--color-accent) 18%, rgb(236 231 218 / 0.68))),
+    url("/assets/crl/card-workbench.png") center / cover no-repeat;
+}
+
+.card-inventory-button {
+  padding: 10px;
 }
 
 .garage-grid .garage-card-toggle {

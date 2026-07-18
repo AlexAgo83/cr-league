@@ -38,9 +38,6 @@ export function ChampionshipView({
         <div>
           <span className="section-kicker">{tt("championship_kicker")}</span>
           <h2>{state.league.name}</h2>
-          <div className="championship-meta">
-            <span className="invite-code">{state.league.code}</span>
-          </div>
         </div>
         <div className="dashboard-summary" aria-label={tt("dashboard_summary")}>
           <div className="current-race-summary">

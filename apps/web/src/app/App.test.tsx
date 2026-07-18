@@ -529,7 +529,7 @@ describe("App", () => {
     createLeagueFromSetup();
 
     // Drive view: map first, plan tuning lives in its own cockpit section.
-    await expectChampionshipCode("ABC123");
+    await expectGarageCode("ABC123");
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(document.querySelector(".command-bar")).toBe(null);
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
@@ -612,7 +612,9 @@ describe("App", () => {
     expect(screen.getAllByText("Current GP").length).toBe(1);
     expect(document.querySelector(".current-gp-panel")).toBe(null);
     expect(screen.getByText("0/2")).toBeTruthy();
-    expect(document.querySelector(".championship-overview")?.textContent).toContain("ABC123");
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    expect(document.querySelector(".garage-overview")?.textContent).toContain("ABC123");
+    fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     expect(document.querySelector(".standings-table")?.textContent).toContain("Volt Union");
     fireEvent.click(screen.getByRole("tab", { name: "Grand Prix history" }));
     expect(document.querySelector(".round-timeline")?.textContent).toContain("R1");
@@ -807,7 +809,7 @@ describe("App", () => {
     render(<App />);
 
     createLeagueFromSetup();
-    await expectChampionshipCode("ABC123");
+    await expectGarageCode("ABC123");
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
@@ -821,6 +823,31 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
+  });
+
+  it("collapses the launch modal starting grid after the top four", async () => {
+    saveProfile();
+    localStorage.setItem("cr-league-help-race", "1");
+    const teams = [
+      ...baseState.teams,
+      ...["Apex Four", "Blue Five", "Crimson Six", "Delta Seven"].map((name, index) => ({
+        ...baseState.teams[1],
+        id: `team_extra_${index}`,
+        name
+      }))
+    ];
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ ...decidedState, teams }));
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Launch GP" }));
+    const launchDialog = screen.getByRole("dialog", { name: "Launch Grand Prix?" });
+    expect(launchDialog.textContent).toContain("P4");
+    expect(launchDialog.textContent).not.toContain("P5");
+    fireEvent.click(within(launchDialog).getByRole("button", { name: "Show full grid (2)" }));
+    expect(launchDialog.textContent).toContain("P5");
+    expect(launchDialog.textContent).toContain("P6");
   });
 
   it("celebrates a season rollover once and reopens the recap from palmares", async () => {
@@ -1014,7 +1041,7 @@ describe("App", () => {
     fireEvent.change(screen.getByLabelText("Team"), { target: { value: "Volt Union" } });
     fireEvent.click(screen.getByRole("button", { name: "Join league" }));
 
-    await expectChampionshipCode("ABC123");
+    await expectGarageCode("ABC123");
     expect(fetch).toHaveBeenCalledWith(
       "http://localhost:4874/leagues/join",
       expect.objectContaining({
@@ -1093,7 +1120,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.change(screen.getByLabelText("Active league"), { target: { value: "team_3" } });
 
-    await expectChampionshipCode("NIGHT1");
+    await expectGarageCode("NIGHT1");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_3");
     expect(fetch).toHaveBeenLastCalledWith(
       "http://localhost:4874/leagues/rejoin",
@@ -1134,7 +1161,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Office League/ }));
 
-    await expectChampionshipCode("ABC123");
+    await expectGarageCode("ABC123");
   });
 
   it("keeps setup league chrome focused when no league is active", () => {
@@ -1248,9 +1275,9 @@ function createLeagueFromSetup() {
   fireEvent.click(screen.getByRole("button", { name: "Start league" }));
 }
 
-async function expectChampionshipCode(code: string) {
-  fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
-  expect(document.querySelector(".championship-overview")?.textContent).toContain(code);
+async function expectGarageCode(code: string) {
+  fireEvent.click(await screen.findByRole("button", { name: "Garage" }));
+  expect(document.querySelector(".garage-overview")?.textContent).toContain(code);
 }
 
 function response(body: unknown) {

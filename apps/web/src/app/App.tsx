@@ -245,6 +245,7 @@ export function App() {
   const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
   const [directiveConfirmOpen, setDirectiveConfirmOpen] = useState(false);
   const [resolveConfirmOpen, setResolveConfirmOpen] = useState(false);
+  const [startingGridExpanded, setStartingGridExpanded] = useState(false);
   const [nextGrandPrixConfirmOpen, setNextGrandPrixConfirmOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
@@ -374,7 +375,7 @@ export function App() {
     deskState === "prepare"
       ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }
       : deskState === "ready"
-        ? { label: tt("action_launch_grand_prix"), action: () => setResolveConfirmOpen(true), disabled: status === "loading" || isResolved }
+        ? { label: tt("action_launch_grand_prix"), action: openResolveConfirm, disabled: status === "loading" || isResolved }
         : {
             label: tt("action_next_grand_prix"),
             action: () => setNextGrandPrixConfirmOpen(true),
@@ -501,6 +502,11 @@ export function App() {
   function openQualifyingRun() {
     if (qualifyingDisabled) return;
     setQualifyingConfirmOpen(true);
+  }
+
+  function openResolveConfirm() {
+    setStartingGridExpanded(false);
+    setResolveConfirmOpen(true);
   }
 
   function startQualifyingRunConfirmed() {
@@ -1000,6 +1006,8 @@ export function App() {
       </div>
     </Modal>
   ) : null;
+  const displayedStartingGridEntries = startingGridExpanded ? startingGridEntries : startingGridEntries.slice(0, 4);
+  const hiddenStartingGridCount = startingGridEntries.length - displayedStartingGridEntries.length;
   const resolveConfirmModal = resolveConfirmOpen ? (
     <Modal label={tt("launch_gp_confirm_title")} onClose={() => setResolveConfirmOpen(false)}>
       <span className="section-kicker">{tt("action_launch_grand_prix")}</span>
@@ -1019,7 +1027,7 @@ export function App() {
           </small>
         </div>
         <ol className="starting-grid-list">
-          {startingGridEntries.map((entry) => (
+          {displayedStartingGridEntries.map((entry) => (
             <li key={entry.team.id} className={entry.team.id === playerTeam?.id ? "current-team" : undefined}>
               <span>P{entry.position}</span>
               <LiveryPlate className="standings-livery-plate" livery={entry.team.livery} name={entry.team.name} />
@@ -1028,6 +1036,11 @@ export function App() {
             </li>
           ))}
         </ol>
+        {hiddenStartingGridCount > 0 ? (
+          <button type="button" className="secondary-button starting-grid-more-button" onClick={() => setStartingGridExpanded(true)}>
+            {tt("action_show_full_grid")} ({hiddenStartingGridCount})
+          </button>
+        ) : null}
       </div>
       <div className="actions secondary-actions">
         <button type="button" onClick={() => void resolveGrandPrix()} disabled={status === "loading"}>

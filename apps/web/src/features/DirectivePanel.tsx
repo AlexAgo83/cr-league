@@ -113,10 +113,11 @@ export function DirectivePanel({
   ];
 
   return (
-    <section className="panel directive-panel">
+    <>
+    <section className="panel directive-panel directive-briefing-panel">
       <header className="directive-heading">
         <span className="section-kicker">{tt("directive_kicker")}</span>
-        <h2>{tt("directive_title")}</h2>
+        <h2>{tt("directive_track_read")}</h2>
       </header>
 
       <div className="directive-briefing" aria-label={tt("directive_track_read")}>
@@ -141,7 +142,13 @@ export function DirectivePanel({
           );
         })}
       </div>
+    </section>
 
+    <section className="panel directive-panel directive-selection-panel">
+      <header className="directive-heading">
+        <span className="section-kicker">{tt("directive_kicker")}</span>
+        <h2>{tt("directive_title")}</h2>
+      </header>
       <div className="plan-steps" role="tablist" aria-label={tt("directive_title")}>
         {steps.map((entry) => (
           <button key={entry.key} type="button" role="tab" aria-selected={step === entry.key} aria-label={`${entry.label}: ${entry.value}`} className={step === entry.key ? "plan-step active" : "plan-step"} onClick={() => setStep(entry.key)}>
@@ -201,6 +208,7 @@ export function DirectivePanel({
         </fieldset>
       ) : null}
     </section>
+    </>
   );
 }
 

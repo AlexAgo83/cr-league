@@ -673,7 +673,7 @@ label small {
   grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
-.directive-briefing span,
+.directive-briefing > span,
 .choice-card,
 .directive-summary {
   background: rgb(16 14 18 / 0.42);
@@ -3966,7 +3966,7 @@ button.primary-command {
 .report-view .report-key-moments li,
 .report-view .report-rewards li,
 .report-view .replay-timeline li,
-.plan-view .directive-briefing span,
+.plan-view .directive-briefing > span,
 .changelog-entry,
 .plan-view .choice-card,
 .plan-view .directive-summary,

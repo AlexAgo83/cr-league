@@ -402,6 +402,8 @@ describe("App", () => {
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Edit planNew lap time");
     fireEvent.click(screen.getByRole("button", { name: "Edit plan" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
+    expect(document.querySelector(".directive-briefing-panel")).toBeTruthy();
+    expect(document.querySelector(".directive-selection-panel")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Plan" }).className).toContain("active");
     // The switcher doubles as the plan summary: each tab shows the current pick.
     expect(screen.getByRole("tab", { name: "Approach: Balanced" })).toBeTruthy();

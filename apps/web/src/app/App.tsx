@@ -341,6 +341,7 @@ export function App() {
     return isLocale(browserLocale) ? browserLocale : "en";
   });
   const [gameView, setGameView] = useState<GameView>("drive");
+  const [planSubscreen, setPlanSubscreen] = useState<"plan" | "chrono">("plan");
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
   const [resultOpen, setResultOpen] = useState(true);
   const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
@@ -1567,6 +1568,7 @@ export function App() {
                 clearTransientNotifications();
                 clearScreenOnboardingSnoozes();
                 setGameView(view);
+                if (view === "plan") setPlanSubscreen("plan");
                 if (view === "drive" && result) setResultOpen(false);
               }}
             >
@@ -1746,7 +1748,14 @@ export function App() {
                         <div className="race-phase-actions map-race-actions">
                           {deskState === "prepare" ? (
                             <>
-                              <button className="primary-command" type="button" onClick={() => setGameView("plan")}>
+                              <button
+                                className="primary-command"
+                                type="button"
+                                onClick={() => {
+                                  setPlanSubscreen("plan");
+                                  setGameView("plan");
+                                }}
+                              >
                                 {tt("action_edit_plan")}
                               </button>
                               <button className="primary-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
@@ -1767,7 +1776,14 @@ export function App() {
                           ) : (
                             <>
                               {deskState === "ready" ? (
-                                <button className="primary-command" type="button" onClick={() => setGameView("plan")}>
+                                <button
+                                  className="primary-command"
+                                  type="button"
+                                  onClick={() => {
+                                    setPlanSubscreen("plan");
+                                    setGameView("plan");
+                                  }}
+                                >
                                   {tt("action_view_plan")}
                                 </button>
                               ) : null}
@@ -1787,76 +1803,87 @@ export function App() {
         ) : null}
         {gameView === "plan" ? (
           <div className="plan-view">
-            <section className="panel chrono-report-panel" aria-label={tt("chrono_report_title")}>
-              <header className="chrono-report-header">
-                <div>
-                  <span className="section-kicker">{tt("chrono_report_kicker")}</span>
-                  <h2>{tt("chrono_report_title")}</h2>
+            <div className="plan-steps plan-subscreen-tabs" role="tablist" aria-label={tt("plan_subscreen_label")}>
+              <button type="button" role="tab" aria-selected={planSubscreen === "plan"} className={planSubscreen === "plan" ? "plan-step active" : "plan-step"} onClick={() => setPlanSubscreen("plan")}>
+                <span className="plan-step-label">{tt("plan_subscreen_plan")}</span>
+              </button>
+              <button type="button" role="tab" aria-selected={planSubscreen === "chrono"} className={planSubscreen === "chrono" ? "plan-step active" : "plan-step"} onClick={() => setPlanSubscreen("chrono")}>
+                <span className="plan-step-label">{tt("plan_subscreen_chrono")}</span>
+              </button>
+            </div>
+            {planSubscreen === "chrono" ? (
+              <section className="panel chrono-report-panel" aria-label={tt("chrono_report_title")}>
+                <header className="chrono-report-header">
+                  <div>
+                    <span className="section-kicker">{tt("chrono_report_kicker")}</span>
+                    <h2>{tt("chrono_report_title")}</h2>
+                  </div>
+                  <p>{chronoReport.suggestion}</p>
+                </header>
+                <div className="chrono-report-stats">
+                  <div>
+                    <span>{tt("qualifying_best")}</span>
+                    <strong>{chronoReport.best ? `${chronoReport.best.time.toFixed(2)}s` : "--"}</strong>
+                  </div>
+                  <div>
+                    <span>{tt("qualifying_result_rank")}</span>
+                    <strong>{chronoReport.gridLabel}</strong>
+                  </div>
+                  <div>
+                    <span>{tt("chrono_report_delta")}</span>
+                    <strong>{chronoReport.deltaLabel}</strong>
+                  </div>
+                  <div>
+                    <span>{tt("qualifying_remaining")}</span>
+                    <strong>
+                      {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
+                    </strong>
+                  </div>
                 </div>
-                <p>{chronoReport.suggestion}</p>
-              </header>
-              <div className="chrono-report-stats">
-                <div>
-                  <span>{tt("qualifying_best")}</span>
-                  <strong>{chronoReport.best ? `${chronoReport.best.time.toFixed(2)}s` : "--"}</strong>
+                <div className="chrono-report-history">
+                  <strong>{tt("chrono_report_history_title")}</strong>
+                  {playerQualifyingRuns.length ? (
+                    <ol>
+                      {[...playerQualifyingRuns]
+                        .sort((left, right) => right.attempts - left.attempts || (right.lap ?? 0) - (left.lap ?? 0))
+                        .map((run) => (
+                          <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`}>
+                            <span>
+                              {tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })} · {tt(`approach_${run.decision.approach}` as TranslationKey)} ·{" "}
+                              {tt(`preparation_${run.decision.preparation}` as TranslationKey)}
+                            </span>
+                            <em>{run.time.toFixed(2)}s</em>
+                            <button
+                              type="button"
+                              className="secondary-button"
+                              onClick={() => {
+                                setQualifyingResult(run);
+                                setGameView("drive");
+                              }}
+                            >
+                              {tt("action_qualifying_history")}
+                            </button>
+                          </li>
+                        ))}
+                    </ol>
+                  ) : (
+                    <p>{tt("chrono_report_history_empty")}</p>
+                  )}
                 </div>
-                <div>
-                  <span>{tt("qualifying_result_rank")}</span>
-                  <strong>{chronoReport.gridLabel}</strong>
-                </div>
-                <div>
-                  <span>{tt("chrono_report_delta")}</span>
-                  <strong>{chronoReport.deltaLabel}</strong>
-                </div>
-                <div>
-                  <span>{tt("qualifying_remaining")}</span>
-                  <strong>
-                    {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
-                  </strong>
-                </div>
-              </div>
-              <div className="chrono-report-history">
-                <strong>{tt("chrono_report_history_title")}</strong>
-                {playerQualifyingRuns.length ? (
-                  <ol>
-                    {[...playerQualifyingRuns]
-                      .sort((left, right) => right.attempts - left.attempts || (right.lap ?? 0) - (left.lap ?? 0))
-                      .map((run) => (
-                        <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`}>
-                          <span>
-                            {tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })} · {tt(`approach_${run.decision.approach}` as TranslationKey)} ·{" "}
-                            {tt(`preparation_${run.decision.preparation}` as TranslationKey)}
-                          </span>
-                          <em>{run.time.toFixed(2)}s</em>
-                          <button
-                            type="button"
-                            className="secondary-button"
-                            onClick={() => {
-                              setQualifyingResult(run);
-                              setGameView("drive");
-                            }}
-                          >
-                            {tt("action_qualifying_history")}
-                          </button>
-                        </li>
-                      ))}
-                  </ol>
-                ) : (
-                  <p>{tt("chrono_report_history_empty")}</p>
-                )}
-              </div>
-            </section>
-            <DirectivePanel
-              form={form}
-              setForm={setForm}
-              ownedCardIds={ownedCardIds}
-              selectedCardId={selectedCardId}
-              selectedCardFit={selectedCardFit}
-              circuitTraits={currentCircuit.traits}
-              cardLocked={Boolean(qualifyingLockedCardId)}
-              disabled={status === "loading" || Boolean(playerDecision) || isResolved}
-              tt={tt}
-            />
+              </section>
+            ) : (
+              <DirectivePanel
+                form={form}
+                setForm={setForm}
+                ownedCardIds={ownedCardIds}
+                selectedCardId={selectedCardId}
+                selectedCardFit={selectedCardFit}
+                circuitTraits={currentCircuit.traits}
+                cardLocked={Boolean(qualifyingLockedCardId)}
+                disabled={status === "loading" || Boolean(playerDecision) || isResolved}
+                tt={tt}
+              />
+            )}
           </div>
         ) : null}
         {gameView === "championship" ? (

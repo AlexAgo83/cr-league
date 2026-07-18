@@ -653,6 +653,9 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "2. Chrono / plan" })).toBeTruthy();
     expect(screen.getByText("Chrono 1/3 is logged. Adjust the directive or lock the plan before the GP.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Understand the lap time" })).toBe(null);
+    fireEvent.click(screen.getByRole("tab", { name: "Chrono report" }));
     expect(screen.getByRole("heading", { name: "Understand the lap time" })).toBeTruthy();
     expect(screen.getByLabelText("Understand the lap time").textContent).toContain("72.42s");
     expect(screen.getByLabelText("Understand the lap time").textContent).toContain("75.18s");

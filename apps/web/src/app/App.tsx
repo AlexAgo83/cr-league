@@ -1629,6 +1629,15 @@ export function App() {
                         <span>
                           {currentQualifyingResult.time.toFixed(2)}s · P{Math.max(1, currentQualifyingRank)} · {currentQualifyingResult.attempts}/{qualifyingAttemptLimit}
                         </span>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPlanSubscreen("chrono");
+                            setGameView("plan");
+                          }}
+                        >
+                          {tt("plan_subscreen_chrono")}
+                        </button>
                         <button type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
                           {tt("action_qualifying")}
                         </button>

@@ -665,6 +665,10 @@ describe("App", () => {
     expect(screen.getByLabelText("Understand the lap time").textContent).toContain("Best run");
     fireEvent.click(screen.getAllByRole("button", { name: "Review lap time" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Chrono report" }));
+    expect(screen.getByRole("heading", { name: "Understand the lap time" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     fireEvent.click(screen.getByRole("button", { name: "Review lap time" }));
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();

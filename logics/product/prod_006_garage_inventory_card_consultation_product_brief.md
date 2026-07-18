@@ -1,6 +1,6 @@
 ## prod_006_garage_inventory_card_consultation_product_brief - Garage Inventory Card Consultation Product Brief
 > Date: 2026-07-15
-> Status: Proposed
+> Status: Settled
 > Related request: `req_035_make_garage_inventory_cards_open_the_card_detail_modal`
 > Related backlog: `item_057_add_read_only_card_detail_modal_for_garage_inventory`
 > Related task: `task_036_orchestrate_garage_inventory_card_consultation`

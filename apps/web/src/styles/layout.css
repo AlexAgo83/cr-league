@@ -4277,17 +4277,20 @@ button.primary-command {
 }
 
 button.highlight-command:not(:disabled) {
-  animation: highlight-command-pulse 1.25s ease-in-out infinite;
+  animation: highlight-command-pulse 0.9s ease-in-out infinite;
   background: #fbbf24;
   box-shadow: 0 0 0 3px rgb(251 191 36 / 0.32), 0 0 28px rgb(251 191 36 / 0.48);
   color: #1d1205;
   outline: 2px solid #fde68a;
   outline-offset: 2px;
+  transform-origin: center;
 }
 
 @keyframes highlight-command-pulse {
   50% {
-    box-shadow: 0 0 0 6px rgb(251 191 36 / 0.18), 0 0 38px rgb(251 191 36 / 0.72);
+    background: #fde68a;
+    box-shadow: 0 0 0 8px rgb(251 191 36 / 0.24), 0 0 42px rgb(251 191 36 / 0.78);
+    transform: scale(1.04);
   }
 }
 

@@ -368,13 +368,15 @@ export function App() {
   }
 
   async function submitDirectiveConfirmed() {
-    if (!leagueState || !playerTeam) return;
+    const player = leagueState?.player;
+    if (!leagueState || !player || !playerTeam) return;
     setDirectiveConfirmOpen(false);
     await run(tt("status_submitting_directive"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/decisions`, {
         method: "POST",
         body: JSON.stringify({
           teamId: playerTeam.id,
+          claimCode: player.claimCode,
           approach: form.approach,
           preparation: form.preparation,
           cardId: selectedCardId || undefined
@@ -388,13 +390,15 @@ export function App() {
   }
 
   async function launchQualifyingRun() {
-    if (!leagueState || !playerTeam || qualifyingDisabled) return;
+    const player = leagueState?.player;
+    if (!leagueState || !player || !playerTeam || qualifyingDisabled) return;
 
     await run(tt("status_qualifying_running"), async () => {
       const response = await api<{ state: LeagueState; run: QualifyingRun; isBest: boolean }>(`/leagues/${leagueState.league.id}/qualifying`, {
         method: "POST",
         body: JSON.stringify({
           teamId: playerTeam.id,
+          claimCode: player.claimCode,
           approach: form.approach,
           preparation: form.preparation,
           cardId: selectedCardId || undefined,

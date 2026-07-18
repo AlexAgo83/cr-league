@@ -548,6 +548,56 @@ describe("api app", () => {
     }
   });
 
+  it("self-heals a missing league owner from the earliest human team", async () => {
+    const db = createMemoryDb();
+    const app = await createTestApp(db);
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    await db.league.update({ where: { id: created.league.id }, data: { ownerTeamId: null } });
+
+    const settingsResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/settings`,
+      payload: { ...created.player, cadence: "fast" }
+    });
+    const repaired = await db.league.findUnique({ where: { id: created.league.id } });
+
+    await app.close();
+
+    expect(settingsResponse.statusCode).toBe(200);
+    expect(repaired?.ownerTeamId).toBe(created.player.teamId);
+  });
+
+  it("self-heals a dangling league owner from the earliest human team", async () => {
+    const db = createMemoryDb();
+    const app = await createTestApp(db);
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    await db.league.update({ where: { id: created.league.id }, data: { ownerTeamId: "missing-team" } });
+
+    const settingsResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/settings`,
+      payload: { ...created.player, cadence: "weekly" }
+    });
+    const repaired = await db.league.findUnique({ where: { id: created.league.id } });
+
+    await app.close();
+
+    expect(settingsResponse.statusCode).toBe(200);
+    expect(repaired?.ownerTeamId).toBe(created.player.teamId);
+  });
+
   it("rejects resolving before the player submits a directive", async () => {
     const app = await createTestApp(createMemoryDb());
 
@@ -991,6 +1041,7 @@ function createMemoryDb(): PrismaClient {
     credits: number;
     cards: string[];
     livery: { primary: string; secondary: string };
+    createdAt: Date;
   };
   type GrandPrixRow = {
     id: string;
@@ -1049,9 +1100,21 @@ function createMemoryDb(): PrismaClient {
         leagues.push(league);
         return league;
       },
-      findUnique: async ({ where }: { where: { id?: string; code?: string } }) => {
+      findUnique: async ({
+        where,
+        include
+      }: {
+        where: { id?: string; code?: string };
+        include?: { teams?: { orderBy?: { createdAt?: string } | Array<{ points?: string; name?: string }> } };
+      }) => {
         const league = leagues.find((candidate) => candidate.id === where.id || candidate.code === where.code);
         if (!league) return null;
+        const leagueTeams = teams.filter((team) => team.leagueId === league.id);
+        if (Array.isArray(include?.teams?.orderBy)) {
+          leagueTeams.sort((left, right) => right.points - left.points || left.name.localeCompare(right.name));
+        } else {
+          leagueTeams.sort((left, right) => left.createdAt.getTime() - right.createdAt.getTime());
+        }
         const leagueGrandPrixes = grandPrixes
           .filter((grandPrix) => grandPrix.leagueId === league.id)
           .sort((left, right) => right.season - left.season || right.round - left.round)
@@ -1062,9 +1125,7 @@ function createMemoryDb(): PrismaClient {
 
         return {
           ...league,
-          teams: teams
-            .filter((team) => team.leagueId === league.id)
-            .sort((left, right) => right.points - left.points || left.name.localeCompare(right.name)),
+          teams: leagueTeams,
           grandPrixes: leagueGrandPrixes
         };
       },
@@ -1073,7 +1134,7 @@ function createMemoryDb(): PrismaClient {
         data
       }: {
         where: { id: string };
-        data: { cadence?: string; ownerTeamId?: string; preparationDeadlineAt?: Date | null };
+        data: { cadence?: string; ownerTeamId?: string | null; preparationDeadlineAt?: Date | null };
       }) => {
         const league = leagues.find((candidate) => candidate.id === where.id);
         if (!league) throw new Error("League not found");
@@ -1112,19 +1173,19 @@ function createMemoryDb(): PrismaClient {
       create: async ({
         data
       }: {
-        data: Omit<TeamRow, "id" | "livery" | "profileId"> & Partial<Pick<TeamRow, "livery" | "profileId">>;
+        data: Omit<TeamRow, "id" | "livery" | "profileId" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "profileId">>;
       }) => {
-        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, ...data, profileId: data.profileId ?? null };
+        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, createdAt: new Date(), ...data, profileId: data.profileId ?? null };
         teams.push(team);
         return team;
       },
       createMany: async ({
         data
       }: {
-        data: Array<Omit<TeamRow, "id" | "livery" | "profileId"> & Partial<Pick<TeamRow, "livery" | "profileId">>>;
+        data: Array<Omit<TeamRow, "id" | "livery" | "profileId" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "profileId">>>;
       }) => {
         for (const team of data) {
-          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, ...team, profileId: team.profileId ?? null });
+          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, createdAt: new Date(), ...team, profileId: team.profileId ?? null });
         }
         return { count: data.length };
       },
@@ -1262,6 +1323,7 @@ function createMemoryDb(): PrismaClient {
         }
         return { count: 0 };
       }
-    }
+    },
+    $queryRaw: async () => []
   } as unknown as PrismaClient;
 }

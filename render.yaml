@@ -4,7 +4,8 @@ services:
     runtime: node
     region: frankfurt
     plan: starter
-    buildCommand: npm ci && npm run db:generate && npm run db:deploy && npm run build -w @cr-league/shared && npm run build -w @cr-league/api
+    buildCommand: npm ci && npm run db:generate && npm run build -w @cr-league/shared && npm run build -w @cr-league/api
+    preDeployCommand: npm run db:deploy
     startCommand: npm run start -w @cr-league/api
     autoDeployTrigger: off
     healthCheckPath: /health

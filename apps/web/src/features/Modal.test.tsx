@@ -54,7 +54,9 @@ describe("Modal", () => {
     fireEvent.keyDown(dialog, { key: "Tab", shiftKey: true });
     expect(document.activeElement).toBe(close);
 
-    fireEvent.click(document.querySelector(".modal-overlay")!);
+    const overlay = document.querySelector(".modal-overlay")!;
+    fireEvent.pointerDown(overlay);
+    fireEvent.click(overlay);
     expect(screen.queryByRole("dialog", { name: "Test dialog" })).toBe(null);
   });
 });

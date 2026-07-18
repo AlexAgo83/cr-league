@@ -1,5 +1,7 @@
+// @vitest-environment node
+
 import { describe, expect, it } from "vitest";
-import { createPrng } from "./prng.js";
+import { createPrng, pickWeightedWithNext } from "./prng.js";
 
 describe("createPrng", () => {
   it("yields the same sequence for the same seed", () => {
@@ -39,6 +41,10 @@ describe("createPrng", () => {
       for (let index = 0; index < 500; index += 1) {
         expect(prng.pickWeighted({ never: 0, always: 1 })).toBe("always");
       }
+    });
+
+    it("skips a leading zero-weight entry when the cursor is exactly zero", () => {
+      expect(pickWeightedWithNext({ never: 0, always: 1 }, () => 0)).toBe("always");
     });
 
     it("treats negative weights as zero", () => {

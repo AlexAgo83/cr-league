@@ -1,5 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { DEMO_RACE_INPUT } from "../packages/shared/src/simulation/demoRace.js";
+import { DEMO_RACE_INPUT } from "../packages/shared/src/index.js";
 
 const prisma = new PrismaClient();
 const code = process.env.PLAYTEST_LEAGUE_CODE ?? "PLAY01";

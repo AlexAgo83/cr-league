@@ -24,6 +24,17 @@ type Strategy = {
   cardId?: CardId;
 };
 
+const QUALIFYING_CARD_DELTAS: Partial<Record<CardId, number>> = {
+  qualifying_focus: -0.3,
+  launch_boost: -0.6,
+  soft_tires: -0.4,
+  adjustable_wing: -0.2,
+  hard_tires: 0.2,
+  economy_mode: 0.4,
+  pit_relay: 0.2,
+  calculated_attack: -0.1
+};
+
 type Row = {
   strategy: string;
   races: number;
@@ -245,28 +256,8 @@ function qualifyingTime(decision: RaceDecision, traits: RaceInput["traits"], wea
   const weatherPenalty = weather === "heavy_rain" ? 2.8 : weather === "light_rain" ? 1.2 : 0;
   const approachDelta = decision.approach === "aggressive" ? -1.1 : decision.approach === "prudent" ? 0.7 : 0;
   const prepDelta = decision.preparation === "speed" ? -1.2 : decision.preparation === "weather" && weather !== "dry" ? -1.4 : decision.preparation === "reliability" ? 0.4 : 0;
-  const cardDelta =
-    decision.cardId === "qualifying_focus"
-      ? -0.3
-      : decision.cardId === "launch_boost"
-        ? -0.6
-        : decision.cardId === "soft_tires"
-          ? -0.4
-          : decision.cardId === "adjustable_wing"
-            ? -0.2
-            : decision.cardId === "rain_grip" && weather !== "dry"
-              ? -0.7
-              : decision.cardId === "rain_mapping" && weather !== "dry"
-                ? -0.4
-                : decision.cardId === "hard_tires"
-                  ? 0.2
-                  : decision.cardId === "economy_mode"
-                    ? 0.4
-                    : decision.cardId === "pit_relay"
-                      ? 0.2
-                      : decision.cardId === "calculated_attack"
-                        ? -0.1
-                        : 0;
+  const rainCardDelta = decision.cardId === "rain_grip" && weather !== "dry" ? -0.7 : decision.cardId === "rain_mapping" && weather !== "dry" ? -0.4 : 0;
+  const cardDelta = rainCardDelta || (decision.cardId ? QUALIFYING_CARD_DELTAS[decision.cardId] ?? 0 : 0);
   return Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + (next() - 0.5) * 2.4);
 }
 

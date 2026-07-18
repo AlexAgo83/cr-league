@@ -1,3 +1,5 @@
+// @vitest-environment node
+
 import { describe, expect, it } from "vitest";
 import { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, raceInputFromCircuit } from "./circuits.js";
 

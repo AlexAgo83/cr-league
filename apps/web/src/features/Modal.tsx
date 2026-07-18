@@ -5,11 +5,14 @@ const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled
 export function Modal({ label, className = "panel modal", onClose, children }: { label: string; className?: string; onClose: () => void; children: ReactNode }) {
   const dialogRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
+  const overlayPressStarted = useRef(false);
 
   useEffect(() => {
     triggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     dialogRef.current?.focus();
-    return () => triggerRef.current?.focus();
+    return () => {
+      if (triggerRef.current?.isConnected) triggerRef.current.focus();
+    };
   }, []);
 
   function handleKeyDown(event: KeyboardEvent<HTMLElement>) {
@@ -36,7 +39,16 @@ export function Modal({ label, className = "panel modal", onClose, children }: {
   }
 
   return (
-    <div className="modal-overlay" onClick={onClose}>
+    <div
+      className="modal-overlay"
+      onPointerDown={(event) => {
+        overlayPressStarted.current = event.target === event.currentTarget;
+      }}
+      onClick={(event) => {
+        if (overlayPressStarted.current && event.target === event.currentTarget) onClose();
+        overlayPressStarted.current = false;
+      }}
+    >
       <section ref={dialogRef} className={className} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={handleKeyDown} onClick={(event: MouseEvent) => event.stopPropagation()}>
         {children}
       </section>

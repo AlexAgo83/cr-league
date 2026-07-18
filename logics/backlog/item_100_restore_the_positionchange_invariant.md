@@ -1,10 +1,10 @@
 ## item_100_restore_the_positionchange_invariant - Restore the positionChange invariant
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Simulation correctness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,6 +31,10 @@
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: positionChange equals the pure grid-to-finish delta for every classification entry.
 - request-AC8 -> This backlog slice. Proof: AC2: ReplayView's reconstructed starting grid is always a valid permutation.
+- request-AC3 -> This backlog slice. Evidence needed: resolveCurrentGrandPrix reads decisions and simulates inside the claiming transaction (or re-validates that no decision changed before committing), and startNextGrandPrix re-reads teams inside its transaction for bot purchases and the season points reset.
+- request-AC5 -> This backlog slice. Evidence needed: dragging the replay scrubber during playback wins over the animation loop, weather icons and ticks have pointer-events none, the range input exposes aria-valuetext with lap/time context, and the seek markers keep working.
+- request-AC6 -> This backlog slice. Evidence needed: pickWeighted never returns an entry whose effective weight is zero (with a test that forces cursor 0), livery colors are validated to a hex pattern at render, team name updates submit trimmed values, the modal only closes when the pointer press started on the overlay, focus restore falls back safely when the trigger is gone, and clearing a league-config numeric field no longer collapses to 0 while typing.
+- request-AC7 -> This backlog slice. Evidence needed: deterministic tests cover a forced mechanical_scare and a forced mechanic_save; the balance script's card delta is a lookup table; shared package tests run under the node environment; scripts import shared through a single path; API_PORT falls back to the default on NaN; render.yaml applies migrations in preDeployCommand.
 
 # Decision framing
 - Product framing: Not needed
@@ -51,3 +55,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_046_orchestrate_repo_review_remediation_pass_4`
+
+# Notes
+- Task `task_046_orchestrate_repo_review_remediation_pass_4` was finished via `logics-manager flow finish task` on 2026-07-18.

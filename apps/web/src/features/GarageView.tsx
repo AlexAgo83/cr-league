@@ -118,7 +118,7 @@ export function GarageView({
                 {tt("garage_team_name")}
                 <input maxLength={32} value={teamName} onChange={(event) => setTeamName(event.target.value)} />
               </label>
-              <button type="button" onClick={() => onUpdateTeamName(teamName)} disabled={loading || teamName.trim() === playerTeam.name}>
+              <button type="button" onClick={() => onUpdateTeamName(teamName.trim())} disabled={loading || teamName.trim() === playerTeam.name}>
                 {tt("garage_team_name_save")}
               </button>
             </div>

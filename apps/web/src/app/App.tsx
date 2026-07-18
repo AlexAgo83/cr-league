@@ -264,7 +264,7 @@ export function App() {
       teamName: leagueState?.teams.find((team) => team.id === run.teamId)?.name ?? run.teamId
     }));
   const qualifyingAttemptsUsed = Math.max(0, ...playerQualifyingRuns.map((run) => run.attempts));
-  const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? form.qualifyingAttemptLimit;
+  const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? Number(form.qualifyingAttemptLimit);
   const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
   const qualifyingLockedCardId = playerQualifyingRuns.find((run) => run.decision?.cardId === "qualifying_focus")?.decision?.cardId;
   const result = leagueState?.currentGrandPrix.result;
@@ -319,12 +319,12 @@ export function App() {
         method: "POST",
         body: JSON.stringify({
           name: form.leagueName,
-          teamName: form.teamName,
+          teamName: form.teamName.trim(),
           profileId: profileSession?.profile.id,
-          maxPlayers: clampNumber(form.maxPlayers, 2, 16),
+          maxPlayers: clampNumber(Number(form.maxPlayers), 2, 16),
           fillWithBots: form.fillWithBots,
-          qualifyingAttemptLimit: clampNumber(form.qualifyingAttemptLimit, 1, 5),
-          maxGrandPrixPerSeason: clampNumber(form.maxGrandPrixPerSeason, 1, 18)
+          qualifyingAttemptLimit: clampNumber(Number(form.qualifyingAttemptLimit), 1, 5),
+          maxGrandPrixPerSeason: clampNumber(Number(form.maxGrandPrixPerSeason), 1, 18)
         })
       });
       rememberPlayer(state);
@@ -341,7 +341,7 @@ export function App() {
         method: "POST",
         body: JSON.stringify({
           code: form.joinCode,
-          teamName: form.teamName,
+          teamName: form.teamName.trim(),
           profileId: profileSession?.profile.id
         })
       });
@@ -1050,7 +1050,7 @@ export function App() {
                           min="2"
                           max="16"
                           value={form.maxPlayers}
-                          onChange={(event) => setForm({ ...form, maxPlayers: Number(event.target.value) })}
+                          onChange={(event) => setForm({ ...form, maxPlayers: event.target.value === "" ? "" : Number(event.target.value) })}
                         />
                       </label>
                       <label>
@@ -1060,7 +1060,7 @@ export function App() {
                           min="1"
                           max="5"
                           value={form.qualifyingAttemptLimit}
-                          onChange={(event) => setForm({ ...form, qualifyingAttemptLimit: Number(event.target.value) })}
+                          onChange={(event) => setForm({ ...form, qualifyingAttemptLimit: event.target.value === "" ? "" : Number(event.target.value) })}
                         />
                       </label>
                       <label>
@@ -1070,7 +1070,7 @@ export function App() {
                           min="1"
                           max="18"
                           value={form.maxGrandPrixPerSeason}
-                          onChange={(event) => setForm({ ...form, maxGrandPrixPerSeason: Number(event.target.value) })}
+                          onChange={(event) => setForm({ ...form, maxGrandPrixPerSeason: event.target.value === "" ? "" : Number(event.target.value) })}
                         />
                       </label>
                       <label className="checkbox-field">

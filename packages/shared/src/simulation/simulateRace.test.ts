@@ -1,3 +1,5 @@
+// @vitest-environment node
+
 import { describe, expect, it } from "vitest";
 import { simulateRace } from "./simulateRace.js";
 import type { RaceInput } from "../domain/race.js";
@@ -196,5 +198,41 @@ describe("simulateRace", () => {
     const attack = simulateRace({ ...baseRace, traits: { grip: 50, overtaking: 82, energy: 48 } });
 
     expect(stable.replayTrace?.at(-1)?.times).not.toEqual(attack.replayTrace?.at(-1)?.times);
+  });
+
+  it("keeps positionChange as the pure grid-to-finish delta", () => {
+    const result = simulateRace(baseRace);
+
+    for (const entry of result.classification) {
+      const gridRank = baseRace.participants.find((participant) => participant.teamId === entry.teamId)?.standingsRank;
+      expect(entry.positionChange).toBe((gridRank ?? entry.position) - entry.position);
+    }
+    expect(result.classification.map((entry) => entry.position + entry.positionChange).sort((left, right) => left - right)).toEqual([1, 2, 3, 4, 5, 6]);
+  });
+
+  it("covers forced risk scare and mechanic save branches", () => {
+    const risky: RaceInput = {
+      ...baseRace,
+      participants: [
+        {
+          ...baseRace.participants[0]!,
+          teamId: "scare",
+          teamName: "Scare GP",
+          standingsRank: 1,
+          decision: { approach: "aggressive", preparation: "speed" }
+        },
+        {
+          ...baseRace.participants[1]!,
+          teamId: "save",
+          teamName: "Save GP",
+          standingsRank: 2,
+          decision: { approach: "aggressive", preparation: "speed", cardId: "fleet_maintenance" }
+        }
+      ]
+    };
+    const result = simulateRace({ ...risky, seed: "risk-106" });
+
+    expect(result.events.some((event) => event.teamId === "scare" && event.type === "mechanical_scare")).toBe(true);
+    expect(result.events.some((event) => event.teamId === "save" && event.type === "mechanic_save")).toBe(true);
   });
 });

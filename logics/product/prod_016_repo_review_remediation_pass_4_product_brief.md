@@ -1,8 +1,8 @@
 ## prod_016_repo_review_remediation_pass_4_product_brief - Repo Review Remediation Pass 4 Product Brief
 > Date: 2026-07-18
-> Status: Proposed
+> Status: Settled
 > Related request: `req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish`
-> Related backlog: `item_098_self_healing_league_ownership`, `item_099_row_locks_and_in_transaction_reads_for_league_writes`, `item_100_restore_the_positionchange_invariant`, `item_101_replay_scrubber_interaction_polish`, `item_102_small_correctness_edges_across_web_and_shared`, `item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups`
+> Related backlog: `item_098_self_healing_league_ownership`
 > Related task: `task_046_orchestrate_repo_review_remediation_pass_4`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -46,5 +46,5 @@ flowchart LR
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish`
+- Product back-reference: `item_098_self_healing_league_ownership`
 - Task back-reference: `task_046_orchestrate_repo_review_remediation_pass_4`

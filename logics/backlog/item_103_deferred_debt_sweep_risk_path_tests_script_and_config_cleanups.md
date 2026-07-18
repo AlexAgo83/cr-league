@@ -1,10 +1,10 @@
 ## item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups - Deferred debt sweep: risk-path tests, script and config cleanups
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Debt cleanup
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,10 @@
 # AC Traceability
 - request-AC7 -> This backlog slice. Proof: AC1: Forced mechanical_scare and mechanic_save outcomes are pinned by deterministic tests.
 - request-AC8 -> This backlog slice. Proof: AC2: The balance script still produces identical output with the lookup table.
+- request-AC3 -> This backlog slice. Evidence needed: resolveCurrentGrandPrix reads decisions and simulates inside the claiming transaction (or re-validates that no decision changed before committing), and startNextGrandPrix re-reads teams inside its transaction for bot purchases and the season points reset.
+- request-AC4 -> This backlog slice. Evidence needed: classification positionChange equals standingsRank minus final position exactly, narrative deltas move to a separate field if still needed, ReplayView's reconstructed starting grid is always a valid permutation, and a test locks the invariant.
+- request-AC5 -> This backlog slice. Evidence needed: dragging the replay scrubber during playback wins over the animation loop, weather icons and ticks have pointer-events none, the range input exposes aria-valuetext with lap/time context, and the seek markers keep working.
+- request-AC6 -> This backlog slice. Evidence needed: pickWeighted never returns an entry whose effective weight is zero (with a test that forces cursor 0), livery colors are validated to a hex pattern at render, team name updates submit trimmed values, the modal only closes when the pointer press started on the overlay, focus restore falls back safely when the trigger is gone, and clearing a league-config numeric field no longer collapses to 0 while typing.
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +57,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_046_orchestrate_repo_review_remediation_pass_4`
+
+# Notes
+- Task `task_046_orchestrate_repo_review_remediation_pass_4` was finished via `logics-manager flow finish task` on 2026-07-18.

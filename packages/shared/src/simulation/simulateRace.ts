@@ -506,7 +506,7 @@ function classify(states: TeamState[]): ClassificationEntry[] {
       points: RACE_POINTS_BY_POSITION[index] ?? 0,
       credits: baseCredits + sponsorBonus + economyBonus,
       score: Number(state.scores.score.toFixed(2)),
-      positionChange: state.participant.standingsRank - position + state.positionDelta,
+      positionChange: state.participant.standingsRank - position,
       status: "finished",
       resultTags: [...state.resultTags]
     };

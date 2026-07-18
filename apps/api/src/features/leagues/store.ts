@@ -23,7 +23,7 @@ import {
 import { createHash, randomBytes } from "node:crypto";
 import type { Prisma, PrismaClient } from "@prisma/client";
 
-type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | "profile"> & {
+type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | "profile" | "$queryRaw"> & {
   $transaction?: <T>(fn: (tx: Db) => Promise<T>) => Promise<T>;
 };
 
@@ -670,8 +670,8 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
     cardId,
     rivalTeamId: input.rivalTeamId
   };
-  // ponytail: transactional re-read shrinks the lost-update window; a dedicated QualifyingRun table if the JSON blob ever loses runs again
   const { nextRun, previousBest } = await runWrite(db, async (tx) => {
+    await lockGrandPrixRow(tx, grandPrix.id);
     const freshGrandPrix = await getCurrentGrandPrix(tx, leagueId);
     if (!freshGrandPrix || freshGrandPrix.id !== grandPrix.id || freshGrandPrix.status === "resolved") {
       throw new LeagueRuleError("This Grand Prix is already resolved.");
@@ -736,18 +736,24 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
     throw new LeagueRuleError("At least two teams are required to launch the Grand Prix.");
   }
 
-  const participants = buildParticipants(raceState);
-  const result = simulateRace({
-    seed: grandPrix.seed,
-    grandPrixName: grandPrix.name,
-    primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
-    secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
-    traits: normalizeRaceTraits(input.traits),
-    forecast: grandPrix.forecast as RaceInput["forecast"],
-    participants
-  });
-
   await runWrite(db, async (tx) => {
+    await lockGrandPrixRow(tx, grandPrix.id);
+    const freshState = await getLeagueState(tx, leagueId);
+    const freshGrandPrix = await getCurrentGrandPrix(tx, leagueId);
+    if (!freshState || !freshGrandPrix || freshGrandPrix.id !== grandPrix.id) return;
+    if (freshState.teams.length < 2) {
+      throw new LeagueRuleError("At least two teams are required to launch the Grand Prix.");
+    }
+    const participants = buildParticipants(freshState);
+    const result = simulateRace({
+      seed: freshGrandPrix.seed,
+      grandPrixName: freshGrandPrix.name,
+      primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
+      secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+      traits: normalizeRaceTraits(input.traits),
+      forecast: freshGrandPrix.forecast as RaceInput["forecast"],
+      participants
+    });
     const claimed = await tx.grandPrix.updateMany({
       where: { id: grandPrix.id, status: "briefing" },
       data: {
@@ -813,9 +819,11 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
       if (isUniqueConstraintError(error)) throw new LeagueRuleError("The next Grand Prix has already started.");
       throw error;
     }
-    await buyBotCards(tx, state, `${leagueId}-s${nextSeason}-r${nextRound}`);
+    const freshState = await getLeagueState(tx, leagueId);
+    if (!freshState) return;
+    await buyBotCards(tx, freshState, `${leagueId}-s${nextSeason}-r${nextRound}`);
     if (nextSeason !== grandPrix.season) {
-      await Promise.all(state.teams.map((team) => tx.team.update({ where: { id: team.id }, data: { points: 0 } })));
+      await Promise.all(freshState.teams.map((team) => tx.team.update({ where: { id: team.id }, data: { points: 0 } })));
     }
   });
 
@@ -882,6 +890,7 @@ function hasHumanDecision(state: LeagueState) {
 async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typeof getCurrentGrandPrix>>, state: LeagueState) {
   if (!grandPrix) return;
   await runWrite(db, async (tx) => {
+    await lockGrandPrixRow(tx, grandPrix.id);
     const freshGrandPrix = await getCurrentGrandPrix(tx, state.league.id);
     if (!freshGrandPrix || freshGrandPrix.id !== grandPrix.id) return;
     const runs = normalizeQualifyingRuns(freshGrandPrix.qualifyingRuns);
@@ -979,8 +988,22 @@ function validateDecisionValues(state: LeagueState, input: SubmitDecisionInput) 
 
 async function requireAdminClaim(db: Db, leagueId: string, input: AdminProofInput) {
   const team = await requireTeamClaim(db, leagueId, input);
-  const league = await db.league.findUnique({ where: { id: leagueId } });
-  if (!league || league.ownerTeamId !== team.id) {
+  const league = await db.league.findUnique({
+    where: { id: leagueId },
+    include: { teams: { orderBy: { createdAt: "asc" } } }
+  });
+  if (!league) {
+    throw new LeagueRuleError("Only the league owner can perform this action.", 403);
+  }
+  const owner = league.teams.find((candidate) => candidate.id === league.ownerTeamId && candidate.kind === "human");
+  const fallbackOwner = owner ?? league.teams.find((candidate) => candidate.kind === "human");
+  if (!fallbackOwner) {
+    throw new LeagueRuleError("Only the league owner can perform this action.", 403);
+  }
+  if (league.ownerTeamId !== fallbackOwner.id) {
+    await db.league.update({ where: { id: leagueId }, data: { ownerTeamId: fallbackOwner.id } });
+  }
+  if (fallbackOwner.id !== team.id) {
     throw new LeagueRuleError("Only the league owner can perform this action.", 403);
   }
   return team;
@@ -1213,6 +1236,11 @@ function withPlayer(state: LeagueState, teamId: string, claimCode: string): Leag
 
 function runWrite<T>(db: Db, fn: (tx: Db) => Promise<T>) {
   return db.$transaction ? db.$transaction(fn) : fn(db);
+}
+
+async function lockGrandPrixRow(db: Db, grandPrixId: string) {
+  if (!db.$queryRaw) return;
+  await db.$queryRaw`SELECT id FROM "grand_prixes" WHERE id = ${grandPrixId} FOR UPDATE`;
 }
 
 async function retryUnique<T>(fn: () => Promise<T>) {

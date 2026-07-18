@@ -19,12 +19,17 @@ const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_STEP = 0.012;
 const MOMENT_NOTIFICATION_SECONDS = 3;
+const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
 
 function savedReplaySpeed(): ReplaySpeed {
   const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
   return REPLAY_SPEEDS.includes(saved as ReplaySpeed) ? (saved as ReplaySpeed) : 1;
+}
+
+function safeHex(value: string | undefined, fallback: string) {
+  return value && HEX_COLOR.test(value) ? value : fallback;
 }
 
 function ReplaySpeedMenu({ speed, setSpeed, tt }: { speed: ReplaySpeed; setSpeed: (speed: ReplaySpeed) => void; tt: Translator }) {
@@ -321,6 +326,7 @@ export function ReplayView({
   const progressRef = useRef<HTMLDivElement>(null);
   const rangeRef = useRef<HTMLInputElement>(null);
   const clock = useRef(0);
+  const scrubbingRef = useRef(false);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState<ReplaySpeed>(savedReplaySpeed);
   const [driverFocus, setDriverFocus] = useState(() => localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
@@ -372,7 +378,7 @@ export function ReplayView({
       last = now;
       svg.setCurrentTime(clock.current);
       if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
-      if (rangeRef.current) rangeRef.current.value = String(clock.current);
+      if (rangeRef.current && !scrubbingRef.current) rangeRef.current.value = String(clock.current);
       updateLive(clock.current);
       if (clock.current >= replayEnd) {
         setPlaying(false);
@@ -482,6 +488,7 @@ export function ReplayView({
   const liveWeather = result.resolvedWeather[live.segment];
   const activeMoment = keyMoments.find((event) => event.id === activeMomentId);
   const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
+  const seekValueText = `${tt("unit_lap")} ${live.lap}/${circuit.laps}, ${Math.round(clock.current)}s`;
 
   function eventTime(event: RaceEvent) {
     return raceTimeAtProgress(event.lap / maxLap);
@@ -595,8 +602,8 @@ export function ReplayView({
                         aria-label={`P${index + 1}`}
                         style={
                           {
-                            "--livery-primary": teamLiveries[entry.teamId]?.primary ?? "#38bdf8",
-                            "--livery-secondary": teamLiveries[entry.teamId]?.secondary ?? "#16c784"
+                            "--livery-primary": safeHex(teamLiveries[entry.teamId]?.primary, "#38bdf8"),
+                            "--livery-secondary": safeHex(teamLiveries[entry.teamId]?.secondary, "#16c784")
                           } as CSSProperties & Record<string, string>
                         }
                       >
@@ -614,10 +621,21 @@ export function ReplayView({
                     type="range"
                     className="replay-progress-input"
                     aria-label={tt("replay_seek")}
+                    aria-valuetext={seekValueText}
                     min={0}
                     max={replayEnd}
                     step={replayEnd / 100}
                     defaultValue={0}
+                    onPointerDown={() => {
+                      scrubbingRef.current = true;
+                    }}
+                    onPointerUp={(event) => {
+                      scrubbingRef.current = false;
+                      seek(Number(event.currentTarget.value));
+                    }}
+                    onPointerCancel={() => {
+                      scrubbingRef.current = false;
+                    }}
                     onChange={(event) => seek(Number(event.target.value))}
                   />
                   {RACE_SEGMENTS.slice(1).map((segment, index) => (

@@ -90,10 +90,10 @@ export type FormState = {
   leagueName: string;
   joinCode: string;
   teamName: string;
-  maxPlayers: number;
+  maxPlayers: number | "";
   fillWithBots: boolean;
-  qualifyingAttemptLimit: number;
-  maxGrandPrixPerSeason: number;
+  qualifyingAttemptLimit: number | "";
+  maxGrandPrixPerSeason: number | "";
   cadence: string;
   preparationDeadlineAt: string;
   approach: RaceDecision["approach"];

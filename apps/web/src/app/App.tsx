@@ -133,6 +133,7 @@ function AmbientRaceBackground({ tt }: { tt: (key: TranslationKey) => string }) 
 
 function SetupShell({
   children,
+  errorModal,
   notificationStack,
   profileCodeModal,
   profileLogoutModal,
@@ -140,6 +141,7 @@ function SetupShell({
   tt
 }: {
   children: ReactNode;
+  errorModal: ReactNode;
   notificationStack: ReactNode;
   profileCodeModal: ReactNode;
   profileLogoutModal: ReactNode;
@@ -152,6 +154,7 @@ function SetupShell({
       {topbar}
       {children}
       {notificationStack}
+      {errorModal}
       {profileCodeModal}
       {profileLogoutModal}
     </main>
@@ -192,6 +195,7 @@ export function App() {
   const [savedLeagueIndex, setSavedLeagueIndex] = useState(0);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState(() => t("status_initial", locale));
+  const [technicalError, setTechnicalError] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const notificationId = useRef(0);
 
@@ -602,7 +606,8 @@ export function App() {
         showStatus(tt("status_saved_league_expired"), "error", false);
         return;
       }
-      showStatus(error instanceof Error ? error.message : tt("status_api_unavailable"), "error");
+      setTechnicalError(error instanceof Error ? error.message : String(error));
+      showStatus(error instanceof TypeError ? tt("status_api_unavailable") : tt("status_request_failed"), "error");
     }
   }
 
@@ -628,21 +633,15 @@ export function App() {
       return;
     }
 
-    try {
-      await navigator.clipboard?.writeText(code);
-    } catch {
-      const input = document.createElement("input");
-      input.value = code;
-      input.setAttribute("readonly", "");
-      input.style.left = "-9999px";
-      input.style.position = "fixed";
-      document.body.append(input);
-      input.select();
-      document.execCommand("copy");
-      input.remove();
-    }
+    await copyText(code);
 
     showStatus(`${tt("status_profile_code_copied")} ${code}`, "info", Boolean(leagueState));
+  }
+
+  async function copyTechnicalError() {
+    if (!technicalError) return;
+    await copyText(technicalError);
+    showStatus(tt("status_error_copied"), "info", Boolean(leagueState));
   }
 
   function forgetProfile() {
@@ -838,6 +837,22 @@ export function App() {
     </Modal>
   ) : null;
 
+  const errorModal = technicalError ? (
+    <Modal label={tt("error_modal_title")} onClose={() => setTechnicalError(null)}>
+      <span className="section-kicker">{tt("error_modal_kicker")}</span>
+      <h2>{tt("error_modal_title")}</h2>
+      <p>{tt("error_modal_body")}</p>
+      <div className="actions secondary-actions">
+        <button type="button" className="secondary-button" onClick={() => void copyTechnicalError()}>
+          {tt("action_copy_error")}
+        </button>
+        <button type="button" onClick={() => setTechnicalError(null)}>
+          {tt("action_close")}
+        </button>
+      </div>
+    </Modal>
+  ) : null;
+
   const directiveConfirmModal = directiveConfirmOpen ? (
     <Modal label={tt("directive_confirm_title")} onClose={() => setDirectiveConfirmOpen(false)}>
       <span className="section-kicker">{tt("qualifying_kicker")}</span>
@@ -952,7 +967,14 @@ export function App() {
 
   if (!profileSession) {
     return (
-      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} profileCodeModal={profileCodeModal} profileLogoutModal={profileLogoutModal}>
+      <SetupShell
+        tt={tt}
+        topbar={setupTopbar}
+        notificationStack={notificationStack}
+        errorModal={errorModal}
+        profileCodeModal={profileCodeModal}
+        profileLogoutModal={profileLogoutModal}
+      >
         <section className="setup-grid setup-grid-single" aria-labelledby="profile-title">
           <div className="panel setup-main-panel">
             <div className="panel-heading">
@@ -1007,7 +1029,14 @@ export function App() {
 
   if (!leagueState) {
     return (
-      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} profileCodeModal={profileCodeModal} profileLogoutModal={profileLogoutModal}>
+      <SetupShell
+        tt={tt}
+        topbar={setupTopbar}
+        notificationStack={notificationStack}
+        errorModal={errorModal}
+        profileCodeModal={profileCodeModal}
+        profileLogoutModal={profileLogoutModal}
+      >
         <section className="setup-grid setup-grid-single" aria-label={tt("flow_label")}>
           <div className="panel setup-main-panel">
             <div className="panel-heading">
@@ -1417,6 +1446,7 @@ export function App() {
 
       {notificationStack}
 
+      {errorModal}
       {profileCodeModal}
       {profileLogoutModal}
       {directiveConfirmModal}
@@ -1581,6 +1611,22 @@ class ApiError extends Error {
 
 function isStaleLeagueError(error: unknown) {
   return error instanceof ApiError && error.statusCode === 404 && localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY);
+}
+
+async function copyText(text: string) {
+  try {
+    await navigator.clipboard?.writeText(text);
+  } catch {
+    const input = document.createElement("input");
+    input.value = text;
+    input.setAttribute("readonly", "");
+    input.style.left = "-9999px";
+    input.style.position = "fixed";
+    document.body.append(input);
+    input.select();
+    document.execCommand("copy");
+    input.remove();
+  }
 }
 
 function claimFromState(state: LeagueState): StoredPlayerClaim | null {

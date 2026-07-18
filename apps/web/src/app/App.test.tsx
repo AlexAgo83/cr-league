@@ -1013,6 +1013,39 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
     expect(screen.getByRole("button", { name: /Join league/ })).toBeTruthy();
   });
+
+  it("hides technical API errors from setup panels and keeps them copyable", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          message:
+            "Invalid `db.profile.findUnique()` invocation in apps/api/src/features/leagues/store.ts. The column `leagues.ownerTeamId` does not exist in the current database."
+        }),
+        {
+          status: 500,
+          headers: { "content-type": "application/json" }
+        }
+      )
+    );
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
+    fireEvent.change(screen.getByLabelText("Recovery code"), { target: { value: "ABCD1234" } });
+    fireEvent.click(screen.getByRole("button", { name: "Recover profile" }));
+
+    await screen.findByRole("dialog", { name: "Action blocked" });
+    expect(document.querySelector(".setup-main-panel")?.textContent).toContain("Something went wrong. Try again in a moment.");
+    expect(document.querySelector(".setup-main-panel")?.textContent).not.toContain("db.profile.findUnique");
+    expect(screen.getByRole("dialog", { name: "Action blocked" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Copy error detail" }));
+
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining("ownerTeamId"));
+  });
 });
 
 function saveProfile(overrides: Partial<{ recoveryCode: string | undefined }> = {}) {

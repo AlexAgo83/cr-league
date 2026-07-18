@@ -3156,6 +3156,51 @@ button.command-icon-button {
   min-width: 36px;
 }
 
+.qualifying-result-panel {
+  align-self: end;
+  background: rgb(18 16 20 / 0.82);
+  margin: auto 16px 16px;
+  max-width: 720px;
+}
+
+.qualifying-result-panel .panel-heading strong {
+  color: var(--color-accent);
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  line-height: 1;
+}
+
+.qualifying-result-stats {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 16px;
+}
+
+.qualifying-result-stats span {
+  background: rgb(255 255 255 / 0.06);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 8px;
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.qualifying-result-stats small {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.qualifying-result-stats strong {
+  font-size: 1.05rem;
+}
+
+.qualifying-result-actions {
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
 .replay-main-grid {
   align-items: start;
   display: grid;
@@ -3731,25 +3776,35 @@ button.primary-command {
   }
 
   .map-workflow-panel {
-    bottom: 8px;
-    gap: 5px;
+    align-items: start;
+    bottom: 86px;
+    gap: 7px;
+    grid-template-columns: 1fr;
     left: 8px;
-    padding: 6px 7px;
+    padding: 8px 10px;
     right: 8px;
   }
 
   .map-workflow-panel h2 {
-    font-size: 0.62rem;
+    font-size: 0.8rem;
   }
 
   .map-workflow-panel p {
-    font-size: 0.58rem;
-    line-height: 1.15;
+    font-size: 0.72rem;
+    line-height: 1.25;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .map-workflow-panel .race-day-steps span {
     font-size: 0.5rem;
     padding: 2px 5px;
+  }
+
+  .map-workflow-panel .race-day-steps {
+    justify-content: space-between;
+    width: 100%;
   }
 
   .circuit-map-stage > .map-traits-panel {
@@ -3795,8 +3850,13 @@ button.primary-command {
   }
 
   .map-race-actions {
-    bottom: 44px;
+    bottom: 8px;
+    left: 8px;
     right: 8px;
+  }
+
+  .map-race-actions button {
+    width: 100%;
   }
 
   .map-qualifying-times li,

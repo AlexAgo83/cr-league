@@ -369,8 +369,9 @@ export function MapCarSprite({ maskId, sprite, transform }: { maskId: string; sp
           <image href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
         </mask>
       </defs>
-      <image href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
       <rect className="map-car-tint" x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
+      <image className="map-car-detail" href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
+      <rect className="map-car-accent" x={CAR_SPRITE_BOX.x + anchor.x + 8} y={CAR_SPRITE_BOX.y + anchor.y} width="8" height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
     </g>
   );
 }

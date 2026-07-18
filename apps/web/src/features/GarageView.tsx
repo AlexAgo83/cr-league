@@ -103,6 +103,30 @@ export function GarageView({
 
   return (
     <div className="garage-grid">
+      <section className="panel garage-overview">
+        <div>
+          <span className="section-kicker">{tt("dashboard_garage")}</span>
+          <h2>{playerTeam.name}</h2>
+        </div>
+        <div className="garage-stats">
+          <span className="garage-livery-visuals">
+            <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
+            <span className="garage-car-stage">
+              <svg className="garage-car-preview map-car" viewBox="-20 -24 40 48" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
+                <MapCarSprite sprite="idle" maskId="garage-car-preview-mask" transform="scale(1.45)" />
+              </svg>
+            </span>
+          </span>
+          <span>
+            <strong>{playerTeam.points}</strong>
+            <small>{tt("unit_points")}</small>
+          </span>
+          <span>
+            <strong>{playerTeam.credits}</strong>
+            <small>{tt("unit_credits")}</small>
+          </span>
+        </div>
+      </section>
       <section className="panel garage-card-panel">
         <div className="garage-card-heading">
           <div>
@@ -123,24 +147,6 @@ export function GarageView({
         </div>
         {cardPanel === "team" ? (
           <div className="garage-team-panel">
-            <div className="garage-stats">
-              <span className="garage-livery-visuals">
-                <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
-                <span className="garage-car-stage">
-                  <svg className="garage-car-preview map-car" viewBox="-20 -24 40 48" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
-                    <MapCarSprite sprite="idle" maskId="garage-car-preview-mask" transform="scale(1.45)" />
-                  </svg>
-                </span>
-              </span>
-              <span>
-                <strong>{playerTeam.points}</strong>
-                <small>{tt("unit_points")}</small>
-              </span>
-              <span>
-                <strong>{playerTeam.credits}</strong>
-                <small>{tt("unit_credits")}</small>
-              </span>
-            </div>
             <div className="field-grid garage-name-fields">
               <label>
                 {tt("garage_team_name")}

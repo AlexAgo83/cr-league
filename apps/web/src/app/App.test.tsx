@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { act } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
@@ -385,6 +385,7 @@ describe("App", () => {
     createLeagueFromSetup();
 
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    await closeLeagueIntro();
     fireEvent.click(screen.getByLabelText("Close Race replay"));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     expect(await screen.findByRole("dialog", { name: "Use the garage for the next GP" })).toBeTruthy();
@@ -405,6 +406,7 @@ describe("App", () => {
     createLeagueFromSetup();
 
     expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
+    await closeLeagueIntro();
     const raceIntro = await screen.findByRole("dialog", { name: "Read the race desk" });
     fireEvent.click(within(raceIntro).getByRole("button", { name: "Got it" }));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
@@ -421,6 +423,7 @@ describe("App", () => {
     createLeagueFromSetup();
 
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    await closeLeagueIntro();
     fireEvent.click(screen.getByLabelText("Close Race replay"));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     expect(screen.queryByRole("dialog", { name: "Use the garage for the next GP" })).toBe(null);
@@ -428,6 +431,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Reset UI preferences" }));
     fireEvent.click(screen.getAllByRole("button", { name: "Reset UI preferences" }).at(-1)!);
 
+    await closeLeagueIntro();
     expect(await screen.findByRole("dialog", { name: "Use the garage for the next GP" })).toBeTruthy();
   });
 
@@ -1273,6 +1277,15 @@ function saveProfile(overrides: Partial<{ recoveryCode: string | undefined }> = 
 function createLeagueFromSetup() {
   fireEvent.click(screen.getByRole("button", { name: /Create league/ }));
   fireEvent.click(screen.getByRole("button", { name: "Start league" }));
+}
+
+async function closeLeagueIntro() {
+  await screen.findByRole("dialog", { name: "Welcome to the grid" });
+  fireEvent.click(screen.getByRole("button", { name: "Next" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Next" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Next" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Enter the grid" }));
+  await waitFor(() => expect(screen.queryByRole("dialog", { name: "Welcome to the grid" })).toBe(null));
 }
 
 async function expectGarageCode(code: string) {

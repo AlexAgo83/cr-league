@@ -1168,6 +1168,42 @@ label small {
   width: 100%;
 }
 
+.league-onboarding {
+  display: grid;
+  gap: 12px;
+}
+
+.league-onboarding-image {
+  border-radius: 8px;
+  margin: 0;
+  object-fit: cover;
+}
+
+.league-onboarding h2,
+.league-onboarding p {
+  margin: 0;
+}
+
+.league-onboarding-dots {
+  display: inline-flex;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.league-onboarding-dots button {
+  background: rgb(255 255 255 / 0.18);
+  border: 0;
+  border-radius: 999px;
+  height: 8px;
+  min-height: 0;
+  padding: 0;
+  width: 28px;
+}
+
+.league-onboarding-dots button.active {
+  background: var(--color-telemetry);
+}
+
 .onboarding-list {
   display: grid;
   gap: 8px;
@@ -1177,6 +1213,21 @@ label small {
 
 .onboarding-dismiss {
   margin-top: 14px;
+}
+
+.form-feedback {
+  border-radius: 8px;
+  font-size: 0.86rem;
+  font-weight: 800;
+  line-height: 1.35;
+  margin: 0;
+  padding: 10px 12px;
+}
+
+.form-feedback.error {
+  background: rgb(127 29 29 / 0.16);
+  border: 1px solid rgb(248 113 113 / 0.34);
+  color: #fecaca;
 }
 
 @keyframes notification-countdown {

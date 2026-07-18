@@ -164,6 +164,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
       await page.getByRole("button", { name: "Race", exact: true }).click();
       await page.getByRole("button", { name: "Next GP" }).click();
       await page.getByRole("dialog", { name: "Start the next race day?" }).getByRole("button", { name: "Next GP" }).click();
+      await expect(page.getByRole("heading", { name: "1. Read the circuit" })).toBeVisible();
       await dismissOnboarding(page);
       await page.getByRole("button", { name: "Championship", exact: true }).click();
       await expect(page.getByText(`Round ${expectedRound + 1}`).first()).toBeVisible();
@@ -394,11 +395,42 @@ async function createProfile(page: Page) {
 async function createLeague(page: Page) {
   await page.getByRole("button", { name: "Create league" }).click();
   await page.getByRole("button", { name: "Start league" }).click();
+  await expect(page.locator(".game-nav button")).toHaveCount(4);
   await dismissOnboarding(page);
+  await suppressOnboarding(page);
 }
 
 async function dismissOnboarding(page: Page) {
-  await page.getByRole("button", { name: "Got it" }).click({ timeout: 5000 }).catch(() => undefined);
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    const overlay = page.locator(".modal-overlay").last();
+    if (!(await overlay.isVisible({ timeout: 3000 }).catch(() => false))) break;
+
+    const leagueIntro = overlay.getByRole("dialog", { name: "Welcome to the grid" });
+    if (await leagueIntro.isVisible({ timeout: 500 }).catch(() => false)) {
+      await leagueIntro.getByRole("button", { name: "Go to step 4" }).click();
+      await expect(leagueIntro.getByRole("heading", { name: "Race by race, build your season" })).toBeVisible();
+      await leagueIntro.getByRole("button", { name: "Enter the grid" }).click();
+      await expect(leagueIntro).toBeHidden();
+      continue;
+    }
+
+    const gotIt = overlay.getByRole("button", { name: "Got it" });
+    if (await gotIt.isVisible({ timeout: 500 }).catch(() => false)) {
+      await gotIt.click();
+      continue;
+    }
+
+    break;
+  }
+  await expect(page.locator(".modal-overlay")).toHaveCount(0);
+}
+
+async function suppressOnboarding(page: Page) {
+  await page.evaluate(() => {
+    for (const key of ["cr-league-help-league-intro", "cr-league-help-race", "cr-league-help-plan", "cr-league-help-garage"]) {
+      localStorage.setItem(key, "1");
+    }
+  });
 }
 
 async function hideReadmeNoise(page: Page) {

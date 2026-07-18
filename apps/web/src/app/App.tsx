@@ -24,6 +24,7 @@ const LANGUAGE_KEY = "cr-league-language";
 const SEASON_RECAP_KEY_PREFIX = "cr-league-season-recap";
 const ONBOARDING_HELP_KEYS = {
   profileCode: "cr-league-help-profile-code",
+  leagueIntro: "cr-league-help-league-intro",
   race: "cr-league-help-race",
   plan: "cr-league-help-plan",
   garage: "cr-league-help-garage"
@@ -33,6 +34,12 @@ const ONBOARDING_HELP_IMAGES = {
   plan: "/assets/crl/strategy-cards.png",
   garage: "/assets/crl/garage-empty.png"
 } as const;
+const LEAGUE_ONBOARDING_IMAGES = [
+  "/assets/crl/onboarding-pit-wall.png",
+  "/assets/crl/onboarding-setup.png",
+  "/assets/crl/onboarding-chrono.png",
+  "/assets/crl/onboarding-season.png"
+] as const;
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
 
 type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
@@ -45,6 +52,8 @@ type ProfileMode = "choice" | "create" | "recover";
 type SetupMode = "choice" | "create" | "join";
 type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
 type OnboardingHelpTopic = keyof typeof ONBOARDING_HELP_KEYS;
+type StandardOnboardingHelpTopic = Exclude<OnboardingHelpTopic, "leagueIntro">;
+const SCREEN_ONBOARDING_HELP_TOPICS = ["race", "plan", "garage"] as const satisfies readonly OnboardingHelpTopic[];
 
 function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
   const impacts: MapTraitImpacts = {};
@@ -182,7 +191,7 @@ function OnboardingHelpModal({
   onClose,
   tt
 }: {
-  topic: OnboardingHelpTopic;
+  topic: StandardOnboardingHelpTopic;
   recoveryCode?: string;
   onClose: (dismiss: boolean) => void;
   tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
@@ -213,6 +222,53 @@ function OnboardingHelpModal({
         <button type="button" onClick={() => onClose(dismiss)}>
           {tt("action_got_it")}
         </button>
+      </div>
+    </Modal>
+  );
+}
+
+function LeagueIntroModal({
+  onClose,
+  tt
+}: {
+  onClose: (dismiss: boolean) => void;
+  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
+}) {
+  const [step, setStep] = useState(0);
+  const [dismiss, setDismiss] = useState(false);
+  const stepNumber = step + 1;
+  const isLastStep = step === LEAGUE_ONBOARDING_IMAGES.length - 1;
+
+  return (
+    <Modal label={tt("league_onboarding_title")} onClose={() => onClose(dismiss)}>
+      <div className="league-onboarding">
+        <img className="onboarding-image league-onboarding-image" src={LEAGUE_ONBOARDING_IMAGES[step]} alt="" />
+        <span className="section-kicker">{tt("onboarding_kicker")}</span>
+        <h2>{tt(`league_onboarding_step_${stepNumber}_title` as TranslationKey)}</h2>
+        <p>{tt(`league_onboarding_step_${stepNumber}_body` as TranslationKey)}</p>
+        <div className="league-onboarding-dots" aria-label={tt("league_onboarding_progress")}>
+          {LEAGUE_ONBOARDING_IMAGES.map((_, index) => (
+            <button
+              key={index}
+              type="button"
+              className={index === step ? "active" : undefined}
+              aria-label={tt("league_onboarding_go_to_step", { step: index + 1 })}
+              onClick={() => setStep(index)}
+            />
+          ))}
+        </div>
+        <label className="checkbox-field onboarding-dismiss">
+          <input type="checkbox" checked={dismiss} onChange={(event) => setDismiss(event.target.checked)} />
+          {tt("league_onboarding_dismiss")}
+        </label>
+        <div className="actions secondary-actions">
+          <button type="button" className="secondary-button" onClick={() => setStep((current) => Math.max(0, current - 1))} disabled={step === 0}>
+            {tt("action_back")}
+          </button>
+          <button type="button" onClick={() => (isLastStep ? onClose(dismiss) : setStep((current) => current + 1))}>
+            {isLastStep ? tt("action_start_racing") : tt("action_next")}
+          </button>
+        </div>
       </div>
     </Modal>
   );
@@ -256,6 +312,7 @@ export function App() {
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [message, setMessage] = useState(() => t("status_initial", locale));
   const [technicalError, setTechnicalError] = useState<string | null>(null);
+  const [profileFormError, setProfileFormError] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [onboardingHelp, setOnboardingHelp] = useState<OnboardingHelpTopic | null>(null);
   const notificationId = useRef(0);
@@ -283,6 +340,10 @@ export function App() {
 
   function clearTransientNotifications() {
     setNotifications((items) => items.filter((item) => item.persistent));
+  }
+
+  function clearScreenOnboardingSnoozes() {
+    for (const topic of SCREEN_ONBOARDING_HELP_TOPICS) snoozedOnboardingHelp.current.delete(topic);
   }
 
   function dismissNotification(id: number) {
@@ -383,6 +444,8 @@ export function App() {
           };
   useEffect(() => {
     if (!leagueState || onboardingHelp) return;
+    openOnboardingHelp("leagueIntro");
+    if (!localStorage.getItem(ONBOARDING_HELP_KEYS.leagueIntro) && !snoozedOnboardingHelp.current.has("leagueIntro")) return;
     if (gameView === "drive" && raceDayPhase === "briefing") openOnboardingHelp("race");
     if (gameView === "plan") openOnboardingHelp("plan");
     if (gameView === "garage") openOnboardingHelp("garage");
@@ -634,10 +697,18 @@ export function App() {
   }
 
   async function createProfileSession() {
+    const email = profileForm.email.trim();
+    const error = validateProfileForm(email);
+    if (error) {
+      setProfileFormError(error);
+      return;
+    }
+    setProfileFormError(null);
+
     await run(tt("status_creating_profile"), async () => {
       const session = await api<ProfileSession>("/profiles", {
         method: "POST",
-        body: JSON.stringify({ email: profileForm.email })
+        body: JSON.stringify({ email })
       });
       storeProfileSession(session);
       setProfileSession(session);
@@ -646,14 +717,23 @@ export function App() {
       setProfileOpen(false);
       showStatus(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`, "info", false);
       openOnboardingHelp("profileCode");
-    });
+    }, undefined, true, (error) => profileApiErrorMessage(error, "create"));
   }
 
   async function recoverProfileSession() {
+    const email = profileForm.email.trim();
+    const recoveryCode = profileForm.recoveryCode.trim().toUpperCase();
+    const error = validateProfileForm(email, recoveryCode);
+    if (error) {
+      setProfileFormError(error);
+      return;
+    }
+    setProfileFormError(null);
+
     await run(tt("status_recovering_profile"), async () => {
       const session = await api<ProfileSession>("/profiles/recover", {
         method: "POST",
-        body: JSON.stringify(profileForm)
+        body: JSON.stringify({ email, recoveryCode })
       });
       storeProfileSession(session);
       const claims = claimsFromProfile(session);
@@ -663,7 +743,7 @@ export function App() {
       setSetupMode("choice");
       setProfileOpen(false);
       showStatus(tt("status_profile_recovered"), "info", false);
-    });
+    }, undefined, true, (error) => profileApiErrorMessage(error, "recover"));
   }
 
   async function switchLeague(teamId: string) {
@@ -697,7 +777,7 @@ export function App() {
     }, "status_league_restarted");
   }
 
-  async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify = true) {
+  async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify = true, errorText?: (error: unknown) => string) {
     setStatus("loading");
     setMessage(nextMessage);
     if (notify) pushNotification(nextMessage);
@@ -713,10 +793,26 @@ export function App() {
         showStatus(tt("status_saved_league_expired"), "error", false);
         return;
       }
+      const friendlyError = errorText?.(error);
       setTechnicalError(error instanceof Error ? error.message : String(error));
       clearTransientNotifications();
-      showStatus(error instanceof TypeError ? tt("status_api_unavailable") : tt("status_request_failed"), "error", notify);
+      showStatus(friendlyError ?? (error instanceof TypeError ? tt("status_api_unavailable") : tt("status_request_failed")), "error", notify);
     }
+  }
+
+  function validateProfileForm(email: string, recoveryCode?: string) {
+    if (!email) return tt("profile_error_email_required");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return tt("profile_error_email_invalid");
+    if (recoveryCode !== undefined && !recoveryCode) return tt("profile_error_recovery_code_required");
+    return null;
+  }
+
+  function profileApiErrorMessage(error: unknown, mode: Exclude<ProfileMode, "choice">) {
+    if (error instanceof TypeError) return tt("status_api_unavailable");
+    if (error instanceof ApiError && error.statusCode >= 500) return tt("status_request_failed");
+    if (mode === "recover" && error instanceof ApiError && [400, 401, 403, 404].includes(error.statusCode)) return tt("profile_error_recovery_failed");
+    if (mode === "create" && error instanceof ApiError && error.statusCode === 409) return tt("profile_error_create_conflict");
+    return mode === "create" ? tt("profile_error_create_failed") : tt("profile_error_recovery_failed");
   }
 
   function forgetPlayer() {
@@ -1109,12 +1205,16 @@ export function App() {
     </div>
   ) : null;
   const onboardingHelpModal = onboardingHelp ? (
-    <OnboardingHelpModal
-      topic={onboardingHelp}
-      recoveryCode={onboardingHelp === "profileCode" ? profileSession?.recoveryCode : undefined}
-      onClose={(dismiss) => closeOnboardingHelp(onboardingHelp, dismiss)}
-      tt={tt}
-    />
+    onboardingHelp === "leagueIntro" ? (
+      <LeagueIntroModal onClose={(dismiss) => closeOnboardingHelp(onboardingHelp, dismiss)} tt={tt} />
+    ) : (
+      <OnboardingHelpModal
+        topic={onboardingHelp}
+        recoveryCode={onboardingHelp === "profileCode" ? profileSession?.recoveryCode : undefined}
+        onClose={(dismiss) => closeOnboardingHelp(onboardingHelp, dismiss)}
+        tt={tt}
+      />
+    )
   ) : null;
 
   if (!profileSession) {
@@ -1139,11 +1239,25 @@ export function App() {
           <div className="panel setup-main-panel setup-form-panel">
             {profileMode === "choice" ? (
               <div className="setup-choice-grid">
-                <button type="button" className="setup-choice" onClick={() => setProfileMode("create")}>
+                <button
+                  type="button"
+                  className="setup-choice"
+                  onClick={() => {
+                    setProfileFormError(null);
+                    setProfileMode("create");
+                  }}
+                >
                   <strong>{tt("action_create_profile")}</strong>
                   <small>{tt("profile_create_hint")}</small>
                 </button>
-                <button type="button" className="setup-choice" onClick={() => setProfileMode("recover")}>
+                <button
+                  type="button"
+                  className="setup-choice"
+                  onClick={() => {
+                    setProfileFormError(null);
+                    setProfileMode("recover");
+                  }}
+                >
                   <strong>{tt("action_recover_profile")}</strong>
                   <small>{tt("profile_recover_hint")}</small>
                 </button>
@@ -1153,20 +1267,44 @@ export function App() {
                 <div className="field-grid setup-fields">
                   <label>
                     {tt("field_email")}
-                    <input type="email" value={profileForm.email} onChange={(event) => setProfileForm({ ...profileForm, email: event.target.value })} />
+                    <input
+                      type="email"
+                      value={profileForm.email}
+                      aria-invalid={profileFormError ? true : undefined}
+                      onChange={(event) => {
+                        setProfileFormError(null);
+                        setProfileForm({ ...profileForm, email: event.target.value });
+                      }}
+                    />
                   </label>
                   {profileMode === "recover" ? (
                     <label>
                       {tt("field_recovery_code")}
-                      <input value={profileForm.recoveryCode} onChange={(event) => setProfileForm({ ...profileForm, recoveryCode: event.target.value.toUpperCase() })} />
+                      <input
+                        value={profileForm.recoveryCode}
+                        aria-invalid={profileFormError ? true : undefined}
+                        onChange={(event) => {
+                          setProfileFormError(null);
+                          setProfileForm({ ...profileForm, recoveryCode: event.target.value.toUpperCase() });
+                        }}
+                      />
                     </label>
                   ) : null}
                 </div>
+                {profileFormError ? <p className="form-feedback error">{profileFormError}</p> : null}
                 <div className="actions primary-actions profile-form-actions">
                   <button type="button" onClick={profileMode === "create" ? createProfileSession : recoverProfileSession} disabled={status === "loading"}>
                     {profileMode === "create" ? tt("action_create_profile") : tt("action_recover_profile")}
                   </button>
-                  <button type="button" className="secondary-button" onClick={() => setProfileMode("choice")} disabled={status === "loading"}>
+                  <button
+                    type="button"
+                    className="secondary-button"
+                    onClick={() => {
+                      setProfileFormError(null);
+                      setProfileMode("choice");
+                    }}
+                    disabled={status === "loading"}
+                  >
                     {tt("action_back")}
                   </button>
                 </div>
@@ -1357,7 +1495,7 @@ export function App() {
               className={gameView === view ? "active" : undefined}
               onClick={() => {
                 clearTransientNotifications();
-                snoozedOnboardingHelp.current.clear();
+                clearScreenOnboardingSnoozes();
                 setGameView(view);
                 if (view === "drive" && result) setResultOpen(false);
               }}

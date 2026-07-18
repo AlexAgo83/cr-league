@@ -1,0 +1,259 @@
+{
+  "title": "Repo review remediation pass 4: ownership resilience, race-window closure, and replay polish",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility.md",
+    "logics/tasks/task_045_orchestrate_repo_review_remediation_pass_3.md",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/config.ts",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/Modal.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "apps/web/src/features/LiveryPlate.tsx",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/styles/layout.css",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/simulation/prng.ts",
+    "scripts/balance-simulations.ts",
+    "vitest.config.ts",
+    "render.yaml",
+    "Second full-repo review from 2026-07-18, after pass 3 (commit 99d7f11) was verified sound with zero high-severity findings: a league whose ownerTeamId is null or dangling is permanently unadministrable; the transactional re-reads shrank but did not close the qualifyingRuns lost-update window because rows are never locked under Read Committed; resolveCurrentGrandPrix simulates from state read outside the claiming transaction; positionChange mixes the narrative positionDelta into the real grid-to-finish delta and ReplayView reconstructs the starting grid from it; the replay scrubber fights the rAF loop while playing and weather/tick overlays create pointer dead zones; pickWeighted can return a zero-weight entry when the PRNG yields exactly 0; the mechanical_scare/mechanic_save risk branch has no dedicated test; livery colors from other players are injected into CSS variables unvalidated on the client."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Repo review remediation",
+    "needs": [
+      "Make league ownership resilient: fall back to the earliest human team when ownerTeamId is null or points at a missing team, so no league becomes permanently unadministrable.",
+      "Close the remaining qualifying-runs lost-update window with a real row lock (SELECT FOR UPDATE) and move the resolve simulation's decision read inside the claiming transaction.",
+      "Restore the positionChange invariant: report the real grid-to-finish delta and keep the narrative event delta out of it, so ReplayView's starting-grid reconstruction is a valid permutation.",
+      "Polish the replay scrubber: user drag wins over the rAF loop during playback, overlay elements stop stealing pointer events, and assistive tech gets lap/time context via aria-valuetext.",
+      "Fix the small correctness edges: pickWeighted must never return a zero-weight entry, livery colors are validated to hex at render, team name is trimmed at submit, modal overlay close requires the press to start on the overlay, focus restore guards against unmounted triggers, and league-config numeric inputs tolerate empty intermediate states.",
+      "Land the deferred cleanups: deterministic risk-path tests (mechanical_scare and mechanic_save), a lookup table for the balance script's card delta, node vitest environment for shared tests, a single shared import path in scripts, API_PORT validation, and Render migrations moved to a pre-deploy step."
+    ],
+    "context": [
+      "Pass 3 (req_044) added ownerTeamId with a backfill to the earliest human team, but a league created without a human team, or whose owner team is later deleted, yields 403 for every caller on settings, resolve, next-grand-prix, and restart with no recovery path (store.ts requireAdminClaim).",
+      "The pass-3 transactions re-read the GrandPrix row inside runWrite but Postgres Read Committed does not serialize two interactive transactions that both read then update the qualifyingRuns JSON column; the ponytail comment in store.ts names this ceiling explicitly. A raw SELECT ... FOR UPDATE on the GrandPrix row inside the existing transactions is the smallest fix; the dedicated QualifyingRun table remains the escalation path only if locking proves insufficient.",
+      "resolveCurrentGrandPrix builds participants and calls simulateRace from raceState read before the claiming transaction, so a decision submitted in that window is persisted but not simulated; buyBotCards and the season points reset in startNextGrandPrix similarly operate on a pre-transaction team snapshot.",
+      "simulateRace classify computes positionChange as standingsRank - position + state.positionDelta, where positionDelta accumulates arbitrary narrative card fudges; ReplayView derives the starting grid as position + positionChange, which is only a permutation when positionChange is the pure grid delta.",
+      "The replay range input is imperatively driven: the rAF loop rewrites its value every frame, so grabbing the thumb during playback snaps back; .replay-weather and .replay-tick overlay the input without pointer-events none, creating dead zones; the input has an aria-label but no aria-valuetext.",
+      "pickWeighted in prng.ts returns the current key when cursor <= 0, so a leading zero-weight entry is returned when next() yields exactly 0; the existing test's fixed seeds never produce 0 and give false confidence.",
+      "The mechanical_scare (-12 score, -1 position) and fleet_maintenance mechanic_save branches in maybeAddRiskEvent are the most consequential untested game-logic paths.",
+      "The API normalizes livery colors on write (isHexColor), but the web renders other players' livery values into CSS custom properties without its own validation; a forged non-hex value consumed by background: var(...) enables CSS-driven external resource loading. Client-side validation is defense in depth.",
+      "Minor debt called out twice by reviews and deliberately deferred until now: render.yaml runs prisma migrate deploy inside buildCommand instead of preDeployCommand; vitest applies jsdom globally so pure-node shared tests pay its startup cost; scripts import shared both from source and via the workspace alias; config.ts accepts a NaN API_PORT; balance-simulations computes cardDelta via a ten-level nested ternary."
+    ],
+    "acceptance_criteria": [
+      "AC1: requireAdminClaim falls back to the earliest-created human team when league.ownerTeamId is null or references a team that no longer exists, persists that fallback as the new owner, and a league can never 403 every member; covered by tests for the null and dangling cases.",
+      "AC2: submitQualifyingRun and ensureBotQualifyingRuns lock the GrandPrix row (SELECT ... FOR UPDATE or equivalent) inside their transactions when running on real Postgres, the attempt limit holds under concurrent submissions, and the memory-db test path keeps working unchanged.",
+      "AC3: resolveCurrentGrandPrix reads decisions and simulates inside the claiming transaction (or re-validates that no decision changed before committing), and startNextGrandPrix re-reads teams inside its transaction for bot purchases and the season points reset.",
+      "AC4: classification positionChange equals standingsRank minus final position exactly, narrative deltas move to a separate field if still needed, ReplayView's reconstructed starting grid is always a valid permutation, and a test locks the invariant.",
+      "AC5: dragging the replay scrubber during playback wins over the animation loop, weather icons and ticks have pointer-events none, the range input exposes aria-valuetext with lap/time context, and the seek markers keep working.",
+      "AC6: pickWeighted never returns an entry whose effective weight is zero (with a test that forces cursor 0), livery colors are validated to a hex pattern at render, team name updates submit trimmed values, the modal only closes when the pointer press started on the overlay, focus restore falls back safely when the trigger is gone, and clearing a league-config numeric field no longer collapses to 0 while typing.",
+      "AC7: deterministic tests cover a forced mechanical_scare and a forced mechanic_save; the balance script's card delta is a lookup table; shared package tests run under the node environment; scripts import shared through a single path; API_PORT falls back to the default on NaN; render.yaml applies migrations in preDeployCommand.",
+      "AC8: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Repo Review Remediation Pass 4 Product Brief",
+    "overview": "A fourth remediation pass driven by the post-pass-3 review: make league ownership self-healing, close the last concurrency windows with real row locks and in-transaction reads, restore the positionChange invariant the replay depends on, polish the replay scrubber interaction, and clear the accumulated small-correctness and infra debt.",
+    "goals": [
+      "No league can become permanently unadministrable.",
+      "Concurrent qualifying submissions cannot exceed the attempt limit or lose runs on real Postgres.",
+      "Replay starting-grid reconstruction is always a valid permutation.",
+      "The replay scrubber is fully usable during playback with a mouse, keyboard, or screen reader.",
+      "The deferred low-severity debt from two review rounds is cleared in one sweep."
+    ],
+    "non_goals": [
+      "Do not migrate qualifyingRuns to a dedicated table unless row locking proves insufficient.",
+      "Do not add ownership-transfer UI or multi-admin support.",
+      "Do not rebalance card effects or change qualifying_focus semantics.",
+      "Do not add rate limiting, sessions, or new dependencies.",
+      "Do not restyle the replay view beyond the listed interaction fixes."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Self-healing league ownership",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "League authority",
+      "request_acs": ["AC1", "AC8"],
+      "problem": [
+        "A league whose ownerTeamId is null (backfill found no human team) or points at a deleted team returns 403 to every member on all admin endpoints.",
+        "There is no recovery path, so such a league is permanently unadministrable."
+      ],
+      "scope_in": [
+        "In requireAdminClaim, when ownerTeamId is null or the referenced team no longer exists in the league, resolve the earliest-created human team as the effective owner and persist it to league.ownerTeamId.",
+        "Keep the 403 for valid non-owner members unchanged.",
+        "Add API tests: null owner falls back to the earliest human team and persists; a dangling owner reference heals the same way; a non-owner still gets 403 after healing."
+      ],
+      "scope_out": [
+        "Ownership transfer endpoints or UI.",
+        "Multi-admin or role support."
+      ],
+      "acceptance_criteria": [
+        "AC1: A league with a null or dangling owner accepts the earliest human team's claim on admin endpoints and persists it as owner.",
+        "AC2: Non-owner members still receive 403 after the fallback resolves.",
+        "AC3: Tests cover both degraded-owner cases."
+      ]
+    },
+    {
+      "title": "Row locks and in-transaction reads for league writes",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Concurrency",
+      "request_acs": ["AC2", "AC3", "AC8"],
+      "problem": [
+        "Postgres Read Committed does not serialize the pass-3 read-then-update transactions on the qualifyingRuns JSON column, so concurrent submissions can still lose runs and exceed the attempt limit.",
+        "resolveCurrentGrandPrix simulates from state read before the claiming transaction, so a decision landing in the window is persisted but not simulated.",
+        "startNextGrandPrix buys bot cards and resets season points from a pre-transaction team snapshot, skipping teams created in the window."
+      ],
+      "scope_in": [
+        "Add a raw SELECT ... FOR UPDATE on the GrandPrix row at the top of the submitQualifyingRun and ensureBotQualifyingRuns transactions, guarded so the memory-db test path (no $transaction/raw support) keeps working.",
+        "Move the decision read and participant build of resolveCurrentGrandPrix inside the claiming transaction, or re-check the decision set inside the transaction and abort with a retryable conflict when it changed.",
+        "Re-read teams inside the startNextGrandPrix transaction for buyBotCards and the season points reset.",
+        "Keep the existing unique-constraint claim and guarded updateMany patterns untouched.",
+        "Add or extend tests asserting the attempt limit and consistent outcomes on sequential repeat calls; document that true concurrent-write coverage requires Postgres."
+      ],
+      "scope_out": [
+        "A dedicated QualifyingRun table (escalation path only if locking proves insufficient).",
+        "Advisory locks, queues, or serializable isolation globally."
+      ],
+      "acceptance_criteria": [
+        "AC1: On Postgres, concurrent qualifying submissions serialize on the row lock; runs are never lost and the attempt limit holds.",
+        "AC2: The resolved race result always reflects the decision set that was persisted at claim time.",
+        "AC3: Teams present at transaction time all receive the season points reset and bot purchases.",
+        "AC4: The in-memory test suite passes unchanged."
+      ]
+    },
+    {
+      "title": "Restore the positionChange invariant",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Simulation correctness",
+      "request_acs": ["AC4", "AC8"],
+      "problem": [
+        "classify computes positionChange as standingsRank - position + positionDelta, mixing arbitrary narrative card fudges into the real grid-to-finish delta.",
+        "ReplayView reconstructs the starting grid as position + positionChange, which stops being a valid permutation when the narrative delta is included."
+      ],
+      "scope_in": [
+        "Set classification positionChange to exactly standingsRank - position.",
+        "If any consumer still needs the narrative accumulator, expose it as a separate field on the classification entry; otherwise drop it from the result.",
+        "Verify ReplayView's grid reconstruction and any recap copy that references positions gained still read correctly.",
+        "Add a shared test asserting that position + positionChange over a full classification is a permutation of 1..n and matches the input standingsRank order."
+      ],
+      "scope_out": [
+        "Rebalancing card effects or event generation.",
+        "Changing the replay trace format."
+      ],
+      "acceptance_criteria": [
+        "AC1: positionChange equals the pure grid-to-finish delta for every classification entry.",
+        "AC2: ReplayView's reconstructed starting grid is always a valid permutation.",
+        "AC3: A test locks the invariant against future narrative additions."
+      ]
+    },
+    {
+      "title": "Replay scrubber interaction polish",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Web accessibility",
+      "request_acs": ["AC5", "AC8"],
+      "problem": [
+        "The rAF loop rewrites the range input's value every frame, so grabbing the thumb during playback snaps back and scrubbing while playing is unusable.",
+        "Weather icons and segment ticks overlay the transparent range input without pointer-events none, creating dead zones where clicks seek nowhere.",
+        "The scrubber announces only raw seconds to assistive tech."
+      ],
+      "scope_in": [
+        "Suppress the per-frame value write while the user is interacting (dragging ref set on pointerdown, cleared on pointerup) or pause playback on pointerdown.",
+        "Add pointer-events: none to .replay-weather and .replay-tick; keep seek-marker buttons interactive.",
+        "Set aria-valuetext on the range input with lap and time context, updated as the value changes.",
+        "Extend the existing web tests only where a behavior is cheaply assertable (aria-valuetext presence); manual verification notes for the drag behavior are acceptable."
+      ],
+      "scope_out": [
+        "Restyling the replay bar.",
+        "Touch-gesture or pinch support."
+      ],
+      "acceptance_criteria": [
+        "AC1: Dragging the scrubber during playback tracks the pointer without snapping back.",
+        "AC2: Every horizontal position on the bar is clickable for seeking except the marker buttons.",
+        "AC3: Assistive tech announces lap/time context, not just raw seconds."
+      ]
+    },
+    {
+      "title": "Small correctness edges across web and shared",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Correctness polish",
+      "request_acs": ["AC6", "AC8"],
+      "problem": [
+        "pickWeighted can return a zero-weight entry when the PRNG yields exactly 0, and the existing test's fixed seeds never hit that path.",
+        "Other players' livery colors reach CSS custom properties unvalidated on the client.",
+        "The garage submits untrimmed team names; the modal closes on clicks that merely end on the overlay; focus restore can drop to body when the trigger unmounted; league-config numeric fields collapse to 0 when cleared while typing."
+      ],
+      "scope_in": [
+        "Guard pickWeighted so entries with effective weight zero are never returned; add a test that forces cursor 0 (mock or seed search).",
+        "Add a small hex-color validator in the web (mirroring the API's isHexColor) applied where livery values become CSS variables, falling back to the default livery.",
+        "Trim the team name in GarageView before enable-check and submit.",
+        "Close the modal only when the pointer press started on the overlay (record mousedown target).",
+        "Guard focus restore with document.contains and fall back to no-op when the trigger is gone.",
+        "Hold the raw string for league-config numeric inputs in local state (or clamp on blur) so intermediate empty states are allowed; clampNumber at submit stays.",
+        "Extend existing test files for the changed helpers and Modal behavior."
+      ],
+      "scope_out": [
+        "Server-side livery re-validation (already normalized on write).",
+        "New validation libraries."
+      ],
+      "acceptance_criteria": [
+        "AC1: pickWeighted provably never returns a zero-weight entry.",
+        "AC2: Non-hex livery values render as the default livery colors.",
+        "AC3: Team names persist trimmed; text selection ending on the overlay no longer closes the modal; focus restore never throws or focuses a detached node; clearing a numeric field while typing is possible and submit still clamps."
+      ]
+    },
+    {
+      "title": "Deferred debt sweep: risk-path tests, script and config cleanups",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Debt cleanup",
+      "request_acs": ["AC7", "AC8"],
+      "problem": [
+        "The mechanical_scare and mechanic_save branches are the most consequential untested simulation paths.",
+        "The balance script computes cardDelta via a ten-level nested ternary; scripts resolve the shared package through two different paths; shared tests pay jsdom startup for nothing; config.ts accepts a NaN API_PORT; render.yaml migrates during build."
+      ],
+      "scope_in": [
+        "Add a deterministic simulateRace test fixture (seed search allowed) that triggers a mechanical_scare and one that triggers a fleet_maintenance mechanic_save, asserting the score/position/event effects.",
+        "Replace the balance script's nested ternary with a Record lookup plus the weather conditionals.",
+        "Import shared through one consistent path in scripts.",
+        "Scope jsdom to web tests (environmentMatchGlobs or per-file pragma) with node as the default environment.",
+        "Validate API_PORT: fall back to the default when parsing yields NaN.",
+        "Move prisma migrate deploy from buildCommand to preDeployCommand in render.yaml."
+      ],
+      "scope_out": [
+        "Testing weather-transition distributions or narrative event text.",
+        "Changing the release contract or CI workflows beyond the render.yaml line."
+      ],
+      "acceptance_criteria": [
+        "AC1: Forced mechanical_scare and mechanic_save outcomes are pinned by deterministic tests.",
+        "AC2: The balance script still produces identical output with the lookup table.",
+        "AC3: Shared tests run under node, the API rejects NaN ports safely, and Render applies migrations pre-deploy."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate repo review remediation pass 4",
+    "plan": [
+      "Read req_044 and task_045 first; this pass extends the same patterns (runWrite transactions, unique-constraint claims, shared enum constants).",
+      "Fix positionChange first (small, shared, unblocks the replay verification in later items) with its permutation test.",
+      "Make ownership self-healing in requireAdminClaim with tests for null and dangling owners.",
+      "Add the FOR UPDATE row locks and move the resolve/startNext reads inside their transactions, keeping the memory-db path working.",
+      "Land the replay scrubber interaction fixes and the small web/shared correctness edges with their test extensions.",
+      "Sweep the deferred debt: risk-path tests, balance-script lookup, single shared import path, node vitest env, API_PORT validation, render.yaml preDeployCommand.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/repo-review-remediation-pass-4.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

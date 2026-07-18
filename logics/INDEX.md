@@ -32,6 +32,7 @@
 | [prod_013_pit_wall_visual_identity_product_brief](product/prod_013_pit_wall_visual_identity_product_brief.md) | Pit Wall Visual Identity Product Brief | Settled |  |  | product/prod_013_pit_wall_visual_identity_product_brief.md |
 | [prod_014_api_surface_follow_up_hardening_product_brief](product/prod_014_api_surface_follow_up_hardening_product_brief.md) | API Surface Follow-up Hardening Product Brief | Settled |  |  | product/prod_014_api_surface_follow_up_hardening_product_brief.md |
 | [prod_015_repo_review_remediation_pass_3_product_brief](product/prod_015_repo_review_remediation_pass_3_product_brief.md) | Repo Review Remediation Pass 3 Product Brief | Settled |  |  | product/prod_015_repo_review_remediation_pass_3_product_brief.md |
+| [prod_016_repo_review_remediation_pass_4_product_brief](product/prod_016_repo_review_remediation_pass_4_product_brief.md) | Repo Review Remediation Pass 4 Product Brief | Proposed |  |  | product/prod_016_repo_review_remediation_pass_4_product_brief.md |
 
 ## Roadmaps
 
@@ -89,6 +90,7 @@
 | [req_042_adopt_the_pit_wall_visual_identity_across_the_web_app](request/req_042_adopt_the_pit_wall_visual_identity_across_the_web_app.md) | Adopt the Pit Wall visual identity across the web app | Done |  |  | request/req_042_adopt_the_pit_wall_visual_identity_across_the_web_app.md |
 | [req_043_api_surface_follow_up_hardening](request/req_043_api_surface_follow_up_hardening.md) | API surface follow-up hardening | Done |  |  | request/req_043_api_surface_follow_up_hardening.md |
 | [req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility](request/req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility.md) | Repo review remediation pass 3: league ownership, robustness, and web accessibility | Done |  |  | request/req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility.md |
+| [req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish](request/req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish.md) | Repo review remediation pass 4: ownership resilience, race-window closure, and replay polish | Draft |  |  | request/req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish.md |
 
 ## Backlog
 
@@ -191,6 +193,12 @@
 | [item_095_fix_balance_script_imports_and_typecheck_scripts_directory](backlog/item_095_fix_balance_script_imports_and_typecheck_scripts_directory.md) | Fix balance script imports and typecheck scripts directory | Done |  | 100% | backlog/item_095_fix_balance_script_imports_and_typecheck_scripts_directory.md |
 | [item_096_web_accessibility_and_numeric_input_clamping](backlog/item_096_web_accessibility_and_numeric_input_clamping.md) | Web accessibility and numeric input clamping | Done |  | 100% | backlog/item_096_web_accessibility_and_numeric_input_clamping.md |
 | [item_097_test_prng_determinism_and_reward_math](backlog/item_097_test_prng_determinism_and_reward_math.md) | Test PRNG determinism and reward math | Done |  | 100% | backlog/item_097_test_prng_determinism_and_reward_math.md |
+| [item_098_self_healing_league_ownership](backlog/item_098_self_healing_league_ownership.md) | Self-healing league ownership | Ready |  | 0% | backlog/item_098_self_healing_league_ownership.md |
+| [item_099_row_locks_and_in_transaction_reads_for_league_writes](backlog/item_099_row_locks_and_in_transaction_reads_for_league_writes.md) | Row locks and in-transaction reads for league writes | Ready |  | 0% | backlog/item_099_row_locks_and_in_transaction_reads_for_league_writes.md |
+| [item_100_restore_the_positionchange_invariant](backlog/item_100_restore_the_positionchange_invariant.md) | Restore the positionChange invariant | Ready |  | 0% | backlog/item_100_restore_the_positionchange_invariant.md |
+| [item_101_replay_scrubber_interaction_polish](backlog/item_101_replay_scrubber_interaction_polish.md) | Replay scrubber interaction polish | Ready |  | 0% | backlog/item_101_replay_scrubber_interaction_polish.md |
+| [item_102_small_correctness_edges_across_web_and_shared](backlog/item_102_small_correctness_edges_across_web_and_shared.md) | Small correctness edges across web and shared | Ready |  | 0% | backlog/item_102_small_correctness_edges_across_web_and_shared.md |
+| [item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups](backlog/item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups.md) | Deferred debt sweep: risk-path tests, script and config cleanups | Ready |  | 0% | backlog/item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups.md |
 
 ## Tasks
 
@@ -241,3 +249,4 @@
 | [task_043_orchestrate_the_pit_wall_visual_identity_rollout](tasks/task_043_orchestrate_the_pit_wall_visual_identity_rollout.md) | Orchestrate the Pit Wall visual identity rollout | Done | Claude (Fable 5) | 100% | tasks/task_043_orchestrate_the_pit_wall_visual_identity_rollout.md |
 | [task_044_orchestrate_api_surface_follow_up_hardening](tasks/task_044_orchestrate_api_surface_follow_up_hardening.md) | Orchestrate API surface follow-up hardening | Done | codex-work4 | 100% | tasks/task_044_orchestrate_api_surface_follow_up_hardening.md |
 | [task_045_orchestrate_repo_review_remediation_pass_3](tasks/task_045_orchestrate_repo_review_remediation_pass_3.md) | Orchestrate repo review remediation pass 3 | Done | claude | 100% | tasks/task_045_orchestrate_repo_review_remediation_pass_3.md |
+| [task_046_orchestrate_repo_review_remediation_pass_4](tasks/task_046_orchestrate_repo_review_remediation_pass_4.md) | Orchestrate repo review remediation pass 4 | Ready |  | 0% | tasks/task_046_orchestrate_repo_review_remediation_pass_4.md |

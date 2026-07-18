@@ -1,0 +1,509 @@
+{
+  "budgets": {
+    "max_docs": 32,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish item_098_self_healing_league_ownership item_099_row_locks_and_in_transaction_reads_for_league_writes item_100_restore_the_positionchange_invariant item_101_replay_scrubber_interaction_polish item_102_small_correctness_edges_across_web_and_shared item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups task_046_orchestrate_repo_review_remediation_pass_4 --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_098_self_healing_league_ownership",
+          "item_099_row_locks_and_in_transaction_reads_for_league_writes",
+          "item_100_restore_the_positionchange_invariant",
+          "item_101_replay_scrubber_interaction_polish",
+          "item_102_small_correctness_edges_across_web_and_shared",
+          "item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups"
+        ],
+        "prod": [
+          "prod_016_repo_review_remediation_pass_4_product_brief"
+        ],
+        "req": [
+          "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish"
+        ],
+        "task": [
+          "task_046_orchestrate_repo_review_remediation_pass_4"
+        ]
+      },
+      "path": "logics/product/prod_016_repo_review_remediation_pass_4_product_brief.md",
+      "ref": "prod_016_repo_review_remediation_pass_4_product_brief",
+      "status": "Proposed",
+      "title": "Repo Review Remediation Pass 4 Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_092_add_league_owner_and_gate_admin_mutations_on_it"
+        ],
+        "prod": [
+          "prod_015_repo_review_remediation_pass_3_product_brief"
+        ],
+        "req": [
+          "req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility"
+        ],
+        "task": [
+          "task_045_orchestrate_repo_review_remediation_pass_3"
+        ]
+      },
+      "path": "logics/product/prod_015_repo_review_remediation_pass_3_product_brief.md",
+      "ref": "prod_015_repo_review_remediation_pass_3_product_brief",
+      "status": "Settled",
+      "title": "Repo Review Remediation Pass 3 Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, repo review remediation pass 4: ownership resilience, race-window closure, and replay polish, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Repo review remediation pass 4: ownership resilience, race-window closure, and replay polish",
+        "use when": "You need to implement or review the scaffolded workflow for Repo review remediation pass 4: ownership resilience, race-window closure, and replay polish."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_098_self_healing_league_ownership",
+          "item_099_row_locks_and_in_transaction_reads_for_league_writes",
+          "item_100_restore_the_positionchange_invariant",
+          "item_101_replay_scrubber_interaction_polish",
+          "item_102_small_correctness_edges_across_web_and_shared",
+          "item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups"
+        ],
+        "prod": [
+          "prod_016_repo_review_remediation_pass_4_product_brief"
+        ],
+        "req": [
+          "req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility",
+          "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish"
+        ],
+        "task": [
+          "task_045_orchestrate_repo_review_remediation_pass_3"
+        ]
+      },
+      "path": "logics/request/req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish.md",
+      "ref": "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Repo review remediation pass 4: ownership resilience, race-window closure, and replay polish"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, repo review remediation pass 3: league ownership, robustness, and web accessibility, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Repo review remediation pass 3: league ownership, robustness, and web accessibility",
+        "use when": "You need to implement or review the scaffolded workflow for Repo review remediation pass 3: league ownership, robustness, and web accessibility."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_092_add_league_owner_and_gate_admin_mutations_on_it",
+          "item_093_validate_persisted_decisions_and_cap_preview_participants",
+          "item_094_make_concurrent_league_write_paths_safe",
+          "item_095_fix_balance_script_imports_and_typecheck_scripts_directory",
+          "item_096_web_accessibility_and_numeric_input_clamping",
+          "item_097_test_prng_determinism_and_reward_math"
+        ],
+        "prod": [
+          "prod_015_repo_review_remediation_pass_3_product_brief"
+        ],
+        "req": [
+          "req_041_api_integrity_hardening_from_repo_review",
+          "req_043_api_surface_follow_up_hardening",
+          "req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility"
+        ]
+      },
+      "path": "logics/request/req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility.md",
+      "ref": "req_044_repo_review_remediation_pass_3_league_ownership_robustness_and_web_accessibility",
+      "schema_version": "1.0",
+      "status": "Done",
+      "title": "Repo review remediation pass 3: league ownership, robustness, and web accessibility"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, self-healing league ownership, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Self-healing league ownership",
+        "use when": "Implementing the scaffolded slice for Self-healing league ownership."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_098_self_healing_league_ownership"
+        ],
+        "prod": [
+          "prod_016_repo_review_remediation_pass_4_product_brief"
+        ],
+        "req": [
+          "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish"
+        ],
+        "task": [
+          "task_046_orchestrate_repo_review_remediation_pass_4"
+        ]
+      },
+      "path": "logics/backlog/item_098_self_healing_league_ownership.md",
+      "ref": "item_098_self_healing_league_ownership",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Self-healing league ownership"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, row locks and in-transaction reads for league writes, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Row locks and in-transaction reads for league writes",
+        "use when": "Implementing the scaffolded slice for Row locks and in-transaction reads for league writes."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_099_row_locks_and_in_transaction_reads_for_league_writes"
+        ],
+        "prod": [
+          "prod_016_repo_review_remediation_pass_4_product_brief"
+        ],
+        "req": [
+          "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish"
+        ],
+        "task": [
+          "task_046_orchestrate_repo_review_remediation_pass_4"
+        ]
+      },
+      "path": "logics/backlog/item_099_row_locks_and_in_transaction_reads_for_league_writes.md",
+      "ref": "item_099_row_locks_and_in_transaction_reads_for_league_writes",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Row locks and in-transaction reads for league writes"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate repo review remediation pass 4",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_098_self_healing_league_ownership",
+          "item_099_row_locks_and_in_transaction_reads_for_league_writes",
+          "item_100_restore_the_positionchange_invariant",
+          "item_101_replay_scrubber_interaction_polish",
+          "item_102_small_correctness_edges_across_web_and_shared",
+          "item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups"
+        ],
+        "prod": [
+          "prod_016_repo_review_remediation_pass_4_product_brief"
+        ],
+        "req": [
+          "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish"
+        ],
+        "task": [
+          "task_046_orchestrate_repo_review_remediation_pass_4"
+        ]
+      },
+      "path": "logics/tasks/task_046_orchestrate_repo_review_remediation_pass_4.md",
+      "ref": "task_046_orchestrate_repo_review_remediation_pass_4",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate repo review remediation pass 4"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_098_self_healing_league_ownership",
+          "item_099_row_locks_and_in_transaction_reads_for_league_writes",
+          "item_100_restore_the_positionchange_invariant",
+          "item_101_replay_scrubber_interaction_polish",
+          "item_102_small_correctness_edges_across_web_and_shared",
+          "item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups"
+        ],
+        "prod": [
+          "prod_016_repo_review_remediation_pass_4_product_brief"
+        ],
+        "req": [
+          "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish"
+        ],
+        "task": [
+          "task_046_orchestrate_repo_review_remediation_pass_4"
+        ]
+      },
+      "path": "logics/product/prod_016_repo_review_remediation_pass_4_product_brief.md",
+      "ref": "prod_016_repo_review_remediation_pass_4_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Repo Review Remediation Pass 4 Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, restore the positionchange invariant, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Restore the positionChange invariant",
+        "use when": "Implementing the scaffolded slice for Restore the positionChange invariant."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_100_restore_the_positionchange_invariant"
+        ],
+        "prod": [
+          "prod_016_repo_review_remediation_pass_4_product_brief"
+        ],
+        "req": [
+          "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish"
+        ],
+        "task": [
+          "task_046_orchestrate_repo_review_remediation_pass_4"
+        ]
+      },
+      "path": "logics/backlog/item_100_restore_the_positionchange_invariant.md",
+      "ref": "item_100_restore_the_positionchange_invariant",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Restore the positionChange invariant"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, replay scrubber interaction polish, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Replay scrubber interaction polish",
+        "use when": "Implementing the scaffolded slice for Replay scrubber interaction polish."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_101_replay_scrubber_interaction_polish"
+        ],
+        "prod": [
+          "prod_016_repo_review_remediation_pass_4_product_brief"
+        ],
+        "req": [
+          "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish"
+        ],
+        "task": [
+          "task_046_orchestrate_repo_review_remediation_pass_4"
+        ]
+      },
+      "path": "logics/backlog/item_101_replay_scrubber_interaction_polish.md",
+      "ref": "item_101_replay_scrubber_interaction_polish",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Replay scrubber interaction polish"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, small correctness edges across web and shared, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Small correctness edges across web and shared",
+        "use when": "Implementing the scaffolded slice for Small correctness edges across web and shared."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_102_small_correctness_edges_across_web_and_shared"
+        ],
+        "prod": [
+          "prod_016_repo_review_remediation_pass_4_product_brief"
+        ],
+        "req": [
+          "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish"
+        ],
+        "task": [
+          "task_046_orchestrate_repo_review_remediation_pass_4"
+        ]
+      },
+      "path": "logics/backlog/item_102_small_correctness_edges_across_web_and_shared.md",
+      "ref": "item_102_small_correctness_edges_across_web_and_shared",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Small correctness edges across web and shared"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, deferred debt sweep: risk-path tests, script and config cleanups, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Deferred debt sweep: risk-path tests, script and config cleanups",
+        "use when": "Implementing the scaffolded slice for Deferred debt sweep: risk-path tests, script and config cleanups."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups"
+        ],
+        "prod": [
+          "prod_016_repo_review_remediation_pass_4_product_brief"
+        ],
+        "req": [
+          "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish"
+        ],
+        "task": [
+          "task_046_orchestrate_repo_review_remediation_pass_4"
+        ]
+      },
+      "path": "logics/backlog/item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups.md",
+      "ref": "item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Deferred debt sweep: risk-path tests, script and config cleanups"
+    }
+  ],
+  "estimates": {
+    "char_count": 12118,
+    "companion_doc_count": 2,
+    "doc_count": 10
+  },
+  "generated_at": "2026-07-18T10:05:12Z",
+  "handoff": {
+    "companion_doc_count": 2,
+    "enabled": true,
+    "source_refs": [
+      "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish",
+      "item_098_self_healing_league_ownership",
+      "item_099_row_locks_and_in_transaction_reads_for_league_writes",
+      "item_100_restore_the_positionchange_invariant",
+      "item_101_replay_scrubber_interaction_polish",
+      "item_102_small_correctness_edges_across_web_and_shared",
+      "item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups",
+      "task_046_orchestrate_repo_review_remediation_pass_4"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 425,
+      "fr": 425
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish,item_098_self_healing_league_ownership,item_099_row_locks_and_in_transaction_reads_for_league_writes,item_100_restore_the_positionchange_invariant,item_101_replay_scrubber_interaction_polish,item_102_small_correctness_edges_across_web_and_shared,item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups,task_046_orchestrate_repo_review_remediation_pass_4",
+  "refs": [
+    "req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish",
+    "item_098_self_healing_league_ownership",
+    "item_099_row_locks_and_in_transaction_reads_for_league_writes",
+    "item_100_restore_the_positionchange_invariant",
+    "item_101_replay_scrubber_interaction_polish",
+    "item_102_small_correctness_edges_across_web_and_shared",
+    "item_103_deferred_debt_sweep_risk_path_tests_script_and_config_cleanups",
+    "task_046_orchestrate_repo_review_remediation_pass_4"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "version_metadata: missing required evidence",
+      "changelog: missing required evidence",
+      "local_validation: missing required evidence",
+      "git_push: missing required evidence",
+      "ci: missing required evidence",
+      "github_release: missing required evidence",
+      "production_deployment: missing required evidence"
+    ],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "version_metadata: missing required evidence",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "pending"
+      },
+      {
+        "blocking_reason": "missing required evidence",
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "pending"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "preparing",
+    "target_version": "0.3.6"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_046_orchestrate_repo_review_remediation_pass_4.md",
+      "ref": "task_046_orchestrate_repo_review_remediation_pass_4"
+    }
+  ]
+}

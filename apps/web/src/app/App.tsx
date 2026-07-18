@@ -32,7 +32,7 @@ type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
 };
 type ProfileMode = "choice" | "create" | "recover";
 type SetupMode = "choice" | "create" | "join";
-type Notification = { id: number; text: string; tone: "info" | "error" };
+type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
 
 function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
   const impacts: MapTraitImpacts = {};
@@ -203,13 +203,15 @@ export function App() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const notificationId = useRef(0);
 
-  function pushNotification(text: string, tone: Notification["tone"] = "info") {
+  function pushNotification(text: string, tone: Notification["tone"] = "info", persistent = tone === "error") {
     const id = notificationId.current + 1;
     notificationId.current = id;
-    queueMicrotask(() => {
-      setNotifications((items) => (items.at(-1)?.text === text ? items : [...items, { id, text, tone }].slice(-5)));
-      window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 5_000);
+    setNotifications((items) => {
+      const kept = items.filter((item) => item.persistent);
+      return kept.at(-1)?.text === text ? kept : [...kept, { id, text, tone, persistent }].slice(-2);
     });
+    if (!persistent) window.setTimeout(() => setNotifications((items) => items.filter((item) => item.id !== id)), 4_000);
+    return id;
   }
 
   function showStatus(text: string, tone: Notification["tone"] = "info", notify = true) {
@@ -218,7 +220,11 @@ export function App() {
   }
 
   function pushCommandHint(nextDeskState: "prepare" | "ready" | "resolved") {
-    pushNotification(t(`command_hint_${nextDeskState}` as TranslationKey, locale));
+    setMessage(t(`command_hint_${nextDeskState}` as TranslationKey, locale));
+  }
+
+  function clearTransientNotifications() {
+    setNotifications((items) => items.filter((item) => item.persistent));
   }
 
   function dismissNotification(id: number) {
@@ -611,7 +617,8 @@ export function App() {
 
   async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify = true) {
     setStatus("loading");
-    showStatus(nextMessage, "info", notify);
+    setMessage(nextMessage);
+    if (notify) pushNotification(nextMessage);
 
     try {
       await action();
@@ -625,6 +632,7 @@ export function App() {
         return;
       }
       setTechnicalError(error instanceof Error ? error.message : String(error));
+      clearTransientNotifications();
       showStatus(error instanceof TypeError ? tt("status_api_unavailable") : tt("status_request_failed"), "error", notify);
     }
   }

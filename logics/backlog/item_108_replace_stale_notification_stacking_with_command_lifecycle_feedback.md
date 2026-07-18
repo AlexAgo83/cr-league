@@ -1,10 +1,10 @@
 ## item_108_replace_stale_notification_stacking_with_command_lifecycle_feedback - Replace stale notification stacking with command lifecycle feedback
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 25%
 > Complexity: Medium
 > Theme: Feedback and trust
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

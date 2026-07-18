@@ -1,10 +1,10 @@
 ## item_115_show_player_race_focus_context_during_replay - Show player race focus context during replay
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 10%
 > Complexity: Medium
 > Theme: Player replay comprehension
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

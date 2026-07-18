@@ -341,7 +341,8 @@ describe("App", () => {
 
     await act(async () => {});
     expect(screen.getByText("League created. Submit your race directive.")).toBeTruthy();
-    act(() => vi.advanceTimersByTime(5_000));
+    expect(screen.queryByText("Creating league...")).toBe(null);
+    act(() => vi.advanceTimersByTime(4_000));
     expect(screen.queryByText("League created. Submit your race directive.")).toBe(null);
   });
 

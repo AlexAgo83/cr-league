@@ -1,10 +1,10 @@
 ## item_114_generate_race_director_beats_from_replay_facts_and_trace - Generate race-director beats from replay facts and trace
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 10%
 > Complexity: Medium
 > Theme: Replay storytelling
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

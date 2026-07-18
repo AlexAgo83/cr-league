@@ -1,10 +1,10 @@
 ## item_113_add_deterministic_grid_start_staging_to_replay - Add deterministic grid start staging to replay
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 10%
 > Complexity: Medium
 > Theme: Replay start clarity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

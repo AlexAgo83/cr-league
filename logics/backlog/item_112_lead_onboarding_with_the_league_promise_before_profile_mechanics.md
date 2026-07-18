@@ -1,10 +1,10 @@
 ## item_112_lead_onboarding_with_the_league_promise_before_profile_mechanics - Lead onboarding with the league promise before profile mechanics
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 25%
 > Complexity: Medium
 > Theme: Onboarding
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

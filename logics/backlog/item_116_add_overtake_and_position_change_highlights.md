@@ -1,10 +1,10 @@
 ## item_116_add_overtake_and_position_change_highlights - Add overtake and position-change highlights
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 10%
 > Complexity: Medium
 > Theme: Replay action feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

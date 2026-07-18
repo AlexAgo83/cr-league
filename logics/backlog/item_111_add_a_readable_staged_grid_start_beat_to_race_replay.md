@@ -1,10 +1,10 @@
 ## item_111_add_a_readable_staged_grid_start_beat_to_race_replay - Add a readable staged grid-start beat to race replay
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 25%
 > Complexity: Medium
 > Theme: Replay clarity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -914,22 +914,23 @@ label small {
 
 .notification-stack {
   align-items: flex-start;
-  bottom: 104px;
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: column;
   gap: 8px;
   left: 50%;
   max-width: 1200px;
   pointer-events: none;
   position: fixed;
+  top: 96px;
   transform: translateX(-50%);
   width: calc(100% - var(--space-page) * 2);
   z-index: 60;
 }
 
 .setup-shell > .notification-stack {
-  bottom: 16px;
   position: fixed;
+  top: auto;
+  bottom: 16px;
 }
 
 .floating-notification {
@@ -988,6 +989,10 @@ label small {
 .floating-notification.error {
   border-color: rgb(248 113 113 / 0.5);
   color: #fecaca;
+}
+
+.floating-notification.error button {
+  animation: none;
 }
 
 @keyframes notification-countdown {

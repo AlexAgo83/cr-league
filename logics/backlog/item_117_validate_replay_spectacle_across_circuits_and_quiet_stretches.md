@@ -1,10 +1,10 @@
 ## item_117_validate_replay_spectacle_across_circuits_and_quiet_stretches - Validate replay spectacle across circuits and quiet stretches
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 10%
 > Complexity: Medium
 > Theme: Replay playtest validation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -1,10 +1,10 @@
 ## item_109_make_mobile_race_guidance_readable_without_shrinking_the_circuit - Make mobile race guidance readable without shrinking the circuit
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 25%
 > Complexity: Medium
 > Theme: Mobile race UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

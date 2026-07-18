@@ -1,10 +1,10 @@
 ## item_110_replace_automatic_chrono_replay_with_a_compact_qualifying_result_flow - Replace automatic chrono replay with a compact qualifying result flow
 > From version: 0.3.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 25%
 > Complexity: Medium
 > Theme: Qualifying flow
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

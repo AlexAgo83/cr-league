@@ -813,10 +813,24 @@ label small {
 }
 
 .saved-league-card {
+  background: rgb(16 14 18 / 0.42);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
   display: grid;
   gap: 4px;
   min-width: 0;
   width: 100%;
+}
+
+.saved-league-card:not(:disabled):hover,
+.saved-league-card:not(:disabled):focus-visible {
+  background: color-mix(in srgb, var(--color-accent) 12%, transparent);
+  border-color: var(--color-accent);
+}
+
+.saved-league-card:disabled {
+  background: rgb(16 14 18 / 0.42);
+  color: var(--color-muted);
 }
 
 .saved-league-arrow {

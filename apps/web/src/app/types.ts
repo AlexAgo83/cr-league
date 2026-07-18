@@ -82,7 +82,7 @@ export type ProfileSession = {
   }>;
 };
 
-export type GameView = "drive" | "plan" | "championship" | "garage";
+export type GameView = "drive" | "plan" | "championship" | "garage" | "changelog";
 
 export const GAME_VIEWS: GameView[] = ["drive", "plan", "championship", "garage"];
 

@@ -362,8 +362,18 @@
 }
 
 .profile-menu-version {
+  background: transparent;
+  border: 0;
   color: var(--color-muted);
-  text-align: right;
+  cursor: pointer;
+  font: inherit;
+  padding: 4px;
+  text-align: center;
+}
+
+.profile-menu-version:hover,
+.profile-menu-version:focus-visible {
+  color: var(--color-accent);
 }
 
 /* ---------- Views ---------- */
@@ -393,6 +403,41 @@
   margin: 0 auto;
   max-width: 860px;
   position: relative;
+}
+
+.changelog-view {
+  display: grid;
+  gap: 16px;
+}
+
+.changelog-hero p {
+  color: var(--color-muted);
+  margin: 0;
+}
+
+.changelog-list {
+  display: grid;
+  gap: 12px;
+}
+
+.changelog-entry header {
+  display: grid;
+  gap: 2px;
+}
+
+.changelog-entry header span {
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: 0.84rem;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.changelog-entry ul {
+  color: var(--color-muted);
+  margin: 10px 0 0;
+  padding-left: 18px;
 }
 
 .championship-view {
@@ -3893,6 +3938,7 @@ button.primary-command {
 .report-view .report-rewards li,
 .report-view .replay-timeline li,
 .plan-view .directive-briefing span,
+.changelog-entry,
 .plan-view .choice-card,
 .plan-view .directive-summary,
 .setup-main-panel .setup-choice {

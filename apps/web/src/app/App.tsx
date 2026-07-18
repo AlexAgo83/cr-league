@@ -6,6 +6,7 @@ import { cardFit, clampNumber, completedSeasonSummaries, startingGrid, strongest
 import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
+import { ChangelogView } from "../features/ChangelogView.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
@@ -756,7 +757,17 @@ export function App() {
           >
             {tt("action_forget_profile")}
           </button>
-          <small className="profile-menu-version">v{APP_VERSION}</small>
+          <button
+            type="button"
+            className="profile-menu-version"
+            onClick={() => {
+              setGameView("changelog");
+              setProfileOpen(false);
+              setResultOpen(false);
+            }}
+          >
+            v{APP_VERSION}
+          </button>
         </div>
       ) : null}
     </div>
@@ -1401,6 +1412,7 @@ export function App() {
             tt={tt}
           />
         ) : null}
+        {gameView === "changelog" ? <ChangelogView currentVersion={APP_VERSION} tt={tt} /> : null}
       </section>
 
       {notificationStack}

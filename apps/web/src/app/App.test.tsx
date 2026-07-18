@@ -734,6 +734,21 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
   });
 
+  it("opens release notes from the centered profile version", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+    render(<App />);
+    createLeagueFromSetup();
+
+    expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "v0.3.6" }));
+
+    expect(screen.getByRole("heading", { name: "What's new" })).toBeTruthy();
+    expect(screen.getByText("Current local version: v0.3.6.")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Visual identity and mobile polish" })).toBeTruthy();
+  });
+
   it("closes the profile menu when focus leaves it", async () => {
     saveProfile();
     render(<App />);

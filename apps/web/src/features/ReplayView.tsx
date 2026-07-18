@@ -446,7 +446,7 @@ function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator
   const team = names.get(event.teamId) ?? "";
   const context = event.cardId ? tt(`card_${event.cardId}` as TranslationKey) : event.type === "weather_change" ? tt("event_weather_change") : team;
   const impact = event.positionDelta
-    ? `${event.positionDelta > 0 ? "+" : ""}${event.positionDelta} pos`
+    ? `${event.positionDelta > 0 ? "+" : ""}${event.positionDelta} ${event.cardId ? "boost" : "pos"}`
     : event.severity === "major"
       ? tt("event_major")
       : tt("event_ambience");

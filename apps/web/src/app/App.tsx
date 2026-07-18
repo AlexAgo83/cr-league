@@ -349,6 +349,7 @@ export function App() {
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
+  const [qualifyingCommandClicked, setQualifyingCommandClicked] = useState(false);
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
@@ -481,6 +482,7 @@ export function App() {
   const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
   const currentCircuit = circuitForRound(leagueState?.currentGrandPrix.round ?? 1);
+  const currentGrandPrixKey = leagueState ? `${leagueState.league.id}:${leagueState.currentGrandPrix.season}:${leagueState.currentGrandPrix.round}` : "";
   const raceDayPhase =
     isResolved
       ? "finished"
@@ -521,6 +523,10 @@ export function App() {
     if (gameView === "plan") openOnboardingHelp("plan");
     if (gameView === "garage") openOnboardingHelp("garage");
   }, [gameView, leagueState, onboardingHelp, preferencesResetSignal, raceDayPhase]);
+
+  useEffect(() => {
+    setQualifyingCommandClicked(false);
+  }, [currentGrandPrixKey]);
 
   useEffect(() => {
     if (!leagueState) {
@@ -635,6 +641,7 @@ export function App() {
 
   function openQualifyingRun() {
     if (qualifyingDisabled) return;
+    setQualifyingCommandClicked(true);
     setQualifyingConfirmOpen(true);
   }
 
@@ -1758,7 +1765,12 @@ export function App() {
                               >
                                 {tt("action_edit_plan")}
                               </button>
-                              <button className="primary-command" type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
+                              <button
+                                className={`primary-command${!qualifyingCommandClicked && qualifyingAttemptsUsed === 0 ? " highlight-command" : ""}`}
+                                type="button"
+                                onClick={openQualifyingRun}
+                                disabled={qualifyingDisabled}
+                              >
                                 {tt("action_qualifying")}
                               </button>
                               <button

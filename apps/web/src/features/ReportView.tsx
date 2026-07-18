@@ -1,4 +1,4 @@
-import { RACE_SEGMENTS, type RaceResult } from "@cr-league/shared";
+import { RACE_SEGMENTS, type RaceEvent, type RaceResult } from "@cr-league/shared";
 import type { CityCircuit } from "../app/circuits.js";
 import type { TranslationKey } from "../i18n/index.js";
 import {
@@ -137,7 +137,7 @@ export function ReportView({
                     <div>
                       <strong>{names.get(event.teamId) ?? tt("event_major")}</strong>
                       <p>{eventReportText(event, names, tt)}</p>
-                      <small>{describeEventImpact(event.positionDelta, tt)}</small>
+                      <small>{describeEventImpact(event, tt)}</small>
                     </div>
                   </li>
                 ))}
@@ -164,7 +164,10 @@ export function ReportView({
   );
 }
 
-function describeEventImpact(delta: number, tt: Translator) {
+function describeEventImpact(event: RaceEvent, tt: Translator) {
+  const delta = event.positionDelta;
+  if (event.cardId && delta > 0) return `${tt("report_event_boost")} +${delta}`;
+  if (event.cardId && delta < 0) return `${tt("report_event_boost")} ${delta}`;
   if (delta > 0) return `${tt("report_event_impact")} +${delta}`;
   if (delta < 0) return `${tt("report_event_impact")} ${delta}`;
   return tt("report_event_neutral");

@@ -4276,6 +4276,11 @@ button.primary-command {
   min-width: 180px;
 }
 
+button.highlight-command:not(:disabled) {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-accent) 28%, transparent), 0 0 22px color-mix(in srgb, var(--color-accent) 34%, transparent);
+}
+
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {

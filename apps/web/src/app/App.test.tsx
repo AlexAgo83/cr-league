@@ -620,10 +620,12 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Review lap time" }).hasAttribute("disabled")).toBe(true);
     expect(screen.getByRole("button", { name: "Review lap time" }).className).toContain("primary-command");
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("New lap time");
+    expect(screen.getByRole("button", { name: "New lap time" }).className).toContain("highlight-command");
 
     // Qualifying modal from the race phase panel
     expect(screen.queryByText("Wait for directives")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "New lap time" }));
+    expect(document.querySelector(".race-phase-actions button.highlight-command")).toBe(null);
     expect(screen.getByRole("dialog", { name: "Run a lap time?" })).toBeTruthy();
     expect(screen.getByText("This attempt uses your current directive and the forecast conditions. Attempts left 3/3")).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "New lap time" }).at(-1)!);
@@ -731,7 +733,7 @@ describe("App", () => {
     expect(document.querySelector(".replay-marker")?.getAttribute("title")).toContain("Rain Grip");
     fireEvent.click(document.querySelector(".replay-marker")!);
     expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("Rain Grip");
-    expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("+2 pos");
+    expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("+2 boost");
     expect(document.querySelector(".replay-map-panel")?.className).toContain("circuit-weather-light_rain");
     expect(document.querySelector(".map-car-event")?.textContent).toContain("Rain Grip");
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Volt Union");

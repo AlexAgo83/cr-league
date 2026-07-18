@@ -1,7 +1,7 @@
 ## req_041_api_integrity_hardening_from_repo_review - API integrity hardening from repo review
 > From version: 0.3.5
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

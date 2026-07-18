@@ -1,8 +1,8 @@
 ## prod_014_api_surface_follow_up_hardening_product_brief - API Surface Follow-up Hardening Product Brief
 > Date: 2026-07-17
-> Status: Proposed
+> Status: Settled
 > Related request: `req_043_api_surface_follow_up_hardening`
-> Related backlog: `item_088_add_minimal_admin_proof_to_league_level_mutations`, `item_089_make_fastify_logging_configurable_for_tests`, `item_090_harden_simulation_preview_input_validation`, `item_091_document_prototype_localstorage_secret_boundary`
+> Related backlog: `item_088_add_minimal_admin_proof_to_league_level_mutations`
 > Related task: `task_044_orchestrate_api_surface_follow_up_hardening`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -44,5 +44,5 @@ flowchart LR
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_043_api_surface_follow_up_hardening`
+- Product back-reference: `item_088_add_minimal_admin_proof_to_league_level_mutations`
 - Task back-reference: `task_044_orchestrate_api_surface_follow_up_hardening`

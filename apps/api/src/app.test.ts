@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PrismaClient } from "@prisma/client";
-import { CARD_PRICE } from "@cr-league/shared";
+import { CARD_PRICE, DEMO_RACE_INPUT } from "@cr-league/shared";
 import { buildApp } from "./app.js";
 import { APP_COMMIT, APP_VERSION } from "./version.js";
 
@@ -10,7 +10,7 @@ function createTestApp(db?: PrismaClient) {
     port: 0,
     webOrigin: "http://localhost:4873"
   };
-  return db ? buildApp(config, { db }) : buildApp(config);
+  return buildApp(config, { db, logger: false });
 }
 
 describe("api app", () => {
@@ -58,15 +58,39 @@ describe("api app", () => {
   it("rejects invalid simulation preview input", async () => {
     const app = await createTestApp();
 
+    const responses = await Promise.all(
+      [
+        { seed: "missing-race-shape" },
+        { ...DEMO_RACE_INPUT, primaryTrait: "magic" },
+        { ...DEMO_RACE_INPUT, forecast: { dry: 0, light_rain: -1, heavy_rain: 0 } },
+        { ...DEMO_RACE_INPUT, participants: [{ ...DEMO_RACE_INPUT.participants[0], decision: { approach: "wild", preparation: "speed" } }] }
+      ].map((payload) =>
+        app.inject({
+          method: "POST",
+          url: "/simulation/preview",
+          payload
+        })
+      )
+    );
+
+    await app.close();
+
+    expect(responses.map((response) => response.statusCode)).toEqual([400, 400, 400, 400]);
+  });
+
+  it("accepts a valid custom simulation preview input", async () => {
+    const app = await createTestApp();
+
     const response = await app.inject({
       method: "POST",
       url: "/simulation/preview",
-      payload: { seed: "missing-race-shape" }
+      payload: DEMO_RACE_INPUT
     });
 
     await app.close();
 
-    expect(response.statusCode).toBe(400);
+    expect(response.statusCode).toBe(200);
+    expect(response.json().classification).toEqual(expect.any(Array));
   });
 
   it("creates, updates, and resolves a persisted demo league", async () => {
@@ -99,6 +123,7 @@ describe("api app", () => {
       url: `/leagues/${leagueId}/qualifying`,
       payload: {
         teamId,
+        claimCode: claim.claimCode,
         approach: "aggressive",
         preparation: "weather",
         cardId: "rain_grip",
@@ -110,6 +135,7 @@ describe("api app", () => {
       url: `/leagues/${leagueId}/decisions`,
       payload: {
         teamId,
+        claimCode: claim.claimCode,
         approach: "aggressive",
         preparation: "weather",
         cardId: "rain_grip"
@@ -119,7 +145,8 @@ describe("api app", () => {
 
     const resolveResponse = await app.inject({
       method: "POST",
-      url: `/leagues/${leagueId}/resolve`
+      url: `/leagues/${leagueId}/resolve`,
+      payload: { teamId, claimCode: claim.claimCode }
     });
     const resolved = resolveResponse.json();
     const resolvedTeam = resolved.teams.find((team: { id: string }) => team.id === teamId);
@@ -129,6 +156,7 @@ describe("api app", () => {
       url: `/leagues/${leagueId}/cards/buy`,
       payload: {
         teamId,
+        claimCode: claim.claimCode,
         cardId: "launch_boost"
       }
     });
@@ -143,17 +171,20 @@ describe("api app", () => {
       url: `/leagues/${leagueId}/decisions`,
       payload: {
         teamId,
+        claimCode: claim.claimCode,
         approach: "prudent",
         preparation: "reliability"
       }
     });
     const secondResolveResponse = await app.inject({
       method: "POST",
-      url: `/leagues/${leagueId}/resolve`
+      url: `/leagues/${leagueId}/resolve`,
+      payload: { teamId, claimCode: claim.claimCode }
     });
     const nextResponse = await app.inject({
       method: "POST",
-      url: `/leagues/${leagueId}/next-grand-prix`
+      url: `/leagues/${leagueId}/next-grand-prix`,
+      payload: { teamId, claimCode: claim.claimCode }
     });
     const botAfterNext = nextResponse.json().teams.find((team: { id: string }) => team.id === botBeforeNext.id);
 
@@ -294,6 +325,7 @@ describe("api app", () => {
     const created = createResponse.json();
     const leagueId = created.league.id;
     const teamId = created.player.teamId;
+    const claimCode = created.player.claimCode;
     await app.inject({
       method: "POST",
       url: "/leagues/join",
@@ -303,23 +335,35 @@ describe("api app", () => {
     const renameResponse = await app.inject({
       method: "POST",
       url: `/leagues/${leagueId}/teams/name`,
-      payload: { teamId, name: "Harbor Pulse" }
+      payload: { teamId, claimCode, name: "Harbor Pulse" }
+    });
+    const missingClaimResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/teams/name`,
+      payload: { teamId, name: "Shadow Team" }
+    });
+    const wrongClaimResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/teams/name`,
+      payload: { teamId, claimCode: "WRONG", name: "Shadow Team" }
     });
     const duplicateResponse = await app.inject({
       method: "POST",
       url: `/leagues/${leagueId}/teams/name`,
-      payload: { teamId, name: "Mika Blitz" }
+      payload: { teamId, claimCode, name: "Mika Blitz" }
     });
     const invalidResponse = await app.inject({
       method: "POST",
       url: `/leagues/${leagueId}/teams/name`,
-      payload: { teamId, name: "x!" }
+      payload: { teamId, claimCode, name: "x!" }
     });
 
     await app.close();
 
     expect(renameResponse.statusCode).toBe(200);
     expect(renameResponse.json().teams).toEqual(expect.arrayContaining([expect.objectContaining({ id: teamId, name: "Harbor Pulse" })]));
+    expect(missingClaimResponse.statusCode).toBe(400);
+    expect(wrongClaimResponse.statusCode).toBe(409);
     expect(duplicateResponse.statusCode).toBe(409);
     expect(invalidResponse.statusCode).toBe(409);
   });
@@ -335,6 +379,7 @@ describe("api app", () => {
     const created = createResponse.json();
     const payload = {
       teamId: created.player.teamId,
+      claimCode: created.player.claimCode,
       approach: "balanced",
       preparation: "weather",
       laps: 2
@@ -360,6 +405,7 @@ describe("api app", () => {
     const created = createResponse.json();
     const payload = {
       teamId: created.player.teamId,
+      claimCode: created.player.claimCode,
       approach: "balanced",
       preparation: "weather",
       laps: 2
@@ -392,6 +438,7 @@ describe("api app", () => {
     await db.team.update({ where: { id: created.player.teamId }, data: { cards: ["rain_grip", "qualifying_focus"] } });
     const basePayload = {
       teamId: created.player.teamId,
+      claimCode: created.player.claimCode,
       approach: "balanced",
       preparation: "weather",
       laps: 1
@@ -424,6 +471,7 @@ describe("api app", () => {
     const created = createResponse.json();
     const basePayload = {
       teamId: created.player.teamId,
+      claimCode: created.player.claimCode,
       approach: "balanced",
       preparation: "weather",
       laps: 1
@@ -456,6 +504,7 @@ describe("api app", () => {
     const created = createResponse.json();
     const payload = {
       teamId: created.player.teamId,
+      claimCode: created.player.claimCode,
       approach: "balanced",
       preparation: "weather"
     };
@@ -484,6 +533,7 @@ describe("api app", () => {
       url: `/leagues/${created.league.id}/decisions`,
       payload: {
         teamId: created.player.teamId,
+        claimCode: created.player.claimCode,
         approach: "balanced",
         preparation: "weather"
       }
@@ -507,10 +557,12 @@ describe("api app", () => {
       payload: { name: "Office League", teamName: "Volt Union" }
     });
     const leagueId = createResponse.json().league.id;
+    const player = createResponse.json().player;
 
     const resolveResponse = await app.inject({
       method: "POST",
-      url: `/leagues/${leagueId}/resolve`
+      url: `/leagues/${leagueId}/resolve`,
+      payload: player
     });
 
     await app.close();
@@ -555,6 +607,7 @@ describe("api app", () => {
     const leagueId = created.league.id;
     const code = created.league.code;
     const teamId = created.teams.find((team: { kind: string }) => team.kind === "human").id;
+    const claimCode = created.player.claimCode;
 
     const unknownResponse = await app.inject({
       method: "POST",
@@ -571,13 +624,15 @@ describe("api app", () => {
       url: `/leagues/${leagueId}/decisions`,
       payload: {
         teamId,
+        claimCode,
         approach: "balanced",
         preparation: "weather"
       }
     });
     await app.inject({
       method: "POST",
-      url: `/leagues/${leagueId}/resolve`
+      url: `/leagues/${leagueId}/resolve`,
+      payload: { teamId, claimCode }
     });
     const closedResponse = await app.inject({
       method: "POST",
@@ -617,19 +672,22 @@ describe("api app", () => {
     const defaultResolveResponse = await app.inject({
       method: "POST",
       url: `/leagues/${leagueId}/resolve`,
-      payload: { allowDefaults: true }
+      payload: { ...created.player, allowDefaults: true }
     });
     const nextResponse = await app.inject({
       method: "POST",
-      url: `/leagues/${leagueId}/next-grand-prix`
+      url: `/leagues/${leagueId}/next-grand-prix`,
+      payload: created.player
     });
     const earlyNextResponse = await app.inject({
       method: "POST",
-      url: `/leagues/${leagueId}/next-grand-prix`
+      url: `/leagues/${leagueId}/next-grand-prix`,
+      payload: created.player
     });
     const restartResponse = await app.inject({
       method: "POST",
-      url: `/leagues/${leagueId}/restart`
+      url: `/leagues/${leagueId}/restart`,
+      payload: created.player
     });
 
     await app.close();
@@ -668,23 +726,30 @@ describe("api app", () => {
       url: "/leagues",
       payload: { name: "Office League", teamName: "Volt Union" }
     });
-    const leagueId = createResponse.json().league.id;
+    const created = createResponse.json();
+    const leagueId = created.league.id;
     const deadline = new Date(Date.now() + 60_000).toISOString();
 
     const settingsResponse = await app.inject({
       method: "POST",
       url: `/leagues/${leagueId}/settings`,
-      payload: { cadence: "weekly", preparationDeadlineAt: deadline }
+      payload: { ...created.player, cadence: "weekly", preparationDeadlineAt: deadline }
+    });
+    const wrongClaimResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/settings`,
+      payload: { ...created.player, claimCode: "WRONG", cadence: "fast" }
     });
     const invalidSettingsResponse = await app.inject({
       method: "POST",
       url: `/leagues/${leagueId}/settings`,
-      payload: { cadence: "always_on" }
+      payload: { ...created.player, cadence: "always_on" }
     });
 
     await app.close();
 
     expect(settingsResponse.statusCode).toBe(200);
+    expect(wrongClaimResponse.statusCode).toBe(409);
     expect(settingsResponse.json().league).toMatchObject({
       cadence: "weekly",
       preparationDeadlineAt: deadline
@@ -717,6 +782,7 @@ describe("api app", () => {
         url: `/leagues/${leagueId}/decisions`,
         payload: {
           teamId,
+          claimCode: created.player.claimCode,
           approach: "balanced",
           preparation: "weather"
         }
@@ -724,7 +790,7 @@ describe("api app", () => {
       const resolveResponse = await app.inject({
         method: "POST",
         url: `/leagues/${leagueId}/resolve`,
-        payload: { allowDefaults: true }
+        payload: { ...created.player, allowDefaults: true }
       });
 
       expect(decisionResponse.statusCode).toBe(200);
@@ -735,7 +801,8 @@ describe("api app", () => {
       if (round < 3) {
         const nextResponse = await app.inject({
           method: "POST",
-          url: `/leagues/${leagueId}/next-grand-prix`
+          url: `/leagues/${leagueId}/next-grand-prix`,
+          payload: created.player
         });
         expect(nextResponse.statusCode).toBe(200);
         expect(nextResponse.json().currentGrandPrix).toMatchObject({ round: round + 1, status: "briefing" });
@@ -743,7 +810,8 @@ describe("api app", () => {
     }
     const nextSeasonResponse = await app.inject({
       method: "POST",
-      url: `/leagues/${leagueId}/next-grand-prix`
+      url: `/leagues/${leagueId}/next-grand-prix`,
+      payload: created.player
     });
 
     await app.close();
@@ -960,6 +1028,22 @@ function createMemoryDb(): PrismaClient {
         if (data.livery) team.livery = data.livery;
         if (data.name) team.name = data.name;
         return team;
+      },
+      updateMany: async ({
+        where,
+        data
+      }: {
+        where: { id: string; credits?: { gte: number } };
+        data: {
+          credits?: { decrement: number };
+          cards?: string[];
+        };
+      }) => {
+        const team = teams.find((candidate) => candidate.id === where.id && candidate.credits >= (where.credits?.gte ?? Number.NEGATIVE_INFINITY));
+        if (!team) return { count: 0 };
+        team.credits -= data.credits?.decrement ?? 0;
+        if (data.cards) team.cards = data.cards;
+        return { count: 1 };
       }
     },
     grandPrix: {
@@ -977,6 +1061,18 @@ function createMemoryDb(): PrismaClient {
         if (!grandPrix) throw new Error("Grand Prix not found");
         Object.assign(grandPrix, data);
         return grandPrix;
+      },
+      updateMany: async ({
+        where,
+        data
+      }: {
+        where: { id: string; status?: string };
+        data: Partial<Pick<GrandPrixRow, "qualifyingRuns" | "status" | "result">>;
+      }) => {
+        const grandPrix = grandPrixes.find((candidate) => candidate.id === where.id && (!where.status || candidate.status === where.status));
+        if (!grandPrix) return { count: 0 };
+        Object.assign(grandPrix, data);
+        return { count: 1 };
       },
       deleteMany: async ({ where }: { where: { leagueId: string } }) => {
         for (let index = grandPrixes.length - 1; index >= 0; index -= 1) {

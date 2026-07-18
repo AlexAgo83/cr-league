@@ -52,7 +52,16 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post("/leagues", async (request) => createDemoLeague(db, request.body ?? {}));
+  app.post("/leagues", async (request, reply) => {
+    try {
+      return await createDemoLeague(db, request.body ?? {});
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
+  });
 
   app.post("/leagues/join", async (request, reply) => {
     if (!isJoinBody(request.body)) {
@@ -198,7 +207,10 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
 
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/resolve", async (request, reply) => {
     try {
-      const state = await resolveCurrentGrandPrix(db, request.params.leagueId, request.body ?? {});
+      if (!isAdminBody(request.body)) {
+        return reply.code(400).send({ error: "Bad Request", message: "Expected an admin proof body." });
+      }
+      const state = await resolveCurrentGrandPrix(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
       return state;
     } catch (error) {
@@ -211,7 +223,10 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
 
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/next-grand-prix", async (request, reply) => {
     try {
-      const state = await startNextGrandPrix(db, request.params.leagueId);
+      if (!isAdminBody(request.body)) {
+        return reply.code(400).send({ error: "Bad Request", message: "Expected an admin proof body." });
+      }
+      const state = await startNextGrandPrix(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
       return state;
     } catch (error) {
@@ -223,9 +238,19 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
   });
 
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/restart", async (request, reply) => {
-    const state = await restartLeague(db, request.params.leagueId);
-    if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-    return state;
+    if (!isAdminBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected an admin proof body." });
+    }
+    try {
+      const state = await restartLeague(db, request.params.leagueId, request.body);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return state;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return reply.code(409).send({ error: "Conflict", message: error.message });
+      }
+      throw error;
+    }
   });
 }
 
@@ -260,6 +285,8 @@ function isSettingsBody(value: unknown): value is Parameters<typeof updateLeague
 
   const candidate = value as Record<string, unknown>;
   return (
+    typeof candidate.teamId === "string" &&
+    typeof candidate.claimCode === "string" &&
     (candidate.cadence === undefined || typeof candidate.cadence === "string") &&
     (candidate.preparationDeadlineAt === undefined ||
       candidate.preparationDeadlineAt === null ||
@@ -271,21 +298,21 @@ function isBuyCardBody(value: unknown): value is Parameters<typeof buyCard>[2] {
   if (!value || typeof value !== "object") return false;
 
   const candidate = value as Record<string, unknown>;
-  return typeof candidate.teamId === "string" && typeof candidate.cardId === "string";
+  return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.cardId === "string";
 }
 
 function isLiveryBody(value: unknown): value is Parameters<typeof updateTeamLivery>[2] {
   if (!value || typeof value !== "object") return false;
 
   const candidate = value as Record<string, unknown>;
-  return typeof candidate.teamId === "string" && typeof candidate.livery === "object" && candidate.livery !== null;
+  return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.livery === "object" && candidate.livery !== null;
 }
 
 function isTeamNameBody(value: unknown): value is Parameters<typeof updateTeamName>[2] {
   if (!value || typeof value !== "object") return false;
 
   const candidate = value as Record<string, unknown>;
-  return typeof candidate.teamId === "string" && typeof candidate.name === "string";
+  return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.name === "string";
 }
 
 function isDecisionBody(value: unknown): value is Parameters<typeof submitDecision>[2] {
@@ -294,8 +321,19 @@ function isDecisionBody(value: unknown): value is Parameters<typeof submitDecisi
   const candidate = value as Record<string, unknown>;
   return (
     typeof candidate.teamId === "string" &&
+    typeof candidate.claimCode === "string" &&
     typeof candidate.approach === "string" &&
     typeof candidate.preparation === "string"
+  );
+}
+
+function isAdminBody(value: unknown): value is { teamId: string; claimCode: string; allowDefaults?: boolean; traits?: unknown } {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Record<string, unknown>;
+  return (
+    typeof candidate.teamId === "string" &&
+    typeof candidate.claimCode === "string" &&
+    (candidate.allowDefaults === undefined || typeof candidate.allowDefaults === "boolean")
   );
 }
 

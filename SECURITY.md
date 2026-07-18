@@ -29,9 +29,10 @@ Do not include real secrets, bearer tokens, production database URLs, or unredac
 Current scaffold:
 
 - `apps/web` is a public client-side app shell.
-- `apps/api` is a Fastify API shell with only `GET /health`.
-- Prisma is configured for PostgreSQL but no application data model is implemented yet.
+- `apps/api` is a Fastify API with prototype league, profile, and race endpoints.
+- Prisma is configured for PostgreSQL and owns league/profile/team race state.
 - `.env` is ignored and must not be committed.
+- Browser `localStorage` stores prototype-grade `claimCode` and `recoveryCode` secrets for playtest convenience. Treat them as bearer secrets, not durable public auth. Move to server-side sessions or account auth before public multi-user security matters.
 
 Future trust boundaries:
 

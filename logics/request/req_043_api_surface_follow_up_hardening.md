@@ -1,7 +1,7 @@
 ## req_043_api_surface_follow_up_hardening - API surface follow-up hardening
 > From version: 0.3.5
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

@@ -1,10 +1,10 @@
 ## item_083_use_crypto_backed_league_and_claim_codes_with_collision_retry - Use crypto-backed league and claim codes with collision retry
 > From version: 0.3.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Identifier generation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,10 @@
 # AC Traceability
 - request-AC6 -> This backlog slice. Proof: AC1: No join or claim secret uses Math.random.
 - request-AC8 -> This backlog slice. Proof: AC2: Generated code formats stay uppercase and compatible with existing UI expectations.
+- request-AC3 -> This backlog slice. Evidence needed: Concurrent calls to resolve the same Grand Prix cannot apply points, credits, or card consumption more than once; a second resolver receives a conflict or returns the already-resolved state without duplicate rewards.
+- request-AC4 -> This backlog slice. Evidence needed: Concurrent card purchases cannot reduce credits below zero, cannot lose an appended card update, and cannot buy when the pre-update balance is insufficient.
+- request-AC5 -> This backlog slice. Evidence needed: /leagues catches LeagueRuleError from createDemoLeague and returns the same client-safe error style as the other league endpoints.
+- request-AC7 -> This backlog slice. Evidence needed: npm run typecheck, npm test, npm run build, npm run logics:validate, and npm run lint pass from a clean worktree.
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +57,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_042_orchestrate_api_integrity_hardening`
+
+# Notes
+- Task `task_042_orchestrate_api_integrity_hardening` was finished via `logics-manager flow finish task` on 2026-07-18.

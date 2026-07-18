@@ -433,6 +433,8 @@ export function App() {
     if (!leagueState) return;
 
     await mutateLeague("status_updating_settings", `/leagues/${leagueState.league.id}/settings`, {
+      teamId: leagueState.player?.teamId,
+      claimCode: leagueState.player?.claimCode,
       cadence: form.cadence,
       preparationDeadlineAt: form.preparationDeadlineAt ? new Date(form.preparationDeadlineAt).toISOString() : null
     }, "status_settings_updated");
@@ -446,6 +448,8 @@ export function App() {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/resolve`, {
         method: "POST",
         body: JSON.stringify({
+          teamId: leagueState.player?.teamId,
+          claimCode: leagueState.player?.claimCode,
           allowDefaults: !playerDecision,
           traits: currentCircuit.traits
         })
@@ -465,7 +469,11 @@ export function App() {
 
     await run(tt("status_starting_next_grand_prix"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/next-grand-prix`, {
-        method: "POST"
+        method: "POST",
+        body: JSON.stringify({
+          teamId: leagueState.player?.teamId,
+          claimCode: leagueState.player?.claimCode
+        })
       });
       setLeagueState(withCurrentPlayer(state));
       setGameView("drive");
@@ -478,13 +486,21 @@ export function App() {
   async function buyCard(cardId: CardId) {
     if (!leagueState || !playerTeam) return;
 
-    await mutateLeague("status_buying_card", `/leagues/${leagueState.league.id}/cards/buy`, { teamId: playerTeam.id, cardId }, "status_card_bought");
+    await mutateLeague("status_buying_card", `/leagues/${leagueState.league.id}/cards/buy`, {
+      teamId: playerTeam.id,
+      claimCode: leagueState.player?.claimCode,
+      cardId
+    }, "status_card_bought");
   }
 
   async function updateLivery(livery: LeagueState["teams"][number]["livery"]) {
     if (!leagueState || !playerTeam) return;
 
-    await mutateLeague("status_livery_updated", `/leagues/${leagueState.league.id}/teams/livery`, { teamId: playerTeam.id, livery }, "status_livery_updated");
+    await mutateLeague("status_livery_updated", `/leagues/${leagueState.league.id}/teams/livery`, {
+      teamId: playerTeam.id,
+      claimCode: leagueState.player?.claimCode,
+      livery
+    }, "status_livery_updated");
   }
 
   async function updateTeamName(name: string) {
@@ -495,6 +511,7 @@ export function App() {
         method: "POST",
         body: JSON.stringify({
           teamId: playerTeam.id,
+          claimCode: leagueState.player?.claimCode,
           name
         })
       });
@@ -562,7 +579,10 @@ export function App() {
   async function restartLeague() {
     if (!leagueState || !window.confirm(tt("restart_confirm"))) return;
 
-    await mutateLeague("status_restarting_league", `/leagues/${leagueState.league.id}/restart`, undefined, "status_league_restarted");
+    await mutateLeague("status_restarting_league", `/leagues/${leagueState.league.id}/restart`, {
+      teamId: leagueState.player?.teamId,
+      claimCode: leagueState.player?.claimCode
+    }, "status_league_restarted");
   }
 
   async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string) {

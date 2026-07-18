@@ -1,10 +1,10 @@
 ## item_091_document_prototype_localstorage_secret_boundary - Document prototype localStorage secret boundary
 > From version: 0.3.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Security boundary
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,8 @@
 - request-AC6 -> This backlog slice. Proof: AC1: The prototype security limitation is documented where future implementation agents will see it.
 - request-AC7 -> This backlog slice. Proof: AC2: Tests protect durable localStorage keys from accidental broad clearing.
 - request-AC8 -> This backlog slice. Proof: AC3: No new visible UI exposes claimCode or recoveryCode beyond existing profile/recovery flows.
+- request-AC4 -> This backlog slice. Evidence needed: /simulation/preview rejects malformed RaceInput values for trait enums, forecast numbers, participant shape, and decision values with 400.
+- request-AC5 -> This backlog slice. Evidence needed: Valid demo preview and valid custom preview payloads still return RaceResult unchanged.
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +55,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_044_orchestrate_api_surface_follow_up_hardening`
+
+# Notes
+- Task `task_044_orchestrate_api_surface_follow_up_hardening` was finished via `logics-manager flow finish task` on 2026-07-18.

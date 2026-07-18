@@ -8,11 +8,12 @@ import { registerSimulationRoutes } from "./features/simulation/routes.js";
 
 export type AppDependencies = {
   db?: PrismaClient;
+  logger?: boolean;
 };
 
 export async function buildApp(config: ApiConfig, dependencies: AppDependencies = {}) {
   const app = Fastify({
-    logger: true
+    logger: dependencies.logger ?? true
   });
 
   const webOrigins = new Set([config.webOrigin, "http://localhost:4873", "http://127.0.0.1:4873"]);

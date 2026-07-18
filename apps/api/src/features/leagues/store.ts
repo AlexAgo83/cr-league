@@ -21,7 +21,9 @@ import {
 import { createHash, randomBytes } from "node:crypto";
 import type { Prisma, PrismaClient } from "@prisma/client";
 
-type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | "profile">;
+type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | "profile"> & {
+  $transaction?: <T>(fn: (tx: Db) => Promise<T>) => Promise<T>;
+};
 
 const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
 const STARTER_CARDS: CardId[] = ["rain_grip"];
@@ -120,6 +122,8 @@ export type RejoinLeagueInput = {
 };
 
 export type UpdateLeagueSettingsInput = {
+  teamId?: string;
+  claimCode?: string;
   cadence?: string;
   preparationDeadlineAt?: string | null;
 };
@@ -193,6 +197,7 @@ export type LeagueState = {
 
 export type SubmitDecisionInput = RaceDecision & {
   teamId: string;
+  claimCode?: string;
 };
 
 export type SubmitQualifyingInput = SubmitDecisionInput & {
@@ -201,18 +206,27 @@ export type SubmitQualifyingInput = SubmitDecisionInput & {
 };
 
 export type ResolveGrandPrixInput = {
+  teamId?: string;
+  claimCode?: string;
   allowDefaults?: boolean;
   traits?: unknown;
 };
 
 export type UpdateTeamLiveryInput = {
   teamId?: string;
+  claimCode?: string;
   livery?: unknown;
 };
 
 export type UpdateTeamNameInput = {
   teamId?: string;
+  claimCode?: string;
   name?: string;
+};
+
+export type AdminProofInput = {
+  teamId?: string;
+  claimCode?: string;
 };
 
 export type CreateProfileInput = {
@@ -270,8 +284,6 @@ export async function recoverProfile(db: Db, input: RecoverProfileInput = {}): P
 }
 
 export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
-  const code = createLeagueCode();
-  const playerClaimCode = createClaimCode();
   const leagueName = normalizeDisplayName(input.name, LEAGUE_NAME_LIMIT);
   const playerTeamName = normalizeDisplayName(input.teamName, TEAM_NAME_LIMIT);
   if (input.name !== undefined && !leagueName) {
@@ -286,42 +298,51 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   const maxGrandPrixPerSeason = clampInteger(input.maxGrandPrixPerSeason, DEFAULT_GRAND_PRIX_PER_SEASON, 1, MAX_GRAND_PRIX_PER_SEASON);
   const openingRaceInput = raceInputFromCircuit(circuitIdentityForRound(1));
 
-  const league = await db.league.create({
-    data: {
-      name: leagueName || "CR League Demo",
-      code,
-      maxPlayers,
-      fillWithBots: input.fillWithBots ?? true,
-      qualifyingAttemptLimit,
-      maxGrandPrixPerSeason
-    }
-  });
+  const { league, playerClaimCode } = await retryUnique(async () => {
+    const playerClaimCode = createClaimCode();
+    const league = await runWrite(db, async (tx) => {
+      const league = await tx.league.create({
+        data: {
+          name: leagueName || "CR League Demo",
+          code: createLeagueCode(),
+          maxPlayers,
+          fillWithBots: input.fillWithBots ?? true,
+          qualifyingAttemptLimit,
+          maxGrandPrixPerSeason
+        }
+      });
 
-  await db.team.create({
-    data: {
-      leagueId: league.id,
-      profileId: input.profileId,
-      name: playerTeamName || DEMO_RACE_INPUT.participants[0]?.teamName || "Player Team",
-      kind: "human",
-      claimCode: playerClaimCode,
-      points: 0,
-      credits: 0,
-      cards: STARTER_CARDS,
-      livery: randomLivery()
-    }
-  });
+      await tx.team.create({
+        data: {
+          leagueId: league.id,
+          profileId: input.profileId,
+          name: playerTeamName || DEMO_RACE_INPUT.participants[0]?.teamName || "Player Team",
+          kind: "human",
+          claimCode: playerClaimCode,
+          points: 0,
+          credits: 0,
+          cards: STARTER_CARDS,
+          livery: randomLivery()
+        }
+      });
 
-  await db.grandPrix.create({
-    data: {
-      leagueId: league.id,
-      name: DEMO_RACE_INPUT.grandPrixName,
-      season: 1,
-      round: 1,
-      seed: `${DEMO_RACE_INPUT.seed}-${league.id}`,
-      primaryTrait: openingRaceInput.primaryTrait,
-      secondaryTrait: openingRaceInput.secondaryTrait,
-      forecast: openingRaceInput.forecast
-    }
+      await tx.grandPrix.create({
+        data: {
+          leagueId: league.id,
+          name: DEMO_RACE_INPUT.grandPrixName,
+          season: 1,
+          round: 1,
+          seed: `${DEMO_RACE_INPUT.seed}-${league.id}`,
+          primaryTrait: openingRaceInput.primaryTrait,
+          secondaryTrait: openingRaceInput.secondaryTrait,
+          forecast: openingRaceInput.forecast
+        }
+      });
+
+      return league;
+    });
+
+    return { league, playerClaimCode };
   });
 
   const state = await getLeagueState(db, league.id);
@@ -352,19 +373,21 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
     throw new LeagueRuleError("This team name is already taken.");
   }
 
-  const team = await db.team.create({
-    data: {
-      leagueId: league.id,
-      profileId: input.profileId,
-      name: teamName,
-      kind: "human",
-      claimCode: createClaimCode(),
-      points: 0,
-      credits: 0,
-      cards: STARTER_CARDS,
-      livery: randomLivery()
-    }
-  });
+  const team = await retryUnique(() =>
+    db.team.create({
+      data: {
+        leagueId: league.id,
+        profileId: input.profileId,
+        name: teamName,
+        kind: "human",
+        claimCode: createClaimCode(),
+        points: 0,
+        credits: 0,
+        cards: STARTER_CARDS,
+        livery: randomLivery()
+      }
+    })
+  );
 
   const nextState = await getLeagueState(db, league.id);
   return nextState ? withPlayer(nextState, team.id, team.claimCode ?? "") : nextState;
@@ -458,7 +481,7 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
   };
 }
 
-export async function buyCard(db: Db, leagueId: string, input: { teamId?: string; cardId?: string } = {}) {
+export async function buyCard(db: Db, leagueId: string, input: { teamId?: string; claimCode?: string; cardId?: string } = {}) {
   const cardId = input.cardId;
   if (typeof cardId !== "string" || !isCardId(cardId)) {
     throw new LeagueRuleError("Expected a team and a valid card.");
@@ -467,27 +490,32 @@ export async function buyCard(db: Db, leagueId: string, input: { teamId?: string
   const state = await getLeagueState(db, leagueId);
   if (!state) return null;
 
-  const team = state.teams.find((candidate) => candidate.id === input.teamId);
-  if (!team) {
-    throw new LeagueRuleError("Team does not belong to this league.");
-  }
+  const team = await requireTeamClaim(db, leagueId, input);
   const price = CARD_PRICE;
   if (team.credits < price) {
     throw new LeagueRuleError("Not enough credits to buy this card.");
   }
 
-  await db.team.update({
-    where: { id: team.id },
-    data: {
-      credits: { decrement: price },
-      cards: appendCard(team.cards, cardId)
+  await runWrite(db, async (tx) => {
+    const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
+    if (!freshTeam || freshTeam.leagueId !== leagueId || freshTeam.credits < price) {
+      throw new LeagueRuleError("Not enough credits to buy this card.");
     }
+    const updated = await tx.team.updateMany({
+      where: { id: freshTeam.id, credits: { gte: price } },
+      data: {
+        credits: { decrement: price },
+        cards: appendCard(normalizeCards(freshTeam.cards), cardId)
+      }
+    });
+    if (updated.count !== 1) throw new LeagueRuleError("Not enough credits to buy this card.");
   });
 
   return getLeagueState(db, leagueId);
 }
 
 export async function updateLeagueSettings(db: Db, leagueId: string, input: UpdateLeagueSettingsInput = {}) {
+  await requireAdminClaim(db, leagueId, input);
   const data: { cadence?: string; preparationDeadlineAt?: Date | null } = {};
 
   if (input.cadence !== undefined) {
@@ -518,8 +546,8 @@ export async function updateLeagueSettings(db: Db, leagueId: string, input: Upda
 export async function updateTeamLivery(db: Db, leagueId: string, input: UpdateTeamLiveryInput = {}) {
   const livery = normalizeLivery(input.livery);
   const state = await getLeagueState(db, leagueId);
-  const team = state?.teams.find((candidate) => candidate.id === input.teamId);
-  if (!state || !team) return null;
+  if (!state) return null;
+  const team = await requireTeamClaim(db, leagueId, input);
 
   await db.team.update({
     where: { id: team.id },
@@ -536,8 +564,8 @@ export async function updateTeamName(db: Db, leagueId: string, input: UpdateTeam
   }
 
   const state = await getLeagueState(db, leagueId);
-  const team = state?.teams.find((candidate) => candidate.id === input.teamId);
-  if (!state || !team) return null;
+  if (!state) return null;
+  const team = await requireTeamClaim(db, leagueId, input);
   if (state.teams.some((candidate) => candidate.id !== team.id && candidate.name.toLowerCase() === name.toLowerCase())) {
     throw new LeagueRuleError("This team name is already taken.");
   }
@@ -557,8 +585,8 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
     throw new LeagueRuleError("This Grand Prix is already resolved.");
   }
   const state = await getLeagueState(db, leagueId);
-  const team = state?.teams.find((candidate) => candidate.id === input.teamId);
-  if (!state || !team) return null;
+  if (!state) return null;
+  const team = await requireTeamClaim(db, leagueId, input);
   const lockedCardId = qualifyingCardForTeam(state.currentGrandPrix.qualifyingRuns, team.id);
   if (lockedCardId && input.cardId && input.cardId !== lockedCardId) {
     throw new LeagueRuleError("This Grand Prix card is already locked by your qualifying run.");
@@ -610,8 +638,8 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
   }
 
   const state = await getLeagueState(db, leagueId);
-  const team = state?.teams.find((candidate) => candidate.id === input.teamId);
-  if (!state || !team) return null;
+  if (!state) return null;
+  const team = await requireTeamClaim(db, leagueId, input);
   if (state.decisions.some((decision) => decision.teamId === team.id)) {
     throw new LeagueRuleError("Qualifying is closed after submitting your directive.");
   }
@@ -665,6 +693,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
 }
 
 export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: ResolveGrandPrixInput = {}) {
+  await requireAdminClaim(db, leagueId, input);
   const state = await getLeagueState(db, leagueId);
   const grandPrix = await getCurrentGrandPrix(db, leagueId);
   if (!state || !grandPrix) return null;
@@ -698,38 +727,42 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
     participants
   });
 
-  await db.grandPrix.update({
-    where: { id: grandPrix.id },
-    data: {
-      status: "resolved",
-      result
+  await runWrite(db, async (tx) => {
+    const claimed = await tx.grandPrix.updateMany({
+      where: { id: grandPrix.id, status: "briefing" },
+      data: {
+        status: "resolved",
+        result
+      }
+    });
+    if (claimed.count !== 1) throw new LeagueRuleError("This Grand Prix is already resolved.");
+
+    for (const entry of result.classification) {
+      await tx.team.update({
+        where: { id: entry.teamId },
+        data: {
+          points: { increment: entry.points },
+          credits: { increment: entry.credits }
+        }
+      });
+    }
+    for (const consumed of result.consumedCards) {
+      const team = readyState.teams.find((candidate) => candidate.id === consumed.teamId);
+      if (!team) continue;
+      await tx.team.update({
+        where: { id: team.id },
+        data: {
+          cards: removeOneCard(team.cards, consumed.cardId)
+        }
+      });
     }
   });
-
-  for (const entry of result.classification) {
-    await db.team.update({
-      where: { id: entry.teamId },
-      data: {
-        points: { increment: entry.points },
-        credits: { increment: entry.credits }
-      }
-    });
-  }
-  for (const consumed of result.consumedCards) {
-    const team = readyState.teams.find((candidate) => candidate.id === consumed.teamId);
-    if (!team) continue;
-    await db.team.update({
-      where: { id: team.id },
-      data: {
-        cards: removeOneCard(team.cards, consumed.cardId)
-      }
-    });
-  }
 
   return getLeagueState(db, leagueId);
 }
 
-export async function startNextGrandPrix(db: Db, leagueId: string) {
+export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminProofInput = {}) {
+  await requireAdminClaim(db, leagueId, input);
   const grandPrix = await getCurrentGrandPrix(db, leagueId);
   const state = await getLeagueState(db, leagueId);
   if (!grandPrix) return null;
@@ -762,7 +795,8 @@ export async function startNextGrandPrix(db: Db, leagueId: string) {
   return getLeagueState(db, leagueId);
 }
 
-export async function restartLeague(db: Db, leagueId: string) {
+export async function restartLeague(db: Db, leagueId: string, input: AdminProofInput = {}) {
+  await requireAdminClaim(db, leagueId, input);
   const state = await getLeagueState(db, leagueId);
   if (!state) return null;
 
@@ -895,6 +929,21 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
         : { ...demo.decision, cardId: defaultCardForTeam(team, demo.decision.cardId) }
     };
   });
+}
+
+async function requireAdminClaim(db: Db, leagueId: string, input: AdminProofInput) {
+  return requireTeamClaim(db, leagueId, input);
+}
+
+async function requireTeamClaim(db: Db, leagueId: string, input: { teamId?: string; claimCode?: string }) {
+  if (!input.teamId || !input.claimCode) {
+    throw new LeagueRuleError("A valid team claim is required.");
+  }
+  const team = await db.team.findUnique({ where: { id: input.teamId } });
+  if (!team || team.leagueId !== leagueId || team.kind !== "human" || team.claimCode !== input.claimCode) {
+    throw new LeagueRuleError("A valid team claim is required.");
+  }
+  return { ...team, cards: normalizeCards(team.cards), livery: normalizeLivery(team.livery) };
 }
 
 async function buyBotCards(db: Db, state: LeagueState, seed: string) {
@@ -1106,6 +1155,25 @@ function withPlayer(state: LeagueState, teamId: string, claimCode: string): Leag
   };
 }
 
+function runWrite<T>(db: Db, fn: (tx: Db) => Promise<T>) {
+  return db.$transaction ? db.$transaction(fn) : fn(db);
+}
+
+async function retryUnique<T>(fn: () => Promise<T>) {
+  for (let attempt = 0; attempt < 5; attempt += 1) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (!isUniqueConstraintError(error) || attempt === 4) throw error;
+    }
+  }
+  throw new LeagueRuleError("Could not allocate a unique code. Try again.");
+}
+
+function isUniqueConstraintError(error: unknown) {
+  return Boolean(error && typeof error === "object" && "code" in error && error.code === "P2002");
+}
+
 async function getCurrentGrandPrix(db: Db, leagueId: string) {
   return db.grandPrix.findFirst({
     where: { leagueId },
@@ -1131,11 +1199,11 @@ function clampInteger(value: unknown, fallback: number, min: number, max: number
 }
 
 function createLeagueCode() {
-  return Math.random().toString(36).slice(2, 8).toUpperCase();
+  return randomBytes(4).toString("hex").slice(0, 6).toUpperCase();
 }
 
 function createClaimCode() {
-  return Math.random().toString(36).slice(2, 12).toUpperCase();
+  return randomBytes(5).toString("hex").toUpperCase();
 }
 
 function createRecoveryCode() {

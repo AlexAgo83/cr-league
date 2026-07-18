@@ -1,10 +1,10 @@
 ## item_090_harden_simulation_preview_input_validation - Harden simulation preview input validation
 > From version: 0.3.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Route validation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,7 @@
 - request-AC5 -> This backlog slice. Proof: AC2: Demo preview with no body still works.
 - request-AC7 -> This backlog slice. Proof: AC3: A valid full RaceInput payload still returns a RaceResult.
 - request-AC8 -> This backlog slice. Proof: AC3: A valid full RaceInput payload still returns a RaceResult.
+- request-AC6 -> This backlog slice. Evidence needed: A short docs note or Logics closeout note states that claimCode/recoveryCode in localStorage are prototype secrets, with the upgrade path to server sessions when the game needs real account security.
 
 # Decision framing
 - Product framing: Not needed
@@ -56,3 +57,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_044_orchestrate_api_surface_follow_up_hardening`
+
+# Notes
+- Task `task_044_orchestrate_api_surface_follow_up_hardening` was finished via `logics-manager flow finish task` on 2026-07-18.

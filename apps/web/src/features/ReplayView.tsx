@@ -319,6 +319,7 @@ export function ReplayView({
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
+  const rangeRef = useRef<HTMLInputElement>(null);
   const clock = useRef(0);
   const [playing, setPlaying] = useState(true);
   const [speed, setSpeed] = useState<ReplaySpeed>(savedReplaySpeed);
@@ -371,6 +372,7 @@ export function ReplayView({
       last = now;
       svg.setCurrentTime(clock.current);
       if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
+      if (rangeRef.current) rangeRef.current.value = String(clock.current);
       updateLive(clock.current);
       if (clock.current >= replayEnd) {
         setPlaying(false);
@@ -403,6 +405,7 @@ export function ReplayView({
     clock.current = Math.max(0, Math.min(time, replayEnd));
     svgRef.current?.setCurrentTime?.(clock.current);
     if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
+    if (rangeRef.current) rangeRef.current.value = String(clock.current);
     positionPopTimers.current.forEach(window.clearTimeout);
     positionPopTimers.current = [];
     setPositionPops({});
@@ -604,15 +607,19 @@ export function ReplayView({
                     </li>
                   ))}
                 </ol>
-                <div
-                  className="replay-progress"
-                  aria-hidden="true"
-                  onClick={(event) => {
-                    const rect = event.currentTarget.getBoundingClientRect();
-                    seek(((event.clientX - rect.left) / rect.width) * replayEnd);
-                  }}
-                >
+                <div className="replay-progress">
                   <div ref={progressRef} className="replay-progress-fill" />
+                  <input
+                    ref={rangeRef}
+                    type="range"
+                    className="replay-progress-input"
+                    aria-label={tt("replay_seek")}
+                    min={0}
+                    max={replayEnd}
+                    step={replayEnd / 100}
+                    defaultValue={0}
+                    onChange={(event) => seek(Number(event.target.value))}
+                  />
                   {RACE_SEGMENTS.slice(1).map((segment, index) => (
                     <span key={segment} className="replay-tick" style={{ left: `${replayPercentAtRaceProgress((index + 1) / RACE_SEGMENTS.length)}%` }} />
                   ))}
@@ -627,15 +634,14 @@ export function ReplayView({
                     </span>
                   ))}
                   {markers.map((marker) => (
-                    <span
+                    <button
                       key={marker.lap}
+                      type="button"
                       className={marker.player ? "replay-marker player" : "replay-marker"}
                       style={{ left: marker.left }}
                       title={marker.title}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        seek(marker.time);
-                      }}
+                      aria-label={marker.title}
+                      onClick={() => seek(marker.time)}
                     />
                   ))}
                 </div>

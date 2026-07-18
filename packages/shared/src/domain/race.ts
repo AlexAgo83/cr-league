@@ -2,9 +2,13 @@ export const RACE_SEGMENTS = ["start", "early", "mid", "late", "finish"] as cons
 
 export type RaceSegment = (typeof RACE_SEGMENTS)[number];
 
-export type RaceApproach = "prudent" | "balanced" | "aggressive";
+export const RACE_APPROACHES = ["prudent", "balanced", "aggressive"] as const;
 
-export type TechnicalPreparation = "speed" | "reliability" | "weather";
+export type RaceApproach = (typeof RACE_APPROACHES)[number];
+
+export const TECHNICAL_PREPARATIONS = ["speed", "reliability", "weather"] as const;
+
+export type TechnicalPreparation = (typeof TECHNICAL_PREPARATIONS)[number];
 
 export type CircuitTrait = "fast" | "technical" | "urban" | "high_wear" | "weather_sensitive";
 

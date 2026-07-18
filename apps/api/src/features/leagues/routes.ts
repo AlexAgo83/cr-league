@@ -1,4 +1,4 @@
-import type { FastifyInstance } from "fastify";
+import type { FastifyInstance, FastifyReply } from "fastify";
 import type { PrismaClient } from "@prisma/client";
 import {
   LeagueRuleError,
@@ -29,7 +29,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return await createProfile(db, request.body);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -46,7 +46,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return session;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -57,7 +57,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return await createDemoLeague(db, request.body ?? {});
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -74,7 +74,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -91,7 +91,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -114,7 +114,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -131,7 +131,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -148,7 +148,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -165,7 +165,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -182,7 +182,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -199,7 +199,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return response;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -215,7 +215,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -231,7 +231,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
@@ -247,11 +247,16 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       return state;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
-        return reply.code(409).send({ error: "Conflict", message: error.message });
+        return sendLeagueRuleError(reply, error);
       }
       throw error;
     }
   });
+}
+
+function sendLeagueRuleError(reply: FastifyReply, error: LeagueRuleError) {
+  const label = error.statusCode === 403 ? "Forbidden" : error.statusCode === 400 ? "Bad Request" : "Conflict";
+  return reply.code(error.statusCode).send({ error: label, message: error.message });
 }
 
 function isCreateProfileBody(value: unknown): value is Parameters<typeof createProfile>[1] {

@@ -242,6 +242,7 @@
   "action_pause": "Pause",
   "action_replay_restart": "Recommencer",
   "replay_speed": "Vitesse",
+  "replay_seek": "Position du replay",
   "restart_confirm": "Relancer cette ligue depuis la manche 1 ? Les équipes restent inscrites, mais points, crédits, cartes, directives et historique GP sont remis à zéro.",
   "cadence_manual": "Manuelle",
   "cadence_fast": "Rapide",

@@ -242,6 +242,7 @@
   "action_pause": "Pause",
   "action_replay_restart": "Restart",
   "replay_speed": "Speed",
+  "replay_seek": "Replay position",
   "restart_confirm": "Restart this league from round 1? Teams stay joined, but points, credits, cards, directives, and GP history are reset.",
   "cadence_manual": "Manual",
   "cadence_fast": "Fast",

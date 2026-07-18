@@ -23,6 +23,10 @@ export function strongestForecast(forecast: Record<string, number>) {
   return Object.entries(forecast).reduce((best, current) => (current[1] > best[1] ? current : best), ["dry", 0])[0];
 }
 
+export function clampNumber(value: number, min: number, max: number) {
+  return Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : min;
+}
+
 export function countCards(cards: CardId[], cardId: CardId) {
   return cards.filter((candidate) => candidate === cardId).length;
 }

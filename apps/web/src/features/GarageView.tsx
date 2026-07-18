@@ -7,6 +7,7 @@ import type { LeagueState } from "../app/types.js";
 import { CardStatBadges } from "./CardStatBadges.js";
 import { MapCarShape } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
+import { Modal } from "./Modal.js";
 
 type CardPanel = "team" | "inventory" | "shop";
 
@@ -185,52 +186,48 @@ export function GarageView({
         ) : null}
       </section>
       {pendingBuy ? (
-        <div className="modal-overlay" onClick={() => setPendingBuyCardId(undefined)}>
-          <section className="panel modal garage-buy-modal" role="dialog" aria-modal="true" aria-label={tt("garage_buy_confirm_title")} onClick={(event) => event.stopPropagation()}>
-            <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setPendingBuyCardId(undefined)}>
-              ×
+        <Modal label={tt("garage_buy_confirm_title")} className="panel modal garage-buy-modal" onClose={() => setPendingBuyCardId(undefined)}>
+          <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setPendingBuyCardId(undefined)}>
+            ×
+          </button>
+          <span className="section-kicker">{tt("garage_shop")}</span>
+          <h2>{tt(`card_${pendingBuy.cardId}` as TranslationKey)}</h2>
+          <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
+          <div className="garage-buy-card">
+            <strong>{pendingBuy.price}</strong>
+            <span>{tt("unit_credits")}</span>
+            <small>{tt(`card_fit_${pendingBuy.fit.level}` as TranslationKey)}</small>
+            <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
+          </div>
+          <p>{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
+          <div className="modal-actions">
+            <button type="button" onClick={confirmBuy} disabled={loading || !pendingBuyAffordable}>
+              {tt("garage_buy_confirm_action")}
             </button>
-            <span className="section-kicker">{tt("garage_shop")}</span>
-            <h2>{tt(`card_${pendingBuy.cardId}` as TranslationKey)}</h2>
-            <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
-            <div className="garage-buy-card">
-              <strong>{pendingBuy.price}</strong>
-              <span>{tt("unit_credits")}</span>
-              <small>{tt(`card_fit_${pendingBuy.fit.level}` as TranslationKey)}</small>
-              <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
-            </div>
-            <p>{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
-            <div className="modal-actions">
-              <button type="button" onClick={confirmBuy} disabled={loading || !pendingBuyAffordable}>
-                {tt("garage_buy_confirm_action")}
-              </button>
-              <button type="button" onClick={() => setPendingBuyCardId(undefined)}>
-                {tt("action_close")}
-              </button>
-            </div>
-          </section>
-        </div>
+            <button type="button" onClick={() => setPendingBuyCardId(undefined)}>
+              {tt("action_close")}
+            </button>
+          </div>
+        </Modal>
       ) : null}
       {viewingCardId && viewingFit ? (
-        <div className="modal-overlay" onClick={() => setViewingCardId(undefined)}>
-          <section className="panel modal garage-buy-modal" role="dialog" aria-modal="true" aria-label={tt(`card_${viewingCardId}` as TranslationKey)} onClick={(event) => event.stopPropagation()}>
-            <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setViewingCardId(undefined)}>
-              ×
+        <Modal label={tt(`card_${viewingCardId}` as TranslationKey)} className="panel modal garage-buy-modal" onClose={() => setViewingCardId(undefined)}>
+          <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setViewingCardId(undefined)}>
+            ×
+          </button>
+          <span className="section-kicker">{tt("garage_inventory")}</span>
+          <h2>{tt(`card_${viewingCardId}` as TranslationKey)}</h2>
+          <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
+          <div className="garage-buy-card garage-detail-card">
+            <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>
+            <CardStatBadges cardId={viewingCardId} tt={tt} />
+          </div>
+          <div className="modal-actions">
+            <button type="button" onClick={() => setViewingCardId(undefined)}>
+              {tt("action_close")}
             </button>
-            <span className="section-kicker">{tt("garage_inventory")}</span>
-            <h2>{tt(`card_${viewingCardId}` as TranslationKey)}</h2>
-            <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
-            <div className="garage-buy-card garage-detail-card">
-              <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>
-              <CardStatBadges cardId={viewingCardId} tt={tt} />
-            </div>
-            <div className="modal-actions">
-              <button type="button" onClick={() => setViewingCardId(undefined)}>
-                {tt("action_close")}
-              </button>
-            </div>
-          </section>
-        </div>
+          </div>
+        </Modal>
       ) : null}
     </div>
   );

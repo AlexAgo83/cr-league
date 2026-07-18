@@ -2,6 +2,8 @@ import {
   CARD_DEFINITIONS,
   CARD_PRICE,
   DEMO_RACE_INPUT,
+  RACE_APPROACHES,
+  TECHNICAL_PREPARATIONS,
   clampTrait,
   circuitIdentityForRound,
   raceInputFromCircuit,
@@ -94,9 +96,12 @@ const LEAGUE_NAME_LIMIT = 40;
 const QUALIFYING_REPLAY_SECONDS_PER_LAP = 10;
 
 export class LeagueRuleError extends Error {
-  constructor(message: string) {
+  statusCode: number;
+
+  constructor(message: string, statusCode = 409) {
     super(message);
     this.name = "LeagueRuleError";
+    this.statusCode = statusCode;
   }
 }
 
@@ -312,7 +317,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
         }
       });
 
-      await tx.team.create({
+      const ownerTeam = await tx.team.create({
         data: {
           leagueId: league.id,
           profileId: input.profileId,
@@ -324,6 +329,11 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
           cards: STARTER_CARDS,
           livery: randomLivery()
         }
+      });
+
+      await tx.league.update({
+        where: { id: league.id },
+        data: { ownerTeamId: ownerTeam.id }
       });
 
       await tx.grandPrix.create({
@@ -586,6 +596,7 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
   }
   const state = await getLeagueState(db, leagueId);
   if (!state) return null;
+  validateDecisionValues(state, input);
   const team = await requireTeamClaim(db, leagueId, input);
   const lockedCardId = qualifyingCardForTeam(state.currentGrandPrix.qualifyingRuns, team.id);
   if (lockedCardId && input.cardId && input.cardId !== lockedCardId) {
@@ -639,6 +650,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
 
   const state = await getLeagueState(db, leagueId);
   if (!state) return null;
+  validateDecisionValues(state, input);
   const team = await requireTeamClaim(db, leagueId, input);
   if (state.decisions.some((decision) => decision.teamId === team.id)) {
     throw new LeagueRuleError("Qualifying is closed after submitting your directive.");
@@ -658,31 +670,39 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
     cardId,
     rivalTeamId: input.rivalTeamId
   };
-  const runs = normalizeQualifyingRuns(grandPrix.qualifyingRuns);
-  const teamRuns = runs.filter((candidate) => candidate.teamId === team.id);
-  const previousBest = teamRuns.reduce<QualifyingRun | null>((best, candidate) => (!best || candidate.time < best.time ? candidate : best), null);
-  const attempts = Math.max(0, ...teamRuns.map((candidate) => candidate.attempts)) + 1;
-  if (attempts > state.league.qualifyingAttemptLimit) {
-    throw new LeagueRuleError("No qualifying attempts left.");
-  }
-  const attemptRuns = createQualifyingRuns({
-    seed: `${grandPrix.seed}-${team.id}-${Date.now()}-${Math.random()}`,
-    teamId: team.id,
-    teamName: team.name,
-    decision,
-    primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
-    secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
-    traits: normalizeRaceTraits(input.traits),
-    forecast: grandPrix.forecast as RaceInput["forecast"],
-    laps: clampInteger(input.laps, 5, 1, 20)
-  });
-  const nextRunsForAttempt = attemptRuns.map((run) => ({ ...run, attempts }));
-  const nextRun = nextRunsForAttempt.reduce((best, run) => (run.time < best.time ? run : best), nextRunsForAttempt[0]!);
-  const nextRuns = [...runs, ...nextRunsForAttempt];
+  // ponytail: transactional re-read shrinks the lost-update window; a dedicated QualifyingRun table if the JSON blob ever loses runs again
+  const { nextRun, previousBest } = await runWrite(db, async (tx) => {
+    const freshGrandPrix = await getCurrentGrandPrix(tx, leagueId);
+    if (!freshGrandPrix || freshGrandPrix.id !== grandPrix.id || freshGrandPrix.status === "resolved") {
+      throw new LeagueRuleError("This Grand Prix is already resolved.");
+    }
+    const runs = normalizeQualifyingRuns(freshGrandPrix.qualifyingRuns);
+    const teamRuns = runs.filter((candidate) => candidate.teamId === team.id);
+    const previousBest = teamRuns.reduce<QualifyingRun | null>((best, candidate) => (!best || candidate.time < best.time ? candidate : best), null);
+    const attempts = Math.max(0, ...teamRuns.map((candidate) => candidate.attempts)) + 1;
+    if (attempts > state.league.qualifyingAttemptLimit) {
+      throw new LeagueRuleError("No qualifying attempts left.");
+    }
+    const attemptRuns = createQualifyingRuns({
+      seed: `${freshGrandPrix.seed}-${team.id}-${Date.now()}-${Math.random()}`,
+      teamId: team.id,
+      teamName: team.name,
+      decision,
+      primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
+      secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+      traits: normalizeRaceTraits(input.traits),
+      forecast: freshGrandPrix.forecast as RaceInput["forecast"],
+      laps: clampInteger(input.laps, 5, 1, 20)
+    });
+    const nextRunsForAttempt = attemptRuns.map((run) => ({ ...run, attempts }));
+    const nextRun = nextRunsForAttempt.reduce((best, run) => (run.time < best.time ? run : best), nextRunsForAttempt[0]!);
 
-  await db.grandPrix.update({
-    where: { id: grandPrix.id },
-    data: { qualifyingRuns: nextRuns }
+    await tx.grandPrix.update({
+      where: { id: freshGrandPrix.id },
+      data: { qualifyingRuns: [...runs, ...nextRunsForAttempt] }
+    });
+
+    return { nextRun, previousBest };
   });
 
   return {
@@ -747,12 +767,12 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
       });
     }
     for (const consumed of result.consumedCards) {
-      const team = readyState.teams.find((candidate) => candidate.id === consumed.teamId);
-      if (!team) continue;
+      const team = await tx.team.findUnique({ where: { id: consumed.teamId } });
+      if (!team || team.leagueId !== leagueId) continue;
       await tx.team.update({
         where: { id: team.id },
         data: {
-          cards: removeOneCard(team.cards, consumed.cardId)
+          cards: removeOneCard(normalizeCards(team.cards), consumed.cardId)
         }
       });
     }
@@ -774,23 +794,30 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
   const nextRound = grandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : grandPrix.round + 1;
   const nextRaceInput = raceInputFromCircuit(circuitIdentityForRound(nextRound));
 
-  await buyBotCards(db, state, `${leagueId}-s${nextSeason}-r${nextRound}`);
-
-  await db.grandPrix.create({
-    data: {
-      leagueId,
-      name: DEMO_RACE_INPUT.grandPrixName,
-      season: nextSeason,
-      round: nextRound,
-      seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-s${nextSeason}-r${nextRound}`,
-      primaryTrait: nextRaceInput.primaryTrait,
-      secondaryTrait: nextRaceInput.secondaryTrait,
-      forecast: nextRaceInput.forecast
+  await runWrite(db, async (tx) => {
+    // The (leagueId, season, round) unique constraint claims the transition: a concurrent double call fails here before touching credits or points.
+    try {
+      await tx.grandPrix.create({
+        data: {
+          leagueId,
+          name: DEMO_RACE_INPUT.grandPrixName,
+          season: nextSeason,
+          round: nextRound,
+          seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-s${nextSeason}-r${nextRound}`,
+          primaryTrait: nextRaceInput.primaryTrait,
+          secondaryTrait: nextRaceInput.secondaryTrait,
+          forecast: nextRaceInput.forecast
+        }
+      });
+    } catch (error) {
+      if (isUniqueConstraintError(error)) throw new LeagueRuleError("The next Grand Prix has already started.");
+      throw error;
+    }
+    await buyBotCards(tx, state, `${leagueId}-s${nextSeason}-r${nextRound}`);
+    if (nextSeason !== grandPrix.season) {
+      await Promise.all(state.teams.map((team) => tx.team.update({ where: { id: team.id }, data: { points: 0 } })));
     }
   });
-  if (nextSeason !== grandPrix.season) {
-    await Promise.all(state.teams.map((team) => db.team.update({ where: { id: team.id }, data: { points: 0 } })));
-  }
 
   return getLeagueState(db, leagueId);
 }
@@ -854,43 +881,47 @@ function hasHumanDecision(state: LeagueState) {
 
 async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typeof getCurrentGrandPrix>>, state: LeagueState) {
   if (!grandPrix) return;
-  const runs = normalizeQualifyingRuns(grandPrix.qualifyingRuns);
-  const runTeamIds = new Set(runs.map((run) => run.teamId));
-  const missingBots = state.teams.filter((team) => team.kind === "bot" && !runTeamIds.has(team.id));
-  if (!missingBots.length) return;
+  await runWrite(db, async (tx) => {
+    const freshGrandPrix = await getCurrentGrandPrix(tx, state.league.id);
+    if (!freshGrandPrix || freshGrandPrix.id !== grandPrix.id) return;
+    const runs = normalizeQualifyingRuns(freshGrandPrix.qualifyingRuns);
+    const runTeamIds = new Set(runs.map((run) => run.teamId));
+    const missingBots = state.teams.filter((team) => team.kind === "bot" && !runTeamIds.has(team.id));
+    if (!missingBots.length) return;
 
-  const nextRuns = [...runs];
-  for (const team of missingBots) {
-    const demo = DEMO_RACE_INPUT.participants[state.teams.indexOf(team) % DEMO_RACE_INPUT.participants.length];
-    const submittedDecision = state.decisions.find((candidate) => candidate.teamId === team.id);
-    const decision: RaceDecision = submittedDecision
-      ? {
-          approach: submittedDecision.approach as RaceDecision["approach"],
-          preparation: submittedDecision.preparation as RaceDecision["preparation"],
-          cardId: (submittedDecision.cardId ?? undefined) as RaceDecision["cardId"],
-          rivalTeamId: submittedDecision.rivalTeamId ?? undefined
-        }
-      : {
-          approach: demo?.decision.approach ?? "balanced",
-          preparation: demo?.decision.preparation ?? "speed",
-          cardId: defaultCardForTeam(team, demo?.decision.cardId),
-          rivalTeamId: demo?.decision.rivalTeamId
-        };
-    nextRuns.push(
-      createQualifyingRuns({
-        seed: `${grandPrix.seed}-${team.id}-bot-qualifying`,
-        teamId: team.id,
-        teamName: team.name,
-        decision,
-        primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
-        secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
-        forecast: grandPrix.forecast as RaceInput["forecast"],
-        laps: 1
-      })[0]!
-    );
-  }
+    const nextRuns = [...runs];
+    for (const team of missingBots) {
+      const demo = DEMO_RACE_INPUT.participants[state.teams.indexOf(team) % DEMO_RACE_INPUT.participants.length];
+      const submittedDecision = state.decisions.find((candidate) => candidate.teamId === team.id);
+      const decision: RaceDecision = submittedDecision
+        ? {
+            approach: submittedDecision.approach as RaceDecision["approach"],
+            preparation: submittedDecision.preparation as RaceDecision["preparation"],
+            cardId: (submittedDecision.cardId ?? undefined) as RaceDecision["cardId"],
+            rivalTeamId: submittedDecision.rivalTeamId ?? undefined
+          }
+        : {
+            approach: demo?.decision.approach ?? "balanced",
+            preparation: demo?.decision.preparation ?? "speed",
+            cardId: defaultCardForTeam(team, demo?.decision.cardId),
+            rivalTeamId: demo?.decision.rivalTeamId
+          };
+      nextRuns.push(
+        createQualifyingRuns({
+          seed: `${freshGrandPrix.seed}-${team.id}-bot-qualifying`,
+          teamId: team.id,
+          teamName: team.name,
+          decision,
+          primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
+          secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+          forecast: freshGrandPrix.forecast as RaceInput["forecast"],
+          laps: 1
+        })[0]!
+      );
+    }
 
-  await db.grandPrix.update({ where: { id: grandPrix.id }, data: { qualifyingRuns: nextRuns } });
+    await tx.grandPrix.update({ where: { id: freshGrandPrix.id }, data: { qualifyingRuns: nextRuns } });
+  });
 }
 
 function buildParticipants(state: LeagueState): RaceParticipant[] {
@@ -931,8 +962,28 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
   });
 }
 
+function validateDecisionValues(state: LeagueState, input: SubmitDecisionInput) {
+  if (!RACE_APPROACHES.includes(input.approach)) {
+    throw new LeagueRuleError("Unsupported race approach.", 400);
+  }
+  if (!TECHNICAL_PREPARATIONS.includes(input.preparation)) {
+    throw new LeagueRuleError("Unsupported technical preparation.", 400);
+  }
+  if (input.cardId != null && (typeof input.cardId !== "string" || !isCardId(input.cardId))) {
+    throw new LeagueRuleError("Unknown card.", 400);
+  }
+  if (input.rivalTeamId != null && !state.teams.some((team) => team.id === input.rivalTeamId)) {
+    throw new LeagueRuleError("Unknown rival team.", 400);
+  }
+}
+
 async function requireAdminClaim(db: Db, leagueId: string, input: AdminProofInput) {
-  return requireTeamClaim(db, leagueId, input);
+  const team = await requireTeamClaim(db, leagueId, input);
+  const league = await db.league.findUnique({ where: { id: leagueId } });
+  if (!league || league.ownerTeamId !== team.id) {
+    throw new LeagueRuleError("Only the league owner can perform this action.", 403);
+  }
+  return team;
 }
 
 async function requireTeamClaim(db: Db, leagueId: string, input: { teamId?: string; claimCode?: string }) {
@@ -1004,18 +1055,23 @@ async function fillLeagueWithBots(db: Db, state: LeagueState) {
   if (!bots.length) return;
 
   const usedLiveries = new Set(state.teams.map((team) => liveryKey(team.livery)));
-  await db.team.createMany({
-    data: bots.map((participant, index) => ({
-      leagueId: state.league.id,
-      name: participant.teamName,
-      kind: "bot",
-      claimCode: null,
-      points: 0,
-      credits: 0,
-      cards: [],
-      livery: uniqueBotLivery(index, usedLiveries)
-    }))
-  });
+  try {
+    await db.team.createMany({
+      data: bots.map((participant, index) => ({
+        leagueId: state.league.id,
+        name: participant.teamName,
+        kind: "bot",
+        claimCode: null,
+        points: 0,
+        credits: 0,
+        cards: [],
+        livery: uniqueBotLivery(index, usedLiveries)
+      }))
+    });
+  } catch (error) {
+    // Concurrent fill: the first writer already created the bots, keep its result.
+    if (!isUniqueConstraintError(error)) throw error;
+  }
 }
 
 function createQualifyingRuns(input: {

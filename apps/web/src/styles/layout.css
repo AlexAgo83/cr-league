@@ -1027,6 +1027,37 @@ label small {
   z-index: 2;
 }
 
+.replay-progress-input {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  height: 100%;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  top: 0;
+  width: 100%;
+}
+
+.replay-progress-input::-webkit-slider-thumb {
+  appearance: none;
+  height: 0;
+  width: 0;
+}
+
+.replay-progress-input::-moz-range-thumb {
+  background: transparent;
+  border: 0;
+  height: 0;
+  width: 0;
+}
+
+.replay-progress-input:focus-visible {
+  border-radius: 999px;
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
 .replay-progress-fill {
   background: linear-gradient(90deg, rgb(255 77 0 / 0.55), var(--color-accent));
   border-radius: 999px;
@@ -1552,8 +1583,10 @@ label small {
   border: 2px solid #121014;
   border-radius: 50%;
   box-shadow: 0 0 8px rgb(255 77 0 / 0.7);
+  clip-path: none;
   cursor: pointer;
   height: 13px;
+  padding: 0;
   position: absolute;
   top: 50%;
   transform: translate(-50%, -50%);

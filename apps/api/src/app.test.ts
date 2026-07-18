@@ -823,6 +823,142 @@ describe("api app", () => {
     expect(state.grandPrixHistory.map((grandPrix: { round: number }) => grandPrix.round)).toEqual([3, 2, 1]);
     expect(state.teams.reduce((total: number, team: { points: number }) => total + team.points, 0)).toBeGreaterThan(0);
   });
+
+  it("rejects league admin actions from a member that is not the owner", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const joinResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code: created.league.code, teamName: "Late Apex" }
+    });
+    const member = joinResponse.json().player;
+
+    const memberSettings = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/settings`,
+      payload: { ...member, cadence: "fast" }
+    });
+    const memberResolve = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/resolve`, payload: member });
+    const memberNext = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/next-grand-prix`, payload: member });
+    const memberRestart = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/restart`, payload: member });
+    const ownerSettings = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/settings`,
+      payload: { ...created.player, cadence: "fast" }
+    });
+
+    await app.close();
+
+    for (const response of [memberSettings, memberResolve, memberNext, memberRestart]) {
+      expect(response.statusCode).toBe(403);
+      expect(response.json()).toMatchObject({ message: "Only the league owner can perform this action." });
+    }
+    expect(ownerSettings.statusCode).toBe(200);
+    expect(ownerSettings.json().league.cadence).toBe("fast");
+  });
+
+  it("rejects invalid decision enum, card, and rival values with 400", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const base = { teamId: created.player.teamId, claimCode: created.player.claimCode };
+
+    const badApproach = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/decisions`,
+      payload: { ...base, approach: "reckless", preparation: "speed" }
+    });
+    const badPreparation = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/decisions`,
+      payload: { ...base, approach: "balanced", preparation: "vibes" }
+    });
+    const badCard = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/decisions`,
+      payload: { ...base, approach: "balanced", preparation: "speed", cardId: "not_a_card" }
+    });
+    const badRival = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/qualifying`,
+      payload: { ...base, approach: "balanced", preparation: "speed", rivalTeamId: "team_missing" }
+    });
+    const stateResponse = await app.inject({ method: "GET", url: `/leagues/${created.league.id}` });
+
+    await app.close();
+
+    for (const response of [badApproach, badPreparation, badCard, badRival]) {
+      expect(response.statusCode).toBe(400);
+    }
+    expect(stateResponse.json().decisions).toHaveLength(0);
+  });
+
+  it("rejects an oversized simulation preview participants array", async () => {
+    const app = await createTestApp();
+
+    const participant = (index: number) => ({
+      teamId: `team_${index}`,
+      teamName: `Team ${index}`,
+      kind: "bot",
+      standingsRank: index + 1,
+      decision: { approach: "balanced", preparation: "speed" }
+    });
+    const response = await app.inject({
+      method: "POST",
+      url: "/simulation/preview",
+      payload: {
+        seed: "cap-check",
+        grandPrixName: "Cap Check GP",
+        primaryTrait: "fast",
+        secondaryTrait: "technical",
+        forecast: { dry: 80, light_rain: 15, heavy_rain: 5 },
+        participants: Array.from({ length: 17 }, (_, index) => participant(index))
+      }
+    });
+
+    await app.close();
+
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("rejects starting the next grand prix twice", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const player = created.player;
+
+    await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/decisions`,
+      payload: { ...player, approach: "balanced", preparation: "speed" }
+    });
+    await app.inject({ method: "POST", url: `/leagues/${created.league.id}/resolve`, payload: player });
+    const firstNext = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/next-grand-prix`, payload: player });
+    const secondNext = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/next-grand-prix`, payload: player });
+
+    await app.close();
+
+    expect(firstNext.statusCode).toBe(200);
+    expect(secondNext.statusCode).toBe(409);
+    expect(secondNext.json()).toMatchObject({ message: "Resolve the current Grand Prix before starting the next one." });
+  });
 });
 
 function createMemoryDb(): PrismaClient {
@@ -836,6 +972,7 @@ function createMemoryDb(): PrismaClient {
     fillWithBots: boolean;
     qualifyingAttemptLimit: number;
     maxGrandPrixPerSeason: number;
+    ownerTeamId: string | null;
     preparationDeadlineAt: Date | null;
   };
   type ProfileRow = {
@@ -905,6 +1042,7 @@ function createMemoryDb(): PrismaClient {
           fillWithBots: true,
           qualifyingAttemptLimit: 3,
           maxGrandPrixPerSeason: 6,
+          ownerTeamId: null,
           preparationDeadlineAt: null,
           ...data
         };
@@ -935,7 +1073,7 @@ function createMemoryDb(): PrismaClient {
         data
       }: {
         where: { id: string };
-        data: { cadence?: string; preparationDeadlineAt?: Date | null };
+        data: { cadence?: string; ownerTeamId?: string; preparationDeadlineAt?: Date | null };
       }) => {
         const league = leagues.find((candidate) => candidate.id === where.id);
         if (!league) throw new Error("League not found");

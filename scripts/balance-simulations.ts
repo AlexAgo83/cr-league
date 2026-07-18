@@ -2,7 +2,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
 import {
   CARD_DEFINITIONS,
-  CARD_PRICES,
+  CARD_PRICE,
   createPrng,
   simulateRace,
   type BotArchetype,
@@ -59,7 +59,7 @@ type Totals = {
 const approaches: RaceApproach[] = ["prudent", "balanced", "aggressive"];
 const preparations: TechnicalPreparation[] = ["speed", "reliability", "weather"];
 const cards = Object.keys(CARD_DEFINITIONS) as CardId[];
-const minCardPrice = Math.min(...Object.values(CARD_PRICES));
+const minCardPrice = CARD_PRICE;
 const args = parseArgs();
 const selectedCircuits = CITY_CIRCUITS.slice(0, args.circuits);
 const circuitTotals = new Map(selectedCircuits.map((circuit) => [String(circuit.layoutKey), emptyTotals()]));
@@ -148,7 +148,7 @@ function addRun(totals: Totals, candidate: Strategy, circuit: (typeof selectedCi
   if (!entry) throw new Error("Candidate missing from classification.");
   const grid = participants.find((participant) => participant.teamId === "candidate")?.standingsRank ?? 0;
   const cardTriggered = Boolean(candidate.cardId && result.events.some((event) => event.teamId === "candidate" && event.cardId === candidate.cardId));
-  const cardPrice = candidate.cardId ? CARD_PRICES[candidate.cardId] : 0;
+  const cardPrice = candidate.cardId ? CARD_PRICE : 0;
 
   const circuitTotal = circuitTotals.get(String(circuit.layoutKey));
   addResult(totals, entry.position, entry.points, entry.score, entry.credits, cardPrice, grid, cardTriggered);
@@ -200,7 +200,7 @@ function buildParticipants(candidateDecision: RaceDecision, candidateGrid: numbe
     {
       teamId: "candidate",
       teamName: "Candidate",
-      kind: "human",
+      kind: "human" as const,
       standingsRank: candidateGrid,
       decision: candidateDecision
     },

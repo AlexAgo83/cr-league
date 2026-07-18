@@ -17,6 +17,7 @@ model League {
   fillWithBots          Boolean   @default(true)
   qualifyingAttemptLimit Int       @default(3)
   maxGrandPrixPerSeason Int       @default(6)
+  ownerTeamId           String?
   preparationDeadlineAt DateTime?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt

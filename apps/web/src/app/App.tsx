@@ -2,7 +2,7 @@ import { APP_NAME, APP_VERSION, type CardId, type QualifyingRun } from "@cr-leag
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitForRound } from "./circuits.js";
-import { cardFit, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
+import { cardFit, clampNumber, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
 import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
 import { GAME_VIEWS, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
@@ -10,6 +10,7 @@ import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/Ci
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GarageView } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
+import { Modal } from "../features/Modal.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 import { CountryBadge } from "../features/VisualIcon.js";
@@ -320,10 +321,10 @@ export function App() {
           name: form.leagueName,
           teamName: form.teamName,
           profileId: profileSession?.profile.id,
-          maxPlayers: form.maxPlayers,
+          maxPlayers: clampNumber(form.maxPlayers, 2, 16),
           fillWithBots: form.fillWithBots,
-          qualifyingAttemptLimit: form.qualifyingAttemptLimit,
-          maxGrandPrixPerSeason: form.maxGrandPrixPerSeason
+          qualifyingAttemptLimit: clampNumber(form.qualifyingAttemptLimit, 1, 5),
+          maxGrandPrixPerSeason: clampNumber(form.maxGrandPrixPerSeason, 1, 18)
         })
       });
       rememberPlayer(state);
@@ -785,159 +786,147 @@ export function App() {
   );
 
   const profileCodeModal = profileCodeOpen ? (
-    <div className="modal-overlay" onClick={() => setProfileCodeOpen(false)}>
-      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("profile_code_title")} onClick={(event) => event.stopPropagation()}>
-        <span className="section-kicker">{tt("profile_kicker")}</span>
-        <h2>{tt("profile_code_title")}</h2>
-        {profileSession?.recoveryCode ? (
-          <input
-            className="profile-code-input"
-            aria-label={tt("action_copy_profile_code")}
-            readOnly
-            value={profileSession.recoveryCode}
-            onClick={(event) => {
-              event.currentTarget.select();
-              void copyProfileCode();
-            }}
-          />
-        ) : (
-          <p>{tt("status_profile_code_missing")}</p>
-        )}
-        <div className="actions">
-          <button type="button" onClick={() => setProfileCodeOpen(false)}>
-            {tt("action_close")}
-          </button>
-        </div>
-      </section>
-    </div>
+    <Modal label={tt("profile_code_title")} onClose={() => setProfileCodeOpen(false)}>
+      <span className="section-kicker">{tt("profile_kicker")}</span>
+      <h2>{tt("profile_code_title")}</h2>
+      {profileSession?.recoveryCode ? (
+        <input
+          className="profile-code-input"
+          aria-label={tt("action_copy_profile_code")}
+          readOnly
+          value={profileSession.recoveryCode}
+          onClick={(event) => {
+            event.currentTarget.select();
+            void copyProfileCode();
+          }}
+        />
+      ) : (
+        <p>{tt("status_profile_code_missing")}</p>
+      )}
+      <div className="actions">
+        <button type="button" onClick={() => setProfileCodeOpen(false)}>
+          {tt("action_close")}
+        </button>
+      </div>
+    </Modal>
   ) : null;
 
   const profileLogoutModal = profileLogoutOpen ? (
-    <div className="modal-overlay" onClick={() => setProfileLogoutOpen(false)}>
-      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("profile_logout_title")} onClick={(event) => event.stopPropagation()}>
-        <span className="section-kicker">{tt("profile_kicker")}</span>
-        <h2>{tt("profile_logout_title")}</h2>
-        <p>{tt("profile_logout_confirm")}</p>
-        <div className="actions secondary-actions">
-          <button type="button" className="danger-button" onClick={forgetProfile}>
-            {tt("action_forget_profile")}
-          </button>
-          <button type="button" onClick={() => setProfileLogoutOpen(false)}>
-            {tt("action_close")}
-          </button>
-        </div>
-      </section>
-    </div>
+    <Modal label={tt("profile_logout_title")} onClose={() => setProfileLogoutOpen(false)}>
+      <span className="section-kicker">{tt("profile_kicker")}</span>
+      <h2>{tt("profile_logout_title")}</h2>
+      <p>{tt("profile_logout_confirm")}</p>
+      <div className="actions secondary-actions">
+        <button type="button" className="danger-button" onClick={forgetProfile}>
+          {tt("action_forget_profile")}
+        </button>
+        <button type="button" onClick={() => setProfileLogoutOpen(false)}>
+          {tt("action_close")}
+        </button>
+      </div>
+    </Modal>
   ) : null;
 
   const directiveConfirmModal = directiveConfirmOpen ? (
-    <div className="modal-overlay" onClick={() => setDirectiveConfirmOpen(false)}>
-      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("directive_confirm_title")} onClick={(event) => event.stopPropagation()}>
-        <span className="section-kicker">{tt("qualifying_kicker")}</span>
-        <h2>{tt("directive_confirm_title")}</h2>
-        <p>
-          {qualifyingAttemptsUsed === 0
-            ? tt("directive_confirm_no_qualifying")
-            : `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`}
-        </p>
-        <div className="actions secondary-actions">
-          <button type="button" onClick={submitDirectiveConfirmed} disabled={status === "loading"}>
-            {tt("action_submit_directive")}
-          </button>
-          <button type="button" onClick={() => setDirectiveConfirmOpen(false)}>
-            {tt("action_close")}
-          </button>
-        </div>
-      </section>
-    </div>
+    <Modal label={tt("directive_confirm_title")} onClose={() => setDirectiveConfirmOpen(false)}>
+      <span className="section-kicker">{tt("qualifying_kicker")}</span>
+      <h2>{tt("directive_confirm_title")}</h2>
+      <p>
+        {qualifyingAttemptsUsed === 0
+          ? tt("directive_confirm_no_qualifying")
+          : `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`}
+      </p>
+      <div className="actions secondary-actions">
+        <button type="button" onClick={submitDirectiveConfirmed} disabled={status === "loading"}>
+          {tt("action_submit_directive")}
+        </button>
+        <button type="button" onClick={() => setDirectiveConfirmOpen(false)}>
+          {tt("action_close")}
+        </button>
+      </div>
+    </Modal>
   ) : null;
   const resolveConfirmModal = resolveConfirmOpen ? (
-    <div className="modal-overlay" onClick={() => setResolveConfirmOpen(false)}>
-      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("launch_gp_confirm_title")} onClick={(event) => event.stopPropagation()}>
-        <span className="section-kicker">{tt("action_launch_grand_prix")}</span>
-        <h2>{tt("launch_gp_confirm_title")}</h2>
-        <p>{tt("launch_gp_confirm_body")}</p>
-        <div className="starting-grid-confirmation">
-          <div>
-            <span className="section-kicker">{tt("starting_grid_title")}</span>
-            <strong>{tt(currentCircuit.layoutKey)}</strong>
-            <small>
-              <CountryBadge country={currentCircuit.country} /> {currentCircuit.city} · {tt("briefing_forecast")} {tt(`weather_${forecastPick}` as TranslationKey)}
-            </small>
-            <small>
-              {tt("circuit_grip")} {currentCircuit.traits.grip} · {tt("circuit_overtaking")} {currentCircuit.traits.overtaking} · {tt("circuit_energy")}{" "}
-              {currentCircuit.traits.energy}
-            </small>
-          </div>
-          <ol className="starting-grid-list">
-            {startingGridEntries.map((entry) => (
-              <li key={entry.team.id} className={entry.team.id === playerTeam?.id ? "current-team" : undefined}>
-                <span>P{entry.position}</span>
-                <LiveryPlate className="standings-livery-plate" livery={entry.team.livery} name={entry.team.name} />
-                <strong>{entry.team.name}</strong>
-                <small>{entry.bestTime === undefined ? tt("starting_grid_no_time") : `${entry.bestTime.toFixed(2)}s`}</small>
-              </li>
-            ))}
-          </ol>
+    <Modal label={tt("launch_gp_confirm_title")} onClose={() => setResolveConfirmOpen(false)}>
+      <span className="section-kicker">{tt("action_launch_grand_prix")}</span>
+      <h2>{tt("launch_gp_confirm_title")}</h2>
+      <p>{tt("launch_gp_confirm_body")}</p>
+      <div className="starting-grid-confirmation">
+        <div>
+          <span className="section-kicker">{tt("starting_grid_title")}</span>
+          <strong>{tt(currentCircuit.layoutKey)}</strong>
+          <small>
+            <CountryBadge country={currentCircuit.country} /> {currentCircuit.city} · {tt("briefing_forecast")} {tt(`weather_${forecastPick}` as TranslationKey)}
+          </small>
+          <small>
+            {tt("circuit_grip")} {currentCircuit.traits.grip} · {tt("circuit_overtaking")} {currentCircuit.traits.overtaking} · {tt("circuit_energy")}{" "}
+            {currentCircuit.traits.energy}
+          </small>
         </div>
-        <div className="actions secondary-actions">
-          <button type="button" onClick={() => void resolveGrandPrix()} disabled={status === "loading"}>
-            {tt("action_launch_grand_prix")}
-          </button>
-          <button type="button" onClick={() => setResolveConfirmOpen(false)}>
-            {tt("action_close")}
-          </button>
-        </div>
-      </section>
-    </div>
+        <ol className="starting-grid-list">
+          {startingGridEntries.map((entry) => (
+            <li key={entry.team.id} className={entry.team.id === playerTeam?.id ? "current-team" : undefined}>
+              <span>P{entry.position}</span>
+              <LiveryPlate className="standings-livery-plate" livery={entry.team.livery} name={entry.team.name} />
+              <strong>{entry.team.name}</strong>
+              <small>{entry.bestTime === undefined ? tt("starting_grid_no_time") : `${entry.bestTime.toFixed(2)}s`}</small>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div className="actions secondary-actions">
+        <button type="button" onClick={() => void resolveGrandPrix()} disabled={status === "loading"}>
+          {tt("action_launch_grand_prix")}
+        </button>
+        <button type="button" onClick={() => setResolveConfirmOpen(false)}>
+          {tt("action_close")}
+        </button>
+      </div>
+    </Modal>
   ) : null;
   const qualifyingConfirmModal = qualifyingConfirmOpen ? (
-    <div className="modal-overlay" onClick={() => setQualifyingConfirmOpen(false)}>
-      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("qualifying_confirm_title")} onClick={(event) => event.stopPropagation()}>
-        <span className="section-kicker">{tt("qualifying_kicker")}</span>
-        <h2>{tt("qualifying_confirm_title")}</h2>
-        <p>
-          {tt("qualifying_confirm_body")} {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
-        </p>
-        <div className="actions secondary-actions">
-          <button type="button" onClick={startQualifyingRunConfirmed} disabled={status === "loading"}>
-            {tt("action_qualifying")}
-          </button>
-          <button type="button" onClick={() => setQualifyingConfirmOpen(false)}>
-            {tt("action_close")}
-          </button>
-        </div>
-      </section>
-    </div>
+    <Modal label={tt("qualifying_confirm_title")} onClose={() => setQualifyingConfirmOpen(false)}>
+      <span className="section-kicker">{tt("qualifying_kicker")}</span>
+      <h2>{tt("qualifying_confirm_title")}</h2>
+      <p>
+        {tt("qualifying_confirm_body")} {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
+      </p>
+      <div className="actions secondary-actions">
+        <button type="button" onClick={startQualifyingRunConfirmed} disabled={status === "loading"}>
+          {tt("action_qualifying")}
+        </button>
+        <button type="button" onClick={() => setQualifyingConfirmOpen(false)}>
+          {tt("action_close")}
+        </button>
+      </div>
+    </Modal>
   ) : null;
   const nextGrandPrixConfirmModal = nextGrandPrixConfirmOpen ? (
-    <div className="modal-overlay" onClick={() => setNextGrandPrixConfirmOpen(false)}>
-      <section className="panel modal" role="dialog" aria-modal="true" aria-label={tt("next_gp_confirm_title")} onClick={(event) => event.stopPropagation()}>
-        <span className="section-kicker">{tt("action_next_grand_prix")}</span>
-        <h2>{tt("next_gp_confirm_title")}</h2>
-        <p>{tt("next_gp_confirm_body")}</p>
-        <div className="actions secondary-actions">
-          <button type="button" onClick={() => void startNextGrandPrix()} disabled={status === "loading"}>
-            {tt("action_next_grand_prix")}
-          </button>
-          <button
-            type="button"
-            onClick={() => {
-              setNextGrandPrixConfirmOpen(false);
-              setGameView("drive");
-              setResultTab("report");
-              setResultOpen(true);
-            }}
-            disabled={!result}
-          >
-            {tt("result_tab_report")}
-          </button>
-          <button type="button" onClick={() => setNextGrandPrixConfirmOpen(false)}>
-            {tt("action_close")}
-          </button>
-        </div>
-      </section>
-    </div>
+    <Modal label={tt("next_gp_confirm_title")} onClose={() => setNextGrandPrixConfirmOpen(false)}>
+      <span className="section-kicker">{tt("action_next_grand_prix")}</span>
+      <h2>{tt("next_gp_confirm_title")}</h2>
+      <p>{tt("next_gp_confirm_body")}</p>
+      <div className="actions secondary-actions">
+        <button type="button" onClick={() => void startNextGrandPrix()} disabled={status === "loading"}>
+          {tt("action_next_grand_prix")}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            setNextGrandPrixConfirmOpen(false);
+            setGameView("drive");
+            setResultTab("report");
+            setResultOpen(true);
+          }}
+          disabled={!result}
+        >
+          {tt("result_tab_report")}
+        </button>
+        <button type="button" onClick={() => setNextGrandPrixConfirmOpen(false)}>
+          {tt("action_close")}
+        </button>
+      </div>
+    </Modal>
   ) : null;
   const notificationStack = notifications.length ? (
     <div className="notification-stack" aria-live="polite">
@@ -1423,119 +1412,113 @@ export function App() {
       {qualifyingConfirmModal}
       {nextGrandPrixConfirmModal}
       {seasonRecap ? (
-        <div className="modal-overlay" onClick={() => setSeasonRecapSeason(null)}>
-          <section className="panel modal season-recap-modal" role="dialog" aria-modal="true" aria-label={tt("season_recap_title")} onClick={(event) => event.stopPropagation()}>
-            <span className="section-kicker">
-              {tt("league_season")} {seasonRecap.season}
-            </span>
-            <h2>{tt("season_recap_title")}</h2>
-            <div className="season-champion-card">
-              <span>{tt("season_champion")}</span>
-              <strong>
-                {seasonRecap.champion.livery ? (
-                  <LiveryPlate className="standings-livery-plate leader-livery-plate" livery={seasonRecap.champion.livery} name={seasonRecap.champion.teamName} />
-                ) : null}
-                {seasonRecap.champion.teamName}
-              </strong>
-              <small>
-                {seasonRecap.champion.points} {tt("unit_points")} · {seasonRecap.gpCount} {tt("season_gp_count")}
-              </small>
-            </div>
-            <div className="season-recap-grid">
-              <section>
-                <h3>{tt("season_podium")}</h3>
-                <ol className="season-podium-list">
-                  {seasonRecap.standings.slice(0, 3).map((entry) => (
-                    <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "current-team" : undefined}>
-                      <strong>P{entry.position}</strong>
-                      {entry.livery ? <LiveryPlate className="standings-livery-plate" livery={entry.livery} name={entry.teamName} /> : null}
-                      <span>{entry.teamName}</span>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-              <section>
-                <h3>{tt("season_final_standings")}</h3>
-                <ol className="season-standings-list">
-                  {seasonRecap.standings.map((entry) => (
-                    <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "current-team" : undefined}>
-                      <strong>P{entry.position}</strong>
-                      <span>{entry.teamName}</span>
-                      <small>
-                        {entry.points} {tt("unit_points")}
-                      </small>
-                    </li>
-                  ))}
-                </ol>
-              </section>
-            </div>
-            <div className="actions secondary-actions">
-              <button type="button" onClick={() => setSeasonRecapSeason(null)}>
-                {tt("action_close")}
-              </button>
-            </div>
-          </section>
-        </div>
+        <Modal label={tt("season_recap_title")} className="panel modal season-recap-modal" onClose={() => setSeasonRecapSeason(null)}>
+          <span className="section-kicker">
+            {tt("league_season")} {seasonRecap.season}
+          </span>
+          <h2>{tt("season_recap_title")}</h2>
+          <div className="season-champion-card">
+            <span>{tt("season_champion")}</span>
+            <strong>
+              {seasonRecap.champion.livery ? (
+                <LiveryPlate className="standings-livery-plate leader-livery-plate" livery={seasonRecap.champion.livery} name={seasonRecap.champion.teamName} />
+              ) : null}
+              {seasonRecap.champion.teamName}
+            </strong>
+            <small>
+              {seasonRecap.champion.points} {tt("unit_points")} · {seasonRecap.gpCount} {tt("season_gp_count")}
+            </small>
+          </div>
+          <div className="season-recap-grid">
+            <section>
+              <h3>{tt("season_podium")}</h3>
+              <ol className="season-podium-list">
+                {seasonRecap.standings.slice(0, 3).map((entry) => (
+                  <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "current-team" : undefined}>
+                    <strong>P{entry.position}</strong>
+                    {entry.livery ? <LiveryPlate className="standings-livery-plate" livery={entry.livery} name={entry.teamName} /> : null}
+                    <span>{entry.teamName}</span>
+                  </li>
+                ))}
+              </ol>
+            </section>
+            <section>
+              <h3>{tt("season_final_standings")}</h3>
+              <ol className="season-standings-list">
+                {seasonRecap.standings.map((entry) => (
+                  <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "current-team" : undefined}>
+                    <strong>P{entry.position}</strong>
+                    <span>{entry.teamName}</span>
+                    <small>
+                      {entry.points} {tt("unit_points")}
+                    </small>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          </div>
+          <div className="actions secondary-actions">
+            <button type="button" onClick={() => setSeasonRecapSeason(null)}>
+              {tt("action_close")}
+            </button>
+          </div>
+        </Modal>
       ) : null}
       {historyReplay?.result ? (
-        <div className="modal-overlay" onClick={() => setHistoryReplay(null)}>
-          <section className="panel modal qualifying-modal" role="dialog" aria-modal="true" aria-label={tt("result_replay_title")} onClick={(event) => event.stopPropagation()}>
-            <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setHistoryReplay(null)}>
-              ×
-            </button>
-            <div className="qualifying-replay">
-              <ReplayView
-                result={historyReplay.result}
-                circuit={circuitForRound(historyReplay.round)}
-                playerTeamId={playerTeam?.id}
-                teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
-                traitImpacts={replayTraitImpacts}
-                preferencesResetSignal={preferencesResetSignal}
-                tt={tt}
-              />
-            </div>
-          </section>
-        </div>
+        <Modal label={tt("result_replay_title")} className="panel modal qualifying-modal" onClose={() => setHistoryReplay(null)}>
+          <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setHistoryReplay(null)}>
+            ×
+          </button>
+          <div className="qualifying-replay">
+            <ReplayView
+              result={historyReplay.result}
+              circuit={circuitForRound(historyReplay.round)}
+              playerTeamId={playerTeam?.id}
+              teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
+              traitImpacts={replayTraitImpacts}
+              preferencesResetSignal={preferencesResetSignal}
+              tt={tt}
+            />
+          </div>
+        </Modal>
       ) : null}
       {leagueControlsOpen ? (
-        <div className="modal-overlay" onClick={closeLeagueControls}>
-          <section className="panel modal league-controls-modal" role="dialog" aria-modal="true" aria-label={tt("settings_title")} onClick={(event) => event.stopPropagation()}>
-            <span className="section-kicker">{tt("championship_kicker")}</span>
-            <h2>{tt("settings_title")}</h2>
-            <div className="field-grid settings-fields">
-              <label>
-                {tt("field_cadence")}
-                <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
-                  <option value="manual">{tt("cadence_manual")}</option>
-                  <option value="fast">{tt("cadence_fast")}</option>
-                  <option value="weekly">{tt("cadence_weekly")}</option>
-                </select>
-              </label>
-              <label>
-                {tt("field_deadline")}
-                <input
-                  type="datetime-local"
-                  value={form.preparationDeadlineAt}
-                  onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })}
-                />
-              </label>
-            </div>
-            <div className="actions secondary-actions">
-              <button type="button" onClick={updateSettings} disabled={status === "loading"}>
-                {tt("action_update_settings")}
-              </button>
-              <button type="button" onClick={forgetPlayer} disabled={status === "loading" || !leagueState.player}>
-                {tt("action_forget_team")}
-              </button>
-              <button type="button" onClick={restartLeague} disabled={status === "loading"}>
-                {tt("action_restart_league")}
-              </button>
-              <button type="button" onClick={closeLeagueControls}>
-                {tt("action_close")}
-              </button>
-            </div>
-          </section>
-        </div>
+        <Modal label={tt("settings_title")} className="panel modal league-controls-modal" onClose={closeLeagueControls}>
+          <span className="section-kicker">{tt("championship_kicker")}</span>
+          <h2>{tt("settings_title")}</h2>
+          <div className="field-grid settings-fields">
+            <label>
+              {tt("field_cadence")}
+              <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
+                <option value="manual">{tt("cadence_manual")}</option>
+                <option value="fast">{tt("cadence_fast")}</option>
+                <option value="weekly">{tt("cadence_weekly")}</option>
+              </select>
+            </label>
+            <label>
+              {tt("field_deadline")}
+              <input
+                type="datetime-local"
+                value={form.preparationDeadlineAt}
+                onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })}
+              />
+            </label>
+          </div>
+          <div className="actions secondary-actions">
+            <button type="button" onClick={updateSettings} disabled={status === "loading"}>
+              {tt("action_update_settings")}
+            </button>
+            <button type="button" onClick={forgetPlayer} disabled={status === "loading" || !leagueState.player}>
+              {tt("action_forget_team")}
+            </button>
+            <button type="button" onClick={restartLeague} disabled={status === "loading"}>
+              {tt("action_restart_league")}
+            </button>
+            <button type="button" onClick={closeLeagueControls}>
+              {tt("action_close")}
+            </button>
+          </div>
+        </Modal>
       ) : null}
     </main>
   );

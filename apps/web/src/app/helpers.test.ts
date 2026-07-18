@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { completedSeasonSummaries, raceRecapCards, seasonStandings, seasonWinsByTeamId, startingGrid } from "./helpers.js";
+import { clampNumber, completedSeasonSummaries, raceRecapCards, seasonStandings, seasonWinsByTeamId, startingGrid } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import type { RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
@@ -227,5 +227,21 @@ describe("raceRecapCards", () => {
     );
 
     expect(recap.lesson).not.toContain("Rain Grip");
+  });
+});
+
+describe("clampNumber", () => {
+  it("keeps in-range values unchanged", () => {
+    expect(clampNumber(8, 2, 16)).toBe(8);
+  });
+
+  it("clamps values below and above the bounds", () => {
+    expect(clampNumber(0, 2, 16)).toBe(2);
+    expect(clampNumber(99, 2, 16)).toBe(16);
+  });
+
+  it("falls back to the minimum for non-finite values", () => {
+    expect(clampNumber(Number.NaN, 2, 16)).toBe(2);
+    expect(clampNumber(Number.POSITIVE_INFINITY, 1, 18)).toBe(1);
   });
 });

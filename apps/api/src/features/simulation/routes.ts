@@ -1,9 +1,17 @@
-import { CARD_DEFINITIONS, DEMO_RACE_INPUT, simulateRace, type RaceInput, type RaceResult } from "@cr-league/shared";
+import {
+  CARD_DEFINITIONS,
+  DEMO_RACE_INPUT,
+  RACE_APPROACHES,
+  TECHNICAL_PREPARATIONS,
+  simulateRace,
+  type RaceInput,
+  type RaceResult
+} from "@cr-league/shared";
 import type { FastifyInstance } from "fastify";
 
 const TRAITS = ["fast", "technical", "urban", "high_wear", "weather_sensitive"] as const;
-const APPROACHES = ["prudent", "balanced", "aggressive"] as const;
-const PREPARATIONS = ["speed", "reliability", "weather"] as const;
+// ponytail: 16 mirrors MAX_PLAYERS_LIMIT in leagues/store.ts — keeps the public route from doing unbounded simulateRace work
+const MAX_PREVIEW_PARTICIPANTS = 16;
 
 export async function registerSimulationRoutes(app: FastifyInstance) {
   app.post("/simulation/preview", async (request, reply): Promise<RaceResult> => {
@@ -32,6 +40,7 @@ function isRaceInput(value: unknown): value is RaceInput {
     isForecast(candidate.forecast) &&
     Array.isArray(candidate.participants) &&
     candidate.participants.length >= 2 &&
+    candidate.participants.length <= MAX_PREVIEW_PARTICIPANTS &&
     candidate.participants.every(isParticipant)
   );
 }
@@ -58,8 +67,8 @@ function isParticipant(value: unknown): value is RaceInput["participants"][numbe
     Number.isFinite(participant.standingsRank) &&
     participant.standingsRank > 0 &&
     Boolean(decision) &&
-    isOneOf(decision?.approach, APPROACHES) &&
-    isOneOf(decision?.preparation, PREPARATIONS) &&
+    isOneOf(decision?.approach, RACE_APPROACHES) &&
+    isOneOf(decision?.preparation, TECHNICAL_PREPARATIONS) &&
     (decision?.cardId === undefined || decision.cardId in CARD_DEFINITIONS) &&
     (decision?.rivalTeamId === undefined || typeof decision.rivalTeamId === "string")
   );

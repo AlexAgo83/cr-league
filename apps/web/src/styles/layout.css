@@ -2508,19 +2508,38 @@ label small {
 }
 
 .championship-record-header {
-  align-items: center;
+  align-items: end;
+  background:
+    linear-gradient(90deg, rgb(16 14 18 / 0.82), rgb(16 14 18 / 0.36)),
+    var(--record-hero-image) center / cover no-repeat;
+  color: #f8f3e8;
   display: flex;
   gap: 12px;
   justify-content: space-between;
+  margin: -20px -20px 0;
+  min-height: 180px;
+  padding: 20px;
 }
 
 .championship-record-header h3 {
   margin: 0;
 }
 
+.record-hero-standings {
+  --record-hero-image: url("/assets/crl/standings-hero.png");
+}
+
+.record-hero-palmares {
+  --record-hero-image: url("/assets/crl/hall-of-fame.png");
+}
+
+.record-hero-history {
+  --record-hero-image: url("/assets/crl/gp-history-hero.png");
+}
+
 .championship-record-switch {
-  background: rgb(23 21 26 / 0.08);
-  border: 1px solid rgb(23 21 26 / 0.16);
+  background: rgb(16 14 18 / 0.58);
+  border: 1px solid rgb(248 243 232 / 0.18);
   display: inline-flex;
   flex: 0 0 auto;
   justify-self: end;
@@ -2530,7 +2549,7 @@ label small {
 .championship-record-switch button {
   background: transparent;
   border: 0;
-  color: var(--color-muted);
+  color: rgb(248 243 232 / 0.72);
   font-size: 0.72rem;
   min-height: 30px;
   padding: 5px 9px;

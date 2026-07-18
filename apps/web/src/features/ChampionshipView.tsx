@@ -76,7 +76,7 @@ export function ChampionshipView({
 
       <div className="championship-grid">
         <section className="panel championship-record-panel">
-          <header className="championship-record-header">
+          <header className={`championship-record-header record-hero-header record-hero-${recordTab}`}>
             <h3>{activeRecordLabel}</h3>
             <div className="championship-record-switch" role="tablist" aria-label={tt("championship_kicker")}>
               {recordTabs.map((tab) => (
@@ -88,60 +88,52 @@ export function ChampionshipView({
           </header>
 
           {recordTab === "standings" ? (
-            <>
-              <img className="record-hero-image" src="/assets/crl/standings-hero.png" alt="" />
-              <ol className="standings-table">
-                {state.teams.map((team, index) => (
-                  <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
-                    <strong className="standings-rank">P{index + 1}</strong>
-                    <LiveryPlate className="standings-livery-plate" livery={team.livery} name={team.name} wins={seasonWins.get(team.id) ?? 0} />
-                    <span className="standings-team">
-                      {team.name}
-                      <small>{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</small>
-                    </span>
-                    <span className={team.ready ? "ready-pill ready" : "ready-pill missing"}>
-                      {team.ready ? tt("team_ready") : tt("team_missing")}
-                    </span>
-                    <span className="standings-score standings-points">
-                      <strong>{team.points}</strong>
-                      <small>{tt("unit_points")}</small>
-                    </span>
-                    <span className="standings-score standings-credits">
-                      <strong>{team.credits}</strong>
-                      <small>{tt("unit_credits")}</small>
-                    </span>
-                  </li>
-                ))}
-              </ol>
-            </>
+            <ol className="standings-table">
+              {state.teams.map((team, index) => (
+                <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
+                  <strong className="standings-rank">P{index + 1}</strong>
+                  <LiveryPlate className="standings-livery-plate" livery={team.livery} name={team.name} wins={seasonWins.get(team.id) ?? 0} />
+                  <span className="standings-team">
+                    {team.name}
+                    <small>{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</small>
+                  </span>
+                  <span className={team.ready ? "ready-pill ready" : "ready-pill missing"}>
+                    {team.ready ? tt("team_ready") : tt("team_missing")}
+                  </span>
+                  <span className="standings-score standings-points">
+                    <strong>{team.points}</strong>
+                    <small>{tt("unit_points")}</small>
+                  </span>
+                  <span className="standings-score standings-credits">
+                    <strong>{team.credits}</strong>
+                    <small>{tt("unit_credits")}</small>
+                  </span>
+                </li>
+              ))}
+            </ol>
           ) : null}
 
           {recordTab === "palmares" ? (
-            <>
-              <img className="record-hero-image" src="/assets/crl/hall-of-fame.png" alt="" />
-              <ol className="palmares-list">
-                {completedSeasons.map((season) => (
-                  <li key={season.season}>
-                    <button type="button" className="palmares-button" onClick={() => onOpenSeasonRecap(season.season)}>
-                      <span>{season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} /> : null}</span>
-                      <strong>
-                        {tt("league_season")} {season.season}
-                      </strong>
-                      <span>{season.champion.teamName}</span>
-                      <small>
-                        {season.gpCount} {tt("season_gp_count")}
-                      </small>
-                    </button>
-                  </li>
-                ))}
-              </ol>
-            </>
+            <ol className="palmares-list">
+              {completedSeasons.map((season) => (
+                <li key={season.season}>
+                  <button type="button" className="palmares-button" onClick={() => onOpenSeasonRecap(season.season)}>
+                    <span>{season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} /> : null}</span>
+                    <strong>
+                      {tt("league_season")} {season.season}
+                    </strong>
+                    <span>{season.champion.teamName}</span>
+                    <small>
+                      {season.gpCount} {tt("season_gp_count")}
+                    </small>
+                  </button>
+                </li>
+              ))}
+            </ol>
           ) : null}
 
           {recordTab === "history" ? (
-            <>
-              <img className="record-hero-image" src="/assets/crl/gp-history-hero.png" alt="" />
-              <div className="season-history-groups" aria-label={tt("league_history")}>
+            <div className="season-history-groups" aria-label={tt("league_history")}>
                 {historyBySeason.map(([season, grandPrixList]) => {
                   const summary = completedBySeason.get(season);
                   return (
@@ -182,8 +174,7 @@ export function ChampionshipView({
                     </details>
                   );
                 })}
-              </div>
-            </>
+            </div>
           ) : null}
         </section>
       </div>

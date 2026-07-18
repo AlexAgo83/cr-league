@@ -17,7 +17,7 @@ const REFERENCE_REPLAY_DISTANCE_PIXELS = 9_000;
 const POSITION_CHANGE_MARGIN_LAPS = 0.015;
 const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
-const MAX_VISUAL_PROGRESS_STEP = 0.012;
+const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
 const GRID_START_PROGRESS = 0.1;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
@@ -419,15 +419,16 @@ function replaySnapshot(
   return { carProgress, tower };
 }
 
-export function smoothCarProgress(current: Record<string, number>, target: Record<string, number>) {
+export function smoothCarProgress(current: Record<string, number>, target: Record<string, number>, elapsedSeconds = 1 / 60) {
+  const maxStep = Math.max(0.001, Math.min(0.03, elapsedSeconds * MAX_VISUAL_PROGRESS_PER_SECOND));
   return Object.fromEntries(
     Object.keys({ ...current, ...target }).map((teamId) => {
       const to = target[teamId] ?? 0;
       const from = current[teamId] ?? to;
       if (to < from) return [teamId, from];
       const delta = to - from;
-      if (Math.abs(delta) <= MAX_VISUAL_PROGRESS_STEP) return [teamId, to];
-      return [teamId, from + Math.sign(delta) * MAX_VISUAL_PROGRESS_STEP];
+      if (Math.abs(delta) <= maxStep) return [teamId, to];
+      return [teamId, from + Math.sign(delta) * maxStep];
     })
   );
 }
@@ -559,12 +560,13 @@ export function ReplayView({
     if (!playing) return;
     let last = performance.now();
     let frame = requestAnimationFrame(function tick(now: number) {
-      clock.current = Math.min(clock.current + ((now - last) / 1000) * speed, replayEnd);
+      const replayDeltaSeconds = ((now - last) / 1000) * speed;
+      clock.current = Math.min(clock.current + replayDeltaSeconds, replayEnd);
       last = now;
       svg.setCurrentTime(clock.current);
       if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
       if (rangeRef.current && !scrubbingRef.current) rangeRef.current.value = String(clock.current);
-      updateLive(clock.current);
+      updateLive(clock.current, true, replayDeltaSeconds);
       if (clock.current >= replayEnd) {
         setPlaying(false);
         return;
@@ -609,7 +611,7 @@ export function ReplayView({
     setPlaying(true);
   }
 
-  function updateLive(time: number, animatePositions = true) {
+  function updateLive(time: number, animatePositions = true, elapsedSeconds = 1 / 60) {
     setActiveMomentId(activeMomentIdAt(time));
     const progress = raceProgressAt(time, raceDuration);
     const raceTime = Math.max(0, time - START_HOLD_SECONDS);
@@ -617,7 +619,7 @@ export function ReplayView({
     const segment = segmentAtProgress(progress);
     setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
     const targetSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, orderRef.current);
-    const carProgress = animatePositions ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress) : targetSnapshot.carProgress;
+    const carProgress = animatePositions ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress, elapsedSeconds) : targetSnapshot.carProgress;
     const nextTower = liveClassificationByCarProgress(result, replayTrace, progress, carProgress, orderRef.current);
     const nextSnapshot = { carProgress, tower: nextTower };
     const nextOrder = nextTower.map((entry) => entry.teamId);

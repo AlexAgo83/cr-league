@@ -10,6 +10,12 @@ import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
 
 type CardPanel = "team" | "inventory" | "shop";
+export const GARAGE_PANEL_KEY = "cr-league-garage-panel";
+
+function savedCardPanel(): CardPanel {
+  const saved = localStorage.getItem(GARAGE_PANEL_KEY);
+  return saved === "team" || saved === "shop" ? saved : "inventory";
+}
 
 export function GarageView({
   state,
@@ -44,7 +50,7 @@ export function GarageView({
   const [teamName, setTeamName] = useState(playerTeam?.name ?? "");
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
   const [viewingCardId, setViewingCardId] = useState<CardId | undefined>();
-  const [cardPanel, setCardPanel] = useState<CardPanel>("shop");
+  const [cardPanel, setCardPanel] = useState<CardPanel>(savedCardPanel);
 
   useEffect(() => {
     if (playerTeam?.livery) setLivery(playerTeam.livery);
@@ -80,6 +86,10 @@ export function GarageView({
     onBuyCard(pendingBuy.cardId);
     setPendingBuyCardId(undefined);
   };
+  const selectCardPanel = (nextPanel: CardPanel) => {
+    localStorage.setItem(GARAGE_PANEL_KEY, nextPanel);
+    setCardPanel(nextPanel);
+  };
 
   return (
     <div className="garage-grid">
@@ -90,13 +100,13 @@ export function GarageView({
             <h3>{panelTitle}</h3>
           </div>
           <div className="garage-card-toggle" role="tablist" aria-label={tt("dashboard_garage")}>
-            <button type="button" role="tab" className={cardPanel === "inventory" ? "active" : undefined} aria-selected={cardPanel === "inventory"} onClick={() => setCardPanel("inventory")}>
+            <button type="button" role="tab" className={cardPanel === "inventory" ? "active" : undefined} aria-selected={cardPanel === "inventory"} onClick={() => selectCardPanel("inventory")}>
               {tt("garage_inventory")}
             </button>
-            <button type="button" role="tab" className={cardPanel === "shop" ? "active" : undefined} aria-selected={cardPanel === "shop"} onClick={() => setCardPanel("shop")}>
+            <button type="button" role="tab" className={cardPanel === "shop" ? "active" : undefined} aria-selected={cardPanel === "shop"} onClick={() => selectCardPanel("shop")}>
               {tt("garage_shop")}
             </button>
-            <button type="button" role="tab" className={cardPanel === "team" ? "active" : undefined} aria-selected={cardPanel === "team"} onClick={() => setCardPanel("team")}>
+            <button type="button" role="tab" className={cardPanel === "team" ? "active" : undefined} aria-selected={cardPanel === "team"} onClick={() => selectCardPanel("team")}>
               {tt("dashboard_my_team")}
             </button>
           </div>

@@ -358,8 +358,7 @@ describe("App", () => {
     await screen.findByRole("button", { name: "Garage" });
 
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
-    expect(screen.getByRole("tab", { name: "Shop" }).getAttribute("aria-selected")).toBe("true");
-    fireEvent.click(screen.getByRole("tab", { name: "Inventory" }));
+    expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
     expect(screen.getByRole("dialog", { name: "Rain Grip" })).toBeTruthy();
     expect(screen.getByText("Pays off if rain appears around mid-race.")).toBeTruthy();
@@ -378,6 +377,30 @@ describe("App", () => {
     expect(screen.getByRole("dialog", { name: "Confirm card purchase" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Buy card" })).toBeTruthy();
     expect(screen.getByText("You do not have enough credits to buy this card yet.")).toBeTruthy();
+    expect(localStorage.getItem("cr-league-garage-panel")).toBe("shop");
+  });
+
+  it("keeps the selected garage tab in local preferences", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Garage" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.click(screen.getByRole("tab", { name: "My team" }));
+    expect(localStorage.getItem("cr-league-garage-panel")).toBe("team");
+
+    cleanup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Garage" });
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+
+    expect(screen.getByRole("tab", { name: "My team" }).getAttribute("aria-selected")).toBe("true");
   });
 
   it("hides replay explainer copy when opening a replay from Grand Prix history", async () => {
@@ -601,8 +624,8 @@ describe("App", () => {
 
     // Garage view
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
-    expect(screen.getByRole("heading", { name: "Shop" })).toBeTruthy();
-    expect(screen.getByRole("tab", { name: "Shop" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("heading", { name: "Inventory" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("tab", { name: "My team" }));
     expect(screen.getByText("Last GP")).toBeTruthy();
     expect(screen.getByText("+150 credits · +25 pts")).toBeTruthy();
@@ -824,6 +847,7 @@ describe("App", () => {
     localStorage.setItem("cr-league-language", "en");
     localStorage.setItem("cr-league-replay-speed", "4");
     localStorage.setItem("cr-league-replay-focus", "0");
+    localStorage.setItem("cr-league-garage-panel", "team");
     localStorage.setItem("cr-league-season-recap:league_1:1", "1");
 
     render(<App />);
@@ -851,6 +875,7 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe(null);
     expect(localStorage.getItem("cr-league-replay-speed")).toBe(null);
     expect(localStorage.getItem("cr-league-replay-focus")).toBe(null);
+    expect(localStorage.getItem("cr-league-garage-panel")).toBe(null);
     expect(localStorage.getItem("cr-league-season-recap:league_1:1")).toBe(null);
     expect(localStorage.getItem("cr-league-language")).toBe("en");
     expect(localStorage.getItem("cr-league-profile-session")).toContain("profile_1");

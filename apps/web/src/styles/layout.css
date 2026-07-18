@@ -2793,6 +2793,16 @@ label small {
   border-radius: 999px;
 }
 
+@media (max-width: 720px) {
+  .garage-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .garage-livery-visuals {
+    grid-column: 1 / -1;
+  }
+}
+
 .card-shop {
   display: grid;
   gap: 10px;

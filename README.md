@@ -35,7 +35,7 @@ CR League compresses the fantasy of running a motorsport team into a short async
 | Phase | Player fantasy |
 | --- | --- |
 | **Read the track** | Spot what the circuit rewards: grip, attack, endurance, weather, timing. |
-| **Set the plan** | Choose the risk profile, preparation focus, and one card that can swing the GP. |
+| **Set the plan** | Choose the risk profile, tire preparation, and one card that can swing the GP. |
 | **Launch the race** | Review the grid, send the field away, and let the simulation expose the tradeoffs. |
 | **Watch the replay** | Follow the cars, timing, incidents, weather beats, and race director moments. |
 | **Build the season** | Score points, earn credits, buy cards, tune identity, and carry history forward. |
@@ -57,7 +57,7 @@ CR League compresses the fantasy of running a motorsport team into a short async
     </td>
   </tr>
   <tr>
-    <td colspan="2"><strong>Plan from the pit wall</strong><br>Read the track traits, pick an approach, prep for the right signal, and decide whether the next GP deserves a card.</td>
+    <td colspan="2"><strong>Plan from the pit wall</strong><br>Read the track traits, compare chrono attempts, pick an approach, prep the right tires, and decide whether the next GP deserves a card.</td>
   </tr>
   <tr>
     <td width="50%">
@@ -108,7 +108,7 @@ CR League is already playable end to end:
 - profile creation, recovery code, league switching, and saved claims;
 - private league create, join, rejoin, restart, and next-Grand-Prix flows;
 - manual cadence with settings, readiness states, and guarded race actions;
-- qualifying attempts, best-lap history, and replay support;
+- qualifying attempts, chrono reports, best-lap history, and replay support;
 - seeded city-circuit race simulation with weather, traits, events, and reports;
 - garage inventory, card shop, prices, credits, livery editing, and team rename;
 - season history, championship standings, replayable past Grand Prix, and rollover;
@@ -270,7 +270,7 @@ Current roadmap direction:
 
 - `0.1`: playable vertical slice implemented;
 - `0.2`: private league prototype foundation implemented;
-- `0.3`: playtest game loop polish has reached setup/release-readiness patch `0.3.7`;
+- `0.3`: playtest game loop polish has reached race-learning patch `0.3.8`;
 - `0.4`: economy and card depth has started, with broader progression waiting for playtest signal.
 
 ## Contributing

@@ -28,7 +28,8 @@ type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | 
 };
 
 const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
-const STARTER_CARDS: CardId[] = ["rain_grip"];
+const STARTING_CREDITS = 180;
+const STARTER_CARDS: CardId[] = [];
 const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICE }));
 const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 const PRIMARY_LIVERY_COLORS = ["#0f172a", "#1e1b4b", "#312e81", "#3f1d2d", "#1f2937", "#064e3b", "#451a03", "#172554"] as const;
@@ -327,7 +328,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
           kind: "human",
           claimCode: playerClaimCode,
           points: 0,
-          credits: 0,
+          credits: STARTING_CREDITS,
           cards: STARTER_CARDS,
           livery: randomLivery()
         }
@@ -394,7 +395,7 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
         kind: "human",
         claimCode: createClaimCode(),
         points: 0,
-        credits: 0,
+        credits: STARTING_CREDITS,
         cards: STARTER_CARDS,
         livery: randomLivery()
       }
@@ -896,7 +897,7 @@ export async function restartLeague(db: Db, leagueId: string, input: AdminProofI
       where: { id: team.id },
       data: {
         points: 0,
-        credits: 0,
+        credits: team.kind === "human" ? STARTING_CREDITS : 0,
         cards: team.kind === "human" ? STARTER_CARDS : [],
         livery
       }

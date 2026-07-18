@@ -117,6 +117,11 @@ describe("api app", () => {
       url: "/leagues/join",
       payload: { code: created.league.code, teamName: "Late Apex" }
     });
+    const starterBuyResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/cards/buy`,
+      payload: { teamId, claimCode: claim.claimCode, cardId: "rain_grip" }
+    });
 
     const qualifyingResponse = await app.inject({
       method: "POST",
@@ -198,7 +203,8 @@ describe("api app", () => {
       secondaryTrait: "fast",
       forecast: { dry: 35, light_rain: 50, heavy_rain: 15 }
     });
-    expect(createdTeam.cards).toEqual(["rain_grip"]);
+    expect(createdTeam.cards).toEqual([]);
+    expect(createdTeam.credits).toBe(180);
     expect(createdTeam.livery).toMatchObject({
       primary: expect.stringMatching(/^#[0-9a-f]{6}$/i),
       secondary: expect.stringMatching(/^#[0-9a-f]{6}$/i)
@@ -213,6 +219,7 @@ describe("api app", () => {
     expect(readResponse.statusCode).toBe(200);
     expect(readResponse.json().league).toMatchObject({ id: leagueId, name: "Office League" });
     expect(joinResponse.statusCode).toBe(200);
+    expect(starterBuyResponse.statusCode).toBe(200);
     expect(joinResponse.json().teams.find((team: { name: string }) => team.name === "Late Apex").livery).toMatchObject({
       primary: expect.stringMatching(/^#[0-9a-f]{6}$/i),
       secondary: expect.stringMatching(/^#[0-9a-f]{6}$/i)
@@ -277,6 +284,7 @@ describe("api app", () => {
     const claim = created.player;
     const payload = { teamId: claim.teamId, claimCode: claim.claimCode, cardId: "rain_grip" };
 
+    const buyBeforeSellResponse = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/cards/buy`, payload });
     const sellResponse = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/cards/sell`, payload });
     const soldTeam = sellResponse.json().teams.find((team: { id: string }) => team.id === claim.teamId);
     const sellAgainResponse = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/cards/sell`, payload });
@@ -289,6 +297,7 @@ describe("api app", () => {
     const locked = lockedCreateResponse.json();
     const lockedClaim = locked.player;
     const lockedPayload = { teamId: lockedClaim.teamId, claimCode: lockedClaim.claimCode, cardId: "rain_grip" };
+    await app.inject({ method: "POST", url: `/leagues/${locked.league.id}/cards/buy`, payload: lockedPayload });
     await app.inject({
       method: "POST",
       url: `/leagues/${locked.league.id}/decisions`,
@@ -299,9 +308,10 @@ describe("api app", () => {
     await app.close();
 
     expect(CARD_PRICE % 2).toBe(0);
+    expect(buyBeforeSellResponse.statusCode).toBe(200);
     expect(sellResponse.statusCode).toBe(200);
     expect(soldTeam.cards).toEqual([]);
-    expect(soldTeam.credits).toBe(CARD_PRICE / 2);
+    expect(soldTeam.credits).toBe(180 - CARD_PRICE + CARD_PRICE / 2);
     expect(sellAgainResponse.statusCode).toBe(409);
     expect(lockedSellResponse.statusCode).toBe(409);
   });
@@ -536,6 +546,11 @@ describe("api app", () => {
       payload: { name: "Office League", teamName: "Volt Union", qualifyingAttemptLimit: 2 }
     });
     const created = createResponse.json();
+    const buyResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/cards/buy`,
+      payload: { teamId: created.player.teamId, claimCode: created.player.claimCode, cardId: "rain_grip" }
+    });
     const basePayload = {
       teamId: created.player.teamId,
       claimCode: created.player.claimCode,
@@ -553,6 +568,7 @@ describe("api app", () => {
 
     await app.close();
 
+    expect(buyResponse.statusCode).toBe(200);
     expect(firstRun.statusCode).toBe(200);
     expect(secondRun.statusCode).toBe(200);
     expect(secondRun.json().run.decision.cardId).toBeUndefined();
@@ -830,8 +846,8 @@ describe("api app", () => {
     expect(restartResponse.json().grandPrixHistory.map((grandPrix: { round: number }) => grandPrix.round)).toEqual([1]);
     expect(restartResponse.json().teams.find((team: { id: string }) => team.id === teamId)).toMatchObject({
       points: 0,
-      credits: 0,
-      cards: ["rain_grip"]
+      credits: 180,
+      cards: []
     });
   });
 

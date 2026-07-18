@@ -595,7 +595,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Plan" }).className).toContain("active");
     // The switcher doubles as the plan summary: each tab shows the current pick.
     expect(screen.getByRole("tab", { name: "Approach: Balanced" })).toBeTruthy();
-    expect(screen.getByRole("tab", { name: "Preparation: Weather" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "Tire prep: Weather" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Card: Rain Grip" })).toBeTruthy();
     expect(screen.getByText("High overtaking rewards attack and launch cards.")).toBeTruthy();
     expect([...document.querySelectorAll(".directive-trait-modifier")].map((element) => element.textContent)).toEqual(["+3", "-1", "+1"]);
@@ -603,9 +603,9 @@ describe("App", () => {
     expect(document.querySelector(".choice-grid")?.className).toContain("directive-choice-grid");
     expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");
     // Preparation choices only appear on their sub-screen.
-    fireEvent.click(screen.getByRole("tab", { name: "Preparation: Weather" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Tire prep: Weather" }));
     expect(document.querySelector(".choice-grid")?.className).toContain("directive-choice-grid");
-    expect(screen.getByRole("button", { name: "Preparation: Weather" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("button", { name: "Tire prep: Weather" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Card: Rain Grip" }));
     expect(screen.getByRole("button", { name: "Card: Rain Grip" }).getAttribute("aria-pressed")).toBe("true");

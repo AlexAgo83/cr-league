@@ -44,7 +44,8 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
   - 0.3.5 — Visual identity and mobile polish. Shipped in `changelogs/CHANGELOGS_0_3_5.md`.
   - 0.3.6 — Cockpit/setup visual identity and release contract alignment. Shipped in `changelogs/CHANGELOGS_0_3_6.md`.
   - 0.3.7 — First-session setup polish: compact Profile/League choices, saved-league cell styling, bottom-centered notifications, clearer Race Desk copy. Shipped in `changelogs/CHANGELOGS_0_3_7.md`.
-  - 0.3.8+ — Open slots for playtest feedback.
+  - 0.3.8 — Race learning feedback: chrono report/history, setup suggestions, payoff recap, starter credits, and tire-prep wording. In progress in `changelogs/CHANGELOGS_0_3_8.md`.
+  - 0.3.9+ — Open slots for playtest feedback.
 - Exit signal:
   - 3 to 5 testers complete a 3-GP session on the polished loop;
   - feedback answers whether choices feel causal, recaps feel personal, and seasons feel like arcs;

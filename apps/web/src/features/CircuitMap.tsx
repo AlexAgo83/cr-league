@@ -55,8 +55,8 @@ const CAR_SPRITES: Record<CarSprite, string> = {
 };
 const CAR_SPRITE_ANCHOR: Record<CarSprite, { x: number; y: number }> = {
   idle: { x: 0, y: 0 },
-  boost: { x: 1, y: 0 },
-  brake: { x: 4, y: 0 }
+  boost: { x: 0, y: -0.35 },
+  brake: { x: 0.35, y: -0.35 }
 };
 const CAR_SPRITE_BOX = { x: -12, y: -18, width: 24, height: 36 };
 
@@ -371,7 +371,7 @@ export function MapCarSprite({ maskId, sprite, transform }: { maskId: string; sp
       </defs>
       <rect className="map-car-tint" x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
       <image className="map-car-detail" href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
-      <rect className="map-car-accent" x={CAR_SPRITE_BOX.x + anchor.x + 8} y={CAR_SPRITE_BOX.y + anchor.y} width="8" height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
+      <rect className="map-car-accent" x="-4" y={CAR_SPRITE_BOX.y + anchor.y} width="8" height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
     </g>
   );
 }

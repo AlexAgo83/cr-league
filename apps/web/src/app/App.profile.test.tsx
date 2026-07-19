@@ -1,0 +1,487 @@
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { App } from "./App.js";
+import { baseState, otherLeagueState, resolvedState } from "./App.testFixtures.js";
+import { createLeagueFromSetup, expectGarageCode, response, saveProfile, withoutPlayer } from "./App.testHelpers.js";
+
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+  vi.useRealTimers();
+  localStorage.clear();
+  window.history.replaceState(null, "", "/");
+});
+
+describe("App profile and admin", () => {
+  it("shows and copies the saved profile code from the profile menu", async () => {
+    saveProfile();
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Copy profile code" }));
+
+    expect(screen.getByRole("dialog", { name: "Profile code" })).toBeTruthy();
+    expect(screen.getByDisplayValue("ABCD1234")).toBeTruthy();
+
+    fireEvent.click(screen.getByLabelText("Copy profile code"));
+    expect(writeText).toHaveBeenCalledWith("ABCD1234");
+    expect(await screen.findByText("Profile code copied: ABCD1234")).toBeTruthy();
+  });
+
+  it("hides profile code copy when the code is not stored locally", () => {
+    saveProfile({ recoveryCode: undefined });
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+
+    expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
+  });
+
+  it("opens release notes from the centered profile version", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+    render(<App />);
+    createLeagueFromSetup();
+
+    expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "v0.3.7" }));
+
+    expect(screen.getByRole("heading", { name: "What's new" })).toBeTruthy();
+    expect(screen.getByText("Current local version: v0.3.7.")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Setup and release-readiness polish" })).toBeTruthy();
+  });
+
+  it("closes the profile menu when focus leaves it", async () => {
+    saveProfile();
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
+
+    fireEvent.blur(document.querySelector(".profile-menu")!, { relatedTarget: null });
+    expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
+  });
+
+  it("shows a replay empty state when a resolved race has no events", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      response({
+        ...resolvedState,
+        currentGrandPrix: {
+          ...resolvedState.currentGrandPrix,
+          result: {
+            ...resolvedState.currentGrandPrix.result,
+            events: []
+          }
+        }
+      })
+    );
+
+    render(<App />);
+
+    createLeagueFromSetup();
+
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(document.querySelector(".replay-moments-panel")).toBe(null);
+    expect(document.querySelector(".replay-progress")).toBeTruthy();
+  });
+
+  it("resets only UI preferences from the profile menu", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(resolvedState));
+    localStorage.setItem("cr-league-language", "en");
+    localStorage.setItem("cr-league-replay-speed", "4");
+    localStorage.setItem("cr-league-replay-focus", "0");
+    localStorage.setItem("cr-league-garage-panel", "team");
+    localStorage.setItem("cr-league-championship-record-tab", "calendar");
+    localStorage.setItem("cr-league-help-race", "1");
+    localStorage.setItem("cr-league-help-plan", "1");
+    localStorage.setItem("cr-league-help-garage", "1");
+    localStorage.setItem("cr-league-help-profile-code", "1");
+    localStorage.setItem("cr-league-season-recap:league_1:1", "1");
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Speed ×4" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Focus driver" }).className).not.toContain("active");
+    fireEvent.click(screen.getByLabelText("Close Race replay"));
+    expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
+    expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe("1");
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Reset UI preferences" }));
+    expect(screen.getByRole("dialog", { name: "Reset UI preferences?" })).toBeTruthy();
+    expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe("1");
+    fireEvent.click(screen.getAllByRole("button", { name: "Reset UI preferences" }).at(-1)!);
+
+    expect(await screen.findByText("UI preferences reset. Help panels and replay preferences are back to default.")).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Speed ×1" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Focus driver" }).className).toContain("active");
+    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
+    expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe(null);
+    expect(localStorage.getItem("cr-league-replay-speed")).toBe(null);
+    expect(localStorage.getItem("cr-league-replay-focus")).toBe(null);
+    expect(localStorage.getItem("cr-league-garage-panel")).toBe(null);
+    expect(localStorage.getItem("cr-league-championship-record-tab")).toBe(null);
+    expect(localStorage.getItem("cr-league-help-race")).toBe(null);
+    expect(localStorage.getItem("cr-league-help-plan")).toBe(null);
+    expect(localStorage.getItem("cr-league-help-garage")).toBe(null);
+    expect(localStorage.getItem("cr-league-help-profile-code")).toBe(null);
+    expect(localStorage.getItem("cr-league-season-recap:league_1:1")).toBe(null);
+    expect(localStorage.getItem("cr-league-language")).toBe("en");
+    expect(localStorage.getItem("cr-league-profile-session")).toContain("profile_1");
+    expect(localStorage.getItem("cr-league-player-claims")).toContain("team_1");
+    expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_1");
+  });
+
+  it("joins a league by code", async () => {
+    saveProfile();
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Join league/ }));
+    fireEvent.change(screen.getByLabelText("Join code"), { target: { value: "abc123" } });
+    fireEvent.change(screen.getByLabelText("Team"), { target: { value: "Volt Union" } });
+    fireEvent.click(screen.getByRole("button", { name: "Join league" }));
+
+    await expectGarageCode("ABC123");
+    expect(fetch).toHaveBeenCalledWith(
+      "http://localhost:4874/leagues/join",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({
+          code: "ABC123",
+          teamName: "Volt Union",
+          profileId: "profile_1"
+        })
+      })
+    );
+    expect(localStorage.getItem("cr-league-player-claims")).toContain("Office League");
+    expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_1");
+  });
+
+  it("rejoins a saved player claim", async () => {
+    saveProfile();
+    localStorage.setItem(
+      "cr-league-player-claims",
+      JSON.stringify([
+        {
+          ...baseState.player,
+          leagueId: baseState.league.id,
+          leagueName: baseState.league.name,
+          leagueCode: baseState.league.code,
+          teamName: "Volt Union"
+        }
+      ])
+    );
+    localStorage.setItem("cr-league-active-player-claim", baseState.player.teamId);
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+
+    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
+    expect(document.querySelector(".notification-stack")).toBe(null);
+    expect(fetch).toHaveBeenCalledWith(
+      "http://localhost:4874/leagues/rejoin",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify(baseState.player)
+      })
+    );
+    expect(localStorage.getItem("cr-league-player-claims")).toContain("Office League");
+  });
+
+  it("switches between saved league claims", async () => {
+    saveProfile();
+    localStorage.setItem(
+      "cr-league-player-claims",
+      JSON.stringify([
+        {
+          teamId: "team_1",
+          claimCode: "CLAIM123",
+          leagueId: "league_1",
+          leagueName: "Office League",
+          leagueCode: "ABC123",
+          teamName: "Volt Union"
+        },
+        {
+          teamId: "team_3",
+          claimCode: "CLAIM456",
+          leagueId: "league_2",
+          leagueName: "Night League",
+          leagueCode: "NIGHT1",
+          teamName: "Late Apex"
+        }
+      ])
+    );
+    localStorage.setItem("cr-league-active-player-claim", "team_1");
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(otherLeagueState));
+
+    render(<App />);
+
+    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.change(screen.getByLabelText("Active league"), { target: { value: "team_3" } });
+
+    await expectGarageCode("NIGHT1");
+    expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_3");
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://localhost:4874/leagues/rejoin",
+      expect.objectContaining({
+        method: "POST",
+        body: JSON.stringify({ teamId: "team_3", claimCode: "CLAIM456" })
+      })
+    );
+  });
+
+  it("opens league adding without dropping saved claims", async () => {
+    saveProfile();
+    localStorage.setItem(
+      "cr-league-player-claims",
+      JSON.stringify([
+        {
+          teamId: "team_1",
+          claimCode: "CLAIM123",
+          leagueId: "league_1",
+          leagueName: "Office League",
+          leagueCode: "ABC123",
+          teamName: "Volt Union"
+        }
+      ])
+    );
+    localStorage.setItem("cr-league-active-player-claim", "team_1");
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+
+    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Manage league" }));
+
+    expect(screen.getByRole("button", { name: /Create league/ })).toBeTruthy();
+    expect(screen.getByText("Saved leagues")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: /Office League/ }));
+
+    await expectGarageCode("ABC123");
+  });
+
+  it("returns to the home setup screen when clicking the brand", async () => {
+    saveProfile();
+    localStorage.setItem(
+      "cr-league-player-claims",
+      JSON.stringify([
+        {
+          teamId: "team_1",
+          claimCode: "CLAIM123",
+          leagueId: "league_1",
+          leagueName: "Office League",
+          leagueCode: "ABC123",
+          teamName: "Volt Union"
+        }
+      ])
+    );
+    localStorage.setItem("cr-league-active-player-claim", "team_1");
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+
+    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Office League" }));
+
+    expect(screen.getByRole("heading", { name: "Race desk" })).toBeTruthy();
+    expect(screen.getByText("Saved leagues")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Office League/ })).toBeTruthy();
+  });
+
+  it("keeps setup league chrome focused when no league is active", () => {
+    saveProfile();
+
+    render(<App />);
+
+    expect(screen.getByText("Saved leagues")).toBeTruthy();
+    expect(screen.getByText("No saved leagues yet.")).toBeTruthy();
+    expect(document.querySelector(".saved-leagues-empty img")).toBe(null);
+    expect(screen.queryByLabelText("Language")).toBe(null);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(screen.getByLabelText("Language")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Manage league" })).toBe(null);
+    expect(screen.queryByRole("button", { name: "Admin" })).toBe(null);
+    expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
+  });
+
+  it("refreshes admin eligibility for an older saved profile session", async () => {
+    saveProfile({ admin: undefined });
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ admin: true }));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(screen.queryByRole("button", { name: "Admin" })).toBe(null);
+
+    expect(await screen.findByRole("button", { name: "Admin" })).toBeTruthy();
+    expect(JSON.parse(localStorage.getItem("cr-league-profile-session") ?? "{}").admin).toBe(true);
+  });
+
+  it("opens the admin console from the profile menu and performs primary admin actions", async () => {
+    saveProfile({ admin: true });
+    const users = {
+      users: [
+        {
+          id: "profile_1",
+          email: "pilot@example.test",
+          createdAt: "2026-07-19T00:00:00.000Z",
+          teamCount: 1,
+          leagueCount: 1
+        }
+      ]
+    };
+    const emptyUsers = { users: [] };
+    const leagues = {
+      leagues: [
+        {
+          id: "league_1",
+          code: "ABC123",
+          name: "Office League",
+          status: "active",
+          currentSeason: 1,
+          currentRound: 1,
+          playerCount: 1,
+          teamCount: 2,
+          createdAt: "2026-07-19T00:00:00.000Z"
+        }
+      ]
+    };
+    const fetch = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(response(users))
+      .mockResolvedValueOnce(response(leagues))
+      .mockResolvedValueOnce(response({ recoveryCode: "FACE1234" }))
+      .mockResolvedValueOnce(response(users))
+      .mockResolvedValueOnce(response({ ok: true }))
+      .mockResolvedValueOnce(response(emptyUsers))
+      .mockResolvedValueOnce(response(withoutPlayer(baseState)));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Admin" }));
+    expect(screen.getByRole("heading", { name: "Admin console" })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Admin token"), { target: { value: "secret-admin-token" } });
+    fireEvent.click(screen.getByRole("button", { name: "Connect" }));
+
+    await screen.findByText("pilot@example.test");
+    expect(fetch).toHaveBeenNthCalledWith(
+      1,
+      "http://localhost:4874/admin/users",
+      expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
+    );
+    expect(screen.getByText("1 teams · 1 leagues")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Reset recovery" }));
+    expect(await screen.findByDisplayValue("FACE1234")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Delete user" }));
+    expect(screen.getByRole("dialog", { name: "Delete user?" })).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Delete user" }).at(-1)!);
+    await screen.findByText("No profiles found.");
+
+    fireEvent.click(screen.getByRole("tab", { name: "Leagues" }));
+    expect(screen.getByText("Office League")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Inspect" }));
+
+    expect(await screen.findByText("Admin inspection mode: read-only league context, no player claim loaded.")).toBeTruthy();
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://localhost:4874/admin/leagues/league_1",
+      expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
+    );
+    expect(screen.queryByRole("button", { name: "Submit directive" })).toBe(null);
+  });
+
+  it("opens sign out confirmation from the league setup screen", () => {
+    saveProfile();
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
+
+    expect(screen.getByRole("dialog", { name: "Sign out" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Sign out" })).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Sign out" }).at(-1)!);
+    expect(screen.queryByRole("dialog", { name: "Sign out" })).toBe(null);
+    expect(screen.getByRole("heading", { name: "Start your championship" })).toBeTruthy();
+  });
+
+  it("clears a stale saved player claim", async () => {
+    saveProfile();
+    localStorage.setItem(
+      "cr-league-player-claims",
+      JSON.stringify([
+        {
+          teamId: "team_1",
+          claimCode: "CLAIM123",
+          leagueId: "league_1",
+          leagueName: "Office League",
+          leagueCode: "ABC123",
+          teamName: "Volt Union"
+        }
+      ])
+    );
+    localStorage.setItem("cr-league-active-player-claim", "team_1");
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(JSON.stringify({ message: "Team claim not found." }), {
+        status: 404,
+        headers: { "content-type": "application/json" }
+      })
+    );
+
+    render(<App />);
+
+    expect(await screen.findByText("Saved league no longer exists. Join the playtest again.")).toBeTruthy();
+    expect(localStorage.getItem("cr-league-player-claims")).toBe("[]");
+    expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
+    expect(screen.getByRole("button", { name: /Join league/ })).toBeTruthy();
+  });
+
+  it("hides technical API errors from setup panels and keeps them copyable", async () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.assign(navigator, { clipboard: { writeText } });
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          message:
+            "Invalid `db.profile.findUnique()` invocation in apps/api/src/features/leagues/store.ts. The column `leagues.ownerTeamId` does not exist in the current database."
+        }),
+        {
+          status: 500,
+          headers: { "content-type": "application/json" }
+        }
+      )
+    );
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
+    fireEvent.change(screen.getByLabelText("Recovery code"), { target: { value: "ABCD1234" } });
+    fireEvent.click(screen.getByRole("button", { name: "Recover profile" }));
+
+    await screen.findByRole("dialog", { name: "Action blocked" });
+    expect(document.querySelector(".setup-main-panel")?.textContent).toContain("Something went wrong. Try again in a moment.");
+    expect(document.querySelector(".setup-main-panel")?.textContent).not.toContain("db.profile.findUnique");
+    expect(screen.getByRole("dialog", { name: "Action blocked" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Copy error detail" }));
+
+    expect(writeText).toHaveBeenCalledWith(expect.stringContaining("ownerTeamId"));
+  });
+});

@@ -22,6 +22,7 @@ Covers work started after `0.3.7`.
 - Updated package versions to `0.3.8` across root, web, API, and shared workspaces.
 - Kept internal workspace dependency versions aligned with `0.3.8`.
 - Split the web app shell into focused onboarding, setup, admin console, and race-flow modules.
+- Split large API and web test files into smoke, admin/profile, fixtures, and helper modules.
 - Updated API league creation, joining, and restart flows for the starter-credit economy.
 - Updated API and web tests around explicit card buying, chrono reports, and tire-prep copy.
 - Kept the implementation on existing `QualifyingRun`, `RaceResult`, card shop, and replay data instead of adding new persistence.

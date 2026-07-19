@@ -264,7 +264,8 @@ export function eventReplayText(event: RaceEvent, names: Map<string, string>, tt
 
 export function eventReportText(event: RaceEvent, names: Map<string, string>, tt: Translator) {
   const delta = event.positionDelta ? ` (${event.positionDelta > 0 ? "+" : ""}${event.positionDelta})` : "";
-  return `${eventReplayText(event, names, tt)}${delta}.`;
+  const text = `${eventReplayText(event, names, tt)}${delta}`;
+  return /[.!?…]$/.test(text) ? text : `${text}.`;
 }
 
 export function resultHeadline(result: RaceResult, tt: Translator, title = result.grandPrixName) {

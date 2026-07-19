@@ -3,6 +3,7 @@ import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CardFit, Translator } from "../app/helpers.js";
 import type { FormState } from "../app/types.js";
+import { AssetImage } from "./AssetImage.js";
 import { CARD_BADGES, CardArtImage, CardStatBadges } from "./CardStatBadges.js";
 import { VisualIcon } from "./VisualIcon.js";
 
@@ -21,6 +22,24 @@ const PIT_STRATEGIES = ["heavy_pack", "standard", "mini_pack"] as const;
 const TRAITS = ["grip", "overtaking", "energy"] as const;
 export type DirectiveStep = "approach" | "preparation" | "pit" | "card";
 export const DIRECTIVE_STEP_KEY = "cr-league-directive-step";
+
+const APPROACH_ART: Record<(typeof APPROACHES)[number], string> = {
+  prudent: "/assets/crl/approach-prudent.png",
+  balanced: "/assets/crl/approach-balanced.png",
+  aggressive: "/assets/crl/approach-aggressive.png"
+};
+
+const PREPARATION_ART: Record<(typeof PREPARATIONS)[number], string> = {
+  speed: "/assets/crl/preparation-speed.png",
+  reliability: "/assets/crl/preparation-reliability.png",
+  weather: "/assets/crl/preparation-weather.png"
+};
+
+const PIT_ART: Record<(typeof PIT_STRATEGIES)[number], string> = {
+  heavy_pack: "/assets/crl/pit-strategy-heavy-pack.png",
+  standard: "/assets/crl/pit-strategy-standard.png",
+  mini_pack: "/assets/crl/pit-strategy-mini-pack.png"
+};
 
 export function savedDirectiveStep(): DirectiveStep {
   const saved = localStorage.getItem(DIRECTIVE_STEP_KEY);
@@ -73,6 +92,10 @@ function ImpactBadges({ badges, tt }: { badges: ImpactBadge[]; tt: Translator })
       ))}
     </span>
   );
+}
+
+function DirectiveChoiceArt({ src }: { src: string }) {
+  return <AssetImage className="directive-choice-art" src={src} alt="" />;
 }
 
 function directiveModifiers(form: FormState, selectedCardId: FormState["cardId"]) {
@@ -181,6 +204,7 @@ export function DirectivePanel({
                 <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
                 <small>{tt(`approach_${approach}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={APPROACH_BADGES[approach]} tt={tt} />
+                <DirectiveChoiceArt src={APPROACH_ART[approach]} />
               </button>
             ))}
           </div>
@@ -195,6 +219,7 @@ export function DirectivePanel({
                 <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
                 <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={PREPARATION_BADGES[preparation]} tt={tt} />
+                <DirectiveChoiceArt src={PREPARATION_ART[preparation]} />
               </button>
             ))}
           </div>
@@ -209,6 +234,7 @@ export function DirectivePanel({
                 <strong>{tt(`pit_strategy_${pitStrategy}` as TranslationKey)}</strong>
                 <small>{tt(`pit_strategy_${pitStrategy}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={PIT_BADGES[pitStrategy]} tt={tt} />
+                <DirectiveChoiceArt src={PIT_ART[pitStrategy]} />
               </button>
             ))}
           </div>

@@ -6149,42 +6149,54 @@ button.highlight-command:not(:disabled) {
   color: rgb(23 21 26 / 0.78);
 }
 
+.plan-view .directive-choice-group .choice-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.directive-choice-art {
+  border-radius: 0;
+  height: 142%;
+  inset: 50% 0 auto auto;
+  mask-image: linear-gradient(90deg, transparent 0, #000 32%);
+  object-fit: contain;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  transform: translateY(-50%);
+  width: min(52%, 200px);
+  z-index: 0;
+}
+
+.directive-choice-art.asset-image-shell {
+  position: absolute;
+}
+
+.directive-choice-art > img {
+  object-fit: contain;
+}
+
+.directive-choice-art .asset-image-placeholder {
+  background:
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.12), transparent),
+    linear-gradient(135deg, rgb(197 58 0 / 0.08), transparent 62%),
+    var(--directive-cell-bg, rgb(236 231 218 / 0.98));
+  background-size: 220% 100%, 100% 100%, 100% 100%;
+  border: 0;
+}
+
 .plan-view .directive-choice-approach .choice-card {
   --approach-cell-bg: rgb(236 231 218 / 0.98);
-  --approach-image: none;
+  --directive-cell-bg: var(--approach-cell-bg);
   min-height: 128px;
   padding-right: min(52%, 200px);
-}
-
-.plan-view .directive-choice-approach .choice-card.approach-prudent {
-  --approach-image: url("/assets/crl/approach-prudent.png");
-}
-
-.plan-view .directive-choice-approach .choice-card.approach-balanced {
-  --approach-image: url("/assets/crl/approach-balanced.png");
-}
-
-.plan-view .directive-choice-approach .choice-card.approach-aggressive {
-  --approach-image: url("/assets/crl/approach-aggressive.png");
 }
 
 .plan-view .directive-choice-pit .choice-card {
   --pit-cell-bg: rgb(236 231 218 / 0.98);
-  --pit-strategy-image: none;
+  --directive-cell-bg: var(--pit-cell-bg);
   min-height: 128px;
   padding-right: min(52%, 200px);
-}
-
-.plan-view .directive-choice-pit .choice-card.pit-strategy-heavy_pack {
-  --pit-strategy-image: url("/assets/crl/pit-strategy-heavy-pack.png");
-}
-
-.plan-view .directive-choice-pit .choice-card.pit-strategy-standard {
-  --pit-strategy-image: url("/assets/crl/pit-strategy-standard.png");
-}
-
-.plan-view .directive-choice-pit .choice-card.pit-strategy-mini_pack {
-  --pit-strategy-image: url("/assets/crl/pit-strategy-mini-pack.png");
 }
 
 .plan-view .directive-choice-group .choice-card:not(:disabled):hover,
@@ -6214,7 +6226,6 @@ button.highlight-command:not(:disabled) {
 .plan-view .directive-choice-approach .choice-card.selected {
   background:
     linear-gradient(90deg, var(--approach-cell-bg) 0 48%, rgb(236 231 218 / 0.86) 62%, transparent 78%),
-    var(--approach-image) right center / auto 142% no-repeat,
     var(--approach-cell-bg);
 }
 
@@ -6224,28 +6235,15 @@ button.highlight-command:not(:disabled) {
 
 .plan-view .directive-choice-preparation .choice-card {
   --preparation-cell-bg: rgb(236 231 218 / 0.98);
-  --preparation-image: none;
+  --directive-cell-bg: var(--preparation-cell-bg);
   min-height: 128px;
   padding-right: min(52%, 200px);
-}
-
-.plan-view .directive-choice-preparation .choice-card.preparation-speed {
-  --preparation-image: url("/assets/crl/preparation-speed.png");
-}
-
-.plan-view .directive-choice-preparation .choice-card.preparation-reliability {
-  --preparation-image: url("/assets/crl/preparation-reliability.png");
-}
-
-.plan-view .directive-choice-preparation .choice-card.preparation-weather {
-  --preparation-image: url("/assets/crl/preparation-weather.png");
 }
 
 .plan-view .directive-choice-preparation .choice-card,
 .plan-view .directive-choice-preparation .choice-card.selected {
   background:
     linear-gradient(90deg, var(--preparation-cell-bg) 0 48%, rgb(236 231 218 / 0.86) 62%, transparent 78%),
-    var(--preparation-image) right center / auto 142% no-repeat,
     var(--preparation-cell-bg);
 }
 
@@ -6257,7 +6255,6 @@ button.highlight-command:not(:disabled) {
 .plan-view .directive-choice-pit .choice-card.selected {
   background:
     linear-gradient(90deg, var(--pit-cell-bg) 0 48%, rgb(236 231 218 / 0.86) 62%, transparent 78%),
-    var(--pit-strategy-image) right center / auto 142% no-repeat,
     var(--pit-cell-bg);
 }
 

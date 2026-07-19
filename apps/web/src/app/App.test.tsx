@@ -296,10 +296,13 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: /S1 R1/ }));
 
     expect(document.querySelector("#result-replay-panel")).toBeTruthy();
+    expect(window.location.pathname).toBe("/replay/gp_1");
     expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
     expect(screen.queryByRole("dialog", { name: "Race replay" })).toBe(null);
     expect(screen.getByRole("button", { name: "Back to circuit" })).toBeTruthy();
     expect(screen.queryByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    expect(window.location.pathname).toBe("/drive");
   });
 
   it("plays through the demo league flow", async () => {
@@ -501,6 +504,7 @@ describe("App", () => {
     expect(launchDialog.textContent).toContain(`Grip ${roundOneCircuit.traits.grip}`);
     fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(window.location.pathname).toBe("/replay/gp_1");
     expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.getByRole("button", { name: "Report" }).className).toContain("replay-report-button");
@@ -538,6 +542,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("replay-close-button");
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
+    expect(window.location.pathname).toBe("/drive");
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     expect(document.querySelectorAll(".map-final-classification li").length).toBe(resolvedState.currentGrandPrix.result.classification.length);
     expect(document.querySelector(".map-final-classification")?.textContent).toContain("Volt Union");
@@ -548,6 +553,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Next GP" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Replay" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    expect(window.location.pathname).toBe("/replay/gp_1");
     expect(Array.from(document.querySelector(".result-view")!.children).map((child) => child.id || child.className)).toEqual([
       "result-replay-panel",
       "panel race-payoff-recap"
@@ -557,6 +563,7 @@ describe("App", () => {
     expect(replayReportButton).toBeTruthy();
     fireEvent.click(replayReportButton);
     expect(screen.getByText(`${roundOneCircuit.title}: Volt Union wins.`)).toBeTruthy();
+    expect(window.location.pathname).toBe("/drive");
     expect(screen.queryByText("Movement")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
 

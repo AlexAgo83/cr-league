@@ -11,6 +11,7 @@ export type AppRoute = {
   directiveStep: DirectiveStep;
   championshipTab: ChampionshipRecordTab;
   garagePanel: CardPanel;
+  replayGrandPrixId?: string;
 };
 
 export function parseAppRoute(pathname: string): AppRoute {
@@ -18,6 +19,7 @@ export function parseAppRoute(pathname: string): AppRoute {
   const first = parts[0];
   const second = parts[1];
 
+  if (first === "replay" && second) return route("drive", "plan", "approach", "standings", "inventory", second);
   if (first === "plan") return route("plan", second === "chrono" ? "chrono" : "plan", directiveStepFromPath(second), "standings", "inventory");
   if (first === "championship") return route("championship", "plan", "approach", championshipTabFromPath(second), "inventory");
   if (first === "garage") return route("garage", "plan", "approach", "standings", garagePanelFromPath(second));
@@ -37,11 +39,29 @@ export function pathForAppRoute(route: AppRoute) {
   if (route.view === "garage") return `/garage/${route.garagePanel}`;
   if (route.view === "admin") return "/admin";
   if (route.view === "changelog") return "/changelog";
+  if (route.view === "drive" && route.replayGrandPrixId) return `/replay/${route.replayGrandPrixId}`;
   return "/drive";
 }
 
-function route(view: GameView, planSubscreen: PlanSubscreen, directiveStep: DirectiveStep, championshipTab: ChampionshipRecordTab, garagePanel: CardPanel): AppRoute {
-  return { view, planSubscreen, directiveStep, championshipTab, garagePanel };
+export function shortGrandPrixId(id: string) {
+  return id.slice(0, 8);
+}
+
+export function isGrandPrixRouteId(id: string, routeId: string) {
+  return id === routeId || shortGrandPrixId(id) === routeId;
+}
+
+function route(
+  view: GameView,
+  planSubscreen: PlanSubscreen,
+  directiveStep: DirectiveStep,
+  championshipTab: ChampionshipRecordTab,
+  garagePanel: CardPanel,
+  replayGrandPrixId?: string
+): AppRoute {
+  const appRoute: AppRoute = { view, planSubscreen, directiveStep, championshipTab, garagePanel };
+  if (replayGrandPrixId) appRoute.replayGrandPrixId = replayGrandPrixId;
+  return appRoute;
 }
 
 function directiveStepFromPath(value: string | undefined): DirectiveStep {

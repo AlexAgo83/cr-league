@@ -5,13 +5,14 @@ import { GARAGE_PANEL_KEY, savedCardPanel, type CardPanel } from "../features/Ga
 import type { GameView, ProfileSession } from "./types.js";
 import { parseAppRoute, pathForAppRoute, type PlanSubscreen } from "./routes.js";
 
-export function useAppNavigation(profileSession: ProfileSession | null, onRouteChange: () => void) {
+export function useAppNavigation(profileSession: ProfileSession | null, onRouteChange: () => void, activeReplayGrandPrixId?: string) {
   const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);
   const [gameView, setGameView] = useState<GameView>(() => initialRoute.view);
   const [planSubscreen, setPlanSubscreen] = useState<PlanSubscreen>(() => initialRoute.planSubscreen);
   const [directiveStep, setDirectiveStep] = useState<DirectiveStep>(() => initialRoute.directiveStep === "approach" ? savedDirectiveStep() : initialRoute.directiveStep);
   const [championshipRecordTab, setChampionshipRecordTab] = useState<ChampionshipRecordTab>(() => initialRoute.championshipTab === "standings" ? savedRecordTab() : initialRoute.championshipTab);
   const [garagePanel, setGaragePanel] = useState<CardPanel>(() => initialRoute.garagePanel === "inventory" ? savedCardPanel() : initialRoute.garagePanel);
+  const [routeReplayGrandPrixId, setRouteReplayGrandPrixId] = useState<string | undefined>(() => initialRoute.replayGrandPrixId);
 
   useEffect(() => {
     const applyRoute = () => {
@@ -22,6 +23,7 @@ export function useAppNavigation(profileSession: ProfileSession | null, onRouteC
       setDirectiveStep(route.directiveStep === "approach" ? savedDirectiveStep() : route.directiveStep);
       setChampionshipRecordTab(route.championshipTab === "standings" ? savedRecordTab() : route.championshipTab);
       setGaragePanel(route.garagePanel === "inventory" ? savedCardPanel() : route.garagePanel);
+      setRouteReplayGrandPrixId(route.replayGrandPrixId);
       onRouteChange();
     };
 
@@ -35,9 +37,16 @@ export function useAppNavigation(profileSession: ProfileSession | null, onRouteC
       return;
     }
 
-    const path = pathForAppRoute({ view: gameView, planSubscreen, directiveStep, championshipTab: championshipRecordTab, garagePanel });
+    const path = pathForAppRoute({
+      view: gameView,
+      planSubscreen,
+      directiveStep,
+      championshipTab: championshipRecordTab,
+      garagePanel,
+      replayGrandPrixId: activeReplayGrandPrixId ?? routeReplayGrandPrixId
+    });
     if (window.location.pathname !== path) window.history.pushState(null, "", path);
-  }, [championshipRecordTab, directiveStep, gameView, garagePanel, planSubscreen, profileSession]);
+  }, [activeReplayGrandPrixId, championshipRecordTab, directiveStep, gameView, garagePanel, planSubscreen, profileSession, routeReplayGrandPrixId]);
 
   useEffect(() => {
     localStorage.setItem(CHAMPIONSHIP_RECORD_TAB_KEY, championshipRecordTab);
@@ -61,6 +70,8 @@ export function useAppNavigation(profileSession: ProfileSession | null, onRouteC
     setPlanSubscreen,
     setDirectiveStep,
     setChampionshipRecordTab,
-    setGaragePanel
+    setGaragePanel,
+    routeReplayGrandPrixId,
+    setRouteReplayGrandPrixId
   };
 }

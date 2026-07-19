@@ -8,6 +8,7 @@ describe("app routes", () => {
     expect(parseAppRoute("/plan/card")).toEqual({ view: "plan", planSubscreen: "plan", directiveStep: "card", championshipTab: "standings", garagePanel: "inventory" });
     expect(parseAppRoute("/championship/circuits")).toEqual({ view: "championship", planSubscreen: "plan", directiveStep: "approach", championshipTab: "calendar", garagePanel: "inventory" });
     expect(parseAppRoute("/garage/shop")).toEqual({ view: "garage", planSubscreen: "plan", directiveStep: "approach", championshipTab: "standings", garagePanel: "shop" });
+    expect(parseAppRoute("/replay/gp_abcd1")).toEqual({ view: "drive", planSubscreen: "plan", directiveStep: "approach", championshipTab: "standings", garagePanel: "inventory", replayGrandPrixId: "gp_abcd1" });
   });
 
   it("builds canonical paths from app state", () => {
@@ -17,5 +18,6 @@ describe("app routes", () => {
     expect(pathForAppRoute({ view: "championship", planSubscreen: "plan", directiveStep: "approach", championshipTab: "calendar", garagePanel: "inventory" })).toBe("/championship/circuits");
     expect(pathForAppRoute({ view: "garage", planSubscreen: "plan", directiveStep: "approach", championshipTab: "standings", garagePanel: "team" })).toBe("/garage/team");
     expect(pathForAppRoute({ view: "drive", planSubscreen: "plan", directiveStep: "approach", championshipTab: "standings", garagePanel: "inventory" })).toBe("/drive");
+    expect(pathForAppRoute({ view: "drive", planSubscreen: "plan", directiveStep: "approach", championshipTab: "standings", garagePanel: "inventory", replayGrandPrixId: "gp_abcd1" })).toBe("/replay/gp_abcd1");
   });
 });

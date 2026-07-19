@@ -40,6 +40,7 @@ import {
   upsertPlayerClaim
 } from "./appStorage.js";
 import { bestQualifyingRuns, buildChronoReport, createInitialForm, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
+import { isGrandPrixRouteId, shortGrandPrixId } from "./routes.js";
 import { LeagueSetupView, ProfileSetupView, type ProfileMode, type SetupMode } from "./SetupViews.js";
 import { useAppNavigation } from "./useAppNavigation.js";
 
@@ -54,7 +55,12 @@ export function App() {
   });
   const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
+  const [resultTab, setResultTab] = useState<ResultTab>("replay");
+  const [resultOpen, setResultOpen] = useState(true);
+  const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const clearRouteReplay = useCallback(() => setHistoryReplay(null), []);
+  const activeReplayGrandPrixId =
+    historyReplay ? shortGrandPrixId(historyReplay.id) : leagueState?.currentGrandPrix.result && resultOpen && resultTab === "replay" ? shortGrandPrixId(leagueState.currentGrandPrix.id) : undefined;
   const {
     gameView,
     planSubscreen,
@@ -65,12 +71,11 @@ export function App() {
     setPlanSubscreen,
     setDirectiveStep,
     setChampionshipRecordTab,
-    setGaragePanel
-  } = useAppNavigation(profileSession, clearRouteReplay);
-  const [resultTab, setResultTab] = useState<ResultTab>("replay");
-  const [resultOpen, setResultOpen] = useState(true);
+    setGaragePanel,
+    routeReplayGrandPrixId,
+    setRouteReplayGrandPrixId
+  } = useAppNavigation(profileSession, clearRouteReplay, activeReplayGrandPrixId);
   const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
-  const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
@@ -272,6 +277,30 @@ export function App() {
       : ""
   }`;
   useEffect(() => {
+    if (!leagueState || !routeReplayGrandPrixId) return;
+    if (historyReplay && isGrandPrixRouteId(historyReplay.id, routeReplayGrandPrixId)) return;
+
+    if (leagueState.currentGrandPrix.result && isGrandPrixRouteId(leagueState.currentGrandPrix.id, routeReplayGrandPrixId)) {
+      if (historyReplay) setHistoryReplay(null);
+      setResultTab("replay");
+      setResultOpen(true);
+      setGameView("drive");
+      return;
+    }
+
+    const replay = leagueState.grandPrixHistory.find((grandPrix) => grandPrix.result && isGrandPrixRouteId(grandPrix.id, routeReplayGrandPrixId));
+    if (!replay) {
+      setRouteReplayGrandPrixId(undefined);
+      return;
+    }
+
+    setHistoryReplay(replay);
+    setResultTab("replay");
+    setResultOpen(true);
+    setGameView("drive");
+  }, [historyReplay, leagueState, routeReplayGrandPrixId, setGameView, setRouteReplayGrandPrixId]);
+
+  useEffect(() => {
     if (!leagueState || onboardingHelp) return;
     openOnboardingHelp("leagueIntro");
     if (!localStorage.getItem(ONBOARDING_HELP_KEYS.leagueIntro) && !snoozedOnboardingHelp.current.has("leagueIntro")) return;
@@ -437,9 +466,15 @@ export function App() {
   function openHistoryReplay(grandPrix: LeagueState["grandPrixHistory"][number]) {
     if (!grandPrix.result) return;
     setHistoryReplay(grandPrix);
+    setRouteReplayGrandPrixId(shortGrandPrixId(grandPrix.id));
     setResultTab("replay");
     setResultOpen(true);
     setGameView("drive");
+  }
+
+  function closeHistoryReplay() {
+    setHistoryReplay(null);
+    setRouteReplayGrandPrixId(undefined);
   }
 
   async function mutateLeague(loadingKey: TranslationKey, path: string, body: unknown, successKey: TranslationKey) {
@@ -757,7 +792,7 @@ export function App() {
   }
 
   function closeOpenReplays() {
-    if (historyReplay) setHistoryReplay(null);
+    if (historyReplay) closeHistoryReplay();
     if (qualifyingResult) setQualifyingResult(null);
     if (resultOpen && result) setResultOpen(false);
   }
@@ -795,7 +830,7 @@ export function App() {
     setGameView("drive");
     setSetupMode("choice");
     setProfileOpen(false);
-    setHistoryReplay(null);
+    closeHistoryReplay();
     setResultOpen(true);
     showStatus(tt("status_initial"));
   }
@@ -1314,7 +1349,7 @@ export function App() {
               onClick={() => {
                 clearTransientNotifications();
                 clearScreenOnboardingSnoozes();
-                setHistoryReplay(null);
+                closeHistoryReplay();
                 setGameView(view);
                 if (view === "plan") setPlanSubscreen("plan");
                 if (view === "drive" && result) setResultOpen(false);
@@ -1362,7 +1397,7 @@ export function App() {
             onOpenReport={() => setResultTab("report")}
             onClose={() => {
               if (historyReplay) {
-                setHistoryReplay(null);
+                closeHistoryReplay();
                 return;
               }
               setResultOpen(false);

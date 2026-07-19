@@ -13,7 +13,7 @@ type TraitStats = {
 };
 
 type TraitKey = "grip" | "overtaking" | "energy";
-type ImpactBadge = { trait: TraitKey; sign: "+" | "-"; label: TranslationKey };
+type ImpactBadge = { trait: TraitKey; sign: "+" | "-"; label: TranslationKey; value?: number };
 
 const APPROACHES = ["prudent", "balanced", "aggressive"] as const;
 const PREPARATIONS = ["speed", "reliability", "weather"] as const;
@@ -28,8 +28,8 @@ const TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
 // Player-facing read of what each directive choice shifts, mirrored from the race
 // simulation's applyDecision() and expressed on the grip/attack/endurance vocabulary
 // the map already uses. UI hint only — no balance logic lives here.
-function badge(trait: TraitKey, sign: "+" | "-"): ImpactBadge {
-  return { trait, sign, label: TRAIT_LABEL[trait] };
+function badge(trait: TraitKey, sign: "+" | "-", value = 2): ImpactBadge {
+  return { trait, sign, label: TRAIT_LABEL[trait], value };
 }
 
 const APPROACH_BADGES: Record<(typeof APPROACHES)[number], ImpactBadge[]> = {
@@ -64,7 +64,7 @@ function ImpactBadges({ badges, tt }: { badges: ImpactBadge[]; tt: Translator })
 function directiveModifiers(form: FormState, selectedCardId: FormState["cardId"]) {
   const modifiers: Record<TraitKey, number> = { grip: 0, overtaking: 0, energy: 0 };
   const add = (entry: ImpactBadge) => {
-    modifiers[entry.trait] += entry.sign === "+" ? 1 : -1;
+    modifiers[entry.trait] += (entry.sign === "+" ? 1 : -1) * (entry.value ?? 1);
   };
 
   APPROACH_BADGES[form.approach].forEach(add);

@@ -189,32 +189,32 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
   const { approach, preparation } = participant.decision;
 
   if (approach === "prudent") {
-    scores.pace -= 5;
-    scores.control += 7;
-    scores.reliability += 7;
-    scores.aggression -= 8;
+    scores.pace -= 8;
+    scores.control += 12;
+    scores.reliability += 12;
+    scores.aggression -= 12;
   } else if (approach === "balanced") {
-    scores.control += 2;
-    scores.reliability += 2;
-    scores.weatherReadiness += 2;
+    scores.control += 4;
+    scores.reliability += 4;
+    scores.weatherReadiness += 4;
   } else if (approach === "aggressive") {
-    scores.pace += 8;
-    scores.control -= 5;
-    scores.reliability -= 5;
-    scores.aggression += 10;
+    scores.pace += 14;
+    scores.control -= 8;
+    scores.reliability -= 8;
+    scores.aggression += 16;
   }
 
   if (preparation === "speed") {
-    scores.pace += 5;
-    scores.reliability -= 2;
+    scores.pace += 9;
+    scores.reliability -= 4;
   } else if (preparation === "reliability") {
-    scores.reliability += 11;
-    scores.control += 5;
-    scores.pace -= 1;
+    scores.reliability += 16;
+    scores.control += 8;
+    scores.pace -= 2;
   } else {
-    scores.weatherReadiness += 14;
-    scores.control += 1;
-    scores.pace -= 1;
+    scores.weatherReadiness += 20;
+    scores.control += 3;
+    scores.pace -= 2;
   }
 
   if (participant.botArchetype === "rain_specialist") {

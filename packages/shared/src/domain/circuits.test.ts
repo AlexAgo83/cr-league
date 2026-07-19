@@ -29,4 +29,11 @@ describe("circuit identities", () => {
       forecast: { dry: 70, light_rain: 20, heavy_rain: 10 }
     });
   });
+
+  it("includes two Monaco layouts", () => {
+    expect(CITY_CIRCUIT_IDENTITIES.filter((circuit) => circuit.city === "Monaco").map((circuit) => circuit.layoutKey)).toEqual([
+      "circuit_monaco_harbor_loop",
+      "circuit_monaco_casino_sprint"
+    ]);
+  });
 });

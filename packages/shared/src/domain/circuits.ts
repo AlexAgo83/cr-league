@@ -11,7 +11,9 @@ export const CITY_CIRCUIT_IDENTITIES = [
   { city: "Lisbon", country: "PT", layoutKey: "circuit_lisbon_baixa_loop", laps: 9, traits: { grip: 54, overtaking: 78, energy: 57 }, likelyWeather: "dry" },
   { city: "Vienna", country: "AT", layoutKey: "circuit_vienna_ring_loop", laps: 5, traits: { grip: 70, overtaking: 66, energy: 72 }, likelyWeather: "light_rain" },
   { city: "Porto", country: "PT", layoutKey: "circuit_porto_boavista_loop", laps: 8, traits: { grip: 56, overtaking: 76, energy: 60 }, likelyWeather: "light_rain" },
-  { city: "Madrid", country: "ES", layoutKey: "circuit_madrid_centro_loop", laps: 5, traits: { grip: 62, overtaking: 80, energy: 55 }, likelyWeather: "dry" }
+  { city: "Madrid", country: "ES", layoutKey: "circuit_madrid_centro_loop", laps: 5, traits: { grip: 62, overtaking: 80, energy: 55 }, likelyWeather: "dry" },
+  { city: "Monaco", country: "MC", layoutKey: "circuit_monaco_harbor_loop", laps: 18, traits: { grip: 82, overtaking: 48, energy: 58 }, likelyWeather: "dry" },
+  { city: "Monaco", country: "MC", layoutKey: "circuit_monaco_casino_sprint", laps: 21, traits: { grip: 78, overtaking: 52, energy: 54 }, likelyWeather: "light_rain" }
 ] as const satisfies readonly [
   CityCircuitIdentitySource,
   ...CityCircuitIdentitySource[]

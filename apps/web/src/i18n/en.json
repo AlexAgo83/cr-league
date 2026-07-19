@@ -418,6 +418,8 @@
   "circuit_vienna_ring_loop": "Ring Loop",
   "circuit_porto_boavista_loop": "Boavista Loop",
   "circuit_madrid_centro_loop": "Centro Loop",
+  "circuit_monaco_harbor_loop": "Harbor Loop",
+  "circuit_monaco_casino_sprint": "Casino Sprint",
   "circuit_grip": "Grip",
   "circuit_grip_hint": "Higher means rain and corners punish the car less.",
   "circuit_overtaking": "Attack",

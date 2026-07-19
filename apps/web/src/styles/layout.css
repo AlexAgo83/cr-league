@@ -1416,11 +1416,21 @@ label small {
   min-height: 300px;
 }
 
+.championship-overview,
+.garage-overview {
+  height: 300px;
+}
+
 @media (max-width: 720px) {
   .directive-briefing-panel,
   .championship-overview,
   .garage-overview {
     min-height: 430px;
+  }
+
+  .championship-overview,
+  .garage-overview {
+    height: 430px;
   }
 
   .choice-grid,
@@ -3293,6 +3303,7 @@ label small {
   gap: 12px;
   justify-content: space-between;
   margin: -20px -20px 0;
+  height: 112px;
   min-height: 112px;
   padding: 14px 20px;
   overflow: hidden;
@@ -4138,6 +4149,7 @@ label small {
   gap: 12px;
   justify-content: space-between;
   margin: -20px -20px 0;
+  height: 112px;
   min-height: 112px;
   padding: 14px 20px;
   overflow: hidden;

@@ -1,6 +1,6 @@
 import {
   CARD_DEFINITIONS,
-  CARD_PRICE,
+  CARD_PRICES,
   DEMO_RACE_INPUT,
   PIT_STRATEGIES,
   RACE_APPROACHES,
@@ -335,7 +335,7 @@ export async function buyCard(db: Db, leagueId: string, input: { teamId?: string
   if (!state) return null;
 
   const team = await requireTeamClaim(db, leagueId, input);
-  const price = CARD_PRICE;
+  const price = CARD_PRICES[cardId];
   if (team.credits < price) {
     throw new LeagueRuleError("Not enough credits to buy this card.");
   }
@@ -384,7 +384,7 @@ export async function sellCard(db: Db, leagueId: string, input: { teamId?: strin
     await tx.team.update({
       where: { id: freshTeam.id },
       data: {
-        credits: { increment: CARD_PRICE / 2 },
+        credits: { increment: CARD_PRICES[cardId] / 2 },
         cards: removeOneCard(cards, cardId)
       }
     });
@@ -932,13 +932,14 @@ async function requireTeamClaim(db: Db, leagueId: string, input: { teamId?: stri
 async function buyBotCards(db: Db, state: LeagueState, seed: string) {
   await Promise.all(
     state.teams
-      .filter((team) => team.kind === "bot" && team.credits >= CARD_PRICE)
+      .filter((team) => team.kind === "bot" && affordableCardIds(team.credits).length > 0)
       .map((team) => {
-        const cardId = randomCardId(`${seed}-${team.id}-${team.credits}-${team.cards.length}`);
+        const cardId = randomCardId(`${seed}-${team.id}-${team.credits}-${team.cards.length}`, affordableCardIds(team.credits));
+        const price = CARD_PRICES[cardId];
         return db.team.update({
           where: { id: team.id },
           data: {
-            credits: { decrement: CARD_PRICE },
+            credits: { decrement: price },
             cards: appendCard(team.cards, cardId)
           }
         });
@@ -950,8 +951,11 @@ function defaultCardForTeam(team: LeagueState["teams"][number], preferred?: Card
   return preferred && team.cards.includes(preferred) ? preferred : team.cards[0];
 }
 
-function randomCardId(seed: string): CardId {
-  const cards = Object.keys(CARD_DEFINITIONS) as CardId[];
+function affordableCardIds(credits: number): CardId[] {
+  return (Object.keys(CARD_DEFINITIONS) as CardId[]).filter((cardId) => CARD_PRICES[cardId] <= credits);
+}
+
+function randomCardId(seed: string, cards: CardId[]): CardId {
   return cards[createHash("sha1").update(seed).digest()[0]! % cards.length]!;
 }
 

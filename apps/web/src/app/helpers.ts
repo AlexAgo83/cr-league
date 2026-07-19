@@ -31,6 +31,10 @@ export function countCards(cards: CardId[], cardId: CardId) {
   return cards.filter((candidate) => candidate === cardId).length;
 }
 
+export function sortCardIdsByName(cardIds: CardId[], tt: Translator) {
+  return [...cardIds].sort((left, right) => tt(`card_${left}` as TranslationKey).localeCompare(tt(`card_${right}` as TranslationKey)));
+}
+
 export type CardFit = {
   level: "recommended" | "risky" | "low";
   score: number;

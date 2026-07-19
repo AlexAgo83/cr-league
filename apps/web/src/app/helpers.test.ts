@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
-import { clampNumber, completedSeasonSummaries, raceRecapCards, seasonStandings, seasonWinsByTeamId, startingGrid } from "./helpers.js";
+import { clampNumber, completedSeasonSummaries, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid } from "./helpers.js";
 import type { LeagueState } from "./types.js";
-import { circuitIdentityForRound, circuitSeasonSeed, type RaceResult } from "@cr-league/shared";
+import { circuitIdentityForRound, circuitSeasonSeed, type CardId, type RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
 
 function expectedNextCircuitName() {
@@ -29,6 +29,14 @@ const result = (winnerId: string, runnerId = "team_2"): RaceResult => ({
     headline: "Test",
     blocks: []
   }
+});
+
+describe("sortCardIdsByName", () => {
+  it("orders cards by translated name", () => {
+    const cards: CardId[] = ["rain_grip", "adjustable_wing", "defensive_order"];
+
+    expect(sortCardIdsByName(cards, (key) => t(key, "en"))).toEqual(["adjustable_wing", "defensive_order", "rain_grip"]);
+  });
 });
 
 function stateWithHistory(grandPrixHistory: LeagueState["grandPrixHistory"]): LeagueState {

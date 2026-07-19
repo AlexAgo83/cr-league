@@ -1,9 +1,9 @@
-import { CARD_DEFINITIONS, CARD_PRICE, type CardId, type TeamLivery } from "@cr-league/shared";
+import { CARD_DEFINITIONS, CARD_PRICES, type CardId, type TeamLivery } from "@cr-league/shared";
 
 export const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
 export const STARTING_CREDITS = 180;
 export const STARTER_CARDS: CardId[] = [];
-export const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICE }));
+export const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICES[cardId as CardId] }));
 export const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 export const PRIMARY_LIVERY_COLORS = ["#0f172a", "#1e1b4b", "#312e81", "#3f1d2d", "#1f2937", "#064e3b", "#451a03", "#172554"] as const;
 export const SECONDARY_LIVERY_COLORS = ["#f8fafc", "#fde68a", "#bfdbfe", "#bbf7d0", "#fecdd3", "#ddd6fe", "#fed7aa", "#ccfbf1"] as const;

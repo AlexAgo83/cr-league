@@ -1,7 +1,7 @@
 import { type CSSProperties } from "react";
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
-import type { CardFit, Translator } from "../app/helpers.js";
+import { sortCardIdsByName, type CardFit, type Translator } from "../app/helpers.js";
 import type { FormState } from "../app/types.js";
 import { AssetImage } from "./AssetImage.js";
 import { CARD_BADGES, CardArtImage, CardStatBadges } from "./CardStatBadges.js";
@@ -149,7 +149,7 @@ export function DirectivePanel({
   onSelectStep: (step: DirectiveStep) => void;
   tt: Translator;
 }) {
-  const cardChoices = ["", ...ownedCardIds] as Array<"" | CardId>;
+  const cardChoices = ["", ...sortCardIdsByName(ownedCardIds, tt)] as Array<"" | CardId>;
   const selectedCardLabel = selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none");
   const modifiers = directiveModifiers(form, selectedCardId);
 

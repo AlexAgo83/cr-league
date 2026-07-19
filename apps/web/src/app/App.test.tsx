@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { act } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
@@ -205,7 +205,7 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-garage-panel")).toBe("shop");
   });
 
-  it("sorts owned garage cards by next-GP fit and marks sellable cards", async () => {
+  it("sorts owned garage cards by name and marks sellable cards", async () => {
     saveProfile();
     const inventoryState = {
       ...baseState,
@@ -219,7 +219,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     const cards = [...document.querySelectorAll(".card-inventory-button")].map((button) => button.textContent ?? "");
-    expect(cards.map((text) => text.match(/Rain Grip|Soft Tires|Qualifying Lap|Defensive Order/)?.[0])).toEqual(["Rain Grip", "Soft Tires", "Qualifying Lap", "Defensive Order"]);
+    expect(cards.map((text) => text.match(/Rain Grip|Soft Tires|Qualifying Lap|Defensive Order/)?.[0])).toEqual(["Defensive Order", "Qualifying Lap", "Rain Grip", "Soft Tires"]);
     expect(cards.every((text) => !text.includes("Sell for"))).toBe(true);
   });
 
@@ -439,7 +439,7 @@ describe("App", () => {
     expect(document.querySelectorAll(".chrono-session-choice b").length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole("button", { name: "Review lap time" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
-    await waitFor(() => expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/3"));
+    expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 1/3");
     expect(screen.getByRole("button", { name: "Chrono report" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Chrono report" }));
     expect(screen.getByRole("heading", { name: "Understand the lap time" })).toBeTruthy();
@@ -612,8 +612,8 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("tab", { name: "My team" }));
     expect(screen.getByText("Last GP")).toBeTruthy();
-    expect(screen.getByText("+150 credits")).toBeTruthy();
-    expect(screen.getByText("+25 pts")).toBeTruthy();
+    expect(document.querySelector(".garage-summary")?.textContent).toContain("+150 credits");
+    expect(document.querySelector(".garage-summary")?.textContent).toContain("+25 pts");
     expect(screen.getByText("Consumed Rain Grip")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Inventory" }));

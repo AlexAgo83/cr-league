@@ -259,13 +259,18 @@ export function teamNamesFromResult(result: RaceResult) {
 }
 
 export function eventReplayText(event: RaceEvent, names: Map<string, string>, tt: Translator) {
-  if (event.tags.includes("mini_info") || event.type === "race_note") {
-    return event.replayText;
+  const qualifyingTag = event.tags.find((tag) => tag === "qualifying_start" || tag === "qualifying_pace" || tag === "qualifying_final");
+  if (qualifyingTag) {
+    return tt(`event_${qualifyingTag}` as TranslationKey);
   }
   if (event.type === "weather_change") {
     return tt(`event_${event.type}` as TranslationKey);
   }
   const team = names.get(event.teamId) ?? "";
+  if (event.tags.includes("mini_info") || event.type === "race_note") {
+    const text = tt(`event_${event.type}` as TranslationKey);
+    return team && event.type !== "race_note" ? `${team} ${text}` : text;
+  }
   const base = `${team} ${tt(`event_${event.type}` as TranslationKey)}`.trim();
   return event.cardId ? `${tt(`card_${event.cardId}` as TranslationKey)} · ${base}` : base;
 }

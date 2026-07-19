@@ -302,6 +302,8 @@
   "action_replay_restart": "Recommencer",
   "replay_speed": "Vitesse",
   "replay_seek": "Position du replay",
+  "replay_moment_boost": "boost",
+  "replay_moment_position": "pos.",
   "replay_director_title": "Directeur de course",
   "replay_director_chrono_title": "Ingénieur chrono",
   "replay_director_qualifying_start": "Départ du chrono",

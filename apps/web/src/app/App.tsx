@@ -1453,7 +1453,6 @@ export function App() {
                     }
                     titleKey="qualifying_replay_title"
                     explainerKey="qualifying_replay_explainer"
-                    initialLap={currentQualifyingResult.lap}
                     preferencesResetSignal={preferencesResetSignal}
                     onClose={() => setQualifyingResult(null)}
                     closeLabel={tt("action_back_to_circuit")}

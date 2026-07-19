@@ -512,7 +512,7 @@ function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator
       ? tt(`event_${event.type}` as TranslationKey)
     : team;
   const impact = event.positionDelta
-    ? `${event.positionDelta > 0 ? "+" : ""}${event.positionDelta} ${event.cardId ? "boost" : "pos"}`
+    ? `${event.positionDelta > 0 ? "+" : ""}${event.positionDelta} ${event.cardId ? tt("replay_moment_boost") : tt("replay_moment_position")}`
     : event.type === "pit_stop"
       ? tt("replay_director_pit_stop")
     : qualifyingTag

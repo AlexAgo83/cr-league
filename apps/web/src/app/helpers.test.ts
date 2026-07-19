@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clampNumber, completedSeasonSummaries, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid } from "./helpers.js";
+import { clampNumber, completedSeasonSummaries, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { circuitIdentityForRound, circuitSeasonSeed, type CardId, type RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
@@ -36,6 +36,28 @@ describe("sortCardIdsByName", () => {
     const cards: CardId[] = ["rain_grip", "adjustable_wing", "defensive_order"];
 
     expect(sortCardIdsByName(cards, (key) => t(key, "en"))).toEqual(["adjustable_wing", "defensive_order", "rain_grip"]);
+  });
+});
+
+describe("eventReplayText", () => {
+  it("localizes mini info replay text instead of using generated English copy", () => {
+    expect(eventReplayText(
+      {
+        id: "mini",
+        order: 1,
+        segment: "mid",
+        lap: 2,
+        type: "best_sector",
+        teamId: "team_1",
+        severity: "minor",
+        positionDelta: 0,
+        tags: ["mini_info", "pace"],
+        replayText: "Volt signs the best sector",
+        reportText: ""
+      },
+      new Map([["team_1", "Volt"]]),
+      (key, params) => t(key, "fr", params)
+    )).toBe("Volt Meilleur secteur");
   });
 });
 

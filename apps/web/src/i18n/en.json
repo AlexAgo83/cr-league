@@ -302,6 +302,8 @@
   "action_replay_restart": "Restart",
   "replay_speed": "Speed",
   "replay_seek": "Replay position",
+  "replay_moment_boost": "boost",
+  "replay_moment_position": "pos",
   "replay_director_title": "Race director",
   "replay_director_chrono_title": "Timing engineer",
   "replay_director_qualifying_start": "Lap time launch",

@@ -1,13 +1,13 @@
 import { APP_NAME, APP_VERSION, type CardId, type QualifyingRun, type Weather } from "@cr-league/shared";
-import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
-import { CITY_CIRCUITS, circuitForRound } from "./circuits.js";
+import { circuitForRound } from "./circuits.js";
 import { cardFit, clampNumber, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
-import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
 import { GAME_VIEWS, type AdminLeague, type AdminUser, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
+import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, ChampionshipView } from "../features/ChampionshipView.js";
 import { ChangelogView } from "../features/ChangelogView.js";
-import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
+import { CircuitMap, MapTraitsPanel } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
 import { GARAGE_PANEL_KEY, GarageView } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
@@ -16,6 +16,9 @@ import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayVi
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 import { RewardValue } from "../features/RewardValue.js";
 import { CountryBadge } from "../features/VisualIcon.js";
+import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, SetupShell, type OnboardingHelpTopic } from "./OnboardingShell.js";
+import { bestQualifyingRuns, buildChronoReport, createInitialForm, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
+import { LeagueSetupView, ProfileSetupView, type ProfileMode, type SetupMode } from "./SetupViews.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
 const PLAYER_CLAIMS_KEY = "cr-league-player-claims";
@@ -23,24 +26,6 @@ const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
 const PROFILE_SESSION_KEY = "cr-league-profile-session";
 const LANGUAGE_KEY = "cr-league-language";
 const SEASON_RECAP_KEY_PREFIX = "cr-league-season-recap";
-const ONBOARDING_HELP_KEYS = {
-  profileCode: "cr-league-help-profile-code",
-  leagueIntro: "cr-league-help-league-intro",
-  race: "cr-league-help-race",
-  plan: "cr-league-help-plan",
-  garage: "cr-league-help-garage"
-} as const;
-const ONBOARDING_HELP_IMAGES = {
-  race: "/assets/crl/track-briefing.png",
-  plan: "/assets/crl/strategy-cards.png",
-  garage: "/assets/crl/garage-empty.png"
-} as const;
-const LEAGUE_ONBOARDING_IMAGES = [
-  "/assets/crl/onboarding-pit-wall.png",
-  "/assets/crl/onboarding-setup.png",
-  "/assets/crl/onboarding-chrono.png",
-  "/assets/crl/onboarding-season.png"
-] as const;
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
 
 type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
@@ -49,292 +34,7 @@ type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueCode: string;
   teamName: string;
 };
-type ProfileMode = "choice" | "create" | "recover";
-type SetupMode = "choice" | "create" | "join";
 type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
-type OnboardingHelpTopic = keyof typeof ONBOARDING_HELP_KEYS;
-type StandardOnboardingHelpTopic = Exclude<OnboardingHelpTopic, "leagueIntro">;
-type AdminTab = "users" | "leagues";
-type ChronoReport = {
-  best: QualifyingRun | null;
-  latest: QualifyingRun | null;
-  deltaLabel: string;
-  gridLabel: string;
-  suggestion: string;
-};
-const SCREEN_ONBOARDING_HELP_TOPICS = ["race", "plan", "garage"] as const satisfies readonly OnboardingHelpTopic[];
-
-function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
-  const impacts: MapTraitImpacts = {};
-  const add = (trait: keyof MapTraitImpacts, label: string) => {
-    impacts[trait] = [...(impacts[trait] ?? []), `+${label}`];
-  };
-
-  if (form.preparation === "weather") add("grip", tt("preparation_weather"));
-  if (form.preparation === "speed") add("overtaking", tt("preparation_speed"));
-  if (form.preparation === "reliability") add("energy", tt("preparation_reliability"));
-  if (form.approach === "aggressive") add("overtaking", tt("approach_aggressive"));
-  if (form.approach === "prudent") add("energy", tt("approach_prudent"));
-  if (selectedCardId === "rain_grip" || selectedCardId === "rain_mapping") add("grip", tt("field_card"));
-  if (selectedCardId === "launch_boost" || selectedCardId === "urban_draft" || selectedCardId === "soft_tires" || selectedCardId === "qualifying_focus" || selectedCardId === "adjustable_wing" || selectedCardId === "calculated_attack") add("overtaking", tt("field_card"));
-  if (selectedCardId === "fleet_maintenance" || selectedCardId === "final_surge" || selectedCardId === "defensive_order" || selectedCardId === "economy_mode" || selectedCardId === "pit_relay" || selectedCardId === "hard_tires") add("energy", tt("field_card"));
-
-  return impacts;
-}
-
-function qualifyingReplayTower(run: QualifyingRun | null, runs: QualifyingRun[], tt: (key: TranslationKey, params?: Record<string, string | number>) => string) {
-  if (!run) return [];
-  return runs
-    .filter((lapRun) => lapRun.teamId === run.teamId && lapRun.attempts === run.attempts)
-    .sort((left, right) => (left.lap ?? 0) - (right.lap ?? 0))
-    .map((lapRun, index) => ({
-      id: `${lapRun.teamId}-${lapRun.attempts}-${lapRun.lap ?? index + 1}`,
-      teamId: lapRun.teamId,
-      teamName: tt("qualifying_replay_lap_label", { attempt: lapRun.attempts, lap: lapRun.lap ?? index + 1 }),
-      value: `${lapRun.time.toFixed(2)}s`
-    }));
-}
-
-function latestQualifyingRun(runs: QualifyingRun[]) {
-  return runs.reduce<QualifyingRun | null>(
-    (latest, run) => (!latest || run.attempts > latest.attempts || (run.attempts === latest.attempts && (run.lap ?? 0) > (latest.lap ?? 0)) ? run : latest),
-    null
-  );
-}
-
-function bestQualifyingRuns(runs: QualifyingRun[]) {
-  const best = new Map<string, QualifyingRun>();
-  for (const run of runs) {
-    const current = best.get(run.teamId);
-    if (!current || run.time < current.time) best.set(run.teamId, run);
-  }
-  return [...best.values()];
-}
-
-function buildChronoReport(input: {
-  runs: QualifyingRun[];
-  gridPosition: number;
-  attemptsLeft: number;
-  attemptLimit: number;
-  forecastPick: string;
-  form: FormState;
-  selectedCardId: string;
-  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
-}): ChronoReport {
-  const best = input.runs.reduce<QualifyingRun | null>((current, run) => (!current || run.time < current.time ? run : current), null);
-  const latest = latestQualifyingRun(input.runs);
-  const delta = best && latest ? latest.time - best.time : 0;
-  const deltaLabel = !best ? input.tt("chrono_report_delta_empty") : Math.abs(delta) < 0.005 ? input.tt("chrono_report_delta_best") : `+${delta.toFixed(2)}s`;
-  return {
-    best,
-    latest,
-    deltaLabel,
-    gridLabel: best && input.gridPosition > 0 ? `P${input.gridPosition}` : input.tt("starting_grid_no_time"),
-    suggestion: chronoReportSuggestion(input, best, latest)
-  };
-}
-
-function chronoReportSuggestion(
-  input: {
-    runs: QualifyingRun[];
-    attemptsLeft: number;
-    attemptLimit: number;
-    forecastPick: string;
-    form: FormState;
-    selectedCardId: string;
-    tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
-  },
-  best: QualifyingRun | null,
-  latest: QualifyingRun | null
-) {
-  if (!best) return input.tt("chrono_report_suggestion_first_run");
-  if (input.attemptsLeft <= 0) return input.tt("chrono_report_suggestion_lock_best");
-  const bestCard = best.decision.cardId ?? "";
-  const currentChanged = best.decision.approach !== input.form.approach || best.decision.preparation !== input.form.preparation || bestCard !== input.selectedCardId;
-  if (latest && latest.time > best.time + 0.15) {
-    return input.tt("chrono_report_suggestion_return_best", {
-      approach: input.tt(`approach_${best.decision.approach}` as TranslationKey),
-      preparation: input.tt(`preparation_${best.decision.preparation}` as TranslationKey)
-    });
-  }
-  if (currentChanged) return input.tt("chrono_report_suggestion_compare_current", { left: input.attemptsLeft, limit: input.attemptLimit });
-  if (input.forecastPick !== "dry" && input.form.preparation !== "weather") return input.tt("chrono_report_suggestion_weather");
-  if (input.form.preparation !== "speed") return input.tt("chrono_report_suggestion_speed");
-  return input.tt("chrono_report_suggestion_lock_best");
-}
-
-function createInitialForm(locale: Locale): FormState {
-  return {
-    leagueName: randomLeagueName() || t("default_league_name", locale),
-    joinCode: "",
-    teamName: randomTeamName() || t("default_team_name", locale),
-    maxPlayers: 8,
-    fillWithBots: true,
-    qualifyingAttemptLimit: 3,
-    maxGrandPrixPerSeason: 6,
-    cadence: "manual",
-    preparationDeadlineAt: "",
-    approach: "balanced",
-    preparation: "weather",
-    cardId: ""
-  };
-}
-
-function AmbientRaceBackground({ tt }: { tt: (key: TranslationKey) => string }) {
-  const { circuit, cars } = useMemo(() => {
-    const liveries: Array<[string, string]> = [
-      ["#22c55e", "#052e16"],
-      ["#38bdf8", "#082f49"],
-      ["#facc15", "#451a03"],
-      ["#fb7185", "#4c0519"],
-      ["#a78bfa", "#2e1065"],
-      ["#f97316", "#431407"],
-      ["#14b8a6", "#042f2e"],
-      ["#e5e7eb", "#111827"]
-    ];
-    return {
-      circuit: CITY_CIRCUITS[Math.floor(Math.random() * CITY_CIRCUITS.length)]!,
-      cars: liveries.map(([primary, secondary], index) => ({
-        id: `ambient-${index}`,
-        label: "",
-        player: false,
-        delay: -index * 2.2,
-        duration: 14 + index * 1.4,
-        repeatCount: "indefinite" as const,
-        livery: { primary, secondary }
-      }))
-    };
-  }, []);
-
-  return (
-    <div className="ambient-race-background" aria-hidden="true">
-      <CircuitMap className="ambient-race-map" circuit={circuit} tt={tt} cars={cars} camera={{ enabled: true, car: cars[0] }} showHeading={false} framed={false} showTraits={false} />
-    </div>
-  );
-}
-
-function SetupShell({
-  children,
-  errorModal,
-  notificationStack,
-  preferencesResetModal,
-  profileCodeModal,
-  profileLogoutModal,
-  topbar,
-  tt
-}: {
-  children: ReactNode;
-  errorModal: ReactNode;
-  notificationStack: ReactNode;
-  preferencesResetModal: ReactNode;
-  profileCodeModal: ReactNode;
-  profileLogoutModal: ReactNode;
-  topbar: ReactNode;
-  tt: (key: TranslationKey) => string;
-}) {
-  return (
-    <main className="app-shell setup-shell">
-      <AmbientRaceBackground tt={tt} />
-      {topbar}
-      {children}
-      {notificationStack}
-      {errorModal}
-      {preferencesResetModal}
-      {profileCodeModal}
-      {profileLogoutModal}
-    </main>
-  );
-}
-
-function OnboardingHelpModal({
-  topic,
-  recoveryCode,
-  onClose,
-  tt
-}: {
-  topic: StandardOnboardingHelpTopic;
-  recoveryCode?: string;
-  onClose: (dismiss: boolean) => void;
-  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
-}) {
-  const [dismiss, setDismiss] = useState(false);
-  const items = topic === "profileCode" ? [] : [1, 2, 3].map((index) => tt(`onboarding_${topic}_item_${index}` as TranslationKey));
-  const image = topic === "profileCode" ? undefined : ONBOARDING_HELP_IMAGES[topic];
-
-  return (
-    <Modal label={tt(`onboarding_${topic}_title` as TranslationKey)} onClose={() => onClose(dismiss)}>
-      <span className="section-kicker">{tt("onboarding_kicker")}</span>
-      <h2>{tt(`onboarding_${topic}_title` as TranslationKey)}</h2>
-      {image ? <img className="onboarding-image" src={image} alt="" /> : null}
-      <p>{tt(`onboarding_${topic}_body` as TranslationKey)}</p>
-      {recoveryCode ? <strong className="onboarding-code">{recoveryCode}</strong> : null}
-      {items.length ? (
-        <ul className="onboarding-list">
-          {items.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      ) : null}
-      <label className="checkbox-field onboarding-dismiss">
-        <input type="checkbox" checked={dismiss} onChange={(event) => setDismiss(event.target.checked)} />
-        {tt(`onboarding_${topic}_dismiss` as TranslationKey)}
-      </label>
-      <div className="actions secondary-actions">
-        <button type="button" onClick={() => onClose(dismiss)}>
-          {tt("action_got_it")}
-        </button>
-      </div>
-    </Modal>
-  );
-}
-
-function LeagueIntroModal({
-  onClose,
-  tt
-}: {
-  onClose: (dismiss: boolean) => void;
-  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
-}) {
-  const [step, setStep] = useState(0);
-  const [dismiss, setDismiss] = useState(false);
-  const stepNumber = step + 1;
-  const isLastStep = step === LEAGUE_ONBOARDING_IMAGES.length - 1;
-
-  return (
-    <Modal label={tt("league_onboarding_title")} onClose={() => onClose(dismiss)}>
-      <div className="league-onboarding">
-        <img className="onboarding-image league-onboarding-image" src={LEAGUE_ONBOARDING_IMAGES[step]} alt="" />
-        <span className="section-kicker">{tt("onboarding_kicker")}</span>
-        <h2>{tt(`league_onboarding_step_${stepNumber}_title` as TranslationKey)}</h2>
-        <p>{tt(`league_onboarding_step_${stepNumber}_body` as TranslationKey)}</p>
-        <div className="league-onboarding-dots" aria-label={tt("league_onboarding_progress")}>
-          {LEAGUE_ONBOARDING_IMAGES.map((_, index) => (
-            <button
-              key={index}
-              type="button"
-              className={index === step ? "active" : undefined}
-              aria-label={tt("league_onboarding_go_to_step", { step: index + 1 })}
-              onClick={() => setStep(index)}
-            />
-          ))}
-        </div>
-        <label className="checkbox-field onboarding-dismiss">
-          <input type="checkbox" checked={dismiss} onChange={(event) => setDismiss(event.target.checked)} />
-          {tt("league_onboarding_dismiss")}
-        </label>
-        <div className="actions secondary-actions">
-          <button type="button" className="secondary-button" onClick={() => setStep((current) => Math.max(0, current - 1))} disabled={step === 0}>
-            {tt("action_back")}
-          </button>
-          <button type="button" onClick={() => (isLastStep ? onClose(dismiss) : setStep((current) => current + 1))}>
-            {isLastStep ? tt("action_start_racing") : tt("action_next")}
-          </button>
-        </div>
-      </div>
-    </Modal>
-  );
-}
-
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(() => {
     const saved = localStorage.getItem(LANGUAGE_KEY);
@@ -1486,122 +1186,22 @@ export function App() {
     </Modal>
   ) : null;
   const adminView = (
-    <section className="admin-console" aria-label={tt("admin_title")}>
-      <div className="panel admin-console-header">
-        <span className="section-kicker">{tt("admin_kicker")}</span>
-        <h1>{tt("admin_title")}</h1>
-        <p>{tt("admin_body")}</p>
-        <form
-          className="admin-token-form"
-          onSubmit={(event) => {
-            event.preventDefault();
-            void refreshAdminData();
-          }}
-        >
-          <label>
-            {tt("admin_token_label")}
-            <input type="password" value={adminToken} onChange={(event) => setAdminToken(event.target.value)} autoComplete="off" />
-          </label>
-          <button type="submit" disabled={status === "loading"}>
-            {tt("admin_action_connect")}
-          </button>
-        </form>
-      </div>
-      {adminRecoveryCode ? (
-        <div className="panel admin-recovery-panel" role="status">
-          <span className="section-kicker">{adminRecoveryCode.email}</span>
-          <strong>{tt("admin_recovery_code_title")}</strong>
-          <input className="profile-code-input" readOnly value={adminRecoveryCode.code} onClick={(event) => event.currentTarget.select()} />
-        </div>
-      ) : null}
-      <div className="panel admin-data-panel">
-        <div className="plan-steps plan-subscreen-tabs" role="tablist" aria-label={tt("admin_tabs_label")}>
-          <button type="button" role="tab" aria-selected={adminTab === "users"} className={adminTab === "users" ? "plan-step active" : "plan-step"} onClick={() => setAdminTab("users")}>
-            <span className="plan-step-label">{tt("admin_tab_users")}</span>
-          </button>
-          <button type="button" role="tab" aria-selected={adminTab === "leagues"} className={adminTab === "leagues" ? "plan-step active" : "plan-step"} onClick={() => setAdminTab("leagues")}>
-            <span className="plan-step-label">{tt("admin_tab_leagues")}</span>
-          </button>
-        </div>
-        {adminTab === "users" ? (
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>{tt("admin_user_email")}</th>
-                  <th>{tt("admin_user_counts")}</th>
-                  <th>{tt("admin_created_at")}</th>
-                  <th>{tt("admin_actions")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {adminUsers.map((user) => (
-                  <tr key={user.id}>
-                    <td>
-                      <strong>{user.email}</strong>
-                      <small>{user.id}</small>
-                    </td>
-                    <td>{tt("admin_user_counts_value", { teams: user.teamCount, leagues: user.leagueCount })}</td>
-                    <td>{formatAdminDate(user.createdAt, locale)}</td>
-                    <td>
-                      <div className="admin-row-actions">
-                        <button type="button" onClick={() => void resetAdminRecoveryCode(user)} disabled={status === "loading"}>
-                          {tt("admin_action_reset_recovery")}
-                        </button>
-                        <button type="button" className="danger-button" onClick={() => setAdminDeleteUser(user)} disabled={status === "loading"}>
-                          {tt("admin_action_delete_user")}
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {!adminUsers.length ? <p className="admin-empty">{tt("admin_users_empty")}</p> : null}
-          </div>
-        ) : (
-          <div className="admin-table-wrap">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>{tt("admin_league_name")}</th>
-                  <th>{tt("admin_league_status")}</th>
-                  <th>{tt("admin_league_counts")}</th>
-                  <th>{tt("admin_created_at")}</th>
-                  <th>{tt("admin_actions")}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {adminLeagues.map((league) => (
-                  <tr key={league.id}>
-                    <td>
-                      <strong>{league.name}</strong>
-                      <small>
-                        {league.code} · {league.id}
-                      </small>
-                    </td>
-                    <td>
-                      {league.status} ·{" "}
-                      {league.currentSeason && league.currentRound
-                        ? tt("admin_league_round_value", { season: league.currentSeason, round: league.currentRound })
-                        : tt("admin_league_no_round")}
-                    </td>
-                    <td>{tt("admin_league_counts_value", { players: league.playerCount, teams: league.teamCount })}</td>
-                    <td>{formatAdminDate(league.createdAt, locale)}</td>
-                    <td>
-                      <button type="button" onClick={() => void inspectAdminLeague(league)} disabled={status === "loading"}>
-                        {tt("admin_action_inspect_league")}
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {!adminLeagues.length ? <p className="admin-empty">{tt("admin_leagues_empty")}</p> : null}
-          </div>
-        )}
-      </div>
-    </section>
+    <AdminConsoleView
+      adminLeagues={adminLeagues}
+      adminRecoveryCode={adminRecoveryCode}
+      adminTab={adminTab}
+      adminToken={adminToken}
+      adminUsers={adminUsers}
+      locale={locale}
+      loading={status === "loading"}
+      onDeleteUser={setAdminDeleteUser}
+      onInspectLeague={(league) => void inspectAdminLeague(league)}
+      onRefresh={() => void refreshAdminData()}
+      onResetRecoveryCode={(user) => void resetAdminRecoveryCode(user)}
+      onSetAdminTab={setAdminTab}
+      onSetAdminToken={setAdminToken}
+      tt={tt}
+    />
   );
 
   if (!profileSession) {
@@ -1615,90 +1215,19 @@ export function App() {
         profileLogoutModal={profileLogoutModal}
         preferencesResetModal={preferencesResetModal}
       >
-        <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="profile-title">
-          <div className="panel setup-main-panel setup-hero-panel profile-hero-panel">
-            <span className="section-kicker">{tt("profile_kicker")}</span>
-            <h1 id="profile-title">
-              {profileMode === "create" ? tt("profile_create_title") : profileMode === "recover" ? tt("profile_recover_title") : tt("profile_title")}
-            </h1>
-            <p className={status === "error" ? "status error" : "status"}>{message === tt("status_initial") ? tt("profile_intro") : message}</p>
-          </div>
-          <div className="panel setup-main-panel setup-form-panel">
-            {profileMode === "choice" ? (
-              <div className="setup-choice-grid">
-                <button
-                  type="button"
-                  className="setup-choice"
-                  onClick={() => {
-                    setProfileFormError(null);
-                    setProfileMode("create");
-                  }}
-                >
-                  <strong>{tt("action_create_profile")}</strong>
-                  <small>{tt("profile_create_hint")}</small>
-                </button>
-                <button
-                  type="button"
-                  className="setup-choice"
-                  onClick={() => {
-                    setProfileFormError(null);
-                    setProfileMode("recover");
-                  }}
-                >
-                  <strong>{tt("action_recover_profile")}</strong>
-                  <small>{tt("profile_recover_hint")}</small>
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="field-grid setup-fields">
-                  <label>
-                    {tt("field_email")}
-                    <input
-                      type="email"
-                      value={profileForm.email}
-                      aria-invalid={profileFormError ? true : undefined}
-                      onChange={(event) => {
-                        setProfileFormError(null);
-                        setProfileForm({ ...profileForm, email: event.target.value });
-                      }}
-                    />
-                  </label>
-                  {profileMode === "recover" ? (
-                    <label>
-                      {tt("field_recovery_code")}
-                      <input
-                        value={profileForm.recoveryCode}
-                        aria-invalid={profileFormError ? true : undefined}
-                        onChange={(event) => {
-                          setProfileFormError(null);
-                          setProfileForm({ ...profileForm, recoveryCode: event.target.value.toUpperCase() });
-                        }}
-                      />
-                    </label>
-                  ) : null}
-                </div>
-                {profileFormError ? <p className="form-feedback error">{profileFormError}</p> : null}
-                <div className="actions primary-actions profile-form-actions">
-                  <button type="button" onClick={profileMode === "create" ? createProfileSession : recoverProfileSession} disabled={status === "loading"}>
-                    {profileMode === "create" ? tt("action_create_profile") : tt("action_recover_profile")}
-                  </button>
-                  <button
-                    type="button"
-                    className="secondary-button"
-                    onClick={() => {
-                      setProfileFormError(null);
-                      setProfileMode("choice");
-                    }}
-                    disabled={status === "loading"}
-                  >
-                    {tt("action_back")}
-                  </button>
-                </div>
-              </>
-            )}
-          </div>
-        </section>
+        <ProfileSetupView
+          message={message}
+          mode={profileMode}
+          profileForm={profileForm}
+          profileFormError={profileFormError}
+          status={status}
+          onCreateProfile={() => void createProfileSession()}
+          onRecoverProfile={() => void recoverProfileSession()}
+          onSetMode={setProfileMode}
+          onSetProfileForm={setProfileForm}
+          onSetProfileFormError={setProfileFormError}
+          tt={tt}
+        />
       </SetupShell>
     );
   }
@@ -1719,147 +1248,21 @@ export function App() {
         ) : gameView === "changelog" ? (
           <ChangelogView currentVersion={APP_VERSION} tt={tt} />
         ) : (
-        <section className="setup-grid setup-grid-single setup-grid-split" aria-label={tt("flow_label")}>
-          <div className="panel setup-main-panel setup-hero-panel league-hero-panel">
-            <span className="section-kicker">{tt("race_desk_kicker")}</span>
-            <h1>{setupMode === "create" ? tt("setup_create_title") : setupMode === "join" ? tt("setup_join_title") : tt("race_desk_title")}</h1>
-            <p className={status === "error" ? "status error" : "status"}>{message}</p>
-          </div>
-          <div className="panel setup-main-panel setup-form-panel">
-
-            {setupMode === "choice" ? (
-              <div className="setup-choice-grid">
-                <button type="button" className="setup-choice" onClick={() => setSetupMode("create")}>
-                  <strong>{tt("action_create_league")}</strong>
-                  <small>{tt("setup_create_hint")}</small>
-                </button>
-                <button type="button" className="setup-choice" onClick={() => setSetupMode("join")}>
-                  <strong>{tt("action_join_league")}</strong>
-                  <small>{tt("setup_join_hint")}</small>
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="field-grid setup-fields">
-                  {setupMode === "create" ? (
-                    <label>
-                      {tt("field_league")}
-                      <input maxLength={40} value={form.leagueName} onChange={(event) => setForm({ ...form, leagueName: event.target.value })} />
-                    </label>
-                  ) : (
-                    <label>
-                      {tt("field_join_code")}
-                      <input
-                        value={form.joinCode}
-                        onChange={(event) => setForm({ ...form, joinCode: event.target.value.toUpperCase() })}
-                        maxLength={6}
-                        placeholder="PLAY01"
-                      />
-                    </label>
-                  )}
-                  <label>
-                    {tt("field_team")}
-                    <input maxLength={32} value={form.teamName} onChange={(event) => setForm({ ...form, teamName: event.target.value })} />
-                  </label>
-                  {setupMode === "create" ? (
-                    <>
-                      <label>
-                        {tt("field_max_players")}
-                        <input
-                          type="number"
-                          min="2"
-                          max="16"
-                          value={form.maxPlayers}
-                          onChange={(event) => setForm({ ...form, maxPlayers: event.target.value === "" ? "" : Number(event.target.value) })}
-                        />
-                      </label>
-                      <label>
-                        {tt("field_qualifying_attempts")}
-                        <input
-                          type="number"
-                          min="1"
-                          max="5"
-                          value={form.qualifyingAttemptLimit}
-                          onChange={(event) => setForm({ ...form, qualifyingAttemptLimit: event.target.value === "" ? "" : Number(event.target.value) })}
-                        />
-                      </label>
-                      <label>
-                        {tt("field_gp_per_season")}
-                        <input
-                          type="number"
-                          min="1"
-                          max="18"
-                          value={form.maxGrandPrixPerSeason}
-                          onChange={(event) => setForm({ ...form, maxGrandPrixPerSeason: event.target.value === "" ? "" : Number(event.target.value) })}
-                        />
-                      </label>
-                      <label className="checkbox-field">
-                        <input
-                          type="checkbox"
-                          checked={form.fillWithBots}
-                          onChange={(event) => setForm({ ...form, fillWithBots: event.target.checked })}
-                        />
-                        {tt("field_fill_with_bots")}
-                      </label>
-                    </>
-                  ) : null}
-                </div>
-                <div className="actions primary-actions setup-form-actions">
-                  <button type="button" onClick={setupMode === "create" ? createLeague : joinLeague} disabled={status === "loading"}>
-                    {setupMode === "create" ? tt("action_start_league") : tt("action_join_league")}
-                  </button>
-                  <button type="button" className="secondary-button" onClick={() => setSetupMode("choice")} disabled={status === "loading"}>
-                    {tt("action_back")}
-                  </button>
-                </div>
-              </>
-            )}
-
-            {setupMode === "choice" ? (
-              <div className="saved-leagues saved-leagues-compact">
-                <span className="section-kicker">{tt("profile_saved_leagues")}</span>
-                {savedClaims.length ? (
-                  <div className="saved-league-carousel">
-                    <button
-                      type="button"
-                      className="saved-league-arrow"
-                      aria-label={tt("action_previous_saved_league")}
-                      disabled={status === "loading" || savedClaims.length < 2}
-                      onClick={() => setSavedLeagueIndex((index) => (index + savedClaims.length - 1) % savedClaims.length)}
-                    >
-                      {"<"}
-                    </button>
-                    {(() => {
-                      const claim = savedClaims[savedLeagueIndex] ?? savedClaims[0]!;
-                      return (
-                        <button type="button" className="profile-menu-action saved-league-card" onClick={() => void switchLeague(claim.teamId)} disabled={status === "loading"}>
-                          <strong>{claim.leagueName}</strong>
-                          <small>
-                            {claim.teamName}
-                            {claim.leagueCode ? ` · ${claim.leagueCode}` : ""}
-                          </small>
-                        </button>
-                      );
-                    })()}
-                    <button
-                      type="button"
-                      className="saved-league-arrow"
-                      aria-label={tt("action_next_saved_league")}
-                      disabled={status === "loading" || savedClaims.length < 2}
-                      onClick={() => setSavedLeagueIndex((index) => (index + 1) % savedClaims.length)}
-                    >
-                      {">"}
-                    </button>
-                  </div>
-                ) : (
-                  <div className="saved-leagues-empty">
-                    <p>{tt("profile_saved_leagues_empty")}</p>
-                  </div>
-                )}
-              </div>
-            ) : null}
-          </div>
-        </section>
+          <LeagueSetupView
+            form={form}
+            message={message}
+            mode={setupMode}
+            savedClaims={savedClaims}
+            savedLeagueIndex={savedLeagueIndex}
+            status={status}
+            onCreateLeague={() => void createLeague()}
+            onJoinLeague={() => void joinLeague()}
+            onSetForm={setForm}
+            onSetMode={setSetupMode}
+            onSetSavedLeagueIndex={setSavedLeagueIndex}
+            onSwitchLeague={(teamId) => void switchLeague(teamId)}
+            tt={tt}
+          />
         )}
         {onboardingHelpModal}
         {adminDeleteModal}
@@ -2542,9 +1945,6 @@ function isStoredPlayerClaim(claim: Partial<StoredPlayerClaim>): claim is Stored
   );
 }
 
-function formatAdminDate(value: string, locale: Locale) {
-  return new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
-}
 
 function upsertPlayerClaim(claims: StoredPlayerClaim[], claim: StoredPlayerClaim) {
   return [claim, ...claims.filter((candidate) => candidate.teamId !== claim.teamId)];

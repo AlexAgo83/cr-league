@@ -1,14 +1,27 @@
 ## prod_021_admin_operations_console_product_brief - Admin Operations Console Product Brief
 > Date: 2026-07-19
-> Status: Proposed
+> Status: Settled
 > Related request: `req_050_add_a_secured_admin_operations_console`
-> Related backlog: `item_126_add_secured_admin_api_operations`, `item_127_add_profile_menu_admin_console_ui`
+> Related backlog: `item_126_add_secured_admin_api_operations`
 > Related task: `task_051_orchestrate_secured_admin_operations_console`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Confidence: 90
 
 # Overview
 The admin operations console gives trusted operators a small, secured way to inspect users and leagues, reset recovery access, remove accounts, and enter league contexts without touching the database directly.
+
+# Overview diagram
+```mermaid
+flowchart LR
+  Menu[Profile menu] --> Console[Admin console]
+  Console --> Token[Bearer token]
+  Token --> Users[Users tab]
+  Token --> Leagues[Leagues tab]
+  Users --> Reset[Reset recovery code]
+  Users --> Delete[Delete profile]
+  Leagues --> Inspect[Inspect league readonly]
+```
 
 # Goals
 - Make support and playtest operations possible from the application instead of direct SQL.
@@ -26,17 +39,30 @@ The admin operations console gives trusted operators a small, secured way to ins
 - Do not expose admin credentials through Vite build-time environment variables.
 
 # Scope and guardrails
-- In: scaffolded request, product, backlog, orchestration task, validation, and handoff context.
-- Out: unrelated workflow docs and implementation of generated tasks.
+- In:
+  - Server-side `ADMIN_TOKEN` configuration for all `/admin/*` API routes.
+  - Bearer-token admin API for users, recovery reset, profile deletion, league listing, and league inspection.
+  - Profile-menu Admin entry that opens a token-gated console.
+  - Users and Leagues admin tabs with focused operational actions.
+  - Read-only league inspection mode that loads league state without a player claim.
+- Out:
+  - Admin roles, RBAC, or database schema changes.
+  - Plaintext recovery-code storage or recovery-code reveal.
+  - Bulk destructive actions.
+  - League mutation tools beyond read-only inspection.
 
 # Key product decisions
-- Use structured input as the source of truth for generated docs.
-- Keep generated write paths local and repo-bounded.
+- Use `Authorization: Bearer <token>` and a server-side `ADMIN_TOKEN`; no admin credential is embedded in Vite build-time config.
+- Keep the admin token in React memory for the current screen session instead of durable browser storage.
+- Implement recovery support as reset-and-show-once because only recovery hashes are stored.
+- Deleting a profile intentionally leaves linked teams in place with `profileId` cleared, matching the Prisma `onDelete: SetNull` relation.
+- Reuse the existing league-state shape for admin inspection and omit `player`, so normal claim-gated player mutations remain unavailable.
 
 # Success signals
-- Generated docs pass lint and audit without broad manual rewrites.
-- Context-pack output can be handed to an implementation agent directly.
+- Focused API tests cover token rejection, user listing without recovery hashes, recovery reset, profile deletion, league listing, and admin league inspection.
+- Focused React tests cover profile-menu Admin entry, bearer-token fetches, Users/Leagues tabs, reset/delete flows, and inspection mode.
+- `npm run lint`, `npm run typecheck`, `npm test`, and Logics validation pass before closeout.
 
 # References
-- Product back-reference: `req_050_add_a_secured_admin_operations_console`
+- Product back-reference: `item_126_add_secured_admin_api_operations`
 - Task back-reference: `task_051_orchestrate_secured_admin_operations_console`

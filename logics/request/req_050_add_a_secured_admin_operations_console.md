@@ -1,7 +1,7 @@
 ## req_050_add_a_secured_admin_operations_console - Add a secured admin operations console
 > From version: 0.3.8
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

@@ -2,6 +2,7 @@ import cors from "@fastify/cors";
 import type { PrismaClient } from "@prisma/client";
 import Fastify from "fastify";
 import type { ApiConfig } from "./config.js";
+import { registerAdminRoutes } from "./features/admin/routes.js";
 import { registerHealthRoutes } from "./features/health/routes.js";
 import { registerLeagueRoutes } from "./features/leagues/routes.js";
 import { registerSimulationRoutes } from "./features/simulation/routes.js";
@@ -27,6 +28,7 @@ export async function buildApp(config: ApiConfig, dependencies: AppDependencies 
   await registerHealthRoutes(app);
   await registerSimulationRoutes(app);
   if (dependencies.db) {
+    await registerAdminRoutes(app, dependencies.db, config);
     await registerLeagueRoutes(app, dependencies.db);
   }
 

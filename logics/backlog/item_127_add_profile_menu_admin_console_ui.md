@@ -1,10 +1,10 @@
 ## item_127_add_profile_menu_admin_console_ui - Add profile-menu admin console UI
 > From version: 0.3.8
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Admin operations
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -17,7 +17,7 @@
 # Scope
 - In:
   - Add an Admin action to the existing profile menu.
-  - Open an admin screen that asks for the admin token and stores it in `sessionStorage` for the tab session only.
+  - Open an admin screen that asks for the admin token and stores it in React memory for the current screen session only.
   - Build a compact admin view with Users and Leagues sub-screens using existing panel, tab, button, modal, and profile-menu styling patterns.
   - Fetch admin data with `Authorization: Bearer <session token>` and handle 403/missing-token states clearly.
   - Render Users with profile id/email/created date/team count/league count, plus reset recovery and delete actions.
@@ -27,7 +27,7 @@
   - Add EN/FR i18n keys for all new labels, confirmations, empty states, and errors.
   - Add focused React tests for profile-menu admin entry, token form, user list, reset-code result, delete confirmation, league list, and enter/inspect behavior.
 - Out:
-  - Persisting admin token in localStorage.
+  - Persisting admin token in localStorage or sessionStorage.
   - Embedding an admin token in `import.meta.env` or other build-time public config.
   - Adding admin actions to resolve races, start next GP, reset leagues, or delete leagues.
   - Replacing the existing player profile/session flow.
@@ -35,7 +35,7 @@
 
 # Acceptance criteria
 - AC1: The profile menu includes an Admin action that opens the admin token/auth screen.
-- AC2: Submitting a token fetches admin data with an `Authorization: Bearer` header and keeps the token only in `sessionStorage`.
+- AC2: Submitting a token fetches admin data with an `Authorization: Bearer` header and keeps the token only in React memory.
 - AC3: The Users tab lists profiles and shows reset/delete actions without exposing recovery hashes.
 - AC4: Reset recovery displays the newly generated code once and warns the operator to copy it before closing.
 - AC5: Delete profile requires explicit confirmation and refreshes the Users list after success.
@@ -46,7 +46,7 @@
 
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: The profile menu includes an Admin action that opens the admin token/auth screen.
-- request-AC3 -> This backlog slice. Proof: AC2: Submitting a token fetches admin data with an `Authorization: Bearer` header and keeps the token only in `sessionStorage`.
+- request-AC3 -> This backlog slice. Proof: AC2: Submitting a token fetches admin data with an `Authorization: Bearer` header and keeps the token only in React memory.
 - request-AC4 -> This backlog slice. Proof: AC3: The Users tab lists profiles and shows reset/delete actions without exposing recovery hashes.
 - request-AC5 -> This backlog slice. Proof: AC4: Reset recovery displays the newly generated code once and warns the operator to copy it before closing.
 - request-AC6 -> This backlog slice. Proof: AC5: Delete profile requires explicit confirmation and refreshes the Users list after success.
@@ -74,3 +74,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_051_orchestrate_secured_admin_operations_console`
+
+# Notes
+- Task `task_051_orchestrate_secured_admin_operations_console` was finished via `logics-manager flow finish task` on 2026-07-19.

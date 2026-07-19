@@ -1354,6 +1354,79 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
   });
 
+  it("opens the admin console from the profile menu and performs primary admin actions", async () => {
+    saveProfile();
+    const users = {
+      users: [
+        {
+          id: "profile_1",
+          email: "pilot@example.test",
+          createdAt: "2026-07-19T00:00:00.000Z",
+          teamCount: 1,
+          leagueCount: 1
+        }
+      ]
+    };
+    const emptyUsers = { users: [] };
+    const leagues = {
+      leagues: [
+        {
+          id: "league_1",
+          code: "ABC123",
+          name: "Office League",
+          status: "active",
+          currentSeason: 1,
+          currentRound: 1,
+          playerCount: 1,
+          teamCount: 2,
+          createdAt: "2026-07-19T00:00:00.000Z"
+        }
+      ]
+    };
+    const fetch = vi
+      .spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(response(users))
+      .mockResolvedValueOnce(response(leagues))
+      .mockResolvedValueOnce(response({ recoveryCode: "FACE1234" }))
+      .mockResolvedValueOnce(response(users))
+      .mockResolvedValueOnce(response({ ok: true }))
+      .mockResolvedValueOnce(response(emptyUsers))
+      .mockResolvedValueOnce(response(withoutPlayer(baseState)));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    fireEvent.click(screen.getByRole("button", { name: "Admin" }));
+    expect(screen.getByRole("heading", { name: "Admin console" })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Admin token"), { target: { value: "secret-admin-token" } });
+    fireEvent.click(screen.getByRole("button", { name: "Connect" }));
+
+    await screen.findByText("pilot@example.test");
+    expect(fetch).toHaveBeenNthCalledWith(
+      1,
+      "http://localhost:4874/admin/users",
+      expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
+    );
+    expect(screen.getByText("1 teams · 1 leagues")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Reset recovery" }));
+    expect(await screen.findByDisplayValue("FACE1234")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Delete user" }));
+    expect(screen.getByRole("dialog", { name: "Delete user?" })).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Delete user" }).at(-1)!);
+    await screen.findByText("No profiles found.");
+
+    fireEvent.click(screen.getByRole("tab", { name: "Leagues" }));
+    expect(screen.getByText("Office League")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Inspect" }));
+
+    expect(await screen.findByText("Admin inspection mode: read-only league context, no player claim loaded.")).toBeTruthy();
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://localhost:4874/admin/leagues/league_1",
+      expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
+    );
+    expect(screen.queryByRole("button", { name: "Submit directive" })).toBe(null);
+  });
+
   it("opens sign out confirmation from the league setup screen", () => {
     saveProfile();
     render(<App />);

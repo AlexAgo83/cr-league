@@ -37,7 +37,7 @@
 | [prod_018_first_session_ux_polish_product_brief](product/prod_018_first_session_ux_polish_product_brief.md) | First Session UX Polish Product Brief | Settled |  |  | product/prod_018_first_session_ux_polish_product_brief.md |
 | [prod_019_replay_spectacle_fun_pass_product_brief](product/prod_019_replay_spectacle_fun_pass_product_brief.md) | Replay Spectacle Fun Pass Product Brief | Settled |  |  | product/prod_019_replay_spectacle_fun_pass_product_brief.md |
 | [prod_020_race_learning_and_feedback_systems_product_brief](product/prod_020_race_learning_and_feedback_systems_product_brief.md) | Race Learning and Feedback Systems Product Brief | Settled |  |  | product/prod_020_race_learning_and_feedback_systems_product_brief.md |
-| [prod_021_admin_operations_console_product_brief](product/prod_021_admin_operations_console_product_brief.md) | Admin Operations Console Product Brief | Proposed |  |  | product/prod_021_admin_operations_console_product_brief.md |
+| [prod_021_admin_operations_console_product_brief](product/prod_021_admin_operations_console_product_brief.md) | Admin Operations Console Product Brief | Settled |  |  | product/prod_021_admin_operations_console_product_brief.md |
 
 ## Roadmaps
 
@@ -100,7 +100,7 @@
 | [req_047_polish_first_session_ux_after_playtest_findings](request/req_047_polish_first_session_ux_after_playtest_findings.md) | Polish first-session UX after playtest findings | Done |  |  | request/req_047_polish_first_session_ux_after_playtest_findings.md |
 | [req_048_make_race_replay_feel_like_a_fun_race_spectacle](request/req_048_make_race_replay_feel_like_a_fun_race_spectacle.md) | Make race replay feel like a fun race spectacle | Done |  |  | request/req_048_make_race_replay_feel_like_a_fun_race_spectacle.md |
 | [req_049_race_learning_and_feedback_systems](request/req_049_race_learning_and_feedback_systems.md) | Race learning and feedback systems | Done |  |  | request/req_049_race_learning_and_feedback_systems.md |
-| [req_050_add_a_secured_admin_operations_console](request/req_050_add_a_secured_admin_operations_console.md) | Add a secured admin operations console | Draft |  |  | request/req_050_add_a_secured_admin_operations_console.md |
+| [req_050_add_a_secured_admin_operations_console](request/req_050_add_a_secured_admin_operations_console.md) | Add a secured admin operations console | Done |  |  | request/req_050_add_a_secured_admin_operations_console.md |
 
 ## Backlog
 
@@ -231,8 +231,8 @@
 | [item_123_add_post_replay_payoff_recap](backlog/item_123_add_post_replay_payoff_recap.md) | Add post-replay payoff recap | Done |  | 100% | backlog/item_123_add_post_replay_payoff_recap.md |
 | [item_124_start_new_leagues_with_credits_instead_of_a_starter_card](backlog/item_124_start_new_leagues_with_credits_instead_of_a_starter_card.md) | Start new leagues with credits instead of a starter card | Done |  | 100% | backlog/item_124_start_new_leagues_with_credits_instead_of_a_starter_card.md |
 | [item_125_specify_and_implement_a_simple_tire_strategy_directive](backlog/item_125_specify_and_implement_a_simple_tire_strategy_directive.md) | Specify and implement a simple tire strategy directive | Done |  | 100% | backlog/item_125_specify_and_implement_a_simple_tire_strategy_directive.md |
-| [item_126_add_secured_admin_api_operations](backlog/item_126_add_secured_admin_api_operations.md) | Add secured admin API operations | Ready |  | 0% | backlog/item_126_add_secured_admin_api_operations.md |
-| [item_127_add_profile_menu_admin_console_ui](backlog/item_127_add_profile_menu_admin_console_ui.md) | Add profile-menu admin console UI | Ready |  | 0% | backlog/item_127_add_profile_menu_admin_console_ui.md |
+| [item_126_add_secured_admin_api_operations](backlog/item_126_add_secured_admin_api_operations.md) | Add secured admin API operations | Done |  | 100% | backlog/item_126_add_secured_admin_api_operations.md |
+| [item_127_add_profile_menu_admin_console_ui](backlog/item_127_add_profile_menu_admin_console_ui.md) | Add profile-menu admin console UI | Done |  | 100% | backlog/item_127_add_profile_menu_admin_console_ui.md |
 
 ## Tasks
 
@@ -288,4 +288,4 @@
 | [task_048_orchestrate_first_session_ux_polish_from_playtest_findings](tasks/task_048_orchestrate_first_session_ux_polish_from_playtest_findings.md) | Orchestrate first-session UX polish from playtest findings | Done | codex-work4 | 100% | tasks/task_048_orchestrate_first_session_ux_polish_from_playtest_findings.md |
 | [task_049_orchestrate_replay_spectacle_fun_pass](tasks/task_049_orchestrate_replay_spectacle_fun_pass.md) | Orchestrate replay spectacle fun pass | Done | codex-work4 | 100% | tasks/task_049_orchestrate_replay_spectacle_fun_pass.md |
 | [task_050_orchestrate_race_learning_and_feedback_systems](tasks/task_050_orchestrate_race_learning_and_feedback_systems.md) | Orchestrate race learning and feedback systems | Done | codex | 100% | tasks/task_050_orchestrate_race_learning_and_feedback_systems.md |
-| [task_051_orchestrate_secured_admin_operations_console](tasks/task_051_orchestrate_secured_admin_operations_console.md) | Orchestrate secured admin operations console | Ready |  | 0% | tasks/task_051_orchestrate_secured_admin_operations_console.md |
+| [task_051_orchestrate_secured_admin_operations_console](tasks/task_051_orchestrate_secured_admin_operations_console.md) | Orchestrate secured admin operations console | Done |  | 100% | tasks/task_051_orchestrate_secured_admin_operations_console.md |

@@ -82,7 +82,7 @@ export type ProfileSession = {
   }>;
 };
 
-export type GameView = "drive" | "plan" | "championship" | "garage" | "changelog";
+export type GameView = "drive" | "plan" | "championship" | "garage" | "changelog" | "admin";
 
 export const GAME_VIEWS: GameView[] = ["drive", "plan", "championship", "garage"];
 
@@ -99,4 +99,24 @@ export type FormState = {
   approach: RaceDecision["approach"];
   preparation: RaceDecision["preparation"];
   cardId: RaceDecision["cardId"] | "";
+};
+
+export type AdminUser = {
+  id: string;
+  email: string;
+  createdAt: string;
+  teamCount: number;
+  leagueCount: number;
+};
+
+export type AdminLeague = {
+  id: string;
+  code: string;
+  name: string;
+  status: string;
+  currentSeason: number | null;
+  currentRound: number | null;
+  playerCount: number;
+  teamCount: number;
+  createdAt: string;
 };

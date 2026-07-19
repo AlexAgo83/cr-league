@@ -4,7 +4,7 @@ import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js"
 import { CITY_CIRCUITS, circuitForRound } from "./circuits.js";
 import { cardFit, clampNumber, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
 import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
-import { GAME_VIEWS, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
+import { GAME_VIEWS, type AdminLeague, type AdminUser, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
 import { ChampionshipView } from "../features/ChampionshipView.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
@@ -54,6 +54,7 @@ type SetupMode = "choice" | "create" | "join";
 type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
 type OnboardingHelpTopic = keyof typeof ONBOARDING_HELP_KEYS;
 type StandardOnboardingHelpTopic = Exclude<OnboardingHelpTopic, "leagueIntro">;
+type AdminTab = "users" | "leagues";
 type ChronoReport = {
   best: QualifyingRun | null;
   latest: QualifyingRun | null;
@@ -375,6 +376,13 @@ export function App() {
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
   const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
   const [profileForm, setProfileForm] = useState({ email: "", recoveryCode: "" });
+  const [adminToken, setAdminToken] = useState("");
+  const [adminTab, setAdminTab] = useState<AdminTab>("users");
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [adminLeagues, setAdminLeagues] = useState<AdminLeague[]>([]);
+  const [adminRecoveryCode, setAdminRecoveryCode] = useState<{ email: string; code: string } | null>(null);
+  const [adminDeleteUser, setAdminDeleteUser] = useState<AdminUser | null>(null);
+  const [adminInspecting, setAdminInspecting] = useState(false);
   const [savedClaims, setSavedClaims] = useState(loadPlayerClaims);
   const [savedLeagueIndex, setSavedLeagueIndex] = useState(0);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
@@ -434,6 +442,7 @@ export function App() {
           body: JSON.stringify({ teamId: saved.teamId, claimCode: saved.claimCode })
         });
         rememberPlayer(state);
+        setAdminInspecting(false);
         setLeagueState(state);
         showStatus(tt("status_league_rejoined"), "info", false);
       },
@@ -445,9 +454,9 @@ export function App() {
   const playerTeam = useMemo(
     () =>
       leagueState?.teams.find((team) => team.id === leagueState.player?.teamId) ??
-      leagueState?.teams.find((team) => team.kind === "human") ??
-      leagueState?.teams[0],
-    [leagueState]
+      (adminInspecting ? undefined : leagueState?.teams.find((team) => team.kind === "human")) ??
+      (adminInspecting ? undefined : leagueState?.teams[0]),
+    [adminInspecting, leagueState]
   );
   const playerDecision = leagueState?.decisions.find((decision) => decision.teamId === playerTeam?.id);
   const qualifyingRuns = leagueState?.currentGrandPrix.qualifyingRuns ?? [];
@@ -586,6 +595,7 @@ export function App() {
         })
       });
       rememberPlayer(state);
+      setAdminInspecting(false);
       setLeagueState(state);
       setGameView("drive");
       showStatus(tt("status_league_created"));
@@ -604,6 +614,7 @@ export function App() {
         })
       });
       rememberPlayer(state);
+      setAdminInspecting(false);
       setLeagueState(state);
       setGameView("drive");
       showStatus(tt("status_league_joined"));
@@ -878,6 +889,7 @@ export function App() {
           body: JSON.stringify({ teamId: claim.teamId, claimCode: claim.claimCode })
         });
         rememberPlayer(state);
+        setAdminInspecting(false);
         setLeagueState(state);
         setGameView("drive");
         setProfileOpen(false);
@@ -886,6 +898,86 @@ export function App() {
       },
       claim.teamId
     );
+  }
+
+  async function openAdminConsole() {
+    setProfileOpen(false);
+    setGameView("admin");
+    if (!adminToken.trim()) return;
+    await refreshAdminData();
+  }
+
+  async function refreshAdminData() {
+    if (!adminToken.trim()) {
+      showStatus(tt("admin_token_required"), "error", false);
+      return;
+    }
+
+    await run(tt("status_admin_loading"), async () => {
+      const [users, leagues] = await Promise.all([
+        api<{ users: AdminUser[] }>("/admin/users", { method: "GET", headers: adminHeaders() }),
+        api<{ leagues: AdminLeague[] }>("/admin/leagues", { method: "GET", headers: adminHeaders() })
+      ]);
+      setAdminUsers(users.users);
+      setAdminLeagues(leagues.leagues);
+      showStatus(tt("status_admin_loaded"), "info", false);
+    }, undefined, false, adminApiErrorMessage);
+  }
+
+  async function resetAdminRecoveryCode(user: AdminUser) {
+    await run(tt("status_admin_resetting_recovery"), async () => {
+      const response = await api<{ recoveryCode: string }>(`/admin/users/${user.id}/recovery-code`, {
+        method: "POST",
+        headers: adminHeaders()
+      });
+      setAdminRecoveryCode({ email: user.email, code: response.recoveryCode });
+      await refreshAdminUsers();
+      showStatus(tt("status_admin_recovery_reset"), "info", false);
+    }, undefined, false, adminApiErrorMessage);
+  }
+
+  async function deleteAdminUserConfirmed() {
+    if (!adminDeleteUser) return;
+    const user = adminDeleteUser;
+    setAdminDeleteUser(null);
+    await run(tt("status_admin_deleting_user"), async () => {
+      await api<{ ok: boolean }>(`/admin/users/${user.id}`, {
+        method: "DELETE",
+        headers: adminHeaders()
+      });
+      setAdminRecoveryCode(null);
+      await refreshAdminUsers();
+      showStatus(tt("status_admin_user_deleted"), "info", false);
+    }, undefined, false, adminApiErrorMessage);
+  }
+
+  async function inspectAdminLeague(league: AdminLeague) {
+    await run(tt("status_admin_inspecting_league"), async () => {
+      const state = await api<LeagueState>(`/admin/leagues/${league.id}`, {
+        method: "GET",
+        headers: adminHeaders()
+      });
+      setLeagueState({ ...state, player: undefined });
+      setAdminInspecting(true);
+      setGameView("championship");
+      showStatus(tt("status_admin_league_loaded"), "info", false);
+    }, undefined, false, adminApiErrorMessage);
+  }
+
+  async function refreshAdminUsers() {
+    const response = await api<{ users: AdminUser[] }>("/admin/users", { method: "GET", headers: adminHeaders() });
+    setAdminUsers(response.users);
+  }
+
+  function adminHeaders() {
+    return { authorization: `Bearer ${adminToken.trim()}` };
+  }
+
+  function adminApiErrorMessage(error: unknown) {
+    if (error instanceof ApiError && error.statusCode === 503) return tt("admin_error_unconfigured");
+    if (error instanceof ApiError && error.statusCode === 403) return tt("admin_error_forbidden");
+    if (error instanceof TypeError) return tt("status_api_unavailable");
+    return tt("status_request_failed");
   }
 
   async function restartLeague() {
@@ -938,12 +1030,14 @@ export function App() {
   function forgetPlayer() {
     forgetClaim(leagueState?.player?.teamId);
     setLeagueState(null);
+    setAdminInspecting(false);
     setGameView("drive");
     showStatus(tt("status_player_forgotten"));
   }
 
   function addLeague() {
     setLeagueState(null);
+    setAdminInspecting(false);
     setGameView("drive");
     setSetupMode("choice");
     setProfileOpen(false);
@@ -972,6 +1066,7 @@ export function App() {
     localStorage.removeItem(PROFILE_SESSION_KEY);
     setProfileSession(null);
     setLeagueState(null);
+    setAdminInspecting(false);
     setProfileLogoutOpen(false);
     setProfileCodeOpen(false);
     setProfileOpen(false);
@@ -1071,6 +1166,9 @@ export function App() {
               {tt("settings_title")}
             </button>
           ) : null}
+          <button type="button" className="profile-menu-action profile-menu-action-info" onClick={() => void openAdminConsole()}>
+            {tt("admin_action_open")}
+          </button>
           {profileSession?.recoveryCode ? (
             <button
               type="button"
@@ -1345,6 +1443,139 @@ export function App() {
       />
     )
   ) : null;
+  const adminDeleteModal = adminDeleteUser ? (
+    <Modal label={tt("admin_delete_user_title")} onClose={() => setAdminDeleteUser(null)}>
+      <span className="section-kicker">{tt("admin_kicker")}</span>
+      <h2>{tt("admin_delete_user_title")}</h2>
+      <p>{tt("admin_delete_user_confirm", { email: adminDeleteUser.email })}</p>
+      <div className="actions secondary-actions">
+        <button type="button" className="danger-button" onClick={() => void deleteAdminUserConfirmed()}>
+          {tt("admin_action_delete_user")}
+        </button>
+        <button type="button" onClick={() => setAdminDeleteUser(null)}>
+          {tt("action_close")}
+        </button>
+      </div>
+    </Modal>
+  ) : null;
+  const adminView = (
+    <section className="admin-console" aria-label={tt("admin_title")}>
+      <div className="panel admin-console-header">
+        <span className="section-kicker">{tt("admin_kicker")}</span>
+        <h1>{tt("admin_title")}</h1>
+        <p>{tt("admin_body")}</p>
+        <form
+          className="admin-token-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            void refreshAdminData();
+          }}
+        >
+          <label>
+            {tt("admin_token_label")}
+            <input type="password" value={adminToken} onChange={(event) => setAdminToken(event.target.value)} autoComplete="off" />
+          </label>
+          <button type="submit" disabled={status === "loading"}>
+            {tt("admin_action_connect")}
+          </button>
+        </form>
+      </div>
+      {adminRecoveryCode ? (
+        <div className="panel admin-recovery-panel" role="status">
+          <span className="section-kicker">{adminRecoveryCode.email}</span>
+          <strong>{tt("admin_recovery_code_title")}</strong>
+          <input className="profile-code-input" readOnly value={adminRecoveryCode.code} onClick={(event) => event.currentTarget.select()} />
+        </div>
+      ) : null}
+      <div className="panel admin-data-panel">
+        <div className="plan-steps plan-subscreen-tabs" role="tablist" aria-label={tt("admin_tabs_label")}>
+          <button type="button" role="tab" aria-selected={adminTab === "users"} className={adminTab === "users" ? "plan-step active" : "plan-step"} onClick={() => setAdminTab("users")}>
+            <span className="plan-step-label">{tt("admin_tab_users")}</span>
+          </button>
+          <button type="button" role="tab" aria-selected={adminTab === "leagues"} className={adminTab === "leagues" ? "plan-step active" : "plan-step"} onClick={() => setAdminTab("leagues")}>
+            <span className="plan-step-label">{tt("admin_tab_leagues")}</span>
+          </button>
+        </div>
+        {adminTab === "users" ? (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>{tt("admin_user_email")}</th>
+                  <th>{tt("admin_user_counts")}</th>
+                  <th>{tt("admin_created_at")}</th>
+                  <th>{tt("admin_actions")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {adminUsers.map((user) => (
+                  <tr key={user.id}>
+                    <td>
+                      <strong>{user.email}</strong>
+                      <small>{user.id}</small>
+                    </td>
+                    <td>{tt("admin_user_counts_value", { teams: user.teamCount, leagues: user.leagueCount })}</td>
+                    <td>{formatAdminDate(user.createdAt, locale)}</td>
+                    <td>
+                      <div className="admin-row-actions">
+                        <button type="button" onClick={() => void resetAdminRecoveryCode(user)} disabled={status === "loading"}>
+                          {tt("admin_action_reset_recovery")}
+                        </button>
+                        <button type="button" className="danger-button" onClick={() => setAdminDeleteUser(user)} disabled={status === "loading"}>
+                          {tt("admin_action_delete_user")}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {!adminUsers.length ? <p className="admin-empty">{tt("admin_users_empty")}</p> : null}
+          </div>
+        ) : (
+          <div className="admin-table-wrap">
+            <table className="admin-table">
+              <thead>
+                <tr>
+                  <th>{tt("admin_league_name")}</th>
+                  <th>{tt("admin_league_status")}</th>
+                  <th>{tt("admin_league_counts")}</th>
+                  <th>{tt("admin_created_at")}</th>
+                  <th>{tt("admin_actions")}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {adminLeagues.map((league) => (
+                  <tr key={league.id}>
+                    <td>
+                      <strong>{league.name}</strong>
+                      <small>
+                        {league.code} · {league.id}
+                      </small>
+                    </td>
+                    <td>
+                      {league.status} ·{" "}
+                      {league.currentSeason && league.currentRound
+                        ? tt("admin_league_round_value", { season: league.currentSeason, round: league.currentRound })
+                        : tt("admin_league_no_round")}
+                    </td>
+                    <td>{tt("admin_league_counts_value", { players: league.playerCount, teams: league.teamCount })}</td>
+                    <td>{formatAdminDate(league.createdAt, locale)}</td>
+                    <td>
+                      <button type="button" onClick={() => void inspectAdminLeague(league)} disabled={status === "loading"}>
+                        {tt("admin_action_inspect_league")}
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {!adminLeagues.length ? <p className="admin-empty">{tt("admin_leagues_empty")}</p> : null}
+          </div>
+        )}
+      </div>
+    </section>
+  );
 
   if (!profileSession) {
     return (
@@ -1456,7 +1687,9 @@ export function App() {
         profileLogoutModal={profileLogoutModal}
         preferencesResetModal={preferencesResetModal}
       >
-        {gameView === "changelog" ? (
+        {gameView === "admin" ? (
+          adminView
+        ) : gameView === "changelog" ? (
           <ChangelogView currentVersion={APP_VERSION} tt={tt} />
         ) : (
         <section className="setup-grid setup-grid-single setup-grid-split" aria-label={tt("flow_label")}>
@@ -1602,6 +1835,7 @@ export function App() {
         </section>
         )}
         {onboardingHelpModal}
+        {adminDeleteModal}
       </SetupShell>
     );
   }
@@ -1641,6 +1875,22 @@ export function App() {
       </header>
 
       <section className="view-container">
+        {adminInspecting ? (
+          <div className="admin-inspection-banner" role="status">
+            <strong>{tt("admin_inspection_banner")}</strong>
+            <button
+              type="button"
+              onClick={() => {
+                setGameView("admin");
+                setLeagueState(null);
+                setAdminInspecting(false);
+              }}
+            >
+              {tt("admin_action_back_to_console")}
+            </button>
+          </div>
+        ) : null}
+        {gameView === "admin" ? adminView : null}
         {gameView === "drive" && visibleResult ? (
           <ResultView
             state={leagueState}
@@ -2022,6 +2272,7 @@ export function App() {
       {profileCodeModal}
       {profileLogoutModal}
       {preferencesResetModal}
+      {adminDeleteModal}
       {directiveConfirmModal}
       {resolveConfirmModal}
       {qualifyingConfirmModal}
@@ -2262,6 +2513,10 @@ function isStoredPlayerClaim(claim: Partial<StoredPlayerClaim>): claim is Stored
     typeof claim.leagueCode === "string" &&
     typeof claim.teamName === "string"
   );
+}
+
+function formatAdminDate(value: string, locale: Locale) {
+  return new Intl.DateTimeFormat(locale, { dateStyle: "medium", timeStyle: "short" }).format(new Date(value));
 }
 
 function upsertPlayerClaim(claims: StoredPlayerClaim[], claim: StoredPlayerClaim) {

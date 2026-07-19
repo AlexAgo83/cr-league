@@ -4,11 +4,12 @@ import { CARD_PRICE, DEMO_RACE_INPUT, circuitIdentityForRound, circuitSeasonSeed
 import { buildApp } from "./app.js";
 import { APP_COMMIT, APP_VERSION } from "./version.js";
 
-function createTestApp(db?: PrismaClient) {
+function createTestApp(db?: PrismaClient, adminToken?: string) {
   const config = {
     host: "127.0.0.1",
     port: 0,
-    webOrigin: "http://localhost:4873"
+    webOrigin: "http://localhost:4873",
+    adminToken
   };
   return buildApp(config, { db, logger: false });
 }
@@ -381,6 +382,126 @@ describe("api app", () => {
       teams: [expect.objectContaining({ leagueName: "Office League", teamName: "Volt Union" })]
     });
     expect(badRecoverResponse.statusCode).toBe(404);
+  });
+
+  it("guards admin routes behind the configured bearer token", async () => {
+    const unavailableApp = await createTestApp(createMemoryDb());
+    const unavailableResponse = await unavailableApp.inject({ method: "GET", url: "/admin/users" });
+    await unavailableApp.close();
+
+    const app = await createTestApp(createMemoryDb(), "secret-admin-token");
+    const missingResponse = await app.inject({ method: "GET", url: "/admin/users" });
+    const wrongResponse = await app.inject({
+      method: "GET",
+      url: "/admin/users",
+      headers: { authorization: "Bearer wrong-token" }
+    });
+    const okResponse = await app.inject({
+      method: "GET",
+      url: "/admin/users",
+      headers: { authorization: "Bearer secret-admin-token" }
+    });
+    await app.close();
+
+    expect(unavailableResponse.statusCode).toBe(503);
+    expect(missingResponse.statusCode).toBe(403);
+    expect(wrongResponse.statusCode).toBe(403);
+    expect(okResponse.statusCode).toBe(200);
+  });
+
+  it("lists admin users, resets recovery codes, and deletes profiles without deleting teams", async () => {
+    const db = createMemoryDb();
+    const app = await createTestApp(db, "secret-admin-token");
+    const adminHeaders = { authorization: "Bearer secret-admin-token" };
+
+    const profileResponse = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const profile = profileResponse.json();
+    const leagueResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id }
+    });
+    const teamId = leagueResponse.json().player.teamId;
+
+    const usersResponse = await app.inject({ method: "GET", url: "/admin/users", headers: adminHeaders });
+    const resetResponse = await app.inject({
+      method: "POST",
+      url: `/admin/users/${profile.profile.id}/recovery-code`,
+      headers: adminHeaders
+    });
+    const oldRecoveryResponse = await app.inject({
+      method: "POST",
+      url: "/profiles/recover",
+      payload: { email: "pilot@example.test", recoveryCode: profile.recoveryCode }
+    });
+    const newRecoveryResponse = await app.inject({
+      method: "POST",
+      url: "/profiles/recover",
+      payload: { email: "pilot@example.test", recoveryCode: resetResponse.json().recoveryCode }
+    });
+    const deleteResponse = await app.inject({
+      method: "DELETE",
+      url: `/admin/users/${profile.profile.id}`,
+      headers: adminHeaders
+    });
+    const orphanedTeam = await db.team.findUnique({ where: { id: teamId } });
+
+    await app.close();
+
+    expect(usersResponse.statusCode).toBe(200);
+    expect(usersResponse.json().users).toEqual([
+      expect.objectContaining({
+        id: profile.profile.id,
+        email: "pilot@example.test",
+        createdAt: expect.any(String),
+        teamCount: 1,
+        leagueCount: 1
+      })
+    ]);
+    expect(usersResponse.body).not.toContain("recoveryCodeHash");
+    expect(resetResponse.statusCode).toBe(200);
+    expect(resetResponse.json().recoveryCode).toMatch(/^[0-9A-F]{8}$/);
+    expect(oldRecoveryResponse.statusCode).toBe(404);
+    expect(newRecoveryResponse.statusCode).toBe(200);
+    expect(deleteResponse.statusCode).toBe(200);
+    expect(orphanedTeam).toMatchObject({ id: teamId, profileId: null });
+  });
+
+  it("lists leagues for admin operations and inspects one without a player claim", async () => {
+    const app = await createTestApp(createMemoryDb(), "secret-admin-token");
+    const adminHeaders = { authorization: "Bearer secret-admin-token" };
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+
+    const leaguesResponse = await app.inject({ method: "GET", url: "/admin/leagues", headers: adminHeaders });
+    const inspectResponse = await app.inject({ method: "GET", url: `/admin/leagues/${created.league.id}`, headers: adminHeaders });
+
+    await app.close();
+
+    expect(leaguesResponse.statusCode).toBe(200);
+    expect(leaguesResponse.json().leagues).toEqual([
+      expect.objectContaining({
+        id: created.league.id,
+        code: created.league.code,
+        name: "Office League",
+        status: "active",
+        currentSeason: 1,
+        currentRound: 1,
+        playerCount: 1,
+        teamCount: 1,
+        createdAt: expect.any(String)
+      })
+    ]);
+    expect(inspectResponse.statusCode).toBe(200);
+    expect(inspectResponse.json()).toMatchObject({
+      league: { id: created.league.id, name: "Office League" },
+      currentGrandPrix: { season: 1, round: 1 }
+    });
+    expect(inspectResponse.json().player).toBeUndefined();
   });
 
   it("renames a team with readable unique names only", async () => {
@@ -1099,11 +1220,13 @@ function createMemoryDb(): PrismaClient {
     maxGrandPrixPerSeason: number;
     ownerTeamId: string | null;
     preparationDeadlineAt: Date | null;
+    createdAt: Date;
   };
   type ProfileRow = {
     id: string;
     email: string;
     recoveryCodeHash: string;
+    createdAt: Date;
   };
   type TeamRow = {
     id: string;
@@ -1170,6 +1293,7 @@ function createMemoryDb(): PrismaClient {
           maxGrandPrixPerSeason: 6,
           ownerTeamId: null,
           preparationDeadlineAt: null,
+          createdAt: new Date(),
           ...data
         };
         leagues.push(league);
@@ -1204,6 +1328,27 @@ function createMemoryDb(): PrismaClient {
           grandPrixes: leagueGrandPrixes
         };
       },
+      findMany: async ({
+        include
+      }: {
+        orderBy?: { createdAt?: string };
+        include?: {
+          teams?: boolean;
+          grandPrixes?: { orderBy?: Array<{ season?: string; round?: string }>; take?: number };
+        };
+      }) =>
+        [...leagues]
+          .sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime())
+          .map((league) => ({
+            ...league,
+            teams: include?.teams ? teams.filter((team) => team.leagueId === league.id) : undefined,
+            grandPrixes: include?.grandPrixes
+              ? grandPrixes
+                  .filter((grandPrix) => grandPrix.leagueId === league.id)
+                  .sort((left, right) => right.season - left.season || right.round - left.round)
+                  .slice(0, include.grandPrixes.take)
+              : undefined
+          })),
       update: async ({
         where,
         data
@@ -1218,8 +1363,8 @@ function createMemoryDb(): PrismaClient {
       }
     },
     profile: {
-      create: async ({ data }: { data: Omit<ProfileRow, "id"> }) => {
-        const profile = { id: id("profile"), ...data };
+      create: async ({ data }: { data: Omit<ProfileRow, "id" | "createdAt"> }) => {
+        const profile = { id: id("profile"), createdAt: new Date(), ...data };
         profiles.push(profile);
         return profile;
       },
@@ -1242,6 +1387,48 @@ function createMemoryDb(): PrismaClient {
               league: leagues.find((league) => league.id === team.leagueId) ?? null
             }))
         };
+      },
+      findMany: async ({
+        include
+      }: {
+        orderBy?: { createdAt?: string };
+        include?: { teams?: { include?: { league?: boolean } } };
+      }) =>
+        [...profiles]
+          .sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime())
+          .map((profile) => ({
+            ...profile,
+            teams: include?.teams
+              ? teams
+                  .filter((team) => team.profileId === profile.id)
+                  .map((team) => ({
+                    ...team,
+                    league: include.teams?.include?.league ? (leagues.find((league) => league.id === team.leagueId) ?? null) : undefined
+                  }))
+              : undefined
+          })),
+      update: async ({ where, data }: { where: { id: string }; data: Partial<Pick<ProfileRow, "recoveryCodeHash">> }) => {
+        const profile = profiles.find((candidate) => candidate.id === where.id);
+        if (!profile) {
+          const error = new Error("Profile not found") as Error & { code?: string };
+          error.code = "P2025";
+          throw error;
+        }
+        Object.assign(profile, data);
+        return profile;
+      },
+      delete: async ({ where }: { where: { id: string } }) => {
+        const index = profiles.findIndex((candidate) => candidate.id === where.id);
+        if (index === -1) {
+          const error = new Error("Profile not found") as Error & { code?: string };
+          error.code = "P2025";
+          throw error;
+        }
+        const [profile] = profiles.splice(index, 1);
+        for (const team of teams) {
+          if (team.profileId === where.id) team.profileId = null;
+        }
+        return profile;
       }
     },
     team: {

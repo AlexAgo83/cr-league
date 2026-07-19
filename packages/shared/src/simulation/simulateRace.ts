@@ -107,6 +107,7 @@ export function simulateRace(input: RaceInput): RaceResult {
     }
 
     maybeAddFlavorEvent(segment, weather[segment], input, states, events, prng.next);
+    maybeAddMiniInfoEvents(segment, weather[segment], states, events);
     traceSegments.push({ segment, pitCosts });
   }
 
@@ -230,12 +231,32 @@ function averageProgress(points: ReplayTracePoint[]) {
 function eventTraceProgress(trace: ReplayTracePoint[], event: RaceEvent) {
   if (event.type === "finish") return 1;
   const segmentIndex = RACE_SEGMENTS.indexOf(event.segment);
-  const ratio = event.type === "weather_change" ? 0 : 0.5;
+  const ratio = eventSegmentRatio(event);
   const target = segmentIndex < 0 ? event.lap / Math.max(1, lapForSegment("finish")) : (segmentIndex + ratio) / RACE_SEGMENTS.length;
   const point = trace
     .filter((candidate) => candidate.segment === event.segment)
     .sort((left, right) => Math.abs(left.progress - target) - Math.abs(right.progress - target))[0];
   return Number((point?.progress ?? Math.max(0, Math.min(1, target))).toFixed(4));
+}
+
+function eventSegmentRatio(event: RaceEvent) {
+  if (event.type === "weather_change") return 0;
+  const ratios: Partial<Record<RaceEvent["type"], number>> = {
+    best_sector: 0.25,
+    overtake_setup: 0.7,
+    pit_imminent: 0.18,
+    pit_exit: 0.82,
+    pace_gain: 0.25,
+    under_pressure: 0.45,
+    dense_traffic: 0.65,
+    favorable_weather: 0.82,
+    battery_critical: 0.2,
+    defense_success: 0.42,
+    minor_error: 0.62,
+    penalty_risk: 0.84,
+    personal_record: 0.55
+  };
+  return ratios[event.type] ?? 0.5;
 }
 
 function createDistanceReplayTrace(states: TeamState[], snapshots: TraceSegmentSnapshot[], trackLengthMeters: number, laps: number, pitLaneProgress: number): ReplayTracePoint[] {
@@ -556,6 +577,7 @@ function maybeAddPitStopEvent(state: TeamState, segment: RaceSegment, events: Ra
   if (strategy === "mini_pack" && segment !== "early" && segment !== "late") return;
 
   const stopCost = strategy === "mini_pack" ? 4 : 6;
+  events.push(createMiniInfoEvent(events.length, state, segment, "pit_imminent", `${state.participant.teamName} approaches the pit window`, ["pit_stop", strategy]));
   state.elapsedTime += stopCost;
   state.scores.score += strategy === "mini_pack" ? 4 : 0;
   state.resultTags.add(strategy);
@@ -572,6 +594,7 @@ function maybeAddPitStopEvent(state: TeamState, segment: RaceSegment, events: Ra
     replayText: `${state.participant.teamName} swaps battery pack in the pit`,
     reportText: `${state.participant.teamName} lost ${stopCost.toFixed(1)}s on a battery swap.`
   });
+  events.push(createMiniInfoEvent(events.length, state, segment, "pit_exit", `${state.participant.teamName} exits the pit into traffic`, ["pit_stop", strategy]));
   return stopCost;
 }
 
@@ -780,6 +803,9 @@ function maybeAddRiskEvent(state: TeamState, segment: RaceSegment, events: RaceE
   if (segment !== "late") return;
 
   const risk = Math.max(0, 58 - state.scores.reliability) + Math.max(0, state.scores.aggression - 56);
+  if (risk >= 18) {
+    events.push(createMiniInfoEvent(events.length, state, segment, "penalty_risk", `${state.participant.teamName} flirts with the penalty line`, ["risk"]));
+  }
   if (next() * 100 >= risk) return;
 
   if (state.mechanicSaveAvailable) {
@@ -805,6 +831,34 @@ function maybeAddRiskEvent(state: TeamState, segment: RaceSegment, events: RaceE
     replayText: `${state.participant.teamName} hits a late mechanical scare`,
     reportText: `${state.participant.teamName} lost time to a late reliability scare.`
   });
+}
+
+function maybeAddMiniInfoEvents(segment: RaceSegment, weather: Weather, states: TeamState[], events: RaceEvent[]) {
+  if (!states.length) return;
+  const byTime = [...states].sort((left, right) => left.elapsedTime - right.elapsedTime);
+  const byPace = [...states].sort((left, right) => right.scores.pace - left.scores.pace);
+  const byScore = [...states].sort((left, right) => right.scores.score - left.scores.score);
+  const byEnergy = [...states].sort((left, right) => left.scores.reliability + left.scores.weatherReadiness - (right.scores.reliability + right.scores.weatherReadiness));
+  const byControl = [...states].sort((left, right) => right.scores.control - left.scores.control);
+  const byAggression = [...states].sort((left, right) => right.scores.aggression - left.scores.aggression);
+  const closePair = byTime.slice(1).find((state, index) => state.elapsedTime - byTime[index]!.elapsedTime <= 1.4);
+  const weatherTeam = states.find((state) => state.participant.decision.preparation === "weather" || state.participant.botArchetype === "rain_specialist") ?? byControl[0];
+
+  if (segment === "early") {
+    events.push(createMiniInfoEvent(events.length, byPace[0]!, segment, "best_sector", `${byPace[0]!.participant.teamName} signs the best sector`, ["pace"]));
+    events.push(createMiniInfoEvent(events.length, byAggression[0]!, segment, "overtake_setup", `${byAggression[0]!.participant.teamName} prepares a move in the slipstream`, ["overtake"]));
+  } else if (segment === "mid") {
+    events.push(createMiniInfoEvent(events.length, byScore[0]!, segment, "pace_gain", `${byScore[0]!.participant.teamName} lifts the race rhythm`, ["pace"]));
+    if (closePair) events.push(createMiniInfoEvent(events.length, closePair, segment, "under_pressure", `${closePair.participant.teamName} runs under pressure`, ["pressure"]));
+    events.push(createMiniInfoEvent(events.length, byTime[Math.min(2, byTime.length - 1)]!, segment, "dense_traffic", "Traffic compresses the field", ["traffic"]));
+    if (weather !== "dry" && weatherTeam) events.push(createMiniInfoEvent(events.length, weatherTeam, segment, "favorable_weather", `${weatherTeam.participant.teamName} finds the right weather window`, ["weather"]));
+  } else if (segment === "late") {
+    events.push(createMiniInfoEvent(events.length, byEnergy[0]!, segment, "battery_critical", `${byEnergy[0]!.participant.teamName} manages a critical battery window`, ["energy"]));
+    events.push(createMiniInfoEvent(events.length, byControl[0]!, segment, "defense_success", `${byControl[0]!.participant.teamName} closes the door cleanly`, ["defense"]));
+    events.push(createMiniInfoEvent(events.length, byControl.at(-1) ?? byControl[0]!, segment, "minor_error", `${(byControl.at(-1) ?? byControl[0]!).participant.teamName} loses a fraction on corner exit`, ["error"]));
+  } else if (segment === "finish") {
+    events.push(createMiniInfoEvent(events.length, byScore[0]!, segment, "personal_record", `${byScore[0]!.participant.teamName} records a personal best rhythm`, ["pace"]));
+  }
 }
 
 function maybeAddFlavorEvent(
@@ -955,6 +1009,22 @@ function createCardEvent(
     tags: ["card", card.family],
     replayText: `${card.name} triggers for ${state.participant.teamName}`,
     reportText: `${state.participant.teamName}: ${card.playerPromise}`
+  };
+}
+
+function createMiniInfoEvent(order: number, state: TeamState, segment: RaceSegment, type: RaceEvent["type"], replayText: string, tags: string[]): RaceEvent {
+  return {
+    id: "",
+    order,
+    segment,
+    lap: lapForSegment(segment),
+    type,
+    teamId: state.participant.teamId,
+    severity: "minor",
+    positionDelta: 0,
+    tags: ["mini_info", ...tags],
+    replayText,
+    reportText: `${replayText}.`
   };
 }
 

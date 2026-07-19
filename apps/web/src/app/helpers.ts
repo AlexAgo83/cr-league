@@ -255,7 +255,10 @@ export function teamNamesFromResult(result: RaceResult) {
 }
 
 export function eventReplayText(event: RaceEvent, names: Map<string, string>, tt: Translator) {
-  if (event.type === "weather_change" || event.type === "race_note") {
+  if (event.tags.includes("mini_info") || event.type === "race_note") {
+    return event.replayText;
+  }
+  if (event.type === "weather_change") {
     return tt(`event_${event.type}` as TranslationKey);
   }
   const team = names.get(event.teamId) ?? "";

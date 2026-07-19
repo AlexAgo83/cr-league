@@ -287,6 +287,40 @@ describe("simulateRace", () => {
     expect(result.events.some((event) => event.severity === "minor" && event.tags.includes("flavor"))).toBe(true);
   });
 
+  it("adds replay mini info toasts around race context", () => {
+    const result = simulateRace({
+      ...baseRace,
+      seed: "mini-info-toasts",
+      forecast: { dry: 0, light_rain: 100, heavy_rain: 0 },
+      participants: baseRace.participants.map((participant, index) => ({
+        ...participant,
+        decision: {
+          ...participant.decision,
+          approach: index === 0 ? "aggressive" : participant.decision.approach,
+          preparation: index === 0 ? "speed" : participant.decision.preparation,
+          pitStrategy: index === 0 ? "mini_pack" : "standard"
+        }
+      }))
+    });
+    const miniTypes = new Set(result.events.filter((event) => event.tags.includes("mini_info")).map((event) => event.type));
+
+    expect([...miniTypes].sort()).toEqual(expect.arrayContaining([
+      "best_sector",
+      "pace_gain",
+      "battery_critical",
+      "pit_imminent",
+      "pit_exit",
+      "under_pressure",
+      "overtake_setup",
+      "minor_error",
+      "defense_success",
+      "dense_traffic",
+      "favorable_weather",
+      "personal_record",
+      "penalty_risk"
+    ]));
+  });
+
   it("uses circuit trait values in race timing", () => {
     const stable = simulateRace({ ...baseRace, traits: { grip: 78, overtaking: 50, energy: 72 } });
     const attack = simulateRace({ ...baseRace, traits: { grip: 50, overtaking: 82, energy: 48 } });

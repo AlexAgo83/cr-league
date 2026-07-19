@@ -498,7 +498,8 @@ export function carProgressAtRaceTime(result: RaceResult, times: Record<string, 
 
 function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator) {
   const team = names.get(event.teamId) ?? "";
-  const context = event.cardId ? tt(`card_${event.cardId}` as TranslationKey) : event.type === "weather_change" ? tt("event_weather_change") : event.type === "pit_stop" ? tt("event_pit_stop") : team;
+  const isMiniInfo = event.tags.includes("mini_info") || event.type === "race_note";
+  const context = event.cardId ? tt(`card_${event.cardId}` as TranslationKey) : event.type === "weather_change" ? tt("event_weather_change") : event.type === "pit_stop" ? tt("event_pit_stop") : isMiniInfo ? tt(`event_${event.type}` as TranslationKey) : team;
   const impact = event.positionDelta
     ? `${event.positionDelta > 0 ? "+" : ""}${event.positionDelta} ${event.cardId ? "boost" : "pos"}`
     : event.type === "pit_stop"
@@ -510,7 +511,7 @@ function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator
   return {
     icon,
     context,
-    team,
+    team: isMiniInfo ? "" : team,
     text: eventReplayText(event, names, tt),
     impact
   };
@@ -729,7 +730,7 @@ export function ReplayView({
     ...result.events.filter((event) => event.severity === "major"),
     ...result.events.filter((event) => event.type === "pit_stop"),
     ...result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId),
-    ...(overlayActions ? [] : result.events.filter((event) => event.severity === "minor" && event.type === "race_note"))
+    ...(overlayActions ? [] : result.events.filter((event) => event.severity === "minor" && (event.type === "race_note" || event.tags.includes("mini_info"))))
   ]
     .filter((event, index, events) => events.findIndex((candidate) => candidate.id === event.id) === index)
     .sort((left, right) => left.order - right.order);

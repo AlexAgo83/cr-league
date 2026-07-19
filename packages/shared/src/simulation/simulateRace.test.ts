@@ -98,10 +98,10 @@ describe("simulateRace", () => {
 
     expect(result.classification).toHaveLength(6);
     expect(result.events.length).toBeGreaterThan(6);
-    expect(result.replayTrace).toHaveLength(51);
+    expect(result.replayTrace).toHaveLength(101);
     expect(result.replayTrace?.[0]?.progress).toBe(0);
-    expect(result.replayTrace?.[1]?.progress).toBe(0.02);
-    expect(result.replayTrace?.[10]?.progress).toBe(0.2);
+    expect(result.replayTrace?.[1]?.progress).toBe(0.01);
+    expect(result.replayTrace?.[20]?.progress).toBe(0.2);
     expect(new Set(Object.values(result.replayTrace?.[0]?.gaps ?? {}))).toEqual(new Set([0]));
     expect(result.replayTrace?.[1]?.times.atlas).toBeLessThan(result.replayTrace?.[1]?.times.redpeak ?? 0);
     expect(result.replayTrace?.at(-1)?.progress).toBe(1);
@@ -168,6 +168,36 @@ describe("simulateRace", () => {
     const midOrders = result.replayTrace?.filter((point) => point.segment === "mid").map((point) => point.order.join("|")) ?? [];
 
     expect(new Set(midOrders).size).toBeGreaterThan(1);
+  });
+
+  it("keeps replay trace movement realistic across generated races", () => {
+    const pitStrategies = ["heavy_pack", "standard", "mini_pack"] as const;
+
+    for (let run = 0; run < 20; run += 1) {
+      const result = simulateRace({
+        ...baseRace,
+        seed: `trace-debug-${run}`,
+        participants: baseRace.participants.map((participant, index) => ({
+          ...participant,
+          teamId: `${participant.teamId}-${run}-${index}`,
+          decision: { ...participant.decision, pitStrategy: pitStrategies[(run + index) % pitStrategies.length] }
+        }))
+      });
+
+      expect(validateReplayTrace(result)).toEqual([]);
+      for (let index = 1; index < (result.replayTrace?.length ?? 0); index += 1) {
+        const previous = result.replayTrace![index - 1]!;
+        const point = result.replayTrace![index]!;
+        for (const [teamId, car] of Object.entries(point.cars ?? {})) {
+          const previousCar = previous.cars?.[teamId];
+          if (!previousCar) continue;
+          const jump = car.trackProgress - previousCar.trackProgress;
+          const pitRelated = previousCar.phase.startsWith("pit") || car.phase.startsWith("pit");
+          expect(jump).toBeLessThanOrEqual(pitRelated ? 0.025 : 0.035);
+          expect(car.speed === 0 && !["grid", "finished", "pit_stop"].includes(car.phase)).toBe(false);
+        }
+      }
+    }
   });
 
   it("emits card events for played cards", () => {

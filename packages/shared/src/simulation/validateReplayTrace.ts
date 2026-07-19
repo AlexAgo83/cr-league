@@ -30,7 +30,7 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
       if (car.distanceMeters !== undefined && car.distanceMeters < 0) errors.push(`car distance out of bounds for ${teamId} at point ${index}`);
       if (car.speed < 0 || car.speed > 1.2) errors.push(`car speed out of bounds for ${teamId} at point ${index}`);
       if (previousCar && car.trackProgress + 0.0001 < previousCar.trackProgress) errors.push(`car progress goes backwards for ${teamId} at point ${index}`);
-      if (previousCar && car.trackProgress - previousCar.trackProgress > 0.09) errors.push(`car progress jumps too far for ${teamId} at point ${index}`);
+      if (previousCar && car.trackProgress - previousCar.trackProgress > 0.035) errors.push(`car progress jumps too far for ${teamId} at point ${index}`);
       if (previousCar && previousCar.phase !== "grid" && car.phase !== "finished" && Math.abs(car.speed - previousCar.speed) > 0.8) errors.push(`car speed changes too abruptly for ${teamId} at point ${index}`);
 
       carPhases.set(teamId, [...(carPhases.get(teamId) ?? []), { progress: point.progress, phase: car.phase }]);

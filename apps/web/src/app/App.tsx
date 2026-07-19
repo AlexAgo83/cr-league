@@ -1849,31 +1849,33 @@ export function App() {
             </div>
             {planSubscreen === "chrono" ? (
               <section className="panel chrono-report-panel" aria-label={tt("chrono_report_title")}>
-                <header className="chrono-report-header">
-                  <div>
-                    <span className="section-kicker">{tt("chrono_report_kicker")}</span>
-                    <h2>{tt("chrono_report_title")}</h2>
-                  </div>
-                  <p>{chronoReport.suggestion}</p>
-                </header>
-                <div className="chrono-report-stats">
-                  <div>
-                    <span>{tt("qualifying_best")}</span>
-                    <strong>{chronoReport.best ? `${chronoReport.best.time.toFixed(2)}s` : "--"}</strong>
-                  </div>
-                  <div>
-                    <span>{tt("qualifying_result_rank")}</span>
-                    <strong>{chronoReport.gridLabel}</strong>
-                  </div>
-                  <div>
-                    <span>{tt("chrono_report_delta")}</span>
-                    <strong>{chronoReport.deltaLabel}</strong>
-                  </div>
-                  <div>
-                    <span>{tt("qualifying_remaining")}</span>
-                    <strong>
-                      {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
-                    </strong>
+                <div className="chrono-report-hero">
+                  <header className="chrono-report-header">
+                    <div>
+                      <span className="section-kicker">{tt("chrono_report_kicker")}</span>
+                      <h2>{tt("chrono_report_title")}</h2>
+                    </div>
+                    <p>{chronoReport.suggestion}</p>
+                  </header>
+                  <div className="chrono-report-stats">
+                    <div>
+                      <span>{tt("qualifying_best")}</span>
+                      <strong>{chronoReport.best ? `${chronoReport.best.time.toFixed(2)}s` : "--"}</strong>
+                    </div>
+                    <div>
+                      <span>{tt("qualifying_result_rank")}</span>
+                      <strong>{chronoReport.gridLabel}</strong>
+                    </div>
+                    <div>
+                      <span>{tt("chrono_report_delta")}</span>
+                      <strong>{chronoReport.deltaLabel}</strong>
+                    </div>
+                    <div>
+                      <span>{tt("qualifying_remaining")}</span>
+                      <strong>
+                        {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
+                      </strong>
+                    </div>
                   </div>
                 </div>
                 <div className="chrono-report-history">

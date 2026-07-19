@@ -772,6 +772,12 @@ label small {
 }
 
 .chrono-report-panel {
+  display: grid;
+  gap: 14px;
+  overflow: hidden;
+}
+
+.chrono-report-hero {
   --color-text: #f8f3e8;
   --color-muted: rgb(248 243 232 / 0.78);
   background:
@@ -780,7 +786,8 @@ label small {
   color: var(--color-text);
   display: grid;
   gap: 14px;
-  overflow: hidden;
+  margin: -20px -20px 0;
+  padding: 20px;
 }
 
 .chrono-report-header {

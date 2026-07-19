@@ -45,11 +45,6 @@ export type ReplayPlan = {
   overtakes: ReplayOvertakeBeat[];
 };
 
-function savedReplaySpeed(): ReplaySpeed {
-  const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
-  return REPLAY_SPEEDS.includes(saved as ReplaySpeed) ? (saved as ReplaySpeed) : 1;
-}
-
 function safeHex(value: string | undefined, fallback: string) {
   return value && HEX_COLOR.test(value) ? value : fallback;
 }
@@ -619,7 +614,7 @@ export function ReplayView({
   const clock = useRef(0);
   const scrubbingRef = useRef(false);
   const [playing, setPlaying] = useState(true);
-  const [speed, setSpeed] = useState<ReplaySpeed>(savedReplaySpeed);
+  const [speed, setSpeed] = useState<ReplaySpeed>(1);
   const [driverFocus, setDriverFocus] = useState(() => localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
   const [copyDismissed, setCopyDismissed] = useState(() => localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
   const replayTrace = result.replayTrace ?? [];
@@ -689,20 +684,19 @@ export function ReplayView({
   }, [playing, speed, replayEnd]);
 
   useEffect(() => {
-    if (speed === 1) localStorage.removeItem(REPLAY_SPEED_KEY);
-    else localStorage.setItem(REPLAY_SPEED_KEY, String(speed));
-  }, [speed]);
-
-  useEffect(() => {
     if (driverFocus) localStorage.removeItem(REPLAY_FOCUS_KEY);
     else localStorage.setItem(REPLAY_FOCUS_KEY, "0");
   }, [driverFocus]);
 
   useEffect(() => {
-    setSpeed(savedReplaySpeed());
+    setSpeed(1);
     setDriverFocus(localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
     setCopyDismissed(localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
   }, [preferencesResetSignal]);
+
+  useEffect(() => {
+    setSpeed(1);
+  }, [result.seed, titleKey]);
 
   useEffect(() => () => positionPopTimers.current.forEach(window.clearTimeout), []);
 

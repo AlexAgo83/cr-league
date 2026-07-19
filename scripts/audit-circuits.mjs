@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
-const sourcePath = "apps/web/src/app/circuits.ts";
+const routesDir = "apps/web/src/app/circuitRoutes";
 const identitiesPath = "packages/shared/src/domain/circuits.ts";
 const args = process.argv.slice(2);
 const geojsonPath = valueAfter("--geojson");
@@ -17,10 +18,10 @@ const thresholds = {
 };
 
 const identities = parseIdentities(readFileSync(identitiesPath, "utf8"));
-const circuits = parseCircuits(readFileSync(sourcePath, "utf8"), identities);
+const circuits = parseCircuits(routesDir, identities);
 
 if (circuits.length === 0) {
-  console.error(`No circuits found in ${sourcePath}`);
+  console.error(`No circuits found in ${routesDir}`);
   process.exit(1);
 }
 
@@ -84,13 +85,20 @@ function parseIdentities(source) {
   }));
 }
 
-function parseCircuits(source, identitySources) {
-  const circuitPattern = /\{\s*\.\.\.CITY_CIRCUIT_IDENTITIES\[(?<index>\d+)\],[\s\S]*?route:\s*\[(?<route>[\s\S]*?)\n\s*\]\s*\}/g;
-  return [...source.matchAll(circuitPattern)].map((match) => ({
-    ...identitySources[Number(match.groups.index)],
-    points: [...match.groups.route.matchAll(/\{\s*lat:\s*(-?\d+(?:\.\d+)?),\s*lng:\s*(-?\d+(?:\.\d+)?)\s*\}/g)].map(
-      ([, lat, lng]) => ({ lat: Number(lat), lng: Number(lng) })
-    )
+function parseCircuits(routeDirectory, identitySources) {
+  return identitySources.map((identity) => {
+    const source = readFileSync(join(routeDirectory, `${identity.layoutKey}.ts`), "utf8");
+    return {
+      ...identity,
+      points: parsePoints(source)
+    };
+  });
+}
+
+function parsePoints(source) {
+  return [...source.matchAll(/\{\s*lat:\s*(-?\d+(?:\.\d+)?),\s*lng:\s*(-?\d+(?:\.\d+)?)\s*\}/g)].map(([, lat, lng]) => ({
+    lat: Number(lat),
+    lng: Number(lng)
   }));
 }
 

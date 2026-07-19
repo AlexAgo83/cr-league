@@ -3,6 +3,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 
 const args = parseArgs(process.argv.slice(2));
 const sourcePath = args.source ?? "apps/web/src/app/circuits.ts";
+const routesDir = args.routesDir ?? "apps/web/src/app/circuitRoutes";
 const identitiesPath = args.identities ?? "packages/shared/src/domain/circuits.ts";
 const candidates = Number(args.candidates ?? 160);
 const targetKm = Number(args.targetKm ?? 6.2);
@@ -64,13 +65,17 @@ if (!selected) {
 }
 
 console.log(summary(selected));
-if (args.quiet !== "true") console.log(routeBlock(Number(args.writeIndex ?? 0), selected.points, args.layoutKey));
+if (args.quiet !== "true") console.log(routeModuleBlock(selected.points));
 
 if (args.writeIndex) {
-  const index = Number(args.writeIndex);
-  let source = readFileSync(sourcePath, "utf8");
-  source = replaceRouteBlock(source, index, routeBlock(index, selected.points));
-  writeFileSync(sourcePath, source);
+  if (args.layoutKey) {
+    writeFileSync(`${routesDir}/${args.layoutKey}.ts`, routeModuleBlock(selected.points));
+  } else {
+    const index = Number(args.writeIndex);
+    let source = readFileSync(sourcePath, "utf8");
+    source = replaceRouteBlock(source, index, legacyRouteBlock(index, selected.points));
+    writeFileSync(sourcePath, source);
+  }
 }
 
 if (args.laps && args.layoutKey) {
@@ -420,9 +425,13 @@ function replaceRouteBlock(source, index, block) {
   return `${source.slice(0, blockStart)}${block}${comma}\n${source.slice(blockEnd)}`;
 }
 
-function routeBlock(index, points) {
+function legacyRouteBlock(index, points) {
   const spread = index ? `    ...CITY_CIRCUIT_IDENTITIES[${index}],\n` : "";
   return `  {\n${spread}    route: [\n${points.map((point) => `      { lat: ${point.lat}, lng: ${point.lng} }`).join(",\n")}\n    ]\n  }`;
+}
+
+function routeModuleBlock(points) {
+  return `export const route: Array<{ lat: number; lng: number }> = [\n${points.map((point) => `  { lat: ${point.lat}, lng: ${point.lng} }`).join(",\n")}\n];\n`;
 }
 
 function toSegments(points) {

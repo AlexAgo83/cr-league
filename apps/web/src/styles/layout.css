@@ -5689,7 +5689,7 @@ button.highlight-command:not(:disabled) {
   }
 
   .replay-moment-notification {
-    top: 50%;
+    top: 60%;
     transform: translate(-50%, -50%);
   }
 

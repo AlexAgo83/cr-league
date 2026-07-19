@@ -3053,6 +3053,24 @@ label small {
   min-width: 58px;
 }
 
+.championship-view .standings-score .reward-points {
+  color: #7c5200;
+}
+
+.championship-view .standings-score .reward-points .reward-icon {
+  background: rgb(124 82 0 / 0.12);
+  border-color: rgb(124 82 0 / 0.28);
+}
+
+.championship-view .standings-score .reward-credits {
+  color: #075985;
+}
+
+.championship-view .standings-score .reward-credits .reward-icon {
+  background: rgb(7 89 133 / 0.1);
+  border-color: rgb(7 89 133 / 0.26);
+}
+
 .palmares-list,
 .season-podium-list,
 .season-standings-list {

@@ -716,9 +716,11 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.queryByRole("button", { name: "Lap time" })).toBe(null);
     expect(screen.getByRole("button", { name: "Launch GP" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Launch GP" }).className).toContain("highlight-command");
 
     // Launch: Course becomes the race replay.
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
+    expect(document.querySelector(".race-phase-actions .primary-command")?.className).not.toContain("highlight-command");
     const launchDialog = screen.getByRole("dialog", { name: "Launch Grand Prix?" });
     expect(launchDialog.textContent).toContain("Starting grid");
     expect(launchDialog.textContent).toContain("P1");

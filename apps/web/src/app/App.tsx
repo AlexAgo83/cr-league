@@ -352,6 +352,7 @@ export function App() {
   const [qualifyingCommandClicked, setQualifyingCommandClicked] = useState(false);
   const [directiveCommandClicked, setDirectiveCommandClicked] = useState(false);
   const [chronoReportCommandClicked, setChronoReportCommandClicked] = useState(false);
+  const [launchGrandPrixCommandClicked, setLaunchGrandPrixCommandClicked] = useState(false);
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
@@ -517,6 +518,9 @@ export function App() {
             action: () => setNextGrandPrixConfirmOpen(true),
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
+  const primaryCommandClass = `primary-command${
+    (deskState === "prepare" && !directiveCommandClicked) || (deskState === "ready" && !launchGrandPrixCommandClicked) ? " highlight-command" : ""
+  }`;
   useEffect(() => {
     if (!leagueState || onboardingHelp) return;
     openOnboardingHelp("leagueIntro");
@@ -530,6 +534,7 @@ export function App() {
     setQualifyingCommandClicked(false);
     setDirectiveCommandClicked(false);
     setChronoReportCommandClicked(false);
+    setLaunchGrandPrixCommandClicked(false);
   }, [currentGrandPrixKey]);
 
   useEffect(() => {
@@ -651,6 +656,7 @@ export function App() {
   }
 
   function openResolveConfirm() {
+    setLaunchGrandPrixCommandClicked(true);
     setStartingGridExpanded(false);
     setResolveConfirmOpen(true);
   }
@@ -963,6 +969,7 @@ export function App() {
     setQualifyingCommandClicked(false);
     setDirectiveCommandClicked(false);
     setChronoReportCommandClicked(false);
+    setLaunchGrandPrixCommandClicked(false);
     setPreferencesResetSignal((signal) => signal + 1);
     setPreferencesResetOpen(false);
     setProfileOpen(false);
@@ -1648,7 +1655,7 @@ export function App() {
                         <button type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
                           {tt("action_qualifying")}
                         </button>
-                        <button type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                        <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
                           {primaryCommand.label}
                         </button>
                       </>
@@ -1766,7 +1773,7 @@ export function App() {
                           >
                             {tt("result_tab_report")}
                           </button>
-                          <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                          <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
                             {primaryCommand.label}
                           </button>
                         </div>
@@ -1801,7 +1808,7 @@ export function App() {
                                 {tt("action_qualifying_history")}
                               </button>
                               <button
-                                className={`primary-command${!directiveCommandClicked ? " highlight-command" : ""}`}
+                                className={primaryCommandClass}
                                 type="button"
                                 onClick={primaryCommand.action}
                                 disabled={primaryCommand.disabled}
@@ -1823,7 +1830,7 @@ export function App() {
                                   {tt("action_view_plan")}
                                 </button>
                               ) : null}
-                              <button className="primary-command" type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                              <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
                                 {primaryCommand.label}
                               </button>
                             </>

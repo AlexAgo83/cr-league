@@ -5677,14 +5677,15 @@ button.highlight-command:not(:disabled) {
   }
 
   .replay-overlay-stack {
-    bottom: auto;
+    bottom: 64px;
     right: 8px;
-    top: 116px;
+    top: auto;
     width: min(260px, calc(100% - 24px));
   }
 
   .map-screen .replay-map-panel .replay-overlay-stack {
-    top: 116px;
+    bottom: 64px;
+    top: auto;
   }
 
   .replay-moment-notification {
@@ -5706,12 +5707,12 @@ button.highlight-command:not(:disabled) {
   }
 
   .map-screen .replay-map-panel .replay-qualifying-times {
-    bottom: 100px;
-    left: 8px;
-    max-height: 132px;
-    max-width: none;
+    bottom: auto;
+    left: auto;
+    max-height: calc(100% - 132px);
+    max-width: 124px;
     right: 8px;
-    top: auto;
+    top: 116px;
   }
 
   .replay-director-panel,

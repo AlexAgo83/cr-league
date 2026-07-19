@@ -253,6 +253,12 @@ export function App() {
   const currentCircuit = leagueState
     ? circuitForRound(leagueState.currentGrandPrix.round, leagueState.league.id, leagueState.currentGrandPrix.season)
     : circuitForRound(1);
+  const qualifyingReplayCircuit = currentQualifyingResult
+    ? {
+        ...currentCircuit,
+        laps: Math.min(3, Math.max(1, ...currentQualifyingResult.result.events.map((event) => event.lap), currentQualifyingResult.lap ?? 1))
+      }
+    : currentCircuit;
   const currentGrandPrixKey = leagueState ? `${leagueState.league.id}:${leagueState.currentGrandPrix.season}:${leagueState.currentGrandPrix.round}` : "";
   const raceDayPhase =
     isResolved
@@ -447,7 +453,7 @@ export function App() {
           pitStrategy: form.pitStrategy,
           cardId: selectedCardId || undefined,
           traits: currentCircuit.traits,
-          laps: currentCircuit.laps
+          laps: 3
         })
       });
       setLeagueState(withCurrentPlayer(response.state));
@@ -1416,7 +1422,7 @@ export function App() {
                 <div className="qualifying-replay-inline drive-map-panel">
                   <ReplayView
                     result={currentQualifyingResult.result}
-                    circuit={currentCircuit}
+                    circuit={qualifyingReplayCircuit}
                     playerTeamId={playerTeam?.id}
                     teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
                     traitImpacts={directiveTraitImpacts}

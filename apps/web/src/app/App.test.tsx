@@ -220,7 +220,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     const cards = [...document.querySelectorAll(".card-inventory-button")].map((button) => button.textContent ?? "");
     expect(cards.map((text) => text.match(/Rain Grip|Soft Tires|Qualifying Lap|Defensive Order/)?.[0])).toEqual(["Rain Grip", "Soft Tires", "Qualifying Lap", "Defensive Order"]);
-    expect(cards.every((text) => text.includes("Sell for 60 credits"))).toBe(true);
+    expect(cards.every((text) => !text.includes("Sell for"))).toBe(true);
   });
 
   it("does not auto-select a card after buying one", async () => {
@@ -401,7 +401,7 @@ describe("App", () => {
     expect(screen.getByText("This attempt uses your current directive and the forecast conditions. Attempts left 3/3")).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "New lap time" }).at(-1)!);
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
-    expect(JSON.parse((fetch.mock.calls[1]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123" });
+    expect(JSON.parse((fetch.mock.calls[1]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123", laps: 3 });
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
     expect(screen.getByText("Relive this run lap by lap:", { exact: false })).toBeTruthy();
     expect(document.querySelector(".replay-overlay-actions")?.textContent).toContain("72.42s · Attempts left 2/3");
@@ -437,7 +437,7 @@ describe("App", () => {
     expect(document.querySelectorAll(".chrono-session-choice b").length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole("button", { name: "Review lap time" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
-    await waitFor(() => expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain(`Lap 2/${roundOneCircuit.laps}`));
+    await waitFor(() => expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/3"));
     expect(screen.getByRole("button", { name: "Chrono report" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Chrono report" }));
     expect(screen.getByRole("heading", { name: "Understand the lap time" })).toBeTruthy();

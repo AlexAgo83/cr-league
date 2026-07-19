@@ -5942,6 +5942,68 @@ button.highlight-command:not(:disabled) {
   background: linear-gradient(90deg, rgb(236 231 218 / 0.9), color-mix(in srgb, var(--color-accent) 18%, rgb(236 231 218 / 0.72)));
 }
 
+.garage-panel-inventory,
+.garage-panel-shop {
+  --garage-card-accent: #b45309;
+}
+
+.garage-panel-inventory .card-inventory li,
+.garage-panel-shop .card-shop button {
+  background: rgb(236 231 218 / 0.98);
+  border-color: color-mix(in srgb, var(--garage-card-accent) 36%, transparent);
+  border-left: 6px solid var(--garage-card-accent);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  overflow: hidden;
+  position: relative;
+}
+
+.garage-panel-inventory .card-inventory li:first-child {
+  border-top-color: color-mix(in srgb, var(--garage-card-accent) 36%, transparent);
+}
+
+.garage-panel-inventory .card-inventory-button,
+.garage-panel-shop .card-shop button {
+  min-height: 84px;
+  padding: 11px 42px 11px 11px;
+}
+
+.garage-panel-inventory .card-inventory-button:not(:disabled):hover,
+.garage-panel-inventory .card-inventory-button:not(:disabled):focus-visible,
+.garage-panel-shop .card-shop button:not(:disabled):hover,
+.garage-panel-shop .card-shop button:not(:disabled):focus-visible {
+  border-color: var(--garage-card-accent);
+  box-shadow: inset 0 0 0 1px var(--garage-card-accent);
+}
+
+.garage-panel-inventory .card-inventory-button strong,
+.garage-panel-shop .card-shop button strong {
+  align-items: center;
+  background: color-mix(in srgb, var(--garage-card-accent) 12%, rgb(236 231 218));
+  border: 2px solid color-mix(in srgb, var(--garage-card-accent) 42%, transparent);
+  border-radius: 999px;
+  color: var(--color-ink);
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 22px;
+  min-width: 22px;
+}
+
+.garage-panel-shop .card-shop button strong {
+  font-size: 0.82rem;
+  grid-column: auto;
+  grid-row: auto;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.garage-panel-inventory .card-inventory-button small,
+.garage-panel-shop .card-shop button small {
+  color: rgb(23 21 26 / 0.78);
+}
+
 .plan-view .directive-choice-group .choice-card {
   --choice-check-size: 18px;
   background: rgb(236 231 218 / 0.98);
@@ -6009,6 +6071,15 @@ button.highlight-command:not(:disabled) {
 
 .card-inventory-button > strong {
   position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.garage-panel-inventory .card-inventory-button {
+  padding: 11px 42px 11px 11px;
+}
+
+.garage-panel-inventory .card-inventory-button > strong {
   right: 10px;
   top: 10px;
 }

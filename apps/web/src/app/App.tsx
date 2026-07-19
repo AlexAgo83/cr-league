@@ -14,6 +14,7 @@ import { GARAGE_PANEL_KEY, GarageView } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
 import { Modal } from "../features/Modal.js";
 import { ModalHero } from "../features/ModalHero.js";
+import { MapPlanPanel } from "../features/MapPlanPanel.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { PlanView } from "../features/PlanView.js";
 import { PositionBadge } from "../features/PositionBadge.js";
@@ -247,6 +248,9 @@ export function App() {
   const replayTraitImpacts = playerDecision
     ? traitImpacts({ ...form, approach: playerDecision.approach, preparation: playerDecision.preparation, pitStrategy: playerDecision.pitStrategy ?? "standard" }, playerDecision.cardId ?? "", tt)
     : directiveTraitImpacts;
+  const mapPlan = playerDecision
+    ? { approach: playerDecision.approach, preparation: playerDecision.preparation, pitStrategy: playerDecision.pitStrategy ?? "standard", cardId: playerDecision.cardId ?? undefined }
+    : { approach: form.approach, preparation: form.preparation, pitStrategy: form.pitStrategy, cardId: selectedCardId || undefined };
   const playerResult = result?.classification.find((entry) => entry.teamId === playerTeam?.id);
   const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
@@ -1426,6 +1430,7 @@ export function App() {
                     playerTeamId={playerTeam?.id}
                     teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
                     traitImpacts={directiveTraitImpacts}
+                    planDecision={currentQualifyingResult.decision}
                     towerEntries={qualifyingReplayEntries}
                     towerReplacement={
                       <div className="map-qualifying-times replay-qualifying-times">
@@ -1505,6 +1510,7 @@ export function App() {
                             <span>{tt(`weather_${forecastPick}` as TranslationKey)}</span>
                           </small>
                         </div>
+                        <MapPlanPanel decision={mapPlan} tt={tt} />
                         <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />
                       </div>
                       <div className="map-workflow-panel">

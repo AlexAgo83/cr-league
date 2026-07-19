@@ -2163,12 +2163,88 @@ label small {
   z-index: 4;
 }
 
+.map-info-stack > .map-plan-panel {
+  background: rgb(16 14 18 / 0.8);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  bottom: 138px;
+  display: grid;
+  gap: 5px;
+  grid-template-columns: repeat(2, minmax(88px, 1fr));
+  left: 12px;
+  max-width: 260px;
+  padding: 9px 10px;
+  position: absolute;
+  z-index: 4;
+}
+
+.map-plan-panel > strong {
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  grid-column: 1 / -1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.map-plan-panel span {
+  border-left: 3px solid var(--map-plan-accent, var(--color-accent));
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+  padding-left: 6px;
+}
+
+.map-plan-approach {
+  --map-plan-accent: #ff4d00;
+}
+
+.map-plan-preparation {
+  --map-plan-accent: #0284c7;
+}
+
+.map-plan-pit {
+  --map-plan-accent: #8b5cf6;
+}
+
+.map-plan-card {
+  --map-plan-accent: #b45309;
+}
+
+.map-plan-panel b,
+.map-plan-panel em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-plan-panel b {
+  color: var(--color-muted);
+  font-size: 0.58rem;
+  text-transform: uppercase;
+}
+
+.map-plan-panel em {
+  color: color-mix(in srgb, var(--map-plan-accent, var(--color-accent)) 76%, var(--color-text));
+  font-size: 0.76rem;
+  font-style: normal;
+  font-weight: 800;
+}
+
 .drive-map-panel .map-info-stack > .map-traits-panel {
   bottom: 62px;
 }
 
+.drive-map-panel .map-info-stack > .map-plan-panel {
+  bottom: 188px;
+}
+
 .replay-map-panel .map-info-stack > .map-traits-panel {
   bottom: 64px;
+}
+
+.replay-map-panel .map-info-stack > .map-plan-panel {
+  bottom: 190px;
 }
 
 .map-status strong {
@@ -5555,11 +5631,16 @@ button.highlight-command:not(:disabled) {
   }
 
   .map-info-stack > .map-status,
+  .map-info-stack > .map-plan-panel,
   .map-info-stack > .map-traits-panel {
     bottom: auto;
     left: auto;
     position: static;
     top: auto;
+  }
+
+  .map-info-stack > .map-plan-panel {
+    display: none;
   }
 
   .map-status .circuit-city {

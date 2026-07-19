@@ -345,6 +345,7 @@ describe("App", () => {
     expect(document.querySelector(".command-bar")).toBe(null);
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(document.querySelector(".map-workflow-panel")?.textContent).toContain("1. Read the circuit");
+    expect(document.querySelector(".map-plan-panel")?.textContent).toContain("Current planApproachBal.Tire prepWeatherPit strategyStd.CardNo card");
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
     const roundOneCircuit = testCircuit(1);
     expect(screen.getAllByText(t(roundOneCircuit.layoutKey, "en")).length).toBeGreaterThan(0);
@@ -530,6 +531,7 @@ describe("App", () => {
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Volt Union");
+    expect(document.querySelector(".replay-map-panel .map-plan-panel")?.textContent).toContain("Current plan");
 
     // Timeline markers carry the key moments and seek on click
     expect(document.querySelectorAll(".replay-tick").length).toBe(7);

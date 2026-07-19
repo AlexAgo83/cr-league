@@ -1,10 +1,11 @@
-import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
+import { RACE_SEGMENTS, type RaceDecision, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
 import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
 import type { RaceEvent } from "../app/helpers.js";
 import { CircuitMap, MapTraitsPanel, circuitDisplayLength, circuitRouteAnalysis, type MapCar, type MapTraitImpacts, type MapTraitStats } from "./CircuitMap.js";
+import { MapPlanPanel } from "./MapPlanPanel.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { CountryBadge, VisualIcon, type VisualIconName } from "./VisualIcon.js";
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
@@ -588,6 +589,7 @@ export function ReplayView({
   closeLabel,
   overlayActions,
   towerReplacement,
+  planDecision,
   tt
 }: {
   result: RaceResult;
@@ -606,6 +608,7 @@ export function ReplayView({
   closeLabel?: string;
   overlayActions?: ReactNode;
   towerReplacement?: ReactNode;
+  planDecision?: RaceDecision;
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -840,6 +843,7 @@ export function ReplayView({
                     </small>
                     <small>{circuitDistance}</small>
                   </div>
+                  <MapPlanPanel decision={planDecision} tt={tt} />
                   <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, live.lap)} impacts={traitImpacts} tt={tt} />
                 </div>
                 {activeMoment && activeMomentCard ? (

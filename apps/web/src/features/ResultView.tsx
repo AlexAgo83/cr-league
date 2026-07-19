@@ -90,6 +90,7 @@ export function ResultView({
             playerTeamId={playerTeamId}
             teamLiveries={teamLiveries}
             traitImpacts={traitImpacts}
+            planDecision={playerDecision ? { ...playerDecision, cardId: playerDecision.cardId ?? undefined } : undefined}
             preferencesResetSignal={preferencesResetSignal}
             showIntro={showReplayIntro}
             onClose={onClose}

@@ -32,11 +32,10 @@ const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
 };
 const REPLAY_TRACE_STEPS_PER_SEGMENT = 20;
 const GRID_GAP_SECONDS = 0.25;
-const PIT_TRACE_WINDOW = 0.38;
-const PIT_TRACE_TEAM_STAGGER = 0.035;
 const DEFAULT_TRACK_LENGTH_METERS = 3200;
 const TRACE_ORDER_MARGIN = 0.006;
-const MAX_TRACE_CAR_PROGRESS_STEP = 0.02;
+const PIT_ENTRY_SECONDS = 1.2;
+const PIT_EXIT_SECONDS = 1.2;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -61,6 +60,23 @@ type InternalScores = {
   score: number;
 };
 
+type TraceSegmentSnapshot = {
+  segment: RaceSegment;
+  pitCosts: Map<string, number>;
+};
+
+type PitStopTracePlan = {
+  targetProgress: number;
+  cost: number;
+};
+
+type TeamTracePlan = {
+  teamId: string;
+  finalTime: number;
+  movingTime: number;
+  pitStops: PitStopTracePlan[];
+};
+
 export function simulateRace(input: RaceInput): RaceResult {
   if (input.participants.length < 2) {
     throw new Error("A race needs at least two participants.");
@@ -71,14 +87,15 @@ export function simulateRace(input: RaceInput): RaceResult {
   const states = input.participants.map(createTeamState);
   const events: RaceEvent[] = [];
   const trackLengthMeters = normalizeTrackLengthMeters(input.trackLengthMeters);
-  const replayTrace: ReplayTracePoint[] = [createReplayTracePoint("start", 0, states, undefined, trackLengthMeters)];
+  const laps = normalizeLaps(input.laps);
+  const pitLaneProgress = normalizePitLaneProgress(input.pitLaneProgress);
+  const traceSegments: TraceSegmentSnapshot[] = [];
 
-  for (const [index, segment] of RACE_SEGMENTS.entries()) {
+  for (const segment of RACE_SEGMENTS) {
     if (segment !== "start" && weather[segment] !== weather[previousSegment(segment)]) {
       events.push(createWeatherEvent(events.length, segment, weather[segment], states[0]?.participant.teamId ?? ""));
     }
 
-    const beforeTimes = new Map(states.map((state) => [state.participant.teamId, state.elapsedTime]));
     const pitCosts = new Map<string, number>();
     for (const state of states) {
       applySegment(state, segment, weather[segment], input, prng.next);
@@ -89,12 +106,13 @@ export function simulateRace(input: RaceInput): RaceResult {
     }
 
     maybeAddFlavorEvent(segment, weather[segment], input, states, events, prng.next);
-    replayTrace.push(...createReplayTraceSteps(segment, index, states, beforeTimes, pitCosts, trackLengthMeters, replayTrace.at(-1)));
+    traceSegments.push({ segment, pitCosts });
   }
 
   const classification = classify(states);
   addFinishEvents(events, classification);
-  const annotatedReplayTrace = annotateReplayOvertakes(stabilizeReplayTraceOrders(replayTrace));
+  const distanceReplayTrace = createDistanceReplayTrace(states, traceSegments, trackLengthMeters, laps, pitLaneProgress);
+  const annotatedReplayTrace = annotateReplayOvertakes(stabilizeReplayTraceOrders(distanceReplayTrace));
   const replayEvents = withTraceEventProgress(events, annotatedReplayTrace);
 
   return {
@@ -185,15 +203,27 @@ function buildReplayDirectorBeats(
 
 function withTraceEventProgress(events: RaceEvent[], trace: ReplayTracePoint[]) {
   return events.map((event) => {
-    const progress = event.type === "pit_stop" ? pitStopTraceProgressForTeam(trace, event.teamId, event.segment) : eventTraceProgress(trace, event);
+    const progress = event.type === "pit_stop" ? pitStopTraceProgressForTeam(trace, event) : eventTraceProgress(trace, event);
     return progress === undefined ? event : { ...event, traceProgress: progress };
   });
 }
 
-function pitStopTraceProgressForTeam(trace: ReplayTracePoint[], teamId: string, segment: RaceSegment) {
-  const pitPoints = trace.filter((point) => point.segment === segment && point.cars?.[teamId]?.phase === "pit_stop");
+function pitStopTraceProgressForTeam(trace: ReplayTracePoint[], event: RaceEvent) {
+  const pitPoints = trace.filter((point) => point.cars?.[event.teamId]?.phase === "pit_stop");
   if (!pitPoints.length) return undefined;
-  return Number((pitPoints.reduce((sum, point) => sum + point.progress, 0) / pitPoints.length).toFixed(4));
+  const target = eventTraceProgress(trace, event);
+  const groups = pitPoints.reduce<ReplayTracePoint[][]>((all, point) => {
+    const current = all.at(-1);
+    if (!current?.length || point.progress - current.at(-1)!.progress > 0.03) all.push([point]);
+    else current.push(point);
+    return all;
+  }, []);
+  const closest = groups.sort((left, right) => Math.abs(averageProgress(left) - target) - Math.abs(averageProgress(right) - target))[0] ?? pitPoints;
+  return Number(averageProgress(closest).toFixed(4));
+}
+
+function averageProgress(points: ReplayTracePoint[]) {
+  return points.reduce((sum, point) => sum + point.progress, 0) / Math.max(1, points.length);
 }
 
 function eventTraceProgress(trace: ReplayTracePoint[], event: RaceEvent) {
@@ -207,98 +237,95 @@ function eventTraceProgress(trace: ReplayTracePoint[], event: RaceEvent) {
   return Number((point?.progress ?? Math.max(0, Math.min(1, target))).toFixed(4));
 }
 
-function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, states: TeamState[], beforeTimes: Map<string, number>, pitCosts = new Map<string, number>(), trackLengthMeters: number, previousPoint?: ReplayTracePoint): ReplayTracePoint[] {
-  const points = Array.from({ length: REPLAY_TRACE_STEPS_PER_SEGMENT }, (_, index) => {
-    const ratio = (index + 1) / REPLAY_TRACE_STEPS_PER_SEGMENT;
-    const progress = (segmentIndex + ratio) / RACE_SEGMENTS.length;
-    const times = new Map(
-      states.map((state) => {
-        const before = beforeTimes.get(state.participant.teamId) ?? state.elapsedTime;
-        const pitCost = pitCosts.get(state.participant.teamId) ?? 0;
-        const movingDelta = state.elapsedTime - before - pitCost;
-        return [state.participant.teamId, before + movingDelta * ratio + pitCost * pitTraceRatio(segment, ratio, pitTraceOffset(state.participant.teamId, pitCosts))];
-      })
-    );
-    const point = createReplayTracePoint(segment, progress, states, times, trackLengthMeters);
-    return {
-      ...point,
-      cars: Object.fromEntries(
-        states.map((state) => {
-          const teamId = state.participant.teamId;
-          const offset = pitTraceOffset(teamId, pitCosts);
-          const phase = progress >= 1 ? "finished" : pitTracePhase(segment, ratio, offset, pitCosts.has(teamId));
-          const trackProgress = replayCarTrackProgress(segmentIndex, segment, ratio, progress, phase, point.gaps[teamId] ?? 0, offset);
-          return [teamId, { trackProgress, distanceMeters: Number((trackProgress * trackLengthMeters).toFixed(1)), speed: replayCarSpeed(phase), phase }];
-        })
-      )
-    };
-  });
+function createDistanceReplayTrace(states: TeamState[], snapshots: TraceSegmentSnapshot[], trackLengthMeters: number, laps: number, pitLaneProgress: number): ReplayTracePoint[] {
+  const plans = new Map(states.map((state) => [state.participant.teamId, teamTracePlan(state, snapshots, laps, pitLaneProgress)]));
+  const raceDuration = Math.max(...states.map((state) => state.elapsedTime));
+  const points: ReplayTracePoint[] = [createReplayTracePoint("start", 0, states, undefined, trackLengthMeters)];
 
-  for (const state of states) {
-    const teamId = state.participant.teamId;
-    let lastProgress = previousPoint?.cars?.[teamId]?.trackProgress ?? segmentIndex / RACE_SEGMENTS.length;
-    for (const point of points) {
-      const car = point.cars?.[teamId];
-      if (!car) continue;
-      car.trackProgress = Math.min(Math.max(lastProgress, car.trackProgress), lastProgress + MAX_TRACE_CAR_PROGRESS_STEP);
-      car.distanceMeters = Number((car.trackProgress * trackLengthMeters).toFixed(1));
-      if (car.trackProgress < 0) {
-        car.phase = "grid";
-        car.speed = replayCarSpeed("grid");
-      }
-      lastProgress = car.trackProgress;
+  for (const [segmentIndex, segment] of RACE_SEGMENTS.entries()) {
+    for (let step = 1; step <= REPLAY_TRACE_STEPS_PER_SEGMENT; step += 1) {
+      const ratio = step / REPLAY_TRACE_STEPS_PER_SEGMENT;
+      const progress = (segmentIndex + ratio) / RACE_SEGMENTS.length;
+      const raceTime = raceDuration * progress;
+      const cars = Object.fromEntries(
+        states.map((state) => {
+          const car = carAtRaceTime(plans.get(state.participant.teamId)!, raceTime);
+          const phase = progress >= 1 ? "finished" : car.phase;
+          return [
+            state.participant.teamId,
+            {
+              trackProgress: progress >= 1 ? 1 : Number(car.progress.toFixed(4)),
+              distanceMeters: Number(((progress >= 1 ? 1 : car.progress) * trackLengthMeters).toFixed(1)),
+              speed: replayCarSpeed(phase),
+              phase
+            }
+          ];
+        })
+      );
+      const order = progress >= 1
+        ? states.slice().sort((left, right) => left.elapsedTime - right.elapsedTime || right.scores.score - left.scores.score).map((state) => state.participant.teamId)
+        : orderFromCars(cars, states);
+      const leaderProgress = Math.max(...Object.values(cars).map((car) => car.trackProgress));
+      points.push({
+        segment,
+        lap: lapForProgress(progress, laps),
+        progress,
+        distanceMeters: Number((progress * trackLengthMeters).toFixed(1)),
+        order,
+        times: Object.fromEntries(states.map((state) => [state.participant.teamId, progress >= 1 ? Number(state.elapsedTime.toFixed(1)) : Number(raceTime.toFixed(1))])),
+        gaps: Object.fromEntries(states.map((state) => [state.participant.teamId, Number(Math.max(0, (leaderProgress - (cars[state.participant.teamId]?.trackProgress ?? 0)) * raceDuration).toFixed(1))])),
+        cars
+      });
     }
   }
 
-  return points.map((point) => ({ ...point, order: orderFromTraceCars(point, states) }));
+  return points;
 }
 
-function pitTraceRatio(segment: RaceSegment, ratio: number, offset = 0) {
-  const center: Partial<Record<RaceSegment, number>> = { early: 0.38, mid: 0.5, late: 0.62 };
-  const pitCenter = center[segment];
-  if (pitCenter === undefined) return ratio;
-  return Math.max(0, Math.min(1, (ratio - (pitCenter + offset - PIT_TRACE_WINDOW / 2)) / PIT_TRACE_WINDOW));
+function teamTracePlan(state: TeamState, snapshots: TraceSegmentSnapshot[], laps: number, pitLaneProgress: number): TeamTracePlan {
+  const pitStops = snapshots.flatMap((snapshot, segmentIndex) => {
+    const cost = snapshot.pitCosts.get(state.participant.teamId);
+    return cost
+      ? [{ cost, targetProgress: pitLaneTrackProgress(segmentIndex, snapshot.segment, laps, pitLaneProgress) }]
+      : [];
+  }).sort((left, right) => left.targetProgress - right.targetProgress);
+  const movingTime = Math.max(1, state.elapsedTime - pitStops.reduce((sum, stop) => sum + stop.cost, 0));
+  return { teamId: state.participant.teamId, finalTime: state.elapsedTime, movingTime, pitStops };
 }
 
-function pitTraceOffset(teamId: string, pitCosts: Map<string, number>) {
-  const pitTeamIds = [...pitCosts.keys()].sort();
-  const index = pitTeamIds.indexOf(teamId);
-  return index < 0 ? 0 : (index - (pitTeamIds.length - 1) / 2) * PIT_TRACE_TEAM_STAGGER;
+function carAtRaceTime(plan: TeamTracePlan, raceTime: number): { progress: number; phase: NonNullable<ReplayTracePoint["cars"]>[string]["phase"] } {
+  let time = 0;
+  let progress = 0;
+  for (const stop of plan.pitStops) {
+    const travelTime = Math.max(0, stop.targetProgress - progress) * plan.movingTime;
+    const arrival = time + travelTime;
+    if (raceTime < arrival) {
+      return {
+        progress: progress + Math.max(0, raceTime - time) / plan.movingTime,
+        phase: arrival - raceTime <= PIT_ENTRY_SECONDS ? "pit_entry" : "racing"
+      };
+    }
+    const departure = arrival + stop.cost;
+    if (raceTime <= departure) {
+      const phase = raceTime < arrival + PIT_ENTRY_SECONDS ? "pit_entry" : departure - raceTime <= PIT_EXIT_SECONDS ? "pit_exit" : "pit_stop";
+      return { progress: stop.targetProgress, phase };
+    }
+    time = departure;
+    progress = stop.targetProgress;
+  }
+  if (raceTime >= plan.finalTime) return { progress: 1, phase: "finished" };
+  return { progress: Math.min(1, progress + Math.max(0, raceTime - time) / plan.movingTime), phase: "racing" };
 }
 
-function pitTracePhase(segment: RaceSegment, ratio: number, offset: number, stopped: boolean): NonNullable<ReplayTracePoint["cars"]>[string]["phase"] {
-  if (!stopped) return "racing";
-  const center: Partial<Record<RaceSegment, number>> = { early: 0.38, mid: 0.5, late: 0.62 };
-  const pitCenter = center[segment];
-  if (pitCenter === undefined) return "racing";
-  const start = pitCenter + offset - PIT_TRACE_WINDOW / 2;
-  const end = pitCenter + offset + PIT_TRACE_WINDOW / 2;
-  if (ratio < start || ratio > end) return "racing";
-  const local = (ratio - start) / (end - start || 1);
-  if (local < 0.34) return "pit_entry";
-  if (local < 0.67) return "pit_stop";
-  return "pit_exit";
-}
-
-function replayCarTrackProgress(segmentIndex: number, segment: RaceSegment, ratio: number, phaseProgress: number, phase: NonNullable<ReplayTracePoint["cars"]>[string]["phase"], gapSeconds: number, offset: number) {
-  const lag = Math.min(0.12, gapSeconds / 180);
-  if (!phase.startsWith("pit")) return Number(Math.max(0, Math.min(1, phaseProgress - lag)).toFixed(4));
-  const center: Partial<Record<RaceSegment, number>> = { early: 0.38, mid: 0.5, late: 0.62 };
-  const pitCenter = center[segment] ?? 0.5;
-  const startRatio = pitCenter + offset - PIT_TRACE_WINDOW / 2;
-  const endRatio = pitCenter + offset + PIT_TRACE_WINDOW / 2;
-  const local = Math.max(0, Math.min(1, (ratio - startRatio) / (endRatio - startRatio || 1)));
-  const pitProgress = pitLaneProgress(segmentIndex, segment, offset);
-  const entryProgress = (segmentIndex + startRatio) / RACE_SEGMENTS.length - lag;
-  const exitProgress = (segmentIndex + endRatio) / RACE_SEGMENTS.length - lag;
-  const ease = (value: number) => value * value * (3 - 2 * value);
-  const trackProgress =
-    local < 0.34
-      ? entryProgress + (pitProgress - entryProgress) * ease(local / 0.34)
-      : local < 0.67
-        ? pitProgress
-        : pitProgress + (exitProgress - pitProgress) * ease((local - 0.67) / 0.33);
-  return Number(Math.max(0, Math.min(1, trackProgress)).toFixed(4));
+function orderFromCars(cars: ReplayTracePoint["cars"], states: TeamState[]) {
+  return [...states]
+    .sort(
+      (left, right) =>
+        (cars?.[right.participant.teamId]?.trackProgress ?? 0) - (cars?.[left.participant.teamId]?.trackProgress ?? 0) ||
+        (cars?.[right.participant.teamId]?.speed ?? 0) - (cars?.[left.participant.teamId]?.speed ?? 0) ||
+        right.scores.score - left.scores.score
+    )
+    .map((state) => state.participant.teamId);
 }
 
 function replayCarSpeed(phase: NonNullable<ReplayTracePoint["cars"]>[string]["phase"]) {
@@ -309,13 +336,23 @@ function replayCarSpeed(phase: NonNullable<ReplayTracePoint["cars"]>[string]["ph
   return 1;
 }
 
-function pitLaneProgress(segmentIndex: number, segment: RaceSegment, offset: number) {
+function pitLaneTrackProgress(segmentIndex: number, segment: RaceSegment, laps: number, pitLaneProgress: number) {
   const center: Partial<Record<RaceSegment, number>> = { early: 0.38, mid: 0.5, late: 0.62 };
-  return (segmentIndex + (center[segment] ?? 0.5) + offset) / RACE_SEGMENTS.length;
+  const raceProgress = (segmentIndex + (center[segment] ?? 0.5)) / RACE_SEGMENTS.length;
+  const lapIndex = Math.min(laps - 1, Math.max(0, Math.ceil(raceProgress * laps) - 1));
+  return (lapIndex + pitLaneProgress) / laps;
 }
 
 function normalizeTrackLengthMeters(value: number | undefined) {
   return typeof value === "number" && Number.isFinite(value) ? Math.max(1200, Math.min(8000, Math.round(value))) : DEFAULT_TRACK_LENGTH_METERS;
+}
+
+function normalizeLaps(value: number | undefined) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(1, Math.min(99, Math.round(value))) : 10;
+}
+
+function normalizePitLaneProgress(value: number | undefined) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.min(0.999, value)) : 0.5;
 }
 
 function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], elapsedTimes?: Map<string, number>, trackLengthMeters = DEFAULT_TRACK_LENGTH_METERS): ReplayTracePoint {
@@ -352,18 +389,6 @@ function createReplayTracePoint(segment: RaceSegment, progress: number, states: 
         }))
       : undefined
   };
-}
-
-function orderFromTraceCars(point: ReplayTracePoint, states: TeamState[]) {
-  if (!point.cars || point.progress >= 1) return point.order;
-  return [...states]
-    .sort(
-      (left, right) =>
-        (point.cars?.[right.participant.teamId]?.trackProgress ?? 0) - (point.cars?.[left.participant.teamId]?.trackProgress ?? 0) ||
-        (point.times[left.participant.teamId] ?? 999) - (point.times[right.participant.teamId] ?? 999) ||
-        right.scores.score - left.scores.score
-    )
-    .map((state) => state.participant.teamId);
 }
 
 function annotateReplayOvertakes(trace: ReplayTracePoint[]) {
@@ -940,6 +965,10 @@ function lapForSegment(segment: RaceSegment) {
   };
 
   return laps[segment];
+}
+
+function lapForProgress(progress: number, laps: number) {
+  return Math.max(1, Math.min(laps, Math.round(1 + Math.max(0, Math.min(1, progress)) * (laps - 1))));
 }
 
 function weatherLabel(weather: Weather) {

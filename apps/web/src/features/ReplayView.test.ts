@@ -3,7 +3,6 @@ import type { RaceEvent, RaceResult, ReplayTracePoint } from "@cr-league/shared"
 import {
   carProgressAtRaceTime,
   carProgressAtTrace,
-  alignPitProgressToCircuit,
   applyGridStart,
   buildReplayPlan,
   buildRaceDirectorBeats,
@@ -285,13 +284,6 @@ describe("ReplayView timing", () => {
     expect(pitStopTraceProgress(result, trace, { ...leader, traceProgress: 0.37 }, 10, 5, 0.25)).toBe(0.37);
     expect(pitStopTraceProgress(result, trace, leader, 10, 5, 0.25)).toBeCloseTo(0.45);
     expect(pitStopTraceProgress(result, trace, last, 10, 5, 0.25)).toBeGreaterThan(pitStopTraceProgress(result, trace, leader, 10, 5, 0.25));
-  });
-
-  it("aligns visual pit stops to the circuit pit lane", () => {
-    const resultWithPit: RaceResult = { ...result, events: [{ ...resultWithEvent("leader", 1), traceProgress: 0.5 }] };
-
-    expect(alignPitProgressToCircuit(resultWithPit, { leader: 6.5 }, 0.5, 13, 0.92).leader).toBeCloseTo(5.92);
-    expect(alignPitProgressToCircuit(resultWithPit, { leader: 5.4 }, 0.4, 13, 0.92).leader).toBeCloseTo(5.4);
   });
 
   it("uses event trace progress before lap fallback", () => {

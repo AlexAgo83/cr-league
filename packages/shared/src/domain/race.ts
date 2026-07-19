@@ -80,6 +80,8 @@ export type RaceInput = {
   secondaryTrait: CircuitTrait;
   traits?: RaceTraits;
   trackLengthMeters?: number;
+  laps?: number;
+  pitLaneProgress?: number;
   forecast: WeatherForecast;
   participants: RaceParticipant[];
 };

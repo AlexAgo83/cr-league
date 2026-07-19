@@ -8,7 +8,7 @@ import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js
 import { AssetImage } from "../features/AssetImage.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, ChampionshipView } from "../features/ChampionshipView.js";
 import { ChangelogView } from "../features/ChangelogView.js";
-import { CircuitMap, MapTraitsPanel } from "../features/CircuitMap.js";
+import { CircuitMap, MapTraitsPanel, circuitRouteAnalysis } from "../features/CircuitMap.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { GARAGE_PANEL_KEY, GarageView } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
@@ -511,7 +511,9 @@ export function App() {
           claimCode: leagueState.player?.claimCode,
           allowDefaults: !playerDecision,
           traits: currentCircuit.traits,
-          trackLengthMeters: currentCircuit.trackLengthMeters
+          trackLengthMeters: currentCircuit.trackLengthMeters,
+          laps: currentCircuit.laps,
+          pitLaneProgress: currentPitLaneProgress()
         })
       });
       setLeagueState(withCurrentPlayer(state));
@@ -520,6 +522,11 @@ export function App() {
       setResultOpen(true);
       pushCommandHint("resolved");
     });
+  }
+
+  function currentPitLaneProgress() {
+    const analysis = circuitRouteAnalysis(currentCircuit);
+    return (((analysis.pitProgress - analysis.startProgress) % 1) + 1) % 1;
   }
 
   async function startNextGrandPrix() {

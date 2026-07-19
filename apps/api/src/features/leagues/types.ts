@@ -118,6 +118,8 @@ export type ResolveGrandPrixInput = {
   allowDefaults?: boolean;
   traits?: unknown;
   trackLengthMeters?: unknown;
+  laps?: unknown;
+  pitLaneProgress?: unknown;
 };
 
 export type UpdateTeamLiveryInput = {

@@ -53,6 +53,7 @@ import type {
 import {
   appendCard,
   clampInteger,
+  clampNumber,
   createClaimCode,
   createLeagueCode,
   createRecoveryCode,
@@ -624,6 +625,8 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
       secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
       traits: normalizeRaceTraits(input.traits),
       trackLengthMeters: clampInteger(input.trackLengthMeters, circuit.trackLengthMeters, 1200, 8000),
+      laps: clampInteger(input.laps, circuit.laps, 1, 99),
+      pitLaneProgress: clampNumber(input.pitLaneProgress, 0.5, 0, 0.999),
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
       participants
     });

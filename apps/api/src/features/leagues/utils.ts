@@ -33,6 +33,10 @@ export function clampInteger(value: unknown, fallback: number, min: number, max:
   return typeof value === "number" && Number.isFinite(value) ? Math.max(min, Math.min(max, Math.round(value))) : fallback;
 }
 
+export function clampNumber(value: unknown, fallback: number, min: number, max: number) {
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(min, Math.min(max, value)) : fallback;
+}
+
 export function createLeagueCode() {
   return randomBytes(4).toString("hex").slice(0, 6).toUpperCase();
 }

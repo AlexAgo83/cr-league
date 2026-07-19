@@ -367,13 +367,15 @@ function isDecisionBody(value: unknown): value is Parameters<typeof submitDecisi
   );
 }
 
-function isAdminBody(value: unknown): value is { teamId: string; claimCode: string; allowDefaults?: boolean; traits?: unknown } {
+function isAdminBody(value: unknown): value is { teamId: string; claimCode: string; allowDefaults?: boolean; traits?: unknown; laps?: unknown; pitLaneProgress?: unknown } {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Record<string, unknown>;
   return (
     typeof candidate.teamId === "string" &&
     typeof candidate.claimCode === "string" &&
-    (candidate.allowDefaults === undefined || typeof candidate.allowDefaults === "boolean")
+    (candidate.allowDefaults === undefined || typeof candidate.allowDefaults === "boolean") &&
+    (candidate.laps === undefined || typeof candidate.laps === "number") &&
+    (candidate.pitLaneProgress === undefined || typeof candidate.pitLaneProgress === "number")
   );
 }
 

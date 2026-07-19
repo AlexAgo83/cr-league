@@ -20,8 +20,6 @@ const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
 const GRID_START_PROGRESS = 0.1;
-const PIT_VISUAL_WINDOW = 0.085;
-const PIT_VISUAL_HOLD = 0.018;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
@@ -108,27 +106,6 @@ function liveTraits(base: MapTraitStats, weather: Weather, lap: number): MapTrai
     overtaking: clampStat(base.overtaking + (weather === "dry" ? 0 : 3)),
     energy: clampStat(base.energy - lateRace * 2 - (weather === "heavy_rain" ? 5 : 0))
   };
-}
-
-function fallbackReplayTrace(result: RaceResult): ReplayTracePoint[] {
-  return [
-    {
-      segment: "start",
-      lap: 1,
-      progress: 0,
-      order: [...result.classification].sort((left, right) => left.position + left.positionChange - (right.position + right.positionChange)).map((entry) => entry.teamId),
-      times: Object.fromEntries(result.classification.map((entry) => [entry.teamId, Math.max(0, entry.position + entry.positionChange - 1)])),
-      gaps: Object.fromEntries(result.classification.map((entry) => [entry.teamId, Math.max(0, entry.position + entry.positionChange - 1)]))
-    },
-    {
-      segment: "finish",
-      lap: 5,
-      progress: 1,
-      order: result.classification.map((entry) => entry.teamId),
-      times: Object.fromEntries(result.classification.map((entry, index) => [entry.teamId, index])),
-      gaps: Object.fromEntries(result.classification.map((entry, index) => [entry.teamId, index]))
-    }
-  ];
 }
 
 function tracePointAt(trace: ReplayTracePoint[], progress: number) {
@@ -368,29 +345,6 @@ export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[]
   );
 }
 
-export function alignPitProgressToCircuit(result: RaceResult, carProgress: Record<string, number>, progress: number, laps: number, pitLapProgress: number) {
-  const aligned = { ...carProgress };
-  for (const event of result.events.filter((candidate) => candidate.type === "pit_stop" && typeof candidate.traceProgress === "number")) {
-    const center = event.traceProgress!;
-    if (progress < center - PIT_VISUAL_WINDOW || progress > center + PIT_VISUAL_WINDOW) continue;
-    const base = carProgress[event.teamId];
-    if (base === undefined) continue;
-    const pitLap = Math.floor(Math.max(0, (center - PIT_VISUAL_WINDOW) * laps)) + pitLapProgress;
-    const ease = (value: number) => value * value * (3 - 2 * value);
-    const delta = progress - center;
-    if (Math.abs(delta) <= PIT_VISUAL_HOLD) {
-      aligned[event.teamId] = pitLap;
-    } else if (delta < 0) {
-      const ratio = ease((delta + PIT_VISUAL_WINDOW) / (PIT_VISUAL_WINDOW - PIT_VISUAL_HOLD));
-      aligned[event.teamId] = base + (pitLap - base) * ratio;
-    } else {
-      const ratio = ease((delta - PIT_VISUAL_HOLD) / (PIT_VISUAL_WINDOW - PIT_VISUAL_HOLD));
-      aligned[event.teamId] = pitLap + (base - pitLap) * ratio;
-    }
-  }
-  return aligned;
-}
-
 export function pitStopTraceProgress(result: RaceResult, trace: ReplayTracePoint[], event: RaceEvent, maxLap: number, laps: number, lapProgress: number, plan?: ReplayPlan) {
   if (typeof event.traceProgress === "number") return event.traceProgress;
   const fallback = pitStopRaceProgress(event, maxLap, laps, lapProgress);
@@ -416,7 +370,7 @@ export function eventTraceProgress(event: RaceEvent, maxLap: number) {
 }
 
 export function shouldSmoothReplayTrace(trace: ReplayTracePoint[]) {
-  return !trace.every((point) => point.cars);
+  return !trace.length || !trace.every((point) => point.cars);
 }
 
 export function gridStartCarProgress(result: RaceResult, trace: ReplayTracePoint[], progress: number) {
@@ -523,13 +477,11 @@ function replaySnapshot(
   raceTime: number,
   progress: number,
   laps: number,
-  pitLapProgress: number,
   plan?: ReplayPlan,
   currentOrder: string[] = []
 ) {
   const baseProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan);
-  const tracedProgress = alignPitProgressToCircuit(result, baseProgress, progress, laps, pitLapProgress);
-  const carProgress = shouldSmoothReplayTrace(trace) ? applyGridStart(result, trace, tracedProgress, progress) : tracedProgress;
+  const carProgress = shouldSmoothReplayTrace(trace) ? applyGridStart(result, trace, baseProgress, progress) : baseProgress;
   const tower = liveClassificationByCarProgress(result, trace, progress, carProgress, currentOrder);
   return { carProgress, tower };
 }
@@ -636,13 +588,13 @@ export function ReplayView({
   const [speed, setSpeed] = useState<ReplaySpeed>(savedReplaySpeed);
   const [driverFocus, setDriverFocus] = useState(() => localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
   const [copyDismissed, setCopyDismissed] = useState(() => localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
-  const replayTrace = result.replayTrace?.length ? result.replayTrace : fallbackReplayTrace(result);
+  const replayTrace = result.replayTrace ?? [];
   const replayPlan = buildReplayPlan(result, replayTrace);
   const replayMode = titleKey === "qualifying_replay_title" ? "qualifying" : "race";
   const pitProgress = pitLapProgress(circuit);
   const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
   const directorBeats = buildRaceDirectorBeats(result, replayTrace, replayPlan, circuit.laps, playerTeamId, replayMode, pitProgress);
-  const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, pitProgress, replayPlan);
+  const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, replayPlan);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [activeMomentId, setActiveMomentId] = useState<string | null>(null);
@@ -654,8 +606,8 @@ export function ReplayView({
   const field = result.classification;
   const activeMoment = result.events.find((event) => event.id === activeMomentId);
   const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
-  const raceDuration = replayTimes.leader;
   const smoothTracePositions = shouldSmoothReplayTrace(replayTrace);
+  const raceDuration = smoothTracePositions ? replayTimes.leader : replayTimes.last;
   const currentRaceProgress = raceProgressAt(clock.current, raceDuration);
   const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
   const raceTimeAtProgress = (progress: number) => START_HOLD_SECONDS + progress * raceDuration;
@@ -751,7 +703,7 @@ export function ReplayView({
     const displayLap = displayLapAtProgress(progress, circuit.laps);
     const segment = segmentAtProgress(progress);
     setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
-    const targetSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, pitProgress, replayPlan, orderRef.current);
+    const targetSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, orderRef.current);
     const carProgress = animatePositions && smoothTracePositions ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress, elapsedSeconds) : targetSnapshot.carProgress;
     const nextTower = liveClassificationByCarProgress(result, replayTrace, progress, carProgress, orderRef.current);
     const nextSnapshot = { carProgress, tower: nextTower };

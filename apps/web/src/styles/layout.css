@@ -2925,6 +2925,23 @@ label small {
   gap: 16px;
   grid-template-columns: 1fr;
   overflow: hidden;
+  position: relative;
+}
+
+.championship-overview::after {
+  background: linear-gradient(to bottom, rgb(18 16 20 / 0), var(--color-page));
+  bottom: 0;
+  content: "";
+  height: 22px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+}
+
+.championship-overview > * {
+  position: relative;
+  z-index: 1;
 }
 
 .championship-overview h2 {

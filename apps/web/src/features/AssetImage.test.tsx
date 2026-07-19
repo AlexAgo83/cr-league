@@ -14,6 +14,7 @@ describe("AssetImage", () => {
     expect(image.parentElement?.getAttribute("data-state")).toBe("loading");
     fireEvent.load(image);
     expect(image.parentElement?.getAttribute("data-state")).toBe("loaded");
+    expect(image.parentElement?.querySelector(".asset-image-placeholder")).toBeTruthy();
 
     rerender(<AssetImage className="modal-hero-image" src="/second.png" alt="Preview" />);
     expect(image.parentElement?.getAttribute("data-state")).toBe("loading");

@@ -30,7 +30,7 @@ export function AssetImage({ className = "", onError, onLoad, src, ...props }: I
           onLoad?.(event);
         }}
       />
-      {state === "loaded" ? null : <span className="asset-image-placeholder" aria-hidden="true" />}
+      <span className="asset-image-placeholder" aria-hidden="true" />
     </span>
   );
 }

@@ -351,6 +351,7 @@ export function App() {
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
   const [qualifyingCommandClicked, setQualifyingCommandClicked] = useState(false);
+  const [editPlanCommandClicked, setEditPlanCommandClicked] = useState(false);
   const [directiveCommandClicked, setDirectiveCommandClicked] = useState(false);
   const [chronoReportCommandClicked, setChronoReportCommandClicked] = useState(false);
   const [launchGrandPrixCommandClicked, setLaunchGrandPrixCommandClicked] = useState(false);
@@ -541,6 +542,7 @@ export function App() {
 
   useEffect(() => {
     setQualifyingCommandClicked(false);
+    setEditPlanCommandClicked(false);
     setDirectiveCommandClicked(false);
     setChronoReportCommandClicked(false);
     setLaunchGrandPrixCommandClicked(false);
@@ -991,6 +993,7 @@ export function App() {
     for (const key of seasonRecapKeys) localStorage.removeItem(key);
     snoozedOnboardingHelp.current.clear();
     setQualifyingCommandClicked(false);
+    setEditPlanCommandClicked(false);
     setDirectiveCommandClicked(false);
     setChronoReportCommandClicked(false);
     setLaunchGrandPrixCommandClicked(false);
@@ -1819,9 +1822,10 @@ export function App() {
                           {deskState === "prepare" ? (
                             <>
                               <button
-                                className="primary-command"
+                                className={`primary-command${!editPlanCommandClicked ? " highlight-command" : ""}`}
                                 type="button"
                                 onClick={() => {
+                                  setEditPlanCommandClicked(true);
                                   setPlanSubscreen("plan");
                                   setGameView("plan");
                                 }}

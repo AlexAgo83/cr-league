@@ -621,6 +621,7 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "Tune the race plan" })).toBe(null);
     expect(screen.getByRole("button", { name: "Plan" })).toBeTruthy();
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Edit planNew lap time");
+    expect(screen.getByRole("button", { name: "Edit plan" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Edit plan" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(document.querySelector(".directive-briefing-panel")).toBeTruthy();
@@ -645,6 +646,7 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "Card: Rain Grip" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Edit plan" }).className).not.toContain("highlight-command");
     expect(screen.queryByRole("button", { name: "Result" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getAllByText("Lap times", { exact: false }).length).toBeGreaterThan(0);

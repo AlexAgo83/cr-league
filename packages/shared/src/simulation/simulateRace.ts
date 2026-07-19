@@ -115,17 +115,21 @@ function buildReplayFacts(trace: ReplayTracePoint[]): RaceReplayFacts {
     return point.order.flatMap((teamId, toIndex) => {
       const fromIndex = previous.order.indexOf(teamId);
       if (fromIndex === -1 || fromIndex <= toIndex) return [];
-      return previous.order.slice(toIndex, fromIndex).map((overtakenTeamId) => ({
-        type: "order_change" as const,
-        segment: point.segment,
-        lap: point.lap,
-        progress: point.progress,
-        overtakingTeamId: teamId,
-        overtakenTeamId,
-        fromPosition: fromIndex + 1,
-        toPosition: toIndex + 1,
-        gapSeconds: Number((point.gaps[teamId] ?? 0).toFixed(1))
-      }));
+      return previous.order.slice(toIndex, fromIndex).flatMap((overtakenTeamId) =>
+        pitRelatedOrderChange(previous, point, teamId, overtakenTeamId)
+          ? []
+          : [{
+              type: "order_change" as const,
+              segment: point.segment,
+              lap: point.lap,
+              progress: point.progress,
+              overtakingTeamId: teamId,
+              overtakenTeamId,
+              fromPosition: fromIndex + 1,
+              toPosition: toIndex + 1,
+              gapSeconds: Number((point.gaps[teamId] ?? 0).toFixed(1))
+            }]
+      );
     });
   });
 
@@ -170,7 +174,7 @@ function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, stat
     }
   }
 
-  return points;
+  return points.map((point) => ({ ...point, order: orderFromTraceCars(point, states) }));
 }
 
 function pitTraceRatio(segment: RaceSegment, ratio: number, offset = 0) {
@@ -257,6 +261,18 @@ function createReplayTracePoint(segment: RaceSegment, progress: number, states: 
   };
 }
 
+function orderFromTraceCars(point: ReplayTracePoint, states: TeamState[]) {
+  if (!point.cars || point.progress >= 1) return point.order;
+  return [...states]
+    .sort(
+      (left, right) =>
+        (point.cars?.[right.participant.teamId]?.trackProgress ?? 0) - (point.cars?.[left.participant.teamId]?.trackProgress ?? 0) ||
+        (point.times[left.participant.teamId] ?? 999) - (point.times[right.participant.teamId] ?? 999) ||
+        right.scores.score - left.scores.score
+    )
+    .map((state) => state.participant.teamId);
+}
+
 function annotateReplayOvertakes(trace: ReplayTracePoint[]) {
   const points = trace.map((point) => ({ ...point, cars: point.cars ? { ...point.cars } : undefined }));
   for (let index = 1; index < points.length; index += 1) {
@@ -266,17 +282,23 @@ function annotateReplayOvertakes(trace: ReplayTracePoint[]) {
       const from = previous.order.indexOf(teamId);
       const to = point.order.indexOf(teamId);
       if (from < 0 || from <= to) continue;
+      const overtakenTeamIds = previous.order.slice(to, from).filter((overtakenTeamId) => !pitRelatedOrderChange(previous, point, teamId, overtakenTeamId));
+      if (!overtakenTeamIds.length) continue;
       setReplayCarPhase(points[index - 2], teamId, "overtake_approach");
       setReplayCarPhase(previous, teamId, "overtake_overlap");
       setReplayCarPhase(point, teamId, "overtake_pass");
       setReplayCarPhase(points[index + 1], teamId, "overtake_settle");
-      for (const overtakenTeamId of previous.order.slice(to, from)) {
+      for (const overtakenTeamId of overtakenTeamIds) {
         setReplayCarPhase(previous, overtakenTeamId, "overtake_overlap");
         setReplayCarPhase(point, overtakenTeamId, "overtake_pass");
       }
     }
   }
   return points;
+}
+
+function pitRelatedOrderChange(previous: ReplayTracePoint, point: ReplayTracePoint, teamId: string, overtakenTeamId: string) {
+  return [teamId, overtakenTeamId].some((id) => [previous.cars?.[id]?.phase, point.cars?.[id]?.phase].some((phase) => phase?.startsWith("pit")));
 }
 
 function setReplayCarPhase(point: ReplayTracePoint | undefined, teamId: string, phase: NonNullable<ReplayTracePoint["cars"]>[string]["phase"]) {

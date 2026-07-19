@@ -9,6 +9,7 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
 
   const teamIds = result.classification.map((entry) => entry.teamId);
   const pitPhases = new Map<string, string[]>();
+  const carPhases = new Map<string, Array<{ progress: number; phase: string }>>();
   const overtakePhases = new Map<string, Array<{ progress: number; phase: string }>>();
 
   for (let index = 1; index < trace.length; index += 1) {
@@ -32,6 +33,7 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
       if (previousCar && car.trackProgress - previousCar.trackProgress > 0.09) errors.push(`car progress jumps too far for ${teamId} at point ${index}`);
       if (previousCar && previousCar.phase !== "grid" && car.phase !== "finished" && Math.abs(car.speed - previousCar.speed) > 0.8) errors.push(`car speed changes too abruptly for ${teamId} at point ${index}`);
 
+      carPhases.set(teamId, [...(carPhases.get(teamId) ?? []), { progress: point.progress, phase: car.phase }]);
       if (car.phase.startsWith("pit")) pitPhases.set(teamId, [...(pitPhases.get(teamId) ?? []), car.phase]);
       if (car.phase.startsWith("overtake")) overtakePhases.set(teamId, [...(overtakePhases.get(teamId) ?? []), { progress: point.progress, phase: car.phase }]);
     }
@@ -46,6 +48,10 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
   }
 
   for (const change of result.replayFacts?.orderChanges ?? []) {
+    const pitRelated = [change.overtakingTeamId, change.overtakenTeamId].some((teamId) =>
+      (carPhases.get(teamId) ?? []).some((phase) => phase.phase.startsWith("pit") && Math.abs(phase.progress - change.progress) <= 0.06)
+    );
+    if (pitRelated) continue;
     const phases = overtakePhases.get(change.overtakingTeamId) ?? [];
     const nearby = phases.filter((phase) => Math.abs(phase.progress - change.progress) <= 0.06).map((phase) => phase.phase);
     if (!nearby.some((phase) => phase === "overtake_overlap" || phase === "overtake_pass")) errors.push(`overtake phases missing near ${change.overtakingTeamId} at ${change.progress.toFixed(2)}`);

@@ -3173,6 +3173,7 @@ label small {
   background: rgb(5 5 5 / 0.3);
   border: 1px solid rgb(248 243 232 / 0.14);
   border-radius: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%, 0 calc(100% - 12px));
   height: 76px;
   width: 82px;
 }

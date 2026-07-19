@@ -33,6 +33,7 @@ const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
 const REPLAY_TRACE_STEPS_PER_SEGMENT = 10;
 const GRID_GAP_SECONDS = 0.25;
 const PIT_TRACE_WINDOW = 0.22;
+const PIT_TRACE_TEAM_STAGGER = 0.035;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -137,18 +138,24 @@ function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, stat
         const before = beforeTimes.get(state.participant.teamId) ?? state.elapsedTime;
         const pitCost = pitCosts.get(state.participant.teamId) ?? 0;
         const movingDelta = state.elapsedTime - before - pitCost;
-        return [state.participant.teamId, before + movingDelta * ratio + pitCost * pitTraceRatio(segment, ratio)];
+        return [state.participant.teamId, before + movingDelta * ratio + pitCost * pitTraceRatio(segment, ratio, pitTraceOffset(state.participant.teamId, pitCosts))];
       })
     );
     return createReplayTracePoint(segment, progress, states, times);
   });
 }
 
-function pitTraceRatio(segment: RaceSegment, ratio: number) {
+function pitTraceRatio(segment: RaceSegment, ratio: number, offset = 0) {
   const center: Partial<Record<RaceSegment, number>> = { early: 0.38, mid: 0.5, late: 0.62 };
   const pitCenter = center[segment];
   if (pitCenter === undefined) return ratio;
-  return Math.max(0, Math.min(1, (ratio - (pitCenter - PIT_TRACE_WINDOW / 2)) / PIT_TRACE_WINDOW));
+  return Math.max(0, Math.min(1, (ratio - (pitCenter + offset - PIT_TRACE_WINDOW / 2)) / PIT_TRACE_WINDOW));
+}
+
+function pitTraceOffset(teamId: string, pitCosts: Map<string, number>) {
+  const pitTeamIds = [...pitCosts.keys()].sort();
+  const index = pitTeamIds.indexOf(teamId);
+  return index < 0 ? 0 : (index - (pitTeamIds.length - 1) / 2) * PIT_TRACE_TEAM_STAGGER;
 }
 
 function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], elapsedTimes?: Map<string, number>): ReplayTracePoint {

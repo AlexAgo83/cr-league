@@ -143,9 +143,26 @@ describe("simulateRace", () => {
     expect(stops.find((event) => event.teamId === "atlas")?.reportText).toContain("6.0s");
     const midTraceTime = (progress: number) => result.replayTrace?.find((point) => point.segment === "mid" && Math.abs(point.progress - progress) < 0.001)?.times.atlas ?? 0;
     const atlasBeforePit = midTraceTime(0.42);
-    const atlasPitEntry = midTraceTime(0.48);
-    const atlasPitExit = midTraceTime(0.52);
-    expect(atlasPitExit - atlasPitEntry).toBeGreaterThan(atlasPitEntry - atlasBeforePit);
+    const atlasAfterPit = midTraceTime(0.54);
+    expect(atlasAfterPit - atlasBeforePit).toBeGreaterThan(15);
+  });
+
+  it("stagger pit trace loss when most cars stop together", () => {
+    const input: RaceInput = {
+      ...baseRace,
+      participants: baseRace.participants.map((participant, index) => ({
+        ...participant,
+        decision: {
+          ...participant.decision,
+          pitStrategy: index === baseRace.participants.length - 1 ? "heavy_pack" : "standard"
+        }
+      }))
+    };
+
+    const result = simulateRace(input);
+    const midOrders = result.replayTrace?.filter((point) => point.segment === "mid").map((point) => point.order.join("|")) ?? [];
+
+    expect(new Set(midOrders).size).toBeGreaterThan(1);
   });
 
   it("emits card events for played cards", () => {

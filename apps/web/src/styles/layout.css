@@ -3205,6 +3205,10 @@ label small {
   grid-column: 1 / -1;
 }
 
+.circuit-order-badges small {
+  font-size: 0.68rem;
+}
+
 .circuit-order-badges span {
   align-items: center;
   background: var(--color-accent);

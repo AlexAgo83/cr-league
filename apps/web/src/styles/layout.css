@@ -6052,7 +6052,7 @@ button.highlight-command:not(:disabled) {
   --garage-card-accent: #b45309;
 }
 
-.garage-panel-inventory .card-inventory li,
+.garage-panel-inventory .card-inventory-button,
 .garage-panel-shop .card-shop button {
   background: rgb(236 231 218 / 0.98);
   border-color: color-mix(in srgb, var(--garage-card-accent) 36%, transparent);
@@ -6063,12 +6063,16 @@ button.highlight-command:not(:disabled) {
 }
 
 .garage-panel-inventory .card-inventory li {
+  background: transparent;
+  border: 0;
+  clip-path: none;
   display: block;
+  overflow: visible;
   padding: 0;
 }
 
 .garage-panel-inventory .card-inventory li:first-child {
-  border-top-color: color-mix(in srgb, var(--garage-card-accent) 36%, transparent);
+  border-top: 0;
 }
 
 .garage-panel-inventory .card-inventory-button,
@@ -6128,9 +6132,6 @@ button.highlight-command:not(:disabled) {
 
 .garage-panel-inventory .card-inventory-button {
   background: transparent;
-  border: 0;
-  clip-path: none;
-  overflow: visible;
 }
 
 .garage-panel-inventory .card-inventory-button.card-art-cell {
@@ -6154,8 +6155,8 @@ button.highlight-command:not(:disabled) {
   display: none;
 }
 
-.garage-panel-inventory .card-inventory li:has(.card-inventory-button:not(:disabled):hover),
-.garage-panel-inventory .card-inventory li:has(.card-inventory-button:not(:disabled):focus-visible),
+.garage-panel-inventory .card-inventory-button:not(:disabled):hover,
+.garage-panel-inventory .card-inventory-button:not(:disabled):focus-visible,
 .garage-panel-shop .card-shop button:not(:disabled):hover,
 .garage-panel-shop .card-shop button:not(:disabled):focus-visible {
   border-color: var(--garage-card-accent);

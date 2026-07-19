@@ -223,6 +223,7 @@ describe("ReplayView timing", () => {
     expect(pitStopVisualProgress(2.4, 10.6, 10, 2.25)).toBe(2.25);
     expect(pitStopVisualProgress(2.6, 11.6, 10, 2.25)).toBeGreaterThan(2.25);
     expect(pitStopVisualProgress(2.7, 12.1, 10, 2.25)).toBe(2.7);
+    expect(pitStopVisualProgress(3.2, 11.6, 10, 2.25)).toBeLessThan(2.37);
     expect(pitStopVisualProgress(2.5, 10.2, 10, 2.25, 2)).toBeLessThan(2.5);
     expect(pitStopVisualProgress(2.5, 12.1, 10, 2.25, 2)).toBe(2.25);
   });

@@ -25,6 +25,7 @@ const PIT_STOP_HOLD_SECONDS = 1.2;
 const PIT_STOP_EXIT_SECONDS = 0.8;
 const PIT_STOP_RANK_GAP_SECONDS = 0.45;
 const PIT_STOP_ORDER_GAP_SECONDS = 0.18;
+const PIT_STOP_EXIT_ADVANCE_LAPS = 0.12;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
@@ -265,7 +266,7 @@ export function pitStopVisualProgress(baseProgress: number, time: number, pitTim
   }
   if (time <= arrivalTime + PIT_STOP_HOLD_SECONDS) return pitProgress;
   const t = easeInOut((time - arrivalTime - PIT_STOP_HOLD_SECONDS) / PIT_STOP_EXIT_SECONDS);
-  return pitProgress + (baseProgress - pitProgress) * t;
+  return pitProgress + (Math.min(baseProgress, pitProgress + PIT_STOP_EXIT_ADVANCE_LAPS) - pitProgress) * t;
 }
 
 export function pitStopTimeOffset(event: RaceEvent, trace: ReplayTracePoint[], progress: number) {

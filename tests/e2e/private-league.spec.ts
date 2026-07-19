@@ -344,6 +344,48 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
 });
 
+test("keeps first-click commands animated and result shortcuts wired", async ({ page }) => {
+  cards = [];
+  await mockLeagueApi(page);
+  await page.goto("/");
+  await createProfile(page);
+  await expect(page.locator(".saved-leagues-empty")).toContainText("No saved leagues yet.");
+  await expect(page.locator(".saved-leagues-empty img, .saved-leagues-empty image")).toHaveCount(0);
+
+  await createLeague(page);
+  await page.getByRole("button", { name: "Garage", exact: true }).click();
+  await dismissOnboarding(page);
+  await expect(page.locator(".garage-empty-inventory")).toContainText("No cards in inventory.");
+  await expect(page.locator(".garage-empty-inventory img, .garage-empty-inventory image")).toHaveCount(0);
+
+  await page.getByRole("button", { name: "Race", exact: true }).click();
+  await dismissOnboarding(page);
+  await expectAnimatedHighlight(page.getByRole("button", { name: "Edit plan" }));
+  await page.getByRole("button", { name: "Edit plan" }).click();
+  await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
+  await page.getByRole("button", { name: "Race", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Edit plan" })).not.toHaveClass(/highlight-command/);
+  await expectAnimatedHighlight(page.getByRole("button", { name: "Send plan" }));
+  await page.getByRole("button", { name: "Send plan" }).click();
+  await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send plan" }).click();
+  await expectAnimatedHighlight(page.getByRole("button", { name: "Launch GP" }));
+  await page.getByRole("button", { name: "Launch GP" }).click();
+  await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
+
+  await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
+  await page.locator(".replay-report-button").click();
+  await expect(page.getByRole("heading", { name: expectedCircuitTitle(1) })).toBeVisible();
+  await page.locator(".report-replay-button").click();
+  await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
+  await page.getByRole("button", { name: "Back to circuit" }).click();
+  await expectAnimatedHighlight(page.getByRole("button", { name: "Report" }));
+  await page.getByRole("button", { name: "Report" }).click();
+  await expect(page.getByRole("heading", { name: expectedCircuitTitle(1) })).toBeVisible();
+  await page.getByRole("button", { name: "Back to circuit" }).click();
+  await expect(page.getByRole("button", { name: "Report" })).not.toHaveClass(/highlight-command/);
+  await expectAnimatedHighlight(page.getByRole("button", { name: "Next GP" }));
+});
+
 test("keeps mobile document pages usable", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 900 });
   await mockLeagueApi(page);
@@ -378,6 +420,11 @@ async function openDocumentPage(page: Page, navIndex: number, panelSelector: str
   await page.locator(".game-nav button").nth(navIndex).click();
   await dismissOnboarding(page);
   await expect(page.locator(panelSelector).first()).toBeVisible();
+}
+
+async function expectAnimatedHighlight(locator: ReturnType<Page["getByRole"]>) {
+  await expect(locator).toHaveClass(/highlight-command/);
+  await expect(locator).toHaveCSS("animation-name", "highlight-command-pulse");
 }
 
 async function createProfile(page: Page) {

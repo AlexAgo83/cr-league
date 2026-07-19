@@ -6157,8 +6157,10 @@ button.highlight-command:not(:disabled) {
   bottom: 10px;
   color: #17151a;
   font-size: 0.82rem;
+  gap: 5px;
   grid-column: auto;
   grid-row: auto;
+  padding: 0 9px;
   position: absolute;
   right: 10px;
   top: auto;

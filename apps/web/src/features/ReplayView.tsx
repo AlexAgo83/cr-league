@@ -146,11 +146,18 @@ function traceCarProgressAt(trace: ReplayTracePoint[], progress: number, laps: n
   const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
   return Object.fromEntries(
     Object.keys({ ...from.cars, ...to.cars }).map((teamId) => {
-      const fromProgress = from.cars?.[teamId]?.trackProgress ?? to.cars?.[teamId]?.trackProgress ?? 0;
-      const toProgress = to.cars?.[teamId]?.trackProgress ?? fromProgress;
-      return [teamId, (fromProgress + (toProgress - fromProgress) * ratio) * laps];
+      const fromCar = from.cars?.[teamId];
+      const toCar = to.cars?.[teamId];
+      const fromProgress = visualCarProgress(fromCar, toCar?.trackProgress ?? 0, laps);
+      const toProgress = visualCarProgress(toCar, fromCar?.trackProgress ?? 0, laps);
+      return [teamId, fromProgress + (toProgress - fromProgress) * ratio];
     })
   );
+}
+
+function visualCarProgress(car: NonNullable<ReplayTracePoint["cars"]>[string] | undefined, fallback: number, laps: number) {
+  const progress = car?.trackProgress ?? fallback;
+  return car?.phase === "grid" && progress < 0 ? progress : progress * laps;
 }
 
 export function buildReplayPlan(result: RaceResult, trace: ReplayTracePoint[]): ReplayPlan {
@@ -952,8 +959,8 @@ export function ReplayView({
                     }}
                     onChange={(event) => seek(Number(event.target.value))}
                   />
-                  {RACE_SEGMENTS.slice(1).map((segment, index) => (
-                    <span key={segment} className="replay-tick" style={{ left: `${replayPercentAtRaceProgress((index + 1) / RACE_SEGMENTS.length)}%` }} />
+                  {Array.from({ length: circuit.laps }, (_, index) => (
+                    <span key={index + 1} className="replay-tick" style={{ left: `${replayPercentAtRaceProgress((index + 1) / circuit.laps)}%` }} />
                   ))}
                   {RACE_SEGMENTS.map((segment, index) => (
                     <span

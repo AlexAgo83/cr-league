@@ -109,7 +109,7 @@ describe("ReplayView timing", () => {
 
   it("uses generated car trace positions when available", () => {
     const trace: ReplayTracePoint[] = [
-      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0, speed: 0, phase: "grid" }, last: { trackProgress: 0, speed: 0, phase: "grid" } } },
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: -0.012, speed: 0, phase: "grid" }, last: { trackProgress: -0.03, speed: 0, phase: "grid" } } },
       {
         segment: "mid",
         lap: 3,
@@ -122,6 +122,7 @@ describe("ReplayView timing", () => {
     ];
 
     expect(carProgressAtTrace(result, trace, 0.5, 5)).toMatchObject({ leader: 2.5, last: 2.1 });
+    expect(carProgressAtTrace(result, trace, 0, 5)).toMatchObject({ leader: -0.012, last: -0.03 });
   });
 
   it("skips runtime smoothing for generated car traces", () => {

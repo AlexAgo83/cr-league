@@ -4394,13 +4394,13 @@ label small {
 .garage-car-stage {
   align-items: center;
   display: flex;
-  inset: 0 -18px 0 auto;
-  justify-content: flex-end;
+  inset: 0;
+  justify-content: center;
   min-width: 0;
   opacity: 0.82;
   pointer-events: none;
   position: absolute;
-  width: min(78%, 260px);
+  width: 100%;
   z-index: 1;
 }
 
@@ -4559,7 +4559,22 @@ label small {
   gap: 8px;
   grid-template-columns: auto auto minmax(0, 1fr);
   margin: 14px 0;
+  overflow: hidden;
   padding: 14px;
+  position: relative;
+}
+
+.garage-buy-card > .card-cell-art {
+  height: 150%;
+  inset: 50% -44px auto auto;
+  position: absolute;
+  width: min(58%, 250px);
+  z-index: 0;
+}
+
+.garage-buy-card > *:not(.card-cell-art) {
+  position: relative;
+  z-index: 1;
 }
 
 .garage-buy-card strong {
@@ -4583,11 +4598,12 @@ label small {
 }
 
 .garage-detail-card {
-  background: rgb(23 21 26 / 0.07);
   border-color: rgb(197 58 0 / 0.48);
   gap: 10px;
   grid-template-columns: 1fr;
+  min-height: 118px;
   padding: 16px;
+  padding-right: min(46%, 190px);
 }
 
 .garage-detail-card > small {
@@ -6044,6 +6060,11 @@ button.highlight-command:not(:disabled) {
   position: relative;
 }
 
+.garage-panel-inventory .card-inventory li {
+  display: block;
+  padding: 0;
+}
+
 .garage-panel-inventory .card-inventory li:first-child {
   border-top-color: color-mix(in srgb, var(--garage-card-accent) 36%, transparent);
 }
@@ -6052,6 +6073,10 @@ button.highlight-command:not(:disabled) {
 .garage-panel-shop .card-shop button {
   min-height: 84px;
   padding: 11px 42px 11px 11px;
+}
+
+.garage-panel-inventory .card-inventory-button > span {
+  gap: 2px;
 }
 
 .garage-panel-inventory .card-inventory-button.card-art-cell,
@@ -6072,6 +6097,10 @@ button.highlight-command:not(:disabled) {
   border: 0;
   clip-path: none;
   overflow: visible;
+}
+
+.garage-panel-inventory .card-inventory-button.card-art-cell {
+  min-height: 84px;
 }
 
 .garage-panel-shop .card-shop button {
@@ -6222,6 +6251,47 @@ button.highlight-command:not(:disabled) {
     var(--directive-cell-bg, rgb(236 231 218 / 0.98));
   background-size: 220% 100%, 100% 100%, 100% 100%;
   border: 0;
+}
+
+.approach-chrono-badge {
+  align-items: center;
+  animation: approach-chrono-shine 1.45s ease-in-out infinite;
+  background: color-mix(in srgb, var(--directive-choice-accent) 18%, rgb(236 231 218));
+  border: 2px solid color-mix(in srgb, var(--directive-choice-accent) 52%, transparent);
+  border-radius: 999px;
+  display: inline-flex;
+  height: 28px;
+  justify-content: center;
+  position: absolute;
+  right: min(46%, 170px);
+  top: 10px;
+  transform: translateX(100%);
+  width: 28px;
+  z-index: 2;
+}
+
+.approach-chrono-badge::before {
+  border: 2px solid var(--directive-choice-accent);
+  border-radius: 999px;
+  content: "";
+  height: 14px;
+  position: absolute;
+  width: 14px;
+}
+
+.approach-chrono-badge::after {
+  background:
+    linear-gradient(var(--directive-choice-accent), var(--directive-choice-accent)) 50% 45% / 2px 7px no-repeat,
+    linear-gradient(90deg, var(--directive-choice-accent), var(--directive-choice-accent)) 58% 58% / 7px 2px no-repeat;
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+@keyframes approach-chrono-shine {
+  50% {
+    box-shadow: 0 0 14px color-mix(in srgb, var(--directive-choice-accent) 62%, transparent);
+  }
 }
 
 .plan-view .directive-choice-approach .choice-card {

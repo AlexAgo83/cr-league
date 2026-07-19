@@ -243,6 +243,7 @@ export function GarageView({
           <ModalHero image="/assets/crl/garage-buy-modal.png" kicker={tt("garage_shop")} title={tt(`card_${pendingBuy.cardId}` as TranslationKey)} />
           <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
+            <CardArtImage cardId={pendingBuy.cardId} />
             <strong>
               <RewardValue type="credits" value={pendingBuy.price} tt={tt} />
             </strong>
@@ -263,6 +264,7 @@ export function GarageView({
           <ModalHero image="/assets/crl/garage-sell-modal.png" kicker={tt("garage_inventory")} title={tt(`card_${viewingCardId}` as TranslationKey)} />
           <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card garage-detail-card">
+            <CardArtImage cardId={viewingCardId} />
             <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>
             <CardStatBadges cardId={viewingCardId} tt={tt} />
           </div>

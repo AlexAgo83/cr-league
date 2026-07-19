@@ -3216,6 +3216,10 @@ label small {
   font-size: 0.68rem;
 }
 
+.circuit-order-badges-unused {
+  justify-content: flex-end;
+}
+
 .circuit-order-badges span {
   align-items: center;
   background: var(--color-accent);
@@ -3232,9 +3236,9 @@ label small {
 
 .circuit-order-badges span.current-round-badge {
   animation: current-round-pulse 1.5s ease-in-out infinite;
-  background: #f8f3e8;
-  box-shadow: inset 0 0 0 2px var(--color-accent);
-  color: #1b100b;
+  background: var(--color-accent);
+  box-shadow: 0 0 0 2px rgb(255 255 255 / 0.16);
+  color: var(--color-accent-ink);
 }
 
 .circuit-detail-screen {

@@ -1416,6 +1416,14 @@ label small {
   grid-template-columns: 1fr;
 }
 
+.directive-choice-card .card-choice-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.directive-choice-card .card-choice-grid .choice-card:first-child {
+  grid-column: 1 / -1;
+}
+
 .directive-choice-approach {
   --directive-choice-accent: #ff4d00;
 }
@@ -6476,11 +6484,23 @@ button.highlight-command:not(:disabled) {
 .plan-view .directive-choice-card .choice-card.card-art-cell,
 .plan-view .directive-choice-card .choice-card.card-art-cell.selected {
   --card-art-bg: rgb(236 231 218 / 0.98);
-  background:
-    linear-gradient(90deg, var(--card-art-bg) 0 46%, rgb(236 231 218 / 0.88) 60%, transparent 78%),
-    var(--card-art-bg);
-  min-height: 118px;
-  padding-right: min(52%, 190px);
+  background: linear-gradient(90deg, rgb(236 231 218 / 0) 0 48%, rgb(236 231 218 / 0.72) 62%, transparent 80%);
+  min-height: 84px;
+  padding-right: min(46%, 190px);
+}
+
+.plan-view .directive-choice-card .choice-card > .card-cell-art {
+  height: 136%;
+  inset: 50% -38px auto auto;
+  position: absolute;
+  width: min(58%, 230px);
+  z-index: 0;
+}
+
+.plan-view .directive-choice-card .choice-card.card-art-cell small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .plan-view .directive-choice-card .choice-card.card-art-cell.selected {

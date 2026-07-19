@@ -136,8 +136,8 @@ export function GarageView({
           </span>
         </div>
       </section>
-      <section className="panel garage-card-panel">
-        <div className="garage-card-heading">
+      <section className={`panel garage-card-panel garage-panel-${cardPanel}`}>
+        <header className={`garage-card-heading garage-hero-${cardPanel}`}>
           <div>
             <span className="section-kicker">{tt("dashboard_garage")}</span>
             <h3>{panelTitle}</h3>
@@ -153,7 +153,7 @@ export function GarageView({
               {tt("dashboard_my_team")}
             </button>
           </div>
-        </div>
+        </header>
         {cardPanel === "team" ? (
           <div className="garage-team-panel">
             <PendingFeedback message={pendingMessage} />

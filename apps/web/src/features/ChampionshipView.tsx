@@ -14,7 +14,7 @@ export const CHAMPIONSHIP_RECORD_TAB_KEY = "cr-league-championship-record-tab";
 
 export function savedRecordTab(): ChampionshipRecordTab {
   const saved = localStorage.getItem(CHAMPIONSHIP_RECORD_TAB_KEY);
-  return saved === "calendar" || saved === "palmares" || saved === "history" ? saved : "standings";
+  return saved === "standings" || saved === "palmares" || saved === "history" ? saved : "calendar";
 }
 
 export function ChampionshipView({
@@ -50,13 +50,13 @@ export function ChampionshipView({
     seasonRoundsByLayout.set(circuit.layoutKey, [...(seasonRoundsByLayout.get(circuit.layoutKey) ?? []), round]);
   }
   const recordTabs = [
-    { key: "standings" as const, label: tt("dashboard_standings") },
     { key: "calendar" as const, label: tt("championship_calendar") },
+    { key: "standings" as const, label: tt("dashboard_standings") },
     ...(completedSeasons.length ? [{ key: "palmares" as const, label: tt("season_palmares") }] : []),
     { key: "history" as const, label: tt("league_history") }
   ];
-  const activeRecordTab = recordTabs.some((tab) => tab.key === recordTab) ? recordTab : "standings";
-  const activeRecordLabel = recordTabs.find((tab) => tab.key === activeRecordTab)?.label ?? tt("dashboard_standings");
+  const activeRecordTab = recordTabs.some((tab) => tab.key === recordTab) ? recordTab : "calendar";
+  const activeRecordLabel = recordTabs.find((tab) => tab.key === activeRecordTab)?.label ?? tt("championship_calendar");
   const selectRecordTab = (nextTab: ChampionshipRecordTab) => {
     localStorage.setItem(CHAMPIONSHIP_RECORD_TAB_KEY, nextTab);
     setPreviewCircuit(undefined);

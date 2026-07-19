@@ -775,7 +775,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
-    expect(screen.getByRole("heading", { name: "Standings" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Circuits" })).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Palmares" }));
     expect(screen.getByRole("heading", { name: "Palmares" })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Season 1/ }).textContent).toContain("Volt Union");

@@ -1,6 +1,6 @@
 # Private League 3 GP Playtest Checklist
 
-Target build: `0.3.8` race-learning polish.
+Target build: `0.4` economy and card progression.
 
 ## Setup
 - Run the API and web app.
@@ -64,6 +64,7 @@ Target build: `0.3.8` race-learning polish.
 - Does the card purchase modal explain why a card matters before asking for confirmation?
 - Do card badges, stats, and recommendations help the card choice?
 - Are credits tight enough to make buying a choice?
+- Do trailing teams earn enough comeback credits to buy back into the card loop without making race results feel fake?
 - Does the pit-wall/race-desk presentation feel more like a race weekend than an admin form?
 - Do the compact profile and pit-wall entry screens make the first action obvious?
 - Do the animated highlights help without feeling noisy after the first click?
@@ -86,7 +87,7 @@ Target build: `0.3.8` race-learning polish.
 ## Known Limits
 - Profile recovery is lightweight only: email plus recovery code, not full password/OAuth authentication.
 - No automatic deadline resolution yet.
-- Card inventory exists as a fixed-price garage/shop with recommendations and purchase confirmation; no selling, rarity, draft offers, or deep catch-up economy yet.
+- Card inventory exists as a fixed-price garage/shop with recommendations, selling, purchase confirmation, and a small capped comeback-credit bonus; no rarity, draft offers, or deep market economy yet.
 - Restart session is a playtest operator tool, not a full admin/season management system.
 - Replay is deterministic playback from stored generated race/qualifying data; it is not a live physics simulation.
 

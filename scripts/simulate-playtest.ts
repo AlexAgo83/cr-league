@@ -233,6 +233,10 @@ async function writeReport(leagueRuns: LeagueRun[]) {
         `- Code: ${run.state.league.code}`,
         `- Human teams: ${run.players.length}`,
         `- Final leader: ${run.state.teams[0]?.name ?? "Unknown"} (${run.state.teams[0]?.points ?? 0} pts, ${run.state.teams[0]?.credits ?? 0} credits)`,
+        `- Final tail: ${run.state.teams
+          .slice(-3)
+          .map((team) => `${team.name} (${team.points} pts, ${team.credits} credits)`)
+          .join(", ")}`,
         "",
         "| GP | Winner | Podium | Decisions | Qualifying runs | Cards bought after GP |",
         "| --- | --- | --- | ---: | ---: | ---: |",

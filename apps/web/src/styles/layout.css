@@ -5502,8 +5502,8 @@ button.highlight-command:not(:disabled) {
 
 .plan-view .directive-choice-group .choice-card {
   background:
-    linear-gradient(135deg, var(--directive-choice-wash), rgb(35 23 18 / 0.24) 44%, rgb(18 16 20 / 0.08)),
-    url("/assets/crl/championship-header.png") center / cover no-repeat;
+    linear-gradient(135deg, var(--directive-choice-wash), rgb(35 23 18 / 0.16) 44%, rgb(18 16 20 / 0.04)),
+    rgb(236 231 218 / 0.78);
   border-color: color-mix(in srgb, var(--directive-choice-accent) 36%, transparent);
   clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
   overflow: hidden;
@@ -5517,8 +5517,8 @@ button.highlight-command:not(:disabled) {
 
 .plan-view .directive-choice-group .choice-card.selected {
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--directive-choice-accent) 42%, transparent), rgb(35 23 18 / 0.28) 44%, rgb(18 16 20 / 0.1)),
-    url("/assets/crl/championship-header.png") center / cover no-repeat;
+    linear-gradient(135deg, color-mix(in srgb, var(--directive-choice-accent) 42%, transparent), rgb(35 23 18 / 0.2) 44%, rgb(18 16 20 / 0.06)),
+    rgb(236 231 218 / 0.82);
   box-shadow: inset 0 0 0 1px var(--directive-choice-accent);
 }
 

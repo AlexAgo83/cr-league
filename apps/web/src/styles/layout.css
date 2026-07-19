@@ -5641,6 +5641,10 @@ button.highlight-command:not(:disabled) {
     gap: 6px;
   }
 
+  .map-final-classification .reward-label {
+    display: none;
+  }
+
   .map-traits-panel {
     border-radius: 6px;
     gap: 2px;

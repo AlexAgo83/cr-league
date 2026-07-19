@@ -10,7 +10,7 @@ export function RewardValue({ type, value, signed = false, tt }: { type: "points
       </span>
       <span>
         {prefix}
-        {value} {label}
+        {value} <span className="reward-label">{label}</span>
       </span>
     </span>
   );

@@ -6118,16 +6118,6 @@ button.highlight-command:not(:disabled) {
   width: min(58%, 230px);
 }
 
-.garage-panel-inventory .card-inventory-button .card-cell-art {
-  height: calc(100% - 18px);
-  inset: 50% 22px auto auto;
-  width: min(38%, 170px);
-}
-
-.garage-panel-inventory .card-inventory-button .card-cell-art > img {
-  object-fit: contain;
-}
-
 .plan-view .choice-card.card-art-cell .card-stat-badges,
 .plan-view .directive-choice-group .choice-card .card-stat-badges,
 .garage-panel-inventory .card-inventory-button .card-stat-badges,

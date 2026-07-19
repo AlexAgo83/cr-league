@@ -1459,9 +1459,6 @@ export function App() {
                     closeLabel={tt("action_back_to_circuit")}
                     overlayActions={
                       <>
-                        <span>
-                          {(chronoReport.best?.time ?? currentQualifyingResult.time).toFixed(2)}s · {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
-                        </span>
                         <button
                           className={!chronoReportCommandClicked ? "highlight-command" : undefined}
                           type="button"

@@ -5676,17 +5676,25 @@ button.highlight-command:not(:disabled) {
     transform: none;
   }
 
+  .replay-overlay-stack {
+    bottom: auto;
+    right: 8px;
+    top: 54px;
+    width: min(260px, calc(100% - 24px));
+  }
+
   .replay-moment-notification {
     top: 50%;
     transform: translate(-50%, -50%);
   }
 
+  .map-qualifying-times,
   .replay-tower {
     border-radius: 6px;
     gap: 2px;
     padding: 4px 6px;
     right: 8px;
-    top: 54px;
+    top: 176px;
   }
 
   .replay-director-panel,

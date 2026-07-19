@@ -351,6 +351,7 @@ export function App() {
   const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
   const [qualifyingCommandClicked, setQualifyingCommandClicked] = useState(false);
   const [directiveCommandClicked, setDirectiveCommandClicked] = useState(false);
+  const [chronoReportCommandClicked, setChronoReportCommandClicked] = useState(false);
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
@@ -528,6 +529,7 @@ export function App() {
   useEffect(() => {
     setQualifyingCommandClicked(false);
     setDirectiveCommandClicked(false);
+    setChronoReportCommandClicked(false);
   }, [currentGrandPrixKey]);
 
   useEffect(() => {
@@ -1630,8 +1632,10 @@ export function App() {
                           {currentQualifyingResult.time.toFixed(2)}s · P{Math.max(1, currentQualifyingRank)} · {currentQualifyingResult.attempts}/{qualifyingAttemptLimit}
                         </span>
                         <button
+                          className={!chronoReportCommandClicked ? "highlight-command" : undefined}
                           type="button"
                           onClick={() => {
+                            setChronoReportCommandClicked(true);
                             setPlanSubscreen("chrono");
                             setGameView("plan");
                           }}

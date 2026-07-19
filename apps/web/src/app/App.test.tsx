@@ -666,10 +666,12 @@ describe("App", () => {
     expect(document.querySelector(".chrono-report-image")?.getAttribute("src")).toBe("/assets/crl/onboarding-chrono.png");
     fireEvent.click(screen.getAllByRole("button", { name: "Review lap time" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Chrono report" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Chrono report" }));
     expect(screen.getByRole("heading", { name: "Understand the lap time" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Chrono report" }).className).not.toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     fireEvent.click(screen.getByRole("button", { name: "Review lap time" }));
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();

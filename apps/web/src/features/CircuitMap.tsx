@@ -47,8 +47,24 @@ const CLOSE_EXIT_DISTANCE = 6;
 const DRIFT_LOOKAHEAD = 0.012;
 const HEADING_LOOKAHEAD = 0.006;
 const MAX_DRIFT_ANGLE = 14;
+const STRAIGHT_TURN_TOLERANCE_DEG = 18;
 type CameraZoomMode = "normal" | "traffic" | "close";
 export type CarSprite = "idle" | "boost" | "brake";
+type RoutePoint = { x: number; y: number };
+type RoutePose = RoutePoint & { angle: number };
+type RouteSegment = {
+  from: RoutePoint;
+  to: RoutePoint;
+  length: number;
+  angle: number;
+  startDistance: number;
+  endDistance: number;
+};
+export type CircuitRouteAnalysis = {
+  startLine: { x1: number; y1: number; x2: number; y2: number };
+  pitStop: RoutePose;
+  longestStraight: { startProgress: number; endProgress: number; length: number };
+};
 
 const CAR_SPRITES: Record<CarSprite, string> = {
   idle: "/assets/cars/idle.png",
@@ -112,12 +128,11 @@ function circuitScene(circuit: CityCircuit) {
     zoom,
     tiles,
     points,
-    d: points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" "),
-    start: points[0] ?? { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2 }
+    d: points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ")
   };
 }
 
-export function poseOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
+export function poseOnRoute(points: RoutePoint[], progress: number) {
   const point = pointOnRoute(points, progress);
   if (!point) return { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
   const before = pointOnRoute(points, progress - HEADING_LOOKAHEAD);
@@ -129,13 +144,9 @@ export function poseOnRoute(points: Array<{ x: number; y: number }>, progress: n
   return { ...point, angle };
 }
 
-function pointOnRoute(points: Array<{ x: number; y: number }>, progress: number) {
+function pointOnRoute(points: RoutePoint[], progress: number): RoutePose {
   if (!points.length) return { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
-  const segments = points.slice(1).map((point, index) => ({
-    from: points[index]!,
-    to: point,
-    length: Math.hypot(point.x - points[index]!.x, point.y - points[index]!.y)
-  }));
+  const segments = routeSegments(points);
   const total = segments.reduce((sum, segment) => sum + segment.length, 0) || 1;
   let distance = (((progress % 1) + 1) % 1) * total;
 
@@ -154,28 +165,87 @@ function pointOnRoute(points: Array<{ x: number; y: number }>, progress: number)
   return { ...points[0]!, angle: 0 };
 }
 
-function routeLength(points: Array<{ x: number; y: number }>) {
+function routeLength(points: RoutePoint[]) {
   return points.slice(1).reduce((sum, point, index) => sum + Math.hypot(point.x - points[index]!.x, point.y - points[index]!.y), 0);
 }
 
-function startFinishLine(points: Array<{ x: number; y: number }>) {
-  const start = points[0] ?? { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2 };
-  const next = points.find((point) => Math.hypot(point.x - start.x, point.y - start.y) > 0.1) ?? { x: start.x + 1, y: start.y };
-  const angle = Math.atan2(next.y - start.y, next.x - start.x) + Math.PI / 2;
+function routeSegments(points: RoutePoint[]): RouteSegment[] {
+  let startDistance = 0;
+  return points.slice(1).map((point, index) => {
+    const from = points[index]!;
+    const length = Math.hypot(point.x - from.x, point.y - from.y);
+    const segment = {
+      from,
+      to: point,
+      length,
+      angle: Math.atan2(point.y - from.y, point.x - from.x),
+      startDistance,
+      endDistance: startDistance + length
+    };
+    startDistance += length;
+    return segment;
+  });
+}
+
+function routeLineAt(pose: RoutePose) {
+  const angle = (pose.angle * Math.PI) / 180 + Math.PI / 2;
   const halfLength = 10;
   const dx = Math.cos(angle) * halfLength;
   const dy = Math.sin(angle) * halfLength;
 
   return {
-    x1: start.x - dx,
-    y1: start.y - dy,
-    x2: start.x + dx,
-    y2: start.y + dy
+    x1: pose.x - dx,
+    y1: pose.y - dy,
+    x2: pose.x + dx,
+    y2: pose.y + dy
+  };
+}
+
+export function analyzeCircuitRoute(points: RoutePoint[]): CircuitRouteAnalysis {
+  const segments = routeSegments(points).filter((segment) => segment.length > 0.1);
+  const total = segments.reduce((sum, segment) => sum + segment.length, 0) || 1;
+  if (!segments.length) {
+    const pose = { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
+    return { startLine: routeLineAt(pose), pitStop: pose, longestStraight: { startProgress: 0, endProgress: 0, length: 0 } };
+  }
+
+  let best = { start: segments[0]!, count: 1, length: segments[0]!.length };
+  for (let startIndex = 0; startIndex < segments.length; startIndex += 1) {
+    let length = segments[startIndex]!.length;
+    let count = 1;
+    for (; count < segments.length; count += 1) {
+      const previous = segments[(startIndex + count - 1) % segments.length]!;
+      const next = segments[(startIndex + count) % segments.length]!;
+      if (Math.abs(angleDelta(previous.angle * 180 / Math.PI, next.angle * 180 / Math.PI)) > STRAIGHT_TURN_TOLERANCE_DEG) break;
+      length += next.length;
+    }
+    if (length > best.length) best = { start: segments[startIndex]!, count, length };
+  }
+
+  const startDistance = best.start.startDistance;
+  const endDistance = segments[(segments.indexOf(best.start) + best.count - 1) % segments.length]!.endDistance;
+  const straightStart = startDistance / total;
+  const straightEnd = (startDistance + best.length) / total;
+  const pitProgress = (straightStart + (best.length / total) * 0.18) % 1;
+  const lineProgress = (straightStart + (best.length / total) * 0.88) % 1;
+
+  return {
+    startLine: routeLineAt(poseOnRoute(points, lineProgress)),
+    pitStop: poseOnRoute(points, pitProgress),
+    longestStraight: {
+      startProgress: straightStart,
+      endProgress: endDistance >= startDistance ? endDistance / total : straightEnd % 1,
+      length: best.length
+    }
   };
 }
 
 export function circuitDisplayLength(circuit: CityCircuit) {
   return routeLength(circuitScene(circuit).points);
+}
+
+export function circuitRouteAnalysis(circuit: CityCircuit) {
+  return analyzeCircuitRoute(circuitScene(circuit).points);
 }
 
 export function angleDelta(from: number, to: number) {
@@ -226,7 +296,7 @@ export function CircuitMap({
   showTraits?: boolean;
   weather?: Weather;
 }) {
-  const { zoom, tiles, points, d, start } = circuitScene(circuit);
+  const { zoom, tiles, points, d } = circuitScene(circuit);
   const cameraRef = useRef<SVGGElement>(null);
   const routeRef = useRef<SVGPathElement>(null);
   const carsRef = useRef(cars);
@@ -236,7 +306,7 @@ export function CircuitMap({
   const zoomModeRef = useRef<CameraZoomMode>("normal");
   const markerScale = camera?.enabled ? 1 / FOCUS_ZOOM : 1;
   const hasCars = cars.length > 0;
-  const replayStart = startFinishLine(points);
+  const routeAnalysis = analyzeCircuitRoute(points);
   carsRef.current = cars;
   pointsRef.current = points;
 
@@ -328,10 +398,16 @@ export function CircuitMap({
             <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={d} />
             <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={d} />
             <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={d} />
+            <g className="circuit-pit-stop" transform={`translate(${routeAnalysis.pitStop.x} ${routeAnalysis.pitStop.y}) rotate(${routeAnalysis.pitStop.angle})`}>
+              <rect x="-12" y="-7" width="24" height="14" />
+              <text textAnchor="middle" dominantBaseline="central">
+                PIT
+              </text>
+            </g>
             {hasCars ? (
-              <line className="circuit-start-line" x1={replayStart.x1} y1={replayStart.y1} x2={replayStart.x2} y2={replayStart.y2} />
+              <line className="circuit-start-line" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
             ) : (
-              <circle className="circuit-start" cx={start.x} cy={start.y} r="9" />
+              <line className="circuit-start-line circuit-start-preview" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
             )}
             {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {

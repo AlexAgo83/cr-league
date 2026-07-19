@@ -2875,18 +2875,33 @@ label small {
   }
 }
 
-.circuit-start {
-  fill: none;
-  stroke: var(--color-text);
-  stroke-width: 5;
-}
-
 .circuit-start-line {
   animation: start-line-flash 1.2s ease-in-out infinite;
   stroke: var(--color-text);
   stroke-linecap: round;
   stroke-width: 3;
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.65));
+}
+
+.circuit-start-preview {
+  animation: none;
+}
+
+.circuit-pit-stop {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.65));
+}
+
+.circuit-pit-stop rect {
+  fill: rgb(16 14 18 / 0.82);
+  stroke: var(--color-telemetry);
+  stroke-width: 2;
+}
+
+.circuit-pit-stop text {
+  fill: var(--color-telemetry);
+  font-family: var(--font-display);
+  font-size: 8px;
+  font-weight: 800;
 }
 
 @keyframes start-line-flash {

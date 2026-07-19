@@ -3075,10 +3075,10 @@ label small {
   stroke-width: 3px;
 }
 
-.map-car-delta {
+.map-car .map-car-delta {
   animation: map-car-delta-float 1s ease-out both;
-  font-size: 24px;
-  stroke-width: 7px;
+  font-size: 48px;
+  stroke-width: 14px;
 }
 
 .map-car-delta.gain {
@@ -4837,6 +4837,15 @@ button.command-icon-button {
   z-index: 3;
 }
 
+.replay-overlay-director-slot {
+  bottom: 74px;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  width: min(320px, calc(100% - 24px));
+  z-index: 3;
+}
+
 .replay-overlay-actions {
   align-items: stretch;
   background: rgb(16 14 18 / 0.82);
@@ -4848,6 +4857,16 @@ button.command-icon-button {
 }
 
 .replay-overlay-stack .replay-director-panel {
+  bottom: auto;
+  left: auto;
+  max-width: none;
+  position: static;
+  right: auto;
+  transform: none;
+  width: 100%;
+}
+
+.replay-overlay-director-slot .replay-director-panel {
   bottom: auto;
   left: auto;
   max-width: none;

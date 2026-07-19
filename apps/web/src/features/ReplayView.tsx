@@ -884,18 +884,16 @@ export function ReplayView({
                     </button>
                   ) : null}
                 </div>
-                {overlayActions ? (
-                  <div className="replay-overlay-stack">
-                    {activeDirectorBeat && activeDirectorCopy ? (
-                      <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
-                        <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
-                        <strong>{activeDirectorCopy.title}</strong>
-                        <small>{renderPositionBadges(activeDirectorCopy.detail)}</small>
-                      </div>
-                    ) : null}
-                    <div className="replay-overlay-actions">{overlayActions}</div>
+                {overlayActions && activeDirectorBeat && activeDirectorCopy ? (
+                  <div className="replay-overlay-director-slot">
+                    <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
+                      <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
+                      <strong>{activeDirectorCopy.title}</strong>
+                      <small>{renderPositionBadges(activeDirectorCopy.detail)}</small>
+                    </div>
                   </div>
                 ) : null}
+                {overlayActions ? <div className="replay-overlay-stack"><div className="replay-overlay-actions">{overlayActions}</div></div> : null}
                 {towerReplacement ?? (
                   <ol className="replay-tower">
                     {tower.map((entry, index) => (

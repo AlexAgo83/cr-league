@@ -5498,6 +5498,7 @@ button.highlight-command:not(:disabled) {
 }
 
 .plan-view .directive-choice-group .choice-card {
+  --choice-check-size: 18px;
   background: rgb(236 231 218 / 0.98);
   border-color: color-mix(in srgb, var(--directive-choice-accent) 36%, transparent);
   border-left: 6px solid var(--directive-choice-accent);
@@ -5513,27 +5514,30 @@ button.highlight-command:not(:disabled) {
   border-radius: 999px;
   content: "";
   display: block;
-  height: 18px;
+  height: var(--choice-check-size);
   inset: 10px 10px auto auto;
   mask-image: none;
   opacity: 1;
   pointer-events: none;
   position: absolute;
-  width: 18px;
+  width: var(--choice-check-size);
 }
 
 .plan-view .directive-choice-group .choice-card::before {
-  border: solid transparent;
-  border-width: 0 2px 2px 0;
-  content: "";
-  height: 8px;
+  color: #fff;
+  content: "✓";
+  display: grid;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-weight: 900;
+  height: var(--choice-check-size);
+  inset: 10px 10px auto auto;
+  line-height: 1;
   opacity: 0;
   pointer-events: none;
+  place-items: center;
   position: absolute;
-  right: 16px;
-  top: 14px;
-  transform: rotate(45deg);
-  width: 4px;
+  width: var(--choice-check-size);
   z-index: 2;
 }
 
@@ -5562,7 +5566,6 @@ button.highlight-command:not(:disabled) {
 }
 
 .plan-view .directive-choice-group .choice-card.selected::before {
-  border-color: #fff;
   opacity: 1;
 }
 

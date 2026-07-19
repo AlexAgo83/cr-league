@@ -1427,6 +1427,30 @@ export function App() {
                     teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
                     traitImpacts={directiveTraitImpacts}
                     towerEntries={qualifyingReplayEntries}
+                    towerReplacement={
+                      <div className="map-qualifying-times">
+                        <header>
+                          <strong>
+                            {tt("qualifying_times_title")} <span>{qualifyingAttemptsUsed}/{qualifyingAttemptLimit}</span>
+                          </strong>
+                        </header>
+                        {qualifyingLeaderboard.length ? (
+                          <ol>
+                            {qualifyingLeaderboard.map((run) => (
+                              <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeam?.id ? "player" : undefined}>
+                                <span>
+                                  <PositionBadge position={run.position} /> {run.teamName}
+                                  {run.attempts ? ` · ${tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}` : ""}
+                                </span>
+                                <em>{run.time.toFixed(2)}s</em>
+                              </li>
+                            ))}
+                          </ol>
+                        ) : (
+                          <small>{tt("qualifying_times_empty")}</small>
+                        )}
+                      </div>
+                    }
                     titleKey="qualifying_replay_title"
                     explainerKey="qualifying_replay_explainer"
                     initialLap={currentQualifyingResult.lap}

@@ -410,11 +410,13 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Run lap time" })).toBe(null);
     expect(screen.queryByText("Track note")).toBe(null);
     expect(screen.queryByText("Race pace settles")).toBe(null);
-    expect(document.querySelector(".replay-tower")?.textContent).toContain("Attempt 1 · lap 1");
-    expect(document.querySelector(".replay-tower")?.textContent).toContain("75.18s");
-    expect(document.querySelector(".replay-tower")?.textContent).toContain("Attempt 1 · lap 2");
-    expect(document.querySelector(".replay-tower")?.textContent).toContain("72.42s");
-    expect(document.querySelector(".replay-tower")?.textContent).not.toContain("Mika Blitz");
+    expect(document.querySelector(".replay-tower")).toBe(null);
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Lap times");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 1");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("75.18s");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 2");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
     expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("replay-close-button");
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     expect(screen.queryByRole("heading", { name: "Lap time replay" })).toBe(null);

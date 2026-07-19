@@ -554,6 +554,7 @@ export function ReplayView({
   onClose,
   closeLabel,
   overlayActions,
+  towerReplacement,
   tt
 }: {
   result: RaceResult;
@@ -571,6 +572,7 @@ export function ReplayView({
   onClose?: () => void;
   closeLabel?: string;
   overlayActions?: ReactNode;
+  towerReplacement?: ReactNode;
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -894,34 +896,36 @@ export function ReplayView({
                     <div className="replay-overlay-actions">{overlayActions}</div>
                   </div>
                 ) : null}
-                <ol className="replay-tower">
-                  {tower.map((entry, index) => (
-                    <li
-                      key={entry.id ?? entry.teamId}
-                      className={[
-                        entry.teamId === playerTeamId ? "player" : "",
-                        positionPops[entry.teamId]?.delta ? "position-change" : "",
-                        (positionPops[entry.teamId]?.delta ?? 0) > 0 ? "gain" : (positionPops[entry.teamId]?.delta ?? 0) < 0 ? "loss" : ""
-                      ].filter(Boolean).join(" ") || undefined}
-                    >
-                      <span
-                        className={`replay-tower-livery position-badge${index < 3 ? ` top-${index + 1}` : ""}`}
-                        aria-label={`P${index + 1}`}
-                        style={
-                          {
-                            "--livery-primary": safeHex(teamLiveries[entry.teamId]?.primary, "#38bdf8"),
-                            "--livery-secondary": safeHex(teamLiveries[entry.teamId]?.secondary, "#16c784")
-                          } as CSSProperties & Record<string, string>
-                        }
+                {towerReplacement ?? (
+                  <ol className="replay-tower">
+                    {tower.map((entry, index) => (
+                      <li
+                        key={entry.id ?? entry.teamId}
+                        className={[
+                          entry.teamId === playerTeamId ? "player" : "",
+                          positionPops[entry.teamId]?.delta ? "position-change" : "",
+                          (positionPops[entry.teamId]?.delta ?? 0) > 0 ? "gain" : (positionPops[entry.teamId]?.delta ?? 0) < 0 ? "loss" : ""
+                        ].filter(Boolean).join(" ") || undefined}
                       >
-                        {index + 1}
-                      </span>
-                      <span className="replay-tower-team">{entry.teamName}</span>
-                      {entry.value ? <span className="replay-tower-value">{entry.value}</span> : null}
-                      {positionPops[entry.teamId]?.delta ? <span className="replay-tower-delta">{positionPops[entry.teamId]!.delta > 0 ? `+${positionPops[entry.teamId]!.delta}` : positionPops[entry.teamId]!.delta}</span> : null}
-                    </li>
-                  ))}
-                </ol>
+                        <span
+                          className={`replay-tower-livery position-badge${index < 3 ? ` top-${index + 1}` : ""}`}
+                          aria-label={`P${index + 1}`}
+                          style={
+                            {
+                              "--livery-primary": safeHex(teamLiveries[entry.teamId]?.primary, "#38bdf8"),
+                              "--livery-secondary": safeHex(teamLiveries[entry.teamId]?.secondary, "#16c784")
+                            } as CSSProperties & Record<string, string>
+                          }
+                        >
+                          {index + 1}
+                        </span>
+                        <span className="replay-tower-team">{entry.teamName}</span>
+                        {entry.value ? <span className="replay-tower-value">{entry.value}</span> : null}
+                        {positionPops[entry.teamId]?.delta ? <span className="replay-tower-delta">{positionPops[entry.teamId]!.delta > 0 ? `+${positionPops[entry.teamId]!.delta}` : positionPops[entry.teamId]!.delta}</span> : null}
+                      </li>
+                    ))}
+                  </ol>
+                )}
                 <div className="replay-progress">
                   <div ref={progressRef} className="replay-progress-fill" />
                   <input

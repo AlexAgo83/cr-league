@@ -3,7 +3,7 @@ import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CardFit, Translator } from "../app/helpers.js";
 import type { FormState } from "../app/types.js";
-import { CARD_BADGES, CardStatBadges, cardArtStyle } from "./CardStatBadges.js";
+import { CARD_BADGES, CardArtImage, CardStatBadges } from "./CardStatBadges.js";
 import { VisualIcon } from "./VisualIcon.js";
 
 type TraitStats = {
@@ -221,13 +221,14 @@ export function DirectivePanel({
             {cardChoices.map((cardId) => {
               const selected = selectedCardId === cardId;
               return (
-                <button key={cardId || "none"} type="button" className={`${selected ? "choice-card selected" : "choice-card"}${cardId ? " card-art-cell" : ""}`} style={cardId ? cardArtStyle(cardId) : undefined} aria-label={`${tt("field_card")}: ${cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}`} aria-pressed={selected} onClick={() => setForm({ ...form, cardId })} disabled={disabled || cardLocked}>
+                <button key={cardId || "none"} type="button" className={`${selected ? "choice-card selected" : "choice-card"}${cardId ? " card-art-cell" : ""}`} aria-label={`${tt("field_card")}: ${cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}`} aria-pressed={selected} onClick={() => setForm({ ...form, cardId })} disabled={disabled || cardLocked}>
                   <strong>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</strong>
                   <small>
                     {cardId && selectedCardFit && selected ? `${tt(`card_fit_${selectedCardFit.level}` as TranslationKey)} · ` : ""}
                     {cardId ? tt(`card_${cardId}_hint` as TranslationKey) : tt("card_none_hint")}
                   </small>
                   {cardId ? <CardStatBadges cardId={cardId} tt={tt} /> : null}
+                  {cardId ? <CardArtImage cardId={cardId} /> : null}
                 </button>
               );
             })}

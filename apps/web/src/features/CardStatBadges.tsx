@@ -1,7 +1,7 @@
-import type { CSSProperties } from "react";
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { Translator } from "../app/helpers.js";
+import { AssetImage } from "./AssetImage.js";
 import { VisualIcon } from "./VisualIcon.js";
 
 const CARD_ART: Record<CardId, string> = {
@@ -22,8 +22,8 @@ const CARD_ART: Record<CardId, string> = {
   calculated_attack: "/assets/crl/card-calculated-attack.png"
 };
 
-export function cardArtStyle(cardId: CardId): CSSProperties & { "--card-art": string } {
-  return { "--card-art": `url("${CARD_ART[cardId]}")` };
+export function CardArtImage({ cardId }: { cardId: CardId }) {
+  return <AssetImage className="card-cell-art" src={CARD_ART[cardId]} alt="" />;
 }
 
 export const CARD_BADGES: Record<CardId, Array<{ trait: "grip" | "overtaking" | "energy"; sign: "+" | "-"; label: TranslationKey }>> = {

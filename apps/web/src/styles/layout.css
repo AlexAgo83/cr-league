@@ -3223,20 +3223,20 @@ label small {
 .circuit-order-badges span {
   align-items: center;
   background: var(--color-accent);
-  border-radius: 999px;
+  border-radius: 7px;
   color: #fff;
   display: inline-flex;
   font-size: 0.72rem;
   font-weight: 900;
-  height: 24px;
+  height: 22px;
   justify-content: center;
-  min-width: 24px;
+  min-width: 22px;
   padding: 0 7px;
 }
 
 .circuit-order-badges span.current-round-badge {
   animation: current-round-pulse 1.5s ease-in-out infinite;
-  background: radial-gradient(circle, #f8f3e8 0 48%, var(--color-accent) 50%);
+  background: radial-gradient(closest-side, #f8f3e8 0 48%, var(--color-accent) 50%);
   color: #1b100b;
 }
 

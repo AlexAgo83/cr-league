@@ -25,7 +25,8 @@ const PIT_STOP_HOLD_SECONDS = 1.2;
 const PIT_STOP_EXIT_SECONDS = 0.8;
 const PIT_STOP_RANK_GAP_SECONDS = 0.45;
 const PIT_STOP_ORDER_GAP_SECONDS = 0.18;
-const PIT_STOP_EXIT_ADVANCE_LAPS = 0.12;
+const STANDARD_PIT_STOP_COST_SECONDS = 3.2;
+const MINI_PIT_STOP_COST_SECONDS = 2.2;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
@@ -256,17 +257,23 @@ function easeInOut(progress: number) {
   return t * t * (3 - 2 * t);
 }
 
-export function pitStopVisualProgress(baseProgress: number, time: number, pitTime: number, pitProgress: number, offsetSeconds = 0) {
+function pitStopCostSeconds(event: RaceEvent) {
+  return event.tags.includes("mini_pack") ? MINI_PIT_STOP_COST_SECONDS : STANDARD_PIT_STOP_COST_SECONDS;
+}
+
+export function pitStopVisualProgress(baseProgress: number, time: number, pitTime: number, pitProgress: number, offsetSeconds = 0, delayLaps = 0) {
   const arrivalTime = pitTime + offsetSeconds;
   const entryStart = pitTime - PIT_STOP_ENTRY_SECONDS;
-  if (time < entryStart || time > arrivalTime + PIT_STOP_HOLD_SECONDS + PIT_STOP_EXIT_SECONDS) return baseProgress;
+  const delayedProgress = Math.max(0, baseProgress - delayLaps);
+  if (time < entryStart) return baseProgress;
+  if (time > arrivalTime + PIT_STOP_HOLD_SECONDS + PIT_STOP_EXIT_SECONDS) return delayedProgress;
   if (time < arrivalTime) {
     const t = easeInOut((time - entryStart) / Math.max(PIT_STOP_ENTRY_SECONDS, arrivalTime - entryStart));
     return baseProgress + (pitProgress - baseProgress) * t;
   }
   if (time <= arrivalTime + PIT_STOP_HOLD_SECONDS) return pitProgress;
   const t = easeInOut((time - arrivalTime - PIT_STOP_HOLD_SECONDS) / PIT_STOP_EXIT_SECONDS);
-  return pitProgress + (Math.min(baseProgress, pitProgress + PIT_STOP_EXIT_ADVANCE_LAPS) - pitProgress) * t;
+  return pitProgress + (Math.max(pitProgress, delayedProgress) - pitProgress) * t;
 }
 
 export function pitStopTimeOffset(event: RaceEvent, trace: ReplayTracePoint[], progress: number) {
@@ -600,7 +607,8 @@ export function ReplayView({
       .filter((event) => event.type === "pit_stop" && event.teamId === entry.teamId)
       .reduce((current, event) => {
         const eventProgress = pitStopRaceProgress(event, maxLap, circuit.laps, pitProgress);
-        return pitStopVisualProgress(current, clock.current, raceTimeAtProgress(eventProgress), eventProgress * circuit.laps, pitStopTimeOffset(event, replayTrace, eventProgress));
+        const delayLaps = (pitStopCostSeconds(event) / Math.max(1, raceDuration)) * circuit.laps;
+        return pitStopVisualProgress(current, clock.current, raceTimeAtProgress(eventProgress), eventProgress * circuit.laps, pitStopTimeOffset(event, replayTrace, eventProgress), delayLaps);
       }, baseProgress);
     return {
       id: entry.teamId,

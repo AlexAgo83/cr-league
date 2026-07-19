@@ -516,13 +516,15 @@ export function App() {
   const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
   const visibleResult = historyReplay?.result ?? (resultOpen ? result : undefined);
   const visibleResultCircuit = historyReplay && leagueState ? circuitForRound(historyReplay.round, leagueState.league.id, historyReplay.season) : currentCircuit;
+  const isSeasonFinalGrandPrix = Boolean(leagueState && leagueState.currentGrandPrix.round >= leagueState.league.maxGrandPrixPerSeason);
+  const nextGrandPrixActionLabel = tt(isSeasonFinalGrandPrix ? "action_finish_season" : "action_next_grand_prix");
   const primaryCommand =
     deskState === "prepare"
       ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }
       : deskState === "ready"
         ? { label: tt("action_launch_grand_prix"), action: openResolveConfirm, disabled: status === "loading" || isResolved }
         : {
-            label: tt("action_next_grand_prix"),
+            label: nextGrandPrixActionLabel,
             action: openNextGrandPrixConfirm,
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
@@ -746,9 +748,10 @@ export function App() {
 
   async function startNextGrandPrix() {
     if (!leagueState) return;
+    const finishingSeason = leagueState.currentGrandPrix.round >= leagueState.league.maxGrandPrixPerSeason;
     setNextGrandPrixConfirmOpen(false);
 
-    await run(tt("status_starting_next_grand_prix"), async () => {
+    await run(tt(finishingSeason ? "status_finishing_season" : "status_starting_next_grand_prix"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/next-grand-prix`, {
         method: "POST",
         body: JSON.stringify({
@@ -759,7 +762,7 @@ export function App() {
       setLeagueState(withCurrentPlayer(state));
       setGameView("drive");
       setResultOpen(false);
-      showStatus(tt("status_next_grand_prix_started"));
+      showStatus(tt(finishingSeason ? "status_season_finished" : "status_next_grand_prix_started"));
       pushCommandHint("prepare");
     });
   }
@@ -1293,14 +1296,14 @@ export function App() {
     </Modal>
   ) : null;
   const nextGrandPrixConfirmModal = nextGrandPrixConfirmOpen ? (
-    <Modal label={tt("next_gp_confirm_title")} onClose={() => setNextGrandPrixConfirmOpen(false)}>
-      <span className="section-kicker">{tt("action_next_grand_prix")}</span>
-      <h2>{tt("next_gp_confirm_title")}</h2>
+    <Modal label={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} onClose={() => setNextGrandPrixConfirmOpen(false)}>
+      <span className="section-kicker">{nextGrandPrixActionLabel}</span>
+      <h2>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")}</h2>
       <img className="modal-hero-image" src="/assets/crl/next-gp-modal.png" alt="" />
-      <p>{tt("next_gp_confirm_body")}</p>
+      <p>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_body" : "next_gp_confirm_body")}</p>
       <div className="actions secondary-actions">
         <button type="button" onClick={() => void startNextGrandPrix()} disabled={status === "loading"}>
-          {tt("action_next_grand_prix")}
+          {nextGrandPrixActionLabel}
         </button>
         <button
           type="button"

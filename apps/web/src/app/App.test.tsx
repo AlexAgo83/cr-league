@@ -1017,8 +1017,15 @@ describe("App", () => {
 
   it("celebrates a season rollover once and reopens the recap from palmares", async () => {
     saveProfile();
+    const finalRoundResolvedState = {
+      ...resolvedState,
+      league: {
+        ...resolvedState.league,
+        maxGrandPrixPerSeason: 1
+      }
+    };
     const fetch = vi.spyOn(globalThis, "fetch")
-      .mockResolvedValueOnce(response(resolvedState))
+      .mockResolvedValueOnce(response(finalRoundResolvedState))
       .mockResolvedValueOnce(response(seasonTwoState));
 
     render(<App />);
@@ -1027,8 +1034,10 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.queryByRole("dialog", { name: "Season recap" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
-    fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
-    fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
+    fireEvent.click(screen.getByRole("button", { name: "Finish season" }));
+    expect(screen.getByRole("dialog", { name: "Finish the season?" })).toBeTruthy();
+    expect(screen.getByText("This closes the current season, prepares the next one, and shows the season recap.")).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Finish season" }).at(-1)!);
     const recap = await screen.findByRole("dialog", { name: "Season recap" });
     expect(recap.textContent).toContain("Season 1");
     expect(recap.textContent).toContain("Champion");

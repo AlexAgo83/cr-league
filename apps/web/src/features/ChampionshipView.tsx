@@ -3,7 +3,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, type CityCircuit } from "../app/circuits.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
-import { CircuitMap } from "./CircuitMap.js";
+import { CircuitMap, analyzeCircuitRoute } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { RewardValue } from "./RewardValue.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
@@ -261,14 +261,17 @@ export function ChampionshipView({
 }
 
 function MiniCircuit({ circuit }: { circuit: CityCircuit }) {
+  const points = miniRoutePoints(circuit.route);
+  const startLine = analyzeCircuitRoute(points).startLine;
   return (
     <svg className="mini-circuit-map" viewBox="0 0 100 64" aria-hidden="true" focusable="false">
-      <path d={miniRoutePath(circuit.route)} />
+      <path d={miniRoutePath(points)} />
+      <line className="mini-circuit-start-line" x1={startLine.x1} y1={startLine.y1} x2={startLine.x2} y2={startLine.y2} />
     </svg>
   );
 }
 
-function miniRoutePath(route: CityCircuit["route"]) {
+function miniRoutePoints(route: CityCircuit["route"]) {
   const lngs = route.map((point) => point.lng);
   const lats = route.map((point) => point.lat);
   const minLng = Math.min(...lngs);
@@ -277,13 +280,14 @@ function miniRoutePath(route: CityCircuit["route"]) {
   const maxLat = Math.max(...lats);
   const scaleX = maxLng - minLng || 1;
   const scaleY = maxLat - minLat || 1;
-  return route
-    .map((point, index) => {
-      const x = 8 + ((point.lng - minLng) / scaleX) * 84;
-      const y = 56 - ((point.lat - minLat) / scaleY) * 48;
-      return `${index === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
-    })
-    .join(" ");
+  return route.map((point) => ({
+    x: 8 + ((point.lng - minLng) / scaleX) * 84,
+    y: 56 - ((point.lat - minLat) / scaleY) * 48
+  }));
+}
+
+function miniRoutePath(points: Array<{ x: number; y: number }>) {
+  return points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
 }
 
 function historyLabel(grandPrix: LeagueState["grandPrixHistory"][number], playerTeamId: string | undefined, tt: Translator) {

@@ -399,9 +399,10 @@ export function CircuitMap({
             <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={d} />
             <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={d} />
             <g className="circuit-pit-stop" transform={`translate(${routeAnalysis.pitStop.x} ${routeAnalysis.pitStop.y}) rotate(${routeAnalysis.pitStop.angle})`}>
-              <rect x="-12" y="-7" width="24" height="14" />
+              <line x1="-18" y1="-11" x2="18" y2="-11" />
+              <circle cx="-22" cy="-11" r="8" />
               <text textAnchor="middle" dominantBaseline="central">
-                PIT
+                P
               </text>
             </g>
             {hasCars ? (

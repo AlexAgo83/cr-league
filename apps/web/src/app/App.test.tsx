@@ -441,10 +441,12 @@ describe("App", () => {
     expect(screen.getByText(t(roundOneCircuit.layoutKey, "en"))).toBeTruthy();
     expect(document.querySelector(".circuit-calendar-list")?.textContent).toContain("1");
     expect(document.querySelector(".current-round-badge")?.textContent).toBe("1");
+    expect(document.querySelector(".mini-circuit-start-line")).toBeTruthy();
     const displayedCircuitNames = [...document.querySelectorAll(".circuit-calendar-button strong")].map((node) => node.textContent);
     expect(displayedCircuitNames).toEqual([...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" })));
     fireEvent.click(screen.getByRole("button", { name: /Brussels Grand Place Clash/ }));
     expect(screen.getByLabelText("City circuit map")).toBeTruthy();
+    expect(document.querySelector(".circuit-detail-screen .circuit-start-line")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Focus driver" })).toBe(null);
     expect(screen.queryByRole("dialog", { name: "Brussels Grand Place Clash" })).toBe(null);
     fireEvent.click(document.querySelector(".circuit-detail-close")!);

@@ -2877,10 +2877,10 @@ label small {
 
 .circuit-start-line {
   animation: start-line-flash 1.2s ease-in-out infinite;
-  stroke: var(--color-text);
+  stroke: #fff7d6;
   stroke-linecap: round;
-  stroke-width: 3;
-  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.65));
+  stroke-width: 4;
+  filter: drop-shadow(0 0 5px rgb(255 77 0 / 0.52)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.8));
 }
 
 .circuit-start-preview {
@@ -2888,11 +2888,17 @@ label small {
 }
 
 .circuit-pit-stop {
-  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.65));
+  filter: drop-shadow(0 0 5px rgb(56 189 248 / 0.45)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.75));
 }
 
-.circuit-pit-stop rect {
-  fill: rgb(16 14 18 / 0.82);
+.circuit-pit-stop line {
+  stroke: var(--color-telemetry);
+  stroke-linecap: round;
+  stroke-width: 4;
+}
+
+.circuit-pit-stop circle {
+  fill: rgb(16 14 18 / 0.88);
   stroke: var(--color-telemetry);
   stroke-width: 2;
 }
@@ -3500,6 +3506,12 @@ label small {
   stroke: #f8f3e8;
   stroke-linecap: round;
   stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.mini-circuit-start-line {
+  stroke: var(--color-accent);
+  stroke-linecap: round;
   stroke-width: 4;
 }
 

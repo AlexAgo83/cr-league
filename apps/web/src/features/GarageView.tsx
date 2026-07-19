@@ -226,7 +226,8 @@ export function GarageView({
               <button key={item.cardId} className="card-art-cell" type="button" onClick={() => setPendingBuyCardId(item.cardId)} disabled={loading}>
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
                 <strong className="card-price-badge">
-                  <RewardValue type="credits" value={item.price} tt={tt} />
+                  <span aria-hidden="true" className="reward-icon">●</span>
+                  <span>{item.price}</span>
                 </strong>
                 <strong className="card-owned-count">x{countCards(playerTeam.cards, item.cardId)}</strong>
                 <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>

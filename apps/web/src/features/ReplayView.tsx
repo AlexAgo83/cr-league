@@ -255,14 +255,16 @@ function easeInOut(progress: number) {
   return t * t * (3 - 2 * t);
 }
 
-export function pitStopVisualProgress(baseProgress: number, time: number, pitTime: number, pitProgress: number) {
-  if (time < pitTime - PIT_STOP_ENTRY_SECONDS || time > pitTime + PIT_STOP_HOLD_SECONDS + PIT_STOP_EXIT_SECONDS) return baseProgress;
-  if (time < pitTime) {
-    const t = easeInOut((time - (pitTime - PIT_STOP_ENTRY_SECONDS)) / PIT_STOP_ENTRY_SECONDS);
+export function pitStopVisualProgress(baseProgress: number, time: number, pitTime: number, pitProgress: number, offsetSeconds = 0) {
+  const arrivalTime = pitTime + offsetSeconds;
+  const entryStart = pitTime - PIT_STOP_ENTRY_SECONDS;
+  if (time < entryStart || time > arrivalTime + PIT_STOP_HOLD_SECONDS + PIT_STOP_EXIT_SECONDS) return baseProgress;
+  if (time < arrivalTime) {
+    const t = easeInOut((time - entryStart) / Math.max(PIT_STOP_ENTRY_SECONDS, arrivalTime - entryStart));
     return baseProgress + (pitProgress - baseProgress) * t;
   }
-  if (time <= pitTime + PIT_STOP_HOLD_SECONDS) return pitProgress;
-  const t = easeInOut((time - pitTime - PIT_STOP_HOLD_SECONDS) / PIT_STOP_EXIT_SECONDS);
+  if (time <= arrivalTime + PIT_STOP_HOLD_SECONDS) return pitProgress;
+  const t = easeInOut((time - arrivalTime - PIT_STOP_HOLD_SECONDS) / PIT_STOP_EXIT_SECONDS);
   return pitProgress + (baseProgress - pitProgress) * t;
 }
 
@@ -597,7 +599,7 @@ export function ReplayView({
       .filter((event) => event.type === "pit_stop" && event.teamId === entry.teamId)
       .reduce((current, event) => {
         const eventProgress = pitStopRaceProgress(event, maxLap, circuit.laps, pitProgress);
-        return pitStopVisualProgress(current, clock.current, raceTimeAtProgress(eventProgress) + pitStopTimeOffset(event, replayTrace, eventProgress), eventProgress * circuit.laps);
+        return pitStopVisualProgress(current, clock.current, raceTimeAtProgress(eventProgress), eventProgress * circuit.laps, pitStopTimeOffset(event, replayTrace, eventProgress));
       }, baseProgress);
     return {
       id: entry.teamId,

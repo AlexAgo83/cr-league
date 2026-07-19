@@ -92,6 +92,12 @@ const CARD_INFO_BADGES: Partial<Record<CardId, TranslationKey>> = {
   calculated_attack: "card_info_rival"
 };
 
+const BADGE_TRAIT_LABEL: Record<"grip" | "overtaking" | "energy", TranslationKey> = {
+  grip: "circuit_grip_short",
+  overtaking: "circuit_overtaking_short",
+  energy: "circuit_energy_short"
+};
+
 export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator }) {
   const infoLabel = CARD_INFO_BADGES[cardId];
 
@@ -101,7 +107,7 @@ export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator 
         <span key={`${badge.sign}-${badge.trait}`} className={`card-stat-badge map-trait-${badge.trait} ${badge.sign === "-" ? "weakness" : "bonus"}`}>
           <i aria-hidden="true"><VisualIcon name={badge.trait} /></i>
           <span>
-            {badge.sign} {tt(badge.label)}
+            {badge.sign} {tt(BADGE_TRAIT_LABEL[badge.trait])}
           </span>
         </span>
       ))}

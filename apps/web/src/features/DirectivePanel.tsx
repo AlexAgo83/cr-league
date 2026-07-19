@@ -52,6 +52,12 @@ const TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
   energy: "circuit_energy"
 };
 
+const BADGE_TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
+  grip: "circuit_grip_short",
+  overtaking: "circuit_overtaking_short",
+  energy: "circuit_energy_short"
+};
+
 // Player-facing read of what each directive choice shifts, mirrored from the race
 // simulation's applyDecision() and expressed on the grip/attack/endurance vocabulary
 // the map already uses. UI hint only — no balance logic lives here.
@@ -86,7 +92,7 @@ function ImpactBadges({ badges, tt }: { badges: ImpactBadge[]; tt: Translator })
             <VisualIcon name={entry.trait} />
           </i>
           <span>
-            {entry.sign} {tt(entry.label)}
+            {entry.sign} {tt(BADGE_TRAIT_LABEL[entry.trait])}
           </span>
         </span>
       ))}

@@ -225,6 +225,7 @@ export function ChampionshipView({
                       </summary>
                       <ol className="round-timeline">
                         {grandPrixList.map((grandPrix) => {
+                          const position = historyPosition(grandPrix, playerTeamId);
                           const chip = (
                             <span
                               className={`round-chip status-${
@@ -245,7 +246,7 @@ export function ChampionshipView({
                               ) : (
                                 chip
                               )}
-                              <small>{historyPosition(grandPrix, playerTeamId) ? <PositionBadge position={historyPosition(grandPrix, playerTeamId)!} /> : statusLabel(grandPrix.status, tt)}</small>
+                              <small>{position ? <PositionBadge position={position} /> : statusLabel(grandPrix.status, tt)}</small>
                             </li>
                           );
                         })}

@@ -85,7 +85,7 @@ export function ChampionshipView({
       </section>
 
       <div className="championship-grid">
-        <section className="panel championship-record-panel">
+        <section className={`panel championship-record-panel record-panel-${activeRecordTab}`}>
           <header className={`championship-record-header record-hero-header record-hero-${activeRecordTab}`}>
             <h3>{activeRecordLabel}</h3>
             <div className="championship-record-switch" role="tablist" aria-label={tt("championship_kicker")}>

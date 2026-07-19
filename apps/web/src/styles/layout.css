@@ -6082,10 +6082,8 @@ button.highlight-command:not(:disabled) {
 }
 
 .garage-panel-inventory .card-inventory-button,
-.garage-panel-shop .card-shop button,
-.garage-panel-inventory .card-inventory-button small,
-.garage-panel-shop .card-shop button small {
-  font-family: inherit;
+.garage-panel-inventory .card-inventory-button small {
+  font-family: var(--font-sans);
 }
 
 .garage-panel-inventory .card-inventory-button > span {

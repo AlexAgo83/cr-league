@@ -27,5 +27,5 @@ export {
 } from "./economy/constants.js";
 export { DEMO_RACE_INPUT } from "./simulation/demoRace.js";
 export { createPrng } from "./simulation/prng.js";
-export { simulateRace } from "./simulation/simulateRace.js";
+export { RACE_REPLAY_BASE_SECONDS, simulateRace } from "./simulation/simulateRace.js";
 export { validateReplayTrace } from "./simulation/validateReplayTrace.js";

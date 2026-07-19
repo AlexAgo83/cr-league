@@ -1,5 +1,6 @@
 import {
   type QualifyingRun,
+  RACE_REPLAY_BASE_SECONDS,
   type RaceDecision,
   type RaceEvent,
   type RaceInput,
@@ -8,8 +9,9 @@ import {
   type RaceTraits,
   type Weather
 } from "@cr-league/shared";
-import { QUALIFYING_REPLAY_SECONDS_PER_LAP } from "./constants.js";
 import { strongestForecast } from "./utils.js";
+
+const QUALIFYING_REFERENCE_LAP_SECONDS = 90;
 
 export function bestQualifyingRuns(runs: QualifyingRun[]) {
   return [...runs]
@@ -32,6 +34,7 @@ export function createQualifyingRuns(input: {
   trackLengthMeters?: number;
   forecast: RaceInput["forecast"];
   laps: number;
+  raceLaps?: number;
 }): QualifyingRun[] {
   const weather = strongestForecast(input.forecast);
   const traits = input.traits ?? { grip: 62, overtaking: 62, energy: 62 };
@@ -61,7 +64,7 @@ export function createQualifyingRuns(input: {
     const variance = (Math.random() - 0.5) * 2.4;
     return Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + pitDelta + cardDelta + warmupPenalty + tyreDelta + variance).toFixed(2));
   });
-  const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, weather, input.trackLengthMeters ?? 3200);
+  const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, weather, input.trackLengthMeters ?? 3200, input.raceLaps ?? input.laps);
   const createdAt = new Date().toISOString();
 
   return lapTimes.map((time, index) => ({
@@ -75,10 +78,11 @@ export function createQualifyingRuns(input: {
   }));
 }
 
-function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, lapTimes: number[], weather: Weather, trackLengthMeters: number): RaceResult {
+function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, lapTimes: number[], weather: Weather, trackLengthMeters: number, raceLaps: number): RaceResult {
   const segments: RaceSegment[] = ["start", "early", "mid", "late", "finish"];
   const bestTime = Math.min(...lapTimes);
-  const visualTime = lapTimes.length * QUALIFYING_REPLAY_SECONDS_PER_LAP;
+  const averageLapTime = lapTimes.reduce((sum, time) => sum + time, 0) / Math.max(1, lapTimes.length);
+  const visualTime = (RACE_REPLAY_BASE_SECONDS / Math.max(1, raceLaps)) * (averageLapTime / QUALIFYING_REFERENCE_LAP_SECONDS);
   const events: RaceEvent[] = lapTimes.map((time, index) => ({
     id: `qualifying_lap_${index + 1}`,
     order: index,

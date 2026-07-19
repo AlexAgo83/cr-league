@@ -69,4 +69,3 @@ export const DEFAULT_GRAND_PRIX_PER_SEASON = 6;
 export const MAX_GRAND_PRIX_PER_SEASON = 18;
 export const TEAM_NAME_LIMIT = 32;
 export const LEAGUE_NAME_LIMIT = 40;
-export const QUALIFYING_REPLAY_SECONDS_PER_LAP = 10;

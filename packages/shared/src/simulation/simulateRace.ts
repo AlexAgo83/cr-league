@@ -30,6 +30,7 @@ const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
   late: 34,
   finish: 20
 };
+export const RACE_REPLAY_BASE_SECONDS = Object.values(SEGMENT_BASE_TIME).reduce((sum, seconds) => sum + seconds, 0);
 const REPLAY_TRACE_STEPS_PER_SEGMENT = 20;
 const GRID_GAP_SECONDS = 0.25;
 const DEFAULT_TRACK_LENGTH_METERS = 3200;

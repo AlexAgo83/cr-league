@@ -555,6 +555,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
     if (attempts > state.league.qualifyingAttemptLimit) {
       throw new LeagueRuleError("No qualifying attempts left.");
     }
+    const circuit = circuitIdentityForRound(freshGrandPrix.round, circuitSeasonSeed(leagueId, freshGrandPrix.season));
     const attemptRuns = createQualifyingRuns({
       seed: `${freshGrandPrix.seed}-${team.id}-${Date.now()}-${Math.random()}`,
       teamId: team.id,
@@ -565,7 +566,8 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
       traits: normalizeRaceTraits(input.traits),
       trackLengthMeters: state.currentGrandPrix.trackLengthMeters,
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
-      laps: clampInteger(input.laps, 3, 1, 3)
+      laps: clampInteger(input.laps, 3, 1, 3),
+      raceLaps: circuit.laps
     });
     const nextRunsForAttempt = attemptRuns.map((run) => ({ ...run, attempts }));
     const nextRun = nextRunsForAttempt.reduce((best, run) => (run.time < best.time ? run : best), nextRunsForAttempt[0]!);
@@ -584,7 +586,8 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
           secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
           trackLengthMeters: state.currentGrandPrix.trackLengthMeters,
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
-          laps: 1
+          laps: 1,
+          raceLaps: circuit.laps
         })[0]!
       );
       nextRuns[nextRuns.length - 1]!.attempts = botAttempt;
@@ -796,6 +799,7 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
     if (!missingBots.length) return;
 
     const nextRuns = [...runs];
+    const circuit = circuitIdentityForRound(freshGrandPrix.round, circuitSeasonSeed(state.league.id, freshGrandPrix.season));
     for (const team of missingBots) {
       const demo = DEMO_RACE_INPUT.participants[state.teams.indexOf(team) % DEMO_RACE_INPUT.participants.length];
       nextRuns.push(
@@ -808,7 +812,8 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
           secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
           trackLengthMeters: state.currentGrandPrix.trackLengthMeters,
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
-          laps: 1
+          laps: 1,
+          raceLaps: circuit.laps
         })[0]!
       );
     }

@@ -14,6 +14,7 @@ export const REPLAY_SPEED_KEY = "cr-league-replay-speed";
 export const REPLAY_FOCUS_KEY = "cr-league-replay-focus";
 export const DISMISSED_REPLAY_HELP_KEY = "cr-league-dismissed-replay-help";
 const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
+const REPLAY_BASE_SPEED = 0.5;
 const REFERENCE_REPLAY_DISTANCE_PIXELS = 9_000;
 const POSITION_CHANGE_MARGIN_LAPS = 0.015;
 const TRACE_ORDER_GAP_LAPS = 0.035;
@@ -667,7 +668,7 @@ export function ReplayView({
     if (!playing) return;
     let last = performance.now();
     let frame = requestAnimationFrame(function tick(now: number) {
-      const replayDeltaSeconds = ((now - last) / 1000) * speed;
+      const replayDeltaSeconds = ((now - last) / 1000) * REPLAY_BASE_SPEED * speed;
       clock.current = Math.min(clock.current + replayDeltaSeconds, replayEnd);
       last = now;
       svg.setCurrentTime(clock.current);

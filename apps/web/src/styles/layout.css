@@ -3212,14 +3212,6 @@ label small {
   top: 8px;
 }
 
-.circuit-order-badges small {
-  font-size: 0.68rem;
-}
-
-.circuit-order-badges-unused {
-  justify-content: flex-end;
-}
-
 .circuit-order-badges span {
   align-items: center;
   background: var(--color-accent);

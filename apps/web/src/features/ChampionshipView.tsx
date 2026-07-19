@@ -172,9 +172,11 @@ export function ChampionshipView({
                           {circuit.laps} {tt("unit_laps")} · <VisualIcon name={circuit.likelyWeather} /> {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
                         </small>
                       </span>
-                      <span className={`circuit-order-badges ${rounds.length ? "circuit-order-badges-used" : "circuit-order-badges-unused"}`}>
-                        {rounds.length ? rounds.map((round) => <span key={round} className={round === currentGrandPrix.round ? "current-round-badge" : undefined}>{round}</span>) : <small>{tt("championship_calendar_unused")}</small>}
-                      </span>
+                      {rounds.length ? (
+                        <span className="circuit-order-badges circuit-order-badges-used">
+                          {rounds.map((round) => <span key={round} className={round === currentGrandPrix.round ? "current-round-badge" : undefined}>{round}</span>)}
+                        </span>
+                      ) : null}
                     </button>
                   </li>
                 );

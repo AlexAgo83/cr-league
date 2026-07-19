@@ -682,6 +682,7 @@ describe("App", () => {
     expect(screen.getAllByText("Current GP").length).toBe(1);
     expect(document.querySelector(".current-gp-panel")).toBe(null);
     expect(screen.getByText("0/2")).toBeTruthy();
+    expect(screen.queryByRole("tab", { name: "Palmares" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     expect(document.querySelector(".garage-overview")?.textContent).toContain("ABC123");
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
@@ -804,6 +805,7 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Inventory" }));
     expect(screen.getByText("No cards in inventory.")).toBeTruthy();
+    expect(document.querySelector(".garage-empty-inventory img")).toBe(null);
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
     expect(screen.getByRole("button", { name: /Soft Tires/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Qualifying Lap/ })).toBeTruthy();

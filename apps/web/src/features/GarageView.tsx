@@ -205,7 +205,6 @@ export function GarageView({
                 ))
               ) : (
                 <li className="garage-empty-inventory">
-                  <img src="/assets/crl/garage-empty.png" alt="" />
                   <span>{tt("garage_empty_inventory")}</span>
                 </li>
               )}

@@ -4120,15 +4120,15 @@ label small {
 }
 
 .garage-hero-team {
-  --garage-panel-image: url("/assets/crl/garage-empty.png");
+  --garage-panel-image: url("/assets/crl/garage-team-hero.png");
 }
 
 .garage-hero-inventory {
-  --garage-panel-image: url("/assets/crl/card-workbench.png");
+  --garage-panel-image: url("/assets/crl/garage-inventory-hero.png");
 }
 
 .garage-hero-shop {
-  --garage-panel-image: url("/assets/crl/garage-buy-modal.png");
+  --garage-panel-image: url("/assets/crl/garage-shop-hero.png");
 }
 
 .garage-card-toggle {

@@ -5503,10 +5503,38 @@ button.highlight-command:not(:disabled) {
   border-left: 6px solid var(--directive-choice-accent);
   clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
   overflow: hidden;
+  padding-right: 42px;
+  position: relative;
 }
 
 .plan-view .directive-choice-group .choice-card::after {
-  display: none;
+  background: transparent;
+  border: 2px solid rgb(23 21 26 / 0.28);
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 18px;
+  inset: 10px 10px auto auto;
+  mask-image: none;
+  opacity: 1;
+  pointer-events: none;
+  position: absolute;
+  width: 18px;
+}
+
+.plan-view .directive-choice-group .choice-card::before {
+  border: solid transparent;
+  border-width: 0 2px 2px 0;
+  content: "";
+  height: 8px;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 16px;
+  top: 14px;
+  transform: rotate(45deg);
+  width: 4px;
+  z-index: 2;
 }
 
 .plan-view .directive-choice-group .choice-card strong {
@@ -5526,6 +5554,16 @@ button.highlight-command:not(:disabled) {
 .plan-view .directive-choice-group .choice-card.selected {
   background: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
   box-shadow: inset 0 0 0 1px var(--directive-choice-accent);
+}
+
+.plan-view .directive-choice-group .choice-card.selected::after {
+  background: var(--directive-choice-accent);
+  border-color: var(--directive-choice-accent);
+}
+
+.plan-view .directive-choice-group .choice-card.selected::before {
+  border-color: #fff;
+  opacity: 1;
 }
 
 .card-inventory-button {
@@ -5752,7 +5790,15 @@ button.highlight-command:not(:disabled) {
 
 .plan-step:not(.active):hover,
 .plan-step:not(.active):focus-visible {
+  background: rgb(248 243 232 / 0.12);
   color: var(--color-text);
+}
+
+.plan-view .plan-step:not(.active):hover,
+.plan-view .plan-step:not(.active):focus-visible,
+.plan-view .plan-step:not(.active):hover .plan-step-value,
+.plan-view .plan-step:not(.active):focus-visible .plan-step-value {
+  color: var(--color-ink);
 }
 
 .plan-step-label {

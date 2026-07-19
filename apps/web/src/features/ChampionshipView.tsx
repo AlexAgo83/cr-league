@@ -147,8 +147,8 @@ export function ChampionshipView({
                   </span>
                   <h4>{tt(previewCircuit.layoutKey)}</h4>
                 </div>
-                <button type="button" className="secondary-button circuit-detail-close" onClick={() => setPreviewCircuit(undefined)}>
-                  {tt("action_close")}
+                <button type="button" className="secondary-button circuit-detail-close" aria-label={tt("action_close")} onClick={() => setPreviewCircuit(undefined)}>
+                  ×
                 </button>
               </div>
               <CircuitMap circuit={previewCircuit} tt={tt} showHeading={false} showTraits={false} />

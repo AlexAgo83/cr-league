@@ -3223,8 +3223,11 @@ label small {
 }
 
 .circuit-detail-screen {
+  background: #100e12;
   display: grid;
   gap: 12px;
+  margin: -2px;
+  padding: 14px;
 }
 
 .circuit-detail-header {
@@ -3242,11 +3245,19 @@ label small {
 
 .circuit-detail-close {
   flex: 0 0 auto;
+  font-size: 1.3rem;
+  height: 42px;
   justify-self: end;
+  line-height: 1;
+  min-width: 42px;
+  padding: 0;
 }
 
 .circuit-detail-screen .circuit-map {
-  min-height: min(66vh, 620px);
+  background: #100e12;
+  border: 0;
+  border-radius: 0;
+  padding: 0;
 }
 
 @keyframes current-round-pulse {

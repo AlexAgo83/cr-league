@@ -1359,6 +1359,10 @@ label small {
   --directive-choice-accent: #0284c7;
 }
 
+.directive-choice-pit {
+  --directive-choice-accent: #8b5cf6;
+}
+
 .directive-choice-card {
   --directive-choice-accent: #b45309;
 }

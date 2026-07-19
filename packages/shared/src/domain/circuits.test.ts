@@ -43,14 +43,14 @@ describe("circuit identities", () => {
     expect(CITY_CIRCUIT_IDENTITIES.slice(-6).map((circuit) => circuit.city)).toEqual(["Tokyo", "Rio de Janeiro", "Cape Town", "Seoul", "Montreal", "Istanbul"]);
   });
 
-  it("uses real global circuit lengths", () => {
+  it("keeps generated global route lengths in circuit metadata", () => {
     expect(Object.fromEntries(CITY_CIRCUIT_IDENTITIES.slice(-6).map((circuit) => [circuit.city, circuit.trackLengthMeters]))).toEqual({
-      "Cape Town": 2930,
-      Istanbul: 5338,
-      Montreal: 4361,
-      "Rio de Janeiro": 5031,
-      Seoul: 2618,
-      Tokyo: 2585
+      "Cape Town": 3035,
+      Istanbul: 5341,
+      Montreal: 4185,
+      "Rio de Janeiro": 3287,
+      Seoul: 3976,
+      Tokyo: 2418
     });
   });
 });

@@ -24,6 +24,26 @@ if (!place && (!args.lat || !args.lng)) {
 }
 
 const center = args.lat && args.lng ? { lat: Number(args.lat), lng: Number(args.lng), label: place ?? `${args.lat},${args.lng}` } : await geocode(place);
+
+if (args.osmWayId) {
+  const points = compactPoints(await fetchOsmWayGeometry(args.osmWayId), Number(args.minPointGapMeters ?? 10));
+  const report = auditPoints(points);
+  if (report.failures.length) {
+    console.error(summary({ ...report, points }));
+    for (const failure of report.failures) console.error(`  - ${failure}`);
+    process.exit(1);
+  }
+  console.log(summary({ ...report, points }));
+  if (args.quiet !== "true") console.log(routeModuleBlock(points));
+  if (args.writeIndex && args.layoutKey) writeFileSync(`${routesDir}/${args.layoutKey}.ts`, routeModuleBlock(points));
+  if (args.laps && args.layoutKey) {
+    let identities = readFileSync(identitiesPath, "utf8");
+    identities = identities.replace(new RegExp(`(layoutKey: "${escapeRegExp(args.layoutKey)}", laps: )\\d+`), `$1${Number(args.laps)}`);
+    writeFileSync(identitiesPath, identities);
+  }
+  process.exit(0);
+}
+
 const seed = hash(`${place ?? ""}:${args.seed ?? ""}:${args.layoutKey ?? ""}`);
 const attempts = candidateRings(center, seed, candidates);
 const graph = args.provider === "osrm" ? null : await fetchStreetGraph(center, Number(args.radiusMeters ?? 3200));
@@ -151,6 +171,30 @@ async function fetchOverpassGraph(query, center) {
   throw new Error(`Overpass failed on every endpoint:\n${errors.join("\n")}`);
 }
 
+async function fetchOsmWayGeometry(wayId) {
+  const query = `[out:json][timeout:${Number(args.overpassTimeout ?? 25)}];way(${Number(wayId)});out geom;`;
+  const errors = [];
+  for (const endpoint of overpassEndpoints) {
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "User-Agent": "cr-league-circuit-generator/1.0" },
+        body: `data=${encodeURIComponent(query)}`
+      });
+      if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
+      const body = await response.json();
+      const geometry = body.elements?.[0]?.geometry;
+      if (!Array.isArray(geometry) || geometry.length < 4) throw new Error(`OSM way ${wayId} has no usable geometry`);
+      const points = geometry.map((point) => ({ lat: round(point.lat), lng: round(point.lon) }));
+      if (distanceMeters(points[0], points.at(-1)) > 1) points.push(points[0]);
+      return points;
+    } catch (error) {
+      errors.push(`${endpoint}: ${error.message}`);
+    }
+  }
+  throw new Error(`Overpass failed on every endpoint:\n${errors.join("\n")}`);
+}
+
 function selectedHighwayTypes() {
   const major = [
     "trunk",
@@ -166,6 +210,7 @@ function selectedHighwayTypes() {
   if (args.highways === "major") return major;
   return [
     "motorway",
+    "raceway",
     ...major,
     "residential",
     "living_street",

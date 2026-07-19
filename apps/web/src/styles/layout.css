@@ -2862,6 +2862,7 @@ label small {
 @media (prefers-reduced-motion: reduce) {
   .circuit-route-accent,
   .circuit-start-line,
+  .circuit-pit-stop,
   .circuit-weather-light_rain .circuit-map-stage::after,
   .circuit-weather-heavy_rain .circuit-map-stage::after,
   .floating-notification button,
@@ -2888,6 +2889,7 @@ label small {
 }
 
 .circuit-pit-stop {
+  animation: pit-stop-pulse 1.2s ease-in-out infinite;
   filter: drop-shadow(0 0 5px rgb(56 189 248 / 0.45)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.75));
 }
 
@@ -2909,6 +2911,13 @@ label small {
     filter: drop-shadow(0 0 6px rgb(255 77 0 / 0.7));
     opacity: 0.72;
     stroke: var(--color-telemetry);
+  }
+}
+
+@keyframes pit-stop-pulse {
+  50% {
+    filter: drop-shadow(0 0 7px rgb(56 189 248 / 0.72)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.8));
+    opacity: 0.78;
   }
 }
 

@@ -220,13 +220,13 @@ describe("ReplayView timing", () => {
   it("eases pit stop entry, hold, and exit without teleporting", () => {
     expect(pitStopVisualProgress(2.1, 9.4, 10, 2.25)).toBeCloseTo(2.1);
     expect(pitStopVisualProgress(2.16, 9.7, 10, 2.25)).toBeGreaterThan(2.16);
-    expect(pitStopVisualProgress(2.4, 10.6, 10, 2.25)).toBe(2.25);
-    expect(pitStopVisualProgress(2.6, 12.4, 10, 2.25)).toBeGreaterThan(2.25);
-    expect(pitStopVisualProgress(2.7, 12.9, 10, 2.25)).toBe(2.7);
-    expect(pitStopVisualProgress(3.2, 12.4, 10, 2.25)).toBeLessThan(3.2);
-    expect(pitStopVisualProgress(3.2, 12.9, 10, 2.25)).toBe(3.2);
+    expect(pitStopVisualProgress(2.4, 10, 10, 2.25)).toBe(2.25);
+    expect(pitStopVisualProgress(2.6, 10.4, 10, 2.25)).toBeGreaterThan(2.25);
+    expect(pitStopVisualProgress(2.7, 10.9, 10, 2.25)).toBe(2.7);
+    expect(pitStopVisualProgress(3.2, 10.4, 10, 2.25)).toBeLessThan(3.2);
+    expect(pitStopVisualProgress(3.2, 10.9, 10, 2.25)).toBe(3.2);
     expect(pitStopVisualProgress(2.5, 10.2, 10, 2.25, 2)).toBeLessThan(2.5);
-    expect(pitStopVisualProgress(2.5, 12.9, 10, 2.25, 2)).toBe(2.25);
+    expect(pitStopVisualProgress(2.5, 12, 10, 2.25, 2)).toBe(2.25);
   });
 
   it("stagger pit stops by race order instead of stacking cars", () => {

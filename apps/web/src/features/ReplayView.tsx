@@ -21,7 +21,6 @@ const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
 const GRID_START_PROGRESS = 0.1;
 const PIT_STOP_ENTRY_SECONDS = 0.6;
-const PIT_STOP_HOLD_SECONDS = 2;
 const PIT_STOP_EXIT_SECONDS = 0.8;
 const PIT_STOP_RANK_GAP_SECONDS = 0.45;
 const PIT_STOP_ORDER_GAP_SECONDS = 0.18;
@@ -258,14 +257,14 @@ function easeInOut(progress: number) {
 export function pitStopVisualProgress(baseProgress: number, time: number, pitTime: number, pitProgress: number, offsetSeconds = 0) {
   const arrivalTime = pitTime + offsetSeconds;
   const entryStart = pitTime - PIT_STOP_ENTRY_SECONDS;
+  const exitEnd = arrivalTime + PIT_STOP_EXIT_SECONDS;
   if (time < entryStart) return baseProgress;
-  if (time > arrivalTime + PIT_STOP_HOLD_SECONDS + PIT_STOP_EXIT_SECONDS) return baseProgress;
+  if (time > exitEnd) return baseProgress;
   if (time < arrivalTime) {
     const t = easeInOut((time - entryStart) / Math.max(PIT_STOP_ENTRY_SECONDS, arrivalTime - entryStart));
     return baseProgress + (pitProgress - baseProgress) * t;
   }
-  if (time <= arrivalTime + PIT_STOP_HOLD_SECONDS) return pitProgress;
-  const t = easeInOut((time - arrivalTime - PIT_STOP_HOLD_SECONDS) / PIT_STOP_EXIT_SECONDS);
+  const t = easeInOut((time - arrivalTime) / PIT_STOP_EXIT_SECONDS);
   return pitProgress + (baseProgress - pitProgress) * t;
 }
 

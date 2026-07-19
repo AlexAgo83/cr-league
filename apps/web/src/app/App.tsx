@@ -994,8 +994,7 @@ export function App() {
 
   const profileCodeModal = profileCodeOpen ? (
     <Modal label={tt("profile_code_title")} onClose={() => setProfileCodeOpen(false)}>
-      <span className="section-kicker">{tt("profile_kicker")}</span>
-      <h2>{tt("profile_code_title")}</h2>
+      <ModalHero image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("profile_code_title")} />
       {profileSession?.recoveryCode ? (
         <input
           className="profile-code-input"
@@ -1020,8 +1019,7 @@ export function App() {
 
   const profileLogoutModal = profileLogoutOpen ? (
     <Modal label={tt("profile_logout_title")} onClose={() => setProfileLogoutOpen(false)}>
-      <span className="section-kicker">{tt("profile_kicker")}</span>
-      <h2>{tt("profile_logout_title")}</h2>
+      <ModalHero image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("profile_logout_title")} />
       <p>{tt("profile_logout_confirm")}</p>
       <div className="actions secondary-actions">
         <button type="button" className="danger-button" onClick={forgetProfile}>
@@ -1051,8 +1049,7 @@ export function App() {
 
   const errorModal = technicalError ? (
     <Modal label={tt("error_modal_title")} onClose={() => setTechnicalError(null)}>
-      <span className="section-kicker">{tt("error_modal_kicker")}</span>
-      <h2>{tt("error_modal_title")}</h2>
+      <ModalHero image="/assets/crl/pit-wall-mobile.png" kicker={tt("error_modal_kicker")} title={tt("error_modal_title")} />
       <p>{tt("error_modal_body")}</p>
       <div className="actions secondary-actions">
         <button type="button" className="secondary-button" onClick={() => void copyTechnicalError()}>
@@ -1197,8 +1194,7 @@ export function App() {
   ) : null;
   const adminDeleteModal = adminDeleteUser ? (
     <Modal label={tt("admin_delete_user_title")} onClose={() => setAdminDeleteUser(null)}>
-      <span className="section-kicker">{tt("admin_kicker")}</span>
-      <h2>{tt("admin_delete_user_title")}</h2>
+      <ModalHero image="/assets/crl/league-arrival.png" kicker={tt("admin_kicker")} title={tt("admin_delete_user_title")} />
       <p>{tt("admin_delete_user_confirm", { email: adminDeleteUser.email })}</p>
       <div className="actions secondary-actions">
         <button type="button" className="danger-button" onClick={() => void deleteAdminUserConfirmed()}>

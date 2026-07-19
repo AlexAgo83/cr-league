@@ -110,18 +110,11 @@ export function OnboardingHelpModal({
 }) {
   const [dismiss, setDismiss] = useState(false);
   const items = topic === "profileCode" ? [] : [1, 2, 3].map((index) => tt(`onboarding_${topic}_item_${index}` as TranslationKey));
-  const image = topic === "profileCode" ? undefined : ONBOARDING_HELP_IMAGES[topic];
+  const image = topic === "profileCode" ? "/assets/crl/profile-arrival.png" : ONBOARDING_HELP_IMAGES[topic];
 
   return (
     <Modal label={tt(`onboarding_${topic}_title` as TranslationKey)} onClose={() => onClose(dismiss)}>
-      {image ? (
-        <ModalHero image={image} kicker={tt("onboarding_kicker")} title={tt(`onboarding_${topic}_title` as TranslationKey)} />
-      ) : (
-        <>
-          <span className="section-kicker">{tt("onboarding_kicker")}</span>
-          <h2>{tt(`onboarding_${topic}_title` as TranslationKey)}</h2>
-        </>
-      )}
+      <ModalHero image={image} kicker={tt("onboarding_kicker")} title={tt(`onboarding_${topic}_title` as TranslationKey)} />
       <p>{tt(`onboarding_${topic}_body` as TranslationKey)}</p>
       {recoveryCode ? <strong className="onboarding-code">{recoveryCode}</strong> : null}
       {items.length ? (

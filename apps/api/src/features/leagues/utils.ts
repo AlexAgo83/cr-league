@@ -52,7 +52,12 @@ export function hashRecoveryCode(code: string) {
 export function normalizeEmail(value: unknown) {
   if (typeof value !== "string") return "";
   const email = value.trim().toLowerCase();
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
+  if (email.length > 254 || email.includes(" ")) return "";
+  const at = email.indexOf("@");
+  if (at <= 0 || at !== email.lastIndexOf("@")) return "";
+  const domain = email.slice(at + 1);
+  if (!domain.includes(".") || domain.startsWith(".") || domain.endsWith(".")) return "";
+  return domain.split(".").some((part) => !part) ? "" : email;
 }
 
 export function normalizeDisplayName(value: unknown, maxLength: number) {

@@ -20,6 +20,8 @@ const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
 const GRID_START_PROGRESS = 0.1;
+const PIT_VISUAL_WINDOW = 0.085;
+const PIT_VISUAL_HOLD = 0.018;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
@@ -366,6 +368,29 @@ export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[]
   );
 }
 
+export function alignPitProgressToCircuit(result: RaceResult, carProgress: Record<string, number>, progress: number, laps: number, pitLapProgress: number) {
+  const aligned = { ...carProgress };
+  for (const event of result.events.filter((candidate) => candidate.type === "pit_stop" && typeof candidate.traceProgress === "number")) {
+    const center = event.traceProgress!;
+    if (progress < center - PIT_VISUAL_WINDOW || progress > center + PIT_VISUAL_WINDOW) continue;
+    const base = carProgress[event.teamId];
+    if (base === undefined) continue;
+    const pitLap = Math.floor(Math.max(0, (center - PIT_VISUAL_WINDOW) * laps)) + pitLapProgress;
+    const ease = (value: number) => value * value * (3 - 2 * value);
+    const delta = progress - center;
+    if (Math.abs(delta) <= PIT_VISUAL_HOLD) {
+      aligned[event.teamId] = pitLap;
+    } else if (delta < 0) {
+      const ratio = ease((delta + PIT_VISUAL_WINDOW) / (PIT_VISUAL_WINDOW - PIT_VISUAL_HOLD));
+      aligned[event.teamId] = base + (pitLap - base) * ratio;
+    } else {
+      const ratio = ease((delta - PIT_VISUAL_HOLD) / (PIT_VISUAL_WINDOW - PIT_VISUAL_HOLD));
+      aligned[event.teamId] = pitLap + (base - pitLap) * ratio;
+    }
+  }
+  return aligned;
+}
+
 export function pitStopTraceProgress(result: RaceResult, trace: ReplayTracePoint[], event: RaceEvent, maxLap: number, laps: number, lapProgress: number, plan?: ReplayPlan) {
   if (typeof event.traceProgress === "number") return event.traceProgress;
   const fallback = pitStopRaceProgress(event, maxLap, laps, lapProgress);
@@ -498,11 +523,13 @@ function replaySnapshot(
   raceTime: number,
   progress: number,
   laps: number,
+  pitLapProgress: number,
   plan?: ReplayPlan,
   currentOrder: string[] = []
 ) {
   const baseProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan);
-  const carProgress = shouldSmoothReplayTrace(trace) ? applyGridStart(result, trace, baseProgress, progress) : baseProgress;
+  const tracedProgress = alignPitProgressToCircuit(result, baseProgress, progress, laps, pitLapProgress);
+  const carProgress = shouldSmoothReplayTrace(trace) ? applyGridStart(result, trace, tracedProgress, progress) : tracedProgress;
   const tower = liveClassificationByCarProgress(result, trace, progress, carProgress, currentOrder);
   return { carProgress, tower };
 }
@@ -615,7 +642,7 @@ export function ReplayView({
   const pitProgress = pitLapProgress(circuit);
   const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
   const directorBeats = buildRaceDirectorBeats(result, replayTrace, replayPlan, circuit.laps, playerTeamId, replayMode, pitProgress);
-  const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, replayPlan);
+  const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, pitProgress, replayPlan);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [activeMomentId, setActiveMomentId] = useState<string | null>(null);
@@ -724,7 +751,7 @@ export function ReplayView({
     const displayLap = displayLapAtProgress(progress, circuit.laps);
     const segment = segmentAtProgress(progress);
     setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
-    const targetSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, orderRef.current);
+    const targetSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, pitProgress, replayPlan, orderRef.current);
     const carProgress = animatePositions && smoothTracePositions ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress, elapsedSeconds) : targetSnapshot.carProgress;
     const nextTower = liveClassificationByCarProgress(result, replayTrace, progress, carProgress, orderRef.current);
     const nextSnapshot = { carProgress, tower: nextTower };

@@ -6317,9 +6317,9 @@ button.highlight-command:not(:disabled) {
   display: inline-flex;
   height: 26px;
   justify-content: center;
-  left: calc(48% + 8px);
   position: absolute;
-  top: 12px;
+  right: calc(min(58%, 230px) - 64px);
+  top: 18px;
   width: 26px;
   z-index: 2;
 }

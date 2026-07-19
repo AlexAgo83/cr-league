@@ -3236,8 +3236,6 @@ label small {
 
 .circuit-order-badges span.current-round-badge {
   animation: current-round-pulse 1.5s ease-in-out infinite;
-  background: radial-gradient(closest-side, #f8f3e8 0 48%, var(--color-accent) 50%);
-  color: #1b100b;
 }
 
 .circuit-detail-screen {
@@ -3281,11 +3279,13 @@ label small {
 @keyframes current-round-pulse {
   0%,
   100% {
+    box-shadow: 0 0 0 0 rgb(255 77 0 / 0);
     filter: brightness(1);
   }
 
   50% {
-    filter: brightness(1.18);
+    box-shadow: 0 0 0 3px rgb(255 77 0 / 0.42), 0 0 18px rgb(255 77 0 / 0.58);
+    filter: brightness(1.35);
   }
 }
 

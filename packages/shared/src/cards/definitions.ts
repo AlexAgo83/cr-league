@@ -60,7 +60,7 @@ export const CARD_DEFINITIONS: Record<CardId, CardDefinition> = {
   rain_mapping: {
     name: "Rain Mapping",
     family: "weather",
-    playerPromise: "Prepare the engine map for changing rain; wasted if the track stays dry."
+    playerPromise: "Prepare the engine map for changing rain; still gives a small baseline if the track stays dry."
   },
   economy_mode: {
     name: "Economy Mode",

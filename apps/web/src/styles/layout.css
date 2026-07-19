@@ -3205,6 +3205,13 @@ label small {
   grid-column: 1 / -1;
 }
 
+.circuit-order-badges-used {
+  justify-content: flex-end;
+  position: absolute;
+  right: 10px;
+  top: 8px;
+}
+
 .circuit-order-badges small {
   font-size: 0.68rem;
 }

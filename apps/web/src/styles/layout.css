@@ -963,10 +963,20 @@ button:disabled {
 
 .asset-image-placeholder {
   background:
-    linear-gradient(135deg, rgb(248 243 232 / 0.1), rgb(248 243 232 / 0.03)),
-    #050505;
+    linear-gradient(90deg, transparent, rgb(255 255 255 / 0.28), transparent),
+    radial-gradient(circle at 18% 24%, rgb(197 58 0 / 0.22), transparent 28%),
+    linear-gradient(135deg, rgb(248 243 232 / 0.2), rgb(42 35 29 / 0.18)),
+    rgb(18 16 18 / 0.72);
+  background-size: 220% 100%, 100% 100%, 100% 100%, 100% 100%;
+  border: 1px solid rgb(248 243 232 / 0.16);
+  border-radius: inherit;
   inset: 0;
+  overflow: hidden;
   position: absolute;
+}
+
+.asset-image-shell.loading .asset-image-placeholder {
+  animation: asset-placeholder-sheen 1.1s ease-in-out infinite;
 }
 
 .asset-image-shell.error .asset-image-placeholder::after {
@@ -978,6 +988,22 @@ button:disabled {
   top: 50%;
   transform: rotate(-20deg);
   width: 30%;
+}
+
+@keyframes asset-placeholder-sheen {
+  from {
+    background-position: -120% 0, 0 0, 0 0, 0 0;
+  }
+
+  to {
+    background-position: 120% 0, 0 0, 0 0, 0 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .asset-image-shell.loading .asset-image-placeholder {
+    animation: none;
+  }
 }
 
 /* Non-CTA buttons keep the body voice. */

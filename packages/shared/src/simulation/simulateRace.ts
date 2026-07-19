@@ -32,6 +32,7 @@ const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
 };
 const REPLAY_TRACE_STEPS_PER_SEGMENT = 10;
 const GRID_GAP_SECONDS = 0.25;
+const PIT_TRACE_WINDOW = 0.22;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -73,15 +74,17 @@ export function simulateRace(input: RaceInput): RaceResult {
     }
 
     const beforeTimes = new Map(states.map((state) => [state.participant.teamId, state.elapsedTime]));
+    const pitCosts = new Map<string, number>();
     for (const state of states) {
       applySegment(state, segment, weather[segment], input, prng.next);
-      maybeAddPitStopEvent(state, segment, events);
+      const pitCost = maybeAddPitStopEvent(state, segment, events);
+      if (pitCost) pitCosts.set(state.participant.teamId, pitCost);
       maybeAddCardEvent(state, segment, weather[segment], input, events, states);
       maybeAddRiskEvent(state, segment, events, prng.next);
     }
 
     maybeAddFlavorEvent(segment, weather[segment], input, states, events, prng.next);
-    replayTrace.push(...createReplayTraceSteps(segment, index, states, beforeTimes));
+    replayTrace.push(...createReplayTraceSteps(segment, index, states, beforeTimes, pitCosts));
   }
 
   const classification = classify(states);
@@ -125,18 +128,27 @@ function buildReplayFacts(trace: ReplayTracePoint[]): RaceReplayFacts {
   return { version: 1, orderChanges };
 }
 
-function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, states: TeamState[], beforeTimes: Map<string, number>): ReplayTracePoint[] {
+function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, states: TeamState[], beforeTimes: Map<string, number>, pitCosts = new Map<string, number>()): ReplayTracePoint[] {
   return Array.from({ length: REPLAY_TRACE_STEPS_PER_SEGMENT }, (_, index) => {
     const ratio = (index + 1) / REPLAY_TRACE_STEPS_PER_SEGMENT;
     const progress = (segmentIndex + ratio) / RACE_SEGMENTS.length;
     const times = new Map(
       states.map((state) => {
         const before = beforeTimes.get(state.participant.teamId) ?? state.elapsedTime;
-        return [state.participant.teamId, before + (state.elapsedTime - before) * ratio];
+        const pitCost = pitCosts.get(state.participant.teamId) ?? 0;
+        const movingDelta = state.elapsedTime - before - pitCost;
+        return [state.participant.teamId, before + movingDelta * ratio + pitCost * pitTraceRatio(segment, ratio)];
       })
     );
     return createReplayTracePoint(segment, progress, states, times);
   });
+}
+
+function pitTraceRatio(segment: RaceSegment, ratio: number) {
+  const center: Partial<Record<RaceSegment, number>> = { early: 0.38, mid: 0.5, late: 0.62 };
+  const pitCenter = center[segment];
+  if (pitCenter === undefined) return ratio;
+  return Math.max(0, Math.min(1, (ratio - (pitCenter - PIT_TRACE_WINDOW / 2)) / PIT_TRACE_WINDOW));
 }
 
 function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], elapsedTimes?: Map<string, number>): ReplayTracePoint {
@@ -290,6 +302,7 @@ function maybeAddPitStopEvent(state: TeamState, segment: RaceSegment, events: Ra
     replayText: `${state.participant.teamName} swaps battery pack in the pit`,
     reportText: `${state.participant.teamName} lost ${stopCost.toFixed(1)}s on a battery swap.`
   });
+  return stopCost;
 }
 
 function resolveWeather(

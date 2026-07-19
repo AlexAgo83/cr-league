@@ -141,6 +141,11 @@ describe("simulateRace", () => {
     expect(stops.filter((event) => event.teamId === "atlas")).toHaveLength(1);
     expect(stops.find((event) => event.teamId === "hugo")?.reportText).toContain("4.0s");
     expect(stops.find((event) => event.teamId === "atlas")?.reportText).toContain("6.0s");
+    const midTraceTime = (progress: number) => result.replayTrace?.find((point) => point.segment === "mid" && Math.abs(point.progress - progress) < 0.001)?.times.atlas ?? 0;
+    const atlasBeforePit = midTraceTime(0.42);
+    const atlasPitEntry = midTraceTime(0.48);
+    const atlasPitExit = midTraceTime(0.52);
+    expect(atlasPitExit - atlasPitEntry).toBeGreaterThan(atlasPitEntry - atlasBeforePit);
   });
 
   it("emits card events for played cards", () => {

@@ -42,6 +42,8 @@ Quality rules:
 - Avoid tiny routes that need excessive laps. Prefer roughly 5km to 8km for new city loops.
 - Target race distance should stay near the catalogue band, usually with 5 to 12 laps.
 - Update both `laps` and `trackLengthMeters` in `packages/shared/src/domain/circuits.ts`.
+- The numeric audit is not enough. Always inspect the route over OSM tiles before accepting it.
+- Reject routes that appear to run on water, harbor basins, piers without a mapped road, parks, or building blocks.
 
 ## Generation Flow
 
@@ -148,6 +150,48 @@ For similar fixes, reject outputs that pass the audit but still have:
 - sparse point counts that look like a polygon instead of a street route;
 - long straight joins that do not follow visible OSM roads;
 - metadata length that no longer matches the generated route.
+
+## Cape Town Reference Fix
+
+Cape Town is the visual-audit failure case. The old route passed numeric audit, but it was a 3.0km waterfront loop with 16 laps and visually drifted into harbor/waterfront geometry instead of reading as a proper street circuit.
+
+The replacement was generated inland around Green Point / Sea Point:
+
+```bash
+npm run generate:circuit -- \
+  --lat -33.9122 \
+  --lng 18.3986 \
+  --place "Cape Town Green Point Sea Point" \
+  --layoutKey circuit_cape_town_waterfront_loop \
+  --targetKm 6.2 \
+  --minKm 5 \
+  --maxKm 8 \
+  --candidates 24 \
+  --radiusMeters 1800 \
+  --quiet true \
+  --write-index 1 \
+  --laps 8
+```
+
+Accepted summary:
+
+```text
+6.12km 184pts 17turns 0cross 0uturn 0m reverse 0m repeat
+```
+
+After writing the route, calculate the route length and update metadata:
+
+```text
+trackLengthMeters: 6120
+laps: 8
+```
+
+Visual acceptance for Cape Town:
+
+- route follows visible roads such as Beach Road, Main Road, and Green Point roads;
+- no segment floats in the ocean or harbor basin;
+- coastal sections are allowed only when the road itself is visible on OSM;
+- avoid making the Waterfront piers the main circuit shape.
 
 ## Manual Review
 

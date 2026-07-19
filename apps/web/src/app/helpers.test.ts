@@ -197,6 +197,9 @@ describe("raceRecapCards", () => {
     const state = stateWithHistory([]);
     state.league.maxGrandPrixPerSeason = 3;
     state.currentGrandPrix.round = 1;
+    state.decisions = [
+      { teamId: "team_1", approach: "aggressive", preparation: "weather", cardId: "rain_grip" }
+    ];
     const race = result("team_1");
     race.seed = "card-rain";
     race.events = [
@@ -216,24 +219,30 @@ describe("raceRecapCards", () => {
       }
     ];
 
-    const recap = raceRecapCards(race, state, "team_1", { teamId: "team_1", approach: "aggressive", preparation: "weather", cardId: "rain_grip" }, "Test GP", (key, params) =>
+    const recap = raceRecapCards(race, state, "team_1", state.decisions[0], "Test GP", (key, params) =>
       t(key, "en", params)
     );
 
     expect(recap.difference).toContain("Rain Grip");
     expect(recap.difference).toContain("+2");
     expect(recap.directive).toContain("Rain Grip");
+    expect(recap.planRead).toContain("You won because");
+    expect(recap.planRead).toContain("Rain Grip");
     expect(recap.lesson).toContain(expectedNextCircuitName());
   });
 
   it("falls back gracefully for a quiet race", () => {
     const state = stateWithHistory([]);
-    const recap = raceRecapCards(result("team_1"), state, "team_1", { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null }, "Test GP", (key, params) =>
+    state.decisions = [
+      { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null }
+    ];
+    const recap = raceRecapCards(result("team_1"), state, "team_1", state.decisions[0], "Test GP", (key, params) =>
       t(key, "en", params)
     );
 
     expect(recap.difference).toContain("Test GP");
     expect(recap.directive).toContain("kept you level");
+    expect(recap.planRead).toContain("You won because");
     expect(recap.lesson).toContain(expectedNextCircuitName());
   });
 
@@ -263,6 +272,21 @@ describe("raceRecapCards", () => {
     );
 
     expect(recap.lesson).not.toContain("Rain Grip");
+  });
+
+  it("compares a losing directive with the winner's plan", () => {
+    const state = stateWithHistory([]);
+    state.decisions = [
+      { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null },
+      { teamId: "team_2", approach: "aggressive", preparation: "speed", cardId: "launch_boost" }
+    ];
+    const recap = raceRecapCards(result("team_2", "team_1"), state, "team_1", state.decisions[0], "Test GP", (key, params) =>
+      t(key, "en", params)
+    );
+
+    expect(recap.planRead).toContain("You finished P2");
+    expect(recap.planRead).toContain("team_2 won with");
+    expect(recap.planRead).toContain("Launch Boost");
   });
 });
 

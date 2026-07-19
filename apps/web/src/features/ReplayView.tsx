@@ -550,7 +550,7 @@ export function buildQualifyingMomentEvents(beats: ReplayDirectorBeat[], result:
     }));
 }
 
-function directorBeatCopy(beat: ReplayDirectorBeat, names: Map<string, string>, tt: Translator) {
+export function directorBeatCopy(beat: ReplayDirectorBeat, names: Map<string, string>, tt: Translator) {
   const team = beat.teamId ? names.get(beat.teamId) ?? beat.teamId : "";
   const related = beat.relatedTeamId ? names.get(beat.relatedTeamId) ?? beat.relatedTeamId : "";
   if (beat.type === "qualifying_start") return { title: tt("replay_director_qualifying_start"), detail: tt("replay_director_qualifying_start_detail") };

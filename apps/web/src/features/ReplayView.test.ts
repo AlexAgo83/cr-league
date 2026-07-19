@@ -6,6 +6,7 @@ import {
   buildReplayPlan,
   buildQualifyingMomentEvents,
   buildRaceDirectorBeats,
+  directorBeatCopy,
   displayLapAtProgress,
   eventTraceProgress,
   finishTimes,
@@ -22,6 +23,7 @@ import {
   shouldSmoothReplayTrace,
   smoothCarProgress
 } from "./ReplayView.js";
+import { t } from "../i18n/index.js";
 
 const result: RaceResult = {
   grandPrixName: "Test GP",
@@ -221,6 +223,17 @@ describe("ReplayView timing", () => {
 
     expect(beats.map((beat) => beat.id)).toEqual(["grid-start", "overtake-last-leader-0.333", "final-pressure"]);
     expect(beats[1]?.type).toBe("player");
+  });
+
+  it("explains the strategic meaning of race-director beats", () => {
+    const copy = directorBeatCopy(
+      { id: "move", type: "player", progress: 0.4, lap: 3, teamId: "last", relatedTeamId: "leader", fromPosition: 2, toPosition: 1 },
+      new Map([["last", "Last"], ["leader", "Leader"]]),
+      (key, params) => t(key, "en", params)
+    );
+
+    expect(copy.detail).toContain("payoff window");
+    expect(copy.detail).toContain("risky approach");
   });
 
   it("shows pit stops as race-director beats", () => {

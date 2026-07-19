@@ -149,6 +149,7 @@ export function raceRecapCards(
   return {
     difference: recapDifference(result, playerTeamId, raceTitle, tt),
     directive: recapDirective(result, playerTeamId, decision, state.currentGrandPrix.round, tt),
+    planRead: recapPlanRead(result, state, playerTeamId, decision, tt),
     lesson: recapNextLesson(result, state, playerTeamId, decision, tt)
   };
 }
@@ -251,6 +252,43 @@ function recapNextLesson(
     circuit: `${nextCircuit.city} ${tt(nextCircuit.layoutKey as TranslationKey)}`,
     focus,
     card: decision?.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : ""
+  });
+}
+
+function recapPlanRead(
+  result: RaceResult,
+  state: LeagueState,
+  playerTeamId: string | undefined,
+  decision: LeagueState["decisions"][number] | undefined,
+  tt: Translator
+) {
+  if (!decision) return tt("result_no_directive");
+  const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
+  const winner = result.classification[0];
+  const winnerDecision = state.decisions.find((candidate) => candidate.teamId === winner?.teamId);
+  const ownCardEvent = decision.cardId ? result.events.find((event) => event.teamId === playerTeamId && event.cardId === decision.cardId) : undefined;
+  const ownSetup = `${tt(`approach_${decision.approach}` as TranslationKey)} / ${tt(`preparation_${decision.preparation}` as TranslationKey)} / ${decision.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : tt("card_none")}`;
+
+  if (playerResult?.position === 1) {
+    return tt(ownCardEvent ? "recap_plan_win_card" : "recap_plan_win_setup", {
+      setup: ownSetup,
+      signal: ownCardEvent ? tt(`card_${ownCardEvent.cardId}` as TranslationKey) : tt(`approach_${decision.approach}` as TranslationKey)
+    });
+  }
+
+  if (winner && winnerDecision) {
+    const winnerSetup = `${tt(`approach_${winnerDecision.approach}` as TranslationKey)} / ${tt(`preparation_${winnerDecision.preparation}` as TranslationKey)} / ${winnerDecision.cardId ? tt(`card_${winnerDecision.cardId}` as TranslationKey) : tt("card_none")}`;
+    return tt("recap_plan_chase_winner", {
+      winner: winner.teamName,
+      position: playerResult?.position ?? "-",
+      setup: ownSetup,
+      winnerSetup
+    });
+  }
+
+  return tt("recap_plan_no_reference", {
+    position: playerResult?.position ?? "-",
+    setup: ownSetup
   });
 }
 

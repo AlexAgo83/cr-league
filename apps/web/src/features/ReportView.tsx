@@ -49,6 +49,11 @@ export function ReportView({
       body: recapCards.directive
     },
     {
+      className: "plan-read",
+      title: tt("result_plan_read"),
+      body: recapCards.planRead
+    },
+    {
       className: "lesson",
       title: tt("result_next_lesson"),
       body: recapCards.lesson

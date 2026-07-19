@@ -4491,7 +4491,7 @@ label small {
   clip-path: none;
   color: var(--color-text);
   display: grid;
-  font-family: var(--font-sans);
+  font-family: inherit;
   font-size: 1em;
   font-style: normal;
   gap: 4px;
@@ -6075,6 +6075,13 @@ button.highlight-command:not(:disabled) {
 .garage-panel-shop .card-shop button {
   min-height: 84px;
   padding: 11px 42px 11px 11px;
+}
+
+.garage-panel-inventory .card-inventory-button,
+.garage-panel-shop .card-shop button,
+.garage-panel-inventory .card-inventory-button small,
+.garage-panel-shop .card-shop button small {
+  font-family: inherit;
 }
 
 .garage-panel-inventory .card-inventory-button > span {

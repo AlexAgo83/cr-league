@@ -6,6 +6,7 @@ import {
   TECHNICAL_PREPARATIONS,
   clampTrait,
   circuitIdentityForRound,
+  circuitSeasonSeed,
   raceInputFromCircuit,
   simulateRace,
   type CardId,
@@ -304,7 +305,6 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   const maxPlayers = clampInteger(input.maxPlayers, DEFAULT_MAX_PLAYERS, 2, MAX_PLAYERS_LIMIT);
   const qualifyingAttemptLimit = clampInteger(input.qualifyingAttemptLimit, DEFAULT_QUALIFYING_ATTEMPTS, 1, MAX_QUALIFYING_ATTEMPTS);
   const maxGrandPrixPerSeason = clampInteger(input.maxGrandPrixPerSeason, DEFAULT_GRAND_PRIX_PER_SEASON, 1, MAX_GRAND_PRIX_PER_SEASON);
-  const openingRaceInput = raceInputFromCircuit(circuitIdentityForRound(1));
 
   const { league, playerClaimCode } = await retryUnique(async () => {
     const playerClaimCode = createClaimCode();
@@ -319,6 +319,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
           maxGrandPrixPerSeason
         }
       });
+      const openingRaceInput = raceInputFromCircuit(circuitIdentityForRound(1, circuitSeasonSeed(league.id, 1)));
 
       const ownerTeam = await tx.team.create({
         data: {
@@ -836,7 +837,7 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
   if (!state) return null;
   const nextSeason = grandPrix.round >= state.league.maxGrandPrixPerSeason ? grandPrix.season + 1 : grandPrix.season;
   const nextRound = grandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : grandPrix.round + 1;
-  const nextRaceInput = raceInputFromCircuit(circuitIdentityForRound(nextRound));
+  const nextRaceInput = raceInputFromCircuit(circuitIdentityForRound(nextRound, circuitSeasonSeed(leagueId, nextSeason)));
 
   await runWrite(db, async (tx) => {
     // The (leagueId, season, round) unique constraint claims the transition: a concurrent double call fails here before touching credits or points.

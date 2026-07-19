@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
-import { CITY_CIRCUITS, type CityCircuit } from "../app/circuits.js";
+import { CITY_CIRCUITS, circuitsForSeason, type CityCircuit } from "../app/circuits.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { LiveryPlate } from "./LiveryPlate.js";
@@ -28,9 +28,10 @@ export function ChampionshipView({
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
   const [recordTab, setRecordTab] = useState<"standings" | "calendar" | "palmares" | "history">("standings");
+  const seasonCircuits = circuitsForSeason(state.league.id, currentGrandPrix.season);
   const seasonRoundsByLayout = new Map<string, number[]>();
   for (let round = 1; round <= state.league.maxGrandPrixPerSeason; round += 1) {
-    const circuit = CITY_CIRCUITS[(round - 1) % CITY_CIRCUITS.length]!;
+    const circuit = seasonCircuits[(round - 1) % seasonCircuits.length]!;
     seasonRoundsByLayout.set(circuit.layoutKey, [...(seasonRoundsByLayout.get(circuit.layoutKey) ?? []), round]);
   }
   const recordTabs = [

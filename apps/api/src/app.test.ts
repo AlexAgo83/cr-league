@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { PrismaClient } from "@prisma/client";
-import { CARD_PRICE, DEMO_RACE_INPUT } from "@cr-league/shared";
+import { CARD_PRICE, DEMO_RACE_INPUT, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit } from "@cr-league/shared";
 import { buildApp } from "./app.js";
 import { APP_COMMIT, APP_VERSION } from "./version.js";
 
@@ -198,11 +198,7 @@ describe("api app", () => {
     expect(createResponse.statusCode).toBe(200);
     expect(claim).toMatchObject({ teamId, claimCode: expect.any(String) });
     expect(created.league).toMatchObject({ maxPlayers: 8, fillWithBots: true, qualifyingAttemptLimit: 3, maxGrandPrixPerSeason: 6 });
-    expect(created.currentGrandPrix).toMatchObject({
-      primaryTrait: "weather_sensitive",
-      secondaryTrait: "fast",
-      forecast: { dry: 35, light_rain: 50, heavy_rain: 15 }
-    });
+    expect(created.currentGrandPrix).toMatchObject(raceInputFromCircuit(circuitIdentityForRound(1, circuitSeasonSeed(created.league.id, 1))));
     expect(createdTeam.cards).toEqual([]);
     expect(createdTeam.credits).toBe(180);
     expect(createdTeam.livery).toMatchObject({
@@ -264,11 +260,7 @@ describe("api app", () => {
     expect(lateDecisionResponse.statusCode).toBe(409);
     expect(secondResolveResponse.statusCode).toBe(409);
     expect(nextResponse.statusCode).toBe(200);
-    expect(nextResponse.json().currentGrandPrix).toMatchObject({
-      primaryTrait: "technical",
-      secondaryTrait: "urban",
-      forecast: { dry: 70, light_rain: 20, heavy_rain: 10 }
-    });
+    expect(nextResponse.json().currentGrandPrix).toMatchObject(raceInputFromCircuit(circuitIdentityForRound(2, circuitSeasonSeed(created.league.id, 1))));
     expect(botAfterNext.cards).toHaveLength(botBeforeNext.cards.length + 1);
     expect(botAfterNext.credits).toBeLessThan(botBeforeNext.credits);
   });

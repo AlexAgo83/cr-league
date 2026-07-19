@@ -1,8 +1,13 @@
 import { describe, expect, it } from "vitest";
 import { clampNumber, completedSeasonSummaries, raceRecapCards, seasonStandings, seasonWinsByTeamId, startingGrid } from "./helpers.js";
 import type { LeagueState } from "./types.js";
-import type { RaceResult } from "@cr-league/shared";
+import { circuitIdentityForRound, circuitSeasonSeed, type RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
+
+function expectedNextCircuitName() {
+  const circuit = circuitIdentityForRound(2, circuitSeasonSeed("league_1", 2));
+  return `${circuit.city} ${t(circuit.layoutKey, "en")}`;
+}
 
 const result = (winnerId: string, runnerId = "team_2"): RaceResult => ({
   grandPrixName: "Test GP",
@@ -187,7 +192,7 @@ describe("raceRecapCards", () => {
     expect(recap.difference).toContain("Rain Grip");
     expect(recap.difference).toContain("+2");
     expect(recap.directive).toContain("Rain Grip");
-    expect(recap.lesson).toContain("Paris Left Bank Loop");
+    expect(recap.lesson).toContain(expectedNextCircuitName());
   });
 
   it("falls back gracefully for a quiet race", () => {
@@ -198,7 +203,7 @@ describe("raceRecapCards", () => {
 
     expect(recap.difference).toContain("Test GP");
     expect(recap.directive).toContain("kept you level");
-    expect(recap.lesson).toContain("Paris Left Bank Loop");
+    expect(recap.lesson).toContain(expectedNextCircuitName());
   });
 
   it("does not count a rival card as the player's card lesson", () => {

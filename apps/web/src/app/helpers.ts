@@ -1,4 +1,4 @@
-import { RACE_SEGMENTS, circuitIdentityForRound, raceInputFromCircuit, type CardId, type RaceResult } from "@cr-league/shared";
+import { RACE_SEGMENTS, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, type CardId, type RaceResult } from "@cr-league/shared";
 import type { TranslationKey, TranslationParams } from "../i18n/index.js";
 import type { LeagueState } from "./types.js";
 
@@ -232,8 +232,9 @@ function recapNextLesson(
 ) {
   const ownCardEvent = decision?.cardId ? result.events.find((event) => event.teamId === playerTeamId && event.cardId === decision.cardId) : undefined;
   const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
+  const nextSeason = state.currentGrandPrix.round >= state.league.maxGrandPrixPerSeason ? state.currentGrandPrix.season + 1 : state.currentGrandPrix.season;
   const nextRound = state.currentGrandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : state.currentGrandPrix.round + 1;
-  const nextCircuit = circuitIdentityForRound(nextRound);
+  const nextCircuit = circuitIdentityForRound(nextRound, circuitSeasonSeed(state.league.id, nextSeason));
   const nextInput = raceInputFromCircuit(nextCircuit);
   const variant = state.currentGrandPrix.round % 3;
   const focus =

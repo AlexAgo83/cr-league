@@ -1,4 +1,4 @@
-import { CITY_CIRCUIT_IDENTITIES } from "@cr-league/shared";
+import { CITY_CIRCUIT_IDENTITIES, circuitSeasonSeed, seasonCircuitIdentities } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 
 export type CityCircuit = {
@@ -4734,6 +4734,17 @@ export const CITY_CIRCUITS: [CityCircuit, ...CityCircuit[]] = [
   }
 ];
 
-export function circuitForRound(round: number): CityCircuit {
-  return CITY_CIRCUITS[(Math.max(1, round) - 1) % CITY_CIRCUITS.length] ?? CITY_CIRCUITS[0];
+const CIRCUIT_BY_LAYOUT = new Map(CITY_CIRCUITS.map((circuit) => [circuit.layoutKey, circuit]));
+
+export function circuitsForSeason(leagueId = "default", season = 1): [CityCircuit, ...CityCircuit[]] {
+  const seed = leagueId === "default" ? "default" : circuitSeasonSeed(leagueId, season);
+  const circuits = seasonCircuitIdentities(seed)
+    .map((identity) => CIRCUIT_BY_LAYOUT.get(identity.layoutKey as TranslationKey))
+    .filter((circuit): circuit is CityCircuit => Boolean(circuit));
+  return circuits.length ? (circuits as [CityCircuit, ...CityCircuit[]]) : CITY_CIRCUITS;
+}
+
+export function circuitForRound(round: number, leagueId = "default", season = 1): CityCircuit {
+  const circuits = circuitsForSeason(leagueId, season);
+  return circuits[(Math.max(1, round) - 1) % circuits.length] ?? circuits[0];
 }

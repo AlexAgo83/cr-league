@@ -11,7 +11,7 @@ export type HealthStatus = {
 };
 
 export { CARD_DEFINITIONS, type CardDefinition } from "./cards/definitions.js";
-export { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, raceInputFromCircuit, type CityCircuitIdentity } from "./domain/circuits.js";
+export { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, seasonCircuitIdentities, type CityCircuitIdentity } from "./domain/circuits.js";
 export * from "./domain/race.js";
 export {
   CARD_PRICE,

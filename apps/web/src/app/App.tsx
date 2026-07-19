@@ -488,7 +488,9 @@ export function App() {
   const playerResult = result?.classification.find((entry) => entry.teamId === playerTeam?.id);
   const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
   const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
-  const currentCircuit = circuitForRound(leagueState?.currentGrandPrix.round ?? 1);
+  const currentCircuit = leagueState
+    ? circuitForRound(leagueState.currentGrandPrix.round, leagueState.league.id, leagueState.currentGrandPrix.season)
+    : circuitForRound(1);
   const currentGrandPrixKey = leagueState ? `${leagueState.league.id}:${leagueState.currentGrandPrix.season}:${leagueState.currentGrandPrix.round}` : "";
   const raceDayPhase =
     isResolved
@@ -513,7 +515,7 @@ export function App() {
   const completedSeasons = useMemo(() => (leagueState ? completedSeasonSummaries(leagueState) : []), [leagueState]);
   const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
   const visibleResult = historyReplay?.result ?? (resultOpen ? result : undefined);
-  const visibleResultCircuit = historyReplay ? circuitForRound(historyReplay.round) : currentCircuit;
+  const visibleResultCircuit = historyReplay && leagueState ? circuitForRound(historyReplay.round, leagueState.league.id, historyReplay.season) : currentCircuit;
   const primaryCommand =
     deskState === "prepare"
       ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }

@@ -1,4 +1,6 @@
 import { expect, type Page, test } from "@playwright/test";
+import { circuitForRound } from "../../apps/web/src/app/circuits.js";
+import { t } from "../../apps/web/src/i18n/index.js";
 
 const player = { teamId: "team_1", claimCode: "CLAIM123" };
 let round = 1;
@@ -195,11 +197,12 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(driveMap).toHaveClass(/circuit-map-unframed/);
   await expect(driveMap).toHaveCSS("padding", "0px");
   await expect(driveMap).toHaveCSS("border-top-width", "0px");
-  await expect(page.locator(".drive-map-panel .map-status")).toContainText("Paris");
-  await expect(page.locator(".drive-map-panel .map-status .country-badge img")).toHaveAttribute("src", /\/assets\/flags\/fr\.svg$/);
-  await expect(page.locator(".drive-map-panel .map-status")).toContainText("7 laps");
+  const currentCircuit = circuitForRound(1, "league_1", 1);
+  await expect(page.locator(".drive-map-panel .map-status")).toContainText(currentCircuit.city);
+  await expect(page.locator(".drive-map-panel .map-status .country-badge img")).toHaveAttribute("src", new RegExp(`/assets/flags/${currentCircuit.country.toLowerCase()}\\.svg$`));
+  await expect(page.locator(".drive-map-panel .map-status")).toContainText(`${currentCircuit.laps} laps`);
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Grip");
-  await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("64");
+  await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText(String(currentCircuit.traits.grip));
   await expect(page.locator(".drive-map-panel .map-workflow-panel")).toBeVisible();
   await expect(page.getByRole("heading", { name: "1. Read the circuit" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toHaveCount(0);
@@ -257,13 +260,14 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(replayMap).toHaveClass(/circuit-map-unframed/);
   await expect(replayMap).toHaveCSS("padding", "0px");
   await expect(replayMap).toHaveCSS("border-top-width", "0px");
-  await expect(mapPanel.locator(".map-status")).toContainText("Paris");
-  await expect(mapPanel.locator(".map-status .country-badge img")).toHaveAttribute("src", /\/assets\/flags\/fr\.svg$/);
-  await expect(mapPanel.locator(".map-status")).toContainText("/7");
+  const replayCircuit = circuitForRound(1, "league_1", 1);
+  await expect(mapPanel.locator(".map-status")).toContainText(replayCircuit.city);
+  await expect(mapPanel.locator(".map-status .country-badge img")).toHaveAttribute("src", new RegExp(`/assets/flags/${replayCircuit.country.toLowerCase()}\\.svg$`));
+  await expect(mapPanel.locator(".map-status")).toContainText(`/${replayCircuit.laps}`);
   await expect(mapPanel.locator(".map-weather-readout")).toContainText("Dry");
   await expect(mapPanel.locator(".map-status")).toContainText("Dry");
-  await expect(mapPanel.locator(".map-traits-panel")).toContainText("64");
-  await expect(mapPanel.locator(".map-traits-panel")).toContainText("58");
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText(String(replayCircuit.traits.grip));
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText(String(replayCircuit.traits.energy));
   await expect(mapPanel.locator(".map-car.player").first()).toHaveAttribute("style", /--car-primary: #[0-9a-f]{6}; --car-secondary: #[0-9a-f]{6}/i);
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Pause" })).toBeVisible();
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Restart" })).toBeVisible();
@@ -294,7 +298,8 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".replay-progress")).toBeVisible();
   await mapPanel.locator(".replay-marker:not(.director)").click();
   await expect(mapPanel.locator(".replay-moment-notification")).toContainText("Rain Grip");
-  await expect(mapPanel.locator(".map-traits-panel")).toContainText("59");
+  await expect(mapPanel.locator(".map-traits-panel .map-trait-grip")).toContainText("Grip");
+  await expect(mapPanel.locator(".map-traits-panel .map-trait-grip")).toContainText("+2");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("Attack");
   await expect(copyPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
 
@@ -413,9 +418,8 @@ test("keeps mobile document pages usable", async ({ page }) => {
 });
 
 function expectedCircuitTitle(resultRound: number) {
-  if (resultRound === 1) return "Paris Docklands Sprint";
-  if (resultRound === 2) return "Paris Left Bank Loop";
-  return "Amsterdam Canal Loop";
+  const circuit = circuitForRound(resultRound, "league_1", 1);
+  return `${circuit.city} ${t(circuit.layoutKey, "en")}`;
 }
 
 async function openDocumentPage(page: Page, navIndex: number, panelSelector: string) {

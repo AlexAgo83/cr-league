@@ -2,6 +2,16 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { act } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
+import { circuitForRound } from "./circuits.js";
+import { t } from "../i18n/index.js";
+
+function testCircuit(round: number, season = 1) {
+  const circuit = circuitForRound(round, baseState.league.id, season);
+  return {
+    ...circuit,
+    title: `${circuit.city} ${t(circuit.layoutKey, "en")}`
+  };
+}
 
 const baseState = {
   league: {
@@ -635,7 +645,8 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(document.querySelector(".map-workflow-panel")?.textContent).toContain("1. Read the circuit");
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
-    expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
+    const roundOneCircuit = testCircuit(1);
+    expect(screen.getAllByText(t(roundOneCircuit.layoutKey, "en")).length).toBeGreaterThan(0);
     expect(screen.queryByRole("heading", { name: "Tune the race plan" })).toBe(null);
     expect(screen.getByRole("button", { name: "Plan" })).toBeTruthy();
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Edit planNew lap time");
@@ -719,7 +730,7 @@ describe("App", () => {
     expect(document.querySelectorAll(".chrono-session-choice b").length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole("button", { name: "Review lap time" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
-    await waitFor(() => expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/7"));
+    await waitFor(() => expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain(`Lap 2/${roundOneCircuit.laps}`));
     expect(screen.getByRole("button", { name: "Chrono report" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Chrono report" }));
     expect(screen.getByRole("heading", { name: "Understand the lap time" })).toBeTruthy();
@@ -739,7 +750,7 @@ describe("App", () => {
     expect(screen.getByText("0/2")).toBeTruthy();
     expect(screen.queryByRole("tab", { name: "Palmares" })).toBe(null);
     fireEvent.click(screen.getByRole("tab", { name: "Circuits" }));
-    expect(screen.getByText("Docklands Sprint")).toBeTruthy();
+    expect(screen.getByText(t(roundOneCircuit.layoutKey, "en"))).toBeTruthy();
     expect(document.querySelector(".circuit-calendar-list")?.textContent).toContain("1");
     fireEvent.click(screen.getByRole("tab", { name: "Standings" }));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
@@ -784,8 +795,8 @@ describe("App", () => {
     const launchDialog = screen.getByRole("dialog", { name: "Launch Grand Prix?" });
     expect(launchDialog.textContent).toContain("Starting grid");
     expect(launchDialog.textContent).toContain("P1");
-    expect(launchDialog.textContent).toContain("Paris");
-    expect(launchDialog.textContent).toContain("Grip 64");
+    expect(launchDialog.textContent).toContain(roundOneCircuit.city);
+    expect(launchDialog.textContent).toContain(`Grip ${roundOneCircuit.traits.grip}`);
     fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
@@ -839,13 +850,13 @@ describe("App", () => {
     const replayReportButton = document.querySelector(".replay-report-button") as HTMLButtonElement;
     expect(replayReportButton).toBeTruthy();
     fireEvent.click(replayReportButton);
-    expect(screen.getByText("Paris Docklands Sprint: Volt Union wins.")).toBeTruthy();
+    expect(screen.getByText(`${roundOneCircuit.title}: Volt Union wins.`)).toBeTruthy();
     expect(screen.queryByText("Movement")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
 
     // Report view
     fireEvent.click(screen.getByRole("button", { name: "Report" }));
-    expect(screen.getByText("Paris Docklands Sprint: Volt Union wins.")).toBeTruthy();
+    expect(screen.getByText(`${roundOneCircuit.title}: Volt Union wins.`)).toBeTruthy();
     expect(screen.getByRole("button", { name: "Replay" }).className).toContain("report-replay-button");
     expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("report-close-button");
     fireEvent.click(screen.getByRole("button", { name: "Replay" }));
@@ -858,7 +869,8 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
     expect(screen.getByText(/Weather prep fit the race weather/)).toBeTruthy();
     expect(screen.getByText(/Rain Grip produced/)).toBeTruthy();
-    expect(screen.getByText(/Paris Left Bank Loop/)).toBeTruthy();
+    const nextCircuit = testCircuit(2);
+    expect(screen.getByText(new RegExp(nextCircuit.title))).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();

@@ -28,8 +28,25 @@ type CityCircuitIdentitySource = {
 
 export type CityCircuitIdentity = (typeof CITY_CIRCUIT_IDENTITIES)[number];
 
-export function circuitIdentityForRound(round: number) {
-  return CITY_CIRCUIT_IDENTITIES[(Math.max(1, round) - 1) % CITY_CIRCUIT_IDENTITIES.length]!;
+export function circuitSeasonSeed(leagueId: string, season: number) {
+  return `${leagueId}:season:${Math.max(1, season)}`;
+}
+
+export function seasonCircuitIdentities(seed = "default") {
+  if (seed === "default") return [...CITY_CIRCUIT_IDENTITIES];
+  const circuits = [...CITY_CIRCUIT_IDENTITIES];
+  let state = hashCircuitSeed(seed);
+  for (let index = circuits.length - 1; index > 0; index -= 1) {
+    state = nextCircuitShuffleState(state);
+    const swapIndex = state % (index + 1);
+    [circuits[index], circuits[swapIndex]] = [circuits[swapIndex]!, circuits[index]!];
+  }
+  return circuits;
+}
+
+export function circuitIdentityForRound(round: number, seasonSeed = "default") {
+  const circuits = seasonCircuitIdentities(seasonSeed);
+  return circuits[(Math.max(1, round) - 1) % circuits.length]!;
 }
 
 export function raceInputFromCircuit(circuit: CityCircuitIdentity): Pick<RaceInput, "primaryTrait" | "secondaryTrait" | "forecast"> {
@@ -57,4 +74,17 @@ function forecastFromLikelyWeather(weather: Weather): RaceInput["forecast"] {
   if (weather === "heavy_rain") return { dry: 20, light_rain: 30, heavy_rain: 50 };
   if (weather === "light_rain") return { dry: 35, light_rain: 50, heavy_rain: 15 };
   return { dry: 70, light_rain: 20, heavy_rain: 10 };
+}
+
+function hashCircuitSeed(seed: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash ^= seed.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+}
+
+function nextCircuitShuffleState(state: number) {
+  return (Math.imul(state, 1664525) + 1013904223) >>> 0;
 }

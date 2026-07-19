@@ -18,6 +18,7 @@ import {
   replayDistanceScale,
   scaleFinishTimes,
   segmentAtProgress,
+  shouldSmoothReplayTrace,
   smoothCarProgress
 } from "./ReplayView.js";
 
@@ -120,6 +121,14 @@ describe("ReplayView timing", () => {
     ];
 
     expect(carProgressAtTrace(result, trace, 0.5, 5)).toMatchObject({ leader: 2.5, last: 2.1 });
+  });
+
+  it("skips runtime smoothing for generated car traces", () => {
+    expect(shouldSmoothReplayTrace([
+      { segment: "start", lap: 1, progress: 0, order: ["leader"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0, speed: 0, phase: "grid" } } },
+      { segment: "finish", lap: 5, progress: 1, order: ["leader"], times: {}, gaps: {}, cars: { leader: { trackProgress: 1, speed: 0, phase: "finished" } } }
+    ])).toBe(false);
+    expect(shouldSmoothReplayTrace([{ segment: "start", lap: 1, progress: 0, order: ["leader"], times: {}, gaps: {} }])).toBe(true);
   });
 
   it("shows absolute pit slowdown even when every car stops together", () => {

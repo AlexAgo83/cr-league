@@ -385,6 +385,10 @@ export function pitStopTraceProgress(result: RaceResult, trace: ReplayTracePoint
   return (low + high) / 2;
 }
 
+export function shouldSmoothReplayTrace(trace: ReplayTracePoint[]) {
+  return !trace.every((point) => point.cars);
+}
+
 export function gridStartCarProgress(result: RaceResult, trace: ReplayTracePoint[], progress: number) {
   const startOrder = trace[0]?.order.length ? trace[0].order : [...result.classification].sort((left, right) => left.position + left.positionChange - (right.position + right.positionChange)).map((entry) => entry.teamId);
   const spacing = 0.018;
@@ -610,6 +614,7 @@ export function ReplayView({
   const activeMoment = result.events.find((event) => event.id === activeMomentId);
   const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
   const raceDuration = replayTimes.leader;
+  const smoothTracePositions = shouldSmoothReplayTrace(replayTrace);
   const currentRaceProgress = raceProgressAt(clock.current, raceDuration);
   const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
   const raceTimeAtProgress = (progress: number) => START_HOLD_SECONDS + progress * raceDuration;
@@ -706,7 +711,7 @@ export function ReplayView({
     const segment = segmentAtProgress(progress);
     setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
     const targetSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, orderRef.current);
-    const carProgress = animatePositions ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress, elapsedSeconds) : targetSnapshot.carProgress;
+    const carProgress = animatePositions && smoothTracePositions ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress, elapsedSeconds) : targetSnapshot.carProgress;
     const nextTower = liveClassificationByCarProgress(result, replayTrace, progress, carProgress, orderRef.current);
     const nextSnapshot = { carProgress, tower: nextTower };
     const nextOrder = nextTower.map((entry) => entry.teamId);

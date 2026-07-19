@@ -3167,7 +3167,7 @@ label small {
   width: 100%;
 }
 
-.card-inventory-button > span {
+.card-inventory-button > span:not(.card-cell-art) {
   display: grid;
   gap: 3px;
 }
@@ -6162,7 +6162,7 @@ button.highlight-command:not(:disabled) {
   text-transform: none;
 }
 
-.garage-panel-inventory .card-inventory-button > span {
+.garage-panel-inventory .card-inventory-button > span:not(.card-cell-art) {
   gap: 2px;
 }
 

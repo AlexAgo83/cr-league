@@ -71,7 +71,7 @@
   "race_phase_adjust_title": "2. Chrono / plan",
   "race_phase_adjust_body": "Chrono {used}/{limit} is logged. Adjust the directive or lock the plan before the GP.",
   "race_phase_locked_title": "3. Plan locked",
-  "race_phase_locked_body": "The directive is final. Review the grid, then launch the Grand Prix.",
+  "race_phase_locked_body": "Plan locked. The grid is ready: launch the Grand Prix.",
   "race_phase_finished_title": "4. Grand Prix finished",
   "race_phase_finished_body": "Review the replay and report, then move to the next race day.",
   "cockpit_sections": "Cockpit sections",

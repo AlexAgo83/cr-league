@@ -71,7 +71,7 @@
   "race_phase_adjust_title": "2. Chrono / plan",
   "race_phase_adjust_body": "Chrono {used}/{limit} enregistré. Ajuste la directive ou verrouille le plan avant le GP.",
   "race_phase_locked_title": "3. Plan verrouillé",
-  "race_phase_locked_body": "La directive est finale. Vérifie la grille, puis lance le Grand Prix.",
+  "race_phase_locked_body": "Plan verrouillé. La grille est prête : lance le Grand Prix.",
   "race_phase_finished_title": "4. Grand Prix terminé",
   "race_phase_finished_body": "Revois le replay et le rapport, puis passe à la journée suivante.",
   "cockpit_sections": "Sections du cockpit",

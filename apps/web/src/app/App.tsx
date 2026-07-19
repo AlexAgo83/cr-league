@@ -1509,7 +1509,7 @@ export function App() {
                       </div>
                       <div className="map-workflow-panel">
                         <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
-                        <p>
+                        <p className="race-phase-message">
                           {tt(`race_phase_${raceDayPhase}_body` as TranslationKey, {
                             used: qualifyingAttemptsUsed,
                             limit: qualifyingAttemptLimit,

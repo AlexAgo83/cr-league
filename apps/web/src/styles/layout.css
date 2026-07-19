@@ -2252,6 +2252,12 @@ label small {
   white-space: nowrap;
 }
 
+.map-workflow-panel .race-phase-message {
+  color: color-mix(in srgb, var(--color-accent) 72%, var(--color-text));
+  font-weight: 800;
+  text-shadow: 0 0 12px color-mix(in srgb, var(--color-accent) 36%, transparent);
+}
+
 .map-workflow-panel .race-day-steps {
   flex-wrap: nowrap;
   margin-left: 0;

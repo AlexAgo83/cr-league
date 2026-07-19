@@ -12,9 +12,7 @@ import {
   liveClassificationByCarProgress,
   playerReplayContext,
   pitStopRaceProgress,
-  pitStopReplayProgress,
-  pitStopTimeOffset,
-  pitStopVisualProgress,
+  pitStopTraceProgress,
   positionDeltas,
   replayPlanDebugLines,
   replayDistanceScale,
@@ -217,25 +215,17 @@ describe("ReplayView timing", () => {
     expect(pitStopRaceProgress(resultWithPit.events[0]!, 10, 5, 0.25)).toBeCloseTo(0.45);
   });
 
-  it("eases pit stop entry, hold, and exit without teleporting", () => {
-    expect(pitStopVisualProgress(2.1, 9.4, 10, 2.25)).toBeCloseTo(2.1);
-    expect(pitStopVisualProgress(2.16, 9.7, 10, 2.25)).toBeGreaterThan(2.16);
-    expect(pitStopVisualProgress(2.4, 10, 10, 2.25)).toBe(2.25);
-    expect(pitStopVisualProgress(2.6, 10.4, 10, 2.25)).toBeGreaterThan(2.25);
-    expect(pitStopVisualProgress(2.7, 10.9, 10, 2.25)).toBe(2.7);
-    expect(pitStopVisualProgress(3.2, 10.4, 10, 2.25)).toBeLessThan(3.2);
-    expect(pitStopVisualProgress(3.2, 10.9, 10, 2.25)).toBe(3.2);
-    expect(pitStopVisualProgress(2.5, 10.2, 10, 2.25, 2)).toBeLessThan(2.5);
-    expect(pitStopVisualProgress(2.5, 12, 10, 2.25, 2)).toBe(2.25);
-  });
+  it("times pit stops when each car naturally reaches pit entry in the trace", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "mid", lap: 5, progress: 0.45, order: ["leader", "last"], times: { leader: 45, last: 46 }, gaps: { leader: 0, last: 1 } },
+      { segment: "finish", lap: 10, progress: 1, order: ["leader", "last"], times: { leader: 100, last: 104 }, gaps: { leader: 0, last: 4 } }
+    ];
+    const leader = resultWithEvent("leader", 1);
+    const last = resultWithEvent("last", 2);
 
-  it("stagger pit stops by race order instead of stacking cars", () => {
-    const trace: ReplayTracePoint[] = [{ segment: "mid", lap: 5, progress: 0.45, order: ["leader", "last"], times: { leader: 45, last: 46 }, gaps: { leader: 0, last: 1 } }];
-    const leader: RaceEvent = { id: "pit-a", order: 1, segment: "mid", lap: 5, type: "pit_stop", teamId: "leader", severity: "minor", positionDelta: 0, tags: [], replayText: "", reportText: "" };
-    const last: RaceEvent = { ...leader, id: "pit-b", order: 2, teamId: "last" };
-
-    expect(pitStopTimeOffset(last, trace, 0.45)).toBeGreaterThan(pitStopTimeOffset(leader, trace, 0.45));
-    expect(pitStopReplayProgress(last, 10, 5, 0.25, trace, 100)).toBeGreaterThan(pitStopReplayProgress(leader, 10, 5, 0.25, trace, 100));
+    expect(pitStopTraceProgress(result, trace, leader, 10, 5, 0.25)).toBeCloseTo(0.45);
+    expect(pitStopTraceProgress(result, trace, last, 10, 5, 0.25)).toBeGreaterThan(pitStopTraceProgress(result, trace, leader, 10, 5, 0.25));
   });
 
   it("uses chrono-specific director beats for qualifying replays", () => {
@@ -288,4 +278,20 @@ function testCircuit(laps: number, route: Array<{ lat: number; lng: number }>) {
     likelyWeather: "dry",
     route
   } as const;
+}
+
+function resultWithEvent(teamId: string, order: number): RaceEvent {
+  return {
+    id: `pit-${teamId}`,
+    order,
+    segment: "mid",
+    lap: 5,
+    type: "pit_stop",
+    teamId,
+    severity: "minor",
+    positionDelta: 0,
+    tags: ["pit_stop", "standard"],
+    replayText: "",
+    reportText: ""
+  };
 }

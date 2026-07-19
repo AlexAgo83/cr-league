@@ -355,6 +355,9 @@ describe("api app", () => {
     expect(secondRun.json().run.time).toBeGreaterThan(70);
     expect(secondRun.json().run.result.replayTrace.at(-1).times[created.player.teamId]).toBe(20);
     expect(secondRun.json().run.result.events).toHaveLength(2);
+    expect(secondRun.json().run.result.replayTrace.at(-1).distanceMeters).toBeGreaterThan(1000);
+    expect(secondRun.json().run.result.replayTrace.at(-1).cars[created.player.teamId]).toMatchObject({ trackProgress: 1, phase: "finished" });
+    expect(secondRun.json().run.result.events.map((event: { traceProgress: number }) => event.traceProgress)).toEqual([0.5, 1]);
   });
 
   it("caps each qualifying attempt to three laps", async () => {

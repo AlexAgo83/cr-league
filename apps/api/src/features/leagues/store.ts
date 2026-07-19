@@ -563,6 +563,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
       primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
       secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
       traits: normalizeRaceTraits(input.traits),
+      trackLengthMeters: state.currentGrandPrix.trackLengthMeters,
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
       laps: clampInteger(input.laps, 3, 1, 3)
     });
@@ -581,6 +582,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
           decision: defaultBotDecision(state, bot, demo?.decision),
           primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
           secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+          trackLengthMeters: state.currentGrandPrix.trackLengthMeters,
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
           laps: 1
         })[0]!
@@ -804,6 +806,7 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
           decision: defaultBotDecision(state, team, demo?.decision),
           primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
           secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+          trackLengthMeters: state.currentGrandPrix.trackLengthMeters,
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
           laps: 1
         })[0]!

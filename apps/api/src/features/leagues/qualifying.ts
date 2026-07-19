@@ -29,6 +29,7 @@ export function createQualifyingRuns(input: {
   primaryTrait: RaceInput["primaryTrait"];
   secondaryTrait: RaceInput["secondaryTrait"];
   traits?: RaceTraits;
+  trackLengthMeters?: number;
   forecast: RaceInput["forecast"];
   laps: number;
 }): QualifyingRun[] {
@@ -60,7 +61,7 @@ export function createQualifyingRuns(input: {
     const variance = (Math.random() - 0.5) * 2.4;
     return Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + pitDelta + cardDelta + warmupPenalty + tyreDelta + variance).toFixed(2));
   });
-  const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, weather);
+  const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, weather, input.trackLengthMeters ?? 3200);
   const createdAt = new Date().toISOString();
 
   return lapTimes.map((time, index) => ({
@@ -74,7 +75,7 @@ export function createQualifyingRuns(input: {
   }));
 }
 
-function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, lapTimes: number[], weather: Weather): RaceResult {
+function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, lapTimes: number[], weather: Weather, trackLengthMeters: number): RaceResult {
   const segments: RaceSegment[] = ["start", "early", "mid", "late", "finish"];
   const bestTime = Math.min(...lapTimes);
   const visualTime = lapTimes.length * QUALIFYING_REPLAY_SECONDS_PER_LAP;
@@ -84,6 +85,7 @@ function createQualifyingResult(teamId: string, teamName: string, seed: string, 
     segment: segments[Math.min(segments.length - 1, Math.floor((index / lapTimes.length) * segments.length))] ?? "finish",
     lap: index + 1,
     type: "finish",
+    traceProgress: (index + 1) / lapTimes.length,
     teamId,
     severity: "minor",
     positionDelta: 0,
@@ -110,21 +112,37 @@ function createQualifyingResult(teamId: string, teamName: string, seed: string, 
       }
     ],
     events,
-    replayTrace: Array.from({ length: lapTimes.length * 4 + 1 }, (_, index) => {
-      const progress = index / (lapTimes.length * 4);
-      return {
-        segment: segments[Math.min(segments.length - 1, Math.floor(progress * segments.length))] ?? "start",
-        lap: Math.min(lapTimes.length, Math.floor(index / 4) + 1),
-        progress,
-        order: [teamId],
-        times: { [teamId]: Number((visualTime * progress).toFixed(1)) },
-        gaps: { [teamId]: 0 }
-      };
-    }),
+    replayTrace: createQualifyingReplayTrace(teamId, lapTimes.length, visualTime, trackLengthMeters, segments),
     consumedCards: [],
     report: {
       headline: `${teamName} ${bestTime.toFixed(2)}s`,
       blocks: []
     }
   };
+}
+
+function createQualifyingReplayTrace(teamId: string, laps: number, visualTime: number, trackLengthMeters: number, segments: RaceSegment[]) {
+  const stepsPerLap = 12;
+  return Array.from({ length: laps * stepsPerLap + 1 }, (_, index) => {
+    const progress = index / (laps * stepsPerLap);
+    const phase = progress >= 1 ? "finished" as const : index === 0 ? "grid" as const : "racing" as const;
+    const distanceMeters = Number((progress * trackLengthMeters).toFixed(1));
+    return {
+      segment: segments[Math.min(segments.length - 1, Math.floor(progress * segments.length))] ?? "start",
+      lap: Math.min(laps, Math.floor(index / stepsPerLap) + 1),
+      progress,
+      distanceMeters,
+      order: [teamId],
+      times: { [teamId]: Number((visualTime * progress).toFixed(1)) },
+      gaps: { [teamId]: 0 },
+      cars: {
+        [teamId]: {
+          trackProgress: Number(progress.toFixed(4)),
+          distanceMeters,
+          speed: phase === "racing" ? 1 : 0,
+          phase
+        }
+      }
+    };
+  });
 }

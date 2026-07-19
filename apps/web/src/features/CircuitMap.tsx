@@ -62,6 +62,7 @@ type RouteSegment = {
 };
 export type CircuitRouteAnalysis = {
   startLine: { x1: number; y1: number; x2: number; y2: number };
+  startProgress: number;
   pitStop: RoutePose;
   longestStraight: { startProgress: number; endProgress: number; length: number };
 };
@@ -206,7 +207,7 @@ export function analyzeCircuitRoute(points: RoutePoint[]): CircuitRouteAnalysis 
   const total = segments.reduce((sum, segment) => sum + segment.length, 0) || 1;
   if (!segments.length) {
     const pose = { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
-    return { startLine: routeLineAt(pose), pitStop: pose, longestStraight: { startProgress: 0, endProgress: 0, length: 0 } };
+    return { startLine: routeLineAt(pose), startProgress: 0, pitStop: pose, longestStraight: { startProgress: 0, endProgress: 0, length: 0 } };
   }
 
   let best = { start: segments[0]!, count: 1, length: segments[0]!.length };
@@ -231,6 +232,7 @@ export function analyzeCircuitRoute(points: RoutePoint[]): CircuitRouteAnalysis 
 
   return {
     startLine: routeLineAt(poseOnRoute(points, lineProgress)),
+    startProgress: lineProgress,
     pitStop: poseOnRoute(points, pitProgress),
     longestStraight: {
       startProgress: straightStart,
@@ -250,6 +252,10 @@ export function circuitRouteAnalysis(circuit: CityCircuit) {
 
 export function angleDelta(from: number, to: number) {
   return ((((to - from) % 360) + 540) % 360) - 180;
+}
+
+function progressFromStart(progress: number, startProgress: number) {
+  return (((progress + startProgress) % 1) + 1) % 1;
 }
 
 export function driftAngle(points: Array<{ x: number; y: number }>, progress: number) {
@@ -307,6 +313,7 @@ export function CircuitMap({
   const markerScale = camera?.enabled ? 1 / FOCUS_ZOOM : 1;
   const hasCars = cars.length > 0;
   const routeAnalysis = analyzeCircuitRoute(points);
+  const stageProgress = (progress: number) => progressFromStart(progress, routeAnalysis.startProgress);
   carsRef.current = cars;
   pointsRef.current = points;
 
@@ -330,11 +337,12 @@ export function CircuitMap({
       clockRef.current = camera.timeRef?.current ?? (performance.now() - startedAt) / 1000;
       const elapsed = Math.max(0, clockRef.current - car.delay);
       const progress = car.progress ?? (car.repeatCount !== "indefinite" && clockRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration);
-      const point = car.progress === undefined ? route.getPointAtLength(length * progress) : poseOnRoute(pointsRef.current, progress);
+      const stagedProgress = progressFromStart(progress, routeAnalysis.startProgress);
+      const point = car.progress === undefined ? route.getPointAtLength(length * stagedProgress) : poseOnRoute(pointsRef.current, stagedProgress);
       const nearestCarDistance = Math.min(
         ...carsRef.current.map((other) => {
           if (other.id === car.id || other.progress === undefined) return Number.POSITIVE_INFINITY;
-          const otherPoint = poseOnRoute(pointsRef.current, other.progress);
+          const otherPoint = poseOnRoute(pointsRef.current, progressFromStart(other.progress, routeAnalysis.startProgress));
           return Math.hypot(otherPoint.x - point.x, otherPoint.y - point.y);
         })
       );
@@ -360,7 +368,7 @@ export function CircuitMap({
       cancelAnimationFrame(frame);
       cameraGroup.removeAttribute("transform");
     };
-  }, [camera?.enabled, camera?.car, camera?.timeRef, circuit.laps]);
+  }, [camera?.enabled, camera?.car, camera?.timeRef, circuit.laps, routeAnalysis.startProgress]);
 
   return (
     <section
@@ -399,8 +407,7 @@ export function CircuitMap({
             <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={d} />
             <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={d} />
             <g className="circuit-pit-stop" transform={`translate(${routeAnalysis.pitStop.x} ${routeAnalysis.pitStop.y}) rotate(${routeAnalysis.pitStop.angle})`}>
-              <line x1="-18" y1="-11" x2="18" y2="-11" />
-              <circle cx="-22" cy="-11" r="8" />
+              <circle r="9" />
               <text textAnchor="middle" dominantBaseline="central">
                 P
               </text>
@@ -412,8 +419,8 @@ export function CircuitMap({
             )}
             {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
-              const pose = car.progress === undefined ? null : poseOnRoute(points, car.progress);
-              const drift = car.progress === undefined ? 0 : driftAngle(points, car.progress);
+              const pose = car.progress === undefined ? null : poseOnRoute(points, stageProgress(car.progress));
+              const drift = car.progress === undefined ? 0 : driftAngle(points, stageProgress(car.progress));
               const sprite = spriteForCar(car);
               const carStyle = car.livery
                 ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
@@ -444,7 +451,7 @@ export function CircuitMap({
                     ) : null}
                   </g>
                   {car.progress === undefined ? (
-                    <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
+                    <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} keyPoints={`${routeAnalysis.startProgress};1;${routeAnalysis.startProgress}`} keyTimes={`0;${1 - routeAnalysis.startProgress};1`} calcMode="linear" repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
                   ) : null}
                 </g>
               );

@@ -2891,12 +2891,6 @@ label small {
   filter: drop-shadow(0 0 5px rgb(56 189 248 / 0.45)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.75));
 }
 
-.circuit-pit-stop line {
-  stroke: var(--color-telemetry);
-  stroke-linecap: round;
-  stroke-width: 4;
-}
-
 .circuit-pit-stop circle {
   fill: rgb(16 14 18 / 0.88);
   stroke: var(--color-telemetry);
@@ -2906,7 +2900,7 @@ label small {
 .circuit-pit-stop text {
   fill: var(--color-telemetry);
   font-family: var(--font-display);
-  font-size: 8px;
+  font-size: 9px;
   font-weight: 800;
 }
 

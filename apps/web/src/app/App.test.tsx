@@ -515,6 +515,24 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-garage-panel")).toBe("shop");
   });
 
+  it("sorts owned garage cards by next-GP fit and marks sellable cards", async () => {
+    saveProfile();
+    const inventoryState = {
+      ...baseState,
+      teams: [{ ...baseState.teams[0], cards: ["defensive_order", "soft_tires", "rain_grip", "qualifying_focus"] }, baseState.teams[1]]
+    };
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(inventoryState));
+
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Garage" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    const cards = [...document.querySelectorAll(".card-inventory-button")].map((button) => button.textContent ?? "");
+    expect(cards.map((text) => text.match(/Rain Grip|Soft Tires|Qualifying Lap|Defensive Order/)?.[0])).toEqual(["Rain Grip", "Soft Tires", "Qualifying Lap", "Defensive Order"]);
+    expect(cards.every((text) => text.includes("Sell for 60 credits"))).toBe(true);
+  });
+
   it("does not auto-select a card after buying one", async () => {
     saveProfile();
     const emptyGarageState = {

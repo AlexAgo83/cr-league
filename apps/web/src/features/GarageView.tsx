@@ -81,14 +81,14 @@ export function GarageView({
   }
 
   const shopOffers = recommendedShopOffers(state, forecastPick);
+  const isCardLocked = (cardId: CardId) =>
+    state.decisions.some((decision) => decision.teamId === playerTeam.id && decision.cardId === cardId) ||
+    state.currentGrandPrix.qualifyingRuns.some((run) => run.teamId === playerTeam.id && run.decision?.cardId === cardId);
+  const inventoryCards = [...ownedCardIds].sort((left, right) => cardFit(right, state, forecastPick).score - cardFit(left, state, forecastPick).score || left.localeCompare(right));
   const pendingBuy = shopOffers.find((item) => item.cardId === pendingBuyCardId);
   const viewingFit = viewingCardId ? cardFit(viewingCardId, state, forecastPick) : null;
   const viewingSellPrice = (state.cardShop.find((item) => item.cardId === viewingCardId)?.price ?? 0) / 2;
-  const viewingCardLocked = Boolean(
-    viewingCardId &&
-      (state.decisions.some((decision) => decision.teamId === playerTeam.id && decision.cardId === viewingCardId) ||
-        state.currentGrandPrix.qualifyingRuns.some((run) => run.teamId === playerTeam.id && run.decision?.cardId === viewingCardId))
-  );
+  const viewingCardLocked = Boolean(viewingCardId && isCardLocked(viewingCardId));
   const pendingBuyAffordable = Boolean(pendingBuy && playerTeam.credits >= pendingBuy.price);
   const panelTitle = cardPanel === "team" ? tt("dashboard_my_team") : cardPanel === "inventory" ? tt("garage_inventory") : tt("garage_shop");
   const seasonWins = seasonWinsByTeamId(state).get(playerTeam.id) ?? 0;
@@ -189,14 +189,15 @@ export function GarageView({
         {cardPanel === "inventory" ? (
           <>
             <ul className="card-inventory">
-              {ownedCardIds.length ? (
-                ownedCardIds.map((cardId) => (
+              {inventoryCards.length ? (
+                inventoryCards.map((cardId) => (
                   <li key={cardId}>
                     <button className="card-inventory-button" type="button" onClick={() => setViewingCardId(cardId)}>
                       <span>
                         {tt(`card_${cardId}` as TranslationKey)}
                         <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
                         <CardStatBadges cardId={cardId} tt={tt} />
+                        {!isCardLocked(cardId) ? <small>{tt("garage_sell_card_action", { price: (state.cardShop.find((item) => item.cardId === cardId)?.price ?? 0) / 2 })}</small> : null}
                       </span>
                       <strong>x{countCards(playerTeam.cards, cardId)}</strong>
                     </button>

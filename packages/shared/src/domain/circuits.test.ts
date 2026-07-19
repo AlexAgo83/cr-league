@@ -39,7 +39,7 @@ describe("circuit identities", () => {
     ]);
   });
 
-  it("adds five European city circuits outside the existing catalog", () => {
-    expect(CITY_CIRCUIT_IDENTITIES.slice(-5).map((circuit) => circuit.city)).toEqual(["London", "Brussels", "Prague", "Copenhagen", "Stockholm"]);
+  it("adds global city circuits outside the European catalog", () => {
+    expect(CITY_CIRCUIT_IDENTITIES.slice(-6).map((circuit) => circuit.city)).toEqual(["Tokyo", "Rio de Janeiro", "Cape Town", "Seoul", "Montreal", "Istanbul"]);
   });
 });

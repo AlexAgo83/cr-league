@@ -18,7 +18,13 @@ export const CITY_CIRCUIT_IDENTITIES = [
   { city: "Brussels", country: "BE", layoutKey: "circuit_brussels_grand_place_loop", laps: 3, trackLengthMeters: 6100, traits: { grip: 63, overtaking: 67, energy: 59 }, likelyWeather: "light_rain" },
   { city: "Prague", country: "CZ", layoutKey: "circuit_prague_vltava_loop", laps: 7, trackLengthMeters: 2900, traits: { grip: 68, overtaking: 60, energy: 64 }, likelyWeather: "dry" },
   { city: "Copenhagen", country: "DK", layoutKey: "circuit_copenhagen_harbor_loop", laps: 7, trackLengthMeters: 3050, traits: { grip: 71, overtaking: 58, energy: 70 }, likelyWeather: "heavy_rain" },
-  { city: "Stockholm", country: "SE", layoutKey: "circuit_stockholm_gamla_stan_loop", laps: 8, trackLengthMeters: 2550, traits: { grip: 72, overtaking: 56, energy: 69 }, likelyWeather: "light_rain" }
+  { city: "Stockholm", country: "SE", layoutKey: "circuit_stockholm_gamla_stan_loop", laps: 8, trackLengthMeters: 2550, traits: { grip: 72, overtaking: 56, energy: 69 }, likelyWeather: "light_rain" },
+  { city: "Tokyo", country: "JP", layoutKey: "circuit_tokyo_bay_loop", laps: 8, trackLengthMeters: 3800, traits: { grip: 74, overtaking: 66, energy: 63 }, likelyWeather: "light_rain" },
+  { city: "Rio de Janeiro", country: "BR", layoutKey: "circuit_rio_flamengo_loop", laps: 7, trackLengthMeters: 3200, traits: { grip: 61, overtaking: 78, energy: 55 }, likelyWeather: "dry" },
+  { city: "Cape Town", country: "ZA", layoutKey: "circuit_cape_town_waterfront_loop", laps: 6, trackLengthMeters: 3700, traits: { grip: 67, overtaking: 72, energy: 58 }, likelyWeather: "dry" },
+  { city: "Seoul", country: "KR", layoutKey: "circuit_seoul_yeouido_loop", laps: 7, trackLengthMeters: 4100, traits: { grip: 69, overtaking: 75, energy: 60 }, likelyWeather: "light_rain" },
+  { city: "Montreal", country: "CA", layoutKey: "circuit_montreal_island_loop", laps: 9, trackLengthMeters: 4300, traits: { grip: 72, overtaking: 80, energy: 62 }, likelyWeather: "light_rain" },
+  { city: "Istanbul", country: "TR", layoutKey: "circuit_istanbul_bosphorus_loop", laps: 7, trackLengthMeters: 4600, traits: { grip: 65, overtaking: 76, energy: 57 }, likelyWeather: "dry" }
 ] as const satisfies readonly [
   CityCircuitIdentitySource,
   ...CityCircuitIdentitySource[]

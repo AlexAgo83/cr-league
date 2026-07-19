@@ -5986,7 +5986,12 @@ button.highlight-command:not(:disabled) {
   overflow: visible;
 }
 
-.garage-panel-inventory .card-inventory-button::after {
+.garage-panel-shop .card-shop button {
+  background: transparent;
+}
+
+.garage-panel-inventory .card-inventory-button::after,
+.garage-panel-shop .card-shop button::after {
   display: none;
 }
 

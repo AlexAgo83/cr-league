@@ -109,7 +109,7 @@ CR League is already playable end to end:
 - private league create, join, rejoin, restart, and next-Grand-Prix flows;
 - manual cadence with settings, readiness states, and guarded race actions;
 - qualifying attempts, chrono reports, best-lap history, and replay support;
-- seeded city-circuit race simulation with weather, traits, events, reports, and trace-driven replays;
+- seeded global city-circuit race simulation with weather, traits, events, reports, and trace-driven replays;
 - dynamic circuit staging markers for the start line and future pit-stop zone;
 - battery/pit strategy choices with pit-stop battery swaps anchored in the generated car trace;
 - garage inventory, card shop, prices, credits, livery editing, and team rename;
@@ -276,7 +276,7 @@ Current roadmap direction:
 
 - `0.1`: playable vertical slice implemented;
 - `0.2`: private league prototype foundation implemented;
-- `0.3`: playtest game loop polish has reached navigation/admin/circuit patch `0.3.9`, with API pending feedback and image placeholders in the web app;
+- `0.3`: playtest game loop polish has reached replay realism, pit strategy, loading feedback, and global circuit catalogue patch `0.3.10`;
 - `0.4`: ship rails are implemented; economy depth waits for playtest signal.
 
 ## Contributing

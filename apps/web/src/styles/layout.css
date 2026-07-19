@@ -753,7 +753,7 @@
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.38)),
     url("/assets/crl/profile-arrival.png") center / cover no-repeat,
-    linear-gradient(90deg, transparent, transparent, transparent) -120% 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
 }
 
@@ -761,7 +761,7 @@
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.38)),
     url("/assets/crl/league-arrival.png") center / cover no-repeat,
-    linear-gradient(90deg, transparent, transparent, transparent) -120% 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
 }
 
@@ -969,7 +969,7 @@ button:disabled {
 
 .asset-image-placeholder {
   background:
-    linear-gradient(90deg, transparent, transparent, transparent),
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent),
     radial-gradient(circle at 18% 24%, rgb(197 58 0 / 0.32), transparent 28%),
     linear-gradient(135deg, rgb(197 58 0 / 0.12), rgb(54 34 26 / 0.5)),
     rgb(15 13 15 / 0.92);
@@ -1138,7 +1138,7 @@ label small {
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.9), rgb(16 14 18 / 0.48)),
     url("/assets/crl/onboarding-chrono.png") center / cover no-repeat,
-    linear-gradient(90deg, transparent, transparent, transparent) -120% 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
   color: var(--color-text);
   display: grid;
@@ -1402,7 +1402,7 @@ label small {
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.42)),
     url("/assets/crl/plan-header.png") center / cover no-repeat,
-    linear-gradient(90deg, transparent, transparent, transparent) -120% 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
   color: var(--color-text);
   overflow: hidden;
@@ -2192,7 +2192,7 @@ label small {
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.46)),
     url("/assets/crl/completed-gp-panel.png") center / cover no-repeat,
-    linear-gradient(90deg, transparent, transparent, transparent) -120% 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
 }
 
@@ -3132,7 +3132,7 @@ label small {
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.9), rgb(16 14 18 / 0.38)),
     url("/assets/crl/championship-header.png") center / cover no-repeat,
-    linear-gradient(90deg, transparent, transparent, transparent) -120% 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
   color: var(--color-text);
   display: grid;
@@ -3263,7 +3263,7 @@ label small {
     linear-gradient(to bottom, var(--color-page) 0, rgb(18 16 20 / 0) 18px),
     linear-gradient(90deg, rgb(16 14 18 / 0.82), rgb(16 14 18 / 0.36)),
     var(--record-hero-image) center / cover no-repeat,
-    linear-gradient(90deg, transparent, transparent, transparent) -120% 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
   color: #f8f3e8;
   display: flex;
@@ -4007,7 +4007,7 @@ label small {
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.9), rgb(16 14 18 / 0.42)),
     url("/assets/crl/garage-empty.png") center / cover no-repeat,
-    linear-gradient(90deg, transparent, transparent, transparent) -120% 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
   color: var(--color-text);
   display: grid;
@@ -4745,7 +4745,7 @@ button.command-icon-button {
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.86), rgb(16 14 18 / 0.34)),
     url("/assets/crl/report-victory.png") center / cover no-repeat,
-    linear-gradient(90deg, transparent, transparent, transparent) -120% 0 / 220% 100% no-repeat,
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
   color: var(--color-text);
   display: grid;

@@ -139,6 +139,8 @@ describe("simulateRace", () => {
     expect(stops.filter((event) => event.teamId === "alice")).toHaveLength(0);
     expect(stops.filter((event) => event.teamId === "hugo")).toHaveLength(2);
     expect(stops.filter((event) => event.teamId === "atlas")).toHaveLength(1);
+    expect(stops.find((event) => event.teamId === "hugo")?.reportText).toContain("2.2s");
+    expect(stops.find((event) => event.teamId === "atlas")?.reportText).toContain("3.2s");
   });
 
   it("emits card events for played cards", () => {

@@ -273,7 +273,7 @@ function maybeAddPitStopEvent(state: TeamState, segment: RaceSegment, events: Ra
   if (strategy === "standard" && segment !== "mid") return;
   if (strategy === "mini_pack" && segment !== "early" && segment !== "late") return;
 
-  const stopCost = strategy === "mini_pack" ? 1.15 : 1.65;
+  const stopCost = strategy === "mini_pack" ? 2.2 : 3.2;
   state.elapsedTime += stopCost;
   state.scores.score += strategy === "mini_pack" ? 4 : 0;
   state.resultTags.add(strategy);

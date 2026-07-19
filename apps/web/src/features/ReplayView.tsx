@@ -459,6 +459,14 @@ export function playerReplayContext(result: RaceResult, trace: ReplayTracePoint[
   };
 }
 
+export function replayPlayerGapItems(context: { gapAhead?: number; gapBehind?: number } | null, tt: Translator) {
+  if (!context) return [];
+  return [
+    context.gapAhead === undefined ? null : { label: tt("replay_player_ahead"), value: `${context.gapAhead.toFixed(1)}s` },
+    context.gapBehind === undefined ? null : { label: tt("replay_player_behind"), value: `${context.gapBehind.toFixed(1)}s` }
+  ].filter((item): item is { label: string; value: string } => Boolean(item));
+}
+
 function replaySnapshot(
   result: RaceResult,
   trace: ReplayTracePoint[],
@@ -590,6 +598,7 @@ export function ReplayView({
   overlayActions,
   towerReplacement,
   planDecision,
+  afterMapContent,
   tt
 }: {
   result: RaceResult;
@@ -609,6 +618,7 @@ export function ReplayView({
   overlayActions?: ReactNode;
   towerReplacement?: ReactNode;
   planDecision?: RaceDecision;
+  afterMapContent?: ReactNode;
   tt: Translator;
 }) {
   const svgRef = useRef<SVGSVGElement>(null);
@@ -799,6 +809,7 @@ export function ReplayView({
   const activeDirectorBeat = [...directorBeats].reverse().find((beat) => beat.progress <= currentRaceProgress) ?? directorBeats[0];
   const activeDirectorCopy = activeDirectorBeat ? directorBeatCopy(activeDirectorBeat, names, tt) : null;
   const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId);
+  const playerGapItems = replayPlayerGapItems(playerContext, tt);
   const latestPlayerBeat = [...directorBeats].reverse().find((beat) => beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId);
   const seekValueText = `${tt("unit_lap")} ${live.lap}/${circuit.laps}, ${Math.round(clock.current)}s`;
   const directorTitle = replayMode === "qualifying" ? tt("replay_director_chrono_title") : tt("replay_director_title");
@@ -873,12 +884,15 @@ export function ReplayView({
                       <strong>
                         <PositionBadge position={playerContext.position} /> {playerContext.delta ? `(${playerContext.delta > 0 ? "+" : ""}${playerContext.delta})` : ""}
                       </strong>
-                      <small>
-                        {tt("replay_player_gaps", {
-                          ahead: playerContext.gapAhead === undefined ? "-" : `${playerContext.gapAhead.toFixed(1)}s`,
-                          behind: playerContext.gapBehind === undefined ? "-" : `${playerContext.gapBehind.toFixed(1)}s`
-                        })}
-                      </small>
+                      {playerGapItems.length ? (
+                        <small className="replay-player-gaps">
+                          {playerGapItems.map((item) => (
+                            <span key={item.label}>
+                              {item.label} <b>{item.value}</b>
+                            </span>
+                          ))}
+                        </small>
+                      ) : null}
                       {latestPlayerBeat ? <small>{renderPositionBadges(directorBeatCopy(latestPlayerBeat, names, tt).detail)}</small> : null}
                     </div>
                     ) : null}
@@ -1032,6 +1046,7 @@ export function ReplayView({
               </>
             }
           />
+          {afterMapContent}
           {showIntro && !copyDismissed ? (
             <section className="panel race-context-panel replay-copy-panel">
               <h2>{tt(titleKey)}</h2>

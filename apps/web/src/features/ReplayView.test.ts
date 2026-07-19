@@ -12,6 +12,7 @@ import {
   finishTimes,
   liveClassificationByCarProgress,
   playerReplayContext,
+  replayPlayerGapItems,
   pitStopRaceProgress,
   pitStopTraceProgress,
   positionDeltas,
@@ -37,6 +38,7 @@ const result: RaceResult = {
   consumedCards: [],
   report: { headline: "Test", blocks: [] }
 };
+const tt = ((key, params) => t(key, "en", params)) as import("../app/helpers.js").Translator;
 
 describe("ReplayView timing", () => {
   it("maps internal replay progress to the displayed circuit lap count", () => {
@@ -330,6 +332,15 @@ describe("ReplayView timing", () => {
 
     expect(playerReplayContext(result, trace, 0.5, "last")).toMatchObject({ position: 1, delta: 1, gapBehind: 1 });
     expect(playerReplayContext(result, trace, 0.5, undefined)).toBe(null);
+  });
+
+  it("formats only available player replay gaps", () => {
+    expect(replayPlayerGapItems({ gapBehind: 0.9 }, tt)).toEqual([{ label: "Behind", value: "0.9s" }]);
+    expect(replayPlayerGapItems({ gapAhead: 1.2, gapBehind: 0.9 }, tt)).toEqual([
+      { label: "Ahead", value: "1.2s" },
+      { label: "Behind", value: "0.9s" }
+    ]);
+    expect(replayPlayerGapItems(null, tt)).toEqual([]);
   });
 
   it("keeps dense trace overtakes on a minimum visual transition", () => {

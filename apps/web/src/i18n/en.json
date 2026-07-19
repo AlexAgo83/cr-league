@@ -333,6 +333,8 @@
   "replay_director_final": "Final pressure",
   "replay_director_final_detail": "{team} controls the run to the flag; the final order is the plan's pace, reliability, and card timing added together.",
   "replay_player_focus": "Your race",
+  "replay_player_ahead": "Ahead",
+  "replay_player_behind": "Behind",
   "replay_player_gaps": "Ahead {ahead} · Behind {behind}",
   "restart_confirm": "Restart this league from round 1? Teams stay joined, but points, credits, cards, directives, and GP history are reset.",
   "cadence_manual": "Manual",

@@ -96,6 +96,7 @@ export function ResultView({
             onClose={onClose}
             onOpenReport={onOpenReport}
             closeLabel={tt("action_back_to_circuit")}
+            afterMapContent={payoffPanel}
             tt={tt}
           />
         ) : (
@@ -111,7 +112,6 @@ export function ResultView({
           />
         )}
       </div>
-      {tab === "replay" ? payoffPanel : null}
     </div>
   );
 }

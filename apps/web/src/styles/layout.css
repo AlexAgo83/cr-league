@@ -2888,6 +2888,25 @@ label small {
   line-height: 1.2;
 }
 
+.replay-player-gaps {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.replay-player-gaps span {
+  background: rgb(255 255 255 / 0.08);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 999px;
+  color: var(--color-muted);
+  padding: 3px 7px;
+}
+
+.replay-player-gaps b {
+  color: var(--color-text);
+  font-weight: 900;
+}
+
 .replay-tower {
   background: rgb(16 14 18 / 0.78);
   border: 1px solid rgb(255 255 255 / 0.12);

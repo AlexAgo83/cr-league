@@ -573,8 +573,12 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(window.location.pathname).toBe("/replay/gp_1");
     expect(Array.from(document.querySelector(".result-view")!.children).map((child) => child.id || child.className)).toEqual([
-      "result-replay-panel",
-      "panel race-payoff-recap"
+      "result-replay-panel"
+    ]);
+    expect(Array.from(document.querySelector(".replay-content-column")!.children).map((child) => child.className)).toEqual([
+      "circuit-map circuit-map-unframed replay-map-panel circuit-weather-dry",
+      "panel race-payoff-recap",
+      "panel race-context-panel replay-copy-panel"
     ]);
     expect(document.querySelector('image[href="/assets/cars/idle.png"]')).toBeTruthy();
     const replayReportButton = document.querySelector(".replay-report-button") as HTMLButtonElement;

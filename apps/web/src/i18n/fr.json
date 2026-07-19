@@ -333,6 +333,8 @@
   "replay_director_final": "Dernière pression",
   "replay_director_final_detail": "{team} contrôle jusqu'au drapeau ; l'ordre final additionne rythme, fiabilité et timing de carte.",
   "replay_player_focus": "Ta course",
+  "replay_player_ahead": "Devant",
+  "replay_player_behind": "Derrière",
   "replay_player_gaps": "Devant {ahead} · Derrière {behind}",
   "restart_confirm": "Relancer cette ligue depuis la manche 1 ? Les équipes restent inscrites, mais points, crédits, cartes, directives et historique GP sont remis à zéro.",
   "cadence_manual": "Manuelle",

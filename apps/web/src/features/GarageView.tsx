@@ -236,10 +236,7 @@ export function GarageView({
         ) : null}
       </section>
       {pendingBuy ? (
-        <Modal label={tt("garage_buy_confirm_title")} className="panel modal garage-buy-modal" onClose={() => setPendingBuyCardId(undefined)}>
-          <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setPendingBuyCardId(undefined)}>
-            ×
-          </button>
+        <Modal label={tt("garage_buy_confirm_title")} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setPendingBuyCardId(undefined)}>
           <ModalHero image="/assets/crl/garage-buy-modal.png" kicker={tt("garage_shop")} title={tt(`card_${pendingBuy.cardId}` as TranslationKey)} />
           <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
@@ -255,17 +252,11 @@ export function GarageView({
             <button type="button" onClick={confirmBuy} disabled={loading || !pendingBuyAffordable}>
               {tt("garage_buy_confirm_action")}
             </button>
-            <button type="button" onClick={() => setPendingBuyCardId(undefined)}>
-              {tt("action_close")}
-            </button>
           </div>
         </Modal>
       ) : null}
       {viewingCardId && viewingFit ? (
-        <Modal label={tt(`card_${viewingCardId}` as TranslationKey)} className="panel modal garage-buy-modal" onClose={() => setViewingCardId(undefined)}>
-          <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setViewingCardId(undefined)}>
-            ×
-          </button>
+        <Modal label={tt(`card_${viewingCardId}` as TranslationKey)} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setViewingCardId(undefined)}>
           <ModalHero image="/assets/crl/garage-sell-modal.png" kicker={tt("garage_inventory")} title={tt(`card_${viewingCardId}` as TranslationKey)} />
           <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card garage-detail-card">
@@ -283,9 +274,6 @@ export function GarageView({
               disabled={loading || viewingSellPrice <= 0 || viewingCardLocked}
             >
               {tt("garage_sell_card_action", { price: viewingSellPrice })}
-            </button>
-            <button type="button" onClick={() => setViewingCardId(undefined)}>
-              {tt("action_close")}
             </button>
           </div>
         </Modal>

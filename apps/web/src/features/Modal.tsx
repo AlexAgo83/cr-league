@@ -2,7 +2,21 @@ import { type KeyboardEvent, type MouseEvent, type ReactNode, useEffect, useRef 
 
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function Modal({ label, className = "panel modal", onClose, children }: { label: string; className?: string; onClose: () => void; children: ReactNode }) {
+export function Modal({
+  label,
+  className = "panel modal",
+  closeLabel = "Close",
+  showCloseButton = false,
+  onClose,
+  children
+}: {
+  label: string;
+  className?: string;
+  closeLabel?: string;
+  showCloseButton?: boolean;
+  onClose: () => void;
+  children: ReactNode;
+}) {
   const dialogRef = useRef<HTMLElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const overlayPressStarted = useRef(false);
@@ -50,6 +64,11 @@ export function Modal({ label, className = "panel modal", onClose, children }: {
       }}
     >
       <section ref={dialogRef} className={className} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={handleKeyDown} onClick={(event: MouseEvent) => event.stopPropagation()}>
+        {showCloseButton ? (
+          <button className="modal-close-button" type="button" aria-label={closeLabel} onClick={onClose}>
+            ×
+          </button>
+        ) : null}
         {children}
       </section>
     </div>

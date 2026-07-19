@@ -1065,7 +1065,7 @@ export function App() {
   );
 
   const profileCodeModal = profileCodeOpen ? (
-    <Modal label={tt("profile_code_title")} onClose={() => setProfileCodeOpen(false)}>
+    <Modal label={tt("profile_code_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setProfileCodeOpen(false)}>
       <ModalHero image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("profile_code_title")} />
       {profileSession?.recoveryCode ? (
         <input
@@ -1081,61 +1081,47 @@ export function App() {
       ) : (
         <p>{tt("status_profile_code_missing")}</p>
       )}
-      <div className="actions">
-        <button type="button" onClick={() => setProfileCodeOpen(false)}>
-          {tt("action_close")}
-        </button>
-      </div>
     </Modal>
   ) : null;
 
   const profileLogoutModal = profileLogoutOpen ? (
-    <Modal label={tt("profile_logout_title")} onClose={() => setProfileLogoutOpen(false)}>
+    <Modal label={tt("profile_logout_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setProfileLogoutOpen(false)}>
       <ModalHero image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("profile_logout_title")} />
       <p>{tt("profile_logout_confirm")}</p>
       <div className="actions secondary-actions">
         <button type="button" className="danger-button" onClick={forgetProfile}>
           {tt("action_forget_profile")}
         </button>
-        <button type="button" onClick={() => setProfileLogoutOpen(false)}>
-          {tt("action_close")}
-        </button>
       </div>
     </Modal>
   ) : null;
 
   const preferencesResetModal = preferencesResetOpen ? (
-    <Modal label={tt("preferences_reset_title")} onClose={() => setPreferencesResetOpen(false)}>
+    <Modal label={tt("preferences_reset_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setPreferencesResetOpen(false)}>
       <ModalHero image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("preferences_reset_title")} />
       <p>{tt("preferences_reset_confirm")}</p>
       <div className="actions secondary-actions">
         <button type="button" className="danger-button" onClick={resetUiPreferences}>
           {tt("action_reset_ui_preferences")}
         </button>
-        <button type="button" onClick={() => setPreferencesResetOpen(false)}>
-          {tt("action_close")}
-        </button>
       </div>
     </Modal>
   ) : null;
 
   const errorModal = technicalError ? (
-    <Modal label={tt("error_modal_title")} onClose={() => setTechnicalError(null)}>
+    <Modal label={tt("error_modal_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setTechnicalError(null)}>
       <ModalHero image="/assets/crl/pit-wall-mobile.png" kicker={tt("error_modal_kicker")} title={tt("error_modal_title")} />
       <p>{tt("error_modal_body")}</p>
       <div className="actions secondary-actions">
         <button type="button" className="secondary-button" onClick={() => void copyTechnicalError()}>
           {tt("action_copy_error")}
         </button>
-        <button type="button" onClick={() => setTechnicalError(null)}>
-          {tt("action_close")}
-        </button>
       </div>
     </Modal>
   ) : null;
 
   const directiveConfirmModal = directiveConfirmOpen ? (
-    <Modal label={tt("directive_confirm_title")} onClose={() => setDirectiveConfirmOpen(false)}>
+    <Modal label={tt("directive_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setDirectiveConfirmOpen(false)}>
       <ModalHero image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} />
       <p>
         {qualifyingAttemptsUsed === 0
@@ -1147,16 +1133,13 @@ export function App() {
         <button type="button" onClick={submitDirectiveConfirmed} disabled={status === "loading"}>
           {tt("action_submit_directive")}
         </button>
-        <button type="button" onClick={() => setDirectiveConfirmOpen(false)}>
-          {tt("action_close")}
-        </button>
       </div>
     </Modal>
   ) : null;
   const displayedStartingGridEntries = startingGridExpanded ? startingGridEntries : startingGridEntries.slice(0, 4);
   const hiddenStartingGridCount = startingGridEntries.length - displayedStartingGridEntries.length;
   const resolveConfirmModal = resolveConfirmOpen ? (
-    <Modal label={tt("launch_gp_confirm_title")} onClose={() => setResolveConfirmOpen(false)}>
+    <Modal label={tt("launch_gp_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setResolveConfirmOpen(false)}>
       <ModalHero image="/assets/crl/launch-gp-modal.png" kicker={tt("action_launch_grand_prix")} title={tt("launch_gp_confirm_title")} />
       <p>{tt("launch_gp_confirm_body")}</p>
       <div className="starting-grid-confirmation">
@@ -1192,14 +1175,11 @@ export function App() {
         <button type="button" onClick={() => void resolveGrandPrix()} disabled={status === "loading"}>
           {tt("action_launch_grand_prix")}
         </button>
-        <button type="button" onClick={() => setResolveConfirmOpen(false)}>
-          {tt("action_close")}
-        </button>
       </div>
     </Modal>
   ) : null;
   const qualifyingConfirmModal = qualifyingConfirmOpen ? (
-    <Modal label={tt("qualifying_confirm_title")} onClose={() => setQualifyingConfirmOpen(false)}>
+    <Modal label={tt("qualifying_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setQualifyingConfirmOpen(false)}>
       <ModalHero image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} />
       <p>
         {tt("qualifying_confirm_body")} {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
@@ -1209,14 +1189,11 @@ export function App() {
         <button type="button" onClick={startQualifyingRunConfirmed} disabled={status === "loading"}>
           {tt("action_qualifying")}
         </button>
-        <button type="button" onClick={() => setQualifyingConfirmOpen(false)}>
-          {tt("action_close")}
-        </button>
       </div>
     </Modal>
   ) : null;
   const nextGrandPrixConfirmModal = nextGrandPrixConfirmOpen ? (
-    <Modal label={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} onClose={() => setNextGrandPrixConfirmOpen(false)}>
+    <Modal label={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setNextGrandPrixConfirmOpen(false)}>
       <ModalHero image="/assets/crl/next-gp-modal.png" kicker={nextGrandPrixActionLabel} title={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} />
       <p>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_body" : "next_gp_confirm_body")}</p>
       <div className="actions secondary-actions">
@@ -1235,9 +1212,6 @@ export function App() {
           disabled={!result}
         >
           {tt("result_tab_report")}
-        </button>
-        <button type="button" onClick={() => setNextGrandPrixConfirmOpen(false)}>
-          {tt("action_close")}
         </button>
       </div>
     </Modal>
@@ -1265,15 +1239,12 @@ export function App() {
     )
   ) : null;
   const adminDeleteModal = adminDeleteUser ? (
-    <Modal label={tt("admin_delete_user_title")} onClose={() => setAdminDeleteUser(null)}>
+    <Modal label={tt("admin_delete_user_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setAdminDeleteUser(null)}>
       <ModalHero image="/assets/crl/league-arrival.png" kicker={tt("admin_kicker")} title={tt("admin_delete_user_title")} />
       <p>{tt("admin_delete_user_confirm", { email: adminDeleteUser.email })}</p>
       <div className="actions secondary-actions">
         <button type="button" className="danger-button" onClick={() => void deleteAdminUserConfirmed()}>
           {tt("admin_action_delete_user")}
-        </button>
-        <button type="button" onClick={() => setAdminDeleteUser(null)}>
-          {tt("action_close")}
         </button>
       </div>
     </Modal>
@@ -1740,7 +1711,7 @@ export function App() {
       {qualifyingConfirmModal}
       {nextGrandPrixConfirmModal}
       {seasonRecap ? (
-        <Modal label={tt("season_recap_title")} className="panel modal season-recap-modal" onClose={() => setSeasonRecapSeason(null)}>
+        <Modal label={tt("season_recap_title")} className="panel modal season-recap-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setSeasonRecapSeason(null)}>
           <ModalHero image="/assets/crl/season-recap-modal.png" kicker={`${tt("league_season")} ${seasonRecap.season}`} title={tt("season_recap_title")} />
           <div className="season-champion-card">
             <span>{tt("season_champion")}</span>
@@ -1782,15 +1753,10 @@ export function App() {
               </ol>
             </section>
           </div>
-          <div className="actions secondary-actions">
-            <button type="button" onClick={() => setSeasonRecapSeason(null)}>
-              {tt("action_close")}
-            </button>
-          </div>
         </Modal>
       ) : null}
       {leagueControlsOpen ? (
-        <Modal label={tt("settings_title")} className="panel modal league-controls-modal" onClose={closeLeagueControls}>
+        <Modal label={tt("settings_title")} className="panel modal league-controls-modal" closeLabel={tt("action_close")} showCloseButton onClose={closeLeagueControls}>
           <ModalHero image="/assets/crl/league-arrival.png" kicker={tt("championship_kicker")} title={tt("settings_title")} />
           <div className="field-grid settings-fields">
             <label>
@@ -1820,9 +1786,6 @@ export function App() {
             </button>
             <button type="button" onClick={restartLeague} disabled={status === "loading"}>
               {tt("action_restart_league")}
-            </button>
-            <button type="button" onClick={closeLeagueControls}>
-              {tt("action_close")}
             </button>
           </div>
         </Modal>

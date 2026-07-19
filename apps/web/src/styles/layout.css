@@ -695,15 +695,17 @@
 .position-badge.top-1 {
   background: linear-gradient(135deg, #f6c23e, #b77905);
   border-color: rgb(82 49 0 / 0.72);
-  color: #211506;
+  color: #fff8dc;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.42), 0 0 0 1px rgb(82 49 0 / 0.18);
+  text-shadow: 0 1px 2px rgb(33 21 6 / 0.9);
 }
 
 .position-badge.top-2 {
   background: linear-gradient(135deg, #d6dde8, #7f8b99);
   border-color: rgb(45 55 72 / 0.7);
-  color: #121821;
+  color: #f8fbff;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5), 0 0 0 1px rgb(45 55 72 / 0.16);
+  text-shadow: 0 1px 2px rgb(18 24 33 / 0.9);
 }
 
 .position-badge.top-3 {
@@ -711,6 +713,7 @@
   border-color: rgb(74 32 12 / 0.72);
   color: #fff4e6;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.28), 0 0 0 1px rgb(74 32 12 / 0.18);
+  text-shadow: 0 1px 2px rgb(74 32 12 / 0.9);
 }
 
 .drive-grid {
@@ -1679,6 +1682,7 @@ label small {
   max-height: calc(100dvh - 32px);
   max-width: 480px;
   overflow: auto;
+  position: relative;
   width: 100%;
 }
 
@@ -5967,8 +5971,19 @@ button.highlight-command:not(:disabled) {
   padding: 11px 42px 11px 11px;
 }
 
-.garage-panel-inventory .card-inventory-button:not(:disabled):hover,
-.garage-panel-inventory .card-inventory-button:not(:disabled):focus-visible,
+.garage-panel-inventory .card-inventory-button {
+  background: transparent;
+  border: 0;
+  clip-path: none;
+  overflow: visible;
+}
+
+.garage-panel-inventory .card-inventory-button::after {
+  display: none;
+}
+
+.garage-panel-inventory .card-inventory li:has(.card-inventory-button:not(:disabled):hover),
+.garage-panel-inventory .card-inventory li:has(.card-inventory-button:not(:disabled):focus-visible),
 .garage-panel-shop .card-shop button:not(:disabled):hover,
 .garage-panel-shop .card-shop button:not(:disabled):focus-visible {
   border-color: var(--garage-card-accent);

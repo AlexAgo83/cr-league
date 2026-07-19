@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
-import { CardStatBadges } from "./CardStatBadges.js";
+import { CardStatBadges, cardArtStyle } from "./CardStatBadges.js";
 import { MapCarSprite } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
@@ -200,7 +200,7 @@ export function GarageView({
               {inventoryCards.length ? (
                 inventoryCards.map((cardId) => (
                   <li key={cardId}>
-                    <button className="card-inventory-button" type="button" onClick={() => setViewingCardId(cardId)}>
+                    <button className="card-inventory-button card-art-cell" type="button" style={cardArtStyle(cardId)} onClick={() => setViewingCardId(cardId)}>
                       <span>
                         {tt(`card_${cardId}` as TranslationKey)}
                         <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
@@ -223,7 +223,7 @@ export function GarageView({
           <div className="card-shop">
             <PendingFeedback className="card-shop-feedback" message={pendingMessage} />
             {shopOffers.map((item) => (
-              <button key={item.cardId} type="button" onClick={() => setPendingBuyCardId(item.cardId)} disabled={loading}>
+              <button key={item.cardId} className="card-art-cell" type="button" style={cardArtStyle(item.cardId)} onClick={() => setPendingBuyCardId(item.cardId)} disabled={loading}>
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
                 <strong>
                   <RewardValue type="credits" value={item.price} tt={tt} />

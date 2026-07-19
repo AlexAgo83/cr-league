@@ -1,7 +1,30 @@
+import type { CSSProperties } from "react";
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { Translator } from "../app/helpers.js";
 import { VisualIcon } from "./VisualIcon.js";
+
+const CARD_ART: Record<CardId, string> = {
+  rain_grip: "/assets/crl/card-rain-grip.png",
+  fleet_maintenance: "/assets/crl/card-fleet-maintenance.png",
+  launch_boost: "/assets/crl/card-launch-boost.png",
+  urban_draft: "/assets/crl/card-urban-draft.png",
+  final_surge: "/assets/crl/card-final-surge.png",
+  fleet_sponsorship: "/assets/crl/card-fleet-sponsorship.png",
+  soft_tires: "/assets/crl/card-soft-tires.png",
+  qualifying_focus: "/assets/crl/card-qualifying-focus.png",
+  defensive_order: "/assets/crl/card-defensive-order.png",
+  adjustable_wing: "/assets/crl/card-adjustable-wing.png",
+  rain_mapping: "/assets/crl/card-rain-mapping.png",
+  economy_mode: "/assets/crl/card-economy-mode.png",
+  pit_relay: "/assets/crl/card-pit-relay.png",
+  hard_tires: "/assets/crl/card-hard-tires.png",
+  calculated_attack: "/assets/crl/card-calculated-attack.png"
+};
+
+export function cardArtStyle(cardId: CardId): CSSProperties & { "--card-art": string } {
+  return { "--card-art": `url("${CARD_ART[cardId]}")` };
+}
 
 export const CARD_BADGES: Record<CardId, Array<{ trait: "grip" | "overtaking" | "energy"; sign: "+" | "-"; label: TranslationKey }>> = {
   rain_grip: [

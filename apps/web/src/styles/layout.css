@@ -5954,6 +5954,29 @@ button.highlight-command:not(:disabled) {
   background: linear-gradient(90deg, rgb(236 231 218 / 0.9), color-mix(in srgb, var(--color-accent) 18%, rgb(236 231 218 / 0.72)));
 }
 
+.card-art-cell {
+  --card-art: none;
+  --card-art-bg: rgb(236 231 218 / 0.98);
+}
+
+.card-choice-grid .choice-card.card-art-cell,
+.card-choice-grid .choice-card.card-art-cell.selected {
+  min-height: 118px;
+  padding-right: min(52%, 190px);
+}
+
+.card-choice-grid .choice-card.card-art-cell,
+.card-choice-grid .choice-card.card-art-cell.selected {
+  background:
+    linear-gradient(90deg, var(--card-art-bg) 0 46%, rgb(236 231 218 / 0.88) 60%, transparent 78%),
+    var(--card-art) right center / auto 140% no-repeat,
+    var(--card-art-bg);
+}
+
+.card-choice-grid .choice-card.card-art-cell.selected {
+  --card-art-bg: color-mix(in srgb, var(--color-accent) 12%, rgb(236 231 218 / 0.96));
+}
+
 .garage-panel-inventory,
 .garage-panel-shop {
   --garage-card-accent: #b45309;
@@ -5979,6 +6002,12 @@ button.highlight-command:not(:disabled) {
   padding: 11px 42px 11px 11px;
 }
 
+.garage-panel-inventory .card-inventory-button.card-art-cell,
+.garage-panel-shop .card-shop button.card-art-cell {
+  --card-art-bg: rgb(236 231 218 / 0.98);
+  padding-right: min(46%, 190px);
+}
+
 .garage-panel-inventory .card-inventory-button {
   background: transparent;
   border: 0;
@@ -5988,6 +6017,18 @@ button.highlight-command:not(:disabled) {
 
 .garage-panel-shop .card-shop button {
   background: transparent;
+}
+
+.garage-panel-inventory .card-inventory-button.card-art-cell {
+  background:
+    linear-gradient(90deg, transparent 0 48%, rgb(236 231 218 / 0.76) 62%, transparent 80%),
+    var(--card-art) right center / auto 136% no-repeat;
+}
+
+.garage-panel-shop .card-shop button.card-art-cell {
+  background:
+    linear-gradient(90deg, rgb(236 231 218 / 0) 0 48%, rgb(236 231 218 / 0.72) 62%, transparent 80%),
+    var(--card-art) right center / auto 136% no-repeat;
 }
 
 .garage-panel-inventory .card-inventory-button::after,
@@ -6184,6 +6225,21 @@ button.highlight-command:not(:disabled) {
 
 .plan-view .directive-choice-pit .choice-card.selected {
   --pit-cell-bg: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
+}
+
+.plan-view .directive-choice-card .choice-card.card-art-cell,
+.plan-view .directive-choice-card .choice-card.card-art-cell.selected {
+  --card-art-bg: rgb(236 231 218 / 0.98);
+  background:
+    linear-gradient(90deg, var(--card-art-bg) 0 46%, rgb(236 231 218 / 0.88) 60%, transparent 78%),
+    var(--card-art) right center / auto 140% no-repeat,
+    var(--card-art-bg);
+  min-height: 118px;
+  padding-right: min(52%, 190px);
+}
+
+.plan-view .directive-choice-card .choice-card.card-art-cell.selected {
+  --card-art-bg: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
 }
 
 .card-inventory-button {

@@ -755,10 +755,10 @@ describe("App", () => {
     expect(document.querySelector(".current-round-badge")?.textContent).toBe("1");
     const displayedCircuitNames = [...document.querySelectorAll(".circuit-calendar-button strong")].map((node) => node.textContent);
     expect(displayedCircuitNames).toEqual([...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" })));
-    fireEvent.click(screen.getByRole("button", { name: /Brussels Grand Place Loop/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Brussels Grand Place Clash/ }));
     expect(screen.getByLabelText("City circuit map")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Focus driver" })).toBe(null);
-    expect(screen.queryByRole("dialog", { name: "Brussels Grand Place Loop" })).toBe(null);
+    expect(screen.queryByRole("dialog", { name: "Brussels Grand Place Clash" })).toBe(null);
     fireEvent.click(document.querySelector(".circuit-detail-close")!);
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));

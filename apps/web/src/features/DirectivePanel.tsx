@@ -206,6 +206,7 @@ export function DirectivePanel({
           <div className="choice-grid directive-choice-grid">
             {PIT_STRATEGIES.map((pitStrategy) => (
               <button key={pitStrategy} type="button" className={form.pitStrategy === pitStrategy ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_pit_strategy")}: ${tt(`pit_strategy_${pitStrategy}` as TranslationKey)}`} aria-pressed={form.pitStrategy === pitStrategy} onClick={() => setForm({ ...form, pitStrategy })} disabled={disabled}>
+                <span className={`pit-strategy-art pit-strategy-art-${pitStrategy}`} aria-hidden="true" />
                 <strong>{tt(`pit_strategy_${pitStrategy}` as TranslationKey)}</strong>
                 <small>{tt(`pit_strategy_${pitStrategy}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={PIT_BADGES[pitStrategy]} tt={tt} />

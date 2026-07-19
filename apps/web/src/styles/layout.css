@@ -6070,6 +6070,41 @@ button.highlight-command:not(:disabled) {
   color: rgb(23 21 26 / 0.78);
 }
 
+.plan-view .directive-choice-pit .choice-card {
+  min-height: 196px;
+  padding-top: 112px;
+}
+
+.pit-strategy-art {
+  background-image: url("/assets/crl/pit-strategy-swaps.png");
+  background-repeat: no-repeat;
+  background-size: 300% 100%;
+  height: 104px;
+  inset: 0 0 auto;
+  opacity: 0.92;
+  pointer-events: none;
+  position: absolute;
+}
+
+.pit-strategy-art::after {
+  background: linear-gradient(180deg, transparent 34%, rgb(236 231 218 / 0.96));
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.pit-strategy-art-heavy_pack {
+  background-position: 0% center;
+}
+
+.pit-strategy-art-standard {
+  background-position: 50% center;
+}
+
+.pit-strategy-art-mini_pack {
+  background-position: 100% center;
+}
+
 .plan-view .directive-choice-group .choice-card:not(:disabled):hover,
 .plan-view .directive-choice-group .choice-card:not(:disabled):focus-visible,
 .plan-view .directive-choice-group .choice-card.selected {

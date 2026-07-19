@@ -833,6 +833,7 @@ describe("App", () => {
 
   it("shows pending feedback while starting the next Grand Prix", async () => {
     saveProfile();
+    window.history.replaceState(null, "", "/replay/gp_1");
     let finishNextGrandPrix!: (value: Response) => void;
     const pendingNextGrandPrix = new Promise<Response>((resolve) => {
       finishNextGrandPrix = resolve;
@@ -855,6 +856,8 @@ describe("App", () => {
 
     finishNextGrandPrix(response(nextGrandPrixState));
     expect(await screen.findByText("Next Grand Prix started.")).toBeTruthy();
+    expect(window.location.pathname).toBe("/drive");
+    expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
   });
 
   it("does not auto-open an old season recap when loading an existing later season", async () => {

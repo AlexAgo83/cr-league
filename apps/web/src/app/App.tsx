@@ -537,6 +537,7 @@ export function App() {
       });
       setLeagueState(withCurrentPlayer(state));
       setGameView("drive");
+      setRouteReplayGrandPrixId(undefined);
       setResultOpen(false);
       showStatus(tt(finishingSeason ? "status_season_finished" : "status_next_grand_prix_started"));
       pushCommandHint("prepare");

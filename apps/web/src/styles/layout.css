@@ -472,6 +472,10 @@
   gap: 16px;
 }
 
+.championship-view {
+  gap: 0;
+}
+
 .result-view {
   display: grid;
   gap: 16px;
@@ -2910,7 +2914,7 @@ label small {
 .championship-grid {
   align-items: start;
   display: grid;
-  gap: 16px;
+  gap: 0;
   grid-template-columns: 1fr;
 }
 
@@ -2935,8 +2939,8 @@ label small {
   gap: 12px;
   justify-content: space-between;
   margin: -20px -20px 0;
-  min-height: 180px;
-  padding: 20px;
+  min-height: 112px;
+  padding: 14px 20px;
 }
 
 .championship-record-header h3 {

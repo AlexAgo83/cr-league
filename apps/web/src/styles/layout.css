@@ -3082,7 +3082,7 @@ label small {
 }
 
 .map-car-delta.gain {
-  fill: var(--color-accent);
+  fill: #fbbf24;
 }
 
 .map-car-delta.loss {

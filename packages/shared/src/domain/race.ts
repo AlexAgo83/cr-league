@@ -138,6 +138,14 @@ export type ReplayTracePoint = {
   order: string[];
   times: Record<string, number>;
   gaps: Record<string, number>;
+  cars?: Record<
+    string,
+    {
+      trackProgress: number;
+      speed: number;
+      phase: "grid" | "racing" | "pit_entry" | "pit_stop" | "pit_exit" | "finished";
+    }
+  >;
 };
 
 export type ReplayOrderChangeFact = {

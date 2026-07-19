@@ -27,3 +27,4 @@ export {
 export { DEMO_RACE_INPUT } from "./simulation/demoRace.js";
 export { createPrng } from "./simulation/prng.js";
 export { simulateRace } from "./simulation/simulateRace.js";
+export { validateReplayTrace } from "./simulation/validateReplayTrace.js";

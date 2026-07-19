@@ -2,6 +2,7 @@
 
 import { describe, expect, it } from "vitest";
 import { simulateRace } from "./simulateRace.js";
+import { validateReplayTrace } from "./validateReplayTrace.js";
 import type { RaceInput } from "../domain/race.js";
 
 const baseRace: RaceInput = {
@@ -107,6 +108,7 @@ describe("simulateRace", () => {
     expect(result.replayTrace?.at(-1)?.order).toEqual(result.classification.map((entry) => entry.teamId));
     expect(result.replayTrace?.at(-1)?.times[result.classification[0]!.teamId]).toBeGreaterThan(0);
     expect(result.replayTrace?.at(-1)?.gaps[result.classification[0]!.teamId]).toBe(0);
+    expect(validateReplayTrace(result)).toEqual([]);
     expect(result.replayFacts?.version).toBe(1);
     expect(result.replayFacts?.orderChanges.every((fact) => fact.type === "order_change" && fact.progress >= 0 && fact.progress <= 1)).toBe(true);
     expect(result.events.filter((event) => event.type === "pit_stop")).toHaveLength(6);
@@ -141,6 +143,7 @@ describe("simulateRace", () => {
     expect(stops.filter((event) => event.teamId === "atlas")).toHaveLength(1);
     expect(stops.find((event) => event.teamId === "hugo")?.reportText).toContain("4.0s");
     expect(stops.find((event) => event.teamId === "atlas")?.reportText).toContain("6.0s");
+    expect(validateReplayTrace(result)).toEqual([]);
     const midTraceTime = (progress: number) => result.replayTrace?.find((point) => point.segment === "mid" && Math.abs(point.progress - progress) < 0.001)?.times.atlas ?? 0;
     const atlasBeforePit = midTraceTime(0.42);
     const atlasAfterPit = midTraceTime(0.54);

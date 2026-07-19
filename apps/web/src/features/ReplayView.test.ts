@@ -105,6 +105,23 @@ describe("ReplayView timing", () => {
     expect(liveClassificationByCarProgress(result, trace, 0.5, progress, ["last", "leader"]).map((entry) => entry.teamId)).toEqual(["last", "leader"]);
   });
 
+  it("uses generated car trace positions when available", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0, speed: 0, phase: "grid" }, last: { trackProgress: 0, speed: 0, phase: "grid" } } },
+      {
+        segment: "mid",
+        lap: 3,
+        progress: 0.5,
+        order: ["leader", "last"],
+        times: {},
+        gaps: { leader: 0, last: 99 },
+        cars: { leader: { trackProgress: 0.5, speed: 1, phase: "racing" }, last: { trackProgress: 0.42, speed: 0, phase: "pit_stop" } }
+      }
+    ];
+
+    expect(carProgressAtTrace(result, trace, 0.5, 5)).toMatchObject({ leader: 2.5, last: 2.1 });
+  });
+
   it("shows absolute pit slowdown even when every car stops together", () => {
     const trace: ReplayTracePoint[] = [
       { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },

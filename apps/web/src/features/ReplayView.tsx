@@ -159,6 +159,21 @@ function traceTimesAt(trace: ReplayTracePoint[], progress: number) {
   );
 }
 
+function traceCarProgressAt(trace: ReplayTracePoint[], progress: number, laps: number) {
+  const from = tracePointAt(trace, progress);
+  const to = trace.find((point) => point.progress > progress) ?? from;
+  if (!from.cars || !to.cars) return null;
+  const span = to.progress - from.progress || 1;
+  const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
+  return Object.fromEntries(
+    Object.keys({ ...from.cars, ...to.cars }).map((teamId) => {
+      const fromProgress = from.cars?.[teamId]?.trackProgress ?? to.cars?.[teamId]?.trackProgress ?? 0;
+      const toProgress = to.cars?.[teamId]?.trackProgress ?? fromProgress;
+      return [teamId, (fromProgress + (toProgress - fromProgress) * ratio) * laps];
+    })
+  );
+}
+
 export function buildReplayPlan(result: RaceResult, trace: ReplayTracePoint[]): ReplayPlan {
   const factChanges = result.replayFacts?.orderChanges ?? [];
   const orderChanges = factChanges.length ? factChanges : orderChangesFromTrace(trace);
@@ -330,6 +345,9 @@ export function positionDeltas(currentOrder: string[], nextOrder: string[]) {
 }
 
 export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[], progress: number, laps: number, plan?: ReplayPlan) {
+  const carProgress = traceCarProgressAt(trace, progress, laps);
+  if (carProgress) return carProgress;
+
   const gaps = traceGapsAt(trace, progress);
   const times = traceTimesAt(trace, progress);
   const rankTargets = traceRankTargetsAt(trace, progress, plan);

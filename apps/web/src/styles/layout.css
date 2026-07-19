@@ -3036,6 +3036,8 @@ label small {
   gap: 12px;
   justify-content: space-between;
   margin: -20px -20px 0;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 18px);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 18px);
   min-height: 112px;
   padding: 14px 20px;
 }

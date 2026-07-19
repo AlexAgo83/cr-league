@@ -227,27 +227,27 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
   }
 
   if (participant.decision.cardId === "soft_tires") {
-    scores.pace += 5;
-    scores.aggression += 4;
-    scores.reliability -= 7;
+    scores.pace += 8;
+    scores.aggression += 6;
+    scores.reliability -= 10;
   } else if (participant.decision.cardId === "defensive_order") {
-    scores.control += 4;
-    scores.reliability += 3;
-    scores.aggression -= 8;
-    scores.pace -= 5;
+    scores.control += 7;
+    scores.reliability += 5;
+    scores.aggression -= 12;
+    scores.pace -= 8;
   } else if (participant.decision.cardId === "adjustable_wing") {
-    scores.pace += 2;
-    scores.aggression += 3;
-    scores.reliability -= 4;
+    scores.pace += 4;
+    scores.aggression += 5;
+    scores.reliability -= 6;
   } else if (participant.decision.cardId === "economy_mode") {
-    scores.pace -= 3;
-    scores.control += 3;
+    scores.pace -= 5;
+    scores.control += 5;
   } else if (participant.decision.cardId === "hard_tires") {
-    scores.pace -= 4;
-    scores.reliability += 7;
-    scores.control += 2;
+    scores.pace -= 6;
+    scores.reliability += 10;
+    scores.control += 4;
   } else if (participant.decision.cardId === "calculated_attack") {
-    scores.aggression += 4;
+    scores.aggression += 7;
   }
 }
 
@@ -299,7 +299,7 @@ function applySegment(
   }
 
   if (state.participant.decision.cardId === "fleet_sponsorship") {
-    delta -= 0.75;
+    delta -= 0.9;
   }
 
   scores.score += delta;
@@ -364,32 +364,32 @@ function maybeAddCardEvent(
 
   if (cardId === "rain_grip" && segment === "mid") {
     const rained = weather !== "dry";
-    state.scores.score += rained ? 16 : -8;
-    state.positionDelta += rained ? 10 : -5;
+    state.scores.score += rained ? 22 : -12;
+    state.positionDelta += rained ? 15 : -8;
     state.resultTags.add(rained ? "weather_gamble" : "wrong_weather_bet");
-    events.push(createCardEvent(events.length, state, segment, rained ? "weather_gamble_paid" : "wrong_weather_bet", rained ? 10 : -5));
+    events.push(createCardEvent(events.length, state, segment, rained ? "weather_gamble_paid" : "wrong_weather_bet", rained ? 15 : -8));
   } else if (cardId === "launch_boost" && segment === "start") {
-    state.scores.score += 18;
-    state.scores.reliability -= 3;
-    state.positionDelta += 5;
+    state.scores.score += 26;
+    state.scores.reliability -= 5;
+    state.positionDelta += 8;
     state.resultTags.add("launch_boost");
-    events.push(createCardEvent(events.length, state, segment, "card_triggered", 5));
+    events.push(createCardEvent(events.length, state, segment, "card_triggered", 8));
   } else if (cardId === "urban_draft" && segment === "mid" && state.participant.decision.rivalTeamId) {
     const rival = states.find((candidate) => candidate.participant.teamId === state.participant.decision.rivalTeamId);
     if (rival) {
-      state.scores.score += 10;
-      rival.scores.score -= 4;
-      state.positionDelta += 5;
+      state.scores.score += 15;
+      rival.scores.score -= 6;
+      state.positionDelta += 8;
       state.resultTags.add("rival_pressure");
-      events.push(createCardEvent(events.length, state, segment, "rival_overtake", 5, rival.participant.teamId));
+      events.push(createCardEvent(events.length, state, segment, "rival_overtake", 8, rival.participant.teamId));
     }
   } else if (cardId === "final_surge" && segment === "finish") {
     const outsidePodium = state.participant.standingsRank > 3;
-    state.scores.score += outsidePodium ? 14 : 5;
-    state.scores.reliability -= 5;
-    state.positionDelta += outsidePodium ? 10 : 5;
+    state.scores.score += outsidePodium ? 22 : 8;
+    state.scores.reliability -= 8;
+    state.positionDelta += outsidePodium ? 15 : 8;
     state.resultTags.add("final_surge");
-    events.push(createCardEvent(events.length, state, segment, "late_push_gain", outsidePodium ? 10 : 5));
+    events.push(createCardEvent(events.length, state, segment, "late_push_gain", outsidePodium ? 15 : 8));
   } else if (cardId === "fleet_maintenance" && segment === "late" && !state.resultTags.has("mechanic_save")) {
     state.resultTags.add("maintenance_ready");
     events.push(createCardEvent(events.length, state, segment, "card_triggered", 0));
@@ -397,49 +397,49 @@ function maybeAddCardEvent(
     state.resultTags.add("sponsor_bonus");
     events.push(createCardEvent(events.length, state, segment, "sponsor_payout", 0));
   } else if (cardId === "soft_tires" && segment === "early") {
-    state.scores.score += 6;
-    state.scores.reliability -= 5;
-    state.positionDelta += 5;
+    state.scores.score += 10;
+    state.scores.reliability -= 7;
+    state.positionDelta += 8;
     state.resultTags.add("soft_tires");
-    events.push(createCardEvent(events.length, state, segment, "card_triggered", 5));
+    events.push(createCardEvent(events.length, state, segment, "card_triggered", 8));
   } else if (cardId === "defensive_order" && segment === "late") {
     state.resultTags.add("defensive_order");
     events.push(createCardEvent(events.length, state, segment, "held_position", 0));
   } else if (cardId === "adjustable_wing" && segment === "early") {
     const suitedCircuit = input.primaryTrait === "fast" || input.secondaryTrait === "fast" || input.primaryTrait === "urban" || input.secondaryTrait === "urban";
-    state.scores.score += suitedCircuit ? 9 : 3;
-    state.scores.reliability -= 2;
-    state.positionDelta += suitedCircuit ? 5 : 0;
+    state.scores.score += suitedCircuit ? 14 : 5;
+    state.scores.reliability -= 4;
+    state.positionDelta += suitedCircuit ? 8 : 0;
     state.resultTags.add("adjustable_wing");
-    events.push(createCardEvent(events.length, state, segment, "card_triggered", suitedCircuit ? 5 : 0));
+    events.push(createCardEvent(events.length, state, segment, "card_triggered", suitedCircuit ? 8 : 0));
   } else if (cardId === "rain_mapping" && segment === "mid") {
     const rained = weather !== "dry";
-    state.scores.score += rained ? 13 : -3;
-    state.positionDelta += rained ? 5 : 0;
+    state.scores.score += rained ? 18 : -5;
+    state.positionDelta += rained ? 8 : 0;
     state.resultTags.add(rained ? "rain_mapping" : "wrong_weather_bet");
-    events.push(createCardEvent(events.length, state, segment, rained ? "weather_gamble_paid" : "wrong_weather_bet", rained ? 5 : 0));
+    events.push(createCardEvent(events.length, state, segment, rained ? "weather_gamble_paid" : "wrong_weather_bet", rained ? 8 : 0));
   } else if (cardId === "economy_mode" && segment === "finish") {
     state.resultTags.add("economy_mode");
     events.push(createCardEvent(events.length, state, segment, "sponsor_payout", 0));
   } else if (cardId === "pit_relay" && segment === "late") {
-    state.scores.score += 10;
-    state.scores.reliability += 4;
-    state.positionDelta += 5;
+    state.scores.score += 15;
+    state.scores.reliability += 6;
+    state.positionDelta += 8;
     state.resultTags.add("pit_relay");
-    events.push(createCardEvent(events.length, state, segment, "held_position", 5));
+    events.push(createCardEvent(events.length, state, segment, "held_position", 8));
   } else if (cardId === "hard_tires" && segment === "late") {
-    state.scores.score += 9;
-    state.positionDelta += 5;
+    state.scores.score += 14;
+    state.positionDelta += 8;
     state.resultTags.add("hard_tires");
-    events.push(createCardEvent(events.length, state, segment, "late_push_gain", 5));
+    events.push(createCardEvent(events.length, state, segment, "late_push_gain", 8));
   } else if (cardId === "calculated_attack" && segment === "mid") {
     const target = carAhead(state, states);
     const closeEnough = target && state.elapsedTime - target.elapsedTime <= 2;
     if (closeEnough) {
-      state.scores.score += 14;
-      state.positionDelta += 5;
+      state.scores.score += 20;
+      state.positionDelta += 8;
       state.resultTags.add("calculated_attack");
-      events.push(createCardEvent(events.length, state, segment, "rival_overtake", 5, target.participant.teamId));
+      events.push(createCardEvent(events.length, state, segment, "rival_overtake", 8, target.participant.teamId));
     } else {
       state.resultTags.add("calculated_attack_missed");
       events.push(createCardEvent(events.length, state, segment, "card_triggered", 0));

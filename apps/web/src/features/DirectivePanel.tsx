@@ -28,7 +28,7 @@ const TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
 // Player-facing read of what each directive choice shifts, mirrored from the race
 // simulation's applyDecision() and expressed on the grip/attack/endurance vocabulary
 // the map already uses. UI hint only — no balance logic lives here.
-function badge(trait: TraitKey, sign: "+" | "-", value = 2): ImpactBadge {
+function badge(trait: TraitKey, sign: "+" | "-", value = 3): ImpactBadge {
   return { trait, sign, label: TRAIT_LABEL[trait], value };
 }
 
@@ -69,7 +69,7 @@ function directiveModifiers(form: FormState, selectedCardId: FormState["cardId"]
 
   APPROACH_BADGES[form.approach].forEach(add);
   PREPARATION_BADGES[form.preparation].forEach(add);
-  if (selectedCardId) CARD_BADGES[selectedCardId].forEach(add);
+  if (selectedCardId) CARD_BADGES[selectedCardId].forEach((entry) => add({ ...entry, value: 2 }));
 
   return modifiers;
 }

@@ -4197,6 +4197,16 @@ button.command-icon-button {
   grid-template-columns: 1fr;
 }
 
+.report-rewards {
+  --color-text: #f8f3e8;
+  --color-muted: rgb(248 243 232 / 0.72);
+  background:
+    linear-gradient(90deg, rgb(16 14 18 / 0.9), rgb(16 14 18 / 0.54)),
+    url("/assets/crl/completed-gp-panel.png") center / cover no-repeat;
+  color: var(--color-text);
+  overflow: hidden;
+}
+
 .report-key-moments ol,
 .report-rewards ol {
   display: grid;
@@ -4234,8 +4244,8 @@ button.command-icon-button {
 
 .report-rewards li {
   align-items: center;
-  background: rgb(16 14 18 / 0.32);
-  border: 1px solid rgb(255 255 255 / 0.08);
+  background: rgb(16 14 18 / 0.58);
+  border: 1px solid rgb(255 255 255 / 0.14);
   border-radius: 8px;
   display: grid;
   gap: 10px 14px;
@@ -4244,7 +4254,7 @@ button.command-icon-button {
 }
 
 .report-rewards li.current-team {
-  background: color-mix(in srgb, var(--color-accent) 14%, transparent);
+  background: color-mix(in srgb, var(--color-accent) 20%, rgb(16 14 18 / 0.72));
   border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 

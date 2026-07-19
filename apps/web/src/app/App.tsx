@@ -353,6 +353,7 @@ export function App() {
   const [directiveCommandClicked, setDirectiveCommandClicked] = useState(false);
   const [chronoReportCommandClicked, setChronoReportCommandClicked] = useState(false);
   const [launchGrandPrixCommandClicked, setLaunchGrandPrixCommandClicked] = useState(false);
+  const [resultReportCommandClicked, setResultReportCommandClicked] = useState(false);
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
@@ -535,6 +536,7 @@ export function App() {
     setDirectiveCommandClicked(false);
     setChronoReportCommandClicked(false);
     setLaunchGrandPrixCommandClicked(false);
+    setResultReportCommandClicked(false);
   }, [currentGrandPrixKey]);
 
   useEffect(() => {
@@ -970,6 +972,7 @@ export function App() {
     setDirectiveCommandClicked(false);
     setChronoReportCommandClicked(false);
     setLaunchGrandPrixCommandClicked(false);
+    setResultReportCommandClicked(false);
     setPreferencesResetSignal((signal) => signal + 1);
     setPreferencesResetOpen(false);
     setProfileOpen(false);
@@ -1764,9 +1767,10 @@ export function App() {
                             {tt("result_tab_replay")}
                           </button>
                           <button
-                            className="result-toggle-command"
+                            className={`result-toggle-command${!resultReportCommandClicked ? " highlight-command" : ""}`}
                             type="button"
                             onClick={() => {
+                              setResultReportCommandClicked(true);
                               setResultTab("report");
                               setResultOpen(true);
                             }}

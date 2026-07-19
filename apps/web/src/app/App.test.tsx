@@ -772,6 +772,7 @@ describe("App", () => {
     expect(document.querySelector(".map-final-classification")?.textContent).toContain("25 pts");
     expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Report" }).className).toContain("highlight-command");
     expect(screen.getByRole("button", { name: "Next GP" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Replay" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
@@ -793,6 +794,7 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Report" }).className).not.toContain("highlight-command");
 
     // Garage view
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));

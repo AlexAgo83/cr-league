@@ -10,6 +10,7 @@ import {
 import type {
   CardId,
   ClassificationEntry,
+  PitStrategy,
   RaceEvent,
   RaceInput,
   RaceParticipant,
@@ -42,6 +43,10 @@ type TeamState = {
   consumedCard?: CardId;
 };
 
+function pitStrategy(decision: RaceParticipant["decision"]): PitStrategy {
+  return decision.pitStrategy ?? "standard";
+}
+
 type InternalScores = {
   pace: number;
   control: number;
@@ -70,6 +75,7 @@ export function simulateRace(input: RaceInput): RaceResult {
     const beforeTimes = new Map(states.map((state) => [state.participant.teamId, state.elapsedTime]));
     for (const state of states) {
       applySegment(state, segment, weather[segment], input, prng.next);
+      maybeAddPitStopEvent(state, segment, events);
       maybeAddCardEvent(state, segment, weather[segment], input, events, states);
       maybeAddRiskEvent(state, segment, events, prng.next);
     }
@@ -217,6 +223,16 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.pace -= 2;
   }
 
+  if (pitStrategy(participant.decision) === "heavy_pack") {
+    scores.pace -= 8;
+    scores.reliability += 10;
+    scores.control += 4;
+  } else if (pitStrategy(participant.decision) === "mini_pack") {
+    scores.pace += 9;
+    scores.aggression += 4;
+    scores.reliability -= 5;
+  }
+
   if (participant.botArchetype === "rain_specialist") {
     scores.weatherReadiness += 6;
   } else if (participant.botArchetype === "sprinter") {
@@ -249,6 +265,31 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
   } else if (participant.decision.cardId === "calculated_attack") {
     scores.aggression += 7;
   }
+}
+
+function maybeAddPitStopEvent(state: TeamState, segment: RaceSegment, events: RaceEvent[]) {
+  const strategy = pitStrategy(state.participant.decision);
+  if (strategy === "heavy_pack") return;
+  if (strategy === "standard" && segment !== "mid") return;
+  if (strategy === "mini_pack" && segment !== "early" && segment !== "late") return;
+
+  const stopCost = strategy === "mini_pack" ? 1.15 : 1.65;
+  state.elapsedTime += stopCost;
+  state.scores.score += strategy === "mini_pack" ? 4 : 0;
+  state.resultTags.add(strategy);
+  events.push({
+    id: "",
+    order: events.length,
+    segment,
+    lap: lapForSegment(segment),
+    type: "pit_stop",
+    teamId: state.participant.teamId,
+    severity: "minor",
+    positionDelta: 0,
+    tags: ["pit_stop", strategy],
+    replayText: `${state.participant.teamName} swaps battery pack in the pit`,
+    reportText: `${state.participant.teamName} lost ${stopCost.toFixed(1)}s on a battery swap.`
+  });
 }
 
 function resolveWeather(

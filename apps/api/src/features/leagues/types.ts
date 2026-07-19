@@ -95,6 +95,7 @@ export type LeagueState = {
     teamId: string;
     approach: string;
     preparation: string;
+    pitStrategy: RaceDecision["pitStrategy"];
     cardId: string | null;
     rivalTeamId: string | null;
   }>;

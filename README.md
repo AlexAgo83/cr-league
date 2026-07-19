@@ -111,6 +111,7 @@ CR League is already playable end to end:
 - qualifying attempts, chrono reports, best-lap history, and replay support;
 - seeded city-circuit race simulation with weather, traits, events, and reports;
 - dynamic circuit staging markers for the start line and future pit-stop zone;
+- battery/pit strategy choices with replayed pit-stop battery swaps;
 - garage inventory, card shop, prices, credits, livery editing, and team rename;
 - season history, championship standings, replayable past Grand Prix, and rollover;
 - inline pending feedback for API-backed actions across setup, race flow, garage, admin, and settings;

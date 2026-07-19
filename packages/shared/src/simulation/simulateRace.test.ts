@@ -109,6 +109,7 @@ describe("simulateRace", () => {
     expect(result.replayTrace?.at(-1)?.gaps[result.classification[0]!.teamId]).toBe(0);
     expect(result.replayFacts?.version).toBe(1);
     expect(result.replayFacts?.orderChanges.every((fact) => fact.type === "order_change" && fact.progress >= 0 && fact.progress <= 1)).toBe(true);
+    expect(result.events.filter((event) => event.type === "pit_stop")).toHaveLength(6);
     expect(result.consumedCards).toEqual(
       expect.arrayContaining([
         { teamId: "alice", cardId: "rain_grip" },
@@ -118,6 +119,26 @@ describe("simulateRace", () => {
       ])
     );
     expect(result.report.blocks).toHaveLength(2);
+  });
+
+  it("applies pit strategy stop counts", () => {
+    const input: RaceInput = {
+      ...baseRace,
+      participants: baseRace.participants.map((participant, index) => ({
+        ...participant,
+        decision: {
+          ...participant.decision,
+          pitStrategy: index === 0 ? "heavy_pack" : index === 1 ? "mini_pack" : "standard"
+        }
+      }))
+    };
+
+    const result = simulateRace(input);
+    const stops = result.events.filter((event) => event.type === "pit_stop");
+
+    expect(stops.filter((event) => event.teamId === "alice")).toHaveLength(0);
+    expect(stops.filter((event) => event.teamId === "hugo")).toHaveLength(2);
+    expect(stops.filter((event) => event.teamId === "atlas")).toHaveLength(1);
   });
 
   it("emits card events for played cards", () => {

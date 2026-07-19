@@ -53,11 +53,12 @@ export function createQualifyingRuns(input: {
         : input.decision.cardId === "rain_grip" && weather !== "dry"
           ? -0.7
           : 0;
+  const pitDelta = input.decision.pitStrategy === "heavy_pack" ? 0.6 : input.decision.pitStrategy === "mini_pack" ? -0.35 : 0;
   const lapTimes = Array.from({ length: input.laps }, (_, index) => {
     const warmupPenalty = index === 0 && input.laps > 1 ? 1.1 : 0;
     const tyreDelta = index > 1 ? (index - 1) * 0.16 : 0;
     const variance = (Math.random() - 0.5) * 2.4;
-    return Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + warmupPenalty + tyreDelta + variance).toFixed(2));
+    return Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + pitDelta + cardDelta + warmupPenalty + tyreDelta + variance).toFixed(2));
   });
   const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, weather);
   const createdAt = new Date().toISOString();

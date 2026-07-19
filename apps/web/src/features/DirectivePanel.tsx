@@ -17,13 +17,14 @@ type ImpactBadge = { trait: TraitKey; sign: "+" | "-"; label: TranslationKey; va
 
 const APPROACHES = ["prudent", "balanced", "aggressive"] as const;
 const PREPARATIONS = ["speed", "reliability", "weather"] as const;
+const PIT_STRATEGIES = ["heavy_pack", "standard", "mini_pack"] as const;
 const TRAITS = ["grip", "overtaking", "energy"] as const;
-export type DirectiveStep = "approach" | "preparation" | "card";
+export type DirectiveStep = "approach" | "preparation" | "pit" | "card";
 export const DIRECTIVE_STEP_KEY = "cr-league-directive-step";
 
 export function savedDirectiveStep(): DirectiveStep {
   const saved = localStorage.getItem(DIRECTIVE_STEP_KEY);
-  return saved === "preparation" || saved === "card" ? saved : "approach";
+  return saved === "preparation" || saved === "pit" || saved === "card" ? saved : "approach";
 }
 
 const TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
@@ -51,6 +52,12 @@ const PREPARATION_BADGES: Record<(typeof PREPARATIONS)[number], ImpactBadge[]> =
   weather: [badge("grip", "+")]
 };
 
+const PIT_BADGES: Record<(typeof PIT_STRATEGIES)[number], ImpactBadge[]> = {
+  heavy_pack: [badge("energy", "+"), badge("overtaking", "-")],
+  standard: [badge("grip", "+", 1)],
+  mini_pack: [badge("overtaking", "+"), badge("energy", "-")]
+};
+
 function ImpactBadges({ badges, tt }: { badges: ImpactBadge[]; tt: Translator }) {
   return (
     <span className="card-stat-badges">
@@ -76,6 +83,7 @@ function directiveModifiers(form: FormState, selectedCardId: FormState["cardId"]
 
   APPROACH_BADGES[form.approach].forEach(add);
   PREPARATION_BADGES[form.preparation].forEach(add);
+  PIT_BADGES[form.pitStrategy].forEach(add);
   if (selectedCardId) CARD_BADGES[selectedCardId].forEach((entry) => add({ ...entry, value: 2 }));
 
   return modifiers;
@@ -119,6 +127,7 @@ export function DirectivePanel({
   const steps = [
     { key: "approach" as const, label: tt("field_approach"), value: tt(`approach_${form.approach}` as TranslationKey) },
     { key: "preparation" as const, label: tt("field_preparation"), value: tt(`preparation_${form.preparation}` as TranslationKey) },
+    { key: "pit" as const, label: tt("field_pit_strategy"), value: tt(`pit_strategy_${form.pitStrategy}` as TranslationKey) },
     { key: "card" as const, label: tt("field_card"), value: selectedCardLabel }
   ];
 
@@ -186,6 +195,20 @@ export function DirectivePanel({
                 <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
                 <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={PREPARATION_BADGES[preparation]} tt={tt} />
+              </button>
+            ))}
+          </div>
+        </fieldset>
+      ) : null}
+
+      {step === "pit" ? (
+        <fieldset className="choice-group directive-choice-group directive-choice-pit" aria-label={tt("field_pit_strategy")}>
+          <div className="choice-grid directive-choice-grid">
+            {PIT_STRATEGIES.map((pitStrategy) => (
+              <button key={pitStrategy} type="button" className={form.pitStrategy === pitStrategy ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_pit_strategy")}: ${tt(`pit_strategy_${pitStrategy}` as TranslationKey)}`} aria-pressed={form.pitStrategy === pitStrategy} onClick={() => setForm({ ...form, pitStrategy })} disabled={disabled}>
+                <strong>{tt(`pit_strategy_${pitStrategy}` as TranslationKey)}</strong>
+                <small>{tt(`pit_strategy_${pitStrategy}_hint` as TranslationKey)}</small>
+                <ImpactBadges badges={PIT_BADGES[pitStrategy]} tt={tt} />
               </button>
             ))}
           </div>

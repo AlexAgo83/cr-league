@@ -2,6 +2,7 @@ import {
   CARD_DEFINITIONS,
   CARD_PRICE,
   DEMO_RACE_INPUT,
+  PIT_STRATEGIES,
   RACE_APPROACHES,
   TECHNICAL_PREPARATIONS,
   circuitIdentityForRound,
@@ -314,6 +315,7 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       teamId: decision.teamId,
       approach: decision.approach,
       preparation: decision.preparation,
+      pitStrategy: normalizePitStrategy(decision.pitStrategy),
       cardId: decision.cardId,
       rivalTeamId: decision.rivalTeamId
     }))
@@ -481,6 +483,7 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
     update: {
       approach: input.approach,
       preparation: input.preparation,
+      pitStrategy: input.pitStrategy ?? "standard",
       cardId,
       rivalTeamId: input.rivalTeamId
     },
@@ -489,6 +492,7 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
       teamId: input.teamId,
       approach: input.approach,
       preparation: input.preparation,
+      pitStrategy: input.pitStrategy ?? "standard",
       cardId,
       rivalTeamId: input.rivalTeamId
     }
@@ -531,6 +535,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
   const decision: RaceDecision = {
     approach: input.approach,
     preparation: input.preparation,
+    pitStrategy: input.pitStrategy ?? "standard",
     cardId,
     rivalTeamId: input.rivalTeamId
   };
@@ -770,12 +775,14 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
         ? {
             approach: submittedDecision.approach as RaceDecision["approach"],
             preparation: submittedDecision.preparation as RaceDecision["preparation"],
+            pitStrategy: normalizePitStrategy(submittedDecision.pitStrategy),
             cardId: (submittedDecision.cardId ?? undefined) as RaceDecision["cardId"],
             rivalTeamId: submittedDecision.rivalTeamId ?? undefined
           }
         : {
             approach: demo?.decision.approach ?? "balanced",
             preparation: demo?.decision.preparation ?? "speed",
+            pitStrategy: normalizePitStrategy(demo?.decision.pitStrategy),
             cardId: defaultCardForTeam(team, demo?.decision.cardId),
             rivalTeamId: demo?.decision.rivalTeamId
           };
@@ -827,6 +834,7 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
         ? {
             approach: decision.approach as RaceDecision["approach"],
             preparation: decision.preparation as RaceDecision["preparation"],
+            pitStrategy: normalizePitStrategy(decision.pitStrategy),
             cardId: (decision.cardId ?? undefined) as RaceDecision["cardId"],
             rivalTeamId: decision.rivalTeamId ?? undefined
           }
@@ -842,12 +850,19 @@ function validateDecisionValues(state: LeagueState, input: SubmitDecisionInput) 
   if (!TECHNICAL_PREPARATIONS.includes(input.preparation)) {
     throw new LeagueRuleError("Unsupported technical preparation.", 400);
   }
+  if (input.pitStrategy != null && !PIT_STRATEGIES.includes(input.pitStrategy)) {
+    throw new LeagueRuleError("Unsupported pit strategy.", 400);
+  }
   if (input.cardId != null && (typeof input.cardId !== "string" || !isCardId(input.cardId))) {
     throw new LeagueRuleError("Unknown card.", 400);
   }
   if (input.rivalTeamId != null && !state.teams.some((team) => team.id === input.rivalTeamId)) {
     throw new LeagueRuleError("Unknown rival team.", 400);
   }
+}
+
+function normalizePitStrategy(value: unknown): NonNullable<RaceDecision["pitStrategy"]> {
+  return PIT_STRATEGIES.includes(value as NonNullable<RaceDecision["pitStrategy"]>) ? value as NonNullable<RaceDecision["pitStrategy"]> : "standard";
 }
 
 async function requireAdminClaim(db: Db, leagueId: string, input: AdminProofInput) {

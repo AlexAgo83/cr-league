@@ -46,6 +46,7 @@ function route(view: GameView, planSubscreen: PlanSubscreen, directiveStep: Dire
 
 function directiveStepFromPath(value: string | undefined): DirectiveStep {
   if (value === "preparation") return "preparation";
+  if (value === "pit") return "pit";
   if (value === "card") return "card";
   return "approach";
 }

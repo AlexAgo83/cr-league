@@ -10,6 +10,10 @@ export const TECHNICAL_PREPARATIONS = ["speed", "reliability", "weather"] as con
 
 export type TechnicalPreparation = (typeof TECHNICAL_PREPARATIONS)[number];
 
+export const PIT_STRATEGIES = ["heavy_pack", "standard", "mini_pack"] as const;
+
+export type PitStrategy = (typeof PIT_STRATEGIES)[number];
+
 export type CircuitTrait = "fast" | "technical" | "urban" | "high_wear" | "weather_sensitive";
 
 export type Weather = "dry" | "light_rain" | "heavy_rain";
@@ -42,6 +46,7 @@ export type CardId =
 export type RaceDecision = {
   approach: RaceApproach;
   preparation: TechnicalPreparation;
+  pitStrategy?: PitStrategy;
   cardId?: CardId;
   rivalTeamId?: string;
 };
@@ -89,6 +94,7 @@ export type RaceEventType =
   | "late_push_gain"
   | "sponsor_payout"
   | "held_position"
+  | "pit_stop"
   | "race_note"
   | "finish";
 

@@ -109,6 +109,7 @@ export const decidedState = {
       teamId: "team_1",
       approach: "balanced",
       preparation: "weather",
+      pitStrategy: "standard",
       cardId: "rain_grip",
       rivalTeamId: null
     }
@@ -255,7 +256,7 @@ export const qualifyingRun = {
   time: 72.42,
   lap: 2,
   attempts: 1,
-  decision: { approach: "balanced", preparation: "weather", cardId: "rain_grip" },
+  decision: { approach: "balanced", preparation: "weather", pitStrategy: "standard", cardId: "rain_grip" },
   createdAt: "2026-07-18T12:00:00.000Z",
   result: resolvedState.currentGrandPrix.result
 };
@@ -273,7 +274,7 @@ export const rivalQualifyingRun = {
   time: 68.33,
   lap: 1,
   attempts: 1,
-  decision: { approach: "aggressive", preparation: "speed" },
+  decision: { approach: "aggressive", preparation: "speed", pitStrategy: "standard" },
   createdAt: "2026-07-18T12:01:00.000Z"
 };
 

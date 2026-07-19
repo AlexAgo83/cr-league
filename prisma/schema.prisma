@@ -91,6 +91,7 @@ model RaceDecision {
   teamId       String
   approach     String
   preparation  String
+  pitStrategy  String   @default("standard")
   cardId       String?
   rivalTeamId  String?
   submittedAt  DateTime @default(now())

@@ -1,6 +1,7 @@
 import {
   CARD_DEFINITIONS,
   DEMO_RACE_INPUT,
+  PIT_STRATEGIES,
   RACE_APPROACHES,
   TECHNICAL_PREPARATIONS,
   simulateRace,
@@ -69,6 +70,7 @@ function isParticipant(value: unknown): value is RaceInput["participants"][numbe
     Boolean(decision) &&
     isOneOf(decision?.approach, RACE_APPROACHES) &&
     isOneOf(decision?.preparation, TECHNICAL_PREPARATIONS) &&
+    (decision?.pitStrategy === undefined || isOneOf(decision.pitStrategy, PIT_STRATEGIES)) &&
     (decision?.cardId === undefined || decision.cardId in CARD_DEFINITIONS) &&
     (decision?.rivalTeamId === undefined || typeof decision.rivalTeamId === "string")
   );

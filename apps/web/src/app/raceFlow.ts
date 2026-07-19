@@ -23,6 +23,8 @@ export function traitImpacts(form: FormState, selectedCardId: FormState["cardId"
   if (form.preparation === "reliability") add("energy", tt("preparation_reliability"));
   if (form.approach === "aggressive") add("overtaking", tt("approach_aggressive"));
   if (form.approach === "prudent") add("energy", tt("approach_prudent"));
+  if (form.pitStrategy === "heavy_pack") add("energy", tt("pit_strategy_heavy_pack"));
+  if (form.pitStrategy === "mini_pack") add("overtaking", tt("pit_strategy_mini_pack"));
   if (selectedCardId === "rain_grip" || selectedCardId === "rain_mapping") add("grip", tt("field_card"));
   if (selectedCardId === "launch_boost" || selectedCardId === "urban_draft" || selectedCardId === "soft_tires" || selectedCardId === "qualifying_focus" || selectedCardId === "adjustable_wing" || selectedCardId === "calculated_attack") add("overtaking", tt("field_card"));
   if (selectedCardId === "fleet_maintenance" || selectedCardId === "final_surge" || selectedCardId === "defensive_order" || selectedCardId === "economy_mode" || selectedCardId === "pit_relay" || selectedCardId === "hard_tires") add("energy", tt("field_card"));
@@ -98,7 +100,11 @@ function chronoReportSuggestion(
   if (!best) return input.tt("chrono_report_suggestion_first_run");
   if (input.attemptsLeft <= 0) return input.tt("chrono_report_suggestion_lock_best");
   const bestCard = best.decision.cardId ?? "";
-  const currentChanged = best.decision.approach !== input.form.approach || best.decision.preparation !== input.form.preparation || bestCard !== input.selectedCardId;
+  const currentChanged =
+    best.decision.approach !== input.form.approach ||
+    best.decision.preparation !== input.form.preparation ||
+    (best.decision.pitStrategy ?? "standard") !== input.form.pitStrategy ||
+    bestCard !== input.selectedCardId;
   if (latest && latest.time > best.time + 0.15) {
     return input.tt("chrono_report_suggestion_return_best", {
       approach: input.tt(`approach_${best.decision.approach}` as TranslationKey),
@@ -124,6 +130,7 @@ export function createInitialForm(locale: Locale): FormState {
     preparationDeadlineAt: "",
     approach: "balanced",
     preparation: "weather",
+    pitStrategy: "standard",
     cardId: "" as "" | CardId
   };
 }

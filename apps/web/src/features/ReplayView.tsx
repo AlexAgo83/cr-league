@@ -20,12 +20,13 @@ const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
 const GRID_START_PROGRESS = 0.1;
+const PIT_STOP_PROGRESS_WINDOW = 0.035;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
 export type ReplayDirectorBeat = {
   id: string;
-  type: "grid_start" | "overtake" | "player" | "pack" | "weather" | "final" | "qualifying_start" | "qualifying_pace" | "qualifying_final";
+  type: "grid_start" | "overtake" | "player" | "pack" | "weather" | "pit_stop" | "final" | "qualifying_start" | "qualifying_pace" | "qualifying_final";
   progress: number;
   lap: number;
   teamId?: string;
@@ -377,6 +378,10 @@ export function buildRaceDirectorBeats(result: RaceResult, trace: ReplayTracePoi
   }
   const quietTrace = trace.find((point, index) => index > 0 && point.progress > 0.35 && point.progress < 0.75 && Math.abs((point.gaps[point.order[1] ?? ""] ?? 99) - (point.gaps[point.order[0] ?? ""] ?? 0)) <= 1.5);
   if (quietTrace) beats.push({ id: `pack-${quietTrace.progress.toFixed(3)}`, type: "pack", progress: quietTrace.progress, lap: displayLapAtProgress(quietTrace.progress, laps), gapSeconds: quietTrace.gaps[quietTrace.order[1] ?? ""] });
+  for (const event of result.events.filter((event) => event.type === "pit_stop").slice(0, 8)) {
+    const progress = event.lap / Math.max(1, ...result.events.map((candidate) => candidate.lap));
+    beats.push({ id: `pit-${event.teamId}-${event.order}`, type: "pit_stop", progress, lap: displayLapAtProgress(progress, laps), teamId: event.teamId });
+  }
   beats.push({ id: "final-pressure", type: "final", progress: 1, lap: displayLapAtProgress(1, laps), teamId: result.classification[0]?.teamId });
   return beats
     .filter((beat, index, all) => all.findIndex((candidate) => candidate.id === beat.id) === index)
@@ -450,7 +455,7 @@ function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator
     : event.severity === "major"
       ? tt("event_major")
       : tt("event_ambience");
-  const icon: VisualIconName = event.tags.includes("weather") || event.type === "weather_change" ? "light_rain" : event.cardId ? "card" : event.positionDelta > 0 ? "position" : "dot";
+  const icon: VisualIconName = event.tags.includes("weather") || event.type === "weather_change" ? "light_rain" : event.type === "pit_stop" ? "energy" : event.cardId ? "card" : event.positionDelta > 0 ? "position" : "dot";
   return {
     icon,
     context,
@@ -471,6 +476,7 @@ function directorBeatCopy(beat: ReplayDirectorBeat, names: Map<string, string>, 
   if (beat.type === "overtake") return { title: tt("replay_director_overtake"), detail: tt("replay_director_overtake_detail", { team, related, from: beat.fromPosition ?? "-", to: beat.toPosition ?? "-" }) };
   if (beat.type === "pack") return { title: tt("replay_director_pack"), detail: tt("replay_director_pack_detail", { gap: (beat.gapSeconds ?? 0).toFixed(1) }) };
   if (beat.type === "weather") return { title: tt("replay_director_weather"), detail: tt("replay_director_weather_detail", { weather: tt(`weather_${beat.weather ?? "dry"}` as TranslationKey) }) };
+  if (beat.type === "pit_stop") return { title: tt("replay_director_pit_stop"), detail: tt("replay_director_pit_stop_detail", { team }) };
   return { title: tt("replay_director_final"), detail: tt("replay_director_final_detail", { team }) };
 }
 
@@ -535,6 +541,9 @@ export function ReplayView({
   const field = result.classification;
   const activeMoment = result.events.find((event) => event.id === activeMomentId);
   const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
+  const raceDuration = replayTimes.leader;
+  const currentRaceProgress = raceProgressAt(clock.current, raceDuration);
+  const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
   const cars: MapCar[] = field.map((entry, index) => ({
     id: entry.teamId,
     label: String(Math.max(1, snapshot.tower.findIndex((team) => team.teamId === entry.teamId) + 1)),
@@ -542,6 +551,7 @@ export function ReplayView({
     delay: 0,
     duration: replayTimes.times[entry.teamId] ?? replayTimes.leader + index,
     progress: snapshot.carProgress[entry.teamId] ?? 0,
+    pitStopActive: result.events.some((event) => event.type === "pit_stop" && event.teamId === entry.teamId && Math.abs(currentRaceProgress - event.lap / maxLap) <= PIT_STOP_PROGRESS_WINDOW),
     livery: teamLiveries[entry.teamId],
     positionDelta: positionPops[entry.teamId]?.delta,
     positionDeltaKey: positionPops[entry.teamId]?.key
@@ -549,7 +559,6 @@ export function ReplayView({
   const playerCar = cars.find((car) => car.player) ?? cars[0];
   const tower: ReplayTowerEntry[] = towerEntries ?? snapshot.tower.map((entry) => ({ teamId: entry.teamId, teamName: entry.teamName, value: "" }));
   const circuitDistance = `${(circuitLengthMeters(circuit) / 1000).toFixed(1)} km`;
-  const raceDuration = replayTimes.leader;
   const lastFinishTime = replayTimes.last;
   const replayEnd = START_HOLD_SECONDS + lastFinishTime + FINISH_HOLD_SECONDS;
   const raceTimeAtProgress = (progress: number) => START_HOLD_SECONDS + progress * raceDuration;
@@ -665,7 +674,6 @@ export function ReplayView({
     .sort((left, right) => left.order - right.order);
 
   // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.
-  const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
   const markerByLap = new Map<number, { texts: string[]; player: boolean; time: number }>();
   for (const event of keyMoments.filter((event) => event.severity === "major" || event.teamId === playerTeamId)) {
     const progress = event.lap / maxLap;
@@ -684,7 +692,6 @@ export function ReplayView({
     player: marker.player
   }));
   const liveWeather = result.resolvedWeather[live.segment];
-  const currentRaceProgress = raceProgressAt(clock.current, raceDuration);
   const activeDirectorBeat = [...directorBeats].reverse().find((beat) => beat.progress <= currentRaceProgress) ?? directorBeats[0];
   const activeDirectorCopy = activeDirectorBeat ? directorBeatCopy(activeDirectorBeat, names, tt) : null;
   const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId);

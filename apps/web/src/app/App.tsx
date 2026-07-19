@@ -219,7 +219,7 @@ export function App() {
   const selectedCardFit = leagueState && selectedCardId ? cardFit(selectedCardId as CardId, leagueState, forecastPick) : null;
   const directiveTraitImpacts = traitImpacts(form, selectedCardId, tt);
   const replayTraitImpacts = playerDecision
-    ? traitImpacts({ ...form, approach: playerDecision.approach, preparation: playerDecision.preparation }, playerDecision.cardId ?? "", tt)
+    ? traitImpacts({ ...form, approach: playerDecision.approach, preparation: playerDecision.preparation, pitStrategy: playerDecision.pitStrategy ?? "standard" }, playerDecision.cardId ?? "", tt)
     : directiveTraitImpacts;
   const playerResult = result?.classification.find((entry) => entry.teamId === playerTeam?.id);
   const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
@@ -371,6 +371,7 @@ export function App() {
           claimCode: player.claimCode,
           approach: form.approach,
           preparation: form.preparation,
+          pitStrategy: form.pitStrategy,
           cardId: selectedCardId || undefined
         })
       });
@@ -393,6 +394,7 @@ export function App() {
           claimCode: player.claimCode,
           approach: form.approach,
           preparation: form.preparation,
+          pitStrategy: form.pitStrategy,
           cardId: selectedCardId || undefined,
           traits: currentCircuit.traits,
           laps: currentCircuit.laps

@@ -54,6 +54,7 @@ export function createMemoryDb(): PrismaClient {
     teamId: string;
     approach: string;
     preparation: string;
+    pitStrategy: string;
     cardId: string | null;
     rivalTeamId: string | null;
   };
@@ -349,8 +350,8 @@ export function createMemoryDb(): PrismaClient {
         create
       }: {
         where: { grandPrixId_teamId: { grandPrixId: string; teamId: string } };
-        update: Omit<DecisionRow, "id" | "grandPrixId" | "teamId">;
-        create: Omit<DecisionRow, "id">;
+        update: Omit<DecisionRow, "id" | "grandPrixId" | "teamId" | "pitStrategy"> & { pitStrategy?: string };
+        create: Omit<DecisionRow, "id" | "pitStrategy"> & { pitStrategy?: string };
       }) => {
         const existing = decisions.find(
           (decision) =>
@@ -365,6 +366,7 @@ export function createMemoryDb(): PrismaClient {
         const decision: DecisionRow = {
           id: id("decision"),
           ...create,
+          pitStrategy: create.pitStrategy ?? "standard",
           cardId: create.cardId ?? null,
           rivalTeamId: create.rivalTeamId ?? null,
         };

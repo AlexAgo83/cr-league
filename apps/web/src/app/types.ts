@@ -62,6 +62,7 @@ export type LeagueState = {
     teamId: string;
     approach: RaceDecision["approach"];
     preparation: RaceDecision["preparation"];
+    pitStrategy?: RaceDecision["pitStrategy"];
     cardId: RaceDecision["cardId"] | null;
   }>;
 };
@@ -99,6 +100,7 @@ export type FormState = {
   preparationDeadlineAt: string;
   approach: RaceDecision["approach"];
   preparation: RaceDecision["preparation"];
+  pitStrategy: NonNullable<RaceDecision["pitStrategy"]>;
   cardId: RaceDecision["cardId"] | "";
 };
 

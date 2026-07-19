@@ -36,4 +36,8 @@ describe("circuit identities", () => {
       "circuit_monaco_casino_sprint"
     ]);
   });
+
+  it("adds five European city circuits outside the existing catalog", () => {
+    expect(CITY_CIRCUIT_IDENTITIES.slice(-5).map((circuit) => circuit.city)).toEqual(["London", "Brussels", "Prague", "Copenhagen", "Stockholm"]);
+  });
 });

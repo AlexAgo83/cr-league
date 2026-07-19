@@ -3,7 +3,9 @@ import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, type CityCircuit } from "../app/circuits.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
+import { CircuitMap } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
+import { Modal } from "./Modal.js";
 import { RewardValue } from "./RewardValue.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
@@ -28,7 +30,9 @@ export function ChampionshipView({
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
   const [recordTab, setRecordTab] = useState<"standings" | "calendar" | "palmares" | "history">("standings");
+  const [previewCircuit, setPreviewCircuit] = useState<CityCircuit | undefined>();
   const seasonCircuits = circuitsForSeason(state.league.id, currentGrandPrix.season);
+  const catalogCircuits = [...CITY_CIRCUITS].sort((left, right) => tt(left.layoutKey).localeCompare(tt(right.layoutKey), undefined, { sensitivity: "base" }));
   const seasonRoundsByLayout = new Map<string, number[]>();
   for (let round = 1; round <= state.league.maxGrandPrixPerSeason; round += 1) {
     const circuit = seasonCircuits[(round - 1) % seasonCircuits.length]!;
@@ -124,23 +128,25 @@ export function ChampionshipView({
 
           {activeRecordTab === "calendar" ? (
             <ol className="circuit-calendar-list" aria-label={tt("championship_calendar")}>
-              {CITY_CIRCUITS.map((circuit) => {
+              {catalogCircuits.map((circuit) => {
                 const rounds = seasonRoundsByLayout.get(circuit.layoutKey) ?? [];
                 return (
                   <li key={`${circuit.city}-${circuit.layoutKey}`} className={rounds.includes(currentGrandPrix.round) ? "current-circuit" : undefined}>
-                    <MiniCircuit circuit={circuit} />
-                    <div>
-                      <span className="circuit-city">
-                        <CountryBadge country={circuit.country} /> {circuit.city}
+                    <button type="button" className="circuit-calendar-button" aria-label={`${circuit.city} ${tt(circuit.layoutKey)}`} onClick={() => setPreviewCircuit(circuit)}>
+                      <MiniCircuit circuit={circuit} />
+                      <span>
+                        <span className="circuit-city">
+                          <CountryBadge country={circuit.country} /> {circuit.city}
+                        </span>
+                        <strong>{tt(circuit.layoutKey)}</strong>
+                        <small>
+                          {circuit.laps} {tt("unit_laps")} · <VisualIcon name={circuit.likelyWeather} /> {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
+                        </small>
                       </span>
-                      <strong>{tt(circuit.layoutKey)}</strong>
-                      <small>
-                        {circuit.laps} {tt("unit_laps")} · <VisualIcon name={circuit.likelyWeather} /> {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
-                      </small>
-                    </div>
-                    <div className="circuit-order-badges">
-                      {rounds.length ? rounds.map((round) => <span key={round}>{round}</span>) : <small>{tt("championship_calendar_unused")}</small>}
-                    </div>
+                      <span className="circuit-order-badges">
+                        {rounds.length ? rounds.map((round) => <span key={round}>{round}</span>) : <small>{tt("championship_calendar_unused")}</small>}
+                      </span>
+                    </button>
                   </li>
                 );
               })}
@@ -212,6 +218,14 @@ export function ChampionshipView({
           ) : null}
         </section>
       </div>
+      {previewCircuit ? (
+        <Modal label={`${previewCircuit.city} ${tt(previewCircuit.layoutKey)}`} className="panel modal circuit-preview-modal" onClose={() => setPreviewCircuit(undefined)}>
+          <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setPreviewCircuit(undefined)}>
+            ×
+          </button>
+          <CircuitMap circuit={previewCircuit} tt={tt} showTraits={false} />
+        </Modal>
+      ) : null}
     </div>
   );
 }

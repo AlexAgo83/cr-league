@@ -3112,6 +3112,29 @@ label small {
   position: relative;
 }
 
+.circuit-calendar-button {
+  align-items: stretch;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  display: grid;
+  font: inherit;
+  gap: 10px;
+  grid-column: 1 / -1;
+  grid-template-columns: 82px minmax(0, 1fr);
+  padding: 0;
+  position: relative;
+  text-align: left;
+  width: 100%;
+  z-index: 1;
+}
+
+.circuit-calendar-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 3px;
+}
+
 .circuit-calendar-list li::before {
   background: url("/assets/crl/championship-header.png") center / cover no-repeat;
   content: "";
@@ -3176,6 +3199,11 @@ label small {
   flex-wrap: wrap;
   gap: 5px;
   grid-column: 1 / -1;
+}
+
+.circuit-preview-modal {
+  max-width: min(960px, calc(100vw - 32px));
+  position: relative;
 }
 
 .circuit-order-badges span {

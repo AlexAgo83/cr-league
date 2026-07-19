@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-li
 import { act } from "react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
-import { circuitForRound } from "./circuits.js";
+import { CITY_CIRCUITS, circuitForRound } from "./circuits.js";
 import { t } from "../i18n/index.js";
 
 function testCircuit(round: number, season = 1) {
@@ -752,6 +752,13 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Circuits" }));
     expect(screen.getByText(t(roundOneCircuit.layoutKey, "en"))).toBeTruthy();
     expect(document.querySelector(".circuit-calendar-list")?.textContent).toContain("1");
+    const displayedCircuitNames = [...document.querySelectorAll(".circuit-calendar-button strong")].map((node) => node.textContent);
+    expect(displayedCircuitNames).toEqual([...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" })));
+    fireEvent.click(screen.getByRole("button", { name: /Brussels Grand Place Loop/ }));
+    expect(screen.getByRole("dialog", { name: "Brussels Grand Place Loop" })).toBeTruthy();
+    expect(screen.getByLabelText("City circuit map")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Focus driver" })).toBe(null);
+    fireEvent.click(screen.getByLabelText("Close"));
     fireEvent.click(screen.getByRole("tab", { name: "Standings" }));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     expect(document.querySelector(".garage-overview")?.textContent).toContain("ABC123");

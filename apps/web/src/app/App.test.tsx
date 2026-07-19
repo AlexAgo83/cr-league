@@ -700,6 +700,7 @@ describe("App", () => {
     expect(screen.getByLabelText("Understand the lap time").textContent).toContain("Best run");
     fireEvent.click(screen.getAllByRole("button", { name: "Review lap time" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
+    await waitFor(() => expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/7"));
     expect(screen.getByRole("button", { name: "Chrono report" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Chrono report" }));
     expect(screen.getByRole("heading", { name: "Understand the lap time" })).toBeTruthy();

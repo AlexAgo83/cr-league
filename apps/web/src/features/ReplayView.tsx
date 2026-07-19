@@ -484,6 +484,7 @@ export function ReplayView({
   explainerKey = "result_replay_explainer",
   showIntro = true,
   towerEntries,
+  initialLap,
   preferencesResetSignal = 0,
   onOpenReport,
   onClose,
@@ -500,6 +501,7 @@ export function ReplayView({
   explainerKey?: TranslationKey;
   showIntro?: boolean;
   towerEntries?: ReplayTowerEntry[];
+  initialLap?: number;
   preferencesResetSignal?: number;
   onOpenReport?: () => void;
   onClose?: () => void;
@@ -609,6 +611,11 @@ export function ReplayView({
     setPositionPops({});
     updateLive(clock.current, false);
   }
+
+  useEffect(() => {
+    if (!initialLap) return;
+    seek(raceTimeAtProgress(Math.max(0, Math.min(circuit.laps - 1, initialLap - 1)) / circuit.laps));
+  }, [initialLap, circuit.laps, replayEnd]);
 
   function restart() {
     setPositionPops({});

@@ -1055,11 +1055,17 @@ export function App() {
   }
 
   function addLeague() {
+    goHome();
+  }
+
+  function goHome() {
     setLeagueState(null);
     setAdminInspecting(false);
     setGameView("drive");
     setSetupMode("choice");
     setProfileOpen(false);
+    setHistoryReplay(null);
+    setResultOpen(true);
     showStatus(tt("status_initial"));
   }
 
@@ -1242,10 +1248,10 @@ export function App() {
 
   const setupTopbar = (
     <header className="setup-topbar">
-      <div className="brand">
-        <img className="brand-icon" src="/favicon.svg" alt={APP_NAME} />
+      <button type="button" className="brand brand-button" onClick={goHome}>
+        <img className="brand-icon" src="/favicon.svg" alt="" />
         <strong>{APP_NAME}</strong>
-      </div>
+      </button>
       <div className="setup-topbar-actions">
         {profileSession ? (
           profileMenu(false, false)
@@ -1866,10 +1872,10 @@ export function App() {
   return (
     <main className={isMapScreen ? "app-shell game-shell map-screen" : "app-shell game-shell"}>
       <header className="topbar">
-        <div className="brand">
-          <img className="brand-icon" src="/favicon.svg" alt={APP_NAME} />
+        <button type="button" className="brand brand-button" onClick={goHome}>
+          <img className="brand-icon" src="/favicon.svg" alt="" />
           <strong>{leagueState.league.name}</strong>
-        </div>
+        </button>
         <nav className="game-nav" aria-label={tt("cockpit_sections")}>
           {GAME_VIEWS.map((view) => (
             <button

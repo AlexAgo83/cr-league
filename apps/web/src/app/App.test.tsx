@@ -1338,6 +1338,34 @@ describe("App", () => {
     await expectGarageCode("ABC123");
   });
 
+  it("returns to the home setup screen when clicking the brand", async () => {
+    saveProfile();
+    localStorage.setItem(
+      "cr-league-player-claims",
+      JSON.stringify([
+        {
+          teamId: "team_1",
+          claimCode: "CLAIM123",
+          leagueId: "league_1",
+          leagueName: "Office League",
+          leagueCode: "ABC123",
+          teamName: "Volt Union"
+        }
+      ])
+    );
+    localStorage.setItem("cr-league-active-player-claim", "team_1");
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+
+    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Office League" }));
+
+    expect(screen.getByRole("heading", { name: "Race desk" })).toBeTruthy();
+    expect(screen.getByText("Saved leagues")).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Office League/ })).toBeTruthy();
+  });
+
   it("keeps setup league chrome focused when no league is active", () => {
     saveProfile();
 

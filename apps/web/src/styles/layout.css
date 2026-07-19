@@ -296,6 +296,21 @@
   min-width: 0;
 }
 
+.brand-button {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.brand-button:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 4px;
+}
+
 .brand-icon {
   border-radius: 6px;
   height: 28px;

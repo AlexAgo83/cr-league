@@ -404,7 +404,7 @@ describe("App", () => {
     expect(JSON.parse((fetch.mock.calls[1]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123" });
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
     expect(screen.getByText("Relive this run lap by lap:", { exact: false })).toBeTruthy();
-    expect(document.querySelector(".replay-overlay-actions")?.textContent).toContain("72.42s · P2 · 1/3");
+    expect(document.querySelector(".replay-overlay-actions")?.textContent).toContain("72.42s · Attempts left 2/3");
     expect(screen.queryByRole("heading", { name: "Run a lap time" })).toBe(null);
     expect(screen.queryByText("Your best time sets your grid slot.", { exact: false })).toBe(null);
     expect(screen.queryByRole("button", { name: "Run lap time" })).toBe(null);

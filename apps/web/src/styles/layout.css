@@ -4313,6 +4313,12 @@ label small {
   padding: 12px 14px;
 }
 
+.garage-stats > .garage-livery-visuals {
+  min-height: 96px;
+  overflow: hidden;
+  position: relative;
+}
+
 .garage-stats > span:not(.garage-livery-visuals) {
   display: grid;
   gap: 2px;
@@ -4362,6 +4368,14 @@ label small {
   width: 62px;
 }
 
+.garage-livery-visuals .garage-livery-preview {
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%) skewX(-10deg);
+  z-index: 2;
+}
+
 .garage-livery-preview .livery-plate-text {
   -webkit-text-stroke: 0.8px var(--livery-primary);
 }
@@ -4380,16 +4394,24 @@ label small {
 .garage-car-stage {
   align-items: center;
   display: flex;
-  min-width: 76px;
+  inset: 0 -18px 0 auto;
+  justify-content: flex-end;
+  min-width: 0;
+  opacity: 0.82;
+  pointer-events: none;
+  position: absolute;
+  width: min(78%, 260px);
+  z-index: 1;
 }
 
 .garage-car-preview {
   filter: drop-shadow(0 4px 4px rgb(0 0 0 / 0.42));
-  height: 42px;
+  height: min(160%, 150px);
   overflow: visible;
   position: relative;
+  transform: rotate(90deg);
+  width: min(92%, 220px);
   z-index: 1;
-  width: 62px;
 }
 
 .garage-name-fields {
@@ -4477,12 +4499,6 @@ label small {
   padding: 12px;
   text-align: left;
   text-transform: none;
-}
-
-.card-shop button strong {
-  color: var(--color-accent);
-  grid-column: 2;
-  grid-row: 1 / span 2;
 }
 
 .card-shop button small {
@@ -6083,8 +6099,9 @@ button.highlight-command:not(:disabled) {
   box-shadow: inset 0 0 0 1px var(--garage-card-accent);
 }
 
-.garage-panel-inventory .card-inventory-button strong,
-.garage-panel-shop .card-shop button strong {
+.garage-panel-inventory .card-inventory-button .card-owned-count,
+.garage-panel-shop .card-shop button .card-owned-count,
+.garage-panel-shop .card-shop button .card-price-badge {
   align-items: center;
   background: color-mix(in srgb, var(--garage-card-accent) 12%, rgb(236 231 218));
   border: 2px solid color-mix(in srgb, var(--garage-card-accent) 42%, transparent);
@@ -6098,13 +6115,29 @@ button.highlight-command:not(:disabled) {
   min-width: 22px;
 }
 
-.garage-panel-shop .card-shop button strong {
+.garage-panel-shop .card-shop button .card-owned-count,
+.garage-panel-inventory .card-inventory-button .card-owned-count {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.garage-panel-shop .card-shop button .card-price-badge {
+  background: color-mix(in srgb, var(--garage-card-accent) 18%, rgb(236 231 218));
+  border-color: color-mix(in srgb, var(--garage-card-accent) 55%, transparent);
+  bottom: 10px;
+  color: #17151a;
   font-size: 0.82rem;
   grid-column: auto;
   grid-row: auto;
   position: absolute;
   right: 10px;
-  top: 10px;
+  top: auto;
+}
+
+.garage-panel-shop .card-shop button .card-price-badge .reward-value,
+.garage-panel-shop .card-shop button .card-price-badge .reward-icon {
+  color: #17151a;
 }
 
 .garage-panel-inventory .card-inventory-button small,
@@ -6286,7 +6319,7 @@ button.highlight-command:not(:disabled) {
   padding: 10px 42px 10px 10px;
 }
 
-.card-inventory-button > strong {
+.card-inventory-button > .card-owned-count {
   position: absolute;
   right: 10px;
   top: 10px;
@@ -6296,7 +6329,7 @@ button.highlight-command:not(:disabled) {
   padding: 11px 42px 11px 11px;
 }
 
-.garage-panel-inventory .card-inventory-button > strong {
+.garage-panel-inventory .card-inventory-button > .card-owned-count {
   right: 10px;
   top: 10px;
 }

@@ -207,7 +207,7 @@ export function GarageView({
                         <CardStatBadges cardId={cardId} tt={tt} />
                         {!isCardLocked(cardId) ? <small>{tt("garage_sell_card_action", { price: (state.cardShop.find((item) => item.cardId === cardId)?.price ?? 0) / 2 })}</small> : null}
                       </span>
-                      <strong>x{countCards(playerTeam.cards, cardId)}</strong>
+                      <strong className="card-owned-count">x{countCards(playerTeam.cards, cardId)}</strong>
                       <CardArtImage cardId={cardId} />
                     </button>
                   </li>
@@ -226,9 +226,10 @@ export function GarageView({
             {shopOffers.map((item) => (
               <button key={item.cardId} className="card-art-cell" type="button" onClick={() => setPendingBuyCardId(item.cardId)} disabled={loading}>
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
-                <strong>
+                <strong className="card-price-badge">
                   <RewardValue type="credits" value={item.price} tt={tt} />
                 </strong>
+                <strong className="card-owned-count">x{countCards(playerTeam.cards, item.cardId)}</strong>
                 <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>
                 <CardStatBadges cardId={item.cardId} tt={tt} />
                 <CardArtImage cardId={item.cardId} />

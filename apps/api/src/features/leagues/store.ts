@@ -564,14 +564,33 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
       secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
       traits: normalizeRaceTraits(input.traits),
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
-      laps: clampInteger(input.laps, 5, 1, 20)
+      laps: clampInteger(input.laps, 3, 1, 3)
     });
     const nextRunsForAttempt = attemptRuns.map((run) => ({ ...run, attempts }));
     const nextRun = nextRunsForAttempt.reduce((best, run) => (run.time < best.time ? run : best), nextRunsForAttempt[0]!);
+    const nextRuns = [...runs, ...nextRunsForAttempt];
+    for (const bot of state.teams.filter((candidate) => candidate.kind === "bot")) {
+      const botAttempt = Math.max(0, ...nextRuns.filter((run) => run.teamId === bot.id).map((run) => run.attempts)) + 1;
+      if (botAttempt > attempts || botAttempt > state.league.qualifyingAttemptLimit) continue;
+      const demo = DEMO_RACE_INPUT.participants[state.teams.indexOf(bot) % DEMO_RACE_INPUT.participants.length];
+      nextRuns.push(
+        createQualifyingRuns({
+          seed: `${freshGrandPrix.seed}-${bot.id}-bot-qualifying-${botAttempt}`,
+          teamId: bot.id,
+          teamName: bot.name,
+          decision: defaultBotDecision(state, bot, demo?.decision),
+          primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
+          secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+          forecast: freshGrandPrix.forecast as RaceInput["forecast"],
+          laps: 1
+        })[0]!
+      );
+      nextRuns[nextRuns.length - 1]!.attempts = botAttempt;
+    }
 
     await tx.grandPrix.update({
       where: { id: freshGrandPrix.id },
-      data: { qualifyingRuns: [...runs, ...nextRunsForAttempt] }
+      data: { qualifyingRuns: nextRuns }
     });
 
     return { nextRun, previousBest };
@@ -777,28 +796,12 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
     const nextRuns = [...runs];
     for (const team of missingBots) {
       const demo = DEMO_RACE_INPUT.participants[state.teams.indexOf(team) % DEMO_RACE_INPUT.participants.length];
-      const submittedDecision = state.decisions.find((candidate) => candidate.teamId === team.id);
-      const decision: RaceDecision = submittedDecision
-        ? {
-            approach: submittedDecision.approach as RaceDecision["approach"],
-            preparation: submittedDecision.preparation as RaceDecision["preparation"],
-            pitStrategy: normalizePitStrategy(submittedDecision.pitStrategy),
-            cardId: (submittedDecision.cardId ?? undefined) as RaceDecision["cardId"],
-            rivalTeamId: submittedDecision.rivalTeamId ?? undefined
-          }
-        : {
-            approach: demo?.decision.approach ?? "balanced",
-            preparation: demo?.decision.preparation ?? "speed",
-            pitStrategy: normalizePitStrategy(demo?.decision.pitStrategy),
-            cardId: defaultCardForTeam(team, demo?.decision.cardId),
-            rivalTeamId: demo?.decision.rivalTeamId
-          };
       nextRuns.push(
         createQualifyingRuns({
           seed: `${freshGrandPrix.seed}-${team.id}-bot-qualifying`,
           teamId: team.id,
           teamName: team.name,
-          decision,
+          decision: defaultBotDecision(state, team, demo?.decision),
           primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
           secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
@@ -809,6 +812,26 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
 
     await tx.grandPrix.update({ where: { id: freshGrandPrix.id }, data: { qualifyingRuns: nextRuns } });
   });
+}
+
+function defaultBotDecision(state: LeagueState, team: LeagueState["teams"][number], fallback?: RaceDecision): RaceDecision {
+  const submittedDecision = state.decisions.find((candidate) => candidate.teamId === team.id);
+  if (submittedDecision) {
+    return {
+      approach: submittedDecision.approach as RaceDecision["approach"],
+      preparation: submittedDecision.preparation as RaceDecision["preparation"],
+      pitStrategy: normalizePitStrategy(submittedDecision.pitStrategy),
+      cardId: (submittedDecision.cardId ?? undefined) as RaceDecision["cardId"],
+      rivalTeamId: submittedDecision.rivalTeamId ?? undefined
+    };
+  }
+  return {
+    approach: fallback?.approach ?? "balanced",
+    preparation: fallback?.preparation ?? "speed",
+    pitStrategy: normalizePitStrategy(fallback?.pitStrategy),
+    cardId: defaultCardForTeam(team, fallback?.cardId),
+    rivalTeamId: fallback?.rivalTeamId
+  };
 }
 
 function buildParticipants(state: LeagueState): RaceParticipant[] {

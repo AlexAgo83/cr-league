@@ -357,6 +357,65 @@ describe("api app", () => {
     expect(secondRun.json().run.result.events).toHaveLength(2);
   });
 
+  it("caps each qualifying attempt to three laps", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const qualifyingResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/qualifying`,
+      payload: {
+        teamId: created.player.teamId,
+        claimCode: created.player.claimCode,
+        approach: "balanced",
+        preparation: "weather",
+        laps: 20
+      }
+    });
+
+    await app.close();
+
+    expect(qualifyingResponse.statusCode).toBe(200);
+    expect(qualifyingResponse.json().state.currentGrandPrix.qualifyingRuns.filter((run: { teamId: string }) => run.teamId === created.player.teamId)).toHaveLength(3);
+    expect(qualifyingResponse.json().run.result.events).toHaveLength(3);
+  });
+
+  it("adds one bot qualifying attempt after each player qualifying attempt", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", qualifyingAttemptLimit: 2 }
+    });
+    const created = createResponse.json();
+    const botIds = created.teams.filter((team: { kind: string }) => team.kind === "bot").map((team: { id: string }) => team.id);
+    const payload = {
+      teamId: created.player.teamId,
+      claimCode: created.player.claimCode,
+      approach: "balanced",
+      preparation: "weather",
+      laps: 1
+    };
+    const firstRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
+    const secondRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload });
+
+    await app.close();
+
+    expect(firstRun.statusCode).toBe(200);
+    expect(secondRun.statusCode).toBe(200);
+    for (const botId of botIds) {
+      const botRuns = secondRun.json().state.currentGrandPrix.qualifyingRuns.filter((run: { teamId: string }) => run.teamId === botId);
+      expect(botRuns).toHaveLength(2);
+      expect(botRuns.map((run: { attempts: number }) => run.attempts)).toEqual([1, 2]);
+    }
+  });
+
   it("locks the Grand Prix card after a qualifying card is used", async () => {
     const db = createMemoryDb();
     const app = await createTestApp(db);

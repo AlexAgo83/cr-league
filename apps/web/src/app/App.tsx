@@ -232,11 +232,6 @@ export function App() {
       position: index + 1,
       teamName: leagueState?.teams.find((team) => team.id === run.teamId)?.name ?? run.teamId
     }));
-  const currentQualifyingRank = currentQualifyingResult
-    ? [...qualifyingRuns]
-        .sort((left, right) => left.time - right.time)
-        .findIndex((run) => run.teamId === currentQualifyingResult.teamId && run.attempts === currentQualifyingResult.attempts && run.time === currentQualifyingResult.time) + 1
-    : 0;
   const qualifyingAttemptsUsed = Math.max(0, ...playerQualifyingRuns.map((run) => run.attempts));
   const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? Number(form.qualifyingAttemptLimit);
   const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
@@ -559,6 +554,10 @@ export function App() {
     if (!leagueState) return;
     const finishingSeason = leagueState.currentGrandPrix.round >= leagueState.league.maxGrandPrixPerSeason;
     setNextGrandPrixConfirmOpen(false);
+    setRouteReplayGrandPrixId(undefined);
+    setHistoryReplay(null);
+    setResultOpen(false);
+    setGameView("drive");
 
     await run(tt(finishingSeason ? "status_finishing_season" : "status_starting_next_grand_prix"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/next-grand-prix`, {
@@ -570,7 +569,6 @@ export function App() {
       });
       setLeagueState(withCurrentPlayer(state));
       setGameView("drive");
-      setRouteReplayGrandPrixId(undefined);
       setResultOpen(false);
       showStatus(tt(finishingSeason ? "status_season_finished" : "status_next_grand_prix_started"));
       pushCommandHint("prepare");
@@ -1432,7 +1430,7 @@ export function App() {
                     overlayActions={
                       <>
                         <span>
-                          {currentQualifyingResult.time.toFixed(2)}s · <PositionBadge position={Math.max(1, currentQualifyingRank)} /> · {currentQualifyingResult.attempts}/{qualifyingAttemptLimit}
+                          {(chronoReport.best?.time ?? currentQualifyingResult.time).toFixed(2)}s · {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
                         </span>
                         <button
                           className={!chronoReportCommandClicked ? "highlight-command" : undefined}

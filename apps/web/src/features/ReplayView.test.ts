@@ -105,6 +105,17 @@ describe("ReplayView timing", () => {
     expect(liveClassificationByCarProgress(result, trace, 0.5, progress, ["last", "leader"]).map((entry) => entry.teamId)).toEqual(["last", "leader"]);
   });
 
+  it("shows absolute pit slowdown even when every car stops together", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "mid", lap: 5, progress: 0.48, order: ["leader", "last"], times: { leader: 48, last: 48 }, gaps: { leader: 0, last: 0 } },
+      { segment: "mid", lap: 5, progress: 0.52, order: ["leader", "last"], times: { leader: 60, last: 60 }, gaps: { leader: 0, last: 0 } },
+      { segment: "finish", lap: 10, progress: 1, order: ["leader", "last"], times: { leader: 100, last: 100 }, gaps: { leader: 0, last: 0 } }
+    ];
+
+    expect(carProgressAtTrace(result, trace, 0.52, 5).leader ?? 0).toBeLessThan(2.6);
+  });
+
   it("uses trace order as a visual spacing target", () => {
     const trace: ReplayTracePoint[] = [
       { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },

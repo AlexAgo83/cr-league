@@ -164,7 +164,7 @@ export function DirectivePanel({
     </section>
 
     <section className="panel directive-panel directive-selection-panel">
-      <div className="plan-steps" role="tablist" aria-label={tt("directive_title")}>
+      <div className="plan-steps directive-plan-steps" role="tablist" aria-label={tt("directive_title")}>
         {steps.map((entry) => (
           <button key={entry.key} type="button" role="tab" aria-selected={step === entry.key} aria-label={`${entry.label}: ${entry.value}`} className={step === entry.key ? "plan-step active" : "plan-step"} onClick={() => onSelectStep(entry.key)}>
             <span className="plan-step-label">{entry.label}</span>

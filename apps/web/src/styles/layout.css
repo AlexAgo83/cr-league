@@ -6071,38 +6071,22 @@ button.highlight-command:not(:disabled) {
 }
 
 .plan-view .directive-choice-pit .choice-card {
-  min-height: 196px;
-  padding-top: 112px;
+  --pit-cell-bg: rgb(236 231 218 / 0.98);
+  --pit-strategy-image: none;
+  min-height: 128px;
+  padding-right: min(52%, 200px);
 }
 
-.pit-strategy-art {
-  background-image: url("/assets/crl/pit-strategy-swaps.png");
-  background-repeat: no-repeat;
-  background-size: 300% 100%;
-  height: 104px;
-  inset: 0 0 auto;
-  opacity: 0.92;
-  pointer-events: none;
-  position: absolute;
+.plan-view .directive-choice-pit .choice-card.pit-strategy-heavy_pack {
+  --pit-strategy-image: url("/assets/crl/pit-strategy-heavy-pack.png");
 }
 
-.pit-strategy-art::after {
-  background: linear-gradient(180deg, transparent 34%, rgb(236 231 218 / 0.96));
-  content: "";
-  inset: 0;
-  position: absolute;
+.plan-view .directive-choice-pit .choice-card.pit-strategy-standard {
+  --pit-strategy-image: url("/assets/crl/pit-strategy-standard.png");
 }
 
-.pit-strategy-art-heavy_pack {
-  background-position: 0% center;
-}
-
-.pit-strategy-art-standard {
-  background-position: 50% center;
-}
-
-.pit-strategy-art-mini_pack {
-  background-position: 100% center;
+.plan-view .directive-choice-pit .choice-card.pit-strategy-mini_pack {
+  --pit-strategy-image: url("/assets/crl/pit-strategy-mini-pack.png");
 }
 
 .plan-view .directive-choice-group .choice-card:not(:disabled):hover,
@@ -6126,6 +6110,18 @@ button.highlight-command:not(:disabled) {
 
 .plan-view .directive-choice-group .choice-card.selected::before {
   display: none;
+}
+
+.plan-view .directive-choice-pit .choice-card,
+.plan-view .directive-choice-pit .choice-card.selected {
+  background:
+    linear-gradient(90deg, var(--pit-cell-bg) 0 48%, rgb(236 231 218 / 0.86) 62%, transparent 78%),
+    var(--pit-strategy-image) right center / auto 142% no-repeat,
+    var(--pit-cell-bg);
+}
+
+.plan-view .directive-choice-pit .choice-card.selected {
+  --pit-cell-bg: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
 }
 
 .card-inventory-button {

@@ -174,7 +174,7 @@ function createInitialForm(locale: Locale): FormState {
     preparationDeadlineAt: "",
     approach: "balanced",
     preparation: "weather",
-    cardId: "rain_grip"
+    cardId: ""
   };
 }
 

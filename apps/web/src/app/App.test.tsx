@@ -516,6 +516,36 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-garage-panel")).toBe("shop");
   });
 
+  it("does not auto-select a card after buying one", async () => {
+    saveProfile();
+    const emptyGarageState = {
+      ...baseState,
+      teams: [{ ...baseState.teams[0], credits: 200, cards: [] }, baseState.teams[1]]
+    };
+    const boughtState = {
+      ...emptyGarageState,
+      teams: [{ ...emptyGarageState.teams[0], credits: 80, cards: ["rain_grip"] }, baseState.teams[1]]
+    };
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(emptyGarageState)).mockResolvedValueOnce(response(boughtState));
+
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Garage" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
+    fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Buy card" }));
+    await act(async () => {});
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://localhost:4874/leagues/league_1/cards/buy",
+      expect.objectContaining({ method: "POST", body: JSON.stringify({ teamId: "team_1", claimCode: "CLAIM123", cardId: "rain_grip" }) })
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    expect(screen.getByRole("tab", { name: "Card: No card" })).toBeTruthy();
+  });
+
   it("keeps the selected garage tab in local preferences", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
@@ -600,9 +630,9 @@ describe("App", () => {
     // The switcher doubles as the plan summary: each tab shows the current pick.
     expect(screen.getByRole("tab", { name: "Approach: Balanced" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Tire prep: Weather" })).toBeTruthy();
-    expect(screen.getByRole("tab", { name: "Card: Rain Grip" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "Card: No card" })).toBeTruthy();
     expect(screen.getByText("High overtaking rewards attack and launch cards.")).toBeTruthy();
-    expect([...document.querySelectorAll(".directive-trait-modifier")].map((element) => element.textContent)).toEqual(["+3", "-1", "+1"]);
+    expect([...document.querySelectorAll(".directive-trait-modifier")].map((element) => element.textContent)).toEqual(["+2", "±0", "+1"]);
     // Approach sub-screen is shown first.
     expect(document.querySelector(".choice-grid")?.className).toContain("directive-choice-grid");
     expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");
@@ -611,8 +641,9 @@ describe("App", () => {
     expect(document.querySelector(".choice-grid")?.className).toContain("directive-choice-grid");
     expect(screen.getByRole("button", { name: "Tire prep: Weather" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
-    fireEvent.click(screen.getByRole("tab", { name: "Card: Rain Grip" }));
-    expect(screen.getByRole("button", { name: "Card: Rain Grip" }).getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(screen.getByRole("tab", { name: "Card: No card" }));
+    fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
+    expect(screen.getByRole("tab", { name: "Card: Rain Grip" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Result" })).toBe(null);

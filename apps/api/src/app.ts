@@ -20,6 +20,8 @@ export async function buildApp(config: ApiConfig, dependencies: AppDependencies 
   const webOrigins = new Set([config.webOrigin, "http://localhost:4873", "http://127.0.0.1:4873"]);
 
   await app.register(cors, {
+    allowedHeaders: ["authorization", "content-type"],
+    methods: ["GET", "POST", "DELETE", "OPTIONS"],
     origin: (origin, callback) => {
       callback(null, !origin || webOrigins.has(origin));
     }

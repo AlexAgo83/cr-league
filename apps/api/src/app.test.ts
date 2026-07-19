@@ -412,6 +412,26 @@ describe("api app", () => {
     expect(okResponse.statusCode).toBe(200);
   });
 
+  it("allows browser preflight for admin delete requests", async () => {
+    const app = await createTestApp(createMemoryDb(), "secret-admin-token");
+
+    const response = await app.inject({
+      method: "OPTIONS",
+      url: "/admin/users/profile_1",
+      headers: {
+        origin: "http://127.0.0.1:4873",
+        "access-control-request-method": "DELETE",
+        "access-control-request-headers": "authorization"
+      }
+    });
+
+    await app.close();
+
+    expect(response.statusCode).toBe(204);
+    expect(response.headers["access-control-allow-methods"]).toContain("DELETE");
+    expect(response.headers["access-control-allow-headers"]).toContain("authorization");
+  });
+
   it("reports admin eligibility for a saved profile session refresh", async () => {
     const app = await createTestApp(createMemoryDb(), undefined, ["pilot@example.test"]);
     const adminProfile = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });

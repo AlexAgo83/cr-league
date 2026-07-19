@@ -354,6 +354,7 @@ export function App() {
   const [chronoReportCommandClicked, setChronoReportCommandClicked] = useState(false);
   const [launchGrandPrixCommandClicked, setLaunchGrandPrixCommandClicked] = useState(false);
   const [resultReportCommandClicked, setResultReportCommandClicked] = useState(false);
+  const [nextGrandPrixCommandClicked, setNextGrandPrixCommandClicked] = useState(false);
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
@@ -516,11 +517,15 @@ export function App() {
         ? { label: tt("action_launch_grand_prix"), action: openResolveConfirm, disabled: status === "loading" || isResolved }
         : {
             label: tt("action_next_grand_prix"),
-            action: () => setNextGrandPrixConfirmOpen(true),
+            action: openNextGrandPrixConfirm,
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
   const primaryCommandClass = `primary-command${
-    (deskState === "prepare" && !directiveCommandClicked) || (deskState === "ready" && !launchGrandPrixCommandClicked) ? " highlight-command" : ""
+    (deskState === "prepare" && !directiveCommandClicked) ||
+    (deskState === "ready" && !launchGrandPrixCommandClicked) ||
+    (deskState === "resolved" && !nextGrandPrixCommandClicked)
+      ? " highlight-command"
+      : ""
   }`;
   useEffect(() => {
     if (!leagueState || onboardingHelp) return;
@@ -537,6 +542,7 @@ export function App() {
     setChronoReportCommandClicked(false);
     setLaunchGrandPrixCommandClicked(false);
     setResultReportCommandClicked(false);
+    setNextGrandPrixCommandClicked(false);
   }, [currentGrandPrixKey]);
 
   useEffect(() => {
@@ -661,6 +667,11 @@ export function App() {
     setLaunchGrandPrixCommandClicked(true);
     setStartingGridExpanded(false);
     setResolveConfirmOpen(true);
+  }
+
+  function openNextGrandPrixConfirm() {
+    setNextGrandPrixCommandClicked(true);
+    setNextGrandPrixConfirmOpen(true);
   }
 
   function startQualifyingRunConfirmed() {
@@ -973,6 +984,7 @@ export function App() {
     setChronoReportCommandClicked(false);
     setLaunchGrandPrixCommandClicked(false);
     setResultReportCommandClicked(false);
+    setNextGrandPrixCommandClicked(false);
     setPreferencesResetSignal((signal) => signal + 1);
     setPreferencesResetOpen(false);
     setProfileOpen(false);

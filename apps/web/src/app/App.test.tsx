@@ -819,8 +819,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Next GP" }).hasAttribute("disabled")).toBe(false);
+    expect(screen.getByRole("button", { name: "Next GP" }).className).toContain("highlight-command");
 
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
+    expect(document.querySelector(".race-phase-actions .primary-command")?.className).not.toContain("highlight-command");
     expect(screen.getByRole("dialog", { name: "Start the next race day?" })).toBeTruthy();
     expect(screen.getByText("This opens the next Grand Prix and moves every player back into preparation.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Close" }));

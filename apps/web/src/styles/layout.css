@@ -1165,17 +1165,20 @@ label small {
 
 .directive-choice-approach {
   --directive-choice-accent: #ff4d00;
-  --directive-choice-wash: rgb(255 77 0 / 0.42);
+  --directive-choice-wash: rgb(255 77 0 / 0.12);
+  --directive-choice-selected-wash: rgb(255 77 0 / 0.2);
 }
 
 .directive-choice-preparation {
-  --directive-choice-accent: #38bdf8;
-  --directive-choice-wash: rgb(56 189 248 / 0.32);
+  --directive-choice-accent: #0284c7;
+  --directive-choice-wash: rgb(2 132 199 / 0.1);
+  --directive-choice-selected-wash: rgb(2 132 199 / 0.18);
 }
 
 .directive-choice-card {
-  --directive-choice-accent: #fbbf24;
-  --directive-choice-wash: rgb(251 191 36 / 0.34);
+  --directive-choice-accent: #b45309;
+  --directive-choice-wash: rgb(180 83 9 / 0.1);
+  --directive-choice-selected-wash: rgb(180 83 9 / 0.18);
 }
 
 .choice-card {
@@ -5502,8 +5505,8 @@ button.highlight-command:not(:disabled) {
 
 .plan-view .directive-choice-group .choice-card {
   background:
-    linear-gradient(135deg, var(--directive-choice-wash), rgb(35 23 18 / 0.16) 44%, rgb(18 16 20 / 0.04)),
-    rgb(236 231 218 / 0.78);
+    linear-gradient(135deg, var(--directive-choice-wash), rgb(236 231 218 / 0) 58%),
+    rgb(236 231 218 / 0.96);
   border-color: color-mix(in srgb, var(--directive-choice-accent) 36%, transparent);
   clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
   overflow: hidden;
@@ -5517,8 +5520,8 @@ button.highlight-command:not(:disabled) {
 
 .plan-view .directive-choice-group .choice-card.selected {
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--directive-choice-accent) 42%, transparent), rgb(35 23 18 / 0.2) 44%, rgb(18 16 20 / 0.06)),
-    rgb(236 231 218 / 0.82);
+    linear-gradient(135deg, var(--directive-choice-selected-wash), rgb(236 231 218 / 0) 58%),
+    rgb(236 231 218 / 0.98);
   box-shadow: inset 0 0 0 1px var(--directive-choice-accent);
 }
 

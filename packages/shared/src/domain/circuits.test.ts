@@ -42,4 +42,10 @@ describe("circuit identities", () => {
   it("adds global city circuits outside the European catalog", () => {
     expect(CITY_CIRCUIT_IDENTITIES.slice(-6).map((circuit) => circuit.city)).toEqual(["Tokyo", "Rio de Janeiro", "Cape Town", "Seoul", "Montreal", "Istanbul"]);
   });
+
+  it("uses Istanbul Park as the Istanbul circuit", () => {
+    const istanbul = CITY_CIRCUIT_IDENTITIES.find((circuit) => circuit.city === "Istanbul");
+    expect(istanbul?.trackLengthMeters).toBe(5338);
+    expect(istanbul?.laps).toBe(6);
+  });
 });

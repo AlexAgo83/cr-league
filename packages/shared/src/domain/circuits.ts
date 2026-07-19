@@ -24,7 +24,7 @@ export const CITY_CIRCUIT_IDENTITIES = [
   { city: "Cape Town", country: "ZA", layoutKey: "circuit_cape_town_waterfront_loop", laps: 6, trackLengthMeters: 3700, traits: { grip: 67, overtaking: 72, energy: 58 }, likelyWeather: "dry" },
   { city: "Seoul", country: "KR", layoutKey: "circuit_seoul_yeouido_loop", laps: 7, trackLengthMeters: 4100, traits: { grip: 69, overtaking: 75, energy: 60 }, likelyWeather: "light_rain" },
   { city: "Montreal", country: "CA", layoutKey: "circuit_montreal_island_loop", laps: 9, trackLengthMeters: 4300, traits: { grip: 72, overtaking: 80, energy: 62 }, likelyWeather: "light_rain" },
-  { city: "Istanbul", country: "TR", layoutKey: "circuit_istanbul_bosphorus_loop", laps: 7, trackLengthMeters: 4600, traits: { grip: 65, overtaking: 76, energy: 57 }, likelyWeather: "dry" }
+  { city: "Istanbul", country: "TR", layoutKey: "circuit_istanbul_bosphorus_loop", laps: 6, trackLengthMeters: 5338, traits: { grip: 74, overtaking: 72, energy: 50 }, likelyWeather: "dry" }
 ] as const satisfies readonly [
   CityCircuitIdentitySource,
   ...CityCircuitIdentitySource[]

@@ -6082,9 +6082,23 @@ button.highlight-command:not(:disabled) {
   padding: 11px 42px 11px 11px;
 }
 
-.garage-panel-inventory .card-inventory-button,
-.garage-panel-inventory .card-inventory-button small {
+.garage-panel-inventory .card-inventory-button {
+  display: grid;
   font-family: var(--font-sans);
+  font-size: 1em;
+  font-style: normal;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  justify-items: start;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.garage-panel-inventory .card-inventory-button small {
+  font-family: inherit;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
 .garage-panel-inventory .card-inventory-button > span {
@@ -6097,11 +6111,16 @@ button.highlight-command:not(:disabled) {
   padding-right: min(46%, 190px);
 }
 
-.garage-panel-inventory .card-inventory-button .card-cell-art,
 .garage-panel-shop .card-shop button .card-cell-art {
   height: 136%;
   inset: 50% -38px auto auto;
   width: min(58%, 230px);
+}
+
+.garage-panel-inventory .card-inventory-button .card-cell-art {
+  height: 128%;
+  inset: 44% -38px auto auto;
+  width: min(56%, 220px);
 }
 
 .plan-view .choice-card.card-art-cell .card-stat-badges,

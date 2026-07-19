@@ -1,4 +1,4 @@
-import type { RaceResult, ReplayTracePoint } from "../domain/race.js";
+import type { RaceResult } from "../domain/race.js";
 
 export function validateReplayTrace(result: RaceResult, trace = result.replayTrace ?? []) {
   const errors: string[] = [];
@@ -26,8 +26,9 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
         continue;
       }
 
-      if (car.trackProgress < 0 || car.trackProgress > 1) errors.push(`car progress out of bounds for ${teamId} at point ${index}`);
-      if (car.distanceMeters !== undefined && car.distanceMeters < 0) errors.push(`car distance out of bounds for ${teamId} at point ${index}`);
+      const minCarProgress = car.phase === "grid" ? -0.25 : 0;
+      if (car.trackProgress < minCarProgress || car.trackProgress > 1) errors.push(`car progress out of bounds for ${teamId} at point ${index}`);
+      if (car.distanceMeters !== undefined && car.distanceMeters < minCarProgress * 8000) errors.push(`car distance out of bounds for ${teamId} at point ${index}`);
       if (car.speed < 0 || car.speed > 1.2) errors.push(`car speed out of bounds for ${teamId} at point ${index}`);
       if (previousCar && car.trackProgress + 0.0001 < previousCar.trackProgress) errors.push(`car progress goes backwards for ${teamId} at point ${index}`);
       if (previousCar && car.trackProgress - previousCar.trackProgress > 0.035) errors.push(`car progress jumps too far for ${teamId} at point ${index}`);
@@ -45,6 +46,11 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
     const stop = phases.indexOf("pit_stop");
     const exit = phases.indexOf("pit_exit");
     if (entry < 0 || stop < entry || exit < stop) errors.push(`pit phases missing or out of order for ${event.teamId}`);
+    if (typeof event.traceProgress !== "number" || event.traceProgress < 0 || event.traceProgress > 1) {
+      errors.push(`pit event trace progress missing for ${event.teamId}`);
+    } else if (!(carPhases.get(event.teamId) ?? []).some((phase) => phase.phase === "pit_stop" && Math.abs(phase.progress - event.traceProgress!) <= 0.04)) {
+      errors.push(`pit event trace progress does not match stop phase for ${event.teamId}`);
+    }
   }
 
   for (const change of result.replayFacts?.orderChanges ?? []) {

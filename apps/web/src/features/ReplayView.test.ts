@@ -204,6 +204,25 @@ describe("ReplayView timing", () => {
     expect(beats.at(-1)?.type).toBe("final");
   });
 
+  it("uses generated race-director beats when replay facts provide them", () => {
+    const resultWithFacts: RaceResult = {
+      ...result,
+      replayFacts: {
+        version: 1,
+        orderChanges: [],
+        directorBeats: [
+          { id: "grid-start", type: "grid_start", progress: 0, lap: 1 },
+          { id: "overtake-last-leader-0.333", type: "overtake", progress: 0.333, lap: 2, teamId: "last", relatedTeamId: "leader", fromPosition: 2, toPosition: 1 },
+          { id: "final-pressure", type: "final", progress: 1, lap: 5, teamId: "last" }
+        ]
+      }
+    };
+    const beats = buildRaceDirectorBeats(resultWithFacts, [], buildReplayPlan(resultWithFacts, []), 5, "last");
+
+    expect(beats.map((beat) => beat.id)).toEqual(["grid-start", "overtake-last-leader-0.333", "final-pressure"]);
+    expect(beats[1]?.type).toBe("player");
+  });
+
   it("shows pit stops as race-director beats", () => {
     const trace: ReplayTracePoint[] = [
       { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
@@ -261,6 +280,7 @@ describe("ReplayView timing", () => {
     const leader = resultWithEvent("leader", 1);
     const last = resultWithEvent("last", 2);
 
+    expect(pitStopTraceProgress(result, trace, { ...leader, traceProgress: 0.37 }, 10, 5, 0.25)).toBe(0.37);
     expect(pitStopTraceProgress(result, trace, leader, 10, 5, 0.25)).toBeCloseTo(0.45);
     expect(pitStopTraceProgress(result, trace, last, 10, 5, 0.25)).toBeGreaterThan(pitStopTraceProgress(result, trace, leader, 10, 5, 0.25));
   });

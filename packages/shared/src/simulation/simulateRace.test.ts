@@ -109,11 +109,14 @@ describe("simulateRace", () => {
     expect(result.replayTrace?.at(-1)?.order).toEqual(result.classification.map((entry) => entry.teamId));
     expect(result.replayTrace?.at(-1)?.times[result.classification[0]!.teamId]).toBeGreaterThan(0);
     expect(result.replayTrace?.at(-1)?.gaps[result.classification[0]!.teamId]).toBe(0);
+    expect(Math.min(...Object.values(result.replayTrace?.[0]?.cars ?? {}).map((car) => car.trackProgress))).toBeLessThan(0);
     expect(validateReplayTrace(result)).toEqual([]);
     expect(result.replayFacts?.version).toBe(1);
     expect(result.replayFacts?.orderChanges.every((fact) => fact.type === "order_change" && fact.progress >= 0 && fact.progress <= 1)).toBe(true);
+    expect(result.replayFacts?.directorBeats?.map((beat) => beat.type)).toEqual(expect.arrayContaining(["grid_start", "pit_stop", "final"]));
     expect(result.replayTrace?.some((point) => Object.values(point.cars ?? {}).some((car) => car.phase.startsWith("overtake")))).toBe(true);
     expect(result.events.filter((event) => event.type === "pit_stop")).toHaveLength(6);
+    expect(result.events.filter((event) => event.type === "pit_stop").every((event) => typeof event.traceProgress === "number")).toBe(true);
     expect(result.consumedCards).toEqual(
       expect.arrayContaining([
         { teamId: "alice", cardId: "rain_grip" },

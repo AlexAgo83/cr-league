@@ -104,6 +104,7 @@ export type RaceEvent = {
   order: number;
   segment: RaceSegment;
   lap: number;
+  traceProgress?: number;
   type: RaceEventType;
   teamId: string;
   relatedTeamId?: string;
@@ -163,9 +164,23 @@ export type ReplayOrderChangeFact = {
   gapSeconds: number;
 };
 
+export type ReplayDirectorBeatFact = {
+  id: string;
+  type: "grid_start" | "overtake" | "pack" | "weather" | "pit_stop" | "final";
+  progress: number;
+  lap: number;
+  teamId?: string;
+  relatedTeamId?: string;
+  fromPosition?: number;
+  toPosition?: number;
+  weather?: Weather;
+  gapSeconds?: number;
+};
+
 export type RaceReplayFacts = {
   version: 1;
   orderChanges: ReplayOrderChangeFact[];
+  directorBeats?: ReplayDirectorBeatFact[];
 };
 
 export type RaceResult = {

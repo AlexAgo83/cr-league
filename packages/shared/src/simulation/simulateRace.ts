@@ -95,23 +95,24 @@ export function simulateRace(input: RaceInput): RaceResult {
   const classification = classify(states);
   addFinishEvents(events, classification);
   const annotatedReplayTrace = annotateReplayOvertakes(stabilizeReplayTraceOrders(replayTrace));
+  const replayEvents = withTraceEventProgress(events, annotatedReplayTrace);
 
   return {
     grandPrixName: input.grandPrixName,
     seed: input.seed,
     resolvedWeather: weather,
     classification,
-    events: events.map((event, order) => ({ ...event, id: `evt_${String(order + 1).padStart(3, "0")}`, order })),
+    events: replayEvents.map((event, order) => ({ ...event, id: `evt_${String(order + 1).padStart(3, "0")}`, order })),
     replayTrace: annotatedReplayTrace,
-    replayFacts: buildReplayFacts(annotatedReplayTrace),
+    replayFacts: buildReplayFacts(annotatedReplayTrace, replayEvents, classification, weather),
     consumedCards: states
       .filter((state): state is TeamState & { consumedCard: CardId } => Boolean(state.consumedCard))
       .map((state) => ({ teamId: state.participant.teamId, cardId: state.consumedCard })),
-    report: buildReport(input.grandPrixName, classification, events)
+    report: buildReport(input.grandPrixName, classification, replayEvents)
   };
 }
 
-function buildReplayFacts(trace: ReplayTracePoint[]): RaceReplayFacts {
+function buildReplayFacts(trace: ReplayTracePoint[], events: RaceEvent[], classification: ClassificationEntry[], weather: Record<RaceSegment, Weather>): RaceReplayFacts {
   const orderChanges = trace.slice(1).flatMap((point, index) => {
     const previous = trace[index]!;
     if (point.progress >= 1) return [];
@@ -136,7 +137,64 @@ function buildReplayFacts(trace: ReplayTracePoint[]): RaceReplayFacts {
     });
   });
 
-  return { version: 1, orderChanges };
+  return { version: 1, orderChanges, directorBeats: buildReplayDirectorBeats(trace, events, orderChanges, classification, weather) };
+}
+
+function buildReplayDirectorBeats(
+  trace: ReplayTracePoint[],
+  events: RaceEvent[],
+  orderChanges: RaceReplayFacts["orderChanges"],
+  classification: ClassificationEntry[],
+  weather: Record<RaceSegment, Weather>
+): NonNullable<RaceReplayFacts["directorBeats"]> {
+  const beats: NonNullable<RaceReplayFacts["directorBeats"]> = [{ id: "grid-start", type: "grid_start", progress: 0, lap: 1 }];
+
+  for (const change of orderChanges.slice(0, 8)) {
+    beats.push({
+      id: `overtake-${change.overtakingTeamId}-${change.overtakenTeamId}-${change.progress.toFixed(3)}`,
+      type: "overtake",
+      progress: change.progress,
+      lap: change.lap,
+      teamId: change.overtakingTeamId,
+      relatedTeamId: change.overtakenTeamId,
+      fromPosition: change.fromPosition,
+      toPosition: change.toPosition,
+      gapSeconds: change.gapSeconds
+    });
+  }
+
+  const weatherChange = RACE_SEGMENTS.find((segment, index) => index > 0 && weather[segment] !== weather[RACE_SEGMENTS[index - 1]!]);
+  if (weatherChange) {
+    const progress = Math.max(0.2, RACE_SEGMENTS.indexOf(weatherChange) / RACE_SEGMENTS.length);
+    beats.push({ id: `weather-${weatherChange}`, type: "weather", progress, lap: lapForSegment(weatherChange), weather: weather[weatherChange] });
+  }
+
+  const quietTrace = trace.find((point, index) => index > 0 && point.progress > 0.35 && point.progress < 0.75 && Math.abs((point.gaps[point.order[1] ?? ""] ?? 99) - (point.gaps[point.order[0] ?? ""] ?? 0)) <= 1.5);
+  if (quietTrace) beats.push({ id: `pack-${quietTrace.progress.toFixed(3)}`, type: "pack", progress: quietTrace.progress, lap: quietTrace.lap, gapSeconds: quietTrace.gaps[quietTrace.order[1] ?? ""] });
+
+  for (const event of events.filter((event) => event.type === "pit_stop").slice(0, 8)) {
+    const progress = event.traceProgress ?? event.lap / Math.max(1, ...events.map((candidate) => candidate.lap));
+    beats.push({ id: `pit-${event.teamId}-${event.order}`, type: "pit_stop", progress, lap: event.lap, teamId: event.teamId });
+  }
+
+  beats.push({ id: "final-pressure", type: "final", progress: 1, lap: trace.at(-1)?.lap ?? lapForSegment("finish"), teamId: classification[0]?.teamId });
+  return beats
+    .filter((beat, index, all) => all.findIndex((candidate) => candidate.id === beat.id) === index)
+    .sort((left, right) => left.progress - right.progress);
+}
+
+function withTraceEventProgress(events: RaceEvent[], trace: ReplayTracePoint[]) {
+  return events.map((event) => {
+    if (event.type !== "pit_stop") return event;
+    const progress = pitStopTraceProgressForTeam(trace, event.teamId, event.segment);
+    return progress === undefined ? event : { ...event, traceProgress: progress };
+  });
+}
+
+function pitStopTraceProgressForTeam(trace: ReplayTracePoint[], teamId: string, segment: RaceSegment) {
+  const pitPoints = trace.filter((point) => point.segment === segment && point.cars?.[teamId]?.phase === "pit_stop");
+  if (!pitPoints.length) return undefined;
+  return Number((pitPoints.reduce((sum, point) => sum + point.progress, 0) / pitPoints.length).toFixed(4));
 }
 
 function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, states: TeamState[], beforeTimes: Map<string, number>, pitCosts = new Map<string, number>(), trackLengthMeters: number, previousPoint?: ReplayTracePoint): ReplayTracePoint[] {
@@ -174,6 +232,10 @@ function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, stat
       if (!car) continue;
       car.trackProgress = Math.min(Math.max(lastProgress, car.trackProgress), lastProgress + MAX_TRACE_CAR_PROGRESS_STEP);
       car.distanceMeters = Number((car.trackProgress * trackLengthMeters).toFixed(1));
+      if (car.trackProgress < 0) {
+        car.phase = "grid";
+        car.speed = replayCarSpeed("grid");
+      }
       lastProgress = car.trackProgress;
     }
   }
@@ -274,7 +336,10 @@ function createReplayTracePoint(segment: RaceSegment, progress: number, states: 
       ])
     ),
     cars: isGrid
-      ? Object.fromEntries(sorted.map((state) => [state.participant.teamId, { trackProgress: 0, distanceMeters: 0, speed: 0, phase: "grid" as const }]))
+      ? Object.fromEntries(sorted.map((state, index) => {
+          const trackProgress = -(0.012 + index * 0.018);
+          return [state.participant.teamId, { trackProgress, distanceMeters: Number((trackProgress * trackLengthMeters).toFixed(1)), speed: 0, phase: "grid" as const }];
+        }))
       : undefined
   };
 }

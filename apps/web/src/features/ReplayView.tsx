@@ -367,6 +367,7 @@ export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[]
 }
 
 export function pitStopTraceProgress(result: RaceResult, trace: ReplayTracePoint[], event: RaceEvent, maxLap: number, laps: number, lapProgress: number, plan?: ReplayPlan) {
+  if (typeof event.traceProgress === "number") return event.traceProgress;
   const fallback = pitStopRaceProgress(event, maxLap, laps, lapProgress);
   const target = fallback * laps;
   let low = Math.max(0, fallback - 0.18);
@@ -421,6 +422,15 @@ export function buildRaceDirectorBeats(result: RaceResult, trace: ReplayTracePoi
       beats.splice(-1, 0, { id: `weather-${weatherChange}`, type: "weather", progress, lap: displayLapAtProgress(progress, laps), weather: result.resolvedWeather[weatherChange] });
     }
     return beats.sort((left, right) => left.progress - right.progress);
+  }
+
+  if (result.replayFacts?.directorBeats?.length) {
+    return result.replayFacts.directorBeats
+      .map((beat) => ({
+        ...beat,
+        type: beat.type === "overtake" && (beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId) ? "player" as const : beat.type
+      }))
+      .sort((left, right) => left.progress - right.progress);
   }
 
   const beats: ReplayDirectorBeat[] = [
@@ -488,7 +498,7 @@ function replaySnapshot(
   currentOrder: string[] = []
 ) {
   const baseProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan);
-  const carProgress = applyGridStart(result, trace, baseProgress, progress);
+  const carProgress = shouldSmoothReplayTrace(trace) ? applyGridStart(result, trace, baseProgress, progress) : baseProgress;
   const tower = liveClassificationByCarProgress(result, trace, progress, carProgress, currentOrder);
   return { carProgress, tower };
 }

@@ -40,3 +40,27 @@ What to check after card/economy changes:
 - card price changes should keep `GP/card` in a range that makes buying a choice.
 
 The script reuses `simulateRace`; it is a balance smoke test, not a full league-season simulator. Use it before playtests, then treat tester feedback as the stronger signal.
+
+## AI season playtest
+
+Run the AI playtest when you want many simulated players to play seasons and produce one readable verdict:
+
+```bash
+npm run playtest:ai
+npm run playtest:ai -- --agents 50 --seasons 3 --rounds 6 --report reports/playtest/latest-ai.md --json reports/playtest/latest-ai.json
+```
+
+What it adds on top of `balance:sim`:
+
+- multiple AI profiles with different approach, preparation, pit, and buying habits;
+- inventory use, card consumption, and card purchases between GP;
+- season standings, champions, card trigger rates, dead-card checks, and profile win rates;
+- deterministic fun/frustration scores from finish position and concrete race events.
+
+Use the alerts this way:
+
+- `dominant profile` means one AI style is probably too efficient across circuits;
+- `dead card trigger` means a card was played but never produced an event;
+- `never bought` means the simulated economy/profile mix did not naturally reach that card.
+
+This is still a mechanics runner. Use `npm run playtest:simulate` for API workflow pressure and browser QA for layout, animation, copy, and replay feel.

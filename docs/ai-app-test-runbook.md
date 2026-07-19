@@ -17,6 +17,7 @@ For replay or simulation changes, add:
 ```bash
 npm run test:e2e
 npm run balance:sim -- --runs 300 --limit 10 --json reports/balance/latest.json
+npm run playtest:ai -- --agents 50 --seasons 3 --rounds 6 --report reports/playtest/latest-ai.md --json reports/playtest/latest-ai.json
 ```
 
 For circuit route changes, add:
@@ -61,6 +62,12 @@ npm run smoke:league
 ```
 
 This creates a league, rejoins it, updates settings, joins another team, submits a plan, resolves a GP, verifies guarded errors, and advances to the next GP.
+
+For heavier API workflow pressure without browser checks:
+
+```bash
+npm run playtest:simulate -- --players 20 --rounds 3
+```
 
 ## Visual QA Checklist
 

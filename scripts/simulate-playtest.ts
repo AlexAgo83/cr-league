@@ -1,6 +1,15 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { PrismaClient } from "@prisma/client";
-import { CARD_DEFINITIONS, CARD_PRICE, RACE_APPROACHES, TECHNICAL_PREPARATIONS, type CardId, type RaceResult } from "../packages/shared/src/index.js";
+import {
+  CARD_DEFINITIONS,
+  CARD_PRICES,
+  type CardId,
+  type PitStrategy,
+  type RaceApproach,
+  type RaceDecision,
+  type RaceResult,
+  type TechnicalPreparation
+} from "../packages/shared/src/index.js";
 import {
   buyCard,
   createDemoLeague,
@@ -17,9 +26,19 @@ import {
 type Player = {
   index: number;
   name: string;
+  profile: AiProfile;
   teamId: string;
   claimCode: string;
   leagueId: string;
+};
+
+type AiProfile = {
+  name: string;
+  approach: RaceApproach;
+  preparation: TechnicalPreparation;
+  pitStrategy: PitStrategy;
+  buy: CardId[];
+  rival: "leader" | "nearest" | "none";
 };
 
 type LeagueRun = {
@@ -42,6 +61,14 @@ const prisma = new PrismaClient();
 const totalPlayers = numberArg("--players", 20);
 const rounds = numberArg("--rounds", 3);
 const maxPlayersPerLeague = 16;
+const aiProfiles: AiProfile[] = [
+  { name: "sprinter", approach: "aggressive", preparation: "speed", pitStrategy: "standard", buy: ["launch_boost", "soft_tires", "adjustable_wing"], rival: "leader" },
+  { name: "rain-reader", approach: "balanced", preparation: "weather", pitStrategy: "standard", buy: ["rain_grip", "rain_mapping", "fleet_maintenance"], rival: "nearest" },
+  { name: "banker", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["fleet_sponsorship", "economy_mode", "hard_tires"], rival: "none" },
+  { name: "closer", approach: "balanced", preparation: "speed", pitStrategy: "standard", buy: ["final_surge", "calculated_attack", "pit_relay"], rival: "leader" },
+  { name: "defender", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["defensive_order", "hard_tires", "pit_relay"], rival: "nearest" },
+  { name: "rival-hunter", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", buy: ["urban_draft", "calculated_attack", "qualifying_focus"], rival: "leader" }
+];
 const teamNames = [
   "Volt Union",
   "Late Apex",
@@ -102,7 +129,14 @@ async function createLeagueRun(leagueNumber: number, playerCount: number, firstP
   });
   if (!created?.player) throw new Error("League creation did not return an owner claim.");
 
-  const admin: Player = { index: firstPlayerIndex, name: owner.name, teamId: created.player.teamId, claimCode: created.player.claimCode, leagueId: created.league.id };
+  const admin: Player = {
+    index: firstPlayerIndex,
+    name: owner.name,
+    profile: profileFor(firstPlayerIndex),
+    teamId: created.player.teamId,
+    claimCode: created.player.claimCode,
+    leagueId: created.league.id
+  };
   await updateLeagueSettings(prisma, created.league.id, {
     teamId: admin.teamId,
     claimCode: admin.claimCode,
@@ -123,6 +157,7 @@ async function createLeagueRun(leagueNumber: number, playerCount: number, firstP
     players.push({
       index: firstPlayerIndex + offset,
       name: candidate.name,
+      profile: profileFor(firstPlayerIndex + offset),
       teamId: joined.player.teamId,
       claimCode: joined.player.claimCode,
       leagueId: joined.league.id
@@ -143,16 +178,14 @@ async function playLeague(run: LeagueRun) {
   for (let round = 1; round <= rounds; round += 1) {
     let cardsBought = 0;
     for (const player of run.players) {
-      const cardId = cardFor(run.state, player, round);
-      const body = {
+      const body = decisionFor(run.state, player, round);
+      const request = {
         teamId: player.teamId,
         claimCode: player.claimCode,
-        approach: RACE_APPROACHES[(player.index + round) % RACE_APPROACHES.length]!,
-        preparation: TECHNICAL_PREPARATIONS[(player.index + round * 2) % TECHNICAL_PREPARATIONS.length]!,
-        ...(cardId ? { cardId } : {})
+        ...body
       };
-      await submitQualifyingRun(prisma, run.state.league.id, { ...body, laps: 4 + ((player.index + round) % 3) });
-      await submitDecision(prisma, run.state.league.id, body);
+      await submitQualifyingRun(prisma, run.state.league.id, { ...request, laps: 4 + ((player.index + round) % 3) });
+      await submitDecision(prisma, run.state.league.id, request);
     }
 
     const resolved = await resolveCurrentGrandPrix(prisma, run.state.league.id, {
@@ -189,11 +222,12 @@ async function buyCards(run: LeagueRun, round: number) {
   let bought = 0;
   for (const player of run.players) {
     const team = run.state.teams.find((candidate) => candidate.id === player.teamId);
-    if (!team || team.credits < CARD_PRICE) continue;
+    const cardId = team ? nextBuyFor(team.cards, team.credits, player, round) : undefined;
+    if (!team || !cardId) continue;
     const state = await buyCard(prisma, run.state.league.id, {
       teamId: player.teamId,
       claimCode: player.claimCode,
-      cardId: cardIds[(player.index + round) % cardIds.length]!
+      cardId
     });
     if (state) run.state = state;
     bought += 1;
@@ -201,30 +235,70 @@ async function buyCards(run: LeagueRun, round: number) {
   return bought;
 }
 
-function cardFor(state: LeagueState, player: Player, round: number) {
+function decisionFor(state: LeagueState, player: Player, round: number): RaceDecision {
+  return {
+    approach: player.profile.approach,
+    preparation: player.profile.preparation,
+    pitStrategy: player.profile.pitStrategy,
+    cardId: cardFor(state, player, round),
+    rivalTeamId: rivalFor(state, player)
+  };
+}
+
+function cardFor(state: LeagueState, player: Player, round: number): CardId | undefined {
   const team = state.teams.find((candidate) => candidate.id === player.teamId);
   if (!team?.cards.length || (player.index + round) % 2 !== 0) return undefined;
-  return team.cards[0];
+  return player.profile.buy.find((cardId) => team.cards.includes(cardId)) ?? team.cards[0];
+}
+
+function nextBuyFor(ownedCards: CardId[], credits: number, player: Player, round: number) {
+  const affordable = (cardId: CardId) => CARD_PRICES[cardId] <= credits;
+  const affordableCards = cardIds.filter(affordable);
+  return (
+    player.profile.buy.find((cardId) => !ownedCards.includes(cardId) && affordable(cardId)) ??
+    player.profile.buy.find(affordable) ??
+    affordableCards[(player.index + round) % affordableCards.length]
+  );
+}
+
+function rivalFor(state: LeagueState, player: Player) {
+  if (player.profile.rival === "none") return undefined;
+  const ordered = [...state.teams].sort((left, right) => right.points - left.points || left.name.localeCompare(right.name));
+  if (player.profile.rival === "leader") return ordered.find((team) => team.id !== player.teamId)?.id;
+  const selfIndex = ordered.findIndex((team) => team.id === player.teamId);
+  return ordered[selfIndex - 1]?.id ?? ordered[selfIndex + 1]?.id;
+}
+
+function profileFor(index: number) {
+  return aiProfiles[index % aiProfiles.length]!;
 }
 
 async function writeReport(leagueRuns: LeagueRun[]) {
   const reportDate = new Date().toISOString().slice(0, 10);
-  const reportPath = `reports/playtest/${reportDate}-20-player-simulation.md`;
+  const reportPath = `reports/playtest/${reportDate}-${totalPlayers}-player-ai-multiplayer-simulation.md`;
+  const profileRows = profileSummaries(leagueRuns);
   await mkdir("reports/playtest", { recursive: true });
   await writeFile(
     reportPath,
     [
-      "# 20 Player Simulated Playtest",
+      "# AI Multiplayer Simulated Playtest",
       "",
       `- Date: ${new Date().toISOString()}`,
       `- Players simulated: ${totalPlayers}`,
       `- Leagues: ${leagueRuns.length}`,
       `- Grand Prix per league: ${rounds}`,
+      `- AI profiles: ${aiProfiles.map((profile) => profile.name).join(", ")}`,
       `- Browser coverage: not included; this is API workflow pressure only.`,
       "",
       "## Result",
-      "- PASS: all simulated players joined, qualified, submitted a plan, resolved races, bought cards when affordable, and advanced through the configured GP count.",
-      "- PASS: no backend rule error blocked the 20-player flow split across the product limit of 16 players per league.",
+      "- PASS: all simulated AI players joined, qualified, submitted a plan, resolved races, bought cards when affordable, and advanced through the configured GP count.",
+      `- PASS: no backend rule error blocked the ${totalPlayers}-player flow split across the product limit of 16 players per league.`,
+      "- PASS: AI plans covered approach, preparation, pit strategy, card usage, and rival targeting.",
+      "",
+      "## AI Profiles",
+      "| Profile | Starts | Wins | Podiums | Pts/race | Credits/race |",
+      "| --- | ---: | ---: | ---: | ---: | ---: |",
+      ...profileRows.map(([profile, stats]) => `| ${profile} | ${stats.starts} | ${stats.wins} | ${stats.podiums} | ${round(stats.points / Math.max(1, stats.starts))} | ${round(stats.credits / Math.max(1, stats.starts))} |`),
       "",
       "## League Runs",
       ...leagueRuns.flatMap((run) => [
@@ -256,4 +330,26 @@ function numberArg(name: string, fallback: number) {
   const index = process.argv.indexOf(name);
   const value = index >= 0 ? Number(process.argv[index + 1]) : fallback;
   return Number.isFinite(value) && value > 0 ? Math.floor(value) : fallback;
+}
+
+function profileSummaries(leagueRuns: LeagueRun[]) {
+  const stats = new Map(aiProfiles.map((profile) => [profile.name, { starts: 0, wins: 0, podiums: 0, points: 0, credits: 0 }]));
+  const players = new Map(leagueRuns.flatMap((run) => run.players.map((player) => [player.teamId, player])));
+  for (const result of leagueRuns.flatMap((run) => run.state.grandPrixHistory.map((grandPrix) => grandPrix.result as RaceResult | null).filter((result): result is RaceResult => Boolean(result)))) {
+    for (const entry of result.classification) {
+      const profile = players.get(entry.teamId)?.profile.name;
+      const row = profile ? stats.get(profile) : undefined;
+      if (!row) continue;
+      row.starts += 1;
+      row.wins += entry.position === 1 ? 1 : 0;
+      row.podiums += entry.position <= 3 ? 1 : 0;
+      row.points += entry.points;
+      row.credits += entry.credits;
+    }
+  }
+  return [...stats.entries()];
+}
+
+function round(value: number) {
+  return Number(value.toFixed(2));
 }

@@ -214,6 +214,8 @@ npm run test:e2e
 npm run lint
 npm run logics:validate
 npm run replay:validate -- race-result.json
+npm run generate:circuit -- --place "Montreal" --layoutKey circuit_montreal_island_loop
+npm run audit:circuits
 ```
 
 Seed a private playtest league:
@@ -231,6 +233,11 @@ npm run balance:sim -- --runs 300 --limit 10 --json reports/balance/latest.json
 ```
 
 See [docs/balance-simulations.md](docs/balance-simulations.md) for the metrics.
+
+Agent-oriented validation docs:
+
+- [AI app test runbook](docs/ai-app-test-runbook.md)
+- [Circuit generation](docs/circuit-generation.md)
 
 ## Render Configuration
 

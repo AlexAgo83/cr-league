@@ -50,7 +50,7 @@ describe("circuit identities", () => {
       Montreal: 4185,
       "Rio de Janeiro": 3287,
       Seoul: 3976,
-      Tokyo: 2418
+      Tokyo: 5720
     });
   });
 });

@@ -4,7 +4,6 @@ import {
   DEMO_RACE_INPUT,
   RACE_APPROACHES,
   TECHNICAL_PREPARATIONS,
-  clampTrait,
   circuitIdentityForRound,
   circuitSeasonSeed,
   raceInputFromCircuit,
@@ -12,257 +11,82 @@ import {
   type CardId,
   type QualifyingRun,
   type RaceDecision,
-  type RaceEvent,
   type RaceInput,
-  type RaceParticipant,
-  type RaceResult,
-  type RaceSegment,
-  type RaceTraits,
-  type TeamLivery,
-  type Weather
+  type RaceParticipant
 } from "@cr-league/shared";
-import { createHash, randomBytes } from "node:crypto";
-import type { Prisma, PrismaClient } from "@prisma/client";
+import { createHash } from "node:crypto";
+import {
+  BOT_TEAM_NAMES,
+  CARD_SHOP,
+  DEFAULT_GRAND_PRIX_PER_SEASON,
+  DEFAULT_MAX_PLAYERS,
+  DEFAULT_QUALIFYING_ATTEMPTS,
+  LEAGUE_NAME_LIMIT,
+  MAX_GRAND_PRIX_PER_SEASON,
+  MAX_PLAYERS_LIMIT,
+  MAX_QUALIFYING_ATTEMPTS,
+  STARTER_CARDS,
+  STARTING_CREDITS,
+  TEAM_NAME_LIMIT
+} from "./constants.js";
+import { LeagueRuleError } from "./errors.js";
+import { getCurrentGrandPrix, isUniqueConstraintError, lockGrandPrixRow, retryUnique, runWrite } from "./persistence.js";
+import { bestQualifyingRuns, createQualifyingRuns, qualifyingCardForTeam } from "./qualifying.js";
+import type {
+  AdminProofInput,
+  CreateLeagueInput,
+  CreateProfileInput,
+  Db,
+  JoinLeagueInput,
+  LeagueState,
+  ProfileSession,
+  RecoverProfileInput,
+  RejoinLeagueInput,
+  ResolveGrandPrixInput,
+  SubmitDecisionInput,
+  SubmitQualifyingInput,
+  UpdateLeagueSettingsInput,
+  UpdateTeamLiveryInput,
+  UpdateTeamNameInput
+} from "./types.js";
+import {
+  appendCard,
+  clampInteger,
+  createClaimCode,
+  createLeagueCode,
+  createRecoveryCode,
+  ensureProfileExists,
+  hashRecoveryCode,
+  isCardId,
+  isLeagueCadence,
+  liveryKey,
+  normalizeCards,
+  normalizeDisplayName,
+  normalizeEmail,
+  normalizeLivery,
+  normalizeQualifyingRuns,
+  normalizeRaceTraits,
+  profileSession,
+  randomLivery,
+  removeOneCard,
+  uniqueBotLivery
+} from "./utils.js";
 
-type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | "profile" | "$queryRaw"> & {
-  $transaction?: <T>(fn: (tx: Db) => Promise<T>) => Promise<T>;
-};
-
-const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
-const STARTING_CREDITS = 180;
-const STARTER_CARDS: CardId[] = [];
-const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICE }));
-const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
-const PRIMARY_LIVERY_COLORS = ["#0f172a", "#1e1b4b", "#312e81", "#3f1d2d", "#1f2937", "#064e3b", "#451a03", "#172554"] as const;
-const SECONDARY_LIVERY_COLORS = ["#f8fafc", "#fde68a", "#bfdbfe", "#bbf7d0", "#fecdd3", "#ddd6fe", "#fed7aa", "#ccfbf1"] as const;
-const MAX_PRIMARY_LIVERY_CHANNEL = 120;
-const MIN_SECONDARY_LIVERY_CHANNEL = 150;
-const BOT_TEAM_NAMES = [
-  "Apex Foundry",
-  "Blackline GP",
-  "Blue Harpoon",
-  "Brake Point",
-  "Carbon Yard",
-  "Circuit Nord",
-  "Coastal Apex",
-  "Copperline",
-  "Corsa Nova",
-  "Delta Forge",
-  "Drift Union",
-  "Eagle Run",
-  "Eastbound",
-  "Falcon Works",
-  "Fastlane",
-  "Ferro Racing",
-  "Grid Seven",
-  "Harbor Sprint",
-  "Helio Corse",
-  "Iron Pulse",
-  "Jetstream",
-  "Kerbside",
-  "Lane Eight",
-  "Lunar Apex",
-  "Metro Veloce",
-  "Midnight GP",
-  "Monarch Racing",
-  "Neon Sector",
-  "Northstar",
-  "Nova Lane",
-  "Omega Works",
-  "Orbit Corse",
-  "Pacific Line",
-  "Piston Club",
-  "Polecraft",
-  "Quantum GP",
-  "Rapid Vale",
-  "Redshift",
-  "Ridge Motors",
-  "Silverline",
-  "Skyline Works",
-  "Slipstream",
-  "South Gate",
-  "Steel Apex",
-  "Stormline",
-  "Summit Corse",
-  "Torque House",
-  "Union Brake",
-  "Vector Lane",
-  "Westline"
-] as const;
-const DEFAULT_MAX_PLAYERS = 8;
-const MAX_PLAYERS_LIMIT = 16;
-const DEFAULT_QUALIFYING_ATTEMPTS = 3;
-const MAX_QUALIFYING_ATTEMPTS = 5;
-const DEFAULT_GRAND_PRIX_PER_SEASON = 6;
-const MAX_GRAND_PRIX_PER_SEASON = 18;
-const TEAM_NAME_LIMIT = 32;
-const LEAGUE_NAME_LIMIT = 40;
-const QUALIFYING_REPLAY_SECONDS_PER_LAP = 10;
-
-export class LeagueRuleError extends Error {
-  statusCode: number;
-
-  constructor(message: string, statusCode = 409) {
-    super(message);
-    this.name = "LeagueRuleError";
-    this.statusCode = statusCode;
-  }
-}
-
-export type CreateLeagueInput = {
-  name?: string;
-  teamName?: string;
-  profileId?: string;
-  maxPlayers?: number;
-  fillWithBots?: boolean;
-  qualifyingAttemptLimit?: number;
-  maxGrandPrixPerSeason?: number;
-};
-
-export type JoinLeagueInput = {
-  code?: string;
-  teamName?: string;
-  profileId?: string;
-};
-
-export type RejoinLeagueInput = {
-  teamId?: string;
-  claimCode?: string;
-};
-
-export type UpdateLeagueSettingsInput = {
-  teamId?: string;
-  claimCode?: string;
-  cadence?: string;
-  preparationDeadlineAt?: string | null;
-};
-
-export type LeagueState = {
-  league: {
-    id: string;
-    name: string;
-    code: string;
-    status: string;
-    cadence: string;
-    maxPlayers: number;
-    fillWithBots: boolean;
-    qualifyingAttemptLimit: number;
-    maxGrandPrixPerSeason: number;
-    preparationDeadlineAt: string | null;
-  };
-  currentGrandPrix: {
-    id: string;
-    name: string;
-    season: number;
-    round: number;
-    status: string;
-    primaryTrait: RaceInput["primaryTrait"];
-    secondaryTrait: RaceInput["secondaryTrait"];
-    forecast: RaceInput["forecast"];
-    qualifyingRuns: QualifyingRun[];
-    result: unknown;
-  };
-  grandPrixHistory: Array<{
-    id: string;
-    name: string;
-    season: number;
-    round: number;
-    status: string;
-    result: unknown;
-  }>;
-  teams: Array<{
-    id: string;
-    name: string;
-    kind: string;
-    points: number;
-    credits: number;
-    cards: CardId[];
-    livery: TeamLivery;
-    ready: boolean;
-  }>;
-  cardShop: Array<{
-    cardId: CardId;
-    price: number;
-  }>;
-  actionState: {
-    submittedTeamIds: string[];
-    missingTeamIds: string[];
-    canResolve: boolean;
-    canStartNextGrandPrix: boolean;
-    nextAction: string;
-  };
-  player?: {
-    teamId: string;
-    claimCode: string;
-  };
-  decisions: Array<{
-    teamId: string;
-    approach: string;
-    preparation: string;
-    cardId: string | null;
-    rivalTeamId: string | null;
-  }>;
-};
-
-export type SubmitDecisionInput = RaceDecision & {
-  teamId: string;
-  claimCode?: string;
-};
-
-export type SubmitQualifyingInput = SubmitDecisionInput & {
-  traits?: unknown;
-  laps?: unknown;
-};
-
-export type ResolveGrandPrixInput = {
-  teamId?: string;
-  claimCode?: string;
-  allowDefaults?: boolean;
-  traits?: unknown;
-};
-
-export type UpdateTeamLiveryInput = {
-  teamId?: string;
-  claimCode?: string;
-  livery?: unknown;
-};
-
-export type UpdateTeamNameInput = {
-  teamId?: string;
-  claimCode?: string;
-  name?: string;
-};
-
-export type AdminProofInput = {
-  teamId?: string;
-  claimCode?: string;
-};
-
-export type CreateProfileInput = {
-  email?: string;
-};
-
-export type RecoverProfileInput = {
-  email?: string;
-  recoveryCode?: string;
-};
-
-export type ProfileSession = {
-  profile: {
-    id: string;
-    email: string;
-  };
-  admin?: boolean;
-  recoveryCode?: string;
-  teams: Array<{
-    leagueId: string;
-    leagueName: string;
-    leagueCode: string;
-    teamId: string;
-    teamName: string;
-    claimCode: string;
-  }>;
-};
+export { LeagueRuleError } from "./errors.js";
+export type {
+  AdminProofInput,
+  CreateLeagueInput,
+  CreateProfileInput,
+  LeagueState,
+  ProfileSession,
+  RecoverProfileInput,
+  ResolveGrandPrixInput,
+  SubmitDecisionInput,
+  SubmitQualifyingInput,
+  UpdateLeagueSettingsInput,
+  UpdateTeamLiveryInput,
+  UpdateTeamNameInput
+} from "./types.js";
 
 export async function createProfile(db: Db, input: CreateProfileInput = {}): Promise<ProfileSession> {
   const email = normalizeEmail(input.email);
@@ -1086,16 +910,6 @@ function randomCardId(seed: string): CardId {
   return cards[createHash("sha1").update(seed).digest()[0]! % cards.length]!;
 }
 
-function bestQualifyingRuns(runs: QualifyingRun[]) {
-  return [...runs]
-    .sort((left, right) => left.time - right.time)
-    .filter((run, index, sorted) => sorted.findIndex((candidate) => candidate.teamId === run.teamId) === index);
-}
-
-function qualifyingCardForTeam(runs: QualifyingRun[], teamId: string) {
-  return runs.find((run) => run.teamId === teamId && run.decision?.cardId === "qualifying_focus")?.decision?.cardId;
-}
-
 async function fillLeagueWithBots(db: Db, state: LeagueState) {
   const missing = Math.max(0, state.league.maxPlayers - state.teams.length);
   if (!missing) return;
@@ -1137,117 +951,6 @@ async function fillLeagueWithBots(db: Db, state: LeagueState) {
   }
 }
 
-function createQualifyingRuns(input: {
-  seed: string;
-  teamId: string;
-  teamName: string;
-  decision: RaceDecision;
-  primaryTrait: RaceInput["primaryTrait"];
-  secondaryTrait: RaceInput["secondaryTrait"];
-  traits?: RaceTraits;
-  forecast: RaceInput["forecast"];
-  laps: number;
-}): QualifyingRun[] {
-  const weather = strongestForecast(input.forecast);
-  const traits = input.traits ?? { grip: 62, overtaking: 62, energy: 62 };
-  const traitBonus = (traits.grip + traits.overtaking + traits.energy - 180) / 18;
-  const weatherPenalty = weather === "heavy_rain" ? 2.8 : weather === "light_rain" ? 1.2 : 0;
-  const approachDelta = input.decision.approach === "aggressive" ? -1.1 : input.decision.approach === "prudent" ? 0.7 : 0;
-  const prepDelta =
-    input.decision.preparation === "speed"
-      ? -1.2
-      : input.decision.preparation === "weather" && weather !== "dry"
-        ? -1.4
-        : input.decision.preparation === "reliability"
-          ? 0.4
-          : 0;
-  const cardDelta =
-    input.decision.cardId === "qualifying_focus"
-      ? -0.3
-      : input.decision.cardId === "launch_boost"
-        ? -0.6
-        : input.decision.cardId === "rain_grip" && weather !== "dry"
-          ? -0.7
-          : 0;
-  const lapTimes = Array.from({ length: input.laps }, (_, index) => {
-    const warmupPenalty = index === 0 && input.laps > 1 ? 1.1 : 0;
-    const tyreDelta = index > 1 ? (index - 1) * 0.16 : 0;
-    const variance = (Math.random() - 0.5) * 2.4;
-    return Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + warmupPenalty + tyreDelta + variance).toFixed(2));
-  });
-  const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, weather);
-  const createdAt = new Date().toISOString();
-
-  return lapTimes.map((time, index) => ({
-    teamId: input.teamId,
-    time,
-    lap: index + 1,
-    attempts: 1,
-    decision: input.decision,
-    result,
-    createdAt
-  }));
-}
-
-function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, lapTimes: number[], weather: Weather): RaceResult {
-  const segments: RaceSegment[] = ["start", "early", "mid", "late", "finish"];
-  const bestTime = Math.min(...lapTimes);
-  const visualTime = lapTimes.length * QUALIFYING_REPLAY_SECONDS_PER_LAP;
-  const events: RaceEvent[] = lapTimes.map((time, index) => ({
-    id: `qualifying_lap_${index + 1}`,
-    order: index,
-    segment: segments[Math.min(segments.length - 1, Math.floor((index / lapTimes.length) * segments.length))] ?? "finish",
-    lap: index + 1,
-    type: "finish",
-    teamId,
-    severity: "minor",
-    positionDelta: 0,
-    tags: ["qualifying"],
-    replayText: `${teamName} boucle le tour ${index + 1} en ${time.toFixed(2)}s`,
-    reportText: `${teamName} signe ${time.toFixed(2)}s au tour ${index + 1}.`
-  }));
-
-  return {
-    grandPrixName: "Chrono",
-    seed,
-    resolvedWeather: Object.fromEntries(segments.map((segment) => [segment, weather])) as Record<RaceSegment, Weather>,
-    classification: [
-      {
-        position: 1,
-        teamId,
-        teamName,
-        points: 0,
-        credits: 0,
-        score: Number((300 - bestTime).toFixed(2)),
-        positionChange: 0,
-        status: "finished",
-        resultTags: [decision.approach, decision.preparation]
-      }
-    ],
-    events,
-    replayTrace: Array.from({ length: lapTimes.length * 4 + 1 }, (_, index) => {
-      const progress = index / (lapTimes.length * 4);
-      return {
-        segment: segments[Math.min(segments.length - 1, Math.floor(progress * segments.length))] ?? "start",
-        lap: Math.min(lapTimes.length, Math.floor(index / 4) + 1),
-        progress,
-        order: [teamId],
-        times: { [teamId]: Number((visualTime * progress).toFixed(1)) },
-        gaps: { [teamId]: 0 }
-      };
-    }),
-    consumedCards: [],
-    report: {
-      headline: `${teamName} ${bestTime.toFixed(2)}s`,
-      blocks: []
-    }
-  };
-}
-
-function strongestForecast(forecast: RaceInput["forecast"]): Weather {
-  return (Object.entries(forecast).sort((left, right) => right[1] - left[1])[0]?.[0] ?? "dry") as Weather;
-}
-
 function buildActionState(teamIds: string[], grandPrixStatus: string, submittedTeamIds: string[], deadline: Date | null) {
   const submitted = new Set(submittedTeamIds);
   const missingTeamIds = grandPrixStatus === "resolved" ? [] : teamIds.filter((teamId) => !submitted.has(teamId));
@@ -1272,195 +975,4 @@ function withPlayer(state: LeagueState, teamId: string, claimCode: string): Leag
       claimCode
     }
   };
-}
-
-function runWrite<T>(db: Db, fn: (tx: Db) => Promise<T>) {
-  return db.$transaction ? db.$transaction(fn) : fn(db);
-}
-
-async function lockGrandPrixRow(db: Db, grandPrixId: string) {
-  if (!db.$queryRaw) return;
-  await db.$queryRaw`SELECT id FROM "grand_prixes" WHERE id = ${grandPrixId} FOR UPDATE`;
-}
-
-async function retryUnique<T>(fn: () => Promise<T>) {
-  for (let attempt = 0; attempt < 5; attempt += 1) {
-    try {
-      return await fn();
-    } catch (error) {
-      if (!isUniqueConstraintError(error) || attempt === 4) throw error;
-    }
-  }
-  throw new LeagueRuleError("Could not allocate a unique code. Try again.");
-}
-
-function isUniqueConstraintError(error: unknown) {
-  return Boolean(error && typeof error === "object" && "code" in error && error.code === "P2002");
-}
-
-async function getCurrentGrandPrix(db: Db, leagueId: string) {
-  return db.grandPrix.findFirst({
-    where: { leagueId },
-    orderBy: [{ season: "desc" }, { round: "desc" }]
-  });
-}
-
-function normalizeRaceTraits(value: unknown): RaceTraits | undefined {
-  if (!value || typeof value !== "object") return undefined;
-  const traits = value as Partial<Record<keyof RaceTraits, unknown>>;
-  const { grip, overtaking, energy } = traits;
-  if (typeof grip !== "number" || typeof overtaking !== "number" || typeof energy !== "number") return undefined;
-  if (!Number.isFinite(grip) || !Number.isFinite(overtaking) || !Number.isFinite(energy)) return undefined;
-  return {
-    grip: clampTrait(grip),
-    overtaking: clampTrait(overtaking),
-    energy: clampTrait(energy)
-  };
-}
-
-function clampInteger(value: unknown, fallback: number, min: number, max: number) {
-  return typeof value === "number" && Number.isFinite(value) ? Math.max(min, Math.min(max, Math.round(value))) : fallback;
-}
-
-function createLeagueCode() {
-  return randomBytes(4).toString("hex").slice(0, 6).toUpperCase();
-}
-
-function createClaimCode() {
-  return randomBytes(5).toString("hex").toUpperCase();
-}
-
-function createRecoveryCode() {
-  return randomBytes(4).toString("hex").toUpperCase();
-}
-
-function hashRecoveryCode(code: string) {
-  return createHash("sha256").update(code.trim().toUpperCase()).digest("hex");
-}
-
-function normalizeEmail(value: unknown) {
-  if (typeof value !== "string") return "";
-  const email = value.trim().toLowerCase();
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : "";
-}
-
-function normalizeDisplayName(value: unknown, maxLength: number) {
-  if (typeof value !== "string") return "";
-  const name = value.trim().replace(/\s+/g, " ");
-  if (name.length < 3 || name.length > maxLength) return "";
-  return /^[\p{L}\p{N}' -]+$/u.test(name) ? name : "";
-}
-
-async function ensureProfileExists(db: Db, profileId: string | undefined) {
-  if (!profileId) return;
-  const profile = await db.profile.findUnique({ where: { id: profileId } });
-  if (!profile) throw new LeagueRuleError("Profile not found.");
-}
-
-async function profileSession(db: Db, profileId: string): Promise<ProfileSession | null> {
-  const profile = await db.profile.findUnique({
-    where: { id: profileId },
-    include: {
-      teams: {
-        include: { league: true },
-        orderBy: { updatedAt: "desc" }
-      }
-    }
-  });
-  if (!profile) return null;
-
-  return {
-    profile: {
-      id: profile.id,
-      email: profile.email
-    },
-    teams: profile.teams.map((team) => ({
-      leagueId: team.leagueId,
-      leagueName: team.league.name,
-      leagueCode: team.league.code,
-      teamId: team.id,
-      teamName: team.name,
-      claimCode: team.claimCode ?? ""
-    }))
-  };
-}
-
-function isLeagueCadence(value: string): value is (typeof LEAGUE_CADENCES)[number] {
-  return LEAGUE_CADENCES.includes(value as (typeof LEAGUE_CADENCES)[number]);
-}
-
-function isCardId(value: string): value is CardId {
-  return value in CARD_DEFINITIONS;
-}
-
-function normalizeCards(value: Prisma.JsonValue): CardId[] {
-  return Array.isArray(value) ? value.filter((cardId): cardId is CardId => typeof cardId === "string" && isCardId(cardId)) : [];
-}
-
-function normalizeQualifyingRuns(value: unknown): QualifyingRun[] {
-  return Array.isArray(value)
-    ? value.flatMap((run) =>
-          Boolean(run) &&
-          typeof run === "object" &&
-          typeof (run as QualifyingRun).teamId === "string" &&
-          typeof (run as QualifyingRun).time === "number" &&
-          Boolean((run as QualifyingRun).result)
-            ? [{ ...(run as QualifyingRun), attempts: Math.max(1, Math.round((run as QualifyingRun).attempts ?? 1)) }]
-            : []
-      )
-    : [];
-}
-
-function normalizeLivery(value: unknown): TeamLivery {
-  if (!value || typeof value !== "object") return DEFAULT_LIVERY;
-  const livery = value as Partial<Record<keyof TeamLivery, unknown>>;
-  return {
-    primary: typeof livery.primary === "string" && isHexColor(livery.primary) ? darkenPrimaryLiveryColor(livery.primary) : DEFAULT_LIVERY.primary,
-    secondary: typeof livery.secondary === "string" && isHexColor(livery.secondary) ? lightenSecondaryLiveryColor(livery.secondary) : DEFAULT_LIVERY.secondary
-  };
-}
-
-function darkenPrimaryLiveryColor(color: string) {
-  return `#${[1, 3, 5].map((index) => Math.min(Number.parseInt(color.slice(index, index + 2), 16), MAX_PRIMARY_LIVERY_CHANNEL).toString(16).padStart(2, "0")).join("")}`;
-}
-
-function lightenSecondaryLiveryColor(color: string) {
-  return `#${[1, 3, 5].map((index) => Math.max(Number.parseInt(color.slice(index, index + 2), 16), MIN_SECONDARY_LIVERY_CHANNEL).toString(16).padStart(2, "0")).join("")}`;
-}
-
-function randomLivery(): TeamLivery {
-  const primary = PRIMARY_LIVERY_COLORS[Math.floor(Math.random() * PRIMARY_LIVERY_COLORS.length)] ?? DEFAULT_LIVERY.primary;
-  const secondary = SECONDARY_LIVERY_COLORS[Math.floor(Math.random() * SECONDARY_LIVERY_COLORS.length)] ?? DEFAULT_LIVERY.secondary;
-  return { primary, secondary };
-}
-
-function uniqueBotLivery(startIndex: number, used: Set<string>): TeamLivery {
-  const pairs = PRIMARY_LIVERY_COLORS.flatMap((primary) => SECONDARY_LIVERY_COLORS.map((secondary) => ({ primary, secondary })));
-  for (let offset = 0; offset < pairs.length; offset += 1) {
-    const livery = pairs[(startIndex + offset) % pairs.length];
-    if (livery && !used.has(liveryKey(livery))) {
-      used.add(liveryKey(livery));
-      return livery;
-    }
-  }
-  return randomLivery();
-}
-
-function liveryKey(livery: TeamLivery) {
-  return `${livery.primary}:${livery.secondary}`.toLowerCase();
-}
-
-function isHexColor(value: string) {
-  return /^#[0-9a-f]{6}$/i.test(value);
-}
-
-function appendCard(cards: CardId[], cardId: CardId): Prisma.InputJsonValue {
-  return [...cards, cardId];
-}
-
-function removeOneCard(cards: CardId[], cardId: CardId): Prisma.InputJsonValue {
-  const nextCards = [...cards];
-  const index = nextCards.indexOf(cardId);
-  if (index >= 0) nextCards.splice(index, 1);
-  return nextCards;
 }

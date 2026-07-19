@@ -6173,6 +6173,11 @@ button.highlight-command:not(:disabled) {
   position: absolute;
 }
 
+.plan-view .directive-choice-group .choice-card > .directive-choice-art {
+  position: absolute;
+  z-index: 0;
+}
+
 .directive-choice-art > img {
   object-fit: contain;
 }

@@ -1428,7 +1428,7 @@ export function App() {
                     traitImpacts={directiveTraitImpacts}
                     towerEntries={qualifyingReplayEntries}
                     towerReplacement={
-                      <div className="map-qualifying-times">
+                      <div className="map-qualifying-times replay-qualifying-times">
                         <header>
                           <strong>
                             {tt("qualifying_times_title")} <span>{qualifyingAttemptsUsed}/{qualifyingAttemptLimit}</span>

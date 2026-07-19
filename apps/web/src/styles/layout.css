@@ -575,8 +575,9 @@
 .race-payoff-recap {
   align-items: center;
   display: grid;
-  gap: 14px;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.8fr);
+  gap: 18px;
+  grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr);
+  padding-block: 16px;
 }
 
 .race-payoff-recap h2 {
@@ -586,7 +587,7 @@
 .race-payoff-recap dl {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(128px, 1fr));
   margin: 0;
 }
 
@@ -594,7 +595,8 @@
   background: rgb(255 255 255 / 0.06);
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 8px;
-  padding: 10px;
+  min-width: 0;
+  padding: 9px 10px;
 }
 
 .race-payoff-recap dt {
@@ -605,7 +607,7 @@
 }
 
 .race-payoff-recap dd {
-  font-size: 1.05rem;
+  font-size: 1rem;
   font-weight: 900;
   margin: 2px 0 0;
 }

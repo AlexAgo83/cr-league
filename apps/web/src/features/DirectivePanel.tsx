@@ -191,7 +191,7 @@ export function DirectivePanel({
         <fieldset className="choice-group directive-choice-group directive-choice-preparation" aria-label={tt("field_preparation")}>
           <div className="choice-grid directive-choice-grid">
             {PREPARATIONS.map((preparation) => (
-              <button key={preparation} type="button" className={form.preparation === preparation ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_preparation")}: ${tt(`preparation_${preparation}` as TranslationKey)}`} aria-pressed={form.preparation === preparation} onClick={() => setForm({ ...form, preparation })} disabled={disabled}>
+              <button key={preparation} type="button" className={`${form.preparation === preparation ? "choice-card selected" : "choice-card"} preparation-${preparation}`} aria-label={`${tt("field_preparation")}: ${tt(`preparation_${preparation}` as TranslationKey)}`} aria-pressed={form.preparation === preparation} onClick={() => setForm({ ...form, preparation })} disabled={disabled}>
                 <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
                 <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={PREPARATION_BADGES[preparation]} tt={tt} />

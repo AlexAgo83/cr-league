@@ -6143,6 +6143,37 @@ button.highlight-command:not(:disabled) {
   --approach-cell-bg: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
 }
 
+.plan-view .directive-choice-preparation .choice-card {
+  --preparation-cell-bg: rgb(236 231 218 / 0.98);
+  --preparation-image: none;
+  min-height: 128px;
+  padding-right: min(52%, 200px);
+}
+
+.plan-view .directive-choice-preparation .choice-card.preparation-speed {
+  --preparation-image: url("/assets/crl/preparation-speed.png");
+}
+
+.plan-view .directive-choice-preparation .choice-card.preparation-reliability {
+  --preparation-image: url("/assets/crl/preparation-reliability.png");
+}
+
+.plan-view .directive-choice-preparation .choice-card.preparation-weather {
+  --preparation-image: url("/assets/crl/preparation-weather.png");
+}
+
+.plan-view .directive-choice-preparation .choice-card,
+.plan-view .directive-choice-preparation .choice-card.selected {
+  background:
+    linear-gradient(90deg, var(--preparation-cell-bg) 0 48%, rgb(236 231 218 / 0.86) 62%, transparent 78%),
+    var(--preparation-image) right center / auto 142% no-repeat,
+    var(--preparation-cell-bg);
+}
+
+.plan-view .directive-choice-preparation .choice-card.selected {
+  --preparation-cell-bg: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
+}
+
 .plan-view .directive-choice-pit .choice-card,
 .plan-view .directive-choice-pit .choice-card.selected {
   background:

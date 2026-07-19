@@ -5720,6 +5720,10 @@ button.highlight-command:not(:disabled) {
     padding: 7px 8px;
   }
 
+  .map-screen .replay-map-panel .replay-director-panel {
+    display: none;
+  }
+
   .replay-info-stack {
     align-items: flex-end;
     bottom: 64px;

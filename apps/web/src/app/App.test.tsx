@@ -1355,6 +1355,19 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
   });
 
+  it("refreshes admin eligibility for an older saved profile session", async () => {
+    saveProfile({ admin: undefined });
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ admin: true }));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    expect(screen.queryByRole("button", { name: "Admin" })).toBe(null);
+
+    expect(await screen.findByRole("button", { name: "Admin" })).toBeTruthy();
+    expect(JSON.parse(localStorage.getItem("cr-league-profile-session") ?? "{}").admin).toBe(true);
+  });
+
   it("opens the admin console from the profile menu and performs primary admin actions", async () => {
     saveProfile({ admin: true });
     const users = {
@@ -1512,6 +1525,7 @@ function saveProfile(overrides: Partial<{ admin: boolean; recoveryCode: string |
     "cr-league-profile-session",
     JSON.stringify({
       profile: { id: "profile_1", email: "pilot@example.test" },
+      admin: false,
       recoveryCode: "ABCD1234",
       ...overrides,
       teams: []

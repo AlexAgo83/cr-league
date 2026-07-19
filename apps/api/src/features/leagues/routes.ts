@@ -54,6 +54,11 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
+  app.get<{ Params: { profileId: string } }>("/profiles/:profileId/admin-status", async (request) => {
+    const profile = await db.profile.findUnique({ where: { id: request.params.profileId } });
+    return { admin: Boolean(profile && isAdminEmail(profile.email, config)) };
+  });
+
   app.post("/leagues", async (request, reply) => {
     try {
       return await createDemoLeague(db, request.body ?? {});
@@ -276,8 +281,12 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
 function withAdminFlag<T extends { profile: { email: string } }>(session: T, config?: Pick<ApiConfig, "adminEmails">) {
   return {
     ...session,
-    admin: Boolean(config?.adminEmails.includes(session.profile.email.toLowerCase()))
+    admin: isAdminEmail(session.profile.email, config)
   };
+}
+
+function isAdminEmail(email: string, config?: Pick<ApiConfig, "adminEmails">) {
+  return Boolean(config?.adminEmails.includes(email.toLowerCase()));
 }
 
 function sendLeagueRuleError(reply: FastifyReply, error: LeagueRuleError) {

@@ -451,6 +451,11 @@ export function App() {
     );
   }, []);
 
+  useEffect(() => {
+    if (!profileSession || profileSession.admin !== undefined) return;
+    void refreshProfileAdminStatus(profileSession);
+  }, [profileSession]);
+
   const playerTeam = useMemo(
     () =>
       leagueState?.teams.find((team) => team.id === leagueState.player?.teamId) ??
@@ -898,6 +903,19 @@ export function App() {
       },
       claim.teamId
     );
+  }
+
+  async function refreshProfileAdminStatus(session: ProfileSession) {
+    try {
+      const response = await api<{ admin: boolean }>(`/profiles/${session.profile.id}/admin-status`, { method: "GET" });
+      const nextSession = { ...session, admin: response.admin };
+      storeProfileSession(nextSession);
+      setProfileSession(nextSession);
+    } catch {
+      const nextSession = { ...session, admin: false };
+      storeProfileSession(nextSession);
+      setProfileSession(nextSession);
+    }
   }
 
   async function openAdminConsole() {

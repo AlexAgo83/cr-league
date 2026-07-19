@@ -412,6 +412,20 @@ describe("api app", () => {
     expect(okResponse.statusCode).toBe(200);
   });
 
+  it("reports admin eligibility for a saved profile session refresh", async () => {
+    const app = await createTestApp(createMemoryDb(), undefined, ["pilot@example.test"]);
+    const adminProfile = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const regularProfile = await app.inject({ method: "POST", url: "/profiles", payload: { email: "driver@example.test" } });
+
+    const adminStatus = await app.inject({ method: "GET", url: `/profiles/${adminProfile.json().profile.id}/admin-status` });
+    const regularStatus = await app.inject({ method: "GET", url: `/profiles/${regularProfile.json().profile.id}/admin-status` });
+
+    await app.close();
+
+    expect(adminStatus.json()).toEqual({ admin: true });
+    expect(regularStatus.json()).toEqual({ admin: false });
+  });
+
   it("lists admin users, resets recovery codes, and deletes profiles without deleting teams", async () => {
     const db = createMemoryDb();
     const app = await createTestApp(db, "secret-admin-token");

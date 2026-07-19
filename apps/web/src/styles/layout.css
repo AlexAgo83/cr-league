@@ -5927,7 +5927,6 @@ button.highlight-command:not(:disabled) {
 .report-close-button,
 .map-qualifying-times header button,
 .map-qualifying-toggle,
-.garage-card-toggle button,
 .round-history-button {
   clip-path: none;
 }

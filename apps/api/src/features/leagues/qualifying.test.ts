@@ -14,13 +14,12 @@ describe("createQualifyingRuns", () => {
       primaryTrait: "technical",
       secondaryTrait: "fast",
       forecast: { dry: 100, light_rain: 0, heavy_rain: 0 },
-      laps: 3,
-      raceLaps: 7
+      laps: 3
     });
 
     vi.restoreAllMocks();
 
     const finalTime = run!.result.replayTrace!.at(-1)!.times.team;
-    expect(finalTime).toBeCloseTo(RACE_REPLAY_BASE_SECONDS / 7, 0);
+    expect(finalTime).toBeCloseTo(RACE_REPLAY_BASE_SECONDS, 0);
   });
 });

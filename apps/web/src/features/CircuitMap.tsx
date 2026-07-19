@@ -280,14 +280,14 @@ function routePath(points: Array<{ x: number; y: number }>) {
   return points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
 }
 
-function fitRoutePoints(points: RoutePoint[]) {
+export function routeFitTransform(points: RoutePoint[]) {
   const bounds = boundsOf(points);
   const width = bounds.maxX - bounds.minX || 1;
   const height = bounds.maxY - bounds.minY || 1;
   const scale = Math.min((VIEW_WIDTH - ROUTE_FIT_PADDING * 2) / width, (VIEW_HEIGHT - ROUTE_FIT_PADDING * 2) / height);
   const x = VIEW_WIDTH / 2 - ((bounds.minX + bounds.maxX) / 2) * scale;
   const y = VIEW_HEIGHT / 2 - ((bounds.minY + bounds.maxY) / 2) * scale;
-  return points.map((point) => ({ x: point.x * scale + x, y: point.y * scale + y }));
+  return { x, y, scale, value: `translate(${x} ${y}) scale(${scale})` };
 }
 
 export function CircuitMap({
@@ -330,8 +330,10 @@ export function CircuitMap({
   const focusEnabled = Boolean(camera?.enabled && camera.car);
   const markerScale = focusEnabled ? 1 / FOCUS_ZOOM : 1;
   const hasCars = cars.length > 0;
-  const renderPoints = focusEnabled ? points : fitRoutePoints(points);
-  const renderD = focusEnabled ? d : routePath(renderPoints);
+  const mapFit = focusEnabled ? null : routeFitTransform(points);
+  const mapTransform = mapFit?.value;
+  const renderPoints = points;
+  const renderD = d;
   const routeAnalysis = analyzeCircuitRoute(renderPoints);
   const stageProgress = (progress: number) => progressFromStart(progress, routeAnalysis.startProgress);
   const displayWeather = weather ?? circuit.likelyWeather;
@@ -399,74 +401,76 @@ export function CircuitMap({
       <div className="circuit-map-stage">
         <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           <g ref={cameraRef} className="circuit-camera">
-            {tiles.map((tile) => (
-              <g key={`${tile.x}-${tile.y}`} className="circuit-map-tile-layer">
-                <rect className="circuit-map-tile-placeholder" x={tile.left} y={tile.top} width={TILE_SIZE} height={TILE_SIZE} />
-                <image
-                  className="circuit-map-tile"
-                  href={`https://basemaps.cartocdn.com/dark_nolabels/${zoom}/${tile.x}/${tile.y}.png`}
-                  x={tile.left}
-                  y={tile.top}
-                  width={TILE_SIZE}
-                  height={TILE_SIZE}
-                />
-              </g>
-            ))}
-            <g className="circuit-route-layer">
-              <path ref={routeRef} className={hasCars ? "circuit-route-glow replay-muted-glow" : "circuit-route-glow"} d={renderD} />
-              <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={renderD} />
-              <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={renderD} />
-              <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={renderD} />
-              <g className="circuit-pit-stop" transform={`translate(${routeAnalysis.pitStop.x} ${routeAnalysis.pitStop.y})`}>
-                <circle r="9" />
-                <text textAnchor="middle" dominantBaseline="central">
-                  P
-                </text>
-              </g>
-              {hasCars ? (
-                <line className="circuit-start-line" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
-              ) : (
-                <line className="circuit-start-line circuit-start-preview" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
-              )}
-              {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
-              {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
-                const pose = car.progress === undefined ? null : poseOnRoute(renderPoints, stageProgress(car.progress));
-                const drift = car.progress === undefined ? 0 : driftAngle(renderPoints, stageProgress(car.progress));
-                const sprite = spriteForCar(car);
-                const carStyle = car.livery
-                  ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
-                  : undefined;
-                return (
-                  <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
-                    <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                      <MapCarSprite sprite={sprite} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift + 90})` : "rotate(90)"} />
-                      <text textAnchor="middle" dominantBaseline="central">
-                        {car.label}
-                      </text>
-                      {car.positionDelta ? (
-                        <text
-                          key={`${car.id}-${car.positionDeltaKey}`}
-                          className={car.positionDelta > 0 ? "map-car-delta gain" : "map-car-delta loss"}
-                          x="24"
-                          y="-16"
-                          textAnchor="middle"
-                          dominantBaseline="central"
-                        >
-                          {car.positionDelta > 0 ? `+${car.positionDelta}` : car.positionDelta}
+            <g className="circuit-map-content" transform={mapTransform}>
+              {tiles.map((tile) => (
+                <g key={`${tile.x}-${tile.y}`} className="circuit-map-tile-layer">
+                  <rect className="circuit-map-tile-placeholder" x={tile.left} y={tile.top} width={TILE_SIZE} height={TILE_SIZE} />
+                  <image
+                    className="circuit-map-tile"
+                    href={`https://basemaps.cartocdn.com/dark_nolabels/${zoom}/${tile.x}/${tile.y}.png`}
+                    x={tile.left}
+                    y={tile.top}
+                    width={TILE_SIZE}
+                    height={TILE_SIZE}
+                  />
+                </g>
+              ))}
+              <g className="circuit-route-layer">
+                <path ref={routeRef} className={hasCars ? "circuit-route-glow replay-muted-glow" : "circuit-route-glow"} d={renderD} />
+                <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={renderD} />
+                <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={renderD} />
+                <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={renderD} />
+                <g className="circuit-pit-stop" transform={`translate(${routeAnalysis.pitStop.x} ${routeAnalysis.pitStop.y})`}>
+                  <circle r="9" />
+                  <text textAnchor="middle" dominantBaseline="central">
+                    P
+                  </text>
+                </g>
+                {hasCars ? (
+                  <line className="circuit-start-line" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
+                ) : (
+                  <line className="circuit-start-line circuit-start-preview" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
+                )}
+                {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
+                {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
+                  const pose = car.progress === undefined ? null : poseOnRoute(renderPoints, stageProgress(car.progress));
+                  const drift = car.progress === undefined ? 0 : driftAngle(renderPoints, stageProgress(car.progress));
+                  const sprite = spriteForCar(car);
+                  const carStyle = car.livery
+                    ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
+                    : undefined;
+                  return (
+                    <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
+                      <g className="map-car-marker" transform={`scale(${markerScale})`}>
+                        <MapCarSprite sprite={sprite} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift + 90})` : "rotate(90)"} />
+                        <text textAnchor="middle" dominantBaseline="central">
+                          {car.label}
                         </text>
-                      ) : null}
-                      {car.eventLabel ? (
-                        <text className="map-car-event" x="0" y="-34" textAnchor="middle">
-                          {car.eventLabel}
-                        </text>
+                        {car.positionDelta ? (
+                          <text
+                            key={`${car.id}-${car.positionDeltaKey}`}
+                            className={car.positionDelta > 0 ? "map-car-delta gain" : "map-car-delta loss"}
+                            x="24"
+                            y="-16"
+                            textAnchor="middle"
+                            dominantBaseline="central"
+                          >
+                            {car.positionDelta > 0 ? `+${car.positionDelta}` : car.positionDelta}
+                          </text>
+                        ) : null}
+                        {car.eventLabel ? (
+                          <text className="map-car-event" x="0" y="-34" textAnchor="middle">
+                            {car.eventLabel}
+                          </text>
+                        ) : null}
+                      </g>
+                      {car.progress === undefined ? (
+                        <animateMotion path={renderD} dur={`${car.duration}s`} begin={`${car.delay}s`} keyPoints={`${routeAnalysis.startProgress};1;${routeAnalysis.startProgress}`} keyTimes={`0;${1 - routeAnalysis.startProgress};1`} calcMode="linear" repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
                       ) : null}
                     </g>
-                    {car.progress === undefined ? (
-                      <animateMotion path={renderD} dur={`${car.duration}s`} begin={`${car.delay}s`} keyPoints={`${routeAnalysis.startProgress};1;${routeAnalysis.startProgress}`} keyTimes={`0;${1 - routeAnalysis.startProgress};1`} calcMode="linear" repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
-                    ) : null}
-                  </g>
-                );
-              })}
+                  );
+                })}
+              </g>
             </g>
           </g>
         </svg>

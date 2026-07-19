@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CITY_CIRCUITS } from "../app/circuits.js";
-import { analyzeCircuitRoute, angleDelta, circuitRouteAnalysis, driftAngle, poseOnRoute } from "./CircuitMap.js";
+import { analyzeCircuitRoute, angleDelta, circuitRouteAnalysis, driftAngle, poseOnRoute, routeFitTransform } from "./CircuitMap.js";
 
 describe("CircuitMap route posing", () => {
   it("smooths heading through sharp route corners", () => {
@@ -46,5 +46,26 @@ describe("CircuitMap route posing", () => {
       expect(values.every(Number.isFinite), circuit.layoutKey).toBe(true);
       expect(analysis.longestStraight.length, circuit.layoutKey).toBeGreaterThan(20);
     }
+  });
+
+  it("fits the whole route layer inside the static map viewport", () => {
+    const route = [
+      { x: 100, y: 50 },
+      { x: 900, y: 50 },
+      { x: 900, y: 450 },
+      { x: 100, y: 450 },
+      { x: 100, y: 50 }
+    ];
+    const fit = routeFitTransform(route);
+    const transformed = route.map((point) => ({
+      x: point.x * fit.scale + fit.x,
+      y: point.y * fit.scale + fit.y
+    }));
+
+    expect(Math.min(...transformed.map((point) => point.x))).toBeGreaterThanOrEqual(58);
+    expect(Math.max(...transformed.map((point) => point.x))).toBeLessThanOrEqual(942);
+    expect(Math.min(...transformed.map((point) => point.y))).toBeGreaterThanOrEqual(58);
+    expect(Math.max(...transformed.map((point) => point.y))).toBeLessThanOrEqual(502);
+    expect(fit.value).toContain("scale(");
   });
 });

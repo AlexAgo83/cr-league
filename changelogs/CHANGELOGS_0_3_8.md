@@ -12,7 +12,7 @@ Covers work started after `0.3.7`.
 - Moved the chrono report into its own Plan sub-screen so it does not crowd the main plan tuning view.
 - Added weather ambience on circuit maps and replay maps.
 - Added live event labels next to the affected car during replay moments.
-- Added URL-backed navigation for the main cockpit screens and persistent sub-screens.
+- Added URL-backed navigation for the main cockpit screens, Plan directive tabs, Garage tabs, and persistent sub-screens.
 - Started new human teams with credits and no starter card, so the first card becomes an intentional garage choice.
 - Reframed the three preparation choices as tire prep in the race plan UI.
 - Kept the mobile replay map full-screen by hiding the payoff recap during the focused replay view.

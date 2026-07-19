@@ -583,8 +583,10 @@ describe("App", () => {
     await screen.findByRole("button", { name: "Garage" });
 
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    expect(window.location.pathname).toBe("/garage/inventory");
     expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("tab", { name: "My team" }));
+    expect(window.location.pathname).toBe("/garage/team");
     fireEvent.change(screen.getByLabelText("Primary"), { target: { value: "#ffffff" } });
     fireEvent.change(screen.getByLabelText("Secondary"), { target: { value: "#000000" } });
     expect((screen.getByLabelText("Primary") as HTMLInputElement).value).toBe("#787878");
@@ -599,6 +601,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
 
     expect(screen.getByRole("tab", { name: "My team" }).getAttribute("aria-selected")).toBe("true");
+    expect(window.location.pathname).toBe("/garage/team");
   });
 
   it("opens Grand Prix history replays in the regular replay screen without explainer copy", async () => {
@@ -653,6 +656,7 @@ describe("App", () => {
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Edit planNew lap time");
     expect(screen.getByRole("button", { name: "Edit plan" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Edit plan" }));
+    expect(window.location.pathname).toBe("/plan/approach");
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(document.querySelector(".directive-briefing-panel")).toBeTruthy();
     expect(document.querySelector(".directive-selection-panel")).toBeTruthy();
@@ -668,10 +672,14 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");
     // Preparation choices only appear on their sub-screen.
     fireEvent.click(screen.getByRole("tab", { name: "Tire prep: Weather" }));
+    expect(window.location.pathname).toBe("/plan/preparation");
+    expect(localStorage.getItem("cr-league-directive-step")).toBe("preparation");
     expect(document.querySelector(".choice-grid")?.className).toContain("directive-choice-grid");
     expect(screen.getByRole("button", { name: "Tire prep: Weather" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByText("Stronger if rain arrives, weaker if it stays dry.")).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Card: No card" }));
+    expect(window.location.pathname).toBe("/plan/card");
+    expect(localStorage.getItem("cr-league-directive-step")).toBe("card");
     fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
     expect(screen.getByRole("tab", { name: "Card: Rain Grip" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Race" }));

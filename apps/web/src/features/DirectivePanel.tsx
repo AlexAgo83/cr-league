@@ -1,4 +1,4 @@
-import { useState, type CSSProperties } from "react";
+import { type CSSProperties } from "react";
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CardFit, Translator } from "../app/helpers.js";
@@ -18,6 +18,13 @@ type ImpactBadge = { trait: TraitKey; sign: "+" | "-"; label: TranslationKey; va
 const APPROACHES = ["prudent", "balanced", "aggressive"] as const;
 const PREPARATIONS = ["speed", "reliability", "weather"] as const;
 const TRAITS = ["grip", "overtaking", "energy"] as const;
+export type DirectiveStep = "approach" | "preparation" | "card";
+export const DIRECTIVE_STEP_KEY = "cr-league-directive-step";
+
+export function savedDirectiveStep(): DirectiveStep {
+  const saved = localStorage.getItem(DIRECTIVE_STEP_KEY);
+  return saved === "preparation" || saved === "card" ? saved : "approach";
+}
 
 const TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
   grip: "circuit_grip",
@@ -86,9 +93,11 @@ export function DirectivePanel({
   ownedCardIds,
   selectedCardId,
   selectedCardFit,
+  step,
   circuitTraits,
   cardLocked,
   disabled,
+  onSelectStep,
   tt
 }: {
   form: FormState;
@@ -96,14 +105,15 @@ export function DirectivePanel({
   ownedCardIds: CardId[];
   selectedCardId: FormState["cardId"];
   selectedCardFit: CardFit | null;
+  step: DirectiveStep;
   circuitTraits: TraitStats;
   cardLocked?: boolean;
   disabled?: boolean;
+  onSelectStep: (step: DirectiveStep) => void;
   tt: Translator;
 }) {
   const cardChoices = ["", ...ownedCardIds] as Array<"" | CardId>;
   const selectedCardLabel = selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none");
-  const [step, setStep] = useState<"approach" | "preparation" | "card">("approach");
   const modifiers = directiveModifiers(form, selectedCardId);
 
   const steps = [
@@ -147,7 +157,7 @@ export function DirectivePanel({
     <section className="panel directive-panel directive-selection-panel">
       <div className="plan-steps" role="tablist" aria-label={tt("directive_title")}>
         {steps.map((entry) => (
-          <button key={entry.key} type="button" role="tab" aria-selected={step === entry.key} aria-label={`${entry.label}: ${entry.value}`} className={step === entry.key ? "plan-step active" : "plan-step"} onClick={() => setStep(entry.key)}>
+          <button key={entry.key} type="button" role="tab" aria-selected={step === entry.key} aria-label={`${entry.label}: ${entry.value}`} className={step === entry.key ? "plan-step active" : "plan-step"} onClick={() => onSelectStep(entry.key)}>
             <span className="plan-step-label">{entry.label}</span>
             <span className="plan-step-value">{entry.value}</span>
           </button>

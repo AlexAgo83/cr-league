@@ -10,12 +10,12 @@ import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
 import { RewardValue } from "./RewardValue.js";
 
-type CardPanel = "team" | "inventory" | "shop";
+export type CardPanel = "team" | "inventory" | "shop";
 export const GARAGE_PANEL_KEY = "cr-league-garage-panel";
 const MAX_PRIMARY_LIVERY_CHANNEL = 120;
 const MIN_SECONDARY_LIVERY_CHANNEL = 150;
 
-function savedCardPanel(): CardPanel {
+export function savedCardPanel(): CardPanel {
   const saved = localStorage.getItem(GARAGE_PANEL_KEY);
   return saved === "team" || saved === "shop" ? saved : "inventory";
 }
@@ -37,8 +37,10 @@ export function GarageView({
   forecastPick,
   isResolved,
   loading,
+  cardPanel,
   onBuyCard,
   onSellCard,
+  onSelectCardPanel,
   onUpdateLivery,
   onUpdateTeamName,
   tt
@@ -51,8 +53,10 @@ export function GarageView({
   forecastPick: string;
   isResolved: boolean;
   loading: boolean;
+  cardPanel: CardPanel;
   onBuyCard: (cardId: CardId) => void;
   onSellCard: (cardId: CardId) => void;
+  onSelectCardPanel: (panel: CardPanel) => void;
   onUpdateLivery: (livery: LeagueState["teams"][number]["livery"]) => void;
   onUpdateTeamName: (name: string) => void;
   tt: Translator;
@@ -61,7 +65,6 @@ export function GarageView({
   const [teamName, setTeamName] = useState(playerTeam?.name ?? "");
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
   const [viewingCardId, setViewingCardId] = useState<CardId | undefined>();
-  const [cardPanel, setCardPanel] = useState<CardPanel>(savedCardPanel);
 
   useEffect(() => {
     if (playerTeam?.livery) setLivery(playerTeam.livery);
@@ -99,7 +102,7 @@ export function GarageView({
   };
   const selectCardPanel = (nextPanel: CardPanel) => {
     localStorage.setItem(GARAGE_PANEL_KEY, nextPanel);
-    setCardPanel(nextPanel);
+    onSelectCardPanel(nextPanel);
   };
 
   return (

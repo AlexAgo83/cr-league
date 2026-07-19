@@ -8,8 +8,8 @@ import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js
 import { CHAMPIONSHIP_RECORD_TAB_KEY, ChampionshipView, savedRecordTab, type ChampionshipRecordTab } from "../features/ChampionshipView.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import { CircuitMap, MapTraitsPanel } from "../features/CircuitMap.js";
-import { DirectivePanel } from "../features/DirectivePanel.js";
-import { GARAGE_PANEL_KEY, GarageView } from "../features/GarageView.js";
+import { DIRECTIVE_STEP_KEY, DirectivePanel, savedDirectiveStep, type DirectiveStep } from "../features/DirectivePanel.js";
+import { GARAGE_PANEL_KEY, GarageView, savedCardPanel, type CardPanel } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
 import { Modal } from "../features/Modal.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
@@ -27,7 +27,7 @@ const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
 const PROFILE_SESSION_KEY = "cr-league-profile-session";
 const LANGUAGE_KEY = "cr-league-language";
 const SEASON_RECAP_KEY_PREFIX = "cr-league-season-recap";
-const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
+const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
 
 type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueId: string;
@@ -46,7 +46,9 @@ export function App() {
   });
   const [gameView, setGameView] = useState<GameView>(() => initialRoute.view);
   const [planSubscreen, setPlanSubscreen] = useState<PlanSubscreen>(() => initialRoute.planSubscreen);
+  const [directiveStep, setDirectiveStep] = useState<DirectiveStep>(() => initialRoute.directiveStep === "approach" ? savedDirectiveStep() : initialRoute.directiveStep);
   const [championshipRecordTab, setChampionshipRecordTab] = useState<ChampionshipRecordTab>(() => initialRoute.championshipTab === "standings" ? savedRecordTab() : initialRoute.championshipTab);
+  const [garagePanel, setGaragePanel] = useState<CardPanel>(() => initialRoute.garagePanel === "inventory" ? savedCardPanel() : initialRoute.garagePanel);
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
   const [resultOpen, setResultOpen] = useState(true);
   const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
@@ -135,7 +137,9 @@ export function App() {
       const nextView = route.view === "admin" && !profileSession ? "drive" : route.view;
       setGameView(nextView);
       setPlanSubscreen(route.planSubscreen);
+      setDirectiveStep(route.directiveStep === "approach" ? savedDirectiveStep() : route.directiveStep);
       setChampionshipRecordTab(route.championshipTab === "standings" ? savedRecordTab() : route.championshipTab);
+      setGaragePanel(route.garagePanel === "inventory" ? savedCardPanel() : route.garagePanel);
       setHistoryReplay(null);
     };
 
@@ -149,13 +153,21 @@ export function App() {
       return;
     }
 
-    const path = pathForAppRoute({ view: gameView, planSubscreen, championshipTab: championshipRecordTab });
+    const path = pathForAppRoute({ view: gameView, planSubscreen, directiveStep, championshipTab: championshipRecordTab, garagePanel });
     if (window.location.pathname !== path) window.history.pushState(null, "", path);
-  }, [championshipRecordTab, gameView, planSubscreen, profileSession?.admin]);
+  }, [championshipRecordTab, directiveStep, gameView, garagePanel, planSubscreen, profileSession?.admin]);
 
   useEffect(() => {
     localStorage.setItem(CHAMPIONSHIP_RECORD_TAB_KEY, championshipRecordTab);
   }, [championshipRecordTab]);
+
+  useEffect(() => {
+    localStorage.setItem(DIRECTIVE_STEP_KEY, directiveStep);
+  }, [directiveStep]);
+
+  useEffect(() => {
+    localStorage.setItem(GARAGE_PANEL_KEY, garagePanel);
+  }, [garagePanel]);
 
 
   useEffect(() => {
@@ -1690,9 +1702,11 @@ export function App() {
                 ownedCardIds={ownedCardIds}
                 selectedCardId={selectedCardId}
                 selectedCardFit={selectedCardFit}
+                step={directiveStep}
                 circuitTraits={currentCircuit.traits}
                 cardLocked={Boolean(qualifyingLockedCardId)}
                 disabled={status === "loading" || Boolean(playerDecision) || isResolved}
+                onSelectStep={setDirectiveStep}
                 tt={tt}
               />
             )}
@@ -1719,8 +1733,10 @@ export function App() {
             forecastPick={forecastPick}
             isResolved={isResolved}
             loading={status === "loading"}
+            cardPanel={garagePanel}
             onBuyCard={buyCard}
             onSellCard={sellCard}
+            onSelectCardPanel={setGaragePanel}
             onUpdateLivery={updateLivery}
             onUpdateTeamName={updateTeamName}
             tt={tt}

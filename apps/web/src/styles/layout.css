@@ -3309,10 +3309,23 @@ label small {
   z-index: 0;
 }
 
+.championship-record-header::before,
+.garage-card-heading::before {
+  background: linear-gradient(to bottom, rgb(18 16 20 / 0), var(--color-page));
+  bottom: 0;
+  content: "";
+  height: 34px;
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  z-index: 1;
+}
+
 .championship-record-header > *,
 .garage-card-heading > * {
   position: relative;
-  z-index: 1;
+  z-index: 2;
 }
 
 .championship-record-header h3 {
@@ -3335,7 +3348,8 @@ label small {
   --record-hero-image: url("/assets/crl/track-briefing.png");
 }
 
-.championship-record-switch {
+.championship-record-switch,
+.garage-card-toggle {
   background: rgb(16 14 18 / 0.58);
   border: 1px solid rgb(248 243 232 / 0.18);
   display: inline-flex;
@@ -3344,7 +3358,8 @@ label small {
   padding: 3px;
 }
 
-.championship-record-switch button {
+.championship-record-switch button,
+.garage-card-toggle button {
   background: transparent;
   border: 0;
   color: rgb(248 243 232 / 0.72);
@@ -3353,7 +3368,8 @@ label small {
   padding: 5px 9px;
 }
 
-.championship-record-switch button.active {
+.championship-record-switch button.active,
+.garage-card-toggle button.active {
   background: var(--color-accent);
   color: #fff;
 }
@@ -4115,10 +4131,6 @@ label small {
   margin: 0;
 }
 
-.garage-card-heading .section-kicker {
-  color: var(--color-telemetry);
-}
-
 .garage-hero-team {
   --garage-panel-image: url("/assets/crl/garage-team-hero.png");
 }
@@ -4129,28 +4141,6 @@ label small {
 
 .garage-hero-shop {
   --garage-panel-image: url("/assets/crl/garage-shop-hero.png");
-}
-
-.garage-card-toggle {
-  background: rgb(16 14 18 / 0.58);
-  border: 1px solid rgb(248 243 232 / 0.18);
-  display: inline-flex;
-  flex: 0 0 auto;
-  padding: 3px;
-}
-
-.garage-card-toggle button {
-  background: transparent;
-  border: 0;
-  color: rgb(248 243 232 / 0.72);
-  font-size: 0.72rem;
-  min-height: 30px;
-  padding: 5px 9px;
-}
-
-.garage-card-toggle button.active {
-  background: var(--color-accent);
-  color: #fff;
 }
 
 .garage-card-toggle button:not(.active):hover,

@@ -139,7 +139,6 @@ export function GarageView({
       <section className={`panel garage-card-panel garage-panel-${cardPanel}`}>
         <header className={`garage-card-heading garage-hero-${cardPanel}`}>
           <div>
-            <span className="section-kicker">{tt("dashboard_garage")}</span>
             <h3>{panelTitle}</h3>
           </div>
           <div className="garage-card-toggle" role="tablist" aria-label={tt("dashboard_garage")}>

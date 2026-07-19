@@ -4411,6 +4411,7 @@ label small {
   height: min(160%, 150px);
   overflow: visible;
   position: relative;
+  top: -10px;
   transform: rotate(90deg);
   width: min(92%, 220px);
   z-index: 1;

@@ -1935,10 +1935,11 @@ export function App() {
                         .sort((left, right) => right.attempts - left.attempts || (right.lap ?? 0) - (left.lap ?? 0))
                         .map((run) => (
                           <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`}>
-                            <span>
-                              {tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })} · {tt(`approach_${run.decision.approach}` as TranslationKey)} ·{" "}
-                              {tt(`preparation_${run.decision.preparation}` as TranslationKey)}
-                            </span>
+                            <div className="chrono-session-setup">
+                              <strong>{tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}</strong>
+                              <span>{tt(`approach_${run.decision.approach}` as TranslationKey)}</span>
+                              <span>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</span>
+                            </div>
                             <em>{run.time.toFixed(2)}s</em>
                             <button
                               type="button"

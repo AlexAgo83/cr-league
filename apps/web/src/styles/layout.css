@@ -892,10 +892,27 @@ label small {
   padding: 8px 10px;
 }
 
-.chrono-report-history li span {
-  overflow: hidden;
-  text-overflow: ellipsis;
+.chrono-session-setup {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.chrono-session-setup strong,
+.chrono-session-setup span {
+  background: rgb(16 14 18 / 0.32);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  color: var(--color-text);
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 3px 7px;
   white-space: nowrap;
+}
+
+.chrono-session-setup strong {
+  color: var(--color-accent);
 }
 
 .chrono-report-history li em {

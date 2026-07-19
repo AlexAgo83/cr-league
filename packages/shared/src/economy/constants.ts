@@ -10,11 +10,11 @@ export const CARD_PRICE = 120;
 export const CARD_PRICES: Record<CardId, number> = {
   rain_grip: 120,
   fleet_maintenance: 250,
-  launch_boost: 250,
-  urban_draft: 250,
+  launch_boost: 180,
+  urban_draft: 180,
   final_surge: 120,
   fleet_sponsorship: 120,
-  soft_tires: 250,
+  soft_tires: 180,
   qualifying_focus: 120,
   defensive_order: 250,
   adjustable_wing: 500,
@@ -22,5 +22,5 @@ export const CARD_PRICES: Record<CardId, number> = {
   economy_mode: 120,
   pit_relay: 250,
   hard_tires: 250,
-  calculated_attack: 500
+  calculated_attack: 250
 };

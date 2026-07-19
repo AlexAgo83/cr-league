@@ -63,12 +63,12 @@ type CardRow = {
 };
 
 const profiles: AgentProfile[] = [
-  { name: "sprinter", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", buy: ["launch_boost", "soft_tires", "adjustable_wing"] },
+  { name: "sprinter", approach: "aggressive", preparation: "speed", pitStrategy: "standard", buy: ["launch_boost", "soft_tires", "adjustable_wing"] },
   { name: "rain-reader", approach: "balanced", preparation: "weather", pitStrategy: "standard", buy: ["rain_grip", "rain_mapping", "fleet_maintenance"] },
   { name: "banker", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["fleet_sponsorship", "economy_mode", "hard_tires"] },
   { name: "closer", approach: "balanced", preparation: "speed", pitStrategy: "standard", buy: ["final_surge", "calculated_attack", "pit_relay"] },
   { name: "defender", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["defensive_order", "hard_tires", "pit_relay"] },
-  { name: "rival-hunter", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", buy: ["urban_draft", "calculated_attack", "qualifying_focus"] }
+  { name: "rival-hunter", approach: "aggressive", preparation: "speed", pitStrategy: "standard", buy: ["urban_draft", "calculated_attack", "qualifying_focus"] }
 ];
 
 const args = parseArgs();
@@ -200,17 +200,20 @@ function decisionFor(agent: Agent, circuit: CityCircuitIdentity, ranked: Agent[]
   const cardId = playableCard(agent, circuit);
   const rival = ranked.find((candidate) => candidate.id !== agent.id && candidate.points >= agent.points)?.id;
   return {
-    approach: circuit.traits.overtaking >= 75 ? "aggressive" : agent.profile.approach,
+    approach: agent.profile.approach,
     preparation: circuit.likelyWeather === "dry" ? agent.profile.preparation : "weather",
-    pitStrategy: circuit.traits.energy <= 55 ? "heavy_pack" : agent.profile.pitStrategy,
+    pitStrategy: agent.profile.pitStrategy,
     cardId,
     rivalTeamId: cardId === "urban_draft" || cardId === "calculated_attack" ? rival : undefined
   };
 }
 
 function playableCard(agent: Agent, circuit: CityCircuitIdentity) {
-  const weatherCard = agent.cards.find((card) => (card === "rain_grip" || card === "rain_mapping") && circuit.likelyWeather !== "dry");
-  return weatherCard ?? agent.cards.find((card) => agent.profile.buy.includes(card)) ?? agent.cards[0];
+  const useful = agent.cards.filter((card) => {
+    if ((card === "rain_grip" || card === "rain_mapping") && circuit.likelyWeather === "dry") return false;
+    return agent.profile.buy.includes(card);
+  });
+  return useful.sort((left, right) => cardStats.get(left)!.played - cardStats.get(right)!.played)[0] ?? agent.cards[0];
 }
 
 function buyNextCard(agent: Agent) {
@@ -224,7 +227,9 @@ function buyNextCard(agent: Agent) {
     cardStats.get(candidate)!.bought += 1;
     return;
   }
-  const cardId = cardIds.find((candidate) => CARD_PRICES[candidate] <= agent.credits);
+  const cardId = cardIds
+    .filter((candidate) => CARD_PRICES[candidate] <= agent.credits)
+    .sort((left, right) => cardStats.get(left)!.bought - cardStats.get(right)!.bought)[0];
   if (!cardId) return;
   agent.credits -= CARD_PRICES[cardId];
   agent.cards.push(cardId);
@@ -245,7 +250,10 @@ function frustrationScore(position: number, result: RaceResult, teamId: string) 
 function alerts(profileRows: ReturnType<typeof rows>, cardRows: CardRow[]) {
   const raceEventCards = new Set<CardId>(cardIds.filter((cardId) => cardId !== "qualifying_focus"));
   const avgWin = profileRows.reduce((sum, item) => sum + item.winRate, 0) / Math.max(1, profileRows.length);
+  const avgPlayed = cardRows.reduce((sum, item) => sum + item.played, 0) / Math.max(1, cardRows.length);
   const found = profileRows.filter((item) => item.winRate >= avgWin + 15).map((item) => `dominant profile: ${item.name} win ${item.winRate}% vs avg ${round(avgWin)}%`);
+  found.push(...profileRows.filter((item) => item.winRate <= avgWin - 10 || item.fun < 5).map((item) => `weak profile: ${item.name} win ${item.winRate}%, fun ${item.fun}`));
+  found.push(...cardRows.filter((item) => item.played >= Math.max(30, avgPlayed * 3)).map((item) => `overplayed card: ${item.card} played ${item.played} times`));
   found.push(...cardRows.filter((item) => raceEventCards.has(item.card) && item.played >= 5 && item.triggered === 0).map((item) => `dead card trigger: ${item.card} played ${item.played} times, triggered 0`));
   found.push(...cardRows.filter((item) => item.played === 0).map((item) => `never played: ${item.card}`));
   if (incidents.length) found.push(...incidents);

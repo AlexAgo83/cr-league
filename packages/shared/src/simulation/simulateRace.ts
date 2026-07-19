@@ -499,18 +499,18 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
   const { approach, preparation } = participant.decision;
 
   if (approach === "prudent") {
-    scores.pace -= 10;
+    scores.pace -= 8;
     scores.control += 10;
-    scores.reliability += 8;
+    scores.reliability += 9;
     scores.aggression -= 12;
   } else if (approach === "balanced") {
-    scores.control += 2;
-    scores.reliability += 2;
-    scores.weatherReadiness += 2;
+    scores.control += 4;
+    scores.reliability += 4;
+    scores.weatherReadiness += 4;
   } else if (approach === "aggressive") {
     scores.pace += 16;
     scores.control -= 6;
-    scores.reliability -= 6;
+    scores.reliability -= 5;
     scores.aggression += 16;
   }
 
@@ -518,13 +518,13 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.pace += 9;
     scores.reliability -= 4;
   } else if (preparation === "reliability") {
-    scores.reliability += 10;
+    scores.reliability += 12;
     scores.control += 6;
-    scores.pace -= 4;
+    scores.pace -= 2;
   } else {
     scores.weatherReadiness += 12;
-    scores.control += 1;
-    scores.pace -= 3;
+    scores.control += 3;
+    scores.pace -= 1;
   }
 
   if (pitStrategy(participant.decision) === "heavy_pack") {
@@ -532,7 +532,7 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.reliability += 4;
     scores.control += 2;
   } else if (pitStrategy(participant.decision) === "mini_pack") {
-    scores.pace += 9;
+    scores.pace += 8;
     scores.aggression += 4;
     scores.reliability -= 5;
   }
@@ -551,10 +551,10 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.aggression += 6;
     scores.reliability -= 10;
   } else if (participant.decision.cardId === "defensive_order") {
-    scores.control += 5;
-    scores.reliability += 1;
-    scores.aggression -= 12;
-    scores.pace -= 10;
+    scores.control += 6;
+    scores.reliability += 3;
+    scores.aggression -= 11;
+    scores.pace -= 8;
   } else if (participant.decision.cardId === "adjustable_wing") {
     scores.pace += 4;
     scores.aggression += 5;
@@ -563,8 +563,8 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.pace -= 5;
     scores.control += 5;
   } else if (participant.decision.cardId === "hard_tires") {
-    scores.pace -= 9;
-    scores.reliability += 6;
+    scores.pace -= 6;
+    scores.reliability += 8;
     scores.control += 4;
   } else if (participant.decision.cardId === "calculated_attack") {
     scores.aggression += 7;
@@ -587,7 +587,7 @@ function maybeAddPitStopEvent(state: TeamState, segment: RaceSegment, events: Ra
   const stopCost = strategy === "mini_pack" ? 4 : 6;
   events.push(createMiniInfoEvent(events.length, state, segment, "pit_imminent", `${state.participant.teamName} approaches the pit window`, ["pit_stop", strategy]));
   state.elapsedTime += stopCost;
-  state.scores.score += strategy === "mini_pack" ? 4 : 0;
+  state.scores.score += strategy === "mini_pack" ? 8 : 0;
   state.resultTags.add(strategy);
   events.push({
     id: "",
@@ -732,11 +732,11 @@ function maybeAddCardEvent(
   } else if (cardId === "urban_draft" && segment === "mid" && state.participant.decision.rivalTeamId) {
     const rival = states.find((candidate) => candidate.participant.teamId === state.participant.decision.rivalTeamId);
     if (rival) {
-      state.scores.score += 15;
-      rival.scores.score -= 6;
-      state.positionDelta += 8;
+      state.scores.score += 22;
+      rival.scores.score -= 8;
+      state.positionDelta += 10;
       state.resultTags.add("rival_pressure");
-      events.push(createCardEvent(events.length, state, segment, "rival_overtake", 8, rival.participant.teamId));
+      events.push(createCardEvent(events.length, state, segment, "rival_overtake", 10, rival.participant.teamId));
     }
   } else if (cardId === "final_surge" && segment === "finish") {
     const outsidePodium = state.participant.standingsRank > 3;
@@ -758,8 +758,10 @@ function maybeAddCardEvent(
     state.resultTags.add("soft_tires");
     events.push(createCardEvent(events.length, state, segment, "card_triggered", 8));
   } else if (cardId === "defensive_order" && segment === "late") {
+    state.scores.score += 4;
+    state.positionDelta += 2;
     state.resultTags.add("defensive_order");
-    events.push(createCardEvent(events.length, state, segment, "held_position", 0));
+    events.push(createCardEvent(events.length, state, segment, "held_position", 2));
   } else if (cardId === "adjustable_wing" && segment === "early") {
     const suitedCircuit = input.primaryTrait === "fast" || input.secondaryTrait === "fast" || input.primaryTrait === "urban" || input.secondaryTrait === "urban";
     state.scores.score += suitedCircuit ? 14 : 5;
@@ -783,19 +785,20 @@ function maybeAddCardEvent(
     state.resultTags.add("pit_relay");
     events.push(createCardEvent(events.length, state, segment, "held_position", 8));
   } else if (cardId === "hard_tires" && segment === "late") {
-    state.scores.score += 14;
+    state.scores.score += 16;
     state.positionDelta += 8;
     state.resultTags.add("hard_tires");
     events.push(createCardEvent(events.length, state, segment, "late_push_gain", 8));
   } else if (cardId === "calculated_attack" && segment === "mid") {
     const target = carAhead(state, states);
-    const closeEnough = target && state.elapsedTime - target.elapsedTime <= 2;
+    const closeEnough = target && state.elapsedTime - target.elapsedTime <= 3;
     if (closeEnough) {
-      state.scores.score += 20;
-      state.positionDelta += 8;
+      state.scores.score += 24;
+      state.positionDelta += 10;
       state.resultTags.add("calculated_attack");
-      events.push(createCardEvent(events.length, state, segment, "rival_overtake", 8, target.participant.teamId));
+      events.push(createCardEvent(events.length, state, segment, "rival_overtake", 10, target.participant.teamId));
     } else {
+      state.scores.score += 6;
       state.resultTags.add("calculated_attack_missed");
       events.push(createCardEvent(events.length, state, segment, "card_triggered", 0));
     }

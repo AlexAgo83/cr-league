@@ -254,8 +254,8 @@ function qualifyingTime(decision: RaceDecision, traits: RaceInput["traits"], wea
   const profile = traits ?? { grip: 62, overtaking: 62, energy: 62 };
   const traitBonus = (profile.grip + profile.overtaking + profile.energy - 180) / 18;
   const weatherPenalty = weather === "heavy_rain" ? 2.8 : weather === "light_rain" ? 1.2 : 0;
-  const approachDelta = decision.approach === "aggressive" ? -1.1 : decision.approach === "prudent" ? 0.7 : 0;
-  const prepDelta = decision.preparation === "speed" ? -1.2 : decision.preparation === "weather" && weather !== "dry" ? -1.4 : decision.preparation === "reliability" ? 0.4 : 0;
+  const approachDelta = decision.approach === "aggressive" ? -0.3 : decision.approach === "prudent" ? 0.2 : 0;
+  const prepDelta = decision.preparation === "speed" ? -0.8 : decision.preparation === "weather" && weather !== "dry" ? -0.9 : decision.preparation === "reliability" ? 0.1 : 0;
   const rainCardDelta = decision.cardId === "rain_grip" && weather !== "dry" ? -0.7 : decision.cardId === "rain_mapping" && weather !== "dry" ? -0.4 : 0;
   const cardDelta = rainCardDelta || (decision.cardId ? QUALIFYING_CARD_DELTAS[decision.cardId] ?? 0 : 0);
   return Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + (next() - 0.5) * 2.4);

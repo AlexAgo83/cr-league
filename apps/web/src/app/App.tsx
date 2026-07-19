@@ -1607,7 +1607,7 @@ export function App() {
       <header className="topbar">
         <div className="brand">
           <img className="brand-icon" src="/favicon.svg" alt={APP_NAME} />
-          <strong>{leagueState.league.name}</strong>
+          {isMapScreen ? null : <strong>{leagueState.league.name}</strong>}
         </div>
         <nav className="game-nav" aria-label={tt("cockpit_sections")}>
           {GAME_VIEWS.map((view) => (
@@ -1936,9 +1936,15 @@ export function App() {
                         .map((run) => (
                           <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`}>
                             <div className="chrono-session-setup">
-                              <strong>{tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}</strong>
-                              <span>{tt(`approach_${run.decision.approach}` as TranslationKey)}</span>
-                              <span>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</span>
+                              <strong className="chrono-session-lap">{tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}</strong>
+                              <span className="chrono-session-choice">
+                                <small>{tt("field_approach")}</small>
+                                <b>{tt(`approach_${run.decision.approach}` as TranslationKey)}</b>
+                              </span>
+                              <span className="chrono-session-choice">
+                                <small>{tt("field_preparation")}</small>
+                                <b>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</b>
+                              </span>
                             </div>
                             <em>{run.time.toFixed(2)}s</em>
                             <button

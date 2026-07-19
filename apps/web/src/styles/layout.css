@@ -894,25 +894,45 @@ label small {
 
 .chrono-session-setup {
   align-items: center;
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
   gap: 6px;
+  grid-template-columns: auto minmax(82px, 0.8fr) minmax(82px, 0.8fr);
   min-width: 0;
 }
 
-.chrono-session-setup strong,
-.chrono-session-setup span {
-  background: rgb(16 14 18 / 0.32);
-  border: 1px solid rgb(255 255 255 / 0.08);
+.chrono-session-lap,
+.chrono-session-choice {
+  background: rgb(16 14 18 / 0.42);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  display: grid;
+  min-height: 38px;
+  place-content: center;
+  text-align: center;
+}
+
+.chrono-session-lap {
   color: var(--color-text);
-  font-size: 0.72rem;
-  font-weight: 800;
-  padding: 3px 7px;
+  font-size: 0.78rem;
+  padding: 5px 9px;
   white-space: nowrap;
 }
 
-.chrono-session-setup strong {
+.chrono-session-choice {
+  gap: 1px;
+  padding: 4px 8px;
+}
+
+.chrono-session-choice small {
+  color: var(--color-muted);
+  font-size: 0.56rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.chrono-session-choice b {
   color: var(--color-accent);
+  font-size: 0.76rem;
+  line-height: 1.05;
 }
 
 .chrono-report-history li em {

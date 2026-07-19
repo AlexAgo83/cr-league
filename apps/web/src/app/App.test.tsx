@@ -618,6 +618,7 @@ describe("App", () => {
     expect(document.querySelector(".map-workflow-panel")?.textContent).toContain("1. Read the circuit");
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
+    expect(document.querySelector(".map-screen .brand strong")).toBe(null);
     expect(screen.queryByRole("heading", { name: "Tune the race plan" })).toBe(null);
     expect(screen.getByRole("button", { name: "Plan" })).toBeTruthy();
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Edit planNew lap time");
@@ -698,7 +699,7 @@ describe("App", () => {
     expect(screen.getByLabelText("Understand the lap time").textContent).toContain("75.18s");
     expect(screen.getByLabelText("Understand the lap time").textContent).toContain("P2");
     expect(screen.getByLabelText("Understand the lap time").textContent).toContain("Best run");
-    expect(document.querySelectorAll(".chrono-session-setup span").length).toBeGreaterThan(0);
+    expect(document.querySelectorAll(".chrono-session-choice b").length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole("button", { name: "Review lap time" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Lap time replay" })).toBeTruthy();
     await waitFor(() => expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/7"));

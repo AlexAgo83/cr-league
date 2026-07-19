@@ -6111,16 +6111,11 @@ button.highlight-command:not(:disabled) {
   padding-right: min(46%, 190px);
 }
 
+.garage-panel-inventory .card-inventory-button .card-cell-art,
 .garage-panel-shop .card-shop button .card-cell-art {
   height: 136%;
   inset: 50% -38px auto auto;
   width: min(58%, 230px);
-}
-
-.garage-panel-inventory .card-inventory-button .card-cell-art {
-  height: 128%;
-  inset: 44% -38px auto auto;
-  width: min(56%, 220px);
 }
 
 .plan-view .choice-card.card-art-cell .card-stat-badges,

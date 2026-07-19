@@ -109,7 +109,7 @@ describe("App profile and admin", () => {
     createLeagueFromSetup();
 
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Speed ×4" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Speed ×1" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Focus driver" }).className).not.toContain("active");
     fireEvent.click(screen.getByLabelText("Close Race replay"));
     expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);

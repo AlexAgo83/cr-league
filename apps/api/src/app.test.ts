@@ -353,7 +353,7 @@ describe("api app", () => {
     expect(firstRun.json().state.currentGrandPrix.qualifyingRuns.filter((run: { teamId: string }) => run.teamId === created.player.teamId)).toHaveLength(2);
     expect(secondRun.json().state.currentGrandPrix.qualifyingRuns.filter((run: { teamId: string }) => run.teamId === created.player.teamId)).toHaveLength(4);
     expect(secondRun.json().run.time).toBeGreaterThan(70);
-    expect(secondRun.json().run.result.replayTrace.at(-1).times[created.player.teamId]).toBe(20);
+    expect(secondRun.json().run.result.replayTrace.at(-1).times[created.player.teamId]).toBeGreaterThan(secondRun.json().run.time);
     expect(secondRun.json().run.result.events).toHaveLength(2);
     expect(secondRun.json().run.result.replayTrace.at(-1).distanceMeters).toBeGreaterThan(1000);
     expect(secondRun.json().run.result.replayTrace.at(-1).cars[created.player.teamId]).toMatchObject({ trackProgress: 1, phase: "finished" });

@@ -20,7 +20,7 @@ const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
 const GRID_START_PROGRESS = 0.1;
-const PIT_STOP_PROGRESS_WINDOW = 0.065;
+const PIT_STOP_HOLD_SECONDS = 1.2;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
@@ -546,6 +546,7 @@ export function ReplayView({
   const raceDuration = replayTimes.leader;
   const currentRaceProgress = raceProgressAt(clock.current, raceDuration);
   const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
+  const raceTimeAtProgress = (progress: number) => START_HOLD_SECONDS + progress * raceDuration;
   const cars: MapCar[] = field.map((entry, index) => ({
     id: entry.teamId,
     label: String(Math.max(1, snapshot.tower.findIndex((team) => team.teamId === entry.teamId) + 1)),
@@ -553,7 +554,7 @@ export function ReplayView({
     delay: 0,
     duration: replayTimes.times[entry.teamId] ?? replayTimes.leader + index,
     progress: snapshot.carProgress[entry.teamId] ?? 0,
-    pitStopActive: result.events.some((event) => event.type === "pit_stop" && event.teamId === entry.teamId && Math.abs(currentRaceProgress - event.lap / maxLap) <= PIT_STOP_PROGRESS_WINDOW),
+    pitStopActive: result.events.some((event) => event.type === "pit_stop" && event.teamId === entry.teamId && Math.abs(clock.current - raceTimeAtProgress(event.lap / maxLap)) <= PIT_STOP_HOLD_SECONDS),
     livery: teamLiveries[entry.teamId],
     positionDelta: positionPops[entry.teamId]?.delta,
     positionDeltaKey: positionPops[entry.teamId]?.key
@@ -563,7 +564,6 @@ export function ReplayView({
   const circuitDistance = `${(circuitLengthMeters(circuit) / 1000).toFixed(1)} km`;
   const lastFinishTime = replayTimes.last;
   const replayEnd = START_HOLD_SECONDS + lastFinishTime + FINISH_HOLD_SECONDS;
-  const raceTimeAtProgress = (progress: number) => START_HOLD_SECONDS + progress * raceDuration;
   const replayPercentAtRaceProgress = (progress: number) => (raceTimeAtProgress(progress) / replayEnd) * 100;
   snapshotRef.current = snapshot;
 

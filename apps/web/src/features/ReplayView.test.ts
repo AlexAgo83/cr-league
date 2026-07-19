@@ -3,13 +3,11 @@ import type { RaceEvent, RaceResult, ReplayTracePoint } from "@cr-league/shared"
 import {
   carProgressAtRaceTime,
   carProgressAtTrace,
-  applyGridStart,
   buildReplayPlan,
   buildRaceDirectorBeats,
   displayLapAtProgress,
   eventTraceProgress,
   finishTimes,
-  gridStartCarProgress,
   liveClassificationByCarProgress,
   playerReplayContext,
   pitStopRaceProgress,
@@ -109,7 +107,7 @@ describe("ReplayView timing", () => {
 
   it("uses generated car trace positions when available", () => {
     const trace: ReplayTracePoint[] = [
-      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: -0.012, speed: 0, phase: "grid" }, last: { trackProgress: -0.03, speed: 0, phase: "grid" } } },
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0, speed: 0, phase: "grid" }, last: { trackProgress: 0, speed: 0, phase: "grid" } } },
       {
         segment: "mid",
         lap: 3,
@@ -122,7 +120,7 @@ describe("ReplayView timing", () => {
     ];
 
     expect(carProgressAtTrace(result, trace, 0.5, 5)).toMatchObject({ leader: 2.5, last: 2.1 });
-    expect(carProgressAtTrace(result, trace, 0, 5)).toMatchObject({ leader: -0.012, last: -0.03 });
+    expect(carProgressAtTrace(result, trace, 0, 5)).toMatchObject({ leader: 0, last: 0 });
   });
 
   it("skips runtime smoothing for generated car traces", () => {
@@ -177,18 +175,6 @@ describe("ReplayView timing", () => {
     expect(plan.source).toBe("trace");
     expect(plan.overtakes[0]?.phases.map((phase) => phase.phase)).toEqual(["setup", "close_gap", "overlap", "swap", "settle"]);
     expect(replayPlanDebugLines(plan)[0]).toContain("last->leader");
-  });
-
-  it("applies a deterministic readable grid start without changing final order", () => {
-    const trace: ReplayTracePoint[] = [
-      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
-      { segment: "finish", lap: 5, progress: 1, order: ["leader", "last"], times: { leader: 100, last: 104 }, gaps: { leader: 0, last: 4 } }
-    ];
-
-    expect(gridStartCarProgress(result, trace, 0).leader ?? 0).toBeGreaterThan(gridStartCarProgress(result, trace, 0).last ?? 0);
-    expect(applyGridStart(result, trace, { leader: 0, last: 0 }, 0).leader ?? 0).toBeLessThan(0);
-    expect(applyGridStart(result, trace, { leader: 0, last: 0 }, 0).last ?? 0).toBeLessThan(applyGridStart(result, trace, { leader: 0, last: 0 }, 0).leader ?? 0);
-    expect(applyGridStart(result, trace, { leader: 5, last: 5 }, 1)).toEqual({ leader: 5, last: 5 });
   });
 
   it("generates deterministic race-director beats from replay facts and quiet trace", () => {

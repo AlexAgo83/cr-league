@@ -527,7 +527,7 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
-    expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Mika Blitz");
+    expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Volt Union");
 
     // Timeline markers carry the key moments and seek on click
     expect(document.querySelectorAll(".replay-tick").length).toBe(7);

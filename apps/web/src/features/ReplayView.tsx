@@ -19,7 +19,6 @@ const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
-const GRID_START_PROGRESS = 0.1;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
@@ -380,25 +379,6 @@ export function shouldSmoothReplayTrace(trace: ReplayTracePoint[]) {
   return !trace.length || !trace.every((point) => point.cars);
 }
 
-export function gridStartCarProgress(result: RaceResult, trace: ReplayTracePoint[], progress: number) {
-  const startOrder = trace[0]?.order.length ? trace[0].order : [...result.classification].sort((left, right) => left.position + left.positionChange - (right.position + right.positionChange)).map((entry) => entry.teamId);
-  const spacing = 0.018;
-  const base = 0.012;
-  const fade = Math.max(0, 1 - progress / GRID_START_PROGRESS);
-  return Object.fromEntries(startOrder.map((teamId, index) => [teamId, -(base + index * spacing) * fade]));
-}
-
-export function applyGridStart(
-  result: RaceResult,
-  trace: ReplayTracePoint[],
-  carProgress: Record<string, number>,
-  progress: number
-) {
-  if (progress >= GRID_START_PROGRESS) return carProgress;
-  const grid = gridStartCarProgress(result, trace, progress);
-  return Object.fromEntries(result.classification.map((entry) => [entry.teamId, (carProgress[entry.teamId] ?? 0) + (grid[entry.teamId] ?? 0)]));
-}
-
 export function buildRaceDirectorBeats(result: RaceResult, trace: ReplayTracePoint[], plan: ReplayPlan, laps: number, playerTeamId?: string, mode: "race" | "qualifying" = "race", pitProgress = 0.5): ReplayDirectorBeat[] {
   if (mode === "qualifying") {
     const beats: ReplayDirectorBeat[] = [
@@ -488,9 +468,8 @@ function replaySnapshot(
   currentOrder: string[] = []
 ) {
   const baseProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan);
-  const carProgress = shouldSmoothReplayTrace(trace) ? applyGridStart(result, trace, baseProgress, progress) : baseProgress;
-  const tower = liveClassificationByCarProgress(result, trace, progress, carProgress, currentOrder);
-  return { carProgress, tower };
+  const tower = liveClassificationByCarProgress(result, trace, progress, baseProgress, currentOrder);
+  return { carProgress: baseProgress, tower };
 }
 
 export function smoothCarProgress(current: Record<string, number>, target: Record<string, number>, elapsedSeconds = 1 / 60) {

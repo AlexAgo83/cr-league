@@ -383,10 +383,7 @@ function createReplayTracePoint(segment: RaceSegment, progress: number, states: 
       ])
     ),
     cars: isGrid
-      ? Object.fromEntries(sorted.map((state, index) => {
-          const trackProgress = -(0.012 + index * 0.018);
-          return [state.participant.teamId, { trackProgress, distanceMeters: Number((trackProgress * trackLengthMeters).toFixed(1)), speed: 0, phase: "grid" as const }];
-        }))
+      ? Object.fromEntries(sorted.map((state) => [state.participant.teamId, { trackProgress: 0, distanceMeters: 0, speed: 0, phase: "grid" as const }]))
       : undefined
   };
 }

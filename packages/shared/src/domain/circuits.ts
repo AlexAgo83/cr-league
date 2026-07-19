@@ -12,13 +12,13 @@ export const CITY_CIRCUIT_IDENTITIES = [
   { city: "Vienna", country: "AT", layoutKey: "circuit_vienna_ring_loop", laps: 5, traits: { grip: 70, overtaking: 66, energy: 72 }, likelyWeather: "light_rain" },
   { city: "Porto", country: "PT", layoutKey: "circuit_porto_boavista_loop", laps: 8, traits: { grip: 56, overtaking: 76, energy: 60 }, likelyWeather: "light_rain" },
   { city: "Madrid", country: "ES", layoutKey: "circuit_madrid_centro_loop", laps: 5, traits: { grip: 62, overtaking: 80, energy: 55 }, likelyWeather: "dry" },
-  { city: "Monaco", country: "MC", layoutKey: "circuit_monaco_harbor_loop", laps: 18, traits: { grip: 82, overtaking: 48, energy: 58 }, likelyWeather: "dry" },
-  { city: "Monaco", country: "MC", layoutKey: "circuit_monaco_casino_sprint", laps: 21, traits: { grip: 78, overtaking: 52, energy: 54 }, likelyWeather: "light_rain" },
-  { city: "London", country: "GB", layoutKey: "circuit_london_thames_loop", laps: 9, traits: { grip: 66, overtaking: 64, energy: 61 }, likelyWeather: "light_rain" },
-  { city: "Brussels", country: "BE", layoutKey: "circuit_brussels_grand_place_loop", laps: 10, traits: { grip: 63, overtaking: 67, energy: 59 }, likelyWeather: "light_rain" },
-  { city: "Prague", country: "CZ", layoutKey: "circuit_prague_vltava_loop", laps: 8, traits: { grip: 68, overtaking: 60, energy: 64 }, likelyWeather: "dry" },
+  { city: "Monaco", country: "MC", layoutKey: "circuit_monaco_harbor_loop", laps: 13, traits: { grip: 82, overtaking: 48, energy: 58 }, likelyWeather: "dry" },
+  { city: "Monaco", country: "MC", layoutKey: "circuit_monaco_casino_sprint", laps: 6, traits: { grip: 78, overtaking: 52, energy: 54 }, likelyWeather: "light_rain" },
+  { city: "London", country: "GB", layoutKey: "circuit_london_thames_loop", laps: 7, traits: { grip: 66, overtaking: 64, energy: 61 }, likelyWeather: "light_rain" },
+  { city: "Brussels", country: "BE", layoutKey: "circuit_brussels_grand_place_loop", laps: 3, traits: { grip: 63, overtaking: 67, energy: 59 }, likelyWeather: "light_rain" },
+  { city: "Prague", country: "CZ", layoutKey: "circuit_prague_vltava_loop", laps: 7, traits: { grip: 68, overtaking: 60, energy: 64 }, likelyWeather: "dry" },
   { city: "Copenhagen", country: "DK", layoutKey: "circuit_copenhagen_harbor_loop", laps: 7, traits: { grip: 71, overtaking: 58, energy: 70 }, likelyWeather: "heavy_rain" },
-  { city: "Stockholm", country: "SE", layoutKey: "circuit_stockholm_gamla_stan_loop", laps: 10, traits: { grip: 72, overtaking: 56, energy: 69 }, likelyWeather: "light_rain" }
+  { city: "Stockholm", country: "SE", layoutKey: "circuit_stockholm_gamla_stan_loop", laps: 8, traits: { grip: 72, overtaking: 56, energy: 69 }, likelyWeather: "light_rain" }
 ] as const satisfies readonly [
   CityCircuitIdentitySource,
   ...CityCircuitIdentitySource[]

@@ -165,6 +165,52 @@ describe("ReplayView timing", () => {
     expect(beats.at(-1)?.type).toBe("final");
   });
 
+  it("shows pit stops as race-director beats", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
+      { segment: "finish", lap: 10, progress: 1, order: ["leader", "last"], times: { leader: 100, last: 104 }, gaps: { leader: 0, last: 4 } }
+    ];
+    const beats = buildRaceDirectorBeats(
+      {
+        ...result,
+        events: [
+          {
+            id: "pit",
+            order: 1,
+            segment: "mid",
+            lap: 5,
+            type: "pit_stop",
+            teamId: "leader",
+            severity: "minor",
+            positionDelta: 0,
+            tags: ["pit_stop", "standard"],
+            replayText: "Leader swaps battery pack in the pit",
+            reportText: "Leader lost time on a battery swap."
+          },
+          {
+            id: "finish",
+            order: 2,
+            segment: "finish",
+            lap: 10,
+            type: "finish",
+            teamId: "leader",
+            severity: "minor",
+            positionDelta: 0,
+            tags: ["finish"],
+            replayText: "Leader finishes the race",
+            reportText: "Leader finishes the race."
+          }
+        ]
+      },
+      trace,
+      buildReplayPlan(result, trace),
+      10,
+      "leader"
+    );
+
+    expect(beats.some((beat) => beat.type === "pit_stop" && beat.progress === 0.5)).toBe(true);
+  });
+
   it("uses chrono-specific director beats for qualifying replays", () => {
     const trace: ReplayTracePoint[] = [
       { segment: "start", lap: 1, progress: 0, order: ["leader"], times: { leader: 0 }, gaps: { leader: 0 } },

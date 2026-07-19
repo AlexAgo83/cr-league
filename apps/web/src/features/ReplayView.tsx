@@ -20,7 +20,7 @@ const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
 const GRID_START_PROGRESS = 0.1;
-const PIT_STOP_PROGRESS_WINDOW = 0.035;
+const PIT_STOP_PROGRESS_WINDOW = 0.065;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
@@ -449,9 +449,11 @@ export function carProgressAtRaceTime(result: RaceResult, times: Record<string, 
 
 function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator) {
   const team = names.get(event.teamId) ?? "";
-  const context = event.cardId ? tt(`card_${event.cardId}` as TranslationKey) : event.type === "weather_change" ? tt("event_weather_change") : team;
+  const context = event.cardId ? tt(`card_${event.cardId}` as TranslationKey) : event.type === "weather_change" ? tt("event_weather_change") : event.type === "pit_stop" ? tt("event_pit_stop") : team;
   const impact = event.positionDelta
     ? `${event.positionDelta > 0 ? "+" : ""}${event.positionDelta} ${event.cardId ? "boost" : "pos"}`
+    : event.type === "pit_stop"
+      ? tt("replay_director_pit_stop")
     : event.severity === "major"
       ? tt("event_major")
       : tt("event_ambience");
@@ -671,7 +673,6 @@ export function ReplayView({
     ...(overlayActions ? [] : result.events.filter((event) => event.severity === "minor" && event.type === "race_note"))
   ]
     .filter((event, index, events) => events.findIndex((candidate) => candidate.id === event.id) === index)
-    .slice(0, 8)
     .sort((left, right) => left.order - right.order);
 
   // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.

@@ -33,6 +33,7 @@ Target build: `0.4` economy and card progression.
 - Confirm highlighted buttons remain readable and do not look like static yellow buttons without motion.
 
 ## Screen Checks
+- API pending states: throttle the network and confirm create/rejoin league, profile create/recover, chrono, send plan, launch GP, next GP, garage buy/sell, livery/team save, settings, restart, and admin operations show an inline spinner/message while the request is pending.
 - Chrono report: background image stops before `Session history`; grey panels do not clash with the rest of the cockpit; session setup is formatted, not raw text.
 - Chrono report history: `Review chrono` opens the replay at the matching lap/timeline moment.
 - Replay: race notifications stay in the top notification area; no duplicate centered league label appears over the car.
@@ -68,6 +69,7 @@ Target build: `0.4` economy and card progression.
 - Does the pit-wall/race-desk presentation feel more like a race weekend than an admin form?
 - Do the compact profile and pit-wall entry screens make the first action obvious?
 - Do the animated highlights help without feeling noisy after the first click?
+- Do slow API actions clearly show that the app is working without changing button names or trapping navigation?
 - Does the chrono report teach what to change for the next plan?
 - Can testers move naturally between replay, report, chrono report, and championship history?
 - Do points and credits feel like distinct rewards at a glance?

@@ -782,7 +782,7 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "New lap time" }).at(-1)!);
 
     expect((await screen.findByRole("status")).textContent).toContain("Running qualifying lap...");
-    expect(document.querySelector(".command-loading")?.textContent).toContain("Running qualifying lap...");
+    expect(document.querySelector(".pending-feedback")?.textContent).toContain("Running qualifying lap...");
 
     finishQualifying(response({ state: qualifiedState, run: qualifyingRun, isBest: true }));
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();

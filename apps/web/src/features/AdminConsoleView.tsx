@@ -1,5 +1,6 @@
 import type { Locale, TranslationKey } from "../i18n/index.js";
 import type { AdminLeague, AdminUser } from "../app/types.js";
+import { PendingFeedback } from "./PendingFeedback.js";
 
 export type AdminTab = "users" | "leagues";
 
@@ -11,6 +12,7 @@ export function AdminConsoleView({
   adminUsers,
   locale,
   loading,
+  pendingMessage,
   onDeleteUser,
   onInspectLeague,
   onRefresh,
@@ -26,6 +28,7 @@ export function AdminConsoleView({
   adminUsers: AdminUser[];
   locale: Locale;
   loading: boolean;
+  pendingMessage: string | null;
   onDeleteUser: (user: AdminUser) => void;
   onInspectLeague: (league: AdminLeague) => void;
   onRefresh: () => void;
@@ -55,6 +58,7 @@ export function AdminConsoleView({
             {tt("admin_action_connect")}
           </button>
         </form>
+        <PendingFeedback message={pendingMessage} />
       </div>
       {adminRecoveryCode ? (
         <div className="panel admin-recovery-panel" role="status">
@@ -64,6 +68,7 @@ export function AdminConsoleView({
         </div>
       ) : null}
       <div className="panel admin-data-panel">
+        <PendingFeedback message={pendingMessage} />
         <div className="plan-steps plan-subscreen-tabs" role="tablist" aria-label={tt("admin_tabs_label")}>
           <button type="button" role="tab" aria-selected={adminTab === "users"} className={adminTab === "users" ? "plan-step active" : "plan-step"} onClick={() => onSetAdminTab("users")}>
             <span className="plan-step-label">{tt("admin_tab_users")}</span>

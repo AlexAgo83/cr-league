@@ -13,6 +13,7 @@ import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { GARAGE_PANEL_KEY, GarageView } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
 import { Modal } from "../features/Modal.js";
+import { PendingFeedback } from "../features/PendingFeedback.js";
 import { PlanView } from "../features/PlanView.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
@@ -110,6 +111,7 @@ export function App() {
   const [profileFormError, setProfileFormError] = useState<string | null>(null);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [onboardingHelp, setOnboardingHelp] = useState<OnboardingHelpTopic | null>(null);
+  const pendingMessage = status === "loading" ? message : null;
   const notificationId = useRef(0);
   const snoozedOnboardingHelp = useRef(new Set<OnboardingHelpTopic>());
 
@@ -1066,6 +1068,7 @@ export function App() {
           : `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`}
       </p>
       <div className="actions secondary-actions">
+        <PendingFeedback message={pendingMessage} />
         <button type="button" onClick={submitDirectiveConfirmed} disabled={status === "loading"}>
           {tt("action_submit_directive")}
         </button>
@@ -1112,6 +1115,7 @@ export function App() {
         ) : null}
       </div>
       <div className="actions secondary-actions">
+        <PendingFeedback message={pendingMessage} />
         <button type="button" onClick={() => void resolveGrandPrix()} disabled={status === "loading"}>
           {tt("action_launch_grand_prix")}
         </button>
@@ -1130,8 +1134,9 @@ export function App() {
         {tt("qualifying_confirm_body")} {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
       </p>
       <div className="actions secondary-actions">
+        <PendingFeedback message={pendingMessage} />
         <button type="button" onClick={startQualifyingRunConfirmed} disabled={status === "loading"}>
-          {status === "loading" ? message : tt("action_qualifying")}
+          {tt("action_qualifying")}
         </button>
         <button type="button" onClick={() => setQualifyingConfirmOpen(false)}>
           {tt("action_close")}
@@ -1146,6 +1151,7 @@ export function App() {
       <AssetImage className="modal-hero-image" src="/assets/crl/next-gp-modal.png" alt="" />
       <p>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_body" : "next_gp_confirm_body")}</p>
       <div className="actions secondary-actions">
+        <PendingFeedback message={pendingMessage} />
         <button type="button" onClick={() => void startNextGrandPrix()} disabled={status === "loading"}>
           {nextGrandPrixActionLabel}
         </button>
@@ -1213,6 +1219,7 @@ export function App() {
       adminUsers={adminUsers}
       locale={locale}
       loading={status === "loading"}
+      pendingMessage={pendingMessage}
       onDeleteUser={setAdminDeleteUser}
       onInspectLeague={(league) => void inspectAdminLeague(league)}
       onRefresh={() => void refreshAdminData()}
@@ -1240,6 +1247,7 @@ export function App() {
           profileForm={profileForm}
           profileFormError={profileFormError}
           status={status}
+          pendingMessage={pendingMessage}
           onCreateProfile={() => void createProfileSession()}
           onRecoverProfile={() => void recoverProfileSession()}
           onSetMode={setProfileMode}
@@ -1274,6 +1282,7 @@ export function App() {
             savedClaims={savedClaims}
             savedLeagueIndex={savedLeagueIndex}
             status={status}
+            pendingMessage={pendingMessage}
             onCreateLeague={() => void createLeague()}
             onJoinLeague={() => void joinLeague()}
             onSetForm={setForm}
@@ -1525,7 +1534,7 @@ export function App() {
                         </div>
                       ) : (
                         <div className="race-phase-actions map-race-actions">
-                          {status === "loading" ? <p className="command-loading" role="status">{message}</p> : null}
+                          <PendingFeedback className="map-pending-feedback" message={pendingMessage} />
                           {deskState === "prepare" ? (
                             <>
                               <button
@@ -1636,6 +1645,7 @@ export function App() {
             forecastPick={forecastPick}
             isResolved={isResolved}
             loading={status === "loading"}
+            pendingMessage={pendingMessage}
             cardPanel={garagePanel}
             onBuyCard={buyCard}
             onSellCard={sellCard}
@@ -1737,6 +1747,7 @@ export function App() {
             </label>
           </div>
           <div className="actions secondary-actions">
+            <PendingFeedback message={pendingMessage} />
             <button type="button" onClick={updateSettings} disabled={status === "loading"}>
               {tt("action_update_settings")}
             </button>

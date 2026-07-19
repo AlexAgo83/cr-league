@@ -817,7 +817,7 @@
   margin: 0 0 14px;
 }
 
-.command-loading {
+.pending-feedback {
   align-items: center;
   background: rgb(16 14 18 / 0.66);
   border: 1px solid rgb(248 243 232 / 0.2);
@@ -831,8 +831,16 @@
   padding: 8px 10px;
 }
 
-.command-loading::before {
-  animation: command-loading-spin 0.8s linear infinite;
+.actions .pending-feedback {
+  flex-basis: 100%;
+}
+
+.card-shop-feedback {
+  grid-column: 1 / -1;
+}
+
+.pending-feedback::before {
+  animation: pending-feedback-spin 0.8s linear infinite;
   border: 2px solid rgb(248 243 232 / 0.32);
   border-radius: 999px;
   border-top-color: var(--color-text);
@@ -841,7 +849,7 @@
   width: 14px;
 }
 
-@keyframes command-loading-spin {
+@keyframes pending-feedback-spin {
   to {
     transform: rotate(1turn);
   }

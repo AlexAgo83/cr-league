@@ -112,6 +112,7 @@ CR League is already playable end to end:
 - seeded city-circuit race simulation with weather, traits, events, and reports;
 - garage inventory, card shop, prices, credits, livery editing, and team rename;
 - season history, championship standings, replayable past Grand Prix, and rollover;
+- inline pending feedback for API-backed actions across setup, race flow, garage, admin, and settings;
 - English/French UI baseline and responsive cockpit layouts.
 
 Still intentionally light:
@@ -272,7 +273,7 @@ Current roadmap direction:
 
 - `0.1`: playable vertical slice implemented;
 - `0.2`: private league prototype foundation implemented;
-- `0.3`: playtest game loop polish has reached navigation/admin/circuit patch `0.3.9`;
+- `0.3`: playtest game loop polish has reached navigation/admin/circuit patch `0.3.9`, with API pending feedback and image placeholders in the web app;
 - `0.4`: ship rails are implemented; economy depth waits for playtest signal.
 
 ## Contributing

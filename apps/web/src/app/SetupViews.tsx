@@ -1,4 +1,5 @@
 import type { TranslationKey } from "../i18n/index.js";
+import { PendingFeedback } from "../features/PendingFeedback.js";
 import type { FormState } from "./types.js";
 
 export type ProfileMode = "choice" | "create" | "recover";
@@ -14,6 +15,7 @@ type SavedClaim = {
 export function ProfileSetupView({
   message,
   mode,
+  pendingMessage,
   profileForm,
   profileFormError,
   status,
@@ -26,6 +28,7 @@ export function ProfileSetupView({
 }: {
   message: string;
   mode: ProfileMode;
+  pendingMessage: string | null;
   profileForm: { email: string; recoveryCode: string };
   profileFormError: string | null;
   status: "idle" | "loading" | "error";
@@ -99,6 +102,7 @@ export function ProfileSetupView({
               ) : null}
             </div>
             {profileFormError ? <p className="form-feedback error">{profileFormError}</p> : null}
+            <PendingFeedback message={pendingMessage} />
             <div className="actions primary-actions profile-form-actions">
               <button type="button" onClick={mode === "create" ? onCreateProfile : onRecoverProfile} disabled={status === "loading"}>
                 {mode === "create" ? tt("action_create_profile") : tt("action_recover_profile")}
@@ -126,6 +130,7 @@ export function LeagueSetupView({
   form,
   message,
   mode,
+  pendingMessage,
   savedClaims,
   savedLeagueIndex,
   status,
@@ -140,6 +145,7 @@ export function LeagueSetupView({
   form: FormState;
   message: string;
   mode: SetupMode;
+  pendingMessage: string | null;
   savedClaims: SavedClaim[];
   savedLeagueIndex: number;
   status: "idle" | "loading" | "error";
@@ -209,6 +215,7 @@ export function LeagueSetupView({
                 </>
               ) : null}
             </div>
+            <PendingFeedback message={pendingMessage} />
             <div className="actions primary-actions setup-form-actions">
               <button type="button" onClick={mode === "create" ? onCreateLeague : onJoinLeague} disabled={status === "loading"}>
                 {mode === "create" ? tt("action_start_league") : tt("action_join_league")}
@@ -223,6 +230,7 @@ export function LeagueSetupView({
         {mode === "choice" ? (
           <div className="saved-leagues saved-leagues-compact">
             <span className="section-kicker">{tt("profile_saved_leagues")}</span>
+            <PendingFeedback message={pendingMessage} />
             {savedClaims.length ? (
               <div className="saved-league-carousel">
                 <button type="button" className="saved-league-arrow" aria-label={tt("action_previous_saved_league")} disabled={status === "loading" || savedClaims.length < 2} onClick={() => onSetSavedLeagueIndex((index) => (index + savedClaims.length - 1) % savedClaims.length)}>

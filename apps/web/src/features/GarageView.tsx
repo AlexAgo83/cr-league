@@ -9,6 +9,7 @@ import { CardStatBadges } from "./CardStatBadges.js";
 import { MapCarSprite } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
+import { PendingFeedback } from "./PendingFeedback.js";
 import { RewardValue } from "./RewardValue.js";
 
 export type CardPanel = "team" | "inventory" | "shop";
@@ -38,6 +39,7 @@ export function GarageView({
   forecastPick,
   isResolved,
   loading,
+  pendingMessage,
   cardPanel,
   onBuyCard,
   onSellCard,
@@ -54,6 +56,7 @@ export function GarageView({
   forecastPick: string;
   isResolved: boolean;
   loading: boolean;
+  pendingMessage: string | null;
   cardPanel: CardPanel;
   onBuyCard: (cardId: CardId) => void;
   onSellCard: (cardId: CardId) => void;
@@ -153,6 +156,7 @@ export function GarageView({
         </div>
         {cardPanel === "team" ? (
           <div className="garage-team-panel">
+            <PendingFeedback message={pendingMessage} />
             <div className="field-grid garage-name-fields">
               <label>
                 {tt("garage_team_name")}
@@ -192,6 +196,7 @@ export function GarageView({
         ) : null}
         {cardPanel === "inventory" ? (
           <>
+            <PendingFeedback message={pendingMessage} />
             <ul className="card-inventory">
               {inventoryCards.length ? (
                 inventoryCards.map((cardId) => (
@@ -217,6 +222,7 @@ export function GarageView({
         ) : null}
         {cardPanel === "shop" ? (
           <div className="card-shop">
+            <PendingFeedback className="card-shop-feedback" message={pendingMessage} />
             {shopOffers.map((item) => (
               <button key={item.cardId} type="button" onClick={() => setPendingBuyCardId(item.cardId)} disabled={loading}>
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
@@ -247,6 +253,7 @@ export function GarageView({
             <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
           </div>
           <p>{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
+          <PendingFeedback message={pendingMessage} />
           <div className="modal-actions">
             <button type="button" onClick={confirmBuy} disabled={loading || !pendingBuyAffordable}>
               {tt("garage_buy_confirm_action")}
@@ -270,6 +277,7 @@ export function GarageView({
             <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>
             <CardStatBadges cardId={viewingCardId} tt={tt} />
           </div>
+          <PendingFeedback message={pendingMessage} />
           <div className="modal-actions">
             <button
               type="button"

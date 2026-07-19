@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
-import { AssetImage } from "./AssetImage.js";
 import { CardStatBadges } from "./CardStatBadges.js";
 import { MapCarSprite } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
+import { ModalHero } from "./ModalHero.js";
 import { PendingFeedback } from "./PendingFeedback.js";
 import { RewardValue } from "./RewardValue.js";
 
@@ -241,9 +241,7 @@ export function GarageView({
           <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setPendingBuyCardId(undefined)}>
             ×
           </button>
-          <span className="section-kicker">{tt("garage_shop")}</span>
-          <h2>{tt(`card_${pendingBuy.cardId}` as TranslationKey)}</h2>
-          <AssetImage className="modal-hero-image" src="/assets/crl/garage-buy-modal.png" alt="" />
+          <ModalHero image="/assets/crl/garage-buy-modal.png" kicker={tt("garage_shop")} title={tt(`card_${pendingBuy.cardId}` as TranslationKey)} />
           <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
             <strong>
@@ -269,9 +267,7 @@ export function GarageView({
           <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setViewingCardId(undefined)}>
             ×
           </button>
-          <span className="section-kicker">{tt("garage_inventory")}</span>
-          <h2>{tt(`card_${viewingCardId}` as TranslationKey)}</h2>
-          <AssetImage className="modal-hero-image" src="/assets/crl/garage-sell-modal.png" alt="" />
+          <ModalHero image="/assets/crl/garage-sell-modal.png" kicker={tt("garage_inventory")} title={tt(`card_${viewingCardId}` as TranslationKey)} />
           <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card garage-detail-card">
             <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>

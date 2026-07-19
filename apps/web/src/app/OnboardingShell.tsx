@@ -2,8 +2,8 @@ import { type ReactNode, useMemo, useState } from "react";
 import { CITY_CIRCUITS } from "./circuits.js";
 import { type TranslationKey } from "../i18n/index.js";
 import { CircuitMap } from "../features/CircuitMap.js";
-import { AssetImage } from "../features/AssetImage.js";
 import { Modal } from "../features/Modal.js";
+import { ModalHero } from "../features/ModalHero.js";
 
 export const ONBOARDING_HELP_KEYS = {
   profileCode: "cr-league-help-profile-code",
@@ -114,9 +114,14 @@ export function OnboardingHelpModal({
 
   return (
     <Modal label={tt(`onboarding_${topic}_title` as TranslationKey)} onClose={() => onClose(dismiss)}>
-      <span className="section-kicker">{tt("onboarding_kicker")}</span>
-      <h2>{tt(`onboarding_${topic}_title` as TranslationKey)}</h2>
-      {image ? <AssetImage className="onboarding-image" src={image} alt="" /> : null}
+      {image ? (
+        <ModalHero image={image} kicker={tt("onboarding_kicker")} title={tt(`onboarding_${topic}_title` as TranslationKey)} />
+      ) : (
+        <>
+          <span className="section-kicker">{tt("onboarding_kicker")}</span>
+          <h2>{tt(`onboarding_${topic}_title` as TranslationKey)}</h2>
+        </>
+      )}
       <p>{tt(`onboarding_${topic}_body` as TranslationKey)}</p>
       {recoveryCode ? <strong className="onboarding-code">{recoveryCode}</strong> : null}
       {items.length ? (
@@ -154,9 +159,7 @@ export function LeagueIntroModal({
   return (
     <Modal label={tt("league_onboarding_title")} onClose={() => onClose(dismiss)}>
       <div className="league-onboarding">
-        <AssetImage className="onboarding-image league-onboarding-image" src={LEAGUE_ONBOARDING_IMAGES[step]!} alt="" />
-        <span className="section-kicker">{tt("onboarding_kicker")}</span>
-        <h2>{tt(`league_onboarding_step_${stepNumber}_title` as TranslationKey)}</h2>
+        <ModalHero image={LEAGUE_ONBOARDING_IMAGES[step]!} kicker={tt("onboarding_kicker")} title={tt(`league_onboarding_step_${stepNumber}_title` as TranslationKey)} />
         <p>{tt(`league_onboarding_step_${stepNumber}_body` as TranslationKey)}</p>
         <div className="league-onboarding-dots" aria-label={tt("league_onboarding_progress")}>
           {LEAGUE_ONBOARDING_IMAGES.map((_, index) => (

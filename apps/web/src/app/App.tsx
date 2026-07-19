@@ -13,6 +13,7 @@ import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { GARAGE_PANEL_KEY, GarageView } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
 import { Modal } from "../features/Modal.js";
+import { ModalHero } from "../features/ModalHero.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { PlanView } from "../features/PlanView.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
@@ -1067,9 +1068,7 @@ export function App() {
 
   const directiveConfirmModal = directiveConfirmOpen ? (
     <Modal label={tt("directive_confirm_title")} onClose={() => setDirectiveConfirmOpen(false)}>
-      <span className="section-kicker">{tt("qualifying_kicker")}</span>
-      <h2>{tt("directive_confirm_title")}</h2>
-      <AssetImage className="modal-hero-image" src="/assets/crl/send-plan-modal.png" alt="" />
+      <ModalHero image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} />
       <p>
         {qualifyingAttemptsUsed === 0
           ? tt("directive_confirm_no_qualifying")
@@ -1090,9 +1089,7 @@ export function App() {
   const hiddenStartingGridCount = startingGridEntries.length - displayedStartingGridEntries.length;
   const resolveConfirmModal = resolveConfirmOpen ? (
     <Modal label={tt("launch_gp_confirm_title")} onClose={() => setResolveConfirmOpen(false)}>
-      <span className="section-kicker">{tt("action_launch_grand_prix")}</span>
-      <h2>{tt("launch_gp_confirm_title")}</h2>
-      <AssetImage className="modal-hero-image" src="/assets/crl/launch-gp-modal.png" alt="" />
+      <ModalHero image="/assets/crl/launch-gp-modal.png" kicker={tt("action_launch_grand_prix")} title={tt("launch_gp_confirm_title")} />
       <p>{tt("launch_gp_confirm_body")}</p>
       <div className="starting-grid-confirmation">
         <div>
@@ -1135,9 +1132,7 @@ export function App() {
   ) : null;
   const qualifyingConfirmModal = qualifyingConfirmOpen ? (
     <Modal label={tt("qualifying_confirm_title")} onClose={() => setQualifyingConfirmOpen(false)}>
-      <span className="section-kicker">{tt("qualifying_kicker")}</span>
-      <h2>{tt("qualifying_confirm_title")}</h2>
-      <AssetImage className="modal-hero-image" src="/assets/crl/qualifying-modal.png" alt="" />
+      <ModalHero image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} />
       <p>
         {tt("qualifying_confirm_body")} {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
       </p>
@@ -1154,9 +1149,7 @@ export function App() {
   ) : null;
   const nextGrandPrixConfirmModal = nextGrandPrixConfirmOpen ? (
     <Modal label={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} onClose={() => setNextGrandPrixConfirmOpen(false)}>
-      <span className="section-kicker">{nextGrandPrixActionLabel}</span>
-      <h2>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")}</h2>
-      <AssetImage className="modal-hero-image" src="/assets/crl/next-gp-modal.png" alt="" />
+      <ModalHero image="/assets/crl/next-gp-modal.png" kicker={nextGrandPrixActionLabel} title={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} />
       <p>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_body" : "next_gp_confirm_body")}</p>
       <div className="actions secondary-actions">
         <PendingFeedback message={pendingMessage} />
@@ -1681,11 +1674,7 @@ export function App() {
       {nextGrandPrixConfirmModal}
       {seasonRecap ? (
         <Modal label={tt("season_recap_title")} className="panel modal season-recap-modal" onClose={() => setSeasonRecapSeason(null)}>
-          <span className="section-kicker">
-            {tt("league_season")} {seasonRecap.season}
-          </span>
-          <h2>{tt("season_recap_title")}</h2>
-          <AssetImage className="modal-hero-image" src="/assets/crl/season-recap-modal.png" alt="" />
+          <ModalHero image="/assets/crl/season-recap-modal.png" kicker={`${tt("league_season")} ${seasonRecap.season}`} title={tt("season_recap_title")} />
           <div className="season-champion-card">
             <span>{tt("season_champion")}</span>
             <strong>

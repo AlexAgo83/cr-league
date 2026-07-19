@@ -302,6 +302,7 @@ function testCircuit(laps: number, route: Array<{ lat: number; lng: number }>) {
     country: "TT",
     layoutKey: "city_circuit_map",
     laps,
+    trackLengthMeters: 3200,
     traits: { grip: 1, overtaking: 1, energy: 1 },
     likelyWeather: "dry",
     route

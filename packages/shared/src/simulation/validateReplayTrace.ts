@@ -9,11 +9,13 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
 
   const teamIds = result.classification.map((entry) => entry.teamId);
   const pitPhases = new Map<string, string[]>();
+  const overtakePhases = new Map<string, Array<{ progress: number; phase: string }>>();
 
   for (let index = 1; index < trace.length; index += 1) {
     const previous = trace[index - 1]!;
     const point = trace[index]!;
     if (point.progress <= previous.progress) errors.push(`trace progress must increase at point ${index}`);
+    if (point.distanceMeters !== undefined && previous.distanceMeters !== undefined && point.distanceMeters <= previous.distanceMeters) errors.push(`trace distance must increase at point ${index}`);
 
     for (const teamId of teamIds) {
       const previousCar = previous.cars?.[teamId];
@@ -24,11 +26,14 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
       }
 
       if (car.trackProgress < 0 || car.trackProgress > 1) errors.push(`car progress out of bounds for ${teamId} at point ${index}`);
+      if (car.distanceMeters !== undefined && car.distanceMeters < 0) errors.push(`car distance out of bounds for ${teamId} at point ${index}`);
       if (car.speed < 0 || car.speed > 1.2) errors.push(`car speed out of bounds for ${teamId} at point ${index}`);
       if (previousCar && car.trackProgress + 0.0001 < previousCar.trackProgress) errors.push(`car progress goes backwards for ${teamId} at point ${index}`);
       if (previousCar && car.trackProgress - previousCar.trackProgress > 0.09) errors.push(`car progress jumps too far for ${teamId} at point ${index}`);
+      if (previousCar && previousCar.phase !== "grid" && car.phase !== "finished" && Math.abs(car.speed - previousCar.speed) > 0.8) errors.push(`car speed changes too abruptly for ${teamId} at point ${index}`);
 
       if (car.phase.startsWith("pit")) pitPhases.set(teamId, [...(pitPhases.get(teamId) ?? []), car.phase]);
+      if (car.phase.startsWith("overtake")) overtakePhases.set(teamId, [...(overtakePhases.get(teamId) ?? []), { progress: point.progress, phase: car.phase }]);
     }
   }
 
@@ -38,6 +43,12 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
     const stop = phases.indexOf("pit_stop");
     const exit = phases.indexOf("pit_exit");
     if (entry < 0 || stop < entry || exit < stop) errors.push(`pit phases missing or out of order for ${event.teamId}`);
+  }
+
+  for (const change of result.replayFacts?.orderChanges ?? []) {
+    const phases = overtakePhases.get(change.overtakingTeamId) ?? [];
+    const nearby = phases.filter((phase) => Math.abs(phase.progress - change.progress) <= 0.06).map((phase) => phase.phase);
+    if (!nearby.some((phase) => phase === "overtake_overlap" || phase === "overtake_pass")) errors.push(`overtake phases missing near ${change.overtakingTeamId} at ${change.progress.toFixed(2)}`);
   }
 
   return errors;

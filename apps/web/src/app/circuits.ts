@@ -8,6 +8,7 @@ export type CityCircuit = {
   country: string;
   layoutKey: TranslationKey;
   laps: number;
+  trackLengthMeters: number;
   traits: {
     grip: number;
     overtaking: number;

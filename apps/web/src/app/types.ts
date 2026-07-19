@@ -21,6 +21,7 @@ export type LeagueState = {
     status: string;
     primaryTrait: string;
     secondaryTrait: string;
+    trackLengthMeters: number;
     forecast: Record<string, number>;
     qualifyingRuns: QualifyingRun[];
     result: RaceResult | null;

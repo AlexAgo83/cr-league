@@ -39,6 +39,7 @@ function isRaceInput(value: unknown): value is RaceInput {
     isOneOf(candidate.primaryTrait, TRAITS) &&
     isOneOf(candidate.secondaryTrait, TRAITS) &&
     isForecast(candidate.forecast) &&
+    (candidate.trackLengthMeters === undefined || (typeof candidate.trackLengthMeters === "number" && Number.isFinite(candidate.trackLengthMeters))) &&
     Array.isArray(candidate.participants) &&
     candidate.participants.length >= 2 &&
     candidate.participants.length <= MAX_PREVIEW_PARTICIPANTS &&

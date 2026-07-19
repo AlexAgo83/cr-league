@@ -53,6 +53,7 @@ function stateWithHistory(grandPrixHistory: LeagueState["grandPrixHistory"]): Le
       status: "briefing",
       primaryTrait: "fast",
       secondaryTrait: "urban",
+      trackLengthMeters: 3200,
       forecast: { dry: 100 },
       qualifyingRuns: [],
       result: null

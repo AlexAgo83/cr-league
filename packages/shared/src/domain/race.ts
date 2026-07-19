@@ -79,6 +79,7 @@ export type RaceInput = {
   primaryTrait: CircuitTrait;
   secondaryTrait: CircuitTrait;
   traits?: RaceTraits;
+  trackLengthMeters?: number;
   forecast: WeatherForecast;
   participants: RaceParticipant[];
 };
@@ -135,6 +136,7 @@ export type ReplayTracePoint = {
   segment: RaceSegment;
   lap: number;
   progress: number;
+  distanceMeters?: number;
   order: string[];
   times: Record<string, number>;
   gaps: Record<string, number>;
@@ -142,8 +144,9 @@ export type ReplayTracePoint = {
     string,
     {
       trackProgress: number;
+      distanceMeters?: number;
       speed: number;
-      phase: "grid" | "racing" | "pit_entry" | "pit_stop" | "pit_exit" | "finished";
+      phase: "grid" | "racing" | "pit_entry" | "pit_stop" | "pit_exit" | "overtake_approach" | "overtake_overlap" | "overtake_pass" | "overtake_settle" | "finished";
     }
   >;
 };

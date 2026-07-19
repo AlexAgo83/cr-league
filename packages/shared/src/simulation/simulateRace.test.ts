@@ -105,12 +105,14 @@ describe("simulateRace", () => {
     expect(new Set(Object.values(result.replayTrace?.[0]?.gaps ?? {}))).toEqual(new Set([0]));
     expect(result.replayTrace?.[1]?.times.atlas).toBeLessThan(result.replayTrace?.[1]?.times.redpeak ?? 0);
     expect(result.replayTrace?.at(-1)?.progress).toBe(1);
+    expect(result.replayTrace?.at(-1)?.distanceMeters).toBe(3200);
     expect(result.replayTrace?.at(-1)?.order).toEqual(result.classification.map((entry) => entry.teamId));
     expect(result.replayTrace?.at(-1)?.times[result.classification[0]!.teamId]).toBeGreaterThan(0);
     expect(result.replayTrace?.at(-1)?.gaps[result.classification[0]!.teamId]).toBe(0);
     expect(validateReplayTrace(result)).toEqual([]);
     expect(result.replayFacts?.version).toBe(1);
     expect(result.replayFacts?.orderChanges.every((fact) => fact.type === "order_change" && fact.progress >= 0 && fact.progress <= 1)).toBe(true);
+    expect(result.replayTrace?.some((point) => Object.values(point.cars ?? {}).some((car) => car.phase.startsWith("overtake")))).toBe(true);
     expect(result.events.filter((event) => event.type === "pit_stop")).toHaveLength(6);
     expect(result.consumedCards).toEqual(
       expect.arrayContaining([

@@ -54,6 +54,7 @@ export type LeagueState = {
     status: string;
     primaryTrait: RaceInput["primaryTrait"];
     secondaryTrait: RaceInput["secondaryTrait"];
+    trackLengthMeters: number;
     forecast: RaceInput["forecast"];
     qualifyingRuns: QualifyingRun[];
     result: unknown;
@@ -116,6 +117,7 @@ export type ResolveGrandPrixInput = {
   claimCode?: string;
   allowDefaults?: boolean;
   traits?: unknown;
+  trackLengthMeters?: unknown;
 };
 
 export type UpdateTeamLiveryInput = {

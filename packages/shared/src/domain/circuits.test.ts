@@ -21,11 +21,13 @@ describe("circuit identities", () => {
     expect(raceInputFromCircuit(CITY_CIRCUIT_IDENTITIES[0])).toEqual({
       primaryTrait: "weather_sensitive",
       secondaryTrait: "fast",
+      trackLengthMeters: 2800,
       forecast: { dry: 35, light_rain: 50, heavy_rain: 15 }
     });
     expect(raceInputFromCircuit(CITY_CIRCUIT_IDENTITIES[1])).toEqual({
       primaryTrait: "technical",
       secondaryTrait: "urban",
+      trackLengthMeters: 2300,
       forecast: { dry: 70, light_rain: 20, heavy_rain: 10 }
     });
   });

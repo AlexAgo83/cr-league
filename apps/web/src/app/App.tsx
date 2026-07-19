@@ -510,7 +510,8 @@ export function App() {
           teamId: leagueState.player?.teamId,
           claimCode: leagueState.player?.claimCode,
           allowDefaults: !playerDecision,
-          traits: currentCircuit.traits
+          traits: currentCircuit.traits,
+          trackLengthMeters: currentCircuit.trackLengthMeters
         })
       });
       setLeagueState(withCurrentPlayer(state));

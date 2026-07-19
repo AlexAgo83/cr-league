@@ -261,6 +261,7 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
   if (!league || !league.grandPrixes[0]) return null;
 
   const grandPrix = league.grandPrixes[0];
+  const currentCircuit = circuitIdentityForRound(grandPrix.round, circuitSeasonSeed(league.id, grandPrix.season));
   return {
     league: {
       id: league.id,
@@ -282,6 +283,7 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
       status: grandPrix.status,
       primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
       secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+      trackLengthMeters: currentCircuit.trackLengthMeters,
       forecast: grandPrix.forecast as RaceInput["forecast"],
       qualifyingRuns: normalizeQualifyingRuns(grandPrix.qualifyingRuns),
       result: grandPrix.result
@@ -614,12 +616,14 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
       throw new LeagueRuleError("At least two teams are required to launch the Grand Prix.");
     }
     const participants = buildParticipants(freshState);
+    const circuit = circuitIdentityForRound(freshGrandPrix.round, circuitSeasonSeed(leagueId, freshGrandPrix.season));
     const result = simulateRace({
       seed: freshGrandPrix.seed,
       grandPrixName: freshGrandPrix.name,
       primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
       secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
       traits: normalizeRaceTraits(input.traits),
+      trackLengthMeters: clampInteger(input.trackLengthMeters, circuit.trackLengthMeters, 1200, 8000),
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
       participants
     });

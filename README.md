@@ -213,6 +213,7 @@ npm test
 npm run test:e2e
 npm run lint
 npm run logics:validate
+npm run replay:validate -- race-result.json
 ```
 
 Seed a private playtest league:

@@ -1,24 +1,24 @@
 import type { CircuitTrait, RaceInput, RaceTraits, Weather } from "./race.js";
 
 export const CITY_CIRCUIT_IDENTITIES = [
-  { city: "Paris", country: "FR", layoutKey: "circuit_docklands_sprint", laps: 7, traits: { grip: 64, overtaking: 72, energy: 58 }, likelyWeather: "light_rain" },
-  { city: "Paris", country: "FR", layoutKey: "circuit_left_bank_loop", laps: 9, traits: { grip: 70, overtaking: 55, energy: 62 }, likelyWeather: "dry" },
-  { city: "Amsterdam", country: "NL", layoutKey: "circuit_canal_loop", laps: 7, traits: { grip: 60, overtaking: 68, energy: 66 }, likelyWeather: "light_rain" },
-  { city: "Amsterdam", country: "NL", layoutKey: "circuit_harbor_sprint", laps: 10, traits: { grip: 58, overtaking: 78, energy: 52 }, likelyWeather: "heavy_rain" },
-  { city: "Berlin", country: "DE", layoutKey: "circuit_ring_sector", laps: 6, traits: { grip: 76, overtaking: 62, energy: 70 }, likelyWeather: "dry" },
-  { city: "Berlin", country: "DE", layoutKey: "circuit_mitte_dash", laps: 5, traits: { grip: 68, overtaking: 74, energy: 60 }, likelyWeather: "dry" },
-  { city: "Rome", country: "IT", layoutKey: "circuit_rome_tiber_loop", laps: 8, traits: { grip: 58, overtaking: 74, energy: 62 }, likelyWeather: "dry" },
-  { city: "Lisbon", country: "PT", layoutKey: "circuit_lisbon_baixa_loop", laps: 9, traits: { grip: 54, overtaking: 78, energy: 57 }, likelyWeather: "dry" },
-  { city: "Vienna", country: "AT", layoutKey: "circuit_vienna_ring_loop", laps: 5, traits: { grip: 70, overtaking: 66, energy: 72 }, likelyWeather: "light_rain" },
-  { city: "Porto", country: "PT", layoutKey: "circuit_porto_boavista_loop", laps: 8, traits: { grip: 56, overtaking: 76, energy: 60 }, likelyWeather: "light_rain" },
-  { city: "Madrid", country: "ES", layoutKey: "circuit_madrid_centro_loop", laps: 5, traits: { grip: 62, overtaking: 80, energy: 55 }, likelyWeather: "dry" },
-  { city: "Monaco", country: "MC", layoutKey: "circuit_monaco_harbor_loop", laps: 13, traits: { grip: 82, overtaking: 48, energy: 58 }, likelyWeather: "dry" },
-  { city: "Monaco", country: "MC", layoutKey: "circuit_monaco_casino_sprint", laps: 6, traits: { grip: 78, overtaking: 52, energy: 54 }, likelyWeather: "light_rain" },
-  { city: "London", country: "GB", layoutKey: "circuit_london_thames_loop", laps: 7, traits: { grip: 66, overtaking: 64, energy: 61 }, likelyWeather: "light_rain" },
-  { city: "Brussels", country: "BE", layoutKey: "circuit_brussels_grand_place_loop", laps: 3, traits: { grip: 63, overtaking: 67, energy: 59 }, likelyWeather: "light_rain" },
-  { city: "Prague", country: "CZ", layoutKey: "circuit_prague_vltava_loop", laps: 7, traits: { grip: 68, overtaking: 60, energy: 64 }, likelyWeather: "dry" },
-  { city: "Copenhagen", country: "DK", layoutKey: "circuit_copenhagen_harbor_loop", laps: 7, traits: { grip: 71, overtaking: 58, energy: 70 }, likelyWeather: "heavy_rain" },
-  { city: "Stockholm", country: "SE", layoutKey: "circuit_stockholm_gamla_stan_loop", laps: 8, traits: { grip: 72, overtaking: 56, energy: 69 }, likelyWeather: "light_rain" }
+  { city: "Paris", country: "FR", layoutKey: "circuit_docklands_sprint", laps: 7, trackLengthMeters: 2800, traits: { grip: 64, overtaking: 72, energy: 58 }, likelyWeather: "light_rain" },
+  { city: "Paris", country: "FR", layoutKey: "circuit_left_bank_loop", laps: 9, trackLengthMeters: 2300, traits: { grip: 70, overtaking: 55, energy: 62 }, likelyWeather: "dry" },
+  { city: "Amsterdam", country: "NL", layoutKey: "circuit_canal_loop", laps: 7, trackLengthMeters: 3100, traits: { grip: 60, overtaking: 68, energy: 66 }, likelyWeather: "light_rain" },
+  { city: "Amsterdam", country: "NL", layoutKey: "circuit_harbor_sprint", laps: 10, trackLengthMeters: 2100, traits: { grip: 58, overtaking: 78, energy: 52 }, likelyWeather: "heavy_rain" },
+  { city: "Berlin", country: "DE", layoutKey: "circuit_ring_sector", laps: 6, trackLengthMeters: 3600, traits: { grip: 76, overtaking: 62, energy: 70 }, likelyWeather: "dry" },
+  { city: "Berlin", country: "DE", layoutKey: "circuit_mitte_dash", laps: 5, trackLengthMeters: 3900, traits: { grip: 68, overtaking: 74, energy: 60 }, likelyWeather: "dry" },
+  { city: "Rome", country: "IT", layoutKey: "circuit_rome_tiber_loop", laps: 8, trackLengthMeters: 2600, traits: { grip: 58, overtaking: 74, energy: 62 }, likelyWeather: "dry" },
+  { city: "Lisbon", country: "PT", layoutKey: "circuit_lisbon_baixa_loop", laps: 9, trackLengthMeters: 2400, traits: { grip: 54, overtaking: 78, energy: 57 }, likelyWeather: "dry" },
+  { city: "Vienna", country: "AT", layoutKey: "circuit_vienna_ring_loop", laps: 5, trackLengthMeters: 4200, traits: { grip: 70, overtaking: 66, energy: 72 }, likelyWeather: "light_rain" },
+  { city: "Porto", country: "PT", layoutKey: "circuit_porto_boavista_loop", laps: 8, trackLengthMeters: 2700, traits: { grip: 56, overtaking: 76, energy: 60 }, likelyWeather: "light_rain" },
+  { city: "Madrid", country: "ES", layoutKey: "circuit_madrid_centro_loop", laps: 5, trackLengthMeters: 4000, traits: { grip: 62, overtaking: 80, energy: 55 }, likelyWeather: "dry" },
+  { city: "Monaco", country: "MC", layoutKey: "circuit_monaco_harbor_loop", laps: 13, trackLengthMeters: 1650, traits: { grip: 82, overtaking: 48, energy: 58 }, likelyWeather: "dry" },
+  { city: "Monaco", country: "MC", layoutKey: "circuit_monaco_casino_sprint", laps: 6, trackLengthMeters: 3300, traits: { grip: 78, overtaking: 52, energy: 54 }, likelyWeather: "light_rain" },
+  { city: "London", country: "GB", layoutKey: "circuit_london_thames_loop", laps: 7, trackLengthMeters: 3000, traits: { grip: 66, overtaking: 64, energy: 61 }, likelyWeather: "light_rain" },
+  { city: "Brussels", country: "BE", layoutKey: "circuit_brussels_grand_place_loop", laps: 3, trackLengthMeters: 6100, traits: { grip: 63, overtaking: 67, energy: 59 }, likelyWeather: "light_rain" },
+  { city: "Prague", country: "CZ", layoutKey: "circuit_prague_vltava_loop", laps: 7, trackLengthMeters: 2900, traits: { grip: 68, overtaking: 60, energy: 64 }, likelyWeather: "dry" },
+  { city: "Copenhagen", country: "DK", layoutKey: "circuit_copenhagen_harbor_loop", laps: 7, trackLengthMeters: 3050, traits: { grip: 71, overtaking: 58, energy: 70 }, likelyWeather: "heavy_rain" },
+  { city: "Stockholm", country: "SE", layoutKey: "circuit_stockholm_gamla_stan_loop", laps: 8, trackLengthMeters: 2550, traits: { grip: 72, overtaking: 56, energy: 69 }, likelyWeather: "light_rain" }
 ] as const satisfies readonly [
   CityCircuitIdentitySource,
   ...CityCircuitIdentitySource[]
@@ -29,6 +29,7 @@ type CityCircuitIdentitySource = {
   country: string;
   layoutKey: string;
   laps: number;
+  trackLengthMeters: number;
   traits: RaceTraits;
   likelyWeather: Weather;
 };
@@ -56,11 +57,12 @@ export function circuitIdentityForRound(round: number, seasonSeed = "default") {
   return circuits[(Math.max(1, round) - 1) % circuits.length]!;
 }
 
-export function raceInputFromCircuit(circuit: CityCircuitIdentity): Pick<RaceInput, "primaryTrait" | "secondaryTrait" | "forecast"> {
+export function raceInputFromCircuit(circuit: CityCircuitIdentity): Pick<RaceInput, "primaryTrait" | "secondaryTrait" | "trackLengthMeters" | "forecast"> {
   const [primaryTrait, secondaryTrait] = rankedCircuitTraits(circuit);
   return {
     primaryTrait,
     secondaryTrait,
+    trackLengthMeters: circuit.trackLengthMeters,
     forecast: forecastFromLikelyWeather(circuit.likelyWeather)
   };
 }

@@ -618,7 +618,6 @@ describe("App", () => {
     expect(document.querySelector(".map-workflow-panel")?.textContent).toContain("1. Read the circuit");
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
     expect(screen.getAllByText("Docklands Sprint").length).toBeGreaterThan(0);
-    expect(document.querySelector(".map-screen .brand strong")).toBe(null);
     expect(screen.queryByRole("heading", { name: "Tune the race plan" })).toBe(null);
     expect(screen.getByRole("button", { name: "Plan" })).toBeTruthy();
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Edit planNew lap time");
@@ -784,7 +783,7 @@ describe("App", () => {
     expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("Rain Grip");
     expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("+2 boost");
     expect(document.querySelector(".replay-map-panel")?.className).toContain("circuit-weather-light_rain");
-    expect(document.querySelector(".map-car-event")?.textContent).toContain("Rain Grip");
+    expect(document.querySelector(".map-car-event")).toBe(null);
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Volt Union");
     fireEvent.click(screen.getByRole("button", { name: /Restart/ }));
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("0%");

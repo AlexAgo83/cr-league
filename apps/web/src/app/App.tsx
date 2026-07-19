@@ -1607,7 +1607,7 @@ export function App() {
       <header className="topbar">
         <div className="brand">
           <img className="brand-icon" src="/favicon.svg" alt={APP_NAME} />
-          {isMapScreen ? null : <strong>{leagueState.league.name}</strong>}
+          <strong>{leagueState.league.name}</strong>
         </div>
         <nav className="game-nav" aria-label={tt("cockpit_sections")}>
           {GAME_VIEWS.map((view) => (

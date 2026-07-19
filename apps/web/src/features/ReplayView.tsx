@@ -544,8 +544,7 @@ export function ReplayView({
     progress: snapshot.carProgress[entry.teamId] ?? 0,
     livery: teamLiveries[entry.teamId],
     positionDelta: positionPops[entry.teamId]?.delta,
-    positionDeltaKey: positionPops[entry.teamId]?.key,
-    eventLabel: activeMoment?.teamId === entry.teamId && activeMomentCard ? activeMomentCard.context : undefined
+    positionDeltaKey: positionPops[entry.teamId]?.key
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
   const tower: ReplayTowerEntry[] = towerEntries ?? snapshot.tower.map((entry) => ({ teamId: entry.teamId, teamName: entry.teamName, value: "" }));

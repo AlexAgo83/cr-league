@@ -2890,17 +2890,17 @@ label small {
 
 .circuit-pit-stop {
   animation: pit-stop-pulse 1.2s ease-in-out infinite;
-  filter: drop-shadow(0 0 5px rgb(56 189 248 / 0.45)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.75));
+  filter: drop-shadow(0 0 5px rgb(250 204 21 / 0.45)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.75));
 }
 
 .circuit-pit-stop circle {
   fill: rgb(16 14 18 / 0.88);
-  stroke: var(--color-telemetry);
+  stroke: #facc15;
   stroke-width: 2;
 }
 
 .circuit-pit-stop text {
-  fill: var(--color-telemetry);
+  fill: #facc15;
   font-family: var(--font-display);
   font-size: 9px;
   font-weight: 800;
@@ -2916,7 +2916,7 @@ label small {
 
 @keyframes pit-stop-pulse {
   50% {
-    filter: drop-shadow(0 0 7px rgb(56 189 248 / 0.72)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.8));
+    filter: drop-shadow(0 0 7px rgb(250 204 21 / 0.72)) drop-shadow(0 1px 2px rgb(0 0 0 / 0.8));
     opacity: 0.78;
   }
 }

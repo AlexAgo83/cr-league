@@ -316,6 +316,7 @@ export function CircuitMap({
   const hasCars = cars.length > 0;
   const routeAnalysis = analyzeCircuitRoute(points);
   const stageProgress = (progress: number) => progressFromStart(progress, routeAnalysis.startProgress);
+  const displayWeather = weather ?? circuit.likelyWeather;
   carsRef.current = cars;
   pointsRef.current = points;
 
@@ -377,17 +378,6 @@ export function CircuitMap({
       className={`${framed ? "circuit-map" : "circuit-map circuit-map-unframed"}${className ? ` ${className}` : ""}${weather ? ` circuit-weather-${weather}` : ""}`}
       aria-label={tt("city_circuit_map")}
     >
-      {showHeading ? (
-        <div className="circuit-map-heading">
-          <span className="circuit-city">
-            <CountryBadge country={circuit.country} /> {circuit.city}
-          </span>
-          <strong>{tt(circuit.layoutKey)}</strong>
-          <small>
-            {circuit.laps} {tt("unit_laps")} · {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
-          </small>
-        </div>
-      ) : null}
       <div className="circuit-map-stage">
         <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           <g ref={cameraRef} className="circuit-camera">
@@ -461,9 +451,28 @@ export function CircuitMap({
           </g>
         </svg>
         <small className="map-attribution">© OSM · CARTO</small>
+        {showHeading || showTraits ? (
+          <div className="map-info-stack">
+            {showHeading ? (
+              <div className="map-status">
+                <span className="circuit-city">
+                  <CountryBadge country={circuit.country} /> {circuit.city}
+                </span>
+                <strong>{tt(circuit.layoutKey)}</strong>
+                <small>
+                  {circuit.laps} {tt("unit_laps")}
+                </small>
+                <small className="map-weather-readout">
+                  <VisualIcon name={displayWeather} />
+                  <span>{tt(`weather_${displayWeather}` as TranslationKey)}</span>
+                </small>
+              </div>
+            ) : null}
+            {showTraits ? <MapTraitsPanel traits={circuit.traits} tt={tt} /> : null}
+          </div>
+        ) : null}
         {overlay}
       </div>
-      {showTraits ? <MapTraitsPanel traits={circuit.traits} tt={tt} /> : null}
     </section>
   );
 }

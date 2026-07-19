@@ -20,7 +20,7 @@ import { PositionBadge } from "../features/PositionBadge.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 import { RewardValue } from "../features/RewardValue.js";
-import { CountryBadge } from "../features/VisualIcon.js";
+import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
 import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, SetupShell, type OnboardingHelpTopic } from "./OnboardingShell.js";
 import {
   ACTIVE_PLAYER_CLAIM_KEY,
@@ -1474,7 +1474,11 @@ export function App() {
                           </span>
                           <strong>{tt(currentCircuit.layoutKey)}</strong>
                           <small>
-                            {currentCircuit.laps} {tt("unit_laps")} · {tt(`weather_${currentCircuit.likelyWeather}` as TranslationKey)}
+                            {currentCircuit.laps} {tt("unit_laps")}
+                          </small>
+                          <small className="map-weather-readout">
+                            <VisualIcon name={forecastPick as Weather} />
+                            <span>{tt(`weather_${forecastPick}` as TranslationKey)}</span>
                           </small>
                         </div>
                         <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />

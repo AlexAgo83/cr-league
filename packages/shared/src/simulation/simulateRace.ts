@@ -499,18 +499,18 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
   const { approach, preparation } = participant.decision;
 
   if (approach === "prudent") {
-    scores.pace -= 8;
-    scores.control += 12;
-    scores.reliability += 12;
+    scores.pace -= 10;
+    scores.control += 10;
+    scores.reliability += 8;
     scores.aggression -= 12;
   } else if (approach === "balanced") {
-    scores.control += 4;
-    scores.reliability += 4;
-    scores.weatherReadiness += 4;
+    scores.control += 2;
+    scores.reliability += 2;
+    scores.weatherReadiness += 2;
   } else if (approach === "aggressive") {
-    scores.pace += 14;
-    scores.control -= 8;
-    scores.reliability -= 8;
+    scores.pace += 16;
+    scores.control -= 6;
+    scores.reliability -= 6;
     scores.aggression += 16;
   }
 
@@ -518,19 +518,19 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.pace += 9;
     scores.reliability -= 4;
   } else if (preparation === "reliability") {
-    scores.reliability += 16;
-    scores.control += 8;
-    scores.pace -= 2;
+    scores.reliability += 10;
+    scores.control += 6;
+    scores.pace -= 4;
   } else {
-    scores.weatherReadiness += 20;
-    scores.control += 3;
-    scores.pace -= 2;
+    scores.weatherReadiness += 12;
+    scores.control += 1;
+    scores.pace -= 3;
   }
 
   if (pitStrategy(participant.decision) === "heavy_pack") {
-    scores.pace -= 8;
-    scores.reliability += 10;
-    scores.control += 4;
+    scores.pace -= 14;
+    scores.reliability += 4;
+    scores.control += 2;
   } else if (pitStrategy(participant.decision) === "mini_pack") {
     scores.pace += 9;
     scores.aggression += 4;
@@ -551,10 +551,10 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.aggression += 6;
     scores.reliability -= 10;
   } else if (participant.decision.cardId === "defensive_order") {
-    scores.control += 7;
-    scores.reliability += 5;
+    scores.control += 5;
+    scores.reliability += 1;
     scores.aggression -= 12;
-    scores.pace -= 8;
+    scores.pace -= 10;
   } else if (participant.decision.cardId === "adjustable_wing") {
     scores.pace += 4;
     scores.aggression += 5;
@@ -563,8 +563,8 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.pace -= 5;
     scores.control += 5;
   } else if (participant.decision.cardId === "hard_tires") {
-    scores.pace -= 6;
-    scores.reliability += 10;
+    scores.pace -= 9;
+    scores.reliability += 6;
     scores.control += 4;
   } else if (participant.decision.cardId === "calculated_attack") {
     scores.aggression += 7;
@@ -573,7 +573,14 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
 
 function maybeAddPitStopEvent(state: TeamState, segment: RaceSegment, events: RaceEvent[]) {
   const strategy = pitStrategy(state.participant.decision);
-  if (strategy === "heavy_pack") return;
+  if (strategy === "heavy_pack") {
+    if (segment === "mid") {
+      state.elapsedTime += 4;
+      state.resultTags.add("heavy_pack");
+      events.push(createMiniInfoEvent(events.length, state, segment, "battery_critical", `${state.participant.teamName} carries heavy battery mass through the middle sector`, ["pit_stop", strategy]));
+    }
+    return;
+  }
   if (strategy === "standard" && segment !== "mid") return;
   if (strategy === "mini_pack" && segment !== "early" && segment !== "late") return;
 

@@ -61,6 +61,6 @@ Use the alerts this way:
 
 - `dominant profile` means one AI style is probably too efficient across circuits;
 - `dead card trigger` means a card was played but never produced an event;
-- `never bought` means the simulated economy/profile mix did not naturally reach that card.
+- `never played` means the simulated profile mix did not cover that card.
 
 This is still a mechanics runner. Use `npm run playtest:simulate` for API workflow pressure and browser QA for layout, animation, copy, and replay feel.

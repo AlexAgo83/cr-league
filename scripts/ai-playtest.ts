@@ -29,6 +29,7 @@ type Agent = {
   id: string;
   name: string;
   profile: AgentProfile;
+  nextBuyIndex: number;
   points: number;
   credits: number;
   cards: CardId[];
@@ -71,13 +72,15 @@ const profiles: AgentProfile[] = [
 ];
 
 const args = parseArgs();
+const cardIds = Object.keys(CARD_DEFINITIONS) as CardId[];
 const agents = Array.from({ length: args.agents }, (_, index) => ({
   id: `agent_${index + 1}`,
   name: `AI ${String(index + 1).padStart(2, "0")}`,
   profile: profiles[index % profiles.length]!,
+  nextBuyIndex: 0,
   points: 0,
   credits: 120,
-  cards: ["qualifying_focus"] as CardId[],
+  cards: [cardIds[index % cardIds.length]!] as CardId[],
   starts: 0,
   wins: 0,
   podiums: 0,
@@ -89,7 +92,7 @@ const agents = Array.from({ length: args.agents }, (_, index) => ({
 }));
 const profileStats = new Map(profiles.map((profile) => [profile.name, emptyCounter()]));
 const approachStats = new Map(RACE_APPROACHES.map((approach) => [approach, emptyCounter()]));
-const cardStats = new Map((Object.keys(CARD_DEFINITIONS) as CardId[]).map((cardId) => [cardId, { played: 0, triggered: 0, bought: 0 }]));
+const cardStats = new Map(cardIds.map((cardId) => [cardId, { played: 0, triggered: 0, bought: 0 }]));
 const incidents: string[] = [];
 const champions: string[] = [];
 
@@ -211,7 +214,17 @@ function playableCard(agent: Agent, circuit: CityCircuitIdentity) {
 }
 
 function buyNextCard(agent: Agent) {
-  const cardId = agent.profile.buy.find((candidate) => CARD_PRICES[candidate] <= agent.credits);
+  for (let offset = 0; offset < agent.profile.buy.length; offset += 1) {
+    const index = (agent.nextBuyIndex + offset) % agent.profile.buy.length;
+    const candidate = agent.profile.buy[index]!;
+    if (CARD_PRICES[candidate] > agent.credits) continue;
+    agent.nextBuyIndex = (index + 1) % agent.profile.buy.length;
+    agent.credits -= CARD_PRICES[candidate];
+    agent.cards.push(candidate);
+    cardStats.get(candidate)!.bought += 1;
+    return;
+  }
+  const cardId = cardIds.find((candidate) => CARD_PRICES[candidate] <= agent.credits);
   if (!cardId) return;
   agent.credits -= CARD_PRICES[cardId];
   agent.cards.push(cardId);
@@ -230,10 +243,11 @@ function frustrationScore(position: number, result: RaceResult, teamId: string) 
 }
 
 function alerts(profileRows: ReturnType<typeof rows>, cardRows: CardRow[]) {
+  const raceEventCards = new Set<CardId>(cardIds.filter((cardId) => cardId !== "qualifying_focus"));
   const avgWin = profileRows.reduce((sum, item) => sum + item.winRate, 0) / Math.max(1, profileRows.length);
   const found = profileRows.filter((item) => item.winRate >= avgWin + 15).map((item) => `dominant profile: ${item.name} win ${item.winRate}% vs avg ${round(avgWin)}%`);
-  found.push(...cardRows.filter((item) => item.played >= 5 && item.triggered === 0).map((item) => `dead card trigger: ${item.card} played ${item.played} times, triggered 0`));
-  found.push(...cardRows.filter((item) => item.bought === 0).map((item) => `never bought: ${item.card}`));
+  found.push(...cardRows.filter((item) => raceEventCards.has(item.card) && item.played >= 5 && item.triggered === 0).map((item) => `dead card trigger: ${item.card} played ${item.played} times, triggered 0`));
+  found.push(...cardRows.filter((item) => item.played === 0).map((item) => `never played: ${item.card}`));
   if (incidents.length) found.push(...incidents);
   return found.length ? found : ["none"];
 }

@@ -1,9 +1,11 @@
 import { useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
+import { CITY_CIRCUITS, type CityCircuit } from "../app/circuits.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { RewardValue } from "./RewardValue.js";
+import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
 export function ChampionshipView({
   state,
@@ -25,9 +27,15 @@ export function ChampionshipView({
   const completedSeasons = completedSeasonSummaries(state);
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
-  const [recordTab, setRecordTab] = useState<"standings" | "palmares" | "history">("standings");
+  const [recordTab, setRecordTab] = useState<"standings" | "calendar" | "palmares" | "history">("standings");
+  const seasonRoundsByLayout = new Map<string, number[]>();
+  for (let round = 1; round <= state.league.maxGrandPrixPerSeason; round += 1) {
+    const circuit = CITY_CIRCUITS[(round - 1) % CITY_CIRCUITS.length]!;
+    seasonRoundsByLayout.set(circuit.layoutKey, [...(seasonRoundsByLayout.get(circuit.layoutKey) ?? []), round]);
+  }
   const recordTabs = [
     { key: "standings" as const, label: tt("dashboard_standings") },
+    { key: "calendar" as const, label: tt("championship_calendar") },
     ...(completedSeasons.length ? [{ key: "palmares" as const, label: tt("season_palmares") }] : []),
     { key: "history" as const, label: tt("league_history") }
   ];
@@ -113,6 +121,31 @@ export function ChampionshipView({
             </ol>
           ) : null}
 
+          {activeRecordTab === "calendar" ? (
+            <ol className="circuit-calendar-list" aria-label={tt("championship_calendar")}>
+              {CITY_CIRCUITS.map((circuit) => {
+                const rounds = seasonRoundsByLayout.get(circuit.layoutKey) ?? [];
+                return (
+                  <li key={`${circuit.city}-${circuit.layoutKey}`} className={rounds.includes(currentGrandPrix.round) ? "current-circuit" : undefined}>
+                    <MiniCircuit circuit={circuit} />
+                    <div>
+                      <span className="circuit-city">
+                        <CountryBadge country={circuit.country} /> {circuit.city}
+                      </span>
+                      <strong>{tt(circuit.layoutKey)}</strong>
+                      <small>
+                        {circuit.laps} {tt("unit_laps")} · <VisualIcon name={circuit.likelyWeather} /> {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
+                      </small>
+                    </div>
+                    <div className="circuit-order-badges">
+                      {rounds.length ? rounds.map((round) => <span key={round}>{round}</span>) : <small>{tt("championship_calendar_unused")}</small>}
+                    </div>
+                  </li>
+                );
+              })}
+            </ol>
+          ) : null}
+
           {activeRecordTab === "palmares" ? (
             <ol className="palmares-list">
               {completedSeasons.map((season) => (
@@ -180,6 +213,32 @@ export function ChampionshipView({
       </div>
     </div>
   );
+}
+
+function MiniCircuit({ circuit }: { circuit: CityCircuit }) {
+  return (
+    <svg className="mini-circuit-map" viewBox="0 0 100 64" aria-hidden="true" focusable="false">
+      <path d={miniRoutePath(circuit.route)} />
+    </svg>
+  );
+}
+
+function miniRoutePath(route: CityCircuit["route"]) {
+  const lngs = route.map((point) => point.lng);
+  const lats = route.map((point) => point.lat);
+  const minLng = Math.min(...lngs);
+  const maxLng = Math.max(...lngs);
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+  const scaleX = maxLng - minLng || 1;
+  const scaleY = maxLat - minLat || 1;
+  return route
+    .map((point, index) => {
+      const x = 8 + ((point.lng - minLng) / scaleX) * 84;
+      const y = 56 - ((point.lat - minLat) / scaleY) * 48;
+      return `${index === 0 ? "M" : "L"}${x.toFixed(1)} ${y.toFixed(1)}`;
+    })
+    .join(" ");
 }
 
 function historyLabel(grandPrix: LeagueState["grandPrixHistory"][number], playerTeamId: string | undefined, tt: Translator) {

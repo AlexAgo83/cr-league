@@ -44,9 +44,10 @@ export function VisualIcon({ name }: { name: VisualIconName }) {
 }
 
 export function CountryBadge({ country }: { country: string }) {
+  const code = country.slice(0, 2).toLowerCase();
   return (
     <span className="country-badge" aria-label={country.toUpperCase()}>
-      {country.slice(0, 2).toUpperCase()}
+      <img src={`/assets/flags/${code}.svg`} alt="" />
     </span>
   );
 }

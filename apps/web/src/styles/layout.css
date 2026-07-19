@@ -246,6 +246,33 @@
   white-space: nowrap;
 }
 
+.language-select > span {
+  font-size: 0.78rem;
+  font-weight: 800;
+}
+
+.language-select button {
+  align-items: center;
+  background: rgb(16 14 18 / 0.46);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-muted);
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-style: normal;
+  gap: 6px;
+  letter-spacing: 0;
+  min-height: 32px;
+  padding: 4px 9px;
+  text-transform: none;
+}
+
+.language-select button.active {
+  border-color: var(--color-accent);
+  color: var(--color-text);
+}
+
 /* ---------- Topbar ---------- */
 
 .topbar {
@@ -407,6 +434,16 @@
 .profile-menu-panel label {
   display: grid;
   gap: 6px;
+}
+
+.profile-menu-panel .language-select {
+  align-items: start;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.profile-menu-panel .language-select > span {
+  grid-column: 1 / -1;
 }
 
 .profile-menu-version {
@@ -731,21 +768,22 @@ button:disabled {
 
 .country-badge {
   align-items: center;
-  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  background: rgb(255 255 255 / 0.12);
   border: 1px solid rgb(255 255 255 / 0.16);
   border-radius: 4px;
-  color: var(--color-accent);
   display: inline-flex;
-  font-family: var(--font-display);
-  font-size: 0.68em;
-  font-style: italic;
-  font-weight: 900;
-  justify-content: center;
-  letter-spacing: 0.06em;
   line-height: 1;
-  min-width: 2.35em;
-  padding: 0.22em 0.35em;
+  overflow: hidden;
+  padding: 2px;
   vertical-align: 0.08em;
+}
+
+.country-badge img {
+  border-radius: 2px;
+  display: block;
+  height: 0.9em;
+  object-fit: cover;
+  width: 1.35em;
 }
 
 /* Non-CTA buttons keep the body voice. */
@@ -850,14 +888,16 @@ label small {
 }
 
 .chrono-report-stats > div {
-  background:
-    linear-gradient(135deg, rgb(255 255 255 / 0.72), rgb(226 220 203 / 0.68)),
-    linear-gradient(90deg, rgb(197 58 0 / 0.1), transparent 48%);
-  border: 1px solid rgb(23 21 26 / 0.14);
-  box-shadow: inset 4px 0 0 rgb(197 58 0 / 0.68);
+  background: rgb(16 14 18 / 0.44);
+  border: 0;
+  box-shadow: inset 0 0 0 1px rgb(255 77 0 / 0.22);
   display: grid;
   gap: 3px;
   padding: 10px;
+}
+
+.chrono-report-stats > div:first-child {
+  background: rgb(255 77 0 / 0.18);
 }
 
 .chrono-report-stats span,
@@ -2915,6 +2955,10 @@ label small {
   --record-hero-image: url("/assets/crl/gp-history-hero.png");
 }
 
+.record-hero-calendar {
+  --record-hero-image: url("/assets/crl/track-briefing.png");
+}
+
 .championship-record-switch {
   background: rgb(16 14 18 / 0.58);
   border: 1px solid rgb(248 243 232 / 0.18);
@@ -2944,6 +2988,77 @@ label small {
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.circuit-calendar-list {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr));
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.circuit-calendar-list li {
+  background: rgb(16 14 18 / 0.34);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 8px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 82px minmax(0, 1fr);
+  padding: 10px;
+}
+
+.circuit-calendar-list li.current-circuit {
+  border-color: rgb(255 77 0 / 0.54);
+  box-shadow: inset 0 0 0 1px rgb(255 77 0 / 0.22);
+}
+
+.mini-circuit-map {
+  align-self: stretch;
+  background: rgb(5 5 5 / 0.38);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 6px;
+  height: 76px;
+  width: 82px;
+}
+
+.mini-circuit-map path {
+  fill: none;
+  stroke: #f8f3e8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 4;
+}
+
+.circuit-calendar-list strong,
+.circuit-calendar-list small {
+  display: block;
+}
+
+.circuit-calendar-list small {
+  color: var(--color-muted);
+}
+
+.circuit-order-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  grid-column: 1 / -1;
+}
+
+.circuit-order-badges span {
+  align-items: center;
+  background: var(--color-accent);
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 0.72rem;
+  font-weight: 900;
+  height: 24px;
+  justify-content: center;
+  min-width: 24px;
+  padding: 0 7px;
 }
 
 .standings-table li {

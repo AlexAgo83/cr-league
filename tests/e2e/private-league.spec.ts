@@ -120,7 +120,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("button", { name: "Reset UI preferences" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
   const menuButtons = await page.locator(".profile-menu-panel button").evaluateAll((buttons) => buttons.map((button) => button.textContent?.trim()));
-  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "Reset UI preferences", "Sign out", "v0.3.7"]);
+  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "English", "Français", "Reset UI preferences", "Sign out", "v0.3.7"]);
   await expect(page.getByLabel("Language")).toBeVisible();
   await page.getByRole("button", { name: "Copy profile code" }).click();
   await expect(page.getByRole("dialog", { name: "Profile code" })).toBeVisible();
@@ -195,7 +195,8 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(driveMap).toHaveClass(/circuit-map-unframed/);
   await expect(driveMap).toHaveCSS("padding", "0px");
   await expect(driveMap).toHaveCSS("border-top-width", "0px");
-  await expect(page.locator(".drive-map-panel .map-status")).toContainText("FR Paris");
+  await expect(page.locator(".drive-map-panel .map-status")).toContainText("Paris");
+  await expect(page.locator(".drive-map-panel .map-status .country-badge img")).toHaveAttribute("src", /\/assets\/flags\/fr\.svg$/);
   await expect(page.locator(".drive-map-panel .map-status")).toContainText("7 laps");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Grip");
   await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("64");
@@ -256,7 +257,8 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(replayMap).toHaveClass(/circuit-map-unframed/);
   await expect(replayMap).toHaveCSS("padding", "0px");
   await expect(replayMap).toHaveCSS("border-top-width", "0px");
-  await expect(mapPanel.locator(".map-status")).toContainText("FR Paris");
+  await expect(mapPanel.locator(".map-status")).toContainText("Paris");
+  await expect(mapPanel.locator(".map-status .country-badge img")).toHaveAttribute("src", /\/assets\/flags\/fr\.svg$/);
   await expect(mapPanel.locator(".map-status")).toContainText("/7");
   await expect(mapPanel.locator(".map-weather-readout")).toContainText("Dry");
   await expect(mapPanel.locator(".map-status")).toContainText("Dry");

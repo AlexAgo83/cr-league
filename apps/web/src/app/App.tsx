@@ -985,6 +985,20 @@ export function App() {
     }
   }
 
+  function languageSwitcher() {
+    return (
+      <div className="language-select" role="group" aria-label={tt("language_label")}>
+        <span>{tt("language_label")}</span>
+        {(["en", "fr"] as const).map((nextLocale) => (
+          <button key={nextLocale} type="button" className={locale === nextLocale ? "active" : undefined} aria-pressed={locale === nextLocale} onClick={() => changeLocale(nextLocale)}>
+            <CountryBadge country={nextLocale === "en" ? "GB" : "FR"} />
+            {tt(`language_${nextLocale}`)}
+          </button>
+        ))}
+      </div>
+    );
+  }
+
   function resetUiPreferences() {
     for (const key of UI_PREFERENCE_KEYS) localStorage.removeItem(key);
     const seasonRecapKeys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index)).filter(
@@ -1064,13 +1078,7 @@ export function App() {
               {tt("action_copy_profile_code")}
             </button>
           ) : null}
-          <label>
-            {tt("language_label")}
-            <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
-              <option value="en">{tt("language_en")}</option>
-              <option value="fr">{tt("language_fr")}</option>
-            </select>
-          </label>
+          {languageSwitcher()}
           <button
             type="button"
             className="profile-menu-action profile-menu-action-info"
@@ -1118,13 +1126,7 @@ export function App() {
         {profileSession ? (
           profileMenu(false, false)
         ) : (
-          <label className="language-select">
-            {tt("language_label")}
-            <select value={locale} onChange={(event) => changeLocale(event.target.value as Locale)}>
-              <option value="en">{tt("language_en")}</option>
-              <option value="fr">{tt("language_fr")}</option>
-            </select>
-          </label>
+          languageSwitcher()
         )}
       </div>
     </header>

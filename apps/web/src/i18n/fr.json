@@ -347,6 +347,8 @@
   "dashboard_my_team": "Mon écurie",
   "dashboard_no_team": "Aucune écurie revendiquée.",
   "dashboard_current_gp": "GP en cours",
+  "championship_calendar": "Circuits",
+  "championship_calendar_unused": "Pas utilisé cette saison",
   "dashboard_players": "Joueurs",
   "dashboard_leader": "Leader",
   "dashboard_standings": "Classement",

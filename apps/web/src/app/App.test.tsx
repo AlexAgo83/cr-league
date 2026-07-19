@@ -328,7 +328,7 @@ describe("App", () => {
   it("switches the interface language", () => {
     render(<App />);
 
-    fireEvent.change(screen.getByLabelText("Language"), { target: { value: "fr" } });
+    fireEvent.click(screen.getByRole("button", { name: /Français/ }));
 
     expect(screen.getByRole("button", { name: /Créer profil/ })).toBeTruthy();
     expect(screen.getByText("Lancer ton championnat")).toBeTruthy();
@@ -738,6 +738,10 @@ describe("App", () => {
     expect(document.querySelector(".current-gp-panel")).toBe(null);
     expect(screen.getByText("0/2")).toBeTruthy();
     expect(screen.queryByRole("tab", { name: "Palmares" })).toBe(null);
+    fireEvent.click(screen.getByRole("tab", { name: "Circuits" }));
+    expect(screen.getByText("Docklands Sprint")).toBeTruthy();
+    expect(document.querySelector(".circuit-calendar-list")?.textContent).toContain("1");
+    fireEvent.click(screen.getByRole("tab", { name: "Standings" }));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     expect(document.querySelector(".garage-overview")?.textContent).toContain("ABC123");
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));

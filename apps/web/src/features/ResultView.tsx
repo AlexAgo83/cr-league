@@ -43,10 +43,10 @@ export function ResultView({
   const payoff = playerRacePayoff(state, result, playerTeamId, tt);
   const payoffPanel = payoff ? (
     <section className="panel race-payoff-recap" aria-label={tt("payoff_title")}>
-      <div>
-        <span className="section-kicker">{tt("payoff_kicker")}</span>
-        <h2>{tt("payoff_title")}</h2>
-      </div>
+      <h2>
+        <span>{tt("payoff_kicker")}</span>
+        {tt("payoff_title")}
+      </h2>
       <dl>
         <div>
           <dt>{tt("payoff_finish")}</dt>

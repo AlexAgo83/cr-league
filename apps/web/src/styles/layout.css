@@ -577,42 +577,63 @@
 
 .race-payoff-recap {
   align-items: center;
-  display: grid;
-  gap: 18px;
-  grid-template-columns: minmax(180px, 0.42fr) minmax(0, 1fr);
-  padding-block: 16px;
+  border-color: color-mix(in srgb, var(--color-accent) 38%, transparent);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  justify-content: center;
+  padding: 7px 14px;
 }
 
-.race-payoff-recap h2 {
+.panel.race-payoff-recap h2 {
+  align-items: center;
+  display: inline-flex;
+  flex: 0 0 auto;
+  flex-wrap: wrap;
+  font-size: 0.95rem;
+  gap: 8px;
+  line-height: 1;
   margin: 0;
 }
 
+.panel.race-payoff-recap h2 span {
+  color: var(--color-muted);
+  font-size: 0.68rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
 .race-payoff-recap dl {
-  display: grid;
-  gap: 8px;
-  grid-template-columns: repeat(5, minmax(128px, 1fr));
+  align-items: center;
+  display: flex;
+  flex: 0 1 auto;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  justify-content: center;
   margin: 0;
 }
 
 .race-payoff-recap dl > div {
-  background: rgb(255 255 255 / 0.06);
-  border: 1px solid rgb(255 255 255 / 0.1);
-  border-radius: 8px;
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  line-height: 1;
   min-width: 0;
-  padding: 9px 10px;
 }
 
 .race-payoff-recap dt {
   color: var(--color-muted);
-  font-size: 0.72rem;
+  font-size: 0.66rem;
   font-weight: 800;
+  line-height: 1;
   text-transform: uppercase;
 }
 
 .race-payoff-recap dd {
-  font-size: 1rem;
+  font-size: 0.86rem;
   font-weight: 900;
-  margin: 2px 0 0;
+  line-height: 1;
+  margin: 0;
 }
 
 .reward-value {
@@ -3946,14 +3967,6 @@ label small {
 }
 
 @media (max-width: 720px) {
-  .race-payoff-recap {
-    grid-template-columns: 1fr;
-  }
-
-  .race-payoff-recap dl {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
   .circuit-calendar-list {
     grid-template-columns: 1fr;
   }
@@ -4093,10 +4106,6 @@ label small {
 }
 
 @media (max-width: 440px) {
-  .race-payoff-recap dl {
-    grid-template-columns: 1fr;
-  }
-
   .chrono-report-stats {
     grid-template-columns: 1fr;
   }

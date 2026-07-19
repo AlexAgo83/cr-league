@@ -960,6 +960,9 @@ export function App() {
     );
     for (const key of seasonRecapKeys) localStorage.removeItem(key);
     snoozedOnboardingHelp.current.clear();
+    setQualifyingCommandClicked(false);
+    setDirectiveCommandClicked(false);
+    setChronoReportCommandClicked(false);
     setPreferencesResetSignal((signal) => signal + 1);
     setPreferencesResetOpen(false);
     setProfileOpen(false);

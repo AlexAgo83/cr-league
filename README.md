@@ -216,6 +216,7 @@ npm run logics:validate
 npm run replay:validate -- race-result.json
 npm run generate:circuit -- --place "Montreal" --layoutKey circuit_montreal_island_loop
 npm run audit:circuits
+npm run review:circuits:water
 ```
 
 Seed a private playtest league:

@@ -23,6 +23,7 @@ For circuit route changes, add:
 
 ```bash
 npm run audit:circuits
+npm run review:circuits:water
 ```
 
 ## Local Runtime
@@ -102,4 +103,3 @@ Check:
 - car `trackProgress` increases smoothly except valid pit-stop holds.
 - pit-stop phases appear in the trace before the replay tries to show a stop.
 - order changes appear in `replayFacts.orderChanges`.
-

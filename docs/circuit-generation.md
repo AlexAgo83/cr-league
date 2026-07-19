@@ -9,6 +9,7 @@ The repo has two circuit tools:
 ```bash
 npm run generate:circuit -- --place "Montreal" --layoutKey circuit_montreal_island_loop
 npm run audit:circuits
+npm run review:circuits:water
 ```
 
 `generate:circuit` uses:
@@ -97,8 +98,11 @@ npm run generate:circuit -- \
 
 ```bash
 npm run audit:circuits
+npm run review:circuits:water
 npm run typecheck
 ```
+
+`review:circuits:water` creates an OSM screenshot contact sheet in `reports/circuit-water-review.png`. By default it selects water-adjacent or suspicious circuits. Use `-- --all` for the full catalogue, or `-- --only circuit_tokyo_bay_loop,circuit_cape_town_waterfront_loop` for a targeted review.
 
 ## Tokyo Reference Fix
 
@@ -212,4 +216,11 @@ For a batch of circuits, export GeoJSON for inspection:
 
 ```bash
 npm run audit:circuits -- --geojson reports/circuits.geojson
+```
+
+For water/coastline review, generate the OSM contact sheet:
+
+```bash
+npm run review:circuits:water
+npm run review:circuits:water -- --all
 ```

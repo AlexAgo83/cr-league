@@ -4,6 +4,7 @@ import {
   carProgressAtRaceTime,
   carProgressAtTrace,
   buildReplayPlan,
+  buildQualifyingMomentEvents,
   buildRaceDirectorBeats,
   displayLapAtProgress,
   eventTraceProgress,
@@ -286,6 +287,15 @@ describe("ReplayView timing", () => {
     const beats = buildRaceDirectorBeats(result, trace, buildReplayPlan(result, trace), 3, "leader", "qualifying");
 
     expect(beats.map((beat) => beat.type)).toEqual(["qualifying_start", "qualifying_pace", "qualifying_final"]);
+  });
+
+  it("turns qualifying director beats into replay moment toasts", () => {
+    const beats = buildRaceDirectorBeats(result, [], buildReplayPlan(result, []), 3, "leader", "qualifying");
+    const moments = buildQualifyingMomentEvents(beats, result);
+
+    expect(moments.map((moment) => moment.tags[1])).toEqual(["qualifying_start", "qualifying_pace", "qualifying_final"]);
+    expect(moments.map((moment) => moment.traceProgress)).toEqual([0, 0.5, 1]);
+    expect(moments.every((moment) => moment.type === "race_note" && moment.tags.includes("mini_info"))).toBe(true);
   });
 
   it("exposes player replay context with position trend and nearby gaps", () => {

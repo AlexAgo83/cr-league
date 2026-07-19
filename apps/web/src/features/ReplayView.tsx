@@ -499,11 +499,24 @@ export function carProgressAtRaceTime(result: RaceResult, times: Record<string, 
 function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator) {
   const team = names.get(event.teamId) ?? "";
   const isMiniInfo = event.tags.includes("mini_info") || event.type === "race_note";
-  const context = event.cardId ? tt(`card_${event.cardId}` as TranslationKey) : event.type === "weather_change" ? tt("event_weather_change") : event.type === "pit_stop" ? tt("event_pit_stop") : isMiniInfo ? tt(`event_${event.type}` as TranslationKey) : team;
+  const qualifyingTag = event.tags.find((tag) => tag === "qualifying_start" || tag === "qualifying_pace" || tag === "qualifying_final");
+  const context = qualifyingTag
+    ? tt(`event_${qualifyingTag}` as TranslationKey)
+    : event.cardId
+      ? tt(`card_${event.cardId}` as TranslationKey)
+    : event.type === "weather_change"
+      ? tt("event_weather_change")
+    : event.type === "pit_stop"
+      ? tt("event_pit_stop")
+    : isMiniInfo
+      ? tt(`event_${event.type}` as TranslationKey)
+    : team;
   const impact = event.positionDelta
     ? `${event.positionDelta > 0 ? "+" : ""}${event.positionDelta} ${event.cardId ? "boost" : "pos"}`
     : event.type === "pit_stop"
       ? tt("replay_director_pit_stop")
+    : qualifyingTag
+      ? tt("event_qualifying_split")
     : event.severity === "major"
       ? tt("event_major")
       : tt("event_ambience");
@@ -511,10 +524,29 @@ function momentCard(event: RaceEvent, names: Map<string, string>, tt: Translator
   return {
     icon,
     context,
-    team: isMiniInfo ? "" : team,
+    team: isMiniInfo && !qualifyingTag ? "" : team,
     text: eventReplayText(event, names, tt),
     impact
   };
+}
+
+export function buildQualifyingMomentEvents(beats: ReplayDirectorBeat[], result: RaceResult): RaceEvent[] {
+  return beats
+    .filter((beat) => beat.type === "qualifying_start" || beat.type === "qualifying_pace" || beat.type === "qualifying_final")
+    .map((beat, index) => ({
+      id: `chrono-${beat.id}`,
+      order: index,
+      segment: segmentAtProgress(beat.progress),
+      lap: beat.lap,
+      traceProgress: beat.progress,
+      type: "race_note",
+      teamId: beat.teamId ?? result.classification[0]?.teamId ?? "",
+      severity: "minor",
+      positionDelta: 0,
+      tags: ["mini_info", beat.type],
+      replayText: "",
+      reportText: ""
+    }));
 }
 
 function directorBeatCopy(beat: ReplayDirectorBeat, names: Map<string, string>, tt: Translator) {
@@ -601,8 +633,6 @@ export function ReplayView({
   const positionPopTimers = useRef<number[]>([]);
   const names = teamNamesFromResult(result);
   const field = result.classification;
-  const activeMoment = result.events.find((event) => event.id === activeMomentId);
-  const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
   const smoothTracePositions = shouldSmoothReplayTrace(replayTrace);
   const raceDuration = smoothTracePositions ? replayTimes.leader : replayTimes.last;
   const currentRaceProgress = raceProgressAt(clock.current, raceDuration);
@@ -725,13 +755,14 @@ export function ReplayView({
     setSnapshot(nextSnapshot);
   }
 
+  const qualifyingMomentEvents = replayMode === "qualifying" ? buildQualifyingMomentEvents(directorBeats, result) : [];
   // Majors and player moments first pick, race notes as filler — then strict race order.
-  const keyMoments = [
+  const keyMoments = (replayMode === "qualifying" ? qualifyingMomentEvents : [
     ...result.events.filter((event) => event.severity === "major"),
     ...result.events.filter((event) => event.type === "pit_stop"),
     ...result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId),
     ...(overlayActions ? [] : result.events.filter((event) => event.severity === "minor" && (event.type === "race_note" || event.tags.includes("mini_info"))))
-  ]
+  ])
     .filter((event, index, events) => events.findIndex((candidate) => candidate.id === event.id) === index)
     .sort((left, right) => left.order - right.order);
 
@@ -754,11 +785,19 @@ export function ReplayView({
     player: marker.player
   }));
   const liveWeather = result.resolvedWeather[live.segment];
+  const activeMoment = keyMoments.find((event) => event.id === activeMomentId);
+  const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
+  const activeMomentLap = activeMoment
+    ? typeof activeMoment.traceProgress === "number"
+      ? displayLapAtProgress(activeMoment.traceProgress, circuit.laps)
+      : displayLapAtProgress(activeMoment.lap / maxLap, circuit.laps)
+    : 1;
   const activeDirectorBeat = [...directorBeats].reverse().find((beat) => beat.progress <= currentRaceProgress) ?? directorBeats[0];
   const activeDirectorCopy = activeDirectorBeat ? directorBeatCopy(activeDirectorBeat, names, tt) : null;
   const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId);
   const latestPlayerBeat = [...directorBeats].reverse().find((beat) => beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId);
   const seekValueText = `${tt("unit_lap")} ${live.lap}/${circuit.laps}, ${Math.round(clock.current)}s`;
+  const directorTitle = replayMode === "qualifying" ? tt("replay_director_chrono_title") : tt("replay_director_title");
 
   function eventTime(event: RaceEvent) {
     return raceTimeAtProgress(eventTraceProgress(event, maxLap));
@@ -804,7 +843,7 @@ export function ReplayView({
                 </div>
                 {activeMoment && activeMomentCard ? (
                   <div className={activeMoment.teamId === playerTeamId ? "replay-moment-notification player" : "replay-moment-notification"} role="status" aria-live="polite">
-                    <span className="lap-marker">L{displayLapAtProgress(activeMoment.lap / maxLap, circuit.laps)}</span>
+                    <span className="lap-marker">L{activeMomentLap}</span>
                     <span className="moment-main">
                       <strong>
                         <VisualIcon name={activeMomentCard.icon} /> {activeMomentCard.context}
@@ -818,7 +857,7 @@ export function ReplayView({
                   <div className="replay-info-stack">
                     {activeDirectorBeat && activeDirectorCopy ? (
                     <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
-                      <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
+                      <span>{directorTitle} · L{activeDirectorBeat.lap}</span>
                       <strong>{activeDirectorCopy.title}</strong>
                       <small>{renderPositionBadges(activeDirectorCopy.detail)}</small>
                     </div>
@@ -888,7 +927,7 @@ export function ReplayView({
                 {overlayActions && activeDirectorBeat && activeDirectorCopy ? (
                   <div className="replay-overlay-director-slot">
                     <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
-                      <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
+                      <span>{directorTitle} · L{activeDirectorBeat.lap}</span>
                       <strong>{activeDirectorCopy.title}</strong>
                       <small>{renderPositionBadges(activeDirectorCopy.detail)}</small>
                     </div>

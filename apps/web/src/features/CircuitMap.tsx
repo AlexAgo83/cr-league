@@ -17,7 +17,6 @@ export type MapCar = {
   positionDelta?: number;
   positionDeltaKey?: number;
   eventLabel?: string;
-  pitStopActive?: boolean;
   repeatCount?: number | "indefinite";
 };
 
@@ -341,7 +340,7 @@ export function CircuitMap({
       const elapsed = Math.max(0, clockRef.current - car.delay);
       const progress = car.progress ?? (car.repeatCount !== "indefinite" && clockRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration);
       const stagedProgress = progressFromStart(progress, routeAnalysis.startProgress);
-      const point = car.pitStopActive ? routeAnalysis.pitStop : car.progress === undefined ? route.getPointAtLength(length * stagedProgress) : poseOnRoute(pointsRef.current, stagedProgress);
+      const point = car.progress === undefined ? route.getPointAtLength(length * stagedProgress) : poseOnRoute(pointsRef.current, stagedProgress);
       const nearestCarDistance = Math.min(
         ...carsRef.current.map((other) => {
           if (other.id === car.id || other.progress === undefined) return Number.POSITIVE_INFINITY;
@@ -422,7 +421,7 @@ export function CircuitMap({
             )}
             {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
             {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
-              const pose = car.pitStopActive ? routeAnalysis.pitStop : car.progress === undefined ? null : poseOnRoute(points, stageProgress(car.progress));
+              const pose = car.progress === undefined ? null : poseOnRoute(points, stageProgress(car.progress));
               const drift = car.progress === undefined ? 0 : driftAngle(points, stageProgress(car.progress));
               const sprite = spriteForCar(car);
               const carStyle = car.livery

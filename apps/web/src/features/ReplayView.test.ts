@@ -12,6 +12,7 @@ import {
   liveClassificationByCarProgress,
   playerReplayContext,
   pitStopRaceProgress,
+  pitStopVisualProgress,
   positionDeltas,
   replayPlanDebugLines,
   replayDistanceScale,
@@ -212,6 +213,14 @@ describe("ReplayView timing", () => {
 
     expect(beats.find((beat) => beat.type === "pit_stop")?.progress).toBeCloseTo(0.45);
     expect(pitStopRaceProgress(resultWithPit.events[0]!, 10, 5, 0.25)).toBeCloseTo(0.45);
+  });
+
+  it("eases pit stop entry, hold, and exit without teleporting", () => {
+    expect(pitStopVisualProgress(2.1, 9.4, 10, 2.25)).toBeCloseTo(2.1);
+    expect(pitStopVisualProgress(2.16, 9.7, 10, 2.25)).toBeGreaterThan(2.16);
+    expect(pitStopVisualProgress(2.4, 10.6, 10, 2.25)).toBe(2.25);
+    expect(pitStopVisualProgress(2.6, 11.6, 10, 2.25)).toBeGreaterThan(2.25);
+    expect(pitStopVisualProgress(2.7, 12.1, 10, 2.25)).toBe(2.7);
   });
 
   it("uses chrono-specific director beats for qualifying replays", () => {

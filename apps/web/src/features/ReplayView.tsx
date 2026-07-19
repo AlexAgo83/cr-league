@@ -20,7 +20,9 @@ const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
 const GRID_START_PROGRESS = 0.1;
+const PIT_STOP_ENTRY_SECONDS = 0.6;
 const PIT_STOP_HOLD_SECONDS = 1.2;
+const PIT_STOP_EXIT_SECONDS = 0.8;
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
@@ -244,6 +246,22 @@ export function pitStopRaceProgress(event: RaceEvent, maxLap: number, laps: numb
   const baseProgress = event.lap / Math.max(1, maxLap);
   const lapIndex = Math.min(Math.max(1, laps) - 1, Math.max(0, Math.ceil(baseProgress * Math.max(1, laps)) - 1));
   return (lapIndex + lapProgress) / Math.max(1, laps);
+}
+
+function easeInOut(progress: number) {
+  const t = Math.max(0, Math.min(1, progress));
+  return t * t * (3 - 2 * t);
+}
+
+export function pitStopVisualProgress(baseProgress: number, time: number, pitTime: number, pitProgress: number) {
+  if (time < pitTime - PIT_STOP_ENTRY_SECONDS || time > pitTime + PIT_STOP_HOLD_SECONDS + PIT_STOP_EXIT_SECONDS) return baseProgress;
+  if (time < pitTime) {
+    const t = easeInOut((time - (pitTime - PIT_STOP_ENTRY_SECONDS)) / PIT_STOP_ENTRY_SECONDS);
+    return baseProgress + (pitProgress - baseProgress) * t;
+  }
+  if (time <= pitTime + PIT_STOP_HOLD_SECONDS) return pitProgress;
+  const t = easeInOut((time - pitTime - PIT_STOP_HOLD_SECONDS) / PIT_STOP_EXIT_SECONDS);
+  return pitProgress + (baseProgress - pitProgress) * t;
 }
 
 export function segmentAtProgress(progress: number): RaceSegment {
@@ -560,18 +578,26 @@ export function ReplayView({
   const currentRaceProgress = raceProgressAt(clock.current, raceDuration);
   const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
   const raceTimeAtProgress = (progress: number) => START_HOLD_SECONDS + progress * raceDuration;
-  const cars: MapCar[] = field.map((entry, index) => ({
-    id: entry.teamId,
-    label: String(Math.max(1, snapshot.tower.findIndex((team) => team.teamId === entry.teamId) + 1)),
-    player: entry.teamId === playerTeamId,
-    delay: 0,
-    duration: replayTimes.times[entry.teamId] ?? replayTimes.leader + index,
-    progress: snapshot.carProgress[entry.teamId] ?? 0,
-    pitStopActive: result.events.some((event) => event.type === "pit_stop" && event.teamId === entry.teamId && Math.abs(clock.current - raceTimeAtProgress(pitStopRaceProgress(event, maxLap, circuit.laps, pitProgress))) <= PIT_STOP_HOLD_SECONDS),
-    livery: teamLiveries[entry.teamId],
-    positionDelta: positionPops[entry.teamId]?.delta,
-    positionDeltaKey: positionPops[entry.teamId]?.key
-  }));
+  const cars: MapCar[] = field.map((entry, index) => {
+    const baseProgress = snapshot.carProgress[entry.teamId] ?? 0;
+    const progress = result.events
+      .filter((event) => event.type === "pit_stop" && event.teamId === entry.teamId)
+      .reduce((current, event) => {
+        const eventProgress = pitStopRaceProgress(event, maxLap, circuit.laps, pitProgress);
+        return pitStopVisualProgress(current, clock.current, raceTimeAtProgress(eventProgress), eventProgress * circuit.laps);
+      }, baseProgress);
+    return {
+      id: entry.teamId,
+      label: String(Math.max(1, snapshot.tower.findIndex((team) => team.teamId === entry.teamId) + 1)),
+      player: entry.teamId === playerTeamId,
+      delay: 0,
+      duration: replayTimes.times[entry.teamId] ?? replayTimes.leader + index,
+      progress,
+      livery: teamLiveries[entry.teamId],
+      positionDelta: positionPops[entry.teamId]?.delta,
+      positionDeltaKey: positionPops[entry.teamId]?.key
+    };
+  });
   const playerCar = cars.find((car) => car.player) ?? cars[0];
   const tower: ReplayTowerEntry[] = towerEntries ?? snapshot.tower.map((entry) => ({ teamId: entry.teamId, teamName: entry.teamName, value: "" }));
   const circuitDistance = `${(circuitLengthMeters(circuit) / 1000).toFixed(1)} km`;

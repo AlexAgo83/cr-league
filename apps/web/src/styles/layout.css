@@ -5977,15 +5977,15 @@ button.highlight-command:not(:disabled) {
 
 .card-cell-art {
   border-radius: 0;
-  height: 138%;
-  inset: 50% -40px auto auto;
+  height: 136%;
+  inset: 50% -38px auto auto;
   mask-image: linear-gradient(90deg, transparent 0, #000 32%);
   object-fit: contain;
   overflow: hidden;
   pointer-events: none;
   position: absolute;
   transform: translateY(-50%);
-  width: min(64%, 250px);
+  width: min(58%, 230px);
   z-index: 0;
 }
 
@@ -6157,15 +6157,15 @@ button.highlight-command:not(:disabled) {
 
 .directive-choice-art {
   border-radius: 0;
-  height: 142%;
-  inset: 50% -42px auto auto;
+  height: 136%;
+  inset: 50% -38px auto auto;
   mask-image: linear-gradient(90deg, transparent 0, #000 32%);
   object-fit: contain;
   overflow: hidden;
   pointer-events: none;
   position: absolute;
   transform: translateY(-50%);
-  width: min(64%, 260px);
+  width: min(58%, 230px);
   z-index: 0;
 }
 

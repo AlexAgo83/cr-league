@@ -20,6 +20,7 @@ export function ResultView({
   traitImpacts,
   preferencesResetSignal,
   showReplayIntro = true,
+  onOpenReplay,
   onOpenReport,
   onClose,
   tt
@@ -33,6 +34,7 @@ export function ResultView({
   traitImpacts: MapTraitImpacts;
   preferencesResetSignal?: number;
   showReplayIntro?: boolean;
+  onOpenReplay?: () => void;
   onOpenReport?: () => void;
   onClose?: () => void;
   tt: Translator;
@@ -98,6 +100,7 @@ export function ResultView({
             circuit={circuit}
             playerTeamId={playerTeamId}
             playerDecision={playerDecision}
+            onOpenReplay={onOpenReplay}
             onClose={onClose}
             tt={tt}
           />

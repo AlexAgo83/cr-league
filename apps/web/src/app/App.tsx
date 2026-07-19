@@ -1643,6 +1643,7 @@ export function App() {
             traitImpacts={replayTraitImpacts}
             preferencesResetSignal={preferencesResetSignal}
             showReplayIntro={!historyReplay}
+            onOpenReplay={() => setResultTab("replay")}
             onOpenReport={() => setResultTab("report")}
             onClose={() => {
               if (historyReplay) {

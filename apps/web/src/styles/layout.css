@@ -4113,29 +4113,62 @@ button.command-icon-button {
   z-index: 1;
 }
 
+.report-actions {
+  display: flex;
+  gap: 6px;
+  position: absolute;
+  right: 20px;
+  top: 20px;
+  z-index: 2;
+}
+
+.report-replay-button,
 .report-close-button {
-  background: rgb(16 14 18 / 0.72);
-  border: 1px solid rgb(248 243 232 / 0.45);
+  align-items: center;
   border-radius: 999px;
-  color: #f8f3e8;
+  display: inline-flex;
+  justify-content: center;
+  min-height: 0;
+  padding: 0;
+}
+
+.report-replay-button {
+  background: rgb(56 189 248 / 0.18);
+  border: 1px solid rgb(125 211 252 / 0.58);
+  color: #7dd3fc;
+  height: 30px;
+  width: 30px;
+}
+
+.report-close-button {
+  background: rgb(214 40 40 / 0.92);
+  border: 1px solid rgb(255 138 122 / 0.65);
+  color: #fff;
   font-size: 1rem;
   font-weight: 900;
   height: 30px;
   line-height: 1;
-  min-height: 0;
-  padding: 0;
-  position: absolute;
-  right: 20px;
-  top: 20px;
   width: 30px;
-  z-index: 2;
+}
+
+.report-replay-button:hover,
+.report-replay-button:focus-visible {
+  background: rgb(56 189 248 / 0.28);
+  border-color: #bae6fd;
+  color: #e0f2fe;
 }
 
 .report-close-button:hover,
 .report-close-button:focus-visible {
-  background: #b2231a;
-  border-color: rgb(255 255 255 / 0.75);
+  background: rgb(232 52 52 / 1);
+  border-color: #fff;
   color: #fff;
+}
+
+.report-play-icon {
+  fill: currentColor;
+  height: 17px;
+  width: 17px;
 }
 
 .report-hero h2 {
@@ -5049,19 +5082,6 @@ button.highlight-command:not(:disabled) {
 .championship-view .ready-pill.missing {
   background: rgb(146 95 0 / 0.16);
   color: #7c5200;
-}
-
-.report-view .report-close-button {
-  background: rgb(16 14 18 / 0.72);
-  border-color: rgb(248 243 232 / 0.45);
-  color: #f8f3e8;
-}
-
-.report-view .report-close-button:hover,
-.report-view .report-close-button:focus-visible {
-  background: #b2231a;
-  border-color: rgb(255 255 255 / 0.75);
-  color: #fff;
 }
 
 .plan-view .report-close-button {

@@ -820,7 +820,11 @@ describe("App", () => {
     // Report view
     fireEvent.click(screen.getByRole("button", { name: "Report" }));
     expect(screen.getByText("Paris Docklands Sprint: Volt Union wins.")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Replay" })).toBe(null);
+    expect(screen.getByRole("button", { name: "Replay" }).className).toContain("report-replay-button");
+    expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("report-close-button");
+    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Report" }));
     expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();
     expect(screen.getByLabelText("Race phases")).toBeTruthy();
     expect(screen.getByText("Phase 1")).toBeTruthy();

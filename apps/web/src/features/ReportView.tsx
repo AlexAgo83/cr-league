@@ -18,6 +18,7 @@ export function ReportView({
   circuit,
   playerTeamId,
   playerDecision,
+  onOpenReplay,
   onClose,
   tt
 }: {
@@ -26,6 +27,7 @@ export function ReportView({
   circuit: CityCircuit;
   playerTeamId: string | undefined;
   playerDecision: LeagueState["decisions"][number] | undefined;
+  onOpenReplay?: () => void;
   onClose?: () => void;
   tt: Translator;
 }) {
@@ -60,10 +62,21 @@ export function ReportView({
           <h2>{raceTitle}</h2>
           <p>{resultHeadline(result, tt, raceTitle)}</p>
         </div>
-        {onClose ? (
-          <button type="button" className="report-close-button" aria-label={tt("action_back_to_circuit")} title={tt("action_back_to_circuit")} onClick={onClose}>
-            ×
-          </button>
+        {onOpenReplay || onClose ? (
+          <div className="report-actions">
+            {onOpenReplay ? (
+              <button type="button" className="report-replay-button" aria-label={tt("result_tab_replay")} title={tt("result_tab_replay")} onClick={onOpenReplay}>
+                <svg className="report-play-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                  <path d="M8 5v14l11-7z" />
+                </svg>
+              </button>
+            ) : null}
+            {onClose ? (
+              <button type="button" className="report-close-button" aria-label={tt("action_back_to_circuit")} title={tt("action_back_to_circuit")} onClick={onClose}>
+                ×
+              </button>
+            ) : null}
+          </div>
         ) : null}
         <ol className="report-podium">
           {result.classification.map((entry) => (

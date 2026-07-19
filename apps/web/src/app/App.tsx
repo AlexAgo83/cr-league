@@ -1,54 +1,69 @@
 import { APP_NAME, APP_VERSION, type CardId, type QualifyingRun, type Weather } from "@cr-league/shared";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { circuitForRound } from "./circuits.js";
 import { cardFit, clampNumber, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
-import { GAME_VIEWS, type AdminLeague, type AdminUser, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
+import { GAME_VIEWS, type AdminLeague, type AdminUser, type FormState, type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
-import { CHAMPIONSHIP_RECORD_TAB_KEY, ChampionshipView, savedRecordTab, type ChampionshipRecordTab } from "../features/ChampionshipView.js";
+import { CHAMPIONSHIP_RECORD_TAB_KEY, ChampionshipView } from "../features/ChampionshipView.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import { CircuitMap, MapTraitsPanel } from "../features/CircuitMap.js";
-import { DIRECTIVE_STEP_KEY, DirectivePanel, savedDirectiveStep, type DirectiveStep } from "../features/DirectivePanel.js";
-import { GARAGE_PANEL_KEY, GarageView, savedCardPanel, type CardPanel } from "../features/GarageView.js";
+import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
+import { GARAGE_PANEL_KEY, GarageView } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
 import { Modal } from "../features/Modal.js";
+import { PlanView } from "../features/PlanView.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 import { RewardValue } from "../features/RewardValue.js";
 import { CountryBadge } from "../features/VisualIcon.js";
 import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, SetupShell, type OnboardingHelpTopic } from "./OnboardingShell.js";
+import {
+  ACTIVE_PLAYER_CLAIM_KEY,
+  ApiError,
+  LANGUAGE_KEY,
+  PROFILE_SESSION_KEY,
+  SEASON_RECAP_KEY_PREFIX,
+  api,
+  claimFromState,
+  claimsFromProfile,
+  copyText,
+  getActiveClaim,
+  loadPlayerClaims,
+  loadProfileSession,
+  seasonRecapStorageKey,
+  storePlayerClaims,
+  storeProfileSession,
+  upsertPlayerClaim
+} from "./appStorage.js";
 import { bestQualifyingRuns, buildChronoReport, createInitialForm, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
-import { parseAppRoute, pathForAppRoute, type PlanSubscreen } from "./routes.js";
 import { LeagueSetupView, ProfileSetupView, type ProfileMode, type SetupMode } from "./SetupViews.js";
+import { useAppNavigation } from "./useAppNavigation.js";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
-const PLAYER_CLAIMS_KEY = "cr-league-player-claims";
-const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
-const PROFILE_SESSION_KEY = "cr-league-profile-session";
-const LANGUAGE_KEY = "cr-league-language";
-const SEASON_RECAP_KEY_PREFIX = "cr-league-season-recap";
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
-
-type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
-  leagueId: string;
-  leagueName: string;
-  leagueCode: string;
-  teamName: string;
-};
 type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
 export function App() {
-  const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);
   const [locale, setLocaleState] = useState<Locale>(() => {
     const saved = localStorage.getItem(LANGUAGE_KEY);
     if (isLocale(saved)) return saved;
     const browserLocale = navigator.language.split("-")[0] ?? "en";
     return isLocale(browserLocale) ? browserLocale : "en";
   });
-  const [gameView, setGameView] = useState<GameView>(() => initialRoute.view);
-  const [planSubscreen, setPlanSubscreen] = useState<PlanSubscreen>(() => initialRoute.planSubscreen);
-  const [directiveStep, setDirectiveStep] = useState<DirectiveStep>(() => initialRoute.directiveStep === "approach" ? savedDirectiveStep() : initialRoute.directiveStep);
-  const [championshipRecordTab, setChampionshipRecordTab] = useState<ChampionshipRecordTab>(() => initialRoute.championshipTab === "standings" ? savedRecordTab() : initialRoute.championshipTab);
-  const [garagePanel, setGaragePanel] = useState<CardPanel>(() => initialRoute.garagePanel === "inventory" ? savedCardPanel() : initialRoute.garagePanel);
+  const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
+  const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
+  const clearRouteReplay = useCallback(() => setHistoryReplay(null), []);
+  const {
+    gameView,
+    planSubscreen,
+    directiveStep,
+    championshipRecordTab,
+    garagePanel,
+    setGameView,
+    setPlanSubscreen,
+    setDirectiveStep,
+    setChampionshipRecordTab,
+    setGaragePanel
+  } = useAppNavigation(profileSession, clearRouteReplay);
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
   const [resultOpen, setResultOpen] = useState(true);
   const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
@@ -65,7 +80,6 @@ export function App() {
   const [nextGrandPrixCommandClicked, setNextGrandPrixCommandClicked] = useState(false);
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
-  const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
   const previousSeasonRef = useRef<number | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -79,7 +93,6 @@ export function App() {
   const [nextGrandPrixConfirmOpen, setNextGrandPrixConfirmOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
-  const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
   const [profileForm, setProfileForm] = useState({ email: "", recoveryCode: "" });
   const [adminToken, setAdminToken] = useState("");
   const [adminTab, setAdminTab] = useState<AdminTab>("users");
@@ -130,45 +143,6 @@ export function App() {
   function dismissNotification(id: number) {
     setNotifications((items) => items.filter((item) => item.id !== id));
   }
-
-  useEffect(() => {
-    const applyRoute = () => {
-      const route = parseAppRoute(window.location.pathname);
-      const nextView = route.view === "admin" && !profileSession ? "drive" : route.view;
-      setGameView(nextView);
-      setPlanSubscreen(route.planSubscreen);
-      setDirectiveStep(route.directiveStep === "approach" ? savedDirectiveStep() : route.directiveStep);
-      setChampionshipRecordTab(route.championshipTab === "standings" ? savedRecordTab() : route.championshipTab);
-      setGaragePanel(route.garagePanel === "inventory" ? savedCardPanel() : route.garagePanel);
-      setHistoryReplay(null);
-    };
-
-    window.addEventListener("popstate", applyRoute);
-    return () => window.removeEventListener("popstate", applyRoute);
-  }, [profileSession?.admin]);
-
-  useEffect(() => {
-    if (gameView === "admin" && (!profileSession || profileSession.admin === false)) {
-      setGameView("drive");
-      return;
-    }
-
-    const path = pathForAppRoute({ view: gameView, planSubscreen, directiveStep, championshipTab: championshipRecordTab, garagePanel });
-    if (window.location.pathname !== path) window.history.pushState(null, "", path);
-  }, [championshipRecordTab, directiveStep, gameView, garagePanel, planSubscreen, profileSession?.admin]);
-
-  useEffect(() => {
-    localStorage.setItem(CHAMPIONSHIP_RECORD_TAB_KEY, championshipRecordTab);
-  }, [championshipRecordTab]);
-
-  useEffect(() => {
-    localStorage.setItem(DIRECTIVE_STEP_KEY, directiveStep);
-  }, [directiveStep]);
-
-  useEffect(() => {
-    localStorage.setItem(GARAGE_PANEL_KEY, garagePanel);
-  }, [garagePanel]);
-
 
   useEffect(() => {
     setSavedLeagueIndex((index) => Math.min(index, Math.max(0, savedClaims.length - 1)));
@@ -1617,100 +1591,27 @@ export function App() {
           </div>
         ) : null}
         {gameView === "plan" ? (
-          <div className="plan-view">
-            <div className="plan-steps plan-subscreen-tabs" role="tablist" aria-label={tt("plan_subscreen_label")}>
-              <button type="button" role="tab" aria-selected={planSubscreen === "plan"} className={planSubscreen === "plan" ? "plan-step active" : "plan-step"} onClick={() => setPlanSubscreen("plan")}>
-                <span className="plan-step-label">{tt("plan_subscreen_plan")}</span>
-              </button>
-              <button type="button" role="tab" aria-selected={planSubscreen === "chrono"} className={planSubscreen === "chrono" ? "plan-step active" : "plan-step"} onClick={() => setPlanSubscreen("chrono")}>
-                <span className="plan-step-label">{tt("plan_subscreen_chrono")}</span>
-              </button>
-            </div>
-            {planSubscreen === "chrono" ? (
-              <section className="panel chrono-report-panel" aria-label={tt("chrono_report_title")}>
-                <div className="chrono-report-hero">
-                  <header className="chrono-report-header">
-                    <div>
-                      <span className="section-kicker">{tt("chrono_report_kicker")}</span>
-                      <h2>{tt("chrono_report_title")}</h2>
-                    </div>
-                    <p>{chronoReport.suggestion}</p>
-                  </header>
-                  <div className="chrono-report-stats">
-                    <div>
-                      <span>{tt("qualifying_best")}</span>
-                      <strong>{chronoReport.best ? `${chronoReport.best.time.toFixed(2)}s` : "--"}</strong>
-                    </div>
-                    <div>
-                      <span>{tt("qualifying_result_rank")}</span>
-                      <strong>{chronoReport.gridLabel}</strong>
-                    </div>
-                    <div>
-                      <span>{tt("chrono_report_delta")}</span>
-                      <strong>{chronoReport.deltaLabel}</strong>
-                    </div>
-                    <div>
-                      <span>{tt("qualifying_remaining")}</span>
-                      <strong>
-                        {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
-                      </strong>
-                    </div>
-                  </div>
-                </div>
-                <div className="chrono-report-history">
-                  <strong>{tt("chrono_report_history_title")}</strong>
-                  {playerQualifyingRuns.length ? (
-                    <ol>
-                      {[...playerQualifyingRuns]
-                        .sort((left, right) => right.attempts - left.attempts || (right.lap ?? 0) - (left.lap ?? 0))
-                        .map((run) => (
-                          <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`}>
-                            <div className="chrono-session-setup">
-                              <strong className="chrono-session-lap">{tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}</strong>
-                              <span className="chrono-session-choice">
-                                <small>{tt("field_approach")}</small>
-                                <b>{tt(`approach_${run.decision.approach}` as TranslationKey)}</b>
-                              </span>
-                              <span className="chrono-session-choice">
-                                <small>{tt("field_preparation")}</small>
-                                <b>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</b>
-                              </span>
-                            </div>
-                            <em>{run.time.toFixed(2)}s</em>
-                            <button
-                              type="button"
-                              className="secondary-button"
-                              onClick={() => {
-                                setQualifyingResult(run);
-                                setGameView("drive");
-                              }}
-                            >
-                              {tt("action_qualifying_history")}
-                            </button>
-                          </li>
-                        ))}
-                    </ol>
-                  ) : (
-                    <p>{tt("chrono_report_history_empty")}</p>
-                  )}
-                </div>
-              </section>
-            ) : (
-              <DirectivePanel
-                form={form}
-                setForm={setForm}
-                ownedCardIds={ownedCardIds}
-                selectedCardId={selectedCardId}
-                selectedCardFit={selectedCardFit}
-                step={directiveStep}
-                circuitTraits={currentCircuit.traits}
-                cardLocked={Boolean(qualifyingLockedCardId)}
-                disabled={status === "loading" || Boolean(playerDecision) || isResolved}
-                onSelectStep={setDirectiveStep}
-                tt={tt}
-              />
-            )}
-          </div>
+          <PlanView
+            cardLocked={Boolean(qualifyingLockedCardId)}
+            chronoReport={chronoReport}
+            circuitTraits={currentCircuit.traits}
+            directiveStep={directiveStep}
+            disabled={status === "loading" || Boolean(playerDecision) || isResolved}
+            form={form}
+            ownedCardIds={ownedCardIds}
+            planSubscreen={planSubscreen}
+            playerQualifyingRuns={playerQualifyingRuns}
+            qualifyingAttemptLimit={qualifyingAttemptLimit}
+            qualifyingAttemptsLeft={qualifyingAttemptsLeft}
+            selectedCardFit={selectedCardFit}
+            selectedCardId={selectedCardId}
+            onSetDirectiveStep={setDirectiveStep}
+            onSetForm={setForm}
+            onSetGameView={setGameView}
+            onSetPlanSubscreen={setPlanSubscreen}
+            onSetQualifyingResult={setQualifyingResult}
+            tt={tt}
+          />
         ) : null}
         {gameView === "championship" ? (
           <ChampionshipView
@@ -1884,132 +1785,6 @@ export function App() {
   }
 }
 
-async function api<T>(path: string, init: RequestInit): Promise<T> {
-  const response = await fetch(`${API_BASE_URL}${path}`, {
-    ...init,
-    headers: init.body ? { "content-type": "application/json", ...init.headers } : init.headers
-  });
-
-  if (!response.ok) {
-    const errorBody = (await response.json().catch(() => null)) as { message?: string } | null;
-    throw new ApiError(response.status, errorBody?.message ?? `API request failed with ${response.status}`);
-  }
-
-  return (await response.json()) as T;
-}
-
-class ApiError extends Error {
-  constructor(
-    readonly statusCode: number,
-    message: string
-  ) {
-    super(message);
-  }
-}
-
 function isStaleLeagueError(error: unknown) {
   return error instanceof ApiError && error.statusCode === 404 && localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY);
-}
-
-async function copyText(text: string) {
-  try {
-    await navigator.clipboard?.writeText(text);
-  } catch {
-    const input = document.createElement("input");
-    input.value = text;
-    input.setAttribute("readonly", "");
-    input.style.left = "-9999px";
-    input.style.position = "fixed";
-    document.body.append(input);
-    input.select();
-    document.execCommand("copy");
-    input.remove();
-  }
-}
-
-function claimFromState(state: LeagueState): StoredPlayerClaim | null {
-  const team = state.teams.find((candidate) => candidate.id === state.player?.teamId);
-  return state.player && team
-    ? {
-        ...state.player,
-        leagueId: state.league.id,
-        leagueName: state.league.name,
-        leagueCode: state.league.code,
-        teamName: team.name
-      }
-    : null;
-}
-
-function loadPlayerClaims(): StoredPlayerClaim[] {
-  return parsePlayerClaims(localStorage.getItem(PLAYER_CLAIMS_KEY));
-}
-
-function loadProfileSession(): ProfileSession | null {
-  const raw = localStorage.getItem(PROFILE_SESSION_KEY);
-  if (!raw) return null;
-  try {
-    const parsed = JSON.parse(raw) as ProfileSession;
-    return parsed?.profile?.id && parsed.profile.email ? parsed : null;
-  } catch {
-    return null;
-  }
-}
-
-function seasonRecapStorageKey(leagueId: string, season: number) {
-  return `${SEASON_RECAP_KEY_PREFIX}:${leagueId}:${season}`;
-}
-
-function storeProfileSession(session: ProfileSession) {
-  localStorage.setItem(PROFILE_SESSION_KEY, JSON.stringify(session));
-}
-
-function claimsFromProfile(session: ProfileSession): StoredPlayerClaim[] {
-  return session.teams.map((team) => ({
-    teamId: team.teamId,
-    claimCode: team.claimCode,
-    leagueId: team.leagueId,
-    leagueName: team.leagueName,
-    leagueCode: team.leagueCode,
-    teamName: team.teamName
-  }));
-}
-
-function parsePlayerClaims(raw: string | null): StoredPlayerClaim[] {
-  if (!raw) return [];
-  try {
-    const parsed = JSON.parse(raw) as StoredPlayerClaim[];
-    return Array.isArray(parsed) ? parsed.filter(isStoredPlayerClaim) : [];
-  } catch {
-    return [];
-  }
-}
-
-function isStoredPlayerClaim(claim: Partial<StoredPlayerClaim>): claim is StoredPlayerClaim {
-  return (
-    typeof claim.teamId === "string" &&
-    typeof claim.claimCode === "string" &&
-    typeof claim.leagueId === "string" &&
-    typeof claim.leagueName === "string" &&
-    typeof claim.leagueCode === "string" &&
-    typeof claim.teamName === "string"
-  );
-}
-
-
-function upsertPlayerClaim(claims: StoredPlayerClaim[], claim: StoredPlayerClaim) {
-  return [claim, ...claims.filter((candidate) => candidate.teamId !== claim.teamId)];
-}
-
-function storePlayerClaims(claims: StoredPlayerClaim[], activeTeamId?: string) {
-  localStorage.setItem(PLAYER_CLAIMS_KEY, JSON.stringify(claims));
-  if (activeTeamId) {
-    localStorage.setItem(ACTIVE_PLAYER_CLAIM_KEY, activeTeamId);
-  } else {
-    localStorage.removeItem(ACTIVE_PLAYER_CLAIM_KEY);
-  }
-}
-
-function getActiveClaim(claims: StoredPlayerClaim[]) {
-  const activeTeamId = localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY);
-  return claims.find((claim) => claim.teamId === activeTeamId) ?? claims[0];
 }

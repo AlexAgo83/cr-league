@@ -5998,6 +5998,11 @@ button.highlight-command:not(:disabled) {
 }
 
 .card-cell-art .asset-image-placeholder {
+  background:
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.12), transparent),
+    linear-gradient(135deg, rgb(197 58 0 / 0.08), transparent 62%),
+    var(--card-art-bg);
+  background-size: 220% 100%, 100% 100%, 100% 100%;
   border: 0;
 }
 

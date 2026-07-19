@@ -35,6 +35,7 @@ const GRID_GAP_SECONDS = 0.25;
 const PIT_TRACE_WINDOW = 0.38;
 const PIT_TRACE_TEAM_STAGGER = 0.035;
 const DEFAULT_TRACK_LENGTH_METERS = 3200;
+const TRACE_ORDER_MARGIN = 0.006;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -92,7 +93,7 @@ export function simulateRace(input: RaceInput): RaceResult {
 
   const classification = classify(states);
   addFinishEvents(events, classification);
-  const annotatedReplayTrace = annotateReplayOvertakes(replayTrace);
+  const annotatedReplayTrace = annotateReplayOvertakes(stabilizeReplayTraceOrders(replayTrace));
 
   return {
     grandPrixName: input.grandPrixName,
@@ -112,6 +113,7 @@ export function simulateRace(input: RaceInput): RaceResult {
 function buildReplayFacts(trace: ReplayTracePoint[]): RaceReplayFacts {
   const orderChanges = trace.slice(1).flatMap((point, index) => {
     const previous = trace[index]!;
+    if (point.progress >= 1) return [];
     return point.order.flatMap((teamId, toIndex) => {
       const fromIndex = previous.order.indexOf(teamId);
       if (fromIndex === -1 || fromIndex <= toIndex) return [];
@@ -295,6 +297,23 @@ function annotateReplayOvertakes(trace: ReplayTracePoint[]) {
     }
   }
   return points;
+}
+
+function stabilizeReplayTraceOrders(trace: ReplayTracePoint[]) {
+  let previousOrder = trace[0]?.order ?? [];
+  return trace.map((point) => {
+    if (!point.cars || point.progress >= 1) {
+      previousOrder = point.order;
+      return point;
+    }
+    const previousRank = new Map(previousOrder.map((teamId, index) => [teamId, index]));
+    const order = [...point.order].sort((left, right) => {
+      const delta = (point.cars?.[right]?.trackProgress ?? 0) - (point.cars?.[left]?.trackProgress ?? 0);
+      return Math.abs(delta) >= TRACE_ORDER_MARGIN ? delta : (previousRank.get(left) ?? 999) - (previousRank.get(right) ?? 999);
+    });
+    previousOrder = order;
+    return { ...point, order };
+  });
 }
 
 function pitRelatedOrderChange(previous: ReplayTracePoint, point: ReplayTracePoint, teamId: string, overtakenTeamId: string) {

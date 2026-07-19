@@ -1,4 +1,5 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { APP_VERSION } from "@cr-league/shared";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
 import { baseState, otherLeagueState, resolvedState } from "./App.testFixtures.js";
@@ -48,11 +49,11 @@ describe("App profile and admin", () => {
 
     expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
-    fireEvent.click(screen.getByRole("button", { name: "v0.3.7" }));
+    fireEvent.click(screen.getByRole("button", { name: `v${APP_VERSION}` }));
 
     expect(screen.getByRole("heading", { name: "What's new" })).toBeTruthy();
-    expect(screen.getByText("Current local version: v0.3.7.")).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Setup and release-readiness polish" })).toBeTruthy();
+    expect(screen.getByText(`Current local version: v${APP_VERSION}.`)).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Navigation, admin operations, and circuit polish for CR League." })).toBeTruthy();
   });
 
   it("closes the profile menu when focus leaves it", async () => {

@@ -1,5 +1,7 @@
+import packageJson from "../package.json" with { type: "json" };
+
 export const APP_NAME = "CR League";
-export const APP_VERSION = "0.3.7";
+export const APP_VERSION = packageJson.version;
 
 export type HealthStatus = {
   app: typeof APP_NAME;

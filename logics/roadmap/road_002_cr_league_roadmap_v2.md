@@ -5,7 +5,7 @@
 > Related request: `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
 > Confidence: 90
-> Non-semantic edit: 2026-07-18 release roadmap wording refresh.
+> Non-semantic edit: 2026-07-19 release roadmap wording refresh.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -19,7 +19,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Insertion rule: a new feature idea = a new patch under the closest active theme. A new minor is created only for a genuinely new theme.
 - Version labels are planning targets, not release promises.
 
-# Current Position (2026-07-18)
+# Current Position (2026-07-19)
 - 0.1 (vertical slice) and 0.2 (private league prototype) are implemented; their detail is preserved in `road_001` and the specs.
 - The prototype runs the full private-league loop: profiles, invite codes, qualifying, directives, resolution, animated replay, reports, seasons, garage with a 15-card economy, EN/FR, balance simulations.
 - Five request chains are scaffolded, validated, and ready to dev with handoff context packs: `req_033` (code cleanup), `req_034` (personalized recap + GP identity), `req_035` (garage card consultation), `req_036` (CI, Render blueprint, release contract), `req_037` (starting grid + season narrative).
@@ -44,8 +44,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
   - 0.3.5 — Visual identity and mobile polish. Shipped in `changelogs/CHANGELOGS_0_3_5.md`.
   - 0.3.6 — Cockpit/setup visual identity and release contract alignment. Shipped in `changelogs/CHANGELOGS_0_3_6.md`.
   - 0.3.7 — First-session setup polish: compact Profile/League choices, saved-league cell styling, bottom-centered notifications, clearer Race Desk copy. Shipped in `changelogs/CHANGELOGS_0_3_7.md`.
-  - 0.3.8 — Race learning feedback: chrono report/history, setup suggestions, payoff recap, starter credits, and tire-prep wording. In progress in `changelogs/CHANGELOGS_0_3_8.md`.
-  - 0.3.9+ — Open slots for playtest feedback.
+  - 0.3.8 — Race learning feedback: chrono report/history, setup suggestions, payoff recap, starter credits, and tire-prep wording. Shipped in `changelogs/CHANGELOGS_0_3_8.md`.
+  - 0.3.9 — Navigation/admin/circuit polish: URL-backed cockpit routes, secured admin console, generated city circuits, randomized calendars, comeback credits, and playtest simulation. In progress in `changelogs/CHANGELOGS_0_3_9.md`.
+  - 0.3.10+ — Open slots for playtest feedback.
 - Exit signal:
   - 3 to 5 testers complete a 3-GP session on the polished loop;
   - feedback answers whether choices feel causal, recaps feel personal, and seasons feel like arcs;

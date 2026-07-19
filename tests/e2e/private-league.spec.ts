@@ -1,4 +1,5 @@
 import { expect, type Page, test } from "@playwright/test";
+import { APP_VERSION } from "../../packages/shared/src/index.js";
 import { circuitForRound } from "../../apps/web/src/app/circuits.js";
 import { t } from "../../apps/web/src/i18n/index.js";
 
@@ -122,7 +123,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("button", { name: "Reset UI preferences" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
   const menuButtons = await page.locator(".profile-menu-panel button").evaluateAll((buttons) => buttons.map((button) => button.textContent?.trim()));
-  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "English", "Français", "Reset UI preferences", "Sign out", "v0.3.7"]);
+  expect(menuButtons).toEqual(["Manage league", "League controls", "Copy profile code", "English", "Français", "Reset UI preferences", "Sign out", `v${APP_VERSION}`]);
   await expect(page.getByLabel("Language")).toBeVisible();
   await page.getByRole("button", { name: "Copy profile code" }).click();
   await expect(page.getByRole("dialog", { name: "Profile code" })).toBeVisible();

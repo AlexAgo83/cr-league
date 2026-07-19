@@ -272,8 +272,8 @@ Current roadmap direction:
 
 - `0.1`: playable vertical slice implemented;
 - `0.2`: private league prototype foundation implemented;
-- `0.3`: playtest game loop polish has reached race-learning patch `0.3.8`;
-- `0.4`: economy and card depth has started, with broader progression waiting for playtest signal.
+- `0.3`: playtest game loop polish has reached navigation/admin/circuit patch `0.3.9`;
+- `0.4`: ship rails are implemented; economy depth waits for playtest signal.
 
 ## Contributing
 

@@ -510,6 +510,8 @@ export function App() {
   });
   const completedSeasons = useMemo(() => (leagueState ? completedSeasonSummaries(leagueState) : []), [leagueState]);
   const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
+  const visibleResult = historyReplay?.result ?? (resultOpen ? result : undefined);
+  const visibleResultCircuit = historyReplay ? circuitForRound(historyReplay.round) : currentCircuit;
   const primaryCommand =
     deskState === "prepare"
       ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }
@@ -683,6 +685,14 @@ export function App() {
   function openLastQualifyingRun() {
     if (!lastQualifyingRun) return;
     setQualifyingResult(lastQualifyingRun);
+  }
+
+  function openHistoryReplay(grandPrix: LeagueState["grandPrixHistory"][number]) {
+    if (!grandPrix.result) return;
+    setHistoryReplay(grandPrix);
+    setResultTab("replay");
+    setResultOpen(true);
+    setGameView("drive");
   }
 
   async function mutateLeague(loadingKey: TranslationKey, path: string, body: unknown, successKey: TranslationKey) {
@@ -1586,7 +1596,7 @@ export function App() {
     );
   }
 
-  const isMapScreen = gameView === "drive" && (!result || !resultOpen || resultTab === "replay");
+  const isMapScreen = gameView === "drive" && (!visibleResult || resultTab === "replay");
 
   return (
     <main className={isMapScreen ? "app-shell game-shell map-screen" : "app-shell game-shell"}>
@@ -1604,6 +1614,7 @@ export function App() {
               onClick={() => {
                 clearTransientNotifications();
                 clearScreenOnboardingSnoozes();
+                setHistoryReplay(null);
                 setGameView(view);
                 if (view === "plan") setPlanSubscreen("plan");
                 if (view === "drive" && result) setResultOpen(false);
@@ -1620,21 +1631,28 @@ export function App() {
       </header>
 
       <section className="view-container">
-        {gameView === "drive" && result && resultOpen ? (
+        {gameView === "drive" && visibleResult ? (
           <ResultView
             state={leagueState}
-            result={result}
-            circuit={currentCircuit}
+            result={visibleResult}
+            circuit={visibleResultCircuit}
             playerTeamId={playerTeam?.id}
             playerDecision={playerDecision}
             tab={resultTab}
             traitImpacts={replayTraitImpacts}
             preferencesResetSignal={preferencesResetSignal}
-            onClose={() => setResultOpen(false)}
+            showReplayIntro={!historyReplay}
+            onClose={() => {
+              if (historyReplay) {
+                setHistoryReplay(null);
+                return;
+              }
+              setResultOpen(false);
+            }}
             tt={tt}
           />
         ) : null}
-        {gameView === "drive" && (!result || !resultOpen) ? (
+        {gameView === "drive" && !historyReplay && (!result || !resultOpen) ? (
           <div className="drive-grid">
             <div className="drive-content-column">
               {!result && currentQualifyingResult ? (
@@ -1951,7 +1969,7 @@ export function App() {
           <ChampionshipView
             state={leagueState}
             playerTeamId={playerTeam?.id}
-            onReplayGrandPrix={setHistoryReplay}
+            onReplayGrandPrix={openHistoryReplay}
             onOpenSeasonRecap={setSeasonRecapSeason}
             tt={tt}
           />
@@ -2038,25 +2056,6 @@ export function App() {
             <button type="button" onClick={() => setSeasonRecapSeason(null)}>
               {tt("action_close")}
             </button>
-          </div>
-        </Modal>
-      ) : null}
-      {historyReplay?.result ? (
-        <Modal label={tt("result_replay_title")} className="panel modal qualifying-modal" onClose={() => setHistoryReplay(null)}>
-          <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setHistoryReplay(null)}>
-            ×
-          </button>
-          <div className="qualifying-replay">
-            <ReplayView
-              result={historyReplay.result}
-              circuit={circuitForRound(historyReplay.round)}
-              playerTeamId={playerTeam?.id}
-              teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
-              traitImpacts={replayTraitImpacts}
-              preferencesResetSignal={preferencesResetSignal}
-              showIntro={false}
-              tt={tt}
-            />
           </div>
         </Modal>
       ) : null}

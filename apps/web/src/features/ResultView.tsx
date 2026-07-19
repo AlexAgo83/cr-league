@@ -18,6 +18,7 @@ export function ResultView({
   tab,
   traitImpacts,
   preferencesResetSignal,
+  showReplayIntro = true,
   onClose,
   tt
 }: {
@@ -29,6 +30,7 @@ export function ResultView({
   tab: ResultTab;
   traitImpacts: MapTraitImpacts;
   preferencesResetSignal?: number;
+  showReplayIntro?: boolean;
   onClose?: () => void;
   tt: Translator;
 }) {
@@ -84,6 +86,7 @@ export function ResultView({
             teamLiveries={teamLiveries}
             traitImpacts={traitImpacts}
             preferencesResetSignal={preferencesResetSignal}
+            showIntro={showReplayIntro}
             onClose={onClose}
             closeLabel={tt("action_back_to_circuit")}
             tt={tt}

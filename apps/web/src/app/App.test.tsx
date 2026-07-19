@@ -543,7 +543,7 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "My team" }).getAttribute("aria-selected")).toBe("true");
   });
 
-  it("hides replay explainer copy when opening a replay from Grand Prix history", async () => {
+  it("opens Grand Prix history replays in the regular replay screen without explainer copy", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(nextGrandPrixState));
 
@@ -555,7 +555,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Grand Prix history" }));
     fireEvent.click(screen.getByRole("button", { name: /S1 R1/ }));
 
-    expect(screen.getByRole("dialog", { name: "Race replay" })).toBeTruthy();
+    expect(document.querySelector("#result-replay-panel")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
+    expect(screen.queryByRole("dialog", { name: "Race replay" })).toBe(null);
+    expect(screen.getByRole("button", { name: "Back to circuit" })).toBeTruthy();
     expect(screen.queryByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBe(null);
   });
 
@@ -834,9 +837,11 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Grand Prix history" }));
     expect(document.querySelector(".round-timeline")?.textContent).toContain("P1");
     fireEvent.click(screen.getByRole("button", { name: "S1 R1" }));
-    expect(screen.getByRole("dialog", { name: "Race replay" })).toBeTruthy();
+    expect(document.querySelector("#result-replay-panel")).toBeTruthy();
+    expect(screen.queryByRole("dialog", { name: "Race replay" })).toBe(null);
     expect(screen.queryByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
     // League controls live in the profile menu.

@@ -228,7 +228,9 @@ function largestComponent(adjacency) {
 function candidateRings(center, seed, count) {
   const rings = [];
   const pointCounts = [18, 22, 26, 30];
-  const radii = [700, 900, 1150, 1450, 1800, 2300, 2900];
+  const radii = args.candidateRadii
+    ? args.candidateRadii.split(",").map(Number).filter((value) => Number.isFinite(value) && value > 0)
+    : [700, 900, 1150, 1450, 1800, 2300, 2900];
   const aspects = [
     [1, 0.68],
     [1, 0.82],

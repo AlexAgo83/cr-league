@@ -5,9 +5,16 @@ import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Transla
 import type { LeagueState } from "../app/types.js";
 import { CircuitMap } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
-import { Modal } from "./Modal.js";
 import { RewardValue } from "./RewardValue.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
+
+type ChampionshipRecordTab = "standings" | "calendar" | "palmares" | "history";
+export const CHAMPIONSHIP_RECORD_TAB_KEY = "cr-league-championship-record-tab";
+
+function savedRecordTab(): ChampionshipRecordTab {
+  const saved = localStorage.getItem(CHAMPIONSHIP_RECORD_TAB_KEY);
+  return saved === "calendar" || saved === "palmares" || saved === "history" ? saved : "standings";
+}
 
 export function ChampionshipView({
   state,
@@ -29,7 +36,7 @@ export function ChampionshipView({
   const completedSeasons = completedSeasonSummaries(state);
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
-  const [recordTab, setRecordTab] = useState<"standings" | "calendar" | "palmares" | "history">("standings");
+  const [recordTab, setRecordTab] = useState<ChampionshipRecordTab>(savedRecordTab);
   const [previewCircuit, setPreviewCircuit] = useState<CityCircuit | undefined>();
   const seasonCircuits = circuitsForSeason(state.league.id, currentGrandPrix.season);
   const catalogCircuits = [...CITY_CIRCUITS].sort((left, right) => tt(left.layoutKey).localeCompare(tt(right.layoutKey), undefined, { sensitivity: "base" }));
@@ -46,6 +53,11 @@ export function ChampionshipView({
   ];
   const activeRecordTab = recordTabs.some((tab) => tab.key === recordTab) ? recordTab : "standings";
   const activeRecordLabel = recordTabs.find((tab) => tab.key === activeRecordTab)?.label ?? tt("dashboard_standings");
+  const selectRecordTab = (nextTab: ChampionshipRecordTab) => {
+    localStorage.setItem(CHAMPIONSHIP_RECORD_TAB_KEY, nextTab);
+    setPreviewCircuit(undefined);
+    setRecordTab(nextTab);
+  };
 
   return (
     <div className="view-stack championship-view">
@@ -95,7 +107,7 @@ export function ChampionshipView({
             <h3>{activeRecordLabel}</h3>
             <div className="championship-record-switch" role="tablist" aria-label={tt("championship_kicker")}>
               {recordTabs.map((tab) => (
-                <button key={tab.key} type="button" role="tab" aria-selected={activeRecordTab === tab.key} className={activeRecordTab === tab.key ? "active" : undefined} onClick={() => setRecordTab(tab.key)}>
+                <button key={tab.key} type="button" role="tab" aria-selected={activeRecordTab === tab.key} className={activeRecordTab === tab.key ? "active" : undefined} onClick={() => selectRecordTab(tab.key)}>
                   {tab.label}
                 </button>
               ))}
@@ -126,7 +138,16 @@ export function ChampionshipView({
             </ol>
           ) : null}
 
-          {activeRecordTab === "calendar" ? (
+          {activeRecordTab === "calendar" && previewCircuit ? (
+            <div className="circuit-detail-screen">
+              <button type="button" className="secondary-button circuit-detail-back" onClick={() => setPreviewCircuit(undefined)}>
+                {tt("action_back")}
+              </button>
+              <CircuitMap circuit={previewCircuit} tt={tt} showTraits={false} />
+            </div>
+          ) : null}
+
+          {activeRecordTab === "calendar" && !previewCircuit ? (
             <ol className="circuit-calendar-list" aria-label={tt("championship_calendar")}>
               {catalogCircuits.map((circuit) => {
                 const rounds = seasonRoundsByLayout.get(circuit.layoutKey) ?? [];
@@ -144,7 +165,7 @@ export function ChampionshipView({
                         </small>
                       </span>
                       <span className="circuit-order-badges">
-                        {rounds.length ? rounds.map((round) => <span key={round}>{round}</span>) : <small>{tt("championship_calendar_unused")}</small>}
+                        {rounds.length ? rounds.map((round) => <span key={round} className={round === currentGrandPrix.round ? "current-round-badge" : undefined}>{round}</span>) : <small>{tt("championship_calendar_unused")}</small>}
                       </span>
                     </button>
                   </li>
@@ -218,14 +239,6 @@ export function ChampionshipView({
           ) : null}
         </section>
       </div>
-      {previewCircuit ? (
-        <Modal label={`${previewCircuit.city} ${tt(previewCircuit.layoutKey)}`} className="panel modal circuit-preview-modal" onClose={() => setPreviewCircuit(undefined)}>
-          <button className="modal-close-button" type="button" aria-label={tt("action_close")} onClick={() => setPreviewCircuit(undefined)}>
-            ×
-          </button>
-          <CircuitMap circuit={previewCircuit} tt={tt} showTraits={false} />
-        </Modal>
-      ) : null}
     </div>
   );
 }

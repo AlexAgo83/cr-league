@@ -752,13 +752,17 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Circuits" }));
     expect(screen.getByText(t(roundOneCircuit.layoutKey, "en"))).toBeTruthy();
     expect(document.querySelector(".circuit-calendar-list")?.textContent).toContain("1");
+    expect(document.querySelector(".current-round-badge")?.textContent).toBe("1");
     const displayedCircuitNames = [...document.querySelectorAll(".circuit-calendar-button strong")].map((node) => node.textContent);
     expect(displayedCircuitNames).toEqual([...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" })));
     fireEvent.click(screen.getByRole("button", { name: /Brussels Grand Place Loop/ }));
-    expect(screen.getByRole("dialog", { name: "Brussels Grand Place Loop" })).toBeTruthy();
     expect(screen.getByLabelText("City circuit map")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Focus driver" })).toBe(null);
-    fireEvent.click(screen.getByLabelText("Close"));
+    expect(screen.queryByRole("dialog", { name: "Brussels Grand Place Loop" })).toBe(null);
+    fireEvent.click(document.querySelector(".circuit-detail-back")!);
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    fireEvent.click(screen.getByRole("button", { name: "Championship" }));
+    expect(screen.getByRole("tab", { name: "Circuits" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("tab", { name: "Standings" }));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     expect(document.querySelector(".garage-overview")?.textContent).toContain("ABC123");
@@ -1168,6 +1172,7 @@ describe("App", () => {
     localStorage.setItem("cr-league-replay-speed", "4");
     localStorage.setItem("cr-league-replay-focus", "0");
     localStorage.setItem("cr-league-garage-panel", "team");
+    localStorage.setItem("cr-league-championship-record-tab", "calendar");
     localStorage.setItem("cr-league-help-race", "1");
     localStorage.setItem("cr-league-help-plan", "1");
     localStorage.setItem("cr-league-help-garage", "1");
@@ -1200,6 +1205,7 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-replay-speed")).toBe(null);
     expect(localStorage.getItem("cr-league-replay-focus")).toBe(null);
     expect(localStorage.getItem("cr-league-garage-panel")).toBe(null);
+    expect(localStorage.getItem("cr-league-championship-record-tab")).toBe(null);
     expect(localStorage.getItem("cr-league-help-race")).toBe(null);
     expect(localStorage.getItem("cr-league-help-plan")).toBe(null);
     expect(localStorage.getItem("cr-league-help-garage")).toBe(null);

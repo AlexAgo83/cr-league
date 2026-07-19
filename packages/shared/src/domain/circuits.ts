@@ -3,7 +3,7 @@ import type { CircuitTrait, RaceInput, RaceTraits, Weather } from "./race.js";
 export const CITY_CIRCUIT_IDENTITIES = [
   { city: "Paris", country: "FR", layoutKey: "circuit_docklands_sprint", laps: 7, traits: { grip: 64, overtaking: 72, energy: 58 }, likelyWeather: "light_rain" },
   { city: "Paris", country: "FR", layoutKey: "circuit_left_bank_loop", laps: 9, traits: { grip: 70, overtaking: 55, energy: 62 }, likelyWeather: "dry" },
-  { city: "Amsterdam", country: "NL", layoutKey: "circuit_canal_loop", laps: 5, traits: { grip: 60, overtaking: 68, energy: 66 }, likelyWeather: "light_rain" },
+  { city: "Amsterdam", country: "NL", layoutKey: "circuit_canal_loop", laps: 7, traits: { grip: 60, overtaking: 68, energy: 66 }, likelyWeather: "light_rain" },
   { city: "Amsterdam", country: "NL", layoutKey: "circuit_harbor_sprint", laps: 10, traits: { grip: 58, overtaking: 78, energy: 52 }, likelyWeather: "heavy_rain" },
   { city: "Berlin", country: "DE", layoutKey: "circuit_ring_sector", laps: 6, traits: { grip: 76, overtaking: 62, energy: 70 }, likelyWeather: "dry" },
   { city: "Berlin", country: "DE", layoutKey: "circuit_mitte_dash", laps: 5, traits: { grip: 68, overtaking: 74, energy: 60 }, likelyWeather: "dry" },

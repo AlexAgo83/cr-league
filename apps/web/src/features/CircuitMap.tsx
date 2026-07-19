@@ -64,6 +64,7 @@ type RouteSegment = {
 export type CircuitRouteAnalysis = {
   startLine: { x1: number; y1: number; x2: number; y2: number };
   startProgress: number;
+  pitProgress: number;
   pitStop: RoutePose;
   longestStraight: { startProgress: number; endProgress: number; length: number };
 };
@@ -208,7 +209,7 @@ export function analyzeCircuitRoute(points: RoutePoint[]): CircuitRouteAnalysis 
   const total = segments.reduce((sum, segment) => sum + segment.length, 0) || 1;
   if (!segments.length) {
     const pose = { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
-    return { startLine: routeLineAt(pose), startProgress: 0, pitStop: pose, longestStraight: { startProgress: 0, endProgress: 0, length: 0 } };
+    return { startLine: routeLineAt(pose), startProgress: 0, pitProgress: 0, pitStop: pose, longestStraight: { startProgress: 0, endProgress: 0, length: 0 } };
   }
 
   let best = { start: segments[0]!, count: 1, length: segments[0]!.length };
@@ -234,6 +235,7 @@ export function analyzeCircuitRoute(points: RoutePoint[]): CircuitRouteAnalysis 
   return {
     startLine: routeLineAt(poseOnRoute(points, lineProgress)),
     startProgress: lineProgress,
+    pitProgress,
     pitStop: poseOnRoute(points, pitProgress),
     longestStraight: {
       startProgress: straightStart,

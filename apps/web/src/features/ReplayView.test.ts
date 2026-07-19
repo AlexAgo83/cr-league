@@ -11,6 +11,7 @@ import {
   gridStartCarProgress,
   liveClassificationByCarProgress,
   playerReplayContext,
+  pitStopRaceProgress,
   positionDeltas,
   replayPlanDebugLines,
   replayDistanceScale,
@@ -170,45 +171,47 @@ describe("ReplayView timing", () => {
       { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
       { segment: "finish", lap: 10, progress: 1, order: ["leader", "last"], times: { leader: 100, last: 104 }, gaps: { leader: 0, last: 4 } }
     ];
+    const resultWithPit: RaceResult = {
+      ...result,
+      events: [
+        {
+          id: "pit",
+          order: 1,
+          segment: "mid",
+          lap: 5,
+          type: "pit_stop",
+          teamId: "leader",
+          severity: "minor",
+          positionDelta: 0,
+          tags: ["pit_stop", "standard"],
+          replayText: "Leader swaps battery pack in the pit",
+          reportText: "Leader lost time on a battery swap."
+        },
+        {
+          id: "finish",
+          order: 2,
+          segment: "finish",
+          lap: 10,
+          type: "finish",
+          teamId: "leader",
+          severity: "minor",
+          positionDelta: 0,
+          tags: ["finish"],
+          replayText: "Leader finishes the race",
+          reportText: "Leader finishes the race."
+        }
+      ]
+    };
     const beats = buildRaceDirectorBeats(
-      {
-        ...result,
-        events: [
-          {
-            id: "pit",
-            order: 1,
-            segment: "mid",
-            lap: 5,
-            type: "pit_stop",
-            teamId: "leader",
-            severity: "minor",
-            positionDelta: 0,
-            tags: ["pit_stop", "standard"],
-            replayText: "Leader swaps battery pack in the pit",
-            reportText: "Leader lost time on a battery swap."
-          },
-          {
-            id: "finish",
-            order: 2,
-            segment: "finish",
-            lap: 10,
-            type: "finish",
-            teamId: "leader",
-            severity: "minor",
-            positionDelta: 0,
-            tags: ["finish"],
-            replayText: "Leader finishes the race",
-            reportText: "Leader finishes the race."
-          }
-        ]
-      },
+      resultWithPit,
       trace,
       buildReplayPlan(result, trace),
       10,
       "leader"
     );
 
-    expect(beats.some((beat) => beat.type === "pit_stop" && beat.progress === 0.5)).toBe(true);
+    expect(beats.find((beat) => beat.type === "pit_stop")?.progress).toBeCloseTo(0.45);
+    expect(pitStopRaceProgress(resultWithPit.events[0]!, 10, 5, 0.25)).toBeCloseTo(0.45);
   });
 
   it("uses chrono-specific director beats for qualifying replays", () => {

@@ -33,6 +33,7 @@ describe("CircuitMap route posing", () => {
     expect(analysis.longestStraight.length).toBe(300);
     expect(analysis.pitStop.x).toBeCloseTo(54);
     expect(analysis.pitStop.y).toBeCloseTo(0);
+    expect(analysis.pitProgress).toBeCloseTo(54 / 700);
     expect((analysis.startLine.x1 + analysis.startLine.x2) / 2).toBeCloseTo(264);
     expect((analysis.startLine.y1 + analysis.startLine.y2) / 2).toBeCloseTo(0);
     expect(poseOnRoute(route, analysis.startProgress).x).toBeCloseTo(264);

@@ -1036,8 +1036,7 @@ export function App() {
 
   const preferencesResetModal = preferencesResetOpen ? (
     <Modal label={tt("preferences_reset_title")} onClose={() => setPreferencesResetOpen(false)}>
-      <span className="section-kicker">{tt("profile_kicker")}</span>
-      <h2>{tt("preferences_reset_title")}</h2>
+      <ModalHero image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("preferences_reset_title")} />
       <p>{tt("preferences_reset_confirm")}</p>
       <div className="actions secondary-actions">
         <button type="button" className="danger-button" onClick={resetUiPreferences}>
@@ -1724,8 +1723,7 @@ export function App() {
       ) : null}
       {leagueControlsOpen ? (
         <Modal label={tt("settings_title")} className="panel modal league-controls-modal" onClose={closeLeagueControls}>
-          <span className="section-kicker">{tt("championship_kicker")}</span>
-          <h2>{tt("settings_title")}</h2>
+          <ModalHero image="/assets/crl/league-arrival.png" kicker={tt("championship_kicker")} title={tt("settings_title")} />
           <div className="field-grid settings-fields">
             <label>
               {tt("field_cadence")}

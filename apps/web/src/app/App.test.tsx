@@ -1302,6 +1302,7 @@ describe("App", () => {
 
     expect(screen.getByText("Saved leagues")).toBeTruthy();
     expect(screen.getByText("No saved leagues yet.")).toBeTruthy();
+    expect(document.querySelector(".saved-leagues-empty img")).toBe(null);
     expect(screen.queryByLabelText("Language")).toBe(null);
 
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));

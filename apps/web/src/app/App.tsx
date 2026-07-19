@@ -1586,7 +1586,6 @@ export function App() {
                   </div>
                 ) : (
                   <div className="saved-leagues-empty">
-                    <img src="/assets/crl/saved-leagues-empty.png" alt="" />
                     <p>{tt("profile_saved_leagues_empty")}</p>
                   </div>
                 )}

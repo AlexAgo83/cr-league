@@ -111,6 +111,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect
     .poll(async () => page.locator(".dashboard-summary").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length))
     .toBe(3);
+  await page.getByRole("tab", { name: "Standings" }).click();
   await expect(page.locator(".standings-table")).toContainText("Volt Union");
   await page.getByRole("tab", { name: "Grand Prix history" }).click();
   await expect(page.locator(".round-timeline")).toContainText("R1");

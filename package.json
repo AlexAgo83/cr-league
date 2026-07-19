@@ -23,6 +23,7 @@
     "playtest:seed": "tsx scripts/seed-playtest-league.ts",
     "db:studio": "prisma studio",
     "smoke:league": "tsx scripts/smoke-league-flow.ts",
+    "playtest:simulate": "tsx scripts/simulate-playtest.ts",
     "balance:sim": "tsx scripts/balance-simulations.ts",
     "audit:circuits": "node scripts/audit-circuits.mjs",
     "logics:validate": "logics-manager lint --require-status && logics-manager audit --group-by-doc"

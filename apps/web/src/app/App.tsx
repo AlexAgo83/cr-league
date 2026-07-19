@@ -5,7 +5,7 @@ import { circuitForRound } from "./circuits.js";
 import { cardFit, clampNumber, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
 import { GAME_VIEWS, type AdminLeague, type AdminUser, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
-import { CHAMPIONSHIP_RECORD_TAB_KEY, ChampionshipView } from "../features/ChampionshipView.js";
+import { CHAMPIONSHIP_RECORD_TAB_KEY, ChampionshipView, savedRecordTab, type ChampionshipRecordTab } from "../features/ChampionshipView.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import { CircuitMap, MapTraitsPanel } from "../features/CircuitMap.js";
 import { DirectivePanel } from "../features/DirectivePanel.js";
@@ -18,6 +18,7 @@ import { RewardValue } from "../features/RewardValue.js";
 import { CountryBadge } from "../features/VisualIcon.js";
 import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, SetupShell, type OnboardingHelpTopic } from "./OnboardingShell.js";
 import { bestQualifyingRuns, buildChronoReport, createInitialForm, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
+import { parseAppRoute, pathForAppRoute, type PlanSubscreen } from "./routes.js";
 import { LeagueSetupView, ProfileSetupView, type ProfileMode, type SetupMode } from "./SetupViews.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
@@ -36,14 +37,16 @@ type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
 };
 type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
 export function App() {
+  const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);
   const [locale, setLocaleState] = useState<Locale>(() => {
     const saved = localStorage.getItem(LANGUAGE_KEY);
     if (isLocale(saved)) return saved;
     const browserLocale = navigator.language.split("-")[0] ?? "en";
     return isLocale(browserLocale) ? browserLocale : "en";
   });
-  const [gameView, setGameView] = useState<GameView>("drive");
-  const [planSubscreen, setPlanSubscreen] = useState<"plan" | "chrono">("plan");
+  const [gameView, setGameView] = useState<GameView>(() => initialRoute.view);
+  const [planSubscreen, setPlanSubscreen] = useState<PlanSubscreen>(() => initialRoute.planSubscreen);
+  const [championshipRecordTab, setChampionshipRecordTab] = useState<ChampionshipRecordTab>(() => initialRoute.championshipTab === "standings" ? savedRecordTab() : initialRoute.championshipTab);
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
   const [resultOpen, setResultOpen] = useState(true);
   const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
@@ -125,6 +128,35 @@ export function App() {
   function dismissNotification(id: number) {
     setNotifications((items) => items.filter((item) => item.id !== id));
   }
+
+  useEffect(() => {
+    const applyRoute = () => {
+      const route = parseAppRoute(window.location.pathname);
+      const nextView = route.view === "admin" && !profileSession ? "drive" : route.view;
+      setGameView(nextView);
+      setPlanSubscreen(route.planSubscreen);
+      setChampionshipRecordTab(route.championshipTab === "standings" ? savedRecordTab() : route.championshipTab);
+      setHistoryReplay(null);
+    };
+
+    window.addEventListener("popstate", applyRoute);
+    return () => window.removeEventListener("popstate", applyRoute);
+  }, [profileSession?.admin]);
+
+  useEffect(() => {
+    if (gameView === "admin" && (!profileSession || profileSession.admin === false)) {
+      setGameView("drive");
+      return;
+    }
+
+    const path = pathForAppRoute({ view: gameView, planSubscreen, championshipTab: championshipRecordTab });
+    if (window.location.pathname !== path) window.history.pushState(null, "", path);
+  }, [championshipRecordTab, gameView, planSubscreen, profileSession?.admin]);
+
+  useEffect(() => {
+    localStorage.setItem(CHAMPIONSHIP_RECORD_TAB_KEY, championshipRecordTab);
+  }, [championshipRecordTab]);
+
 
   useEffect(() => {
     setSavedLeagueIndex((index) => Math.min(index, Math.max(0, savedClaims.length - 1)));
@@ -1243,7 +1275,7 @@ export function App() {
         profileLogoutModal={profileLogoutModal}
         preferencesResetModal={preferencesResetModal}
       >
-        {gameView === "admin" ? (
+        {gameView === "admin" && profileSession.admin ? (
           adminView
         ) : gameView === "changelog" ? (
           <ChangelogView currentVersion={APP_VERSION} tt={tt} />
@@ -1320,7 +1352,7 @@ export function App() {
             </button>
           </div>
         ) : null}
-        {gameView === "admin" ? adminView : null}
+        {gameView === "admin" && profileSession?.admin ? adminView : null}
         {gameView === "drive" && visibleResult ? (
           <ResultView
             state={leagueState}
@@ -1670,8 +1702,10 @@ export function App() {
           <ChampionshipView
             state={leagueState}
             playerTeamId={playerTeam?.id}
+            recordTab={championshipRecordTab}
             onReplayGrandPrix={openHistoryReplay}
             onOpenSeasonRecap={setSeasonRecapSeason}
+            onSelectRecordTab={setChampionshipRecordTab}
             tt={tt}
           />
         ) : null}

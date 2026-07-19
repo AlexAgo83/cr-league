@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, type CityCircuit } from "../app/circuits.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
@@ -8,10 +8,10 @@ import { LiveryPlate } from "./LiveryPlate.js";
 import { RewardValue } from "./RewardValue.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
-type ChampionshipRecordTab = "standings" | "calendar" | "palmares" | "history";
+export type ChampionshipRecordTab = "standings" | "calendar" | "palmares" | "history";
 export const CHAMPIONSHIP_RECORD_TAB_KEY = "cr-league-championship-record-tab";
 
-function savedRecordTab(): ChampionshipRecordTab {
+export function savedRecordTab(): ChampionshipRecordTab {
   const saved = localStorage.getItem(CHAMPIONSHIP_RECORD_TAB_KEY);
   return saved === "calendar" || saved === "palmares" || saved === "history" ? saved : "standings";
 }
@@ -19,14 +19,18 @@ function savedRecordTab(): ChampionshipRecordTab {
 export function ChampionshipView({
   state,
   playerTeamId,
+  recordTab,
   onReplayGrandPrix,
   onOpenSeasonRecap,
+  onSelectRecordTab,
   tt
 }: {
   state: LeagueState;
   playerTeamId: string | undefined;
+  recordTab: ChampionshipRecordTab;
   onReplayGrandPrix: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
   onOpenSeasonRecap: (season: number) => void;
+  onSelectRecordTab: (tab: ChampionshipRecordTab) => void;
   tt: Translator;
 }) {
   const leader = state.teams[0];
@@ -36,7 +40,6 @@ export function ChampionshipView({
   const completedSeasons = completedSeasonSummaries(state);
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
-  const [recordTab, setRecordTab] = useState<ChampionshipRecordTab>(savedRecordTab);
   const [previewCircuit, setPreviewCircuit] = useState<CityCircuit | undefined>();
   const seasonCircuits = circuitsForSeason(state.league.id, currentGrandPrix.season);
   const catalogCircuits = [...CITY_CIRCUITS].sort((left, right) => tt(left.layoutKey).localeCompare(tt(right.layoutKey), undefined, { sensitivity: "base" }));
@@ -56,8 +59,12 @@ export function ChampionshipView({
   const selectRecordTab = (nextTab: ChampionshipRecordTab) => {
     localStorage.setItem(CHAMPIONSHIP_RECORD_TAB_KEY, nextTab);
     setPreviewCircuit(undefined);
-    setRecordTab(nextTab);
+    onSelectRecordTab(nextTab);
   };
+
+  useEffect(() => {
+    setPreviewCircuit(undefined);
+  }, [activeRecordTab]);
 
   return (
     <div className="view-stack championship-view">

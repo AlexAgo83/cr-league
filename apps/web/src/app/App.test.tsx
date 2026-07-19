@@ -332,6 +332,7 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.useRealTimers();
   localStorage.clear();
+  window.history.replaceState(null, "", "/");
 });
 
 describe("App", () => {

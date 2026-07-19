@@ -41,43 +41,44 @@ export function ResultView({
 }) {
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
   const payoff = playerRacePayoff(state, result, playerTeamId, tt);
+  const payoffPanel = payoff ? (
+    <section className="panel race-payoff-recap" aria-label={tt("payoff_title")}>
+      <div>
+        <span className="section-kicker">{tt("payoff_kicker")}</span>
+        <h2>{tt("payoff_title")}</h2>
+      </div>
+      <dl>
+        <div>
+          <dt>{tt("payoff_finish")}</dt>
+          <dd>P{payoff.position}</dd>
+        </div>
+        <div>
+          <dt>{tt("payoff_points")}</dt>
+          <dd>
+            <RewardValue type="points" value={payoff.points} signed tt={tt} />
+          </dd>
+        </div>
+        <div>
+          <dt>{tt("payoff_credits")}</dt>
+          <dd>
+            <RewardValue type="credits" value={payoff.credits} signed tt={tt} />
+          </dd>
+        </div>
+        <div>
+          <dt>{tt("payoff_cards")}</dt>
+          <dd>{payoff.cards}</dd>
+        </div>
+        <div>
+          <dt>{tt("payoff_championship")}</dt>
+          <dd>{payoff.championship}</dd>
+        </div>
+      </dl>
+    </section>
+  ) : null;
 
   return (
     <div className="result-view">
-      {payoff ? (
-        <section className="panel race-payoff-recap" aria-label={tt("payoff_title")}>
-          <div>
-            <span className="section-kicker">{tt("payoff_kicker")}</span>
-            <h2>{tt("payoff_title")}</h2>
-          </div>
-          <dl>
-            <div>
-              <dt>{tt("payoff_finish")}</dt>
-              <dd>P{payoff.position}</dd>
-            </div>
-            <div>
-              <dt>{tt("payoff_points")}</dt>
-              <dd>
-                <RewardValue type="points" value={payoff.points} signed tt={tt} />
-              </dd>
-            </div>
-            <div>
-              <dt>{tt("payoff_credits")}</dt>
-              <dd>
-                <RewardValue type="credits" value={payoff.credits} signed tt={tt} />
-              </dd>
-            </div>
-            <div>
-              <dt>{tt("payoff_cards")}</dt>
-              <dd>{payoff.cards}</dd>
-            </div>
-            <div>
-              <dt>{tt("payoff_championship")}</dt>
-              <dd>{payoff.championship}</dd>
-            </div>
-          </dl>
-        </section>
-      ) : null}
+      {tab === "report" ? payoffPanel : null}
       <div id={`result-${tab}-panel`}>
         {tab === "replay" ? (
           <ReplayView
@@ -106,6 +107,7 @@ export function ResultView({
           />
         )}
       </div>
+      {tab === "replay" ? payoffPanel : null}
     </div>
   );
 }

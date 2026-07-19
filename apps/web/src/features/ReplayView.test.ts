@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { RaceResult, ReplayTracePoint } from "@cr-league/shared";
+import type { RaceEvent, RaceResult, ReplayTracePoint } from "@cr-league/shared";
 import {
   carProgressAtRaceTime,
   carProgressAtTrace,
@@ -12,6 +12,8 @@ import {
   liveClassificationByCarProgress,
   playerReplayContext,
   pitStopRaceProgress,
+  pitStopReplayProgress,
+  pitStopTimeOffset,
   pitStopVisualProgress,
   positionDeltas,
   replayPlanDebugLines,
@@ -221,6 +223,15 @@ describe("ReplayView timing", () => {
     expect(pitStopVisualProgress(2.4, 10.6, 10, 2.25)).toBe(2.25);
     expect(pitStopVisualProgress(2.6, 11.6, 10, 2.25)).toBeGreaterThan(2.25);
     expect(pitStopVisualProgress(2.7, 12.1, 10, 2.25)).toBe(2.7);
+  });
+
+  it("stagger pit stops by race order instead of stacking cars", () => {
+    const trace: ReplayTracePoint[] = [{ segment: "mid", lap: 5, progress: 0.45, order: ["leader", "last"], times: { leader: 45, last: 46 }, gaps: { leader: 0, last: 1 } }];
+    const leader: RaceEvent = { id: "pit-a", order: 1, segment: "mid", lap: 5, type: "pit_stop", teamId: "leader", severity: "minor", positionDelta: 0, tags: [], replayText: "", reportText: "" };
+    const last: RaceEvent = { ...leader, id: "pit-b", order: 2, teamId: "last" };
+
+    expect(pitStopTimeOffset(last, trace, 0.45)).toBeGreaterThan(pitStopTimeOffset(leader, trace, 0.45));
+    expect(pitStopReplayProgress(last, 10, 5, 0.25, trace, 100)).toBeGreaterThan(pitStopReplayProgress(leader, 10, 5, 0.25, trace, 100));
   });
 
   it("uses chrono-specific director beats for qualifying replays", () => {

@@ -1,5 +1,7 @@
 # Private League 3 GP Playtest Checklist
 
+Target build: `0.3.8` race-learning polish.
+
 ## Setup
 - Run the API and web app.
 - Prepare the database with migrations and seed data.
@@ -14,13 +16,34 @@
 1. Player A creates or recovers a profile, then joins code `PLAY01` as `Volt Union`.
 2. Player B creates or recovers a profile, then joins code `PLAY01` as `Late Apex`.
 3. Set cadence to `Fast`.
-4. Each player reviews the current GP, runs at least one qualifying attempt, replays the latest chrono, then submits a directive.
-5. Resolve GP 1 and read the race recap, report, replay, chrono table, and classification.
-6. Review the championship screen, click GP history to reopen a replay, then return to the race flow.
-7. Review the garage, switch between inventory/shop, open a card purchase modal, buy a recommended card if enough credits are available, then start GP 2.
-8. Start GP 3 and repeat with a different directive/card choice.
-9. If testing season flow, continue until the configured season limit and confirm the next season starts at 0 points while GP history remains consultable.
-10. Use `Restart session` once and confirm the league returns to season 1 / round 1 while teams remain joined.
+4. Each player reviews the current GP, checks the first-time highlighted commands, edits the plan once, runs at least one qualifying attempt, opens the chrono report, replays the latest chrono, then submits a directive.
+5. Resolve GP 1, launch the replay from the race flow, use the replay toolbar report shortcut, then use the report replay shortcut to return to the replay.
+6. Read the race recap, report, rewards, chrono table, and classification.
+7. Review the championship screen, click GP history, and confirm it opens in the normal replay screen instead of a modal.
+8. Review the garage, switch between inventory/shop, open a card purchase modal, buy a recommended card if enough credits are available, then start GP 2.
+9. Start GP 3 and repeat with a different directive/card choice.
+10. If testing season flow, continue until the configured season limit and confirm the next season starts at 0 points while GP history remains consultable.
+11. Use `Restart session` once and confirm the league returns to season 1 / round 1 while teams remain joined.
+12. Use `Reset UI preferences` once and confirm the one-shot highlighted commands are visible again on a fresh pass.
+
+## First-Time Highlight Pass
+- Before clicking them, confirm `Edit plan`, `New chrono`, `Chrono report`, `Send plan`, `Launch GP`, `Report`, `Next GP`, and `Launch next GP` have an animated highlight.
+- After clicking each command once, confirm its highlight is gone and does not come back during normal navigation.
+- After resetting UI preferences, confirm the same one-shot highlights come back.
+- Confirm highlighted buttons remain readable and do not look like static yellow buttons without motion.
+
+## Screen Checks
+- Chrono report: background image stops before `Session history`; grey panels do not clash with the rest of the cockpit; session setup is formatted, not raw text.
+- Chrono report history: `Review chrono` opens the replay at the matching lap/timeline moment.
+- Replay: race notifications stay in the top notification area; no duplicate centered league label appears over the car.
+- Replay toolbar: the report shortcut sits before the red quit button and uses the blue report treatment.
+- Report toolbar: the replay shortcut sits before the red quit button; the quit button keeps the same red treatment as the map.
+- Report rewards: points and credits are readable, include a recognizable visual token/icon, and avoid the old grey-panel look.
+- Garage inventory: duplicate count is pinned to the top-right of the card.
+- Empty states: no decorative image appears next to `No cards in inventory` or `No saved league`.
+- Shop: buying a card does not auto-select it for the player unless the player explicitly chooses it.
+- Championship standings: points are legible on the light background.
+- Championship trophies/history carousel: if the honors list is empty, the empty entry is not shown in the slider.
 
 ## Observe
 - Can testers tell which team is theirs?
@@ -43,12 +66,18 @@
 - Are credits tight enough to make buying a choice?
 - Does the pit-wall/race-desk presentation feel more like a race weekend than an admin form?
 - Do the compact profile and pit-wall entry screens make the first action obvious?
+- Do the animated highlights help without feeling noisy after the first click?
+- Does the chrono report teach what to change for the next plan?
+- Can testers move naturally between replay, report, chrono report, and championship history?
+- Do points and credits feel like distinct rewards at a glance?
 
 ## Questions
 - What did you expect to happen before launching the GP?
 - Did you understand when to run a chrono and when it was too late?
+- Did you understand why a chrono report existed before submitting the plan?
 - Which choice felt most meaningful?
 - What was confusing or hidden?
+- Where did you hesitate before the next click?
 - Would you come back for the next GP later?
 - Did being behind still feel playable?
 - What did the recap teach you for the next GP?

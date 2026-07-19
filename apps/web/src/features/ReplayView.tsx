@@ -112,6 +112,11 @@ function tracePointAt(trace: ReplayTracePoint[], progress: number) {
   return [...trace].reverse().find((point) => point.progress <= progress) ?? trace[0] ?? EMPTY_TRACE_POINT;
 }
 
+export function replayOrderAtProgress(result: RaceResult, trace: ReplayTracePoint[], progress: number) {
+  const order = tracePointAt(trace, progress).order;
+  return order.length ? order : result.classification.map((entry) => entry.teamId);
+}
+
 function traceGapsAt(trace: ReplayTracePoint[], progress: number) {
   const from = tracePointAt(trace, progress);
   const to = trace.find((point) => point.progress > progress) ?? from;
@@ -709,6 +714,8 @@ export function ReplayView({
     positionPopTimers.current.forEach(window.clearTimeout);
     positionPopTimers.current = [];
     setPositionPops({});
+    const progress = raceProgressAt(clock.current, raceDuration);
+    orderRef.current = replayOrderAtProgress(result, replayTrace, progress);
     updateLive(clock.current, false);
   }
 

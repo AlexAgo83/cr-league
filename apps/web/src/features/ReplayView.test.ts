@@ -14,6 +14,7 @@ import {
   pitStopRaceProgress,
   pitStopTraceProgress,
   positionDeltas,
+  replayOrderAtProgress,
   replayPlanDebugLines,
   replayDistanceScale,
   scaleFinishTimes,
@@ -104,6 +105,16 @@ describe("ReplayView timing", () => {
 
     expect(progress.last ?? 0).toBeGreaterThan(progress.leader ?? 0);
     expect(liveClassificationByCarProgress(result, trace, 0.5, progress, ["last", "leader"]).map((entry) => entry.teamId)).toEqual(["last", "leader"]);
+  });
+
+  it("resets replay order from the trace when seeking or restarting", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {} },
+      { segment: "mid", lap: 3, progress: 0.5, order: ["last", "leader"], times: {}, gaps: {} }
+    ];
+
+    expect(replayOrderAtProgress(result, trace, 0)).toEqual(["leader", "last"]);
+    expect(replayOrderAtProgress(result, trace, 0.75)).toEqual(["last", "leader"]);
   });
 
   it("uses generated car trace positions when available", () => {

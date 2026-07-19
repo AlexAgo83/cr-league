@@ -5,6 +5,7 @@ import { circuitForRound } from "./circuits.js";
 import { cardFit, clampNumber, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
 import { GAME_VIEWS, type AdminLeague, type AdminUser, type FormState, type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
+import { AssetImage } from "../features/AssetImage.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, ChampionshipView } from "../features/ChampionshipView.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import { CircuitMap, MapTraitsPanel } from "../features/CircuitMap.js";
@@ -967,7 +968,7 @@ export function App() {
   const setupTopbar = (
     <header className="setup-topbar">
       <button type="button" className="brand brand-button" onClick={goHome}>
-        <img className="brand-icon" src="/favicon.svg" alt="" />
+        <AssetImage className="brand-icon" src="/favicon.svg" alt="" />
         <strong>{APP_NAME}</strong>
       </button>
       <div className="setup-topbar-actions">
@@ -1058,7 +1059,7 @@ export function App() {
     <Modal label={tt("directive_confirm_title")} onClose={() => setDirectiveConfirmOpen(false)}>
       <span className="section-kicker">{tt("qualifying_kicker")}</span>
       <h2>{tt("directive_confirm_title")}</h2>
-      <img className="modal-hero-image" src="/assets/crl/send-plan-modal.png" alt="" />
+      <AssetImage className="modal-hero-image" src="/assets/crl/send-plan-modal.png" alt="" />
       <p>
         {qualifyingAttemptsUsed === 0
           ? tt("directive_confirm_no_qualifying")
@@ -1080,7 +1081,7 @@ export function App() {
     <Modal label={tt("launch_gp_confirm_title")} onClose={() => setResolveConfirmOpen(false)}>
       <span className="section-kicker">{tt("action_launch_grand_prix")}</span>
       <h2>{tt("launch_gp_confirm_title")}</h2>
-      <img className="modal-hero-image" src="/assets/crl/launch-gp-modal.png" alt="" />
+      <AssetImage className="modal-hero-image" src="/assets/crl/launch-gp-modal.png" alt="" />
       <p>{tt("launch_gp_confirm_body")}</p>
       <div className="starting-grid-confirmation">
         <div>
@@ -1124,13 +1125,13 @@ export function App() {
     <Modal label={tt("qualifying_confirm_title")} onClose={() => setQualifyingConfirmOpen(false)}>
       <span className="section-kicker">{tt("qualifying_kicker")}</span>
       <h2>{tt("qualifying_confirm_title")}</h2>
-      <img className="modal-hero-image" src="/assets/crl/qualifying-modal.png" alt="" />
+      <AssetImage className="modal-hero-image" src="/assets/crl/qualifying-modal.png" alt="" />
       <p>
         {tt("qualifying_confirm_body")} {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
       </p>
       <div className="actions secondary-actions">
         <button type="button" onClick={startQualifyingRunConfirmed} disabled={status === "loading"}>
-          {tt("action_qualifying")}
+          {status === "loading" ? message : tt("action_qualifying")}
         </button>
         <button type="button" onClick={() => setQualifyingConfirmOpen(false)}>
           {tt("action_close")}
@@ -1142,7 +1143,7 @@ export function App() {
     <Modal label={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} onClose={() => setNextGrandPrixConfirmOpen(false)}>
       <span className="section-kicker">{nextGrandPrixActionLabel}</span>
       <h2>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")}</h2>
-      <img className="modal-hero-image" src="/assets/crl/next-gp-modal.png" alt="" />
+      <AssetImage className="modal-hero-image" src="/assets/crl/next-gp-modal.png" alt="" />
       <p>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_body" : "next_gp_confirm_body")}</p>
       <div className="actions secondary-actions">
         <button type="button" onClick={() => void startNextGrandPrix()} disabled={status === "loading"}>
@@ -1294,7 +1295,7 @@ export function App() {
     <main className={isMapScreen ? "app-shell game-shell map-screen" : "app-shell game-shell"}>
       <header className="topbar">
         <button type="button" className="brand brand-button" onClick={goHome}>
-          <img className="brand-icon" src="/favicon.svg" alt="" />
+          <AssetImage className="brand-icon" src="/favicon.svg" alt="" />
           <strong>{leagueState.league.name}</strong>
         </button>
         <nav className="game-nav" aria-label={tt("cockpit_sections")}>
@@ -1524,6 +1525,7 @@ export function App() {
                         </div>
                       ) : (
                         <div className="race-phase-actions map-race-actions">
+                          {status === "loading" ? <p className="command-loading" role="status">{message}</p> : null}
                           {deskState === "prepare" ? (
                             <>
                               <button
@@ -1664,7 +1666,7 @@ export function App() {
             {tt("league_season")} {seasonRecap.season}
           </span>
           <h2>{tt("season_recap_title")}</h2>
-          <img className="modal-hero-image" src="/assets/crl/season-recap-modal.png" alt="" />
+          <AssetImage className="modal-hero-image" src="/assets/crl/season-recap-modal.png" alt="" />
           <div className="season-champion-card">
             <span>{tt("season_champion")}</span>
             <strong>

@@ -1,3 +1,5 @@
+import { AssetImage } from "./AssetImage.js";
+
 export type VisualIconName = "grip" | "overtaking" | "energy" | "dry" | "light_rain" | "heavy_rain" | "card" | "position" | "dot";
 
 export function VisualIcon({ name }: { name: VisualIconName }) {
@@ -47,7 +49,7 @@ export function CountryBadge({ country }: { country: string }) {
   const code = country.slice(0, 2).toLowerCase();
   return (
     <span className="country-badge" aria-label={country.toUpperCase()}>
-      <img src={`/assets/flags/${code}.svg`} alt="" />
+      <AssetImage className="country-flag" src={`/assets/flags/${code}.svg`} alt="" />
     </span>
   );
 }

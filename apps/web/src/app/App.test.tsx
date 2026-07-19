@@ -764,6 +764,30 @@ describe("App", () => {
     expect(screen.queryByRole("dialog", { name: "Season recap" })).toBe(null);
   });
 
+  it("shows command feedback while a qualifying request is pending", async () => {
+    saveProfile();
+    let finishQualifying!: (value: Response) => void;
+    const pendingQualifying = new Promise<Response>((resolve) => {
+      finishQualifying = resolve;
+    });
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(response(baseState))
+      .mockReturnValueOnce(pendingQualifying);
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    await screen.findByRole("button", { name: "Race" });
+    fireEvent.click(screen.getByRole("button", { name: "New lap time" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "New lap time" }).at(-1)!);
+
+    expect((await screen.findByRole("status")).textContent).toContain("Running qualifying lap...");
+    expect(document.querySelector(".command-loading")?.textContent).toContain("Running qualifying lap...");
+
+    finishQualifying(response({ state: qualifiedState, run: qualifyingRun, isBest: true }));
+    expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
+  });
+
   it("does not auto-open an old season recap when loading an existing later season", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(seasonTwoState));

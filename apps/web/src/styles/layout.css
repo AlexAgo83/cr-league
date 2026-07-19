@@ -314,7 +314,9 @@
 .brand-icon {
   background: rgb(248 243 232 / 0.08);
   border-radius: 6px;
+  display: inline-block;
   height: 28px;
+  overflow: hidden;
   width: 28px;
 }
 
@@ -796,6 +798,7 @@
     #050505;
   display: block;
   object-fit: cover;
+  overflow: hidden;
   width: 100%;
 }
 
@@ -812,6 +815,36 @@
 .status {
   color: var(--color-muted);
   margin: 0 0 14px;
+}
+
+.command-loading {
+  align-items: center;
+  background: rgb(16 14 18 / 0.66);
+  border: 1px solid rgb(248 243 232 / 0.2);
+  color: var(--color-text);
+  display: inline-flex;
+  font-size: 0.82rem;
+  font-weight: 800;
+  gap: 8px;
+  margin: 0;
+  min-height: 38px;
+  padding: 8px 10px;
+}
+
+.command-loading::before {
+  animation: command-loading-spin 0.8s linear infinite;
+  border: 2px solid rgb(248 243 232 / 0.32);
+  border-radius: 999px;
+  border-top-color: var(--color-text);
+  content: "";
+  height: 14px;
+  width: 14px;
+}
+
+@keyframes command-loading-spin {
+  to {
+    transform: rotate(1turn);
+  }
 }
 
 .error {
@@ -878,12 +911,50 @@ button:disabled {
   vertical-align: 0.08em;
 }
 
-.country-badge img {
+.country-flag {
   border-radius: 2px;
   display: block;
   height: 0.9em;
   object-fit: cover;
+  overflow: hidden;
   width: 1.35em;
+}
+
+.asset-image-shell {
+  position: relative;
+}
+
+.asset-image-shell > img {
+  display: block;
+  height: 100%;
+  object-fit: inherit;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+}
+
+.asset-image-shell.loading > img,
+.asset-image-shell.error > img {
+  opacity: 0;
+}
+
+.asset-image-placeholder {
+  background:
+    linear-gradient(135deg, rgb(248 243 232 / 0.1), rgb(248 243 232 / 0.03)),
+    #050505;
+  inset: 0;
+  position: absolute;
+}
+
+.asset-image-shell.error .asset-image-placeholder::after {
+  background: rgb(248 243 232 / 0.38);
+  content: "";
+  height: 2px;
+  left: 35%;
+  position: absolute;
+  top: 50%;
+  transform: rotate(-20deg);
+  width: 30%;
 }
 
 /* Non-CTA buttons keep the body voice. */
@@ -1533,6 +1604,7 @@ label small {
   display: block;
   margin: 12px 0;
   object-fit: contain;
+  overflow: hidden;
   width: 100%;
 }
 

@@ -155,7 +155,7 @@ export function DirectivePanel({
       </div>
 
       {step === "approach" ? (
-        <fieldset className="choice-group" aria-label={tt("field_approach")}>
+        <fieldset className="choice-group directive-choice-group directive-choice-approach" aria-label={tt("field_approach")}>
           <div className="choice-grid directive-choice-grid">
             {APPROACHES.map((approach) => (
               <button key={approach} type="button" className={form.approach === approach ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_approach")}: ${tt(`approach_${approach}` as TranslationKey)}`} aria-pressed={form.approach === approach} onClick={() => setForm({ ...form, approach })} disabled={disabled}>
@@ -169,7 +169,7 @@ export function DirectivePanel({
       ) : null}
 
       {step === "preparation" ? (
-        <fieldset className="choice-group" aria-label={tt("field_preparation")}>
+        <fieldset className="choice-group directive-choice-group directive-choice-preparation" aria-label={tt("field_preparation")}>
           <div className="choice-grid directive-choice-grid">
             {PREPARATIONS.map((preparation) => (
               <button key={preparation} type="button" className={form.preparation === preparation ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_preparation")}: ${tt(`preparation_${preparation}` as TranslationKey)}`} aria-pressed={form.preparation === preparation} onClick={() => setForm({ ...form, preparation })} disabled={disabled}>
@@ -183,7 +183,7 @@ export function DirectivePanel({
       ) : null}
 
       {step === "card" ? (
-        <fieldset className="choice-group" aria-label={tt("field_card")}>
+        <fieldset className="choice-group directive-choice-group directive-choice-card" aria-label={tt("field_card")}>
           <div className="choice-grid card-choice-grid">
             {cardChoices.map((cardId) => {
               const selected = selectedCardId === cardId;

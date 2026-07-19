@@ -140,10 +140,18 @@ export function ChampionshipView({
 
           {activeRecordTab === "calendar" && previewCircuit ? (
             <div className="circuit-detail-screen">
-              <button type="button" className="secondary-button circuit-detail-back" onClick={() => setPreviewCircuit(undefined)}>
-                {tt("action_back")}
-              </button>
-              <CircuitMap circuit={previewCircuit} tt={tt} showTraits={false} />
+              <div className="circuit-detail-header">
+                <div>
+                  <span className="circuit-city">
+                    <CountryBadge country={previewCircuit.country} /> {previewCircuit.city}
+                  </span>
+                  <h4>{tt(previewCircuit.layoutKey)}</h4>
+                </div>
+                <button type="button" className="secondary-button circuit-detail-close" onClick={() => setPreviewCircuit(undefined)}>
+                  {tt("action_close")}
+                </button>
+              </div>
+              <CircuitMap circuit={previewCircuit} tt={tt} showHeading={false} showTraits={false} />
             </div>
           ) : null}
 

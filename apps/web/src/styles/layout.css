@@ -3227,8 +3227,22 @@ label small {
   gap: 12px;
 }
 
-.circuit-detail-back {
-  justify-self: start;
+.circuit-detail-header {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.circuit-detail-header h4 {
+  color: #f8f3e8;
+  font-size: 1.15rem;
+  margin: 3px 0 0;
+}
+
+.circuit-detail-close {
+  flex: 0 0 auto;
+  justify-self: end;
 }
 
 .circuit-detail-screen .circuit-map {

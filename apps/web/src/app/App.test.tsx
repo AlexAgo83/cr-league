@@ -759,7 +759,7 @@ describe("App", () => {
     expect(screen.getByLabelText("City circuit map")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Focus driver" })).toBe(null);
     expect(screen.queryByRole("dialog", { name: "Brussels Grand Place Loop" })).toBe(null);
-    fireEvent.click(document.querySelector(".circuit-detail-back")!);
+    fireEvent.click(document.querySelector(".circuit-detail-close")!);
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     expect(screen.getByRole("tab", { name: "Circuits" }).getAttribute("aria-selected")).toBe("true");

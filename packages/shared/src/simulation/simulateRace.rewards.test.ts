@@ -3,6 +3,8 @@
 import { describe, expect, it } from "vitest";
 import { simulateRace } from "./simulateRace.js";
 import {
+  COMEBACK_CREDIT_BONUS_CAP,
+  COMEBACK_CREDIT_BONUS_PER_POSITION,
   ECONOMY_MODE_CREDIT_BONUS,
   FLEET_SPONSORSHIP_CREDIT_BONUS,
   RACE_CREDITS_BY_POSITION,
@@ -130,5 +132,20 @@ describe("simulateRace rewards", () => {
     expect(last.position).toBe(6);
     expect(last.credits).toBe(100);
     expect(last.points).toBe(8);
+  });
+
+  it("adds a capped comeback credit bonus outside points-paying positions", () => {
+    const participants: RaceInput["participants"] = Array.from({ length: 12 }, (_, index) => ({
+      teamId: `team-${index}`,
+      teamName: `Team ${index}`,
+      kind: "human",
+      standingsRank: index + 1,
+      decision: { approach: "balanced", preparation: "speed" }
+    }));
+    const result = simulateRace({ ...rewardRace, participants });
+
+    expect(result.classification.find((entry) => entry.position === 6)?.credits).toBe(100);
+    expect(result.classification.find((entry) => entry.position === 7)?.credits).toBe(100 + COMEBACK_CREDIT_BONUS_PER_POSITION);
+    expect(result.classification.find((entry) => entry.position === 12)?.credits).toBe(100 + COMEBACK_CREDIT_BONUS_CAP);
   });
 });

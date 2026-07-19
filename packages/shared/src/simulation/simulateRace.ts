@@ -1,5 +1,12 @@
 import { CARD_DEFINITIONS } from "../cards/definitions.js";
-import { ECONOMY_MODE_CREDIT_BONUS, FLEET_SPONSORSHIP_CREDIT_BONUS, RACE_CREDITS_BY_POSITION, RACE_POINTS_BY_POSITION } from "../economy/constants.js";
+import {
+  COMEBACK_CREDIT_BONUS_CAP,
+  COMEBACK_CREDIT_BONUS_PER_POSITION,
+  ECONOMY_MODE_CREDIT_BONUS,
+  FLEET_SPONSORSHIP_CREDIT_BONUS,
+  RACE_CREDITS_BY_POSITION,
+  RACE_POINTS_BY_POSITION
+} from "../economy/constants.js";
 import type {
   CardId,
   ClassificationEntry,
@@ -521,6 +528,7 @@ function classify(states: TeamState[]): ClassificationEntry[] {
   return sorted.map((state, index) => {
     const position = index + 1;
     const baseCredits = RACE_CREDITS_BY_POSITION[index] ?? 100;
+    const comebackBonus = Math.min(COMEBACK_CREDIT_BONUS_CAP, Math.max(0, position - RACE_POINTS_BY_POSITION.length) * COMEBACK_CREDIT_BONUS_PER_POSITION);
     const sponsorBonus = state.participant.decision.cardId === "fleet_sponsorship" ? FLEET_SPONSORSHIP_CREDIT_BONUS : 0;
     const economyBonus = state.participant.decision.cardId === "economy_mode" && position <= 4 ? ECONOMY_MODE_CREDIT_BONUS : 0;
 
@@ -529,7 +537,7 @@ function classify(states: TeamState[]): ClassificationEntry[] {
       teamId: state.participant.teamId,
       teamName: state.participant.teamName,
       points: RACE_POINTS_BY_POSITION[index] ?? 0,
-      credits: baseCredits + sponsorBonus + economyBonus,
+      credits: baseCredits + comebackBonus + sponsorBonus + economyBonus,
       score: Number(state.scores.score.toFixed(2)),
       positionChange: state.participant.standingsRank - position,
       status: "finished",

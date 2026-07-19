@@ -3190,6 +3190,8 @@ label small {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
+  position: relative;
+  z-index: 2;
 }
 
 .card-stat-badge {

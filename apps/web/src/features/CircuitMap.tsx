@@ -48,6 +48,7 @@ const DRIFT_LOOKAHEAD = 0.012;
 const HEADING_LOOKAHEAD = 0.006;
 const MAX_DRIFT_ANGLE = 14;
 const STRAIGHT_TURN_TOLERANCE_DEG = 18;
+const ROUTE_FIT_PADDING = 58;
 type CameraZoomMode = "normal" | "traffic" | "close";
 export type CarSprite = "idle" | "boost" | "brake";
 type RoutePoint = { x: number; y: number };
@@ -130,7 +131,7 @@ function circuitScene(circuit: CityCircuit) {
     zoom,
     tiles,
     points,
-    d: points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ")
+    d: routePath(points)
   };
 }
 
@@ -275,6 +276,20 @@ function boundsOf(points: Array<{ x: number; y: number }>) {
   };
 }
 
+function routePath(points: Array<{ x: number; y: number }>) {
+  return points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
+}
+
+function fitRoutePoints(points: RoutePoint[]) {
+  const bounds = boundsOf(points);
+  const width = bounds.maxX - bounds.minX || 1;
+  const height = bounds.maxY - bounds.minY || 1;
+  const scale = Math.min((VIEW_WIDTH - ROUTE_FIT_PADDING * 2) / width, (VIEW_HEIGHT - ROUTE_FIT_PADDING * 2) / height);
+  const x = VIEW_WIDTH / 2 - ((bounds.minX + bounds.maxX) / 2) * scale;
+  const y = VIEW_HEIGHT / 2 - ((bounds.minY + bounds.maxY) / 2) * scale;
+  return points.map((point) => ({ x: point.x * scale + x, y: point.y * scale + y }));
+}
+
 export function CircuitMap({
   circuit,
   tt,
@@ -312,13 +327,16 @@ export function CircuitMap({
   const clockRef = useRef(0);
   const zoomRef = useRef(FOCUS_ZOOM);
   const zoomModeRef = useRef<CameraZoomMode>("normal");
-  const markerScale = camera?.enabled ? 1 / FOCUS_ZOOM : 1;
+  const focusEnabled = Boolean(camera?.enabled && camera.car);
+  const markerScale = focusEnabled ? 1 / FOCUS_ZOOM : 1;
   const hasCars = cars.length > 0;
-  const routeAnalysis = analyzeCircuitRoute(points);
+  const renderPoints = focusEnabled ? points : fitRoutePoints(points);
+  const renderD = focusEnabled ? d : routePath(renderPoints);
+  const routeAnalysis = analyzeCircuitRoute(renderPoints);
   const stageProgress = (progress: number) => progressFromStart(progress, routeAnalysis.startProgress);
   const displayWeather = weather ?? circuit.likelyWeather;
   carsRef.current = cars;
-  pointsRef.current = points;
+  pointsRef.current = renderPoints;
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
@@ -394,60 +412,62 @@ export function CircuitMap({
                 />
               </g>
             ))}
-            <path ref={routeRef} className={hasCars ? "circuit-route-glow replay-muted-glow" : "circuit-route-glow"} d={d} />
-            <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={d} />
-            <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={d} />
-            <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={d} />
-            <g className="circuit-pit-stop" transform={`translate(${routeAnalysis.pitStop.x} ${routeAnalysis.pitStop.y})`}>
-              <circle r="9" />
-              <text textAnchor="middle" dominantBaseline="central">
-                P
-              </text>
-            </g>
-            {hasCars ? (
-              <line className="circuit-start-line" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
-            ) : (
-              <line className="circuit-start-line circuit-start-preview" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
-            )}
-            {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
-            {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
-              const pose = car.progress === undefined ? null : poseOnRoute(points, stageProgress(car.progress));
-              const drift = car.progress === undefined ? 0 : driftAngle(points, stageProgress(car.progress));
-              const sprite = spriteForCar(car);
-              const carStyle = car.livery
-                ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
-                : undefined;
-              return (
-                <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
-                  <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                    <MapCarSprite sprite={sprite} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift + 90})` : "rotate(90)"} />
-                    <text textAnchor="middle" dominantBaseline="central">
-                      {car.label}
-                    </text>
-                    {car.positionDelta ? (
-                      <text
-                        key={`${car.id}-${car.positionDeltaKey}`}
-                        className={car.positionDelta > 0 ? "map-car-delta gain" : "map-car-delta loss"}
-                        x="24"
-                        y="-16"
-                        textAnchor="middle"
-                        dominantBaseline="central"
-                      >
-                        {car.positionDelta > 0 ? `+${car.positionDelta}` : car.positionDelta}
+            <g className="circuit-route-layer">
+              <path ref={routeRef} className={hasCars ? "circuit-route-glow replay-muted-glow" : "circuit-route-glow"} d={renderD} />
+              <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={renderD} />
+              <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={renderD} />
+              <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={renderD} />
+              <g className="circuit-pit-stop" transform={`translate(${routeAnalysis.pitStop.x} ${routeAnalysis.pitStop.y})`}>
+                <circle r="9" />
+                <text textAnchor="middle" dominantBaseline="central">
+                  P
+                </text>
+              </g>
+              {hasCars ? (
+                <line className="circuit-start-line" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
+              ) : (
+                <line className="circuit-start-line circuit-start-preview" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
+              )}
+              {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
+              {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
+                const pose = car.progress === undefined ? null : poseOnRoute(renderPoints, stageProgress(car.progress));
+                const drift = car.progress === undefined ? 0 : driftAngle(renderPoints, stageProgress(car.progress));
+                const sprite = spriteForCar(car);
+                const carStyle = car.livery
+                  ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
+                  : undefined;
+                return (
+                  <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
+                    <g className="map-car-marker" transform={`scale(${markerScale})`}>
+                      <MapCarSprite sprite={sprite} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift + 90})` : "rotate(90)"} />
+                      <text textAnchor="middle" dominantBaseline="central">
+                        {car.label}
                       </text>
-                    ) : null}
-                    {car.eventLabel ? (
-                      <text className="map-car-event" x="0" y="-34" textAnchor="middle">
-                        {car.eventLabel}
-                      </text>
+                      {car.positionDelta ? (
+                        <text
+                          key={`${car.id}-${car.positionDeltaKey}`}
+                          className={car.positionDelta > 0 ? "map-car-delta gain" : "map-car-delta loss"}
+                          x="24"
+                          y="-16"
+                          textAnchor="middle"
+                          dominantBaseline="central"
+                        >
+                          {car.positionDelta > 0 ? `+${car.positionDelta}` : car.positionDelta}
+                        </text>
+                      ) : null}
+                      {car.eventLabel ? (
+                        <text className="map-car-event" x="0" y="-34" textAnchor="middle">
+                          {car.eventLabel}
+                        </text>
+                      ) : null}
+                    </g>
+                    {car.progress === undefined ? (
+                      <animateMotion path={renderD} dur={`${car.duration}s`} begin={`${car.delay}s`} keyPoints={`${routeAnalysis.startProgress};1;${routeAnalysis.startProgress}`} keyTimes={`0;${1 - routeAnalysis.startProgress};1`} calcMode="linear" repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
                     ) : null}
                   </g>
-                  {car.progress === undefined ? (
-                    <animateMotion path={d} dur={`${car.duration}s`} begin={`${car.delay}s`} keyPoints={`${routeAnalysis.startProgress};1;${routeAnalysis.startProgress}`} keyTimes={`0;${1 - routeAnalysis.startProgress};1`} calcMode="linear" repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
-                  ) : null}
-                </g>
-              );
-            })}
+                );
+              })}
+            </g>
           </g>
         </svg>
         <small className="map-attribution">© OSM · CARTO</small>

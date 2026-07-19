@@ -148,18 +148,25 @@ export function ChampionshipView({
 
           {activeRecordTab === "calendar" && previewCircuit ? (
             <div className="circuit-detail-screen">
-              <div className="circuit-detail-header">
-                <div>
-                  <span className="circuit-city">
-                    <CountryBadge country={previewCircuit.country} /> {previewCircuit.city}
-                  </span>
-                  <h4>{tt(previewCircuit.layoutKey)}</h4>
-                </div>
-                <button type="button" className="secondary-button circuit-detail-close" aria-label={tt("action_close")} onClick={() => setPreviewCircuit(undefined)}>
-                  ×
-                </button>
-              </div>
-              <CircuitMap circuit={previewCircuit} tt={tt} showHeading={false} showTraits={false} />
+              <CircuitMap
+                circuit={previewCircuit}
+                tt={tt}
+                showHeading={false}
+                showTraits={false}
+                overlay={
+                  <>
+                    <div className="circuit-detail-header">
+                      <span className="circuit-city">
+                        <CountryBadge country={previewCircuit.country} /> {previewCircuit.city}
+                      </span>
+                      <h4>{tt(previewCircuit.layoutKey)}</h4>
+                    </div>
+                    <button type="button" className="secondary-button circuit-detail-close" aria-label={tt("action_close")} onClick={() => setPreviewCircuit(undefined)}>
+                      ×
+                    </button>
+                  </>
+                }
+              />
             </div>
           ) : null}
 
@@ -280,11 +287,14 @@ function miniRoutePoints(route: CityCircuit["route"]) {
   const maxLng = Math.max(...lngs);
   const minLat = Math.min(...lats);
   const maxLat = Math.max(...lats);
-  const scaleX = maxLng - minLng || 1;
-  const scaleY = maxLat - minLat || 1;
+  const width = maxLng - minLng || 1;
+  const height = maxLat - minLat || 1;
+  const scale = Math.min(84 / width, 48 / height);
+  const offsetX = 50 - ((minLng + maxLng) / 2) * scale;
+  const offsetY = 32 + ((minLat + maxLat) / 2) * scale;
   return route.map((point) => ({
-    x: 8 + ((point.lng - minLng) / scaleX) * 84,
-    y: 56 - ((point.lat - minLat) / scaleY) * 48
+    x: point.lng * scale + offsetX,
+    y: offsetY - point.lat * scale
   }));
 }
 

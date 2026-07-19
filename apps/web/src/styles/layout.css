@@ -3659,16 +3659,20 @@ label small {
 .circuit-detail-screen {
   background: #100e12;
   display: grid;
-  gap: 12px;
   margin: -2px;
   padding: 14px;
 }
 
 .circuit-detail-header {
-  align-items: center;
-  display: flex;
-  gap: 12px;
-  justify-content: space-between;
+  background: rgb(16 14 18 / 0.8);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-radius: 8px;
+  left: 12px;
+  max-width: calc(100% - 86px);
+  padding: 10px 12px;
+  position: absolute;
+  top: 12px;
+  z-index: 4;
 }
 
 .circuit-detail-header h4 {
@@ -3685,6 +3689,10 @@ label small {
   line-height: 1;
   min-width: 42px;
   padding: 0;
+  position: absolute;
+  right: 12px;
+  top: 12px;
+  z-index: 4;
 }
 
 .circuit-detail-screen .circuit-map {

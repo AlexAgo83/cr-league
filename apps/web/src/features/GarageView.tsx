@@ -8,6 +8,7 @@ import { CardStatBadges } from "./CardStatBadges.js";
 import { MapCarSprite } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
+import { RewardValue } from "./RewardValue.js";
 
 type CardPanel = "team" | "inventory" | "shop";
 export const GARAGE_PANEL_KEY = "cr-league-garage-panel";
@@ -121,12 +122,10 @@ export function GarageView({
             </span>
           </span>
           <span>
-            <strong>{playerTeam.points}</strong>
-            <small>{tt("unit_points")}</small>
+            <RewardValue type="points" value={playerTeam.points} tt={tt} />
           </span>
           <span>
-            <strong>{playerTeam.credits}</strong>
-            <small>{tt("unit_credits")}</small>
+            <RewardValue type="credits" value={playerTeam.credits} tt={tt} />
           </span>
         </div>
       </section>
@@ -176,7 +175,7 @@ export function GarageView({
               <div className="garage-summary">
                 <strong>{tt("garage_last_gp")}</strong>
                 <span>
-                  +{playerResult.credits} {tt("unit_credits")} · +{playerResult.points} {tt("unit_points")}
+                  <RewardValue type="credits" value={playerResult.credits} signed tt={tt} /> <RewardValue type="points" value={playerResult.points} signed tt={tt} />
                 </span>
                 <span>
                   {consumedCardIds.length
@@ -216,7 +215,9 @@ export function GarageView({
             {shopOffers.map((item) => (
               <button key={item.cardId} type="button" onClick={() => setPendingBuyCardId(item.cardId)} disabled={loading}>
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
-                <strong>{item.price}</strong>
+                <strong>
+                  <RewardValue type="credits" value={item.price} tt={tt} />
+                </strong>
                 <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>
                 <CardStatBadges cardId={item.cardId} tt={tt} />
               </button>
@@ -234,8 +235,9 @@ export function GarageView({
           <img className="modal-hero-image" src="/assets/crl/garage-buy-modal.png" alt="" />
           <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
-            <strong>{pendingBuy.price}</strong>
-            <span>{tt("unit_credits")}</span>
+            <strong>
+              <RewardValue type="credits" value={pendingBuy.price} tt={tt} />
+            </strong>
             <small>{tt(`card_fit_${pendingBuy.fit.level}` as TranslationKey)}</small>
             <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
           </div>

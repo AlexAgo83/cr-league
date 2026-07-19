@@ -485,6 +485,7 @@ export function ReplayView({
   showIntro = true,
   towerEntries,
   preferencesResetSignal = 0,
+  onOpenReport,
   onClose,
   closeLabel,
   overlayActions,
@@ -500,6 +501,7 @@ export function ReplayView({
   showIntro?: boolean;
   towerEntries?: ReplayTowerEntry[];
   preferencesResetSignal?: number;
+  onOpenReport?: () => void;
   onClose?: () => void;
   closeLabel?: string;
   overlayActions?: ReactNode;
@@ -792,6 +794,16 @@ export function ReplayView({
                     </svg>
                   </button>
                   <ReplaySpeedMenu speed={speed} setSpeed={setSpeed} tt={tt} />
+                  {onOpenReport ? (
+                    <button type="button" className="replay-report-button" aria-label={tt("result_tab_report")} title={tt("result_tab_report")} onClick={onOpenReport}>
+                      <svg className="replay-report-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="M6 3h9l3 3v15H6z" />
+                        <path d="M14 3v4h4" />
+                        <path d="M9 12h6" />
+                        <path d="M9 16h4" />
+                      </svg>
+                    </button>
+                  ) : null}
                   {onClose ? (
                     <button type="button" className="replay-close-button" aria-label={closeLabel ?? tt("action_close")} title={closeLabel ?? tt("action_close")} onClick={onClose}>
                       ×

@@ -6,6 +6,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import type { MapTraitImpacts } from "./CircuitMap.js";
 import { ReplayView } from "./ReplayView.js";
 import { ReportView } from "./ReportView.js";
+import { RewardValue } from "./RewardValue.js";
 
 export type ResultTab = "replay" | "report";
 
@@ -19,6 +20,7 @@ export function ResultView({
   traitImpacts,
   preferencesResetSignal,
   showReplayIntro = true,
+  onOpenReport,
   onClose,
   tt
 }: {
@@ -31,6 +33,7 @@ export function ResultView({
   traitImpacts: MapTraitImpacts;
   preferencesResetSignal?: number;
   showReplayIntro?: boolean;
+  onOpenReport?: () => void;
   onClose?: () => void;
   tt: Translator;
 }) {
@@ -51,19 +54,15 @@ export function ResultView({
               <dd>P{payoff.position}</dd>
             </div>
             <div>
-              <dt>{tt("payoff_movement")}</dt>
-              <dd>{payoff.movement}</dd>
-            </div>
-            <div>
               <dt>{tt("payoff_points")}</dt>
               <dd>
-                +{payoff.points} {tt("unit_points")}
+                <RewardValue type="points" value={payoff.points} signed tt={tt} />
               </dd>
             </div>
             <div>
               <dt>{tt("payoff_credits")}</dt>
               <dd>
-                +{payoff.credits} {tt("unit_credits")}
+                <RewardValue type="credits" value={payoff.credits} signed tt={tt} />
               </dd>
             </div>
             <div>
@@ -88,6 +87,7 @@ export function ResultView({
             preferencesResetSignal={preferencesResetSignal}
             showIntro={showReplayIntro}
             onClose={onClose}
+            onOpenReport={onOpenReport}
             closeLabel={tt("action_back_to_circuit")}
             tt={tt}
           />
@@ -114,7 +114,6 @@ function playerRacePayoff(state: LeagueState, result: RaceResult, playerTeamId: 
   const championship = championshipMovement(state, result, playerTeamId, tt);
   return {
     position: entry.position,
-    movement: entry.positionChange > 0 ? `+${entry.positionChange}` : entry.positionChange < 0 ? `${entry.positionChange}` : tt("report_position_hold"),
     points: entry.points,
     credits: entry.credits,
     cards: consumedCards.length ? consumedCards.join(", ") : tt("payoff_no_cards"),

@@ -14,6 +14,7 @@ import { LiveryPlate } from "../features/LiveryPlate.js";
 import { Modal } from "../features/Modal.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
+import { RewardValue } from "../features/RewardValue.js";
 import { CountryBadge } from "../features/VisualIcon.js";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
@@ -1642,6 +1643,7 @@ export function App() {
             traitImpacts={replayTraitImpacts}
             preferencesResetSignal={preferencesResetSignal}
             showReplayIntro={!historyReplay}
+            onOpenReport={() => setResultTab("report")}
             onClose={() => {
               if (historyReplay) {
                 setHistoryReplay(null);
@@ -1746,7 +1748,7 @@ export function App() {
                                   {entry.position}. {entry.teamName}
                                 </span>
                                 <em>
-                                  {entry.points} {tt("unit_points")}
+                                  <RewardValue type="points" value={entry.points} tt={tt} />
                                 </em>
                               </li>
                             ))}
@@ -2021,7 +2023,7 @@ export function App() {
               {seasonRecap.champion.teamName}
             </strong>
             <small>
-              {seasonRecap.champion.points} {tt("unit_points")} · {seasonRecap.gpCount} {tt("season_gp_count")}
+              <RewardValue type="points" value={seasonRecap.champion.points} tt={tt} /> · {seasonRecap.gpCount} {tt("season_gp_count")}
             </small>
           </div>
           <div className="season-recap-grid">
@@ -2045,7 +2047,7 @@ export function App() {
                     <strong>P{entry.position}</strong>
                     <span>{entry.teamName}</span>
                     <small>
-                      {entry.points} {tt("unit_points")}
+                      <RewardValue type="points" value={entry.points} tt={tt} />
                     </small>
                   </li>
                 ))}

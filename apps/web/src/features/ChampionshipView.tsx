@@ -3,6 +3,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { LiveryPlate } from "./LiveryPlate.js";
+import { RewardValue } from "./RewardValue.js";
 
 export function ChampionshipView({
   state,
@@ -60,7 +61,7 @@ export function ChampionshipView({
               <strong>-</strong>
             )}
             <small>
-              {leader?.points ?? 0} {tt("unit_points")}
+              <RewardValue type="points" value={leader?.points ?? 0} tt={tt} />
             </small>
           </div>
           <div className="league-flow-summary">
@@ -102,12 +103,10 @@ export function ChampionshipView({
                     {team.ready ? tt("team_ready") : tt("team_missing")}
                   </span>
                   <span className="standings-score standings-points">
-                    <strong>{team.points}</strong>
-                    <small>{tt("unit_points")}</small>
+                    <RewardValue type="points" value={team.points} tt={tt} />
                   </span>
                   <span className="standings-score standings-credits">
-                    <strong>{team.credits}</strong>
-                    <small>{tt("unit_credits")}</small>
+                    <RewardValue type="credits" value={team.credits} tt={tt} />
                   </span>
                 </li>
               ))}

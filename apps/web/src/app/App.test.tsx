@@ -414,7 +414,6 @@ describe("App", () => {
 
     const payoff = screen.getByLabelText("What you gained");
     expect(payoff.textContent).toContain("P1");
-    expect(payoff.textContent).toContain("+1");
     expect(payoff.textContent).toContain("+25 pts");
     expect(payoff.textContent).toContain("+150 credits");
     expect(payoff.textContent).toContain("Rain Grip");
@@ -765,7 +764,7 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
-    expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
+    expect(screen.getByRole("button", { name: "Report" }).className).toContain("replay-report-button");
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
@@ -811,6 +810,11 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Replay" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(document.querySelector('image[href="/assets/cars/idle.png"]')).toBeTruthy();
+    const replayReportButton = document.querySelector(".replay-report-button") as HTMLButtonElement;
+    expect(replayReportButton).toBeTruthy();
+    fireEvent.click(replayReportButton);
+    expect(screen.getByText("Paris Docklands Sprint: Volt Union wins.")).toBeTruthy();
+    expect(screen.queryByText("Movement")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
 
     // Report view
@@ -836,7 +840,8 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("tab", { name: "My team" }));
     expect(screen.getByText("Last GP")).toBeTruthy();
-    expect(screen.getByText("+150 credits · +25 pts")).toBeTruthy();
+    expect(screen.getByText("+150 credits")).toBeTruthy();
+    expect(screen.getByText("+25 pts")).toBeTruthy();
     expect(screen.getByText("Consumed Rain Grip")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Inventory" }));

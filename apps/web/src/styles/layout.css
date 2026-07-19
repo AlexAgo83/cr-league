@@ -478,6 +478,42 @@
   margin: 2px 0 0;
 }
 
+.reward-value {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+  font-weight: 900;
+  white-space: nowrap;
+}
+
+.reward-icon {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  font-size: 0.78em;
+  height: 1.35em;
+  justify-content: center;
+  width: 1.35em;
+}
+
+.reward-points {
+  color: #fbbf24;
+}
+
+.reward-points .reward-icon {
+  background: rgb(251 191 36 / 0.18);
+  border: 1px solid rgb(251 191 36 / 0.38);
+}
+
+.reward-credits {
+  color: #38bdf8;
+}
+
+.reward-credits .reward-icon {
+  background: rgb(56 189 248 / 0.16);
+  border: 1px solid rgb(56 189 248 / 0.38);
+}
+
 .drive-grid {
   align-items: start;
   display: grid;
@@ -2030,6 +2066,29 @@ label small {
 .replay-map-controls button.active {
   background: rgb(255 77 0 / 0.22);
   color: var(--color-accent);
+}
+
+.replay-map-controls .replay-report-button {
+  background: rgb(56 189 248 / 0.18);
+  border: 1px solid rgb(125 211 252 / 0.58);
+  color: #7dd3fc;
+}
+
+.replay-map-controls .replay-report-button:hover,
+.replay-map-controls .replay-report-button:focus-visible {
+  background: rgb(56 189 248 / 0.28);
+  border-color: #bae6fd;
+  color: #e0f2fe;
+}
+
+.replay-report-icon {
+  fill: none;
+  height: 17px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+  width: 17px;
 }
 
 .replay-map-controls .replay-close-button {
@@ -4265,7 +4324,7 @@ button.command-icon-button {
 .report-rewards dl {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   margin: 0;
 }
 

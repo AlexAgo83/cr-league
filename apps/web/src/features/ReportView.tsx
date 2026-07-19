@@ -9,6 +9,7 @@ import {
   type Translator
 } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
+import { RewardValue } from "./RewardValue.js";
 import { VisualIcon } from "./VisualIcon.js";
 
 export function ReportView({
@@ -70,7 +71,7 @@ export function ReportView({
               <strong>P{entry.position}</strong>
               <span>{entry.teamName}</span>
               <small>
-                {entry.points} {tt("unit_points")} · {entry.credits} {tt("unit_credits")}
+                <RewardValue type="points" value={entry.points} tt={tt} /> <RewardValue type="credits" value={entry.credits} tt={tt} />
               </small>
             </li>
           ))}
@@ -106,18 +107,14 @@ export function ReportView({
                     <div>
                       <dt>{tt("report_reward_points")}</dt>
                       <dd>
-                        {entry.points} {tt("unit_points")}
+                        <RewardValue type="points" value={entry.points} tt={tt} />
                       </dd>
                     </div>
                     <div>
                       <dt>{tt("report_reward_credits")}</dt>
                       <dd>
-                        {entry.credits} {tt("unit_credits")}
+                        <RewardValue type="credits" value={entry.credits} tt={tt} />
                       </dd>
-                    </div>
-                    <div>
-                      <dt>{tt("report_reward_movement")}</dt>
-                      <dd>{describePositionChange(entry.positionChange, tt)}</dd>
                     </div>
                   </dl>
                 </li>
@@ -171,10 +168,4 @@ function describeEventImpact(event: RaceEvent, tt: Translator) {
   if (delta > 0) return `${tt("report_event_impact")} +${delta}`;
   if (delta < 0) return `${tt("report_event_impact")} ${delta}`;
   return tt("report_event_neutral");
-}
-
-function describePositionChange(delta: number, tt: Translator) {
-  if (delta > 0) return `${tt("report_position_gain")} +${delta}`;
-  if (delta < 0) return `${tt("report_position_loss")} ${Math.abs(delta)}`;
-  return tt("report_position_hold");
 }

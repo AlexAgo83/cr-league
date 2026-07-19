@@ -672,6 +672,45 @@
   border: 1px solid rgb(56 189 248 / 0.38);
 }
 
+.position-badge {
+  align-items: center;
+  background: rgb(255 255 255 / 0.07);
+  border: 1px solid rgb(255 255 255 / 0.14);
+  border-radius: 999px;
+  color: var(--color-text);
+  display: inline-flex;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-style: italic;
+  font-weight: 900;
+  justify-content: center;
+  letter-spacing: 0.03em;
+  line-height: 1;
+  min-height: 1.65em;
+  min-width: 2.55em;
+  padding: 0 0.55em;
+  vertical-align: middle;
+}
+
+.position-badge.top-1 {
+  background: linear-gradient(135deg, rgb(251 191 36 / 0.28), rgb(251 191 36 / 0.08));
+  border-color: rgb(251 191 36 / 0.56);
+  color: #fde68a;
+  box-shadow: 0 0 16px rgb(251 191 36 / 0.16);
+}
+
+.position-badge.top-2 {
+  background: linear-gradient(135deg, rgb(226 232 240 / 0.24), rgb(148 163 184 / 0.08));
+  border-color: rgb(226 232 240 / 0.48);
+  color: #e5e7eb;
+}
+
+.position-badge.top-3 {
+  background: linear-gradient(135deg, rgb(251 146 60 / 0.26), rgb(251 146 60 / 0.08));
+  border-color: rgb(251 146 60 / 0.52);
+  color: #fed7aa;
+}
+
 .drive-grid {
   align-items: start;
   display: grid;
@@ -2812,6 +2851,21 @@ label small {
   width: 16px;
 }
 
+.replay-tower-livery.position-badge.top-1 {
+  border-color: #fbbf24;
+  box-shadow: 0 0 0 1px rgb(16 14 18 / 0.7), 0 0 12px rgb(251 191 36 / 0.36);
+}
+
+.replay-tower-livery.position-badge.top-2 {
+  border-color: #e5e7eb;
+  box-shadow: 0 0 0 1px rgb(16 14 18 / 0.7), 0 0 10px rgb(226 232 240 / 0.24);
+}
+
+.replay-tower-livery.position-badge.top-3 {
+  border-color: #fb923c;
+  box-shadow: 0 0 0 1px rgb(16 14 18 / 0.7), 0 0 10px rgb(251 146 60 / 0.28);
+}
+
 .replay-tower-team {
   max-width: 130px;
   overflow: hidden;
@@ -4010,11 +4064,11 @@ label small {
     grid-template-columns: 36px minmax(0, 1fr) auto;
   }
 
-  .season-podium-list li > strong {
+  .season-podium-list li > .position-badge {
     grid-column: 1;
   }
 
-  .season-podium-list li > span {
+  .season-podium-list li > span:not(.position-badge) {
     grid-column: 2;
     min-width: 0;
   }
@@ -4027,8 +4081,8 @@ label small {
     grid-template-columns: 36px minmax(0, 1fr) auto;
   }
 
-  .season-podium-list li > span,
-  .season-standings-list li > span {
+  .season-podium-list li > span:not(.position-badge),
+  .season-standings-list li > span:not(.position-badge) {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -5008,12 +5062,7 @@ button.command-icon-button {
   border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
-.report-podium strong {
-  color: var(--color-accent);
-  font-size: 0.8125rem;
-}
-
-.report-podium span {
+.report-podium span:not(.position-badge) {
   font-size: 1.05rem;
   font-weight: 800;
 }
@@ -5111,7 +5160,7 @@ button.command-icon-button {
 }
 
 .report-key-moments strong,
-.report-rewards span {
+.report-rewards span:not(.position-badge) {
   color: var(--color-text);
   font-weight: 800;
 }
@@ -5141,18 +5190,8 @@ button.command-icon-button {
   border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
-.report-rewards li > strong {
-  align-items: center;
-  background: rgb(255 77 0 / 0.12);
-  border: 1px solid rgb(255 77 0 / 0.34);
-  border-radius: 999px;
-  color: var(--color-accent);
-  display: inline-flex;
-  font-size: 0.8125rem;
-  justify-content: center;
+.report-rewards li > .position-badge {
   justify-self: start;
-  min-width: 42px;
-  padding: 4px 8px;
 }
 
 .report-rewards dl {

@@ -5,6 +5,7 @@ import type { CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
 import type { RaceEvent } from "../app/helpers.js";
 import { CircuitMap, MapTraitsPanel, circuitDisplayLength, circuitRouteAnalysis, type MapCar, type MapTraitImpacts, type MapTraitStats } from "./CircuitMap.js";
+import { PositionBadge } from "./PositionBadge.js";
 import { CountryBadge, VisualIcon, type VisualIconName } from "./VisualIcon.js";
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 const START_HOLD_SECONDS = 1;
@@ -530,6 +531,13 @@ function directorBeatCopy(beat: ReplayDirectorBeat, names: Map<string, string>, 
   return { title: tt("replay_director_final"), detail: tt("replay_director_final_detail", { team }) };
 }
 
+function renderPositionBadges(text: string): ReactNode {
+  return text.split(/(P\d+)/g).map((part, index) => {
+    const match = /^P(\d+)$/.exec(part);
+    return match ? <PositionBadge key={`${part}-${index}`} position={Number(match[1])} /> : part;
+  });
+}
+
 export function ReplayView({
   result,
   circuit,
@@ -809,14 +817,14 @@ export function ReplayView({
                     <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
                       <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
                       <strong>{activeDirectorCopy.title}</strong>
-                      <small>{activeDirectorCopy.detail}</small>
+                      <small>{renderPositionBadges(activeDirectorCopy.detail)}</small>
                     </div>
                     ) : null}
                     {playerContext ? (
                     <div className="replay-player-focus-panel">
                       <span>{tt("replay_player_focus")}</span>
                       <strong>
-                        P{playerContext.position} {playerContext.delta ? `(${playerContext.delta > 0 ? "+" : ""}${playerContext.delta})` : ""}
+                        <PositionBadge position={playerContext.position} /> {playerContext.delta ? `(${playerContext.delta > 0 ? "+" : ""}${playerContext.delta})` : ""}
                       </strong>
                       <small>
                         {tt("replay_player_gaps", {
@@ -824,7 +832,7 @@ export function ReplayView({
                           behind: playerContext.gapBehind === undefined ? "-" : `${playerContext.gapBehind.toFixed(1)}s`
                         })}
                       </small>
-                      {latestPlayerBeat ? <small>{directorBeatCopy(latestPlayerBeat, names, tt).detail}</small> : null}
+                      {latestPlayerBeat ? <small>{renderPositionBadges(directorBeatCopy(latestPlayerBeat, names, tt).detail)}</small> : null}
                     </div>
                     ) : null}
                   </div>
@@ -880,7 +888,7 @@ export function ReplayView({
                       <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
                         <span>{tt("replay_director_title")} · L{activeDirectorBeat.lap}</span>
                         <strong>{activeDirectorCopy.title}</strong>
-                        <small>{activeDirectorCopy.detail}</small>
+                        <small>{renderPositionBadges(activeDirectorCopy.detail)}</small>
                       </div>
                     ) : null}
                     <div className="replay-overlay-actions">{overlayActions}</div>
@@ -897,7 +905,7 @@ export function ReplayView({
                       ].filter(Boolean).join(" ") || undefined}
                     >
                       <span
-                        className="replay-tower-livery"
+                        className={`replay-tower-livery position-badge${index < 3 ? ` top-${index + 1}` : ""}`}
                         aria-label={`P${index + 1}`}
                         style={
                           {

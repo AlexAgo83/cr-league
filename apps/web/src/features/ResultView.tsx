@@ -6,6 +6,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import type { MapTraitImpacts } from "./CircuitMap.js";
 import { ReplayView } from "./ReplayView.js";
 import { ReportView } from "./ReportView.js";
+import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
 
 export type ResultTab = "replay" | "report";
@@ -50,7 +51,9 @@ export function ResultView({
       <dl>
         <div>
           <dt>{tt("payoff_finish")}</dt>
-          <dd>P{payoff.position}</dd>
+          <dd>
+            <PositionBadge position={payoff.position} />
+          </dd>
         </div>
         <div>
           <dt>{tt("payoff_points")}</dt>
@@ -70,7 +73,7 @@ export function ResultView({
         </div>
         <div>
           <dt>{tt("payoff_championship")}</dt>
-          <dd>{payoff.championship}</dd>
+          <dd>{payoff.championshipRank ? <><PositionBadge position={payoff.championshipRank} /> ({payoff.championshipMovement})</> : payoff.championshipMovement}</dd>
         </div>
       </dl>
     </section>
@@ -122,20 +125,21 @@ function playerRacePayoff(state: LeagueState, result: RaceResult, playerTeamId: 
     points: entry.points,
     credits: entry.credits,
     cards: consumedCards.length ? consumedCards.join(", ") : tt("payoff_no_cards"),
-    championship
+    championshipRank: championship.rank,
+    championshipMovement: championship.movement
   };
 }
 
 function championshipMovement(state: LeagueState, result: RaceResult, playerTeamId: string | undefined, tt: Translator) {
-  if (!playerTeamId) return tt("report_position_hold");
+  if (!playerTeamId) return { rank: null, movement: tt("report_position_hold") };
   const resultPoints = new Map(result.classification.map((entry) => [entry.teamId, entry.points]));
   const teamOrder = new Map(state.teams.map((team, index) => [team.id, index]));
   const before = [...state.teams].sort((left, right) => (right.points - (resultPoints.get(right.id) ?? 0)) - (left.points - (resultPoints.get(left.id) ?? 0)) || (teamOrder.get(left.id) ?? 999) - (teamOrder.get(right.id) ?? 999));
   const after = [...state.teams].sort((left, right) => right.points - left.points || (teamOrder.get(left.id) ?? 999) - (teamOrder.get(right.id) ?? 999));
   const beforeRank = before.findIndex((team) => team.id === playerTeamId) + 1;
   const afterRank = after.findIndex((team) => team.id === playerTeamId) + 1;
-  if (!beforeRank || !afterRank) return tt("report_position_hold");
+  if (!beforeRank || !afterRank) return { rank: null, movement: tt("report_position_hold") };
   const delta = beforeRank - afterRank;
   const movement = delta > 0 ? `+${delta}` : delta < 0 ? `${delta}` : tt("report_position_hold");
-  return `P${afterRank} (${movement})`;
+  return { rank: afterRank, movement };
 }

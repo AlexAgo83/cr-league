@@ -9,6 +9,7 @@ export type ChronoReport = {
   latest: QualifyingRun | null;
   deltaLabel: string;
   gridLabel: string;
+  gridPosition: number | null;
   suggestion: string;
 };
 
@@ -79,6 +80,7 @@ export function buildChronoReport(input: {
     best,
     latest,
     deltaLabel,
+    gridPosition: best && input.gridPosition > 0 ? input.gridPosition : null,
     gridLabel: best && input.gridPosition > 0 ? `P${input.gridPosition}` : input.tt("starting_grid_no_time"),
     suggestion: chronoReportSuggestion(input, best, latest)
   };

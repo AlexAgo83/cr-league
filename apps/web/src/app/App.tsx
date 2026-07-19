@@ -16,6 +16,7 @@ import { Modal } from "../features/Modal.js";
 import { ModalHero } from "../features/ModalHero.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { PlanView } from "../features/PlanView.js";
+import { PositionBadge } from "../features/PositionBadge.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 import { RewardValue } from "../features/RewardValue.js";
@@ -1173,7 +1174,7 @@ export function App() {
         <ol className="starting-grid-list">
           {displayedStartingGridEntries.map((entry) => (
             <li key={entry.team.id} className={entry.team.id === playerTeam?.id ? "current-team" : undefined}>
-              <span>P{entry.position}</span>
+              <PositionBadge position={entry.position} />
               <LiveryPlate className="standings-livery-plate" livery={entry.team.livery} name={entry.team.name} />
               <strong>{entry.team.name}</strong>
               <small>{entry.bestTime === undefined ? tt("starting_grid_no_time") : `${entry.bestTime.toFixed(2)}s`}</small>
@@ -1460,7 +1461,7 @@ export function App() {
                     overlayActions={
                       <>
                         <span>
-                          {currentQualifyingResult.time.toFixed(2)}s · P{Math.max(1, currentQualifyingRank)} · {currentQualifyingResult.attempts}/{qualifyingAttemptLimit}
+                          {currentQualifyingResult.time.toFixed(2)}s · <PositionBadge position={Math.max(1, currentQualifyingRank)} /> · {currentQualifyingResult.attempts}/{qualifyingAttemptLimit}
                         </span>
                         <button
                           className={!chronoReportCommandClicked ? "highlight-command" : undefined}
@@ -1531,7 +1532,7 @@ export function App() {
                             {result.classification.map((entry) => (
                               <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "player" : undefined}>
                                 <span>
-                                  {entry.position}. {entry.teamName}
+                                  <PositionBadge position={entry.position} /> {entry.teamName}
                                 </span>
                                 <em>
                                   <RewardValue type="points" value={entry.points} tt={tt} />
@@ -1556,7 +1557,7 @@ export function App() {
                               {qualifyingLeaderboard.map((run) => (
                                 <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeam?.id ? "player" : undefined}>
                                   <span>
-                                    {run.position}. {run.teamName}
+                                    <PositionBadge position={run.position} /> {run.teamName}
                                     {run.attempts ? ` · ${tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}` : ""}
                                   </span>
                                   <em>{run.time.toFixed(2)}s</em>
@@ -1759,7 +1760,7 @@ export function App() {
               <ol className="season-podium-list">
                 {seasonRecap.standings.slice(0, 3).map((entry) => (
                   <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "current-team" : undefined}>
-                    <strong>P{entry.position}</strong>
+                    <PositionBadge position={entry.position} />
                     {entry.livery ? <LiveryPlate className="standings-livery-plate" livery={entry.livery} name={entry.teamName} /> : null}
                     <span>{entry.teamName}</span>
                   </li>
@@ -1771,7 +1772,7 @@ export function App() {
               <ol className="season-standings-list">
                 {seasonRecap.standings.map((entry) => (
                   <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "current-team" : undefined}>
-                    <strong>P{entry.position}</strong>
+                    <PositionBadge position={entry.position} />
                     <span>{entry.teamName}</span>
                     <small>
                       <RewardValue type="points" value={entry.points} tt={tt} />

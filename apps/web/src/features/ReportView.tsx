@@ -9,6 +9,7 @@ import {
   type Translator
 } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
+import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
 import { VisualIcon } from "./VisualIcon.js";
 
@@ -81,7 +82,7 @@ export function ReportView({
         <ol className="report-podium">
           {result.classification.map((entry) => (
             <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>
-              <strong>P{entry.position}</strong>
+              <PositionBadge position={entry.position} />
               <span>{entry.teamName}</span>
               <small>
                 <RewardValue type="points" value={entry.points} tt={tt} /> <RewardValue type="credits" value={entry.credits} tt={tt} />
@@ -114,7 +115,7 @@ export function ReportView({
             <ol>
               {result.classification.map((entry) => (
                 <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>
-                  <strong>P{entry.position}</strong>
+                  <PositionBadge position={entry.position} />
                   <span>{entry.teamName}</span>
                   <dl>
                     <div>

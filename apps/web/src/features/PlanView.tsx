@@ -5,6 +5,7 @@ import type { ChronoReport } from "../app/raceFlow.js";
 import type { PlanSubscreen } from "../app/routes.js";
 import type { FormState, GameView, LeagueState } from "../app/types.js";
 import { DirectivePanel, type DirectiveStep } from "./DirectivePanel.js";
+import { PositionBadge } from "./PositionBadge.js";
 
 export function PlanView({
   cardLocked,
@@ -74,7 +75,7 @@ export function PlanView({
               </div>
               <div>
                 <span>{tt("qualifying_result_rank")}</span>
-                <strong>{chronoReport.gridLabel}</strong>
+                <strong>{chronoReport.gridPosition ? <PositionBadge position={chronoReport.gridPosition} /> : chronoReport.gridLabel}</strong>
               </div>
               <div>
                 <span>{tt("chrono_report_delta")}</span>

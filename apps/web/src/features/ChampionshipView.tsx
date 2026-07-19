@@ -5,6 +5,7 @@ import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Transla
 import type { LeagueState } from "../app/types.js";
 import { CircuitMap, analyzeCircuitRoute } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
+import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
@@ -125,7 +126,7 @@ export function ChampionshipView({
             <ol className="standings-table">
               {state.teams.map((team, index) => (
                 <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
-                  <strong className="standings-rank">P{index + 1}</strong>
+                  <PositionBadge position={index + 1} className="standings-rank" />
                   <LiveryPlate className="standings-livery-plate" livery={team.livery} name={team.name} wins={seasonWins.get(team.id) ?? 0} />
                   <span className="standings-team">
                     {team.name}
@@ -244,7 +245,7 @@ export function ChampionshipView({
                               ) : (
                                 chip
                               )}
-                              <small>{historyLabel(grandPrix, playerTeamId, tt)}</small>
+                              <small>{historyPosition(grandPrix, playerTeamId) ? <PositionBadge position={historyPosition(grandPrix, playerTeamId)!} /> : statusLabel(grandPrix.status, tt)}</small>
                             </li>
                           );
                         })}
@@ -290,9 +291,8 @@ function miniRoutePath(points: Array<{ x: number; y: number }>) {
   return points.map((point, index) => `${index === 0 ? "M" : "L"}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(" ");
 }
 
-function historyLabel(grandPrix: LeagueState["grandPrixHistory"][number], playerTeamId: string | undefined, tt: Translator) {
-  const position = playerTeamId ? grandPrix.result?.classification.find((entry) => entry.teamId === playerTeamId)?.position : undefined;
-  return position ? `P${position}` : statusLabel(grandPrix.status, tt);
+function historyPosition(grandPrix: LeagueState["grandPrixHistory"][number], playerTeamId: string | undefined) {
+  return playerTeamId ? grandPrix.result?.classification.find((entry) => entry.teamId === playerTeamId)?.position : undefined;
 }
 
 function groupHistoryBySeason(history: LeagueState["grandPrixHistory"]) {

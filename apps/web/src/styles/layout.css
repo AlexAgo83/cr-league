@@ -312,6 +312,7 @@
 }
 
 .brand-icon {
+  background: rgb(248 243 232 / 0.08);
   border-radius: 6px;
   height: 28px;
   width: 28px;
@@ -790,7 +791,9 @@
 
 .modal-hero-image {
   aspect-ratio: 16 / 9;
-  background: #050505;
+  background:
+    linear-gradient(135deg, rgb(248 243 232 / 0.08), rgb(248 243 232 / 0.02)),
+    #050505;
   display: block;
   object-fit: cover;
   width: 100%;
@@ -1523,7 +1526,9 @@ label small {
 
 .onboarding-image {
   aspect-ratio: 16 / 9;
-  background: #050505;
+  background:
+    linear-gradient(135deg, rgb(248 243 232 / 0.08), rgb(248 243 232 / 0.02)),
+    #050505;
   border: 1px solid rgb(255 255 255 / 0.12);
   display: block;
   margin: 12px 0;
@@ -1733,6 +1738,10 @@ label small {
 
 .circuit-map-tile {
   opacity: 0.85;
+}
+
+.circuit-map-tile-placeholder {
+  fill: rgb(248 243 232 / 0.06);
 }
 
 .map-attribution {
@@ -2831,6 +2840,9 @@ label small {
 
 .garage-empty-inventory img {
   aspect-ratio: 16 / 9;
+  background:
+    linear-gradient(135deg, rgb(248 243 232 / 0.08), rgb(248 243 232 / 0.02)),
+    #050505;
   display: block;
   object-fit: cover;
   width: 100%;
@@ -2893,7 +2905,7 @@ label small {
 }
 
 .card-inventory {
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .card-inventory li {
@@ -4030,7 +4042,7 @@ label small {
 .card-shop {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 .card-shop button {
@@ -4069,6 +4081,13 @@ label small {
 .card-shop button:not(:disabled):hover,
 .card-shop button:not(:disabled):focus-visible {
   border-color: var(--color-accent);
+}
+
+@media (max-width: 520px) {
+  .card-inventory,
+  .card-shop {
+    grid-template-columns: 1fr;
+  }
 }
 
 .garage-buy-modal {
@@ -5791,6 +5810,12 @@ button.highlight-command:not(:disabled) {
 .plan-view .plan-step:not(.active):hover .plan-step-value,
 .plan-view .plan-step:not(.active):focus-visible .plan-step-value {
   color: var(--color-ink);
+}
+
+.plan-view .plan-subscreen-tabs .plan-step:not(.active):hover,
+.plan-view .plan-subscreen-tabs .plan-step:not(.active):focus-visible {
+  background: transparent;
+  color: rgb(248 243 232 / 0.96);
 }
 
 .plan-step-label {

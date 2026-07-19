@@ -312,15 +312,17 @@ export function CircuitMap({
         <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           <g ref={cameraRef} className="circuit-camera">
             {tiles.map((tile) => (
-              <image
-                key={`${tile.x}-${tile.y}`}
-                className="circuit-map-tile"
-                href={`https://basemaps.cartocdn.com/dark_nolabels/${zoom}/${tile.x}/${tile.y}.png`}
-                x={tile.left}
-                y={tile.top}
-                width={TILE_SIZE}
-                height={TILE_SIZE}
-              />
+              <g key={`${tile.x}-${tile.y}`} className="circuit-map-tile-layer">
+                <rect className="circuit-map-tile-placeholder" x={tile.left} y={tile.top} width={TILE_SIZE} height={TILE_SIZE} />
+                <image
+                  className="circuit-map-tile"
+                  href={`https://basemaps.cartocdn.com/dark_nolabels/${zoom}/${tile.x}/${tile.y}.png`}
+                  x={tile.left}
+                  y={tile.top}
+                  width={TILE_SIZE}
+                  height={TILE_SIZE}
+                />
+              </g>
             ))}
             <path ref={routeRef} className={hasCars ? "circuit-route-glow replay-muted-glow" : "circuit-route-glow"} d={d} />
             <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={d} />

@@ -185,8 +185,7 @@ function buildReplayDirectorBeats(
 
 function withTraceEventProgress(events: RaceEvent[], trace: ReplayTracePoint[]) {
   return events.map((event) => {
-    if (event.type !== "pit_stop") return event;
-    const progress = pitStopTraceProgressForTeam(trace, event.teamId, event.segment);
+    const progress = event.type === "pit_stop" ? pitStopTraceProgressForTeam(trace, event.teamId, event.segment) : eventTraceProgress(trace, event);
     return progress === undefined ? event : { ...event, traceProgress: progress };
   });
 }
@@ -195,6 +194,17 @@ function pitStopTraceProgressForTeam(trace: ReplayTracePoint[], teamId: string, 
   const pitPoints = trace.filter((point) => point.segment === segment && point.cars?.[teamId]?.phase === "pit_stop");
   if (!pitPoints.length) return undefined;
   return Number((pitPoints.reduce((sum, point) => sum + point.progress, 0) / pitPoints.length).toFixed(4));
+}
+
+function eventTraceProgress(trace: ReplayTracePoint[], event: RaceEvent) {
+  if (event.type === "finish") return 1;
+  const segmentIndex = RACE_SEGMENTS.indexOf(event.segment);
+  const ratio = event.type === "weather_change" ? 0 : 0.5;
+  const target = segmentIndex < 0 ? event.lap / Math.max(1, lapForSegment("finish")) : (segmentIndex + ratio) / RACE_SEGMENTS.length;
+  const point = trace
+    .filter((candidate) => candidate.segment === event.segment)
+    .sort((left, right) => Math.abs(left.progress - target) - Math.abs(right.progress - target))[0];
+  return Number((point?.progress ?? Math.max(0, Math.min(1, target))).toFixed(4));
 }
 
 function createReplayTraceSteps(segment: RaceSegment, segmentIndex: number, states: TeamState[], beforeTimes: Map<string, number>, pitCosts = new Map<string, number>(), trackLengthMeters: number, previousPoint?: ReplayTracePoint): ReplayTracePoint[] {

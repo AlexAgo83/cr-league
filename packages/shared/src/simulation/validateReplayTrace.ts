@@ -40,6 +40,10 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
     }
   }
 
+  for (const event of result.events) {
+    if (typeof event.traceProgress !== "number" || event.traceProgress < 0 || event.traceProgress > 1) errors.push(`event trace progress missing for ${event.id || event.order}`);
+  }
+
   for (const event of result.events.filter((candidate) => candidate.type === "pit_stop")) {
     const phases = pitPhases.get(event.teamId) ?? [];
     const entry = phases.indexOf("pit_entry");

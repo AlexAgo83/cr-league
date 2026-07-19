@@ -7,6 +7,7 @@ import {
   buildReplayPlan,
   buildRaceDirectorBeats,
   displayLapAtProgress,
+  eventTraceProgress,
   finishTimes,
   gridStartCarProgress,
   liveClassificationByCarProgress,
@@ -283,6 +284,11 @@ describe("ReplayView timing", () => {
     expect(pitStopTraceProgress(result, trace, { ...leader, traceProgress: 0.37 }, 10, 5, 0.25)).toBe(0.37);
     expect(pitStopTraceProgress(result, trace, leader, 10, 5, 0.25)).toBeCloseTo(0.45);
     expect(pitStopTraceProgress(result, trace, last, 10, 5, 0.25)).toBeGreaterThan(pitStopTraceProgress(result, trace, leader, 10, 5, 0.25));
+  });
+
+  it("uses event trace progress before lap fallback", () => {
+    expect(eventTraceProgress({ ...resultWithEvent("leader", 1), traceProgress: 0.37 }, 10)).toBe(0.37);
+    expect(eventTraceProgress(resultWithEvent("leader", 1), 10)).toBe(0.5);
   });
 
   it("uses chrono-specific director beats for qualifying replays", () => {

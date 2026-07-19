@@ -386,6 +386,10 @@ export function pitStopTraceProgress(result: RaceResult, trace: ReplayTracePoint
   return (low + high) / 2;
 }
 
+export function eventTraceProgress(event: RaceEvent, maxLap: number) {
+  return typeof event.traceProgress === "number" ? event.traceProgress : event.lap / maxLap;
+}
+
 export function shouldSmoothReplayTrace(trace: ReplayTracePoint[]) {
   return !trace.every((point) => point.cars);
 }
@@ -758,7 +762,7 @@ export function ReplayView({
   // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.
   const markerByLap = new Map<number, { texts: string[]; player: boolean; time: number }>();
   for (const event of keyMoments.filter((event) => event.severity === "major" || event.type === "pit_stop" || event.teamId === playerTeamId)) {
-    const progress = event.type === "pit_stop" ? pitStopTraceProgress(result, replayTrace, event, maxLap, circuit.laps, pitProgress, replayPlan) : event.lap / maxLap;
+    const progress = event.type === "pit_stop" ? pitStopTraceProgress(result, replayTrace, event, maxLap, circuit.laps, pitProgress, replayPlan) : eventTraceProgress(event, maxLap);
     const displayLap = displayLapAtProgress(progress, circuit.laps);
     const marker = markerByLap.get(displayLap) ?? { texts: [], player: false, time: raceTimeAtProgress(progress) };
     marker.texts.push(`${tt("unit_lap")} ${displayLap} · ${eventReplayText(event, names, tt)}`);
@@ -781,7 +785,7 @@ export function ReplayView({
   const seekValueText = `${tt("unit_lap")} ${live.lap}/${circuit.laps}, ${Math.round(clock.current)}s`;
 
   function eventTime(event: RaceEvent) {
-    return raceTimeAtProgress(event.lap / maxLap);
+    return raceTimeAtProgress(eventTraceProgress(event, maxLap));
   }
 
   function activeMomentIdAt(time: number) {

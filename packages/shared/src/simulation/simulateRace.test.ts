@@ -117,6 +117,7 @@ describe("simulateRace", () => {
     expect(result.replayTrace?.some((point) => Object.values(point.cars ?? {}).some((car) => car.phase.startsWith("overtake")))).toBe(true);
     expect(result.events.filter((event) => event.type === "pit_stop")).toHaveLength(6);
     expect(result.events.filter((event) => event.type === "pit_stop").every((event) => typeof event.traceProgress === "number")).toBe(true);
+    expect(result.events.every((event) => typeof event.traceProgress === "number" && event.traceProgress >= 0 && event.traceProgress <= 1)).toBe(true);
     expect(result.consumedCards).toEqual(
       expect.arrayContaining([
         { teamId: "alice", cardId: "rain_grip" },

@@ -205,7 +205,6 @@ export function GarageView({
                         {tt(`card_${cardId}` as TranslationKey)}
                         <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
                         <CardStatBadges cardId={cardId} tt={tt} />
-                        {!isCardLocked(cardId) ? <small>{tt("garage_sell_card_action", { price: (state.cardShop.find((item) => item.cardId === cardId)?.price ?? 0) / 2 })}</small> : null}
                       </span>
                       <strong className="card-owned-count">x{countCards(playerTeam.cards, cardId)}</strong>
                       <CardArtImage cardId={cardId} />

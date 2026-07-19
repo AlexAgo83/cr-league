@@ -6260,13 +6260,12 @@ button.highlight-command:not(:disabled) {
   border: 2px solid color-mix(in srgb, var(--directive-choice-accent) 52%, transparent);
   border-radius: 999px;
   display: inline-flex;
-  height: 28px;
+  height: 26px;
   justify-content: center;
+  left: calc(48% + 8px);
   position: absolute;
-  right: min(46%, 170px);
-  top: 10px;
-  transform: translateX(100%);
-  width: 28px;
+  top: 12px;
+  width: 26px;
   z-index: 2;
 }
 

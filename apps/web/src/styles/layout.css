@@ -5978,14 +5978,14 @@ button.highlight-command:not(:disabled) {
 .card-cell-art {
   border-radius: 0;
   height: 138%;
-  inset: 50% 0 auto auto;
+  inset: 50% -40px auto auto;
   mask-image: linear-gradient(90deg, transparent 0, #000 32%);
   object-fit: contain;
   overflow: hidden;
   pointer-events: none;
   position: absolute;
   transform: translateY(-50%);
-  width: min(52%, 190px);
+  width: min(64%, 250px);
   z-index: 0;
 }
 
@@ -6047,7 +6047,8 @@ button.highlight-command:not(:disabled) {
 .garage-panel-inventory .card-inventory-button .card-cell-art,
 .garage-panel-shop .card-shop button .card-cell-art {
   height: 136%;
-  width: min(46%, 190px);
+  inset: 50% -38px auto auto;
+  width: min(58%, 230px);
 }
 
 .garage-panel-inventory .card-inventory-button {
@@ -6157,14 +6158,14 @@ button.highlight-command:not(:disabled) {
 .directive-choice-art {
   border-radius: 0;
   height: 142%;
-  inset: 50% 0 auto auto;
+  inset: 50% -42px auto auto;
   mask-image: linear-gradient(90deg, transparent 0, #000 32%);
   object-fit: contain;
   overflow: hidden;
   pointer-events: none;
   position: absolute;
   transform: translateY(-50%);
-  width: min(52%, 200px);
+  width: min(64%, 260px);
   z-index: 0;
 }
 

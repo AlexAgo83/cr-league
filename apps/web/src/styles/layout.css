@@ -5391,6 +5391,10 @@ button.highlight-command:not(:disabled) {
   line-height: 1;
 }
 
+.plan-view .map-trait-overtaking .directive-trait-modifier.bonus {
+  color: #0b7a8f;
+}
+
 .directive-trait-modifier.weakness,
 .directive-trait-modifier.neutral {
   color: var(--color-muted);

@@ -5068,7 +5068,13 @@ button.highlight-command:not(:disabled) {
 }
 
 .card-inventory-button {
-  padding: 10px;
+  padding: 10px 42px 10px 10px;
+}
+
+.card-inventory-button > strong {
+  position: absolute;
+  right: 10px;
+  top: 10px;
 }
 
 .garage-grid .garage-card-toggle {

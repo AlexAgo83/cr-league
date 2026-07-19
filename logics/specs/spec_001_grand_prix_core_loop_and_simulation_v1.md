@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: 90%
-> Confidence: 92
+> Confidence: 93
 > Date: 2026-07-13
 > Related request: `req_001_define_grand_prix_core_loop_and_simulation_v1`
 > Related backlog: `item_007_define_grand_prix_core_loop_and_simulation_v1`
@@ -111,6 +111,10 @@ Multiplayer:
 - The race resolves when the deadline passes or all players are ready, whichever rule the league uses.
 - Default V1 recommendation: resolve when all players are ready, otherwise at deadline.
 - Missing players use a default plan: Balanced approach, Reliability preparation, no card.
+
+Season setup should offer a quick 3-GP playtest preset and a default 6-GP league preset before adding more configuration.
+
+Qualifying should make grid position feel earned without deciding the race alone. If playtests show pole converts too often, soften grid advantage or increase overtaking windows before redesigning qualifying.
 
 ## 4. Resolution
 The server resolves the race exactly once.

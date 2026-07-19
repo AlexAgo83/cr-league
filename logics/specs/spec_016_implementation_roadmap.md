@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Settled
 > Understanding: Implementation order reflects the current prototype reality: private-league foundation, race recap readability, replay, qualifying, seasons, garage/card progression, balance simulation, race desk immersion, session restart, and dashboard clarity were pulled forward after playtest feedback.
-> Confidence: 92
+> Confidence: 93
 > Related request: `req_008_define_cr_league_implementation_roadmap`
 > Related backlog: `item_014_define_cr_league_implementation_roadmap`
 > Related task: `task_009_define_cr_league_implementation_roadmap`
@@ -273,4 +273,5 @@ Acceptance criteria for the next useful request should include:
 - Does the current qualifying model make grid position feel earned without making GP outcomes too deterministic?
 - Are card prices and credit rewards tight enough to make buying a choice, not an automatic click?
 - Does season rollover need a dedicated season-history UI before live beta?
-- Is automatic deadline resolution necessary for private playtests, or can manual launch remain the simpler operating model?
+- Does async cadence V1 need force-resolve or pause controls, or are all-ready plus deadline resolution enough for beta operations?
+- Are the 3-GP playtest and 6-GP season presets enough, or do testers still need custom setup?

@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 90%
-> Confidence: 82
+> Confidence: 83
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -63,6 +63,8 @@ If a human player misses the deadline:
 
 Do not block the league.
 
+Public league activity should use neutral wording, for example "Standard plan applied for Volt Union." The player's own report can explain the default in more detail.
+
 # Joining And Leaving
 V1 recommendation:
 
@@ -72,7 +74,8 @@ V1 recommendation:
 
 Later:
 
-- allow replacement of bot by human mid-season if needed.
+- allow replacement of bot by human mid-season if needed;
+- allow a bot to cover an inactive human only after repeated absences, starting after two consecutive missed Grand Prix if beta leagues stall.
 
 # Pause
 V1 can skip pause controls if cadence is manual in early multiplayer tests.
@@ -91,7 +94,5 @@ If pause exists:
 - No mid-race intervention.
 
 # Open Questions
-- Should "all ready" be default in private leagues?
 - Should a league creator be able to force resolve manually?
-- Should absent defaults be visible to all players?
-- Should bots replace inactive players after repeated absences?
+- Should pause be needed for beta operations, or is force-resolve enough?

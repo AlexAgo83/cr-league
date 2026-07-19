@@ -1,6 +1,6 @@
 # Private League 3 GP Playtest Checklist
 
-Target build: `0.4` economy and card progression.
+Target build: current private-beta loop with 3-GP playtest coverage.
 
 ## Setup
 - Run the API and web app.
@@ -10,7 +10,7 @@ Target build: `0.4` economy and card progression.
 - Ask each tester to create a profile with an email and keep the recovery code, or recover an existing profile before joining.
 - Use one browser profile per tester, or clear the saved profile between testers.
 - Ask testers to join `PLAY01` with human team names, for example `Volt Union` and `Late Apex`.
-- For a custom league, keep defaults unless testing setup friction: 8 players, bot fill on, 3 qualifying attempts, 6 GP per season.
+- For a custom league, use the 3-GP playtest preset when validating the short loop; use the 6-GP season preset when validating return behavior.
 
 ## Scenario
 1. Player A creates or recovers a profile, then joins code `PLAY01` as `Volt Union`.
@@ -53,6 +53,7 @@ Target build: `0.4` economy and card progression.
 - Do ready/missing states match what players did?
 - Does the result feel connected to the submitted directive?
 - Does qualifying feel like it influences the grid without deciding the whole race?
+- If pole wins too often, does the problem feel like grid advantage, weak overtaking windows, or player plan quality?
 - Does replay speed feel consistent between qualifying and GP replay?
 - Does the race recap explain what made the difference?
 - Does the visual replay make the race easier to understand than the timeline alone?
@@ -73,6 +74,8 @@ Target build: `0.4` economy and card progression.
 - Does the chrono report teach what to change for the next plan?
 - Can testers move naturally between replay, report, chrono report, and championship history?
 - Do points and credits feel like distinct rewards at a glance?
+- Does the 3-GP preset feel long enough for a playtest, and does the 6-GP preset feel right for a real league?
+- Does max 5 inventory feel clear, too restrictive, or too easy to hoard?
 
 ## Questions
 - What did you expect to happen before launching the GP?
@@ -85,11 +88,15 @@ Target build: `0.4` economy and card progression.
 - Did being behind still feel playable?
 - What did the recap teach you for the next GP?
 - Which card felt too strong, too weak, or unclear?
+- Would you prefer fixed shop offers, or did the shop feel predictable enough to need draft/random offers?
+- Did any player absence/default plan feel clear without feeling punitive?
 
 ## Known Limits
 - Profile recovery is lightweight only: email plus recovery code, not full password/OAuth authentication.
 - No automatic deadline resolution yet.
+- Async cadence is still being validated: all-ready/deadline resolution, default plans, force-resolve, pause, and inactive-player replacement should be judged from beta behavior before broadening tools.
 - Card inventory exists as a fixed-price garage/shop with recommendations, selling, purchase confirmation, and a small capped comeback-credit bonus; no rarity, draft offers, or deep market economy yet.
+- Season rollover economy is intentionally light: partial credit carry-over and cosmetic champion rewards are preferred before car wear or persistent team condition.
 - Restart session is a playtest operator tool, not a full admin/season management system.
 - Replay is deterministic playback from stored generated race/qualifying data; it is not a live physics simulation.
 

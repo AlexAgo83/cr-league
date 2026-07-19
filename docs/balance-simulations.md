@@ -36,6 +36,7 @@ What to check after card/economy changes:
 - no single card dominates points, win rate, and credit margin at the same time;
 - economy cards should pay for future options without becoming the obvious racing choice;
 - qualifying-focused cards should improve average grid without making average finish automatic;
+- if pole converts too often, test softer grid advantage or larger overtaking windows before redesigning qualifying;
 - circuit summaries should not show one circuit paying wildly more points/credits than the others;
 - card price changes should keep `GP/card` in a range that makes buying a choice.
 

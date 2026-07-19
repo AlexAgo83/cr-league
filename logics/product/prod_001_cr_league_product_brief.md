@@ -82,7 +82,7 @@ flowchart LR
 - League creation can expose only a few setup levers: max players, bot fill, qualifying attempt limit, and GP per season. These settings are useful for playtests but should stay compact.
 
 # Default V1 assumptions
-- Season length: 6 Grand Prix by default, configurable up to 18 in the current prototype.
+- Season length: 6 Grand Prix by default, configurable up to 18 in the current prototype; expose a 3-GP playtest preset and a 6-GP season preset before adding more setup options.
 - Participants: 2 to 8 human players by default, configurable up to 16, with bots available to fill the grid.
 - Race cadence: weekly by default for multiplayer; manual immediate launch for solo.
 - Pre-race mandatory decisions: 3 decisions by default.
@@ -367,13 +367,18 @@ Can wait until later:
 - Split solo and multiplayer needs: solo wants speed, multiplayer wants suspense. The shared engine must support both cadences.
 - Over-management: too many resources, upgrades, and stats would bury the simple strategic bet at the heart of the game.
 
+# Deferred Decisions
+- Keep fixed card offers until playtest evidence shows the shop is too flat or too predictable; then try draft or hybrid offers before deeper card systems.
+- Use partial season credit carry-over with a cap as the first continuity mechanic; champion rewards should be cosmetic only.
+- Default multiplayer cadence should resolve when all players are ready, otherwise at the deadline; missing plans use a neutral visible default.
+- Keep car wear or team condition out until playtesters say seasons lack continuity even after rollover economy.
+- Keep 2D replay as the presentation baseline; improve callouts/animation before considering 3D.
+- If qualifying makes race outcomes too deterministic, soften grid advantage or increase overtaking windows before redesigning qualifying.
+- Keep admin accident recovery operational first: confirmations, support runbooks, and test-data cleanup before undo tooling.
+
 # Open questions
 - Does the current qualifying model make the starting grid feel earned without making the final race feel predetermined?
-- Should card acquisition stay a fixed shop, move to random offers, or become a hybrid after playtest feedback?
-- Is 6 GP the right default season length for private leagues, or only for short playtests?
-- Should multiplayer races resolve at a fixed scheduled time, when all users are ready, or whichever comes first?
 - What replay fidelity is enough before live beta?
-- Should team condition or car wear persist between races in V1, or should each Grand Prix start clean except for cards and credits?
 
 # References
 - Product back-reference: `item_029_add_automated_private_league_playtest_scenario`

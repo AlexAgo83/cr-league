@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 90%
-> Confidence: 85
+> Confidence: 86
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -37,6 +37,8 @@ Target:
 - Event-driven, not physics-driven.
 - Focus on player, top positions, and key events.
 - Can be skipped.
+
+Default flow: show a very short verdict first, then replay for the emotional read, then the report for explanation. Keep report-only access available for players who skip motion or return later.
 
 Required visual elements:
 
@@ -137,5 +139,4 @@ Avoid:
 
 # Open Questions
 - Should reports be written in second person or team-name voice?
-- Should replay play before report, after report, or side-by-side?
 - How many events are too many for casual players?

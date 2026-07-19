@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 85%
-> Confidence: 80
+> Confidence: 81
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -69,6 +69,8 @@ V1 recommendation:
 - played consumable cards are removed after resolution;
 - duplicate cards allowed only if the UI stays clear.
 
+Keep max 5 until playtest says otherwise. If players hoard and stop making choices, reduce pressure through better recommendations before shrinking the cap. If the cap feels punitive, test 6-7 cards before adding larger collection systems.
+
 # Shop Model
 Simple shop:
 
@@ -78,6 +80,8 @@ Simple shop:
 - no player trading.
 
 This creates a small decision without overwhelming users.
+
+Keep fixed offers until playtest evidence says the shop is too flat or too predictable. If it is, try a draft or hybrid offer model before adding rarity/crafting.
 
 # Comeback Economy
 Allowed:
@@ -94,6 +98,15 @@ Avoid:
 - leader tax;
 - language that labels players as losers.
 
+# Season Rollover Economy
+Recommended first pass:
+
+- carry over only 25-35% of unspent credits into the next season;
+- cap the carry-over so a rich team cannot dominate the next season opener;
+- make champion rewards cosmetic only, such as a badge, title, or palmares entry;
+- show cosmetic champion rewards in the season history or palmares, not as a hidden account stat;
+- avoid performance bonuses for last season's winner.
+
 # Non-goals
 - No sponsors as a full system.
 - No car part upgrades.
@@ -103,7 +116,4 @@ Avoid:
 - No premium currency.
 
 # Open Questions
-- Should card rewards be random, shop-based, or both?
 - Is max 5 inventory too restrictive?
-- Should credits persist across seasons?
-- Should season winner receive cosmetic-only reward later?

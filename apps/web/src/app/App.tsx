@@ -527,7 +527,7 @@ export function App() {
   async function updateLivery(livery: LeagueState["teams"][number]["livery"]) {
     if (!leagueState || !playerTeam) return;
 
-    await mutateLeague("status_livery_updated", `/leagues/${leagueState.league.id}/teams/livery`, {
+    await mutateLeague("status_livery_updating", `/leagues/${leagueState.league.id}/teams/livery`, {
       teamId: playerTeam.id,
       claimCode: leagueState.player?.claimCode,
       livery
@@ -537,7 +537,7 @@ export function App() {
   async function updateTeamName(name: string) {
     if (!leagueState || !playerTeam) return;
 
-    await run(tt("status_team_name_updated"), async () => {
+    await run(tt("status_team_name_updating"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/teams/name`, {
         method: "POST",
         body: JSON.stringify({
@@ -730,6 +730,7 @@ export function App() {
   }
 
   async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify = true, errorText?: (error: unknown) => string) {
+    closeOpenReplays();
     setStatus("loading");
     setMessage(nextMessage);
     if (notify) pushNotification(nextMessage);
@@ -750,6 +751,12 @@ export function App() {
       clearTransientNotifications();
       showStatus(friendlyError ?? (error instanceof TypeError ? tt("status_api_unavailable") : tt("status_request_failed")), "error", notify);
     }
+  }
+
+  function closeOpenReplays() {
+    if (historyReplay) setHistoryReplay(null);
+    if (qualifyingResult) setQualifyingResult(null);
+    if (resultOpen && result) setResultOpen(false);
   }
 
   function validateProfileForm(email: string, recoveryCode?: string) {
@@ -1507,6 +1514,7 @@ export function App() {
                       ) : null}
                       {result ? (
                         <div className="race-phase-actions map-race-actions">
+                          <PendingFeedback className="map-pending-feedback" message={pendingMessage} />
                           <button
                             className="result-toggle-command"
                             type="button"

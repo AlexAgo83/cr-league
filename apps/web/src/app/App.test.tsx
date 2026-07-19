@@ -788,6 +788,61 @@ describe("App", () => {
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
   });
 
+  it("closes an open replay when an API action starts", async () => {
+    saveProfile();
+    let finishQualifying!: (value: Response) => void;
+    const pendingQualifying = new Promise<Response>((resolve) => {
+      finishQualifying = resolve;
+    });
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(response(baseState))
+      .mockResolvedValueOnce(response({ state: qualifiedState, run: qualifyingRun, isBest: true }))
+      .mockReturnValueOnce(pendingQualifying);
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    await screen.findByRole("button", { name: "Race" });
+    fireEvent.click(screen.getByRole("button", { name: "New lap time" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "New lap time" }).at(-1)!);
+    expect(await screen.findByRole("heading", { name: "Lap time replay" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "New lap time" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "New lap time" }).at(-1)!);
+
+    expect(screen.queryByRole("heading", { name: "Lap time replay" })).toBe(null);
+    expect((await screen.findByRole("status")).textContent).toContain("Running qualifying lap...");
+
+    finishQualifying(response({ state: qualifiedState, run: qualifyingRun, isBest: true }));
+    expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
+  });
+
+  it("shows pending feedback while starting the next Grand Prix", async () => {
+    saveProfile();
+    let finishNextGrandPrix!: (value: Response) => void;
+    const pendingNextGrandPrix = new Promise<Response>((resolve) => {
+      finishNextGrandPrix = resolve;
+    });
+    vi.spyOn(globalThis, "fetch")
+      .mockResolvedValueOnce(response(resolvedState))
+      .mockReturnValueOnce(pendingNextGrandPrix);
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    await closeLeagueIntro();
+    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
+
+    expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
+    expect((await screen.findByRole("status")).textContent).toContain("Starting next Grand Prix...");
+
+    finishNextGrandPrix(response(nextGrandPrixState));
+    expect(await screen.findByText("Next Grand Prix started.")).toBeTruthy();
+  });
+
   it("does not auto-open an old season recap when loading an existing later season", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(seasonTwoState));

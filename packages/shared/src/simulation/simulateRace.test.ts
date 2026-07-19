@@ -98,12 +98,15 @@ describe("simulateRace", () => {
 
     expect(result.classification).toHaveLength(6);
     expect(result.events.length).toBeGreaterThan(6);
-    expect(result.replayTrace).toHaveLength(101);
+    expect(result.replayTrace).toHaveLength(106);
     expect(result.replayTrace?.[0]?.progress).toBe(0);
-    expect(result.replayTrace?.[1]?.progress).toBe(0.01);
-    expect(result.replayTrace?.[20]?.progress).toBe(0.2);
+    expect(result.replayTrace?.some((point) => point.progress === 0.01)).toBe(true);
+    expect(result.replayTrace?.some((point) => point.progress === 0.2)).toBe(true);
     expect(new Set(Object.values(result.replayTrace?.[0]?.gaps ?? {}))).toEqual(new Set([0]));
-    expect(result.replayTrace?.[1]?.cars?.atlas?.trackProgress).toBeGreaterThan(result.replayTrace?.[0]?.cars?.atlas?.trackProgress ?? -1);
+    const firstDelayPoint = result.replayTrace?.find((point) => point.progress > 0);
+    expect(firstDelayPoint?.cars?.atlas?.trackProgress).toBeGreaterThan(result.replayTrace?.[0]?.cars?.atlas?.trackProgress ?? -1);
+    expect(firstDelayPoint?.cars?.redpeak?.phase).toBe("grid");
+    expect(firstDelayPoint?.cars?.redpeak?.trackProgress).toBe(0);
     expect(result.replayTrace?.at(-1)?.progress).toBe(1);
     expect(result.replayTrace?.at(-1)?.distanceMeters).toBe(3200);
     expect(result.replayTrace?.at(-1)?.order).toEqual(result.classification.map((entry) => entry.teamId));

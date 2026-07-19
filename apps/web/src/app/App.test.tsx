@@ -1351,11 +1351,12 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     expect(screen.getByLabelText("Language")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Manage league" })).toBe(null);
+    expect(screen.queryByRole("button", { name: "Admin" })).toBe(null);
     expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
   });
 
   it("opens the admin console from the profile menu and performs primary admin actions", async () => {
-    saveProfile();
+    saveProfile({ admin: true });
     const users = {
       users: [
         {
@@ -1506,7 +1507,7 @@ describe("App", () => {
   });
 });
 
-function saveProfile(overrides: Partial<{ recoveryCode: string | undefined }> = {}) {
+function saveProfile(overrides: Partial<{ admin: boolean; recoveryCode: string | undefined }> = {}) {
   localStorage.setItem(
     "cr-league-profile-session",
     JSON.stringify({

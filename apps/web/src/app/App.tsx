@@ -901,6 +901,7 @@ export function App() {
   }
 
   async function openAdminConsole() {
+    if (!profileSession?.admin) return;
     setProfileOpen(false);
     setGameView("admin");
     if (!adminToken.trim()) return;
@@ -1166,9 +1167,11 @@ export function App() {
               {tt("settings_title")}
             </button>
           ) : null}
-          <button type="button" className="profile-menu-action profile-menu-action-info" onClick={() => void openAdminConsole()}>
-            {tt("admin_action_open")}
-          </button>
+          {profileSession?.admin ? (
+            <button type="button" className="profile-menu-action profile-menu-action-info" onClick={() => void openAdminConsole()}>
+              {tt("admin_action_open")}
+            </button>
+          ) : null}
           {profileSession?.recoveryCode ? (
             <button
               type="button"

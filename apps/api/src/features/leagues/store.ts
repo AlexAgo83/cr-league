@@ -252,6 +252,7 @@ export type ProfileSession = {
     id: string;
     email: string;
   };
+  admin?: boolean;
   recoveryCode?: string;
   teams: Array<{
     leagueId: string;

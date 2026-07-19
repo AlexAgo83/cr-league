@@ -171,6 +171,8 @@ API_HOST="127.0.0.1"
 API_PORT="4874"
 WEB_ORIGIN="http://localhost:4873"
 VITE_API_BASE_URL="http://localhost:4874"
+ADMIN_EMAILS="admin@example.test"
+ADMIN_TOKEN="change-me"
 ```
 
 Prepare Prisma:

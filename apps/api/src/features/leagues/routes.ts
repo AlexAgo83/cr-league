@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyReply } from "fastify";
 import type { PrismaClient } from "@prisma/client";
+import type { ApiConfig } from "../../config.js";
 import {
   LeagueRuleError,
   buyCard,
@@ -20,14 +21,14 @@ import {
   updateTeamName
 } from "./store.js";
 
-export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient) {
+export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient, config?: Pick<ApiConfig, "adminEmails">) {
   app.post("/profiles", async (request, reply) => {
     if (!isCreateProfileBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a valid email." });
     }
 
     try {
-      return await createProfile(db, request.body);
+      return withAdminFlag(await createProfile(db, request.body), config);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -44,7 +45,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     try {
       const session = await recoverProfile(db, request.body);
       if (!session) return reply.code(404).send({ error: "Not Found", message: "Profile not found." });
-      return session;
+      return withAdminFlag(session, config);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -270,6 +271,13 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       throw error;
     }
   });
+}
+
+function withAdminFlag<T extends { profile: { email: string } }>(session: T, config?: Pick<ApiConfig, "adminEmails">) {
+  return {
+    ...session,
+    admin: Boolean(config?.adminEmails.includes(session.profile.email.toLowerCase()))
+  };
 }
 
 function sendLeagueRuleError(reply: FastifyReply, error: LeagueRuleError) {

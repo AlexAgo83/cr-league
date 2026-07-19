@@ -29,7 +29,7 @@ export async function buildApp(config: ApiConfig, dependencies: AppDependencies 
   await registerSimulationRoutes(app);
   if (dependencies.db) {
     await registerAdminRoutes(app, dependencies.db, config);
-    await registerLeagueRoutes(app, dependencies.db);
+    await registerLeagueRoutes(app, dependencies.db, config);
   }
 
   return app;

@@ -4,12 +4,13 @@ import { CARD_PRICE, DEMO_RACE_INPUT, circuitIdentityForRound, circuitSeasonSeed
 import { buildApp } from "./app.js";
 import { APP_COMMIT, APP_VERSION } from "./version.js";
 
-function createTestApp(db?: PrismaClient, adminToken?: string) {
+function createTestApp(db?: PrismaClient, adminToken?: string, adminEmails: string[] = []) {
   const config = {
     host: "127.0.0.1",
     port: 0,
     webOrigin: "http://localhost:4873",
-    adminToken
+    adminToken,
+    adminEmails
   };
   return buildApp(config, { db, logger: false });
 }
@@ -337,7 +338,7 @@ describe("api app", () => {
   });
 
   it("creates and recovers a profile with linked league teams", async () => {
-    const app = await createTestApp(createMemoryDb());
+    const app = await createTestApp(createMemoryDb(), undefined, ["pilot@example.test"]);
 
     const profileResponse = await app.inject({
       method: "POST",
@@ -371,6 +372,7 @@ describe("api app", () => {
     expect(profileResponse.statusCode).toBe(200);
     expect(profile).toMatchObject({
       profile: { email: "pilot@example.test" },
+      admin: true,
       recoveryCode: expect.stringMatching(/^[0-9A-F]{8}$/),
       teams: []
     });
@@ -379,6 +381,7 @@ describe("api app", () => {
     expect(recoverResponse.statusCode).toBe(200);
     expect(recoverResponse.json()).toMatchObject({
       profile: { id: profile.profile.id, email: "pilot@example.test" },
+      admin: true,
       teams: [expect.objectContaining({ leagueName: "Office League", teamName: "Volt Union" })]
     });
     expect(badRecoverResponse.statusCode).toBe(404);

@@ -43,9 +43,14 @@ describe("circuit identities", () => {
     expect(CITY_CIRCUIT_IDENTITIES.slice(-6).map((circuit) => circuit.city)).toEqual(["Tokyo", "Rio de Janeiro", "Cape Town", "Seoul", "Montreal", "Istanbul"]);
   });
 
-  it("uses Istanbul Park as the Istanbul circuit", () => {
-    const istanbul = CITY_CIRCUIT_IDENTITIES.find((circuit) => circuit.city === "Istanbul");
-    expect(istanbul?.trackLengthMeters).toBe(5338);
-    expect(istanbul?.laps).toBe(6);
+  it("uses real global circuit lengths", () => {
+    expect(Object.fromEntries(CITY_CIRCUIT_IDENTITIES.slice(-6).map((circuit) => [circuit.city, circuit.trackLengthMeters]))).toEqual({
+      "Cape Town": 2930,
+      Istanbul: 5338,
+      Montreal: 4361,
+      "Rio de Janeiro": 5031,
+      Seoul: 2618,
+      Tokyo: 2585
+    });
   });
 });

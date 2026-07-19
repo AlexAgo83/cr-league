@@ -1,0 +1,362 @@
+{
+  "budgets": {
+    "max_docs": 16,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_050_add_a_secured_admin_operations_console item_126_add_secured_admin_api_operations item_127_add_profile_menu_admin_console_ui task_051_orchestrate_secured_admin_operations_console --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_029_add_automated_private_league_playtest_scenario"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_023_add_automated_private_league_playtest_scenario"
+        ],
+        "task": [
+          "task_024_add_automated_private_league_playtest_scenario"
+        ]
+      },
+      "path": "logics/product/prod_001_cr_league_product_brief.md",
+      "ref": "prod_001_cr_league_product_brief",
+      "status": "Settled",
+      "title": "CR League Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_126_add_secured_admin_api_operations",
+          "item_127_add_profile_menu_admin_console_ui"
+        ],
+        "prod": [
+          "prod_021_admin_operations_console_product_brief"
+        ],
+        "req": [
+          "req_050_add_a_secured_admin_operations_console"
+        ],
+        "task": [
+          "task_051_orchestrate_secured_admin_operations_console"
+        ]
+      },
+      "path": "logics/product/prod_021_admin_operations_console_product_brief.md",
+      "ref": "prod_021_admin_operations_console_product_brief",
+      "status": "Proposed",
+      "title": "Admin Operations Console Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, add a secured admin operations console, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Add a secured admin operations console",
+        "use when": "You need to implement or review the scaffolded workflow for Add a secured admin operations console."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_126_add_secured_admin_api_operations",
+          "item_127_add_profile_menu_admin_console_ui"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief",
+          "prod_021_admin_operations_console_product_brief"
+        ],
+        "req": [
+          "req_050_add_a_secured_admin_operations_console"
+        ],
+        "spec": [
+          "spec_016_implementation_roadmap"
+        ]
+      },
+      "path": "logics/request/req_050_add_a_secured_admin_operations_console.md",
+      "ref": "req_050_add_a_secured_admin_operations_console",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Add a secured admin operations console"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add secured admin api operations, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add secured admin API operations",
+        "use when": "Implementing the scaffolded slice for Add secured admin API operations."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_126_add_secured_admin_api_operations"
+        ],
+        "prod": [
+          "prod_021_admin_operations_console_product_brief"
+        ],
+        "req": [
+          "req_050_add_a_secured_admin_operations_console"
+        ],
+        "task": [
+          "task_051_orchestrate_secured_admin_operations_console"
+        ]
+      },
+      "path": "logics/backlog/item_126_add_secured_admin_api_operations.md",
+      "ref": "item_126_add_secured_admin_api_operations",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Add secured admin API operations"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add profile-menu admin console ui, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add profile-menu admin console UI",
+        "use when": "Implementing the scaffolded slice for Add profile-menu admin console UI."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_127_add_profile_menu_admin_console_ui"
+        ],
+        "prod": [
+          "prod_021_admin_operations_console_product_brief"
+        ],
+        "req": [
+          "req_050_add_a_secured_admin_operations_console"
+        ],
+        "task": [
+          "task_051_orchestrate_secured_admin_operations_console"
+        ]
+      },
+      "path": "logics/backlog/item_127_add_profile_menu_admin_console_ui.md",
+      "ref": "item_127_add_profile_menu_admin_console_ui",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Add profile-menu admin console UI"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_029_add_automated_private_league_playtest_scenario"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_023_add_automated_private_league_playtest_scenario"
+        ],
+        "task": [
+          "task_024_add_automated_private_league_playtest_scenario"
+        ]
+      },
+      "path": "logics/product/prod_001_cr_league_product_brief.md",
+      "ref": "prod_001_cr_league_product_brief",
+      "schema_version": "1.0",
+      "status": "Settled",
+      "title": "CR League Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate secured admin operations console",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_126_add_secured_admin_api_operations",
+          "item_127_add_profile_menu_admin_console_ui"
+        ],
+        "prod": [
+          "prod_021_admin_operations_console_product_brief"
+        ],
+        "req": [
+          "req_050_add_a_secured_admin_operations_console"
+        ],
+        "task": [
+          "task_051_orchestrate_secured_admin_operations_console"
+        ]
+      },
+      "path": "logics/tasks/task_051_orchestrate_secured_admin_operations_console.md",
+      "ref": "task_051_orchestrate_secured_admin_operations_console",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate secured admin operations console"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_126_add_secured_admin_api_operations",
+          "item_127_add_profile_menu_admin_console_ui"
+        ],
+        "prod": [
+          "prod_021_admin_operations_console_product_brief"
+        ],
+        "req": [
+          "req_050_add_a_secured_admin_operations_console"
+        ],
+        "task": [
+          "task_051_orchestrate_secured_admin_operations_console"
+        ]
+      },
+      "path": "logics/product/prod_021_admin_operations_console_product_brief.md",
+      "ref": "prod_021_admin_operations_console_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Admin Operations Console Product Brief"
+    }
+  ],
+  "estimates": {
+    "char_count": 5399,
+    "companion_doc_count": 2,
+    "doc_count": 6
+  },
+  "generated_at": "2026-07-19T02:21:26Z",
+  "handoff": {
+    "companion_doc_count": 2,
+    "enabled": true,
+    "source_refs": [
+      "req_050_add_a_secured_admin_operations_console",
+      "item_126_add_secured_admin_api_operations",
+      "item_127_add_profile_menu_admin_console_ui",
+      "task_051_orchestrate_secured_admin_operations_console"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 545,
+      "fr": 545
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_050_add_a_secured_admin_operations_console,item_126_add_secured_admin_api_operations,item_127_add_profile_menu_admin_console_ui,task_051_orchestrate_secured_admin_operations_console",
+  "refs": [
+    "req_050_add_a_secured_admin_operations_console",
+    "item_126_add_secured_admin_api_operations",
+    "item_127_add_profile_menu_admin_console_ui",
+    "task_051_orchestrate_secured_admin_operations_console"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "version_metadata: evidence targets a different commit",
+      "changelog: evidence targets a different commit",
+      "local_validation: evidence targets a different commit",
+      "git_push: evidence targets a different commit",
+      "ci: evidence targets a different commit"
+    ],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "version_metadata: evidence targets a different commit",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "blocked",
+    "target_version": "0.3.8"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_051_orchestrate_secured_admin_operations_console.md",
+      "ref": "task_051_orchestrate_secured_admin_operations_console"
+    }
+  ]
+}

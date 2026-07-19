@@ -1,0 +1,196 @@
+{
+  "title": "Add a secured admin operations console",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/product/prod_001_cr_league_product_brief.md",
+    "logics/specs/spec_016_implementation_roadmap.md",
+    "apps/api/src/app.ts",
+    "apps/api/src/config.ts",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/app.test.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/types.ts",
+    "apps/web/src/app/App.test.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/web/src/styles/layout.css",
+    "prisma/schema.prisma",
+    "User request: add an admin screen from the profile menu with users/recovery management and league listing/entry; setup should be coordinated through environment configuration."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Admin operations",
+    "needs": [
+      "Expose a protected admin entry from the profile menu so operators can inspect production or playtest data without database access.",
+      "Protect all admin API surfaces behind server-side environment configuration; the admin feature must be unavailable when the API has no admin token configured.",
+      "Provide an admin users screen that lists profiles and supports safe account removal.",
+      "Handle recovery codes safely: existing recovery codes are currently stored only as hashes, so the admin must reset and display a new code once instead of trying to reveal existing codes.",
+      "Provide an admin leagues screen that lists leagues with useful operational metadata and lets an operator enter a league context for inspection.",
+      "Keep the first implementation small and auditable: no role model, no database schema change unless required, no hidden destructive bulk actions."
+    ],
+    "context": [
+      "`prisma/schema.prisma` stores `Profile.recoveryCodeHash`; plaintext recovery codes are not recoverable by design.",
+      "`apps/api/src/config.ts` currently reads host, port, and web origin only; admin auth should extend config with an optional `adminToken` or equivalent server-side setting.",
+      "`apps/api/src/app.ts` registers league routes when a Prisma client is present; an admin route module can be registered alongside league routes when the same DB dependency exists.",
+      "`apps/api/src/features/leagues/routes.ts` and `store.ts` already contain profile, recovery, league, and admin-proof patterns, but those proofs are team claim-code based and are not sufficient for global admin operations.",
+      "`apps/web/src/app/App.tsx` renders the profile menu and routes game views through `GAME_VIEWS`; the admin entry can be a profile-menu action that opens an admin view or modal workflow.",
+      "The web app already uses localized EN/FR catalogs and should not hard-code new visible admin copy.",
+      "Destructive profile deletion can orphan teams by the existing `Team.profile` relation with `onDelete: SetNull`; acceptance criteria must require tests for this behavior or an intentional store policy.",
+      "League entry should start as inspection/navigation, not silent mutation or claim-code impersonation."
+    ],
+    "acceptance_criteria": [
+      "AC1: The API reads an admin token from environment/configuration and all `/admin/*` routes return forbidden or unavailable responses when the token is missing or incorrect.",
+      "AC2: Admin authentication uses an HTTP header such as `Authorization: Bearer <token>`; admin credentials are never embedded into the built web bundle.",
+      "AC3: The profile menu exposes an Admin action that opens an admin authentication workflow or admin screen without disrupting the current league session.",
+      "AC4: The admin Users sub-screen lists profiles with id, email, created date, and useful team/league counts; it does not display existing recovery codes.",
+      "AC5: The admin Users sub-screen can reset a profile recovery code and displays the new code once after the reset succeeds.",
+      "AC6: The admin Users sub-screen can delete a profile through an explicit confirmation and refreshes the list afterward.",
+      "AC7: The admin Leagues sub-screen lists leagues with id/code/name/status/current season-round/player count/created date, and includes a control to enter or inspect a selected league.",
+      "AC8: Entering a league from admin mode loads the selected league in a clearly marked admin/inspection context and does not require a player claim code for read-only inspection.",
+      "AC9: EN/FR i18n covers all new visible admin copy.",
+      "AC10: Tests cover API token rejection, users listing, recovery reset, profile deletion, league listing, profile-menu admin entry, and the primary admin screen states."
+    ]
+  },
+  "product": {
+    "title": "Admin Operations Console Product Brief",
+    "overview": "The admin operations console gives trusted operators a small, secured way to inspect users and leagues, reset recovery access, remove accounts, and enter league contexts without touching the database directly.",
+    "goals": [
+      "Make support and playtest operations possible from the application instead of direct SQL.",
+      "Keep global admin access explicitly gated by server-side environment configuration.",
+      "Protect recovery-code security by supporting reset-and-show-once rather than plaintext lookup.",
+      "Give operators a concise read of profiles and leagues before adding heavier operational actions.",
+      "Preserve the player-facing cockpit and profile flows for non-admin users."
+    ],
+    "non_goals": [
+      "Do not add a full RBAC or multi-admin user-management system.",
+      "Do not store plaintext recovery codes or make existing recovery codes recoverable.",
+      "Do not add bulk destructive actions.",
+      "Do not add league mutation actions such as force-resolve, force-next-GP, reset league, or delete league in the first slice.",
+      "Do not redesign the whole profile menu or cockpit navigation.",
+      "Do not expose admin credentials through Vite build-time environment variables."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add secured admin API operations",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Admin operations",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC10"
+      ],
+      "problem": [
+        "Operators currently need database-level access to inspect profiles and leagues.",
+        "Global admin operations cannot reuse team claim codes because claim codes are scoped to one team and league.",
+        "Recovery codes are hashed, so the requested recovery-code visibility must be reframed as reset-and-show-once."
+      ],
+      "scope_in": [
+        "Extend API config to read an optional server-side admin token from `ADMIN_TOKEN` or the chosen project env name.",
+        "Register an admin route module only when a Prisma client is available.",
+        "Add a small shared admin-auth guard for `/admin/*` routes that validates `Authorization: Bearer <token>` and returns 403 for missing/wrong tokens.",
+        "Define behavior when admin token is missing: admin routes should return 404/403/503 consistently, and tests should pin the chosen response.",
+        "Add `GET /admin/profiles` with profile id/email/createdAt/team count/league count metadata, excluding recovery hashes.",
+        "Add `POST /admin/profiles/:profileId/reset-recovery` that generates a new recovery code, stores its hash, and returns the plaintext code once.",
+        "Add `DELETE /admin/profiles/:profileId` with explicit single-profile deletion behavior; verify team relations become unlinked or document any intentional cascade policy.",
+        "Add `GET /admin/leagues` with league id/code/name/status/settings/current GP season-round/status/player count/createdAt metadata.",
+        "Add a read-only admin league inspection endpoint or reuse `GET /leagues/:leagueId` behind admin auth, without requiring a team claim code.",
+        "Add focused Fastify tests in `apps/api/src/app.test.ts` or a new admin route test file."
+      ],
+      "scope_out": [
+        "Database schema changes for admin users or roles.",
+        "Plaintext recovery-code storage.",
+        "Bulk delete or bulk reset operations.",
+        "League mutation operations beyond read-only inspection.",
+        "Audit-log persistence unless a minimal test-visible log already exists."
+      ],
+      "acceptance_criteria": [
+        "AC1: With no admin token configured, `/admin/profiles` and `/admin/leagues` do not expose data.",
+        "AC2: With an admin token configured, missing or wrong `Authorization` headers are rejected.",
+        "AC3: With a valid token, `GET /admin/profiles` returns profile summaries and never returns `recoveryCodeHash`.",
+        "AC4: Resetting a profile recovery code returns a new eight-character recovery code once, and the normal profile recovery endpoint accepts that new code afterward.",
+        "AC5: Deleting a profile removes the profile and leaves related teams in a deliberate, tested state.",
+        "AC6: With a valid token, `GET /admin/leagues` returns league summaries with current GP and team-count metadata.",
+        "AC7: A valid admin can fetch a selected league state for inspection without a player claim code.",
+        "AC8: `npm run typecheck` and the focused API tests pass."
+      ]
+    },
+    {
+      "title": "Add profile-menu admin console UI",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Admin operations",
+      "request_acs": [
+        "AC2",
+        "AC3",
+        "AC4",
+        "AC5",
+        "AC6",
+        "AC7",
+        "AC8",
+        "AC9",
+        "AC10"
+      ],
+      "problem": [
+        "Even after API support exists, operators need a discoverable screen inside the app to use it.",
+        "Admin access must not leak a real token into the client bundle.",
+        "Users and leagues need separate, scannable sub-screens because their actions and risks differ."
+      ],
+      "scope_in": [
+        "Add an Admin action to the existing profile menu.",
+        "Open an admin screen that asks for the admin token and stores it in `sessionStorage` for the tab session only.",
+        "Build a compact admin view with Users and Leagues sub-screens using existing panel, tab, button, modal, and profile-menu styling patterns.",
+        "Fetch admin data with `Authorization: Bearer <session token>` and handle 403/missing-token states clearly.",
+        "Render Users with profile id/email/created date/team count/league count, plus reset recovery and delete actions.",
+        "Show a reset recovery result in a modal or inline confirmation that makes clear the code is only shown once.",
+        "Render Leagues with id/code/name/status/current GP/player count/created date and an Enter/Inspect control.",
+        "When entering a league from admin mode, load the selected league read-only/admin context and visibly indicate admin inspection mode.",
+        "Add EN/FR i18n keys for all new labels, confirmations, empty states, and errors.",
+        "Add focused React tests for profile-menu admin entry, token form, user list, reset-code result, delete confirmation, league list, and enter/inspect behavior."
+      ],
+      "scope_out": [
+        "Persisting admin token in localStorage.",
+        "Embedding an admin token in `import.meta.env` or other build-time public config.",
+        "Adding admin actions to resolve races, start next GP, reset leagues, or delete leagues.",
+        "Replacing the existing player profile/session flow.",
+        "Adding charts or analytics dashboards."
+      ],
+      "acceptance_criteria": [
+        "AC1: The profile menu includes an Admin action that opens the admin token/auth screen.",
+        "AC2: Submitting a token fetches admin data with an `Authorization: Bearer` header and keeps the token only in `sessionStorage`.",
+        "AC3: The Users tab lists profiles and shows reset/delete actions without exposing recovery hashes.",
+        "AC4: Reset recovery displays the newly generated code once and warns the operator to copy it before closing.",
+        "AC5: Delete profile requires explicit confirmation and refreshes the Users list after success.",
+        "AC6: The Leagues tab lists league summaries and lets the operator enter/inspect a selected league.",
+        "AC7: Admin inspection mode is visibly distinct from a normal player claim session.",
+        "AC8: All new visible text is localized in EN and FR.",
+        "AC9: `npm run typecheck` and `npm test -- apps/web/src/app/App.test.tsx` pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate secured admin operations console",
+    "plan": [
+      "Read `apps/api/src/config.ts`, `apps/api/src/app.ts`, league routes/store, Prisma schema, profile-menu code in `App.tsx`, i18n catalogs, and existing API/web tests.",
+      "Implement the admin API slice first: config token, admin route registration, auth guard, profile list/reset/delete, league list, and read-only league inspection.",
+      "Verify the recovery-code reset model: do not expose `recoveryCodeHash`, and prove the new code works through existing recovery flow.",
+      "Implement the web admin slice: profile-menu entry, session-token capture, Users and Leagues tabs, reset/delete confirmations, and admin league inspection state.",
+      "Localize all new copy in EN and FR.",
+      "Run focused API tests, focused App tests, `npm run lint`, `npm run typecheck`, and `npm test`; record closeout evidence."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/admin-operations-console.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

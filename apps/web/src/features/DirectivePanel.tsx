@@ -177,7 +177,7 @@ export function DirectivePanel({
         <fieldset className="choice-group directive-choice-group directive-choice-approach" aria-label={tt("field_approach")}>
           <div className="choice-grid directive-choice-grid">
             {APPROACHES.map((approach) => (
-              <button key={approach} type="button" className={form.approach === approach ? "choice-card selected" : "choice-card"} aria-label={`${tt("field_approach")}: ${tt(`approach_${approach}` as TranslationKey)}`} aria-pressed={form.approach === approach} onClick={() => setForm({ ...form, approach })} disabled={disabled}>
+              <button key={approach} type="button" className={`${form.approach === approach ? "choice-card selected" : "choice-card"} approach-${approach}`} aria-label={`${tt("field_approach")}: ${tt(`approach_${approach}` as TranslationKey)}`} aria-pressed={form.approach === approach} onClick={() => setForm({ ...form, approach })} disabled={disabled}>
                 <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
                 <small>{tt(`approach_${approach}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={APPROACH_BADGES[approach]} tt={tt} />

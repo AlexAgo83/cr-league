@@ -6070,6 +6070,25 @@ button.highlight-command:not(:disabled) {
   color: rgb(23 21 26 / 0.78);
 }
 
+.plan-view .directive-choice-approach .choice-card {
+  --approach-cell-bg: rgb(236 231 218 / 0.98);
+  --approach-image: none;
+  min-height: 128px;
+  padding-right: min(52%, 200px);
+}
+
+.plan-view .directive-choice-approach .choice-card.approach-prudent {
+  --approach-image: url("/assets/crl/approach-prudent.png");
+}
+
+.plan-view .directive-choice-approach .choice-card.approach-balanced {
+  --approach-image: url("/assets/crl/approach-balanced.png");
+}
+
+.plan-view .directive-choice-approach .choice-card.approach-aggressive {
+  --approach-image: url("/assets/crl/approach-aggressive.png");
+}
+
 .plan-view .directive-choice-pit .choice-card {
   --pit-cell-bg: rgb(236 231 218 / 0.98);
   --pit-strategy-image: none;
@@ -6110,6 +6129,18 @@ button.highlight-command:not(:disabled) {
 
 .plan-view .directive-choice-group .choice-card.selected::before {
   display: none;
+}
+
+.plan-view .directive-choice-approach .choice-card,
+.plan-view .directive-choice-approach .choice-card.selected {
+  background:
+    linear-gradient(90deg, var(--approach-cell-bg) 0 48%, rgb(236 231 218 / 0.86) 62%, transparent 78%),
+    var(--approach-image) right center / auto 142% no-repeat,
+    var(--approach-cell-bg);
+}
+
+.plan-view .directive-choice-approach .choice-card.selected {
+  --approach-cell-bg: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
 }
 
 .plan-view .directive-choice-pit .choice-card,

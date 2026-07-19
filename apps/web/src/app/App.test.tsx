@@ -283,6 +283,21 @@ describe("App", () => {
     expect(window.location.pathname).toBe("/garage/team");
   });
 
+  it("restores the last unlocked race plan draft", async () => {
+    localStorage.setItem("cr-league-plan-form", JSON.stringify({ approach: "aggressive", preparation: "reliability", pitStrategy: "mini_pack" }));
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Plan" });
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+
+    expect(screen.getByRole("button", { name: "Approach: Aggressive" }).getAttribute("aria-pressed")).toBe("true");
+    expect(screen.getByRole("tab", { name: "Tire prep: Reliability" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "Pit strategy: Mini pack" })).toBeTruthy();
+  });
+
   it("opens Grand Prix history replays in the regular replay screen without explainer copy", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(nextGrandPrixState));
@@ -515,7 +530,7 @@ describe("App", () => {
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Mika Blitz");
 
     // Timeline markers carry the key moments and seek on click
-    expect(document.querySelectorAll(".replay-tick").length).toBe(4);
+    expect(document.querySelectorAll(".replay-tick").length).toBe(7);
     expect(document.querySelectorAll(".replay-weather").length).toBe(5);
     expect(document.querySelector(".replay-marker")?.getAttribute("title")).toContain("Rain Grip");
     fireEvent.click(document.querySelector(".replay-marker")!);

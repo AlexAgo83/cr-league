@@ -1,4 +1,4 @@
-import { APP_NAME, APP_VERSION, type CardId, type QualifyingRun, type Weather } from "@cr-league/shared";
+import { APP_NAME, APP_VERSION, PIT_STRATEGIES, RACE_APPROACHES, TECHNICAL_PREPARATIONS, type CardId, type QualifyingRun, type Weather } from "@cr-league/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { circuitForRound } from "./circuits.js";
@@ -45,7 +45,23 @@ import { LeagueSetupView, ProfileSetupView, type ProfileMode, type SetupMode } f
 import { useAppNavigation } from "./useAppNavigation.js";
 
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
+const PLAN_FORM_KEY = "cr-league-plan-form";
 type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
+
+function savedPlanForm() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(PLAN_FORM_KEY) ?? "{}") as Partial<FormState>;
+    const form: Partial<FormState> = {};
+    if (RACE_APPROACHES.includes(saved.approach as FormState["approach"])) form.approach = saved.approach;
+    if (TECHNICAL_PREPARATIONS.includes(saved.preparation as FormState["preparation"])) form.preparation = saved.preparation;
+    if (PIT_STRATEGIES.includes(saved.pitStrategy as FormState["pitStrategy"])) form.pitStrategy = saved.pitStrategy;
+    if (typeof saved.cardId === "string") form.cardId = saved.cardId as FormState["cardId"];
+    return form;
+  } catch {
+    return {};
+  }
+}
+
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(() => {
     const saved = localStorage.getItem(LANGUAGE_KEY);
@@ -100,7 +116,7 @@ export function App() {
   const [startingGridExpanded, setStartingGridExpanded] = useState(false);
   const [nextGrandPrixConfirmOpen, setNextGrandPrixConfirmOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
-  const [form, setForm] = useState<FormState>(() => createInitialForm(locale));
+  const [form, setForm] = useState<FormState>(() => ({ ...createInitialForm(locale), ...savedPlanForm() }));
   const [profileForm, setProfileForm] = useState({ email: "", recoveryCode: "" });
   const [adminToken, setAdminToken] = useState("");
   const [adminTab, setAdminTab] = useState<AdminTab>("users");
@@ -182,6 +198,15 @@ export function App() {
     if (!profileSession || profileSession.admin !== undefined) return;
     void refreshProfileAdminStatus(profileSession);
   }, [profileSession]);
+
+  useEffect(() => {
+    localStorage.setItem(PLAN_FORM_KEY, JSON.stringify({
+      approach: form.approach,
+      preparation: form.preparation,
+      pitStrategy: form.pitStrategy,
+      cardId: form.cardId
+    }));
+  }, [form.approach, form.preparation, form.pitStrategy, form.cardId]);
 
   const playerTeam = useMemo(
     () =>

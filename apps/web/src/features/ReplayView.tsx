@@ -666,6 +666,7 @@ export function ReplayView({
   // Majors and player moments first pick, race notes as filler — then strict race order.
   const keyMoments = [
     ...result.events.filter((event) => event.severity === "major"),
+    ...result.events.filter((event) => event.type === "pit_stop"),
     ...result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId),
     ...(overlayActions ? [] : result.events.filter((event) => event.severity === "minor" && event.type === "race_note"))
   ]
@@ -675,7 +676,7 @@ export function ReplayView({
 
   // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.
   const markerByLap = new Map<number, { texts: string[]; player: boolean; time: number }>();
-  for (const event of keyMoments.filter((event) => event.severity === "major" || event.teamId === playerTeamId)) {
+  for (const event of keyMoments.filter((event) => event.severity === "major" || event.type === "pit_stop" || event.teamId === playerTeamId)) {
     const progress = event.lap / maxLap;
     const displayLap = displayLapAtProgress(progress, circuit.laps);
     const marker = markerByLap.get(displayLap) ?? { texts: [], player: false, time: raceTimeAtProgress(progress) };

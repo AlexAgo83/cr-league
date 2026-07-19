@@ -45,7 +45,7 @@ describe("circuit identities", () => {
 
   it("keeps generated global route lengths in circuit metadata", () => {
     expect(Object.fromEntries(CITY_CIRCUIT_IDENTITIES.slice(-6).map((circuit) => [circuit.city, circuit.trackLengthMeters]))).toEqual({
-      "Cape Town": 6120,
+      "Cape Town": 5373,
       Istanbul: 5341,
       Montreal: 4185,
       "Rio de Janeiro": 3287,

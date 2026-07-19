@@ -44,6 +44,7 @@ Quality rules:
 - Update both `laps` and `trackLengthMeters` in `packages/shared/src/domain/circuits.ts`.
 - The numeric audit is not enough. Always inspect the route over OSM tiles before accepting it.
 - Reject routes that appear to run on water, harbor basins, piers without a mapped road, parks, or building blocks.
+- If the generated graph loop hugs coastlines or harbor geometry, reject it even when it technically follows OSM ways. Use a stricter road class or an OSRM driving route through hand-picked urban waypoints.
 
 ## Generation Flow
 
@@ -153,45 +154,47 @@ For similar fixes, reject outputs that pass the audit but still have:
 
 ## Cape Town Reference Fix
 
-Cape Town is the visual-audit failure case. The old route passed numeric audit, but it was a 3.0km waterfront loop with 16 laps and visually drifted into harbor/waterfront geometry instead of reading as a proper street circuit.
+Cape Town is the visual-audit failure case. The old routes passed numeric audit, but they were waterfront/coastal loops that visually drifted into water or harbor geometry instead of reading as proper street circuits.
 
-The replacement was generated inland around Green Point / Sea Point:
+Use an inland city-grid loop:
 
 ```bash
 npm run generate:circuit -- \
-  --lat -33.9122 \
-  --lng 18.3986 \
-  --place "Cape Town Green Point Sea Point" \
+  --lat -33.9250 \
+  --lng 18.4190 \
+  --place "Cape Town City Centre grid" \
   --layoutKey circuit_cape_town_waterfront_loop \
-  --targetKm 6.2 \
-  --minKm 5 \
-  --maxKm 8 \
-  --candidates 24 \
-  --radiusMeters 1800 \
+  --targetKm 5.5 \
+  --minKm 4.5 \
+  --maxKm 7.5 \
+  --candidates 28 \
+  --radiusMeters 1050 \
   --quiet true \
   --write-index 1 \
-  --laps 8
+  --laps 9
 ```
 
-Accepted summary:
+Reject any candidate that still uses Beach Road or any coastal/waterfront edge as the main circuit boundary.
+
+Accepted replacement:
 
 ```text
-6.12km 184pts 17turns 0cross 0uturn 0m reverse 0m repeat
+5.37km 175pts 17turns 0cross 0uturn 0m reverse 0m repeat
 ```
 
-After writing the route, calculate the route length and update metadata:
+Metadata:
 
 ```text
-trackLengthMeters: 6120
-laps: 8
+trackLengthMeters: 5373
+laps: 9
 ```
 
 Visual acceptance for Cape Town:
 
-- route follows visible roads such as Beach Road, Main Road, and Green Point roads;
+- route follows visible urban roads around City Centre, Foreshore, and Bo-Kaap;
 - no segment floats in the ocean or harbor basin;
-- coastal sections are allowed only when the road itself is visible on OSM;
-- avoid making the Waterfront piers the main circuit shape.
+- do not use Beach Road, the promenade, or Waterfront piers as the main loop;
+- coastal sections are allowed only if they are short connectors on visible mapped roads.
 
 ## Manual Review
 

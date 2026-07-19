@@ -21,7 +21,7 @@ export const CITY_CIRCUIT_IDENTITIES = [
   { city: "Stockholm", country: "SE", layoutKey: "circuit_stockholm_gamla_stan_loop", laps: 8, trackLengthMeters: 2550, traits: { grip: 72, overtaking: 56, energy: 69 }, likelyWeather: "light_rain" },
   { city: "Tokyo", country: "JP", layoutKey: "circuit_tokyo_bay_loop", laps: 9, trackLengthMeters: 5720, traits: { grip: 72, overtaking: 70, energy: 58 }, likelyWeather: "light_rain" },
   { city: "Rio de Janeiro", country: "BR", layoutKey: "circuit_rio_flamengo_loop", laps: 15, trackLengthMeters: 3287, traits: { grip: 63, overtaking: 76, energy: 55 }, likelyWeather: "dry" },
-  { city: "Cape Town", country: "ZA", layoutKey: "circuit_cape_town_waterfront_loop", laps: 8, trackLengthMeters: 6120, traits: { grip: 67, overtaking: 74, energy: 58 }, likelyWeather: "dry" },
+  { city: "Cape Town", country: "ZA", layoutKey: "circuit_cape_town_waterfront_loop", laps: 9, trackLengthMeters: 5373, traits: { grip: 67, overtaking: 74, energy: 58 }, likelyWeather: "dry" },
   { city: "Seoul", country: "KR", layoutKey: "circuit_seoul_yeouido_loop", laps: 12, trackLengthMeters: 3976, traits: { grip: 68, overtaking: 73, energy: 60 }, likelyWeather: "light_rain" },
   { city: "Montreal", country: "CA", layoutKey: "circuit_montreal_island_loop", laps: 12, trackLengthMeters: 4185, traits: { grip: 72, overtaking: 82, energy: 61 }, likelyWeather: "light_rain" },
   { city: "Istanbul", country: "TR", layoutKey: "circuit_istanbul_bosphorus_loop", laps: 9, trackLengthMeters: 5341, traits: { grip: 74, overtaking: 72, energy: 50 }, likelyWeather: "dry" }

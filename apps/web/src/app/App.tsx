@@ -1854,7 +1854,6 @@ export function App() {
                     <span className="section-kicker">{tt("chrono_report_kicker")}</span>
                     <h2>{tt("chrono_report_title")}</h2>
                   </div>
-                  <img className="chrono-report-image" src="/assets/crl/onboarding-chrono.png" alt="" />
                   <p>{chronoReport.suggestion}</p>
                 </header>
                 <div className="chrono-report-stats">

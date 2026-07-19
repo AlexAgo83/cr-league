@@ -772,15 +772,22 @@ label small {
 }
 
 .chrono-report-panel {
+  --color-text: #f8f3e8;
+  --color-muted: rgb(248 243 232 / 0.78);
+  background:
+    linear-gradient(90deg, rgb(16 14 18 / 0.9), rgb(16 14 18 / 0.48)),
+    url("/assets/crl/onboarding-chrono.png") center / cover no-repeat;
+  color: var(--color-text);
   display: grid;
   gap: 14px;
+  overflow: hidden;
 }
 
 .chrono-report-header {
   align-items: start;
   display: grid;
   gap: 12px;
-  grid-template-columns: minmax(0, 0.72fr) minmax(180px, 0.86fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
 }
 
 .chrono-report-header h2,
@@ -791,13 +798,6 @@ label small {
 .chrono-report-header p {
   color: var(--color-muted);
   line-height: 1.4;
-}
-
-.chrono-report-image {
-  aspect-ratio: 16 / 9;
-  border: 1px solid rgb(255 255 255 / 0.12);
-  object-fit: cover;
-  width: 100%;
 }
 
 .chrono-report-stats {

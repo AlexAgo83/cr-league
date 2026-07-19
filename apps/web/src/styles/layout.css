@@ -6364,7 +6364,8 @@ button.highlight-command:not(:disabled) {
   border: 0;
 }
 
-.approach-chrono-badge {
+.approach-chrono-badge,
+.approach-skull-badge {
   align-items: center;
   animation: approach-chrono-shine 1.45s ease-in-out infinite;
   background: color-mix(in srgb, var(--directive-choice-accent) 18%, rgb(236 231 218));
@@ -6374,8 +6375,8 @@ button.highlight-command:not(:disabled) {
   height: 26px;
   justify-content: center;
   position: absolute;
-  right: calc(min(58%, 230px) - 64px);
-  top: 18px;
+  bottom: 18px;
+  right: 18px;
   width: 26px;
   z-index: 2;
 }
@@ -6396,6 +6397,45 @@ button.highlight-command:not(:disabled) {
   content: "";
   inset: 0;
   position: absolute;
+}
+
+.approach-skull-badge {
+  background: color-mix(in srgb, #17151a 78%, var(--directive-choice-accent));
+  border-color: color-mix(in srgb, var(--directive-choice-accent) 62%, #17151a);
+}
+
+.approach-skull-badge::before {
+  background:
+    radial-gradient(circle at 38% 42%, #17151a 0 2px, transparent 2.4px),
+    radial-gradient(circle at 62% 42%, #17151a 0 2px, transparent 2.4px),
+    radial-gradient(circle at 50% 60%, #17151a 0 2px, transparent 2.4px),
+    #f8f3e8;
+  border-radius: 50% 50% 46% 46%;
+  content: "";
+  height: 15px;
+  position: absolute;
+  top: 5px;
+  width: 16px;
+}
+
+.approach-skull-badge::after {
+  background:
+    linear-gradient(#f8f3e8, #f8f3e8) 5px 0 / 2px 6px no-repeat,
+    linear-gradient(#f8f3e8, #f8f3e8) 9px 0 / 2px 6px no-repeat,
+    linear-gradient(#f8f3e8, #f8f3e8) 13px 0 / 2px 6px no-repeat;
+  bottom: 4px;
+  content: "";
+  height: 6px;
+  position: absolute;
+  width: 20px;
+}
+
+.plan-view .directive-choice-approach .choice-card > .approach-chrono-badge,
+.plan-view .directive-choice-approach .choice-card > .approach-skull-badge {
+  bottom: 18px;
+  position: absolute;
+  right: 18px;
+  z-index: 2;
 }
 
 @keyframes approach-chrono-shine {

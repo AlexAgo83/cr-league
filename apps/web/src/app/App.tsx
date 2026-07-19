@@ -890,6 +890,7 @@ export function App() {
       </button>
       {profileOpen ? (
         <div className="profile-menu-panel">
+          <PendingFeedback message={pendingMessage} />
           {showLeagueSwitch && savedClaims.length > 1 ? (
             <label>
               {tt("profile_league_switch")}

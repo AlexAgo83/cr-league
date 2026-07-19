@@ -225,13 +225,19 @@ describe("App profile and admin", () => {
       ])
     );
     localStorage.setItem("cr-league-active-player-claim", "team_1");
-    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(otherLeagueState));
+    let resolveSwitch!: (value: Response) => void;
+    const pendingSwitch = new Promise<Response>((resolve) => {
+      resolveSwitch = resolve;
+    });
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockReturnValueOnce(pendingSwitch);
 
     render(<App />);
 
     expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.change(screen.getByLabelText("Active league"), { target: { value: "team_3" } });
+    expect(document.querySelector(".profile-menu-panel .pending-feedback")?.textContent).toContain("Rejoining league...");
+    resolveSwitch(response(otherLeagueState));
 
     await expectGarageCode("NIGHT1");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_3");

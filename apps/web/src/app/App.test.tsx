@@ -47,7 +47,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Create profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
-    fireEvent.click(screen.getByRole("button", { name: "Create profile" }));
+    fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
 
     const checkbox = await screen.findByLabelText("I saved this code");
     expect((checkbox as HTMLInputElement).checked).toBe(false);
@@ -63,7 +63,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Create profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
-    fireEvent.click(screen.getByRole("button", { name: "Create profile" }));
+    fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
 
     fireEvent.click(await screen.findByLabelText("I saved this code"));
     fireEvent.click(screen.getByRole("button", { name: "Got it" }));
@@ -71,7 +71,7 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-help-profile-code")).toBe("1");
   });
 
-  it("shows onboarding help again after returning when opt-out is unchecked", async () => {
+  it("keeps league onboarding dismissed after a plain close", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(resolvedState));
 
@@ -89,7 +89,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
 
-    expect(await screen.findByRole("dialog", { name: "Use the garage for the next GP" })).toBeTruthy();
+    expect(screen.queryByRole("dialog", { name: "Use the garage for the next GP" })).toBe(null);
   });
 
   it("summarizes the player payoff after a resolved grand prix", async () => {
@@ -109,6 +109,19 @@ describe("App", () => {
     expect(payoff.textContent).toContain("+150 credits");
     expect(payoff.textContent).toContain("Rain Grip");
     expect(payoff.textContent).toContain("P1 (Held position)");
+  });
+
+  it("creates a league through form submit", async () => {
+    saveProfile();
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Create league/ }));
+    fireEvent.submit(screen.getByLabelText("League").closest("form")!);
+
+    expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
+    expect(fetch).toHaveBeenCalledWith("http://localhost:4874/leagues", expect.objectContaining({ method: "POST" }));
   });
 
   it("shows an explicit no-card payoff when no race card was consumed", async () => {
@@ -154,7 +167,7 @@ describe("App", () => {
   it("reset UI preferences reopens onboarding help on the current screen", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(resolvedState));
-    localStorage.setItem("cr-league-help-garage", "1");
+    localStorage.setItem("cr-league-help-garage:league_1", "1");
 
     render(<App />);
     createLeagueFromSetup();
@@ -399,13 +412,11 @@ describe("App", () => {
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("New chrono");
     expect(screen.getByRole("button", { name: "New chrono" }).className).toContain("highlight-command");
 
-    // Qualifying modal from the race phase panel
+    // First chrono runs directly from the race phase panel.
     expect(screen.queryByText("Wait for directives")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     expect([...document.querySelectorAll(".race-phase-actions button.highlight-command")].map((button) => button.textContent)).not.toContain("New chrono");
-    expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
-    expect(screen.getByText("This attempt uses your current directive and the forecast conditions. Attempts left 3/3")).toBeTruthy();
-    fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
+    expect(screen.queryByRole("dialog", { name: "Run chrono?" })).toBe(null);
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
     expect(JSON.parse((fetch.mock.calls[1]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123", laps: 3 });
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
@@ -827,13 +838,35 @@ describe("App", () => {
 
     await screen.findByRole("button", { name: "Race" });
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
-    fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
 
     expect((await screen.findByRole("status")).textContent).toContain("Running qualifying lap...");
     expect(document.querySelector(".pending-feedback")?.textContent).toContain("Running qualifying lap...");
 
     finishQualifying(response({ state: qualifiedState, run: qualifyingRun, isBest: true }));
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
+  });
+
+  it("keeps the chrono confirmation for the last attempt", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({
+      ...baseState,
+      currentGrandPrix: {
+        ...baseState.currentGrandPrix,
+        qualifyingRuns: [
+          { ...qualifyingRun, attempts: 1, lap: 1 },
+          { ...qualifyingRun, attempts: 2, lap: 2, createdAt: "2026-07-18T12:02:00.000Z" }
+        ]
+      }
+    }));
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    await screen.findByRole("button", { name: "Race" });
+    fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
+
+    expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
+    expect(screen.getByText("This attempt uses your current directive and the forecast conditions. Attempts left 1/3")).toBeTruthy();
   });
 
   it("closes an open replay when an API action starts", async () => {

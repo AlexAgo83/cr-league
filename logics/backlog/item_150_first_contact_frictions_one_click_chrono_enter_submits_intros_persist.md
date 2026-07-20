@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 10%
+> Progress: 80%
 > Complexity: Low
 > Theme: First-session UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,12 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+
+# Implementation Notes
+- Wave 2: `openQualifyingRun` now runs chrono directly while more than one attempt remains, and keeps the confirmation for the final available attempt.
+- Wave 2: profile create/recover and league create/join panels now use native form submit semantics, so Enter submits filled forms without custom key handlers.
+- Wave 2: league quick-start intros now persist on plain close with league-scoped localStorage keys; profile-code help keeps the previous explicit opt-out behavior. UI preference reset removes both static and league-scoped intro keys.
+- Validation wave 2: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts` passed with 44 tests.
 
 # Links
 - Product brief(s): `prod_026_replay_suspense_and_first_contact_polish_product_brief`

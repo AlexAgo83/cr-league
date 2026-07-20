@@ -152,7 +152,7 @@ describe("App profile and admin", () => {
     fireEvent.click(screen.getByRole("button", { name: /Join league/ }));
     fireEvent.change(screen.getByLabelText("Join code"), { target: { value: "abc123" } });
     fireEvent.change(screen.getByLabelText("Team"), { target: { value: "Volt Union" } });
-    fireEvent.click(screen.getByRole("button", { name: "Join league" }));
+    fireEvent.submit(screen.getByLabelText("Join code").closest("form")!);
 
     await expectGarageCode("ABC123");
     expect(fetch).toHaveBeenCalledWith(
@@ -481,7 +481,7 @@ describe("App profile and admin", () => {
     fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
     fireEvent.change(screen.getByLabelText("Recovery code"), { target: { value: "ABCD1234" } });
-    fireEvent.click(screen.getByRole("button", { name: "Recover profile" }));
+    fireEvent.submit(screen.getByLabelText("Recovery code").closest("form")!);
 
     await screen.findByRole("dialog", { name: "Action blocked" });
     expect(document.querySelector(".setup-main-panel")?.textContent).toContain("Something went wrong. Try again in a moment.");

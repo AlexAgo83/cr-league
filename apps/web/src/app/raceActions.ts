@@ -165,6 +165,11 @@ export function createRaceActions({
   function openQualifyingRun() {
     if (qualifyingDisabled) return;
     markCommandClicked("qualifying");
+    if (qualifyingAttemptsLeft > 1) {
+      setQualifyingResult(null);
+      void launchQualifyingRun();
+      return;
+    }
     setQualifyingConfirmOpen(true);
   }
 

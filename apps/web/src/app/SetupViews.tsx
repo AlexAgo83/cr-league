@@ -73,7 +73,12 @@ export function ProfileSetupView({
             </button>
           </div>
         ) : (
-          <>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (status !== "loading") (mode === "create" ? onCreateProfile : onRecoverProfile)();
+            }}
+          >
             <div className="field-grid setup-fields">
               <label>
                 {tt("field_email")}
@@ -104,7 +109,7 @@ export function ProfileSetupView({
             {profileFormError ? <p className="form-feedback error">{profileFormError}</p> : null}
             <PendingFeedback message={pendingMessage} />
             <div className="actions primary-actions profile-form-actions">
-              <button type="button" onClick={mode === "create" ? onCreateProfile : onRecoverProfile} disabled={status === "loading"}>
+              <button type="submit" disabled={status === "loading"}>
                 {mode === "create" ? tt("action_create_profile") : tt("action_recover_profile")}
               </button>
               <button
@@ -119,7 +124,7 @@ export function ProfileSetupView({
                 {tt("action_back")}
               </button>
             </div>
-          </>
+          </form>
         )}
       </div>
     </section>
@@ -177,7 +182,12 @@ export function LeagueSetupView({
             </button>
           </div>
         ) : (
-          <>
+          <form
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (status !== "loading") (mode === "create" ? onCreateLeague : onJoinLeague)();
+            }}
+          >
             <div className="field-grid setup-fields">
               {mode === "create" ? (
                 <label>
@@ -217,14 +227,14 @@ export function LeagueSetupView({
             </div>
             <PendingFeedback message={pendingMessage} />
             <div className="actions primary-actions setup-form-actions">
-              <button type="button" onClick={mode === "create" ? onCreateLeague : onJoinLeague} disabled={status === "loading"}>
+              <button type="submit" disabled={status === "loading"}>
                 {mode === "create" ? tt("action_start_league") : tt("action_join_league")}
               </button>
               <button type="button" className="secondary-button" onClick={() => onSetMode("choice")} disabled={status === "loading"}>
                 {tt("action_back")}
               </button>
             </div>
-          </>
+          </form>
         )}
 
         {mode === "choice" ? (

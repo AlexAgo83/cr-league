@@ -37,6 +37,7 @@ import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
 
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
+const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "race", "plan", "garage"]);
 
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(() => {
@@ -105,7 +106,7 @@ export function App() {
   const { notifications, pushNotification, clearTransientNotifications, dismissNotification } = useNotifications();
   const [onboardingHelp, setOnboardingHelp] = useState<OnboardingHelpTopic | null>(null);
   const pendingMessage = status === "loading" ? message : null;
-  const snoozedOnboardingHelp = useRef(new Set<OnboardingHelpTopic>());
+  const snoozedOnboardingHelp = useRef(new Set<string>());
   const initialProfileSession = useRef(profileSession);
   const initialActiveClaim = useRef(getActiveClaim(savedClaims));
 
@@ -119,7 +120,7 @@ export function App() {
   }
 
   function clearScreenOnboardingSnoozes() {
-    for (const topic of SCREEN_ONBOARDING_HELP_TOPICS) snoozedOnboardingHelp.current.delete(topic);
+    for (const topic of SCREEN_ONBOARDING_HELP_TOPICS) snoozedOnboardingHelp.current.delete(onboardingStorageKey(topic));
   }
 
   useEffect(() => {
@@ -308,7 +309,7 @@ export function App() {
   useEffect(() => {
     if (!leagueState || onboardingHelp) return;
     openOnboardingHelp("leagueIntro");
-    if (!localStorage.getItem(ONBOARDING_HELP_KEYS.leagueIntro) && !snoozedOnboardingHelp.current.has("leagueIntro")) return;
+    if (!localStorage.getItem(onboardingStorageKey("leagueIntro")) && !snoozedOnboardingHelp.current.has(onboardingStorageKey("leagueIntro"))) return;
     if (gameView === "drive" && raceDayPhase === "briefing") openOnboardingHelp("race");
     if (gameView === "plan") openOnboardingHelp("plan");
     if (gameView === "garage") openOnboardingHelp("garage");
@@ -397,10 +398,10 @@ export function App() {
 
   function resetUiPreferences() {
     for (const key of UI_PREFERENCE_KEYS) localStorage.removeItem(key);
-    const seasonRecapKeys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index)).filter(
-      (key): key is string => key !== null && key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`)
+    const dynamicPreferenceKeys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index)).filter(
+      (key): key is string => key !== null && (key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.leagueIntro}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.race}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.plan}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.garage}:`))
     );
-    for (const key of seasonRecapKeys) localStorage.removeItem(key);
+    for (const key of dynamicPreferenceKeys) localStorage.removeItem(key);
     snoozedOnboardingHelp.current.clear();
     resetCommandClicks();
     setPreferencesResetSignal((signal) => signal + 1);
@@ -642,14 +643,20 @@ export function App() {
   }
 
   function openOnboardingHelp(topic: OnboardingHelpTopic) {
-    if (localStorage.getItem(ONBOARDING_HELP_KEYS[topic]) || snoozedOnboardingHelp.current.has(topic)) return;
+    const key = onboardingStorageKey(topic);
+    if (localStorage.getItem(key) || snoozedOnboardingHelp.current.has(key)) return;
     setOnboardingHelp(topic);
   }
 
   function closeOnboardingHelp(topic: OnboardingHelpTopic, dismiss: boolean) {
-    if (dismiss) localStorage.setItem(ONBOARDING_HELP_KEYS[topic], "1");
-    else snoozedOnboardingHelp.current.add(topic);
+    const key = onboardingStorageKey(topic);
+    if (dismiss || LEAGUE_SCOPED_HELP_TOPICS.has(topic)) localStorage.setItem(key, "1");
+    else snoozedOnboardingHelp.current.add(key);
     setOnboardingHelp(null);
+  }
+
+  function onboardingStorageKey(topic: OnboardingHelpTopic) {
+    return LEAGUE_SCOPED_HELP_TOPICS.has(topic) && leagueState ? `${ONBOARDING_HELP_KEYS[topic]}:${leagueState.league.id}` : ONBOARDING_HELP_KEYS[topic];
   }
 }
 

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 20
+> Progress: 45
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -17,7 +17,7 @@
 # Plan
 - [x] 1. Check the landing order against req_058 (ReplayView split) and req_060 (verdict block); rebase the payoff gating onto useReplayClock if the split has landed, otherwise implement on current ReplayView and note it for the split.
 - [x] 2. Implement the payoff completion gate with its skip control and test.
-- [ ] 3. Land the first-contact fixes (one-click chrono, Enter submit, intro persistence) with their test updates.
+- [x] 3. Land the first-contact fixes (one-click chrono, Enter submit, intro persistence) with their test updates.
 - [ ] 4. Fix the attempt labels and key-moment grouping with helper tests.
 - [ ] 5. Implement plan-lock safety (item_153): Send plan confirmation with plan summary and unused-card warning, visible locked state on the plan screen, carried-over-plan label, and the finished-GP reopen-on-summary behavior with a labeled replay exit (item_149 extension).
 - [ ] 6. Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout and mark roadmap patch 0.3.18 shipped when released.
@@ -50,6 +50,8 @@
 # Report
 - Wave 1 implementation: gated `ReplayView` payoff content and report shortcut until replay completion or explicit skip; added EN/FR skip/result-locked copy.
 - Wave 1 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/i18n/index.test.ts`.
+- Wave 2 implementation: one-click chrono except final-attempt confirmation, native form submit semantics for setup forms, and league-scoped intro persistence on plain close.
+- Wave 2 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts`.
 
 # AI Context
 - Summary: Orchestrate replay suspense and first-contact polish

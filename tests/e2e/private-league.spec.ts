@@ -350,7 +350,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await mapPanel.locator(".replay-marker:not(.director)").click();
   await expect(mapPanel.locator(".replay-moment-notification")).toContainText("Rain Grip");
   await expect(mapPanel.locator(".map-traits-panel .map-trait-grip")).toContainText("Grip");
-  await expect(mapPanel.locator(".map-traits-panel .map-trait-grip")).toContainText("+2");
+  await expect(mapPanel.locator(".map-traits-panel .map-trait-grip")).toContainText("+9");
   await expect(mapPanel.locator(".map-traits-panel")).toContainText("Attack");
   await expect(copyPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
 

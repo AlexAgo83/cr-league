@@ -39,6 +39,9 @@
 | [prod_020_race_learning_and_feedback_systems_product_brief](product/prod_020_race_learning_and_feedback_systems_product_brief.md) | Race Learning and Feedback Systems Product Brief | Settled |  |  | product/prod_020_race_learning_and_feedback_systems_product_brief.md |
 | [prod_021_admin_operations_console_product_brief](product/prod_021_admin_operations_console_product_brief.md) | Admin Operations Console Product Brief | Settled |  |  | product/prod_021_admin_operations_console_product_brief.md |
 | [prod_022_repo_review_remediation_pass_5_product_brief](product/prod_022_repo_review_remediation_pass_5_product_brief.md) | Repo Review Remediation Pass 5 Product Brief | Proposed |  |  | product/prod_022_repo_review_remediation_pass_5_product_brief.md |
+| [prod_023_first_gp_action_clarity_product_brief](product/prod_023_first_gp_action_clarity_product_brief.md) | First-GP Action Clarity Product Brief | Proposed |  |  | product/prod_023_first_gp_action_clarity_product_brief.md |
+| [prod_024_result_verdict_pass_product_brief](product/prod_024_result_verdict_pass_product_brief.md) | Result Verdict Pass Product Brief | Proposed |  |  | product/prod_024_result_verdict_pass_product_brief.md |
+| [prod_025_email_backed_profile_recovery_product_brief](product/prod_025_email_backed_profile_recovery_product_brief.md) | Email-Backed Profile Recovery Product Brief | Proposed |  |  | product/prod_025_email_backed_profile_recovery_product_brief.md |
 
 ## Roadmaps
 
@@ -110,6 +113,9 @@
 | [req_056_darken_circuit_detail_panel_background](request/req_056_darken_circuit_detail_panel_background.md) | Darken circuit detail panel background | Done |  |  | request/req_056_darken_circuit_detail_panel_background.md |
 | [req_057_split_circuit_route_data_modules](request/req_057_split_circuit_route_data_modules.md) | Split circuit route data modules | Done |  |  | request/req_057_split_circuit_route_data_modules.md |
 | [req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening](request/req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening.md) | Repo review remediation pass 5: account security, API trust boundaries, web decomposition, and CI hardening | Draft |  |  | request/req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening.md |
+| [req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization](request/req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization.md) | First-GP action clarity: one recommended CTA, plan recommendation, and vocabulary harmonization | Draft |  |  | request/req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization.md |
+| [req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next](request/req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next.md) | Result verdict pass: why it worked, why it failed, what to try next | Draft |  |  | request/req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next.md |
+| [req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue](request/req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue.md) | Email-backed profile recovery: send codes on creation and self-service re-issue | Draft |  |  | request/req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue.md |
 
 ## Backlog
 
@@ -255,6 +261,14 @@
 | [item_138_split_replayview_and_extract_the_replay_clock](backlog/item_138_split_replayview_and_extract_the_replay_clock.md) | Split ReplayView and extract the replay clock | Ready |  | 0% | backlog/item_138_split_replayview_and_extract_the_replay_clock.md |
 | [item_139_postgres_integration_test_ci_lane_for_concurrent_store_paths](backlog/item_139_postgres_integration_test_ci_lane_for_concurrent_store_paths.md) | Postgres integration-test CI lane for concurrent store paths | Ready |  | 0% | backlog/item_139_postgres_integration_test_ci_lane_for_concurrent_store_paths.md |
 | [item_140_ci_lint_and_release_gate_hardening](backlog/item_140_ci_lint_and_release_gate_hardening.md) | CI, lint, and release-gate hardening | Ready |  | 0% | backlog/item_140_ci_lint_and_release_gate_hardening.md |
+| [item_141_single_recommended_cta_at_grand_prix_start](backlog/item_141_single_recommended_cta_at_grand_prix_start.md) | Single recommended CTA at Grand Prix start | Ready |  | 0% | backlog/item_141_single_recommended_cta_at_grand_prix_start.md |
+| [item_142_compact_circuit_and_weather_recommendation_on_the_plan_screen](backlog/item_142_compact_circuit_and_weather_recommendation_on_the_plan_screen.md) | Compact circuit and weather recommendation on the plan screen | Ready |  | 0% | backlog/item_142_compact_circuit_and_weather_recommendation_on_the_plan_screen.md |
+| [item_143_harmonize_first_session_vocabulary_in_en_and_fr](backlog/item_143_harmonize_first_session_vocabulary_in_en_and_fr.md) | Harmonize first-session vocabulary in EN and FR | Ready |  | 0% | backlog/item_143_harmonize_first_session_vocabulary_in_en_and_fr.md |
+| [item_144_deterministic_verdict_builder](backlog/item_144_deterministic_verdict_builder.md) | Deterministic verdict builder | Ready |  | 0% | backlog/item_144_deterministic_verdict_builder.md |
+| [item_145_verdict_block_in_the_race_report](backlog/item_145_verdict_block_in_the_race_report.md) | Verdict block in the race report | Ready |  | 0% | backlog/item_145_verdict_block_in_the_race_report.md |
+| [item_146_minimal_smtp_mailer_module_and_configuration](backlog/item_146_minimal_smtp_mailer_module_and_configuration.md) | Minimal SMTP mailer module and configuration | Ready |  | 0% | backlog/item_146_minimal_smtp_mailer_module_and_configuration.md |
+| [item_147_send_the_recovery_code_at_profile_creation](backlog/item_147_send_the_recovery_code_at_profile_creation.md) | Send the recovery code at profile creation | Ready |  | 0% | backlog/item_147_send_the_recovery_code_at_profile_creation.md |
+| [item_148_self_service_recovery_code_re_issue_by_email](backlog/item_148_self_service_recovery_code_re_issue_by_email.md) | Self-service recovery-code re-issue by email | Ready |  | 0% | backlog/item_148_self_service_recovery_code_re_issue_by_email.md |
 
 ## Tasks
 
@@ -319,3 +333,6 @@
 | [task_057_darken_circuit_detail_panel_background](tasks/task_057_darken_circuit_detail_panel_background.md) | Darken circuit detail panel background | Done | codex | 100% | tasks/task_057_darken_circuit_detail_panel_background.md |
 | [task_058_split_circuit_route_data_modules](tasks/task_058_split_circuit_route_data_modules.md) | Split circuit route data modules | Done | codex | 100% | tasks/task_058_split_circuit_route_data_modules.md |
 | [task_059_orchestrate_repo_review_remediation_pass_5](tasks/task_059_orchestrate_repo_review_remediation_pass_5.md) | Orchestrate repo review remediation pass 5 | Ready |  | 0% | tasks/task_059_orchestrate_repo_review_remediation_pass_5.md |
+| [task_060_orchestrate_first_gp_action_clarity](tasks/task_060_orchestrate_first_gp_action_clarity.md) | Orchestrate first-GP action clarity | Ready |  | 0% | tasks/task_060_orchestrate_first_gp_action_clarity.md |
+| [task_061_orchestrate_result_verdict_pass](tasks/task_061_orchestrate_result_verdict_pass.md) | Orchestrate result verdict pass | Ready |  | 0% | tasks/task_061_orchestrate_result_verdict_pass.md |
+| [task_062_orchestrate_email_backed_profile_recovery](tasks/task_062_orchestrate_email_backed_profile_recovery.md) | Orchestrate email-backed profile recovery | Ready |  | 0% | tasks/task_062_orchestrate_email_backed_profile_recovery.md |

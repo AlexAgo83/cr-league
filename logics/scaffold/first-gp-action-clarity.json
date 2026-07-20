@@ -1,0 +1,155 @@
+{
+  "title": "First-GP action clarity: one recommended CTA, plan recommendation, and vocabulary harmonization",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/request/req_047_polish_first_session_ux_after_playtest_findings.md",
+    "docs/playtest/private-league-3gp-checklist.md",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/features/PlanView.tsx",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/app/raceFlow.ts",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/web/src/app/App.test.tsx",
+    "tests/e2e/private-league.spec.ts",
+    "Roadmap patch 0.3.16, added 2026-07-20 from AI/player playtest findings: at the start of a GP the prepare-state cluster highlights Edit plan and New lap time simultaneously (App.tsx renders highlight-command on both when neither was clicked), the plan screen receives circuit traits but no weather forecast and offers no compact recommendation, and the first-session vocabulary competes: the chrono CTA is 'New lap time' in EN but 'Nouveau chrono' in FR while the roadmap and playtest checklist both say 'New chrono', and league/championship/plan/chrono/launch labels overlap across rail, subscreen, and action keys."
+  ],
+  "request": {
+    "complexity": "Low",
+    "theme": "First-session UX",
+    "needs": [
+      "Make the chrono CTA the single recommended action at the start of a Grand Prix: when the player has no plan and no qualifying attempt yet, only the New chrono button pulses; Edit plan and Send plan become recommended only after a first chrono exists.",
+      "Add one compact circuit/weather recommendation line to the plan screen, derived from the circuit traits and the strongest forecast, so a first-time player knows what the track rewards before locking a plan.",
+      "Harmonize the first-session vocabulary across EN and FR so league, championship, plan, chrono, and launch labels do not compete: align the EN chrono CTA with 'New chrono', keep FR consistent, and make rail, subscreen, and action labels use one term per concept."
+    ],
+    "context": [
+      "The prepare-state CTA cluster lives in App.tsx (race-phase-actions): Edit plan, New lap time (action_qualifying, onClick openQualifyingRun), Review lap time, and the primary Send plan command. The highlight-command class pulses on Edit plan when editPlanCommandClicked is false and on New lap time when qualifyingCommandClicked is false and qualifyingAttemptsUsed is 0, so both pulse at once on a fresh GP.",
+      "The command-clicked booleans in App.tsx are being collapsed into a single structure by the pass-5 decomposition (req_058 item_137); this feature should build the new recommendation rule on whatever structure lands first and must not fork the logic. If req_058 has not shipped when this starts, apply the rule to the existing booleans and let the decomposition absorb it.",
+      "PlanView receives circuitTraits ({grip, overtaking, energy}) but no weather; the strongest forecast is already computed in App.tsx as forecastPick via strongestForecast(leagueState.currentGrandPrix.forecast) with a circuit.likelyWeather fallback in CircuitMap. The chrono report already has a suggestion system (buildChronoReport / chronoReportSuggestion in raceFlow.ts, rendered in PlanView) including a weather-aware string, which is the pattern to mirror for the plan recommendation.",
+      "Circuit trait labels and hints exist in i18n (circuit_grip/circuit_overtaking/circuit_energy with hint variants); weather labels exist as weather_dry/weather_light_rain/weather_heavy_rain. The recommendation line should compose from the dominant trait and the forecast, not introduce a new data model.",
+      "Vocabulary today (EN): action_qualifying is 'New lap time' while FR is 'Nouveau chrono' and the playtest checklist plus the roadmap say 'New chrono'; the plan concept appears as rail_plan 'Plan', plan_subscreen_plan 'Plan', map_plan_config_title 'Current plan', action_submit_directive 'Send plan', action_edit_plan 'Edit plan', action_view_plan 'View plan'; the chrono concept splits across action_qualifying, action_qualifying_history 'Review lap time', action_launch_qualifying 'Run lap time', plan_subscreen_chrono 'Chrono report'; launch appears in action_launch_grand_prix 'Launch GP' and command_hint_prepare 'move into launch'.",
+      "Behavior is pinned by App.test.tsx (exact race-phase-actions text including button order and labels, highlight-command toggling per CTA) and by the e2e spec (highlight lifecycle and the highlight-command-pulse animation); the i18n parity test fails if EN and FR keys diverge. Label changes must update these tests and the playtest checklist doc together.",
+      "Only the recommendation rule and labels change: the desk phase machine (prepare/ready/resolved), the primary-command mapping, and the qualifying flow itself stay untouched."
+    ],
+    "acceptance_criteria": [
+      "AC1: On a fresh Grand Prix with no submitted plan and zero qualifying attempts, exactly one CTA carries highlight-command: the New chrono button; after the first chrono attempt exists, the plan CTAs become the recommended path as today.",
+      "AC2: The plan screen shows one compact recommendation line composed from the dominant circuit trait and the strongest forecast, present in EN and FR, and it does not duplicate the chrono report suggestion.",
+      "AC3: The EN chrono CTA reads 'New chrono' and the league/championship/plan/chrono/launch vocabulary uses one term per concept across rail, subscreen, action, and hint keys in both locales, with the i18n parity test passing.",
+      "AC4: App.test.tsx, the e2e highlight assertions, and the playtest checklist are updated to the new single-recommendation behavior and labels, and npm run typecheck, npm test, npm run build, npm run lint, and npm run test:e2e pass."
+    ]
+  },
+  "product": {
+    "title": "First-GP Action Clarity Product Brief",
+    "overview": "Roadmap patch 0.3.16: make the first minutes of a Grand Prix unambiguous. One pulsing CTA (New chrono) at GP start, one compact circuit/weather recommendation on the plan screen, and one term per concept across the first-session vocabulary in EN and FR.",
+    "goals": [
+      "A first-time player always knows the single next action at GP start.",
+      "The plan screen tells the player what the track rewards before they lock a plan.",
+      "League, championship, plan, chrono, and launch each have exactly one label per locale."
+    ],
+    "non_goals": [
+      "Do not change the desk phase machine or the qualifying/plan flows.",
+      "Do not redesign the plan screen beyond the one recommendation line.",
+      "Do not add onboarding tours, tooltips systems, or new preference toggles.",
+      "Do not touch the report or replay vocabulary beyond the five listed concepts."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Single recommended CTA at Grand Prix start",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "First-session UX",
+      "request_acs": ["AC1", "AC4"],
+      "problem": [
+        "On a fresh GP, Edit plan and New lap time pulse simultaneously because their highlight conditions are independent, so the recommended first action is ambiguous.",
+        "The playtest that produced roadmap patch 0.3.16 found players hesitating at exactly this fork."
+      ],
+      "scope_in": [
+        "Gate the plan CTAs' highlight-command on the existence of at least one qualifying attempt (or a submitted plan), so only the chrono CTA pulses at GP start.",
+        "Keep the existing highlight-clearing behavior on click and the per-state primary command mapping unchanged.",
+        "Coordinate with the req_058 command-clicked collapse: implement on whichever structure is in main when this starts.",
+        "Update App.test.tsx highlight assertions and the e2e highlight lifecycle spec to the single-recommendation behavior."
+      ],
+      "scope_out": [
+        "Changing the desk phase machine or button order.",
+        "New animation styles."
+      ],
+      "acceptance_criteria": [
+        "AC1: With no plan and zero attempts, only the chrono CTA carries highlight-command.",
+        "AC2: After one attempt, the plan path highlights as today.",
+        "AC3: Unit and e2e highlight tests pass with the new rule."
+      ]
+    },
+    {
+      "title": "Compact circuit and weather recommendation on the plan screen",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "First-session UX",
+      "request_acs": ["AC2", "AC4"],
+      "problem": [
+        "PlanView receives circuit traits but no forecast and offers no guidance, so first-time players lock plans without reading what the track rewards.",
+        "The trait hints exist only on the desk map panel, not where the plan decision is made."
+      ],
+      "scope_in": [
+        "Pass the strongest forecast (already computed as forecastPick in App.tsx) into PlanView.",
+        "Add one recommendation line composed from the dominant trait (grip/overtaking/energy) and the forecast, mirroring the chronoReportSuggestion pattern in raceFlow.ts as a pure helper with unit tests.",
+        "Add the EN and FR strings with the existing interpolation style; keep the line to a single sentence.",
+        "Render it once on the plan subscreen, visually consistent with the existing chrono suggestion block."
+      ],
+      "scope_out": [
+        "Weather probability displays or forecast redesign.",
+        "Per-card or per-approach recommendations (roadmap 0.3.13 risk/readability layer)."
+      ],
+      "acceptance_criteria": [
+        "AC1: The plan subscreen shows one trait+weather recommendation sentence in both locales.",
+        "AC2: The composing helper is pure and unit-tested across trait dominance and all three weather values.",
+        "AC3: The chrono report suggestion is not duplicated or displaced."
+      ]
+    },
+    {
+      "title": "Harmonize first-session vocabulary in EN and FR",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "i18n",
+      "request_acs": ["AC3", "AC4"],
+      "problem": [
+        "The chrono CTA is 'New lap time' in EN but 'Nouveau chrono' in FR, while the roadmap and playtest checklist call it 'New chrono'.",
+        "Plan, chrono, and launch concepts each spread across several diverging labels (Send plan / Edit plan / Current plan; New lap time / Review lap time / Run lap time / Chrono report; Launch GP / move into launch), which competes for a first-session player's attention."
+      ],
+      "scope_in": [
+        "Rename the EN chrono CTA family to the chrono term (New chrono, Review chrono, Run chrono) and keep FR aligned.",
+        "Audit the league, championship, plan, chrono, and launch keys across rail_*, rail_short_*, plan_subscreen_*, action_*, command_hint_*, and briefing labels; converge each concept on one term per locale with minimal renames.",
+        "Update App.test.tsx exact-text assertions, the e2e spec, and docs/playtest/private-league-3gp-checklist.md to the final labels.",
+        "Keep the i18n EN/FR key-parity test passing; no key additions without both locales."
+      ],
+      "scope_out": [
+        "Renaming i18n keys themselves (values only, unless a key name actively lies).",
+        "Vocabulary outside the five listed concepts (report, replay, garage)."
+      ],
+      "acceptance_criteria": [
+        "AC1: The EN chrono CTA reads 'New chrono' and each of the five concepts uses one term per locale.",
+        "AC2: The parity test and all pinned-label tests pass.",
+        "AC3: The playtest checklist matches the shipped labels."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate first-GP action clarity",
+    "plan": [
+      "Check whether req_058 item_137 (App.tsx decomposition and command-clicked collapse) has landed; build the highlight rule on the current structure either way and note the coordination in the closeout.",
+      "Implement the single-recommendation highlight rule with its unit and e2e test updates.",
+      "Add the plan recommendation helper and PlanView line with EN/FR strings and helper tests.",
+      "Run the vocabulary audit, apply the renames in both locales, and update the pinned-label tests and playtest checklist in the same change.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout and mark roadmap patch 0.3.16 shipped when released."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/first-gp-action-clarity.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

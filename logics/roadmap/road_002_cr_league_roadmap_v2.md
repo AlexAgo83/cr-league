@@ -8,6 +8,7 @@
 > Non-semantic edit: 2026-07-19 release roadmap wording refresh.
 > Semantic edit: 2026-07-20 added first-GP action clarity patch from AI/player playtest.
 > Semantic edit: 2026-07-20 added 0.4.4 repo review remediation pass 5 (req_058); 0.4.2 is implemented by that chain.
+> Semantic edit: 2026-07-20 scaffolded 0.3.14 (req_060), 0.3.16 (req_059), and 0.4.1 (req_061, sequenced after req_058) as ready-to-dev chains.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -52,9 +53,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
   - 0.3.11 — Balance/playtest release: AI playtest balance, report guidance, replay payoff placement, and gap badge polish. Shipped in `changelogs/CHANGELOGS_0_3_11.md`.
   - 0.3.12 — Dynamic race objectives: before each GP, offer 2-3 contextual missions (beat a rival, hold a target position, score a points floor, trigger a weather/card plan, trade podium odds for credits). The selected objective should make non-winning plans feel successful, feed the replay/report explanations, and grant only light rewards so it adds purpose without becoming a mandatory optimization layer.
   - 0.3.13 — Plan risk/readability layer: show a compact `safe / risky / high-upside` read before sending the plan, including where the setup is strong, where it can fail, and which finishing band it is trying to optimize.
-  - 0.3.14 — Result verdict pass: add a direct `why this worked / why this failed / try this next` summary to reports so players understand the outcome in seconds before reading detailed phases.
+  - 0.3.14 — Result verdict pass: add a direct `why this worked / why this failed / try this next` summary to reports so players understand the outcome in seconds before reading detailed phases. (`req_060`, ready to dev)
   - 0.3.15 — Non-winning success feedback: make defensive, economy, and weather plans visibly rewarding when they save risk, preserve a target position, amortize bad weather, or turn credits into future options even without a win.
-  - 0.3.16 — First-GP action clarity: make `New chrono` the only recommended CTA at the start of a GP, add one compact circuit/weather recommendation in the plan, and harmonize first-session vocabulary so league, championship, plan, chrono, and launch labels do not compete.
+  - 0.3.16 — First-GP action clarity: make `New chrono` the only recommended CTA at the start of a GP, add one compact circuit/weather recommendation in the plan, and harmonize first-session vocabulary so league, championship, plan, chrono, and launch labels do not compete. (`req_059`, ready to dev)
 - Exit signal:
   - 3 to 5 testers complete a 3-GP session on the polished loop;
   - feedback answers whether choices feel causal, recaps feel personal, and seasons feel like arcs;
@@ -66,7 +67,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Status: Implemented for the current release path.
 - Planned patches:
   - 0.4.0 — CI, Render blueprint, and release contract: parallel test lanes, render.yaml (API + static web + Postgres), release-published deploy via Render hooks with CI gate and /health version verification. Shipped.
-  - 0.4.1 — Email-backed profile recovery: add a minimal transactional email path so account creation can send the player recovery code by email, and players who know their email can request the code again without manual admin support.
+  - 0.4.1 — Email-backed profile recovery: add a minimal transactional email path so account creation can send the player recovery code by email, and players who know their email can request the code again without manual admin support. (`req_061`, ready to dev; sequenced after `req_058` item_135)
   - 0.4.2 — Real Postgres integration-test CI lane: exercise the production-like DB path in automation without relying only on unit/in-memory coverage. Covered by `req_058` (repo review remediation pass 5).
   - 0.4.3 — Beta support hardening: admin reset/support path, backup/restore/support runbooks, known-limits page for testers, admin filters and 100-by-100 pagination on both admin screens, a safe admin action to delete test data sets (test accounts, test leagues, and related rows), and small operational affordances discovered during hosted playtests.
   - 0.4.4 — Repo review remediation pass 5: brute-force-resistant account recovery (scrypt, rate limiting), API trust boundaries (profile-ownership proof, hidden invite code, constant-time admin token, production CORS), atomic league restart, App.tsx/ReplayView decomposition, Postgres integration-test lane (implements 0.4.2), and CI/lint/release-gate hardening (Dependabot, npm audit, coverage, react-hooks/jsx-a11y, hard-fail health check). (`req_058`, ready to dev)
@@ -128,9 +129,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Product brief(s): `prod_001_cr_league_product_brief`
 - Superseded roadmap: `road_001_cr_league_roadmap` (kept for 0.1/0.2 delivered detail)
 - Implementation roadmap spec: `spec_016_implementation_roadmap`
-- Request(s): `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`
+- Request(s): `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`, `req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization`, `req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next`, `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`
 - Backlog item(s): (tracked per request chain)
-- Task(s): `task_034_orchestrate_over_engineering_cleanup_pass_1`, `task_035_orchestrate_personalized_race_recap`, `task_036_orchestrate_garage_inventory_card_consultation`, `task_037_orchestrate_ci_render_blueprint_and_release_contract`, `task_038_orchestrate_starting_grid_and_season_narrative`, `task_059_orchestrate_repo_review_remediation_pass_5`
+- Task(s): `task_034_orchestrate_over_engineering_cleanup_pass_1`, `task_035_orchestrate_personalized_race_recap`, `task_036_orchestrate_garage_inventory_card_consultation`, `task_037_orchestrate_ci_render_blueprint_and_release_contract`, `task_038_orchestrate_starting_grid_and_season_narrative`, `task_059_orchestrate_repo_review_remediation_pass_5`, `task_060_orchestrate_first_gp_action_clarity`, `task_061_orchestrate_result_verdict_pass`, `task_062_orchestrate_email_backed_profile_recovery`
 
 # AI Context
 - Summary: Release-level roadmap for CR League with a three-level version scheme (theme minors, feature-drop patches) from playable prototype to private league V1.

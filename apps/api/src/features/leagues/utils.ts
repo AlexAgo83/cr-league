@@ -46,7 +46,7 @@ export function createClaimCode() {
 }
 
 export function createRecoveryCode() {
-  return randomBytes(16).toString("hex").toUpperCase();
+  return randomBytes(6).toString("hex").toUpperCase();
 }
 
 export function hashRecoveryCode(code: string) {

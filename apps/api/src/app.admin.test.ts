@@ -54,7 +54,7 @@ describe("api app profile and admin", () => {
     expect(profile).toMatchObject({
       profile: { email: "pilot@example.test" },
       admin: true,
-      recoveryCode: expect.stringMatching(/^[0-9A-F]{32}$/),
+      recoveryCode: expect.stringMatching(/^[0-9A-F]{12}$/),
       teams: []
     });
     expect(duplicateResponse.statusCode).toBe(409);
@@ -328,7 +328,7 @@ describe("api app profile and admin", () => {
     ]);
     expect(usersResponse.body).not.toContain("recoveryCodeHash");
     expect(resetResponse.statusCode).toBe(200);
-    expect(resetResponse.json().recoveryCode).toMatch(/^[0-9A-F]{32}$/);
+    expect(resetResponse.json().recoveryCode).toMatch(/^[0-9A-F]{12}$/);
     expect(oldRecoveryResponse.statusCode).toBe(404);
     expect(newRecoveryResponse.statusCode).toBe(200);
     expect(deleteResponse.statusCode).toBe(200);

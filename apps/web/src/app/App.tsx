@@ -35,6 +35,7 @@ import {
   storeProfileSession,
   upsertPlayerClaim
 } from "./appStorage.js";
+import { createAdminActions } from "./adminActions.js";
 import { bestQualifyingRuns, buildChronoReport, createInitialForm, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
 import { isGrandPrixRouteId, shortGrandPrixId } from "./routes.js";
 import { SetupGate } from "./SetupGate.js";
@@ -301,6 +302,22 @@ export function App() {
     pushCommandHint,
     withCurrentPlayer,
     rememberPlayer
+  });
+  const { openAdminConsole, refreshAdminData, resetAdminRecoveryCode, deleteAdminUserConfirmed, inspectAdminLeague } = createAdminActions({
+    profileIsAdmin: Boolean(profileSession?.admin),
+    adminToken,
+    adminDeleteUser,
+    run,
+    tt,
+    setProfileOpen,
+    setGameView,
+    setAdminUsers,
+    setAdminLeagues,
+    setAdminRecoveryCode,
+    setAdminDeleteUser,
+    setLeagueState,
+    setAdminInspecting,
+    showStatus
   });
   const primaryCommand =
     deskState === "prepare"
@@ -605,87 +622,6 @@ export function App() {
       storeProfileSession(nextSession);
       setProfileSession(nextSession);
     }
-  }
-
-  async function openAdminConsole() {
-    if (!profileSession?.admin) return;
-    setProfileOpen(false);
-    setGameView("admin");
-    if (!adminToken.trim()) return;
-    await refreshAdminData();
-  }
-
-  async function refreshAdminData() {
-    if (!adminToken.trim()) {
-      showStatus(tt("admin_token_required"), "error", false);
-      return;
-    }
-
-    await run(tt("status_admin_loading"), async () => {
-      const [users, leagues] = await Promise.all([
-        api<{ users: AdminUser[] }>("/admin/users", { method: "GET", headers: adminHeaders() }),
-        api<{ leagues: AdminLeague[] }>("/admin/leagues", { method: "GET", headers: adminHeaders() })
-      ]);
-      setAdminUsers(users.users);
-      setAdminLeagues(leagues.leagues);
-      showStatus(tt("status_admin_loaded"), "info", false);
-    }, undefined, false, adminApiErrorMessage);
-  }
-
-  async function resetAdminRecoveryCode(user: AdminUser) {
-    await run(tt("status_admin_resetting_recovery"), async () => {
-      const response = await api<{ recoveryCode: string }>(`/admin/users/${user.id}/recovery-code`, {
-        method: "POST",
-        headers: adminHeaders()
-      });
-      setAdminRecoveryCode({ email: user.email, code: response.recoveryCode });
-      await refreshAdminUsers();
-      showStatus(tt("status_admin_recovery_reset"), "info", false);
-    }, undefined, false, adminApiErrorMessage);
-  }
-
-  async function deleteAdminUserConfirmed() {
-    if (!adminDeleteUser) return;
-    const user = adminDeleteUser;
-    setAdminDeleteUser(null);
-    await run(tt("status_admin_deleting_user"), async () => {
-      await api<{ ok: boolean }>(`/admin/users/${user.id}`, {
-        method: "DELETE",
-        headers: adminHeaders()
-      });
-      setAdminRecoveryCode(null);
-      await refreshAdminUsers();
-      showStatus(tt("status_admin_user_deleted"), "info", false);
-    }, undefined, false, adminApiErrorMessage);
-  }
-
-  async function inspectAdminLeague(league: AdminLeague) {
-    await run(tt("status_admin_inspecting_league"), async () => {
-      const state = await api<LeagueState>(`/admin/leagues/${league.id}`, {
-        method: "GET",
-        headers: adminHeaders()
-      });
-      setLeagueState({ ...state, player: undefined });
-      setAdminInspecting(true);
-      setGameView("championship");
-      showStatus(tt("status_admin_league_loaded"), "info", false);
-    }, undefined, false, adminApiErrorMessage);
-  }
-
-  async function refreshAdminUsers() {
-    const response = await api<{ users: AdminUser[] }>("/admin/users", { method: "GET", headers: adminHeaders() });
-    setAdminUsers(response.users);
-  }
-
-  function adminHeaders() {
-    return { authorization: `Bearer ${adminToken.trim()}` };
-  }
-
-  function adminApiErrorMessage(error: unknown) {
-    if (error instanceof ApiError && error.statusCode === 503) return tt("admin_error_unconfigured");
-    if (error instanceof ApiError && error.statusCode === 403) return tt("admin_error_forbidden");
-    if (error instanceof TypeError) return tt("status_api_unavailable");
-    return tt("status_request_failed");
   }
 
   async function restartLeague() {

@@ -198,10 +198,10 @@ export function PlanView({
                     <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run === chronoReport.best ? "best-session" : undefined}>
                       <div className="chrono-session-setup">
                         <span className="chrono-session-lap">
-                          <small>{tt("qualifying_attempt_short")}</small>
-                          <b>
-                            {run.attempts} · {tt("qualifying_result_lap_value", { lap: run.lap ?? 1 })}
-                          </b>
+                          <small>
+                            {tt("qualifying_attempt_short")} {run.attempts}
+                          </small>
+                          <b>{tt("qualifying_result_lap_value", { lap: run.lap ?? 1 })}</b>
                         </span>
                         <span className={`chrono-session-choice type-approach approach-${run.decision.approach}`}>
                           <small>{tt("field_approach")}</small>

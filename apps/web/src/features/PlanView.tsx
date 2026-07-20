@@ -181,7 +181,6 @@ export function PlanView({
                   <b>{chronoReport.best.decision.cardId ? tt(`card_${chronoReport.best.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
                 </span>
               </div>
-              <em>{chronoReport.best.time.toFixed(2)}s</em>
             </div>
           ) : null}
           <div className="chrono-report-history">

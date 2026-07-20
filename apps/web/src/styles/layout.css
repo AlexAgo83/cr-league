@@ -1450,7 +1450,7 @@ label small {
   border: 1px solid rgb(23 21 26 / 0.14);
   display: grid;
   gap: 10px;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr);
   padding: 10px;
 }
 
@@ -1459,12 +1459,6 @@ label small {
   font-size: 0.72rem;
   font-weight: 800;
   text-transform: uppercase;
-}
-
-.chrono-best-config em {
-  color: var(--color-accent);
-  font-style: normal;
-  font-weight: 900;
 }
 
 .chrono-best-config .chrono-session-setup {
@@ -1495,7 +1489,7 @@ label small {
 }
 
 .chrono-report-history li.best-session {
-  background: color-mix(in srgb, var(--color-accent) 9%, rgb(248 243 232 / 0.88));
+  background: color-mix(in srgb, var(--color-accent) 7%, rgb(248 243 232 / 0.9));
   border-color: color-mix(in srgb, var(--color-accent) 48%, transparent);
 }
 
@@ -1509,7 +1503,10 @@ label small {
 
 .chrono-session-lap,
 .chrono-session-choice {
-  background: rgb(248 243 232 / 0.72);
+  --chrono-cell-accent: rgb(23 21 26 / 0.18);
+  background:
+    linear-gradient(var(--chrono-cell-accent), var(--chrono-cell-accent)) 0 0 / 100% 3px no-repeat,
+    rgb(248 243 232 / 0.72);
   border: 1px solid rgb(23 21 26 / 0.12);
   display: grid;
   min-height: 38px;
@@ -1531,18 +1528,15 @@ label small {
 }
 
 .chrono-session-choice.type-approach {
-  background: color-mix(in srgb, #db2777 10%, rgb(248 243 232 / 0.9));
-  border-color: color-mix(in srgb, #db2777 38%, transparent);
+  --chrono-cell-accent: #db2777;
 }
 
 .chrono-session-choice.type-preparation {
-  background: color-mix(in srgb, #0d9488 10%, rgb(248 243 232 / 0.9));
-  border-color: color-mix(in srgb, #0d9488 38%, transparent);
+  --chrono-cell-accent: #0d9488;
 }
 
 .chrono-session-choice.type-card {
-  background: color-mix(in srgb, #b45309 10%, rgb(248 243 232 / 0.9));
-  border-color: color-mix(in srgb, #b45309 38%, transparent);
+  --chrono-cell-accent: #b45309;
 }
 
 .chrono-session-lap small,
@@ -1571,9 +1565,7 @@ label small {
 }
 
 .chrono-report-history li.best-session em {
-  background: var(--color-accent);
-  color: #fff;
-  padding: 4px 8px;
+  color: var(--color-accent);
 }
 
 .chrono-report-history p {

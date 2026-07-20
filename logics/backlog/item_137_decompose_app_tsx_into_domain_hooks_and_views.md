@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 55%
+> Progress: 62%
 > Complexity: Medium
 > Theme: Web architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -40,6 +40,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-20 first implementation wave: command-clicked state is now a single typed map with mark/reset helpers, rejoin POST logic is centralized in rejoinClaim, and the automatic saved-claim rejoin uses initial refs to avoid the stale mount-effect closure while preserving mount-only behavior. Remaining: larger domain/view extraction and App.tsx line-count reduction.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

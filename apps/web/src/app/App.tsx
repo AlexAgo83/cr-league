@@ -49,6 +49,8 @@ import { useAppNavigation } from "./useAppNavigation.js";
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
 const PLAN_FORM_KEY = "cr-league-plan-form";
 type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
+type CommandClick = "qualifying" | "editPlan" | "directive" | "chronoReport" | "launchGrandPrix" | "resultReport" | "nextGrandPrix";
+const COMMAND_CLICKS: CommandClick[] = ["qualifying", "editPlan", "directive", "chronoReport", "launchGrandPrix", "resultReport", "nextGrandPrix"];
 
 function savedPlanForm() {
   try {
@@ -97,13 +99,7 @@ export function App() {
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
-  const [qualifyingCommandClicked, setQualifyingCommandClicked] = useState(false);
-  const [editPlanCommandClicked, setEditPlanCommandClicked] = useState(false);
-  const [directiveCommandClicked, setDirectiveCommandClicked] = useState(false);
-  const [chronoReportCommandClicked, setChronoReportCommandClicked] = useState(false);
-  const [launchGrandPrixCommandClicked, setLaunchGrandPrixCommandClicked] = useState(false);
-  const [resultReportCommandClicked, setResultReportCommandClicked] = useState(false);
-  const [nextGrandPrixCommandClicked, setNextGrandPrixCommandClicked] = useState(false);
+  const [commandClicks, setCommandClicks] = useState<Record<CommandClick, boolean>>(() => Object.fromEntries(COMMAND_CLICKS.map((key) => [key, false])) as Record<CommandClick, boolean>);
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
@@ -138,6 +134,8 @@ export function App() {
   const pendingMessage = status === "loading" ? message : null;
   const notificationId = useRef(0);
   const snoozedOnboardingHelp = useRef(new Set<OnboardingHelpTopic>());
+  const initialProfileSession = useRef(profileSession);
+  const initialActiveClaim = useRef(getActiveClaim(savedClaims));
 
   function pushNotification(text: string, tone: Notification["tone"] = "info", persistent = tone === "error") {
     const id = notificationId.current + 1;
@@ -159,6 +157,14 @@ export function App() {
     setMessage(t(`command_hint_${nextDeskState}` as TranslationKey, locale));
   }
 
+  function markCommandClicked(command: CommandClick) {
+    setCommandClicks((clicks) => ({ ...clicks, [command]: true }));
+  }
+
+  function resetCommandClicks() {
+    setCommandClicks(Object.fromEntries(COMMAND_CLICKS.map((key) => [key, false])) as Record<CommandClick, boolean>);
+  }
+
   function clearTransientNotifications() {
     setNotifications((items) => items.filter((item) => item.persistent));
   }
@@ -176,24 +182,12 @@ export function App() {
   }, [savedClaims.length]);
 
   useEffect(() => {
-    if (!profileSession) return;
-    const saved = getActiveClaim(savedClaims);
+    if (!initialProfileSession.current) return;
+    const saved = initialActiveClaim.current;
     if (!saved) return;
-    void run(
-      tt("status_rejoining_league"),
-      async () => {
-        const state = await api<LeagueState>("/leagues/rejoin", {
-          method: "POST",
-          body: JSON.stringify({ teamId: saved.teamId, claimCode: saved.claimCode })
-        });
-        rememberPlayer(state);
-        setAdminInspecting(false);
-        setLeagueState(state);
-        showStatus(tt("status_league_rejoined"), "info", false);
-      },
-      saved.teamId,
-      false
-    );
+    void rejoinClaim(saved, { setDrive: false, notify: false });
+    // The automatic rejoin intentionally uses the first local-storage snapshot only.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -301,9 +295,9 @@ export function App() {
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
   const primaryCommandClass = `primary-command${
-    (deskState === "prepare" && !directiveCommandClicked) ||
-    (deskState === "ready" && !launchGrandPrixCommandClicked) ||
-    (deskState === "resolved" && !nextGrandPrixCommandClicked)
+    (deskState === "prepare" && !commandClicks.directive) ||
+    (deskState === "ready" && !commandClicks.launchGrandPrix) ||
+    (deskState === "resolved" && !commandClicks.nextGrandPrix)
       ? " highlight-command"
       : ""
   }`;
@@ -341,13 +335,7 @@ export function App() {
   }, [gameView, leagueState, onboardingHelp, preferencesResetSignal, raceDayPhase]);
 
   useEffect(() => {
-    setQualifyingCommandClicked(false);
-    setEditPlanCommandClicked(false);
-    setDirectiveCommandClicked(false);
-    setChronoReportCommandClicked(false);
-    setLaunchGrandPrixCommandClicked(false);
-    setResultReportCommandClicked(false);
-    setNextGrandPrixCommandClicked(false);
+    resetCommandClicks();
   }, [currentGrandPrixKey]);
 
   useEffect(() => {
@@ -413,7 +401,7 @@ export function App() {
 
   async function submitDirective() {
     if (!leagueState || !playerTeam) return;
-    setDirectiveCommandClicked(true);
+    markCommandClicked("directive");
     if (qualifyingAttemptsUsed === 0 || qualifyingAttemptsLeft > 0) {
       setDirectiveConfirmOpen(true);
       return;
@@ -470,18 +458,18 @@ export function App() {
 
   function openQualifyingRun() {
     if (qualifyingDisabled) return;
-    setQualifyingCommandClicked(true);
+    markCommandClicked("qualifying");
     setQualifyingConfirmOpen(true);
   }
 
   function openResolveConfirm() {
-    setLaunchGrandPrixCommandClicked(true);
+    markCommandClicked("launchGrandPrix");
     setStartingGridExpanded(false);
     setResolveConfirmOpen(true);
   }
 
   function openNextGrandPrixConfirm() {
-    setNextGrandPrixCommandClicked(true);
+    markCommandClicked("nextGrandPrix");
     setNextGrandPrixConfirmOpen(true);
   }
 
@@ -690,6 +678,10 @@ export function App() {
     const claim = savedClaims.find((candidate) => candidate.teamId === teamId);
     if (!claim || claim.teamId === leagueState?.player?.teamId) return;
 
+    await rejoinClaim(claim, { setDrive: true, notify: true });
+  }
+
+  async function rejoinClaim(claim: NonNullable<ReturnType<typeof getActiveClaim>>, options: { setDrive: boolean; notify: boolean }) {
     await run(
       tt("status_rejoining_league"),
       async () => {
@@ -700,12 +692,13 @@ export function App() {
         rememberPlayer(state);
         setAdminInspecting(false);
         setLeagueState(state);
-        setGameView("drive");
-        setProfileOpen(false);
-        showStatus(tt("status_league_rejoined"));
-        pushCommandHint("prepare");
+        if (options.setDrive) setGameView("drive");
+        if (options.setDrive) setProfileOpen(false);
+        showStatus(tt("status_league_rejoined"), "info", options.notify);
+        if (options.setDrive) pushCommandHint("prepare");
       },
-      claim.teamId
+      claim.teamId,
+      options.notify
     );
   }
 
@@ -942,13 +935,7 @@ export function App() {
     );
     for (const key of seasonRecapKeys) localStorage.removeItem(key);
     snoozedOnboardingHelp.current.clear();
-    setQualifyingCommandClicked(false);
-    setEditPlanCommandClicked(false);
-    setDirectiveCommandClicked(false);
-    setChronoReportCommandClicked(false);
-    setLaunchGrandPrixCommandClicked(false);
-    setResultReportCommandClicked(false);
-    setNextGrandPrixCommandClicked(false);
+    resetCommandClicks();
     setPreferencesResetSignal((signal) => signal + 1);
     setPreferencesResetOpen(false);
     setProfileOpen(false);
@@ -1466,10 +1453,10 @@ export function App() {
                     overlayActions={
                       <>
                         <button
-                          className={!chronoReportCommandClicked ? "highlight-command" : undefined}
+                          className={!commandClicks.chronoReport ? "highlight-command" : undefined}
                           type="button"
                           onClick={() => {
-                            setChronoReportCommandClicked(true);
+                            markCommandClicked("chronoReport");
                             setPlanSubscreen("chrono");
                             setGameView("plan");
                           }}
@@ -1594,10 +1581,10 @@ export function App() {
                             {tt("result_tab_replay")}
                           </button>
                           <button
-                            className={`result-toggle-command${!resultReportCommandClicked ? " highlight-command" : ""}`}
+                            className={`result-toggle-command${!commandClicks.resultReport ? " highlight-command" : ""}`}
                             type="button"
                             onClick={() => {
-                              setResultReportCommandClicked(true);
+                              markCommandClicked("resultReport");
                               setResultTab("report");
                               setResultOpen(true);
                             }}
@@ -1614,10 +1601,10 @@ export function App() {
                           {deskState === "prepare" ? (
                             <>
                               <button
-                                className={`primary-command${!editPlanCommandClicked ? " highlight-command" : ""}`}
+                                className={`primary-command${!commandClicks.editPlan ? " highlight-command" : ""}`}
                                 type="button"
                                 onClick={() => {
-                                  setEditPlanCommandClicked(true);
+                                  markCommandClicked("editPlan");
                                   setPlanSubscreen("plan");
                                   setGameView("plan");
                                 }}
@@ -1625,7 +1612,7 @@ export function App() {
                                 {tt("action_edit_plan")}
                               </button>
                               <button
-                                className={`primary-command${!qualifyingCommandClicked && qualifyingAttemptsUsed === 0 ? " highlight-command" : ""}`}
+                                className={`primary-command${!commandClicks.qualifying && qualifyingAttemptsUsed === 0 ? " highlight-command" : ""}`}
                                 type="button"
                                 onClick={openQualifyingRun}
                                 disabled={qualifyingDisabled}

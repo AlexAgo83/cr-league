@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 55%
+> Progress: 62%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -57,6 +57,7 @@
 - 2026-07-20 wave 4: implemented the first CI/release hardening slice from item_140: package.json now declares Node >=20, Dependabot monitors npm and GitHub Actions, CI quality runs npm audit --audit-level=high, the previous global DATABASE_URL placeholder was removed from unit CI, and deploy-release now fails if API health never reports the release version and commit. Remaining item_140 work: coverage surfacing, react-hooks/jsx-a11y lint rules, and reports/ policy.
 - 2026-07-20 wave 5: completed the remaining item_140 lint/coverage/report-policy slice: added eslint-plugin-react-hooks and eslint-plugin-jsx-a11y, enabled hooks rules and jsx-a11y recommended checks, fixed the surfaced alt/backdrop issues, configured Vitest V8 coverage with text/json-summary output, CI unit lanes now run with --coverage, and .gitignore now ignores generated coverage plus local report artifacts while keeping the committed playtest report explicit.
 - 2026-07-20 wave 6: implemented item_139 Postgres integration lane. Added apps/api/src/app.postgres.test.ts gated by POSTGRES_INTEGRATION=1, covering real Postgres row-lock serialization for concurrent qualifying, single-winner resolve transition claim, and credit-guarded concurrent card purchase. CI now runs a postgres:16 service, migrate deploy, and the integration spec with DATABASE_URL schema=cr_league. Local proof used a temporary docker postgres on port 55432; migrations and the 3-test integration spec passed.
+- 2026-07-20 wave 7: started item_137 App.tsx decomposition/hook cleanup. Collapsed seven command-clicked booleans into a typed commandClicks map, centralized reset/mark helpers, deduplicated /leagues/rejoin through rejoinClaim, and changed automatic rejoin to use an initial local-storage snapshot so the react-hooks stale-closure warning is gone without repeated background rejoins. Targeted proof: App.test.tsx and App.profile.test.tsx pass; lint now has only ReplayView hook warnings.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

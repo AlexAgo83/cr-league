@@ -67,7 +67,7 @@ export function PlanView({
   tt: Translator;
 }) {
   const planRecommendation = buildPlanRecommendation({ circuitTraits, forecastPick, tt });
-  const activeSubscreen = planSubscreen === "report" && !reportResult ? "plan" : planSubscreen;
+  const activeSubscreen = planSubscreen;
 
   return (
     <div className="plan-view">
@@ -78,14 +78,20 @@ export function PlanView({
         <button type="button" role="tab" aria-selected={activeSubscreen === "chrono"} className={activeSubscreen === "chrono" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("chrono")}>
           <span className="plan-step-label">{tt("plan_subscreen_chrono")}</span>
         </button>
-        {reportResult ? (
-          <button type="button" role="tab" aria-selected={activeSubscreen === "report"} className={activeSubscreen === "report" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("report")}>
-            <span className="plan-step-label">{tt("result_tab_report")}</span>
-          </button>
-        ) : null}
+        <button type="button" role="tab" aria-selected={activeSubscreen === "report"} className={activeSubscreen === "report" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("report")}>
+          <span className="plan-step-label">{tt("result_tab_report")}</span>
+        </button>
       </div>
-      {activeSubscreen === "report" && reportResult ? (
-        <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} tt={tt} />
+      {activeSubscreen === "report" ? (
+        reportResult ? (
+          <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} tt={tt} />
+        ) : (
+          <section className="panel plan-empty-report" aria-label={tt("result_tab_report")}>
+            <span className="section-kicker">{tt("result_tab_report")}</span>
+            <h2>{tt("plan_report_empty_title")}</h2>
+            <p>{tt("plan_report_empty_body")}</p>
+          </section>
+        )
       ) : activeSubscreen === "chrono" ? (
         <section className="panel chrono-report-panel" aria-label={tt("chrono_report_title")}>
           <div className="chrono-report-hero">

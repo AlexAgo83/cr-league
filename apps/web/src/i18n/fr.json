@@ -126,6 +126,8 @@
   "plan_subscreen_label": "Écrans du plan",
   "plan_subscreen_plan": "Plan",
   "plan_subscreen_chrono": "Rapport chrono",
+  "plan_report_empty_title": "Rapport de course en attente",
+  "plan_report_empty_body": "Lance le Grand Prix pour remplir ce rapport avec les phases, récompenses et moments clés.",
   "directive_plan_summary": "Rythme {approach}, pneus {preparation}, batterie {pitStrategy}, {card}. Teste en chrono, puis verrouille pour le GP.",
   "directive_card_locked": "Le chrono a verrouillé la carte qualif sélectionnée pour ce GP.",
   "field_league": "Ligue",

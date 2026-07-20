@@ -424,6 +424,11 @@ describe("App", () => {
     expect(document.querySelector(".directive-briefing-panel")).toBeTruthy();
     expect(document.querySelector(".directive-selection-panel")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Plan" }).className).toContain("active");
+    fireEvent.click(screen.getByRole("tab", { name: "Report" }));
+    expect(window.location.pathname).toBe("/plan/report");
+    expect(screen.getByRole("heading", { name: "Race report pending" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Race phases" })).toBe(null);
+    fireEvent.click(screen.getByRole("tab", { name: "Plan" }));
     // The switcher doubles as the plan summary: each tab shows the current pick.
     expect(screen.getByRole("tab", { name: "Approach: Balanced" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Tire prep: Weather" })).toBeTruthy();

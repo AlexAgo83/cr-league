@@ -37,7 +37,7 @@
 }
 
 .ambient-race-background {
-  background: url("/assets/stand.png") center / cover no-repeat;
+  background: var(--color-page);
   bottom: 0;
   left: 0;
   opacity: 0.54;
@@ -50,11 +50,6 @@
 }
 
 @media (max-width: 720px) {
-  .setup-shell .ambient-race-background {
-    background-image: url("/assets/crl/pit-wall-mobile.png");
-    background-position: center top;
-  }
-
   .topbar {
     align-items: center;
   }

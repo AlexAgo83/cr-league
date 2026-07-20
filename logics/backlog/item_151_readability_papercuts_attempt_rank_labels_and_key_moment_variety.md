@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 90
+> Confidence: 85
+> Progress: 0
 > Complexity: Low
 > Theme: Race learning and feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -28,7 +28,7 @@
 
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: Chrono attempts no longer carry race-position styling or labels.
-- request-AC6 -> This backlog slice. Proof: AC2: Key moments show no duplicate same-lap same-type lines and at most one entry per event type unless slots remain.
+- request-AC8 -> This backlog slice. Proof: AC2: Key moments show no duplicate same-lap same-type lines and at most one entry per event type unless slots remain.
 
 # Decision framing
 - Product framing: Not needed

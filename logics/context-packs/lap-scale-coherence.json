@@ -1,0 +1,523 @@
+{
+  "budgets": {
+    "max_docs": 12,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary task_064_orchestrate_lap_scale_coherence_fix --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary"
+        ],
+        "prod": [
+          "prod_027_lap_scale_coherence_product_brief"
+        ],
+        "req": [
+          "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count"
+        ],
+        "task": [
+          "task_064_orchestrate_lap_scale_coherence_fix"
+        ]
+      },
+      "path": "logics/product/prod_027_lap_scale_coherence_product_brief.md",
+      "ref": "prod_027_lap_scale_coherence_product_brief",
+      "status": "Proposed",
+      "title": "Lap-Scale Coherence Product Brief"
+    },
+    {
+      "kind": "roadmap",
+      "linked_refs": {
+        "adr": [
+          "adr_001_cr_league_v1_static_pwa_api_architecture",
+          "adr_004_data_security",
+          "adr_006_accessibility",
+          "adr_007_i18n",
+          "adr_008_testing_quality"
+        ],
+        "item": [
+          "item_004_design_and_implement_the_v1_card_and_inventory_system",
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_032_redesign_the_cr_league_race_cockpit_v0",
+          "req_033_over_engineering_cleanup_pass_1",
+          "req_034_personalized_race_recap",
+          "req_035_make_garage_inventory_cards_open_the_card_detail_modal",
+          "req_036_github_ci_render_blueprint_and_release_contract",
+          "req_037_starting_grid_modal_and_season_narrative",
+          "req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening",
+          "req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization",
+          "req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next",
+          "req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue",
+          "req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap",
+          "road_002_cr_league_roadmap_v2"
+        ],
+        "spec": [
+          "spec_001_grand_prix_core_loop_and_simulation_v1",
+          "spec_016_implementation_roadmap"
+        ],
+        "task": [
+          "task_034_orchestrate_over_engineering_cleanup_pass_1",
+          "task_035_orchestrate_personalized_race_recap",
+          "task_036_orchestrate_garage_inventory_card_consultation",
+          "task_037_orchestrate_ci_render_blueprint_and_release_contract",
+          "task_038_orchestrate_starting_grid_and_season_narrative",
+          "task_059_orchestrate_repo_review_remediation_pass_5",
+          "task_060_orchestrate_first_gp_action_clarity",
+          "task_061_orchestrate_result_verdict_pass",
+          "task_062_orchestrate_email_backed_profile_recovery",
+          "task_063_orchestrate_replay_suspense_and_first_contact_polish"
+        ]
+      },
+      "path": "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+      "ref": "road_002_cr_league_roadmap_v2",
+      "status": "Accepted",
+      "title": "CR League Roadmap v2"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_029_add_automated_private_league_playtest_scenario"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_023_add_automated_private_league_playtest_scenario"
+        ],
+        "task": [
+          "task_024_add_automated_private_league_playtest_scenario"
+        ]
+      },
+      "path": "logics/product/prod_001_cr_league_product_brief.md",
+      "ref": "prod_001_cr_league_product_brief",
+      "status": "Settled",
+      "title": "CR League Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_037_design_visual_replay_v0_contract_and_layout"
+        ],
+        "prod": [
+          "prod_002_visual_replay_v0_product_brief"
+        ],
+        "req": [
+          "req_031_add_first_visual_race_replay_from_event_timeline"
+        ],
+        "task": [
+          "task_032_orchestrate_visual_replay_v0"
+        ]
+      },
+      "path": "logics/product/prod_002_visual_replay_v0_product_brief.md",
+      "ref": "prod_002_visual_replay_v0_product_brief",
+      "status": "Settled",
+      "title": "Visual Replay V0 Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_071_remove_the_permanent_replay_key_moments_panel"
+        ],
+        "prod": [
+          "prod_010_full_width_replay_moment_notifications_product_brief"
+        ],
+        "req": [
+          "req_039_turn_replay_key_moments_into_timed_notifications"
+        ],
+        "task": [
+          "task_040_orchestrate_full_width_replay_moment_notifications"
+        ]
+      },
+      "path": "logics/product/prod_010_full_width_replay_moment_notifications_product_brief.md",
+      "ref": "prod_010_full_width_replay_moment_notifications_product_brief",
+      "status": "Settled",
+      "title": "Full-Width Replay Moment Notifications Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_104_audit_and_normalize_circuit_race_distances",
+          "item_105_define_the_replay_staging_contract",
+          "item_106_implement_arcade_plausible_replay_movement",
+          "item_107_validate_replay_realism_with_tests_and_playtest_prompts"
+        ],
+        "prod": [
+          "prod_017_coherent_race_replay_and_simulation_realism_product_brief"
+        ],
+        "req": [
+          "req_046_make_race_simulation_and_replay_feel_coherent_across_circuits"
+        ],
+        "task": [
+          "task_047_orchestrate_coherent_replay_realism_and_circuit_normalization"
+        ]
+      },
+      "path": "logics/product/prod_017_coherent_race_replay_and_simulation_realism_product_brief.md",
+      "ref": "prod_017_coherent_race_replay_and_simulation_realism_product_brief",
+      "status": "Settled",
+      "title": "Coherent Race Replay And Simulation Realism Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_149_gate_the_race_payoff_on_replay_completion",
+          "item_150_first_contact_frictions_one_click_chrono_enter_submits_intros_persist",
+          "item_151_readability_papercuts_attempt_rank_labels_and_key_moment_variety"
+        ],
+        "prod": [
+          "prod_026_replay_suspense_and_first_contact_polish_product_brief"
+        ],
+        "req": [
+          "req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest"
+        ],
+        "task": [
+          "task_063_orchestrate_replay_suspense_and_first_contact_polish"
+        ]
+      },
+      "path": "logics/product/prod_026_replay_suspense_and_first_contact_polish_product_brief.md",
+      "ref": "prod_026_replay_suspense_and_first_contact_polish_product_brief",
+      "status": "Proposed",
+      "title": "Replay Suspense and First-Contact Polish Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, lap-scale coherence: displayed lap numbers must match the circuit's lap count, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Lap-scale coherence: displayed lap numbers must match the circuit's lap count",
+        "use when": "You need to implement or review the scaffolded workflow for Lap-scale coherence: displayed lap numbers must match the circuit's lap count."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary"
+        ],
+        "prod": [
+          "prod_027_lap_scale_coherence_product_brief"
+        ],
+        "req": [
+          "req_046_make_race_simulation_and_replay_feel_coherent_across_circuits",
+          "req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest",
+          "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count"
+        ],
+        "road": [
+          "road_002_cr_league_roadmap_v2"
+        ]
+      },
+      "path": "logics/request/req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count.md",
+      "ref": "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Lap-scale coherence: displayed lap numbers must match the circuit's lap count"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, make race simulation and replay feel coherent across circuits, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Make race simulation and replay feel coherent across circuits",
+        "use when": "You need to implement or review the scaffolded workflow for Make race simulation and replay feel coherent across circuits."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_104_audit_and_normalize_circuit_race_distances",
+          "item_105_define_the_replay_staging_contract",
+          "item_106_implement_arcade_plausible_replay_movement",
+          "item_107_validate_replay_realism_with_tests_and_playtest_prompts"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief",
+          "prod_002_visual_replay_v0_product_brief",
+          "prod_010_full_width_replay_moment_notifications_product_brief",
+          "prod_017_coherent_race_replay_and_simulation_realism_product_brief"
+        ],
+        "req": [
+          "req_046_make_race_simulation_and_replay_feel_coherent_across_circuits"
+        ],
+        "spec": [
+          "spec_001_grand_prix_core_loop_and_simulation_v1",
+          "spec_004_race_report_and_replay_ux",
+          "spec_011_simulation_algorithm_v0",
+          "spec_016_implementation_roadmap"
+        ],
+        "task": [
+          "task_047_orchestrate_coherent_replay_realism_and_circuit_normalization"
+        ]
+      },
+      "path": "logics/request/req_046_make_race_simulation_and_replay_feel_coherent_across_circuits.md",
+      "ref": "req_046_make_race_simulation_and_replay_feel_coherent_across_circuits",
+      "schema_version": "1.0",
+      "status": "Done",
+      "title": "Make race simulation and replay feel coherent across circuits"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, replay suspense and first-contact polish from the 2026-07-20 ai playtest, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Replay suspense and first-contact polish from the 2026-07-20 AI playtest",
+        "use when": "You need to implement or review the scaffolded workflow for Replay suspense and first-contact polish from the 2026-07-20 AI playtest."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_149_gate_the_race_payoff_on_replay_completion",
+          "item_150_first_contact_frictions_one_click_chrono_enter_submits_intros_persist",
+          "item_151_readability_papercuts_attempt_rank_labels_and_key_moment_variety"
+        ],
+        "prod": [
+          "prod_026_replay_suspense_and_first_contact_polish_product_brief"
+        ],
+        "req": [
+          "req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization",
+          "req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next",
+          "req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest"
+        ],
+        "road": [
+          "road_002_cr_league_roadmap_v2"
+        ]
+      },
+      "path": "logics/request/req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest.md",
+      "ref": "req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Replay suspense and first-contact polish from the 2026-07-20 AI playtest"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, map simulation laps to circuit laps at the display boundary, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Map simulation laps to circuit laps at the display boundary",
+        "use when": "Implementing the scaffolded slice for Map simulation laps to circuit laps at the display boundary."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary"
+        ],
+        "prod": [
+          "prod_027_lap_scale_coherence_product_brief"
+        ],
+        "req": [
+          "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count"
+        ],
+        "task": [
+          "task_064_orchestrate_lap_scale_coherence_fix"
+        ]
+      },
+      "path": "logics/backlog/item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary.md",
+      "ref": "item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Map simulation laps to circuit laps at the display boundary"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate lap-scale coherence fix",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary"
+        ],
+        "prod": [
+          "prod_027_lap_scale_coherence_product_brief"
+        ],
+        "req": [
+          "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count"
+        ],
+        "task": [
+          "task_064_orchestrate_lap_scale_coherence_fix"
+        ]
+      },
+      "path": "logics/tasks/task_064_orchestrate_lap_scale_coherence_fix.md",
+      "ref": "task_064_orchestrate_lap_scale_coherence_fix",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate lap-scale coherence fix"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary"
+        ],
+        "prod": [
+          "prod_027_lap_scale_coherence_product_brief"
+        ],
+        "req": [
+          "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count"
+        ],
+        "task": [
+          "task_064_orchestrate_lap_scale_coherence_fix"
+        ]
+      },
+      "path": "logics/product/prod_027_lap_scale_coherence_product_brief.md",
+      "ref": "prod_027_lap_scale_coherence_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Lap-Scale Coherence Product Brief"
+    }
+  ],
+  "estimates": {
+    "char_count": 12248,
+    "companion_doc_count": 7,
+    "doc_count": 6
+  },
+  "generated_at": "2026-07-20T06:44:13Z",
+  "handoff": {
+    "companion_doc_count": 7,
+    "enabled": true,
+    "source_refs": [
+      "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count",
+      "item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary",
+      "task_064_orchestrate_lap_scale_coherence_fix"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 648,
+      "fr": 648
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count,item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary,task_064_orchestrate_lap_scale_coherence_fix",
+  "refs": [
+    "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count",
+    "item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary",
+    "task_064_orchestrate_lap_scale_coherence_fix"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "version_metadata: evidence targets a different commit",
+      "changelog: evidence targets a different commit",
+      "local_validation: evidence targets a different commit",
+      "git_push: evidence targets a different commit",
+      "ci: evidence targets a different commit"
+    ],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "version_metadata: evidence targets a different commit",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "blocked",
+    "target_version": "0.3.11"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_064_orchestrate_lap_scale_coherence_fix.md",
+      "ref": "task_064_orchestrate_lap_scale_coherence_fix"
+    }
+  ]
+}

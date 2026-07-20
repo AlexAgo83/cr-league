@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 90
+> Confidence: 85
+> Progress: 0
 > Complexity: Low
 > Theme: First-session UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,7 +31,7 @@
 - request-AC2 -> This backlog slice. Proof: AC1: First chrono is one click with attempts-left visible; last attempt still confirms.
 - request-AC3 -> This backlog slice. Proof: AC2: Enter submits each filled setup form.
 - request-AC4 -> This backlog slice. Proof: AC3: A dismissed intro stays dismissed for that league across reloads.
-- request-AC6 -> This backlog slice. Proof: AC3: A dismissed intro stays dismissed for that league across reloads.
+- request-AC8 -> This backlog slice. Proof: AC3: A dismissed intro stays dismissed for that league across reloads.
 
 # Decision framing
 - Product framing: Not needed

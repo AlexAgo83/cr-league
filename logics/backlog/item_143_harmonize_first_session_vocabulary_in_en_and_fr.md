@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 90
+> Confidence: 85
+> Progress: 0
 > Complexity: Low
 > Theme: i18n
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -19,6 +19,7 @@
   - Audit the league, championship, plan, chrono, and launch keys across rail_*, rail_short_*, plan_subscreen_*, action_*, command_hint_*, and briefing labels; converge each concept on one term per locale with minimal renames.
   - Update App.test.tsx exact-text assertions, the e2e spec, and docs/playtest/private-league-3gp-checklist.md to the final labels.
   - Keep the i18n EN/FR key-parity test passing; no key additions without both locales.
+  - Replace the bot status label "missing" in the championship standings with phase-appropriate wording (e.g. "no plan yet" during preparation, nothing on a finished round): the 2026-07-20 playtest read it as a data error.
 - Out:
   - Renaming i18n keys themselves (values only, unless a key name actively lies).
   - Vocabulary outside the five listed concepts (report, replay, garage).

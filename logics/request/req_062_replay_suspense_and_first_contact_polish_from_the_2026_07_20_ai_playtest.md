@@ -1,9 +1,9 @@
 ## req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest - Replay suspense and first-contact polish from the 2026-07-20 AI playtest
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Ready
+> Understanding: 90
+> Confidence: 85
 > Complexity: Low
 > Theme: Replay and first-session polish
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -12,6 +12,7 @@
 - Preserve the replay's suspense: the race payoff and final classification must not be visible while the live replay is still running; they appear once the replay has finished or the player has deliberately skipped to the result.
 - Remove the first-contact frictions: one click to run a chrono when attempts remain, Enter submits the setup forms, and a quick-start intro seen once stays dismissed for that league without requiring the checkbox.
 - Make the small readability fixes: rank chrono attempts without race-position P labels, and de-duplicate key moments so a calm race shows fewer, more varied entries instead of repeated identical lines.
+- Make plan locking safe and legible: Send plan confirms with a plan summary and warns when a playable card is left unselected, the plan screen visibly shows the locked state, and a plan carried over from the previous Grand Prix is labeled as such until the player opens it; a returning player lands on the finished-GP summary instead of an auto-replaying replay, with a visibly labeled exit. (Added 2026-07-20 after the second AI playtest session: the tester locked a carried-over plan with one unconfirmed click, could not add the card they had just bought, and found no visible lock indicator; on every return the finished replay auto-played from the start.)
 
 # Context
 - ResultView renders the payoff panel (finish, points, credits, cards spent, championship movement) and passes it to ReplayView as afterMapContent on the replay tab, so it sits under the map from the first frame; the replay tab and report tab are a local ResultTab switch. The fix is presentation-side: gate the payoff (and anything else that reveals the final order, including the report tab if it spoils) on replay completion state, with an explicit skip-to-result affordance for players who do not want to watch. The replay clock already knows elapsed versus total time.
@@ -29,7 +30,9 @@
 - AC3: Enter submits the profile create, profile recover, and league create/join forms when their required fields are filled.
 - AC4: A quick-start intro dismissed once for a league does not reopen on reload for that league, without ticking the checkbox; the help affordance to reopen intros still works.
 - AC5: Chrono attempts are ranked without race-position P labels in both locales, and the report's key moments never show duplicate identical lines for the same lap and event type, with entries preferring variety across the five slots.
-- AC6: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
+- AC6: Send plan opens a confirmation summarizing approach, preparation, pit strategy, and card, warning when the inventory holds a playable card and none is selected; the plan screen shows an explicit locked state with visually disabled options; a carried-over plan is labeled with its origin GP until first opened; locking stays irreversible.
+- AC7: Returning to a finished Grand Prix lands on the summary (classification and actions), not an auto-playing replay; the replay remains one click away and its exit control carries a visible label, not only an aria-label.
+- AC8: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.
@@ -67,3 +70,4 @@
 - `item_149_gate_the_race_payoff_on_replay_completion`
 - `item_150_first_contact_frictions_one_click_chrono_enter_submits_intros_persist`
 - `item_151_readability_papercuts_attempt_rank_labels_and_key_moment_variety`
+- `item_153_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest`

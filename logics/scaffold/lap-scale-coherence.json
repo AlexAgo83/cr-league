@@ -1,0 +1,102 @@
+{
+  "title": "Lap-scale coherence: displayed lap numbers must match the circuit's lap count",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/request/req_046_make_race_simulation_and_replay_feel_coherent_across_circuits.md",
+    "logics/request/req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest.md",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/domain/race.ts",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/ReportView.tsx",
+    "apps/web/src/app/helpers.ts",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "AI playtest of 2026-07-20 on v0.3.11, second session, Brussels Grand Place Clash: the circuit is defined and displayed as 3 laps and the replay header counted Lap 2/3, but the race report's key moments cite laps 5, 8, and 10, the finish event fires at lap 10, and the recap says the weather moved to heavy rain on lap 5 — lap numbers from a race the UI says lasted 3 laps. The simulation appears to run on its own canonical lap scale (roughly 10) while circuits declare their own lap counts (3 to 12 in the catalog), and raw simulation lap numbers leak into every event-derived surface: key moments, recap sentences, seek-marker aria-labels, and race-director callouts. The first GP (Montreal, 12 laps) masked the bug because the two scales roughly coincide."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Race simulation realism and replay coherence",
+    "needs": [
+      "Every lap number a player sees — key moments, recap sentences, replay callouts, seek-marker labels, finish events — must be consistent with the lap count the circuit announces and the replay header counts; no displayed lap may exceed the circuit's lap total.",
+      "Decide and document the single mapping between the simulation's internal lap scale and the circuit's displayed laps, so future event-producing features cannot reintroduce the mismatch."
+    ],
+    "context": [
+      "Observed on v0.3.11: Brussels declares laps 3 (CityCircuit.laps in apps/web/src/app/circuits.ts) and the replay header respects it (Lap 2/3), but RaceEvent.lap values reach 10 and flow untranslated into ReportView key moments, recap copy in helpers.ts (eventReportText and the difference recap interpolate event.lap), ReplayView seek-marker aria-labels, and race-director callouts. Montreal (12 laps) masked the bug because the scales nearly coincide.",
+      "Locate the authoritative lap scale first: determine whether simulateRace derives its lap loop from an input laps parameter that callers do not wire to the circuit, or runs a fixed canonical count. The chosen fix depends on this diagnosis, and the diagnosis belongs in the task's first step.",
+      "Preferred fix shape: keep the simulation's internal scale and deterministic traces untouched, and rescale at the boundary where events become player-facing — a single pure lapLabel(simLap, simTotal, circuitLaps) mapping used by every consumer (report, recap, replay callouts, markers). Rebalancing the simulation to actually run 3-lap races would change race outcomes and balance and is explicitly the fallback only if boundary rescaling proves incoherent (e.g. phase boundaries no longer align with the replay clock).",
+      "The replay header already displays circuit-scaled laps, so the replay clock contains a working time-to-circuit-lap mapping; the same mapping must drive event lap labels so a key moment's stated lap matches where its marker sits on the scrubber and where the replay clock stands when it pops.",
+      "Segment/phase structure (5 RACE_SEGMENTS) is orthogonal: phases are already circuit-independent and the report renders them as Phase 1..5; only lap numerals are wrong.",
+      "req_046 (Done) owns the simulation/replay coherence theme; this is a follow-up defect in the same theme, not a reopening of that chain. req_062's payoff gating touches ReplayView at the same time; sequence this chain relative to it in whichever order lands first, the surfaces barely overlap (labels versus visibility).",
+      "Tests to leave behind: a shared or web invariant test that for every event in a resolved race, the displayed lap is between 1 and the circuit's lap count, and that the finish event maps to the final lap; plus a fixture on a short circuit (3 laps) since the existing tests all use long-circuit fixtures that mask the bug."
+    ],
+    "acceptance_criteria": [
+      "AC1: On a short circuit (3 laps), every player-visible lap number — key moments, recap sentences, replay callouts, seek-marker labels, finish line — is between 1 and 3, and the finish event reads as the final lap.",
+      "AC2: A single shared mapping translates simulation laps to displayed laps and every event-consuming surface uses it; no consumer formats raw RaceEvent.lap directly.",
+      "AC3: The lap stated in a key moment matches the replay position where its seek marker sits and where the replay clock stands when the callout pops.",
+      "AC4: Existing long-circuit replay and report tests pass unchanged, and a new short-circuit fixture test locks the invariant.",
+      "AC5: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Lap-Scale Coherence Product Brief",
+    "overview": "Defect chain from the 2026-07-20 AI playtest: the simulation's internal lap scale leaks raw into every event-derived surface, so a 3-lap Grand Prix reports moments from laps 5, 8, and 10. Fix by translating simulation laps to circuit laps at one boundary, lock it with a short-circuit invariant test, and keep simulation outcomes untouched.",
+    "goals": [
+      "No displayed lap number ever exceeds the circuit's announced lap count.",
+      "One documented mapping owns the translation; future event features inherit it.",
+      "Race outcomes, balance, and existing replay traces are unchanged."
+    ],
+    "non_goals": [
+      "Do not rebalance the simulation or change how many internal laps it computes (fallback only if boundary rescaling proves incoherent).",
+      "Do not change the segment/phase structure or the trace format.",
+      "Do not touch payoff gating, key-moment selection, or recap prose (req_062, req_060)."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Map simulation laps to circuit laps at the display boundary",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race simulation realism and replay coherence",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5"],
+      "problem": [
+        "RaceEvent.lap carries the simulation's internal lap scale and every consumer formats it raw, so a 3-lap circuit reports key moments at laps 5, 8, and 10 and a finish at lap 10.",
+        "Only long circuits masked the mismatch; the catalog ranges from 3 to 12 laps."
+      ],
+      "scope_in": [
+        "Diagnose where the simulation's lap count comes from and whether callers fail to wire the circuit's laps into it; record the finding in the task.",
+        "Implement one pure mapping from simulation lap to displayed lap (aligned with the replay clock's existing time-to-lap scaling) and route every consumer through it: ReportView key moments, helpers.ts recap interpolations, ReplayView callouts and seek-marker aria-labels, and any finish-line copy.",
+        "Add a short-circuit (3-lap) fixture test asserting every displayed lap is within 1..circuitLaps and the finish maps to the final lap; keep long-circuit tests green.",
+        "Document the mapping at its definition so future event-producing features use it."
+      ],
+      "scope_out": [
+        "Changing simulateRace outcomes, internal lap loops, or the trace format.",
+        "Key-moment selection, dedup, or recap wording (req_060, req_062)."
+      ],
+      "acceptance_criteria": [
+        "AC1: No player-visible lap number exceeds the circuit's lap count on any catalog circuit.",
+        "AC2: All event-consuming surfaces share the single mapping.",
+        "AC3: Marker positions, replay clock, and stated laps agree.",
+        "AC4: Short-circuit fixture test locks the invariant; existing tests pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate lap-scale coherence fix",
+    "plan": [
+      "Diagnose the lap-scale source: inspect simulateRace's lap loop and what callers pass; confirm whether the fix is a missing parameter wire or a canonical-scale design, and record it.",
+      "Implement the boundary mapping aligned with the replay clock's scaling and route all consumers through it.",
+      "Add the 3-lap fixture invariant test and verify marker/callout/clock agreement on a short circuit manually once.",
+      "Coordinate file overlap with req_062 (ReplayView) by rebasing on whichever lands first.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/lap-scale-coherence.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

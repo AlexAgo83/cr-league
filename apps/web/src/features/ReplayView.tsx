@@ -1,15 +1,14 @@
 import { RACE_SEGMENTS, type RaceDecision, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
-import { type ReactNode, useCallback, useEffect, useId, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
 import type { RaceEvent } from "../app/helpers.js";
-import { CircuitMap, MapTraitsPanel, circuitDisplayLength, circuitRouteAnalysis, type MapCar, type MapTraitImpacts, type MapTraitStats } from "./CircuitMap.js";
-import { MapPlanPanel } from "./MapPlanPanel.js";
+import { CircuitMap, circuitDisplayLength, circuitRouteAnalysis, type MapCar, type MapTraitImpacts } from "./CircuitMap.js";
 import { PositionBadge } from "./PositionBadge.js";
-import { CountryBadge, VisualIcon, type VisualIconName } from "./VisualIcon.js";
-import { ReplayProgress, type ReplayTimelineMarker } from "./replay/ReplayProgress.js";
-import { ReplayTower } from "./replay/ReplayTower.js";
+import { type VisualIconName } from "./VisualIcon.js";
+import { ReplayStageOverlay } from "./replay/ReplayStageOverlay.js";
+import type { ReplayTimelineMarker } from "./replay/ReplayProgress.js";
 import { useReplayClock } from "./replay/useReplayClock.js";
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 const START_HOLD_SECONDS = 1;
@@ -17,7 +16,6 @@ const FINISH_HOLD_SECONDS = 1;
 export const REPLAY_SPEED_KEY = "cr-league-replay-speed";
 export const REPLAY_FOCUS_KEY = "cr-league-replay-focus";
 export const DISMISSED_REPLAY_HELP_KEY = "cr-league-dismissed-replay-help";
-const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
 const REFERENCE_REPLAY_DISTANCE_PIXELS = 9_000;
 const POSITION_CHANGE_MARGIN_LAPS = 0.015;
 const TRACE_ORDER_GAP_LAPS = 0.035;
@@ -25,7 +23,6 @@ const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
-type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
 export type ReplayDirectorBeat = {
   id: string;
   type: "grid_start" | "overtake" | "player" | "pack" | "weather" | "pit_stop" | "final" | "qualifying_start" | "qualifying_pace" | "qualifying_final";
@@ -47,60 +44,6 @@ export type ReplayPlan = {
   source: "facts" | "trace" | "fallback";
   overtakes: ReplayOvertakeBeat[];
 };
-
-function ReplaySpeedMenu({ speed, setSpeed, tt }: { speed: ReplaySpeed; setSpeed: (speed: ReplaySpeed) => void; tt: Translator }) {
-  const [open, setOpen] = useState(false);
-  const listId = useId();
-
-  return (
-    <div className="replay-speed-menu" onBlur={(event) => !event.currentTarget.contains(event.relatedTarget) && setOpen(false)}>
-      <button
-        type="button"
-        className={open ? "replay-speed-trigger active" : "replay-speed-trigger"}
-        aria-haspopup="listbox"
-        aria-expanded={open}
-        aria-controls={listId}
-        aria-label={`${tt("replay_speed")} ×${speed}`}
-        onClick={() => setOpen((current) => !current)}
-      >
-        ×{speed}
-      </button>
-      {open ? (
-        <div id={listId} className="replay-speed-options" role="listbox" aria-label={tt("replay_speed")}>
-          {REPLAY_SPEEDS.map((option) => (
-            <button
-              key={option}
-              type="button"
-              role="option"
-              aria-selected={option === speed}
-              className={option === speed ? "selected" : undefined}
-              onClick={() => {
-                setSpeed(option);
-                setOpen(false);
-              }}
-            >
-              ×{option}
-            </button>
-          ))}
-        </div>
-      ) : null}
-    </div>
-  );
-}
-
-function clampStat(value: number) {
-  return Math.max(1, Math.min(99, Math.round(value)));
-}
-
-function liveTraits(base: MapTraitStats, weather: Weather, lap: number): MapTraitStats {
-  const rainGrip = weather === "heavy_rain" ? -12 : weather === "light_rain" ? -5 : 0;
-  const lateRace = Math.max(0, lap - 1);
-  return {
-    grip: clampStat(base.grip + rainGrip),
-    overtaking: clampStat(base.overtaking + (weather === "dry" ? 0 : 3)),
-    energy: clampStat(base.energy - lateRace * 2 - (weather === "heavy_rain" ? 5 : 0))
-  };
-}
 
 function tracePointAt(trace: ReplayTracePoint[], progress: number) {
   return [...trace].reverse().find((point) => point.progress <= progress) ?? trace[0] ?? EMPTY_TRACE_POINT;
@@ -759,13 +702,37 @@ export function ReplayView({
       ? displayLapAtProgress(activeMoment.traceProgress, circuit.laps)
       : displayLapAtProgress(activeMoment.lap / maxLap, circuit.laps)
     : 1;
+  const activeMomentNotice = activeMoment && activeMomentCard
+    ? {
+        player: activeMoment.teamId === playerTeamId,
+        lap: activeMomentLap,
+        icon: activeMomentCard.icon,
+        context: activeMomentCard.context,
+        detail: activeMomentCard.team || activeMomentCard.text,
+        impact: activeMomentCard.impact
+      }
+    : undefined;
   const activeDirectorBeat = [...directorBeats].reverse().find((beat) => beat.progress <= currentRaceProgress) ?? directorBeats[0];
   const activeDirectorCopy = activeDirectorBeat ? directorBeatCopy(activeDirectorBeat, names, tt) : null;
+  const activeDirector = activeDirectorBeat && activeDirectorCopy
+    ? {
+        type: activeDirectorBeat.type,
+        lap: activeDirectorBeat.lap,
+        title: activeDirectorCopy.title,
+        detail: renderPositionBadges(activeDirectorCopy.detail)
+      }
+    : undefined;
   const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId);
   const playerGapItems = replayPlayerGapItems(playerContext, tt);
   const latestPlayerBeat = [...directorBeats].reverse().find((beat) => beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId);
-  const seekValueText = `${tt("unit_lap")} ${live.lap}/${circuit.laps}, ${Math.round(clock.current)}s`;
-  const directorTitle = replayMode === "qualifying" ? tt("replay_director_chrono_title") : tt("replay_director_title");
+  const playerFocus = playerContext
+    ? {
+        position: playerContext.position,
+        delta: playerContext.delta,
+        gapItems: playerGapItems,
+        latestDetail: latestPlayerBeat ? renderPositionBadges(directorBeatCopy(latestPlayerBeat, names, tt).detail) : undefined
+      }
+    : undefined;
 
   return (
     <div className="view-stack">
@@ -783,137 +750,44 @@ export function ReplayView({
             showTraits={false}
             camera={{ enabled: driverFocus, car: playerCar, timeRef: clock }}
             overlay={
-              <>
-                <div className="map-info-stack">
-                  <div className="map-status">
-                    <span className="circuit-city">
-                      <CountryBadge country={circuit.country} /> {circuit.city}
-                    </span>
-                    <strong>{tt(circuit.layoutKey)}</strong>
-                    <small>
-                      {tt("unit_lap")} {live.lap}/{circuit.laps}
-                    </small>
-                    <small className="map-weather-readout">
-                      <VisualIcon name={liveWeather} />
-                      <span>{tt(`weather_${liveWeather}` as TranslationKey)}</span>
-                    </small>
-                    <small>{circuitDistance}</small>
-                  </div>
-                  <MapPlanPanel decision={planDecision} tt={tt} />
-                  <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, live.lap)} impacts={traitImpacts} tt={tt} />
-                </div>
-                {activeMoment && activeMomentCard ? (
-                  <div className={activeMoment.teamId === playerTeamId ? "replay-moment-notification player" : "replay-moment-notification"} role="status" aria-live="polite">
-                    <span className="lap-marker">L{activeMomentLap}</span>
-                    <span className="moment-main">
-                      <strong>
-                        <VisualIcon name={activeMomentCard.icon} /> {activeMomentCard.context}
-                      </strong>
-                      <small>{activeMomentCard.team || activeMomentCard.text}</small>
-                    </span>
-                    <span className="moment-impact">{activeMomentCard.impact}</span>
-                  </div>
-                ) : null}
-                {!overlayActions ? (
-                  <div className="replay-info-stack">
-                    {activeDirectorBeat && activeDirectorCopy ? (
-                    <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
-                      <span>{directorTitle} · L{activeDirectorBeat.lap}</span>
-                      <strong>{activeDirectorCopy.title}</strong>
-                      <small>{renderPositionBadges(activeDirectorCopy.detail)}</small>
-                    </div>
-                    ) : null}
-                    {playerContext ? (
-                    <div className="replay-player-focus-panel">
-                      <span>{tt("replay_player_focus")}</span>
-                      <strong>
-                        <PositionBadge position={playerContext.position} /> {playerContext.delta ? `(${playerContext.delta > 0 ? "+" : ""}${playerContext.delta})` : ""}
-                      </strong>
-                      {playerGapItems.length ? (
-                        <small className="replay-player-gaps">
-                          {playerGapItems.map((item) => (
-                            <span key={item.label}>
-                              {item.label} <b>{item.value}</b>
-                            </span>
-                          ))}
-                        </small>
-                      ) : null}
-                      {latestPlayerBeat ? <small>{renderPositionBadges(directorBeatCopy(latestPlayerBeat, names, tt).detail)}</small> : null}
-                    </div>
-                    ) : null}
-                  </div>
-                ) : null}
-                <div className="replay-map-controls">
-                  <button
-                    type="button"
-                    className={playing ? "replay-playback-button playing" : "replay-playback-button paused"}
-                    aria-label={playing ? tt("action_pause") : tt("action_play")}
-                    title={playing ? tt("action_pause") : tt("action_play")}
-                    onClick={() => (!playing && clock.current >= replayEnd ? restart() : setPlaying(!playing))}
-                  >
-                    {playing ? "⏸" : "▶"}
-                  </button>
-                  <button type="button" aria-label={tt("action_replay_restart")} title={tt("action_replay_restart")} onClick={restart}>
-                    ↻
-                  </button>
-                  <button
-                    type="button"
-                    aria-label="Focus driver"
-                    title="Focus driver"
-                    className={driverFocus ? "replay-focus-button active" : "replay-focus-button"}
-                    onClick={() => setDriverFocus(!driverFocus)}
-                  >
-                    <svg className="replay-focus-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                      <path d="M8 4H6a2 2 0 0 0-2 2v2" />
-                      <path d="M16 4h2a2 2 0 0 1 2 2v2" />
-                      <path d="M20 16v2a2 2 0 0 1-2 2h-2" />
-                      <path d="M8 20H6a2 2 0 0 1-2-2v-2" />
-                      <circle cx="12" cy="12" r="3" />
-                    </svg>
-                  </button>
-                  <ReplaySpeedMenu speed={speed} setSpeed={setSpeed} tt={tt} />
-                  {onOpenReport ? (
-                    <button type="button" className="replay-report-button" aria-label={tt("result_tab_report")} title={tt("result_tab_report")} onClick={onOpenReport}>
-                      <svg className="replay-report-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                        <path d="M6 3h9l3 3v15H6z" />
-                        <path d="M14 3v4h4" />
-                        <path d="M9 12h6" />
-                        <path d="M9 16h4" />
-                      </svg>
-                    </button>
-                  ) : null}
-                  {onClose ? (
-                    <button type="button" className="replay-close-button" aria-label={closeLabel ?? tt("action_close")} title={closeLabel ?? tt("action_close")} onClick={onClose}>
-                      ×
-                    </button>
-                  ) : null}
-                </div>
-                {overlayActions && activeDirectorBeat && activeDirectorCopy ? (
-                  <div className="replay-overlay-director-slot">
-                    <div className={`replay-director-panel ${activeDirectorBeat.type}`}>
-                      <span>{directorTitle} · L{activeDirectorBeat.lap}</span>
-                      <strong>{activeDirectorCopy.title}</strong>
-                      <small>{renderPositionBadges(activeDirectorCopy.detail)}</small>
-                    </div>
-                  </div>
-                ) : null}
-                {overlayActions ? <div className="replay-overlay-stack"><div className="replay-overlay-actions">{overlayActions}</div></div> : null}
-                {towerReplacement ?? <ReplayTower entries={tower} playerTeamId={playerTeamId} positionPops={positionPops} teamLiveries={teamLiveries} />}
-                <ReplayProgress
-                  progressRef={progressRef}
-                  rangeRef={rangeRef}
-                  scrubbingRef={scrubbingRef}
-                  seekValueText={seekValueText}
-                  replayEnd={replayEnd}
-                  laps={circuit.laps}
-                  resolvedWeather={result.resolvedWeather}
-                  replayPercentAtRaceProgress={replayPercentAtRaceProgress}
-                  seek={seek}
-                  markers={markers}
-                  directorMarkers={directorMarkers}
-                  tt={tt}
-                />
-              </>
+              <ReplayStageOverlay
+                circuit={circuit}
+                liveLap={live.lap}
+                liveWeather={liveWeather}
+                circuitDistance={circuitDistance}
+                planDecision={planDecision}
+                traitImpacts={traitImpacts}
+                resolvedWeather={result.resolvedWeather}
+                activeMoment={activeMomentNotice}
+                activeDirector={activeDirector}
+                playerFocus={playerFocus}
+                overlayActions={overlayActions}
+                playing={playing}
+                speed={speed}
+                driverFocus={driverFocus}
+                replayEnd={replayEnd}
+                clockSeconds={clock.current}
+                progressRef={progressRef}
+                rangeRef={rangeRef}
+                scrubbingRef={scrubbingRef}
+                towerReplacement={towerReplacement}
+                tower={tower}
+                playerTeamId={playerTeamId}
+                positionPops={positionPops}
+                teamLiveries={teamLiveries}
+                markers={markers}
+                directorMarkers={directorMarkers}
+                replayPercentAtRaceProgress={replayPercentAtRaceProgress}
+                tt={tt}
+                setPlaying={setPlaying}
+                setSpeed={setSpeed}
+                setDriverFocus={setDriverFocus}
+                restart={restart}
+                seek={seek}
+                onOpenReport={onOpenReport}
+                onClose={onClose}
+                closeLabel={closeLabel}
+              />
             }
           />
           {afterMapContent}

@@ -5,7 +5,7 @@ export type ReplayClockSnapshot = {
   carProgress: Record<string, number>;
   tower: RaceResult["classification"];
 };
-type ReplaySpeed = 0.5 | 1 | 2 | 4;
+export type ReplaySpeed = 0.5 | 1 | 2 | 4;
 
 type ReplayClockOptions = {
   initialSnapshot: ReplayClockSnapshot;

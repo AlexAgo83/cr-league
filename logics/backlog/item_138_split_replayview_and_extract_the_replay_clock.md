@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 76%
+> Progress: 84%
 > Complexity: Low
 > Theme: Web architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,7 @@
 - Architecture framing: Not needed
 - 2026-07-20 first implementation wave: useReplayClock now owns the replay clock loop, seek/restart state, live lap/segment updates, and position-pop timer lifecycle. ReplayView.tsx is reduced from 1071 to 1004 lines, and the previous react-hooks exhaustive-deps warnings are gone. Remaining: move scrubber, timing tower, and stage sub-components under replay/ and continue reducing ReplayView toward a composition file.
 - 2026-07-20 second implementation wave: ReplayTower and ReplayProgress now live under apps/web/src/features/replay/. The timeline scrubber, lap ticks, weather markers, director markers, and position-delta tower rendering are no longer inline in ReplayView; new replay folder files are 57, 104, and 184 lines. Remaining: extract the replay stage/overlay composition and keep reducing ReplayView.tsx below its current 941 lines.
+- 2026-07-20 third implementation wave: ReplayStageOverlay now owns the stage overlay presentation, including map info, moment notification, director/focus panels, playback controls, tower slot, and timeline progress wiring. ReplayView.tsx is reduced to 815 lines; ReplayProgress.tsx, ReplayStageOverlay.tsx, ReplayTower.tsx, and useReplayClock.ts are all below 400 lines. Remaining: slim the remaining derived-data orchestration in ReplayView before marking this slice done.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

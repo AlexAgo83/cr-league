@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 76%
+> Progress: 84%
 > Complexity: Medium
 > Theme: Account security
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

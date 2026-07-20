@@ -1,9 +1,8 @@
-import { PIT_STRATEGIES, RACE_APPROACHES, TECHNICAL_PREPARATIONS, type CardId, type QualifyingRun } from "@cr-league/shared";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type QualifyingRun } from "@cr-league/shared";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
-import { circuitForRound } from "./circuits.js";
-import { cardFit, clampNumber, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
-import { type AdminLeague, type AdminUser, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
+import { clampNumber } from "./helpers.js";
+import { type AdminLeague, type AdminUser, type GameView, type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY } from "../features/ChampionshipView.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
@@ -33,32 +32,18 @@ import {
 import { createAdminActions } from "./adminActions.js";
 import { rememberPlayerClaim, withCurrentPlayer as restoreCurrentPlayer, withoutPlayerClaim } from "./claimHelpers.js";
 import { createProfileActions } from "./profileActions.js";
-import { bestQualifyingRuns, buildChronoReport, createInitialForm, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
 import { isGrandPrixRouteId, shortGrandPrixId } from "./routes.js";
 import { SetupGate } from "./SetupGate.js";
 import { type ProfileMode, type SetupMode } from "./SetupViews.js";
 import { createLeagueMutations } from "./leagueMutations.js";
 import { useAppNavigation } from "./useAppNavigation.js";
+import { usePlanForm } from "./usePlanForm.js";
+import { useRaceDerivations } from "./useRaceDerivations.js";
 
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
-const PLAN_FORM_KEY = "cr-league-plan-form";
 type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
 type CommandClick = "qualifying" | "editPlan" | "directive" | "chronoReport" | "launchGrandPrix" | "resultReport" | "nextGrandPrix";
 const COMMAND_CLICKS: CommandClick[] = ["qualifying", "editPlan", "directive", "chronoReport", "launchGrandPrix", "resultReport", "nextGrandPrix"];
-
-function savedPlanForm() {
-  try {
-    const saved = JSON.parse(localStorage.getItem(PLAN_FORM_KEY) ?? "{}") as Partial<FormState>;
-    const form: Partial<FormState> = {};
-    if (RACE_APPROACHES.includes(saved.approach as FormState["approach"])) form.approach = saved.approach;
-    if (TECHNICAL_PREPARATIONS.includes(saved.preparation as FormState["preparation"])) form.preparation = saved.preparation;
-    if (PIT_STRATEGIES.includes(saved.pitStrategy as FormState["pitStrategy"])) form.pitStrategy = saved.pitStrategy;
-    if (typeof saved.cardId === "string") form.cardId = saved.cardId as FormState["cardId"];
-    return form;
-  } catch {
-    return {};
-  }
-}
 
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(() => {
@@ -109,7 +94,7 @@ export function App() {
   const [nextGrandPrixConfirmOpen, setNextGrandPrixConfirmOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [restartConfirmOpen, setRestartConfirmOpen] = useState(false);
-  const [form, setForm] = useState<FormState>(() => ({ ...createInitialForm(locale), ...savedPlanForm() }));
+  const [form, setForm] = usePlanForm(locale);
   const [profileForm, setProfileForm] = useState({ email: "", recoveryCode: "" });
   const [adminToken, setAdminToken] = useState("");
   const [adminTab, setAdminTab] = useState<AdminTab>("users");
@@ -190,94 +175,43 @@ export function App() {
     void refreshProfileAdminStatus(profileSession);
   }, [profileSession]);
 
-  useEffect(() => {
-    localStorage.setItem(PLAN_FORM_KEY, JSON.stringify({
-      approach: form.approach,
-      preparation: form.preparation,
-      pitStrategy: form.pitStrategy,
-      cardId: form.cardId
-    }));
-  }, [form.approach, form.preparation, form.pitStrategy, form.cardId]);
-
-  const playerTeam = useMemo(
-    () =>
-      leagueState?.teams.find((team) => team.id === leagueState.player?.teamId) ??
-      (adminInspecting ? undefined : leagueState?.teams.find((team) => team.kind === "human")) ??
-      (adminInspecting ? undefined : leagueState?.teams[0]),
-    [adminInspecting, leagueState]
-  );
-  const playerDecision = leagueState?.decisions.find((decision) => decision.teamId === playerTeam?.id);
-  const qualifyingRuns = leagueState?.currentGrandPrix.qualifyingRuns ?? [];
-  const playerQualifyingRuns = qualifyingRuns.filter((run) => run.teamId === playerTeam?.id);
-  const lastQualifyingRun = latestQualifyingRun(playerQualifyingRuns);
-  const currentQualifyingResult = qualifyingResult && playerQualifyingRuns.some((run) => run.teamId === qualifyingResult.teamId && run.attempts === qualifyingResult.attempts) ? qualifyingResult : null;
-  const replayQualifyingRun = currentQualifyingResult ?? lastQualifyingRun;
-  const qualifyingReplayEntries = qualifyingReplayTower(replayQualifyingRun, qualifyingRuns, tt);
-  const qualifyingLeaderboardRuns = playerDecision ? bestQualifyingRuns(qualifyingRuns) : qualifyingRuns;
-  const qualifyingLeaderboard = [...qualifyingLeaderboardRuns]
-    .sort((left, right) => left.time - right.time)
-    .slice(0, 10)
-    .map((run, index) => ({
-      ...run,
-      position: index + 1,
-      teamName: leagueState?.teams.find((team) => team.id === run.teamId)?.name ?? run.teamId
-    }));
-  const qualifyingAttemptsUsed = Math.max(0, ...playerQualifyingRuns.map((run) => run.attempts));
-  const qualifyingAttemptLimit = leagueState?.league.qualifyingAttemptLimit ?? Number(form.qualifyingAttemptLimit);
-  const qualifyingAttemptsLeft = Math.max(0, qualifyingAttemptLimit - qualifyingAttemptsUsed);
-  const qualifyingLockedCardId = playerQualifyingRuns.find((run) => run.decision?.cardId === "qualifying_focus")?.decision?.cardId;
-  const result = leagueState?.currentGrandPrix.result;
-  const isResolved = leagueState?.currentGrandPrix.status === "resolved" || Boolean(result);
-  const qualifyingDisabled = status === "loading" || isResolved || Boolean(playerDecision) || qualifyingAttemptsLeft <= 0;
-  const forecastPick = leagueState ? strongestForecast(leagueState.currentGrandPrix.forecast) : "dry";
-  const ownedCardIds = useMemo(() => Array.from(new Set(playerTeam?.cards ?? [])), [playerTeam]);
-  const selectedCardId = qualifyingLockedCardId ?? (ownedCardIds.includes(form.cardId as CardId) ? form.cardId : "");
-  const selectedCardFit = leagueState && selectedCardId ? cardFit(selectedCardId as CardId, leagueState, forecastPick) : null;
-  const directiveTraitImpacts = traitImpacts(form, selectedCardId, tt);
-  const replayTraitImpacts = playerDecision
-    ? traitImpacts({ ...form, approach: playerDecision.approach, preparation: playerDecision.preparation, pitStrategy: playerDecision.pitStrategy ?? "standard" }, playerDecision.cardId ?? "", tt)
-    : directiveTraitImpacts;
-  const mapPlan = playerDecision
-    ? { approach: playerDecision.approach, preparation: playerDecision.preparation, pitStrategy: playerDecision.pitStrategy ?? "standard", cardId: playerDecision.cardId ?? undefined }
-    : { approach: form.approach, preparation: form.preparation, pitStrategy: form.pitStrategy, cardId: selectedCardId || undefined };
-  const playerResult = result?.classification.find((entry) => entry.teamId === playerTeam?.id);
-  const consumedCardIds = result?.consumedCards.filter((card) => card.teamId === playerTeam?.id).map((card) => card.cardId) ?? [];
-  const deskState = isResolved ? "resolved" : playerDecision ? "ready" : "prepare";
-  const currentCircuit = leagueState
-    ? circuitForRound(leagueState.currentGrandPrix.round, leagueState.league.id, leagueState.currentGrandPrix.season)
-    : circuitForRound(1);
-  const qualifyingReplayCircuit = currentQualifyingResult
-    ? {
-        ...currentCircuit,
-        laps: Math.min(3, Math.max(1, ...currentQualifyingResult.result.events.map((event) => event.lap), currentQualifyingResult.lap ?? 1))
-      }
-    : currentCircuit;
-  const currentGrandPrixKey = leagueState ? `${leagueState.league.id}:${leagueState.currentGrandPrix.season}:${leagueState.currentGrandPrix.round}` : "";
-  const raceDayPhase =
-    isResolved
-      ? "finished"
-      : playerDecision
-        ? "locked"
-        : qualifyingAttemptsUsed > 0 || qualifyingAttemptsLeft <= 0
-          ? "adjust"
-          : "briefing";
-  const startingGridEntries = leagueState ? startingGrid(leagueState) : [];
-  const playerGridPosition = startingGridEntries.find((entry) => entry.team.id === playerTeam?.id)?.position ?? 0;
-  const chronoReport = buildChronoReport({
-    runs: playerQualifyingRuns,
-    gridPosition: playerGridPosition,
-    attemptsLeft: qualifyingAttemptsLeft,
-    attemptLimit: qualifyingAttemptLimit,
+  const {
+    playerTeam,
+    playerDecision,
+    playerQualifyingRuns,
+    lastQualifyingRun,
+    currentQualifyingResult,
+    qualifyingReplayEntries,
+    qualifyingLeaderboard,
+    qualifyingAttemptsUsed,
+    qualifyingAttemptLimit,
+    qualifyingAttemptsLeft,
+    qualifyingLockedCardId,
+    result,
+    isResolved,
+    qualifyingDisabled,
     forecastPick,
-    form,
-    selectedCardId: selectedCardId ?? "",
-    tt
-  });
-  const completedSeasons = useMemo(() => (leagueState ? completedSeasonSummaries(leagueState) : []), [leagueState]);
+    ownedCardIds,
+    selectedCardId,
+    selectedCardFit,
+    directiveTraitImpacts,
+    replayTraitImpacts,
+    mapPlan,
+    playerResult,
+    consumedCardIds,
+    deskState,
+    currentCircuit,
+    qualifyingReplayCircuit,
+    currentGrandPrixKey,
+    raceDayPhase,
+    startingGridEntries,
+    chronoReport,
+    completedSeasons,
+    visibleResult,
+    visibleResultCircuit,
+    isSeasonFinalGrandPrix
+  } = useRaceDerivations({ leagueState, adminInspecting, form, qualifyingResult, historyReplay, resultOpen, status, tt });
   const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
-  const visibleResult = historyReplay?.result ?? (resultOpen ? result : undefined);
-  const visibleResultCircuit = historyReplay && leagueState ? circuitForRound(historyReplay.round, leagueState.league.id, historyReplay.season) : currentCircuit;
-  const isSeasonFinalGrandPrix = Boolean(leagueState && leagueState.currentGrandPrix.round >= leagueState.league.maxGrandPrixPerSeason);
   const nextGrandPrixActionLabel = tt(isSeasonFinalGrandPrix ? "action_finish_season" : "action_next_grand_prix");
   const { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, updateLivery, updateTeamName, restartLeague: restartLeagueState } = createLeagueMutations({
     leagueState,

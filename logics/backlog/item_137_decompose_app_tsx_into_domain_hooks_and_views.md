@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 96%
-> Confidence: 90%
-> Progress: 99%
+> Understanding: 96
+> Confidence: 90
+> Progress: 99
 > Complexity: Medium
 > Theme: Web architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -53,6 +53,7 @@
 - 2026-07-20 eleventh implementation wave: AppChrome.tsx now owns language switching, profile menu, setup topbar, and game topbar presentation. App.tsx is 1084 lines; AppChrome.tsx is 181 lines. AC1 remains open; the remaining reduction needs local-claim/rejoin helpers or modal/notification assembly extraction.
 - 2026-07-20 twelfth implementation wave: AppOverlays.tsx owns overlay/modal composition and NotificationStack moved to AppChrome.tsx. App.tsx is 1042 lines; AppOverlays.tsx is 166 lines. AC1 remains open; remaining meaningful work is local-claim/rejoin helpers or deeper controller extraction.
 - 2026-07-20 thirteenth implementation wave: claimHelpers.ts now owns local player-claim persistence and current-player restoration helpers. App.tsx is 1034 lines; claimHelpers.ts is 22 lines. AC1 remains open; reaching ~700 now needs a deeper controller split rather than more helper extraction.
+- 2026-07-20 fourteenth implementation wave: usePlanForm.ts now owns persisted plan-form loading/saving and useRaceDerivations.ts owns the race-derived view model for player team, qualifying state, map plan, result state, and season summaries. App.tsx is now 968 lines; usePlanForm.ts is 39 lines and useRaceDerivations.ts is 127 lines. AC1 remains open; the next useful reduction is extracting the remaining app shell/controller assembly rather than one-off helpers.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`
@@ -72,3 +73,4 @@
 
 # Validation
 - 2026-07-20 thirteenth implementation wave validation: full suite passed after claimHelpers extraction: rtk npm test, rtk npm run build, and rtk npm run logics:validate.
+- 2026-07-20 fourteenth implementation wave targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed.

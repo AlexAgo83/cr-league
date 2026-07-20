@@ -1462,7 +1462,8 @@ label small {
 }
 
 .chrono-best-config .chrono-session-setup {
-  grid-template-columns: repeat(3, minmax(82px, 1fr));
+  grid-template-columns: repeat(3, 76px);
+  justify-content: start;
 }
 
 .chrono-report-history {
@@ -1497,7 +1498,7 @@ label small {
   align-items: center;
   display: grid;
   gap: 6px;
-  grid-template-columns: auto minmax(82px, 0.8fr) minmax(82px, 0.8fr);
+  grid-template-columns: auto 76px 76px;
   min-width: 0;
 }
 
@@ -1523,7 +1524,9 @@ label small {
 }
 
 .chrono-session-choice {
+  aspect-ratio: 1;
   gap: 1px;
+  min-height: 0;
   padding: 4px 8px;
 }
 
@@ -4547,7 +4550,7 @@ label small {
   }
 
   .chrono-best-config .chrono-session-setup {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, 76px);
   }
 
   .chrono-report-stats {
@@ -4685,7 +4688,7 @@ label small {
   }
 
   .chrono-best-config .chrono-session-setup {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(auto-fit, 72px);
   }
 
   .dashboard-summary {

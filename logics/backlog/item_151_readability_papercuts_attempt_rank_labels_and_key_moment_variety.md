@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 10%
+> Progress: 80%
 > Complexity: Low
 > Theme: Race learning and feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,11 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+
+# Implementation Notes
+- Wave 3: the race desk chrono panel now uses plain `#rank` text instead of race-position `P` badges for chrono rows.
+- Wave 3: `ReportView` now deduplicates major key moments by displayed lap and event type, then prefers one event per type before filling remaining slots.
+- Validation wave 3: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/features/ReportView.test.tsx apps/web/src/app/App.test.tsx apps/web/src/i18n/index.test.ts` passed with 30 tests.
 
 # Links
 - Product brief(s): `prod_026_replay_suspense_and_first_contact_polish_product_brief`

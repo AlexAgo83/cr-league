@@ -91,4 +91,56 @@ describe("ReportView", () => {
     expect(container.textContent?.toLowerCase()).not.toContain("lap 5");
     expect(container.textContent?.toLowerCase()).not.toContain("lap 10");
   });
+
+  it("deduplicates same-lap key moment types and prefers event variety", () => {
+    const typedBaseState = baseState as unknown as LeagueState;
+    const state = {
+      ...typedBaseState,
+      decisions: [{ teamId: "team_1", approach: "balanced", preparation: "weather", cardId: null }]
+    } satisfies LeagueState;
+    const event = (id: string, order: number, type: RaceResult["events"][number]["type"], teamId: string, lap: number): RaceResult["events"][number] => ({
+      id,
+      order,
+      segment: "mid",
+      lap,
+      traceProgress: lap / 10,
+      type,
+      teamId,
+      severity: "major",
+      positionDelta: type === "held_position" ? 0 : -1,
+      tags: [],
+      replayText: "",
+      reportText: ""
+    });
+    const result: RaceResult = {
+      grandPrixName: "Variety GP",
+      seed: "variety",
+      resolvedWeather: { start: "dry", early: "dry", mid: "dry", late: "dry", finish: "dry" },
+      classification: [
+        { teamId: "team_1", teamName: "Volt Union", position: 1, points: 25, credits: 100, score: 90, positionChange: 0, status: "finished", resultTags: [] },
+        { teamId: "team_2", teamName: "Mika Blitz", position: 2, points: 18, credits: 80, score: 80, positionChange: 0, status: "finished", resultTags: [] },
+        { teamId: "team_3", teamName: "Apex Lab", position: 3, points: 15, credits: 70, score: 70, positionChange: 0, status: "finished", resultTags: [] }
+      ],
+      events: [
+        event("scare-1", 1, "mechanical_scare", "team_1", 5),
+        event("scare-2", 2, "mechanical_scare", "team_2", 5),
+        event("scare-3", 3, "mechanical_scare", "team_3", 5),
+        event("weather", 4, "weather_change", "team_2", 6),
+        event("hold", 5, "held_position", "team_1", 7),
+        event("overtake", 6, "rival_overtake", "team_3", 8)
+      ],
+      consumedCards: [],
+      report: { headline: "Test", blocks: [] }
+    };
+
+    const { container } = render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+    const moments = container.querySelectorAll(".report-key-moments li");
+    const keyMomentText = container.querySelector(".report-key-moments")?.textContent ?? "";
+
+    expect(moments).toHaveLength(4);
+    expect(keyMomentText.match(/mechanical scare/g)?.length).toBe(1);
+    expect(keyMomentText).toContain("The weather changes during the race");
+    expect(keyMomentText).toContain("holds position");
+    expect(keyMomentText).toContain("makes a key overtake");
+  });
 });

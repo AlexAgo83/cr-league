@@ -37,9 +37,8 @@ export function ReportView({
 }) {
   const names = teamNamesFromResult(result);
   const raceTitle = `${circuit.city} ${tt(circuit.layoutKey)}`;
-  const majorEvents = result.events.filter((event) => event.severity === "major");
-  const keyEvents = majorEvents.slice(0, 5);
   const rawMaxLap = maxEventLap(result);
+  const keyEvents = keyMomentEvents(result.events, rawMaxLap, circuit.laps);
   const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
   const verdict = buildRaceVerdict(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
   const recap = [
@@ -188,6 +187,20 @@ export function ReportView({
       </div>
     </div>
   );
+}
+
+function keyMomentEvents(events: RaceEvent[], rawMaxLap: number, circuitLaps: number) {
+  const deduped = events
+    .filter((event) => event.severity === "major")
+    .filter((event, index, all) => all.findIndex((candidate) => candidate.type === event.type && displayLapForEvent(candidate, rawMaxLap, circuitLaps) === displayLapForEvent(event, rawMaxLap, circuitLaps)) === index);
+  const seenTypes = new Set<RaceEvent["type"]>();
+  const varied: RaceEvent[] = [];
+  const overflow: RaceEvent[] = [];
+  for (const event of deduped) {
+    (seenTypes.has(event.type) ? overflow : varied).push(event);
+    seenTypes.add(event.type);
+  }
+  return [...varied, ...overflow].slice(0, 5).sort((left, right) => left.order - right.order);
 }
 
 function describeEventImpact(event: RaceEvent, tt: Translator) {

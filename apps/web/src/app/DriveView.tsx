@@ -259,7 +259,7 @@ function QualifyingTimesPanel({
           {entries.map((run) => (
             <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeamId ? "player" : undefined}>
               <span>
-                <PositionBadge position={run.position} /> {run.teamName}
+                <span className="chrono-rank">#{run.position}</span> {run.teamName}
                 {run.attempts ? ` · ${tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}` : ""}
               </span>
               <em>{run.time.toFixed(2)}s</em>

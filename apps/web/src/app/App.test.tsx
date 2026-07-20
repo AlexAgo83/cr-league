@@ -430,6 +430,8 @@ describe("App", () => {
     expect(document.querySelector(".replay-tower")).toBe(null);
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Chronos");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
+    expect(document.querySelector(".map-qualifying-times .position-badge")).toBe(null);
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("#1");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 1");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("75.18s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 2");

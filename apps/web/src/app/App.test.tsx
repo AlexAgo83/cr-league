@@ -515,6 +515,9 @@ describe("App", () => {
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("75.18s");
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("P2");
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("Best run");
+    expect(document.querySelector(".chrono-best-config")?.textContent).toContain("Best config");
+    expect(document.querySelector(".chrono-best-config")?.textContent).toContain("72.42s");
+    expect(document.querySelector(".chrono-best-config")?.compareDocumentPosition(document.querySelector(".chrono-report-history")!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(document.querySelectorAll(".chrono-session-choice b").length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();

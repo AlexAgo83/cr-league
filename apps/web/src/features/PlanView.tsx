@@ -164,6 +164,30 @@ export function PlanView({
               </div>
             </div>
           </div>
+          {chronoReport.best ? (
+            <div className="chrono-best-config">
+              <strong>{tt("chrono_report_best_config")}</strong>
+              <div className="chrono-session-setup">
+                <span className="chrono-session-choice">
+                  <small>{tt("field_approach")}</small>
+                  <b>{tt(`approach_${chronoReport.best.decision.approach}` as TranslationKey)}</b>
+                </span>
+                <span className="chrono-session-choice">
+                  <small>{tt("field_preparation")}</small>
+                  <b>{tt(`preparation_${chronoReport.best.decision.preparation}` as TranslationKey)}</b>
+                </span>
+                <span className="chrono-session-choice">
+                  <small>{tt("field_pit_strategy")}</small>
+                  <b>{tt(`pit_strategy_${chronoReport.best.decision.pitStrategy ?? "standard"}` as TranslationKey)}</b>
+                </span>
+                <span className="chrono-session-choice">
+                  <small>{tt("field_card")}</small>
+                  <b>{chronoReport.best.decision.cardId ? tt(`card_${chronoReport.best.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
+                </span>
+              </div>
+              <em>{chronoReport.best.time.toFixed(2)}s</em>
+            </div>
+          ) : null}
           <div className="chrono-report-history">
             <strong>{tt("chrono_report_history_title")}</strong>
             {playerQualifyingRuns.length ? (

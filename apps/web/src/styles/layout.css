@@ -1444,6 +1444,33 @@ label small {
   font-size: 1.06rem;
 }
 
+.chrono-best-config {
+  align-items: center;
+  background: rgb(248 243 232 / 0.72);
+  border: 1px solid rgb(23 21 26 / 0.14);
+  display: grid;
+  gap: 10px;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  padding: 10px;
+}
+
+.chrono-best-config > strong {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.chrono-best-config em {
+  color: var(--color-accent);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.chrono-best-config .chrono-session-setup {
+  grid-template-columns: repeat(4, minmax(82px, 1fr));
+}
+
 .chrono-report-history {
   display: grid;
   gap: 8px;
@@ -4493,8 +4520,13 @@ label small {
   }
 
   .chrono-report-header,
+  .chrono-best-config,
   .chrono-report-history li {
     grid-template-columns: 1fr;
+  }
+
+  .chrono-best-config .chrono-session-setup {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .chrono-report-stats {
@@ -4628,6 +4660,10 @@ label small {
 
 @media (max-width: 440px) {
   .chrono-report-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .chrono-best-config .chrono-session-setup {
     grid-template-columns: 1fr;
   }
 

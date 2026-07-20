@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 38%
+> Progress: 45%
 > Complexity: Low
 > Theme: Engineering infrastructure
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -41,6 +41,7 @@
 - Product framing: Not needed
 - Architecture framing: Not needed
 - 2026-07-20 partial implementation: added Node >=20 engines, Dependabot for npm and GitHub Actions, npm audit --audit-level=high in CI quality, removed the misleading global DATABASE_URL from CI, and made deploy-release fail on health version/commit mismatch. Deferred in this item: coverage reporting, react-hooks/jsx-a11y lint plugins, and reports/ gitignore policy.
+- 2026-07-20 completion wave: react-hooks rules and jsx-a11y recommended lint are enabled, the surfaced a11y issues were fixed locally, Vitest coverage uses V8 text/json-summary and CI unit lanes collect coverage, and reports/ ignore policy now distinguishes the committed playtest report from generated/local artifacts. item_140 is implementation-complete pending req_058 closeout validation.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

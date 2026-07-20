@@ -1,4 +1,4 @@
-import { type KeyboardEvent, type MouseEvent, type ReactNode, useEffect, useRef } from "react";
+import { type KeyboardEvent, type ReactNode, useEffect, useRef } from "react";
 
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -55,6 +55,7 @@ export function Modal({
   return (
     <div
       className="modal-overlay"
+      role="presentation"
       onPointerDown={(event) => {
         overlayPressStarted.current = event.target === event.currentTarget;
       }}
@@ -63,7 +64,8 @@ export function Modal({
         overlayPressStarted.current = false;
       }}
     >
-      <section ref={dialogRef} className={className} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={handleKeyDown} onClick={(event: MouseEvent) => event.stopPropagation()}>
+      {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- dialog owns the focus trap keyboard handler. */}
+      <section ref={dialogRef} className={className} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={handleKeyDown}>
         {showCloseButton ? (
           <button className="modal-close-button" type="button" aria-label={closeLabel} onClick={onClose}>
             ×

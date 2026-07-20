@@ -52,7 +52,7 @@ jobs:
           cache: npm
       - run: npm ci
       - run: npm run db:generate
-      - run: npm test -- ${{ matrix.test_path }}
+      - run: npm test -- --coverage ${{ matrix.test_path }}
 
   e2e:
     name: E2E

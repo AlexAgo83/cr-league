@@ -19,6 +19,7 @@ export function AssetImage({ className = "", onError, onLoad, src, ...props }: I
     <span className={`asset-image-shell ${className} ${state}`} data-state={state}>
       <img
         {...props}
+        alt={props.alt ?? ""}
         ref={imageRef}
         src={src}
         onError={(event) => {

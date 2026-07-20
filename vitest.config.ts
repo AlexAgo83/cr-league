@@ -7,6 +7,10 @@ export default defineConfig({
     }
   },
   test: {
+    coverage: {
+      provider: "v8",
+      reporter: ["text", "json-summary"]
+    },
     environment: "jsdom",
     include: ["apps/**/*.test.ts", "apps/**/*.test.tsx", "packages/**/*.test.ts"],
     passWithNoTests: false

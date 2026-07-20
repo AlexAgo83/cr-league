@@ -5,7 +5,11 @@ dist/
 .npm-cache/
 playwright-report/
 test-results/
-reports/
+reports/*
+!reports/playtest/
+reports/playtest/*
+!reports/playtest/2026-07-19-20-player-simulation.md
+coverage/
 .env
 *.tsbuildinfo
 .DS_Store

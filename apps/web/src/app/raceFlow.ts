@@ -221,7 +221,6 @@ function chronoReportSuggestion(
   const currentChanged =
     best.decision.approach !== input.form.approach ||
     best.decision.preparation !== input.form.preparation ||
-    (best.decision.pitStrategy ?? "standard") !== input.form.pitStrategy ||
     bestCard !== input.selectedCardId;
   if (latest && latest.time > best.time + 0.15) {
     return input.tt("chrono_report_suggestion_return_best", {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { t } from "../i18n/index.js";
-import { buildPlanRecommendation, buildPlanRiskRead, traitImpacts } from "./raceFlow.js";
+import { buildChronoReport, buildPlanRecommendation, buildPlanRiskRead, traitImpacts } from "./raceFlow.js";
 import type { FormState } from "./types.js";
 
 const total = (values: Array<{ value: number }> = []) => values.reduce((sum, entry) => sum + entry.value, 0);
@@ -70,5 +70,30 @@ describe("buildPlanRecommendation", () => {
     });
 
     expect(read.level).toBe(level);
+  });
+
+  it("ignores pit strategy changes in chrono advice", () => {
+    const report = buildChronoReport({
+      runs: [
+        {
+          teamId: "team",
+          time: 72,
+          lap: 1,
+          attempts: 1,
+          decision: { approach: "balanced", preparation: "weather", pitStrategy: "heavy_pack" },
+          result: {} as never,
+          createdAt: "now"
+        }
+      ],
+      gridPosition: 1,
+      attemptsLeft: 1,
+      attemptLimit: 3,
+      forecastPick: "dry",
+      form: { ...baseForm, approach: "balanced", preparation: "weather", pitStrategy: "mini_pack" },
+      selectedCardId: "",
+      tt: (key, params) => t(key, "en", params)
+    });
+
+    expect(report.suggestion).not.toBe(t("chrono_report_suggestion_compare_current", "en", { left: 1, limit: 3 }));
   });
 });

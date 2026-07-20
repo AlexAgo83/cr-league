@@ -1,5 +1,5 @@
 import { RACE_SEGMENTS, type RaceDecision, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
-import { type CSSProperties, type ReactNode, useCallback, useEffect, useId, useMemo, useState } from "react";
+import { type ReactNode, useCallback, useEffect, useId, useMemo, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
@@ -8,6 +8,8 @@ import { CircuitMap, MapTraitsPanel, circuitDisplayLength, circuitRouteAnalysis,
 import { MapPlanPanel } from "./MapPlanPanel.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { CountryBadge, VisualIcon, type VisualIconName } from "./VisualIcon.js";
+import { ReplayProgress, type ReplayTimelineMarker } from "./replay/ReplayProgress.js";
+import { ReplayTower } from "./replay/ReplayTower.js";
 import { useReplayClock } from "./replay/useReplayClock.js";
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 const START_HOLD_SECONDS = 1;
@@ -22,7 +24,6 @@ const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
 const MAX_VISUAL_PROGRESS_PER_SECOND = 0.36;
 const MOMENT_NOTIFICATION_SECONDS = 3;
-const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 type ReplaySpeed = (typeof REPLAY_SPEEDS)[number];
 export type ReplayDirectorBeat = {
@@ -46,10 +47,6 @@ export type ReplayPlan = {
   source: "facts" | "trace" | "fallback";
   overtakes: ReplayOvertakeBeat[];
 };
-
-function safeHex(value: string | undefined, fallback: string) {
-  return value && HEX_COLOR.test(value) ? value : fallback;
-}
 
 function ReplaySpeedMenu({ speed, setSpeed, tt }: { speed: ReplaySpeed; setSpeed: (speed: ReplaySpeed) => void; tt: Translator }) {
   const [open, setOpen] = useState(false);
@@ -738,12 +735,22 @@ export function ReplayView({
     markerByLap.set(displayLap, marker);
   }
   const markers = [...markerByLap.entries()].map(([lap, marker]) => ({
-    lap,
+    id: String(lap),
+    className: marker.player ? "replay-marker player" : "replay-marker",
     left: `${Math.min(96, Math.max(3, (marker.time / replayEnd) * 100))}%`,
     time: marker.time,
-    title: marker.texts.join("\n"),
-    player: marker.player
-  }));
+    title: marker.texts.join("\n")
+  })) satisfies ReplayTimelineMarker[];
+  const directorMarkers = directorBeats.slice(1, -1).map((beat) => {
+    const copy = directorBeatCopy(beat, names, tt);
+    return {
+      id: beat.id,
+      className: `replay-marker director ${beat.type}`,
+      left: `${Math.min(96, Math.max(3, replayPercentAtRaceProgress(beat.progress)))}%`,
+      title: copy.detail,
+      time: raceTimeAtProgress(beat.progress)
+    };
+  }) satisfies ReplayTimelineMarker[];
   const liveWeather = result.resolvedWeather[live.segment];
   const activeMoment = keyMoments.find((event) => event.id === activeMomentId);
   const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
@@ -891,96 +898,21 @@ export function ReplayView({
                   </div>
                 ) : null}
                 {overlayActions ? <div className="replay-overlay-stack"><div className="replay-overlay-actions">{overlayActions}</div></div> : null}
-                {towerReplacement ?? (
-                  <ol className="replay-tower">
-                    {tower.map((entry, index) => (
-                      <li
-                        key={entry.id ?? entry.teamId}
-                        className={[
-                          entry.teamId === playerTeamId ? "player" : "",
-                          positionPops[entry.teamId]?.delta ? "position-change" : "",
-                          (positionPops[entry.teamId]?.delta ?? 0) > 0 ? "gain" : (positionPops[entry.teamId]?.delta ?? 0) < 0 ? "loss" : ""
-                        ].filter(Boolean).join(" ") || undefined}
-                      >
-                        <span
-                          className={`replay-tower-livery position-badge${index < 3 ? ` top-${index + 1}` : ""}`}
-                          aria-label={`P${index + 1}`}
-                          style={
-                            {
-                              "--livery-primary": safeHex(teamLiveries[entry.teamId]?.primary, "#38bdf8"),
-                              "--livery-secondary": safeHex(teamLiveries[entry.teamId]?.secondary, "#16c784")
-                            } as CSSProperties & Record<string, string>
-                          }
-                        >
-                          {index + 1}
-                        </span>
-                        <span className="replay-tower-team">{entry.teamName}</span>
-                        {entry.value ? <span className="replay-tower-value">{entry.value}</span> : null}
-                        {positionPops[entry.teamId]?.delta ? <span className="replay-tower-delta">{positionPops[entry.teamId]!.delta > 0 ? `+${positionPops[entry.teamId]!.delta}` : positionPops[entry.teamId]!.delta}</span> : null}
-                      </li>
-                    ))}
-                  </ol>
-                )}
-                <div className="replay-progress">
-                  <div ref={progressRef} className="replay-progress-fill" />
-                  <input
-                    ref={rangeRef}
-                    type="range"
-                    className="replay-progress-input"
-                    aria-label={tt("replay_seek")}
-                    aria-valuetext={seekValueText}
-                    min={0}
-                    max={replayEnd}
-                    step={replayEnd / 100}
-                    defaultValue={0}
-                    onPointerDown={() => {
-                      scrubbingRef.current = true;
-                    }}
-                    onPointerUp={(event) => {
-                      scrubbingRef.current = false;
-                      seek(Number(event.currentTarget.value));
-                    }}
-                    onPointerCancel={() => {
-                      scrubbingRef.current = false;
-                    }}
-                    onChange={(event) => seek(Number(event.target.value))}
-                  />
-                  {Array.from({ length: circuit.laps }, (_, index) => (
-                    <span key={index + 1} className="replay-tick" style={{ left: `${replayPercentAtRaceProgress((index + 1) / circuit.laps)}%` }} />
-                  ))}
-                  {RACE_SEGMENTS.map((segment, index) => (
-                    <span
-                      key={segment}
-                      className="replay-weather"
-                      style={{ left: `${replayPercentAtRaceProgress((index + 0.5) / RACE_SEGMENTS.length)}%` }}
-                      title={tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
-                    >
-                      <VisualIcon name={result.resolvedWeather[segment]} />
-                    </span>
-                  ))}
-                  {markers.map((marker) => (
-                    <button
-                      key={marker.lap}
-                      type="button"
-                      className={marker.player ? "replay-marker player" : "replay-marker"}
-                      style={{ left: marker.left }}
-                      title={marker.title}
-                      aria-label={marker.title}
-                      onClick={() => seek(marker.time)}
-                    />
-                  ))}
-                  {directorBeats.slice(1, -1).map((beat) => (
-                    <button
-                      key={beat.id}
-                      type="button"
-                      className={`replay-marker director ${beat.type}`}
-                      style={{ left: `${Math.min(96, Math.max(3, replayPercentAtRaceProgress(beat.progress)))}%` }}
-                      title={directorBeatCopy(beat, names, tt).detail}
-                      aria-label={directorBeatCopy(beat, names, tt).detail}
-                      onClick={() => seek(raceTimeAtProgress(beat.progress))}
-                    />
-                  ))}
-                </div>
+                {towerReplacement ?? <ReplayTower entries={tower} playerTeamId={playerTeamId} positionPops={positionPops} teamLiveries={teamLiveries} />}
+                <ReplayProgress
+                  progressRef={progressRef}
+                  rangeRef={rangeRef}
+                  scrubbingRef={scrubbingRef}
+                  seekValueText={seekValueText}
+                  replayEnd={replayEnd}
+                  laps={circuit.laps}
+                  resolvedWeather={result.resolvedWeather}
+                  replayPercentAtRaceProgress={replayPercentAtRaceProgress}
+                  seek={seek}
+                  markers={markers}
+                  directorMarkers={directorMarkers}
+                  tt={tt}
+                />
               </>
             }
           />

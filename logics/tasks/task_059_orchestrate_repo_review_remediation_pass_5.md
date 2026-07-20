@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 76%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -59,6 +59,7 @@
 - 2026-07-20 wave 6: implemented item_139 Postgres integration lane. Added apps/api/src/app.postgres.test.ts gated by POSTGRES_INTEGRATION=1, covering real Postgres row-lock serialization for concurrent qualifying, single-winner resolve transition claim, and credit-guarded concurrent card purchase. CI now runs a postgres:16 service, migrate deploy, and the integration spec with DATABASE_URL schema=cr_league. Local proof used a temporary docker postgres on port 55432; migrations and the 3-test integration spec passed.
 - 2026-07-20 wave 7: started item_137 App.tsx decomposition/hook cleanup. Collapsed seven command-clicked booleans into a typed commandClicks map, centralized reset/mark helpers, deduplicated /leagues/rejoin through rejoinClaim, and changed automatic rejoin to use an initial local-storage snapshot so the react-hooks stale-closure warning is gone without repeated background rejoins. Targeted proof: App.test.tsx and App.profile.test.tsx pass; lint now has only ReplayView hook warnings.
 - 2026-07-20 wave 8: started item_138 ReplayView split by extracting the playback clock into apps/web/src/features/replay/useReplayClock.ts. The hook now owns SMIL rAF playback, play/pause/speed state, seek/restart, live lap/segment updates, and position-pop timer cleanup; ReplayView consumes the hook state and callbacks. Lint is now clean with the previous ReplayView exhaustive-deps warnings removed. Remaining item_138 work: move scrubber/tower/stage sub-components and reduce ReplayView.tsx toward composition size.
+- 2026-07-20 wave 9: continued item_138 by moving the replay timing tower and scrubber/timeline rendering into apps/web/src/features/replay/ReplayTower.tsx and ReplayProgress.tsx. ReplayView now delegates tower livery/delta rendering and progress input/weather/director markers to focused components; replay folder files stay under 400 lines and ReplayView.tsx is reduced to 941 lines. Remaining item_138 work: extract the larger replay stage/overlay composition and continue reducing ReplayView toward a composition file.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

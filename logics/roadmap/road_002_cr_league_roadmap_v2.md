@@ -1,11 +1,12 @@
 ## road_002_cr_league_roadmap_v2 - CR League Roadmap v2
-> Date: 2026-07-15
+> Date: 2026-07-20
 > Status: Accepted
 > Related product: `prod_001_cr_league_product_brief`
 > Related request: `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
 > Confidence: 90
 > Non-semantic edit: 2026-07-19 release roadmap wording refresh.
+> Semantic edit: 2026-07-20 added first-GP action clarity patch from AI/player playtest.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -52,6 +53,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
   - 0.3.13 — Plan risk/readability layer: show a compact `safe / risky / high-upside` read before sending the plan, including where the setup is strong, where it can fail, and which finishing band it is trying to optimize.
   - 0.3.14 — Result verdict pass: add a direct `why this worked / why this failed / try this next` summary to reports so players understand the outcome in seconds before reading detailed phases.
   - 0.3.15 — Non-winning success feedback: make defensive, economy, and weather plans visibly rewarding when they save risk, preserve a target position, amortize bad weather, or turn credits into future options even without a win.
+  - 0.3.16 — First-GP action clarity: make `New chrono` the only recommended CTA at the start of a GP, add one compact circuit/weather recommendation in the plan, and harmonize first-session vocabulary so league, championship, plan, chrono, and launch labels do not compete.
 - Exit signal:
   - 3 to 5 testers complete a 3-GP session on the polished loop;
   - feedback answers whether choices feel causal, recaps feel personal, and seasons feel like arcs;

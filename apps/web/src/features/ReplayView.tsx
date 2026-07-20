@@ -1,5 +1,5 @@
 import { RACE_SEGMENTS, type RaceDecision, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TeamLivery, type Weather } from "@cr-league/shared";
-import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from "react";
+import { type CSSProperties, type ReactNode, useCallback, useEffect, useId, useMemo, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
@@ -8,6 +8,7 @@ import { CircuitMap, MapTraitsPanel, circuitDisplayLength, circuitRouteAnalysis,
 import { MapPlanPanel } from "./MapPlanPanel.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { CountryBadge, VisualIcon, type VisualIconName } from "./VisualIcon.js";
+import { useReplayClock } from "./replay/useReplayClock.js";
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 const START_HOLD_SECONDS = 1;
 const FINISH_HOLD_SECONDS = 1;
@@ -239,10 +240,6 @@ function traceRankTargetsAt(trace: ReplayTracePoint[], progress: number, plan?: 
 
 function sameOrder(left: string[], right: string[]) {
   return left.length === right.length && left.every((teamId, index) => teamId === right[index]);
-}
-
-function raceProgressAt(time: number, raceDuration: number) {
-  return raceDuration > 0 ? Math.min(1, Math.max(0, (time - START_HOLD_SECONDS) / raceDuration)) : 1;
 }
 
 export function displayLapAtProgress(progress: number, laps: number) {
@@ -621,36 +618,100 @@ export function ReplayView({
   afterMapContent?: ReactNode;
   tt: Translator;
 }) {
-  const svgRef = useRef<SVGSVGElement>(null);
-  const progressRef = useRef<HTMLDivElement>(null);
-  const rangeRef = useRef<HTMLInputElement>(null);
-  const clock = useRef(0);
-  const scrubbingRef = useRef(false);
-  const [playing, setPlaying] = useState(true);
-  const [speed, setSpeed] = useState<ReplaySpeed>(1);
   const [driverFocus, setDriverFocus] = useState(() => localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
   const [copyDismissed, setCopyDismissed] = useState(() => localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
-  const replayTrace = result.replayTrace ?? [];
-  const replayPlan = buildReplayPlan(result, replayTrace);
+  const replayTrace = useMemo(() => result.replayTrace ?? [], [result.replayTrace]);
+  const replayPlan = useMemo(() => buildReplayPlan(result, replayTrace), [replayTrace, result]);
   const replayMode = titleKey === "qualifying_replay_title" ? "qualifying" : "race";
   const pitProgress = pitLapProgress(circuit);
-  const replayTimes = scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit));
-  const directorBeats = buildRaceDirectorBeats(result, replayTrace, replayPlan, circuit.laps, playerTeamId, replayMode, pitProgress);
-  const initialSnapshot = replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, replayPlan);
-  const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
-  const [snapshot, setSnapshot] = useState(initialSnapshot);
-  const [activeMomentId, setActiveMomentId] = useState<string | null>(null);
-  const snapshotRef = useRef(initialSnapshot);
-  const [positionPops, setPositionPops] = useState<Record<string, { delta: number; key: number }>>({});
-  const orderRef = useRef(initialSnapshot.tower.map((entry) => entry.teamId));
-  const positionPopTimers = useRef<number[]>([]);
+  const replayTimes = useMemo(() => scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit)), [circuit, replayTrace, result]);
+  const directorBeats = useMemo(
+    () => buildRaceDirectorBeats(result, replayTrace, replayPlan, circuit.laps, playerTeamId, replayMode, pitProgress),
+    [circuit.laps, pitProgress, playerTeamId, replayMode, replayPlan, replayTrace, result]
+  );
+  const initialSnapshot = useMemo(() => replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, replayPlan), [circuit.laps, replayPlan, replayTimes, replayTrace, result]);
   const names = teamNamesFromResult(result);
   const field = result.classification;
   const smoothTracePositions = shouldSmoothReplayTrace(replayTrace);
   const raceDuration = smoothTracePositions ? replayTimes.leader : replayTimes.last;
-  const currentRaceProgress = raceProgressAt(clock.current, raceDuration);
   const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
-  const raceTimeAtProgress = (progress: number) => START_HOLD_SECONDS + progress * raceDuration;
+  const raceTimeAtProgress = useCallback((progress: number) => START_HOLD_SECONDS + progress * raceDuration, [raceDuration]);
+  const circuitDistance = `${(circuitLengthMeters(circuit) / 1000).toFixed(1)} km`;
+  const lastFinishTime = replayTimes.last;
+  const replayEnd = START_HOLD_SECONDS + lastFinishTime + FINISH_HOLD_SECONDS;
+  const replayPercentAtRaceProgress = (progress: number) => (raceTimeAtProgress(progress) / replayEnd) * 100;
+
+  useEffect(() => {
+    if (driverFocus) localStorage.removeItem(REPLAY_FOCUS_KEY);
+    else localStorage.setItem(REPLAY_FOCUS_KEY, "0");
+  }, [driverFocus]);
+
+  useEffect(() => {
+    setDriverFocus(localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
+    setCopyDismissed(localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
+  }, [preferencesResetSignal]);
+
+  const qualifyingMomentEvents = useMemo(() => replayMode === "qualifying" ? buildQualifyingMomentEvents(directorBeats, result) : [], [directorBeats, replayMode, result]);
+  // Majors and player moments first pick, race notes as filler — then strict race order.
+  const keyMoments = useMemo(() => (
+    replayMode === "qualifying" ? qualifyingMomentEvents : [
+      ...result.events.filter((event) => event.severity === "major"),
+      ...result.events.filter((event) => event.type === "pit_stop"),
+      ...result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId),
+      ...(overlayActions ? [] : result.events.filter((event) => event.severity === "minor" && (event.type === "race_note" || event.tags.includes("mini_info"))))
+    ]
+  )
+    .filter((event, index, events) => events.findIndex((candidate) => candidate.id === event.id) === index)
+    .sort((left, right) => left.order - right.order), [overlayActions, playerTeamId, qualifyingMomentEvents, replayMode, result.events]);
+
+  const eventTime = useCallback((event: RaceEvent) => raceTimeAtProgress(eventTraceProgress(event, maxLap)), [maxLap, raceTimeAtProgress]);
+  const activeMomentIdAt = useCallback((time: number) => keyMoments.find((event) => Math.abs(eventTime(event) - time) <= MOMENT_NOTIFICATION_SECONDS)?.id ?? null, [eventTime, keyMoments]);
+  const createTargetSnapshot = useCallback(
+    (raceTime: number, progress: number, currentOrder: string[]) => replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, currentOrder),
+    [circuit.laps, replayPlan, replayTimes, replayTrace, result]
+  );
+  const createTower = useCallback(
+    (progress: number, carProgress: Record<string, number>, currentOrder: string[]) => liveClassificationByCarProgress(result, replayTrace, progress, carProgress, currentOrder),
+    [replayTrace, result]
+  );
+  const getOrderAtProgress = useCallback((progress: number) => replayOrderAtProgress(result, replayTrace, progress), [replayTrace, result]);
+  const {
+    svgRef,
+    progressRef,
+    rangeRef,
+    clock,
+    scrubbingRef,
+    playing,
+    setPlaying,
+    speed,
+    setSpeed,
+    live,
+    snapshot,
+    activeMomentId,
+    positionPops,
+    currentRaceProgress,
+    seek,
+    restart
+  } = useReplayClock({
+    initialSnapshot,
+    initialOrder: initialSnapshot.tower.map((entry) => entry.teamId),
+    replayEnd,
+    raceDuration,
+    laps: circuit.laps,
+    smoothTracePositions,
+    resultSeed: result.seed,
+    titleKey,
+    initialLap,
+    startHoldSeconds: START_HOLD_SECONDS,
+    getActiveMomentId: activeMomentIdAt,
+    getOrderAtProgress,
+    createTargetSnapshot,
+    createTower,
+    smoothCarProgress,
+    displayLapAtProgress,
+    segmentAtProgress
+  });
+
   const cars: MapCar[] = field.map((entry, index) => ({
       id: entry.teamId,
       label: String(Math.max(1, snapshot.tower.findIndex((team) => team.teamId === entry.teamId) + 1)),
@@ -664,121 +725,6 @@ export function ReplayView({
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
   const tower: ReplayTowerEntry[] = towerEntries ?? snapshot.tower.map((entry) => ({ teamId: entry.teamId, teamName: entry.teamName, value: "" }));
-  const circuitDistance = `${(circuitLengthMeters(circuit) / 1000).toFixed(1)} km`;
-  const lastFinishTime = replayTimes.last;
-  const replayEnd = START_HOLD_SECONDS + lastFinishTime + FINISH_HOLD_SECONDS;
-  const replayPercentAtRaceProgress = (progress: number) => (raceTimeAtProgress(progress) / replayEnd) * 100;
-  snapshotRef.current = snapshot;
-
-  // SMIL has no playback-rate API, so the SVG clock is driven by hand:
-  // animations stay paused and a rAF loop advances setCurrentTime at `speed`.
-  // jsdom implements none of this, hence the guards.
-  useEffect(() => {
-    const svg = svgRef.current;
-    if (!svg?.pauseAnimations) return;
-    svg.pauseAnimations();
-    if (!playing) return;
-    let last = performance.now();
-    let frame = requestAnimationFrame(function tick(now: number) {
-      const replayDeltaSeconds = ((now - last) / 1000) * speed;
-      clock.current = Math.min(clock.current + replayDeltaSeconds, replayEnd);
-      last = now;
-      svg.setCurrentTime(clock.current);
-      if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
-      if (rangeRef.current && !scrubbingRef.current) rangeRef.current.value = String(clock.current);
-      updateLive(clock.current, true, replayDeltaSeconds);
-      if (clock.current >= replayEnd) {
-        setPlaying(false);
-        return;
-      }
-      frame = requestAnimationFrame(tick);
-    });
-    return () => cancelAnimationFrame(frame);
-  }, [playing, speed, replayEnd]);
-
-  useEffect(() => {
-    if (driverFocus) localStorage.removeItem(REPLAY_FOCUS_KEY);
-    else localStorage.setItem(REPLAY_FOCUS_KEY, "0");
-  }, [driverFocus]);
-
-  useEffect(() => {
-    setSpeed(1);
-    setDriverFocus(localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
-    setCopyDismissed(localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
-  }, [preferencesResetSignal]);
-
-  useEffect(() => {
-    setSpeed(1);
-  }, [result.seed, titleKey]);
-
-  useEffect(() => () => positionPopTimers.current.forEach(window.clearTimeout), []);
-
-  function seek(time: number) {
-    clock.current = Math.max(0, Math.min(time, replayEnd));
-    svgRef.current?.setCurrentTime?.(clock.current);
-    if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
-    if (rangeRef.current) rangeRef.current.value = String(clock.current);
-    positionPopTimers.current.forEach(window.clearTimeout);
-    positionPopTimers.current = [];
-    setPositionPops({});
-    const progress = raceProgressAt(clock.current, raceDuration);
-    orderRef.current = replayOrderAtProgress(result, replayTrace, progress);
-    updateLive(clock.current, false);
-  }
-
-  useEffect(() => {
-    if (!initialLap) return;
-    seek(raceTimeAtProgress(Math.max(0, Math.min(circuit.laps - 1, initialLap - 1)) / circuit.laps));
-  }, [initialLap, circuit.laps, replayEnd]);
-
-  function restart() {
-    setPositionPops({});
-    seek(0);
-    setPlaying(true);
-  }
-
-  function updateLive(time: number, animatePositions = true, elapsedSeconds = 1 / 60) {
-    setActiveMomentId(activeMomentIdAt(time));
-    const progress = raceProgressAt(time, raceDuration);
-    const raceTime = Math.max(0, time - START_HOLD_SECONDS);
-    const displayLap = displayLapAtProgress(progress, circuit.laps);
-    const segment = segmentAtProgress(progress);
-    setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
-    const targetSnapshot = replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, orderRef.current);
-    const carProgress = animatePositions && smoothTracePositions ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress, elapsedSeconds) : targetSnapshot.carProgress;
-    const nextTower = liveClassificationByCarProgress(result, replayTrace, progress, carProgress, orderRef.current);
-    const nextSnapshot = { carProgress, tower: nextTower };
-    const nextOrder = nextTower.map((entry) => entry.teamId);
-    if (orderRef.current.join("|") !== nextOrder.join("|")) {
-      if (animatePositions) {
-        const deltas = positionDeltas(orderRef.current, nextOrder);
-        const key = Math.round(time * 1000);
-        const pops = Object.fromEntries(Object.entries(deltas).map(([teamId, delta]) => [teamId, { delta, key }]));
-        setPositionPops((current) => ({ ...current, ...pops }));
-        for (const teamId of Object.keys(pops)) {
-          positionPopTimers.current.push(
-            window.setTimeout(() => {
-              setPositionPops((current) => (current[teamId]?.key === key ? Object.fromEntries(Object.entries(current).filter(([id]) => id !== teamId)) : current));
-            }, 1100)
-          );
-        }
-      }
-      orderRef.current = nextOrder;
-    }
-    snapshotRef.current = nextSnapshot;
-    setSnapshot(nextSnapshot);
-  }
-
-  const qualifyingMomentEvents = replayMode === "qualifying" ? buildQualifyingMomentEvents(directorBeats, result) : [];
-  // Majors and player moments first pick, race notes as filler — then strict race order.
-  const keyMoments = (replayMode === "qualifying" ? qualifyingMomentEvents : [
-    ...result.events.filter((event) => event.severity === "major"),
-    ...result.events.filter((event) => event.type === "pit_stop"),
-    ...result.events.filter((event) => event.teamId === playerTeamId || event.relatedTeamId === playerTeamId),
-    ...(overlayActions ? [] : result.events.filter((event) => event.severity === "minor" && (event.type === "race_note" || event.tags.includes("mini_info"))))
-  ])
-    .filter((event, index, events) => events.findIndex((candidate) => candidate.id === event.id) === index)
-    .sort((left, right) => left.order - right.order);
 
   // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.
   const markerByLap = new Map<number, { texts: string[]; player: boolean; time: number }>();
@@ -813,14 +759,6 @@ export function ReplayView({
   const latestPlayerBeat = [...directorBeats].reverse().find((beat) => beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId);
   const seekValueText = `${tt("unit_lap")} ${live.lap}/${circuit.laps}, ${Math.round(clock.current)}s`;
   const directorTitle = replayMode === "qualifying" ? tt("replay_director_chrono_title") : tt("replay_director_title");
-
-  function eventTime(event: RaceEvent) {
-    return raceTimeAtProgress(eventTraceProgress(event, maxLap));
-  }
-
-  function activeMomentIdAt(time: number) {
-    return keyMoments.find((event) => Math.abs(eventTime(event) - time) <= MOMENT_NOTIFICATION_SECONDS)?.id ?? null;
-  }
 
   return (
     <div className="view-stack">

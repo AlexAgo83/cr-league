@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 62%
+> Progress: 70%
 > Complexity: Low
 > Theme: Web architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -34,6 +34,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-20 first implementation wave: useReplayClock now owns the replay clock loop, seek/restart state, live lap/segment updates, and position-pop timer lifecycle. ReplayView.tsx is reduced from 1071 to 1004 lines, and the previous react-hooks exhaustive-deps warnings are gone. Remaining: move scrubber, timing tower, and stage sub-components under replay/ and continue reducing ReplayView toward a composition file.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

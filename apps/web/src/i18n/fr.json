@@ -128,6 +128,7 @@
   "plan_subscreen_chrono": "Chrono",
   "plan_subscreen_gp": "GP",
   "plan_report_empty_body": "Ce rapport est encore vide parce que le Grand Prix n'a pas encore été lancé. Lance-le pour remplir les phases de course, récompenses et moments clés.",
+  "plan_report_empty_placeholder": "À venir après le GP",
   "directive_plan_summary": "Rythme {approach}, pneus {preparation}, batterie {pitStrategy}, {card}. Teste en chrono, puis verrouille pour le GP.",
   "directive_card_locked": "Le chrono a verrouillé la carte qualif sélectionnée pour ce GP.",
   "field_league": "Ligue",

@@ -429,7 +429,9 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: `${roundOneCircuit.city} ${t(roundOneCircuit.layoutKey, "en")}` })).toBeTruthy();
     expect(screen.getByText("Race report")).toBeTruthy();
     expect(screen.getByText("This report is still empty because the Grand Prix has not been run yet.", { exact: false })).toBeTruthy();
-    expect(screen.queryByRole("heading", { name: "Race phases" })).toBe(null);
+    expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Rewards" })).toBeTruthy();
+    expect(screen.getAllByText("Coming after the GP").length).toBeGreaterThan(1);
     fireEvent.click(screen.getByRole("tab", { name: "Plan" }));
     // The switcher doubles as the plan summary: each tab shows the current pick.
     expect(screen.getByRole("tab", { name: "Approach: Balanced" })).toBeTruthy();

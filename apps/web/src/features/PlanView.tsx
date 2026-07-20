@@ -1,4 +1,4 @@
-import { type CardId, type QualifyingRun, type RaceResult } from "@cr-league/shared";
+import { RACE_SEGMENTS, type CardId, type QualifyingRun, type RaceResult } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import type { CardFit, Translator } from "../app/helpers.js";
@@ -87,13 +87,51 @@ export function PlanView({
         reportResult ? (
           <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} tt={tt} />
         ) : (
-          <section className="panel report-hero plan-empty-report" aria-label={tt("result_tab_report")}>
-            <div className="report-headline">
-              <span className="section-kicker">{tt("result_race_report")}</span>
-              <h2>{reportTitle}</h2>
-              <p>{tt("plan_report_empty_body")}</p>
+          <>
+            <section className="panel report-hero plan-empty-report" aria-label={tt("result_tab_report")}>
+              <div className="report-headline">
+                <span className="section-kicker">{tt("result_race_report")}</span>
+                <h2>{reportTitle}</h2>
+                <p>{tt("plan_report_empty_body")}</p>
+              </div>
+            </section>
+            <div className="report-main-grid">
+              <div className="report-content-column">
+                <section className="panel report-phases">
+                  <h3>{tt("report_phases")}</h3>
+                  <ol className="report-phases-list" aria-label={tt("report_phases")}>
+                    {RACE_SEGMENTS.map((segment, index) => (
+                      <li key={segment}>
+                        <strong>
+                          {tt("result_replay_phase")} {index + 1}
+                        </strong>
+                        <span>{tt("plan_report_empty_placeholder")}</span>
+                      </li>
+                    ))}
+                  </ol>
+                </section>
+                <section className="panel report-rewards">
+                  <h3>{tt("report_rewards")}</h3>
+                  <p>{tt("plan_report_empty_placeholder")}</p>
+                </section>
+                <section className="panel report-key-moments">
+                  <h3>{tt("report_key_moments")}</h3>
+                  <p>{tt("plan_report_empty_placeholder")}</p>
+                </section>
+              </div>
+              <section className="panel report-side-recap">
+                <h2>{tt("result_recap_title")}</h2>
+                <div className="recap-grid">
+                  {(["result_difference", "result_your_directive", "result_plan_read", "result_next_lesson"] as const).map((key) => (
+                    <section key={key}>
+                      <h3>{tt(key)}</h3>
+                      <p>{tt("plan_report_empty_placeholder")}</p>
+                    </section>
+                  ))}
+                </div>
+              </section>
             </div>
-          </section>
+          </>
         )
       ) : activeSubscreen === "chrono" ? (
         <section className="panel chrono-report-panel" aria-label={tt("chrono_report_title")}>

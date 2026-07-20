@@ -29,11 +29,12 @@ model League {
 }
 
 model Profile {
-  id               String   @id @default(cuid())
-  email            String   @unique
-  recoveryCodeHash String
-  createdAt        DateTime @default(now())
-  updatedAt        DateTime @updatedAt
+  id                  String    @id @default(cuid())
+  email               String    @unique
+  recoveryCodeHash    String
+  recoveryEmailSentAt DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
 
   teams Team[]
 

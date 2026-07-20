@@ -9,6 +9,7 @@ import {
   getLeagueState,
   joinLeagueByCode,
   recoverProfile,
+  requestRecoveryCode,
   rejoinLeague,
   restartLeague,
   resolveCurrentGrandPrix,
@@ -20,8 +21,11 @@ import {
   updateTeamLivery,
   updateTeamName
 } from "./store.js";
+import type { RecoveryMailer } from "../../mailer.js";
 
-export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient, config?: Pick<ApiConfig, "adminEmails">) {
+const RECOVERY_REQUEST_OK = { ok: true, message: "If a profile exists for this email, a fresh recovery code will be sent." };
+
+export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient, config?: Pick<ApiConfig, "adminEmails">, mailer?: RecoveryMailer) {
   const recoveryLimiter = createRecoveryLimiter();
 
   app.post("/profiles", async (request, reply) => {
@@ -30,7 +34,28 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
 
     try {
-      return withAdminFlag(await createProfile(db, request.body), config);
+      return withAdminFlag(await createProfile(db, request.body, mailer), config);
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return sendLeagueRuleError(reply, error);
+      }
+      throw error;
+    }
+  });
+
+  app.post("/profiles/recovery-code", async (request, reply) => {
+    if (!isRequestRecoveryCodeBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected a valid email." });
+    }
+    const body = request.body as { email: string };
+
+    if (!recoveryLimiter.take(body.email ?? "", request.ip)) {
+      return reply.code(429).send({ error: "Too Many Requests", message: "Too many recovery attempts. Try again later." });
+    }
+
+    try {
+      await requestRecoveryCode(db, body, mailer);
+      return RECOVERY_REQUEST_OK;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -332,6 +357,12 @@ function isRecoverProfileBody(value: unknown): value is Parameters<typeof recove
   if (!value || typeof value !== "object") return false;
   const candidate = value as Record<string, unknown>;
   return typeof candidate.email === "string" && typeof candidate.recoveryCode === "string";
+}
+
+function isRequestRecoveryCodeBody(value: unknown): value is Parameters<typeof requestRecoveryCode>[1] {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.email === "string";
 }
 
 function isJoinBody(value: unknown): value is Parameters<typeof joinLeagueByCode>[1] {

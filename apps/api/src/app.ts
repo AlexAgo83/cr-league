@@ -6,10 +6,12 @@ import { registerAdminRoutes } from "./features/admin/routes.js";
 import { registerHealthRoutes } from "./features/health/routes.js";
 import { registerLeagueRoutes } from "./features/leagues/routes.js";
 import { registerSimulationRoutes } from "./features/simulation/routes.js";
+import { createRecoveryMailer, type RecoveryMailer } from "./mailer.js";
 
 export type AppDependencies = {
   db?: PrismaClient;
   logger?: boolean;
+  recoveryMailer?: RecoveryMailer;
 };
 
 export async function buildApp(config: ApiConfig, dependencies: AppDependencies = {}) {
@@ -35,7 +37,7 @@ export async function buildApp(config: ApiConfig, dependencies: AppDependencies 
   await registerSimulationRoutes(app);
   if (dependencies.db) {
     await registerAdminRoutes(app, dependencies.db, config);
-    await registerLeagueRoutes(app, dependencies.db, config);
+    await registerLeagueRoutes(app, dependencies.db, config, dependencies.recoveryMailer ?? createRecoveryMailer(config, app.log));
   }
 
   return app;

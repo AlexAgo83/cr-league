@@ -19,6 +19,7 @@ export function createMemoryDb(): PrismaClient {
     id: string;
     email: string;
     recoveryCodeHash: string;
+    recoveryEmailSentAt: Date | null;
     createdAt: Date;
   };
   type TeamRow = {
@@ -201,7 +202,7 @@ export function createMemoryDb(): PrismaClient {
                   }))
               : undefined
           })),
-      update: async ({ where, data }: { where: { id: string }; data: Partial<Pick<ProfileRow, "recoveryCodeHash">> }) => {
+      update: async ({ where, data }: { where: { id: string }; data: Partial<Pick<ProfileRow, "recoveryCodeHash" | "recoveryEmailSentAt">> }) => {
         const profile = profiles.find((candidate) => candidate.id === where.id);
         if (!profile) {
           const error = new Error("Profile not found") as Error & { code?: string };

@@ -1,10 +1,10 @@
 ## item_148_self_service_recovery_code_re_issue_by_email - Self-service recovery-code re-issue by email
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 45%
 > Complexity: Medium
 > Theme: Ship rails
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -46,6 +46,11 @@
 - Architecture decision(s): (none yet)
 - Request: `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`
 - Primary task(s): `task_062_orchestrate_email_backed_profile_recovery`
+
+# Implementation Notes
+- Wave 1: added `Profile.recoveryEmailSentAt`, `POST /profiles/recovery-code`, neutral success response for known/unknown/cooldown/send-failure cases, and reuse of the existing recovery limiter for email/IP throttling.
+- Wave 1: the re-issue path rotates the stored hash only after an active mailer accepts the new code, avoiding no-SMTP lockout in local/no-op mode.
+- Validation wave 1: `rtk npm run typecheck` passed; `rtk npm test -- apps/api/src/app.admin.test.ts` covers rotation, neutral unknown response, limiter, and cooldown.
 
 # AI Context
 - Summary: Self-service recovery-code re-issue by email

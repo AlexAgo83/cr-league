@@ -1,10 +1,10 @@
 ## item_147_send_the_recovery_code_at_profile_creation - Send the recovery code at profile creation
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 45%
 > Complexity: Low
 > Theme: Ship rails
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -41,6 +41,10 @@
 - Architecture decision(s): (none yet)
 - Request: `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`
 - Primary task(s): `task_062_orchestrate_email_backed_profile_recovery`
+
+# Implementation Notes
+- Wave 1: `createProfile` calls the injected mailer after the profile exists, returns `recoveryEmailSent`, and keeps profile creation successful when the mailer is inactive or throws.
+- Validation wave 1: `rtk npm run typecheck` passed; `rtk npm test -- apps/api/src/app.admin.test.ts` covers active, inactive, and failing mailers.
 
 # AI Context
 - Summary: Send the recovery code at profile creation

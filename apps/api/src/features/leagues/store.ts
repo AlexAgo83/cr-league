@@ -41,6 +41,7 @@ import type {
   JoinLeagueInput,
   LeagueState,
   ProfileSession,
+  RecoveryMailer,
   RecoverProfileInput,
   RejoinLeagueInput,
   ResolveGrandPrixInput,
@@ -91,7 +92,7 @@ export type {
   UpdateTeamNameInput
 } from "./types.js";
 
-export async function createProfile(db: Db, input: CreateProfileInput = {}): Promise<ProfileSession> {
+export async function createProfile(db: Db, input: CreateProfileInput = {}, mailer?: RecoveryMailer): Promise<ProfileSession & { recoveryEmailSent?: boolean }> {
   const email = normalizeEmail(input.email);
   if (!email) throw new LeagueRuleError("A valid email is required.");
 
@@ -106,7 +107,50 @@ export async function createProfile(db: Db, input: CreateProfileInput = {}): Pro
     }
   });
 
-  return { profile: { id: profile.id, email: profile.email }, recoveryCode, teams: [] };
+  let recoveryEmailSent = false;
+  if (mailer) {
+    try {
+      recoveryEmailSent = await mailer.sendRecoveryCode(email, recoveryCode);
+      if (recoveryEmailSent) {
+        await db.profile.update({ where: { id: profile.id }, data: { recoveryEmailSentAt: new Date() } });
+      }
+    } catch (error) {
+      console.error("Recovery email failed after profile creation.", error);
+    }
+  }
+
+  return { profile: { id: profile.id, email: profile.email }, recoveryCode, recoveryEmailSent, teams: [] };
+}
+
+export async function requestRecoveryCode(db: Db, input: { email?: string } = {}, mailer?: RecoveryMailer, now = new Date()) {
+  const email = normalizeEmail(input.email);
+  if (!email) throw new LeagueRuleError("A valid email is required.");
+
+  const profile = await db.profile.findUnique({ where: { email } });
+  if (!profile || !mailer?.active || isRecoveryEmailCoolingDown(profile.recoveryEmailSentAt, now)) return { ok: true };
+
+  const recoveryCode = createRecoveryCode();
+  let sent = false;
+  try {
+    sent = await mailer.sendRecoveryCode(email, recoveryCode);
+  } catch (error) {
+    console.error("Recovery email re-issue failed.", error);
+  }
+  if (!sent) return { ok: true };
+
+  await db.profile.update({
+    where: { id: profile.id },
+    data: {
+      recoveryCodeHash: hashRecoveryCode(recoveryCode),
+      recoveryEmailSentAt: now
+    }
+  });
+
+  return { ok: true };
+}
+
+function isRecoveryEmailCoolingDown(sentAt: Date | null | undefined, now: Date) {
+  return sentAt ? now.getTime() - sentAt.getTime() < 15 * 60 * 1000 : false;
 }
 
 export async function recoverProfile(db: Db, input: RecoverProfileInput = {}): Promise<ProfileSession | null> {

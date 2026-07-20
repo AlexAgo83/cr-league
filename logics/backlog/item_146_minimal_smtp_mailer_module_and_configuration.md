@@ -1,10 +1,10 @@
 ## item_146_minimal_smtp_mailer_module_and_configuration - Minimal SMTP mailer module and configuration
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 45%
 > Complexity: Low
 > Theme: Ship rails
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -40,6 +40,11 @@
 - Architecture decision(s): (none yet)
 - Request: `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`
 - Primary task(s): `task_062_orchestrate_email_backed_profile_recovery`
+
+# Implementation Notes
+- Wave 1: `apps/api/src/mailer.ts` exposes `sendRecoveryCode`, activates from `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASS`/`MAIL_FROM`, and no-ops without logging the recovery code when SMTP is absent.
+- Wave 1: `buildApp` accepts an injected recovery mailer; tests use a recording fake, so no test opens SMTP.
+- Validation wave 1: `rtk npm run typecheck` passed; `rtk npm test -- apps/api/src/app.admin.test.ts` passed.
 
 # AI Context
 - Summary: Minimal SMTP mailer module and configuration

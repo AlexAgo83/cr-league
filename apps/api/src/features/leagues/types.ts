@@ -5,6 +5,11 @@ export type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecis
   $transaction?: <T>(fn: (tx: Db) => Promise<T>) => Promise<T>;
 };
 
+export type RecoveryMailer = {
+  active: boolean;
+  sendRecoveryCode(email: string, code: string): Promise<boolean>;
+};
+
 export type CreateLeagueInput = {
   name?: string;
   teamName?: string;

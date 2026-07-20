@@ -1,7 +1,21 @@
 import { describe, expect, it } from "vitest";
 import { createTestApp } from "./app.testHelpers.js";
+import type { RecoveryMailer } from "./mailer.js";
 import { hashLegacyRecoveryCode } from "./features/leagues/utils.js";
 import { createMemoryDb } from "./testMemoryDb.js";
+
+function recordingMailer(options: { active?: boolean; throwOnSend?: boolean } = {}) {
+  const sent: Array<{ email: string; code: string }> = [];
+  const mailer: RecoveryMailer = {
+    active: options.active ?? true,
+    async sendRecoveryCode(email, code) {
+      if (options.throwOnSend) throw new Error("SMTP down");
+      sent.push({ email, code });
+      return mailer.active;
+    }
+  };
+  return { mailer, sent };
+}
 
 describe("api app profile and admin", () => {
   it("creates and recovers a profile with linked league teams", async () => {
@@ -100,6 +114,88 @@ describe("api app profile and admin", () => {
 
     await app.close();
 
+    expect(limitedResponse.statusCode).toBe(429);
+  });
+
+  it("emails recovery codes on profile creation when mail is active", async () => {
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(createMemoryDb(), undefined, [], "http://localhost:4873", mailer);
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/profiles",
+      payload: { email: "pilot@example.test" }
+    });
+
+    await app.close();
+
+    expect(response.statusCode).toBe(200);
+    expect(response.json().recoveryEmailSent).toBe(true);
+    expect(sent).toEqual([{ email: "pilot@example.test", code: response.json().recoveryCode }]);
+  });
+
+  it("keeps profile creation working when recovery email is inactive or fails", async () => {
+    const inactive = recordingMailer({ active: false });
+    const inactiveApp = await createTestApp(createMemoryDb(), undefined, [], "http://localhost:4873", inactive.mailer);
+    const inactiveResponse = await inactiveApp.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    await inactiveApp.close();
+
+    const failing = recordingMailer({ throwOnSend: true });
+    const failingApp = await createTestApp(createMemoryDb(), undefined, [], "http://localhost:4873", failing.mailer);
+    const failingResponse = await failingApp.inject({ method: "POST", url: "/profiles", payload: { email: "driver@example.test" } });
+    await failingApp.close();
+
+    expect(inactiveResponse.statusCode).toBe(200);
+    expect(inactiveResponse.json().recoveryEmailSent).toBe(false);
+    expect(inactive.sent).toHaveLength(1);
+    expect(failingResponse.statusCode).toBe(200);
+    expect(failingResponse.json().recoveryEmailSent).toBe(false);
+  });
+
+  it("re-issues recovery codes by email without leaking profile existence", async () => {
+    const db = createMemoryDb();
+    const setupApp = await createTestApp(db);
+    const profileResponse = await setupApp.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const oldCode = profileResponse.json().recoveryCode;
+    await setupApp.close();
+
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(db, undefined, [], "http://localhost:4873", mailer);
+    const knownResponse = await app.inject({ method: "POST", url: "/profiles/recovery-code", payload: { email: "pilot@example.test" } });
+    const unknownResponse = await app.inject({ method: "POST", url: "/profiles/recovery-code", payload: { email: "missing@example.test" } });
+    const oldRecoverResponse = await app.inject({ method: "POST", url: "/profiles/recover", payload: { email: "pilot@example.test", recoveryCode: oldCode } });
+    const newRecoverResponse = await app.inject({ method: "POST", url: "/profiles/recover", payload: { email: "pilot@example.test", recoveryCode: sent[0]?.code } });
+    await app.close();
+
+    expect(knownResponse.statusCode).toBe(200);
+    expect(unknownResponse.statusCode).toBe(200);
+    expect(knownResponse.json()).toEqual(unknownResponse.json());
+    expect(sent).toHaveLength(1);
+    expect(oldRecoverResponse.statusCode).toBe(404);
+    expect(newRecoverResponse.statusCode).toBe(200);
+  });
+
+  it("rate-limits and cooldowns recovery-code re-issue without changing the neutral body", async () => {
+    const db = createMemoryDb();
+    const setupApp = await createTestApp(db);
+    const profileResponse = await setupApp.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    await db.profile.update({ where: { id: profileResponse.json().profile.id }, data: { recoveryEmailSentAt: new Date() } });
+    await setupApp.close();
+
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(db, undefined, [], "http://localhost:4873", mailer);
+    const cooldownResponse = await app.inject({ method: "POST", url: "/profiles/recovery-code", payload: { email: "pilot@example.test" } });
+    const unknownResponse = await app.inject({ method: "POST", url: "/profiles/recovery-code", payload: { email: "missing@example.test" } });
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      await app.inject({ method: "POST", url: "/profiles/recovery-code", payload: { email: "limited@example.test" } });
+    }
+    const limitedResponse = await app.inject({ method: "POST", url: "/profiles/recovery-code", payload: { email: "limited@example.test" } });
+    await app.close();
+
+    expect(cooldownResponse.statusCode).toBe(200);
+    expect(unknownResponse.statusCode).toBe(200);
+    expect(cooldownResponse.json()).toEqual(unknownResponse.json());
+    expect(sent).toHaveLength(0);
     expect(limitedResponse.statusCode).toBe(429);
   });
 

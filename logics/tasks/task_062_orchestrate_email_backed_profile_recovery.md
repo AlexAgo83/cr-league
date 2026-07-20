@@ -1,20 +1,21 @@
 ## task_062_orchestrate_email_backed_profile_recovery - Orchestrate email-backed profile recovery
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 45%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
 
 # Plan
-- [ ] 1. Gate on req_058 item_135 being Done: this chain consumes its code generator, scrypt hashing, and rate limiter; do not start before it lands on main.
-- [ ] 2. Build the mailer module and config wiring with the injected fake and both-mode tests.
+- [x] 1. Gate on req_058 item_135 being Done: this chain consumes its code generator, scrypt hashing, and rate limiter; do not start before it lands on main.
+- [x] 2. Build the mailer module and config wiring with the injected fake and both-mode tests.
 - [ ] 3. Wire send-on-create with the sent flag, web copy updates, and failure tolerance.
 - [ ] 4. Add the Prisma cooldown migration, the neutral re-issue endpoint with limiter and cooldown, and the web request-by-email path.
 - [ ] 5. Update docs/runtime-configuration.md with the shipped endpoints and Gmail notes.
@@ -45,7 +46,9 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- Wave 1 gate: req_058 item_135 had landed; `createRecoveryCode`, scrypt hashing, legacy upgrade, and the in-process recovery limiter are present in `apps/api/src/features/leagues/utils.ts` and `routes.ts`.
+- Wave 1 implementation: added SMTP config, `createRecoveryMailer`, mailer injection, profile-creation email send flag/failure tolerance, `recoveryEmailSentAt` Prisma migration, and neutral `POST /profiles/recovery-code` re-issue with rate limiting and cooldown.
+- Wave 1 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/api/src/app.admin.test.ts`.
 
 # AI Context
 - Summary: Orchestrate email-backed profile recovery

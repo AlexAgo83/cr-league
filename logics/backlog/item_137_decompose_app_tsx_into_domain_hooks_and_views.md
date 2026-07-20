@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 96%
+> Progress: 97%
 > Complexity: Medium
 > Theme: Web architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -44,6 +44,7 @@
 - 2026-07-20 second implementation wave: restart league now uses a Modal confirmation instead of window.confirm; SeasonRecapModal and LeagueControlsModal moved to apps/web/src/app/AppModals.tsx; the empty src/lib and src/ui placeholder .gitkeep files were removed. App.tsx is 1791 lines after this slice, so AC1 remains open for further decomposition.
 - 2026-07-20 third implementation wave: simple modal JSX moved into AppModals.tsx, covering profile code, profile logout, preferences reset, technical error, directive/qualifying/next-GP confirmations, and admin delete. App.tsx is 1714 lines; AppModals.tsx is 286 lines. AC1 remains open.
 - 2026-07-20 fourth implementation wave: DriveView.tsx now owns the drive screen presentation and remains below 400 lines. App.tsx dropped to 1496 lines but AC1 remains open because the target is below ~700 lines; next low-risk extraction is setup/admin/topbar or a domain hook around profile/league mutations.
+- 2026-07-20 fifth implementation wave: GameViews.tsx now owns the non-drive view switch for result, plan, championship, garage, admin, and changelog presentation. App.tsx dropped to 1468 lines and GameViews.tsx is 190 lines. AC1 remains open; next low-risk extraction is setup/profile/admin chrome or a domain hook around league/profile mutations.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

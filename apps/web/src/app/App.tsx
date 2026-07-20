@@ -6,22 +6,22 @@ import { cardFit, clampNumber, completedSeasonSummaries, startingGrid, strongest
 import { GAME_VIEWS, type AdminLeague, type AdminUser, type FormState, type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
 import { AssetImage } from "../features/AssetImage.js";
-import { CHAMPIONSHIP_RECORD_TAB_KEY, ChampionshipView } from "../features/ChampionshipView.js";
+import { CHAMPIONSHIP_RECORD_TAB_KEY } from "../features/ChampionshipView.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import { circuitRouteAnalysis } from "../features/CircuitMap.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
-import { GARAGE_PANEL_KEY, GarageView } from "../features/GarageView.js";
+import { GARAGE_PANEL_KEY } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
 import { Modal } from "../features/Modal.js";
 import { ModalHero } from "../features/ModalHero.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
-import { PlanView } from "../features/PlanView.js";
 import { PositionBadge } from "../features/PositionBadge.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY } from "../features/ReplayView.js";
-import { ResultView, type ResultTab } from "../features/ResultView.js";
+import type { ResultTab } from "../features/ResultView.js";
 import { CountryBadge } from "../features/VisualIcon.js";
 import { AdminDeleteUserModal, ConfirmActionModal, LeagueControlsModal, NextGrandPrixConfirmModal, ProfileCodeModal, RestartConfirmModal, SeasonRecapModal } from "./AppModals.js";
 import { DriveView } from "./DriveView.js";
+import { GameViews } from "./GameViews.js";
 import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, SetupShell, type OnboardingHelpTopic } from "./OnboardingShell.js";
 import {
   ACTIVE_PLAYER_CLAIM_KEY,
@@ -1308,30 +1308,57 @@ export function App() {
             </button>
           </div>
         ) : null}
-        {gameView === "admin" && profileSession?.admin ? adminView : null}
-        {gameView === "drive" && visibleResult ? (
-          <ResultView
-            state={leagueState}
-            result={visibleResult}
-            circuit={visibleResultCircuit}
-            playerTeamId={playerTeam?.id}
-            playerDecision={playerDecision}
-            tab={resultTab}
-            traitImpacts={replayTraitImpacts}
-            preferencesResetSignal={preferencesResetSignal}
-            showReplayIntro={!historyReplay}
-            onOpenReplay={() => setResultTab("replay")}
-            onOpenReport={() => setResultTab("report")}
-            onClose={() => {
-              if (historyReplay) {
-                closeHistoryReplay();
-                return;
-              }
-              setResultOpen(false);
-            }}
-            tt={tt}
-          />
-        ) : null}
+        <GameViews
+          gameView={gameView}
+          state={leagueState}
+          visibleResult={visibleResult}
+          visibleResultCircuit={visibleResultCircuit}
+          playerTeam={playerTeam}
+          playerDecision={playerDecision}
+          resultTab={resultTab}
+          replayTraitImpacts={replayTraitImpacts}
+          preferencesResetSignal={preferencesResetSignal}
+          historyReplay={historyReplay}
+          currentCircuit={currentCircuit}
+          directiveStep={directiveStep}
+          status={status}
+          form={form}
+          ownedCardIds={ownedCardIds}
+          planSubscreen={planSubscreen}
+          playerQualifyingRuns={playerQualifyingRuns}
+          qualifyingAttemptLimit={qualifyingAttemptLimit}
+          qualifyingAttemptsLeft={qualifyingAttemptsLeft}
+          selectedCardFit={selectedCardFit}
+          selectedCardId={selectedCardId}
+          championshipRecordTab={championshipRecordTab}
+          playerResult={playerResult}
+          consumedCardIds={consumedCardIds}
+          forecastPick={forecastPick}
+          isResolved={isResolved}
+          pendingMessage={pendingMessage}
+          garagePanel={garagePanel}
+          adminView={adminView}
+          chronoReport={chronoReport}
+          qualifyingLockedCardId={qualifyingLockedCardId}
+          profileIsAdmin={Boolean(profileSession?.admin)}
+          setResultTab={setResultTab}
+          setResultOpen={setResultOpen}
+          closeHistoryReplay={closeHistoryReplay}
+          setDirectiveStep={setDirectiveStep}
+          setForm={setForm}
+          setGameView={setGameView}
+          setPlanSubscreen={setPlanSubscreen}
+          setQualifyingResult={setQualifyingResult}
+          openHistoryReplay={openHistoryReplay}
+          setSeasonRecapSeason={setSeasonRecapSeason}
+          setChampionshipRecordTab={setChampionshipRecordTab}
+          buyCard={buyCard}
+          sellCard={sellCard}
+          setGaragePanel={setGaragePanel}
+          updateLivery={updateLivery}
+          updateTeamName={updateTeamName}
+          tt={tt}
+        />
         {gameView === "drive" && !historyReplay && (!result || !resultOpen) ? (
           <DriveView
             state={leagueState}
@@ -1371,61 +1398,6 @@ export function App() {
             tt={tt}
           />
         ) : null}
-        {gameView === "plan" ? (
-          <PlanView
-            cardLocked={Boolean(qualifyingLockedCardId)}
-            chronoReport={chronoReport}
-            circuitTraits={currentCircuit.traits}
-            directiveStep={directiveStep}
-            disabled={status === "loading" || Boolean(playerDecision) || isResolved}
-            form={form}
-            ownedCardIds={ownedCardIds}
-            planSubscreen={planSubscreen}
-            playerQualifyingRuns={playerQualifyingRuns}
-            qualifyingAttemptLimit={qualifyingAttemptLimit}
-            qualifyingAttemptsLeft={qualifyingAttemptsLeft}
-            selectedCardFit={selectedCardFit}
-            selectedCardId={selectedCardId}
-            onSetDirectiveStep={setDirectiveStep}
-            onSetForm={setForm}
-            onSetGameView={setGameView}
-            onSetPlanSubscreen={setPlanSubscreen}
-            onSetQualifyingResult={setQualifyingResult}
-            tt={tt}
-          />
-        ) : null}
-        {gameView === "championship" ? (
-          <ChampionshipView
-            state={leagueState}
-            playerTeamId={playerTeam?.id}
-            recordTab={championshipRecordTab}
-            onReplayGrandPrix={openHistoryReplay}
-            onOpenSeasonRecap={setSeasonRecapSeason}
-            onSelectRecordTab={setChampionshipRecordTab}
-            tt={tt}
-          />
-        ) : null}
-        {gameView === "garage" ? (
-          <GarageView
-            state={leagueState}
-            playerTeam={playerTeam}
-            playerResult={playerResult}
-            consumedCardIds={consumedCardIds}
-            ownedCardIds={ownedCardIds}
-            forecastPick={forecastPick}
-            isResolved={isResolved}
-            loading={status === "loading"}
-            pendingMessage={pendingMessage}
-            cardPanel={garagePanel}
-            onBuyCard={buyCard}
-            onSellCard={sellCard}
-            onSelectCardPanel={setGaragePanel}
-            onUpdateLivery={updateLivery}
-            onUpdateTeamName={updateTeamName}
-            tt={tt}
-          />
-        ) : null}
-        {gameView === "changelog" ? <ChangelogView currentVersion={APP_VERSION} tt={tt} /> : null}
       </section>
 
       {notificationStack}

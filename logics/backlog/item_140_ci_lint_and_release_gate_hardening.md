@@ -1,10 +1,10 @@
 ## item_140_ci_lint_and_release_gate_hardening - CI, lint, and release-gate hardening
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 0
+> Progress: 15%
 > Complexity: Low
 > Theme: Engineering infrastructure
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createTestApp } from "./app.testHelpers.js";
+import { hashLegacyRecoveryCode } from "./features/leagues/utils.js";
 import { createMemoryDb } from "./testMemoryDb.js";
 
 describe("api app profile and admin", () => {
@@ -39,7 +40,7 @@ describe("api app profile and admin", () => {
     expect(profile).toMatchObject({
       profile: { email: "pilot@example.test" },
       admin: true,
-      recoveryCode: expect.stringMatching(/^[0-9A-F]{8}$/),
+      recoveryCode: expect.stringMatching(/^[0-9A-F]{32}$/),
       teams: []
     });
     expect(duplicateResponse.statusCode).toBe(409);
@@ -51,6 +52,55 @@ describe("api app profile and admin", () => {
       teams: [expect.objectContaining({ leagueName: "Office League", teamName: "Volt Union" })]
     });
     expect(badRecoverResponse.statusCode).toBe(404);
+  });
+
+  it("upgrades legacy recovery hashes on successful recovery", async () => {
+    const db = createMemoryDb();
+    const app = await createTestApp(db);
+    const profileResponse = await app.inject({
+      method: "POST",
+      url: "/profiles",
+      payload: { email: "legacy@example.test" }
+    });
+    const profile = profileResponse.json();
+    await db.profile.update({
+      where: { id: profile.profile.id },
+      data: { recoveryCodeHash: hashLegacyRecoveryCode(profile.recoveryCode) }
+    });
+
+    const recoverResponse = await app.inject({
+      method: "POST",
+      url: "/profiles/recover",
+      payload: { email: "legacy@example.test", recoveryCode: profile.recoveryCode }
+    });
+    const upgraded = await db.profile.findUnique({ where: { id: profile.profile.id } });
+
+    await app.close();
+
+    expect(recoverResponse.statusCode).toBe(200);
+    expect(upgraded?.recoveryCodeHash).toMatch(/^scrypt\$/);
+  });
+
+  it("rate-limits repeated profile recovery attempts", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    for (let attempt = 0; attempt < 5; attempt += 1) {
+      const response = await app.inject({
+        method: "POST",
+        url: "/profiles/recover",
+        payload: { email: "pilot@example.test", recoveryCode: `BAD-${attempt}` }
+      });
+      expect(response.statusCode).toBe(404);
+    }
+    const limitedResponse = await app.inject({
+      method: "POST",
+      url: "/profiles/recover",
+      payload: { email: "pilot@example.test", recoveryCode: "BAD-5" }
+    });
+
+    await app.close();
+
+    expect(limitedResponse.statusCode).toBe(429);
   });
 
   it("guards admin routes behind the configured bearer token", async () => {
@@ -163,7 +213,7 @@ describe("api app profile and admin", () => {
     ]);
     expect(usersResponse.body).not.toContain("recoveryCodeHash");
     expect(resetResponse.statusCode).toBe(200);
-    expect(resetResponse.json().recoveryCode).toMatch(/^[0-9A-F]{8}$/);
+    expect(resetResponse.json().recoveryCode).toMatch(/^[0-9A-F]{32}$/);
     expect(oldRecoveryResponse.statusCode).toBe(404);
     expect(newRecoveryResponse.statusCode).toBe(200);
     expect(deleteResponse.statusCode).toBe(200);

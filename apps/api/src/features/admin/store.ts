@@ -1,6 +1,6 @@
-import { createHash, randomBytes } from "node:crypto";
 import type { PrismaClient } from "@prisma/client";
 import { getLeagueState } from "../leagues/store.js";
+import { createRecoveryCode, hashRecoveryCode } from "../leagues/utils.js";
 
 type Db = Pick<PrismaClient, "profile" | "team" | "league">;
 
@@ -29,10 +29,10 @@ export async function listAdminUsers(db: Db) {
 }
 
 export async function resetAdminUserRecoveryCode(db: Db, profileId: string) {
-  const recoveryCode = randomBytes(4).toString("hex").toUpperCase();
+  const recoveryCode = createRecoveryCode();
   const profile = await db.profile.update({
     where: { id: profileId },
-    data: { recoveryCodeHash: createHash("sha256").update(recoveryCode).digest("hex") }
+    data: { recoveryCodeHash: hashRecoveryCode(recoveryCode) }
   });
 
   return {

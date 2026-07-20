@@ -71,7 +71,8 @@ import {
   profileSession,
   randomLivery,
   removeOneCard,
-  uniqueBotLivery
+  uniqueBotLivery,
+  verifyRecoveryCode
 } from "./utils.js";
 
 export { LeagueRuleError } from "./errors.js";
@@ -114,7 +115,14 @@ export async function recoverProfile(db: Db, input: RecoverProfileInput = {}): P
   if (!email || !recoveryCode) throw new LeagueRuleError("Email and recovery code are required.");
 
   const profile = await db.profile.findUnique({ where: { email } });
-  if (!profile || profile.recoveryCodeHash !== hashRecoveryCode(recoveryCode)) return null;
+  const verification = profile ? verifyRecoveryCode(recoveryCode, profile.recoveryCodeHash) : false;
+  if (!profile || !verification) return null;
+  if (verification === "legacy") {
+    await db.profile.update({
+      where: { id: profile.id },
+      data: { recoveryCodeHash: hashRecoveryCode(recoveryCode) }
+    });
+  }
 
   return profileSession(db, profile.id);
 }

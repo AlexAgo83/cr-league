@@ -1,10 +1,10 @@
 ## item_139_postgres_integration_test_ci_lane_for_concurrent_store_paths - Postgres integration-test CI lane for concurrent store paths
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Test integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -1,10 +1,10 @@
 ## item_135_brute_force_resistant_account_recovery - Brute-force-resistant account recovery
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Account security
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-20 implementation wave: createRecoveryCode now uses 16 random bytes; recovery hashes use salted scrypt in a self-describing format; legacy SHA-256 hashes verify and upgrade on successful recovery; /profiles/recover is throttled per normalized email and IP; admin recovery resets reuse the same generator/hash path. Remaining before item closeout: full-suite verification with the rest of req_058.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

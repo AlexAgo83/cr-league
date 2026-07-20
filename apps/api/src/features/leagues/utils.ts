@@ -1,5 +1,5 @@
 import { CARD_DEFINITIONS, clampTrait, type CardId, type QualifyingRun, type RaceInput, type RaceTraits, type TeamLivery, type Weather } from "@cr-league/shared";
-import { createHash, randomBytes } from "node:crypto";
+import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { Prisma } from "@prisma/client";
 import {
   DEFAULT_LIVERY,
@@ -46,11 +46,35 @@ export function createClaimCode() {
 }
 
 export function createRecoveryCode() {
-  return randomBytes(4).toString("hex").toUpperCase();
+  return randomBytes(16).toString("hex").toUpperCase();
 }
 
 export function hashRecoveryCode(code: string) {
-  return createHash("sha256").update(code.trim().toUpperCase()).digest("hex");
+  const salt = randomBytes(16).toString("hex");
+  const key = scryptSync(normalizeRecoveryCode(code), salt, 32).toString("hex");
+  return `scrypt$${salt}$${key}`;
+}
+
+export function hashLegacyRecoveryCode(code: string) {
+  return createHash("sha256").update(normalizeRecoveryCode(code)).digest("hex");
+}
+
+export function verifyRecoveryCode(code: string, hash: string): "current" | "legacy" | false {
+  const normalizedCode = normalizeRecoveryCode(code);
+  if (hash.startsWith("scrypt$")) {
+    const [, salt, key] = hash.split("$");
+    if (!salt || !key) return false;
+    const expected = Buffer.from(key, "hex");
+    const actual = scryptSync(normalizedCode, salt, expected.length);
+    return expected.length === actual.length && timingSafeEqual(expected, actual) ? "current" : false;
+  }
+  const expected = Buffer.from(hashLegacyRecoveryCode(normalizedCode), "hex");
+  const actual = Buffer.from(hash, "hex");
+  return expected.length === actual.length && timingSafeEqual(expected, actual) ? "legacy" : false;
+}
+
+function normalizeRecoveryCode(code: string) {
+  return code.trim().toUpperCase();
 }
 
 export function normalizeEmail(value: unknown) {

@@ -1,10 +1,10 @@
 ## item_136_api_trust_boundary_and_atomicity_fixes - API trust-boundary and atomicity fixes
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: API integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

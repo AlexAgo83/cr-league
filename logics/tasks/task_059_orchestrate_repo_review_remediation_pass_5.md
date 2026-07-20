@@ -1,13 +1,14 @@
 ## task_059_orchestrate_repo_review_remediation_pass_5 - Orchestrate repo review remediation pass 5
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -50,6 +51,7 @@
 
 # Report
 - Implementation complete.
+- 2026-07-20 wave 1: implemented item_135 recovery hardening baseline: 16-byte recovery codes, salted scrypt hash format with legacy SHA-256 upgrade, in-process email/IP limiter on /profiles/recover, admin reset using the shared generator, and API tests for length, legacy upgrade, and 429 lockout. Targeted verification: rtk npm test -- apps/api/src/app.admin.test.ts; rtk npm run typecheck; rtk npm run lint.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

@@ -22,6 +22,8 @@ import {
 } from "./store.js";
 
 export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient, config?: Pick<ApiConfig, "adminEmails">) {
+  const recoveryLimiter = createRecoveryLimiter();
+
   app.post("/profiles", async (request, reply) => {
     if (!isCreateProfileBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a valid email." });
@@ -41,9 +43,13 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     if (!isRecoverProfileBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected an email and recovery code." });
     }
+    const body = request.body as { email: string; recoveryCode: string };
 
     try {
-      const session = await recoverProfile(db, request.body);
+      if (!recoveryLimiter.take(body.email ?? "", request.ip)) {
+        return reply.code(429).send({ error: "Too Many Requests", message: "Too many recovery attempts. Try again later." });
+      }
+      const session = await recoverProfile(db, body);
       if (!session) return reply.code(404).send({ error: "Not Found", message: "Profile not found." });
       return withAdminFlag(session, config);
     } catch (error) {
@@ -287,6 +293,28 @@ function withAdminFlag<T extends { profile: { email: string } }>(session: T, con
 
 function isAdminEmail(email: string, config?: Pick<ApiConfig, "adminEmails">) {
   return Boolean(config?.adminEmails.includes(email.toLowerCase()));
+}
+
+function createRecoveryLimiter(limit = 5, windowMs = 15 * 60 * 1000) {
+  const buckets = new Map<string, { count: number; resetAt: number }>();
+  const take = (key: string) => {
+    const now = Date.now();
+    const bucket = buckets.get(key);
+    if (!bucket || bucket.resetAt <= now) {
+      buckets.set(key, { count: 1, resetAt: now + windowMs });
+      return true;
+    }
+    if (bucket.count >= limit) return false;
+    bucket.count += 1;
+    return true;
+  };
+
+  return {
+    take(email: string, ip: string) {
+      // ponytail: in-process limiter is enough for single-node Render; use Redis if API scales horizontally.
+      return take(`email:${email.trim().toLowerCase()}`) && take(`ip:${ip}`);
+    }
+  };
 }
 
 function sendLeagueRuleError(reply: FastifyReply, error: LeagueRuleError) {

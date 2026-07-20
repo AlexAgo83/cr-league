@@ -462,7 +462,8 @@
   display: inline-block;
   height: 30px;
   overflow: hidden;
-  width: 36px;
+  object-fit: contain;
+  width: 86px;
 }
 
 .brand-icon-cr {
@@ -473,8 +474,9 @@
   display: inline-block;
   filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.42));
   height: 25px;
+  object-fit: contain;
   overflow: hidden;
-  width: 96px;
+  width: 92px;
 }
 
 .brand strong {

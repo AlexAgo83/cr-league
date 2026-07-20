@@ -1,10 +1,10 @@
 ## item_158_build_the_splash_layout_header_covering_background_floating_titles_press_start - Build the splash layout: header, covering background, floating titles, PRESS START
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Home splash and brand first-contact
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -37,6 +37,7 @@
 - request-AC3 -> This backlog slice. Proof: AC5: Language switches from the splash and carries into the app.
 - request-AC5 -> This backlog slice. Proof: AC5: Language switches from the splash and carries into the app.
 - request-AC6 -> This backlog slice. Proof: AC5: Language switches from the splash and carries into the app.
+- request-AC4 -> This backlog slice. Evidence needed: Opening the app directly at any inner route (/garage, /plan/*, /championship/*, /admin, /changelog, /replay/:id) bypasses the splash and renders the target screen immediately.
 
 # Decision framing
 - Product framing: Not needed
@@ -57,3 +58,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_066_orchestrate_the_home_splash_landing_screen`
+
+# Notes
+- Task `task_066_orchestrate_the_home_splash_landing_screen` was finished via `logics-manager flow finish task` on 2026-07-20.

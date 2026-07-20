@@ -1,7 +1,7 @@
 ## req_065_home_splash_landing_screen_with_floating_title_and_press_start - Home splash landing screen with floating title and PRESS START
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

@@ -1,6 +1,6 @@
 ## prod_029_home_splash_landing_screen_product_brief - Home Splash Landing Screen Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_065_home_splash_landing_screen_with_floating_title_and_press_start`
 > Related backlog: `item_157_gate_a_home_splash_on_the_start_url_with_deep_link_bypass`, `item_158_build_the_splash_layout_header_covering_background_floating_titles_press_start`
 > Related task: `task_066_orchestrate_the_home_splash_landing_screen`

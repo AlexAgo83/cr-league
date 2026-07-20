@@ -39,7 +39,7 @@ For each release it:
 3. Waits for the `CI` workflow to succeed on the release commit.
 4. Creates a GitHub Deployment for the API service.
 5. Calls the Render API deploy hook.
-6. Polls production `/health` until the returned `version` equals the release tag without the leading `v` and `commit` equals the release SHA.
+6. Polls production `/health` for up to 10 minutes until the returned `version` equals the release tag without the leading `v` and `commit` equals the release SHA.
 7. Calls the Render web deploy hook.
 8. Marks the GitHub Deployment as `success` or `failure`.
 

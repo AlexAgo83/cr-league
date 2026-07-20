@@ -2044,18 +2044,15 @@ label small {
 }
 
 .form-feedback {
-  border-radius: 8px;
   font-size: 0.86rem;
-  font-weight: 800;
+  font-weight: 700;
   line-height: 1.35;
   margin: 0;
-  padding: 10px 12px;
+  padding: 0;
 }
 
 .form-feedback.error {
-  background: rgb(127 29 29 / 0.16);
-  border: 1px solid rgb(248 113 113 / 0.34);
-  color: #fecaca;
+  color: #8f1d1d;
 }
 
 @keyframes notification-countdown {

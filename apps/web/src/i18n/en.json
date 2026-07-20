@@ -44,7 +44,7 @@
   "status_profile_recovered": "Profile recovered.",
   "status_requesting_recovery_code": "Requesting recovery code...",
   "status_recovery_code_requested": "If a profile exists for this email, a fresh recovery code will be sent.",
-  "profile_error_email_required": "Enter the email attached to your profile.",
+  "profile_error_email_required": "Email required to recover your profile.",
   "profile_error_email_invalid": "Enter a valid email, for example driver@team.com.",
   "profile_error_recovery_code_required": "Enter the recovery code shown when the profile was created.",
   "profile_error_recovery_failed": "No profile matches this email and recovery code. Check both fields and try again.",

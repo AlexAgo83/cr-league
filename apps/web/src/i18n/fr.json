@@ -44,7 +44,7 @@
   "status_profile_recovered": "Profil récupéré.",
   "status_requesting_recovery_code": "Demande de code de récupération...",
   "status_recovery_code_requested": "Si un profil existe pour cet email, un nouveau code de récupération sera envoyé.",
-  "profile_error_email_required": "Entre l'email associé à ton profil.",
+  "profile_error_email_required": "Email requis pour retrouver ton profil.",
   "profile_error_email_invalid": "Entre un email valide, par exemple pilote@ecurie.com.",
   "profile_error_recovery_code_required": "Entre le code de récupération affiché lors de la création du profil.",
   "profile_error_recovery_failed": "Aucun profil ne correspond à cet email et ce code. Vérifie les deux champs puis réessaie.",

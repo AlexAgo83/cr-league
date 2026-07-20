@@ -158,7 +158,7 @@ describe("App profile and admin", () => {
     expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Speed ×1" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Focus driver" }).className).toContain("active");
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     expect(localStorage.getItem("cr-league-dismissed-replay-help")).toBe(null);
     expect(localStorage.getItem("cr-league-replay-speed")).toBe(null);
@@ -223,7 +223,7 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
-    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
     expect(document.querySelector(".notification-stack")).toBe(null);
     expect(fetch).toHaveBeenCalledWith(
       "http://localhost:4874/leagues/rejoin",
@@ -267,7 +267,7 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
-    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.change(screen.getByLabelText("Active league"), { target: { value: "team_3" } });
     expect(document.querySelector(".profile-menu-panel .pending-feedback")?.textContent).toContain("Rejoining league...");
@@ -304,7 +304,7 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
-    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.click(screen.getByRole("button", { name: "Manage league" }));
 
@@ -337,10 +337,10 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
-    expect(await screen.findByRole("button", { name: "Race" })).toBeTruthy();
+    expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Office League" }));
 
-    expect(screen.getByRole("heading", { name: "Race desk" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Stand" })).toBeTruthy();
     expect(screen.getByText("Saved leagues")).toBeTruthy();
     expect(screen.getByRole("button", { name: /Office League/ })).toBeTruthy();
   });

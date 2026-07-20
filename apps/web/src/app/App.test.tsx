@@ -204,7 +204,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     await closeLeagueIntro();
-    const raceIntro = await screen.findByRole("dialog", { name: "Read the race desk" });
+    const raceIntro = await screen.findByRole("dialog", { name: "Read the stand" });
     fireEvent.click(within(raceIntro).getByRole("button", { name: "Got it" }));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
 
@@ -373,11 +373,11 @@ describe("App", () => {
 
     expect(document.querySelector("#result-replay-panel")).toBeTruthy();
     expect(window.location.pathname).toBe("/replay/gp_1");
-    expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
+    expect(screen.getByRole("button", { name: "Stand" }).className).toContain("active");
     expect(screen.queryByRole("dialog", { name: "Race replay" })).toBe(null);
-    expect(screen.getByRole("button", { name: "Back to race" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Back to stand" })).toBeTruthy();
     expect(screen.queryByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
     expect(window.location.pathname).toBe("/drive");
   });
 
@@ -396,13 +396,13 @@ describe("App", () => {
 
     render(<App />);
 
-    expect(screen.getByRole("heading", { name: "Race desk" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Stand" })).toBeTruthy();
 
     createLeagueFromSetup();
 
     // Drive view: map first, plan tuning lives in its own cockpit section.
     await expectGarageCode("ABC123");
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(document.querySelector(".command-bar")).toBe(null);
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(document.querySelector(".map-workflow-panel")?.textContent).toContain("1. Read the circuit");
@@ -445,11 +445,11 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-directive-step")).toBe("card");
     fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
     expect(screen.getByRole("tab", { name: "Card: Rain Grip" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Edit plan" }).className).not.toContain("highlight-command");
     expect(screen.queryByRole("button", { name: "Result" })).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getAllByText("Chronos", { exact: false }).length).toBeGreaterThan(0);
     expect(screen.getByText("0/3")).toBeTruthy();
     expect(screen.getByText("No chronos")).toBeTruthy();
@@ -482,9 +482,9 @@ describe("App", () => {
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("75.18s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 2");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
-    const chronoCloseButton = screen.getByRole("button", { name: "Back to race" });
+    const chronoCloseButton = screen.getByRole("button", { name: "Back to stand" });
     expect(chronoCloseButton.className).toContain("replay-close-button");
-    expect(chronoCloseButton.querySelector(".replay-close-label")?.textContent).toBe("Back to race");
+    expect(chronoCloseButton.querySelector(".replay-close-label")?.textContent).toBe("Back to stand");
     expect(chronoCloseButton.querySelector(".replay-close-mark")?.textContent).toBe("×");
     fireEvent.click(chronoCloseButton);
     expect(screen.queryByRole("heading", { name: "Chrono replay" })).toBe(null);
@@ -512,13 +512,13 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Chrono report" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Chrono report" }));
     expect(screen.getByRole("heading", { name: "Understand the chrono" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Chrono report" }).className).not.toContain("highlight-command");
-    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
     fireEvent.click(screen.getByRole("button", { name: "Review chrono" }));
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
 
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
@@ -552,7 +552,7 @@ describe("App", () => {
     expect(document.querySelector(".round-timeline")?.textContent).toContain("R1");
     fireEvent.click(screen.getByRole("tab", { name: "Standings" }));
 
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("button", { name: "Send plan" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
     expect(document.querySelector(".race-phase-actions button.highlight-command")).toBe(null);
@@ -567,7 +567,7 @@ describe("App", () => {
     expect(JSON.parse((fetch.mock.calls[2]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123" });
     fireEvent.click(screen.getByText("Directive locked. You can launch the Grand Prix.").closest(".floating-notification")!.querySelector("button")!);
     expect(screen.queryByText("Directive locked. You can launch the Grand Prix.")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "3. Plan locked" })).toBeTruthy();
     expect(document.querySelector(".map-workflow-panel")?.textContent).toContain("3. Plan locked");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
@@ -580,7 +580,7 @@ describe("App", () => {
     for (const button of document.querySelectorAll(".directive-panel .choice-card")) {
       expect(button.hasAttribute("disabled")).toBe(true);
     }
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.queryByRole("button", { name: "Chrono" })).toBe(null);
     expect(screen.getByRole("button", { name: "Launch GP" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Launch GP" }).className).toContain("highlight-command");
@@ -596,7 +596,7 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(window.location.pathname).toBe("/replay/gp_1");
-    expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
+    expect(screen.getByRole("button", { name: "Stand" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
@@ -635,8 +635,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Speed ×1" }));
     fireEvent.click(screen.getByRole("option", { name: "×2" }));
     expect(screen.getByRole("button", { name: "Speed ×2" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Back to race" }).className).toContain("replay-close-button");
-    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
+    expect(screen.getByRole("button", { name: "Back to stand" }).className).toContain("replay-close-button");
+    fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
     expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
     expect(window.location.pathname).toBe("/drive");
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
@@ -715,7 +715,7 @@ describe("App", () => {
     // One command at a time
     expect(screen.queryByRole("button", { name: "Send plan" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Launch GP" })).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Next GP" }).hasAttribute("disabled")).toBe(false);
     expect(screen.getByRole("button", { name: "Next GP" }).className).toContain("highlight-command");
@@ -742,7 +742,7 @@ describe("App", () => {
     expect(document.querySelector("#result-replay-panel")).toBeTruthy();
     expect(screen.queryByRole("dialog", { name: "Race replay" })).toBe(null);
     expect(screen.queryByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
@@ -800,7 +800,7 @@ describe("App", () => {
 
     createLeagueFromSetup();
     await expectGarageCode("ABC123");
-    fireEvent.click(screen.getByRole("button", { name: "Race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
     fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
@@ -885,7 +885,7 @@ describe("App", () => {
     fetch.mockResolvedValueOnce(response(seasonTwoState));
     render(<App />);
     createLeagueFromSetup();
-    await screen.findByRole("button", { name: "Race" });
+    await screen.findByRole("button", { name: "Stand" });
     expect(screen.queryByRole("dialog", { name: "Season recap" })).toBe(null);
   });
 
@@ -902,7 +902,7 @@ describe("App", () => {
     render(<App />);
     createLeagueFromSetup();
 
-    await screen.findByRole("button", { name: "Race" });
+    await screen.findByRole("button", { name: "Stand" });
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
 
     expect((await screen.findByRole("status")).textContent).toContain("Running qualifying lap...");
@@ -928,7 +928,7 @@ describe("App", () => {
     render(<App />);
     createLeagueFromSetup();
 
-    await screen.findByRole("button", { name: "Race" });
+    await screen.findByRole("button", { name: "Stand" });
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
 
     expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
@@ -949,7 +949,7 @@ describe("App", () => {
     render(<App />);
     createLeagueFromSetup();
 
-    await screen.findByRole("button", { name: "Race" });
+    await screen.findByRole("button", { name: "Stand" });
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Chrono replay" })).toBeTruthy();
@@ -980,7 +980,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     await closeLeagueIntro();
-    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
 
@@ -1000,7 +1000,7 @@ describe("App", () => {
     render(<App />);
 
     createLeagueFromSetup();
-    await screen.findByRole("button", { name: "Race" });
+    await screen.findByRole("button", { name: "Stand" });
     expect(screen.queryByRole("dialog", { name: "Season recap" })).toBe(null);
     expect(localStorage.getItem("cr-league-season-recap:league_1:1")).toBe(null);
   });

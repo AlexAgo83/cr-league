@@ -1585,11 +1585,11 @@ label small {
 }
 
 .directive-choice-approach {
-  --directive-choice-accent: #ff4d00;
+  --directive-choice-accent: #db2777;
 }
 
 .directive-choice-preparation {
-  --directive-choice-accent: #0284c7;
+  --directive-choice-accent: #0d9488;
 }
 
 .directive-choice-pit {
@@ -2387,11 +2387,11 @@ label small {
 }
 
 .map-plan-approach {
-  --map-plan-accent: #ff4d00;
+  --map-plan-accent: #db2777;
 }
 
 .map-plan-preparation {
-  --map-plan-accent: #0284c7;
+  --map-plan-accent: #0d9488;
 }
 
 .map-plan-pit {
@@ -2706,14 +2706,14 @@ label small {
 }
 
 .map-trait-overtaking i {
-  background: rgb(255 77 0 / 0.18);
-  color: #ff4d00;
+  background: rgb(37 99 235 / 0.18);
+  color: #2563eb;
 }
 
 .map-trait-overtaking {
-  --trait-fill: rgb(255 77 0 / 0.32);
-  --trait-tone: #ff4d00;
-  --trait-tone-paper: #c53a00;
+  --trait-fill: rgb(37 99 235 / 0.3);
+  --trait-tone: #2563eb;
+  --trait-tone-paper: #1d4ed8;
 }
 
 .map-trait-energy i {
@@ -7236,11 +7236,11 @@ button.highlight-command:not(:disabled) {
 }
 
 .plan-step-approach {
-  --plan-step-accent: #ff4d00;
+  --plan-step-accent: #db2777;
 }
 
 .plan-step-preparation {
-  --plan-step-accent: #0284c7;
+  --plan-step-accent: #0d9488;
 }
 
 .plan-step-pit {

@@ -146,6 +146,7 @@ async function createLeagueRun(leagueNumber: number, playerCount: number, firstP
 
   const players = [admin];
   let state = created;
+  if (!created.league.code) throw new Error("Created league did not return an invite code.");
   for (let offset = 1; offset < playerCount; offset += 1) {
     const candidate = await createPlayer(firstPlayerIndex + offset);
     const joined = await joinLeagueByCode(prisma, {

@@ -194,7 +194,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
     return { league, playerClaimCode };
   });
 
-  const state = await getLeagueState(db, league.id);
+  const state = await getLeagueState(db, league.id, { includeInviteCode: true });
   const playerTeam = state?.teams.find((team) => team.kind === "human");
   return state && playerTeam ? withPlayer(state, playerTeam.id, playerClaimCode) : state;
 }
@@ -238,7 +238,7 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
     })
   );
 
-  const nextState = await getLeagueState(db, league.id);
+  const nextState = await getLeagueState(db, league.id, { includeInviteCode: true });
   return nextState ? withPlayer(nextState, team.id, team.claimCode ?? "") : nextState;
 }
 
@@ -249,12 +249,12 @@ export async function rejoinLeague(db: Db, input: RejoinLeagueInput = {}) {
   });
   if (!team || team.claimCode !== input.claimCode) return null;
 
-  const state = await getLeagueState(db, team.leagueId);
+  const state = await getLeagueState(db, team.leagueId, { includeInviteCode: true });
   return state ? withPlayer(state, team.id, team.claimCode) : null;
 }
 
-export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueState | null> {
-    const league = await db.league.findUnique({
+export async function getLeagueState(db: Db, leagueId: string, options: { includeInviteCode?: boolean } = {}): Promise<LeagueState | null> {
+  const league = await db.league.findUnique({
     where: { id: leagueId },
     include: {
       teams: { orderBy: [{ points: "desc" }, { name: "asc" }] },
@@ -275,7 +275,7 @@ export async function getLeagueState(db: Db, leagueId: string): Promise<LeagueSt
     league: {
       id: league.id,
       name: league.name,
-      code: league.code,
+      code: options.includeInviteCode ? league.code : null,
       status: league.status,
       cadence: league.cadence,
       maxPlayers: league.maxPlayers,
@@ -740,48 +740,50 @@ export async function restartLeague(db: Db, leagueId: string, input: AdminProofI
   const state = await getLeagueState(db, leagueId);
   if (!state) return null;
 
-  await db.raceDecision.deleteMany({
-    where: {
-      grandPrix: {
-        leagueId
-      }
-    }
-  });
-  await db.grandPrix.deleteMany({ where: { leagueId } });
-  await db.league.update({
-    where: { id: leagueId },
-    data: {
-      preparationDeadlineAt: null
-    }
-  });
-
-  const usedBotLiveries = new Set(state.teams.filter((team) => team.kind !== "bot").map((team) => liveryKey(team.livery)));
-  let botLiveryIndex = 0;
-  for (const team of state.teams) {
-    const livery = team.kind === "bot" ? uniqueBotLivery(botLiveryIndex, usedBotLiveries) : team.livery;
-    if (team.kind === "bot") botLiveryIndex += 1;
-    await db.team.update({
-      where: { id: team.id },
-      data: {
-        points: 0,
-        credits: team.kind === "human" ? STARTING_CREDITS : 0,
-        cards: team.kind === "human" ? STARTER_CARDS : [],
-        livery
+  await runWrite(db, async (tx) => {
+    await tx.raceDecision.deleteMany({
+      where: {
+        grandPrix: {
+          leagueId
+        }
       }
     });
-  }
+    await tx.grandPrix.deleteMany({ where: { leagueId } });
+    await tx.league.update({
+      where: { id: leagueId },
+      data: {
+        preparationDeadlineAt: null
+      }
+    });
 
-  await db.grandPrix.create({
-    data: {
-      leagueId,
-      name: DEMO_RACE_INPUT.grandPrixName,
-      season: 1,
-      round: 1,
-      seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-restart`,
-      primaryTrait: DEMO_RACE_INPUT.primaryTrait,
-      secondaryTrait: DEMO_RACE_INPUT.secondaryTrait,
-      forecast: DEMO_RACE_INPUT.forecast
+    const usedBotLiveries = new Set(state.teams.filter((team) => team.kind !== "bot").map((team) => liveryKey(team.livery)));
+    let botLiveryIndex = 0;
+    for (const team of state.teams) {
+      const livery = team.kind === "bot" ? uniqueBotLivery(botLiveryIndex, usedBotLiveries) : team.livery;
+      if (team.kind === "bot") botLiveryIndex += 1;
+      await tx.team.update({
+        where: { id: team.id },
+        data: {
+          points: 0,
+          credits: team.kind === "human" ? STARTING_CREDITS : 0,
+          cards: team.kind === "human" ? STARTER_CARDS : [],
+          livery
+        }
+      });
     }
+
+    await tx.grandPrix.create({
+      data: {
+        leagueId,
+        name: DEMO_RACE_INPUT.grandPrixName,
+        season: 1,
+        round: 1,
+        seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-restart`,
+        primaryTrait: DEMO_RACE_INPUT.primaryTrait,
+        secondaryTrait: DEMO_RACE_INPUT.secondaryTrait,
+        forecast: DEMO_RACE_INPUT.forecast
+      }
+    });
   });
 
   return getLeagueState(db, leagueId);
@@ -1030,6 +1032,10 @@ function buildActionState(teamIds: string[], grandPrixStatus: string, submittedT
 function withPlayer(state: LeagueState, teamId: string, claimCode: string): LeagueState {
   return {
     ...state,
+    league: {
+      ...state.league,
+      code: state.league.code ?? ""
+    },
     player: {
       teamId,
       claimCode

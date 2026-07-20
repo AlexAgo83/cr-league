@@ -81,5 +81,5 @@ export async function listAdminLeagues(db: Db) {
 }
 
 export async function inspectAdminLeague(db: Db, leagueId: string) {
-  return getLeagueState(db as Parameters<typeof getLeagueState>[0], leagueId);
+  return getLeagueState(db as Parameters<typeof getLeagueState>[0], leagueId, { includeInviteCode: true });
 }

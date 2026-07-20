@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import type { PrismaClient } from "@prisma/client";
+import { timingSafeEqual } from "node:crypto";
 import type { ApiConfig } from "../../config.js";
 import { deleteAdminUser, inspectAdminLeague, listAdminLeagues, listAdminUsers, resetAdminUserRecoveryCode } from "./store.js";
 
@@ -7,7 +8,7 @@ export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient
   app.addHook("preHandler", async (request, reply) => {
     if (!request.url.startsWith("/admin/")) return;
     if (!config.adminToken) return reply.code(503).send({ error: "Unavailable", message: "Admin operations are not configured." });
-    if (adminTokenFrom(request) !== config.adminToken) return reply.code(403).send({ error: "Forbidden", message: "Admin token is required." });
+    if (!sameToken(adminTokenFrom(request), config.adminToken)) return reply.code(403).send({ error: "Forbidden", message: "Admin token is required." });
   });
 
   app.get("/admin/users", async () => listAdminUsers(db));
@@ -40,6 +41,16 @@ export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient
 function adminTokenFrom(request: FastifyRequest) {
   const authorization = request.headers.authorization;
   return authorization?.startsWith("Bearer ") ? authorization.slice("Bearer ".length).trim() : undefined;
+}
+
+function sameToken(actualToken: string | undefined, expectedToken: string) {
+  const expected = Buffer.from(expectedToken);
+  const actual = Buffer.from(actualToken ?? "");
+  if (actual.length !== expected.length) {
+    timingSafeEqual(expected, Buffer.alloc(expected.length));
+    return false;
+  }
+  return timingSafeEqual(actual, expected);
 }
 
 function sendAdminStoreError(reply: FastifyReply, error: unknown, message: string) {

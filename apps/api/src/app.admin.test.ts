@@ -148,6 +148,25 @@ describe("api app profile and admin", () => {
     expect(response.headers["access-control-allow-headers"]).toContain("authorization");
   });
 
+  it("does not whitelist localhost CORS origins for a non-local web origin", async () => {
+    const app = await createTestApp(createMemoryDb(), "secret-admin-token", [], "https://cr-league.example");
+
+    const response = await app.inject({
+      method: "OPTIONS",
+      url: "/admin/users/profile_1",
+      headers: {
+        origin: "http://127.0.0.1:4873",
+        "access-control-request-method": "DELETE",
+        "access-control-request-headers": "authorization"
+      }
+    });
+
+    await app.close();
+
+    expect(response.headers["access-control-allow-origin"]).toBeUndefined();
+  });
+
+
   it("reports admin eligibility for a saved profile session refresh", async () => {
     const app = await createTestApp(createMemoryDb(), undefined, ["pilot@example.test"]);
     const adminProfile = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });

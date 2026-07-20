@@ -645,6 +645,26 @@ describe("api app", () => {
     expect(joinResponse.json().teams).toEqual(expect.arrayContaining([expect.objectContaining({ name: "Late Apex", kind: "human" })]));
   });
 
+  it("hides the invite code from public league reads", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const publicResponse = await app.inject({
+      method: "GET",
+      url: `/leagues/${createResponse.json().league.id}`
+    });
+
+    await app.close();
+
+    expect(createResponse.json().league.code).toMatch(/^[0-9A-F]{6}$/);
+    expect(publicResponse.json().league.code).toBeNull();
+  });
+
+
   it("rejects unknown, duplicate, and closed league joins", async () => {
     const app = await createTestApp(createMemoryDb());
 

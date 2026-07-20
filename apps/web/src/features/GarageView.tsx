@@ -115,9 +115,11 @@ export function GarageView({
         <div>
           <span className="section-kicker">{tt("dashboard_garage")}</span>
           <h2>{playerTeam.name}</h2>
-          <div className="championship-meta">
-            <span className="invite-code">{state.league.code}</span>
-          </div>
+          {state.league.code ? (
+            <div className="championship-meta">
+              <span className="invite-code">{state.league.code}</span>
+            </div>
+          ) : null}
         </div>
         <div className="garage-stats">
           <span className="garage-livery-visuals">

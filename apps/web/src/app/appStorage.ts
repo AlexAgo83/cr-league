@@ -61,7 +61,7 @@ export function claimFromState(state: LeagueState): StoredPlayerClaim | null {
         ...state.player,
         leagueId: state.league.id,
         leagueName: state.league.name,
-        leagueCode: state.league.code,
+        leagueCode: state.league.code ?? "",
         teamName: team.name
       }
     : null;

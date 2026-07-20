@@ -37,7 +37,7 @@ export type LeagueState = {
   league: {
     id: string;
     name: string;
-    code: string;
+    code: string | null;
     status: string;
     cadence: string;
     maxPlayers: number;

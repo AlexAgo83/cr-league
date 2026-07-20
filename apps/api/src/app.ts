@@ -17,7 +17,11 @@ export async function buildApp(config: ApiConfig, dependencies: AppDependencies 
     logger: dependencies.logger ?? true
   });
 
-  const webOrigins = new Set([config.webOrigin, "http://localhost:4873", "http://127.0.0.1:4873"]);
+  const webOrigins = new Set([config.webOrigin]);
+  if (isLocalOrigin(config.webOrigin)) {
+    webOrigins.add("http://localhost:4873");
+    webOrigins.add("http://127.0.0.1:4873");
+  }
 
   await app.register(cors, {
     allowedHeaders: ["authorization", "content-type"],
@@ -35,4 +39,13 @@ export async function buildApp(config: ApiConfig, dependencies: AppDependencies 
   }
 
   return app;
+}
+
+function isLocalOrigin(origin: string) {
+  try {
+    const hostname = new URL(origin).hostname;
+    return hostname === "localhost" || hostname === "127.0.0.1";
+  } catch {
+    return false;
+  }
 }

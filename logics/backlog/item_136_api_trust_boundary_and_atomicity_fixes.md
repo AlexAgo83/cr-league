@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 15%
+> Progress: 25%
 > Complexity: Medium
 > Theme: API integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -42,6 +42,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-20 partial implementation: CORS localhost allowlist is conditional on local WEB_ORIGIN; admin token comparison uses timingSafeEqual; public league reads hide invite code with league.code null; claimed create/join/rejoin and admin inspect preserve the invite code; restartLeague now runs in runWrite. Deferred inside this item: profile ownership proof replacing bare profileId on createDemoLeague and joinLeagueByCode.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

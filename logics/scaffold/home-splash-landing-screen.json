@@ -1,0 +1,137 @@
+{
+  "title": "Home splash landing screen with floating title and PRESS START",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/specs/spec_014_theme_and_brand_inspiration.md",
+    "logics/request/req_042_adopt_the_pit_wall_visual_identity_across_the_web_app.md",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/AppChrome.tsx",
+    "apps/web/src/app/SetupGate.tsx",
+    "apps/web/src/app/routes.ts",
+    "apps/web/src/features/AssetImage.tsx",
+    "apps/web/src/styles/layout.css",
+    "apps/web/src/styles/tokens.css",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "apps/web/public/assets/crl/home-background.jpg",
+    "apps/web/public/assets/crl/home-title-cr.png",
+    "apps/web/public/assets/crl/home-title-league.png",
+    "New product ask 2026-07-20: add a home/landing splash screen shown when the app is opened at its start URL. It reuses the Profile-style header (brand on the left, language switch on the right), shows a centered background image that fits both desktop and mobile, overlays two title assets 'CR' and 'League' that float with a subtle motion, and offers a themed PRESS START button that enters the game exactly as if the splash did not exist. Reference composite provided by the client: cr_base_fond_exemple_base+titre_03."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Home splash and brand first-contact",
+    "needs": [
+      "Show a home/landing splash screen when the app is opened at its start URL (root '/'); deep links to any inner route must bypass the splash and render the target screen directly.",
+      "The splash header matches the Profile screen: brand/home control on the left, language switcher on the right, reusing the existing AppChrome components.",
+      "A centered background image covers the viewport cleanly on both desktop (landscape) and mobile (portrait) without distortion or letterboxing.",
+      "Two title assets 'CR' and 'League' are overlaid on the background and animate with a subtle continuous floating motion, respecting prefers-reduced-motion.",
+      "A themed PRESS START button dismisses the splash and enters the app at its default screen, after which the session behaves exactly as if there had been no splash."
+    ],
+    "context": [
+      "Assets are already prepared and committed at apps/web/public/assets/crl/: home-background.jpg (162KB, the base scene), home-title-cr.png and home-title-league.png (transparent, background removed, glow preserved). Do NOT regenerate or re-detour these; wire them in as-is. Use AssetImage or plain img as fits the layout.",
+      "Header reuse: AppChrome.tsx already exports SetupTopbar (brand left + actions slot) and LanguageSwitcher (brand-orange language toggle with CountryBadge). The splash header should compose these so it matches the Profile/setup header exactly, with the language switcher on the right.",
+      "Start-URL detection: parseAppRoute (apps/web/src/app/routes.ts) maps '/' to the default 'drive' view and maps '/garage', '/plan/*', '/championship/*', '/admin', '/changelog', '/replay/:id' to inner views. The splash gates on the INITIAL location.pathname being the root ('/' or empty); any deeper initial path bypasses the splash. Decide the exact gate in the task's first step and keep it a single source of truth so it cannot drift from the router.",
+      "Dismissal: PRESS START flips an in-memory 'entered' flag (not persisted) so the splash reappears on the next fresh load of the start URL but never blocks a same-session navigation. Entering must land on the same default screen the app shows today at '/', so downstream behavior (onboarding, SetupGate, profile session) is unchanged.",
+      "Background fit: the source is portrait; use object-fit:cover (or background-size:cover) centered so the car/HUD focal point stays framed on wide desktop and tall mobile alike, with no horizontal page scroll on either.",
+      "Motion: give 'CR' and 'League' independent, gentle float keyframes (small translateY, eased, offset phases so they do not move in lockstep). Wrap in @media (prefers-reduced-motion: reduce) to disable animation. Keep it lightweight CSS, no animation library.",
+      "PRESS START styling should follow the existing orange pit-wall theme tokens (tokens.css) and button conventions already in layout.css, not a new one-off style system.",
+      "Coordination: another agent (Codex) is concurrently decomposing App/UI shell files (App.tsx, AppShell, AppChrome). The splash gate touches the app root render path — introduce it as a thin, additive wrapper around the existing root render rather than restructuring App.tsx, so it rebases cleanly.",
+      "New i18n keys are needed for the PRESS START label (and any splash aria labels); add them to both en.json and fr.json. Brand name/app name already exist (APP_NAME).",
+      "Tests to leave behind: a render/interaction test that the splash shows at initial path '/', that a deep initial path (e.g. '/garage') bypasses it, and that PRESS START dismisses it and reveals the app; prefers-reduced-motion is a CSS concern and does not need a unit test."
+    ],
+    "acceptance_criteria": [
+      "AC1: Opening the app at the root URL shows the splash with a Profile-style header (brand/home left, language switcher right), a centered background covering the viewport on both desktop and mobile without distortion or horizontal page scroll, and the 'CR' and 'League' titles overlaid.",
+      "AC2: The 'CR' and 'League' titles animate with a subtle, independent floating motion that is disabled under prefers-reduced-motion.",
+      "AC3: A themed PRESS START button (orange pit-wall theme) dismisses the splash and lands on the same default screen the app renders today at '/', with all downstream onboarding/session behavior unchanged.",
+      "AC4: Opening the app directly at any inner route (/garage, /plan/*, /championship/*, /admin, /changelog, /replay/:id) bypasses the splash and renders the target screen immediately.",
+      "AC5: Switching language from the splash header changes the splash copy and carries the choice into the app.",
+      "AC6: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Home Splash Landing Screen Product Brief",
+    "overview": "A first-contact landing screen for CR League: opened at the start URL, it presents the brand with a centered background, floating 'CR' and 'League' title art, and a PRESS START button that drops the player into the game as if the splash were not there. Deep links bypass it so shared/bookmarked routes are unaffected. Header and theming reuse existing components and tokens; the detoured, optimized assets are already in the repo.",
+    "goals": [
+      "Give the app a branded, arcade-style front door on first open without changing what happens after PRESS START.",
+      "Fit the background cleanly on both desktop and mobile and keep the title art floating and legible.",
+      "Never intercept deep links or add persisted state; the splash is a thin, additive gate on the root URL."
+    ],
+    "non_goals": [
+      "No changes to onboarding, SetupGate, profile session, or any inner screen behavior.",
+      "No persisted 'seen splash' flag, no routing library change, and no restructure of App.tsx beyond a thin additive wrapper.",
+      "No new asset generation — the home-* assets already exist in apps/web/public/assets/crl/.",
+      "No animation library or new design-token system."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Gate a home splash on the start URL with deep-link bypass",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Home splash and brand first-contact",
+      "request_acs": ["AC1", "AC3", "AC4", "AC6"],
+      "problem": [
+        "The app opens straight into the game; there is no branded front door, and one must exist only when entering at the root URL without intercepting shared deep links.",
+        "The root render path is being concurrently decomposed by Codex, so the gate must be additive and thin."
+      ],
+      "scope_in": [
+        "Add an in-memory 'entered' gate around the app root render that shows the splash only when the initial location.pathname is the root, and bypasses it for any inner route, deriving the decision from a single source aligned with parseAppRoute.",
+        "PRESS START flips the flag and lands on the same default screen '/' renders today; no persistence.",
+        "A render/interaction test covering show-at-root, bypass-at-deep-link, and dismiss-on-PRESS-START."
+      ],
+      "scope_out": [
+        "Persisting a seen-splash flag or adding a routing library.",
+        "Restructuring App.tsx beyond a thin additive wrapper."
+      ],
+      "acceptance_criteria": [
+        "AC1: Splash shows at the root URL; AC3: PRESS START lands on today's default screen unchanged.",
+        "AC4: Any inner initial route bypasses the splash."
+      ]
+    },
+    {
+      "title": "Build the splash layout: header, covering background, floating titles, PRESS START",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Home splash and brand first-contact",
+      "request_acs": ["AC1", "AC2", "AC3", "AC5", "AC6"],
+      "problem": [
+        "The splash needs a Profile-style header, a background that fits desktop and mobile, floating title art, and a themed PRESS START, using existing components/tokens and the already-prepared assets."
+      ],
+      "scope_in": [
+        "Compose the header from SetupTopbar + LanguageSwitcher (brand left, language right) so it matches Profile.",
+        "Render home-background.jpg centered with cover so it fits both orientations without distortion or horizontal page scroll.",
+        "Overlay home-title-cr.png and home-title-league.png with independent, gentle float keyframes disabled under prefers-reduced-motion.",
+        "Style PRESS START from the existing orange pit-wall theme tokens; add en/fr i18n keys for its label and any aria text."
+      ],
+      "scope_out": [
+        "Regenerating or re-detouring the home-* assets.",
+        "A new button/design-token system or animation library."
+      ],
+      "acceptance_criteria": [
+        "AC1: Header, covering background, and overlaid titles render correctly on desktop and mobile.",
+        "AC2: Titles float subtly and stop under prefers-reduced-motion.",
+        "AC5: Language switches from the splash and carries into the app."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate the home splash landing screen",
+    "plan": [
+      "Define the single start-URL gate aligned with parseAppRoute and add the thin additive 'entered' wrapper around the app root render.",
+      "Compose the splash header from SetupTopbar + LanguageSwitcher and lay out the covering background with the two overlaid title assets.",
+      "Add independent float keyframes for CR and League with a prefers-reduced-motion off-switch; style PRESS START from existing theme tokens and add en/fr labels.",
+      "Wire PRESS START to enter the default screen unchanged; add the show/bypass/dismiss render test.",
+      "Keep the root-path change additive to rebase cleanly against Codex's shell decomposition.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/home-splash-landing-screen.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

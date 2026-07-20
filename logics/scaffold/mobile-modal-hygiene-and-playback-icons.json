@@ -1,0 +1,143 @@
+{
+  "title": "Mobile modal hygiene and real playback icons",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/request/req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest.md",
+    "logics/request/req_047_polish_first_session_ux_after_playtest_findings.md",
+    "apps/web/src/features/Modal.tsx",
+    "apps/web/src/app/AppModals.tsx",
+    "apps/web/src/styles/layout.css",
+    "apps/web/src/features/replay/ReplayStageOverlay.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "Mobile playtest feedback 2026-07-20: (a) opening any modal still lets the page behind it scroll on mobile, so the background drifts under the dialog; scroll should be locked behind the modal and allowed only inside it. (b) The launch-Grand-Prix confirmation modal is too tall and too wide on a phone, producing both vertical and horizontal scroll that runs off-screen; it must be compact and stay within the viewport. (c) The replay pause/play button renders as an emoji (glyph varies by client/OS) instead of a drawn icon that matches the app theme."
+  ],
+  "request": {
+    "complexity": "Low",
+    "theme": "Playtest-ready loop polish",
+    "needs": [
+      "Opening any Modal must lock scrolling of the page behind it; only the modal's own content may scroll. Restoring on close must not shift the page.",
+      "The launch-Grand-Prix confirmation modal must fit within a phone viewport with no horizontal scroll and no off-screen vertical overflow beyond the modal's own internal scroll.",
+      "The replay pause/play control must use a drawn, theme-consistent icon rather than an emoji whose appearance depends on the client/OS."
+    ],
+    "context": [
+      "Modal.tsx (apps/web/src/features/Modal.tsx) renders a fixed .modal-overlay but never locks body scroll; the inner .modal already has overflow:auto (layout.css ~1694). Add a mount/unmount body scroll lock in Modal.tsx so any consumer inherits it; account for concurrent/stacked modals so the last one to close restores scroll, and avoid a layout jump from scrollbar removal on desktop.",
+      "LaunchGpModal (apps/web/src/app/AppModals.tsx ~line 161) stacks a ModalHero (min-height 178px, layout.css ~1708) above the full starting-grid-confirmation block (kicker + circuit traits + a starting-grid-list of grid entries with livery plates and names). On a phone this overflows both axes. Make it compact on small viewports: reduce the hero height, render the starting grid single-column, and apply min-width:0 / controlled overflow on grid rows so long names and livery plates cannot force horizontal scroll. The modal must stay within the viewport with the dialog's own overflow:auto handling any remaining height.",
+      "ReplayStageOverlay.tsx (~line 165) renders the emoji ⏸/▶ inside .replay-playback-button. Replace with two small inline SVG icons (two pause bars / a play triangle) using currentColor so the existing orange theme applies; keep the existing aria-label/title (action_pause/action_play) and the playing/paused class toggle intact.",
+      "This is UI polish in the same first-contact/mobile lineage as req_047 and req_062; it changes no game logic, no API, no i18n keys beyond reuse of existing action_pause/action_play labels.",
+      "Coordination: another agent (Codex) is concurrently decomposing App/UI shell files. Keep each diff small and file-isolated (Modal.tsx, AppModals.tsx, layout.css, ReplayStageOverlay.tsx) and avoid unrelated refactors so the changes rebase cleanly.",
+      "Tests to leave behind: extend the existing Modal test (apps/web/src/features/Modal.test.tsx) to assert body scroll is locked while mounted and restored on unmount; a render assertion that the playback control renders an svg (not emoji text) for both playing and paused states."
+    ],
+    "acceptance_criteria": [
+      "AC1: While any Modal is open on a mobile viewport, the content behind it does not scroll; scrolling works only inside the modal, and closing it restores the previous scroll position without a visible jump.",
+      "AC2: The launch-Grand-Prix confirmation modal fits within a 360px-wide phone viewport with no horizontal scroll and no vertical overflow beyond the modal's own internal scroll; the starting grid reads as a single column.",
+      "AC3: The replay pause/play control renders a drawn SVG icon (pause bars / play triangle) that follows the orange theme via currentColor, with the existing aria-label, title, and playing/paused state preserved.",
+      "AC4: The Modal test asserts the body scroll lock on mount and restore on unmount, and a render test asserts an svg (not emoji text) in both playback states; existing tests pass unchanged.",
+      "AC5: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Mobile Modal Hygiene and Playback Icons Product Brief",
+    "overview": "Three mobile-playtest polish fixes with no gameplay impact: lock page scroll behind modals so only the dialog scrolls, make the launch-Grand-Prix confirmation modal compact enough to stay inside a phone viewport, and replace the emoji pause/play control with a drawn theme icon. Small, file-isolated diffs that keep the playtest loop feeling finished on mobile.",
+    "goals": [
+      "Modals never let the background scroll on mobile; only their own content scrolls.",
+      "The launch-Grand-Prix modal stays fully within a phone viewport on both axes.",
+      "Playback controls look identical across clients by using a drawn icon."
+    ],
+    "non_goals": [
+      "No changes to game logic, simulation, API, or the set of i18n keys (reuse existing action_pause/action_play).",
+      "No broader modal-system redesign or shared icon library; scope is these three fixes.",
+      "No unrelated refactors of the App/UI shell files Codex is concurrently decomposing."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Lock background scroll behind modals",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Playtest-ready loop polish",
+      "request_acs": ["AC1", "AC4", "AC5"],
+      "problem": [
+        "Modal.tsx renders a fixed overlay but never locks body scroll, so on mobile the page behind the dialog drifts while the modal is open.",
+        "The fix belongs in Modal.tsx so every modal consumer inherits it rather than each modal solving it locally."
+      ],
+      "scope_in": [
+        "Add a body scroll lock in Modal.tsx effective for the modal's lifetime (lock on mount, restore on unmount), correct under stacked/concurrent modals.",
+        "Prevent a desktop layout jump when the scrollbar is removed.",
+        "Extend Modal.test.tsx to assert lock-on-mount and restore-on-unmount."
+      ],
+      "scope_out": [
+        "Redesigning the modal component API or focus trap.",
+        "Per-modal scroll behavior overrides."
+      ],
+      "acceptance_criteria": [
+        "AC1: Background does not scroll while a modal is open; only modal content scrolls; scroll position restores without a jump on close.",
+        "AC4: Modal.test.tsx covers the lock and restore."
+      ]
+    },
+    {
+      "title": "Make the launch-Grand-Prix modal compact on mobile",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Playtest-ready loop polish",
+      "request_acs": ["AC2", "AC5"],
+      "problem": [
+        "LaunchGpModal stacks a tall hero over the full starting-grid confirmation, overflowing both axes on a phone and producing off-screen horizontal and vertical scroll.",
+        "Long team names and livery plates in the starting-grid rows push horizontal width beyond the viewport."
+      ],
+      "scope_in": [
+        "Reduce the hero height on small viewports and render the starting grid single-column.",
+        "Apply min-width:0 and controlled overflow on grid rows so names/plates cannot force horizontal scroll.",
+        "Keep the modal within the viewport, relying on the dialog's own overflow:auto for residual height."
+      ],
+      "scope_out": [
+        "Changing what the modal confirms or the starting-grid data.",
+        "Restyling other modals."
+      ],
+      "acceptance_criteria": [
+        "AC2: The modal fits a 360px-wide viewport with no horizontal scroll and no vertical overflow beyond its internal scroll; grid is single-column."
+      ]
+    },
+    {
+      "title": "Replace the emoji playback control with a themed SVG icon",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Playtest-ready loop polish",
+      "request_acs": ["AC3", "AC4", "AC5"],
+      "problem": [
+        "ReplayStageOverlay.tsx renders the emoji ⏸/▶, whose glyph and color vary by client/OS and clash with the app theme."
+      ],
+      "scope_in": [
+        "Replace the emoji with two inline SVG icons (pause bars / play triangle) using currentColor so the orange theme applies.",
+        "Preserve the existing aria-label, title, and playing/paused class toggle.",
+        "Add a render assertion that an svg (not emoji text) appears in both states."
+      ],
+      "scope_out": [
+        "A shared icon component or icon set for the rest of the app.",
+        "Changing playback behavior or the clock."
+      ],
+      "acceptance_criteria": [
+        "AC3: The control renders a themed SVG icon via currentColor with accessibility and state preserved.",
+        "AC4: A render test asserts the svg in both playback states."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate mobile modal hygiene and playback icons",
+    "plan": [
+      "Add the body scroll lock in Modal.tsx (stack-safe, no desktop layout jump) and extend Modal.test.tsx.",
+      "Make LaunchGpModal compact on mobile: shorter hero, single-column starting grid, min-width:0/overflow guards in AppModals.tsx and layout.css.",
+      "Swap the emoji playback control in ReplayStageOverlay.tsx for themed inline SVG icons and add the render assertion.",
+      "Keep each diff small and file-isolated to rebase cleanly against Codex's concurrent shell decomposition.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/mobile-modal-hygiene-and-playback-icons.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

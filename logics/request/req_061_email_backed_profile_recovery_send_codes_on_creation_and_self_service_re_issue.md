@@ -1,7 +1,7 @@
 ## req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue - Email-backed profile recovery: send codes on creation and self-service re-issue
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
+> Status: Ready
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

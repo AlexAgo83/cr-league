@@ -8,6 +8,7 @@
 > Complexity: Low
 > Theme: First-session UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-20 refreshed AI Context to match the groomed plan-lock slice.
 
 # Problem
 - The most consequential action in the game — locking the race plan — is one unconfirmed click, while the harmless chrono confirms every time; the 2026-07-20 playtest locked a carried-over plan by accident and could not add the card bought minutes earlier.
@@ -50,10 +51,10 @@
 - Primary task(s): `task_063_orchestrate_replay_suspense_and_first_contact_polish`
 
 # AI Context
-- Summary: Replay suspense and first-contact polish from the 2026-07-20 AI playtest
-- Keywords: backlog-groom, request, replay suspense and first-contact polish from the 2026-07-20 ai playtest, bounded slice
-- Use when: Use when implementing or reviewing the delivery slice for Replay suspense and first-contact polish from the 2026-07-20 AI playtest.
-- Skip when: Skip when the change is unrelated to this delivery slice or its linked request.
+- Summary: Plan-lock safety — Send plan confirmation with unused-card warning, visible locked state on the plan screen, carried-over-plan label.
+- Keywords: plan-lock, send-plan confirmation, unused card warning, locked state, carried-over plan, first-session UX
+- Use when: Implementing or reviewing the plan-lock safety slice of req_062 (send confirmation, locked-state visibility, carry-over labeling).
+- Skip when: The change concerns replay gating (item_149), chrono/Enter/intro frictions (item_150), or readability papercuts (item_151).
 
 # Priority
 - Priority: High

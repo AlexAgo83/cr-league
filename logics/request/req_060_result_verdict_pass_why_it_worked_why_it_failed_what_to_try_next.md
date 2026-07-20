@@ -1,7 +1,7 @@
 ## req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next - Result verdict pass: why it worked, why it failed, what to try next
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
+> Status: Ready
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Low

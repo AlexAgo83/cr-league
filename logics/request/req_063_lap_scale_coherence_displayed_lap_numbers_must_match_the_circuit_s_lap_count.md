@@ -1,7 +1,7 @@
 ## req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count - Lap-scale coherence: displayed lap numbers must match the circuit's lap count
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
+> Status: Ready
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

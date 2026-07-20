@@ -7,7 +7,6 @@ import { GAME_VIEWS, type AdminLeague, type AdminUser, type FormState, type Leag
 import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
 import { AssetImage } from "../features/AssetImage.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY } from "../features/ChampionshipView.js";
-import { ChangelogView } from "../features/ChangelogView.js";
 import { circuitRouteAnalysis } from "../features/CircuitMap.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { GARAGE_PANEL_KEY } from "../features/GarageView.js";
@@ -18,7 +17,7 @@ import { CountryBadge } from "../features/VisualIcon.js";
 import { AdminDeleteUserModal, ConfirmActionModal, LeagueControlsModal, NextGrandPrixConfirmModal, ProfileCodeModal, ResolveGrandPrixConfirmModal, RestartConfirmModal, SeasonRecapModal } from "./AppModals.js";
 import { DriveView } from "./DriveView.js";
 import { GameViews } from "./GameViews.js";
-import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, SetupShell, type OnboardingHelpTopic } from "./OnboardingShell.js";
+import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, type OnboardingHelpTopic } from "./OnboardingShell.js";
 import {
   ACTIVE_PLAYER_CLAIM_KEY,
   ApiError,
@@ -39,7 +38,8 @@ import {
 } from "./appStorage.js";
 import { bestQualifyingRuns, buildChronoReport, createInitialForm, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
 import { isGrandPrixRouteId, shortGrandPrixId } from "./routes.js";
-import { LeagueSetupView, ProfileSetupView, type ProfileMode, type SetupMode } from "./SetupViews.js";
+import { SetupGate } from "./SetupGate.js";
+import { type ProfileMode, type SetupMode } from "./SetupViews.js";
 import { useAppNavigation } from "./useAppNavigation.js";
 
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
@@ -1159,71 +1159,44 @@ export function App() {
     />
   );
 
-  if (!profileSession) {
+  if (!profileSession || !leagueState) {
     return (
-      <SetupShell
-        tt={tt}
-        topbar={setupTopbar}
+      <SetupGate
+        profileSession={profileSession}
+        leagueState={leagueState}
+        gameView={gameView}
+        adminView={adminView}
+        setupTopbar={setupTopbar}
         notificationStack={notificationStack}
         errorModal={errorModal}
         profileCodeModal={profileCodeModal}
         profileLogoutModal={profileLogoutModal}
         preferencesResetModal={preferencesResetModal}
-      >
-        <ProfileSetupView
-          message={message}
-          mode={profileMode}
-          profileForm={profileForm}
-          profileFormError={profileFormError}
-          status={status}
-          pendingMessage={pendingMessage}
-          onCreateProfile={() => void createProfileSession()}
-          onRecoverProfile={() => void recoverProfileSession()}
-          onSetMode={setProfileMode}
-          onSetProfileForm={setProfileForm}
-          onSetProfileFormError={setProfileFormError}
-          tt={tt}
-        />
-      </SetupShell>
-    );
-  }
-
-  if (!leagueState) {
-    return (
-      <SetupShell
+        onboardingHelpModal={onboardingHelpModal}
+        adminDeleteModal={adminDeleteModal}
+        form={form}
+        message={message}
+        profileMode={profileMode}
+        profileForm={profileForm}
+        profileFormError={profileFormError}
+        setupMode={setupMode}
+        savedClaims={savedClaims}
+        savedLeagueIndex={savedLeagueIndex}
+        status={status}
+        pendingMessage={pendingMessage}
+        setForm={setForm}
+        setProfileMode={setProfileMode}
+        setProfileForm={setProfileForm}
+        setProfileFormError={setProfileFormError}
+        setSetupMode={setSetupMode}
+        setSavedLeagueIndex={setSavedLeagueIndex}
+        createProfileSession={() => void createProfileSession()}
+        recoverProfileSession={() => void recoverProfileSession()}
+        createLeague={() => void createLeague()}
+        joinLeague={() => void joinLeague()}
+        switchLeague={(teamId) => void switchLeague(teamId)}
         tt={tt}
-        topbar={setupTopbar}
-        notificationStack={notificationStack}
-        errorModal={errorModal}
-        profileCodeModal={profileCodeModal}
-        profileLogoutModal={profileLogoutModal}
-        preferencesResetModal={preferencesResetModal}
-      >
-        {gameView === "admin" && profileSession.admin ? (
-          adminView
-        ) : gameView === "changelog" ? (
-          <ChangelogView currentVersion={APP_VERSION} tt={tt} />
-        ) : (
-          <LeagueSetupView
-            form={form}
-            message={message}
-            mode={setupMode}
-            savedClaims={savedClaims}
-            savedLeagueIndex={savedLeagueIndex}
-            status={status}
-            pendingMessage={pendingMessage}
-            onCreateLeague={() => void createLeague()}
-            onJoinLeague={() => void joinLeague()}
-            onSetForm={setForm}
-            onSetMode={setSetupMode}
-            onSetSavedLeagueIndex={setSavedLeagueIndex}
-            onSwitchLeague={(teamId) => void switchLeague(teamId)}
-            tt={tt}
-          />
-        )}
-        {onboardingHelpModal}
-        {adminDeleteModal}
-      </SetupShell>
+      />
     );
   }
 

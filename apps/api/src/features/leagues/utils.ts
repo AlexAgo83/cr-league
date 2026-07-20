@@ -101,6 +101,15 @@ export async function ensureProfileExists(db: Db, profileId: string | undefined)
   if (!profile) throw new LeagueRuleError("Profile not found.");
 }
 
+export async function ensureProfileOwnership(db: Db, profileId: string | undefined, recoveryCode: string | undefined) {
+  if (!profileId) return;
+  if (!recoveryCode) throw new LeagueRuleError("A valid profile proof is required.", 403);
+  const profile = await db.profile.findUnique({ where: { id: profileId } });
+  if (!profile || !verifyRecoveryCode(recoveryCode, profile.recoveryCodeHash)) {
+    throw new LeagueRuleError("A valid profile proof is required.", 403);
+  }
+}
+
 export async function profileSession(db: Db, profileId: string): Promise<ProfileSession | null> {
   const profile = await db.profile.findUnique({
     where: { id: profileId },

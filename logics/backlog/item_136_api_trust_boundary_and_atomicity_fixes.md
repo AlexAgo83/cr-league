@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 25%
+> Progress: 32%
 > Complexity: Medium
 > Theme: API integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -43,6 +43,7 @@
 - Product framing: Not needed
 - Architecture framing: Not needed
 - 2026-07-20 partial implementation: CORS localhost allowlist is conditional on local WEB_ORIGIN; admin token comparison uses timingSafeEqual; public league reads hide invite code with league.code null; claimed create/join/rejoin and admin inspect preserve the invite code; restartLeague now runs in runWrite. Deferred inside this item: profile ownership proof replacing bare profileId on createDemoLeague and joinLeagueByCode.
+- 2026-07-20 completion wave: createDemoLeague and joinLeagueByCode no longer accept bare profileId for linked teams; profileId must be accompanied by a recoveryCode that verifies against that profile hash. recoverProfile returns the submitted code to preserve local proof after recovery, and the web passes recoveryCode on create/join. This closes the profileId trust-boundary portion for the current lightweight-profile model.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

@@ -21,7 +21,7 @@ describe("api app profile and admin", () => {
     const createLeagueResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id }
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id, recoveryCode: profile.recoveryCode }
     });
     const recoverResponse = await app.inject({
       method: "POST",
@@ -191,7 +191,7 @@ describe("api app profile and admin", () => {
     const leagueResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id }
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id, recoveryCode: profile.recoveryCode }
     });
     const teamId = leagueResponse.json().player.teamId;
 

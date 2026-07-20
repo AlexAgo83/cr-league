@@ -162,7 +162,8 @@ describe("App profile and admin", () => {
         body: JSON.stringify({
           code: "ABC123",
           teamName: "Volt Union",
-          profileId: "profile_1"
+          profileId: "profile_1",
+          recoveryCode: "ABCD1234"
         })
       })
     );

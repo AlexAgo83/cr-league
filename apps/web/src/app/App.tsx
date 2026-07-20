@@ -375,6 +375,7 @@ export function App() {
           name: form.leagueName,
           teamName: form.teamName.trim(),
           profileId: profileSession?.profile.id,
+          recoveryCode: profileSession?.recoveryCode,
           maxPlayers: clampNumber(Number(form.maxPlayers), 2, 16),
           fillWithBots: form.fillWithBots,
           qualifyingAttemptLimit: clampNumber(Number(form.qualifyingAttemptLimit), 1, 5),
@@ -397,7 +398,8 @@ export function App() {
         body: JSON.stringify({
           code: form.joinCode,
           teamName: form.teamName.trim(),
-          profileId: profileSession?.profile.id
+          profileId: profileSession?.profile.id,
+          recoveryCode: profileSession?.recoveryCode
         })
       });
       rememberPlayer(state);

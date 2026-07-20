@@ -645,6 +645,44 @@ describe("api app", () => {
     expect(joinResponse.json().teams).toEqual(expect.arrayContaining([expect.objectContaining({ name: "Late Apex", kind: "human" })]));
   });
 
+  it("requires profile proof when creating or joining with a profile id", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    const profileResponse = await app.inject({
+      method: "POST",
+      url: "/profiles",
+      payload: { email: "pilot@example.test" }
+    });
+    const profile = profileResponse.json();
+    const bareCreateResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id }
+    });
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id, recoveryCode: profile.recoveryCode }
+    });
+    const bareJoinResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code: createResponse.json().league.code, teamName: "Late Apex", profileId: profile.profile.id }
+    });
+    const wrongJoinResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code: createResponse.json().league.code, teamName: "Late Apex", profileId: profile.profile.id, recoveryCode: "WRONG" }
+    });
+
+    await app.close();
+
+    expect(bareCreateResponse.statusCode).toBe(403);
+    expect(createResponse.statusCode).toBe(200);
+    expect(bareJoinResponse.statusCode).toBe(403);
+    expect(wrongJoinResponse.statusCode).toBe(403);
+  });
+
   it("hides the invite code from public league reads", async () => {
     const app = await createTestApp(createMemoryDb());
 

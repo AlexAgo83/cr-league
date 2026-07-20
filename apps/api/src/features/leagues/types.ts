@@ -9,6 +9,7 @@ export type CreateLeagueInput = {
   name?: string;
   teamName?: string;
   profileId?: string;
+  recoveryCode?: string;
   maxPlayers?: number;
   fillWithBots?: boolean;
   qualifyingAttemptLimit?: number;
@@ -19,6 +20,7 @@ export type JoinLeagueInput = {
   code?: string;
   teamName?: string;
   profileId?: string;
+  recoveryCode?: string;
 };
 
 export type RejoinLeagueInput = {

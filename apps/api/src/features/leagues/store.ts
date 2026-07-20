@@ -57,7 +57,7 @@ import {
   createClaimCode,
   createLeagueCode,
   createRecoveryCode,
-  ensureProfileExists,
+  ensureProfileOwnership,
   hashRecoveryCode,
   isCardId,
   isLeagueCadence,
@@ -124,7 +124,8 @@ export async function recoverProfile(db: Db, input: RecoverProfileInput = {}): P
     });
   }
 
-  return profileSession(db, profile.id);
+  const session = await profileSession(db, profile.id);
+  return session ? { ...session, recoveryCode } : null;
 }
 
 export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
@@ -136,7 +137,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   if (input.teamName !== undefined && !playerTeamName) {
     throw new LeagueRuleError("Team name must be 3 to 32 readable characters.");
   }
-  await ensureProfileExists(db, input.profileId);
+  await ensureProfileOwnership(db, input.profileId, input.recoveryCode);
   const maxPlayers = clampInteger(input.maxPlayers, DEFAULT_MAX_PLAYERS, 2, MAX_PLAYERS_LIMIT);
   const qualifyingAttemptLimit = clampInteger(input.qualifyingAttemptLimit, DEFAULT_QUALIFYING_ATTEMPTS, 1, MAX_QUALIFYING_ATTEMPTS);
   const maxGrandPrixPerSeason = clampInteger(input.maxGrandPrixPerSeason, DEFAULT_GRAND_PRIX_PER_SEASON, 1, MAX_GRAND_PRIX_PER_SEASON);
@@ -205,7 +206,7 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
   if (!code || !teamName) {
     throw new LeagueRuleError("League code and team name are required.");
   }
-  await ensureProfileExists(db, input.profileId);
+  await ensureProfileOwnership(db, input.profileId, input.recoveryCode);
 
   const league = await db.league.findUnique({ where: { code } });
   if (!league) return null;

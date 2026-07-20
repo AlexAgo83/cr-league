@@ -143,7 +143,6 @@ export function DirectivePanel({
   planRiskRead,
   planRecommendation,
   cardLocked,
-  carriedOver,
   disabled,
   locked,
   onSelectStep,
@@ -159,7 +158,6 @@ export function DirectivePanel({
   planRiskRead: PlanRiskRead;
   planRecommendation?: string;
   cardLocked?: boolean;
-  carriedOver?: boolean;
   disabled?: boolean;
   locked?: boolean;
   onSelectStep: (step: DirectiveStep) => void;
@@ -215,10 +213,6 @@ export function DirectivePanel({
         <div className="directive-lock-note">
           <strong>{tt("directive_locked_title")}</strong>
           <span>{tt("directive_locked_body")}</span>
-        </div>
-      ) : carriedOver ? (
-        <div className="directive-lock-note">
-          <strong>{tt("directive_carried_over")}</strong>
         </div>
       ) : null}
       <div className="plan-steps directive-plan-steps" role="tablist" aria-label={tt("directive_title")}>

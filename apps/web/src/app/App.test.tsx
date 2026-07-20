@@ -730,7 +730,7 @@ describe("App", () => {
     fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
     expect(await screen.findByText("Season 1 · Round 2/6")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
-    expect(screen.getByText("Carried over from the previous Grand Prix.")).toBeTruthy();
+    expect(screen.queryByText("Carried over from the previous Grand Prix.")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     expect(screen.queryByText("Carried over from the previous Grand Prix.")).toBe(null);

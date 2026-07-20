@@ -219,7 +219,6 @@
   "directive_confirm_unused_card_warning": "Tu as une carte jouable en inventaire mais aucune carte sélectionnée.",
   "directive_locked_title": "Plan verrouillé",
   "directive_locked_body": "Cette directive est envoyée pour le Grand Prix en cours. Les choix restent visibles mais ne peuvent plus changer.",
-  "directive_carried_over": "Repris du Grand Prix précédent.",
   "launch_gp_confirm_title": "Lancer le Grand Prix ?",
   "launch_gp_confirm_body": "Vérifie la grille et les conditions avant d'envoyer le peloton.",
   "starting_grid_title": "Grille de départ",

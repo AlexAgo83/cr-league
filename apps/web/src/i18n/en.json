@@ -219,7 +219,6 @@
   "directive_confirm_unused_card_warning": "You have a playable card in inventory but no card selected.",
   "directive_locked_title": "Plan locked",
   "directive_locked_body": "This directive is sent for the current Grand Prix. Choices stay visible but cannot be changed.",
-  "directive_carried_over": "Carried over from the previous Grand Prix.",
   "launch_gp_confirm_title": "Launch Grand Prix?",
   "launch_gp_confirm_body": "Review the grid and conditions before sending the field away.",
   "starting_grid_title": "Starting grid",

@@ -44,7 +44,6 @@ export function GameViews({
   isResolved,
   pendingMessage,
   garagePanel,
-  showCarriedOverPlanLabel,
   adminView,
   chronoReport,
   qualifyingLockedCardId,
@@ -96,7 +95,6 @@ export function GameViews({
   isResolved: boolean;
   pendingMessage: string | null;
   garagePanel: CardPanel;
-  showCarriedOverPlanLabel: boolean;
   adminView: ReactNode;
   chronoReport: ChronoReport;
   qualifyingLockedCardId: string | null | undefined;
@@ -145,7 +143,6 @@ export function GameViews({
       {gameView === "plan" ? (
         <PlanView
           cardLocked={Boolean(qualifyingLockedCardId)}
-          carriedOver={showCarriedOverPlanLabel}
           chronoReport={chronoReport}
           circuitTraits={currentCircuit.traits}
           directiveStep={directiveStep}

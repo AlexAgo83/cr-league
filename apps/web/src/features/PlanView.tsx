@@ -9,7 +9,6 @@ import { PositionBadge } from "./PositionBadge.js";
 
 export function PlanView({
   cardLocked,
-  carriedOver,
   chronoReport,
   circuitTraits,
   directiveStep,
@@ -33,7 +32,6 @@ export function PlanView({
   tt
 }: {
   cardLocked: boolean;
-  carriedOver: boolean;
   chronoReport: ChronoReport;
   circuitTraits: LeagueState["currentGrandPrix"] extends never ? never : { grip: number; overtaking: number; energy: number };
   directiveStep: DirectiveStep;
@@ -149,7 +147,6 @@ export function PlanView({
           planRiskRead={planRiskRead}
           planRecommendation={planRecommendation}
           cardLocked={cardLocked}
-          carriedOver={carriedOver}
           disabled={disabled}
           locked={locked}
           onSelectStep={onSetDirectiveStep}

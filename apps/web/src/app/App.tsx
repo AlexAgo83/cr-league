@@ -38,7 +38,6 @@ import { useRaceDerivations } from "./useRaceDerivations.js";
 
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
 const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "race", "plan", "garage"]);
-const CARRIED_OVER_PLAN_SEEN_KEY_PREFIX = "cr-league-carried-plan-seen";
 const EMPTY_ADMIN_PAGINATION: AdminPagination = { page: 1, limit: 100, total: 0, totalPages: 1, hasPrevious: false, hasNext: false };
 
 function initialLocale() {
@@ -143,7 +142,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const [leagueFormError, setLeagueFormError] = useState<string | null>(null);
   const { notifications, pushNotification, clearTransientNotifications, dismissNotification } = useNotifications();
   const [onboardingHelp, setOnboardingHelp] = useState<OnboardingHelpTopic | null>(null);
-  const [openCarriedOverPlanKey, setOpenCarriedOverPlanKey] = useState<string | null>(null);
   const pendingMessage = status === "loading" ? message : null;
   const snoozedOnboardingHelp = useRef(new Set<string>());
   const initialProfileSession = useRef(profileSession);
@@ -210,9 +208,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   } = race;
   const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
   const nextGrandPrixActionLabel = tt(isSeasonFinalGrandPrix ? "action_finish_season" : "action_next_grand_prix");
-  const carriedOverPlanKey = leagueState ? `${CARRIED_OVER_PLAN_SEEN_KEY_PREFIX}:${leagueState.league.id}:${leagueState.currentGrandPrix.id}` : null;
-  const planIsCarriedOver = Boolean(leagueState && leagueState.currentGrandPrix.round > 1 && !playerDecision && !isResolved);
-  const showCarriedOverPlanLabel = Boolean(planIsCarriedOver && carriedOverPlanKey && (openCarriedOverPlanKey === carriedOverPlanKey || !localStorage.getItem(carriedOverPlanKey)));
   const { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, updateLivery, updateTeamName, restartLeague: restartLeagueState } = createLeagueMutations({
     leagueState,
     playerTeam,
@@ -382,21 +377,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   }, [currentGrandPrixKey, resetCommandClicks]);
 
   useEffect(() => {
-    if (!planIsCarriedOver || !carriedOverPlanKey) {
-      if (openCarriedOverPlanKey) setOpenCarriedOverPlanKey(null);
-      return;
-    }
-    if (gameView === "plan") {
-      if (!localStorage.getItem(carriedOverPlanKey)) {
-        localStorage.setItem(carriedOverPlanKey, "1");
-        setOpenCarriedOverPlanKey(carriedOverPlanKey);
-      }
-      return;
-    }
-    if (openCarriedOverPlanKey === carriedOverPlanKey) setOpenCarriedOverPlanKey(null);
-  }, [carriedOverPlanKey, gameView, openCarriedOverPlanKey, planIsCarriedOver]);
-
-  useEffect(() => {
     if (!leagueState) {
       previousSeasonRef.current = null;
       return;
@@ -475,7 +455,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   function resetUiPreferences() {
     for (const key of UI_PREFERENCE_KEYS) localStorage.removeItem(key);
     const dynamicPreferenceKeys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index)).filter(
-      (key): key is string => key !== null && (key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`) || key.startsWith(`${CARRIED_OVER_PLAN_SEEN_KEY_PREFIX}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.leagueIntro}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.race}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.plan}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.garage}:`))
+      (key): key is string => key !== null && (key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.leagueIntro}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.race}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.plan}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.garage}:`))
     );
     for (const key of dynamicPreferenceKeys) localStorage.removeItem(key);
     snoozedOnboardingHelp.current.clear();
@@ -676,7 +656,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       directiveStep={directiveStep}
       championshipRecordTab={championshipRecordTab}
       garagePanel={garagePanel}
-      showCarriedOverPlanLabel={showCarriedOverPlanLabel}
       gameProfileMenu={profileMenu()}
       setForm={setForm}
       setProfileMode={setProfileMode}

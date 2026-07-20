@@ -26,7 +26,8 @@ export type MapTraitStats = {
   energy: number;
 };
 
-export type MapTraitImpacts = Partial<Record<keyof MapTraitStats, string[]>>;
+export type MapTraitImpact = { label: string; value: number };
+export type MapTraitImpacts = Partial<Record<keyof MapTraitStats, MapTraitImpact[]>>;
 
 const VIEW_WIDTH = 1000;
 const VIEW_HEIGHT = 560;
@@ -529,8 +530,10 @@ export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitS
     <div className="map-traits-panel">
       {rows.map((row) => {
         const rowImpacts = impacts[row.key] ?? [];
+        const impactValue = rowImpacts.reduce((total, impact) => total + impact.value, 0);
+        const impactLabel = impactValue > 0 ? `+${impactValue}` : impactValue < 0 ? `${impactValue}` : "±0";
         return (
-          <span key={row.key} className={`map-trait-${row.key}`} title={[tt(row.hint), ...rowImpacts].join("\n")}>
+          <span key={row.key} className={`map-trait-${row.key}`} title={[tt(row.hint), ...rowImpacts.map((impact) => `${impact.value > 0 ? "+" : ""}${impact.value} ${impact.label}`)].join("\n")}>
             <i aria-hidden="true">
               <VisualIcon name={row.key} />
             </i>
@@ -538,7 +541,7 @@ export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitS
               <span>{traits[row.key]}</span>
             </strong>
             <span className="trait-label">{tt(row.label)}</span>
-            {rowImpacts.length ? <em>+{rowImpacts.length}</em> : null}
+            {rowImpacts.length ? <em className={impactValue > 0 ? "bonus" : impactValue < 0 ? "weakness" : "neutral"}>{impactLabel}</em> : null}
           </span>
         );
       })}

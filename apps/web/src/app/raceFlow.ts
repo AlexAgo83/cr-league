@@ -25,20 +25,65 @@ const WEATHER_VALUES: Weather[] = ["dry", "light_rain", "heavy_rain"];
 
 export function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
   const impacts: MapTraitImpacts = {};
-  const add = (trait: keyof MapTraitImpacts, label: string) => {
-    impacts[trait] = [...(impacts[trait] ?? []), `+${label}`];
+  const add = (trait: keyof MapTraitImpacts, value: number, label: string) => {
+    impacts[trait] = [...(impacts[trait] ?? []), { label, value }];
   };
 
-  if (form.preparation === "weather") add("grip", tt("preparation_weather"));
-  if (form.preparation === "speed") add("overtaking", tt("preparation_speed"));
-  if (form.preparation === "reliability") add("energy", tt("preparation_reliability"));
-  if (form.approach === "aggressive") add("overtaking", tt("approach_aggressive"));
-  if (form.approach === "prudent") add("energy", tt("approach_prudent"));
-  if (form.pitStrategy === "heavy_pack") add("energy", tt("pit_strategy_heavy_pack"));
-  if (form.pitStrategy === "mini_pack") add("overtaking", tt("pit_strategy_mini_pack"));
-  if (selectedCardId === "rain_grip" || selectedCardId === "rain_mapping") add("grip", tt("field_card"));
-  if (selectedCardId === "launch_boost" || selectedCardId === "urban_draft" || selectedCardId === "soft_tires" || selectedCardId === "qualifying_focus" || selectedCardId === "adjustable_wing" || selectedCardId === "calculated_attack") add("overtaking", tt("field_card"));
-  if (selectedCardId === "fleet_maintenance" || selectedCardId === "final_surge" || selectedCardId === "defensive_order" || selectedCardId === "economy_mode" || selectedCardId === "pit_relay" || selectedCardId === "hard_tires") add("energy", tt("field_card"));
+  if (form.approach === "prudent") {
+    add("grip", 3, tt("approach_prudent"));
+    add("energy", 3, tt("approach_prudent"));
+    add("overtaking", -3, tt("approach_prudent"));
+  }
+  if (form.approach === "balanced") {
+    add("grip", 3, tt("approach_balanced"));
+    add("energy", 3, tt("approach_balanced"));
+  }
+  if (form.approach === "aggressive") {
+    add("overtaking", 3, tt("approach_aggressive"));
+    add("grip", -3, tt("approach_aggressive"));
+    add("energy", -3, tt("approach_aggressive"));
+  }
+  if (form.preparation === "weather") add("grip", 3, tt("preparation_weather"));
+  if (form.preparation === "speed") {
+    add("overtaking", 3, tt("preparation_speed"));
+    add("energy", -3, tt("preparation_speed"));
+  }
+  if (form.preparation === "reliability") {
+    add("energy", 3, tt("preparation_reliability"));
+    add("grip", 3, tt("preparation_reliability"));
+  }
+  if (form.pitStrategy === "heavy_pack") {
+    add("energy", 3, tt("pit_strategy_heavy_pack"));
+    add("overtaking", -3, tt("pit_strategy_heavy_pack"));
+  }
+  if (form.pitStrategy === "standard") add("grip", 1, tt("pit_strategy_standard"));
+  if (form.pitStrategy === "mini_pack") {
+    add("overtaking", 3, tt("pit_strategy_mini_pack"));
+    add("energy", -3, tt("pit_strategy_mini_pack"));
+  }
+  if (selectedCardId === "rain_grip" || selectedCardId === "rain_mapping") {
+    add("grip", 2, tt("field_card"));
+    add("overtaking", -2, tt("field_card"));
+  }
+  if (selectedCardId === "launch_boost" || selectedCardId === "soft_tires" || selectedCardId === "adjustable_wing") {
+    add("overtaking", 2, tt("field_card"));
+    add("energy", -2, tt("field_card"));
+  }
+  if (selectedCardId === "urban_draft" || selectedCardId === "qualifying_focus") add("overtaking", 2, tt("field_card"));
+  if (selectedCardId === "final_surge") {
+    add("energy", 2, tt("field_card"));
+    add("overtaking", 2, tt("field_card"));
+  }
+  if (selectedCardId === "defensive_order" || selectedCardId === "economy_mode" || selectedCardId === "hard_tires") {
+    add("energy", 2, tt("field_card"));
+    add("overtaking", -2, tt("field_card"));
+  }
+  if (selectedCardId === "fleet_sponsorship") add("overtaking", -2, tt("field_card"));
+  if (selectedCardId === "fleet_maintenance" || selectedCardId === "pit_relay") add("energy", 2, tt("field_card"));
+  if (selectedCardId === "calculated_attack") {
+    add("overtaking", 2, tt("field_card"));
+    add("grip", -2, tt("field_card"));
+  }
 
   return impacts;
 }

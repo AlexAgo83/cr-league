@@ -2762,12 +2762,18 @@ label small {
 }
 
 .map-traits-panel em {
-  background: rgb(255 77 0 / 0.16);
+  background: color-mix(in srgb, var(--trait-tone) 16%, transparent);
   border-radius: 999px;
-  color: var(--color-accent);
+  color: var(--trait-tone);
   font-size: 0.58rem;
   font-style: normal;
   padding: 1px 5px;
+}
+
+.map-traits-panel em.weakness,
+.map-traits-panel em.neutral {
+  background: rgb(255 255 255 / 0.08);
+  color: var(--color-muted);
 }
 
 .replay-map-controls {

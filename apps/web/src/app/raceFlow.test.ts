@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { t } from "../i18n/index.js";
-import { buildPlanRecommendation } from "./raceFlow.js";
+import { buildPlanRecommendation, traitImpacts } from "./raceFlow.js";
+
+const total = (values: Array<{ value: number }> = []) => values.reduce((sum, entry) => sum + entry.value, 0);
 
 describe("buildPlanRecommendation", () => {
   it.each([
@@ -25,5 +27,13 @@ describe("buildPlanRecommendation", () => {
     expect(recommendation).toContain("Lecture du plan");
     expect(recommendation).toContain("Endurance");
     expect(recommendation).toContain("Forte pluie");
+  });
+
+  it("returns signed trait impact values", () => {
+    const impacts = traitImpacts({ approach: "aggressive", preparation: "speed", pitStrategy: "heavy_pack", cardId: "rain_grip", leagueName: "", joinCode: "", teamName: "", maxPlayers: 4, fillWithBots: true, maxGrandPrixPerSeason: 3, qualifyingAttemptLimit: 3, cadence: "", preparationDeadlineAt: "" }, "rain_grip", (key) => t(key, "en"));
+
+    expect(total(impacts.grip)).toBe(-1);
+    expect(total(impacts.overtaking)).toBe(1);
+    expect(total(impacts.energy)).toBe(-3);
   });
 });

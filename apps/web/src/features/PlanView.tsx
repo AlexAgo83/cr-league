@@ -79,7 +79,7 @@ export function PlanView({
           <span className="plan-step-label">{tt("plan_subscreen_chrono")}</span>
         </button>
         <button type="button" role="tab" aria-selected={activeSubscreen === "report"} className={activeSubscreen === "report" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("report")}>
-          <span className="plan-step-label">{tt("result_tab_report")}</span>
+          <span className="plan-step-label">{tt("plan_subscreen_gp")}</span>
         </button>
       </div>
       {activeSubscreen === "report" ? (

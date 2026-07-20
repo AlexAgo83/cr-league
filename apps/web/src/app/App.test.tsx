@@ -424,7 +424,7 @@ describe("App", () => {
     expect(document.querySelector(".directive-briefing-panel")).toBeTruthy();
     expect(document.querySelector(".directive-selection-panel")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Plan" }).className).toContain("active");
-    fireEvent.click(screen.getByRole("tab", { name: "Report" }));
+    fireEvent.click(screen.getByRole("tab", { name: "GP" }));
     expect(window.location.pathname).toBe("/plan/report");
     expect(screen.getByRole("heading", { name: "Race report pending" })).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "Race phases" })).toBe(null);
@@ -678,7 +678,7 @@ describe("App", () => {
     // Report view
     fireEvent.click(screen.getByRole("button", { name: "Report" }));
     expect(window.location.pathname).toBe("/plan/report");
-    expect(screen.getByRole("tab", { name: "Report" }).getAttribute("aria-selected")).toBe("true");
+    expect(screen.getByRole("tab", { name: "GP" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByText(`${roundOneCircuit.title}: Volt Union wins.`)).toBeTruthy();
     expect(document.querySelector(".report-replay-button")).toBe(null);
     expect(document.querySelector(".report-close-button")).toBe(null);

@@ -28,9 +28,9 @@ export function LanguageSwitcher({ locale, tt, onChangeLocale }: { locale: Local
     <div className="language-select" role="group" aria-label={tt("language_label")}>
       <span>{tt("language_label")}</span>
       {(["en", "fr"] as const).map((nextLocale) => (
-        <button key={nextLocale} type="button" className={locale === nextLocale ? "active" : undefined} aria-pressed={locale === nextLocale} onClick={() => onChangeLocale(nextLocale)}>
+        <button key={nextLocale} type="button" className={locale === nextLocale ? "active" : undefined} aria-label={tt(`language_${nextLocale}`)} aria-pressed={locale === nextLocale} onClick={() => onChangeLocale(nextLocale)}>
           <CountryBadge country={nextLocale === "en" ? "GB" : "FR"} />
-          {tt(`language_${nextLocale}`)}
+          {nextLocale.toUpperCase()}
         </button>
       ))}
     </div>

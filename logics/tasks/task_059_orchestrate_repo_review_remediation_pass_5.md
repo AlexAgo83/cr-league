@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 93%
+> Progress: 96%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -63,6 +63,7 @@
 - 2026-07-20 wave 10: continued item_138 by extracting the replay stage overlay into apps/web/src/features/replay/ReplayStageOverlay.tsx. ReplayView now passes precomputed director, moment, player-focus, tower, and timeline props into a presentation component; the stage controls, map info stack, active moment card, director panel, focus panel, tower slot, and replay progress bar are no longer inline. ReplayView.tsx is now 815 lines and all replay/ files remain under 400 lines. Remaining: one final pass to reduce ReplayView's derived-data section before closing item_138.
 - 2026-07-20 wave 11: continued item_137 by replacing the restartLeague window.confirm with a RestartConfirmModal, extracting SeasonRecapModal and LeagueControlsModal into apps/web/src/app/AppModals.tsx, updating the App test to confirm restart through the dialog, and deleting empty apps/web/src/lib and apps/web/src/ui .gitkeep placeholders. Targeted proof: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed. Remaining item_137 work: larger App.tsx decomposition toward the <700-line AC.
 - 2026-07-20 wave 12: continued item_137 by moving the simple App modals into AppModals.tsx: profile code, logout, preferences reset, technical error, directive confirm, qualifying confirm, next Grand Prix confirm, and admin delete. App.tsx is now 1714 lines; AppModals.tsx is 286 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed. Remaining: App.tsx still needs larger view/domain extraction to satisfy the <700-line AC.
+- 2026-07-20 wave 13: continued item_137 by extracting the drive screen JSX into apps/web/src/app/DriveView.tsx while keeping App as the state/mutation owner. DriveView contains the qualifying replay, circuit map overlay, qualifying times, final classification, and drive action controls; App.tsx is now 1496 lines and DriveView.tsx is 389 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

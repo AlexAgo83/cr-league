@@ -1,4 +1,4 @@
-import { APP_NAME, APP_VERSION, PIT_STRATEGIES, RACE_APPROACHES, TECHNICAL_PREPARATIONS, type CardId, type QualifyingRun, type Weather } from "@cr-league/shared";
+import { APP_NAME, APP_VERSION, PIT_STRATEGIES, RACE_APPROACHES, TECHNICAL_PREPARATIONS, type CardId, type QualifyingRun } from "@cr-league/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { circuitForRound } from "./circuits.js";
@@ -8,21 +8,20 @@ import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js
 import { AssetImage } from "../features/AssetImage.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, ChampionshipView } from "../features/ChampionshipView.js";
 import { ChangelogView } from "../features/ChangelogView.js";
-import { CircuitMap, MapTraitsPanel, circuitRouteAnalysis } from "../features/CircuitMap.js";
+import { circuitRouteAnalysis } from "../features/CircuitMap.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { GARAGE_PANEL_KEY, GarageView } from "../features/GarageView.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
 import { Modal } from "../features/Modal.js";
 import { ModalHero } from "../features/ModalHero.js";
-import { MapPlanPanel } from "../features/MapPlanPanel.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { PlanView } from "../features/PlanView.js";
 import { PositionBadge } from "../features/PositionBadge.js";
-import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayView } from "../features/ReplayView.js";
+import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY } from "../features/ReplayView.js";
 import { ResultView, type ResultTab } from "../features/ResultView.js";
-import { RewardValue } from "../features/RewardValue.js";
-import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
+import { CountryBadge } from "../features/VisualIcon.js";
 import { AdminDeleteUserModal, ConfirmActionModal, LeagueControlsModal, NextGrandPrixConfirmModal, ProfileCodeModal, RestartConfirmModal, SeasonRecapModal } from "./AppModals.js";
+import { DriveView } from "./DriveView.js";
 import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, SetupShell, type OnboardingHelpTopic } from "./OnboardingShell.js";
 import {
   ACTIVE_PLAYER_CLAIM_KEY,
@@ -1334,260 +1333,43 @@ export function App() {
           />
         ) : null}
         {gameView === "drive" && !historyReplay && (!result || !resultOpen) ? (
-          <div className="drive-grid">
-            <div className="drive-content-column">
-              {!result && currentQualifyingResult ? (
-                <div className="qualifying-replay-inline drive-map-panel">
-                  <ReplayView
-                    result={currentQualifyingResult.result}
-                    circuit={qualifyingReplayCircuit}
-                    playerTeamId={playerTeam?.id}
-                    teamLiveries={Object.fromEntries(leagueState.teams.map((team) => [team.id, team.livery]))}
-                    traitImpacts={directiveTraitImpacts}
-                    planDecision={currentQualifyingResult.decision}
-                    towerEntries={qualifyingReplayEntries}
-                    towerReplacement={
-                      <div className="map-qualifying-times replay-qualifying-times">
-                        <header>
-                          <strong>
-                            {tt("qualifying_times_title")} <span>{qualifyingAttemptsUsed}/{qualifyingAttemptLimit}</span>
-                          </strong>
-                        </header>
-                        {qualifyingLeaderboard.length ? (
-                          <ol>
-                            {qualifyingLeaderboard.map((run) => (
-                              <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeam?.id ? "player" : undefined}>
-                                <span>
-                                  <PositionBadge position={run.position} /> {run.teamName}
-                                  {run.attempts ? ` · ${tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}` : ""}
-                                </span>
-                                <em>{run.time.toFixed(2)}s</em>
-                              </li>
-                            ))}
-                          </ol>
-                        ) : (
-                          <small>{tt("qualifying_times_empty")}</small>
-                        )}
-                      </div>
-                    }
-                    titleKey="qualifying_replay_title"
-                    explainerKey="qualifying_replay_explainer"
-                    preferencesResetSignal={preferencesResetSignal}
-                    onClose={() => setQualifyingResult(null)}
-                    closeLabel={tt("action_back_to_circuit")}
-                    overlayActions={
-                      <>
-                        <button
-                          className={!commandClicks.chronoReport ? "highlight-command" : undefined}
-                          type="button"
-                          onClick={() => {
-                            markCommandClicked("chronoReport");
-                            setPlanSubscreen("chrono");
-                            setGameView("plan");
-                          }}
-                        >
-                          {tt("plan_subscreen_chrono")}
-                        </button>
-                        <button type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
-                          {tt("action_qualifying")}
-                        </button>
-                        <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                          {primaryCommand.label}
-                        </button>
-                      </>
-                    }
-                    tt={tt}
-                  />
-                </div>
-              ) : (
-                <CircuitMap
-                  className="drive-map-panel"
-                  circuit={currentCircuit}
-                  tt={tt}
-                  showHeading={false}
-                  framed={false}
-                  showTraits={false}
-                  weather={forecastPick as Weather}
-                  overlay={
-                    <>
-                      <div className="map-info-stack">
-                        <div className="map-status">
-                          <span className="circuit-city">
-                            <CountryBadge country={currentCircuit.country} /> {currentCircuit.city}
-                          </span>
-                          <strong>{tt(currentCircuit.layoutKey)}</strong>
-                          <small>
-                            {currentCircuit.laps} {tt("unit_laps")}
-                          </small>
-                          <small className="map-weather-readout">
-                            <VisualIcon name={forecastPick as Weather} />
-                            <span>{tt(`weather_${forecastPick}` as TranslationKey)}</span>
-                          </small>
-                        </div>
-                        <MapPlanPanel decision={mapPlan} tt={tt} />
-                        <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />
-                      </div>
-                      <div className="map-workflow-panel">
-                        <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
-                        <p className="race-phase-message">
-                          {tt(`race_phase_${raceDayPhase}_body` as TranslationKey, {
-                            used: qualifyingAttemptsUsed,
-                            limit: qualifyingAttemptLimit,
-                            left: qualifyingAttemptsLeft
-                          })}
-                        </p>
-                        <div className="race-day-steps" aria-label={tt("race_day_steps")}>
-                          {["briefing", "adjust", "locked", "gp"].map((step) => (
-                            <span key={step} className={step === raceDayPhase || (step === "gp" && raceDayPhase === "finished") ? "active" : undefined}>
-                              {tt(`race_step_${step}` as TranslationKey)}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                      {result ? (
-                        <div className="map-final-classification">
-                          <strong>{tt("result_final_classification")}</strong>
-                          <ol>
-                            {result.classification.map((entry) => (
-                              <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "player" : undefined}>
-                                <span>
-                                  <PositionBadge position={entry.position} /> {entry.teamName}
-                                </span>
-                                <em>
-                                  <RewardValue type="points" value={entry.points} tt={tt} />
-                                </em>
-                              </li>
-                            ))}
-                          </ol>
-                        </div>
-                      ) : null}
-                      {!result && qualifyingPanelOpen ? (
-                        <div className="map-qualifying-times">
-                          <header>
-                            <strong>
-                              {tt("qualifying_times_title")} <span>{qualifyingAttemptsUsed}/{qualifyingAttemptLimit}</span>
-                            </strong>
-                            <button type="button" aria-label={`${tt("action_close")} ${tt("qualifying_times_title")}`} onClick={() => setQualifyingPanelOpen(false)}>
-                              ×
-                            </button>
-                          </header>
-                          {qualifyingLeaderboard.length ? (
-                            <ol>
-                              {qualifyingLeaderboard.map((run) => (
-                                <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeam?.id ? "player" : undefined}>
-                                  <span>
-                                    <PositionBadge position={run.position} /> {run.teamName}
-                                    {run.attempts ? ` · ${tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}` : ""}
-                                  </span>
-                                  <em>{run.time.toFixed(2)}s</em>
-                                </li>
-                              ))}
-                            </ol>
-                          ) : (
-                            <small>{tt("qualifying_times_empty")}</small>
-                          )}
-                        </div>
-                      ) : !result ? (
-                        <button className="map-qualifying-toggle" type="button" onClick={() => setQualifyingPanelOpen(true)}>
-                          {tt("qualifying_times_title")} {qualifyingAttemptsUsed}/{qualifyingAttemptLimit}
-                        </button>
-                      ) : null}
-                      {result ? (
-                        <div className="race-phase-actions map-race-actions">
-                          <PendingFeedback className="map-pending-feedback" message={pendingMessage} />
-                          <button
-                            className="result-toggle-command"
-                            type="button"
-                            onClick={() => {
-                              setResultTab("replay");
-                              setResultOpen(true);
-                            }}
-                          >
-                            {tt("result_tab_replay")}
-                          </button>
-                          <button
-                            className={`result-toggle-command${!commandClicks.resultReport ? " highlight-command" : ""}`}
-                            type="button"
-                            onClick={() => {
-                              markCommandClicked("resultReport");
-                              setResultTab("report");
-                              setResultOpen(true);
-                            }}
-                          >
-                            {tt("result_tab_report")}
-                          </button>
-                          <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                            {primaryCommand.label}
-                          </button>
-                        </div>
-                      ) : (
-                        <div className="race-phase-actions map-race-actions">
-                          <PendingFeedback className="map-pending-feedback" message={pendingMessage} />
-                          {deskState === "prepare" ? (
-                            <>
-                              <button
-                                className={`primary-command${!commandClicks.editPlan ? " highlight-command" : ""}`}
-                                type="button"
-                                onClick={() => {
-                                  markCommandClicked("editPlan");
-                                  setPlanSubscreen("plan");
-                                  setGameView("plan");
-                                }}
-                              >
-                                {tt("action_edit_plan")}
-                              </button>
-                              <button
-                                className={`primary-command${!commandClicks.qualifying && qualifyingAttemptsUsed === 0 ? " highlight-command" : ""}`}
-                                type="button"
-                                onClick={openQualifyingRun}
-                                disabled={qualifyingDisabled}
-                              >
-                                {tt("action_qualifying")}
-                              </button>
-                              <button
-                                className="primary-command"
-                                type="button"
-                                onClick={openLastQualifyingRun}
-                                disabled={!lastQualifyingRun}
-                              >
-                                {tt("action_qualifying_history")}
-                              </button>
-                              <button
-                                className={primaryCommandClass}
-                                type="button"
-                                onClick={primaryCommand.action}
-                                disabled={primaryCommand.disabled}
-                              >
-                                {primaryCommand.label}
-                              </button>
-                            </>
-                          ) : (
-                            <>
-                              {deskState === "ready" ? (
-                                <button
-                                  className="primary-command"
-                                  type="button"
-                                  onClick={() => {
-                                    setPlanSubscreen("plan");
-                                    setGameView("plan");
-                                  }}
-                                >
-                                  {tt("action_view_plan")}
-                                </button>
-                              ) : null}
-                              <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                                {primaryCommand.label}
-                              </button>
-                            </>
-                          )}
-                        </div>
-                      )}
-                    </>
-                  }
-                />
-              )}
-            </div>
-          </div>
+          <DriveView
+            state={leagueState}
+            result={result}
+            currentQualifyingResult={currentQualifyingResult}
+            currentCircuit={currentCircuit}
+            qualifyingReplayCircuit={qualifyingReplayCircuit}
+            playerTeam={playerTeam}
+            mapPlan={mapPlan}
+            directiveTraitImpacts={directiveTraitImpacts}
+            replayTraitImpacts={replayTraitImpacts}
+            forecastPick={forecastPick}
+            raceDayPhase={raceDayPhase}
+            qualifyingAttemptsUsed={qualifyingAttemptsUsed}
+            qualifyingAttemptLimit={qualifyingAttemptLimit}
+            qualifyingAttemptsLeft={qualifyingAttemptsLeft}
+            qualifyingPanelOpen={qualifyingPanelOpen}
+            qualifyingLeaderboard={qualifyingLeaderboard}
+            qualifyingReplayEntries={qualifyingReplayEntries}
+            commandClicks={commandClicks}
+            primaryCommandClass={primaryCommandClass}
+            primaryCommand={primaryCommand}
+            deskState={deskState}
+            lastQualifyingRun={lastQualifyingRun}
+            qualifyingDisabled={qualifyingDisabled}
+            pendingMessage={pendingMessage}
+            preferencesResetSignal={preferencesResetSignal}
+            setQualifyingPanelOpen={setQualifyingPanelOpen}
+            setQualifyingResult={setQualifyingResult}
+            setPlanSubscreen={setPlanSubscreen}
+            setGameView={setGameView}
+            setResultTab={setResultTab}
+            setResultOpen={setResultOpen}
+            markCommandClicked={markCommandClicked}
+            openQualifyingRun={openQualifyingRun}
+            openLastQualifyingRun={openLastQualifyingRun}
+            tt={tt}
+          />
         ) : null}
         {gameView === "plan" ? (
           <PlanView

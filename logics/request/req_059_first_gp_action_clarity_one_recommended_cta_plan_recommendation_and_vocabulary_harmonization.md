@@ -1,7 +1,7 @@
 ## req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization - First-GP action clarity: one recommended CTA, plan recommendation, and vocabulary harmonization
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Low

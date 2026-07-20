@@ -451,10 +451,10 @@ async function createProfile(page: Page) {
 
 async function createLeague(page: Page) {
   await page.getByRole("button", { name: "Create league" }).click();
+  await suppressOnboarding(page);
   await page.getByRole("button", { name: "Start league" }).click();
   await expect(page.locator(".game-nav button")).toHaveCount(4);
   await dismissOnboarding(page);
-  await suppressOnboarding(page);
 }
 
 async function dismissOnboarding(page: Page) {
@@ -463,10 +463,12 @@ async function dismissOnboarding(page: Page) {
     if (!(await overlay.isVisible({ timeout: 3000 }).catch(() => false))) break;
 
     const leagueIntro = overlay.getByRole("dialog", { name: "Welcome to the grid" });
-    if (await leagueIntro.isVisible({ timeout: 500 }).catch(() => false)) {
-      await leagueIntro.getByRole("button", { name: "Go to step 4" }).click();
-      await expect(leagueIntro.getByRole("heading", { name: "Race by race, build your season" })).toBeVisible();
-      await leagueIntro.getByRole("button", { name: "Enter the grid" }).click();
+    if (await leagueIntro.isVisible({ timeout: 3000 }).catch(() => false)) {
+      const startRacing = leagueIntro.getByRole("button", { name: "Enter the grid" });
+      for (let step = 0; step < 4 && !(await startRacing.isVisible({ timeout: 250 }).catch(() => false)); step += 1) {
+        await leagueIntro.getByRole("button", { name: "Next" }).click();
+      }
+      await startRacing.click();
       await expect(leagueIntro).toBeHidden();
       continue;
     }

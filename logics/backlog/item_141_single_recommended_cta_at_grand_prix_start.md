@@ -1,10 +1,10 @@
 ## item_141_single_recommended_cta_at_grand_prix_start - Single recommended CTA at Grand Prix start
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 65
+> Progress: 100%
 > Complexity: Low
 > Theme: First-session UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -39,6 +39,7 @@
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: With no plan and zero attempts, only the chrono CTA carries highlight-command.
 - request-AC4 -> This backlog slice. Proof: AC2: After one attempt, the plan path highlights as today.
+- request-AC3 -> This backlog slice. Evidence needed: The EN chrono CTA reads 'New chrono' and the league/championship/plan/chrono/launch vocabulary uses one term per concept across rail, subscreen, action, and hint keys in both locales, with the i18n parity test passing.
 
 # Decision framing
 - Product framing: Not needed
@@ -59,3 +60,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_060_orchestrate_first_gp_action_clarity`
+
+# Notes
+- Task `task_060_orchestrate_first_gp_action_clarity` was finished via `logics-manager flow finish task` on 2026-07-20.

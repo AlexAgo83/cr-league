@@ -1,10 +1,10 @@
 ## item_143_harmonize_first_session_vocabulary_in_en_and_fr - Harmonize first-session vocabulary in EN and FR
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 85
+> Progress: 100%
 > Complexity: Low
 > Theme: i18n
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -61,3 +61,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_060_orchestrate_first_gp_action_clarity`
+
+# Notes
+- Task `task_060_orchestrate_first_gp_action_clarity` was finished via `logics-manager flow finish task` on 2026-07-20.

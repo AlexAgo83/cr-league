@@ -1,8 +1,8 @@
 ## prod_023_first_gp_action_clarity_product_brief - First-GP Action Clarity Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization`
-> Related backlog: `item_141_single_recommended_cta_at_grand_prix_start`, `item_142_compact_circuit_and_weather_recommendation_on_the_plan_screen`, `item_143_harmonize_first_session_vocabulary_in_en_and_fr`
+> Related backlog: `item_141_single_recommended_cta_at_grand_prix_start`
 > Related task: `task_060_orchestrate_first_gp_action_clarity`
 > Related architecture: (none yet)
 > Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
@@ -44,5 +44,5 @@ Roadmap patch 0.3.16: make the first minutes of a Grand Prix unambiguous. One pu
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization`
+- Product back-reference: `item_141_single_recommended_cta_at_grand_prix_start`
 - Task back-reference: `task_060_orchestrate_first_gp_action_clarity`

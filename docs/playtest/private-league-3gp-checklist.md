@@ -16,7 +16,7 @@ Target build: current private-beta loop with 3-GP playtest coverage.
 1. Player A creates or recovers a profile, then joins code `PLAY01` as `Volt Union`.
 2. Player B creates or recovers a profile, then joins code `PLAY01` as `Late Apex`.
 3. Set cadence to `Fast`.
-4. Each player reviews the current GP, checks the first-time highlighted commands, edits the plan once, runs at least one qualifying attempt, opens the chrono report, replays the latest chrono, then submits a directive.
+4. Each player reviews the current GP, checks the first-time highlighted commands, edits the plan once, reads the plan recommendation, runs at least one chrono attempt, opens the chrono report, replays the latest chrono, then submits a directive.
 5. Resolve GP 1, launch the replay from the race flow, use the replay toolbar report shortcut, then use the report replay shortcut to return to the replay.
 6. Read the race recap, report, rewards, chrono table, and classification.
 7. Review the championship screen, click GP history, and confirm it opens in the normal replay screen instead of a modal.

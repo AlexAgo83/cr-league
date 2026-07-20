@@ -524,6 +524,7 @@ describe("App", () => {
     expect(document.querySelector(".chrono-report-history .type-preparation")).toBeTruthy();
     expect(document.querySelector(".chrono-report-history .type-pit.is-faded")).toBeTruthy();
     expect(document.querySelector(".chrono-report-history .type-card")).toBeTruthy();
+    expect(document.querySelector(".chrono-report-history .type-card.is-faded")).toBeTruthy();
     expect(document.querySelectorAll(".chrono-session-choice b").length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();

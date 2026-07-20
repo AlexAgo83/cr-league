@@ -69,6 +69,7 @@ export function PlanView({
   const planRecommendation = buildPlanRecommendation({ circuitTraits, forecastPick, tt });
   const activeSubscreen = planSubscreen;
   const reportTitle = `${reportCircuit.city} ${tt(reportCircuit.layoutKey)}`;
+  const chronoCardClass = (cardId?: CardId) => `chrono-session-choice type-card${isChronoCardRelevant(cardId, forecastPick) ? "" : " is-faded"}`;
 
   return (
     <div className="plan-view">
@@ -180,7 +181,7 @@ export function PlanView({
                   <small>{tt("field_pit_strategy")}</small>
                   <b>{tt(`pit_strategy_${chronoReport.best.decision.pitStrategy ?? "standard"}` as TranslationKey)}</b>
                 </span>
-                <span className="chrono-session-choice type-card">
+                <span className={chronoCardClass(chronoReport.best.decision.cardId)}>
                   <small>{tt("field_card")}</small>
                   <b>{chronoReport.best.decision.cardId ? tt(`card_${chronoReport.best.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
                 </span>
@@ -214,7 +215,7 @@ export function PlanView({
                           <small>{tt("field_pit_strategy")}</small>
                           <b>{tt(`pit_strategy_${run.decision.pitStrategy ?? "standard"}` as TranslationKey)}</b>
                         </span>
-                        <span className="chrono-session-choice type-card">
+                        <span className={chronoCardClass(run.decision.cardId)}>
                           <small>{tt("field_card")}</small>
                           <b>{run.decision.cardId ? tt(`card_${run.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
                         </span>
@@ -258,4 +259,8 @@ export function PlanView({
       )}
     </div>
   );
+}
+
+function isChronoCardRelevant(cardId: CardId | undefined, forecastPick: string) {
+  return cardId === "qualifying_focus" || cardId === "launch_boost" || (cardId === "rain_grip" && forecastPick !== "dry");
 }

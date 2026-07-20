@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseAppRoute, pathForAppRoute } from "./routes.js";
+import { isStartPath, parseAppRoute, pathForAppRoute } from "./routes.js";
 
 describe("app routes", () => {
   it("maps stable navigation paths to app state", () => {
@@ -9,6 +9,13 @@ describe("app routes", () => {
     expect(parseAppRoute("/championship/circuits")).toEqual({ view: "championship", planSubscreen: "plan", directiveStep: "approach", championshipTab: "calendar", garagePanel: "inventory" });
     expect(parseAppRoute("/garage/shop")).toEqual({ view: "garage", planSubscreen: "plan", directiveStep: "approach", championshipTab: "standings", garagePanel: "shop" });
     expect(parseAppRoute("/replay/gp_abcd1")).toEqual({ view: "drive", planSubscreen: "plan", directiveStep: "approach", championshipTab: "standings", garagePanel: "inventory", replayGrandPrixId: "gp_abcd1" });
+  });
+
+  it("detects only the root URL as the splash start path", () => {
+    expect(isStartPath("/")).toBe(true);
+    expect(isStartPath("")).toBe(true);
+    expect(isStartPath("/garage")).toBe(false);
+    expect(isStartPath("/plan/chrono")).toBe(false);
   });
 
   it("builds canonical paths from app state", () => {

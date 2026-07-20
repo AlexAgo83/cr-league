@@ -1,10 +1,10 @@
 ## item_158_build_the_splash_layout_header_covering_background_floating_titles_press_start - Build the splash layout: header, covering background, floating titles, PRESS START
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 70%
 > Complexity: Medium
 > Theme: Home splash and brand first-contact
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -26,6 +26,10 @@
 - AC1: Header, covering background, and overlaid titles render correctly on desktop and mobile.
 - AC2: Titles float subtly and stop under prefers-reduced-motion.
 - AC5: Language switches from the splash and carries into the app.
+
+# Implementation notes
+- 2026-07-20: The splash reuses `SetupTopbar` + `LanguageSwitcher`, renders the committed `home-background.jpg` as an object-fit cover viewport image, overlays `home-title-cr.png` and `home-title-league.png`, and animates them with independent CSS float keyframes disabled by `prefers-reduced-motion`.
+- Targeted proof: `rtk npm run test:e2e` passed with desktop/mobile splash assertions for cover background, no horizontal scroll, animated titles, and the PRESS START path into the normal app.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Header, covering background, and overlaid titles render correctly on desktop and mobile.

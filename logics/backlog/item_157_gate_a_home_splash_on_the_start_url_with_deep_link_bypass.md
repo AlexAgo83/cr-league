@@ -1,10 +1,10 @@
 ## item_157_gate_a_home_splash_on_the_start_url_with_deep_link_bypass - Gate a home splash on the start URL with deep-link bypass
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 70%
 > Complexity: Medium
 > Theme: Home splash and brand first-contact
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -25,6 +25,10 @@
 # Acceptance criteria
 - AC1: Splash shows at the root URL; AC3: PRESS START lands on today's default screen unchanged.
 - AC4: Any inner initial route bypasses the splash.
+
+# Implementation notes
+- 2026-07-20: `isStartPath()` now centralizes the root-only gate, and `App` wraps the existing app body with an in-memory `entered` splash guard so `/` shows the splash while `/garage`, `/plan/*`, `/championship/*`, `/admin`, `/changelog`, and `/replay/:id` bypass it.
+- Targeted proof: `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/app/routes.test.ts apps/web/src/i18n/index.test.ts` passed, covering root show, deep-link bypass, PRESS START dismiss, and default app reveal.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Splash shows at the root URL; AC3: PRESS START lands on today's default screen unchanged.

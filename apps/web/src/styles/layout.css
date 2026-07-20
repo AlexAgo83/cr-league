@@ -89,6 +89,100 @@
   transform: scale(1.18);
 }
 
+.home-splash {
+  align-items: center;
+  display: grid;
+  isolation: isolate;
+  justify-items: center;
+  min-height: 100dvh;
+  overflow: hidden;
+  padding: 96px 20px 52px;
+  position: relative;
+}
+
+.home-splash-background {
+  height: 100%;
+  inset: 0;
+  object-fit: cover;
+  object-position: center;
+  position: fixed;
+  width: 100%;
+  z-index: -2;
+}
+
+.home-splash::after {
+  background: linear-gradient(180deg, rgb(16 14 18 / 0.28), rgb(16 14 18 / 0.1) 44%, rgb(16 14 18 / 0.72));
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
+}
+
+.home-splash > .setup-topbar {
+  position: fixed;
+  z-index: 2;
+}
+
+.home-splash-title {
+  align-items: center;
+  display: grid;
+  gap: clamp(0px, 1.2vw, 12px);
+  justify-items: center;
+  margin-top: min(8dvh, 72px);
+  width: min(78vw, 620px);
+}
+
+.home-splash-title img {
+  display: block;
+  height: auto;
+  max-width: 100%;
+}
+
+.home-splash-title-cr {
+  animation: splash-title-float-cr 4.8s ease-in-out infinite;
+  width: min(46vw, 330px);
+}
+
+.home-splash-title-league {
+  animation: splash-title-float-league 5.6s ease-in-out -1.2s infinite;
+  width: min(72vw, 560px);
+}
+
+.home-press-start {
+  align-self: end;
+  background: color-mix(in srgb, var(--color-accent) 82%, #ffdf7e);
+  border: 1px solid rgb(255 226 166 / 0.72);
+  box-shadow: 0 0 0 1px rgb(255 77 0 / 0.32), 0 12px 34px rgb(255 77 0 / 0.24);
+  color: #1b1008;
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 4vw, 1.35rem);
+  font-style: italic;
+  letter-spacing: 0.08em;
+  min-height: 46px;
+  padding: 10px 28px;
+  text-shadow: 0 1px 0 rgb(255 255 255 / 0.28);
+}
+
+@keyframes splash-title-float-cr {
+  50% {
+    transform: translateY(-10px) rotate(-0.8deg);
+  }
+}
+
+@keyframes splash-title-float-league {
+  50% {
+    transform: translateY(8px) rotate(0.6deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-splash-title-cr,
+  .home-splash-title-league {
+    animation: none;
+  }
+}
+
 .ambient-race-map .circuit-map-stage {
   background: transparent;
   border: 0;

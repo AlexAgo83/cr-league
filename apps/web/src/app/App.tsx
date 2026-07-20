@@ -26,7 +26,7 @@ import { AppShell } from "./AppShell.js";
 import { rememberPlayerClaim, withCurrentPlayer as restoreCurrentPlayer, withoutPlayerClaim } from "./claimHelpers.js";
 import { createProfileActions } from "./profileActions.js";
 import { createRaceActions } from "./raceActions.js";
-import { isGrandPrixRouteId, shortGrandPrixId } from "./routes.js";
+import { isGrandPrixRouteId, isStartPath, shortGrandPrixId } from "./routes.js";
 import { createSessionActions } from "./sessionActions.js";
 import { type ProfileMode, type SetupMode } from "./SetupViews.js";
 import { createLeagueMutations } from "./leagueMutations.js";
@@ -41,6 +41,41 @@ const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "
 const CARRIED_OVER_PLAN_SEEN_KEY_PREFIX = "cr-league-carried-plan-seen";
 
 export function App() {
+  const [locale, setLocaleState] = useState<Locale>(() => {
+    const saved = localStorage.getItem(LANGUAGE_KEY);
+    if (isLocale(saved)) return saved;
+    const browserLocale = navigator.language.split("-")[0] ?? "en";
+    return isLocale(browserLocale) ? browserLocale : "en";
+  });
+  const [entered, setEntered] = useState(() => !isStartPath(window.location.pathname));
+  const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
+
+  function changeLocale(nextLocale: Locale) {
+    localStorage.setItem(LANGUAGE_KEY, nextLocale);
+    setLocaleState(nextLocale);
+  }
+
+  if (!entered) return <HomeSplash locale={locale} tt={tt} onChangeLocale={changeLocale} onEnter={() => setEntered(true)} />;
+  return <GameApp />;
+}
+
+function HomeSplash({ locale, tt, onChangeLocale, onEnter }: { locale: Locale; tt: (key: TranslationKey) => string; onChangeLocale: (locale: Locale) => void; onEnter: () => void }) {
+  return (
+    <main className="home-splash" aria-label={tt("splash_label")}>
+      <img className="home-splash-background" src="/assets/crl/home-background.jpg" alt="" />
+      <SetupTopbar profileMenu={null} languageSwitcher={<LanguageSwitcher locale={locale} tt={tt} onChangeLocale={onChangeLocale} />} onHome={() => undefined} />
+      <div className="home-splash-title" aria-hidden="true">
+        <img className="home-splash-title-cr" src="/assets/crl/home-title-cr.png" alt="" />
+        <img className="home-splash-title-league" src="/assets/crl/home-title-league.png" alt="" />
+      </div>
+      <button type="button" className="home-press-start" onClick={onEnter}>
+        {tt("splash_press_start")}
+      </button>
+    </main>
+  );
+}
+
+function GameApp() {
   const [locale, setLocaleState] = useState<Locale>(() => {
     const saved = localStorage.getItem(LANGUAGE_KEY);
     if (isLocale(saved)) return saved;

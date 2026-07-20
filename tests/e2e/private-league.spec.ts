@@ -91,6 +91,20 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await mockLeagueApi(page);
 
   await page.goto("/");
+  await expect(page.getByRole("main", { name: "CR League home" })).toBeVisible();
+  await expect(page.locator(".home-splash-background")).toHaveCSS("object-fit", "cover");
+  await expect(page.locator(".home-press-start")).toBeVisible();
+  expect(
+    await page.evaluate(() => ({
+      noHorizontalScroll: document.documentElement.scrollWidth <= window.innerWidth + 1,
+      crAnimated: getComputedStyle(document.querySelector(".home-splash-title-cr")!).animationName !== "none",
+      leagueAnimated: getComputedStyle(document.querySelector(".home-splash-title-league")!).animationName !== "none"
+    }))
+  ).toEqual({ noHorizontalScroll: true, crAnimated: true, leagueAnimated: true });
+  await page.setViewportSize({ width: 390, height: 900 });
+  await expect.poll(async () => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("home-splash-mobile.png"), fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await createProfile(page);
 
   await createLeague(page);
@@ -459,6 +473,7 @@ async function expectAnimatedHighlight(locator: ReturnType<Page["getByRole"]>) {
 }
 
 async function createProfile(page: Page) {
+  await enterSplash(page);
   await page.getByRole("button", { name: /Create profile/ }).click();
   await page.getByLabel("Email").fill("pilot@example.test");
   await page.getByRole("button", { name: "Create profile" }).click();
@@ -468,6 +483,11 @@ async function createProfile(page: Page) {
   await expect(page.locator(".profile-menu-panel")).toHaveCount(0);
   await expect(page.getByText("No saved leagues yet.")).toBeVisible();
   await expect(page.getByLabel("Language")).toHaveCount(0);
+}
+
+async function enterSplash(page: Page) {
+  const pressStart = page.getByRole("button", { name: "PRESS START" });
+  if (await pressStart.isVisible({ timeout: 500 }).catch(() => false)) await pressStart.click();
 }
 
 async function createLeague(page: Page) {

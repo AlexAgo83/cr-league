@@ -1,11 +1,16 @@
 import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
 import { act } from "react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
 import { CITY_CIRCUITS } from "./circuits.js";
 import { testCircuit, baseState, decidedState, resolvedState, nextGrandPrixState, seasonTwoState, qualifyingRun, qualifiedState, decidedStateWithQualifying, settingsState } from "./App.testFixtures.js";
 import { closeLeagueIntro, createLeagueFromSetup, expectGarageCode, response, saveProfile, withoutPlayer } from "./App.testHelpers.js";
 import { t } from "../i18n/index.js";
+
+beforeEach(() => {
+  window.history.replaceState(null, "", "/drive");
+});
+
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
@@ -15,6 +20,47 @@ afterEach(() => {
 });
 
 describe("App", () => {
+  it("shows the animated home splash at the root and enters the app on press start", () => {
+    window.history.replaceState(null, "", "/");
+
+    render(<App />);
+
+    expect(screen.getByRole("main", { name: "CR League home" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "PRESS START" })).toBeTruthy();
+    expect(document.querySelector(".home-splash-title-cr")).toBeTruthy();
+    expect(document.querySelector(".home-splash-title-league")).toBeTruthy();
+    expect(screen.queryByRole("button", { name: /Create profile/ })).toBe(null);
+
+    fireEvent.click(screen.getByRole("button", { name: "PRESS START" }));
+
+    expect(screen.queryByRole("main", { name: "CR League home" })).toBe(null);
+    expect(screen.getByRole("button", { name: /Create profile/ })).toBeTruthy();
+  });
+
+  it("bypasses the splash for deep initial routes", () => {
+    window.history.replaceState(null, "", "/garage");
+
+    render(<App />);
+
+    expect(screen.queryByRole("main", { name: "CR League home" })).toBe(null);
+    expect(screen.getByRole("button", { name: /Create profile/ })).toBeTruthy();
+  });
+
+  it("carries the splash language choice into the app", () => {
+    window.history.replaceState(null, "", "/");
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Français/ }));
+
+    expect(screen.getByRole("main", { name: "Accueil CR League" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "APPUYER START" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "APPUYER START" }));
+
+    expect(screen.getByRole("button", { name: /Créer profil/ })).toBeTruthy();
+    expect(localStorage.getItem("cr-league-language")).toBe("fr");
+  });
+
   it("switches the interface language", () => {
     render(<App />);
 

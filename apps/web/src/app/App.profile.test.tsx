@@ -1,9 +1,13 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { APP_VERSION } from "@cr-league/shared";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
 import { baseState, otherLeagueState, resolvedState } from "./App.testFixtures.js";
 import { createLeagueFromSetup, expectGarageCode, response, saveProfile, withoutPlayer } from "./App.testHelpers.js";
+
+beforeEach(() => {
+  window.history.replaceState(null, "", "/drive");
+});
 
 afterEach(() => {
   cleanup();

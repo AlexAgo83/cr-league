@@ -1,22 +1,23 @@
 ## task_066_orchestrate_the_home_splash_landing_screen - Orchestrate the home splash landing screen
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 70%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
 
 # Plan
-- [ ] 1. Define the single start-URL gate aligned with parseAppRoute and add the thin additive 'entered' wrapper around the app root render.
-- [ ] 2. Compose the splash header from SetupTopbar + LanguageSwitcher and lay out the covering background with the two overlaid title assets.
-- [ ] 3. Add independent float keyframes for CR and League with a prefers-reduced-motion off-switch; style PRESS START from existing theme tokens and add en/fr labels.
-- [ ] 4. Wire PRESS START to enter the default screen unchanged; add the show/bypass/dismiss render test.
+- [x] 1. Define the single start-URL gate aligned with parseAppRoute and add the thin additive 'entered' wrapper around the app root render.
+- [x] 2. Compose the splash header from SetupTopbar + LanguageSwitcher and lay out the covering background with the two overlaid title assets.
+- [x] 3. Add independent float keyframes for CR and League with a prefers-reduced-motion off-switch; style PRESS START from existing theme tokens and add en/fr labels.
+- [x] 4. Wire PRESS START to enter the default screen unchanged; add the show/bypass/dismiss render test.
 - [ ] 5. Keep the root-path change additive to rebase cleanly against Codex's shell decomposition.
 - [ ] 6. Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
@@ -42,9 +43,10 @@
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- 2026-07-20 wave 1 targeted proof: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/app/routes.test.ts apps/web/src/i18n/index.test.ts` passed (52 tests); `rtk npm run test:e2e` passed (4 tests).
 
 # Report
-- Implementation complete.
+- Wave 1 implemented: root-only home splash gate, deep-link bypass, Profile-style header reuse, cover background, animated CR/League title assets with reduced-motion guard, themed PRESS START, language carry-through, and e2e splash assertions.
 
 # AI Context
 - Summary: Orchestrate the home splash landing screen

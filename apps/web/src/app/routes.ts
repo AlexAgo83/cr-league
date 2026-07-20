@@ -28,6 +28,10 @@ export function parseAppRoute(pathname: string): AppRoute {
   return route("drive", "plan", "approach", "standings", "inventory");
 }
 
+export function isStartPath(pathname: string) {
+  return pathname.split("/").filter(Boolean).length === 0;
+}
+
 export function pathForAppRoute(route: AppRoute) {
   if (route.view === "plan") return route.planSubscreen === "chrono" ? "/plan/chrono" : `/plan/${route.directiveStep}`;
   if (route.view === "championship") {

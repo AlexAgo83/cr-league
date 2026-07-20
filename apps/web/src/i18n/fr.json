@@ -1,6 +1,8 @@
 {
   "app_eyebrow": "Championnat urbain de micro-EV",
   "app_intro": "Crée ou rejoins une ligue privée, fixe ta directive, puis lance le Grand Prix.",
+  "splash_label": "Accueil CR League",
+  "splash_press_start": "APPUYER START",
   "flow_label": "Parcours de ligue démo",
   "status_initial": "Crée ton championnat privé, invite les pilotes, puis joue chaque Grand Prix comme un choix de muret.",
   "status_creating_league": "Création de la ligue...",

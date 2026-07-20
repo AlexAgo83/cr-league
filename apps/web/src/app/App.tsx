@@ -1,18 +1,16 @@
-import { APP_NAME, APP_VERSION, PIT_STRATEGIES, RACE_APPROACHES, TECHNICAL_PREPARATIONS, type CardId, type QualifyingRun } from "@cr-league/shared";
+import { PIT_STRATEGIES, RACE_APPROACHES, TECHNICAL_PREPARATIONS, type CardId, type QualifyingRun } from "@cr-league/shared";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { circuitForRound } from "./circuits.js";
 import { cardFit, clampNumber, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
-import { GAME_VIEWS, type AdminLeague, type AdminUser, type FormState, type LeagueState, type ProfileSession } from "./types.js";
+import { type AdminLeague, type AdminUser, type FormState, type GameView, type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
-import { AssetImage } from "../features/AssetImage.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY } from "../features/ChampionshipView.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { GARAGE_PANEL_KEY } from "../features/GarageView.js";
-import { PendingFeedback } from "../features/PendingFeedback.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY } from "../features/ReplayView.js";
 import type { ResultTab } from "../features/ResultView.js";
-import { CountryBadge } from "../features/VisualIcon.js";
+import { GameTopbar, LanguageSwitcher, ProfileMenu, SetupTopbar } from "./AppChrome.js";
 import { AdminDeleteUserModal, ConfirmActionModal, LeagueControlsModal, NextGrandPrixConfirmModal, ProfileCodeModal, ResolveGrandPrixConfirmModal, RestartConfirmModal, SeasonRecapModal } from "./AppModals.js";
 import { DriveView } from "./DriveView.js";
 import { GameViews } from "./GameViews.js";
@@ -686,19 +684,7 @@ export function App() {
     }
   }
 
-  function languageSwitcher() {
-    return (
-      <div className="language-select" role="group" aria-label={tt("language_label")}>
-        <span>{tt("language_label")}</span>
-        {(["en", "fr"] as const).map((nextLocale) => (
-          <button key={nextLocale} type="button" className={locale === nextLocale ? "active" : undefined} aria-pressed={locale === nextLocale} onClick={() => changeLocale(nextLocale)}>
-            <CountryBadge country={nextLocale === "en" ? "GB" : "FR"} />
-            {tt(`language_${nextLocale}`)}
-          </button>
-        ))}
-      </div>
-    );
-  }
+  const languageSwitcher = <LanguageSwitcher locale={locale} tt={tt} onChangeLocale={changeLocale} />;
 
   function resetUiPreferences() {
     for (const key of UI_PREFERENCE_KEYS) localStorage.removeItem(key);
@@ -719,118 +705,52 @@ export function App() {
     setProfileOpen(false);
   }
 
-  function profileMenu(showManageLeague = true, showLeagueSwitch = true) {
-    return (
-    <div
-      className="profile-menu"
-      onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) setProfileOpen(false);
+  const profileMenu = (showManageLeague = true, showLeagueSwitch = true) => (
+    <ProfileMenu
+      locale={locale}
+      profileOpen={profileOpen}
+      playerTeamName={playerTeam?.name}
+      pendingMessage={pendingMessage}
+      savedClaims={savedClaims}
+      activeTeamId={leagueState?.player?.teamId ?? ""}
+      showManageLeague={showManageLeague}
+      showLeagueSwitch={showLeagueSwitch}
+      hasLeague={Boolean(leagueState)}
+      isAdmin={Boolean(profileSession?.admin)}
+      hasRecoveryCode={Boolean(profileSession?.recoveryCode)}
+      tt={tt}
+      onChangeLocale={changeLocale}
+      onToggleOpen={() => setProfileOpen((open) => !open)}
+      onClose={() => setProfileOpen(false)}
+      onSwitchLeague={(teamId) => void switchLeague(teamId)}
+      onAddLeague={addLeague}
+      onOpenLeagueControls={() => {
+        setLeagueControlsOpen(true);
+        setProfileOpen(false);
       }}
-    >
-      <button type="button" className="profile-menu-button" aria-label={tt("profile_menu")} aria-expanded={profileOpen} onClick={() => setProfileOpen((open) => !open)}>
-        {playerTeam?.name.slice(0, 2).toUpperCase() ?? "CR"}
-      </button>
-      {profileOpen ? (
-        <div className="profile-menu-panel">
-          <PendingFeedback message={pendingMessage} />
-          {showLeagueSwitch && savedClaims.length > 1 ? (
-            <label>
-              {tt("profile_league_switch")}
-              <select value={leagueState?.player?.teamId ?? ""} onChange={(event) => void switchLeague(event.target.value)}>
-                {savedClaims.map((claim) => (
-                  <option key={claim.teamId} value={claim.teamId}>
-                    {claim.leagueName} · {claim.teamName}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
-          {showManageLeague ? (
-            <button type="button" className="profile-menu-action" onClick={addLeague}>
-              {tt("action_add_league")}
-            </button>
-          ) : null}
-          {leagueState ? (
-            <button
-              type="button"
-              className="profile-menu-action"
-              onClick={() => {
-                setLeagueControlsOpen(true);
-                setProfileOpen(false);
-              }}
-            >
-              {tt("settings_title")}
-            </button>
-          ) : null}
-          {profileSession?.admin ? (
-            <button type="button" className="profile-menu-action profile-menu-action-info" onClick={() => void openAdminConsole()}>
-              {tt("admin_action_open")}
-            </button>
-          ) : null}
-          {profileSession?.recoveryCode ? (
-            <button
-              type="button"
-              className="profile-menu-action profile-menu-action-info"
-              onClick={() => {
-                setProfileCodeOpen(true);
-                setProfileOpen(false);
-              }}
-            >
-              {tt("action_copy_profile_code")}
-            </button>
-          ) : null}
-          {languageSwitcher()}
-          <button
-            type="button"
-            className="profile-menu-action profile-menu-action-info"
-            onClick={() => {
-              setPreferencesResetOpen(true);
-              setProfileOpen(false);
-            }}
-          >
-            {tt("action_reset_ui_preferences")}
-          </button>
-          <button
-            type="button"
-            className="profile-menu-action profile-menu-action-danger"
-            onClick={() => {
-              setProfileLogoutOpen(true);
-              setProfileOpen(false);
-            }}
-          >
-            {tt("action_forget_profile")}
-          </button>
-          <button
-            type="button"
-            className="profile-menu-version"
-            onClick={() => {
-              setGameView("changelog");
-              setProfileOpen(false);
-              setResultOpen(false);
-            }}
-          >
-            v{APP_VERSION}
-          </button>
-        </div>
-      ) : null}
-    </div>
-    );
-  }
+      onOpenAdminConsole={() => void openAdminConsole()}
+      onOpenProfileCode={() => {
+        setProfileCodeOpen(true);
+        setProfileOpen(false);
+      }}
+      onOpenPreferencesReset={() => {
+        setPreferencesResetOpen(true);
+        setProfileOpen(false);
+      }}
+      onOpenProfileLogout={() => {
+        setProfileLogoutOpen(true);
+        setProfileOpen(false);
+      }}
+      onOpenChangelog={() => {
+        setGameView("changelog");
+        setProfileOpen(false);
+        setResultOpen(false);
+      }}
+    />
+  );
 
   const setupTopbar = (
-    <header className="setup-topbar">
-      <button type="button" className="brand brand-button" onClick={goHome}>
-        <AssetImage className="brand-icon" src="/favicon.svg" alt="" />
-        <strong>{APP_NAME}</strong>
-      </button>
-      <div className="setup-topbar-actions">
-        {profileSession ? (
-          profileMenu(false, false)
-        ) : (
-          languageSwitcher()
-        )}
-      </div>
-    </header>
+    <SetupTopbar profileMenu={profileSession ? profileMenu(false, false) : null} languageSwitcher={languageSwitcher} onHome={goHome} />
   );
 
   const profileCodeModal = profileCodeOpen ? (
@@ -975,38 +895,18 @@ export function App() {
   }
 
   const isMapScreen = gameView === "drive" && (!visibleResult || resultTab === "replay");
+  const selectGameView = (view: GameView) => {
+    clearTransientNotifications();
+    clearScreenOnboardingSnoozes();
+    closeHistoryReplay();
+    setGameView(view);
+    if (view === "plan") setPlanSubscreen("plan");
+    if (view === "drive" && result) setResultOpen(false);
+  };
 
   return (
     <main className={isMapScreen ? "app-shell game-shell map-screen" : "app-shell game-shell"}>
-      <header className="topbar">
-        <button type="button" className="brand brand-button" onClick={goHome}>
-          <AssetImage className="brand-icon" src="/favicon.svg" alt="" />
-          <strong>{leagueState.league.name}</strong>
-        </button>
-        <nav className="game-nav" aria-label={tt("cockpit_sections")}>
-          {GAME_VIEWS.map((view) => (
-            <button
-              key={view}
-              type="button"
-              className={gameView === view ? "active" : undefined}
-              onClick={() => {
-                clearTransientNotifications();
-                clearScreenOnboardingSnoozes();
-                closeHistoryReplay();
-                setGameView(view);
-                if (view === "plan") setPlanSubscreen("plan");
-                if (view === "drive" && result) setResultOpen(false);
-              }}
-            >
-              <span className="nav-label-full">{tt(`rail_${view}` as TranslationKey)}</span>
-              <span className="nav-label-short" aria-hidden="true">
-                {tt(`rail_short_${view}` as TranslationKey)}
-              </span>
-            </button>
-          ))}
-        </nav>
-        {profileMenu()}
-      </header>
+      <GameTopbar leagueName={leagueState.league.name} gameView={gameView} profileMenu={profileMenu()} tt={tt} onHome={goHome} onSelectView={selectGameView} />
 
       <section className="view-container">
         {adminInspecting ? (

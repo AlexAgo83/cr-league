@@ -1819,6 +1819,11 @@ label small {
   justify-content: flex-end;
 }
 
+.modal-body {
+  display: grid;
+  gap: 10px;
+}
+
 .profile-form-actions,
 .setup-form-actions {
   justify-content: flex-end;
@@ -5007,10 +5012,17 @@ label small {
 
   .modal {
     border-radius: 0;
+    display: flex;
+    flex-direction: column;
     height: 100dvh;
     max-height: none;
     max-width: none;
     width: 100dvw;
+  }
+
+  .modal > .actions {
+    margin-top: auto;
+    padding-bottom: env(safe-area-inset-bottom);
   }
 
   .launch-gp-modal {

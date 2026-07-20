@@ -930,6 +930,7 @@ describe("App", () => {
 
     expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
     expect(screen.getByText("This attempt uses your current directive and the forecast conditions. Attempts left 1/3")).toBeTruthy();
+    expect(screen.getByRole("dialog", { name: "Run chrono?" }).textContent).toContain("Current planApproachBal.Tire prepWeatherPit strategyStd.CardNo card");
   });
 
   it("closes an open replay when an API action starts", async () => {

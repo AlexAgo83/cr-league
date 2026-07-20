@@ -148,6 +148,13 @@ export function AppOverlays({
       {hasUnusedCard ? <strong>{tt("directive_confirm_unused_card_warning")}</strong> : null}
     </span>
   );
+  const currentPlan = { approach: form.approach, preparation: form.preparation, pitStrategy: form.pitStrategy, cardId: form.cardId || undefined };
+  const qualifyingConfirmBody = (
+    <span className="directive-confirm-summary">
+      <span>{`${tt("qualifying_confirm_body")} ${tt("qualifying_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`}</span>
+      <MapPlanPanel className="directive-confirm-plan" decision={currentPlan} tt={tt} />
+    </span>
+  );
 
   return (
     <>
@@ -165,7 +172,7 @@ export function AppOverlays({
       {adminDeleteUser ? <AdminDeleteUserModal user={adminDeleteUser} tt={tt} onClose={onCloseAdminDelete} onDelete={onDeleteAdminUser} /> : null}
       {directiveConfirmOpen ? <ConfirmActionModal label={tt("directive_confirm_title")} image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} body={directiveConfirmBody} actionLabel={tt("action_submit_directive")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseDirectiveConfirm} onConfirm={onSubmitDirectiveConfirmed} /> : null}
       {resolveConfirmOpen ? <ResolveGrandPrixConfirmModal currentCircuit={currentCircuit} forecastPick={forecastPick} playerTeamId={playerTeamId} startingGridEntries={startingGridEntries} status={status} pendingMessage={pendingMessage} startingGridExpanded={startingGridExpanded} tt={tt} onClose={onCloseResolveConfirm} onShowFullGrid={onShowFullGrid} onResolve={onResolveGrandPrix} /> : null}
-      {qualifyingConfirmOpen ? <ConfirmActionModal label={tt("qualifying_confirm_title")} image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} body={`${tt("qualifying_confirm_body")} ${tt("qualifying_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`} actionLabel={tt("action_qualifying")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseQualifyingConfirm} onConfirm={onStartQualifyingRunConfirmed} /> : null}
+      {qualifyingConfirmOpen ? <ConfirmActionModal label={tt("qualifying_confirm_title")} image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} body={qualifyingConfirmBody} actionLabel={tt("action_qualifying")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseQualifyingConfirm} onConfirm={onStartQualifyingRunConfirmed} /> : null}
       {nextGrandPrixConfirmOpen ? <NextGrandPrixConfirmModal isSeasonFinalGrandPrix={isSeasonFinalGrandPrix} nextGrandPrixActionLabel={nextGrandPrixActionLabel} status={status} pendingMessage={pendingMessage} hasResult={hasResult} tt={tt} onClose={onCloseNextGrandPrixConfirm} onStartNextGrandPrix={onStartNextGrandPrix} onOpenReport={onOpenResultReport} /> : null}
       {seasonRecap ? <SeasonRecapModal recap={seasonRecap} playerTeamId={playerTeamId} tt={tt} onClose={onCloseSeasonRecap} /> : null}
       {leagueControlsOpen && leagueState ? (

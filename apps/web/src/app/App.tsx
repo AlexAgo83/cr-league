@@ -10,11 +10,11 @@ import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { GARAGE_PANEL_KEY } from "../features/GarageView.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY } from "../features/ReplayView.js";
 import type { ResultTab } from "../features/ResultView.js";
-import { GameTopbar, LanguageSwitcher, ProfileMenu, SetupTopbar } from "./AppChrome.js";
-import { AdminDeleteUserModal, ConfirmActionModal, LeagueControlsModal, NextGrandPrixConfirmModal, ProfileCodeModal, ResolveGrandPrixConfirmModal, RestartConfirmModal, SeasonRecapModal } from "./AppModals.js";
+import { GameTopbar, LanguageSwitcher, NotificationStack, ProfileMenu, SetupTopbar } from "./AppChrome.js";
+import { AppOverlays } from "./AppOverlays.js";
 import { DriveView } from "./DriveView.js";
 import { GameViews } from "./GameViews.js";
-import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, type OnboardingHelpTopic } from "./OnboardingShell.js";
+import { ONBOARDING_HELP_KEYS, SCREEN_ONBOARDING_HELP_TOPICS, type OnboardingHelpTopic } from "./OnboardingShell.js";
 import {
   ACTIVE_PLAYER_CLAIM_KEY,
   ApiError,
@@ -753,86 +753,75 @@ export function App() {
     <SetupTopbar profileMenu={profileSession ? profileMenu(false, false) : null} languageSwitcher={languageSwitcher} onHome={goHome} />
   );
 
-  const profileCodeModal = profileCodeOpen ? (
-    <ProfileCodeModal profileSession={profileSession} tt={tt} onClose={() => setProfileCodeOpen(false)} onCopy={() => void copyProfileCode()} />
-  ) : null;
-
-  const profileLogoutModal = profileLogoutOpen ? (
-    <ConfirmActionModal label={tt("profile_logout_title")} image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("profile_logout_title")} body={tt("profile_logout_confirm")} actionLabel={tt("action_forget_profile")} status={status} danger tt={tt} onClose={() => setProfileLogoutOpen(false)} onConfirm={forgetProfile} />
-  ) : null;
-
-  const preferencesResetModal = preferencesResetOpen ? (
-    <ConfirmActionModal label={tt("preferences_reset_title")} image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("preferences_reset_title")} body={tt("preferences_reset_confirm")} actionLabel={tt("action_reset_ui_preferences")} status={status} danger tt={tt} onClose={() => setPreferencesResetOpen(false)} onConfirm={resetUiPreferences} />
-  ) : null;
-
-  const errorModal = technicalError ? (
-    <ConfirmActionModal label={tt("error_modal_title")} image="/assets/crl/pit-wall-mobile.png" kicker={tt("error_modal_kicker")} title={tt("error_modal_title")} body={tt("error_modal_body")} actionLabel={tt("action_copy_error")} status={status} tt={tt} onClose={() => setTechnicalError(null)} onConfirm={() => void copyTechnicalError()} />
-  ) : null;
-
-  const directiveConfirmModal = directiveConfirmOpen ? (
-    <ConfirmActionModal label={tt("directive_confirm_title")} image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} body={qualifyingAttemptsUsed === 0 ? tt("directive_confirm_no_qualifying") : `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`} actionLabel={tt("action_submit_directive")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={() => setDirectiveConfirmOpen(false)} onConfirm={submitDirectiveConfirmed} />
-  ) : null;
-  const resolveConfirmModal = resolveConfirmOpen ? (
-    <ResolveGrandPrixConfirmModal
+  const notificationStack = <NotificationStack notifications={notifications} tt={tt} onDismiss={dismissNotification} />;
+  const commonOverlays = (
+    <AppOverlays
+      profileSession={profileSession}
+      profileCodeOpen={profileCodeOpen}
+      profileLogoutOpen={profileLogoutOpen}
+      preferencesResetOpen={preferencesResetOpen}
+      technicalError={technicalError}
+      directiveConfirmOpen={directiveConfirmOpen}
+      resolveConfirmOpen={resolveConfirmOpen}
+      qualifyingConfirmOpen={qualifyingConfirmOpen}
+      nextGrandPrixConfirmOpen={nextGrandPrixConfirmOpen}
+      leagueControlsOpen={leagueControlsOpen}
+      restartConfirmOpen={restartConfirmOpen}
+      onboardingHelp={onboardingHelp}
+      adminDeleteUser={adminDeleteUser}
+      seasonRecap={seasonRecap}
+      playerTeamId={playerTeam?.id}
+      form={form}
+      leagueState={leagueState}
+      status={status}
+      pendingMessage={pendingMessage}
+      qualifyingAttemptsUsed={qualifyingAttemptsUsed}
+      qualifyingAttemptsLeft={qualifyingAttemptsLeft}
+      qualifyingAttemptLimit={qualifyingAttemptLimit}
       currentCircuit={currentCircuit}
       forecastPick={forecastPick}
-      playerTeamId={playerTeam?.id}
       startingGridEntries={startingGridEntries}
-      status={status}
-      pendingMessage={pendingMessage}
       startingGridExpanded={startingGridExpanded}
-      tt={tt}
-      onClose={() => setResolveConfirmOpen(false)}
-      onShowFullGrid={() => setStartingGridExpanded(true)}
-      onResolve={() => void resolveGrandPrix()}
-    />
-  ) : null;
-  const qualifyingConfirmModal = qualifyingConfirmOpen ? (
-    <ConfirmActionModal label={tt("qualifying_confirm_title")} image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} body={`${tt("qualifying_confirm_body")} ${tt("qualifying_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`} actionLabel={tt("action_qualifying")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={() => setQualifyingConfirmOpen(false)} onConfirm={startQualifyingRunConfirmed} />
-  ) : null;
-  const nextGrandPrixConfirmModal = nextGrandPrixConfirmOpen ? (
-    <NextGrandPrixConfirmModal
       isSeasonFinalGrandPrix={isSeasonFinalGrandPrix}
       nextGrandPrixActionLabel={nextGrandPrixActionLabel}
-      status={status}
-      pendingMessage={pendingMessage}
       hasResult={Boolean(result)}
       tt={tt}
-      onClose={() => setNextGrandPrixConfirmOpen(false)}
+      setForm={setForm}
+      onCopyProfileCode={() => void copyProfileCode()}
+      onForgetProfile={forgetProfile}
+      onResetUiPreferences={resetUiPreferences}
+      onCopyTechnicalError={() => void copyTechnicalError()}
+      onSubmitDirectiveConfirmed={submitDirectiveConfirmed}
+      onResolveGrandPrix={() => void resolveGrandPrix()}
+      onStartQualifyingRunConfirmed={startQualifyingRunConfirmed}
       onStartNextGrandPrix={() => void startNextGrandPrix()}
-      onOpenReport={() => {
+      onOpenResultReport={() => {
         setNextGrandPrixConfirmOpen(false);
         setGameView("drive");
         setResultTab("report");
         setResultOpen(true);
       }}
+      onUpdateSettings={updateSettings}
+      onForgetPlayer={forgetPlayer}
+      onRestartLeague={() => void restartLeague()}
+      onCloseOnboardingHelp={closeOnboardingHelp}
+      onCloseAdminDelete={() => setAdminDeleteUser(null)}
+      onDeleteAdminUser={() => void deleteAdminUserConfirmed()}
+      onCloseProfileCode={() => setProfileCodeOpen(false)}
+      onCloseProfileLogout={() => setProfileLogoutOpen(false)}
+      onClosePreferencesReset={() => setPreferencesResetOpen(false)}
+      onCloseTechnicalError={() => setTechnicalError(null)}
+      onCloseDirectiveConfirm={() => setDirectiveConfirmOpen(false)}
+      onCloseResolveConfirm={() => setResolveConfirmOpen(false)}
+      onShowFullGrid={() => setStartingGridExpanded(true)}
+      onCloseQualifyingConfirm={() => setQualifyingConfirmOpen(false)}
+      onCloseNextGrandPrixConfirm={() => setNextGrandPrixConfirmOpen(false)}
+      onCloseSeasonRecap={() => setSeasonRecapSeason(null)}
+      onCloseLeagueControls={closeLeagueControls}
+      onOpenRestartConfirm={() => setRestartConfirmOpen(true)}
+      onCloseRestartConfirm={() => setRestartConfirmOpen(false)}
     />
-  ) : null;
-  const notificationStack = notifications.length ? (
-    <div className="notification-stack" aria-live="polite">
-      {notifications.map((notification) => (
-        <div key={notification.id} className={`floating-notification ${notification.tone}`}>
-          <p>{notification.text}</p>
-          <button type="button" aria-label={tt("notification_close")} onClick={() => dismissNotification(notification.id)} />
-        </div>
-      ))}
-    </div>
-  ) : null;
-  const onboardingHelpModal = onboardingHelp ? (
-    onboardingHelp === "leagueIntro" ? (
-      <LeagueIntroModal onClose={(dismiss) => closeOnboardingHelp(onboardingHelp, dismiss)} tt={tt} />
-    ) : (
-      <OnboardingHelpModal
-        topic={onboardingHelp}
-        recoveryCode={onboardingHelp === "profileCode" ? profileSession?.recoveryCode : undefined}
-        onClose={(dismiss) => closeOnboardingHelp(onboardingHelp, dismiss)}
-        tt={tt}
-      />
-    )
-  ) : null;
-  const adminDeleteModal = adminDeleteUser ? (
-    <AdminDeleteUserModal user={adminDeleteUser} tt={tt} onClose={() => setAdminDeleteUser(null)} onDelete={() => void deleteAdminUserConfirmed()} />
-  ) : null;
+  );
   const adminView = (
     <AdminConsoleView
       adminLeagues={adminLeagues}
@@ -862,12 +851,7 @@ export function App() {
         adminView={adminView}
         setupTopbar={setupTopbar}
         notificationStack={notificationStack}
-        errorModal={errorModal}
-        profileCodeModal={profileCodeModal}
-        profileLogoutModal={profileLogoutModal}
-        preferencesResetModal={preferencesResetModal}
-        onboardingHelpModal={onboardingHelpModal}
-        adminDeleteModal={adminDeleteModal}
+        overlays={commonOverlays}
         form={form}
         message={message}
         profileMode={profileMode}
@@ -1017,33 +1001,7 @@ export function App() {
       </section>
 
       {notificationStack}
-      {onboardingHelpModal}
-
-      {errorModal}
-      {profileCodeModal}
-      {profileLogoutModal}
-      {preferencesResetModal}
-      {adminDeleteModal}
-      {directiveConfirmModal}
-      {resolveConfirmModal}
-      {qualifyingConfirmModal}
-      {nextGrandPrixConfirmModal}
-      {seasonRecap ? <SeasonRecapModal recap={seasonRecap} playerTeamId={playerTeam?.id} tt={tt} onClose={() => setSeasonRecapSeason(null)} /> : null}
-      {leagueControlsOpen ? (
-        <LeagueControlsModal
-          form={form}
-          status={status}
-          pendingMessage={pendingMessage}
-          hasPlayer={Boolean(leagueState.player)}
-          tt={tt}
-          setForm={setForm}
-          onClose={closeLeagueControls}
-          onUpdateSettings={updateSettings}
-          onForgetPlayer={forgetPlayer}
-          onOpenRestartConfirm={() => setRestartConfirmOpen(true)}
-        />
-      ) : null}
-      {restartConfirmOpen ? <RestartConfirmModal status={status} pendingMessage={pendingMessage} tt={tt} onClose={() => setRestartConfirmOpen(false)} onRestart={() => void restartLeague()} /> : null}
+      {commonOverlays}
     </main>
   );
 

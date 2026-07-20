@@ -2,8 +2,8 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 94%
-> Confidence: 89%
+> Understanding: 95%
+> Confidence: 90%
 > Progress: 99%
 > Complexity: Medium
 > Theme: Web architecture
@@ -51,6 +51,7 @@
 - 2026-07-20 ninth implementation wave: adminActions.ts now owns admin API actions for console refresh, recovery reset, user delete, and inspected league loading. App.tsx is 1237 lines; adminActions.ts is 116 lines. AC1 remains open; the largest remaining reduction is profile/session actions or profile menu/topbar chrome.
 - 2026-07-20 tenth implementation wave: profileActions.ts now owns profile creation and recovery. The admin-status probe stayed in App because extracting it introduced a hook dependency that would need extra memoization for no real gain. App.tsx is 1184 lines; profileActions.ts is 95 lines. AC1 remains open; profile menu/topbar chrome and rejoin/local-claim helpers are the remaining obvious reductions.
 - 2026-07-20 eleventh implementation wave: AppChrome.tsx now owns language switching, profile menu, setup topbar, and game topbar presentation. App.tsx is 1084 lines; AppChrome.tsx is 181 lines. AC1 remains open; the remaining reduction needs local-claim/rejoin helpers or modal/notification assembly extraction.
+- 2026-07-20 twelfth implementation wave: AppOverlays.tsx owns overlay/modal composition and NotificationStack moved to AppChrome.tsx. App.tsx is 1042 lines; AppOverlays.tsx is 166 lines. AC1 remains open; remaining meaningful work is local-claim/rejoin helpers or deeper controller extraction.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

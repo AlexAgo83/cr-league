@@ -8,6 +8,21 @@ import type { StoredPlayerClaim } from "./appStorage.js";
 import { GAME_VIEWS, type GameView } from "./types.js";
 import type { Translator } from "./helpers.js";
 
+type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
+
+export function NotificationStack({ notifications, tt, onDismiss }: { notifications: Notification[]; tt: Translator; onDismiss: (id: number) => void }) {
+  return notifications.length ? (
+    <div className="notification-stack" aria-live="polite">
+      {notifications.map((notification) => (
+        <div key={notification.id} className={`floating-notification ${notification.tone}`}>
+          <p>{notification.text}</p>
+          <button type="button" aria-label={tt("notification_close")} onClick={() => onDismiss(notification.id)} />
+        </div>
+      ))}
+    </div>
+  ) : null;
+}
+
 export function LanguageSwitcher({ locale, tt, onChangeLocale }: { locale: Locale; tt: Translator; onChangeLocale: (locale: Locale) => void }) {
   return (
     <div className="language-select" role="group" aria-label={tt("language_label")}>

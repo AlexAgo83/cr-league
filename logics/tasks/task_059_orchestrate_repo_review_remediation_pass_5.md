@@ -2,8 +2,8 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 94%
-> Confidence: 89%
+> Understanding: 95%
+> Confidence: 90%
 > Progress: 99%
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -71,6 +71,7 @@
 - 2026-07-20 wave 18: continued item_137 by extracting admin API actions into apps/web/src/app/adminActions.ts. Admin console open/refresh, recovery reset, user delete, and league inspect now live outside App while App keeps admin state and presentation wiring. App.tsx is now 1237 lines and adminActions.ts is 116 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 - 2026-07-20 wave 19: continued item_137 by extracting profile create/recovery actions into apps/web/src/app/profileActions.ts. Profile form validation, profile API error mapping, session storage, and recovered-claims storage moved out; App keeps rejoin and admin-status probing because they depend on current league state and hook timing. App.tsx is now 1184 lines and profileActions.ts is 95 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 - 2026-07-20 wave 20: continued item_137 by extracting app chrome into apps/web/src/app/AppChrome.tsx. LanguageSwitcher, ProfileMenu, SetupTopbar, and GameTopbar now own the topbar/profile-menu JSX while App keeps navigation and modal callbacks. App.tsx is now 1084 lines and AppChrome.tsx is 181 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
+- 2026-07-20 wave 21: continued item_137 by extracting notification and overlay assembly into AppChrome.tsx and apps/web/src/app/AppOverlays.tsx. NotificationStack now owns toast rendering; AppOverlays owns profile/error/directive/qualifying/next-GP/season/settings/restart/onboarding/admin-delete modal composition. App.tsx is now 1042 lines and AppOverlays.tsx is 166 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

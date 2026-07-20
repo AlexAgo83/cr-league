@@ -14,12 +14,7 @@ export function SetupGate({
   adminView,
   setupTopbar,
   notificationStack,
-  errorModal,
-  profileCodeModal,
-  profileLogoutModal,
-  preferencesResetModal,
-  onboardingHelpModal,
-  adminDeleteModal,
+  overlays,
   form,
   message,
   profileMode,
@@ -49,12 +44,7 @@ export function SetupGate({
   adminView: ReactNode;
   setupTopbar: ReactNode;
   notificationStack: ReactNode;
-  errorModal: ReactNode;
-  profileCodeModal: ReactNode;
-  profileLogoutModal: ReactNode;
-  preferencesResetModal: ReactNode;
-  onboardingHelpModal: ReactNode;
-  adminDeleteModal: ReactNode;
+  overlays: ReactNode;
   form: FormState;
   message: string;
   profileMode: ProfileMode;
@@ -80,7 +70,7 @@ export function SetupGate({
 }) {
   if (!profileSession) {
     return (
-      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} errorModal={errorModal} profileCodeModal={profileCodeModal} profileLogoutModal={profileLogoutModal} preferencesResetModal={preferencesResetModal}>
+      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
         <ProfileSetupView
           message={message}
           mode={profileMode}
@@ -101,7 +91,7 @@ export function SetupGate({
 
   if (!leagueState) {
     return (
-      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} errorModal={errorModal} profileCodeModal={profileCodeModal} profileLogoutModal={profileLogoutModal} preferencesResetModal={preferencesResetModal}>
+      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
         {gameView === "admin" && profileSession.admin ? (
           adminView
         ) : gameView === "changelog" ? (
@@ -124,8 +114,6 @@ export function SetupGate({
             tt={tt}
           />
         )}
-        {onboardingHelpModal}
-        {adminDeleteModal}
       </SetupShell>
     );
   }

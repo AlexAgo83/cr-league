@@ -1873,6 +1873,10 @@ label small {
   width: 100%;
 }
 
+.modal:focus {
+  outline: none;
+}
+
 .modal h2 {
   font-size: 1.4rem;
   margin: 4px 0 8px;

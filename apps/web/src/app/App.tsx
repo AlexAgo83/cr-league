@@ -22,7 +22,7 @@ import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayVi
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 import { RewardValue } from "../features/RewardValue.js";
 import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
-import { LeagueControlsModal, RestartConfirmModal, SeasonRecapModal } from "./AppModals.js";
+import { AdminDeleteUserModal, ConfirmActionModal, LeagueControlsModal, NextGrandPrixConfirmModal, ProfileCodeModal, RestartConfirmModal, SeasonRecapModal } from "./AppModals.js";
 import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, SetupShell, type OnboardingHelpTopic } from "./OnboardingShell.js";
 import {
   ACTIVE_PLAYER_CLAIM_KEY,
@@ -1065,76 +1065,23 @@ export function App() {
   );
 
   const profileCodeModal = profileCodeOpen ? (
-    <Modal label={tt("profile_code_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setProfileCodeOpen(false)}>
-      <ModalHero image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("profile_code_title")} />
-      {profileSession?.recoveryCode ? (
-        <input
-          className="profile-code-input"
-          aria-label={tt("action_copy_profile_code")}
-          readOnly
-          value={profileSession.recoveryCode}
-          onClick={(event) => {
-            event.currentTarget.select();
-            void copyProfileCode();
-          }}
-        />
-      ) : (
-        <p>{tt("status_profile_code_missing")}</p>
-      )}
-    </Modal>
+    <ProfileCodeModal profileSession={profileSession} tt={tt} onClose={() => setProfileCodeOpen(false)} onCopy={() => void copyProfileCode()} />
   ) : null;
 
   const profileLogoutModal = profileLogoutOpen ? (
-    <Modal label={tt("profile_logout_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setProfileLogoutOpen(false)}>
-      <ModalHero image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("profile_logout_title")} />
-      <p>{tt("profile_logout_confirm")}</p>
-      <div className="actions secondary-actions">
-        <button type="button" className="danger-button" onClick={forgetProfile}>
-          {tt("action_forget_profile")}
-        </button>
-      </div>
-    </Modal>
+    <ConfirmActionModal label={tt("profile_logout_title")} image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("profile_logout_title")} body={tt("profile_logout_confirm")} actionLabel={tt("action_forget_profile")} status={status} danger tt={tt} onClose={() => setProfileLogoutOpen(false)} onConfirm={forgetProfile} />
   ) : null;
 
   const preferencesResetModal = preferencesResetOpen ? (
-    <Modal label={tt("preferences_reset_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setPreferencesResetOpen(false)}>
-      <ModalHero image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("preferences_reset_title")} />
-      <p>{tt("preferences_reset_confirm")}</p>
-      <div className="actions secondary-actions">
-        <button type="button" className="danger-button" onClick={resetUiPreferences}>
-          {tt("action_reset_ui_preferences")}
-        </button>
-      </div>
-    </Modal>
+    <ConfirmActionModal label={tt("preferences_reset_title")} image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("preferences_reset_title")} body={tt("preferences_reset_confirm")} actionLabel={tt("action_reset_ui_preferences")} status={status} danger tt={tt} onClose={() => setPreferencesResetOpen(false)} onConfirm={resetUiPreferences} />
   ) : null;
 
   const errorModal = technicalError ? (
-    <Modal label={tt("error_modal_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setTechnicalError(null)}>
-      <ModalHero image="/assets/crl/pit-wall-mobile.png" kicker={tt("error_modal_kicker")} title={tt("error_modal_title")} />
-      <p>{tt("error_modal_body")}</p>
-      <div className="actions secondary-actions">
-        <button type="button" className="secondary-button" onClick={() => void copyTechnicalError()}>
-          {tt("action_copy_error")}
-        </button>
-      </div>
-    </Modal>
+    <ConfirmActionModal label={tt("error_modal_title")} image="/assets/crl/pit-wall-mobile.png" kicker={tt("error_modal_kicker")} title={tt("error_modal_title")} body={tt("error_modal_body")} actionLabel={tt("action_copy_error")} status={status} tt={tt} onClose={() => setTechnicalError(null)} onConfirm={() => void copyTechnicalError()} />
   ) : null;
 
   const directiveConfirmModal = directiveConfirmOpen ? (
-    <Modal label={tt("directive_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setDirectiveConfirmOpen(false)}>
-      <ModalHero image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} />
-      <p>
-        {qualifyingAttemptsUsed === 0
-          ? tt("directive_confirm_no_qualifying")
-          : `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`}
-      </p>
-      <div className="actions secondary-actions">
-        <PendingFeedback message={pendingMessage} />
-        <button type="button" onClick={submitDirectiveConfirmed} disabled={status === "loading"}>
-          {tt("action_submit_directive")}
-        </button>
-      </div>
-    </Modal>
+    <ConfirmActionModal label={tt("directive_confirm_title")} image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} body={qualifyingAttemptsUsed === 0 ? tt("directive_confirm_no_qualifying") : `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`} actionLabel={tt("action_submit_directive")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={() => setDirectiveConfirmOpen(false)} onConfirm={submitDirectiveConfirmed} />
   ) : null;
   const displayedStartingGridEntries = startingGridExpanded ? startingGridEntries : startingGridEntries.slice(0, 4);
   const hiddenStartingGridCount = startingGridEntries.length - displayedStartingGridEntries.length;
@@ -1179,42 +1126,25 @@ export function App() {
     </Modal>
   ) : null;
   const qualifyingConfirmModal = qualifyingConfirmOpen ? (
-    <Modal label={tt("qualifying_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setQualifyingConfirmOpen(false)}>
-      <ModalHero image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} />
-      <p>
-        {tt("qualifying_confirm_body")} {tt("qualifying_remaining")} {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
-      </p>
-      <div className="actions secondary-actions">
-        <PendingFeedback message={pendingMessage} />
-        <button type="button" onClick={startQualifyingRunConfirmed} disabled={status === "loading"}>
-          {tt("action_qualifying")}
-        </button>
-      </div>
-    </Modal>
+    <ConfirmActionModal label={tt("qualifying_confirm_title")} image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} body={`${tt("qualifying_confirm_body")} ${tt("qualifying_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`} actionLabel={tt("action_qualifying")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={() => setQualifyingConfirmOpen(false)} onConfirm={startQualifyingRunConfirmed} />
   ) : null;
   const nextGrandPrixConfirmModal = nextGrandPrixConfirmOpen ? (
-    <Modal label={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setNextGrandPrixConfirmOpen(false)}>
-      <ModalHero image="/assets/crl/next-gp-modal.png" kicker={nextGrandPrixActionLabel} title={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} />
-      <p>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_body" : "next_gp_confirm_body")}</p>
-      <div className="actions secondary-actions">
-        <PendingFeedback message={pendingMessage} />
-        <button type="button" onClick={() => void startNextGrandPrix()} disabled={status === "loading"}>
-          {nextGrandPrixActionLabel}
-        </button>
-        <button
-          type="button"
-          onClick={() => {
-            setNextGrandPrixConfirmOpen(false);
-            setGameView("drive");
-            setResultTab("report");
-            setResultOpen(true);
-          }}
-          disabled={!result}
-        >
-          {tt("result_tab_report")}
-        </button>
-      </div>
-    </Modal>
+    <NextGrandPrixConfirmModal
+      isSeasonFinalGrandPrix={isSeasonFinalGrandPrix}
+      nextGrandPrixActionLabel={nextGrandPrixActionLabel}
+      status={status}
+      pendingMessage={pendingMessage}
+      hasResult={Boolean(result)}
+      tt={tt}
+      onClose={() => setNextGrandPrixConfirmOpen(false)}
+      onStartNextGrandPrix={() => void startNextGrandPrix()}
+      onOpenReport={() => {
+        setNextGrandPrixConfirmOpen(false);
+        setGameView("drive");
+        setResultTab("report");
+        setResultOpen(true);
+      }}
+    />
   ) : null;
   const notificationStack = notifications.length ? (
     <div className="notification-stack" aria-live="polite">
@@ -1239,15 +1169,7 @@ export function App() {
     )
   ) : null;
   const adminDeleteModal = adminDeleteUser ? (
-    <Modal label={tt("admin_delete_user_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setAdminDeleteUser(null)}>
-      <ModalHero image="/assets/crl/league-arrival.png" kicker={tt("admin_kicker")} title={tt("admin_delete_user_title")} />
-      <p>{tt("admin_delete_user_confirm", { email: adminDeleteUser.email })}</p>
-      <div className="actions secondary-actions">
-        <button type="button" className="danger-button" onClick={() => void deleteAdminUserConfirmed()}>
-          {tt("admin_action_delete_user")}
-        </button>
-      </div>
-    </Modal>
+    <AdminDeleteUserModal user={adminDeleteUser} tt={tt} onClose={() => setAdminDeleteUser(null)} onDelete={() => void deleteAdminUserConfirmed()} />
   ) : null;
   const adminView = (
     <AdminConsoleView

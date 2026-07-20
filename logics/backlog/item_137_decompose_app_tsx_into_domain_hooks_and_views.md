@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 90%
+> Progress: 93%
 > Complexity: Medium
 > Theme: Web architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -42,6 +42,7 @@
 - Architecture framing: Not needed
 - 2026-07-20 first implementation wave: command-clicked state is now a single typed map with mark/reset helpers, rejoin POST logic is centralized in rejoinClaim, and the automatic saved-claim rejoin uses initial refs to avoid the stale mount-effect closure while preserving mount-only behavior. Remaining: larger domain/view extraction and App.tsx line-count reduction.
 - 2026-07-20 second implementation wave: restart league now uses a Modal confirmation instead of window.confirm; SeasonRecapModal and LeagueControlsModal moved to apps/web/src/app/AppModals.tsx; the empty src/lib and src/ui placeholder .gitkeep files were removed. App.tsx is 1791 lines after this slice, so AC1 remains open for further decomposition.
+- 2026-07-20 third implementation wave: simple modal JSX moved into AppModals.tsx, covering profile code, profile logout, preferences reset, technical error, directive/qualifying/next-GP confirmations, and admin delete. App.tsx is 1714 lines; AppModals.tsx is 286 lines. AC1 remains open.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

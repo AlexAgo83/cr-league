@@ -1,10 +1,10 @@
 ## item_159_compact_the_splash_header_on_narrow_mobile - Compact the splash header on narrow mobile
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 75%
 > Complexity: Low
 > Theme: Post-splash first-contact polish
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,6 +32,11 @@
 - AC2: Desktop still matches the setup/profile header language-switching pattern.
 - AC3: On desktop, the background artwork is fit by height without excessive zoom, and any side fill blends with the image rather than reading as blank letterbox.
 - AC6: The splash e2e path still validates root display, mobile fit, language controls, desktop background framing, and PRESS START entry.
+
+# Implementation notes
+- 2026-07-20: Desktop splash now renders the main background image with `object-fit: contain` and a blurred cover layer behind it so the artwork stays fit by height while the sides blend into the page.
+- 2026-07-20: Narrow mobile splash header hides the nonessential "Language" label and tightens splash-scoped topbar/icon/button spacing without changing shared SetupTopbar markup or non-splash headers.
+- Targeted proof: manual Playwright screenshots `manual-splash-desktop-contained.png` and `manual-splash-mobile-compact-header.png`; `rtk npm run test:e2e` passed with desktop `contain`, mobile `cover`, no-overflow, and header bounds assertions.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: At 360px and 390px, the splash header controls remain visible, unclipped, and free of horizontal scroll.

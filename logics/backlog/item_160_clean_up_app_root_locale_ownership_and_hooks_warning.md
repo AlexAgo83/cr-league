@@ -1,10 +1,10 @@
 ## item_160_clean_up_app_root_locale_ownership_and_hooks_warning - Clean up App root locale ownership and Hooks warning
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 75%
 > Complexity: Medium
 > Theme: Root shell hygiene
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -28,6 +28,11 @@
 - AC4: Locale defaulting and persistence live in one reusable path for both splash and entered app.
 - AC5: npm run lint reports no App.tsx React Hooks exhaustive-deps warning.
 - AC6: Existing App, profile, i18n, and e2e flows still pass.
+
+# Implementation notes
+- 2026-07-20: `App` now owns locale state through one `initialLocale()` path and passes the locale/change callback into `GameApp`, removing the duplicate localStorage/browser-locale initialization in the entered app body.
+- 2026-07-20: Onboarding storage/open helpers are stable callbacks and the onboarding effect declares them in its dependency list; lint no longer reports the App.tsx React Hooks warning.
+- Targeted proof: `rtk npm run lint` passed with no warnings; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/app/routes.test.ts apps/web/src/i18n/index.test.ts` passed (52 tests).
 
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC4: Locale defaulting and persistence live in one reusable path for both splash and entered app.

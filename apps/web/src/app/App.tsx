@@ -40,23 +40,25 @@ const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_
 const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "race", "plan", "garage"]);
 const CARRIED_OVER_PLAN_SEEN_KEY_PREFIX = "cr-league-carried-plan-seen";
 
+function initialLocale() {
+  const saved = localStorage.getItem(LANGUAGE_KEY);
+  if (isLocale(saved)) return saved;
+  const browserLocale = navigator.language.split("-")[0] ?? "en";
+  return isLocale(browserLocale) ? browserLocale : "en";
+}
+
 export function App() {
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    const saved = localStorage.getItem(LANGUAGE_KEY);
-    if (isLocale(saved)) return saved;
-    const browserLocale = navigator.language.split("-")[0] ?? "en";
-    return isLocale(browserLocale) ? browserLocale : "en";
-  });
+  const [locale, setLocaleState] = useState<Locale>(initialLocale);
   const [entered, setEntered] = useState(() => !isStartPath(window.location.pathname));
   const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
 
-  function changeLocale(nextLocale: Locale) {
+  const changeLocale = useCallback((nextLocale: Locale) => {
     localStorage.setItem(LANGUAGE_KEY, nextLocale);
     setLocaleState(nextLocale);
-  }
+  }, []);
 
   if (!entered) return <HomeSplash locale={locale} tt={tt} onChangeLocale={changeLocale} onEnter={() => setEntered(true)} />;
-  return <GameApp />;
+  return <GameApp locale={locale} onLocaleChange={changeLocale} />;
 }
 
 function HomeSplash({ locale, tt, onChangeLocale, onEnter }: { locale: Locale; tt: (key: TranslationKey) => string; onChangeLocale: (locale: Locale) => void; onEnter: () => void }) {
@@ -75,13 +77,7 @@ function HomeSplash({ locale, tt, onChangeLocale, onEnter }: { locale: Locale; t
   );
 }
 
-function GameApp() {
-  const [locale, setLocaleState] = useState<Locale>(() => {
-    const saved = localStorage.getItem(LANGUAGE_KEY);
-    if (isLocale(saved)) return saved;
-    const browserLocale = navigator.language.split("-")[0] ?? "en";
-    return isLocale(browserLocale) ? browserLocale : "en";
-  });
+function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (locale: Locale) => void }) {
   const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
@@ -146,6 +142,18 @@ function GameApp() {
   const snoozedOnboardingHelp = useRef(new Set<string>());
   const initialProfileSession = useRef(profileSession);
   const initialActiveClaim = useRef(getActiveClaim(savedClaims));
+  const onboardingStorageKey = useCallback(
+    (topic: OnboardingHelpTopic) => (LEAGUE_SCOPED_HELP_TOPICS.has(topic) && leagueState ? `${ONBOARDING_HELP_KEYS[topic]}:${leagueState.league.id}` : ONBOARDING_HELP_KEYS[topic]),
+    [leagueState]
+  );
+  const openOnboardingHelp = useCallback(
+    (topic: OnboardingHelpTopic) => {
+      const key = onboardingStorageKey(topic);
+      if (localStorage.getItem(key) || snoozedOnboardingHelp.current.has(key)) return;
+      setOnboardingHelp(topic);
+    },
+    [onboardingStorageKey]
+  );
 
   function showStatus(text: string, tone: Notification["tone"] = "info", notify = true) {
     setMessage(text);
@@ -352,7 +360,7 @@ function GameApp() {
     if (gameView === "drive" && raceDayPhase === "briefing") openOnboardingHelp("race");
     if (gameView === "plan") openOnboardingHelp("plan");
     if (gameView === "garage") openOnboardingHelp("garage");
-  }, [gameView, leagueState, onboardingHelp, preferencesResetSignal, raceDayPhase]);
+  }, [gameView, leagueState, onboardingHelp, onboardingStorageKey, openOnboardingHelp, preferencesResetSignal, raceDayPhase]);
 
   useEffect(() => {
     resetCommandClicks();
@@ -441,8 +449,7 @@ function GameApp() {
   }
 
   function changeLocale(nextLocale: Locale) {
-    localStorage.setItem(LANGUAGE_KEY, nextLocale);
-    setLocaleState(nextLocale);
+    onLocaleChange(nextLocale);
     if (!leagueState && message === t("status_initial", locale)) {
       setMessage(t("status_initial", nextLocale));
     }
@@ -698,21 +705,11 @@ function GameApp() {
     setSavedClaims(withoutPlayerClaim(savedClaims, teamId ?? leagueState?.player?.teamId));
   }
 
-  function openOnboardingHelp(topic: OnboardingHelpTopic) {
-    const key = onboardingStorageKey(topic);
-    if (localStorage.getItem(key) || snoozedOnboardingHelp.current.has(key)) return;
-    setOnboardingHelp(topic);
-  }
-
   function closeOnboardingHelp(topic: OnboardingHelpTopic, dismiss: boolean) {
     const key = onboardingStorageKey(topic);
     if (dismiss || LEAGUE_SCOPED_HELP_TOPICS.has(topic)) localStorage.setItem(key, "1");
     else snoozedOnboardingHelp.current.add(key);
     setOnboardingHelp(null);
-  }
-
-  function onboardingStorageKey(topic: OnboardingHelpTopic) {
-    return LEAGUE_SCOPED_HELP_TOPICS.has(topic) && leagueState ? `${ONBOARDING_HELP_KEYS[topic]}:${leagueState.league.id}` : ONBOARDING_HELP_KEYS[topic];
   }
 }
 

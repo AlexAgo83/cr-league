@@ -2,8 +2,8 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 92
+> Confidence: 88
 > Complexity: Medium
 > Theme: Post-splash first-contact polish and root shell hygiene
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -31,7 +31,6 @@
 - AC5: The existing React Hooks exhaustive-deps warning in App.tsx is gone, with onboarding behavior preserved by tests.
 - AC6: Root splash, deep-link bypass, PRESS START entry, language carry-through, and the existing private-league e2e flow still pass.
 - AC7: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
-- AC6: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

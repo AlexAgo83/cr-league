@@ -91,6 +91,9 @@
 
 .home-splash {
   align-items: center;
+  background:
+    radial-gradient(circle at 50% 42%, rgb(255 77 0 / 0.16), transparent 38%),
+    #080709;
   display: grid;
   isolation: isolate;
   justify-items: center;
@@ -100,10 +103,22 @@
   position: relative;
 }
 
+.home-splash::before {
+  background: url("/assets/crl/home-background.jpg") center / cover no-repeat;
+  content: "";
+  filter: blur(18px);
+  inset: -24px;
+  opacity: 0.42;
+  pointer-events: none;
+  position: fixed;
+  transform: scale(1.04);
+  z-index: -3;
+}
+
 .home-splash-background {
   height: 100%;
   inset: 0;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   position: fixed;
   width: 100%;
@@ -180,6 +195,50 @@
   .home-splash-title-cr,
   .home-splash-title-league {
     animation: none;
+  }
+}
+
+@media (max-width: 520px) {
+  .home-splash {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .home-splash-background {
+    object-fit: cover;
+  }
+
+  .home-splash > .setup-topbar {
+    flex-wrap: nowrap;
+    gap: 8px;
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .home-splash .brand {
+    gap: 7px;
+  }
+
+  .home-splash .brand-icon {
+    height: 24px;
+    width: 24px;
+  }
+
+  .home-splash .brand strong {
+    font-size: 0.92rem;
+  }
+
+  .home-splash .language-select {
+    gap: 6px;
+  }
+
+  .home-splash .language-select > span {
+    display: none;
+  }
+
+  .home-splash .language-select button {
+    gap: 5px;
+    padding: 4px 7px;
   }
 }
 

@@ -92,17 +92,26 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
 
   await page.goto("/");
   await expect(page.getByRole("main", { name: "CR League home" })).toBeVisible();
-  await expect(page.locator(".home-splash-background")).toHaveCSS("object-fit", "cover");
+  await expect(page.locator(".home-splash-background")).toHaveCSS("object-fit", "contain");
   await expect(page.locator(".home-press-start")).toBeVisible();
   expect(
     await page.evaluate(() => ({
       noHorizontalScroll: document.documentElement.scrollWidth <= window.innerWidth + 1,
+      backgroundFitsHeight: document.querySelector(".home-splash-background")?.getBoundingClientRect().height === window.innerHeight,
       crAnimated: getComputedStyle(document.querySelector(".home-splash-title-cr")!).animationName !== "none",
       leagueAnimated: getComputedStyle(document.querySelector(".home-splash-title-league")!).animationName !== "none"
     }))
-  ).toEqual({ noHorizontalScroll: true, crAnimated: true, leagueAnimated: true });
+  ).toEqual({ noHorizontalScroll: true, backgroundFitsHeight: true, crAnimated: true, leagueAnimated: true });
   await page.setViewportSize({ width: 390, height: 900 });
+  await expect(page.locator(".home-splash-background")).toHaveCSS("object-fit", "cover");
   await expect.poll(async () => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth + 1)).toBe(true);
+  await expect.poll(async () =>
+    page.evaluate(() => {
+      const header = document.querySelector(".home-splash .setup-topbar")?.getBoundingClientRect();
+      const actions = document.querySelector(".home-splash .setup-topbar-actions")?.getBoundingClientRect();
+      return Boolean(header && actions && header.left >= 0 && header.right <= window.innerWidth && actions.right <= window.innerWidth);
+    })
+  ).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("home-splash-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
   await createProfile(page);

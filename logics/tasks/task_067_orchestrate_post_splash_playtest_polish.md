@@ -1,22 +1,23 @@
 ## task_067_orchestrate_post_splash_playtest_polish - Orchestrate post-splash playtest polish
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 75%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
 
 # Plan
-- [ ] 1. Capture the current 360px/390px splash header layout and desktop background framing, then define the smallest scoped CSS adjustment.
-- [ ] 2. Apply splash-only mobile header compacting and desktop height-fit background blending; extend e2e coverage for no overflow, visible language controls, and desktop framing.
-- [ ] 3. Centralize locale initialization/change handling between the splash wrapper and entered app without changing the persisted language key.
-- [ ] 4. Fix the App.tsx React Hooks exhaustive-deps warning while preserving onboarding tests.
+- [x] 1. Capture the current 360px/390px splash header layout and desktop background framing, then define the smallest scoped CSS adjustment.
+- [x] 2. Apply splash-only mobile header compacting and desktop height-fit background blending; extend e2e coverage for no overflow, visible language controls, and desktop framing.
+- [x] 3. Centralize locale initialization/change handling between the splash wrapper and entered app without changing the persisted language key.
+- [x] 4. Fix the App.tsx React Hooks exhaustive-deps warning while preserving onboarding tests.
 - [ ] 5. Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
@@ -41,9 +42,10 @@
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- 2026-07-20 wave 1 targeted proof: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/app/routes.test.ts apps/web/src/i18n/index.test.ts` passed (52 tests); `rtk npm run lint` passed with no warnings; `rtk npm run test:e2e` passed (4 tests).
 
 # Report
-- Implementation complete.
+- Wave 1 implemented: desktop splash background fits by height with blended side fill, mobile splash header is compacted with scoped CSS, locale ownership is centralized in App, and the App.tsx Hooks warning is removed.
 
 # AI Context
 - Summary: Orchestrate post-splash playtest polish

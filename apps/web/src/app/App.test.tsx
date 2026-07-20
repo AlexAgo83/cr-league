@@ -522,6 +522,7 @@ describe("App", () => {
     expect(document.querySelector(".chrono-report-history li.best-session")?.textContent).toContain("72.42s");
     expect(document.querySelector(".chrono-report-history .type-approach")).toBeTruthy();
     expect(document.querySelector(".chrono-report-history .type-preparation")).toBeTruthy();
+    expect(document.querySelector(".chrono-report-history .type-card")).toBeTruthy();
     expect(document.querySelectorAll(".chrono-session-choice b").length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();

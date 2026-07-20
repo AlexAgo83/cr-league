@@ -206,6 +206,10 @@ export function PlanView({
                           <small>{tt("field_preparation")}</small>
                           <b>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</b>
                         </span>
+                        <span className="chrono-session-choice type-card">
+                          <small>{tt("field_card")}</small>
+                          <b>{run.decision.cardId ? tt(`card_${run.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
+                        </span>
                       </div>
                       <em>{run.time.toFixed(2)}s</em>
                       <button

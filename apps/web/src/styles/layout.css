@@ -1498,7 +1498,7 @@ label small {
   align-items: center;
   display: grid;
   gap: 6px;
-  grid-template-columns: auto 76px 76px;
+  grid-template-columns: auto 76px 76px 76px;
   min-width: 0;
 }
 

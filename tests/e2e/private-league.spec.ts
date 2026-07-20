@@ -288,14 +288,14 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
       bodyLocked: getComputedStyle(document.body).position === "fixed" && getComputedStyle(document.body).overflow === "hidden",
       modalWithinViewport: Boolean(rect && rect.left >= 0 && rect.right <= window.innerWidth && rect.top >= 0 && rect.bottom <= window.innerHeight),
       noHorizontalOverflow: Boolean(modal && modal.scrollWidth <= modal.clientWidth + 1),
-      singleColumnGrid: row ? getComputedStyle(row).gridTemplateColumns.split(" ").length === 1 : false
+      compactGrid: row ? getComputedStyle(row).gridTemplateColumns.split(" ").length === 4 && row.scrollWidth <= row.clientWidth + 1 : false
     };
   });
   expect(launchModalMobile).toEqual({
     bodyLocked: true,
     modalWithinViewport: true,
     noHorizontalOverflow: true,
-    singleColumnGrid: true
+    compactGrid: true
   });
   await page.screenshot({ path: testInfo.outputPath("launch-gp-modal-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });

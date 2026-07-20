@@ -459,12 +459,22 @@
 }
 
 .brand-icon {
-  background: rgb(248 243 232 / 0.08);
-  border-radius: 6px;
   display: inline-block;
-  height: 28px;
+  height: 30px;
   overflow: hidden;
-  width: 28px;
+  width: 36px;
+}
+
+.brand-icon-cr {
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.42));
+}
+
+.brand-wordmark {
+  display: inline-block;
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.42));
+  height: 25px;
+  overflow: hidden;
+  width: 96px;
 }
 
 .brand strong {
@@ -2799,10 +2809,19 @@ label small {
   overflow: visible;
 }
 
-.replay-playback-icon {
+.replay-playback-icon,
+.replay-restart-icon {
   fill: currentColor;
   height: 15px;
   width: 15px;
+}
+
+.replay-restart-icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
 }
 
 .replay-map-controls .replay-playback-button.playing::after {

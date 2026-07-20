@@ -30,6 +30,16 @@ function PlaybackIcon({ playing }: { playing: boolean }) {
   );
 }
 
+function RestartIcon() {
+  return (
+    <svg className="replay-restart-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M7 7h6a5 5 0 1 1-4.3 7.55" />
+      <path d="M7 7V3" />
+      <path d="M7 7h4" />
+    </svg>
+  );
+}
+
 export function ReplayStageOverlay({
   circuit,
   liveLap,
@@ -180,7 +190,7 @@ export function ReplayStageOverlay({
           <PlaybackIcon playing={playing} />
         </button>
         <button type="button" aria-label={tt("action_replay_restart")} title={tt("action_replay_restart")} onClick={restart}>
-          ↻
+          <RestartIcon />
         </button>
         <button
           type="button"

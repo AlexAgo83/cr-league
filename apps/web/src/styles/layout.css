@@ -2695,13 +2695,14 @@ label small {
 }
 
 .map-trait-grip i {
-  background: rgb(255 122 64 / 0.18);
-  color: #ff7a40;
+  background: rgb(34 197 94 / 0.18);
+  color: #22c55e;
 }
 
 .map-trait-grip {
-  --trait-fill: rgb(255 122 64 / 0.32);
-  --trait-tone: #ff7a40;
+  --trait-fill: rgb(34 197 94 / 0.32);
+  --trait-tone: #22c55e;
+  --trait-tone-paper: #15803d;
 }
 
 .map-trait-overtaking i {
@@ -2712,6 +2713,7 @@ label small {
 .map-trait-overtaking {
   --trait-fill: rgb(255 77 0 / 0.32);
   --trait-tone: #ff4d00;
+  --trait-tone-paper: #c53a00;
 }
 
 .map-trait-energy i {
@@ -2722,6 +2724,7 @@ label small {
 .map-trait-energy {
   --trait-fill: rgb(250 204 21 / 0.3);
   --trait-tone: #facc15;
+  --trait-tone-paper: #9a6b00;
 }
 
 .map-traits-panel strong {
@@ -7130,10 +7133,6 @@ button.highlight-command:not(:disabled) {
   line-height: 1;
 }
 
-.plan-view .map-trait-overtaking .directive-trait-modifier.bonus {
-  color: #c53a00;
-}
-
 .directive-trait-modifier.weakness,
 .directive-trait-modifier.neutral {
   color: var(--color-muted);
@@ -7169,16 +7168,10 @@ button.highlight-command:not(:disabled) {
 }
 
 /* Paper-scoped trait tones so gauges + badge icons read on chalk (asphalt tones are too light). */
-.plan-view .map-trait-grip {
-  --trait-tone: #c53a00;
-}
-
-.plan-view .map-trait-overtaking {
-  --trait-tone: #c53a00;
-}
-
+.plan-view .map-trait-grip,
+.plan-view .map-trait-overtaking,
 .plan-view .map-trait-energy {
-  --trait-tone: #9a6b00;
+  --trait-tone: var(--trait-tone-paper);
 }
 
 /* Stat badges need real contrast on the paper material (white-alpha vanishes). */

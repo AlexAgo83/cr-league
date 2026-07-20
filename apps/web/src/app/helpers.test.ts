@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { clampNumber, completedSeasonSummaries, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid } from "./helpers.js";
+import { buildRaceVerdict, clampNumber, completedSeasonSummaries, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid, translateLine } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { circuitIdentityForRound, circuitSeasonSeed, type CardId, type RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
@@ -287,6 +287,113 @@ describe("raceRecapCards", () => {
     expect(recap.planRead).toContain("You finished P2");
     expect(recap.planRead).toContain("team_2 won with");
     expect(recap.planRead).toContain("Launch Boost");
+  });
+});
+
+describe("buildRaceVerdict", () => {
+  it("returns a podium verdict grounded in a fired card event", () => {
+    const state = stateWithHistory([]);
+    const decision = { teamId: "team_1", approach: "aggressive", preparation: "weather", cardId: "rain_grip" } satisfies LeagueState["decisions"][number];
+    state.decisions = [decision];
+    const race = result("team_1");
+    race.seed = "a";
+    race.events = [
+      {
+        id: "evt_card",
+        order: 1,
+        segment: "mid",
+        lap: 3,
+        type: "card_triggered",
+        teamId: "team_1",
+        cardId: "rain_grip",
+        severity: "major",
+        positionDelta: 2,
+        tags: ["card"],
+        replayText: "",
+        reportText: ""
+      }
+    ];
+
+    const verdict = buildRaceVerdict(race, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params));
+
+    expect(verdict.outcome).toBe("podium");
+    expect(verdict.stance.key).toBe("recap_verdict_stance_podium_1");
+    expect(verdict.cause.key).toBe("recap_difference_event_1");
+    expect(translateLine(verdict.cause, (key, params) => t(key, "en", params))).toContain("Rain Grip");
+    expect(verdict.tryNext.key).toBe("recap_lesson_card_1");
+  });
+
+  it("uses weather as the dominant cause for a wrong weather bet", () => {
+    const state = stateWithHistory([]);
+    const decision = { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null } satisfies LeagueState["decisions"][number];
+    const race = result("team_2", "team_1");
+    race.seed = "b";
+    race.classification[1]!.positionChange = -1;
+    race.events = [
+      {
+        id: "evt_weather",
+        order: 1,
+        segment: "mid",
+        lap: 3,
+        type: "weather_change",
+        teamId: "team_2",
+        severity: "major",
+        positionDelta: 0,
+        tags: ["weather"],
+        replayText: "",
+        reportText: ""
+      }
+    ];
+    race.resolvedWeather.mid = "heavy_rain";
+
+    const verdict = buildRaceVerdict(race, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params));
+
+    expect(verdict.outcome).toBe("loss");
+    expect(verdict.cause.key).toBe("recap_difference_weather_2");
+    expect(translateLine(verdict.cause, (key, params) => t(key, "en", params))).toContain("Heavy rain");
+    expect(verdict.tryNext.key).toBe("recap_lesson_recover_1");
+  });
+
+  it("falls back to a clean hold verdict when no major cause exists", () => {
+    const state = stateWithHistory([]);
+    const decision = { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null } satisfies LeagueState["decisions"][number];
+    const race = result("team_2", "team_1");
+    race.seed = "c";
+    race.classification[1]!.position = 4;
+
+    const verdict = buildRaceVerdict(race, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params));
+
+    expect(verdict.outcome).toBe("hold");
+    expect(verdict.cause.key).toBe("recap_difference_headline_0");
+    expect(translateLine(verdict.stance, (key, params) => t(key, "en", params))).toContain("held station");
+  });
+
+  it("uses approach as the cause when a quiet race gains positions", () => {
+    const state = stateWithHistory([]);
+    const decision = { teamId: "team_1", approach: "aggressive", preparation: "speed", cardId: null } satisfies LeagueState["decisions"][number];
+    const race = result("team_2", "team_1");
+    race.seed = "c";
+    race.classification[1]!.position = 4;
+    race.classification[1]!.positionChange = 2;
+
+    const verdict = buildRaceVerdict(race, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params));
+
+    expect(verdict.outcome).toBe("gain");
+    expect(verdict.cause.key).toBe("recap_verdict_cause_approach_gain_0");
+    expect(translateLine(verdict.cause, (key, params) => t(key, "en", params))).toContain("Aggressive");
+  });
+
+  it("rotates repeated winning verdict phrasing by seed", () => {
+    const state = stateWithHistory([]);
+    const decision = { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null } satisfies LeagueState["decisions"][number];
+    const first = result("team_1");
+    const second = result("team_1");
+    first.seed = "a";
+    second.seed = "b";
+
+    expect(buildRaceVerdict(first, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params)).stance.key).not.toBe(
+      buildRaceVerdict(second, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params)).stance.key
+    );
   });
 });
 

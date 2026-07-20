@@ -18,6 +18,16 @@ export type CompletedSeasonSummary = {
   standings: SeasonStanding[];
   champion: SeasonStanding;
 };
+export type RaceVerdictLine = {
+  key: TranslationKey;
+  params?: TranslationParams;
+};
+export type RaceVerdict = {
+  outcome: "podium" | "gain" | "hold" | "loss";
+  stance: RaceVerdictLine;
+  cause: RaceVerdictLine;
+  tryNext: RaceVerdictLine;
+};
 
 export function strongestForecast(forecast: Record<string, number>) {
   return Object.entries(forecast).reduce((best, current) => (current[1] > best[1] ? current : best), ["dry", 0])[0];
@@ -155,39 +165,100 @@ export function raceRecapCards(
 }
 
 function recapDifference(result: RaceResult, playerTeamId: string | undefined, raceTitle: string, tt: Translator) {
+  return translateLine(raceDominantCause(result, playerTeamId, raceTitle, tt, false), tt);
+}
+
+export function buildRaceVerdict(
+  result: RaceResult,
+  state: LeagueState,
+  playerTeamId: string | undefined,
+  decision: LeagueState["decisions"][number] | undefined,
+  raceTitle: string,
+  tt: Translator
+): RaceVerdict {
+  const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
+  const variant = resultVariant(result);
+  const outcome = (playerResult?.positionChange ?? 0) < 0 ? "loss" : playerResult?.position && playerResult.position <= 3 ? "podium" : (playerResult?.positionChange ?? 0) > 0 ? "gain" : "hold";
+  return {
+    outcome,
+    stance: {
+      key: pickRecapKey(`recap_verdict_stance_${outcome}`, variant),
+      params: {
+        position: playerResult?.position ?? "-",
+        delta: signedDelta(playerResult?.positionChange ?? 0),
+        points: playerResult?.points ?? 0
+      }
+    },
+    cause: raceDominantCause(result, playerTeamId, raceTitle, tt, true, decision),
+    tryNext: recapNextLessonLine(result, state, playerTeamId, decision, tt)
+  };
+}
+
+export function translateLine(line: RaceVerdictLine, tt: Translator) {
+  return tt(line.key, line.params);
+}
+
+function raceDominantCause(
+  result: RaceResult,
+  playerTeamId: string | undefined,
+  raceTitle: string,
+  tt: Translator,
+  includeApproach: boolean,
+  decision?: LeagueState["decisions"][number]
+): RaceVerdictLine {
   const names = teamNamesFromResult(result);
   const ownEvents = result.events.filter((event) => event.teamId === playerTeamId);
   const impactful = [...ownEvents].sort((left, right) => Math.abs(right.positionDelta) - Math.abs(left.positionDelta))[0];
   const variant = resultVariant(result);
 
   if (impactful && impactful.positionDelta !== 0) {
-    return tt(pickRecapKey("recap_difference_event", variant), {
+    return {
+      key: pickRecapKey("recap_difference_event", variant),
+      params: {
       event: eventReplayText(impactful, names, tt),
       lap: impactful.lap,
       segment: tt(`segment_${impactful.segment}` as TranslationKey),
       delta: signedDelta(impactful.positionDelta)
-    });
+      }
+    };
   }
 
   const cardEvent = ownEvents.find((event) => event.cardId);
   if (cardEvent?.cardId) {
-    return tt(pickRecapKey("recap_difference_card", variant), {
-      card: tt(`card_${cardEvent.cardId}` as TranslationKey),
-      lap: cardEvent.lap,
-      segment: tt(`segment_${cardEvent.segment}` as TranslationKey)
-    });
+    return {
+      key: pickRecapKey("recap_difference_card", variant),
+      params: {
+        card: tt(`card_${cardEvent.cardId}` as TranslationKey),
+        lap: cardEvent.lap,
+        segment: tt(`segment_${cardEvent.segment}` as TranslationKey)
+      }
+    };
   }
 
   const weatherEvent = result.events.find((event) => event.type === "weather_change");
   if (weatherEvent) {
-    return tt(pickRecapKey("recap_difference_weather", variant), {
-      lap: weatherEvent.lap,
-      segment: tt(`segment_${weatherEvent.segment}` as TranslationKey),
-      weather: tt(`weather_${result.resolvedWeather[weatherEvent.segment]}` as TranslationKey)
-    });
+    return {
+      key: pickRecapKey("recap_difference_weather", variant),
+      params: {
+        lap: weatherEvent.lap,
+        segment: tt(`segment_${weatherEvent.segment}` as TranslationKey),
+        weather: tt(`weather_${result.resolvedWeather[weatherEvent.segment]}` as TranslationKey)
+      }
+    };
   }
 
-  return tt(pickRecapKey("recap_difference_headline", variant), { headline: resultHeadline(result, tt, raceTitle) });
+  const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
+  if (includeApproach && decision && (playerResult?.positionChange ?? 0) !== 0) {
+    return {
+      key: pickRecapKey(`recap_verdict_cause_approach_${playerResult!.positionChange > 0 ? "gain" : "loss"}`, variant),
+      params: {
+        approach: tt(`approach_${decision.approach}` as TranslationKey),
+        delta: signedDelta(playerResult!.positionChange)
+      }
+    };
+  }
+
+  return { key: pickRecapKey("recap_difference_headline", variant), params: { headline: resultHeadline(result, tt, raceTitle) } };
 }
 
 function recapDirective(
@@ -235,6 +306,16 @@ function recapNextLesson(
   decision: LeagueState["decisions"][number] | undefined,
   tt: Translator
 ) {
+  return translateLine(recapNextLessonLine(result, state, playerTeamId, decision, tt), tt);
+}
+
+function recapNextLessonLine(
+  result: RaceResult,
+  state: LeagueState,
+  playerTeamId: string | undefined,
+  decision: LeagueState["decisions"][number] | undefined,
+  tt: Translator
+): RaceVerdictLine {
   const ownCardEvent = decision?.cardId ? result.events.find((event) => event.teamId === playerTeamId && event.cardId === decision.cardId) : undefined;
   const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
   const nextSeason = state.currentGrandPrix.round >= state.league.maxGrandPrixPerSeason ? state.currentGrandPrix.season + 1 : state.currentGrandPrix.season;
@@ -248,11 +329,14 @@ function recapNextLesson(
       : tt(`trait_${nextInput.primaryTrait}` as TranslationKey);
   const family = ownCardEvent ? "recap_lesson_card" : (playerResult?.positionChange ?? 0) < 0 ? "recap_lesson_recover" : "recap_lesson_prepare";
 
-  return tt(pickRecapKey(family, variant), {
-    circuit: `${nextCircuit.city} ${tt(nextCircuit.layoutKey as TranslationKey)}`,
-    focus,
-    card: decision?.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : ""
-  });
+  return {
+    key: pickRecapKey(family, variant),
+    params: {
+      circuit: `${nextCircuit.city} ${tt(nextCircuit.layoutKey as TranslationKey)}`,
+      focus,
+      card: decision?.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : ""
+    }
+  };
 }
 
 function recapPlanRead(

@@ -1,10 +1,10 @@
 ## item_144_deterministic_verdict_builder - Deterministic verdict builder
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90
-> Confidence: 85
-> Progress: 0
+> Status: In progress
+> Understanding: 95
+> Confidence: 90
+> Progress: 85
 > Complexity: Low
 > Theme: Race learning and feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -29,6 +29,15 @@
 - AC2: The four scenario families are unit-tested.
 - AC3: Cause ranking is shared with the recap builders, not duplicated.
 - AC4: Two consecutive wins with the same plan do not produce word-for-word identical verdicts: the seed-based variant selection (resultVariant) must be exercised so repeated outcomes rotate phrasing. (Added 2026-07-20: the playtest saw the same winning recap sentence verbatim on two consecutive GPs.)
+
+# Implementation Notes
+- 2026-07-20 wave 1: added `buildRaceVerdict()` in `helpers.ts`, returning outcome, stance, dominant cause, and try-next as i18n keys plus params.
+- Extracted the dominant-cause selection behind `recapDifference()` so the verdict and recap use the same event/card/weather/headline priority; verdict additionally allows an approach cause when no higher-priority cause exists.
+- Reused the next-lesson derivation by splitting `recapNextLessonLine()` from `recapNextLesson()`, so verdict try-next copy cannot drift from the recap card.
+- Added EN/FR `recap_verdict_*` variant families and unit coverage for card podium, weather loss, clean hold, approach gain, and seed-based wording rotation.
+
+# Validation
+- 2026-07-20 targeted: `rtk npm run typecheck`; `rtk npm run lint`; `rtk npm test -- apps/web/src/app/helpers.test.ts apps/web/src/i18n/index.test.ts`.
 
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: buildRaceVerdict is pure, deterministic for a given seed, and returns keys plus values only.

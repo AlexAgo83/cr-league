@@ -15,6 +15,21 @@ const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
 
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
 
+function PlaybackIcon({ playing }: { playing: boolean }) {
+  return (
+    <svg className="replay-playback-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      {playing ? (
+        <>
+          <rect x="7" y="5" width="3.5" height="14" rx="1" />
+          <rect x="13.5" y="5" width="3.5" height="14" rx="1" />
+        </>
+      ) : (
+        <path d="M8 5v14l11-7z" />
+      )}
+    </svg>
+  );
+}
+
 export function ReplayStageOverlay({
   circuit,
   liveLap,
@@ -162,7 +177,7 @@ export function ReplayStageOverlay({
           title={playing ? tt("action_pause") : tt("action_play")}
           onClick={() => (!playing && clockSeconds >= replayEnd ? restart() : setPlaying(!playing))}
         >
-          {playing ? "⏸" : "▶"}
+          <PlaybackIcon playing={playing} />
         </button>
         <button type="button" aria-label={tt("action_replay_restart")} title={tt("action_replay_restart")} onClick={restart}>
           ↻

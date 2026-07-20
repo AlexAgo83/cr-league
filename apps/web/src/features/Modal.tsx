@@ -2,6 +2,41 @@ import { type KeyboardEvent, type ReactNode, useEffect, useRef } from "react";
 
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
+let bodyScrollLockCount = 0;
+let bodyScrollState: { overflow: string; paddingRight: string; position: string; top: string; width: string; scrollY: number } | null = null;
+
+function lockBodyScroll() {
+  if (bodyScrollLockCount === 0) {
+    const scrollbarGap = window.innerWidth - document.documentElement.clientWidth;
+    bodyScrollState = {
+      overflow: document.body.style.overflow,
+      paddingRight: document.body.style.paddingRight,
+      position: document.body.style.position,
+      top: document.body.style.top,
+      width: document.body.style.width,
+      scrollY: window.scrollY
+    };
+    document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${bodyScrollState.scrollY}px`;
+    document.body.style.width = "100%";
+    if (scrollbarGap > 0) document.body.style.paddingRight = bodyScrollState.paddingRight ? `calc(${bodyScrollState.paddingRight} + ${scrollbarGap}px)` : `${scrollbarGap}px`;
+  }
+  bodyScrollLockCount += 1;
+  return () => {
+    bodyScrollLockCount = Math.max(0, bodyScrollLockCount - 1);
+    if (bodyScrollLockCount > 0 || !bodyScrollState) return;
+    const { overflow, paddingRight, position, top, width, scrollY } = bodyScrollState;
+    document.body.style.overflow = overflow;
+    document.body.style.paddingRight = paddingRight;
+    document.body.style.position = position;
+    document.body.style.top = top;
+    document.body.style.width = width;
+    if (scrollY > 0) window.scrollTo(0, scrollY);
+    bodyScrollState = null;
+  };
+}
+
 export function Modal({
   label,
   className = "panel modal",
@@ -22,9 +57,11 @@ export function Modal({
   const overlayPressStarted = useRef(false);
 
   useEffect(() => {
+    const unlockBodyScroll = lockBodyScroll();
     triggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
     dialogRef.current?.focus();
     return () => {
+      unlockBodyScroll();
       if (triggerRef.current?.isConnected) triggerRef.current.focus();
     };
   }, []);

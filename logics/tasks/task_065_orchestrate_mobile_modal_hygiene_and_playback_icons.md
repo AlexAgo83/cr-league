@@ -1,21 +1,22 @@
 ## task_065_orchestrate_mobile_modal_hygiene_and_playback_icons - Orchestrate mobile modal hygiene and playback icons
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 65%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
 
 # Plan
-- [ ] 1. Add the body scroll lock in Modal.tsx (stack-safe, no desktop layout jump) and extend Modal.test.tsx.
-- [ ] 2. Make LaunchGpModal compact on mobile: shorter hero, single-column starting grid, min-width:0/overflow guards in AppModals.tsx and layout.css.
-- [ ] 3. Swap the emoji playback control in ReplayStageOverlay.tsx for themed inline SVG icons and add the render assertion.
+- [x] 1. Add the body scroll lock in Modal.tsx (stack-safe, no desktop layout jump) and extend Modal.test.tsx.
+- [x] 2. Make LaunchGpModal compact on mobile: shorter hero, single-column starting grid, min-width:0/overflow guards in AppModals.tsx and layout.css.
+- [x] 3. Swap the emoji playback control in ReplayStageOverlay.tsx for themed inline SVG icons and add the render assertion.
 - [ ] 4. Keep each diff small and file-isolated to rebase cleanly against Codex's concurrent shell decomposition.
 - [ ] 5. Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
@@ -42,9 +43,10 @@
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- 2026-07-20 wave 1 targeted proof: `rtk npm test -- apps/web/src/features/Modal.test.tsx apps/web/src/app/App.test.tsx` passed (29 tests).
 
 # Report
-- Implementation complete.
+- Wave 1 implemented: stack-safe modal body scroll lock with scroll position restore, compact 360px launch-GP modal styling with a single-column starting grid, and themed inline SVG play/pause icons preserving the existing replay controls' labels/state.
 
 # AI Context
 - Summary: Orchestrate mobile modal hygiene and playback icons

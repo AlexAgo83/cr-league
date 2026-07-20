@@ -571,8 +571,13 @@ describe("App", () => {
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("0%");
 
     // Replay playback controls
-    fireEvent.click(screen.getByRole("button", { name: "Pause" }));
-    expect(screen.getByRole("button", { name: "Play" })).toBeTruthy();
+    const pauseButton = screen.getByRole("button", { name: "Pause" });
+    expect(pauseButton.querySelector("svg.replay-playback-icon")).toBeTruthy();
+    expect(pauseButton.textContent).toBe("");
+    fireEvent.click(pauseButton);
+    const playButton = screen.getByRole("button", { name: "Play" });
+    expect(playButton.querySelector("svg.replay-playback-icon")).toBeTruthy();
+    expect(playButton.textContent).toBe("");
     fireEvent.click(screen.getByRole("button", { name: "Restart" }));
     expect(screen.getByRole("button", { name: "Pause" })).toBeTruthy();
     // Focus is on by default; clicking turns it off and persists that.

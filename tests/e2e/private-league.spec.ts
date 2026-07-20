@@ -250,6 +250,27 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.getByRole("button", { name: "Send plan" }).click();
   await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send plan" }).click();
   await page.getByRole("button", { name: "Launch GP" }).click();
+  await page.setViewportSize({ width: 360, height: 720 });
+  await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toBeVisible();
+  const launchModalMobile = await page.evaluate(() => {
+    const modal = document.querySelector(".launch-gp-modal");
+    const row = document.querySelector(".launch-gp-modal .starting-grid-list li");
+    const rect = modal?.getBoundingClientRect();
+    return {
+      bodyLocked: getComputedStyle(document.body).position === "fixed" && getComputedStyle(document.body).overflow === "hidden",
+      modalWithinViewport: Boolean(rect && rect.left >= 0 && rect.right <= window.innerWidth && rect.top >= 0 && rect.bottom <= window.innerHeight),
+      noHorizontalOverflow: Boolean(modal && modal.scrollWidth <= modal.clientWidth + 1),
+      singleColumnGrid: row ? getComputedStyle(row).gridTemplateColumns.split(" ").length === 1 : false
+    };
+  });
+  expect(launchModalMobile).toEqual({
+    bodyLocked: true,
+    modalWithinViewport: true,
+    noHorizontalOverflow: true,
+    singleColumnGrid: true
+  });
+  await page.screenshot({ path: testInfo.outputPath("launch-gp-modal-mobile.png"), fullPage: true });
+  await page.setViewportSize({ width: 1440, height: 1000 });
   await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
   await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
 

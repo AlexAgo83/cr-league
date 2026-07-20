@@ -159,7 +159,7 @@ export function ResolveGrandPrixConfirmModal({
   const hiddenCount = startingGridEntries.length - displayedEntries.length;
 
   return (
-    <Modal label={tt("launch_gp_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+    <Modal label={tt("launch_gp_confirm_title")} className="panel modal launch-gp-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/launch-gp-modal.png" kicker={tt("action_launch_grand_prix")} title={tt("launch_gp_confirm_title")} />
       <p>{tt("launch_gp_confirm_body")}</p>
       <div className="starting-grid-confirmation">

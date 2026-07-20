@@ -1695,6 +1695,7 @@ label small {
   display: flex;
   inset: 0;
   justify-content: center;
+  overflow: hidden;
   padding: 16px;
   position: fixed;
   z-index: 100;
@@ -2628,6 +2629,12 @@ label small {
 
 .replay-map-controls .replay-playback-button {
   overflow: visible;
+}
+
+.replay-playback-icon {
+  fill: currentColor;
+  height: 15px;
+  width: 15px;
 }
 
 .replay-map-controls .replay-playback-button.playing::after {
@@ -4816,6 +4823,61 @@ label small {
 
 .starting-grid-more-button {
   justify-self: start;
+}
+
+@media (max-width: 520px) {
+  .modal-overlay {
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  .launch-gp-modal {
+    max-height: calc(100dvh - 20px);
+    min-width: 0;
+  }
+
+  .launch-gp-modal .modal-hero {
+    margin-bottom: 10px;
+    min-height: 118px;
+  }
+
+  .launch-gp-modal .modal-hero-image {
+    max-height: 120px;
+  }
+
+  .launch-gp-modal .modal-hero-copy {
+    padding: 14px;
+  }
+
+  .launch-gp-modal .starting-grid-confirmation {
+    gap: 10px;
+    margin: 10px 0;
+    min-width: 0;
+    padding: 10px;
+  }
+
+  .launch-gp-modal .starting-grid-list li {
+    align-items: start;
+    grid-template-areas:
+      "pos"
+      "team"
+      "plate"
+      "time";
+    grid-template-columns: minmax(0, 1fr);
+    min-width: 0;
+  }
+
+  .launch-gp-modal .starting-grid-list li > .standings-livery-plate {
+    justify-self: start;
+    max-width: 100%;
+  }
+
+  .launch-gp-modal .starting-grid-list li > strong,
+  .launch-gp-modal .starting-grid-list li > small,
+  .launch-gp-modal .starting-grid-confirmation small {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
 }
 
 @media (max-width: 1040px) {

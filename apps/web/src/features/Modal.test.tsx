@@ -1,6 +1,6 @@
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { useState } from "react";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { Modal } from "./Modal.js";
 
 function Harness() {
@@ -24,6 +24,8 @@ function Harness() {
 
 afterEach(() => {
   cleanup();
+  document.body.removeAttribute("style");
+  vi.restoreAllMocks();
 });
 
 describe("Modal", () => {
@@ -58,5 +60,57 @@ describe("Modal", () => {
     fireEvent.pointerDown(overlay);
     fireEvent.click(overlay);
     expect(screen.queryByRole("dialog", { name: "Test dialog" })).toBe(null);
+  });
+
+  it("locks body scroll while mounted and restores it on unmount", () => {
+    vi.spyOn(window, "scrollY", "get").mockReturnValue(120);
+    vi.spyOn(window, "innerWidth", "get").mockReturnValue(1000);
+    vi.spyOn(document.documentElement, "clientWidth", "get").mockReturnValue(980);
+    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+    document.body.style.paddingRight = "4px";
+
+    const { unmount } = render(
+      <Modal label="Lock test" onClose={() => undefined}>
+        <button type="button">Inside</button>
+      </Modal>
+    );
+
+    expect(document.body.style.overflow).toBe("hidden");
+    expect(document.body.style.position).toBe("fixed");
+    expect(document.body.style.top).toBe("-120px");
+    expect(document.body.style.width).toBe("100%");
+    expect(document.body.style.paddingRight).toBe("calc(24px)");
+
+    unmount();
+
+    expect(document.body.style.overflow).toBe("");
+    expect(document.body.style.position).toBe("");
+    expect(document.body.style.top).toBe("");
+    expect(document.body.style.width).toBe("");
+    expect(document.body.style.paddingRight).toBe("4px");
+    expect(scrollTo).toHaveBeenCalledWith(0, 120);
+  });
+
+  it("keeps body scroll locked until the last stacked modal unmounts", () => {
+    const scrollTo = vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
+
+    const first = render(
+      <Modal label="First" onClose={() => undefined}>
+        <button type="button">First action</button>
+      </Modal>
+    );
+    const second = render(
+      <Modal label="Second" onClose={() => undefined}>
+        <button type="button">Second action</button>
+      </Modal>
+    );
+
+    first.unmount();
+    expect(document.body.style.overflow).toBe("hidden");
+    expect(scrollTo).not.toHaveBeenCalled();
+
+    second.unmount();
+    expect(document.body.style.overflow).toBe("");
+    expect(scrollTo).not.toHaveBeenCalled();
   });
 });

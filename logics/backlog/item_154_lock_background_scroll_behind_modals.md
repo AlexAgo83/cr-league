@@ -1,10 +1,10 @@
 ## item_154_lock_background_scroll_behind_modals - Lock background scroll behind modals
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 65%
 > Complexity: Low
 > Theme: Playtest-ready loop polish
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -25,6 +25,10 @@
 # Acceptance criteria
 - AC1: Background does not scroll while a modal is open; only modal content scrolls; scroll position restores without a jump on close.
 - AC4: Modal.test.tsx covers the lock and restore.
+
+# Implementation notes
+- 2026-07-20: Modal.tsx now applies a stack-safe body scroll lock on mount, preserves scrollbar gutter padding, fixes the body at the current scroll offset, and restores styles/scroll position when the last modal closes.
+- Targeted proof: `rtk npm test -- apps/web/src/features/Modal.test.tsx apps/web/src/app/App.test.tsx` passed.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Background does not scroll while a modal is open; only modal content scrolls; scroll position restores without a jump on close.

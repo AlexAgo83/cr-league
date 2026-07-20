@@ -1,10 +1,10 @@
 ## item_155_make_the_launch_grand_prix_modal_compact_on_mobile - Make the launch-Grand-Prix modal compact on mobile
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 65%
 > Complexity: Low
 > Theme: Playtest-ready loop polish
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -24,6 +24,10 @@
 
 # Acceptance criteria
 - AC2: The modal fits a 360px-wide viewport with no horizontal scroll and no vertical overflow beyond its internal scroll; grid is single-column.
+
+# Implementation notes
+- 2026-07-20: Launch-GP confirmation now has a dedicated `launch-gp-modal` class, compact mobile hero sizing, tighter spacing, min-width guards, and a literal single-column starting-grid row layout at phone width.
+- Targeted proof: `rtk npm test -- apps/web/src/features/Modal.test.tsx apps/web/src/app/App.test.tsx` passed; e2e coverage added for the 360px modal fit/body-lock/grid assertion.
 
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC2: The modal fits a 360px-wide viewport with no horizontal scroll and no vertical overflow beyond its internal scroll; grid is single-column.

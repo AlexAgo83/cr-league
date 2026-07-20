@@ -29,6 +29,8 @@ export function AdminConsoleView({
   onSetAdminTab,
   onSetAdminToken,
   onSetAdminUserQuery,
+  onCleanupLeague,
+  onCleanupUser,
   tt
 }: {
   adminLeagues: AdminLeague[];
@@ -43,6 +45,8 @@ export function AdminConsoleView({
   locale: Locale;
   loading: boolean;
   pendingMessage: string | null;
+  onCleanupLeague: (league: AdminLeague) => void;
+  onCleanupUser: (user: AdminUser) => void;
   onDeleteUser: (user: AdminUser) => void;
   onInspectLeague: (league: AdminLeague) => void;
   onPageLeagues: (page: number) => void;
@@ -132,6 +136,9 @@ export function AdminConsoleView({
                         <button type="button" onClick={() => onResetRecoveryCode(user)} disabled={loading}>
                           {tt("admin_action_reset_recovery")}
                         </button>
+                        <button type="button" className="danger-button" onClick={() => onCleanupUser(user)} disabled={loading}>
+                          {tt("admin_action_cleanup_test_data")}
+                        </button>
                         <button type="button" className="danger-button" onClick={() => onDeleteUser(user)} disabled={loading}>
                           {tt("admin_action_delete_user")}
                         </button>
@@ -183,9 +190,14 @@ export function AdminConsoleView({
                     <td>{tt("admin_league_counts_value", { players: league.playerCount, teams: league.teamCount })}</td>
                     <td>{formatAdminDate(league.createdAt, locale)}</td>
                     <td>
-                      <button type="button" onClick={() => onInspectLeague(league)} disabled={loading}>
-                        {tt("admin_action_inspect_league")}
-                      </button>
+                      <div className="admin-row-actions">
+                        <button type="button" onClick={() => onInspectLeague(league)} disabled={loading}>
+                          {tt("admin_action_inspect_league")}
+                        </button>
+                        <button type="button" className="danger-button" onClick={() => onCleanupLeague(league)} disabled={loading}>
+                          {tt("admin_action_cleanup_test_data")}
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

@@ -2,12 +2,26 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import type { PrismaClient } from "@prisma/client";
 import { timingSafeEqual } from "node:crypto";
 import type { ApiConfig } from "../../config.js";
-import { deleteAdminUser, inspectAdminLeague, listAdminLeagues, listAdminUsers, resetAdminUserRecoveryCode, type AdminListInput } from "./store.js";
+import {
+  AdminCleanupError,
+  cleanupAdminTestData,
+  deleteAdminUser,
+  inspectAdminLeague,
+  listAdminLeagues,
+  listAdminUsers,
+  resetAdminUserRecoveryCode,
+  type AdminListInput
+} from "./store.js";
 
 type AdminListQuery = {
   q?: string;
   page?: string;
   limit?: string;
+};
+type AdminCleanupBody = {
+  profileIds?: string[];
+  leagueIds?: string[];
+  confirmation?: string;
 };
 
 export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient, config: ApiConfig) {
@@ -32,6 +46,15 @@ export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient
       return await deleteAdminUser(db, request.params.profileId);
     } catch (error) {
       return sendAdminStoreError(reply, error, "Profile not found.");
+    }
+  });
+
+  app.post<{ Body: AdminCleanupBody }>("/admin/test-data-cleanup", async (request, reply) => {
+    try {
+      return await cleanupAdminTestData(db, request.body);
+    } catch (error) {
+      if (error instanceof AdminCleanupError) return reply.code(400).send({ error: "Bad Request", message: error.message });
+      return sendAdminStoreError(reply, error, "Selected test data not found.");
     }
   });
 

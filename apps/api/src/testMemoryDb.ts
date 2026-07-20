@@ -155,6 +155,30 @@ export function createMemoryDb(): PrismaClient {
         if (!league) throw new Error("League not found");
         Object.assign(league, data);
         return league;
+      },
+      delete: async ({ where }: { where: { id: string } }) => {
+        const index = leagues.findIndex((candidate) => candidate.id === where.id);
+        if (index === -1) {
+          const error = new Error("League not found") as Error & { code?: string };
+          error.code = "P2025";
+          throw error;
+        }
+        const [league] = leagues.splice(index, 1) as [LeagueRow];
+        const deletedTeamIds = new Set(teams.filter((team) => team.leagueId === where.id).map((team) => team.id));
+        for (let teamIndex = teams.length - 1; teamIndex >= 0; teamIndex -= 1) {
+          const team = teams[teamIndex];
+          if (team?.leagueId === where.id) teams.splice(teamIndex, 1);
+        }
+        const deletedGrandPrixIds = new Set(grandPrixes.filter((grandPrix) => grandPrix.leagueId === where.id).map((grandPrix) => grandPrix.id));
+        for (let grandPrixIndex = grandPrixes.length - 1; grandPrixIndex >= 0; grandPrixIndex -= 1) {
+          const grandPrix = grandPrixes[grandPrixIndex];
+          if (grandPrix?.leagueId === where.id) grandPrixes.splice(grandPrixIndex, 1);
+        }
+        for (let decisionIndex = decisions.length - 1; decisionIndex >= 0; decisionIndex -= 1) {
+          const decision = decisions[decisionIndex];
+          if (decision && (deletedGrandPrixIds.has(decision.grandPrixId) || deletedTeamIds.has(decision.teamId))) decisions.splice(decisionIndex, 1);
+        }
+        return league;
       }
     },
     profile: {

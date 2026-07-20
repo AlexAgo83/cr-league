@@ -3,6 +3,7 @@ import { getLeagueState } from "../leagues/store.js";
 import { createRecoveryCode, hashRecoveryCode } from "../leagues/utils.js";
 
 type Db = Pick<PrismaClient, "profile" | "team" | "league">;
+export const ADMIN_TEST_DATA_CLEANUP_CONFIRMATION = "DELETE TEST DATA";
 
 export type AdminListInput = {
   q?: string;
@@ -59,6 +60,42 @@ export async function deleteAdminUser(db: Db, profileId: string) {
   return { ok: true };
 }
 
+export async function cleanupAdminTestData(db: Db, input: { profileIds?: string[]; leagueIds?: string[]; confirmation?: string }) {
+  const profileIds = uniqueIds(input.profileIds);
+  const leagueIds = uniqueIds(input.leagueIds);
+  if (input.confirmation !== ADMIN_TEST_DATA_CLEANUP_CONFIRMATION) throw new AdminCleanupError("Confirmation is required.");
+  if (!profileIds.length && !leagueIds.length) throw new AdminCleanupError("Select at least one test data set.");
+
+  const profiles = await Promise.all(profileIds.map((profileId) => db.profile.findUnique({ where: { id: profileId } })));
+  const leagues = await Promise.all(leagueIds.map((leagueId) => db.league.findUnique({ where: { id: leagueId }, include: { teams: true, grandPrixes: { include: { decisions: true } } } })));
+  const missing = [...profileIds.filter((_, index) => !profiles[index]), ...leagueIds.filter((_, index) => !leagues[index])];
+  if (missing.length) throw new AdminCleanupError(`Missing selected data: ${missing.join(", ")}`);
+
+  const unsafeProfiles = profiles.filter((profile): profile is NonNullable<typeof profile> => Boolean(profile)).filter((profile) => !isTestProfile(profile.email));
+  const unsafeLeagues = leagues.filter((league): league is NonNullable<typeof league> => Boolean(league)).filter((league) => !isTestLeague(league.name, league.code));
+  if (unsafeProfiles.length || unsafeLeagues.length) throw new AdminCleanupError("Only clearly marked test profiles or leagues can be cleaned up.");
+
+  const leagueRows = leagues.filter((league): league is NonNullable<typeof league> => Boolean(league));
+  const counts = {
+    profiles: 0,
+    leagues: 0,
+    teams: leagueRows.reduce((total, league) => total + league.teams.length, 0),
+    grandPrixes: leagueRows.reduce((total, league) => total + league.grandPrixes.length, 0),
+    decisions: leagueRows.reduce((total, league) => total + league.grandPrixes.reduce((sum, grandPrix) => sum + grandPrix.decisions.length, 0), 0)
+  };
+
+  for (const leagueId of leagueIds) {
+    await db.league.delete({ where: { id: leagueId } });
+    counts.leagues += 1;
+  }
+  for (const profileId of profileIds) {
+    await db.profile.delete({ where: { id: profileId } });
+    counts.profiles += 1;
+  }
+
+  return { ok: true, deleted: counts };
+}
+
 export async function listAdminLeagues(db: Db, input: AdminListInput = {}) {
   const leagues = await db.league.findMany({
     orderBy: { createdAt: "desc" },
@@ -94,6 +131,21 @@ export async function listAdminLeagues(db: Db, input: AdminListInput = {}) {
 
 export async function inspectAdminLeague(db: Db, leagueId: string) {
   return getLeagueState(db as Parameters<typeof getLeagueState>[0], leagueId, { includeInviteCode: true });
+}
+
+export class AdminCleanupError extends Error {}
+
+function uniqueIds(ids: string[] | undefined) {
+  return Array.from(new Set((ids ?? []).map((id) => id.trim()).filter(Boolean)));
+}
+
+function isTestProfile(email: string) {
+  const normalized = email.toLowerCase();
+  return normalized.endsWith(".test") || normalized.includes("+test@") || normalized.startsWith("test@");
+}
+
+function isTestLeague(name: string, code: string) {
+  return /\b(test|demo|qa|staging)\b/i.test(name) || code.toUpperCase().startsWith("TEST");
 }
 
 function matchesAdminQuery(query: string | undefined, ...values: Array<string | null | undefined>) {

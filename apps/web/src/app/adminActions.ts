@@ -148,6 +148,20 @@ export function createAdminActions({
     }, undefined, false, adminApiErrorMessage);
   };
 
+  const cleanupAdminTestData = async (input: { profileIds?: string[]; leagueIds?: string[] }) => {
+    if (!window.confirm(tt("admin_cleanup_confirm_prompt"))) return;
+    await run(tt("status_admin_cleanup_running"), async () => {
+      await api<{ ok: boolean; deleted: Record<string, number> }>("/admin/test-data-cleanup", {
+        method: "POST",
+        headers: { ...adminHeaders(), "content-type": "application/json" },
+        body: JSON.stringify({ ...input, confirmation: "DELETE TEST DATA" })
+      });
+      setAdminRecoveryCode(null);
+      await Promise.all([refreshAdminUsers(), refreshAdminLeagues()]);
+      showStatus(tt("status_admin_cleanup_done"), "info", false);
+    }, undefined, false, adminApiErrorMessage);
+  };
+
   const inspectAdminLeague = async (league: AdminLeague) => {
     await run(tt("status_admin_inspecting_league"), async () => {
       const state = await api<LeagueState>(`/admin/leagues/${league.id}`, {
@@ -167,6 +181,7 @@ export function createAdminActions({
     resetAdminRecoveryCode,
     deleteAdminUserConfirmed,
     inspectAdminLeague,
+    cleanupAdminTestData,
     searchAdminUsers,
     searchAdminLeagues,
     pageAdminUsers,

@@ -234,7 +234,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     withCurrentPlayer,
     rememberPlayer
   });
-  const { openAdminConsole, refreshAdminData, resetAdminRecoveryCode, deleteAdminUserConfirmed, inspectAdminLeague, searchAdminUsers, searchAdminLeagues, pageAdminUsers, pageAdminLeagues } = createAdminActions({
+  const { openAdminConsole, refreshAdminData, resetAdminRecoveryCode, deleteAdminUserConfirmed, inspectAdminLeague, cleanupAdminTestData, searchAdminUsers, searchAdminLeagues, pageAdminUsers, pageAdminLeagues } = createAdminActions({
     profileIsAdmin: Boolean(profileSession?.admin),
     adminToken,
     adminDeleteUser,
@@ -623,6 +623,8 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       locale={locale}
       loading={status === "loading"}
       pendingMessage={pendingMessage}
+      onCleanupLeague={(league) => void cleanupAdminTestData({ leagueIds: [league.id] })}
+      onCleanupUser={(user) => void cleanupAdminTestData({ profileIds: [user.id] })}
       onDeleteUser={setAdminDeleteUser}
       onInspectLeague={(league) => void inspectAdminLeague(league)}
       onPageLeagues={(page) => void pageAdminLeagues(page)}

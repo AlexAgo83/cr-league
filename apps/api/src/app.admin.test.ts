@@ -397,4 +397,77 @@ describe("api app profile and admin", () => {
     expect(filteredLeagues.json().leagues).toEqual([expect.objectContaining({ name: "Beta Bowl" })]);
     expect(filteredLeagues.json().pagination.total).toBe(1);
   });
+
+  it("cleans up explicitly selected admin test data with confirmation and counts", async () => {
+    const app = await createTestApp(createMemoryDb(), "secret-admin-token");
+    const adminHeaders = { authorization: "Bearer secret-admin-token" };
+    const profileResponse = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const profile = profileResponse.json();
+    const leagueResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Test League", teamName: "Volt Union", profileId: profile.profile.id, recoveryCode: profile.recoveryCode }
+    });
+    const created = leagueResponse.json();
+
+    const cleanupResponse = await app.inject({
+      method: "POST",
+      url: "/admin/test-data-cleanup",
+      headers: adminHeaders,
+      payload: {
+        confirmation: "DELETE TEST DATA",
+        profileIds: [profile.profile.id],
+        leagueIds: [created.league.id]
+      }
+    });
+    const inspectResponse = await app.inject({ method: "GET", url: `/admin/leagues/${created.league.id}`, headers: adminHeaders });
+    const recoverResponse = await app.inject({ method: "POST", url: "/profiles/recover", payload: { email: "pilot@example.test", recoveryCode: profile.recoveryCode } });
+
+    await app.close();
+
+    expect(cleanupResponse.statusCode).toBe(200);
+    expect(cleanupResponse.json()).toEqual({
+      ok: true,
+      deleted: {
+        profiles: 1,
+        leagues: 1,
+        teams: 1,
+        grandPrixes: 1,
+        decisions: 0
+      }
+    });
+    expect(inspectResponse.statusCode).toBe(404);
+    expect(recoverResponse.statusCode).toBe(404);
+  });
+
+  it("rejects admin cleanup without confirmation or clearly marked test data", async () => {
+    const app = await createTestApp(createMemoryDb(), "secret-admin-token");
+    const adminHeaders = { authorization: "Bearer secret-admin-token" };
+    const profileResponse = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.com" } });
+    const profile = profileResponse.json();
+
+    const missingConfirmation = await app.inject({
+      method: "POST",
+      url: "/admin/test-data-cleanup",
+      headers: adminHeaders,
+      payload: { profileIds: [profile.profile.id] }
+    });
+    const unsafeProfile = await app.inject({
+      method: "POST",
+      url: "/admin/test-data-cleanup",
+      headers: adminHeaders,
+      payload: { confirmation: "DELETE TEST DATA", profileIds: [profile.profile.id] }
+    });
+    const forbidden = await app.inject({
+      method: "POST",
+      url: "/admin/test-data-cleanup",
+      payload: { confirmation: "DELETE TEST DATA", profileIds: [profile.profile.id] }
+    });
+
+    await app.close();
+
+    expect(missingConfirmation.statusCode).toBe(400);
+    expect(unsafeProfile.statusCode).toBe(400);
+    expect(forbidden.statusCode).toBe(403);
+  });
 });

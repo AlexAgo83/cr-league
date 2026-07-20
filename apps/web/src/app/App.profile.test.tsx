@@ -426,6 +426,9 @@ describe("App profile and admin", () => {
       .mockResolvedValueOnce(response(users))
       .mockResolvedValueOnce(response(leagues))
       .mockResolvedValueOnce(response(users))
+      .mockResolvedValueOnce(response({ ok: true, deleted: { profiles: 1, leagues: 0, teams: 0, grandPrixes: 0, decisions: 0 } }))
+      .mockResolvedValueOnce(response(users))
+      .mockResolvedValueOnce(response(leagues))
       .mockResolvedValueOnce(response({ recoveryCode: "FACE1234" }))
       .mockResolvedValueOnce(response(users))
       .mockResolvedValueOnce(response({ ok: true }))
@@ -454,6 +457,18 @@ describe("App profile and admin", () => {
         3,
         "http://localhost:4874/admin/users?page=1&limit=100&q=pilot",
         expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
+      )
+    );
+    vi.spyOn(window, "confirm").mockReturnValue(true);
+    fireEvent.click(screen.getAllByRole("button", { name: "Clean test data" }).at(0)!);
+    await waitFor(() =>
+      expect(fetch).toHaveBeenNthCalledWith(
+        4,
+        "http://localhost:4874/admin/test-data-cleanup",
+        expect.objectContaining({
+          body: JSON.stringify({ profileIds: ["profile_1"], confirmation: "DELETE TEST DATA" }),
+          headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" })
+        })
       )
     );
     expect(screen.getByText("1 teams · 1 leagues")).toBeTruthy();

@@ -505,7 +505,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "Understand the chrono" })).toBe(null);
-    fireEvent.click(screen.getByRole("tab", { name: "Chrono report" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
     expect(screen.getByRole("heading", { name: "Understand the chrono" })).toBeTruthy();
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("72.42s");
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("75.18s");
@@ -515,12 +515,12 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 1/3");
-    expect(screen.getByRole("button", { name: "Chrono report" }).className).toContain("highlight-command");
-    fireEvent.click(screen.getByRole("button", { name: "Chrono report" }));
+    expect(screen.getByRole("button", { name: "Chrono" }).className).toContain("highlight-command");
+    fireEvent.click(screen.getByRole("button", { name: "Chrono" }));
     expect(screen.getByRole("heading", { name: "Understand the chrono" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Chrono report" }).className).not.toContain("highlight-command");
+    expect(screen.getByRole("button", { name: "Chrono" }).className).not.toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
     fireEvent.click(screen.getByRole("button", { name: "Review chrono" }));
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();

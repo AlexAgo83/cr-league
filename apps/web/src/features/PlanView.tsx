@@ -1,11 +1,13 @@
-import { type CardId, type QualifyingRun } from "@cr-league/shared";
+import { type CardId, type QualifyingRun, type RaceResult } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
+import type { CityCircuit } from "../app/circuits.js";
 import type { CardFit, Translator } from "../app/helpers.js";
 import { buildPlanRecommendation, type ChronoReport, type PlanRiskRead } from "../app/raceFlow.js";
 import type { PlanSubscreen } from "../app/routes.js";
 import type { FormState, GameView, LeagueState } from "../app/types.js";
 import { DirectivePanel, type DirectiveStep } from "./DirectivePanel.js";
 import { PositionBadge } from "./PositionBadge.js";
+import { ReportView } from "./ReportView.js";
 
 export function PlanView({
   cardLocked,
@@ -19,11 +21,16 @@ export function PlanView({
   locked,
   planSubscreen,
   playerQualifyingRuns,
+  playerDecision,
+  playerTeamId,
   planRiskRead,
   qualifyingAttemptLimit,
   qualifyingAttemptsLeft,
   selectedCardFit,
   selectedCardId,
+  reportCircuit,
+  reportResult,
+  state,
   onSetDirectiveStep,
   onSetForm,
   onSetGameView,
@@ -42,11 +49,16 @@ export function PlanView({
   locked: boolean;
   planSubscreen: PlanSubscreen;
   playerQualifyingRuns: QualifyingRun[];
+  playerDecision: LeagueState["decisions"][number] | undefined;
+  playerTeamId: string | undefined;
   planRiskRead: PlanRiskRead;
   qualifyingAttemptLimit: number;
   qualifyingAttemptsLeft: number;
   selectedCardFit: CardFit | null;
   selectedCardId: FormState["cardId"];
+  reportCircuit: CityCircuit;
+  reportResult: RaceResult | null;
+  state: LeagueState;
   onSetDirectiveStep: (step: DirectiveStep) => void;
   onSetForm: (form: FormState) => void;
   onSetGameView: (view: GameView) => void;
@@ -55,18 +67,26 @@ export function PlanView({
   tt: Translator;
 }) {
   const planRecommendation = buildPlanRecommendation({ circuitTraits, forecastPick, tt });
+  const activeSubscreen = planSubscreen === "report" && !reportResult ? "plan" : planSubscreen;
 
   return (
     <div className="plan-view">
       <div className="plan-steps plan-subscreen-tabs" role="tablist" aria-label={tt("plan_subscreen_label")}>
-        <button type="button" role="tab" aria-selected={planSubscreen === "plan"} className={planSubscreen === "plan" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("plan")}>
+        <button type="button" role="tab" aria-selected={activeSubscreen === "plan"} className={activeSubscreen === "plan" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("plan")}>
           <span className="plan-step-label">{tt("plan_subscreen_plan")}</span>
         </button>
-        <button type="button" role="tab" aria-selected={planSubscreen === "chrono"} className={planSubscreen === "chrono" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("chrono")}>
+        <button type="button" role="tab" aria-selected={activeSubscreen === "chrono"} className={activeSubscreen === "chrono" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("chrono")}>
           <span className="plan-step-label">{tt("plan_subscreen_chrono")}</span>
         </button>
+        {reportResult ? (
+          <button type="button" role="tab" aria-selected={activeSubscreen === "report"} className={activeSubscreen === "report" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("report")}>
+            <span className="plan-step-label">{tt("result_tab_report")}</span>
+          </button>
+        ) : null}
       </div>
-      {planSubscreen === "chrono" ? (
+      {activeSubscreen === "report" && reportResult ? (
+        <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} tt={tt} />
+      ) : activeSubscreen === "chrono" ? (
         <section className="panel chrono-report-panel" aria-label={tt("chrono_report_title")}>
           <div className="chrono-report-hero">
             <header className="chrono-report-header">

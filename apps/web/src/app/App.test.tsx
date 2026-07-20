@@ -672,13 +672,11 @@ describe("App", () => {
 
     // Report view
     fireEvent.click(screen.getByRole("button", { name: "Report" }));
+    expect(window.location.pathname).toBe("/plan/report");
+    expect(screen.getByRole("tab", { name: "Report" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByText(`${roundOneCircuit.title}: Volt Union wins.`)).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Replay" }).className).toContain("report-replay-button");
-    expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("report-close-button");
-    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
-    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Skip to result" }));
-    fireEvent.click(screen.getByRole("button", { name: "Report" }));
+    expect(document.querySelector(".report-replay-button")).toBe(null);
+    expect(document.querySelector(".report-close-button")).toBe(null);
     expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();
     expect(screen.getByLabelText("Race phases")).toBeTruthy();
     expect(screen.getByText("Phase 1")).toBeTruthy();
@@ -689,7 +687,7 @@ describe("App", () => {
     const nextCircuit = testCircuit(2);
     expect(screen.getAllByText(new RegExp(nextCircuit.title)).length).toBeGreaterThan(0);
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Report" }).className).not.toContain("highlight-command");
 

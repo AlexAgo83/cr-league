@@ -153,11 +153,16 @@ export function GameViews({
           locked={Boolean(playerDecision) || isResolved}
           planSubscreen={planSubscreen}
           playerQualifyingRuns={playerQualifyingRuns}
+          playerDecision={playerDecision}
+          playerTeamId={playerTeam?.id}
           planRiskRead={planRiskRead}
           qualifyingAttemptLimit={qualifyingAttemptLimit}
           qualifyingAttemptsLeft={qualifyingAttemptsLeft}
           selectedCardFit={selectedCardFit}
           selectedCardId={selectedCardId}
+          reportCircuit={currentCircuit}
+          reportResult={state.currentGrandPrix.result}
+          state={state}
           onSetDirectiveStep={setDirectiveStep}
           onSetForm={setForm}
           onSetGameView={setGameView}

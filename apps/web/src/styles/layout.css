@@ -1691,7 +1691,6 @@ label small {
 .plan-risk-summary {
   background: rgb(236 231 218 / 0.96);
   border: 1px solid rgb(23 21 26 / 0.14);
-  border-left: 4px solid var(--plan-risk-accent, var(--color-accent));
   color: var(--color-ink);
   display: grid;
   gap: 5px;
@@ -1736,7 +1735,6 @@ label small {
 .directive-selection-panel > .directive-lock-note {
   background: rgb(236 231 218 / 0.96);
   border: 1px solid rgb(23 21 26 / 0.14);
-  border-left: 4px solid var(--color-accent);
   color: var(--color-ink);
   display: grid;
   gap: 5px;

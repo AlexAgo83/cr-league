@@ -11,6 +11,7 @@ import { ReplayView } from "../features/ReplayView.js";
 import { RewardValue } from "../features/RewardValue.js";
 import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
 import type { ResultTab } from "../features/ResultView.js";
+import type { PlanSubscreen } from "./routes.js";
 
 type CommandClick = "qualifying" | "editPlan" | "directive" | "chronoReport" | "launchGrandPrix" | "resultReport" | "nextGrandPrix";
 type DeskState = "prepare" | "ready" | "resolved";
@@ -82,7 +83,7 @@ export function DriveView({
   preferencesResetSignal: number;
   setQualifyingPanelOpen: (open: boolean) => void;
   setQualifyingResult: (result: null) => void;
-  setPlanSubscreen: (screen: "plan" | "chrono") => void;
+  setPlanSubscreen: (screen: PlanSubscreen) => void;
   setGameView: (view: "drive" | "plan") => void;
   setResultTab: (tab: ResultTab) => void;
   setResultOpen: (open: boolean) => void;
@@ -321,7 +322,7 @@ function DriveActions({
   qualifyingDisabled: boolean;
   qualifyingAttemptsUsed: number;
   pendingMessage: string | null;
-  setPlanSubscreen: (screen: "plan" | "chrono") => void;
+  setPlanSubscreen: (screen: PlanSubscreen) => void;
   setGameView: (view: "drive" | "plan") => void;
   setResultTab: (tab: ResultTab) => void;
   setResultOpen: (open: boolean) => void;
@@ -337,7 +338,7 @@ function DriveActions({
         <button className="result-toggle-command" type="button" onClick={() => { setResultTab("replay"); setResultOpen(true); }}>
           {tt("result_tab_replay")}
         </button>
-        <button className={`result-toggle-command${!commandClicks.resultReport ? " highlight-command" : ""}`} type="button" onClick={() => { markCommandClicked("resultReport"); setResultTab("report"); setResultOpen(true); }}>
+        <button className={`result-toggle-command${!commandClicks.resultReport ? " highlight-command" : ""}`} type="button" onClick={() => { markCommandClicked("resultReport"); setPlanSubscreen("report"); setGameView("plan"); }}>
           {tt("result_tab_report")}
         </button>
         <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>

@@ -3,7 +3,7 @@ import type { DirectiveStep } from "../features/DirectivePanel.js";
 import type { CardPanel } from "../features/GarageView.js";
 import type { GameView } from "./types.js";
 
-export type PlanSubscreen = "plan" | "chrono";
+export type PlanSubscreen = "plan" | "chrono" | "report";
 
 export type AppRoute = {
   view: GameView;
@@ -20,7 +20,7 @@ export function parseAppRoute(pathname: string): AppRoute {
   const second = parts[1];
 
   if (first === "replay" && second) return route("drive", "plan", "approach", "standings", "inventory", second);
-  if (first === "plan") return route("plan", second === "chrono" ? "chrono" : "plan", directiveStepFromPath(second), "standings", "inventory");
+  if (first === "plan") return route("plan", second === "chrono" || second === "report" ? second : "plan", directiveStepFromPath(second), "standings", "inventory");
   if (first === "championship") return route("championship", "plan", "approach", championshipTabFromPath(second), "inventory");
   if (first === "garage") return route("garage", "plan", "approach", "standings", garagePanelFromPath(second));
   if (first === "admin") return route("admin", "plan", "approach", "standings", "inventory");
@@ -33,7 +33,11 @@ export function isStartPath(pathname: string) {
 }
 
 export function pathForAppRoute(route: AppRoute) {
-  if (route.view === "plan") return route.planSubscreen === "chrono" ? "/plan/chrono" : `/plan/${route.directiveStep}`;
+  if (route.view === "plan") {
+    if (route.planSubscreen === "chrono") return "/plan/chrono";
+    if (route.planSubscreen === "report") return "/plan/report";
+    return `/plan/${route.directiveStep}`;
+  }
   if (route.view === "championship") {
     if (route.championshipTab === "calendar") return "/championship/circuits";
     if (route.championshipTab === "palmares") return "/championship/palmares";

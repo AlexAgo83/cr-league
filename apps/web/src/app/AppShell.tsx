@@ -9,13 +9,13 @@ import { DriveView } from "./DriveView.js";
 import { GameViews } from "./GameViews.js";
 import { SetupGate } from "./SetupGate.js";
 import type { ProfileMode, SetupMode } from "./SetupViews.js";
+import type { PlanSubscreen } from "./routes.js";
 import type { FormState, GameView, LeagueState, ProfileSession } from "./types.js";
 import type { CommandClick } from "./useCommandClicks.js";
 import type { useRaceDerivations } from "./useRaceDerivations.js";
 
 type RaceDerivations = ReturnType<typeof useRaceDerivations>;
 type ResultTab = "replay" | "report";
-type PlanSubscreen = "plan" | "chrono";
 
 export function AppShell({
   profileSession,

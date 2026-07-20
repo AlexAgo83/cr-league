@@ -8,6 +8,7 @@
     "packages/*"
   ],
   "scripts": {
+    "clean": "rm -rf apps/api/dist apps/web/dist packages/shared/dist",
     "dev": "node scripts/dev-local.mjs",
     "dev:stop": "node scripts/stop-dev.mjs",
     "dev:api": "npm run dev -w @cr-league/api",

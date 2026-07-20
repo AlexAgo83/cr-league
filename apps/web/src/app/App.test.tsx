@@ -428,7 +428,7 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "Tire prep: Weather" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Pit strategy: Standard swap" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Card: No card" })).toBeTruthy();
-    expect(screen.getByText("High overtaking rewards attack and launch cards.")).toBeTruthy();
+    expect(screen.getByText("Higher means aggressive and offensive plans gain more time.")).toBeTruthy();
     expect([...document.querySelectorAll(".directive-trait-modifier")].map((element) => element.textContent)).toEqual(["+7", "±0", "+3"]);
     // Approach sub-screen is shown first.
     expect(document.querySelector(".choice-grid")?.className).toContain("directive-choice-grid");

@@ -1,6 +1,6 @@
 ## prod_027_lap_scale_coherence_product_brief - Lap-Scale Coherence Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count`
 > Related backlog: `item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary`
 > Related task: `task_064_orchestrate_lap_scale_coherence_fix`
@@ -43,5 +43,5 @@ Defect chain from the 2026-07-20 AI playtest: the simulation's internal lap scal
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count`
+- Product back-reference: `item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary`
 - Task back-reference: `task_064_orchestrate_lap_scale_coherence_fix`

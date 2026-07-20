@@ -1,10 +1,10 @@
 ## item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary - Map simulation laps to circuit laps at the display boundary
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 70%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Race simulation realism and replay coherence
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,7 @@
 - request-AC3 -> This backlog slice. Proof: AC3: Marker positions, replay clock, and stated laps agree.
 - request-AC4 -> This backlog slice. Proof: AC4: Short-circuit fixture test locks the invariant; existing tests pass.
 - request-AC5 -> This backlog slice. Proof: AC4: Short-circuit fixture test locks the invariant; existing tests pass.
+- request-AC6 -> This backlog slice. Proof: chrono remains isolated on the qualifying `laps: 3` path while GP labels use `currentCircuit.laps`.
 
 # Decision framing
 - Product framing: Not needed
@@ -65,3 +66,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_064_orchestrate_lap_scale_coherence_fix`
+
+# Notes
+- Task `task_064_orchestrate_lap_scale_coherence_fix` was finished via `logics-manager flow finish task` on 2026-07-20.

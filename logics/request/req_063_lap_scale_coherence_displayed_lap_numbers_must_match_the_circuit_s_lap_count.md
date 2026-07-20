@@ -1,12 +1,13 @@
 ## req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count - Lap-scale coherence: displayed lap numbers must match the circuit's lap count
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 95
 > Confidence: 90
 > Complexity: Medium
 > Theme: Race simulation realism and replay coherence
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
+> Non-semantic edit: closeout traceability proof added without changing the accepted need.
 
 # Needs
 - Every lap number a player sees — key moments, recap sentences, replay callouts, seek-marker labels, finish events — must be consistent with the lap count the circuit announces and the replay header counts; no displayed lap may exceed the circuit's lap total.
@@ -29,6 +30,14 @@
 - AC4: Existing long-circuit replay and report tests pass unchanged, and a new short-circuit fixture test locks the invariant.
 - AC5: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
 - AC6: Chrono replay remains explicitly 1..3 and is not used as the Grand Prix lap reference; tests or review notes must distinguish chrono lap scale from resolved-GP circuit lap scale.
+
+# AC Traceability
+- AC1 -> `item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary`; `task_064_orchestrate_lap_scale_coherence_fix`. Proof: `ReportView.test.tsx` short-GP fixture asserts raw laps 5/10 do not render and displayed laps stay on lap 3.
+- AC2 -> `item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary`; `task_064_orchestrate_lap_scale_coherence_fix`. Proof: `lapDisplay.ts` centralizes `displayLapAtProgress`, `displayLapForEvent`, and `maxEventLap`; `ReportView`, `helpers.ts`, `replayMath`, and `replayDirector` route player-facing GP lap labels through that boundary.
+- AC3 -> `item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary`; `task_064_orchestrate_lap_scale_coherence_fix`. Proof: report key moments, replay markers, replay clock, and precomputed director facts all use progress-based circuit-lap mapping.
+- AC4 -> `item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary`; `task_064_orchestrate_lap_scale_coherence_fix`. Proof: full `rtk npm test` passed with 184 passing tests and 4 skipped; targeted report/replay tests passed with 47 tests.
+- AC5 -> `item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary`; `task_064_orchestrate_lap_scale_coherence_fix`. Proof: `rtk npm run typecheck`, `rtk npm test`, `rtk npm run build`, `rtk npm run lint`, `rtk npm run test:e2e`, and `rtk npm run logics:validate` passed.
+- AC6 -> `item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary`; `task_064_orchestrate_lap_scale_coherence_fix`. Proof: task diagnosis records qualifying's separate `laps: 3` path and the implementation only applies the mapper to resolved GP report/replay labels.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

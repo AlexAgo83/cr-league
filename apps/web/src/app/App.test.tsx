@@ -529,12 +529,12 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/3");
-    expect(screen.getByRole("button", { name: "Chrono" }).className).toContain("highlight-command");
-    fireEvent.click(screen.getByRole("button", { name: "Chrono" }));
+    expect(screen.getByRole("button", { name: "Report" }).className).toContain("highlight-command");
+    fireEvent.click(screen.getByRole("button", { name: "Report" }));
     expect(screen.getByRole("heading", { name: "Understand the chrono" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Chrono" }).className).not.toContain("highlight-command");
+    expect(screen.getByRole("button", { name: "Report" }).className).not.toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
     fireEvent.click(screen.getByRole("button", { name: "Review chrono" }));
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();

@@ -127,7 +127,7 @@ export function DriveView({
                       setGameView("plan");
                     }}
                   >
-                    {tt("plan_subscreen_chrono")}
+                    {tt("result_tab_report")}
                   </button>
                   <button type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
                     {tt("action_qualifying")}

@@ -25,6 +25,27 @@ The CI workflow does not read production secrets. Render owns runtime secrets in
 - `WEB_ORIGIN` is entered in Render.
 - `VITE_API_BASE_URL` is entered in Render.
 
+## Email recovery setup
+
+CR League has no custom domain for now. Use a dedicated Gmail account for recovery-code emails until a domain-backed transactional provider is worth the overhead.
+
+Operator setup:
+
+1. Create a dedicated Gmail account for CR League mail.
+2. Enable two-step verification on that account.
+3. Create a Gmail app password for the API service.
+4. Store the SMTP values as Render API service environment variables.
+
+Expected Render variables:
+
+- `SMTP_HOST=smtp.gmail.com`
+- `SMTP_PORT=465`
+- `SMTP_USER=<dedicated Gmail address>`
+- `SMTP_PASS=<Gmail app password>`
+- `MAIL_FROM=CR League <<dedicated Gmail address>>`
+
+Never commit the Gmail address password, app password, or any real SMTP secret. Local development may use a disabled/no-op mailer unless the SMTP variables are present.
+
 ## Release workflow
 
 The `deploy-release.yml` workflow runs on published GitHub releases and can also be started manually with a `release_tag` input.

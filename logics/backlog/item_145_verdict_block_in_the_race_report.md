@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 10%
+> Understanding: 95
+> Confidence: 90
+> Progress: 85
 > Complexity: Low
 > Theme: Race learning and feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -26,6 +26,14 @@
 - AC1: The verdict block appears above the phases in both locales.
 - AC2: Existing report tests pass unchanged and the new ReportView test covers the block.
 - AC3: The i18n parity test passes.
+
+# Implementation Notes
+- 2026-07-20 wave 2: `ReportView` now renders a `Race verdict` block in the existing report hero before the podium/phases, translating the stance, dominant cause, and try-next lines from `buildRaceVerdict()`.
+- Added minimal `.report-verdict` styling inside the existing report hero system, plus EN/FR `result_verdict` labels.
+- Added `ReportView.test.tsx` to assert the verdict renders for a finished race and appears before report phases; adjusted the App test to allow the shared next-GP advice to appear in both verdict and recap.
+
+# Validation
+- 2026-07-20 targeted: `rtk npm run typecheck`; `rtk npm run lint`; `rtk npm test -- apps/web/src/features/ReportView.test.tsx apps/web/src/app/App.test.tsx apps/web/src/app/helpers.test.ts apps/web/src/i18n/index.test.ts`.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: The verdict block appears above the phases in both locales.

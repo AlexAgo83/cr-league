@@ -609,7 +609,7 @@ describe("App", () => {
     expect(screen.getByText(/Weather prep fit the race weather/)).toBeTruthy();
     expect(screen.getByText(/Rain Grip produced/)).toBeTruthy();
     const nextCircuit = testCircuit(2);
-    expect(screen.getByText(new RegExp(nextCircuit.title))).toBeTruthy();
+    expect(screen.getAllByText(new RegExp(nextCircuit.title)).length).toBeGreaterThan(0);
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();

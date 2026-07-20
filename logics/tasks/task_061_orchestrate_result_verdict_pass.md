@@ -3,8 +3,8 @@
 > Schema version: 1.0
 > Status: In progress
 > Understanding: 95
-> Confidence: 88
-> Progress: 45
+> Confidence: 90
+> Progress: 85
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -45,6 +45,7 @@
 
 # Report
 - 2026-07-20 wave 1: implemented `item_144` deterministic verdict builder as a pure helper returning i18n keys/params, sharing dominant-cause and next-lesson derivations with the existing recap builders. Targeted typecheck, lint, helpers tests, and i18n parity test passed.
+- 2026-07-20 wave 2: rendered the verdict block in `ReportView` above the detailed sections, added EN/FR aria label copy, minimal hero styling, and a component test covering the block placement. Targeted typecheck, lint, App/helper/i18n/ReportView tests passed.
 
 # AI Context
 - Summary: Orchestrate result verdict pass

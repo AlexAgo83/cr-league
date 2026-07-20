@@ -5146,6 +5146,7 @@ button.command-icon-button {
 }
 
 .report-hero .report-headline,
+.report-hero .report-verdict,
 .report-hero .report-podium {
   position: relative;
   z-index: 1;
@@ -5220,6 +5221,28 @@ button.command-icon-button {
   font-size: 1.05rem;
   font-weight: 700;
   margin: 0;
+}
+
+.report-verdict {
+  background: rgb(16 14 18 / 0.5);
+  border: 1px solid rgb(248 243 232 / 0.16);
+  border-radius: 8px;
+  display: grid;
+  gap: 6px;
+  max-width: 780px;
+  padding: 12px;
+}
+
+.report-verdict strong,
+.report-verdict p,
+.report-verdict small {
+  margin: 0;
+}
+
+.report-verdict small {
+  color: var(--color-muted);
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 .report-podium {

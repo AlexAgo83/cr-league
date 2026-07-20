@@ -2,10 +2,12 @@ import { RACE_SEGMENTS, type RaceEvent, type RaceResult } from "@cr-league/share
 import type { CityCircuit } from "../app/circuits.js";
 import type { TranslationKey } from "../i18n/index.js";
 import {
+  buildRaceVerdict,
   eventReportText,
   raceRecapCards,
   resultHeadline,
   teamNamesFromResult,
+  translateLine,
   type Translator
 } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
@@ -37,6 +39,7 @@ export function ReportView({
   const majorEvents = result.events.filter((event) => event.severity === "major");
   const keyEvents = majorEvents.slice(0, 5);
   const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt);
+  const verdict = buildRaceVerdict(result, state, playerTeamId, playerDecision, raceTitle, tt);
   const recap = [
     {
       className: "difference",
@@ -84,6 +87,11 @@ export function ReportView({
             ) : null}
           </div>
         ) : null}
+        <section className="report-verdict" aria-label={tt("result_verdict")}>
+          <strong>{translateLine(verdict.stance, tt)}</strong>
+          <p>{translateLine(verdict.cause, tt)}</p>
+          <small>{translateLine(verdict.tryNext, tt)}</small>
+        </section>
         <ol className="report-podium">
           {result.classification.map((entry) => (
             <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>

@@ -25,7 +25,6 @@ import {
   SEASON_RECAP_KEY_PREFIX,
   api,
   claimFromState,
-  claimsFromProfile,
   copyText,
   getActiveClaim,
   loadPlayerClaims,
@@ -36,6 +35,7 @@ import {
   upsertPlayerClaim
 } from "./appStorage.js";
 import { createAdminActions } from "./adminActions.js";
+import { createProfileActions } from "./profileActions.js";
 import { bestQualifyingRuns, buildChronoReport, createInitialForm, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
 import { isGrandPrixRouteId, shortGrandPrixId } from "./routes.js";
 import { SetupGate } from "./SetupGate.js";
@@ -319,6 +319,18 @@ export function App() {
     setAdminInspecting,
     showStatus
   });
+  const { createProfileSession, recoverProfileSession } = createProfileActions({
+    profileForm,
+    run,
+    tt,
+    setProfileFormError,
+    setProfileSession,
+    setSavedClaims,
+    setSetupMode,
+    setProfileOpen,
+    showStatus,
+    openProfileCodeHelp: () => openOnboardingHelp("profileCode")
+  });
   const primaryCommand =
     deskState === "prepare"
       ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }
@@ -533,56 +545,6 @@ export function App() {
     setRouteReplayGrandPrixId(undefined);
   }
 
-  async function createProfileSession() {
-    const email = profileForm.email.trim();
-    const error = validateProfileForm(email);
-    if (error) {
-      setProfileFormError(error);
-      return;
-    }
-    setProfileFormError(null);
-
-    await run(tt("status_creating_profile"), async () => {
-      const session = await api<ProfileSession>("/profiles", {
-        method: "POST",
-        body: JSON.stringify({ email })
-      });
-      storeProfileSession(session);
-      setProfileSession(session);
-      setSavedClaims(claimsFromProfile(session));
-      setSetupMode("choice");
-      setProfileOpen(false);
-      showStatus(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`, "info", false);
-      openOnboardingHelp("profileCode");
-    }, undefined, true, (error) => profileApiErrorMessage(error, "create"));
-  }
-
-  async function recoverProfileSession() {
-    const email = profileForm.email.trim();
-    const recoveryCode = profileForm.recoveryCode.trim().toUpperCase();
-    const error = validateProfileForm(email, recoveryCode);
-    if (error) {
-      setProfileFormError(error);
-      return;
-    }
-    setProfileFormError(null);
-
-    await run(tt("status_recovering_profile"), async () => {
-      const session = await api<ProfileSession>("/profiles/recover", {
-        method: "POST",
-        body: JSON.stringify({ email, recoveryCode })
-      });
-      storeProfileSession(session);
-      const claims = claimsFromProfile(session);
-      storePlayerClaims(claims, claims[0]?.teamId);
-      setProfileSession(session);
-      setSavedClaims(claims);
-      setSetupMode("choice");
-      setProfileOpen(false);
-      showStatus(tt("status_profile_recovered"), "info", false);
-    }, undefined, true, (error) => profileApiErrorMessage(error, "recover"));
-  }
-
   async function switchLeague(teamId: string) {
     const claim = savedClaims.find((candidate) => candidate.teamId === teamId);
     if (!claim || claim.teamId === leagueState?.player?.teamId) return;
@@ -658,21 +620,6 @@ export function App() {
     if (historyReplay) closeHistoryReplay();
     if (qualifyingResult) setQualifyingResult(null);
     if (resultOpen && result) setResultOpen(false);
-  }
-
-  function validateProfileForm(email: string, recoveryCode?: string) {
-    if (!email) return tt("profile_error_email_required");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return tt("profile_error_email_invalid");
-    if (recoveryCode !== undefined && !recoveryCode) return tt("profile_error_recovery_code_required");
-    return null;
-  }
-
-  function profileApiErrorMessage(error: unknown, mode: Exclude<ProfileMode, "choice">) {
-    if (error instanceof TypeError) return tt("status_api_unavailable");
-    if (error instanceof ApiError && error.statusCode >= 500) return tt("status_request_failed");
-    if (mode === "recover" && error instanceof ApiError && [400, 401, 403, 404].includes(error.statusCode)) return tt("profile_error_recovery_failed");
-    if (mode === "create" && error instanceof ApiError && error.statusCode === 409) return tt("profile_error_create_conflict");
-    return mode === "create" ? tt("profile_error_create_failed") : tt("profile_error_recovery_failed");
   }
 
   function forgetPlayer() {

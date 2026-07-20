@@ -2,8 +2,8 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 92%
-> Confidence: 87%
+> Understanding: 93%
+> Confidence: 88%
 > Progress: 99%
 > Complexity: Medium
 > Theme: Web architecture
@@ -49,6 +49,7 @@
 - 2026-07-20 seventh implementation wave: SetupGate.tsx now owns the profile setup and league setup early-return UI. App.tsx is 1410 lines and SetupGate.tsx is 134 lines. AC1 remains open; the next meaningful reduction needs domain hook extraction, not more small modal moves.
 - 2026-07-20 eighth implementation wave: leagueMutations.ts now owns the league/team race mutation handlers around settings, resolve, next GP, card inventory, livery/name, and restart state. App.tsx is 1301 lines; leagueMutations.ts is 206 lines. AC1 remains open; the remaining large blocks are profile/admin actions and topbar/profile-menu chrome.
 - 2026-07-20 ninth implementation wave: adminActions.ts now owns admin API actions for console refresh, recovery reset, user delete, and inspected league loading. App.tsx is 1237 lines; adminActions.ts is 116 lines. AC1 remains open; the largest remaining reduction is profile/session actions or profile menu/topbar chrome.
+- 2026-07-20 tenth implementation wave: profileActions.ts now owns profile creation and recovery. The admin-status probe stayed in App because extracting it introduced a hook dependency that would need extra memoization for no real gain. App.tsx is 1184 lines; profileActions.ts is 95 lines. AC1 remains open; profile menu/topbar chrome and rejoin/local-claim helpers are the remaining obvious reductions.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

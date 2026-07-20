@@ -1720,6 +1720,22 @@ label small {
   margin: 0;
 }
 
+.directive-selection-panel > .directive-lock-note {
+  background: rgb(16 14 18 / 0.42);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  display: grid;
+  gap: 4px;
+  padding: 12px 14px;
+}
+
+.directive-selection-panel > .directive-lock-note strong {
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
 .directive-briefing-panel {
   --color-text: #f8f3e8;
   --color-muted: rgb(248 243 232 / 0.78);

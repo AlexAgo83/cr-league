@@ -2,9 +2,11 @@ import { type CSSProperties } from "react";
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { sortCardIdsByName, type CardFit, type Translator } from "../app/helpers.js";
+import type { PlanRiskRead } from "../app/raceFlow.js";
 import type { FormState } from "../app/types.js";
 import { AssetImage } from "./AssetImage.js";
 import { CARD_BADGES, CardArtImage, CardStatBadges } from "./CardStatBadges.js";
+import { PlanRiskSummary } from "./PlanRiskSummary.js";
 import { VisualIcon } from "./VisualIcon.js";
 
 type TraitStats = {
@@ -138,6 +140,7 @@ export function DirectivePanel({
   selectedCardFit,
   step,
   circuitTraits,
+  planRiskRead,
   planRecommendation,
   cardLocked,
   carriedOver,
@@ -153,6 +156,7 @@ export function DirectivePanel({
   selectedCardFit: CardFit | null;
   step: DirectiveStep;
   circuitTraits: TraitStats;
+  planRiskRead: PlanRiskRead;
   planRecommendation?: string;
   cardLocked?: boolean;
   carriedOver?: boolean;
@@ -206,6 +210,7 @@ export function DirectivePanel({
     </section>
 
     <section className="panel directive-panel directive-selection-panel">
+      <PlanRiskSummary read={planRiskRead} tt={tt} />
       {locked ? (
         <div className="directive-lock-note">
           <strong>{tt("directive_locked_title")}</strong>

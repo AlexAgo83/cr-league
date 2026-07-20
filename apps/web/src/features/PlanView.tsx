@@ -5,7 +5,6 @@ import { buildPlanRecommendation, type ChronoReport, type PlanRiskRead } from ".
 import type { PlanSubscreen } from "../app/routes.js";
 import type { FormState, GameView, LeagueState } from "../app/types.js";
 import { DirectivePanel, type DirectiveStep } from "./DirectivePanel.js";
-import { PlanRiskSummary } from "./PlanRiskSummary.js";
 import { PositionBadge } from "./PositionBadge.js";
 
 export function PlanView({
@@ -139,25 +138,23 @@ export function PlanView({
           </div>
         </section>
       ) : (
-        <>
-          <PlanRiskSummary read={planRiskRead} tt={tt} />
-          <DirectivePanel
-            form={form}
-            setForm={onSetForm}
-            ownedCardIds={ownedCardIds}
-            selectedCardId={selectedCardId}
-            selectedCardFit={selectedCardFit}
-            step={directiveStep}
-            circuitTraits={circuitTraits}
-            planRecommendation={planRecommendation}
-            cardLocked={cardLocked}
-            carriedOver={carriedOver}
-            disabled={disabled}
-            locked={locked}
-            onSelectStep={onSetDirectiveStep}
-            tt={tt}
-          />
-        </>
+        <DirectivePanel
+          form={form}
+          setForm={onSetForm}
+          ownedCardIds={ownedCardIds}
+          selectedCardId={selectedCardId}
+          selectedCardFit={selectedCardFit}
+          step={directiveStep}
+          circuitTraits={circuitTraits}
+          planRiskRead={planRiskRead}
+          planRecommendation={planRecommendation}
+          cardLocked={cardLocked}
+          carriedOver={carriedOver}
+          disabled={disabled}
+          locked={locked}
+          onSelectStep={onSetDirectiveStep}
+          tt={tt}
+        />
       )}
     </div>
   );

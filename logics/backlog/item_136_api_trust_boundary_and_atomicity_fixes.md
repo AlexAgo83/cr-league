@@ -1,10 +1,10 @@
 ## item_136_api_trust_boundary_and_atomicity_fixes - API trust-boundary and atomicity fixes
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 84%
+> Progress: 100%
 > Complexity: Medium
 > Theme: API integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -60,3 +60,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-20 closeout proof: createDemoLeague and joinLeagueByCode require recoveryCode proof when profileId is supplied; restartLeague runs through runWrite; admin token checks use timingSafeEqual; localhost CORS is local-only; public league reads hide invite code. Verification in this pass: rtk npm run typecheck, rtk npm run lint, full rtk npm test previously passed with 172 tests.

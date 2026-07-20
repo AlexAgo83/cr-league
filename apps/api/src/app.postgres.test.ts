@@ -1,6 +1,8 @@
 import { PrismaClient } from "@prisma/client";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createTestApp } from "./app.testHelpers.js";
+import { restartLeague } from "./features/leagues/store.js";
+import type { Db } from "./features/leagues/types.js";
 
 const run = process.env.POSTGRES_INTEGRATION === "1" ? describe : describe.skip;
 
@@ -94,4 +96,56 @@ run("api app postgres integration", () => {
     expect(responses.map((response) => response.statusCode).sort()).toEqual([200, 409]);
     expect(team).toMatchObject({ credits: 0, cards: ["launch_boost"] });
   });
+
+  it("rolls back restartLeague when the replacement Grand Prix insert fails", async () => {
+    const app = await createTestApp(prisma);
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const proof = { teamId: created.player.teamId, claimCode: created.player.claimCode };
+    await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/resolve`,
+      payload: { ...proof, allowDefaults: true }
+    });
+    await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/next-grand-prix`,
+      payload: proof
+    });
+    const before = (await app.inject({ method: "GET", url: `/leagues/${created.league.id}` })).json();
+
+    await expect(restartLeague(dbWithFailingGrandPrixCreate(prisma), created.league.id, proof)).rejects.toThrow("boom");
+
+    const after = (await app.inject({ method: "GET", url: `/leagues/${created.league.id}` })).json();
+    await app.close();
+
+    expect(after.currentGrandPrix).toMatchObject({ id: before.currentGrandPrix.id, season: 1, round: 2 });
+    expect(after.grandPrixHistory.map((grandPrix: { id: string }) => grandPrix.id)).toEqual(before.grandPrixHistory.map((grandPrix: { id: string }) => grandPrix.id));
+  });
 });
+
+function dbWithFailingGrandPrixCreate(prisma: PrismaClient): Db {
+  return {
+    league: prisma.league,
+    grandPrix: prisma.grandPrix,
+    team: prisma.team,
+    raceDecision: prisma.raceDecision,
+    profile: prisma.profile,
+    $queryRaw: prisma.$queryRaw.bind(prisma),
+    $transaction: async (fn) => prisma.$transaction((tx) => {
+      const db = {
+        league: tx.league,
+        grandPrix: { ...tx.grandPrix, create: async () => { throw new Error("boom"); } },
+        team: tx.team,
+        raceDecision: tx.raceDecision,
+        profile: tx.profile,
+        $queryRaw: tx.$queryRaw.bind(tx)
+      };
+      return fn(db as unknown as Db);
+    })
+  };
+}

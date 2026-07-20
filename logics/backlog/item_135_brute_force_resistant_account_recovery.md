@@ -1,10 +1,10 @@
 ## item_135_brute_force_resistant_account_recovery - Brute-force-resistant account recovery
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 84%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Account security
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -55,3 +55,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-20 closeout proof: recovery codes are generated from 16 random bytes, stored as salted scrypt hashes with legacy SHA-256 verification/upgrade, compared with timingSafeEqual-compatible helpers, and /profiles/recover is throttled by normalized email and IP. Verification in this pass: rtk npm run typecheck, rtk npm run lint, full rtk npm test previously passed with 172 tests.

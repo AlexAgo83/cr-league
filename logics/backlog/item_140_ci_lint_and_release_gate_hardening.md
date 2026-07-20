@@ -1,10 +1,10 @@
 ## item_140_ci_lint_and_release_gate_hardening - CI, lint, and release-gate hardening
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90
 > Confidence: 85
-> Progress: 84%
+> Progress: 100%
 > Complexity: Low
 > Theme: Engineering infrastructure
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -58,3 +58,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-20 closeout proof: Dependabot and npm audit gate are configured; Vitest coverage uses V8 output and CI unit lanes collect coverage; eslint enforces react-hooks and jsx-a11y with current lint clean; release health mismatch exits non-zero; package.json declares Node >=20; reports ignore policy is explicit. Verification in this pass: rtk npm run typecheck and rtk npm run lint passed.

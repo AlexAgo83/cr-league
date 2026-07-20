@@ -1,6 +1,6 @@
 ## prod_030_post_splash_playtest_polish_product_brief - Post-splash Playtest Polish Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup`
 > Related backlog: `item_159_compact_the_splash_header_on_narrow_mobile`, `item_160_clean_up_app_root_locale_ownership_and_hooks_warning`
 > Related task: `task_067_orchestrate_post_splash_playtest_polish`

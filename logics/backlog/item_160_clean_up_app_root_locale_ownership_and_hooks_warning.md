@@ -1,10 +1,10 @@
 ## item_160_clean_up_app_root_locale_ownership_and_hooks_warning - Clean up App root locale ownership and Hooks warning
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Root shell hygiene
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -39,6 +39,9 @@
 - request-AC5 -> This backlog slice. Proof: AC5: npm run lint reports no App.tsx React Hooks exhaustive-deps warning.
 - request-AC6 -> This backlog slice. Proof: AC6: Existing App, profile, i18n, and e2e flows still pass.
 - request-AC7 -> This backlog slice. Proof: AC6: Existing App, profile, i18n, and e2e flows still pass.
+- request-AC1 -> This backlog slice. Evidence needed: At 360px and 390px widths, the splash header has no horizontal scroll, no clipped controls, and better visual breathing than the current one-row brand + Language label + two language buttons layout.
+- request-AC2 -> This backlog slice. Evidence needed: Desktop splash header remains visually consistent with the Profile/setup header and the language switcher still works from the splash.
+- request-AC3 -> This backlog slice. Evidence needed: On desktop, the splash background image is fit by height without over-zooming; any exposed side area uses a page background/blend that feels continuous with the image rather than blank letterboxing.
 
 # Decision framing
 - Product framing: Not needed
@@ -59,3 +62,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_067_orchestrate_post_splash_playtest_polish`
+
+# Notes
+- Task `task_067_orchestrate_post_splash_playtest_polish` was finished via `logics-manager flow finish task` on 2026-07-20.

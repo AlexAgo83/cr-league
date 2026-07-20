@@ -1,7 +1,7 @@
 ## req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup - Post-splash playtest polish: mobile header and root shell cleanup
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 92
 > Confidence: 88
 > Complexity: Medium

@@ -1,10 +1,10 @@
 ## item_159_compact_the_splash_header_on_narrow_mobile - Compact the splash header on narrow mobile
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Low
 > Theme: Post-splash first-contact polish
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -44,6 +44,8 @@
 - request-AC3 -> This backlog slice. Proof: AC3: On desktop, the background artwork is fit by height without excessive zoom, and any side fill blends with the image rather than reading as blank letterbox.
 - request-AC6 -> This backlog slice. Proof: AC6: The splash e2e path still validates root display, mobile fit, language controls, desktop background framing, and PRESS START entry.
 - request-AC7 -> This backlog slice. Proof: AC6: The splash e2e path still validates root display, mobile fit, language controls, desktop background framing, and PRESS START entry.
+- request-AC4 -> This backlog slice. Evidence needed: Locale initialization is centralized or otherwise de-duplicated so the splash and entered app cannot drift on browser/localStorage locale defaults.
+- request-AC5 -> This backlog slice. Evidence needed: The existing React Hooks exhaustive-deps warning in App.tsx is gone, with onboarding behavior preserved by tests.
 
 # Decision framing
 - Product framing: Not needed
@@ -64,3 +66,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_067_orchestrate_post_splash_playtest_polish`
+
+# Notes
+- Task `task_067_orchestrate_post_splash_playtest_polish` was finished via `logics-manager flow finish task` on 2026-07-20.

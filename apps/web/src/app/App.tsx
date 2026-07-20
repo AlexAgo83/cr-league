@@ -11,15 +11,11 @@ import { ChangelogView } from "../features/ChangelogView.js";
 import { circuitRouteAnalysis } from "../features/CircuitMap.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { GARAGE_PANEL_KEY } from "../features/GarageView.js";
-import { LiveryPlate } from "../features/LiveryPlate.js";
-import { Modal } from "../features/Modal.js";
-import { ModalHero } from "../features/ModalHero.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
-import { PositionBadge } from "../features/PositionBadge.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY } from "../features/ReplayView.js";
 import type { ResultTab } from "../features/ResultView.js";
 import { CountryBadge } from "../features/VisualIcon.js";
-import { AdminDeleteUserModal, ConfirmActionModal, LeagueControlsModal, NextGrandPrixConfirmModal, ProfileCodeModal, RestartConfirmModal, SeasonRecapModal } from "./AppModals.js";
+import { AdminDeleteUserModal, ConfirmActionModal, LeagueControlsModal, NextGrandPrixConfirmModal, ProfileCodeModal, ResolveGrandPrixConfirmModal, RestartConfirmModal, SeasonRecapModal } from "./AppModals.js";
 import { DriveView } from "./DriveView.js";
 import { GameViews } from "./GameViews.js";
 import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, SetupShell, type OnboardingHelpTopic } from "./OnboardingShell.js";
@@ -1082,47 +1078,20 @@ export function App() {
   const directiveConfirmModal = directiveConfirmOpen ? (
     <ConfirmActionModal label={tt("directive_confirm_title")} image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} body={qualifyingAttemptsUsed === 0 ? tt("directive_confirm_no_qualifying") : `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`} actionLabel={tt("action_submit_directive")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={() => setDirectiveConfirmOpen(false)} onConfirm={submitDirectiveConfirmed} />
   ) : null;
-  const displayedStartingGridEntries = startingGridExpanded ? startingGridEntries : startingGridEntries.slice(0, 4);
-  const hiddenStartingGridCount = startingGridEntries.length - displayedStartingGridEntries.length;
   const resolveConfirmModal = resolveConfirmOpen ? (
-    <Modal label={tt("launch_gp_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => setResolveConfirmOpen(false)}>
-      <ModalHero image="/assets/crl/launch-gp-modal.png" kicker={tt("action_launch_grand_prix")} title={tt("launch_gp_confirm_title")} />
-      <p>{tt("launch_gp_confirm_body")}</p>
-      <div className="starting-grid-confirmation">
-        <div>
-          <span className="section-kicker">{tt("starting_grid_title")}</span>
-          <strong>{tt(currentCircuit.layoutKey)}</strong>
-          <small>
-            <CountryBadge country={currentCircuit.country} /> {currentCircuit.city} · {tt("briefing_forecast")} {tt(`weather_${forecastPick}` as TranslationKey)}
-          </small>
-          <small>
-            {tt("circuit_grip")} {currentCircuit.traits.grip} · {tt("circuit_overtaking")} {currentCircuit.traits.overtaking} · {tt("circuit_energy")}{" "}
-            {currentCircuit.traits.energy}
-          </small>
-        </div>
-        <ol className="starting-grid-list">
-          {displayedStartingGridEntries.map((entry) => (
-            <li key={entry.team.id} className={entry.team.id === playerTeam?.id ? "current-team" : undefined}>
-              <PositionBadge position={entry.position} />
-              <LiveryPlate className="standings-livery-plate" livery={entry.team.livery} name={entry.team.name} />
-              <strong>{entry.team.name}</strong>
-              <small>{entry.bestTime === undefined ? tt("starting_grid_no_time") : `${entry.bestTime.toFixed(2)}s`}</small>
-            </li>
-          ))}
-        </ol>
-        {hiddenStartingGridCount > 0 ? (
-          <button type="button" className="secondary-button starting-grid-more-button" onClick={() => setStartingGridExpanded(true)}>
-            {tt("action_show_full_grid")} ({hiddenStartingGridCount})
-          </button>
-        ) : null}
-      </div>
-      <div className="actions secondary-actions">
-        <PendingFeedback message={pendingMessage} />
-        <button type="button" onClick={() => void resolveGrandPrix()} disabled={status === "loading"}>
-          {tt("action_launch_grand_prix")}
-        </button>
-      </div>
-    </Modal>
+    <ResolveGrandPrixConfirmModal
+      currentCircuit={currentCircuit}
+      forecastPick={forecastPick}
+      playerTeamId={playerTeam?.id}
+      startingGridEntries={startingGridEntries}
+      status={status}
+      pendingMessage={pendingMessage}
+      startingGridExpanded={startingGridExpanded}
+      tt={tt}
+      onClose={() => setResolveConfirmOpen(false)}
+      onShowFullGrid={() => setStartingGridExpanded(true)}
+      onResolve={() => void resolveGrandPrix()}
+    />
   ) : null;
   const qualifyingConfirmModal = qualifyingConfirmOpen ? (
     <ConfirmActionModal label={tt("qualifying_confirm_title")} image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} body={`${tt("qualifying_confirm_body")} ${tt("qualifying_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`} actionLabel={tt("action_qualifying")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={() => setQualifyingConfirmOpen(false)} onConfirm={startQualifyingRunConfirmed} />

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 97%
+> Progress: 98%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -65,6 +65,7 @@
 - 2026-07-20 wave 12: continued item_137 by moving the simple App modals into AppModals.tsx: profile code, logout, preferences reset, technical error, directive confirm, qualifying confirm, next Grand Prix confirm, and admin delete. App.tsx is now 1714 lines; AppModals.tsx is 286 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed. Remaining: App.tsx still needs larger view/domain extraction to satisfy the <700-line AC.
 - 2026-07-20 wave 13: continued item_137 by extracting the drive screen JSX into apps/web/src/app/DriveView.tsx while keeping App as the state/mutation owner. DriveView contains the qualifying replay, circuit map overlay, qualifying times, final classification, and drive action controls; App.tsx is now 1496 lines and DriveView.tsx is 389 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 - 2026-07-20 wave 14: continued item_137 by extracting the non-drive view selector into apps/web/src/app/GameViews.tsx. Result, plan, championship, garage, admin, and changelog rendering now sit behind a single presentation wrapper while App remains the state/mutation owner. App.tsx is now 1468 lines and GameViews.tsx is 190 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
+- 2026-07-20 wave 15: continued item_137 by moving the launch Grand Prix confirmation modal into AppModals.tsx as ResolveGrandPrixConfirmModal. The starting-grid preview and confirm action now live with the other App modal presentations; App.tsx is 1437 lines and AppModals.tsx is 365 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

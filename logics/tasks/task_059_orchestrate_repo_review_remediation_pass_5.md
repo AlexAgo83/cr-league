@@ -2,7 +2,7 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 95%
+> Understanding: 96%
 > Confidence: 90%
 > Progress: 99%
 > Complexity: Medium
@@ -48,6 +48,7 @@
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- 2026-07-20 wave 22 full validation: rtk npm test passed (21 files, 172 tests), rtk npm run build passed, and rtk npm run logics:validate passed with 0 blocking issues.
 
 # Report
 - Implementation complete.
@@ -72,6 +73,7 @@
 - 2026-07-20 wave 19: continued item_137 by extracting profile create/recovery actions into apps/web/src/app/profileActions.ts. Profile form validation, profile API error mapping, session storage, and recovered-claims storage moved out; App keeps rejoin and admin-status probing because they depend on current league state and hook timing. App.tsx is now 1184 lines and profileActions.ts is 95 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 - 2026-07-20 wave 20: continued item_137 by extracting app chrome into apps/web/src/app/AppChrome.tsx. LanguageSwitcher, ProfileMenu, SetupTopbar, and GameTopbar now own the topbar/profile-menu JSX while App keeps navigation and modal callbacks. App.tsx is now 1084 lines and AppChrome.tsx is 181 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 - 2026-07-20 wave 21: continued item_137 by extracting notification and overlay assembly into AppChrome.tsx and apps/web/src/app/AppOverlays.tsx. NotificationStack now owns toast rendering; AppOverlays owns profile/error/directive/qualifying/next-GP/season/settings/restart/onboarding/admin-delete modal composition. App.tsx is now 1042 lines and AppOverlays.tsx is 166 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
+- 2026-07-20 wave 22: continued item_137 by extracting local player-claim helpers into apps/web/src/app/claimHelpers.ts. rememberPlayerClaim, withCurrentPlayer, and withoutPlayerClaim now own claim persistence/restoration while App keeps the rejoin side effect and stale-error handling. App.tsx is now 1034 lines and claimHelpers.ts is 22 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile/helpers tests passed.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

@@ -2,7 +2,7 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 95%
+> Understanding: 96%
 > Confidence: 90%
 > Progress: 99%
 > Complexity: Medium
@@ -52,6 +52,7 @@
 - 2026-07-20 tenth implementation wave: profileActions.ts now owns profile creation and recovery. The admin-status probe stayed in App because extracting it introduced a hook dependency that would need extra memoization for no real gain. App.tsx is 1184 lines; profileActions.ts is 95 lines. AC1 remains open; profile menu/topbar chrome and rejoin/local-claim helpers are the remaining obvious reductions.
 - 2026-07-20 eleventh implementation wave: AppChrome.tsx now owns language switching, profile menu, setup topbar, and game topbar presentation. App.tsx is 1084 lines; AppChrome.tsx is 181 lines. AC1 remains open; the remaining reduction needs local-claim/rejoin helpers or modal/notification assembly extraction.
 - 2026-07-20 twelfth implementation wave: AppOverlays.tsx owns overlay/modal composition and NotificationStack moved to AppChrome.tsx. App.tsx is 1042 lines; AppOverlays.tsx is 166 lines. AC1 remains open; remaining meaningful work is local-claim/rejoin helpers or deeper controller extraction.
+- 2026-07-20 thirteenth implementation wave: claimHelpers.ts now owns local player-claim persistence and current-player restoration helpers. App.tsx is 1034 lines; claimHelpers.ts is 22 lines. AC1 remains open; reaching ~700 now needs a deeper controller split rather than more helper extraction.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`
@@ -68,3 +69,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-20 thirteenth implementation wave validation: full suite passed after claimHelpers extraction: rtk npm test, rtk npm run build, and rtk npm run logics:validate.

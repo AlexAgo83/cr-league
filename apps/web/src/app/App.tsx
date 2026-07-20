@@ -22,7 +22,6 @@ import {
   PROFILE_SESSION_KEY,
   SEASON_RECAP_KEY_PREFIX,
   api,
-  claimFromState,
   copyText,
   getActiveClaim,
   loadPlayerClaims,
@@ -30,9 +29,9 @@ import {
   seasonRecapStorageKey,
   storePlayerClaims,
   storeProfileSession,
-  upsertPlayerClaim
 } from "./appStorage.js";
 import { createAdminActions } from "./adminActions.js";
+import { rememberPlayerClaim, withCurrentPlayer as restoreCurrentPlayer, withoutPlayerClaim } from "./claimHelpers.js";
 import { createProfileActions } from "./profileActions.js";
 import { bestQualifyingRuns, buildChronoReport, createInitialForm, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
 import { isGrandPrixRouteId, shortGrandPrixId } from "./routes.js";
@@ -1006,23 +1005,16 @@ export function App() {
   );
 
   function rememberPlayer(state: LeagueState) {
-    const claim = claimFromState(state);
-    if (!claim) return;
-    const nextClaims = upsertPlayerClaim(loadPlayerClaims(), claim);
-    storePlayerClaims(nextClaims, claim.teamId);
-    setSavedClaims(nextClaims);
+    const nextClaims = rememberPlayerClaim(state);
+    if (nextClaims) setSavedClaims(nextClaims);
   }
 
   function withCurrentPlayer(state: LeagueState): LeagueState {
-    const player = state.player ?? leagueState?.player;
-    return player && state.teams.some((team) => team.id === player.teamId) ? { ...state, player } : state;
+    return restoreCurrentPlayer(state, leagueState?.player);
   }
 
   function forgetClaim(teamId?: string) {
-    const activeTeamId = teamId ?? leagueState?.player?.teamId ?? localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY);
-    const nextClaims = activeTeamId ? savedClaims.filter((claim) => claim.teamId !== activeTeamId) : savedClaims;
-    storePlayerClaims(nextClaims, nextClaims[0]?.teamId);
-    setSavedClaims(nextClaims);
+    setSavedClaims(withoutPlayerClaim(savedClaims, teamId ?? leagueState?.player?.teamId));
   }
 
   function openOnboardingHelp(topic: OnboardingHelpTopic) {

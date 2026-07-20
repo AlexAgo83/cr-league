@@ -212,7 +212,7 @@ export function DirectivePanel({
       ) : null}
       <div className="plan-steps directive-plan-steps" role="tablist" aria-label={tt("directive_title")}>
         {steps.map((entry) => (
-          <button key={entry.key} type="button" role="tab" aria-selected={step === entry.key} aria-label={`${entry.label}: ${entry.value}`} className={step === entry.key ? "plan-step active" : "plan-step"} onClick={() => onSelectStep(entry.key)}>
+          <button key={entry.key} type="button" role="tab" aria-selected={step === entry.key} aria-label={`${entry.label}: ${entry.value}`} className={`plan-step plan-step-${entry.key}${step === entry.key ? " active" : ""}`} onClick={() => onSelectStep(entry.key)}>
             <span className="plan-step-label">{entry.label}</span>
             <span className="plan-step-value">{entry.value}</span>
           </button>

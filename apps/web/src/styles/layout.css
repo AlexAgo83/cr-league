@@ -7221,6 +7221,7 @@ button.highlight-command:not(:disabled) {
 }
 
 .plan-step {
+  --plan-step-accent: var(--color-accent);
   background: transparent;
   border: 0;
   border-bottom: 3px solid transparent;
@@ -7239,6 +7240,22 @@ button.highlight-command:not(:disabled) {
   padding: 10px 8px;
   text-align: left;
   text-transform: none;
+}
+
+.plan-step-approach {
+  --plan-step-accent: #ff4d00;
+}
+
+.plan-step-preparation {
+  --plan-step-accent: #0284c7;
+}
+
+.plan-step-pit {
+  --plan-step-accent: #8b5cf6;
+}
+
+.plan-step-card {
+  --plan-step-accent: #b45309;
 }
 
 .plan-step:not(.active):hover,
@@ -7288,11 +7305,16 @@ button.highlight-command:not(:disabled) {
 }
 
 .plan-step.active {
-  border-bottom-color: var(--color-accent);
+  background: color-mix(in srgb, var(--plan-step-accent) 12%, transparent);
+  border-bottom-color: var(--plan-step-accent);
 }
 
 .plan-step.active .plan-step-label {
-  color: var(--color-accent);
+  color: var(--plan-step-accent);
+}
+
+.plan-step.active .plan-step-value {
+  color: var(--plan-step-accent);
 }
 
 @media (max-width: 820px) {

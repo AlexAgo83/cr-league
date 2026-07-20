@@ -1485,7 +1485,7 @@ label small {
   border: 1px solid rgb(23 21 26 / 0.14);
   display: grid;
   gap: 10px;
-  grid-template-columns: minmax(0, 1fr) auto auto;
+  grid-template-columns: auto minmax(84px, 1fr) auto;
   padding: 8px 10px;
 }
 
@@ -1519,6 +1519,8 @@ label small {
   background: rgb(248 243 232 / 0.72);
   color: var(--color-text);
   gap: 1px;
+  inline-size: 76px;
+  min-height: 76px;
   padding: 5px 9px;
   white-space: nowrap;
 }
@@ -1565,6 +1567,8 @@ label small {
   color: var(--color-accent);
   font-style: normal;
   font-weight: 900;
+  justify-self: center;
+  text-align: center;
 }
 
 .chrono-report-history li.best-session em {

@@ -428,6 +428,7 @@ describe("App", () => {
     expect(window.location.pathname).toBe("/plan/report");
     expect(screen.getByRole("heading", { name: `${roundOneCircuit.city} ${t(roundOneCircuit.layoutKey, "en")}` })).toBeTruthy();
     expect(screen.getByText("Race report")).toBeTruthy();
+    expect(screen.getByText("This report is still empty because the Grand Prix has not been run yet.", { exact: false })).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "Race phases" })).toBe(null);
     fireEvent.click(screen.getByRole("tab", { name: "Plan" }));
     // The switcher doubles as the plan summary: each tab shows the current pick.

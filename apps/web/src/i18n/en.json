@@ -127,7 +127,7 @@
   "plan_subscreen_plan": "Plan",
   "plan_subscreen_chrono": "Chrono",
   "plan_subscreen_gp": "GP",
-  "plan_report_empty_body": "Launch the Grand Prix to fill this report with race phases, rewards, and key moments.",
+  "plan_report_empty_body": "This report is still empty because the Grand Prix has not been run yet. Launch it to fill the race phases, rewards, and key moments.",
   "directive_plan_summary": "{approach} pace, {preparation} tires, {pitStrategy} battery, {card}. Test it in chrono, then lock it for the GP.",
   "directive_card_locked": "Qualifying has locked the selected chrono card for this GP.",
   "field_league": "League",

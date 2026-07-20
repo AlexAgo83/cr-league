@@ -183,7 +183,6 @@
   "chrono_report_delta_empty": "No run",
   "chrono_report_delta_best": "Best run",
   "chrono_report_history_title": "Session history",
-  "chrono_report_best_config": "Best config",
   "chrono_report_history_empty": "Run a chrono to build a session history.",
   "chrono_report_suggestion_first_run": "Start with one chrono: it gives you a grid read before you spend the final directive.",
   "chrono_report_suggestion_return_best": "Your best lap came with {approach} pace and {preparation} tires. Reuse that base before locking the plan.",

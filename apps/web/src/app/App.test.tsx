@@ -516,9 +516,6 @@ describe("App", () => {
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("75.18s");
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("P2");
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("Best run");
-    expect(document.querySelector(".chrono-best-config")?.textContent).toContain("Best config");
-    expect(document.querySelector(".chrono-best-config")?.textContent).not.toContain("72.42s");
-    expect(document.querySelector(".chrono-best-config")?.compareDocumentPosition(document.querySelector(".chrono-report-history")!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
     expect(document.querySelector(".chrono-report-history li.best-session")?.textContent).toContain("72.42s");
     expect(document.querySelector(".chrono-report-history .type-approach")).toBeTruthy();
     expect(document.querySelector(".chrono-report-history .type-preparation")).toBeTruthy();

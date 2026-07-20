@@ -183,7 +183,6 @@
   "chrono_report_delta_empty": "Aucun essai.",
   "chrono_report_delta_best": "Meilleur essai",
   "chrono_report_history_title": "Historique de session",
-  "chrono_report_best_config": "Meilleure config",
   "chrono_report_history_empty": "Lance un chrono pour construire l'historique de session.",
   "chrono_report_suggestion_first_run": "Commence par un chrono : il te donne une lecture de grille avant de dépenser la directive finale.",
   "chrono_report_suggestion_return_best": "Ton meilleur tour vient du rythme {approach} et des pneus {preparation}. Repars de cette base avant de verrouiller le plan.",

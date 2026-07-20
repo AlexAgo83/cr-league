@@ -2,22 +2,24 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 95
+> Confidence: 90
+> Progress: 0
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
+- Scope guard: keep chrono attempt laps and Grand Prix laps separate. Chrono uses a deliberate 3-lap scale (`laps: 3` through qualifying), while resolved GP display must use `currentCircuit.laps`; the fix must not make the GP mapper depend on the chrono scale.
 
 # Plan
 - [ ] 1. Diagnose the lap-scale source: inspect simulateRace's lap loop and what callers pass; confirm whether the fix is a missing parameter wire or a canonical-scale design, and record it.
 - [ ] 2. Implement the boundary mapping aligned with the replay clock's scaling and route all consumers through it.
 - [ ] 3. Add the 3-lap fixture invariant test and verify marker/callout/clock agreement on a short circuit manually once.
-- [ ] 4. Coordinate file overlap with req_062 (ReplayView) by rebasing on whichever lands first.
-- [ ] 5. Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout.
+- [ ] 4. Verify chrono replay still uses its intentional 1..3 attempt scale and is not treated as the Grand Prix lap reference.
+- [ ] 5. Coordinate file overlap with req_062 (ReplayView) by rebasing on whichever lands first.
+- [ ] 6. Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.

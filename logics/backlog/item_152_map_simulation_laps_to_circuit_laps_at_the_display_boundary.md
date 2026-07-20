@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 95
+> Confidence: 90
+> Progress: 0
 > Complexity: Medium
 > Theme: Race simulation realism and replay coherence
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -12,6 +12,7 @@
 # Problem
 - RaceEvent.lap carries the simulation's internal lap scale and every consumer formats it raw, so a 3-lap circuit reports key moments at laps 5, 8, and 10 and a finish at lap 10.
 - Only long circuits masked the mismatch; the catalog ranges from 3 to 12 laps.
+- Do not confuse this with chrono attempts: chrono replay is intentionally capped at 3 laps, while resolved Grand Prix replay/report labels must use the current circuit's GP lap count.
 
 # Scope
 - In:
@@ -22,12 +23,14 @@
 - Out:
   - Changing simulateRace outcomes, internal lap loops, or the trace format.
   - Key-moment selection, dedup, or recap wording (req_060, req_062).
+  - Changing qualifying/chrono lap behavior or using the chrono 3-lap scale as the Grand Prix display reference.
 
 # Acceptance criteria
 - AC1: No player-visible lap number exceeds the circuit's lap count on any catalog circuit.
 - AC2: All event-consuming surfaces share the single mapping.
 - AC3: Marker positions, replay clock, and stated laps agree.
 - AC4: Short-circuit fixture test locks the invariant; existing tests pass.
+- AC5: Chrono surfaces keep their own 3-lap attempt scale and are explicitly excluded from the GP lap mapping.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: No player-visible lap number exceeds the circuit's lap count on any catalog circuit.

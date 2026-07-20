@@ -2,8 +2,8 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Complexity: Medium
 > Theme: Race simulation realism and replay coherence
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -20,6 +20,7 @@
 - Segment/phase structure (5 RACE_SEGMENTS) is orthogonal: phases are already circuit-independent and the report renders them as Phase 1..5; only lap numerals are wrong.
 - req_046 (Done) owns the simulation/replay coherence theme; this is a follow-up defect in the same theme, not a reopening of that chain. req_062's payoff gating touches ReplayView at the same time; sequence this chain relative to it in whichever order lands first, the surfaces barely overlap (labels versus visibility).
 - Tests to leave behind: a shared or web invariant test that for every event in a resolved race, the displayed lap is between 1 and the circuit's lap count, and that the finish event maps to the final lap; plus a fixture on a short circuit (3 laps) since the existing tests all use long-circuit fixtures that mask the bug.
+- Chrono and Grand Prix laps are separate concepts and must stay separate. Qualifying/chrono attempts deliberately run on a short 3-lap replay scale (`raceActions.ts` sends `laps: 3`, API qualifying clamps to 1..3, and `useRaceDerivations.ts` builds a max-3 `qualifyingReplayCircuit`). Grand Prix resolution sends `currentCircuit.laps` through `/resolve` and API league resolution passes that to `simulateRace`. This request targets only resolved-GP report/replay lap labels; it must not reuse the chrono lap count as the GP reference or change chrono replay behavior.
 
 # Acceptance criteria
 - AC1: On a short circuit (3 laps), every player-visible lap number — key moments, recap sentences, replay callouts, seek-marker labels, finish line — is between 1 and 3, and the finish event reads as the final lap.
@@ -27,6 +28,7 @@
 - AC3: The lap stated in a key moment matches the replay position where its seek marker sits and where the replay clock stands when the callout pops.
 - AC4: Existing long-circuit replay and report tests pass unchanged, and a new short-circuit fixture test locks the invariant.
 - AC5: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
+- AC6: Chrono replay remains explicitly 1..3 and is not used as the Grand Prix lap reference; tests or review notes must distinguish chrono lap scale from resolved-GP circuit lap scale.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

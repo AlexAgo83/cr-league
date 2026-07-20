@@ -5,8 +5,8 @@ import { buildPlanRecommendation } from "./raceFlow.js";
 describe("buildPlanRecommendation", () => {
   it.each([
     [{ grip: 91, overtaking: 40, energy: 50 }, "dry", "Grip", "Dry", "Keep the car stable"],
-    [{ grip: 30, overtaking: 88, energy: 70 }, "light_rain", "Overtaking", "Light rain", "attacking setup"],
-    [{ grip: 50, overtaking: 60, energy: 92 }, "heavy_rain", "Energy", "Heavy rain", "late-race endurance"]
+    [{ grip: 30, overtaking: 88, energy: 70 }, "light_rain", "Attack", "Light rain", "attacking setup"],
+    [{ grip: 50, overtaking: 60, energy: 92 }, "heavy_rain", "Endurance", "Heavy rain", "late-race endurance"]
   ])("combines dominant trait and forecast", (circuitTraits, forecastPick, trait, weather, advice) => {
     const recommendation = buildPlanRecommendation({ circuitTraits, forecastPick, tt: (key, params) => t(key, "en", params) });
 
@@ -23,7 +23,7 @@ describe("buildPlanRecommendation", () => {
     const recommendation = buildPlanRecommendation({ circuitTraits: { grip: 30, overtaking: 40, energy: 90 }, forecastPick: "heavy_rain", tt: (key, params) => t(key, "fr", params) });
 
     expect(recommendation).toContain("Lecture du plan");
-    expect(recommendation).toContain("Énergie");
+    expect(recommendation).toContain("Endurance");
     expect(recommendation).toContain("Forte pluie");
   });
 });

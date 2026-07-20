@@ -15,6 +15,7 @@
 > Semantic edit: 2026-07-20 mobile playtest: scaffolded 0.3.20 modal hygiene + playback icons (req_064) and 0.3.21 home splash landing screen (req_065) as ready-to-dev chains; splash assets detoured and committed.
 > Semantic edit: 2026-07-20 release prep: marked completed 0.3.14, 0.3.16, 0.3.18-0.3.21, and 0.4.1 work as shipped; marked 0.3.13, 0.3.15, and 0.4.3 corpora as ready to dev.
 > Semantic edit: 2026-07-20 release dependency triage: integrated compatible Dependabot maintenance and parked incompatible major migrations in the watchlist.
+> Semantic edit: 2026-07-20 added 0.3.25 plan stat vocabulary alignment after post-release UI review.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -70,6 +71,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
   - 0.3.22 — Post-playtest clarity and release hardening: result verdicts, first-GP action clarity, replay suspense, lap-scale labels, mobile modal polish, branded splash, compatible Dependabot updates, and release health-gate fixes. Shipped in `changelogs/CHANGELOGS_0_3_22.md`.
   - 0.3.23 — Post-release UI polish: main cockpit copy is now `Stand`, profile and join-league validation errors stay inline, emailed recovery codes use a readable 12-character format, mobile modals are full-screen with bottom-pinned actions and compact launch-GP grid cells, plan card choices collapse to one column on phones, replay controls use stable SVG icons, topbar branding uses the splash title assets without ratio distortion, and send-plan/chrono confirmations reuse the styled current-plan summary. Shipped in `changelogs/CHANGELOGS_0_3_23.md`.
   - 0.3.24 — Setup background and trait-color polish: removes the setup page background assets behind Profile/League setup, unifies Grip/Attack/Energy stat colors across map and Plan screens, and colors the active directive step summary by category. Shipped in `changelogs/CHANGELOGS_0_3_24.md`.
+  - 0.3.25 — Plan stat vocabulary alignment: Plan now uses the same Adhérence/Attaque/Endurance names, hints, and stat-color mapping as the Course/Replay stats panels. Implemented locally; release pending.
 - Exit signal:
   - 3 to 5 testers complete a 3-GP session on the polished loop;
   - feedback answers whether choices feel causal, recaps feel personal, and seasons feel like arcs;

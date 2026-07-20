@@ -52,6 +52,12 @@ const TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
   energy: "circuit_energy"
 };
 
+const TRAIT_HINT: Record<TraitKey, TranslationKey> = {
+  grip: "circuit_grip_hint",
+  overtaking: "circuit_overtaking_hint",
+  energy: "circuit_energy_hint"
+};
+
 const BADGE_TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
   grip: "circuit_grip_short",
   overtaking: "circuit_overtaking_short",
@@ -182,7 +188,7 @@ export function DirectivePanel({
           return (
             <span key={trait} className={`directive-trait map-trait-${trait}`}>
               <span className="directive-trait-head">
-                <strong>{tt(`map_trait_${trait}` as TranslationKey)}</strong>
+                <strong>{tt(TRAIT_LABEL[trait])}</strong>
                 <b className="directive-trait-score">
                   <span className="directive-trait-value type-chrono">{value}</span>
                   <span className={`directive-trait-modifier type-chrono ${modifier > 0 ? "bonus" : modifier < 0 ? "weakness" : "neutral"}`}>{signedModifier(modifier)}</span>
@@ -192,7 +198,7 @@ export function DirectivePanel({
                 <i style={{ "--trait-value": `${value}%` } as CSSProperties} />
               </span>
               <em>{tt(`trait_level_${traitLevel(circuitTraits[trait])}` as TranslationKey)}</em>
-              <small>{tt(`trait_brief_${trait}` as TranslationKey)}</small>
+              <small>{tt(TRAIT_HINT[trait])}</small>
             </span>
           );
         })}

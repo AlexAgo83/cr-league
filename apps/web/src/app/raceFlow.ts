@@ -16,6 +16,11 @@ export type ChronoReport = {
 type CircuitTraitKey = "grip" | "overtaking" | "energy";
 
 const CIRCUIT_TRAITS: CircuitTraitKey[] = ["grip", "overtaking", "energy"];
+const CIRCUIT_TRAIT_LABELS: Record<CircuitTraitKey, TranslationKey> = {
+  grip: "circuit_grip",
+  overtaking: "circuit_overtaking",
+  energy: "circuit_energy"
+};
 const WEATHER_VALUES: Weather[] = ["dry", "light_rain", "heavy_rain"];
 
 export function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
@@ -99,7 +104,7 @@ export function buildPlanRecommendation(input: {
   const trait = CIRCUIT_TRAITS.reduce((best, current) => (input.circuitTraits[current] > input.circuitTraits[best] ? current : best), "grip");
   const weather = WEATHER_VALUES.includes(input.forecastPick as Weather) ? (input.forecastPick as Weather) : "dry";
   return input.tt("plan_recommendation", {
-    trait: input.tt(`map_trait_${trait}` as TranslationKey),
+    trait: input.tt(CIRCUIT_TRAIT_LABELS[trait]),
     weather: input.tt(`weather_${weather}` as TranslationKey),
     traitAdvice: input.tt(`plan_recommendation_trait_${trait}` as TranslationKey),
     weatherAdvice: input.tt(`plan_recommendation_weather_${weather}` as TranslationKey)

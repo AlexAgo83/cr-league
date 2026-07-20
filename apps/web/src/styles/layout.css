@@ -5027,6 +5027,12 @@ label small {
 
   .launch-gp-modal {
     min-width: 0;
+    overflow: hidden;
+  }
+
+  .launch-gp-content {
+    min-height: 0;
+    overflow: auto;
   }
 
   .launch-gp-modal .modal-hero {
@@ -5050,19 +5056,25 @@ label small {
   }
 
   .launch-gp-modal .starting-grid-list li {
-    align-items: start;
-    grid-template-areas:
-      "pos"
-      "team"
-      "plate"
-      "time";
-    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    gap: 6px;
+    grid-template-columns: 34px 42px minmax(0, 1fr) auto;
     min-width: 0;
   }
 
   .launch-gp-modal .starting-grid-list li > .standings-livery-plate {
+    grid-area: auto;
+    justify-self: center;
+  }
+
+  .launch-gp-modal .starting-grid-list li > .position-badge,
+  .launch-gp-modal .starting-grid-list li > strong,
+  .launch-gp-modal .starting-grid-list li > small {
+    grid-area: auto;
+  }
+
+  .launch-gp-modal .starting-grid-list li > .position-badge {
     justify-self: start;
-    max-width: 100%;
   }
 
   .launch-gp-modal .starting-grid-list li > strong,

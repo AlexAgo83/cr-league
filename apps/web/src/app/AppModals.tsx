@@ -161,34 +161,36 @@ export function ResolveGrandPrixConfirmModal({
   return (
     <Modal label={tt("launch_gp_confirm_title")} className="panel modal launch-gp-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/launch-gp-modal.png" kicker={tt("action_launch_grand_prix")} title={tt("launch_gp_confirm_title")} />
-      <p>{tt("launch_gp_confirm_body")}</p>
-      <div className="starting-grid-confirmation">
-        <div>
-          <span className="section-kicker">{tt("starting_grid_title")}</span>
-          <strong>{tt(currentCircuit.layoutKey)}</strong>
-          <small>
-            <CountryBadge country={currentCircuit.country} /> {currentCircuit.city} · {tt("briefing_forecast")} {tt(`weather_${forecastPick}` as TranslationKey)}
-          </small>
-          <small>
-            {tt("circuit_grip")} {currentCircuit.traits.grip} · {tt("circuit_overtaking")} {currentCircuit.traits.overtaking} · {tt("circuit_energy")}{" "}
-            {currentCircuit.traits.energy}
-          </small>
+      <div className="launch-gp-content">
+        <p>{tt("launch_gp_confirm_body")}</p>
+        <div className="starting-grid-confirmation">
+          <div>
+            <span className="section-kicker">{tt("starting_grid_title")}</span>
+            <strong>{tt(currentCircuit.layoutKey)}</strong>
+            <small>
+              <CountryBadge country={currentCircuit.country} /> {currentCircuit.city} · {tt("briefing_forecast")} {tt(`weather_${forecastPick}` as TranslationKey)}
+            </small>
+            <small>
+              {tt("circuit_grip")} {currentCircuit.traits.grip} · {tt("circuit_overtaking")} {currentCircuit.traits.overtaking} · {tt("circuit_energy")}{" "}
+              {currentCircuit.traits.energy}
+            </small>
+          </div>
+          <ol className="starting-grid-list">
+            {displayedEntries.map((entry) => (
+              <li key={entry.team.id} className={entry.team.id === playerTeamId ? "current-team" : undefined}>
+                <PositionBadge position={entry.position} />
+                <LiveryPlate className="standings-livery-plate" livery={entry.team.livery} name={entry.team.name} />
+                <strong>{entry.team.name}</strong>
+                <small>{entry.bestTime === undefined ? tt("starting_grid_no_time") : `${entry.bestTime.toFixed(2)}s`}</small>
+              </li>
+            ))}
+          </ol>
+          {hiddenCount > 0 ? (
+            <button type="button" className="secondary-button starting-grid-more-button" onClick={onShowFullGrid}>
+              {tt("action_show_full_grid")} ({hiddenCount})
+            </button>
+          ) : null}
         </div>
-        <ol className="starting-grid-list">
-          {displayedEntries.map((entry) => (
-            <li key={entry.team.id} className={entry.team.id === playerTeamId ? "current-team" : undefined}>
-              <PositionBadge position={entry.position} />
-              <LiveryPlate className="standings-livery-plate" livery={entry.team.livery} name={entry.team.name} />
-              <strong>{entry.team.name}</strong>
-              <small>{entry.bestTime === undefined ? tt("starting_grid_no_time") : `${entry.bestTime.toFixed(2)}s`}</small>
-            </li>
-          ))}
-        </ol>
-        {hiddenCount > 0 ? (
-          <button type="button" className="secondary-button starting-grid-more-button" onClick={onShowFullGrid}>
-            {tt("action_show_full_grid")} ({hiddenCount})
-          </button>
-        ) : null}
       </div>
       <div className="actions secondary-actions">
         <PendingFeedback message={pendingMessage} />

@@ -20,6 +20,7 @@ export function SetupGate({
   profileMode,
   profileForm,
   profileFormError,
+  leagueFormError,
   setupMode,
   savedClaims,
   savedLeagueIndex,
@@ -29,6 +30,7 @@ export function SetupGate({
   setProfileMode,
   setProfileForm,
   setProfileFormError,
+  setLeagueFormError,
   setSetupMode,
   setSavedLeagueIndex,
   createProfileSession,
@@ -51,6 +53,7 @@ export function SetupGate({
   profileMode: ProfileMode;
   profileForm: { email: string; recoveryCode: string };
   profileFormError: string | null;
+  leagueFormError: string | null;
   setupMode: SetupMode;
   savedClaims: StoredPlayerClaim[];
   savedLeagueIndex: number;
@@ -60,6 +63,7 @@ export function SetupGate({
   setProfileMode: (mode: ProfileMode) => void;
   setProfileForm: (form: { email: string; recoveryCode: string }) => void;
   setProfileFormError: (error: string | null) => void;
+  setLeagueFormError: (error: string | null) => void;
   setSetupMode: (mode: SetupMode) => void;
   setSavedLeagueIndex: (updater: (index: number) => number) => void;
   createProfileSession: () => void;
@@ -102,6 +106,7 @@ export function SetupGate({
         ) : (
           <LeagueSetupView
             form={form}
+            formError={leagueFormError}
             message={message}
             mode={setupMode}
             savedClaims={savedClaims}
@@ -111,6 +116,7 @@ export function SetupGate({
             onCreateLeague={createLeague}
             onJoinLeague={joinLeague}
             onSetForm={setForm}
+            onSetFormError={setLeagueFormError}
             onSetMode={setSetupMode}
             onSetSavedLeagueIndex={setSavedLeagueIndex}
             onSwitchLeague={switchLeague}

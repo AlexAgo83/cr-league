@@ -135,6 +135,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const [message, setMessage] = useState(() => t("status_initial", locale));
   const [technicalError, setTechnicalError] = useState<string | null>(null);
   const [profileFormError, setProfileFormError] = useState<string | null>(null);
+  const [leagueFormError, setLeagueFormError] = useState<string | null>(null);
   const { notifications, pushNotification, clearTransientNotifications, dismissNotification } = useNotifications();
   const [onboardingHelp, setOnboardingHelp] = useState<OnboardingHelpTopic | null>(null);
   const [openCarriedOverPlanKey, setOpenCarriedOverPlanKey] = useState<string | null>(null);
@@ -295,6 +296,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     tt,
     setAdminInspecting,
     setLeagueState,
+    setLeagueFormError,
     setGameView,
     setDirectiveConfirmOpen,
     setQualifyingResult,
@@ -628,6 +630,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       profileMode={profileMode}
       profileForm={profileForm}
       profileFormError={profileFormError}
+      leagueFormError={leagueFormError}
       setupMode={setupMode}
       savedClaims={savedClaims}
       savedLeagueIndex={savedLeagueIndex}
@@ -653,6 +656,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       setProfileMode={setProfileMode}
       setProfileForm={setProfileForm}
       setProfileFormError={setProfileFormError}
+      setLeagueFormError={setLeagueFormError}
       setSetupMode={setSetupMode}
       setSavedLeagueIndex={setSavedLeagueIndex}
       setResultTab={setResultTab}

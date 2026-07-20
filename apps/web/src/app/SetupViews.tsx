@@ -140,6 +140,7 @@ export function ProfileSetupView({
 
 export function LeagueSetupView({
   form,
+  formError,
   message,
   mode,
   pendingMessage,
@@ -149,12 +150,14 @@ export function LeagueSetupView({
   onCreateLeague,
   onJoinLeague,
   onSetForm,
+  onSetFormError,
   onSetMode,
   onSetSavedLeagueIndex,
   onSwitchLeague,
   tt
 }: {
   form: FormState;
+  formError: string | null;
   message: string;
   mode: SetupMode;
   pendingMessage: string | null;
@@ -164,6 +167,7 @@ export function LeagueSetupView({
   onCreateLeague: () => void;
   onJoinLeague: () => void;
   onSetForm: (form: FormState) => void;
+  onSetFormError: (error: string | null) => void;
   onSetMode: (mode: SetupMode) => void;
   onSetSavedLeagueIndex: (updater: (index: number) => number) => void;
   onSwitchLeague: (teamId: string) => void;
@@ -179,11 +183,25 @@ export function LeagueSetupView({
       <div className="panel setup-main-panel setup-form-panel">
         {mode === "choice" ? (
           <div className="setup-choice-grid">
-            <button type="button" className="setup-choice" onClick={() => onSetMode("create")}>
+            <button
+              type="button"
+              className="setup-choice"
+              onClick={() => {
+                onSetFormError(null);
+                onSetMode("create");
+              }}
+            >
               <strong>{tt("action_create_league")}</strong>
               <small>{tt("setup_create_hint")}</small>
             </button>
-            <button type="button" className="setup-choice" onClick={() => onSetMode("join")}>
+            <button
+              type="button"
+              className="setup-choice"
+              onClick={() => {
+                onSetFormError(null);
+                onSetMode("join");
+              }}
+            >
               <strong>{tt("action_join_league")}</strong>
               <small>{tt("setup_join_hint")}</small>
             </button>
@@ -199,17 +217,41 @@ export function LeagueSetupView({
               {mode === "create" ? (
                 <label>
                   {tt("field_league")}
-                  <input maxLength={40} value={form.leagueName} onChange={(event) => onSetForm({ ...form, leagueName: event.target.value })} />
+                  <input
+                    maxLength={40}
+                    value={form.leagueName}
+                    onChange={(event) => {
+                      onSetFormError(null);
+                      onSetForm({ ...form, leagueName: event.target.value });
+                    }}
+                  />
                 </label>
               ) : (
                 <label>
                   {tt("field_join_code")}
-                  <input value={form.joinCode} onChange={(event) => onSetForm({ ...form, joinCode: event.target.value.toUpperCase() })} maxLength={6} placeholder="PLAY01" />
+                  <input
+                    aria-invalid={formError ? true : undefined}
+                    value={form.joinCode}
+                    onChange={(event) => {
+                      onSetFormError(null);
+                      onSetForm({ ...form, joinCode: event.target.value.toUpperCase() });
+                    }}
+                    maxLength={6}
+                    placeholder="PLAY01"
+                  />
                 </label>
               )}
               <label>
                 {tt("field_team")}
-                <input maxLength={32} value={form.teamName} onChange={(event) => onSetForm({ ...form, teamName: event.target.value })} />
+                <input
+                  aria-invalid={formError ? true : undefined}
+                  maxLength={32}
+                  value={form.teamName}
+                  onChange={(event) => {
+                    onSetFormError(null);
+                    onSetForm({ ...form, teamName: event.target.value });
+                  }}
+                />
               </label>
               {mode === "create" ? (
                 <>
@@ -232,12 +274,21 @@ export function LeagueSetupView({
                 </>
               ) : null}
             </div>
+            {formError ? <p className="form-feedback error">{formError}</p> : null}
             <PendingFeedback message={pendingMessage} />
             <div className="actions primary-actions setup-form-actions">
               <button type="submit" disabled={status === "loading"}>
                 {mode === "create" ? tt("action_start_league") : tt("action_join_league")}
               </button>
-              <button type="button" className="secondary-button" onClick={() => onSetMode("choice")} disabled={status === "loading"}>
+              <button
+                type="button"
+                className="secondary-button"
+                onClick={() => {
+                  onSetFormError(null);
+                  onSetMode("choice");
+                }}
+                disabled={status === "loading"}
+              >
                 {tt("action_back")}
               </button>
             </div>

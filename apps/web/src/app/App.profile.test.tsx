@@ -204,6 +204,20 @@ describe("App profile and admin", () => {
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_1");
   });
 
+  it("keeps incomplete join league validation inline", () => {
+    saveProfile();
+    const fetch = vi.spyOn(globalThis, "fetch");
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Join league/ }));
+    fireEvent.submit(screen.getByLabelText("Join code").closest("form")!);
+
+    expect(screen.getByText("Enter a league code and team name.")).toBeTruthy();
+    expect(screen.queryByRole("dialog", { name: "Action blocked" })).toBe(null);
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it("rejoins a saved player claim", async () => {
     saveProfile();
     localStorage.setItem(

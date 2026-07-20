@@ -20,6 +20,7 @@ export function createRaceActions({
   tt,
   setAdminInspecting,
   setLeagueState,
+  setLeagueFormError,
   setGameView,
   setDirectiveConfirmOpen,
   setQualifyingResult,
@@ -46,6 +47,7 @@ export function createRaceActions({
   tt: (key: TranslationKey) => string;
   setAdminInspecting: (inspecting: boolean) => void;
   setLeagueState: (state: LeagueState) => void;
+  setLeagueFormError: (error: string | null) => void;
   setGameView: (view: GameView) => void;
   setDirectiveConfirmOpen: (open: boolean) => void;
   setQualifyingResult: (result: QualifyingRun | null) => void;
@@ -84,6 +86,10 @@ export function createRaceActions({
   }
 
   async function joinLeague() {
+    if (!form.joinCode.trim() || !form.teamName.trim()) {
+      setLeagueFormError(tt("setup_error_join_required"));
+      return;
+    }
     await run(tt("status_joining_league"), async () => {
       const state = await api<LeagueState>("/leagues/join", {
         method: "POST",

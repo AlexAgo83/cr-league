@@ -31,6 +31,7 @@ export function AppShell({
   profileMode,
   profileForm,
   profileFormError,
+  leagueFormError,
   setupMode,
   savedClaims,
   savedLeagueIndex,
@@ -56,6 +57,7 @@ export function AppShell({
   setProfileMode,
   setProfileForm,
   setProfileFormError,
+  setLeagueFormError,
   setSetupMode,
   setSavedLeagueIndex,
   setResultTab,
@@ -102,6 +104,7 @@ export function AppShell({
   profileMode: ProfileMode;
   profileForm: { email: string; recoveryCode: string };
   profileFormError: string | null;
+  leagueFormError: string | null;
   setupMode: SetupMode;
   savedClaims: ProfileSession["teams"];
   savedLeagueIndex: number;
@@ -127,6 +130,7 @@ export function AppShell({
   setProfileMode: Dispatch<SetStateAction<ProfileMode>>;
   setProfileForm: Dispatch<SetStateAction<{ email: string; recoveryCode: string }>>;
   setProfileFormError: Dispatch<SetStateAction<string | null>>;
+  setLeagueFormError: Dispatch<SetStateAction<string | null>>;
   setSetupMode: Dispatch<SetStateAction<SetupMode>>;
   setSavedLeagueIndex: Dispatch<SetStateAction<number>>;
   setResultTab: (tab: ResultTab) => void;
@@ -175,6 +179,7 @@ export function AppShell({
         profileMode={profileMode}
         profileForm={profileForm}
         profileFormError={profileFormError}
+        leagueFormError={leagueFormError}
         setupMode={setupMode}
         savedClaims={savedClaims}
         savedLeagueIndex={savedLeagueIndex}
@@ -184,6 +189,7 @@ export function AppShell({
         setProfileMode={setProfileMode}
         setProfileForm={setProfileForm}
         setProfileFormError={setProfileFormError}
+        setLeagueFormError={setLeagueFormError}
         setSetupMode={setSetupMode}
         setSavedLeagueIndex={setSavedLeagueIndex}
         createProfileSession={createProfileSession}

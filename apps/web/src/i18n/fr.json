@@ -61,6 +61,7 @@
   "race_desk_title": "Stand de course",
   "setup_create_title": "Nouvelle ligue",
   "setup_join_title": "Rejoindre ligue",
+  "setup_error_join_required": "Entre un code ligue et un nom d'écurie.",
   "setup_create_hint": "Lancer un championnat.",
   "setup_join_hint": "Entrer un code d'invitation.",
   "drive_context_title": "Préparation course",

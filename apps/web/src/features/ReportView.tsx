@@ -1,6 +1,7 @@
 import { RACE_SEGMENTS, type RaceEvent, type RaceResult } from "@cr-league/shared";
 import type { CityCircuit } from "../app/circuits.js";
 import type { TranslationKey } from "../i18n/index.js";
+import { displayLapForEvent, maxEventLap } from "../app/lapDisplay.js";
 import {
   buildRaceVerdict,
   eventReportText,
@@ -38,8 +39,9 @@ export function ReportView({
   const raceTitle = `${circuit.city} ${tt(circuit.layoutKey)}`;
   const majorEvents = result.events.filter((event) => event.severity === "major");
   const keyEvents = majorEvents.slice(0, 5);
-  const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt);
-  const verdict = buildRaceVerdict(result, state, playerTeamId, playerDecision, raceTitle, tt);
+  const rawMaxLap = maxEventLap(result);
+  const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
+  const verdict = buildRaceVerdict(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
   const recap = [
     {
       className: "difference",
@@ -156,7 +158,7 @@ export function ReportView({
                 {keyEvents.map((event) => (
                   <li key={event.id || `${event.order}-${event.type}-${event.teamId}`}>
                     <span className="lap-marker">
-                      {tt("unit_lap")} {event.lap}
+                      {tt("unit_lap")} {displayLapForEvent(event, rawMaxLap, circuit.laps)}
                     </span>
                     <div>
                       <strong>{names.get(event.teamId) ?? tt("event_major")}</strong>

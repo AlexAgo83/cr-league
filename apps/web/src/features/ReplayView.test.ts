@@ -221,9 +221,10 @@ describe("ReplayView timing", () => {
         ]
       }
     };
-    const beats = buildRaceDirectorBeats(resultWithFacts, [], buildReplayPlan(resultWithFacts, []), 5, "last");
+    const beats = buildRaceDirectorBeats(resultWithFacts, [], buildReplayPlan(resultWithFacts, []), 3, "last");
 
     expect(beats.map((beat) => beat.id)).toEqual(["grid-start", "overtake-last-leader-0.333", "final-pressure"]);
+    expect(beats.map((beat) => beat.lap)).toEqual([1, 2, 3]);
     expect(beats[1]?.type).toBe("player");
   });
 

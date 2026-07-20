@@ -1,10 +1,10 @@
 ## item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary - Map simulation laps to circuit laps at the display boundary
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 0
+> Progress: 70%
 > Complexity: Medium
 > Theme: Race simulation realism and replay coherence
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -42,6 +42,13 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+
+# Implementation Notes
+- Diagnosis: `simulateRace` receives the resolved GP `laps` value from `currentCircuit.laps`, and the replay trace/clock already scales to that circuit lap count. The mismatch came from canonical event labels: `lapForSegment()` still emits internal event laps on the `1/2/5/8/10` segment scale, and those raw `RaceEvent.lap` values leaked into report/recap/replay callouts.
+- Chrono boundary: qualifying remains a separate 3-lap attempt workflow (`raceActions.ts` sends `laps: 3`; qualifying API clamps to 1..3; `useRaceDerivations.ts` builds a max-3 replay circuit). The GP display mapper must not use the chrono lap count as its reference.
+- Implementation wave 1: added `apps/web/src/app/lapDisplay.ts` with the shared progress-to-circuit-lap mapping, routed `ReportView` key moments and `helpers.ts` recap/verdict interpolations through it, and made replay director facts remap their generated `lap` labels from `progress` instead of trusting raw fact laps.
+- Test coverage wave 1: added a 3-lap GP fixture in `ReportView.test.tsx` to assert raw laps 5/10 do not appear, and updated `ReplayView.test.ts` to prove precomputed director beats remap to `[1, 2, 3]` on a 3-lap circuit.
+- Validation wave 1: `rtk npm run typecheck` passed; targeted `rtk npm test -- apps/web/src/features/ReportView.test.tsx apps/web/src/app/helpers.test.ts apps/web/src/features/ReplayView.test.ts apps/web/src/i18n/index.test.ts` passed with 47 tests.
 
 # Links
 - Product brief(s): `prod_027_lap_scale_coherence_product_brief`

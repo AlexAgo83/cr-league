@@ -34,6 +34,7 @@ export function buildRaceDirectorBeats(result: RaceResult, trace: ReplayTracePoi
     return result.replayFacts.directorBeats
       .map((beat) => ({
         ...beat,
+        lap: displayLapAtProgress(beat.progress, laps),
         type: beat.type === "overtake" && (beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId) ? "player" as const : beat.type
       }))
       .sort((left, right) => left.progress - right.progress);
@@ -107,4 +108,3 @@ export function directorBeatCopy(beat: ReplayDirectorBeat, names: Map<string, st
   if (beat.type === "pit_stop") return { title: tt("replay_director_pit_stop"), detail: tt("replay_director_pit_stop_detail", { team }) };
   return { title: tt("replay_director_final"), detail: tt("replay_director_final_detail", { team }) };
 }
-

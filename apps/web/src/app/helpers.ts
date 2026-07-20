@@ -1,6 +1,7 @@
 import { RACE_SEGMENTS, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, type CardId, type RaceResult } from "@cr-league/shared";
 import type { TranslationKey, TranslationParams } from "../i18n/index.js";
 import type { LeagueState } from "./types.js";
+import { displayLapForEvent, maxEventLap } from "./lapDisplay.js";
 
 export type Translator = (key: TranslationKey, params?: TranslationParams) => string;
 
@@ -154,18 +155,15 @@ export function raceRecapCards(
   playerTeamId: string | undefined,
   decision: LeagueState["decisions"][number] | undefined,
   raceTitle: string,
-  tt: Translator
+  tt: Translator,
+  circuitLaps = maxEventLap(result)
 ) {
   return {
-    difference: recapDifference(result, playerTeamId, raceTitle, tt),
+    difference: recapDifference(result, playerTeamId, raceTitle, tt, circuitLaps),
     directive: recapDirective(result, playerTeamId, decision, state.currentGrandPrix.round, tt),
     planRead: recapPlanRead(result, state, playerTeamId, decision, tt),
     lesson: recapNextLesson(result, state, playerTeamId, decision, tt)
   };
-}
-
-function recapDifference(result: RaceResult, playerTeamId: string | undefined, raceTitle: string, tt: Translator) {
-  return translateLine(raceDominantCause(result, playerTeamId, raceTitle, tt, false), tt);
 }
 
 export function buildRaceVerdict(
@@ -174,7 +172,8 @@ export function buildRaceVerdict(
   playerTeamId: string | undefined,
   decision: LeagueState["decisions"][number] | undefined,
   raceTitle: string,
-  tt: Translator
+  tt: Translator,
+  circuitLaps = maxEventLap(result)
 ): RaceVerdict {
   const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
   const variant = resultVariant(result);
@@ -189,7 +188,7 @@ export function buildRaceVerdict(
         points: playerResult?.points ?? 0
       }
     },
-    cause: raceDominantCause(result, playerTeamId, raceTitle, tt, true, decision),
+    cause: raceDominantCause(result, playerTeamId, raceTitle, tt, true, circuitLaps, decision),
     tryNext: recapNextLessonLine(result, state, playerTeamId, decision, tt)
   };
 }
@@ -198,12 +197,17 @@ export function translateLine(line: RaceVerdictLine, tt: Translator) {
   return tt(line.key, line.params);
 }
 
+function recapDifference(result: RaceResult, playerTeamId: string | undefined, raceTitle: string, tt: Translator, circuitLaps: number) {
+  return translateLine(raceDominantCause(result, playerTeamId, raceTitle, tt, false, circuitLaps), tt);
+}
+
 function raceDominantCause(
   result: RaceResult,
   playerTeamId: string | undefined,
   raceTitle: string,
   tt: Translator,
   includeApproach: boolean,
+  circuitLaps: number,
   decision?: LeagueState["decisions"][number]
 ): RaceVerdictLine {
   const names = teamNamesFromResult(result);
@@ -215,10 +219,10 @@ function raceDominantCause(
     return {
       key: pickRecapKey("recap_difference_event", variant),
       params: {
-      event: eventReplayText(impactful, names, tt),
-      lap: impactful.lap,
-      segment: tt(`segment_${impactful.segment}` as TranslationKey),
-      delta: signedDelta(impactful.positionDelta)
+        event: eventReplayText(impactful, names, tt),
+        lap: displayLapForEvent(impactful, maxEventLap(result), circuitLaps),
+        segment: tt(`segment_${impactful.segment}` as TranslationKey),
+        delta: signedDelta(impactful.positionDelta)
       }
     };
   }
@@ -229,7 +233,7 @@ function raceDominantCause(
       key: pickRecapKey("recap_difference_card", variant),
       params: {
         card: tt(`card_${cardEvent.cardId}` as TranslationKey),
-        lap: cardEvent.lap,
+        lap: displayLapForEvent(cardEvent, maxEventLap(result), circuitLaps),
         segment: tt(`segment_${cardEvent.segment}` as TranslationKey)
       }
     };
@@ -240,7 +244,7 @@ function raceDominantCause(
     return {
       key: pickRecapKey("recap_difference_weather", variant),
       params: {
-        lap: weatherEvent.lap,
+        lap: displayLapForEvent(weatherEvent, maxEventLap(result), circuitLaps),
         segment: tt(`segment_${weatherEvent.segment}` as TranslationKey),
         weather: tt(`weather_${result.resolvedWeather[weatherEvent.segment]}` as TranslationKey)
       }

@@ -57,4 +57,38 @@ describe("ReportView", () => {
     expect(screen.getByLabelText("Race verdict").textContent).toContain("Rain Grip");
     expect(container.querySelector(".report-verdict")!.compareDocumentPosition(container.querySelector(".report-phases")!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
   });
+
+  it("maps GP event laps to the circuit lap count without using the chrono scale", () => {
+    const typedBaseState = baseState as unknown as LeagueState;
+    const state = {
+      ...typedBaseState,
+      currentGrandPrix: { ...typedBaseState.currentGrandPrix, trackLengthMeters: 6100, round: 15 },
+      decisions: [{ teamId: "team_1", approach: "balanced", preparation: "weather", cardId: null }]
+    } satisfies LeagueState;
+    const circuit = { ...circuitForRound(1), laps: 3 };
+    const result: RaceResult = {
+      grandPrixName: "Short GP",
+      seed: "short",
+      resolvedWeather: { start: "dry", early: "dry", mid: "heavy_rain", late: "heavy_rain", finish: "heavy_rain" },
+      classification: [
+        { teamId: "team_1", teamName: "Volt Union", position: 1, points: 25, credits: 100, score: 90, positionChange: 0, status: "finished", resultTags: [] },
+        { teamId: "team_2", teamName: "Mika Blitz", position: 2, points: 18, credits: 80, score: 80, positionChange: 0, status: "finished", resultTags: [] }
+      ],
+      events: [
+        { id: "weather", order: 1, segment: "mid", lap: 5, traceProgress: 0.5, type: "weather_change", teamId: "team_2", severity: "major", positionDelta: 0, tags: ["weather"], replayText: "", reportText: "" },
+        { id: "finish", order: 2, segment: "finish", lap: 10, traceProgress: 1, type: "held_position", teamId: "team_1", severity: "major", positionDelta: 0, tags: ["finish"], replayText: "", reportText: "" }
+      ],
+      consumedCards: [],
+      report: { headline: "Test", blocks: [] }
+    };
+
+    const { container } = render(<ReportView state={state} result={result} circuit={circuit} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+
+    expect(screen.queryByText("Lap 5")).toBe(null);
+    expect(screen.queryByText("Lap 10")).toBe(null);
+    expect(screen.getAllByText("Lap 3").length).toBeGreaterThan(0);
+    expect(container.textContent?.toLowerCase()).toContain("lap 3");
+    expect(container.textContent?.toLowerCase()).not.toContain("lap 5");
+    expect(container.textContent?.toLowerCase()).not.toContain("lap 10");
+  });
 });

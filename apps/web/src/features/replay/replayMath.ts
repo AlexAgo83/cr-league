@@ -1,6 +1,7 @@
 import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint } from "@cr-league/shared";
 import type { RaceEvent, Translator } from "../../app/helpers.js";
 import type { CityCircuit } from "../../app/circuits.js";
+export { displayLapAtProgress } from "../../app/lapDisplay.js";
 import { circuitDisplayLength, circuitRouteAnalysis } from "../CircuitMap.js";
 
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
@@ -160,10 +161,6 @@ function traceRankTargetsAt(trace: ReplayTracePoint[], progress: number, plan?: 
 
 function sameOrder(left: string[], right: string[]) {
   return left.length === right.length && left.every((teamId, index) => teamId === right[index]);
-}
-
-export function displayLapAtProgress(progress: number, laps: number) {
-  return Math.max(1, Math.min(laps, Math.round(1 + Math.max(0, Math.min(1, progress)) * (laps - 1))));
 }
 
 export function pitLapProgress(circuit: CityCircuit) {

@@ -68,6 +68,7 @@ export function PlanView({
 }) {
   const planRecommendation = buildPlanRecommendation({ circuitTraits, forecastPick, tt });
   const activeSubscreen = planSubscreen;
+  const reportTitle = `${reportCircuit.city} ${tt(reportCircuit.layoutKey)}`;
 
   return (
     <div className="plan-view">
@@ -86,10 +87,12 @@ export function PlanView({
         reportResult ? (
           <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} tt={tt} />
         ) : (
-          <section className="panel plan-empty-report" aria-label={tt("result_tab_report")}>
-            <span className="section-kicker">{tt("result_tab_report")}</span>
-            <h2>{tt("plan_report_empty_title")}</h2>
-            <p>{tt("plan_report_empty_body")}</p>
+          <section className="panel report-hero plan-empty-report" aria-label={tt("result_tab_report")}>
+            <div className="report-headline">
+              <span className="section-kicker">{tt("result_race_report")}</span>
+              <h2>{reportTitle}</h2>
+              <p>{tt("plan_report_empty_body")}</p>
+            </div>
           </section>
         )
       ) : activeSubscreen === "chrono" ? (

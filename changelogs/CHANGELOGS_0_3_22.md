@@ -19,6 +19,8 @@ Covers work shipped after `0.3.11`.
 - Added and closed Logics chains through post-splash polish, then scaffolded ready-to-dev corpora for plan risk/readability, non-winning success feedback, and beta support hardening.
 - Updated the roadmap to mark shipped chains as shipped and keep only the next three active corpora as ready to dev.
 - Refreshed splash title PNGs from violet-matte sources with alpha transparency and compressed palette output.
+- Integrated compatible Dependabot maintenance for GitHub Actions v7 and `@fontsource/barlow-condensed` 5.3.0.
+- Deferred incompatible major Dependabot bumps that require separate migrations: ESLint 10 with `eslint-plugin-jsx-a11y`, Vite React plugin 6 with Vite 8, and Prisma 7 datasource/client configuration.
 - Kept release package versions aligned across root, API, web, shared, and `package-lock.json`.
 
 ## Validation

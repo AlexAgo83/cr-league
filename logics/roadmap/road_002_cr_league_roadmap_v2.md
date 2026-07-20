@@ -14,6 +14,7 @@
 > Semantic edit: 2026-07-20 second playtest session: added 0.3.19 lap-scale coherence defect chain (req_063), extended req_062 with plan-lock safety, added bot-rivalry watchlist entry.
 > Semantic edit: 2026-07-20 mobile playtest: scaffolded 0.3.20 modal hygiene + playback icons (req_064) and 0.3.21 home splash landing screen (req_065) as ready-to-dev chains; splash assets detoured and committed.
 > Semantic edit: 2026-07-20 release prep: marked completed 0.3.14, 0.3.16, 0.3.18-0.3.21, and 0.4.1 work as shipped; marked 0.3.13, 0.3.15, and 0.4.3 corpora as ready to dev.
+> Semantic edit: 2026-07-20 release dependency triage: integrated compatible Dependabot maintenance and parked incompatible major migrations in the watchlist.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -127,6 +128,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 - After the first coverage report from 0.4.4 (`req_058`) lands, add render/interaction tests for the 2-3 weakest game screens (PlanView, GarageView, ResultView first) as a backlog item on an existing chain — not a dedicated corpus.
 - Keep `submitDecision`'s repeated full-state reloads as-is until the 0.4.4 Postgres integration lane measures a real cost; the fix (thread loaded state through) is mechanical when justified.
+- Dependabot major migrations parked after 0.3.22 release triage: ESLint 10 needs jsx-a11y peer support or replacement, `@vitejs/plugin-react` 6 should move with Vite 8, and Prisma 7 needs datasource/client configuration migration. Do not force these into a patch release without a focused migration chain.
 
 # Next Recommended Requests
 - Start `task_068` / `req_067` next: the plan risk/readability layer is the highest-impact remaining gameplay clarity slice.

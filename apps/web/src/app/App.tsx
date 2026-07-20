@@ -22,6 +22,7 @@ import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY, ReplayVi
 import { ResultView, type ResultTab } from "../features/ResultView.js";
 import { RewardValue } from "../features/RewardValue.js";
 import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
+import { LeagueControlsModal, RestartConfirmModal, SeasonRecapModal } from "./AppModals.js";
 import { LeagueIntroModal, ONBOARDING_HELP_KEYS, OnboardingHelpModal, SCREEN_ONBOARDING_HELP_TOPICS, SetupShell, type OnboardingHelpTopic } from "./OnboardingShell.js";
 import {
   ACTIVE_PLAYER_CLAIM_KEY,
@@ -114,6 +115,7 @@ export function App() {
   const [startingGridExpanded, setStartingGridExpanded] = useState(false);
   const [nextGrandPrixConfirmOpen, setNextGrandPrixConfirmOpen] = useState(false);
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
+  const [restartConfirmOpen, setRestartConfirmOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => ({ ...createInitialForm(locale), ...savedPlanForm() }));
   const [profileForm, setProfileForm] = useState({ email: "", recoveryCode: "" });
   const [adminToken, setAdminToken] = useState("");
@@ -797,7 +799,8 @@ export function App() {
   }
 
   async function restartLeague() {
-    if (!leagueState || !window.confirm(tt("restart_confirm"))) return;
+    if (!leagueState) return;
+    setRestartConfirmOpen(false);
 
     await mutateLeague("status_restarting_league", `/leagues/${leagueState.league.id}/restart`, {
       teamId: leagueState.player?.teamId,
@@ -1733,86 +1736,22 @@ export function App() {
       {resolveConfirmModal}
       {qualifyingConfirmModal}
       {nextGrandPrixConfirmModal}
-      {seasonRecap ? (
-        <Modal label={tt("season_recap_title")} className="panel modal season-recap-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setSeasonRecapSeason(null)}>
-          <ModalHero image="/assets/crl/season-recap-modal.png" kicker={`${tt("league_season")} ${seasonRecap.season}`} title={tt("season_recap_title")} />
-          <div className="season-champion-card">
-            <span>{tt("season_champion")}</span>
-            <strong>
-              {seasonRecap.champion.livery ? (
-                <LiveryPlate className="standings-livery-plate leader-livery-plate" livery={seasonRecap.champion.livery} name={seasonRecap.champion.teamName} />
-              ) : null}
-              {seasonRecap.champion.teamName}
-            </strong>
-            <small>
-              <RewardValue type="points" value={seasonRecap.champion.points} tt={tt} /> · {seasonRecap.gpCount} {tt("season_gp_count")}
-            </small>
-          </div>
-          <div className="season-recap-grid">
-            <section>
-              <h3>{tt("season_podium")}</h3>
-              <ol className="season-podium-list">
-                {seasonRecap.standings.slice(0, 3).map((entry) => (
-                  <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "current-team" : undefined}>
-                    <PositionBadge position={entry.position} />
-                    {entry.livery ? <LiveryPlate className="standings-livery-plate" livery={entry.livery} name={entry.teamName} /> : null}
-                    <span>{entry.teamName}</span>
-                  </li>
-                ))}
-              </ol>
-            </section>
-            <section>
-              <h3>{tt("season_final_standings")}</h3>
-              <ol className="season-standings-list">
-                {seasonRecap.standings.map((entry) => (
-                  <li key={entry.teamId} className={entry.teamId === playerTeam?.id ? "current-team" : undefined}>
-                    <PositionBadge position={entry.position} />
-                    <span>{entry.teamName}</span>
-                    <small>
-                      <RewardValue type="points" value={entry.points} tt={tt} />
-                    </small>
-                  </li>
-                ))}
-              </ol>
-            </section>
-          </div>
-        </Modal>
-      ) : null}
+      {seasonRecap ? <SeasonRecapModal recap={seasonRecap} playerTeamId={playerTeam?.id} tt={tt} onClose={() => setSeasonRecapSeason(null)} /> : null}
       {leagueControlsOpen ? (
-        <Modal label={tt("settings_title")} className="panel modal league-controls-modal" closeLabel={tt("action_close")} showCloseButton onClose={closeLeagueControls}>
-          <ModalHero image="/assets/crl/league-arrival.png" kicker={tt("championship_kicker")} title={tt("settings_title")} />
-          <div className="field-grid settings-fields">
-            <label>
-              {tt("field_cadence")}
-              <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
-                <option value="manual">{tt("cadence_manual")}</option>
-                <option value="fast">{tt("cadence_fast")}</option>
-                <option value="weekly">{tt("cadence_weekly")}</option>
-              </select>
-            </label>
-            <label>
-              {tt("field_deadline")}
-              <input
-                type="datetime-local"
-                value={form.preparationDeadlineAt}
-                onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })}
-              />
-            </label>
-          </div>
-          <div className="actions secondary-actions">
-            <PendingFeedback message={pendingMessage} />
-            <button type="button" onClick={updateSettings} disabled={status === "loading"}>
-              {tt("action_update_settings")}
-            </button>
-            <button type="button" onClick={forgetPlayer} disabled={status === "loading" || !leagueState.player}>
-              {tt("action_forget_team")}
-            </button>
-            <button type="button" onClick={restartLeague} disabled={status === "loading"}>
-              {tt("action_restart_league")}
-            </button>
-          </div>
-        </Modal>
+        <LeagueControlsModal
+          form={form}
+          status={status}
+          pendingMessage={pendingMessage}
+          hasPlayer={Boolean(leagueState.player)}
+          tt={tt}
+          setForm={setForm}
+          onClose={closeLeagueControls}
+          onUpdateSettings={updateSettings}
+          onForgetPlayer={forgetPlayer}
+          onOpenRestartConfirm={() => setRestartConfirmOpen(true)}
+        />
       ) : null}
+      {restartConfirmOpen ? <RestartConfirmModal status={status} pendingMessage={pendingMessage} tt={tt} onClose={() => setRestartConfirmOpen(false)} onRestart={() => void restartLeague()} /> : null}
     </main>
   );
 

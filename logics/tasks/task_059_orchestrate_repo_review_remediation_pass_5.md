@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 84%
+> Progress: 90%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -61,6 +61,7 @@
 - 2026-07-20 wave 8: started item_138 ReplayView split by extracting the playback clock into apps/web/src/features/replay/useReplayClock.ts. The hook now owns SMIL rAF playback, play/pause/speed state, seek/restart, live lap/segment updates, and position-pop timer cleanup; ReplayView consumes the hook state and callbacks. Lint is now clean with the previous ReplayView exhaustive-deps warnings removed. Remaining item_138 work: move scrubber/tower/stage sub-components and reduce ReplayView.tsx toward composition size.
 - 2026-07-20 wave 9: continued item_138 by moving the replay timing tower and scrubber/timeline rendering into apps/web/src/features/replay/ReplayTower.tsx and ReplayProgress.tsx. ReplayView now delegates tower livery/delta rendering and progress input/weather/director markers to focused components; replay folder files stay under 400 lines and ReplayView.tsx is reduced to 941 lines. Remaining item_138 work: extract the larger replay stage/overlay composition and continue reducing ReplayView toward a composition file.
 - 2026-07-20 wave 10: continued item_138 by extracting the replay stage overlay into apps/web/src/features/replay/ReplayStageOverlay.tsx. ReplayView now passes precomputed director, moment, player-focus, tower, and timeline props into a presentation component; the stage controls, map info stack, active moment card, director panel, focus panel, tower slot, and replay progress bar are no longer inline. ReplayView.tsx is now 815 lines and all replay/ files remain under 400 lines. Remaining: one final pass to reduce ReplayView's derived-data section before closing item_138.
+- 2026-07-20 wave 11: continued item_137 by replacing the restartLeague window.confirm with a RestartConfirmModal, extracting SeasonRecapModal and LeagueControlsModal into apps/web/src/app/AppModals.tsx, updating the App test to confirm restart through the dialog, and deleting empty apps/web/src/lib and apps/web/src/ui .gitkeep placeholders. Targeted proof: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed. Remaining item_137 work: larger App.tsx decomposition toward the <700-line AC.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

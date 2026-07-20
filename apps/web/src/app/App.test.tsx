@@ -669,6 +669,7 @@ describe("App", () => {
     expect(await screen.findByText("League settings updated.")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("button", { name: "Restart session" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "Restart session" })).getByRole("button", { name: "Restart session" }));
     expect(await screen.findByText("Playtest session restarted.")).toBeTruthy();
     expect(screen.getByText("Season 1 · Round 1/6")).toBeTruthy();
 

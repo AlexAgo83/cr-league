@@ -157,17 +157,9 @@ jobs:
               "$API_HEALTH_URL"
           }
 
-          log_non_json_health() {
-            prefix="$(printf "%s" "${health:-}" | tr "\n" " " | head -c 160)"
-            echo "API health returned non-JSON body prefix: ${prefix:-<empty>}"
-          }
-
           health_matches_release() {
             health="$(fetch_health)" || return 1
-            jq -e . >/dev/null 2>&1 <<< "${health:-{}}" || return 1
-            version="$(jq -r '.version // ""' <<< "${health:-{}}")"
-            commit="$(jq -r '.commit // ""' <<< "${health:-{}}")"
-            [ "$version" = "$RELEASE_VERSION" ] && [ "$commit" = "$RELEASE_SHA" ]
+            [[ "$health" == *"\"version\":\"$RELEASE_VERSION\""* ]] && [[ "$health" == *"\"commit\":\"$RELEASE_SHA\""* ]]
           }
 
           if health_matches_release; then
@@ -180,20 +172,13 @@ jobs:
 
           for attempt in $(seq 1 60); do
             health="$(fetch_health)" || health="{}"
-            if ! jq -e . >/dev/null 2>&1 <<< "${health:-{}}"; then
-              log_non_json_health
-              echo "API health returned non-JSON, waiting for ${RELEASE_VERSION}@${RELEASE_SHA} (${attempt}/60)."
-              sleep 10
-              continue
-            fi
-            version="$(jq -r '.version // ""' <<< "${health:-{}}")"
-            commit="$(jq -r '.commit // ""' <<< "${health:-{}}")"
-            if [ "$version" = "$RELEASE_VERSION" ] && [ "$commit" = "$RELEASE_SHA" ]; then
-              echo "API health reports ${version} at ${commit}."
+            if [[ "$health" == *"\"version\":\"$RELEASE_VERSION\""* ]] && [[ "$health" == *"\"commit\":\"$RELEASE_SHA\""* ]]; then
+              echo "API health reports ${RELEASE_VERSION} at ${RELEASE_SHA}."
               exit 0
             fi
 
-            echo "API health returned ${version}@${commit}, waiting for ${RELEASE_VERSION}@${RELEASE_SHA} (${attempt}/60)."
+            prefix="$(printf "%s" "${health:-}" | tr "\n" " " | head -c 160)"
+            echo "API health body does not match release yet: ${prefix:-<empty>} (${attempt}/60)."
             sleep 10
           done
 

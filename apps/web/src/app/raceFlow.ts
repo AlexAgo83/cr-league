@@ -1,4 +1,4 @@
-import { type CardId, type QualifyingRun } from "@cr-league/shared";
+import { type CardId, type QualifyingRun, type Weather } from "@cr-league/shared";
 import { t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { type MapTraitImpacts } from "../features/CircuitMap.js";
 import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
@@ -12,6 +12,11 @@ export type ChronoReport = {
   gridPosition: number | null;
   suggestion: string;
 };
+
+type CircuitTraitKey = "grip" | "overtaking" | "energy";
+
+const CIRCUIT_TRAITS: CircuitTraitKey[] = ["grip", "overtaking", "energy"];
+const WEATHER_VALUES: Weather[] = ["dry", "light_rain", "heavy_rain"];
 
 export function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
   const impacts: MapTraitImpacts = {};
@@ -84,6 +89,21 @@ export function buildChronoReport(input: {
     gridLabel: best && input.gridPosition > 0 ? `P${input.gridPosition}` : input.tt("starting_grid_no_time"),
     suggestion: chronoReportSuggestion(input, best, latest)
   };
+}
+
+export function buildPlanRecommendation(input: {
+  circuitTraits: Record<CircuitTraitKey, number>;
+  forecastPick: string;
+  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
+}) {
+  const trait = CIRCUIT_TRAITS.reduce((best, current) => (input.circuitTraits[current] > input.circuitTraits[best] ? current : best), "grip");
+  const weather = WEATHER_VALUES.includes(input.forecastPick as Weather) ? (input.forecastPick as Weather) : "dry";
+  return input.tt("plan_recommendation", {
+    trait: input.tt(`map_trait_${trait}` as TranslationKey),
+    weather: input.tt(`weather_${weather}` as TranslationKey),
+    traitAdvice: input.tt(`plan_recommendation_trait_${trait}` as TranslationKey),
+    weatherAdvice: input.tt(`plan_recommendation_weather_${weather}` as TranslationKey)
+  });
 }
 
 function chronoReportSuggestion(

@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 92
-> Confidence: 85
-> Progress: 35
+> Understanding: 95
+> Confidence: 88
+> Progress: 65
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -47,6 +47,7 @@
 # Report
 - 2026-07-20 wave 1: req_058 item_137 had already landed, so this wave built on the extracted app-shell/session action structure. Implemented the fresh-GP single-CTA highlight rule for item_141 and started the EN chrono label rename for item_143.
 - Targeted validation passed for typecheck, lint, App/i18n unit tests, and the first-click e2e spec. Full validation remains pending until item_142 and the remaining item_143 audit are complete.
+- 2026-07-20 wave 2: implemented the item_142 plan recommendation helper, EN/FR strings, prop flow into `PlanView`, header rendering in `DirectivePanel`, helper tests across all forecast values, a FR localization test, and an App render assertion.
 
 # AI Context
 - Summary: Orchestrate first-GP action clarity

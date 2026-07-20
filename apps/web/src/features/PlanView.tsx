@@ -1,7 +1,7 @@
 import { type CardId, type QualifyingRun } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CardFit, Translator } from "../app/helpers.js";
-import type { ChronoReport } from "../app/raceFlow.js";
+import { buildPlanRecommendation, type ChronoReport } from "../app/raceFlow.js";
 import type { PlanSubscreen } from "../app/routes.js";
 import type { FormState, GameView, LeagueState } from "../app/types.js";
 import { DirectivePanel, type DirectiveStep } from "./DirectivePanel.js";
@@ -14,6 +14,7 @@ export function PlanView({
   directiveStep,
   disabled,
   form,
+  forecastPick,
   ownedCardIds,
   planSubscreen,
   playerQualifyingRuns,
@@ -34,6 +35,7 @@ export function PlanView({
   directiveStep: DirectiveStep;
   disabled: boolean;
   form: FormState;
+  forecastPick: string;
   ownedCardIds: CardId[];
   planSubscreen: PlanSubscreen;
   playerQualifyingRuns: QualifyingRun[];
@@ -48,6 +50,8 @@ export function PlanView({
   onSetQualifyingResult: (run: QualifyingRun) => void;
   tt: Translator;
 }) {
+  const planRecommendation = buildPlanRecommendation({ circuitTraits, forecastPick, tt });
+
   return (
     <div className="plan-view">
       <div className="plan-steps plan-subscreen-tabs" role="tablist" aria-label={tt("plan_subscreen_label")}>
@@ -136,6 +140,7 @@ export function PlanView({
           selectedCardFit={selectedCardFit}
           step={directiveStep}
           circuitTraits={circuitTraits}
+          planRecommendation={planRecommendation}
           cardLocked={cardLocked}
           disabled={disabled}
           onSelectStep={onSetDirectiveStep}

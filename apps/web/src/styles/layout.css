@@ -1347,6 +1347,12 @@ label small {
   margin-bottom: 0;
 }
 
+.directive-heading p {
+  color: var(--color-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
 .directive-briefing {
   display: grid;
   gap: 8px;

@@ -146,6 +146,7 @@ export function GameViews({
           directiveStep={directiveStep}
           disabled={status === "loading" || Boolean(playerDecision) || isResolved}
           form={form}
+          forecastPick={forecastPick}
           ownedCardIds={ownedCardIds}
           planSubscreen={planSubscreen}
           playerQualifyingRuns={playerQualifyingRuns}

@@ -132,6 +132,7 @@ export function DirectivePanel({
   selectedCardFit,
   step,
   circuitTraits,
+  planRecommendation,
   cardLocked,
   disabled,
   onSelectStep,
@@ -144,6 +145,7 @@ export function DirectivePanel({
   selectedCardFit: CardFit | null;
   step: DirectiveStep;
   circuitTraits: TraitStats;
+  planRecommendation?: string;
   cardLocked?: boolean;
   disabled?: boolean;
   onSelectStep: (step: DirectiveStep) => void;
@@ -166,6 +168,7 @@ export function DirectivePanel({
       <header className="directive-heading">
         <span className="section-kicker">{tt("directive_kicker")}</span>
         <h2>{tt("directive_title")}</h2>
+        {planRecommendation ? <p>{planRecommendation}</p> : null}
       </header>
 
       <div className="directive-briefing" aria-label={tt("directive_track_read")}>

@@ -358,6 +358,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Edit plan" }));
     expect(window.location.pathname).toBe("/plan/approach");
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
+    expect(screen.getByText("Plan read:", { exact: false })).toBeTruthy();
     expect(document.querySelector(".directive-briefing-panel")).toBeTruthy();
     expect(document.querySelector(".directive-selection-panel")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Plan" }).className).toContain("active");

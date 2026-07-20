@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 10%
+> Understanding: 95
+> Confidence: 90
+> Progress: 85
 > Complexity: Low
 > Theme: First-session UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -27,6 +27,14 @@
 - AC1: The plan subscreen shows one trait+weather recommendation sentence in both locales.
 - AC2: The composing helper is pure and unit-tested across trait dominance and all three weather values.
 - AC3: The chrono report suggestion is not duplicated or displaced.
+
+# Implementation Notes
+- 2026-07-20 wave 2: added `buildPlanRecommendation()` in `raceFlow.ts`, deriving the strongest circuit stat and normalized forecast into one localized recommendation sentence.
+- `GameViews` now passes `forecastPick` to `PlanView`; `PlanView` builds the sentence and `DirectivePanel` renders it once in the directive briefing header, leaving the chrono report panel untouched.
+- Added EN/FR recommendation keys for the wrapper sentence, each dominant stat, and dry/light-rain/heavy-rain forecast advice.
+
+# Validation
+- 2026-07-20 targeted: `rtk npm run typecheck`; `rtk npm run lint`; `rtk npm test -- apps/web/src/app/raceFlow.test.ts apps/web/src/app/App.test.tsx apps/web/src/i18n/index.test.ts`.
 
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: The plan subscreen shows one trait+weather recommendation sentence in both locales.

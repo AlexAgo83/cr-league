@@ -46,7 +46,10 @@
 | [prod_027_lap_scale_coherence_product_brief](product/prod_027_lap_scale_coherence_product_brief.md) | Lap-Scale Coherence Product Brief | Settled |  |  | product/prod_027_lap_scale_coherence_product_brief.md |
 | [prod_028_mobile_modal_hygiene_and_playback_icons_product_brief](product/prod_028_mobile_modal_hygiene_and_playback_icons_product_brief.md) | Mobile Modal Hygiene and Playback Icons Product Brief | Settled |  |  | product/prod_028_mobile_modal_hygiene_and_playback_icons_product_brief.md |
 | [prod_029_home_splash_landing_screen_product_brief](product/prod_029_home_splash_landing_screen_product_brief.md) | Home Splash Landing Screen Product Brief | Settled |  |  | product/prod_029_home_splash_landing_screen_product_brief.md |
-| [prod_030_post_splash_playtest_polish_product_brief](product/prod_030_post_splash_playtest_polish_product_brief.md) | Post-splash Playtest Polish Product Brief | Proposed |  |  | product/prod_030_post_splash_playtest_polish_product_brief.md |
+| [prod_030_post_splash_playtest_polish_product_brief](product/prod_030_post_splash_playtest_polish_product_brief.md) | Post-splash Playtest Polish Product Brief | Settled |  |  | product/prod_030_post_splash_playtest_polish_product_brief.md |
+| [prod_031_plan_risk_readability_product_brief](product/prod_031_plan_risk_readability_product_brief.md) | Plan Risk Readability Product Brief | Proposed |  |  | product/prod_031_plan_risk_readability_product_brief.md |
+| [prod_032_non_winning_success_feedback_product_brief](product/prod_032_non_winning_success_feedback_product_brief.md) | Non-winning Success Feedback Product Brief | Proposed |  |  | product/prod_032_non_winning_success_feedback_product_brief.md |
+| [prod_033_beta_support_hardening_product_brief](product/prod_033_beta_support_hardening_product_brief.md) | Beta Support Hardening Product Brief | Proposed |  |  | product/prod_033_beta_support_hardening_product_brief.md |
 
 ## Roadmaps
 
@@ -125,7 +128,10 @@
 | [req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count](request/req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count.md) | Lap-scale coherence: displayed lap numbers must match the circuit's lap count | Done |  |  | request/req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count.md |
 | [req_064_mobile_modal_hygiene_and_real_playback_icons](request/req_064_mobile_modal_hygiene_and_real_playback_icons.md) | Mobile modal hygiene and real playback icons | Done |  |  | request/req_064_mobile_modal_hygiene_and_real_playback_icons.md |
 | [req_065_home_splash_landing_screen_with_floating_title_and_press_start](request/req_065_home_splash_landing_screen_with_floating_title_and_press_start.md) | Home splash landing screen with floating title and PRESS START | Done |  |  | request/req_065_home_splash_landing_screen_with_floating_title_and_press_start.md |
-| [req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup](request/req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup.md) | Post-splash playtest polish: mobile header and root shell cleanup | Draft |  |  | request/req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup.md |
+| [req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup](request/req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup.md) | Post-splash playtest polish: mobile header and root shell cleanup | Done |  |  | request/req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup.md |
+| [req_067_plan_risk_readability_layer](request/req_067_plan_risk_readability_layer.md) | Plan risk readability layer | Draft |  |  | request/req_067_plan_risk_readability_layer.md |
+| [req_068_non_winning_success_feedback](request/req_068_non_winning_success_feedback.md) | Non-winning success feedback | Draft |  |  | request/req_068_non_winning_success_feedback.md |
+| [req_069_beta_support_hardening](request/req_069_beta_support_hardening.md) | Beta support hardening | Draft |  |  | request/req_069_beta_support_hardening.md |
 
 ## Backlog
 
@@ -289,8 +295,15 @@
 | [item_156_replace_the_emoji_playback_control_with_a_themed_svg_icon](backlog/item_156_replace_the_emoji_playback_control_with_a_themed_svg_icon.md) | Replace the emoji playback control with a themed SVG icon | Done |  | 100% | backlog/item_156_replace_the_emoji_playback_control_with_a_themed_svg_icon.md |
 | [item_157_gate_a_home_splash_on_the_start_url_with_deep_link_bypass](backlog/item_157_gate_a_home_splash_on_the_start_url_with_deep_link_bypass.md) | Gate a home splash on the start URL with deep-link bypass | Done |  | 100% | backlog/item_157_gate_a_home_splash_on_the_start_url_with_deep_link_bypass.md |
 | [item_158_build_the_splash_layout_header_covering_background_floating_titles_press_start](backlog/item_158_build_the_splash_layout_header_covering_background_floating_titles_press_start.md) | Build the splash layout: header, covering background, floating titles, PRESS START | Done |  | 100% | backlog/item_158_build_the_splash_layout_header_covering_background_floating_titles_press_start.md |
-| [item_159_compact_the_splash_header_on_narrow_mobile](backlog/item_159_compact_the_splash_header_on_narrow_mobile.md) | Compact the splash header on narrow mobile | Ready |  | 0% | backlog/item_159_compact_the_splash_header_on_narrow_mobile.md |
-| [item_160_clean_up_app_root_locale_ownership_and_hooks_warning](backlog/item_160_clean_up_app_root_locale_ownership_and_hooks_warning.md) | Clean up App root locale ownership and Hooks warning | Ready |  | 0% | backlog/item_160_clean_up_app_root_locale_ownership_and_hooks_warning.md |
+| [item_159_compact_the_splash_header_on_narrow_mobile](backlog/item_159_compact_the_splash_header_on_narrow_mobile.md) | Compact the splash header on narrow mobile | Done |  | 100% | backlog/item_159_compact_the_splash_header_on_narrow_mobile.md |
+| [item_160_clean_up_app_root_locale_ownership_and_hooks_warning](backlog/item_160_clean_up_app_root_locale_ownership_and_hooks_warning.md) | Clean up App root locale ownership and Hooks warning | Done |  | 100% | backlog/item_160_clean_up_app_root_locale_ownership_and_hooks_warning.md |
+| [item_161_derive_deterministic_plan_risk_reads](backlog/item_161_derive_deterministic_plan_risk_reads.md) | Derive deterministic plan risk reads | Ready |  | 0% | backlog/item_161_derive_deterministic_plan_risk_reads.md |
+| [item_162_render_plan_risk_summary_before_commitment](backlog/item_162_render_plan_risk_summary_before_commitment.md) | Render plan risk summary before commitment | Ready |  | 0% | backlog/item_162_render_plan_risk_summary_before_commitment.md |
+| [item_163_derive_non_winning_success_verdicts](backlog/item_163_derive_non_winning_success_verdicts.md) | Derive non-winning success verdicts | Ready |  | 0% | backlog/item_163_derive_non_winning_success_verdicts.md |
+| [item_164_surface_non_winning_feedback_in_reports](backlog/item_164_surface_non_winning_feedback_in_reports.md) | Surface non-winning feedback in reports | Ready |  | 0% | backlog/item_164_surface_non_winning_feedback_in_reports.md |
+| [item_165_add_admin_filters_and_pagination](backlog/item_165_add_admin_filters_and_pagination.md) | Add admin filters and pagination | Ready |  | 0% | backlog/item_165_add_admin_filters_and_pagination.md |
+| [item_166_add_safe_admin_test_data_cleanup](backlog/item_166_add_safe_admin_test_data_cleanup.md) | Add safe admin test-data cleanup | Ready |  | 0% | backlog/item_166_add_safe_admin_test_data_cleanup.md |
+| [item_167_write_beta_support_runbooks_and_known_limits](backlog/item_167_write_beta_support_runbooks_and_known_limits.md) | Write beta support runbooks and known limits | Ready |  | 0% | backlog/item_167_write_beta_support_runbooks_and_known_limits.md |
 
 ## Tasks
 
@@ -362,4 +375,7 @@
 | [task_064_orchestrate_lap_scale_coherence_fix](tasks/task_064_orchestrate_lap_scale_coherence_fix.md) | Orchestrate lap-scale coherence fix | Done | codex | 100% | tasks/task_064_orchestrate_lap_scale_coherence_fix.md |
 | [task_065_orchestrate_mobile_modal_hygiene_and_playback_icons](tasks/task_065_orchestrate_mobile_modal_hygiene_and_playback_icons.md) | Orchestrate mobile modal hygiene and playback icons | Done | codex | 100% | tasks/task_065_orchestrate_mobile_modal_hygiene_and_playback_icons.md |
 | [task_066_orchestrate_the_home_splash_landing_screen](tasks/task_066_orchestrate_the_home_splash_landing_screen.md) | Orchestrate the home splash landing screen | Done | codex | 100% | tasks/task_066_orchestrate_the_home_splash_landing_screen.md |
-| [task_067_orchestrate_post_splash_playtest_polish](tasks/task_067_orchestrate_post_splash_playtest_polish.md) | Orchestrate post-splash playtest polish | Ready |  | 0% | tasks/task_067_orchestrate_post_splash_playtest_polish.md |
+| [task_067_orchestrate_post_splash_playtest_polish](tasks/task_067_orchestrate_post_splash_playtest_polish.md) | Orchestrate post-splash playtest polish | Done | codex | 100% | tasks/task_067_orchestrate_post_splash_playtest_polish.md |
+| [task_068_orchestrate_plan_risk_readability_layer](tasks/task_068_orchestrate_plan_risk_readability_layer.md) | Orchestrate plan risk readability layer | Ready |  | 0% | tasks/task_068_orchestrate_plan_risk_readability_layer.md |
+| [task_069_orchestrate_non_winning_success_feedback](tasks/task_069_orchestrate_non_winning_success_feedback.md) | Orchestrate non-winning success feedback | Ready |  | 0% | tasks/task_069_orchestrate_non_winning_success_feedback.md |
+| [task_070_orchestrate_beta_support_hardening](tasks/task_070_orchestrate_beta_support_hardening.md) | Orchestrate beta support hardening | Ready |  | 0% | tasks/task_070_orchestrate_beta_support_hardening.md |

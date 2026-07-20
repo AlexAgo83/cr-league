@@ -1,0 +1,55 @@
+## item_164_surface_non_winning_feedback_in_reports - Surface non-winning feedback in reports
+> From version: 0.3.11
+> Schema version: 1.0
+> Status: Ready
+> Understanding: 90%
+> Confidence: 85%
+> Progress: 0%
+> Complexity: Medium
+> Theme: Report UX
+> Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+
+# Problem
+- Derived feedback must appear in the result/report flow where players judge whether the race made sense.
+- The UI must stay compact and not compete with the main verdict.
+
+# Scope
+- In:
+  - Render the derived non-winning feedback in result/report surfaces.
+  - Add EN/FR copy for supported verdicts.
+  - Extend focused render/e2e tests around a non-winning scenario.
+- Out:
+  - New report page structure.
+  - Long narrative generation.
+  - Adding rewards or missions.
+
+# Acceptance criteria
+- AC1: Reports can show concrete non-winning success feedback.
+- AC5: EN/FR copy is present.
+- AC6: Report/replay/result flow still passes.
+
+# AC Traceability
+- request-AC1 -> This backlog slice. Proof: AC1: Reports can show concrete non-winning success feedback.
+- request-AC5 -> This backlog slice. Proof: AC5: EN/FR copy is present.
+- request-AC6 -> This backlog slice. Proof: AC6: Report/replay/result flow still passes.
+- request-AC7 -> This backlog slice. Proof: AC6: Report/replay/result flow still passes.
+
+# Decision framing
+- Product framing: Not needed
+- Architecture framing: Not needed
+
+# Links
+- Product brief(s): `prod_032_non_winning_success_feedback_product_brief`
+- Architecture decision(s): (none yet)
+- Request: `req_068_non_winning_success_feedback`
+- Primary task(s): `task_069_orchestrate_non_winning_success_feedback`
+
+# AI Context
+- Summary: Surface non-winning feedback in reports
+- Keywords: scaffolded-backlog, surface non-winning feedback in reports, implementation-ready
+- Use when: Implementing the scaffolded slice for Surface non-winning feedback in reports.
+- Skip when: The change belongs to another backlog slice.
+
+# Priority
+- Priority: Medium
+- Rationale: Set by scaffold input or defaulted for grooming.

@@ -1,0 +1,154 @@
+{
+  "title": "Beta support hardening",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/request/req_036_github_ci_render_blueprint_and_release_contract.md",
+    "logics/request/req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening.md",
+    "apps/api/src/app.ts",
+    "apps/api/src/features/leagues",
+    "apps/web/src/features/AdminConsoleView.tsx",
+    "apps/web/src/app/App.tsx",
+    "docs/runtime-configuration.md",
+    "tests/e2e/private-league.spec.ts",
+    "Roadmap 0.4.3: beta support hardening: admin reset/support path, backup/restore/support runbooks, known-limits page for testers, admin filters and 100-by-100 pagination on both admin screens, a safe admin action to delete test data sets, and small operational affordances discovered during hosted playtests."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Beta operations and support hardening",
+    "needs": [
+      "Prepare the hosted beta for support work without manual database intervention for common test-data cleanup and account/league inspection tasks.",
+      "Add safe admin filters and 100-by-100 pagination on admin users and admin leagues screens so support remains usable as data grows.",
+      "Add a guarded admin action to delete test data sets, including test accounts, test leagues, and related rows, with confirmation and audit-friendly feedback.",
+      "Document backup, restore, support triage, and known limits for testers/operators.",
+      "Keep destructive actions explicitly admin-only, confirmation-gated, and covered by API/web tests."
+    ],
+    "context": [
+      "0.4 ship rails are implemented for the current release path, but beta support still needs operational affordances before inviting a broader group.",
+      "Existing admin console functionality and admin-token protection should be reused. Do not introduce a full auth system in this request.",
+      "Repo review remediation pass 5 contains security/trust-boundary work that this request should build on rather than weaken.",
+      "Test-data deletion must be conservative: it should target clearly identified test data sets, avoid accidental production cleanup, and return clear counts/results.",
+      "Runbooks are part of the deliverable, not optional notes."
+    ],
+    "acceptance_criteria": [
+      "AC1: Admin users and leagues views support server-backed filters plus 100-by-100 pagination, with UI controls that preserve current admin access rules.",
+      "AC2: A safe admin-only test-data cleanup action can delete explicitly selected test accounts/leagues and related rows, requires confirmation, and reports deleted counts.",
+      "AC3: API tests cover filter/pagination behavior, admin authorization, and destructive-action safety boundaries.",
+      "AC4: Web tests or focused component tests cover admin filter/pagination controls and destructive confirmation UX.",
+      "AC5: Backup/restore/support runbooks and a known-limits tester page/doc are added or updated with concrete commands and recovery steps.",
+      "AC6: No full auth system, public self-service delete, or irreversible bulk wipe outside explicit admin test-data cleanup is introduced.",
+      "AC7: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Beta Support Hardening Product Brief",
+    "overview": "Operational hardening for a hosted beta: make admin support usable with filters and pagination, provide a conservative test-data cleanup action, and document backup/restore/support procedures so a small beta can run without ad hoc database intervention.",
+    "goals": [
+      "Let admins inspect and support growing beta data safely.",
+      "Provide a narrow, confirmation-gated path to clean test data sets.",
+      "Give operators and testers clear known-limits and recovery documentation."
+    ],
+    "non_goals": [
+      "No full authentication system.",
+      "No public user self-service deletion flow.",
+      "No broad production data wipe tooling.",
+      "No analytics or customer-support platform integration."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add admin filters and pagination",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Admin support",
+      "request_acs": ["AC1", "AC3", "AC4", "AC7"],
+      "problem": [
+        "Admin users and leagues screens will become hard to use as hosted beta data grows.",
+        "Support needs bounded server responses instead of unbounded admin lists."
+      ],
+      "scope_in": [
+        "Add server-backed filters and 100-by-100 pagination for admin users and leagues endpoints.",
+        "Expose compact UI controls in AdminConsoleView.",
+        "Cover API authorization and web control behavior with tests."
+      ],
+      "scope_out": [
+        "Full text search service.",
+        "Infinite scroll.",
+        "New admin auth model."
+      ],
+      "acceptance_criteria": [
+        "AC1: Admin screens support filters and 100-by-100 pagination.",
+        "AC3: API tests cover filter/pagination and admin authorization.",
+        "AC4: Web tests cover admin controls."
+      ]
+    },
+    {
+      "title": "Add safe admin test-data cleanup",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Admin support safety",
+      "request_acs": ["AC2", "AC3", "AC4", "AC6", "AC7"],
+      "problem": [
+        "Hosted beta support needs a safe way to remove test accounts/leagues without manual database edits.",
+        "Destructive actions are high risk and must be narrow, explicit, and well tested."
+      ],
+      "scope_in": [
+        "Add admin-only cleanup endpoint(s) for explicitly selected test data sets.",
+        "Require confirmation in the web admin UI and report deleted counts.",
+        "Add safety-boundary tests proving non-admins cannot run cleanup and unrelated data is not deleted."
+      ],
+      "scope_out": [
+        "Undo tooling.",
+        "Public account deletion.",
+        "Unscoped truncate/wipe-all operations."
+      ],
+      "acceptance_criteria": [
+        "AC2: Cleanup deletes selected test data and reports counts.",
+        "AC3: API tests cover authorization and safety.",
+        "AC6: No broad wipe or public deletion is introduced."
+      ]
+    },
+    {
+      "title": "Write beta support runbooks and known limits",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Operational documentation",
+      "request_acs": ["AC5", "AC7"],
+      "problem": [
+        "A hosted beta needs operator instructions before problems happen.",
+        "Testers need known limits so support requests do not become avoidable confusion."
+      ],
+      "scope_in": [
+        "Document backup, restore, support triage, test-data cleanup, and known limits.",
+        "Reference concrete commands/config paths already present in the repo.",
+        "Add docs validation proof at closeout."
+      ],
+      "scope_out": [
+        "External helpdesk integration.",
+        "Legal/privacy policy drafting.",
+        "Automated backup scheduling unless already supported by existing infrastructure."
+      ],
+      "acceptance_criteria": [
+        "AC5: Runbooks and known-limits docs include concrete commands and recovery steps.",
+        "AC7: Validation passes after documentation changes."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate beta support hardening",
+    "plan": [
+      "Inspect current admin API, admin UI, data model, and existing runtime/release docs.",
+      "Implement admin filters and 100-by-100 pagination with API and UI tests.",
+      "Implement narrow confirmation-gated admin test-data cleanup with safety tests.",
+      "Add backup/restore/support runbooks and known-limits documentation.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/beta-support-hardening.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

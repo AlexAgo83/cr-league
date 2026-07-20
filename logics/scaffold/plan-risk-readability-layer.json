@@ -1,0 +1,131 @@
+{
+  "title": "Plan risk readability layer",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/request/req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization.md",
+    "logics/request/req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next.md",
+    "apps/web/src/features/PlanView.tsx",
+    "apps/web/src/features/DirectivePanel.tsx",
+    "apps/web/src/app/raceFlow.ts",
+    "apps/web/src/app/useRaceDerivations.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "tests/e2e/private-league.spec.ts",
+    "Roadmap 0.3.13: show a compact safe / risky / high-upside read before sending the plan, including where the setup is strong, where it can fail, and which finishing band it is trying to optimize."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Plan comprehension and decision confidence",
+    "needs": [
+      "Before the player sends a race plan, show a compact risk/readability summary for the current directive.",
+      "Classify the plan as safe, risky, or high-upside using existing plan inputs, circuit traits, weather forecast, card choice, qualifying/grid context, and current league state.",
+      "Explain the plan's main strength, main failure mode, and intended finishing band in short player-facing language.",
+      "Keep the feature advisory only: it must not change simulation, plan locking, card consumption, or API payloads.",
+      "Make the summary available on the plan screen and in the send-plan confirmation so the player sees it before committing."
+    ],
+    "context": [
+      "The current plan flow already has directive controls, circuit traits, weather forecast, card choice, qualifying state, and a send-plan confirmation. The new layer should derive from that existing state instead of introducing a new model.",
+      "The result verdict pass (req_060) explains outcomes after the race. This request is the pre-race counterpart: what the player is trying to do and why it is safe/risky/high-upside before committing.",
+      "Avoid a prediction engine. Use deterministic heuristics that are simple, testable, and stable enough to be explained in copy.",
+      "The summary should reuse existing theme tokens and compact panel patterns. No modal redesign and no new charting or visual dependency.",
+      "New i18n keys are expected for risk labels and short explanation copy in en/fr."
+    ],
+    "acceptance_criteria": [
+      "AC1: The plan screen shows a compact risk/readability panel for the currently selected directive, with one of safe/risky/high-upside, one strength, one failure mode, and one intended finishing band.",
+      "AC2: The send-plan confirmation repeats the same risk/readability summary before the player commits the directive.",
+      "AC3: The heuristic reacts deterministically to at least approach, tire prep, pit strategy, selected card, forecast weather, circuit traits, and available qualifying/grid context.",
+      "AC4: The feature changes no simulation results, no API contract, and no persisted directive shape.",
+      "AC5: EN/FR copy is present and covered by i18n validation/tests where applicable.",
+      "AC6: Unit tests cover representative safe, risky, and high-upside derivations; existing App/e2e plan flow tests still pass.",
+      "AC7: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Plan Risk Readability Product Brief",
+    "overview": "A pre-race readability layer that tells players what kind of plan they are about to send: safe, risky, or high-upside. It turns existing directive/circuit/weather/card context into a short explanation before commitment, without changing the race simulation.",
+    "goals": [
+      "Help players understand the consequence profile of their directive before sending it.",
+      "Make plan choices feel causal by naming the intended finishing band and tradeoff.",
+      "Create a natural pre-race counterpart to the post-race verdict/report work."
+    ],
+    "non_goals": [
+      "No simulation rewrite, no probability model, and no new persisted plan fields.",
+      "No broad redesign of PlanView or the send-plan modal.",
+      "No promise that the summary predicts the exact result."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Derive deterministic plan risk reads",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Plan comprehension",
+      "request_acs": ["AC3", "AC4", "AC6", "AC7"],
+      "problem": [
+        "Players can configure a directive but do not get a compact read of whether the plan is safe, risky, or high-upside before committing it.",
+        "A full prediction model would be too heavy for this stage; the product needs explainable heuristics from existing data."
+      ],
+      "scope_in": [
+        "Add a deterministic helper that derives risk tier, strength, failure mode, and target finishing band from existing race/plan inputs.",
+        "Cover safe, risky, and high-upside examples with focused unit tests.",
+        "Keep the helper pure and independent of API persistence."
+      ],
+      "scope_out": [
+        "Changing simulateRace or reward math.",
+        "Adding probability distributions or exact finish predictions.",
+        "Persisting new directive fields."
+      ],
+      "acceptance_criteria": [
+        "AC3: Heuristic reacts to directive settings, forecast/circuit/card, and qualifying/grid context.",
+        "AC4: No simulation, API, or persisted directive behavior changes.",
+        "AC6: Unit tests cover safe/risky/high-upside representative cases."
+      ]
+    },
+    {
+      "title": "Render plan risk summary before commitment",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Plan UX",
+      "request_acs": ["AC1", "AC2", "AC5", "AC6", "AC7"],
+      "problem": [
+        "The risk read only helps if it appears while the player is choosing and again before the commitment click.",
+        "The UI must stay compact so it does not compete with directive controls."
+      ],
+      "scope_in": [
+        "Render the risk/readability summary in PlanView near the directive controls.",
+        "Repeat the summary inside the send-plan confirmation modal.",
+        "Add EN/FR copy and targeted render/e2e assertions."
+      ],
+      "scope_out": [
+        "A new modal flow or wizard.",
+        "New visual dependencies.",
+        "Changing the send-plan action semantics."
+      ],
+      "acceptance_criteria": [
+        "AC1: Plan screen shows the compact risk/readability panel.",
+        "AC2: Send-plan confirmation repeats the same summary.",
+        "AC5: EN/FR copy is present.",
+        "AC6: Existing plan flow tests still pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate plan risk readability layer",
+    "plan": [
+      "Inspect current plan derivations, directive controls, send-plan confirmation, and report verdict helpers for reusable patterns.",
+      "Implement the smallest pure helper for safe/risky/high-upside derivation and focused tests.",
+      "Render the summary in PlanView and send-plan confirmation using existing compact panel styles.",
+      "Add i18n copy in EN/FR and targeted tests for render and flow behavior.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/plan-risk-readability-layer.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

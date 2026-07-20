@@ -1,0 +1,128 @@
+{
+  "title": "Non-winning success feedback",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/request/req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next.md",
+    "apps/web/src/features/ReportView.tsx",
+    "apps/web/src/features/ResultView.tsx",
+    "apps/web/src/features/replay/ReplayStageOverlay.tsx",
+    "apps/web/src/app/raceFlow.ts",
+    "apps/web/src/app/useRaceDerivations.ts",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "tests/e2e/private-league.spec.ts",
+    "Roadmap 0.3.15: make defensive, economy, and weather plans visibly rewarding when they save risk, preserve a target position, amortize bad weather, or turn credits into future options even without a win."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Outcome comprehension beyond winning",
+    "needs": [
+      "Make non-winning races feel understandable and sometimes successful when the player executed a defensive, economy, or weather plan well.",
+      "Detect and name meaningful non-winning outcomes such as preserved position, minimized loss in bad weather, converted card value, saved credits, or gained future option value.",
+      "Surface this feedback in result/report copy and, where applicable, replay/report summary moments without changing rewards or standings.",
+      "Keep the feedback honest: do not call a poor result successful unless the data supports a concrete saved-risk or future-value reason.",
+      "Support EN/FR copy and keep the UI compact."
+    ],
+    "context": [
+      "Reports currently explain outcomes and rewards, but a player who does not win can still miss why their plan was useful.",
+      "This request should derive labels from existing result, decision, card, weather, and classification data. It should not invent hidden objectives or grant extra rewards.",
+      "Dynamic race objectives (0.3.12) may later add explicit missions. This request should work without selected objectives and remain compatible with them later.",
+      "Reuse existing report/replay/result surfaces rather than creating a new results page."
+    ],
+    "acceptance_criteria": [
+      "AC1: Result/report surfaces can show a non-winning success verdict when a concrete defensive, economy, weather, or future-value outcome is detected.",
+      "AC2: At least three deterministic non-winning patterns are supported: position preserved/limited loss, weather/card plan value, and economy/future-option value.",
+      "AC3: A clearly poor non-winning result does not receive a success verdict; it still receives useful failure/try-next guidance.",
+      "AC4: Feedback changes no simulation, standings, rewards, or persisted result shape unless an additive derived view model is used only in the web app.",
+      "AC5: EN/FR copy is present for labels and explanations.",
+      "AC6: Unit tests cover positive and negative derivations; existing report/replay/result e2e flow still passes.",
+      "AC7: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Non-winning Success Feedback Product Brief",
+    "overview": "A result-feedback pass that recognizes when a player did something valuable without winning. Defensive, economy, and weather plans can earn clear explanatory praise when the data supports it, helping the game feel less binary while preserving existing rewards and standings.",
+    "goals": [
+      "Make non-winning outcomes legible and emotionally fair.",
+      "Reinforce causal planning by naming what the plan protected or converted.",
+      "Keep reward economy unchanged while improving feedback quality."
+    ],
+    "non_goals": [
+      "No new missions/objective selection system.",
+      "No additional rewards, standings adjustments, or simulation changes.",
+      "No broad report redesign."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Derive non-winning success verdicts",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Result interpretation",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC6", "AC7"],
+      "problem": [
+        "The app can explain a win, but non-winning plans often read as plain losses even when they protected position, handled bad weather, or saved future value.",
+        "The logic must stay honest and deterministic."
+      ],
+      "scope_in": [
+        "Add a pure derived helper for non-winning success verdicts from existing decision/result/context inputs.",
+        "Support at least position-preservation, weather/card-value, and economy/future-option patterns.",
+        "Add negative tests proving poor non-winning results are not mislabeled as success."
+      ],
+      "scope_out": [
+        "Changing result storage, rewards, or standings.",
+        "Adding explicit objectives.",
+        "Using randomness or subjective scoring."
+      ],
+      "acceptance_criteria": [
+        "AC2: Three deterministic non-winning success patterns are supported.",
+        "AC3: Poor results do not receive success verdicts.",
+        "AC4: No simulation/reward/standings changes."
+      ]
+    },
+    {
+      "title": "Surface non-winning feedback in reports",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Report UX",
+      "request_acs": ["AC1", "AC5", "AC6", "AC7"],
+      "problem": [
+        "Derived feedback must appear in the result/report flow where players judge whether the race made sense.",
+        "The UI must stay compact and not compete with the main verdict."
+      ],
+      "scope_in": [
+        "Render the derived non-winning feedback in result/report surfaces.",
+        "Add EN/FR copy for supported verdicts.",
+        "Extend focused render/e2e tests around a non-winning scenario."
+      ],
+      "scope_out": [
+        "New report page structure.",
+        "Long narrative generation.",
+        "Adding rewards or missions."
+      ],
+      "acceptance_criteria": [
+        "AC1: Reports can show concrete non-winning success feedback.",
+        "AC5: EN/FR copy is present.",
+        "AC6: Report/replay/result flow still passes."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate non-winning success feedback",
+    "plan": [
+      "Inspect report/result derivations and identify existing data available for non-winning feedback.",
+      "Implement a pure verdict derivation helper with positive and negative tests.",
+      "Render feedback in existing result/report surfaces with compact copy.",
+      "Add EN/FR i18n keys and targeted render/e2e coverage.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/non-winning-success-feedback.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

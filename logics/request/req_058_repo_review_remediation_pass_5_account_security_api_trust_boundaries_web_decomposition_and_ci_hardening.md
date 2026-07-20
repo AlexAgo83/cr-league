@@ -1,9 +1,9 @@
 ## req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening - Repo review remediation pass 5: account security, API trust boundaries, web decomposition, and CI hardening
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Ready
+> Understanding: 90
+> Confidence: 85
 > Complexity: Medium
 > Theme: Repo review remediation
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -26,7 +26,7 @@
 - ReplayView.tsx is 1071 lines holding several sub-components, a requestAnimationFrame loop, ~10 state hooks, 6 refs, and manual pop-timer arrays; the clock logic belongs in a useReplayClock hook and the scrubber/tower/stage sub-components in their own files. Decomposition must not change replay behavior pinned by the existing ReplayView tests.
 - testMemoryDb.ts implements $transaction as fn(db) and $queryRaw as a no-op, so the FOR UPDATE locks and transactional rollbacks added in passes 3 and 4 are never exercised by any test. The roadmap already reserves patch 0.4.2 for a real Postgres integration-test CI lane; this pass implements it with a postgres service container in CI and a small integration suite covering concurrent qualifying submissions, the resolve claim, and the credit-guarded buy path. The unit job currently exports DATABASE_URL without provisioning Postgres, which is misleading and should be resolved by this lane.
 - CI gaps from the review: no Dependabot or npm audit despite SECURITY.md; no coverage collection so unit-test reach is invisible; eslint.config.js has only js.recommended and tseslint.recommended for a React app (no react-hooks, no jsx-a11y despite ADR-006); the deploy-release.yml health-poll ends in ::warning:: and lets a stuck Render deploy pass; package.json has no engines field while CI and Render pin Node 20; .gitignore ignores reports/ yet one playtest report is force-committed.
-- Out of pattern-scope on purpose: the requireAdminClaim ownership self-healing flagged by the review is pass-4 intended behavior and stays; the qualifyingRuns JSON growth, Prisma string enums, and vitest node-environment split remain deferred watchlist items unless the integration lane makes one of them free to pick up.
+- Out of pattern-scope on purpose: the requireAdminClaim ownership self-healing flagged by the review is pass-4 intended behavior and stays; the qualifyingRuns JSON growth and Prisma string enums remain deferred watchlist items unless the integration lane makes one of them free to pick up; the vitest node-environment split rides along with the coverage work in the CI hardening item since both touch vitest.config.ts.
 
 # Acceptance criteria
 - AC1: Recovery codes are generated from at least 16 random bytes, stored with a salted scrypt hash, verified in constant time, legacy SHA-256 codes still verify and are upgraded on successful use, and /profiles/recover enforces a per-email and per-IP rate limit with tests covering lockout and legacy upgrade.

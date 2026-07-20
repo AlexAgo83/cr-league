@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 90
+> Confidence: 85
+> Progress: 0
 > Complexity: Low
 > Theme: Engineering infrastructure
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -16,6 +16,7 @@
 - In:
   - Add a Dependabot config for npm and github-actions ecosystems plus an npm audit gate (high severity and above) in the CI quality lane.
   - Enable vitest coverage collection and surface the summary in CI output.
+  - While in vitest.config.ts, scope jsdom to web tests (environmentMatchGlobs) with node as the default environment for api/shared suites.
   - Add eslint-plugin-react-hooks (recommended) and eslint-plugin-jsx-a11y (recommended) scoped to the web app, fixing or explicitly justifying every violation they surface.
   - Make the deploy-release health-poll exit non-zero when the deployed version/commit never matches, marking the GitHub deployment as failed.
   - Declare engines.node >= 20 in the root package.json.

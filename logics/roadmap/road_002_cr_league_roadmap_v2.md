@@ -9,6 +9,7 @@
 > Semantic edit: 2026-07-20 added first-GP action clarity patch from AI/player playtest.
 > Semantic edit: 2026-07-20 added 0.4.4 repo review remediation pass 5 (req_058); 0.4.2 is implemented by that chain.
 > Semantic edit: 2026-07-20 scaffolded 0.3.14 (req_060), 0.3.16 (req_059), and 0.4.1 (req_061, sequenced after req_058) as ready-to-dev chains.
+> Semantic edit: 2026-07-20 added 0.3.17 visibility-refetch patch and watchlist entries for view-screen tests and multiplayer freshness, from the v0.3.11 review follow-up.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -56,6 +57,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
   - 0.3.14 — Result verdict pass: add a direct `why this worked / why this failed / try this next` summary to reports so players understand the outcome in seconds before reading detailed phases. (`req_060`, ready to dev)
   - 0.3.15 — Non-winning success feedback: make defensive, economy, and weather plans visibly rewarding when they save risk, preserve a target position, amortize bad weather, or turn credits into future options even without a win.
   - 0.3.16 — First-GP action clarity: make `New chrono` the only recommended CTA at the start of a GP, add one compact circuit/weather recommendation in the plan, and harmonize first-session vocabulary so league, championship, plan, chrono, and launch labels do not compete. (`req_059`, ready to dev)
+  - 0.3.17 — League-state freshness on return: refetch the league state when the tab regains visibility (visibilitychange, no polling), so opponents' submissions and results appear when a player comes back to the app instead of only after their own actions. Real-time polling/SSE stays a 0.6 decision.
 - Exit signal:
   - 3 to 5 testers complete a 3-GP session on the polished loop;
   - feedback answers whether choices feel causal, recaps feel personal, and seasons feel like arcs;
@@ -112,6 +114,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Keep visual regression, file-size linting, test sharding, and normalized replay/event tables out until CI, layout stability, or admin/debug needs make the current setup painful.
 - Watch qualifying impact in playtests: if pole wins too often, soften grid advantage or increase overtaking windows before changing the whole qualifying model.
 - Keep admin accident recovery minimal: prefer confirmation, runbooks, and test-data cleanup before adding undo/reset-recent-action tooling.
+
+- After the first coverage report from 0.4.4 (`req_058`) lands, add render/interaction tests for the 2-3 weakest game screens (PlanView, GarageView, ResultView first) as a backlog item on an existing chain — not a dedicated corpus.
+- Keep `submitDecision`'s repeated full-state reloads as-is until the 0.4.4 Postgres integration lane measures a real cost; the fix (thread loaded state through) is mechanical when justified.
 
 # Next Recommended Requests
 - Dev the five ready chains in the encoded order; push main to GitHub before handing off (`req_036` workflows only exist on GitHub).

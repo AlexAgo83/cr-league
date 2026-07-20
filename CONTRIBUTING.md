@@ -53,6 +53,10 @@ npm run lint
 npm run logics:validate
 ```
 
+UI-facing changes that add or alter a player flow must extend the e2e spec
+(`tests/e2e/private-league.spec.ts`) for that flow — e2e coverage grows with
+the product, not as a separate effort.
+
 For docs-only changes, at minimum run:
 
 ```bash

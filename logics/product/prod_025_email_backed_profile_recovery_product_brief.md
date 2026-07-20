@@ -1,8 +1,8 @@
 ## prod_025_email_backed_profile_recovery_product_brief - Email-Backed Profile Recovery Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`
-> Related backlog: `item_146_minimal_smtp_mailer_module_and_configuration`, `item_147_send_the_recovery_code_at_profile_creation`, `item_148_self_service_recovery_code_re_issue_by_email`
+> Related backlog: `item_146_minimal_smtp_mailer_module_and_configuration`
 > Related task: `task_062_orchestrate_email_backed_profile_recovery`
 > Related architecture: (none yet)
 > Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
@@ -46,5 +46,5 @@ Roadmap patch 0.4.1: a minimal SMTP mailer sends the recovery code at profile cr
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`
+- Product back-reference: `item_146_minimal_smtp_mailer_module_and_configuration`
 - Task back-reference: `task_062_orchestrate_email_backed_profile_recovery`

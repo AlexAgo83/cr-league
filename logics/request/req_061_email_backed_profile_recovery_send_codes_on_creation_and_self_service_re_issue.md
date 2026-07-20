@@ -1,7 +1,7 @@
 ## req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue - Email-backed profile recovery: send codes on creation and self-service re-issue
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium
@@ -41,6 +41,17 @@
 # Companion docs
 - Product brief(s): `prod_025_email_backed_profile_recovery_product_brief`
 - Architecture decision(s): (none yet)
+
+# AC Traceability
+- AC1 -> `task_062_orchestrate_email_backed_profile_recovery`. Proof: mailer/config/injection/no-op behavior implemented in API.
+- AC2 -> `task_062_orchestrate_email_backed_profile_recovery`. Proof: profile creation sends via active mailer, still displays the one-time code, and tolerates no-op/failing mailer.
+- AC3 -> `task_062_orchestrate_email_backed_profile_recovery`. Proof: `POST /profiles/recovery-code` rotates to a fresh emailed recovery code for known profiles.
+- AC4 -> `task_062_orchestrate_email_backed_profile_recovery`. Proof: re-issue limiter/cooldown and neutral response behavior are covered by API tests.
+- AC5 -> `task_062_orchestrate_email_backed_profile_recovery`. Proof: recover form includes email re-issue path and EN/FR neutral copy; creation copy reflects `recoveryEmailSent`.
+- AC6 -> `task_062_orchestrate_email_backed_profile_recovery`. Proof: API test coverage and `docs/runtime-configuration.md` document the shipped flow.
+- AC7 -> `task_062_orchestrate_email_backed_profile_recovery`. Proof: full validation suite passed at closeout.
+
+> Non-semantic edit: closeout traceability proof added after implementation without changing the accepted need.
 
 # References
 - AGENTS.md

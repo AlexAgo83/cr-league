@@ -1,10 +1,10 @@
 ## item_147_send_the_recovery_code_at_profile_creation - Send the recovery code at profile creation
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Low
 > Theme: Ship rails
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,6 +31,8 @@
 - request-AC2 -> This backlog slice. Proof: AC1: Active mode sends the code to the profile email at creation; no-op mode changes nothing.
 - request-AC5 -> This backlog slice. Proof: AC2: A mailer failure never fails profile creation.
 - request-AC7 -> This backlog slice. Proof: AC3: Web copy reflects whether the email was sent, in both locales.
+- request-AC4 -> This backlog slice. Evidence needed: The re-issue path is rate-limited per email and per IP via the item_135 limiter and enforces a per-profile cooldown stored in a new nullable Profile timestamp, without leaking account existence through status codes, bodies, or the cooldown.
+- request-AC6 -> This backlog slice. Evidence needed: API tests cover mail-sent-on-create, no-op mode, re-issue rotation, neutral response for unknown emails, rate limit, and cooldown; the runtime-configuration runbook documents the shipped endpoints.
 
 # Decision framing
 - Product framing: Not needed
@@ -57,3 +59,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_062_orchestrate_email_backed_profile_recovery`
+
+# Notes
+- Task `task_062_orchestrate_email_backed_profile_recovery` was finished via `logics-manager flow finish task` on 2026-07-20.

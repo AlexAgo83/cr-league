@@ -1,10 +1,10 @@
 ## item_148_self_service_recovery_code_re_issue_by_email - Self-service recovery-code re-issue by email
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Ship rails
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -63,3 +63,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_062_orchestrate_email_backed_profile_recovery`
+
+# Notes
+- Task `task_062_orchestrate_email_backed_profile_recovery` was finished via `logics-manager flow finish task` on 2026-07-20.

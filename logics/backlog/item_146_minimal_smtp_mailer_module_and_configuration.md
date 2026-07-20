@@ -1,10 +1,10 @@
 ## item_146_minimal_smtp_mailer_module_and_configuration - Minimal SMTP mailer module and configuration
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Low
 > Theme: Ship rails
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -30,6 +30,10 @@
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Mailer activates from env, no-ops safely without it, and never logs secret material.
 - request-AC7 -> This backlog slice. Proof: AC2: Tests exercise both modes through the injected fake with no network.
+- request-AC3 -> This backlog slice. Evidence needed: A re-issue endpoint accepts an email, rotates the recovery code and hash using the item_135 generator and hashing, emails the new code, and returns an identical neutral response whether or not the profile exists.
+- request-AC4 -> This backlog slice. Evidence needed: The re-issue path is rate-limited per email and per IP via the item_135 limiter and enforces a per-profile cooldown stored in a new nullable Profile timestamp, without leaking account existence through status codes, bodies, or the cooldown.
+- request-AC5 -> This backlog slice. Evidence needed: The web recover flow offers the email re-issue path with neutral EN and FR copy, and creation copy mentions the email when one was sent.
+- request-AC6 -> This backlog slice. Evidence needed: API tests cover mail-sent-on-create, no-op mode, re-issue rotation, neutral response for unknown emails, rate limit, and cooldown; the runtime-configuration runbook documents the shipped endpoints.
 
 # Decision framing
 - Product framing: Not needed
@@ -56,3 +60,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_062_orchestrate_email_backed_profile_recovery`
+
+# Notes
+- Task `task_062_orchestrate_email_backed_profile_recovery` was finished via `logics-manager flow finish task` on 2026-07-20.

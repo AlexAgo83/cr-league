@@ -1678,7 +1678,6 @@ label small {
 .directive-confirm-summary .plan-risk-summary.compact {
   background: rgb(16 14 18 / 0.8);
   border: 1px solid rgb(255 255 255 / 0.12);
-  border-left: 4px solid var(--plan-risk-accent, var(--color-accent));
   border-radius: 8px;
   color: var(--color-text);
   margin-top: 0;

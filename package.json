@@ -8,7 +8,7 @@
     "packages/*"
   ],
   "scripts": {
-    "clean": "rm -rf apps/api/dist apps/web/dist packages/shared/dist",
+    "clean": "rm -rf apps/api/dist apps/web/dist packages/shared/dist apps/api/tsconfig.tsbuildinfo apps/web/tsconfig.tsbuildinfo packages/shared/tsconfig.tsbuildinfo",
     "dev": "node scripts/dev-local.mjs",
     "dev:stop": "node scripts/stop-dev.mjs",
     "dev:api": "npm run dev -w @cr-league/api",

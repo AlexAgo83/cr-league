@@ -1,10 +1,10 @@
 ## item_151_readability_papercuts_attempt_rank_labels_and_key_moment_variety - Readability papercuts: attempt rank labels and key-moment variety
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90
 > Confidence: 85
-> Progress: 85%
+> Progress: 100%
 > Complexity: Low
 > Theme: Race learning and feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -29,6 +29,10 @@
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: Chrono attempts no longer carry race-position styling or labels.
 - request-AC8 -> This backlog slice. Proof: AC2: Key moments show no duplicate same-lap same-type lines and at most one entry per event type unless slots remain.
+- request-AC3 -> This backlog slice. Evidence needed: Enter submits the profile create, profile recover, and league create/join forms when their required fields are filled.
+- request-AC4 -> This backlog slice. Evidence needed: A quick-start intro dismissed once for a league does not reopen on reload for that league, without ticking the checkbox; the help affordance to reopen intros still works.
+- request-AC6 -> This backlog slice. Evidence needed: Send plan opens a confirmation summarizing approach, preparation, pit strategy, and card, warning when the inventory holds a playable card and none is selected; the plan screen shows an explicit locked state with visually disabled options; a carried-over plan is labeled with its origin GP until first opened; locking stays irreversible.
+- request-AC7 -> This backlog slice. Evidence needed: Returning to a finished Grand Prix lands on the summary (classification and actions), not an auto-playing replay; the replay remains one click away and its exit control carries a visible label, not only an aria-label.
 
 # Decision framing
 - Product framing: Not needed
@@ -54,3 +58,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_063_orchestrate_replay_suspense_and_first_contact_polish`
+
+# Notes
+- Task `task_063_orchestrate_replay_suspense_and_first_contact_polish` was finished via `logics-manager flow finish task` on 2026-07-20.

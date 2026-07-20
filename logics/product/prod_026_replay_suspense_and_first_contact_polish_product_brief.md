@@ -1,8 +1,8 @@
 ## prod_026_replay_suspense_and_first_contact_polish_product_brief - Replay Suspense and First-Contact Polish Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest`
-> Related backlog: `item_149_gate_the_race_payoff_on_replay_completion`, `item_150_first_contact_frictions_one_click_chrono_enter_submits_intros_persist`, `item_151_readability_papercuts_attempt_rank_labels_and_key_moment_variety`
+> Related backlog: `item_149_gate_the_race_payoff_on_replay_completion`
 > Related task: `task_063_orchestrate_replay_suspense_and_first_contact_polish`
 > Related architecture: (none yet)
 > Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
@@ -45,5 +45,5 @@ Playtest-driven patch 0.3.18: keep the race outcome hidden until the replay has 
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest`
+- Product back-reference: `item_149_gate_the_race_payoff_on_replay_completion`
 - Task back-reference: `task_063_orchestrate_replay_suspense_and_first_contact_polish`

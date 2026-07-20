@@ -1,10 +1,10 @@
 ## item_149_gate_the_race_payoff_on_replay_completion - Gate the race payoff on replay completion
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90
 > Confidence: 85
-> Progress: 85%
+> Progress: 100%
 > Complexity: Low
 > Theme: Replay suspense
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,9 @@
 - request-AC1 -> This backlog slice. Proof: AC1: No final classification or payoff is visible while the replay plays.
 - request-AC7 -> This backlog slice. Proof: AC4: A finished GP reopens on its summary, not an auto-playing replay, and the replay exit has a visible label.
 - request-AC8 -> This backlog slice. Proof: AC2: Completion or explicit skip reveals the payoff as today.
+- request-AC3 -> This backlog slice. Evidence needed: Enter submits the profile create, profile recover, and league create/join forms when their required fields are filled.
+- request-AC5 -> This backlog slice. Evidence needed: Chrono attempts are ranked without race-position P labels in both locales, and the report's key moments never show duplicate identical lines for the same lap and event type, with entries preferring variety across the five slots.
+- request-AC6 -> This backlog slice. Evidence needed: Send plan opens a confirmation summarizing approach, preparation, pit strategy, and card, warning when the inventory holds a playable card and none is selected; the plan screen shows an explicit locked state with visually disabled options; a carried-over plan is labeled with its origin GP until first opened; locking stays irreversible.
 
 # Decision framing
 - Product framing: Not needed
@@ -64,3 +67,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_063_orchestrate_replay_suspense_and_first_contact_polish`
+
+# Notes
+- Task `task_063_orchestrate_replay_suspense_and_first_contact_polish` was finished via `logics-manager flow finish task` on 2026-07-20.

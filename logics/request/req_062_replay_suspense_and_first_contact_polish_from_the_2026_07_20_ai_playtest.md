@@ -1,7 +1,7 @@
 ## req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest - Replay suspense and first-contact polish from the 2026-07-20 AI playtest
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90
 > Confidence: 85
 > Complexity: Low
@@ -43,6 +43,18 @@
 # Companion docs
 - Product brief(s): `prod_026_replay_suspense_and_first_contact_polish_product_brief`
 - Architecture decision(s): (none yet)
+
+# AC Traceability
+- AC1 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: replay payoff/report gate remains hidden until completion or Skip to result, then payoff appears; covered by `apps/web/src/app/App.test.tsx`.
+- AC2 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: chrono starts on one click while attempts remain and keeps final-attempt confirmation; covered by `apps/web/src/app/App.test.tsx`.
+- AC3 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: profile create/recover and league create/join use native submit paths; covered by `apps/web/src/app/App.test.tsx` and `apps/web/src/app/App.profile.test.tsx`.
+- AC4 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: league-scoped intro dismissals persist after plain close and reset clears them; covered by `apps/web/src/app/App.test.tsx`.
+- AC5 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: chrono ranks use `#` labels and report moments dedupe same displayed lap/event type while preserving variety; covered by `apps/web/src/app/App.test.tsx` and `apps/web/src/features/ReportView.test.tsx`.
+- AC6 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: Send plan confirms plan summary, warns for unused playable inventory card, locked plan is explicit, and carried-over plan label is first-visit only; covered by `apps/web/src/app/App.test.tsx`.
+- AC7 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: resolved GP entry lands on the summary with Replay one click away, explicit replay routes still work, and replay close shows Back to circuit text; covered by `apps/web/src/app/App.test.tsx` and `apps/web/src/app/App.profile.test.tsx`.
+- AC8 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: full validation suite passed at closeout.
+
+> Non-semantic edit: closeout traceability proof added after implementation without changing the accepted need.
 
 # References
 - AGENTS.md

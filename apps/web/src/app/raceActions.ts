@@ -13,7 +13,6 @@ export function createRaceActions({
   form,
   selectedCardId,
   currentCircuit,
-  qualifyingAttemptsUsed,
   qualifyingAttemptsLeft,
   qualifyingDisabled,
   lastQualifyingRun,
@@ -40,7 +39,6 @@ export function createRaceActions({
   form: FormState;
   selectedCardId: FormState["cardId"];
   currentCircuit: CityCircuit;
-  qualifyingAttemptsUsed: number;
   qualifyingAttemptsLeft: number;
   qualifyingDisabled: boolean;
   lastQualifyingRun: QualifyingRun | null;

@@ -1,10 +1,10 @@
 ## item_153_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest - Plan-lock safety: confirm on send, visible locked state, carried-over label
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90
 > Confidence: 85
-> Progress: 85%
+> Progress: 100%
 > Complexity: Low
 > Theme: First-session UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -35,6 +35,10 @@
 # AC Traceability
 - request-AC6 -> This backlog slice. Proof: AC1: Sending the plan requires confirming a summary of approach, preparation, pit strategy, and card, with a visible warning when a playable card is left unselected.
 - request-AC8 -> This backlog slice. Proof: AC4: Locking remains irreversible and all existing plan-flow tests pass with the new confirmation step.
+- request-AC2 -> This backlog slice. Evidence needed: With attempts remaining, one click on the desk chrono CTA starts the run with the attempts-left count still visible somewhere; a confirmation only appears for the last attempt.
+- request-AC3 -> This backlog slice. Evidence needed: Enter submits the profile create, profile recover, and league create/join forms when their required fields are filled.
+- request-AC5 -> This backlog slice. Evidence needed: Chrono attempts are ranked without race-position P labels in both locales, and the report's key moments never show duplicate identical lines for the same lap and event type, with entries preferring variety across the five slots.
+- request-AC7 -> This backlog slice. Evidence needed: Returning to a finished Grand Prix lands on the summary (classification and actions), not an auto-playing replay; the replay remains one click away and its exit control carries a visible label, not only an aria-label.
 
 # Decision framing
 - Product framing: Not needed
@@ -47,7 +51,7 @@
 # Links
 - Product brief(s): (none yet)
 - Architecture decision(s): (none yet)
-- Request: `logics/request/req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest.md`
+- Request: `req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest`
 - Primary task(s): `task_063_orchestrate_replay_suspense_and_first_contact_polish`
 
 # AI Context
@@ -67,3 +71,7 @@
 - Validation wave: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts` passed with 44 tests.
 - Source file: `logics/request/req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest.md`.
 - Generated locally by logics-manager.
+- Task `task_063_orchestrate_replay_suspense_and_first_contact_polish` was finished via `logics-manager flow finish task` on 2026-07-20.
+
+# Tasks
+- `task_063_orchestrate_replay_suspense_and_first_contact_polish`

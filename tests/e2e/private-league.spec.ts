@@ -488,6 +488,7 @@ async function suppressOnboarding(page: Page) {
   await page.evaluate(() => {
     for (const key of ["cr-league-help-league-intro", "cr-league-help-race", "cr-league-help-plan", "cr-league-help-garage"]) {
       localStorage.setItem(key, "1");
+      localStorage.setItem(`${key}:league_1`, "1");
     }
   });
 }

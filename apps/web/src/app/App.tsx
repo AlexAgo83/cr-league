@@ -245,7 +245,6 @@ export function App() {
     form,
     selectedCardId,
     currentCircuit,
-    qualifyingAttemptsUsed,
     qualifyingAttemptsLeft,
     qualifyingDisabled,
     lastQualifyingRun,

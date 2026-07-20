@@ -75,7 +75,7 @@ export function ConfirmActionModal({
   return (
     <Modal label={label} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image={image} kicker={kicker} title={title} />
-      <p>{body}</p>
+      {typeof body === "string" ? <p>{body}</p> : <div className="modal-body">{body}</div>}
       <div className="actions secondary-actions">
         {pendingMessage !== undefined ? <PendingFeedback message={pendingMessage} /> : null}
         <button type="button" className={danger ? "danger-button" : undefined} onClick={onConfirm} disabled={status === "loading"}>

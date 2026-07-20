@@ -2,7 +2,6 @@ import type { AdminUser, FormState, LeagueState, ProfileSession } from "./types.
 import type { CityCircuit } from "./circuits.js";
 import type { Translator } from "./helpers.js";
 import type { OnboardingHelpTopic } from "./OnboardingShell.js";
-import type { TranslationKey } from "../i18n/index.js";
 import { LeagueIntroModal, OnboardingHelpModal } from "./OnboardingShell.js";
 import {
   AdminDeleteUserModal,
@@ -14,6 +13,7 @@ import {
   RestartConfirmModal,
   SeasonRecapModal
 } from "./AppModals.js";
+import { MapPlanPanel } from "../features/MapPlanPanel.js";
 
 type SeasonRecap = Parameters<typeof SeasonRecapModal>[0]["recap"];
 type StartingGridEntry = Parameters<typeof ResolveGrandPrixConfirmModal>[0]["startingGridEntries"][number];
@@ -144,10 +144,7 @@ export function AppOverlays({
   const directiveConfirmBody = (
     <span className="directive-confirm-summary">
       <span>{qualifyingAttemptsUsed === 0 ? tt("directive_confirm_no_qualifying") : qualifyingAttemptsLeft > 0 ? `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}` : tt("directive_confirm_ready")}</span>
-      <span>{tt("field_approach")}: {tt(`approach_${form.approach}` as TranslationKey)}</span>
-      <span>{tt("field_preparation")}: {tt(`preparation_${form.preparation}` as TranslationKey)}</span>
-      <span>{tt("field_pit_strategy")}: {tt(`pit_strategy_${form.pitStrategy}` as TranslationKey)}</span>
-      <span>{tt("field_card")}: {form.cardId ? tt(`card_${form.cardId}` as TranslationKey) : tt("card_none")}</span>
+      <MapPlanPanel className="directive-confirm-plan" decision={{ approach: form.approach, preparation: form.preparation, pitStrategy: form.pitStrategy, cardId: form.cardId || undefined }} tt={tt} />
       {hasUnusedCard ? <strong>{tt("directive_confirm_unused_card_warning")}</strong> : null}
     </span>
   );

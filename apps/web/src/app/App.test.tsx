@@ -558,10 +558,7 @@ describe("App", () => {
     expect(document.querySelector(".race-phase-actions button.highlight-command")).toBe(null);
     const directiveDialog = screen.getByRole("dialog", { name: "Send race plan" });
     expect(directiveDialog.textContent).toContain("You still have chrono attempts left. Send the plan now? 2/3");
-    expect(directiveDialog.textContent).toContain("Approach: Balanced");
-    expect(directiveDialog.textContent).toContain("Tire prep: Weather");
-    expect(directiveDialog.textContent).toContain("Pit strategy: Standard swap");
-    expect(directiveDialog.textContent).toContain("Card: Rain Grip");
+    expect(directiveDialog.textContent).toContain("Current planApproachBal.Tire prepWeatherPit strategyStd.CardRain Grip");
     fireEvent.click(screen.getAllByRole("button", { name: "Send plan" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(JSON.parse((fetch.mock.calls[2]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123" });

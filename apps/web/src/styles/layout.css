@@ -1626,11 +1626,18 @@ label small {
 
 .directive-confirm-summary {
   display: grid;
-  gap: 5px;
+  gap: 10px;
 }
 
 .directive-confirm-summary strong {
   color: var(--color-accent);
+}
+
+.directive-confirm-summary .map-plan-panel {
+  bottom: auto;
+  left: auto;
+  max-width: none;
+  position: relative;
 }
 
 .directive-lock-note {
@@ -2323,17 +2330,21 @@ label small {
   z-index: 4;
 }
 
-.map-info-stack > .map-plan-panel {
+.map-info-stack > .map-plan-panel,
+.directive-confirm-plan {
   background: rgb(16 14 18 / 0.8);
   border: 1px solid rgb(255 255 255 / 0.12);
   border-radius: 8px;
-  bottom: 138px;
   display: grid;
   gap: 5px;
   grid-template-columns: repeat(2, minmax(88px, 1fr));
-  left: 12px;
   max-width: 260px;
   padding: 9px 10px;
+}
+
+.map-info-stack > .map-plan-panel {
+  bottom: 138px;
+  left: 12px;
   position: absolute;
   z-index: 4;
 }

@@ -42,6 +42,7 @@
 | [prod_023_first_gp_action_clarity_product_brief](product/prod_023_first_gp_action_clarity_product_brief.md) | First-GP Action Clarity Product Brief | Proposed |  |  | product/prod_023_first_gp_action_clarity_product_brief.md |
 | [prod_024_result_verdict_pass_product_brief](product/prod_024_result_verdict_pass_product_brief.md) | Result Verdict Pass Product Brief | Proposed |  |  | product/prod_024_result_verdict_pass_product_brief.md |
 | [prod_025_email_backed_profile_recovery_product_brief](product/prod_025_email_backed_profile_recovery_product_brief.md) | Email-Backed Profile Recovery Product Brief | Proposed |  |  | product/prod_025_email_backed_profile_recovery_product_brief.md |
+| [prod_026_replay_suspense_and_first_contact_polish_product_brief](product/prod_026_replay_suspense_and_first_contact_polish_product_brief.md) | Replay Suspense and First-Contact Polish Product Brief | Proposed |  |  | product/prod_026_replay_suspense_and_first_contact_polish_product_brief.md |
 
 ## Roadmaps
 
@@ -116,6 +117,7 @@
 | [req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization](request/req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization.md) | First-GP action clarity: one recommended CTA, plan recommendation, and vocabulary harmonization | Draft |  |  | request/req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization.md |
 | [req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next](request/req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next.md) | Result verdict pass: why it worked, why it failed, what to try next | Draft |  |  | request/req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next.md |
 | [req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue](request/req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue.md) | Email-backed profile recovery: send codes on creation and self-service re-issue | Draft |  |  | request/req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue.md |
+| [req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest](request/req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest.md) | Replay suspense and first-contact polish from the 2026-07-20 AI playtest | Draft |  |  | request/req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest.md |
 
 ## Backlog
 
@@ -269,6 +271,9 @@
 | [item_146_minimal_smtp_mailer_module_and_configuration](backlog/item_146_minimal_smtp_mailer_module_and_configuration.md) | Minimal SMTP mailer module and configuration | Ready |  | 0% | backlog/item_146_minimal_smtp_mailer_module_and_configuration.md |
 | [item_147_send_the_recovery_code_at_profile_creation](backlog/item_147_send_the_recovery_code_at_profile_creation.md) | Send the recovery code at profile creation | Ready |  | 0% | backlog/item_147_send_the_recovery_code_at_profile_creation.md |
 | [item_148_self_service_recovery_code_re_issue_by_email](backlog/item_148_self_service_recovery_code_re_issue_by_email.md) | Self-service recovery-code re-issue by email | Ready |  | 0% | backlog/item_148_self_service_recovery_code_re_issue_by_email.md |
+| [item_149_gate_the_race_payoff_on_replay_completion](backlog/item_149_gate_the_race_payoff_on_replay_completion.md) | Gate the race payoff on replay completion | Ready |  | 0% | backlog/item_149_gate_the_race_payoff_on_replay_completion.md |
+| [item_150_first_contact_frictions_one_click_chrono_enter_submits_intros_persist](backlog/item_150_first_contact_frictions_one_click_chrono_enter_submits_intros_persist.md) | First-contact frictions: one-click chrono, Enter submits, intros persist | Ready |  | 0% | backlog/item_150_first_contact_frictions_one_click_chrono_enter_submits_intros_persist.md |
+| [item_151_readability_papercuts_attempt_rank_labels_and_key_moment_variety](backlog/item_151_readability_papercuts_attempt_rank_labels_and_key_moment_variety.md) | Readability papercuts: attempt rank labels and key-moment variety | Ready |  | 0% | backlog/item_151_readability_papercuts_attempt_rank_labels_and_key_moment_variety.md |
 
 ## Tasks
 
@@ -336,3 +341,4 @@
 | [task_060_orchestrate_first_gp_action_clarity](tasks/task_060_orchestrate_first_gp_action_clarity.md) | Orchestrate first-GP action clarity | Ready |  | 0% | tasks/task_060_orchestrate_first_gp_action_clarity.md |
 | [task_061_orchestrate_result_verdict_pass](tasks/task_061_orchestrate_result_verdict_pass.md) | Orchestrate result verdict pass | Ready |  | 0% | tasks/task_061_orchestrate_result_verdict_pass.md |
 | [task_062_orchestrate_email_backed_profile_recovery](tasks/task_062_orchestrate_email_backed_profile_recovery.md) | Orchestrate email-backed profile recovery | Ready |  | 0% | tasks/task_062_orchestrate_email_backed_profile_recovery.md |
+| [task_063_orchestrate_replay_suspense_and_first_contact_polish](tasks/task_063_orchestrate_replay_suspense_and_first_contact_polish.md) | Orchestrate replay suspense and first-contact polish | Ready |  | 0% | tasks/task_063_orchestrate_replay_suspense_and_first_contact_polish.md |

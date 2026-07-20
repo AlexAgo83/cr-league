@@ -10,6 +10,7 @@
 > Semantic edit: 2026-07-20 added 0.4.4 repo review remediation pass 5 (req_058); 0.4.2 is implemented by that chain.
 > Semantic edit: 2026-07-20 scaffolded 0.3.14 (req_060), 0.3.16 (req_059), and 0.4.1 (req_061, sequenced after req_058) as ready-to-dev chains.
 > Semantic edit: 2026-07-20 added 0.3.17 visibility-refetch patch and watchlist entries for view-screen tests and multiplayer freshness, from the v0.3.11 review follow-up.
+> Semantic edit: 2026-07-20 added 0.3.18 replay-suspense and first-contact polish (req_062) plus a 0.5 first-win affordability note, from the AI playtest.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -58,6 +59,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
   - 0.3.15 — Non-winning success feedback: make defensive, economy, and weather plans visibly rewarding when they save risk, preserve a target position, amortize bad weather, or turn credits into future options even without a win.
   - 0.3.16 — First-GP action clarity: make `New chrono` the only recommended CTA at the start of a GP, add one compact circuit/weather recommendation in the plan, and harmonize first-session vocabulary so league, championship, plan, chrono, and launch labels do not compete. (`req_059`, ready to dev)
   - 0.3.17 — League-state freshness on return: refetch the league state when the tab regains visibility (visibilitychange, no polling), so opponents' submissions and results appear when a player comes back to the app instead of only after their own actions. Real-time polling/SSE stays a 0.6 decision.
+  - 0.3.18 — Replay suspense and first-contact polish: hide the race payoff until the replay finishes or is explicitly skipped, one-click chrono with attempts visible, Enter submits setup forms, intros persist per league once seen, attempt-rank labels stop mimicking race positions, and key moments deduplicate. From the 2026-07-20 AI playtest. (`req_062`, ready to dev)
 - Exit signal:
   - 3 to 5 testers complete a 3-GP session on the polished loop;
   - feedback answers whether choices feel causal, recaps feel personal, and seasons feel like arcs;
@@ -110,6 +112,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Full auth stays out of scope while private beta can operate with email-backed recovery codes and claim-protected teams.
 - Notifications and reminders stay conditional in 0.6; add them only if beta players forget to return for scheduled preparation.
 - Random, draft, or hybrid card acquisition belongs in 0.5 only after real playtest evidence shows the fixed shop is too flat or too predictable.
+- First-win affordability (0.5): the 2026-07-20 playtest ended a winning first GP with 330 credits while the most visible Recommended card cost 500; when tuning the 0.5 economy, check that at least one Recommended card is reachable after a first win.
 - Keep 2D replay as the default; add better animation/callouts before considering 3D, and only consider 3D after the loop is proven.
 - Keep visual regression, file-size linting, test sharding, and normalized replay/event tables out until CI, layout stability, or admin/debug needs make the current setup painful.
 - Watch qualifying impact in playtests: if pole wins too often, soften grid advantage or increase overtaking windows before changing the whole qualifying model.
@@ -134,9 +137,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Product brief(s): `prod_001_cr_league_product_brief`
 - Superseded roadmap: `road_001_cr_league_roadmap` (kept for 0.1/0.2 delivered detail)
 - Implementation roadmap spec: `spec_016_implementation_roadmap`
-- Request(s): `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`, `req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization`, `req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next`, `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`
+- Request(s): `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`, `req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization`, `req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next`, `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`, `req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest`
 - Backlog item(s): (tracked per request chain)
-- Task(s): `task_034_orchestrate_over_engineering_cleanup_pass_1`, `task_035_orchestrate_personalized_race_recap`, `task_036_orchestrate_garage_inventory_card_consultation`, `task_037_orchestrate_ci_render_blueprint_and_release_contract`, `task_038_orchestrate_starting_grid_and_season_narrative`, `task_059_orchestrate_repo_review_remediation_pass_5`, `task_060_orchestrate_first_gp_action_clarity`, `task_061_orchestrate_result_verdict_pass`, `task_062_orchestrate_email_backed_profile_recovery`
+- Task(s): `task_034_orchestrate_over_engineering_cleanup_pass_1`, `task_035_orchestrate_personalized_race_recap`, `task_036_orchestrate_garage_inventory_card_consultation`, `task_037_orchestrate_ci_render_blueprint_and_release_contract`, `task_038_orchestrate_starting_grid_and_season_narrative`, `task_059_orchestrate_repo_review_remediation_pass_5`, `task_060_orchestrate_first_gp_action_clarity`, `task_061_orchestrate_result_verdict_pass`, `task_062_orchestrate_email_backed_profile_recovery`, `task_063_orchestrate_replay_suspense_and_first_contact_polish`
 
 # AI Context
 - Summary: Release-level roadmap for CR League with a three-level version scheme (theme minors, feature-drop patches) from playable prototype to private league V1.

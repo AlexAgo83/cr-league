@@ -1,0 +1,154 @@
+{
+  "title": "Replay suspense and first-contact polish from the 2026-07-20 AI playtest",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/request/req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization.md",
+    "logics/request/req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next.md",
+    "apps/web/src/features/ResultView.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/ReportView.tsx",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/SetupViews.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "AI playtest of 2026-07-20 on v0.3.11, playing the full loop (profile, league, chrono, plan, launch, replay, report, garage purchase): the race payoff banner (FINISH P1, points, credits, championship movement) is visible from lap 2 of a 12-lap replay because ResultView passes it as afterMapContent under the live replay, spoiling the outcome the replay is supposed to dramatize; the desk chrono CTA NEW LAP TIME opens a confirmation modal whose confirm button is also labeled NEW LAP TIME, so the very first game action takes two identical clicks; pressing Enter in the profile email field does not submit the form; the three quick-start intros (league, plan, garage) reopen on every page reload until their do-not-show checkbox is ticked, and they overlay the very screen they describe; the LAP TIMES panel ranks the player's own attempts as P1/P2/P3, which reads as race positions; and the report's key moments listed three identical mechanical-scare entries from the same lap plus the player finishing the race as a highlight, so a calm race reads as filler."
+  ],
+  "request": {
+    "complexity": "Low",
+    "theme": "Replay and first-session polish",
+    "needs": [
+      "Preserve the replay's suspense: the race payoff and final classification must not be visible while the live replay is still running; they appear once the replay has finished or the player has deliberately skipped to the result.",
+      "Remove the first-contact frictions: one click to run a chrono when attempts remain, Enter submits the setup forms, and a quick-start intro seen once stays dismissed for that league without requiring the checkbox.",
+      "Make the small readability fixes: rank chrono attempts without race-position P labels, and de-duplicate key moments so a calm race shows fewer, more varied entries instead of repeated identical lines."
+    ],
+    "context": [
+      "ResultView renders the payoff panel (finish, points, credits, cards spent, championship movement) and passes it to ReplayView as afterMapContent on the replay tab, so it sits under the map from the first frame; the replay tab and report tab are a local ResultTab switch. The fix is presentation-side: gate the payoff (and anything else that reveals the final order, including the report tab if it spoils) on replay completion state, with an explicit skip-to-result affordance for players who do not want to watch. The replay clock already knows elapsed versus total time.",
+      "This lands in the same files req_058 item_138 (ReplayView split, useReplayClock) and req_060 (report verdict) touch; whichever chain lands last rebases trivially, and the completion-gate belongs in the replay clock state so the decomposition should carry it, not fight it.",
+      "The chrono flow: the desk NEW LAP TIME button opens a confirmation modal showing attempts left with a confirm button also labeled NEW LAP TIME. When attempts remain, the desk button can run the attempt directly with the attempts-left count surfaced on the desk button or as a toast; the modal remains only when it adds information (last attempt warning). Aligns with the single-CTA work in req_059 item_141 but is a separate friction.",
+      "Setup forms (profile create, recover, league create/join in SetupViews) are button-submit only; pressing Enter in a filled email or code field does nothing. Wrapping in form elements with onSubmit or key handling fixes it; the e2e spec and App tests pin these flows.",
+      "Quick-start intros (league, plan, garage) come from the req_040 dismissible-help system: they reopen on every reload unless the do-not-show checkbox was ticked. Seen-once-per-league persistence (the existing UI-preferences storage) matches player expectation; the explicit help affordance to reopen them stays.",
+      "The LAP TIMES qualifying panel labels the player's own attempts P1/P2/P3 by rank; during qualifying these read as race positions (the same P-badge styling is used for race standings). Label attempts as attempt ordinals or best/second/third instead; i18n EN/FR parity test applies.",
+      "Key moments in ReportView are result.events filtered to severity major, sliced to five, in order; the 2026-07-20 playtest showed three identical same-lap mechanical-scare lines from different teams plus the player's own race finish as a highlight. Grouping identical same-lap event types into one line and preferring event-type variety in the five slots is a render-side change in ReportView (or its helper), not a simulation change; req_060's verdict block is separate and unaffected.",
+      "All changes are web-side presentation and copy; no API, schema, or simulation output changes."
+    ],
+    "acceptance_criteria": [
+      "AC1: While the replay is playing, no element on the replay tab reveals the final classification or payoff; after the replay ends or the player uses an explicit skip-to-result control, the payoff appears as today, and a test covers the gating.",
+      "AC2: With attempts remaining, one click on the desk chrono CTA starts the run with the attempts-left count still visible somewhere; a confirmation only appears for the last attempt.",
+      "AC3: Enter submits the profile create, profile recover, and league create/join forms when their required fields are filled.",
+      "AC4: A quick-start intro dismissed once for a league does not reopen on reload for that league, without ticking the checkbox; the help affordance to reopen intros still works.",
+      "AC5: Chrono attempts are ranked without race-position P labels in both locales, and the report's key moments never show duplicate identical lines for the same lap and event type, with entries preferring variety across the five slots.",
+      "AC6: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Replay Suspense and First-Contact Polish Product Brief",
+    "overview": "Playtest-driven patch 0.3.18: keep the race outcome hidden until the replay has told its story, cut the double-click and dead-Enter frictions from the first minutes, persist seen intros, and fix the two readability papercuts (attempt rank labels, duplicate key moments) the 2026-07-20 AI playtest surfaced.",
+    "goals": [
+      "The replay is watched with the outcome genuinely unknown.",
+      "The first chrono is one click and every setup form submits on Enter.",
+      "Intros are seen once per league, not once per reload.",
+      "A calm race's report reads as curated, not filler."
+    ],
+    "non_goals": [
+      "Do not change simulation output, event generation, or the trace format.",
+      "Do not redesign the replay bar, payoff content, or report sections.",
+      "Do not touch the recommended-CTA logic (req_059) or the verdict block (req_060).",
+      "Do not add settings or preferences beyond the existing UI-preferences storage."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Gate the race payoff on replay completion",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Replay suspense",
+      "request_acs": ["AC1", "AC6"],
+      "problem": [
+        "The payoff banner with the final position, points, and credits renders under the live replay from lap 2, spoiling the outcome the replay exists to dramatize."
+      ],
+      "scope_in": [
+        "Track replay completion in the replay clock state and gate afterMapContent (and any other final-order reveal on the replay tab) on completed-or-skipped.",
+        "Add an explicit skip-to-result control for players who do not want to watch; skipping counts as completion.",
+        "Verify the report tab access path does not silently spoil mid-replay, and decide its gating consistently.",
+        "Coordinate with req_058 item_138: the completion flag belongs in useReplayClock once that split lands.",
+        "Add a test for hidden-while-playing and visible-after-completion."
+      ],
+      "scope_out": [
+        "Changing the payoff panel's content or styling.",
+        "Replay pacing or auto-play behavior."
+      ],
+      "acceptance_criteria": [
+        "AC1: No final classification or payoff is visible while the replay plays.",
+        "AC2: Completion or explicit skip reveals the payoff as today.",
+        "AC3: A test pins the gating."
+      ]
+    },
+    {
+      "title": "First-contact frictions: one-click chrono, Enter submits, intros persist",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "First-session UX",
+      "request_acs": ["AC2", "AC3", "AC4", "AC6"],
+      "problem": [
+        "The first game action takes two identical NEW LAP TIME clicks; Enter does nothing in the setup forms; the three quick-start intros reopen every reload until a checkbox is found and ticked."
+      ],
+      "scope_in": [
+        "Run the chrono directly from the desk CTA when attempts remain, keeping the attempts-left count visible; keep a confirmation only for the last attempt.",
+        "Make profile create, profile recover, and league create/join submit on Enter via proper form semantics.",
+        "Persist intro dismissal per league on first close through the existing UI-preferences storage; keep the checkbox semantics as never-show-again and the help reopen affordance.",
+        "Update the App and e2e tests that pin the confirm-modal flow."
+      ],
+      "scope_out": [
+        "The single-recommended-CTA highlight rule (req_059 item_141).",
+        "Rewriting intro content."
+      ],
+      "acceptance_criteria": [
+        "AC1: First chrono is one click with attempts-left visible; last attempt still confirms.",
+        "AC2: Enter submits each filled setup form.",
+        "AC3: A dismissed intro stays dismissed for that league across reloads."
+      ]
+    },
+    {
+      "title": "Readability papercuts: attempt rank labels and key-moment variety",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Race learning and feedback",
+      "request_acs": ["AC5", "AC6"],
+      "problem": [
+        "The LAP TIMES panel labels the player's own attempts P1/P2/P3 in the same badge style as race positions, and the report's key moments can show several identical same-lap lines plus the player's own finish as a highlight."
+      ],
+      "scope_in": [
+        "Replace the P-rank badges on chrono attempts with attempt ordinals or best-time markers, in both locales.",
+        "In the key-moments selection, collapse identical same-lap event types into one grouped line and prefer event-type variety when filling the five slots; keep chronological order.",
+        "Extend the existing report/helpers tests for the grouping rule."
+      ],
+      "scope_out": [
+        "Changing which events the simulation emits or their severity.",
+        "The verdict block and recap cards (req_060)."
+      ],
+      "acceptance_criteria": [
+        "AC1: Chrono attempts no longer carry race-position styling or labels.",
+        "AC2: Key moments show no duplicate same-lap same-type lines and at most one entry per event type unless slots remain.",
+        "AC3: Tests cover the grouping rule."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate replay suspense and first-contact polish",
+    "plan": [
+      "Check the landing order against req_058 (ReplayView split) and req_060 (verdict block); rebase the payoff gating onto useReplayClock if the split has landed, otherwise implement on current ReplayView and note it for the split.",
+      "Implement the payoff completion gate with its skip control and test.",
+      "Land the first-contact fixes (one-click chrono, Enter submit, intro persistence) with their test updates.",
+      "Fix the attempt labels and key-moment grouping with helper tests.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout and mark roadmap patch 0.3.18 shipped when released."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/replay-suspense-first-contact-polish.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

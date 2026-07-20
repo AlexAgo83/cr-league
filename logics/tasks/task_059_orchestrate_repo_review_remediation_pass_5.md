@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 32%
+> Progress: 38%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -54,6 +54,7 @@
 - 2026-07-20 wave 1: implemented item_135 recovery hardening baseline: 16-byte recovery codes, salted scrypt hash format with legacy SHA-256 upgrade, in-process email/IP limiter on /profiles/recover, admin reset using the shared generator, and API tests for length, legacy upgrade, and 429 lockout. Targeted verification: rtk npm test -- apps/api/src/app.admin.test.ts; rtk npm run typecheck; rtk npm run lint.
 - 2026-07-20 wave 2: implemented part of item_136: localhost CORS is only whitelisted for local WEB_ORIGIN, admin bearer token uses timingSafeEqual, public league reads return league.code as null while claimed/admin responses keep the invite code, and restartLeague now performs its delete/update/create reset sequence inside runWrite. Remaining item_136 work: replace bare profileId trust for create/join with a profile-ownership proof contract.
 - 2026-07-20 wave 3: completed the remaining API identity part of item_136 by requiring recoveryCode proof whenever createDemoLeague or joinLeagueByCode receives a profileId. Successful profile recovery now returns the submitted recovery code so recovered local sessions can keep proving profile ownership. Web create/join payloads pass the stored recovery code; API tests cover bare/wrong profile proof rejection.
+- 2026-07-20 wave 4: implemented the first CI/release hardening slice from item_140: package.json now declares Node >=20, Dependabot monitors npm and GitHub Actions, CI quality runs npm audit --audit-level=high, the previous global DATABASE_URL placeholder was removed from unit CI, and deploy-release now fails if API health never reports the release version and commit. Remaining item_140 work: coverage surfacing, react-hooks/jsx-a11y lint rules, and reports/ policy.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

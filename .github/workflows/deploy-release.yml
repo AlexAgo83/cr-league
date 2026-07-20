@@ -185,7 +185,8 @@ jobs:
             sleep 10
           done
 
-          echo "::warning::API health did not report ${RELEASE_VERSION}@${RELEASE_SHA} from GitHub Actions; continuing after Render accepted the deploy hook."
+          echo "API health did not report ${RELEASE_VERSION}@${RELEASE_SHA} from GitHub Actions."
+          exit 1
 
       - name: Deploy web
         env:

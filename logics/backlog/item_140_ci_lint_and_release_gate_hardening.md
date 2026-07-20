@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 32%
+> Progress: 38%
 > Complexity: Low
 > Theme: Engineering infrastructure
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -40,6 +40,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-20 partial implementation: added Node >=20 engines, Dependabot for npm and GitHub Actions, npm audit --audit-level=high in CI quality, removed the misleading global DATABASE_URL from CI, and made deploy-release fail on health version/commit mismatch. Deferred in this item: coverage reporting, react-hooks/jsx-a11y lint plugins, and reports/ gitignore policy.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

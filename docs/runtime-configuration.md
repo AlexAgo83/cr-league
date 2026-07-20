@@ -43,3 +43,8 @@ Gmail notes:
 
 - App passwords are account-scoped; rotate the Render `SMTP_PASS` value if the mailbox owner changes.
 - Gmail has sending limits. If playtests approach those limits, move this mailer to a transactional provider instead of adding queue complexity here.
+
+## Beta operations
+
+- Operator support runbook: [beta-support-runbook.md](beta-support-runbook.md)
+- Tester known limits: [beta-known-limits.md](beta-known-limits.md)

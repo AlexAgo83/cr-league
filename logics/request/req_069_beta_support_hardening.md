@@ -1,7 +1,7 @@
 ## req_069_beta_support_hardening - Beta support hardening
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: High

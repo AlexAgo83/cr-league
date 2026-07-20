@@ -1,10 +1,10 @@
 ## item_166_add_safe_admin_test_data_cleanup - Add safe admin test-data cleanup
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 65%
+> Progress: 100%
 > Complexity: High
 > Theme: Admin support safety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -54,3 +54,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_070_orchestrate_beta_support_hardening` was finished via `logics-manager flow finish task` on 2026-07-20.

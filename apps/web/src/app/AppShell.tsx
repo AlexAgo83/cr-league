@@ -50,6 +50,7 @@ export function AppShell({
   directiveStep,
   championshipRecordTab,
   garagePanel,
+  showCarriedOverPlanLabel,
   gameProfileMenu,
   setForm,
   setProfileMode,
@@ -119,6 +120,7 @@ export function AppShell({
   directiveStep: DirectiveStep;
   championshipRecordTab: ChampionshipRecordTab;
   garagePanel: CardPanel;
+  showCarriedOverPlanLabel: boolean;
   gameProfileMenu: ReactNode;
   setForm: Dispatch<SetStateAction<FormState>>;
   setProfileMode: Dispatch<SetStateAction<ProfileMode>>;
@@ -244,6 +246,7 @@ export function AppShell({
           isResolved={race.isResolved}
           pendingMessage={pendingMessage}
           garagePanel={garagePanel}
+          showCarriedOverPlanLabel={showCarriedOverPlanLabel}
           adminView={adminView}
           chronoReport={race.chronoReport}
           qualifyingLockedCardId={race.qualifyingLockedCardId}

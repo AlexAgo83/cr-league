@@ -108,11 +108,7 @@ export function createRaceActions({
   async function submitDirective() {
     if (!leagueState || !playerTeam) return;
     markCommandClicked("directive");
-    if (qualifyingAttemptsUsed === 0 || qualifyingAttemptsLeft > 0) {
-      setDirectiveConfirmOpen(true);
-      return;
-    }
-    await submitDirectiveConfirmed();
+    setDirectiveConfirmOpen(true);
   }
 
   async function submitDirectiveConfirmed() {

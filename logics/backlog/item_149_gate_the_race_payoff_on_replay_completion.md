@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 55%
+> Progress: 85%
 > Complexity: Low
 > Theme: Replay suspense
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -46,6 +46,8 @@
 - Wave 1: the replay report shortcut is hidden until the result is unlocked, so the report cannot spoil the final order mid-replay.
 - Wave 1: result unlock resets when the replay seed/title changes, avoiding carry-over between GP or chrono/race modes.
 - Validation wave 1: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/i18n/index.test.ts` passed with 25 tests.
+- Wave 4: normal app entry into an already resolved current GP now opens on the finished summary instead of auto-playing the replay; explicit `/replay/<gp>` routes and the Replay button still open replay. The replay close control now renders the visible Back to circuit label.
+- Validation wave 4: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts` passed with 44 tests.
 
 # Links
 - Product brief(s): `prod_026_replay_suspense_and_first_contact_polish_product_brief`

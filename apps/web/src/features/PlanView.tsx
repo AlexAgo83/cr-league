@@ -9,6 +9,7 @@ import { PositionBadge } from "./PositionBadge.js";
 
 export function PlanView({
   cardLocked,
+  carriedOver,
   chronoReport,
   circuitTraits,
   directiveStep,
@@ -16,6 +17,7 @@ export function PlanView({
   form,
   forecastPick,
   ownedCardIds,
+  locked,
   planSubscreen,
   playerQualifyingRuns,
   qualifyingAttemptLimit,
@@ -30,6 +32,7 @@ export function PlanView({
   tt
 }: {
   cardLocked: boolean;
+  carriedOver: boolean;
   chronoReport: ChronoReport;
   circuitTraits: LeagueState["currentGrandPrix"] extends never ? never : { grip: number; overtaking: number; energy: number };
   directiveStep: DirectiveStep;
@@ -37,6 +40,7 @@ export function PlanView({
   form: FormState;
   forecastPick: string;
   ownedCardIds: CardId[];
+  locked: boolean;
   planSubscreen: PlanSubscreen;
   playerQualifyingRuns: QualifyingRun[];
   qualifyingAttemptLimit: number;
@@ -142,7 +146,9 @@ export function PlanView({
           circuitTraits={circuitTraits}
           planRecommendation={planRecommendation}
           cardLocked={cardLocked}
+          carriedOver={carriedOver}
           disabled={disabled}
+          locked={locked}
           onSelectStep={onSetDirectiveStep}
           tt={tt}
         />

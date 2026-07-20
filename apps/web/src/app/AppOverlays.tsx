@@ -2,6 +2,7 @@ import type { AdminUser, FormState, LeagueState, ProfileSession } from "./types.
 import type { CityCircuit } from "./circuits.js";
 import type { Translator } from "./helpers.js";
 import type { OnboardingHelpTopic } from "./OnboardingShell.js";
+import type { TranslationKey } from "../i18n/index.js";
 import { LeagueIntroModal, OnboardingHelpModal } from "./OnboardingShell.js";
 import {
   AdminDeleteUserModal,
@@ -138,6 +139,19 @@ export function AppOverlays({
   onOpenRestartConfirm: () => void;
   onCloseRestartConfirm: () => void;
 }) {
+  const playerTeam = leagueState?.teams.find((team) => team.id === playerTeamId);
+  const hasUnusedCard = Boolean(playerTeam?.cards.length && !form.cardId);
+  const directiveConfirmBody = (
+    <span className="directive-confirm-summary">
+      <span>{qualifyingAttemptsUsed === 0 ? tt("directive_confirm_no_qualifying") : qualifyingAttemptsLeft > 0 ? `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}` : tt("directive_confirm_ready")}</span>
+      <span>{tt("field_approach")}: {tt(`approach_${form.approach}` as TranslationKey)}</span>
+      <span>{tt("field_preparation")}: {tt(`preparation_${form.preparation}` as TranslationKey)}</span>
+      <span>{tt("field_pit_strategy")}: {tt(`pit_strategy_${form.pitStrategy}` as TranslationKey)}</span>
+      <span>{tt("field_card")}: {form.cardId ? tt(`card_${form.cardId}` as TranslationKey) : tt("card_none")}</span>
+      {hasUnusedCard ? <strong>{tt("directive_confirm_unused_card_warning")}</strong> : null}
+    </span>
+  );
+
   return (
     <>
       {onboardingHelp ? (
@@ -152,7 +166,7 @@ export function AppOverlays({
       {preferencesResetOpen ? <ConfirmActionModal label={tt("preferences_reset_title")} image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("preferences_reset_title")} body={tt("preferences_reset_confirm")} actionLabel={tt("action_reset_ui_preferences")} status={status} danger tt={tt} onClose={onClosePreferencesReset} onConfirm={onResetUiPreferences} /> : null}
       {technicalError ? <ConfirmActionModal label={tt("error_modal_title")} image="/assets/crl/pit-wall-mobile.png" kicker={tt("error_modal_kicker")} title={tt("error_modal_title")} body={tt("error_modal_body")} actionLabel={tt("action_copy_error")} status={status} tt={tt} onClose={onCloseTechnicalError} onConfirm={onCopyTechnicalError} /> : null}
       {adminDeleteUser ? <AdminDeleteUserModal user={adminDeleteUser} tt={tt} onClose={onCloseAdminDelete} onDelete={onDeleteAdminUser} /> : null}
-      {directiveConfirmOpen ? <ConfirmActionModal label={tt("directive_confirm_title")} image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} body={qualifyingAttemptsUsed === 0 ? tt("directive_confirm_no_qualifying") : `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`} actionLabel={tt("action_submit_directive")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseDirectiveConfirm} onConfirm={onSubmitDirectiveConfirmed} /> : null}
+      {directiveConfirmOpen ? <ConfirmActionModal label={tt("directive_confirm_title")} image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} body={directiveConfirmBody} actionLabel={tt("action_submit_directive")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseDirectiveConfirm} onConfirm={onSubmitDirectiveConfirmed} /> : null}
       {resolveConfirmOpen ? <ResolveGrandPrixConfirmModal currentCircuit={currentCircuit} forecastPick={forecastPick} playerTeamId={playerTeamId} startingGridEntries={startingGridEntries} status={status} pendingMessage={pendingMessage} startingGridExpanded={startingGridExpanded} tt={tt} onClose={onCloseResolveConfirm} onShowFullGrid={onShowFullGrid} onResolve={onResolveGrandPrix} /> : null}
       {qualifyingConfirmOpen ? <ConfirmActionModal label={tt("qualifying_confirm_title")} image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} body={`${tt("qualifying_confirm_body")} ${tt("qualifying_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`} actionLabel={tt("action_qualifying")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseQualifyingConfirm} onConfirm={onStartQualifyingRunConfirmed} /> : null}
       {nextGrandPrixConfirmOpen ? <NextGrandPrixConfirmModal isSeasonFinalGrandPrix={isSeasonFinalGrandPrix} nextGrandPrixActionLabel={nextGrandPrixActionLabel} status={status} pendingMessage={pendingMessage} hasResult={hasResult} tt={tt} onClose={onCloseNextGrandPrixConfirm} onStartNextGrandPrix={onStartNextGrandPrix} onOpenReport={onOpenResultReport} /> : null}

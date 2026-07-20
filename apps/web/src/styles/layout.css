@@ -1477,6 +1477,15 @@ label small {
   padding: 12px;
 }
 
+.directive-confirm-summary {
+  display: grid;
+  gap: 5px;
+}
+
+.directive-confirm-summary strong {
+  color: var(--color-accent);
+}
+
 .directive-lock-note {
   margin: 0;
 }
@@ -2678,9 +2687,11 @@ label small {
   background: rgb(214 40 40 / 0.92);
   border: 1px solid rgb(255 138 122 / 0.65);
   color: #fff;
-  font-size: 1.35rem;
+  font-size: 0.82rem;
   font-weight: 700;
   margin-left: 6px;
+  min-width: 112px;
+  padding-inline: 12px;
 }
 
 .replay-map-controls .replay-close-button:hover,

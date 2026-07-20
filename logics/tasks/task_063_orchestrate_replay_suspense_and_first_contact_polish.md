@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 65
+> Progress: 85%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -19,7 +19,7 @@
 - [x] 2. Implement the payoff completion gate with its skip control and test.
 - [x] 3. Land the first-contact fixes (one-click chrono, Enter submit, intro persistence) with their test updates.
 - [x] 4. Fix the attempt labels and key-moment grouping with helper tests.
-- [ ] 5. Implement plan-lock safety (item_153): Send plan confirmation with plan summary and unused-card warning, visible locked state on the plan screen, carried-over-plan label, and the finished-GP reopen-on-summary behavior with a labeled replay exit (item_149 extension).
+- [x] 5. Implement plan-lock safety (item_153): Send plan confirmation with plan summary and unused-card warning, visible locked state on the plan screen, carried-over-plan label, and the finished-GP reopen-on-summary behavior with a labeled replay exit (item_149 extension).
 - [ ] 6. Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout and mark roadmap patch 0.3.18 shipped when released.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
@@ -54,6 +54,8 @@
 - Wave 2 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts`.
 - Wave 3 implementation: chrono rows no longer use `PositionBadge`; report key moments deduplicate same displayed lap/event type and prefer type variety.
 - Wave 3 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/web/src/features/ReportView.test.tsx apps/web/src/app/App.test.tsx apps/web/src/i18n/index.test.ts`.
+- Wave 4 implementation: finished GPs loaded from normal app entry now land on the result summary, replay remains one click away, and the replay exit has visible Back to circuit text. Send plan always confirms with the selected approach/preparation/pit/card summary, plan lock is explicit on the plan screen, and carried-over plans are labeled on the first plan visit of the new GP only.
+- Wave 4 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts`.
 
 # AI Context
 - Summary: Orchestrate replay suspense and first-contact polish

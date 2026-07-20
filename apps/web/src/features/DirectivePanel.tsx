@@ -134,7 +134,9 @@ export function DirectivePanel({
   circuitTraits,
   planRecommendation,
   cardLocked,
+  carriedOver,
   disabled,
+  locked,
   onSelectStep,
   tt
 }: {
@@ -147,7 +149,9 @@ export function DirectivePanel({
   circuitTraits: TraitStats;
   planRecommendation?: string;
   cardLocked?: boolean;
+  carriedOver?: boolean;
   disabled?: boolean;
+  locked?: boolean;
   onSelectStep: (step: DirectiveStep) => void;
   tt: Translator;
 }) {
@@ -196,6 +200,16 @@ export function DirectivePanel({
     </section>
 
     <section className="panel directive-panel directive-selection-panel">
+      {locked ? (
+        <div className="directive-lock-note">
+          <strong>{tt("directive_locked_title")}</strong>
+          <span>{tt("directive_locked_body")}</span>
+        </div>
+      ) : carriedOver ? (
+        <div className="directive-lock-note">
+          <strong>{tt("directive_carried_over")}</strong>
+        </div>
+      ) : null}
       <div className="plan-steps directive-plan-steps" role="tablist" aria-label={tt("directive_title")}>
         {steps.map((entry) => (
           <button key={entry.key} type="button" role="tab" aria-selected={step === entry.key} aria-label={`${entry.label}: ${entry.value}`} className={step === entry.key ? "plan-step active" : "plan-step"} onClick={() => onSelectStep(entry.key)}>

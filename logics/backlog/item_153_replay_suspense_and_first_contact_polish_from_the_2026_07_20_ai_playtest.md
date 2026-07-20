@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 10%
+> Progress: 85%
 > Complexity: Low
 > Theme: First-session UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -62,5 +62,8 @@
 
 # Notes
 - Hybrid rationale: Derived from request `req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest` and kept bounded to one coherent delivery slice.
+- Implementation wave: `raceActions.submitDirective` now always opens confirmation; the confirmation modal summarizes approach, preparation, pit strategy, and card and warns when inventory has a playable card but no card is selected.
+- Implementation wave: `DirectivePanel` now shows an explicit locked note while keeping options disabled after send; the carried-over note is keyed by league/current GP and remains visible only during the first Plan visit for the new GP.
+- Validation wave: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts` passed with 44 tests.
 - Source file: `logics/request/req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest.md`.
 - Generated locally by logics-manager.

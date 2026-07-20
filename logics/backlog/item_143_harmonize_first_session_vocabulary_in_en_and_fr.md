@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 90
-> Confidence: 85
-> Progress: 30
+> Understanding: 95
+> Confidence: 90
+> Progress: 85
 > Complexity: Low
 > Theme: i18n
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,10 +31,12 @@
 
 # Implementation Notes
 - 2026-07-20 wave 1: renamed the EN primary chrono CTA values from `New lap time` / `Review lap time` to `New chrono` / `Review chrono`, and updated pinned unit/e2e expectations to match.
-- Remaining: complete the broader EN/FR vocabulary audit for the five listed concepts, including the `Run chrono` family and the championship bot status wording.
+- 2026-07-20 wave 3: completed the visible EN chrono-label sweep (`Run chrono`, `Chronos`, `Chrono logged`, `Understand the chrono`, `Chrono replay`, `No chrono`) and aligned exact-text tests. Replaced championship team `missing` status with `no plan yet` / `plan absent`.
+- Remaining: run full-suite validation and any final playtest checklist touch-ups found during closeout.
 
 # Validation
 - 2026-07-20 targeted: `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts`; `rtk npx playwright test tests/e2e/private-league.spec.ts -g "first-click commands"`.
+- 2026-07-20 targeted: `rtk npm run typecheck`; `rtk npm run lint`; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/raceFlow.test.ts apps/web/src/i18n/index.test.ts apps/web/src/features/ReplayView.test.ts`.
 
 # AC Traceability
 - request-AC3 -> This backlog slice. Proof: AC1: The EN chrono CTA reads 'New chrono' and each of the five concepts uses one term per locale.

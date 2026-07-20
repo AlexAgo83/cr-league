@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 91%
 > Confidence: 86%
-> Progress: 98%
+> Progress: 99%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -67,6 +67,7 @@
 - 2026-07-20 wave 14: continued item_137 by extracting the non-drive view selector into apps/web/src/app/GameViews.tsx. Result, plan, championship, garage, admin, and changelog rendering now sit behind a single presentation wrapper while App remains the state/mutation owner. App.tsx is now 1468 lines and GameViews.tsx is 190 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 - 2026-07-20 wave 15: continued item_137 by moving the launch Grand Prix confirmation modal into AppModals.tsx as ResolveGrandPrixConfirmModal. The starting-grid preview and confirm action now live with the other App modal presentations; App.tsx is 1437 lines and AppModals.tsx is 365 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 - 2026-07-20 wave 16: continued item_137 by extracting the profile/league setup gate into apps/web/src/app/SetupGate.tsx. SetupGate now owns the no-profile and no-league presentation paths while App keeps the handlers and state. App.tsx is 1410 lines and SetupGate.tsx is 134 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
+- 2026-07-20 wave 17: continued item_137 by extracting league/team race mutations into apps/web/src/app/leagueMutations.ts. App still owns UI state, run(), profile/admin flows, and modal open/close wrappers, while update settings, resolve, next GP, card buy/sell, livery/name update, and restart state mutation moved out. App.tsx is now 1301 lines and leagueMutations.ts is 206 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

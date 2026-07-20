@@ -7,7 +7,6 @@ import { GAME_VIEWS, type AdminLeague, type AdminUser, type FormState, type Leag
 import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
 import { AssetImage } from "../features/AssetImage.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY } from "../features/ChampionshipView.js";
-import { circuitRouteAnalysis } from "../features/CircuitMap.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { GARAGE_PANEL_KEY } from "../features/GarageView.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
@@ -40,6 +39,7 @@ import { bestQualifyingRuns, buildChronoReport, createInitialForm, latestQualify
 import { isGrandPrixRouteId, shortGrandPrixId } from "./routes.js";
 import { SetupGate } from "./SetupGate.js";
 import { type ProfileMode, type SetupMode } from "./SetupViews.js";
+import { createLeagueMutations } from "./leagueMutations.js";
 import { useAppNavigation } from "./useAppNavigation.js";
 
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
@@ -281,6 +281,27 @@ export function App() {
   const visibleResultCircuit = historyReplay && leagueState ? circuitForRound(historyReplay.round, leagueState.league.id, historyReplay.season) : currentCircuit;
   const isSeasonFinalGrandPrix = Boolean(leagueState && leagueState.currentGrandPrix.round >= leagueState.league.maxGrandPrixPerSeason);
   const nextGrandPrixActionLabel = tt(isSeasonFinalGrandPrix ? "action_finish_season" : "action_next_grand_prix");
+  const { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, updateLivery, updateTeamName, restartLeague: restartLeagueState } = createLeagueMutations({
+    leagueState,
+    playerTeam,
+    playerDecision,
+    form,
+    currentCircuit,
+    run,
+    tt,
+    setLeagueState,
+    setGameView,
+    setResultTab,
+    setResultOpen,
+    setResolveConfirmOpen,
+    setNextGrandPrixConfirmOpen,
+    setRouteReplayGrandPrixId,
+    setHistoryReplay,
+    showStatus,
+    pushCommandHint,
+    withCurrentPlayer,
+    rememberPlayer
+  });
   const primaryCommand =
     deskState === "prepare"
       ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }
@@ -495,132 +516,6 @@ export function App() {
     setRouteReplayGrandPrixId(undefined);
   }
 
-  async function mutateLeague(loadingKey: TranslationKey, path: string, body: unknown, successKey: TranslationKey) {
-    await run(tt(loadingKey), async () => {
-      const state = await api<LeagueState>(path, {
-        method: "POST",
-        body: body === undefined ? undefined : JSON.stringify(body)
-      });
-      setLeagueState(withCurrentPlayer(state));
-      showStatus(tt(successKey));
-    });
-  }
-
-  async function updateSettings() {
-    if (!leagueState) return;
-
-    await mutateLeague("status_updating_settings", `/leagues/${leagueState.league.id}/settings`, {
-      teamId: leagueState.player?.teamId,
-      claimCode: leagueState.player?.claimCode,
-      cadence: form.cadence,
-      preparationDeadlineAt: form.preparationDeadlineAt ? new Date(form.preparationDeadlineAt).toISOString() : null
-    }, "status_settings_updated");
-  }
-
-  async function resolveGrandPrix() {
-    if (!leagueState) return;
-    setResolveConfirmOpen(false);
-
-    await run(tt("status_resolving_grand_prix"), async () => {
-      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/resolve`, {
-        method: "POST",
-        body: JSON.stringify({
-          teamId: leagueState.player?.teamId,
-          claimCode: leagueState.player?.claimCode,
-          allowDefaults: !playerDecision,
-          traits: currentCircuit.traits,
-          trackLengthMeters: currentCircuit.trackLengthMeters,
-          laps: currentCircuit.laps,
-          pitLaneProgress: currentPitLaneProgress()
-        })
-      });
-      setLeagueState(withCurrentPlayer(state));
-      setGameView("drive");
-      setResultTab("replay");
-      setResultOpen(true);
-      pushCommandHint("resolved");
-    });
-  }
-
-  function currentPitLaneProgress() {
-    const analysis = circuitRouteAnalysis(currentCircuit);
-    return (((analysis.pitProgress - analysis.startProgress) % 1) + 1) % 1;
-  }
-
-  async function startNextGrandPrix() {
-    if (!leagueState) return;
-    const finishingSeason = leagueState.currentGrandPrix.round >= leagueState.league.maxGrandPrixPerSeason;
-    setNextGrandPrixConfirmOpen(false);
-    setRouteReplayGrandPrixId(undefined);
-    setHistoryReplay(null);
-    setResultOpen(false);
-    setGameView("drive");
-
-    await run(tt(finishingSeason ? "status_finishing_season" : "status_starting_next_grand_prix"), async () => {
-      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/next-grand-prix`, {
-        method: "POST",
-        body: JSON.stringify({
-          teamId: leagueState.player?.teamId,
-          claimCode: leagueState.player?.claimCode
-        })
-      });
-      setLeagueState(withCurrentPlayer(state));
-      setGameView("drive");
-      setResultOpen(false);
-      showStatus(tt(finishingSeason ? "status_season_finished" : "status_next_grand_prix_started"));
-      pushCommandHint("prepare");
-    });
-  }
-
-  async function buyCard(cardId: CardId) {
-    if (!leagueState || !playerTeam) return;
-
-    await mutateLeague("status_buying_card", `/leagues/${leagueState.league.id}/cards/buy`, {
-      teamId: playerTeam.id,
-      claimCode: leagueState.player?.claimCode,
-      cardId
-    }, "status_card_bought");
-  }
-
-  async function sellCard(cardId: CardId) {
-    if (!leagueState || !playerTeam) return;
-
-    await mutateLeague("status_selling_card", `/leagues/${leagueState.league.id}/cards/sell`, {
-      teamId: playerTeam.id,
-      claimCode: leagueState.player?.claimCode,
-      cardId
-    }, "status_card_sold");
-  }
-
-  async function updateLivery(livery: LeagueState["teams"][number]["livery"]) {
-    if (!leagueState || !playerTeam) return;
-
-    await mutateLeague("status_livery_updating", `/leagues/${leagueState.league.id}/teams/livery`, {
-      teamId: playerTeam.id,
-      claimCode: leagueState.player?.claimCode,
-      livery
-    }, "status_livery_updated");
-  }
-
-  async function updateTeamName(name: string) {
-    if (!leagueState || !playerTeam) return;
-
-    await run(tt("status_team_name_updating"), async () => {
-      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/teams/name`, {
-        method: "POST",
-        body: JSON.stringify({
-          teamId: playerTeam.id,
-          claimCode: leagueState.player?.claimCode,
-          name
-        })
-      });
-      const nextState = withCurrentPlayer(state);
-      setLeagueState(nextState);
-      rememberPlayer(nextState);
-      showStatus(tt("status_team_name_updated"));
-    });
-  }
-
   async function createProfileSession() {
     const email = profileForm.email.trim();
     const error = validateProfileForm(email);
@@ -796,11 +691,7 @@ export function App() {
   async function restartLeague() {
     if (!leagueState) return;
     setRestartConfirmOpen(false);
-
-    await mutateLeague("status_restarting_league", `/leagues/${leagueState.league.id}/restart`, {
-      teamId: leagueState.player?.teamId,
-      claimCode: leagueState.player?.claimCode
-    }, "status_league_restarted");
+    await restartLeagueState();
   }
 
   async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify = true, errorText?: (error: unknown) => string) {

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 91%
 > Confidence: 86%
-> Progress: 98%
+> Progress: 99%
 > Complexity: Medium
 > Theme: Web architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -47,6 +47,7 @@
 - 2026-07-20 fifth implementation wave: GameViews.tsx now owns the non-drive view switch for result, plan, championship, garage, admin, and changelog presentation. App.tsx dropped to 1468 lines and GameViews.tsx is 190 lines. AC1 remains open; next low-risk extraction is setup/profile/admin chrome or a domain hook around league/profile mutations.
 - 2026-07-20 sixth implementation wave: ResolveGrandPrixConfirmModal moved the launch Grand Prix modal and starting-grid preview into AppModals.tsx. App.tsx is now 1437 lines; AppModals.tsx is 365 lines, still under the extracted-module ceiling. AC1 remains open; next work should extract a larger setup/profile/admin shell or domain mutation hook.
 - 2026-07-20 seventh implementation wave: SetupGate.tsx now owns the profile setup and league setup early-return UI. App.tsx is 1410 lines and SetupGate.tsx is 134 lines. AC1 remains open; the next meaningful reduction needs domain hook extraction, not more small modal moves.
+- 2026-07-20 eighth implementation wave: leagueMutations.ts now owns the league/team race mutation handlers around settings, resolve, next GP, card inventory, livery/name, and restart state. App.tsx is 1301 lines; leagueMutations.ts is 206 lines. AC1 remains open; the remaining large blocks are profile/admin actions and topbar/profile-menu chrome.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

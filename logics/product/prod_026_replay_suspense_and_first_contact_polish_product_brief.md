@@ -5,9 +5,19 @@
 > Related backlog: `item_149_gate_the_race_payoff_on_replay_completion`, `item_150_first_contact_frictions_one_click_chrono_enter_submits_intros_persist`, `item_151_readability_papercuts_attempt_rank_labels_and_key_moment_variety`
 > Related task: `task_063_orchestrate_replay_suspense_and_first_contact_polish`
 > Related architecture: (none yet)
+> Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
+```mermaid
+flowchart LR
+  Launch[GP launched] --> Replay[Replay plays, payoff hidden]
+  Replay --> Done[Finished or skipped]
+  Done --> Payoff[Payoff revealed]
+  Lock[Send plan] --> Confirm[Summary + card warning]
+  Confirm --> Locked[Visible locked state]
+```
+
 Playtest-driven patch 0.3.18: keep the race outcome hidden until the replay has told its story, cut the double-click and dead-Enter frictions from the first minutes, persist seen intros, and fix the two readability papercuts (attempt rank labels, duplicate key moments) the 2026-07-20 AI playtest surfaced.
 
 # Goals

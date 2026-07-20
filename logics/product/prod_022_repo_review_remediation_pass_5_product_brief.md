@@ -5,9 +5,20 @@
 > Related backlog: `item_135_brute_force_resistant_account_recovery`, `item_136_api_trust_boundary_and_atomicity_fixes`, `item_137_decompose_app_tsx_into_domain_hooks_and_views`, `item_138_split_replayview_and_extract_the_replay_clock`, `item_139_postgres_integration_test_ci_lane_for_concurrent_store_paths`, `item_140_ci_lint_and_release_gate_hardening`
 > Related task: `task_059_orchestrate_repo_review_remediation_pass_5`
 > Related architecture: (none yet)
+> Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
+```mermaid
+flowchart LR
+  Review[v0.3.11 full review] --> Sec[Account & API security]
+  Review --> Web[App/ReplayView decomposition]
+  Review --> CI[Postgres lane + CI hardening]
+  Sec --> Safe[No takeover, atomic restart]
+  Web --> Maint[Navigable web modules]
+  CI --> Gate[Regressions caught automatically]
+```
+
 A fifth remediation pass driven by the v0.3.11 full-repo review: make account recovery brute-force resistant, close the remaining API trust-boundary gaps, make league restart atomic, decompose the two god components on the web, exercise the concurrency machinery against real Postgres in CI, and harden the CI/lint/release toolchain so these classes of defects are caught automatically next time.
 
 # Goals

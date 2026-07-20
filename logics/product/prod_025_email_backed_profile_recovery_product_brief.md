@@ -5,9 +5,20 @@
 > Related backlog: `item_146_minimal_smtp_mailer_module_and_configuration`, `item_147_send_the_recovery_code_at_profile_creation`, `item_148_self_service_recovery_code_re_issue_by_email`
 > Related task: `task_062_orchestrate_email_backed_profile_recovery`
 > Related architecture: (none yet)
+> Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
+```mermaid
+flowchart LR
+  Create[Profile created] --> Mailer[SMTP mailer]
+  Mailer --> Inbox[Recovery code by email]
+  Lost[Code lost] --> Reissue[Re-issue endpoint]
+  Reissue --> Rotate[New code, old invalid]
+  Rotate --> Mailer
+  Reissue --> Neutral[Neutral response, rate-limited]
+```
+
 Roadmap patch 0.4.1: a minimal SMTP mailer sends the recovery code at profile creation and lets players re-issue a fresh code to their email without admin support, building on the hardened code generation, hashing, and rate limiting from remediation pass 5.
 
 # Goals

@@ -5,9 +5,19 @@
 > Related backlog: `item_152_map_simulation_laps_to_circuit_laps_at_the_display_boundary`
 > Related task: `task_064_orchestrate_lap_scale_coherence_fix`
 > Related architecture: (none yet)
+> Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
+```mermaid
+flowchart LR
+  Sim[Simulation laps ~10] --> Map[lap mapping at display boundary]
+  Circuit[Circuit laps 3-12] --> Map
+  Map --> Report[Key moments & recap]
+  Map --> Replay[Callouts & markers]
+  Map --> Test[Short-circuit invariant test]
+```
+
 Defect chain from the 2026-07-20 AI playtest: the simulation's internal lap scale leaks raw into every event-derived surface, so a 3-lap Grand Prix reports moments from laps 5, 8, and 10. Fix by translating simulation laps to circuit laps at one boundary, lock it with a short-circuit invariant test, and keep simulation outcomes untouched.
 
 # Goals

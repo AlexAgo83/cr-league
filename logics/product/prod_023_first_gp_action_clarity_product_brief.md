@@ -5,9 +5,19 @@
 > Related backlog: `item_141_single_recommended_cta_at_grand_prix_start`, `item_142_compact_circuit_and_weather_recommendation_on_the_plan_screen`, `item_143_harmonize_first_session_vocabulary_in_en_and_fr`
 > Related task: `task_060_orchestrate_first_gp_action_clarity`
 > Related architecture: (none yet)
+> Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
+```mermaid
+flowchart LR
+  Start[Fresh GP] --> CTA[One pulsing CTA: New chrono]
+  CTA --> Chrono[First chrono run]
+  Chrono --> Reco[Plan screen trait+weather hint]
+  Reco --> Plan[Lock plan]
+  Plan --> Launch[Launch GP]
+```
+
 Roadmap patch 0.3.16: make the first minutes of a Grand Prix unambiguous. One pulsing CTA (New chrono) at GP start, one compact circuit/weather recommendation on the plan screen, and one term per concept across the first-session vocabulary in EN and FR.
 
 # Goals

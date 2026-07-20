@@ -5,9 +5,20 @@
 > Related backlog: `item_144_deterministic_verdict_builder`, `item_145_verdict_block_in_the_race_report`
 > Related task: `task_061_orchestrate_result_verdict_pass`
 > Related architecture: (none yet)
+> Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
+```mermaid
+flowchart LR
+  Race[Race result] --> Builder[buildRaceVerdict]
+  Decision[Player decision] --> Builder
+  Events[Race events] --> Builder
+  Builder --> Verdict[Why it worked / failed]
+  Builder --> Next[Try this next]
+  Verdict --> Report[Report hero block]
+```
+
 Roadmap patch 0.3.14: open every race report with a direct verdict — why the plan worked or failed and what to try next — derived from the data the report already receives, so players understand the outcome in seconds before reading phases, rewards, and key moments.
 
 # Goals

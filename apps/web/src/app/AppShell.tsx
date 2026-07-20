@@ -42,6 +42,7 @@ export function AppShell({
   historyReplay,
   profileIsAdmin,
   preferencesResetSignal,
+  qualifyingReplayInitialLap,
   qualifyingPanelOpen,
   commandClicks,
   primaryCommandClass,
@@ -65,6 +66,7 @@ export function AppShell({
   setGameView,
   setPlanSubscreen,
   setQualifyingResult,
+  openQualifyingHistory,
   setSeasonRecapSeason,
   setChampionshipRecordTab,
   setGaragePanel,
@@ -114,6 +116,7 @@ export function AppShell({
   historyReplay: LeagueState["grandPrixHistory"][number] | null;
   profileIsAdmin: boolean;
   preferencesResetSignal: number;
+  qualifyingReplayInitialLap?: number;
   qualifyingPanelOpen: boolean;
   commandClicks: Record<CommandClick, boolean>;
   primaryCommandClass: string;
@@ -137,6 +140,7 @@ export function AppShell({
   setGameView: (view: GameView) => void;
   setPlanSubscreen: (screen: PlanSubscreen) => void;
   setQualifyingResult: (result: QualifyingRun | null) => void;
+  openQualifyingHistory: (run: QualifyingRun) => void;
   setSeasonRecapSeason: Dispatch<SetStateAction<number | null>>;
   setChampionshipRecordTab: (tab: ChampionshipRecordTab) => void;
   setGaragePanel: (panel: CardPanel) => void;
@@ -265,7 +269,7 @@ export function AppShell({
           setForm={setForm}
           setGameView={setGameView}
           setPlanSubscreen={setPlanSubscreen}
-          setQualifyingResult={setQualifyingResult}
+          openQualifyingHistory={openQualifyingHistory}
           openHistoryReplay={openHistoryReplay}
           setSeasonRecapSeason={setSeasonRecapSeason}
           setChampionshipRecordTab={setChampionshipRecordTab}
@@ -303,6 +307,7 @@ export function AppShell({
             qualifyingDisabled={race.qualifyingDisabled}
             pendingMessage={pendingMessage}
             preferencesResetSignal={preferencesResetSignal}
+            qualifyingReplayInitialLap={qualifyingReplayInitialLap}
             setQualifyingPanelOpen={setQualifyingPanelOpen}
             setQualifyingResult={setQualifyingResult}
             setPlanSubscreen={setPlanSubscreen}

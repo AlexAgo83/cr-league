@@ -55,7 +55,7 @@ export function GameViews({
   setForm,
   setGameView,
   setPlanSubscreen,
-  setQualifyingResult,
+  openQualifyingHistory,
   openHistoryReplay,
   setSeasonRecapSeason,
   setChampionshipRecordTab,
@@ -106,7 +106,7 @@ export function GameViews({
   setForm: (form: FormState) => void;
   setGameView: (view: GameView) => void;
   setPlanSubscreen: (screen: PlanSubscreen) => void;
-  setQualifyingResult: (run: QualifyingRun) => void;
+  openQualifyingHistory: (run: QualifyingRun) => void;
   openHistoryReplay: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
   setSeasonRecapSeason: (season: number) => void;
   setChampionshipRecordTab: (tab: ChampionshipRecordTab) => void;
@@ -167,7 +167,7 @@ export function GameViews({
           onSetForm={setForm}
           onSetGameView={setGameView}
           onSetPlanSubscreen={setPlanSubscreen}
-          onSetQualifyingResult={setQualifyingResult}
+          onOpenQualifyingHistory={openQualifyingHistory}
           tt={tt}
         />
       ) : null}

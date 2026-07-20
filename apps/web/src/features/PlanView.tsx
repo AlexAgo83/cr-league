@@ -35,7 +35,7 @@ export function PlanView({
   onSetForm,
   onSetGameView,
   onSetPlanSubscreen,
-  onSetQualifyingResult,
+  onOpenQualifyingHistory,
   tt
 }: {
   cardLocked: boolean;
@@ -63,7 +63,7 @@ export function PlanView({
   onSetForm: (form: FormState) => void;
   onSetGameView: (view: GameView) => void;
   onSetPlanSubscreen: (subscreen: PlanSubscreen) => void;
-  onSetQualifyingResult: (run: QualifyingRun) => void;
+  onOpenQualifyingHistory: (run: QualifyingRun) => void;
   tt: Translator;
 }) {
   const planRecommendation = buildPlanRecommendation({ circuitTraits, forecastPick, tt });
@@ -168,15 +168,15 @@ export function PlanView({
             <div className="chrono-best-config">
               <strong>{tt("chrono_report_best_config")}</strong>
               <div className="chrono-session-setup">
-                <span className="chrono-session-choice">
+                <span className={`chrono-session-choice type-approach approach-${chronoReport.best.decision.approach}`}>
                   <small>{tt("field_approach")}</small>
                   <b>{tt(`approach_${chronoReport.best.decision.approach}` as TranslationKey)}</b>
                 </span>
-                <span className="chrono-session-choice">
+                <span className={`chrono-session-choice type-preparation preparation-${chronoReport.best.decision.preparation}`}>
                   <small>{tt("field_preparation")}</small>
                   <b>{tt(`preparation_${chronoReport.best.decision.preparation}` as TranslationKey)}</b>
                 </span>
-                <span className="chrono-session-choice">
+                <span className="chrono-session-choice type-card">
                   <small>{tt("field_card")}</small>
                   <b>{chronoReport.best.decision.cardId ? tt(`card_${chronoReport.best.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
                 </span>
@@ -191,14 +191,19 @@ export function PlanView({
                 {[...playerQualifyingRuns]
                   .sort((left, right) => right.attempts - left.attempts || (right.lap ?? 0) - (left.lap ?? 0))
                   .map((run) => (
-                    <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`}>
+                    <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run === chronoReport.best ? "best-session" : undefined}>
                       <div className="chrono-session-setup">
-                        <strong className="chrono-session-lap">{tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}</strong>
-                        <span className="chrono-session-choice">
+                        <span className="chrono-session-lap">
+                          <small>{tt("qualifying_attempt_short")}</small>
+                          <b>
+                            {run.attempts} · {tt("qualifying_result_lap_value", { lap: run.lap ?? 1 })}
+                          </b>
+                        </span>
+                        <span className={`chrono-session-choice type-approach approach-${run.decision.approach}`}>
                           <small>{tt("field_approach")}</small>
                           <b>{tt(`approach_${run.decision.approach}` as TranslationKey)}</b>
                         </span>
-                        <span className="chrono-session-choice">
+                        <span className={`chrono-session-choice type-preparation preparation-${run.decision.preparation}`}>
                           <small>{tt("field_preparation")}</small>
                           <b>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</b>
                         </span>
@@ -208,7 +213,7 @@ export function PlanView({
                         type="button"
                         className="secondary-button"
                         onClick={() => {
-                          onSetQualifyingResult(run);
+                          onOpenQualifyingHistory(run);
                           onSetGameView("drive");
                         }}
                       >

@@ -476,6 +476,7 @@ describe("App", () => {
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
     expect(JSON.parse((fetch.mock.calls[1]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123", laps: 3 });
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
+    expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 1/3");
     expect(screen.getByText("Relive this run lap by lap:", { exact: false })).toBeTruthy();
     expect(document.querySelector(".replay-overlay-actions")?.textContent).not.toContain("Attempts left");
     expect(screen.queryByRole("heading", { name: "Run chrono" })).toBe(null);
@@ -518,10 +519,13 @@ describe("App", () => {
     expect(document.querySelector(".chrono-best-config")?.textContent).toContain("Best config");
     expect(document.querySelector(".chrono-best-config")?.textContent).toContain("72.42s");
     expect(document.querySelector(".chrono-best-config")?.compareDocumentPosition(document.querySelector(".chrono-report-history")!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    expect(document.querySelector(".chrono-report-history li.best-session")?.textContent).toContain("72.42s");
+    expect(document.querySelector(".chrono-report-history .type-approach")).toBeTruthy();
+    expect(document.querySelector(".chrono-report-history .type-preparation")).toBeTruthy();
     expect(document.querySelectorAll(".chrono-session-choice b").length).toBeGreaterThan(0);
     fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
-    expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 1/3");
+    expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/3");
     expect(screen.getByRole("button", { name: "Chrono" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Chrono" }));
     expect(screen.getByRole("heading", { name: "Understand the chrono" })).toBeTruthy();

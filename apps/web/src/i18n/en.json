@@ -175,6 +175,7 @@
   "qualifying_result_attempt": "Attempt",
   "qualifying_result_best_lap": "Best lap",
   "qualifying_result_lap_value": "Lap {lap}",
+  "qualifying_attempt_short": "Attempt",
   "qualifying_attempt_label": "Attempt {attempt} · lap {lap}",
   "chrono_report_kicker": "Chrono report",
   "chrono_report_title": "Understand the chrono",

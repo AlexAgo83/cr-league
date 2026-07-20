@@ -45,6 +45,7 @@ export function DriveView({
   qualifyingDisabled,
   pendingMessage,
   preferencesResetSignal,
+  qualifyingReplayInitialLap,
   setQualifyingPanelOpen,
   setQualifyingResult,
   setPlanSubscreen,
@@ -81,6 +82,7 @@ export function DriveView({
   qualifyingDisabled: boolean;
   pendingMessage: string | null;
   preferencesResetSignal: number;
+  qualifyingReplayInitialLap?: number;
   setQualifyingPanelOpen: (open: boolean) => void;
   setQualifyingResult: (result: null) => void;
   setPlanSubscreen: (screen: PlanSubscreen) => void;
@@ -110,6 +112,7 @@ export function DriveView({
               towerReplacement={<QualifyingTimesPanel replay entries={qualifyingLeaderboard} playerTeamId={playerTeam?.id} attemptsUsed={qualifyingAttemptsUsed} attemptLimit={qualifyingAttemptLimit} tt={tt} />}
               titleKey="qualifying_replay_title"
               explainerKey="qualifying_replay_explainer"
+              initialLap={qualifyingReplayInitialLap}
               preferencesResetSignal={preferencesResetSignal}
               onClose={() => setQualifyingResult(null)}
               closeLabel={tt("action_back_to_race")}

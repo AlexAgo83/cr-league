@@ -1494,6 +1494,11 @@ label small {
   padding: 8px 10px;
 }
 
+.chrono-report-history li.best-session {
+  background: color-mix(in srgb, var(--color-accent) 9%, rgb(248 243 232 / 0.88));
+  border-color: color-mix(in srgb, var(--color-accent) 48%, transparent);
+}
+
 .chrono-session-setup {
   align-items: center;
   display: grid;
@@ -1515,7 +1520,7 @@ label small {
 .chrono-session-lap {
   background: rgb(248 243 232 / 0.72);
   color: var(--color-text);
-  font-size: 0.78rem;
+  gap: 1px;
   padding: 5px 9px;
   white-space: nowrap;
 }
@@ -1525,6 +1530,22 @@ label small {
   padding: 4px 8px;
 }
 
+.chrono-session-choice.type-approach {
+  background: color-mix(in srgb, #db2777 10%, rgb(248 243 232 / 0.9));
+  border-color: color-mix(in srgb, #db2777 38%, transparent);
+}
+
+.chrono-session-choice.type-preparation {
+  background: color-mix(in srgb, #0d9488 10%, rgb(248 243 232 / 0.9));
+  border-color: color-mix(in srgb, #0d9488 38%, transparent);
+}
+
+.chrono-session-choice.type-card {
+  background: color-mix(in srgb, #b45309 10%, rgb(248 243 232 / 0.9));
+  border-color: color-mix(in srgb, #b45309 38%, transparent);
+}
+
+.chrono-session-lap small,
 .chrono-session-choice small {
   color: var(--color-muted);
   font-size: 0.56rem;
@@ -1532,16 +1553,27 @@ label small {
   text-transform: uppercase;
 }
 
+.chrono-session-lap b,
 .chrono-session-choice b {
   color: var(--color-accent);
   font-size: 0.76rem;
   line-height: 1.05;
 }
 
+.chrono-session-lap b {
+  color: var(--color-text);
+}
+
 .chrono-report-history li em {
   color: var(--color-accent);
   font-style: normal;
   font-weight: 900;
+}
+
+.chrono-report-history li.best-session em {
+  background: var(--color-accent);
+  color: #fff;
+  padding: 4px 8px;
 }
 
 .chrono-report-history p {

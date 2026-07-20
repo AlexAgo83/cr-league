@@ -107,6 +107,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const { commandClicks, markCommandClicked, resetCommandClicks } = useCommandClicks();
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
+  const [qualifyingReplayInitialLap, setQualifyingReplayInitialLap] = useState<number | undefined>();
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
   const previousSeasonRef = useRef<number | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
@@ -307,7 +308,10 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setLeagueFormError,
     setGameView,
     setDirectiveConfirmOpen,
-    setQualifyingResult,
+    setQualifyingResult: (result) => {
+      setQualifyingReplayInitialLap(undefined);
+      setQualifyingResult(result);
+    },
     setQualifyingConfirmOpen,
     setResolveConfirmOpen,
     setStartingGridExpanded,
@@ -439,8 +443,16 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
 
   function closeOpenReplays() {
     if (historyReplay) closeHistoryReplay();
-    if (qualifyingResult) setQualifyingResult(null);
+    if (qualifyingResult) {
+      setQualifyingReplayInitialLap(undefined);
+      setQualifyingResult(null);
+    }
     if (resultOpen && result) setResultOpen(false);
+  }
+
+  function openQualifyingHistory(run: QualifyingRun) {
+    setQualifyingReplayInitialLap(run.lap ?? 1);
+    setQualifyingResult(run);
   }
 
   function changeLocale(nextLocale: Locale) {
@@ -647,6 +659,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       historyReplay={historyReplay}
       profileIsAdmin={Boolean(profileSession?.admin)}
       preferencesResetSignal={preferencesResetSignal}
+      qualifyingReplayInitialLap={qualifyingReplayInitialLap}
       qualifyingPanelOpen={qualifyingPanelOpen}
       commandClicks={commandClicks}
       primaryCommandClass={primaryCommandClass}
@@ -669,7 +682,11 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       setDirectiveStep={setDirectiveStep}
       setGameView={setGameView}
       setPlanSubscreen={setPlanSubscreen}
-      setQualifyingResult={setQualifyingResult}
+      setQualifyingResult={(result) => {
+        if (!result) setQualifyingReplayInitialLap(undefined);
+        setQualifyingResult(result);
+      }}
+      openQualifyingHistory={openQualifyingHistory}
       setSeasonRecapSeason={setSeasonRecapSeason}
       setChampionshipRecordTab={setChampionshipRecordTab}
       setGaragePanel={setGaragePanel}

@@ -175,6 +175,7 @@
   "qualifying_result_attempt": "Essai",
   "qualifying_result_best_lap": "Meilleur tour",
   "qualifying_result_lap_value": "Tour {lap}",
+  "qualifying_attempt_short": "Essai",
   "qualifying_attempt_label": "Essai {attempt} · tour {lap}",
   "chrono_report_kicker": "Rapport chrono",
   "chrono_report_title": "Comprendre le chrono",

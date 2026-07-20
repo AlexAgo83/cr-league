@@ -1,10 +1,10 @@
 ## task_059_orchestrate_repo_review_remediation_pass_5 - Orchestrate repo review remediation pass 5
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
-> Understanding: 98
-> Confidence: 92
-> Progress: 99
+> Status: Done
+> Understanding: 99
+> Confidence: 94
+> Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -14,16 +14,16 @@
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
 
 # Plan
-- [ ] 1. Read req_045 and its orchestration task first; this pass extends the same store patterns (runWrite, guarded updateMany, memory-db compatibility) and must not regress pass-4 behavior.
-- [ ] 2. Land the API items first: recovery hardening (new code format, scrypt, rate limiter, legacy upgrade), then trust-boundary and restartLeague atomicity fixes, keeping the in-memory suite green.
-- [ ] 3. Add the eslint react-hooks and jsx-a11y plugins before touching the web code so the decomposition is policed by the new rules from the start.
-- [ ] 4. Decompose App.tsx into domain hooks and view containers, fix the rejoin effect, dedupe rejoin, collapse command-clicked state, swap window.confirm for the Modal; then split ReplayView with useReplayClock.
-- [ ] 5. Build the Postgres integration suite and its CI job (services: postgres, migrate deploy, concurrency scenarios including the restart rollback), and clean the unit lane's DATABASE_URL.
-- [ ] 6. Finish the infra sweep: Dependabot, npm audit gate, vitest coverage in CI, release health-check hard-fail, engines field, reports/ gitignore policy.
-- [ ] 7. Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout and update the roadmap patch statuses.
-- [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
-- [ ] Keep commit creation under operator control; do not force one commit per micro-step.
-- [ ] GATE: do not close until lint, audit, and scaffold validation pass.
+- [x] 1. Read req_045 and its orchestration task first; this pass extends the same store patterns (runWrite, guarded updateMany, memory-db compatibility) and must not regress pass-4 behavior.
+- [x] 2. Land the API items first: recovery hardening (new code format, scrypt, rate limiter, legacy upgrade), then trust-boundary and restartLeague atomicity fixes, keeping the in-memory suite green.
+- [x] 3. Add the eslint react-hooks and jsx-a11y plugins before touching the web code so the decomposition is policed by the new rules from the start.
+- [x] 4. Decompose App.tsx into domain hooks and view containers, fix the rejoin effect, dedupe rejoin, collapse command-clicked state, swap window.confirm for the Modal; then split ReplayView with useReplayClock.
+- [x] 5. Build the Postgres integration suite and its CI job (services: postgres, migrate deploy, concurrency scenarios including the restart rollback), and clean the unit lane's DATABASE_URL.
+- [x] 6. Finish the infra sweep: Dependabot, npm audit gate, vitest coverage in CI, release health-check hard-fail, engines field, reports/ gitignore policy.
+- [x] 7. Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout and update the roadmap patch statuses.
+- [x] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
+- [x] Keep commit creation under operator control; do not force one commit per micro-step.
+- [x] GATE: do not close until lint, audit, and scaffold validation pass.
 
 # Backlog
 - `item_135_brute_force_resistant_account_recovery`
@@ -34,16 +34,26 @@
 - `item_140_ci_lint_and_release_gate_hardening`
 
 # Definition of Done (DoD)
-- [ ] Generated request, product, backlog, and task docs are present.
-- [ ] Context-pack handoff is available when requested.
-- [ ] Validation passes.
-- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+- [x] Generated request, product, backlog, and task docs are present.
+- [x] Context-pack handoff is available when requested.
+- [x] Validation passes.
+- [x] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
 - request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
 - request-AC4 -> This task. Proof: optional context-pack handoff is supported.
 - request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
 - request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC2 -> This task. Proof: createDemoLeague and joinLeagueByCode require recoveryCode proof for profileId use; public league reads hide league.code while claimed/admin responses keep the invite code; API tests cover bare/wrong profile proof rejection.
+- request-AC3 -> This task. Proof: restartLeague reset now runs inside runWrite, and the Postgres integration lane covers restart rollback under real transaction semantics.
+- request-AC5 -> This task. Proof: App.tsx is 658 lines after extracting AppShell, race/session actions, plan/race hooks, chrome, overlays, and helpers; rejoin is centralized and restart confirm uses the Modal pattern; App/App.profile tests pass.
+- request-AC7 -> This task. Proof: app.postgres.test.ts and CI postgres:16 service cover concurrent qualifying, single-winner resolve transition claim, credit-guarded card purchase, and restart rollback; the unit CI lane no longer advertises DATABASE_URL.
+- request-AC9 -> This task. Proof: closeout validation passed with rtk npm run typecheck, rtk npm run lint, rtk npm test, rtk npm run build, rtk npm run test:e2e, and rtk npm run logics:validate.
+- request-AC2 -> This task. Evidence needed: createDemoLeague and joinLeagueByCode require proof of profile ownership and reject a bare profileId belonging to someone else; league reads only include the invite code for the owner or members; tests cover the rejection and the code visibility rules.
+- request-AC3 -> This task. Evidence needed: restartLeague executes atomically inside runWrite so an injected mid-sequence failure leaves the previous league state intact, with a test proving no league can end up without a current Grand Prix.
+- request-AC5 -> This task. Evidence needed: App.tsx drops below ~700 lines by extracting domain hooks (league, profile, admin, plan form) and view containers, the rejoin effect has correct dependencies or an explicit mount guard, the rejoin logic exists once, the seven command-clicked booleans collapse into one structure, and all existing web tests still pass.
+- request-AC7 -> This task. Evidence needed: A CI lane runs integration tests against a real Postgres service covering concurrent qualifying submissions, the resolve transition claim, and the credit-guarded card purchase; the unit lane no longer advertises an unused DATABASE_URL.
+- request-AC9 -> This task. Evidence needed: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
 
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
@@ -52,6 +62,10 @@
 - 2026-07-20 wave 23 targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed after plan-form and race-derivation extraction.
 - 2026-07-20 wave 24 targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed after App shell, race action, session action, command click, and notification extraction.
 - 2026-07-20 wave 25 targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/features/ReplayView.test.ts apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed after replay math/director/moment extraction.
+- 2026-07-20 closeout validation: rtk npm run typecheck passed; rtk npm run lint passed; rtk npm test passed (21 files, 1 skipped, 172 tests, 4 skipped); rtk npm run build passed; rtk npm run test:e2e passed (4 tests); rtk npm run logics:validate passed with 0 blocking issues.
+- rtk npm run typecheck passed; rtk npm run lint passed; rtk npm test passed (21 files, 1 skipped, 172 tests, 4 skipped); rtk npm run build passed; rtk npm run test:e2e passed (4 tests); rtk npm run logics:validate passed with 0 blocking issues.
+- Finish workflow executed on 2026-07-20.
+- Linked backlog/request close verification passed.
 
 # Report
 - Implementation complete.
@@ -80,6 +94,9 @@
 - 2026-07-20 wave 23: continued item_137 by extracting persisted plan-form state into apps/web/src/app/usePlanForm.ts and race-derived view-model calculations into apps/web/src/app/useRaceDerivations.ts. App.tsx is now 968 lines; the new files are 39 and 127 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed. Remaining item_137 work: App.tsx still needs a larger app shell/controller split to reach the ~700-line AC.
 - 2026-07-20 wave 24: completed item_137's line-count decomposition target by extracting AppShell.tsx, raceActions.ts, sessionActions.ts, useCommandClicks.ts, and useNotifications.ts. App.tsx is now 658 lines and no extracted app module exceeds 400 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 - 2026-07-20 wave 25: completed the remaining item_138 slimming pass by extracting replayMath.ts, replayDirector.ts, and replayMoment.ts. ReplayView.tsx is now 376 lines and every replay/ module remains below 400 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and ReplayView/App/App.profile tests passed.
+- Finished on 2026-07-20.
+- Linked backlog item(s): `item_135_brute_force_resistant_account_recovery`, `item_136_api_trust_boundary_and_atomicity_fixes`, `item_137_decompose_app_tsx_into_domain_hooks_and_views`, `item_138_split_replayview_and_extract_the_replay_clock`, `item_139_postgres_integration_test_ci_lane_for_concurrent_store_paths`, `item_140_ci_lint_and_release_gate_hardening`
+- Related request(s): `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

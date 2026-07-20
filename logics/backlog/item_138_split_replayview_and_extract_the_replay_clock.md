@@ -2,8 +2,8 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: Done
-> Understanding: 96
-> Confidence: 92
+> Understanding: 98
+> Confidence: 94
 > Progress: 100
 > Complexity: Low
 > Theme: Web architecture
@@ -30,6 +30,10 @@
 # AC Traceability
 - request-AC6 -> This backlog slice. Proof: AC1: ReplayView.tsx is a composition file and the rAF/timer logic lives in useReplayClock.
 - request-AC9 -> This backlog slice. Proof: AC2: Existing replay tests pass unchanged apart from import paths.
+- request-AC4 -> This backlog slice. Evidence needed: The admin token comparison is constant-time and localhost CORS origins are absent from the production origin set, verified by tests or config assertions.
+- request-AC5 -> This backlog slice. Evidence needed: App.tsx drops below ~700 lines by extracting domain hooks (league, profile, admin, plan form) and view containers, the rejoin effect has correct dependencies or an explicit mount guard, the rejoin logic exists once, the seven command-clicked booleans collapse into one structure, and all existing web tests still pass.
+- request-AC7 -> This backlog slice. Evidence needed: A CI lane runs integration tests against a real Postgres service covering concurrent qualifying submissions, the resolve transition claim, and the credit-guarded card purchase; the unit lane no longer advertises an unused DATABASE_URL.
+- request-AC8 -> This backlog slice. Evidence needed: CI gains dependency scanning (Dependabot config plus an npm audit gate), vitest coverage collection surfaced in CI, eslint enforces react-hooks and jsx-a11y rules with the codebase passing, the release workflow fails on a health-version mismatch, package.json declares engines, and the reports/ gitignore policy is consistent.
 
 # Decision framing
 - Product framing: Not needed
@@ -58,3 +62,9 @@
 # Validation
 - 2026-07-20 closeout proof: AC1 useReplayClock owns the replay rAF playback loop, speed/play state, seek/restart, live lap/segment state, and position-pop timer cleanup; ReplayView delegates stage presentation to ReplayStageOverlay. AC2 ReplayView.test.ts passes unchanged (26 tests), and full suite passes (172 tests). AC3 replay folder files are below 400 lines: ReplayProgress 104, ReplayStageOverlay 283, ReplayTower 57, useReplayClock 184.
 - 2026-07-20 fourth implementation wave targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/features/ReplayView.test.ts apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed. File sizes: ReplayView 376, replayMath 365, replayDirector 110, replayMoment 37, useReplayClock 184, ReplayProgress 104, ReplayStageOverlay 283, ReplayTower 57.
+
+# Tasks
+- `task_059_orchestrate_repo_review_remediation_pass_5`
+
+# Notes
+- Task `task_059_orchestrate_repo_review_remediation_pass_5` was finished via `logics-manager flow finish task` on 2026-07-20.

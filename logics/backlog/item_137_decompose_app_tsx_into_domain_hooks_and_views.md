@@ -1,10 +1,10 @@
 ## item_137_decompose_app_tsx_into_domain_hooks_and_views - Decompose App.tsx into domain hooks and views
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 98
 > Confidence: 92
-> Progress: 100
+> Progress: 100%
 > Complexity: Medium
 > Theme: Web architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,11 @@
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: App.tsx is below ~700 lines and no extracted module exceeds ~400 lines.
 - request-AC9 -> This backlog slice. Proof: AC2: react-hooks lint rules pass with no disabled exhaustive-deps except explicitly justified mount guards.
+- request-AC3 -> This backlog slice. Evidence needed: restartLeague executes atomically inside runWrite so an injected mid-sequence failure leaves the previous league state intact, with a test proving no league can end up without a current Grand Prix.
+- request-AC4 -> This backlog slice. Evidence needed: The admin token comparison is constant-time and localhost CORS origins are absent from the production origin set, verified by tests or config assertions.
+- request-AC6 -> This backlog slice. Evidence needed: ReplayView.tsx is split into a useReplayClock hook and separate scrubber/tower/stage files with no behavior change pinned by the existing replay tests.
+- request-AC7 -> This backlog slice. Evidence needed: A CI lane runs integration tests against a real Postgres service covering concurrent qualifying submissions, the resolve transition claim, and the credit-guarded card purchase; the unit lane no longer advertises an unused DATABASE_URL.
+- request-AC8 -> This backlog slice. Evidence needed: CI gains dependency scanning (Dependabot config plus an npm audit gate), vitest coverage collection surfaced in CI, eslint enforces react-hooks and jsx-a11y rules with the codebase passing, the release workflow fails on a health-version mismatch, package.json declares engines, and the reports/ gitignore policy is consistent.
 
 # Decision framing
 - Product framing: Not needed
@@ -76,3 +81,9 @@
 - 2026-07-20 thirteenth implementation wave validation: full suite passed after claimHelpers extraction: rtk npm test, rtk npm run build, and rtk npm run logics:validate.
 - 2026-07-20 fourteenth implementation wave targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed.
 - 2026-07-20 fifteenth implementation wave targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed.
+
+# Tasks
+- `task_059_orchestrate_repo_review_remediation_pass_5`
+
+# Notes
+- Task `task_059_orchestrate_repo_review_remediation_pass_5` was finished via `logics-manager flow finish task` on 2026-07-20.

@@ -1,9 +1,9 @@
 ## req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening - Repo review remediation pass 5: account security, API trust boundaries, web decomposition, and CI hardening
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90
-> Confidence: 85
+> Status: Done
+> Understanding: 99
+> Confidence: 94
 > Complexity: Medium
 > Theme: Repo review remediation
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -38,6 +38,17 @@
 - AC7: A CI lane runs integration tests against a real Postgres service covering concurrent qualifying submissions, the resolve transition claim, and the credit-guarded card purchase; the unit lane no longer advertises an unused DATABASE_URL.
 - AC8: CI gains dependency scanning (Dependabot config plus an npm audit gate), vitest coverage collection surfaced in CI, eslint enforces react-hooks and jsx-a11y rules with the codebase passing, the release workflow fails on a health-version mismatch, package.json declares engines, and the reports/ gitignore policy is consistent.
 - AC9: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
+
+# AC Traceability
+- AC1 -> `task_059_orchestrate_repo_review_remediation_pass_5`. Proof: wave 1 implemented 16-byte recovery codes, salted scrypt hash format, legacy SHA-256 upgrade, per-email/IP limiter, and recovery/admin reset tests.
+- AC2 -> `task_059_orchestrate_repo_review_remediation_pass_5`. Proof: wave 3 requires recoveryCode proof for createDemoLeague and joinLeagueByCode profileId use, keeps recovered sessions able to prove ownership, and tests bare/wrong profile proof rejection; wave 2 hides league.code for public league reads.
+- AC3 -> `task_059_orchestrate_repo_review_remediation_pass_5`. Proof: wave 2 wraps restartLeague delete/update/create reset in runWrite; wave 6 Postgres integration includes restart rollback coverage under real transaction semantics.
+- AC4 -> `task_059_orchestrate_repo_review_remediation_pass_5`. Proof: wave 2 limits localhost CORS to local WEB_ORIGIN and compares admin bearer tokens with timingSafeEqual.
+- AC5 -> `task_059_orchestrate_repo_review_remediation_pass_5`. Proof: waves 7, 11, and 24 collapse command-click state, centralize rejoin, replace restart confirm with Modal, and reduce App.tsx to 658 lines with extracted modules below 400 lines.
+- AC6 -> `task_059_orchestrate_repo_review_remediation_pass_5`. Proof: waves 8-10 and 25 extract useReplayClock, ReplayTower, ReplayProgress, ReplayStageOverlay, replayMath, replayDirector, and replayMoment; ReplayView.tsx is 376 lines and replay tests pass unchanged.
+- AC7 -> `task_059_orchestrate_repo_review_remediation_pass_5`. Proof: wave 6 adds a Postgres CI lane and app.postgres.test.ts covering concurrent qualifying, single-winner resolve transition claim, credit-guarded card purchase, and restart rollback; unit CI no longer advertises DATABASE_URL.
+- AC8 -> `task_059_orchestrate_repo_review_remediation_pass_5`. Proof: waves 4-5 add Node engines, Dependabot, npm audit gate, release health-check hard fail, react-hooks/jsx-a11y linting, Vitest V8 coverage in CI, and reports/ gitignore policy.
+- AC9 -> `task_059_orchestrate_repo_review_remediation_pass_5`. Proof: final validation passed with rtk npm run typecheck, rtk npm run lint, rtk npm test, rtk npm run build, rtk npm run test:e2e, and rtk npm run logics:validate.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

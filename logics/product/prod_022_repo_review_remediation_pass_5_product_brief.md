@@ -1,8 +1,8 @@
 ## prod_022_repo_review_remediation_pass_5_product_brief - Repo Review Remediation Pass 5 Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`
-> Related backlog: `item_135_brute_force_resistant_account_recovery`, `item_136_api_trust_boundary_and_atomicity_fixes`, `item_137_decompose_app_tsx_into_domain_hooks_and_views`, `item_138_split_replayview_and_extract_the_replay_clock`, `item_139_postgres_integration_test_ci_lane_for_concurrent_store_paths`, `item_140_ci_lint_and_release_gate_hardening`
+> Related backlog: `item_135_brute_force_resistant_account_recovery`
 > Related task: `task_059_orchestrate_repo_review_remediation_pass_5`
 > Related architecture: (none yet)
 > Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
@@ -50,5 +50,5 @@ A fifth remediation pass driven by the v0.3.11 full-repo review: make account re
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`
+- Product back-reference: `item_135_brute_force_resistant_account_recovery`
 - Task back-reference: `task_059_orchestrate_repo_review_remediation_pass_5`

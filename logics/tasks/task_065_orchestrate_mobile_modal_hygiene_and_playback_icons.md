@@ -9,6 +9,7 @@
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 > Owner: codex
+> Non-semantic edit: 2026-07-20 added follow-up note for responsive replay close text.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -51,6 +52,7 @@
 
 # Report
 - Wave 1 implemented: stack-safe modal body scroll lock with scroll position restore, compact 360px launch-GP modal styling with a single-column starting grid, and themed inline SVG play/pause icons preserving the existing replay controls' labels/state.
+- 2026-07-20 follow-up: replay close now keeps the full Back to race label on desktop and renders compact × text on mobile, with the full aria-label preserved for accessibility and e2e coverage.
 - Finished on 2026-07-20.
 - Linked backlog item(s): `item_154_lock_background_scroll_behind_modals`, `item_155_make_the_launch_grand_prix_modal_compact_on_mobile`, `item_156_replace_the_emoji_playback_control_with_a_themed_svg_icon`
 - Related request(s): `req_064_mobile_modal_hygiene_and_real_playback_icons`

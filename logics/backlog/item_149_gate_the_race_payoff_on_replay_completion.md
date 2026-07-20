@@ -8,10 +8,11 @@
 > Complexity: Low
 > Theme: Replay suspense
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-20 updated replay close label wording to match responsive UI.
 
 # Problem
 - The payoff banner with the final position, points, and credits renders under the live replay from lap 2, spoiling the outcome the replay exists to dramatize.
-- Returning to a finished Grand Prix auto-plays the replay from the start on every visit (re-spoiling included), and the only exit is an unlabeled × whose meaning (Back to circuit) exists only as an aria-label.
+- Returning to a finished Grand Prix auto-plays the replay from the start on every visit (re-spoiling included), and the only exit is an unlabeled × whose meaning exists only as an aria-label.
 
 # Scope
 - In:
@@ -21,7 +22,7 @@
   - Coordinate with req_058 item_138: the completion flag belongs in useReplayClock once that split lands.
   - Add a test for hidden-while-playing and visible-after-completion.
   - Once a replay has been completed or skipped, returning to that Grand Prix lands on the finished summary (classification and actions) with the replay one click away, instead of auto-playing it; persist the seen state with the same mechanism as the completion flag.
-  - Give the replay exit control a visible label (Back to circuit), not only an aria-label.
+  - Give the replay exit control a visible desktop label, not only an aria-label.
 - Out:
   - Changing the payoff panel's content or styling.
   - Replay pacing or auto-play behavior.
@@ -49,7 +50,7 @@
 - Wave 1: the replay report shortcut is hidden until the result is unlocked, so the report cannot spoil the final order mid-replay.
 - Wave 1: result unlock resets when the replay seed/title changes, avoiding carry-over between GP or chrono/race modes.
 - Validation wave 1: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/i18n/index.test.ts` passed with 25 tests.
-- Wave 4: normal app entry into an already resolved current GP now opens on the finished summary instead of auto-playing the replay; explicit `/replay/<gp>` routes and the Replay button still open replay. The replay close control now renders the visible Back to circuit label.
+- Wave 4: normal app entry into an already resolved current GP now opens on the finished summary instead of auto-playing the replay; explicit `/replay/<gp>` routes and the Replay button still open replay. The replay close control now renders the visible Back to race label on desktop and a compact × on mobile.
 - Validation wave 4: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts` passed with 44 tests.
 
 # Links

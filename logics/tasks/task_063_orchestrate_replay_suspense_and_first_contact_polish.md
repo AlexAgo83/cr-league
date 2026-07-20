@@ -9,6 +9,7 @@
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 > Owner: codex
+> Non-semantic edit: 2026-07-20 updated replay close label wording to match responsive UI.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -44,7 +45,7 @@
 - request-AC4 -> league-scoped onboarding persistence. Proof: plain close stores scoped intro keys and reset clears them; covered by `apps/web/src/app/App.test.tsx`.
 - request-AC5 -> chrono labels and report moments. Proof: chrono ranks render as `#` labels without race `P` badges, and key moments dedupe same displayed lap/event type while preferring variety; covered by `apps/web/src/app/App.test.tsx` and `apps/web/src/features/ReportView.test.tsx`.
 - request-AC6 -> plan-lock safety. Proof: Send plan always confirms the selected approach/preparation/pit/card summary, warns on unused inventory card, shows a locked note after send, and labels carried-over plans for the first Plan visit only; covered by `apps/web/src/app/App.test.tsx`.
-- request-AC7 -> replay return. Proof: normal reload/open of a resolved current GP lands on the finished summary with Replay one click away, explicit replay routes still open replay, and the replay exit has visible Back to circuit text; covered by `apps/web/src/app/App.test.tsx` and `apps/web/src/app/App.profile.test.tsx`.
+- request-AC7 -> replay return. Proof: normal reload/open of a resolved current GP lands on the finished summary with Replay one click away, explicit replay routes still open replay, and the replay exit has visible Back to race text on desktop; covered by `apps/web/src/app/App.test.tsx` and `tests/e2e/private-league.spec.ts`.
 - request-AC8 -> validation. Proof: `rtk npm run typecheck`, `rtk npm test`, `rtk npm run build`, `rtk npm run lint`, `rtk npm run test:e2e`, `rtk npm run logics:validate`, `rtk logics-manager lint --require-status`, and `rtk logics-manager audit --group-by-doc` passed after implementation; lint/audit keep known non-blocking warnings only.
 
 # Validation
@@ -67,7 +68,7 @@
 - Wave 2 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts`.
 - Wave 3 implementation: chrono rows no longer use `PositionBadge`; report key moments deduplicate same displayed lap/event type and prefer type variety.
 - Wave 3 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/web/src/features/ReportView.test.tsx apps/web/src/app/App.test.tsx apps/web/src/i18n/index.test.ts`.
-- Wave 4 implementation: finished GPs loaded from normal app entry now land on the result summary, replay remains one click away, and the replay exit has visible Back to circuit text. Send plan always confirms with the selected approach/preparation/pit/card summary, plan lock is explicit on the plan screen, and carried-over plans are labeled on the first plan visit of the new GP only.
+- Wave 4 implementation: finished GPs loaded from normal app entry now land on the result summary, replay remains one click away, and the replay exit has visible Back to race text on desktop. Send plan always confirms with the selected approach/preparation/pit/card summary, plan lock is explicit on the plan screen, and carried-over plans are labeled on the first plan visit of the new GP only.
 - Wave 4 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts`.
 - Closeout validation passed: `rtk npm run typecheck`; `rtk npm test`; `rtk npm run build`; `rtk npm run lint`; `rtk npm run test:e2e`; `rtk npm run logics:validate`; `rtk logics-manager lint --require-status`; `rtk logics-manager audit --group-by-doc`.
 - Finished on 2026-07-20.

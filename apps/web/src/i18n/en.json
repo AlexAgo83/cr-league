@@ -297,6 +297,7 @@
   "action_next": "Next",
   "action_start_racing": "Enter the grid",
   "action_back_to_circuit": "Back to circuit",
+  "action_back_to_race": "Back to race",
   "action_back_to_result": "Back to result",
   "action_create_profile": "Create profile",
   "action_recover_profile": "Recover profile",

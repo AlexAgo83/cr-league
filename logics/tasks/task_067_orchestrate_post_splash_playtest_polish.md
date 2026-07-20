@@ -9,6 +9,7 @@
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 > Owner: codex
+> Non-semantic edit: 2026-07-20 updated splash background proof from blurred fill to black page fill.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -36,7 +37,7 @@
 # AC Traceability
 - request-AC1 -> `item_159_compact_the_splash_header_on_narrow_mobile`. Proof: splash-scoped mobile CSS hides the nonessential language label, tightens header spacing, and e2e asserts no overflow/header bounds at 390px.
 - request-AC2 -> `item_159_compact_the_splash_header_on_narrow_mobile`. Proof: desktop still uses `SetupTopbar` + `LanguageSwitcher`, and the language switcher remains visible in the desktop e2e splash path.
-- request-AC3 -> `item_159_compact_the_splash_header_on_narrow_mobile`. Proof: desktop `.home-splash-background` now uses `object-fit: contain`, with a blurred cover layer behind it to blend side fill; e2e asserts desktop `contain` and full-height background bounds.
+- request-AC3 -> `item_159_compact_the_splash_header_on_narrow_mobile`. Proof: desktop `.home-splash-background` now uses `object-fit: contain` over a black `.home-splash` background; e2e asserts desktop `contain`, black background, and full-height background bounds.
 - request-AC4 -> `item_160_clean_up_app_root_locale_ownership_and_hooks_warning`. Proof: `App` owns locale state via one `initialLocale()` path and passes locale/change handling into the entered app body.
 - request-AC5 -> `item_160_clean_up_app_root_locale_ownership_and_hooks_warning`. Proof: onboarding helpers are stable callbacks declared in the onboarding effect dependencies; `rtk npm run lint` passes with no App.tsx warning.
 - request-AC6 -> This task. Proof: App/profile/i18n targeted tests and private-league e2e flow passed after the root shell and splash CSS changes.
@@ -52,7 +53,7 @@
 - Linked backlog/request close verification passed.
 
 # Report
-- Wave 1 implemented: desktop splash background fits by height with blended side fill, mobile splash header is compacted with scoped CSS, locale ownership is centralized in App, and the App.tsx Hooks warning is removed.
+- Wave 1 implemented: desktop splash background fits by height over black page fill, mobile splash header is compacted with scoped CSS, locale ownership is centralized in App, and the App.tsx Hooks warning is removed.
 - Finished on 2026-07-20.
 - Linked backlog item(s): `item_159_compact_the_splash_header_on_narrow_mobile`, `item_160_clean_up_app_root_locale_ownership_and_hooks_warning`
 - Related request(s): `req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup`

@@ -51,7 +51,7 @@
 - AC4 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: league-scoped intro dismissals persist after plain close and reset clears them; covered by `apps/web/src/app/App.test.tsx`.
 - AC5 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: chrono ranks use `#` labels and report moments dedupe same displayed lap/event type while preserving variety; covered by `apps/web/src/app/App.test.tsx` and `apps/web/src/features/ReportView.test.tsx`.
 - AC6 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: Send plan confirms plan summary, warns for unused playable inventory card, locked plan is explicit, and carried-over plan label is first-visit only; covered by `apps/web/src/app/App.test.tsx`.
-- AC7 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: resolved GP entry lands on the summary with Replay one click away, explicit replay routes still work, and replay close shows Back to circuit text; covered by `apps/web/src/app/App.test.tsx` and `apps/web/src/app/App.profile.test.tsx`.
+- AC7 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: resolved GP entry lands on the summary with Replay one click away, explicit replay routes still work, and replay close shows Back to race text on desktop; covered by `apps/web/src/app/App.test.tsx` and `tests/e2e/private-league.spec.ts`.
 - AC8 -> `task_063_orchestrate_replay_suspense_and_first_contact_polish`. Proof: full validation suite passed at closeout.
 
 > Non-semantic edit: closeout traceability proof added after implementation without changing the accepted need.

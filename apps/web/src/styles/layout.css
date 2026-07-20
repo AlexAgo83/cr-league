@@ -91,9 +91,7 @@
 
 .home-splash {
   align-items: center;
-  background:
-    radial-gradient(circle at 50% 42%, rgb(255 77 0 / 0.16), transparent 38%),
-    #080709;
+  background: #000;
   display: grid;
   isolation: isolate;
   justify-items: center;
@@ -104,15 +102,9 @@
 }
 
 .home-splash::before {
-  background: url("/assets/crl/home-background.jpg") center / cover no-repeat;
   content: "";
-  filter: blur(18px);
-  inset: -24px;
-  opacity: 0.42;
+  display: none;
   pointer-events: none;
-  position: fixed;
-  transform: scale(1.04);
-  z-index: -3;
 }
 
 .home-splash-background {
@@ -240,6 +232,7 @@
     gap: 5px;
     padding: 4px 7px;
   }
+
 }
 
 .ambient-race-map .circuit-map-stage {
@@ -2854,11 +2847,30 @@ label small {
   padding-inline: 12px;
 }
 
+.replay-map-controls .replay-close-mark {
+  display: none;
+}
+
 .replay-map-controls .replay-close-button:hover,
 .replay-map-controls .replay-close-button:focus-visible {
   background: rgb(232 52 52 / 1);
   border-color: #fff;
   color: #fff;
+}
+
+@media (max-width: 520px) {
+  .replay-map-controls .replay-close-button {
+    min-width: 40px;
+    padding-inline: 10px;
+  }
+
+  .replay-map-controls .replay-close-label {
+    display: none;
+  }
+
+  .replay-map-controls .replay-close-mark {
+    display: inline;
+  }
 }
 
 .replay-speed-menu {

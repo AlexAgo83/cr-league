@@ -111,7 +111,7 @@ export function DriveView({
               explainerKey="qualifying_replay_explainer"
               preferencesResetSignal={preferencesResetSignal}
               onClose={() => setQualifyingResult(null)}
-              closeLabel={tt("action_back_to_circuit")}
+              closeLabel={tt("action_back_to_race")}
               overlayActions={
                 <>
                   <button

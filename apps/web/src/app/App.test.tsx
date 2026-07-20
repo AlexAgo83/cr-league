@@ -375,9 +375,9 @@ describe("App", () => {
     expect(window.location.pathname).toBe("/replay/gp_1");
     expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
     expect(screen.queryByRole("dialog", { name: "Race replay" })).toBe(null);
-    expect(screen.getByRole("button", { name: "Back to circuit" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Back to race" })).toBeTruthy();
     expect(screen.queryByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
     expect(window.location.pathname).toBe("/drive");
   });
 
@@ -482,8 +482,11 @@ describe("App", () => {
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("75.18s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 2");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
-    expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("replay-close-button");
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    const chronoCloseButton = screen.getByRole("button", { name: "Back to race" });
+    expect(chronoCloseButton.className).toContain("replay-close-button");
+    expect(chronoCloseButton.querySelector(".replay-close-label")?.textContent).toBe("Back to race");
+    expect(chronoCloseButton.querySelector(".replay-close-mark")?.textContent).toBe("×");
+    fireEvent.click(chronoCloseButton);
     expect(screen.queryByRole("heading", { name: "Chrono replay" })).toBe(null);
     expect(screen.getByText("72.42s")).toBeTruthy();
     expect(screen.getByText("75.18s")).toBeTruthy();
@@ -512,10 +515,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Race" }));
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Chrono report" }).className).not.toContain("highlight-command");
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
     fireEvent.click(screen.getByRole("button", { name: "Review chrono" }));
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
 
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
@@ -632,8 +635,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Speed ×1" }));
     fireEvent.click(screen.getByRole("option", { name: "×2" }));
     expect(screen.getByRole("button", { name: "Speed ×2" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("replay-close-button");
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    expect(screen.getByRole("button", { name: "Back to race" }).className).toContain("replay-close-button");
+    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
     expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
     expect(window.location.pathname).toBe("/drive");
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
@@ -739,7 +742,7 @@ describe("App", () => {
     expect(document.querySelector("#result-replay-panel")).toBeTruthy();
     expect(screen.queryByRole("dialog", { name: "Race replay" })).toBe(null);
     expect(screen.queryByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
@@ -977,7 +980,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     await closeLeagueIntro();
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    fireEvent.click(screen.getByRole("button", { name: "Back to race" }));
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
 

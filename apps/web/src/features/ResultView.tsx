@@ -95,7 +95,7 @@ export function ResultView({
             showIntro={showReplayIntro}
             onClose={onClose}
             onOpenReport={onOpenReport}
-            closeLabel={tt("action_back_to_circuit")}
+            closeLabel={tt("action_back_to_race")}
             afterMapContent={payoffPanel}
             tt={tt}
           />

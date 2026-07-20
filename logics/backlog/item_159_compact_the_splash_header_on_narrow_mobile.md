@@ -8,6 +8,7 @@
 > Complexity: Low
 > Theme: Post-splash first-contact polish
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-20 updated splash background proof from blurred fill to black page fill.
 
 # Problem
 - Manual mobile playtest shows the splash works at 390px, but the top header is crowded because the brand, Language label, and two locale buttons all compete in one row.
@@ -34,9 +35,9 @@
 - AC6: The splash e2e path still validates root display, mobile fit, language controls, desktop background framing, and PRESS START entry.
 
 # Implementation notes
-- 2026-07-20: Desktop splash now renders the main background image with `object-fit: contain` and a blurred cover layer behind it so the artwork stays fit by height while the sides blend into the page.
+- 2026-07-20: Desktop splash now renders the main background image with `object-fit: contain` over a black page background so the artwork stays fit by height without over-zooming or visible letterbox mismatch.
 - 2026-07-20: Narrow mobile splash header hides the nonessential "Language" label and tightens splash-scoped topbar/icon/button spacing without changing shared SetupTopbar markup or non-splash headers.
-- Targeted proof: manual Playwright screenshots `manual-splash-desktop-contained.png` and `manual-splash-mobile-compact-header.png`; `rtk npm run test:e2e` passed with desktop `contain`, mobile `cover`, no-overflow, and header bounds assertions.
+- Targeted proof: manual Playwright screenshots `manual-splash-desktop-contained.png` and `manual-splash-mobile-compact-header.png`; `rtk npm run test:e2e` passed with desktop `contain` plus black splash background, mobile `cover`, no-overflow, and header bounds assertions.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: At 360px and 390px, the splash header controls remain visible, unclipped, and free of horizontal scroll.

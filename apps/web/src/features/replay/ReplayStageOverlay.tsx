@@ -210,7 +210,8 @@ export function ReplayStageOverlay({
         ) : null}
         {onClose ? (
           <button type="button" className="replay-close-button" aria-label={closeLabel ?? tt("action_close")} title={closeLabel ?? tt("action_close")} onClick={onClose}>
-            {closeLabel ?? tt("action_close")}
+            <span className="replay-close-label">{closeLabel ?? tt("action_close")}</span>
+            <span className="replay-close-mark" aria-hidden="true">×</span>
           </button>
         ) : null}
       </div>

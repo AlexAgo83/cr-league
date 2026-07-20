@@ -1,10 +1,10 @@
 ## item_153_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest - Plan-lock safety: confirm on send, visible locked state, carried-over label
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 0
+> Progress: 10%
 > Complexity: Low
 > Theme: First-session UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

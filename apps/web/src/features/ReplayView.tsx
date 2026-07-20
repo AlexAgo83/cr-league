@@ -121,6 +121,7 @@ export function ReplayView({
 }) {
   const [driverFocus, setDriverFocus] = useState(() => localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
   const [copyDismissed, setCopyDismissed] = useState(() => localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
+  const [resultUnlocked, setResultUnlocked] = useState(false);
   const replayTrace = useMemo(() => result.replayTrace ?? [], [result.replayTrace]);
   const replayPlan = useMemo(() => buildReplayPlan(result, replayTrace), [replayTrace, result]);
   const replayMode = titleKey === "qualifying_replay_title" ? "qualifying" : "race";
@@ -151,6 +152,10 @@ export function ReplayView({
     setDriverFocus(localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
     setCopyDismissed(localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
   }, [preferencesResetSignal]);
+
+  useEffect(() => {
+    setResultUnlocked(false);
+  }, [result.seed, titleKey]);
 
   const qualifyingMomentEvents = useMemo(() => replayMode === "qualifying" ? buildQualifyingMomentEvents(directorBeats, result) : [], [directorBeats, replayMode, result]);
   // Majors and player moments first pick, race notes as filler — then strict race order.
@@ -212,6 +217,12 @@ export function ReplayView({
     displayLapAtProgress,
     segmentAtProgress
   });
+  const replayComplete = resultUnlocked || clock.current >= replayEnd;
+  const unlockResult = () => {
+    seek(replayEnd);
+    setPlaying(false);
+    setResultUnlocked(true);
+  };
 
   const cars: MapCar[] = field.map((entry, index) => ({
       id: entry.teamId,
@@ -345,13 +356,21 @@ export function ReplayView({
                 setDriverFocus={setDriverFocus}
                 restart={restart}
                 seek={seek}
-                onOpenReport={onOpenReport}
+                onOpenReport={replayComplete ? onOpenReport : undefined}
                 onClose={onClose}
                 closeLabel={closeLabel}
               />
             }
           />
-          {afterMapContent}
+          {afterMapContent && !replayComplete ? (
+            <section className="panel race-context-panel replay-result-gate">
+              <h2>{tt("replay_result_locked_title")}</h2>
+              <p>{tt("replay_result_locked_body")}</p>
+              <button type="button" className="secondary-button" onClick={unlockResult}>
+                {tt("action_skip_to_result")}
+              </button>
+            </section>
+          ) : afterMapContent}
           {showIntro && !copyDismissed ? (
             <section className="panel race-context-panel replay-copy-panel">
               <h2>{tt(titleKey)}</h2>

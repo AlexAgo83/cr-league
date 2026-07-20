@@ -1,10 +1,10 @@
 ## item_149_gate_the_race_payoff_on_replay_completion - Gate the race payoff on replay completion
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 0
+> Progress: 55%
 > Complexity: Low
 > Theme: Replay suspense
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -40,6 +40,12 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+
+# Implementation Notes
+- Wave 1: `ReplayView` now keeps the payoff/report path locked while the replay is live. `afterMapContent` renders as a small result gate with an explicit skip button until the replay reaches the end or the player clicks skip.
+- Wave 1: the replay report shortcut is hidden until the result is unlocked, so the report cannot spoil the final order mid-replay.
+- Wave 1: result unlock resets when the replay seed/title changes, avoiding carry-over between GP or chrono/race modes.
+- Validation wave 1: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/i18n/index.test.ts` passed with 25 tests.
 
 # Links
 - Product brief(s): `prod_026_replay_suspense_and_first_contact_polish_product_brief`

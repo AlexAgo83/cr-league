@@ -1,20 +1,22 @@
 ## task_063_orchestrate_replay_suspense_and_first_contact_polish - Orchestrate replay suspense and first-contact polish
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 0
+> Progress: 20
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
+- Wave 1 sequencing: req_058/useReplayClock split has landed, so the payoff gate was implemented in current `ReplayView` around the existing clock state and `afterMapContent` boundary. req_060/report verdict is already present; the report shortcut is gated before it can reveal that content mid-replay.
 
 # Plan
-- [ ] 1. Check the landing order against req_058 (ReplayView split) and req_060 (verdict block); rebase the payoff gating onto useReplayClock if the split has landed, otherwise implement on current ReplayView and note it for the split.
-- [ ] 2. Implement the payoff completion gate with its skip control and test.
+- [x] 1. Check the landing order against req_058 (ReplayView split) and req_060 (verdict block); rebase the payoff gating onto useReplayClock if the split has landed, otherwise implement on current ReplayView and note it for the split.
+- [x] 2. Implement the payoff completion gate with its skip control and test.
 - [ ] 3. Land the first-contact fixes (one-click chrono, Enter submit, intro persistence) with their test updates.
 - [ ] 4. Fix the attempt labels and key-moment grouping with helper tests.
 - [ ] 5. Implement plan-lock safety (item_153): Send plan confirmation with plan summary and unused-card warning, visible locked state on the plan screen, carried-over-plan label, and the finished-GP reopen-on-summary behavior with a labeled replay exit (item_149 extension).
@@ -46,7 +48,8 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- Wave 1 implementation: gated `ReplayView` payoff content and report shortcut until replay completion or explicit skip; added EN/FR skip/result-locked copy.
+- Wave 1 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/i18n/index.test.ts`.
 
 # AI Context
 - Summary: Orchestrate replay suspense and first-contact polish

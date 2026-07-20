@@ -1,10 +1,10 @@
 ## item_151_readability_papercuts_attempt_rank_labels_and_key_moment_variety - Readability papercuts: attempt rank labels and key-moment variety
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 0
+> Progress: 10%
 > Complexity: Low
 > Theme: Race learning and feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

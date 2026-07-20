@@ -101,6 +101,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     await closeLeagueIntro();
+    fireEvent.click(screen.getByRole("button", { name: "Skip to result" }));
 
     const payoff = screen.getByLabelText("What you gained");
     expect(payoff.textContent).toContain("P1");
@@ -129,6 +130,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     await closeLeagueIntro();
+    fireEvent.click(screen.getByRole("button", { name: "Skip to result" }));
 
     expect(screen.getByLabelText("What you gained").textContent).toContain("No card spent");
   });
@@ -529,7 +531,7 @@ describe("App", () => {
     expect(window.location.pathname).toBe("/replay/gp_1");
     expect(screen.getByRole("button", { name: "Race" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
-    expect(screen.getByRole("button", { name: "Report" }).className).toContain("replay-report-button");
+    expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
@@ -581,9 +583,13 @@ describe("App", () => {
     ]);
     expect(Array.from(document.querySelector(".replay-content-column")!.children).map((child) => child.className)).toEqual([
       "circuit-map circuit-map-unframed replay-map-panel circuit-weather-dry",
-      "panel race-payoff-recap",
+      "panel race-context-panel replay-result-gate",
       "panel race-context-panel replay-copy-panel"
     ]);
+    expect(screen.queryByLabelText("What you gained")).toBe(null);
+    expect(document.querySelector(".replay-report-button")).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Skip to result" }));
+    expect(screen.getByLabelText("What you gained")).toBeTruthy();
     expect(document.querySelector('image[href="/assets/cars/idle.png"]')).toBeTruthy();
     const replayReportButton = document.querySelector(".replay-report-button") as HTMLButtonElement;
     expect(replayReportButton).toBeTruthy();
@@ -600,6 +606,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "Back to circuit" }).className).toContain("report-close-button");
     fireEvent.click(screen.getByRole("button", { name: "Replay" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Skip to result" }));
     fireEvent.click(screen.getByRole("button", { name: "Report" }));
     expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();
     expect(screen.getByLabelText("Race phases")).toBeTruthy();

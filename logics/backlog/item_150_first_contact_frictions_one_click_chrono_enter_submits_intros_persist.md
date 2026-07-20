@@ -1,10 +1,10 @@
 ## item_150_first_contact_frictions_one_click_chrono_enter_submits_intros_persist - First-contact frictions: one-click chrono, Enter submits, intros persist
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 0
+> Progress: 10%
 > Complexity: Low
 > Theme: First-session UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

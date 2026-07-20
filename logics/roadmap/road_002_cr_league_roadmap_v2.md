@@ -7,6 +7,7 @@
 > Confidence: 90
 > Non-semantic edit: 2026-07-19 release roadmap wording refresh.
 > Semantic edit: 2026-07-20 added first-GP action clarity patch from AI/player playtest.
+> Semantic edit: 2026-07-20 added 0.4.4 repo review remediation pass 5 (req_058); 0.4.2 is implemented by that chain.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -66,8 +67,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Planned patches:
   - 0.4.0 — CI, Render blueprint, and release contract: parallel test lanes, render.yaml (API + static web + Postgres), release-published deploy via Render hooks with CI gate and /health version verification. Shipped.
   - 0.4.1 — Email-backed profile recovery: add a minimal transactional email path so account creation can send the player recovery code by email, and players who know their email can request the code again without manual admin support.
-  - 0.4.2 — Real Postgres integration-test CI lane: exercise the production-like DB path in automation without relying only on unit/in-memory coverage.
+  - 0.4.2 — Real Postgres integration-test CI lane: exercise the production-like DB path in automation without relying only on unit/in-memory coverage. Covered by `req_058` (repo review remediation pass 5).
   - 0.4.3 — Beta support hardening: admin reset/support path, backup/restore/support runbooks, known-limits page for testers, admin filters and 100-by-100 pagination on both admin screens, a safe admin action to delete test data sets (test accounts, test leagues, and related rows), and small operational affordances discovered during hosted playtests.
+  - 0.4.4 — Repo review remediation pass 5: brute-force-resistant account recovery (scrypt, rate limiting), API trust boundaries (profile-ownership proof, hidden invite code, constant-time admin token, production CORS), atomic league restart, App.tsx/ReplayView decomposition, Postgres integration-test lane (implements 0.4.2), and CI/lint/release-gate hardening (Dependabot, npm audit, coverage, react-hooks/jsx-a11y, hard-fail health check). (`req_058`, ready to dev)
 - Exit signal:
   - publishing a GitHub Release vX.Y.Z is the only deploy path and ends with production /health reporting that version;
   - a small invited group can play on the hosted environment without local dev tooling.
@@ -126,9 +128,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Product brief(s): `prod_001_cr_league_product_brief`
 - Superseded roadmap: `road_001_cr_league_roadmap` (kept for 0.1/0.2 delivered detail)
 - Implementation roadmap spec: `spec_016_implementation_roadmap`
-- Request(s): `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`
+- Request(s): `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`
 - Backlog item(s): (tracked per request chain)
-- Task(s): `task_034_orchestrate_over_engineering_cleanup_pass_1`, `task_035_orchestrate_personalized_race_recap`, `task_036_orchestrate_garage_inventory_card_consultation`, `task_037_orchestrate_ci_render_blueprint_and_release_contract`, `task_038_orchestrate_starting_grid_and_season_narrative`
+- Task(s): `task_034_orchestrate_over_engineering_cleanup_pass_1`, `task_035_orchestrate_personalized_race_recap`, `task_036_orchestrate_garage_inventory_card_consultation`, `task_037_orchestrate_ci_render_blueprint_and_release_contract`, `task_038_orchestrate_starting_grid_and_season_narrative`, `task_059_orchestrate_repo_review_remediation_pass_5`
 
 # AI Context
 - Summary: Release-level roadmap for CR League with a three-level version scheme (theme minors, feature-drop patches) from playable prototype to private league V1.

@@ -1,0 +1,274 @@
+{
+  "title": "Repo review remediation pass 5: account security, API trust boundaries, web decomposition, and CI hardening",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_045_repo_review_remediation_pass_4_ownership_resilience_race_window_closure_and_replay_polish.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "apps/api/src/features/leagues/utils.ts",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/features/admin/routes.ts",
+    "apps/api/src/app.ts",
+    "apps/api/src/testMemoryDb.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "eslint.config.js",
+    "vitest.config.ts",
+    ".github/workflows/ci.yml",
+    ".github/workflows/deploy-release.yml",
+    "package.json",
+    ".gitignore",
+    "Full-repo review from 2026-07-20 on v0.3.11, after pass 4 (req_045) closed: recovery codes are 4 random bytes hashed with unsalted single-round SHA-256 and /profiles/recover has no rate limiting, making brute-force account takeover feasible; createDemoLeague and joinLeagueByCode trust any existing profileId from the request body; restartLeague runs its delete/update/create sequence as separate statements outside runWrite and a mid-sequence failure leaves the league with no current Grand Prix; the admin token is compared with !== leaking timing; localhost origins stay CORS-whitelisted in production; GET /leagues/:leagueId returns the invite code to any reader; App.tsx is 1864 lines with ~55 useState and a mount effect closing over stale state; ReplayView.tsx is 1071 lines with an inline rAF loop; the concurrency machinery (FOR UPDATE locks, transactional claims) is only ever exercised against an in-memory test DB with no-op $transaction/$queryRaw; CI has no dependency scanning, no coverage collection, no react-hooks or jsx-a11y lint rules, sets DATABASE_URL in the unit job without provisioning Postgres, and the release health-check mismatch ends in a warning instead of failing the deploy."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Repo review remediation",
+    "needs": [
+      "Make account recovery resistant to brute force: recovery codes of at least 16 random bytes, hashed with a slow salted KDF from the Node standard library (scrypt), and per-email/IP rate limiting on the recover endpoint, while existing legacy-hashed codes keep working until rotated.",
+      "Close the API trust-boundary gaps: bind createDemoLeague and joinLeagueByCode to a proof of profile ownership instead of a bare profileId, stop returning the league invite code to non-members, compare the admin token in constant time, and only whitelist localhost CORS origins outside production.",
+      "Make restartLeague atomic so a mid-sequence failure can never leave a league without a current Grand Prix.",
+      "Decompose the two god components: extract domain hooks and view containers from the 1864-line App.tsx, fix its stale-closure mount effect, deduplicate the rejoin logic, and split ReplayView with the animation loop in a dedicated hook.",
+      "Exercise the concurrency-critical store paths against real Postgres in CI, since the in-memory test DB silently no-ops transactions and row locks.",
+      "Harden CI and tooling: automated dependency scanning, test coverage collection, react-hooks and jsx-a11y lint rules, a release health-check that fails the deploy on mismatch, an engines field, and a consistent reports/ gitignore policy."
+    ],
+    "context": [
+      "createRecoveryCode in utils.ts returns randomBytes(4).toString(\"hex\") (32 bits) and hashRecoveryCode is a single unsalted SHA-256; routes.ts registers /profiles/recover with no throttling, so an attacker who knows an email can brute-force the code online, and a DB leak allows trivial offline cracking. Node's crypto.scrypt and timingSafeEqual cover the fix without new dependencies; a small in-memory fixed-window limiter is enough at this scale.",
+      "Legacy compatibility matters: profiles already hold SHA-256 recovery hashes. Verification should try the new format first, fall back to the legacy hash, and re-issue or re-hash on successful recovery so old codes converge to the new format without a manual migration.",
+      "createDemoLeague and joinLeagueByCode accept any profileId that exists (ensureProfileExists), so anyone who learns another player's cuid can attach teams to their account. The recovery flow already proves profile ownership; joining should require that proof (a profile-scoped token or the recovery claim) rather than the raw id.",
+      "restartLeague in store.ts runs deleteMany decisions, deleteMany grand prixes, the league update, per-team updates, and the new GP create as separate awaited statements outside runWrite; a crash after the GP delete leaves getLeagueState with no grandPrixes[0] and the league is bricked. Wrapping the sequence in the existing runWrite helper matches the patterns passes 3 and 4 established.",
+      "admin/routes.ts compares the admin token with !==; crypto.timingSafeEqual on equal-length buffers is the standard fix. app.ts always adds http://localhost:4873 and http://127.0.0.1:4873 to the CORS set, including on Render; these should be conditional on a non-production environment. getLeagueState returns league.code to any caller who knows the leagueId, exposing the join secret to spectators and ex-members.",
+      "App.tsx concentrates ~55 useState, ~15 useEffect, every API mutation, and ~515 lines of JSX in one 1864-line component; the rejoin effect at line ~178 uses [] deps while closing over profileSession, savedClaims, run, and tt, and the rejoin POST logic is duplicated near-verbatim around lines 184 and 694. Seven separate *CommandClicked booleans track UI hints. The repo's eslint has no react-hooks plugin, which is why the stale closure survived review; adding the plugin is part of this pass and will police the decomposition.",
+      "ReplayView.tsx is 1071 lines holding several sub-components, a requestAnimationFrame loop, ~10 state hooks, 6 refs, and manual pop-timer arrays; the clock logic belongs in a useReplayClock hook and the scrubber/tower/stage sub-components in their own files. Decomposition must not change replay behavior pinned by the existing ReplayView tests.",
+      "testMemoryDb.ts implements $transaction as fn(db) and $queryRaw as a no-op, so the FOR UPDATE locks and transactional rollbacks added in passes 3 and 4 are never exercised by any test. The roadmap already reserves patch 0.4.2 for a real Postgres integration-test CI lane; this pass implements it with a postgres service container in CI and a small integration suite covering concurrent qualifying submissions, the resolve claim, and the credit-guarded buy path. The unit job currently exports DATABASE_URL without provisioning Postgres, which is misleading and should be resolved by this lane.",
+      "CI gaps from the review: no Dependabot or npm audit despite SECURITY.md; no coverage collection so unit-test reach is invisible; eslint.config.js has only js.recommended and tseslint.recommended for a React app (no react-hooks, no jsx-a11y despite ADR-006); the deploy-release.yml health-poll ends in ::warning:: and lets a stuck Render deploy pass; package.json has no engines field while CI and Render pin Node 20; .gitignore ignores reports/ yet one playtest report is force-committed.",
+      "Out of pattern-scope on purpose: the requireAdminClaim ownership self-healing flagged by the review is pass-4 intended behavior and stays; the qualifyingRuns JSON growth, Prisma string enums, and vitest node-environment split remain deferred watchlist items unless the integration lane makes one of them free to pick up."
+    ],
+    "acceptance_criteria": [
+      "AC1: Recovery codes are generated from at least 16 random bytes, stored with a salted scrypt hash, verified in constant time, legacy SHA-256 codes still verify and are upgraded on successful use, and /profiles/recover enforces a per-email and per-IP rate limit with tests covering lockout and legacy upgrade.",
+      "AC2: createDemoLeague and joinLeagueByCode require proof of profile ownership and reject a bare profileId belonging to someone else; league reads only include the invite code for the owner or members; tests cover the rejection and the code visibility rules.",
+      "AC3: restartLeague executes atomically inside runWrite so an injected mid-sequence failure leaves the previous league state intact, with a test proving no league can end up without a current Grand Prix.",
+      "AC4: The admin token comparison is constant-time and localhost CORS origins are absent from the production origin set, verified by tests or config assertions.",
+      "AC5: App.tsx drops below ~700 lines by extracting domain hooks (league, profile, admin, plan form) and view containers, the rejoin effect has correct dependencies or an explicit mount guard, the rejoin logic exists once, the seven command-clicked booleans collapse into one structure, and all existing web tests still pass.",
+      "AC6: ReplayView.tsx is split into a useReplayClock hook and separate scrubber/tower/stage files with no behavior change pinned by the existing replay tests.",
+      "AC7: A CI lane runs integration tests against a real Postgres service covering concurrent qualifying submissions, the resolve transition claim, and the credit-guarded card purchase; the unit lane no longer advertises an unused DATABASE_URL.",
+      "AC8: CI gains dependency scanning (Dependabot config plus an npm audit gate), vitest coverage collection surfaced in CI, eslint enforces react-hooks and jsx-a11y rules with the codebase passing, the release workflow fails on a health-version mismatch, package.json declares engines, and the reports/ gitignore policy is consistent.",
+      "AC9: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Repo Review Remediation Pass 5 Product Brief",
+    "overview": "A fifth remediation pass driven by the v0.3.11 full-repo review: make account recovery brute-force resistant, close the remaining API trust-boundary gaps, make league restart atomic, decompose the two god components on the web, exercise the concurrency machinery against real Postgres in CI, and harden the CI/lint/release toolchain so these classes of defects are caught automatically next time.",
+    "goals": [
+      "Account takeover via recovery-code brute force is not feasible online or offline.",
+      "No API endpoint trusts a client-supplied identity or leaks a join secret.",
+      "A failed league restart can never brick a league.",
+      "App.tsx and ReplayView.tsx become navigable modules that new UI work can extend without merge pain.",
+      "Row locks and transactional claims are proven against real Postgres on every CI run.",
+      "Lint, coverage, dependency scanning, and the release gate catch regressions of this pass automatically."
+    ],
+    "non_goals": [
+      "Do not build full session-based authentication or user passwords; profile-ownership proof reuses the existing recovery/claim material.",
+      "Do not add rate-limiting infrastructure beyond an in-process limiter (no Redis, no new dependencies).",
+      "Do not migrate qualifyingRuns to a dedicated table or convert Prisma string columns to enums.",
+      "Do not restyle any screen; web changes are structural decomposition only.",
+      "Do not change the ownership self-healing behavior shipped in pass 4.",
+      "Do not expand e2e coverage beyond what the decomposition requires to stay green."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Brute-force-resistant account recovery",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Account security",
+      "request_acs": ["AC1", "AC9"],
+      "problem": [
+        "Recovery codes are 4 random bytes (32 bits) hashed with unsalted single-round SHA-256, so a leaked database cracks offline in seconds.",
+        "/profiles/recover has no rate limiting, so a known email can be brute-forced online."
+      ],
+      "scope_in": [
+        "Generate recovery codes from at least 16 random bytes in createRecoveryCode.",
+        "Hash with crypto.scrypt and a per-code random salt, stored in a self-describing format (e.g. scrypt$salt$hash) alongside legacy hashes; verify with timingSafeEqual.",
+        "On successful recovery with a legacy SHA-256 hash, re-hash or re-issue so old codes converge to the new format.",
+        "Add an in-process fixed-window rate limiter on /profiles/recover keyed by normalized email and by IP, returning 429 with a retry hint.",
+        "Tests: new-format roundtrip, legacy fallback and upgrade, rate-limit lockout and window reset."
+      ],
+      "scope_out": [
+        "Passwords, sessions, or OAuth.",
+        "Distributed rate limiting or new dependencies.",
+        "Changing the email delivery path (roadmap 0.4.1)."
+      ],
+      "acceptance_criteria": [
+        "AC1: New recovery codes carry at least 128 bits of entropy and are stored salted with scrypt.",
+        "AC2: Legacy codes still verify once and are upgraded on use.",
+        "AC3: Repeated recover attempts for the same email or IP are throttled with 429.",
+        "AC4: All comparisons on secret material are constant-time."
+      ]
+    },
+    {
+      "title": "API trust-boundary and atomicity fixes",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "API integrity",
+      "request_acs": ["AC2", "AC3", "AC4", "AC9"],
+      "problem": [
+        "createDemoLeague and joinLeagueByCode trust any existing profileId from the request body, so a leaked cuid lets a stranger attach teams to another player's account.",
+        "restartLeague runs its destructive sequence outside a transaction; a mid-sequence failure leaves the league with no current Grand Prix and no recovery path.",
+        "The admin token comparison leaks timing, localhost CORS origins ship to production, and GET /leagues/:leagueId hands the invite code to any reader."
+      ],
+      "scope_in": [
+        "Require proof of profile ownership (profile-scoped secret derived from the existing recovery/claim material) on createDemoLeague and joinLeagueByCode; reject a bare profileId that is not accompanied by its proof.",
+        "Wrap the full restartLeague sequence in runWrite so it commits or rolls back atomically, preserving the memory-db test path.",
+        "Replace the admin token !== check with crypto.timingSafeEqual over equal-length buffers.",
+        "Only add localhost origins to the CORS set when the environment is not production.",
+        "Omit league.code from league state responses unless the caller is an authenticated member or owner.",
+        "Tests: foreign-profileId rejection, restart rollback on injected failure, code hidden from non-members, CORS set per environment."
+      ],
+      "scope_out": [
+        "Full auth or session management.",
+        "Changing the invite-code format or join UX.",
+        "Reworking pass-4 ownership self-healing."
+      ],
+      "acceptance_criteria": [
+        "AC1: A request with someone else's profileId and no ownership proof is rejected on demo-league creation and league join.",
+        "AC2: An injected failure mid-restart leaves the league state exactly as before the call.",
+        "AC3: The production CORS set contains only the configured web origin, and admin token checks are constant-time.",
+        "AC4: Non-members never receive the league invite code in any response."
+      ]
+    },
+    {
+      "title": "Decompose App.tsx into domain hooks and views",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Web architecture",
+      "request_acs": ["AC5", "AC9"],
+      "problem": [
+        "App.tsx is 1864 lines with ~55 useState, ~15 useEffect, every API mutation, and ~515 lines of JSX — store, controller, and view in one file.",
+        "The rejoin mount effect uses [] deps while closing over profileSession, savedClaims, run, and tt (stale closures), and the rejoin POST logic is duplicated in two places.",
+        "Seven parallel *CommandClicked booleans track UI-hint state and must be reset in sync."
+      ],
+      "scope_in": [
+        "Extract domain hooks (league state and mutations, profile/session, admin actions, plan form) and move the trailing JSX into view container components, keeping the run() error-handling wrapper as the shared spine.",
+        "Fix the rejoin effect dependencies or add an explicit mount-guard ref with a lint-visible justification, and extract a single rejoin helper used by both call sites.",
+        "Collapse the command-clicked booleans into one Set or record keyed by command.",
+        "Replace the window.confirm restart-league prompt with the existing Modal confirm pattern.",
+        "Delete the empty src/lib and src/ui .gitkeep placeholder directories.",
+        "Keep all existing App tests green; move or split them alongside the extracted hooks where needed."
+      ],
+      "scope_out": [
+        "Adding a router, state library, or data-fetching library.",
+        "Visual or copy changes beyond the confirm-modal swap.",
+        "New features while files are in motion."
+      ],
+      "acceptance_criteria": [
+        "AC1: App.tsx is below ~700 lines and no extracted module exceeds ~400 lines.",
+        "AC2: react-hooks lint rules pass with no disabled exhaustive-deps except explicitly justified mount guards.",
+        "AC3: Rejoin logic exists in exactly one place and the restart confirm uses the Modal pattern.",
+        "AC4: The existing web test suite passes without behavioral snapshot changes."
+      ]
+    },
+    {
+      "title": "Split ReplayView and extract the replay clock",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Web architecture",
+      "request_acs": ["AC6", "AC9"],
+      "problem": [
+        "ReplayView.tsx is 1071 lines holding several sub-components, a requestAnimationFrame loop, ~10 state hooks, 6 refs, and manual pop-timer arrays in one file."
+      ],
+      "scope_in": [
+        "Extract a useReplayClock hook owning the rAF loop, play/pause/seek state, and pop-timer lifecycle.",
+        "Move the scrubber, timing tower, and stage sub-components into their own files under a replay/ folder.",
+        "Preserve the pass-4 scrubber interaction fixes (drag-wins, pointer-events, aria-valuetext) unchanged.",
+        "Keep the existing ReplayView tests passing as the behavioral contract; relocate them alongside the split files."
+      ],
+      "scope_out": [
+        "Any change to replay visuals, timing math, or the trace format.",
+        "New replay features."
+      ],
+      "acceptance_criteria": [
+        "AC1: ReplayView.tsx is a composition file and the rAF/timer logic lives in useReplayClock.",
+        "AC2: Existing replay tests pass unchanged apart from import paths.",
+        "AC3: No file in the replay folder exceeds ~400 lines."
+      ]
+    },
+    {
+      "title": "Postgres integration-test CI lane for concurrent store paths",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Test integrity",
+      "request_acs": ["AC7", "AC9"],
+      "problem": [
+        "The in-memory test DB implements $transaction as fn(db) and $queryRaw as a no-op, so the FOR UPDATE locks, transactional claims, and rollback behavior the store relies on are never exercised by any test.",
+        "The CI unit job exports DATABASE_URL without provisioning a database, which is misleading and a latent flake."
+      ],
+      "scope_in": [
+        "Add an integration test suite that runs against real Postgres via a services: postgres container in a dedicated CI job, applying prisma migrate deploy before the run.",
+        "Cover at least: concurrent qualifying submissions holding the attempt limit under the row lock, the resolve transition claimed exactly once under concurrent calls, the credit-guarded card purchase never overspending, and the restartLeague rollback from the API-integrity item.",
+        "Make the suite runnable locally against a DATABASE_URL with a single npm script, and skip cleanly when no database is configured.",
+        "Remove the unused DATABASE_URL from the unit lane or scope it to the new integration job.",
+        "This implements roadmap patch 0.4.2."
+      ],
+      "scope_out": [
+        "Replacing the in-memory DB for the fast unit suite.",
+        "Testcontainers or Docker-in-Docker orchestration beyond the CI service container.",
+        "Load or soak testing."
+      ],
+      "acceptance_criteria": [
+        "AC1: A CI job runs the integration suite against real Postgres on every push and pull request lane where unit tests run.",
+        "AC2: The suite proves the attempt limit, single resolve claim, credit guard, and restart rollback under real transaction semantics.",
+        "AC3: The unit lane no longer advertises a DATABASE_URL it does not use.",
+        "AC4: The integration suite runs locally with one command given a DATABASE_URL."
+      ]
+    },
+    {
+      "title": "CI, lint, and release-gate hardening",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Engineering infrastructure",
+      "request_acs": ["AC8", "AC9"],
+      "problem": [
+        "No automated dependency scanning exists despite a SECURITY.md; unit-test coverage is invisible; the React app is linted without react-hooks or jsx-a11y rules; a stuck Render deploy ends the release workflow with a warning instead of a failure; Node 20 is pinned in CI and Render but not in package.json; reports/ is gitignored yet holds a force-committed file."
+      ],
+      "scope_in": [
+        "Add a Dependabot config for npm and github-actions ecosystems plus an npm audit gate (high severity and above) in the CI quality lane.",
+        "Enable vitest coverage collection and surface the summary in CI output.",
+        "Add eslint-plugin-react-hooks (recommended) and eslint-plugin-jsx-a11y (recommended) scoped to the web app, fixing or explicitly justifying every violation they surface.",
+        "Make the deploy-release health-poll exit non-zero when the deployed version/commit never matches, marking the GitHub deployment as failed.",
+        "Declare engines.node >= 20 in the root package.json.",
+        "Resolve the reports/ policy: un-ignore reports/playtest/ explicitly or relocate the committed evidence under docs/ and keep reports/ fully ignored."
+      ],
+      "scope_out": [
+        "CodeQL or SAST beyond dependency scanning.",
+        "Coverage thresholds that block CI on day one (surface first, gate later).",
+        "Restructuring the CI workflow topology."
+      ],
+      "acceptance_criteria": [
+        "AC1: Dependabot and the npm audit gate are active and CI fails on new high-severity advisories.",
+        "AC2: Coverage output appears in CI for the unit lanes.",
+        "AC3: Lint enforces react-hooks and jsx-a11y rules and the codebase passes.",
+        "AC4: A health-version mismatch fails the release workflow and the GitHub deployment status.",
+        "AC5: engines is declared and the reports/ gitignore policy has no tracked exception."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate repo review remediation pass 5",
+    "plan": [
+      "Read req_045 and its orchestration task first; this pass extends the same store patterns (runWrite, guarded updateMany, memory-db compatibility) and must not regress pass-4 behavior.",
+      "Land the API items first: recovery hardening (new code format, scrypt, rate limiter, legacy upgrade), then trust-boundary and restartLeague atomicity fixes, keeping the in-memory suite green.",
+      "Add the eslint react-hooks and jsx-a11y plugins before touching the web code so the decomposition is policed by the new rules from the start.",
+      "Decompose App.tsx into domain hooks and view containers, fix the rejoin effect, dedupe rejoin, collapse command-clicked state, swap window.confirm for the Modal; then split ReplayView with useReplayClock.",
+      "Build the Postgres integration suite and its CI job (services: postgres, migrate deploy, concurrency scenarios including the restart rollback), and clean the unit lane's DATABASE_URL.",
+      "Finish the infra sweep: Dependabot, npm audit gate, vitest coverage in CI, release health-check hard-fail, engines field, reports/ gitignore policy.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout and update the roadmap patch statuses."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/repo-review-remediation-pass-5.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

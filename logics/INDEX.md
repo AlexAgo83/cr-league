@@ -38,6 +38,7 @@
 | [prod_019_replay_spectacle_fun_pass_product_brief](product/prod_019_replay_spectacle_fun_pass_product_brief.md) | Replay Spectacle Fun Pass Product Brief | Settled |  |  | product/prod_019_replay_spectacle_fun_pass_product_brief.md |
 | [prod_020_race_learning_and_feedback_systems_product_brief](product/prod_020_race_learning_and_feedback_systems_product_brief.md) | Race Learning and Feedback Systems Product Brief | Settled |  |  | product/prod_020_race_learning_and_feedback_systems_product_brief.md |
 | [prod_021_admin_operations_console_product_brief](product/prod_021_admin_operations_console_product_brief.md) | Admin Operations Console Product Brief | Settled |  |  | product/prod_021_admin_operations_console_product_brief.md |
+| [prod_022_repo_review_remediation_pass_5_product_brief](product/prod_022_repo_review_remediation_pass_5_product_brief.md) | Repo Review Remediation Pass 5 Product Brief | Proposed |  |  | product/prod_022_repo_review_remediation_pass_5_product_brief.md |
 
 ## Roadmaps
 
@@ -101,6 +102,14 @@
 | [req_048_make_race_replay_feel_like_a_fun_race_spectacle](request/req_048_make_race_replay_feel_like_a_fun_race_spectacle.md) | Make race replay feel like a fun race spectacle | Done |  |  | request/req_048_make_race_replay_feel_like_a_fun_race_spectacle.md |
 | [req_049_race_learning_and_feedback_systems](request/req_049_race_learning_and_feedback_systems.md) | Race learning and feedback systems | Done |  |  | request/req_049_race_learning_and_feedback_systems.md |
 | [req_050_add_a_secured_admin_operations_console](request/req_050_add_a_secured_admin_operations_console.md) | Add a secured admin operations console | Done |  |  | request/req_050_add_a_secured_admin_operations_console.md |
+| [req_051_improve_circuit_catalog_and_maps](request/req_051_improve_circuit_catalog_and_maps.md) | Improve circuit catalog and maps | Done |  |  | request/req_051_improve_circuit_catalog_and_maps.md |
+| [req_052_add_osm_street_circuit_generator](request/req_052_add_osm_street_circuit_generator.md) | Add OSM street circuit generator | Done |  |  | request/req_052_add_osm_street_circuit_generator.md |
+| [req_053_polish_circuit_catalog_navigation_and_regenerate_amsterdam](request/req_053_polish_circuit_catalog_navigation_and_regenerate_amsterdam.md) | Polish circuit catalog navigation and regenerate Amsterdam | Done |  |  | request/req_053_polish_circuit_catalog_navigation_and_regenerate_amsterdam.md |
+| [req_054_fix_current_round_badge_highlight_clipping](request/req_054_fix_current_round_badge_highlight_clipping.md) | Fix current round badge highlight clipping | Done |  |  | request/req_054_fix_current_round_badge_highlight_clipping.md |
+| [req_055_align_circuit_detail_close_action](request/req_055_align_circuit_detail_close_action.md) | Align circuit detail close action | Done |  |  | request/req_055_align_circuit_detail_close_action.md |
+| [req_056_darken_circuit_detail_panel_background](request/req_056_darken_circuit_detail_panel_background.md) | Darken circuit detail panel background | Done |  |  | request/req_056_darken_circuit_detail_panel_background.md |
+| [req_057_split_circuit_route_data_modules](request/req_057_split_circuit_route_data_modules.md) | Split circuit route data modules | Done |  |  | request/req_057_split_circuit_route_data_modules.md |
+| [req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening](request/req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening.md) | Repo review remediation pass 5: account security, API trust boundaries, web decomposition, and CI hardening | Draft |  |  | request/req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening.md |
 
 ## Backlog
 
@@ -231,8 +240,21 @@
 | [item_123_add_post_replay_payoff_recap](backlog/item_123_add_post_replay_payoff_recap.md) | Add post-replay payoff recap | Done |  | 100% | backlog/item_123_add_post_replay_payoff_recap.md |
 | [item_124_start_new_leagues_with_credits_instead_of_a_starter_card](backlog/item_124_start_new_leagues_with_credits_instead_of_a_starter_card.md) | Start new leagues with credits instead of a starter card | Done |  | 100% | backlog/item_124_start_new_leagues_with_credits_instead_of_a_starter_card.md |
 | [item_125_specify_and_implement_a_simple_tire_strategy_directive](backlog/item_125_specify_and_implement_a_simple_tire_strategy_directive.md) | Specify and implement a simple tire strategy directive | Done |  | 100% | backlog/item_125_specify_and_implement_a_simple_tire_strategy_directive.md |
-| [item_126_add_secured_admin_api_operations](backlog/item_126_add_secured_admin_api_operations.md) | Add secured admin API operations | Done |  | 100% | backlog/item_126_add_secured_admin_api_operations.md |
+| [item_126_add_secured_admin_api_operations](backlog/item_126_add_secured_admin_api_operations.md) | Add secured admin API operations | Done |  | 100 | backlog/item_126_add_secured_admin_api_operations.md |
 | [item_127_add_profile_menu_admin_console_ui](backlog/item_127_add_profile_menu_admin_console_ui.md) | Add profile-menu admin console UI | Done |  | 100% | backlog/item_127_add_profile_menu_admin_console_ui.md |
+| [item_128_improve_circuit_catalog_and_maps](backlog/item_128_improve_circuit_catalog_and_maps.md) | Improve circuit catalog and maps | Done |  | 100 | backlog/item_128_improve_circuit_catalog_and_maps.md |
+| [item_129_add_osm_street_circuit_generator](backlog/item_129_add_osm_street_circuit_generator.md) | Add OSM street circuit generator | Done |  | 100% | backlog/item_129_add_osm_street_circuit_generator.md |
+| [item_130_polish_circuit_catalog_navigation_and_regenerate_amsterdam](backlog/item_130_polish_circuit_catalog_navigation_and_regenerate_amsterdam.md) | Polish circuit catalog navigation and regenerate Amsterdam | Done |  | 100% | backlog/item_130_polish_circuit_catalog_navigation_and_regenerate_amsterdam.md |
+| [item_131_fix_current_round_badge_highlight_clipping](backlog/item_131_fix_current_round_badge_highlight_clipping.md) | Fix current round badge highlight clipping | Done |  | 100% | backlog/item_131_fix_current_round_badge_highlight_clipping.md |
+| [item_132_align_circuit_detail_close_action](backlog/item_132_align_circuit_detail_close_action.md) | Align circuit detail close action | Done |  | 100% | backlog/item_132_align_circuit_detail_close_action.md |
+| [item_133_darken_circuit_detail_panel_background](backlog/item_133_darken_circuit_detail_panel_background.md) | Darken circuit detail panel background | Done |  | 100% | backlog/item_133_darken_circuit_detail_panel_background.md |
+| [item_134_split_circuit_route_data_modules](backlog/item_134_split_circuit_route_data_modules.md) | Split circuit route data modules | Done |  | 100% | backlog/item_134_split_circuit_route_data_modules.md |
+| [item_135_brute_force_resistant_account_recovery](backlog/item_135_brute_force_resistant_account_recovery.md) | Brute-force-resistant account recovery | Ready |  | 0% | backlog/item_135_brute_force_resistant_account_recovery.md |
+| [item_136_api_trust_boundary_and_atomicity_fixes](backlog/item_136_api_trust_boundary_and_atomicity_fixes.md) | API trust-boundary and atomicity fixes | Ready |  | 0% | backlog/item_136_api_trust_boundary_and_atomicity_fixes.md |
+| [item_137_decompose_app_tsx_into_domain_hooks_and_views](backlog/item_137_decompose_app_tsx_into_domain_hooks_and_views.md) | Decompose App.tsx into domain hooks and views | Ready |  | 0% | backlog/item_137_decompose_app_tsx_into_domain_hooks_and_views.md |
+| [item_138_split_replayview_and_extract_the_replay_clock](backlog/item_138_split_replayview_and_extract_the_replay_clock.md) | Split ReplayView and extract the replay clock | Ready |  | 0% | backlog/item_138_split_replayview_and_extract_the_replay_clock.md |
+| [item_139_postgres_integration_test_ci_lane_for_concurrent_store_paths](backlog/item_139_postgres_integration_test_ci_lane_for_concurrent_store_paths.md) | Postgres integration-test CI lane for concurrent store paths | Ready |  | 0% | backlog/item_139_postgres_integration_test_ci_lane_for_concurrent_store_paths.md |
+| [item_140_ci_lint_and_release_gate_hardening](backlog/item_140_ci_lint_and_release_gate_hardening.md) | CI, lint, and release-gate hardening | Ready |  | 0% | backlog/item_140_ci_lint_and_release_gate_hardening.md |
 
 ## Tasks
 
@@ -288,4 +310,12 @@
 | [task_048_orchestrate_first_session_ux_polish_from_playtest_findings](tasks/task_048_orchestrate_first_session_ux_polish_from_playtest_findings.md) | Orchestrate first-session UX polish from playtest findings | Done | codex-work4 | 100% | tasks/task_048_orchestrate_first_session_ux_polish_from_playtest_findings.md |
 | [task_049_orchestrate_replay_spectacle_fun_pass](tasks/task_049_orchestrate_replay_spectacle_fun_pass.md) | Orchestrate replay spectacle fun pass | Done | codex-work4 | 100% | tasks/task_049_orchestrate_replay_spectacle_fun_pass.md |
 | [task_050_orchestrate_race_learning_and_feedback_systems](tasks/task_050_orchestrate_race_learning_and_feedback_systems.md) | Orchestrate race learning and feedback systems | Done | codex | 100% | tasks/task_050_orchestrate_race_learning_and_feedback_systems.md |
-| [task_051_orchestrate_secured_admin_operations_console](tasks/task_051_orchestrate_secured_admin_operations_console.md) | Orchestrate secured admin operations console | Done |  | 100% | tasks/task_051_orchestrate_secured_admin_operations_console.md |
+| [task_051_orchestrate_secured_admin_operations_console](tasks/task_051_orchestrate_secured_admin_operations_console.md) | Orchestrate secured admin operations console | Done |  | 100 | tasks/task_051_orchestrate_secured_admin_operations_console.md |
+| [task_052_improve_circuit_catalog_and_maps](tasks/task_052_improve_circuit_catalog_and_maps.md) | Improve circuit catalog and maps | Done | codex | 100% | tasks/task_052_improve_circuit_catalog_and_maps.md |
+| [task_053_add_osm_street_circuit_generator](tasks/task_053_add_osm_street_circuit_generator.md) | Add OSM street circuit generator | Done | codex | 100% | tasks/task_053_add_osm_street_circuit_generator.md |
+| [task_054_polish_circuit_catalog_navigation_and_regenerate_amsterdam](tasks/task_054_polish_circuit_catalog_navigation_and_regenerate_amsterdam.md) | Polish circuit catalog navigation and regenerate Amsterdam | Done | codex | 100% | tasks/task_054_polish_circuit_catalog_navigation_and_regenerate_amsterdam.md |
+| [task_055_fix_current_round_badge_highlight_clipping](tasks/task_055_fix_current_round_badge_highlight_clipping.md) | Fix current round badge highlight clipping | Done | codex | 100% | tasks/task_055_fix_current_round_badge_highlight_clipping.md |
+| [task_056_align_circuit_detail_close_action](tasks/task_056_align_circuit_detail_close_action.md) | Align circuit detail close action | Done | codex | 100% | tasks/task_056_align_circuit_detail_close_action.md |
+| [task_057_darken_circuit_detail_panel_background](tasks/task_057_darken_circuit_detail_panel_background.md) | Darken circuit detail panel background | Done | codex | 100% | tasks/task_057_darken_circuit_detail_panel_background.md |
+| [task_058_split_circuit_route_data_modules](tasks/task_058_split_circuit_route_data_modules.md) | Split circuit route data modules | Done | codex | 100% | tasks/task_058_split_circuit_route_data_modules.md |
+| [task_059_orchestrate_repo_review_remediation_pass_5](tasks/task_059_orchestrate_repo_review_remediation_pass_5.md) | Orchestrate repo review remediation pass 5 | Ready |  | 0% | tasks/task_059_orchestrate_repo_review_remediation_pass_5.md |

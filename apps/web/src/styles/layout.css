@@ -2705,13 +2705,13 @@ label small {
 }
 
 .map-trait-overtaking i {
-  background: rgb(241 237 228 / 0.16);
-  color: #f1ede4;
+  background: rgb(103 232 249 / 0.18);
+  color: #67e8f9;
 }
 
 .map-trait-overtaking {
-  --trait-fill: rgb(241 237 228 / 0.28);
-  --trait-tone: #f1ede4;
+  --trait-fill: rgb(103 232 249 / 0.32);
+  --trait-tone: #67e8f9;
 }
 
 .map-trait-energy i {

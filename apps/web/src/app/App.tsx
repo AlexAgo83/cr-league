@@ -551,6 +551,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       qualifyingAttemptsUsed={qualifyingAttemptsUsed}
       qualifyingAttemptsLeft={qualifyingAttemptsLeft}
       qualifyingAttemptLimit={qualifyingAttemptLimit}
+      planRiskRead={race.planRiskRead}
       currentCircuit={currentCircuit}
       forecastPick={forecastPick}
       startingGridEntries={startingGridEntries}

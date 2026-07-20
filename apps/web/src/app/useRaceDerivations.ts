@@ -3,7 +3,7 @@ import { useMemo } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitForRound } from "./circuits.js";
 import { cardFit, completedSeasonSummaries, startingGrid, strongestForecast } from "./helpers.js";
-import { bestQualifyingRuns, buildChronoReport, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
+import { bestQualifyingRuns, buildChronoReport, buildPlanRiskRead, latestQualifyingRun, qualifyingReplayTower, traitImpacts } from "./raceFlow.js";
 import type { FormState, LeagueState } from "./types.js";
 
 type DeskState = "prepare" | "ready" | "resolved";
@@ -73,6 +73,26 @@ export function useRaceDerivations(input: {
   const raceDayPhase = isResolved ? "finished" : playerDecision ? "locked" : qualifyingAttemptsUsed > 0 || qualifyingAttemptsLeft <= 0 ? "adjust" : "briefing";
   const startingGridEntries = leagueState ? startingGrid(leagueState) : [];
   const playerGridPosition = startingGridEntries.find((entry) => entry.team.id === playerTeam?.id)?.position ?? 0;
+  const planRiskForm: FormState = playerDecision
+    ? {
+        ...form,
+        approach: playerDecision.approach,
+        preparation: playerDecision.preparation,
+        pitStrategy: playerDecision.pitStrategy ?? "standard",
+        cardId: (playerDecision.cardId ?? "") as FormState["cardId"]
+      }
+    : form;
+  const planRiskSelectedCardId = playerDecision ? playerDecision.cardId ?? "" : selectedCardId;
+  const planRiskRead = buildPlanRiskRead({
+    form: planRiskForm,
+    selectedCardId: planRiskSelectedCardId,
+    forecastPick,
+    circuitTraits: currentCircuit.traits,
+    qualifyingAttemptsUsed,
+    qualifyingAttemptsLeft,
+    gridPosition: playerGridPosition,
+    tt
+  });
   const chronoReport = buildChronoReport({
     runs: playerQualifyingRuns,
     gridPosition: playerGridPosition,
@@ -118,6 +138,7 @@ export function useRaceDerivations(input: {
     currentGrandPrixKey,
     raceDayPhase,
     startingGridEntries,
+    planRiskRead,
     chronoReport,
     completedSeasons,
     visibleResult,

@@ -1,10 +1,10 @@
 ## item_162_render_plan_risk_summary_before_commitment - Render plan risk summary before commitment
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Plan UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -55,3 +55,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_068_orchestrate_plan_risk_readability_layer` was finished via `logics-manager flow finish task` on 2026-07-20.

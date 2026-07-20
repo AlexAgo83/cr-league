@@ -14,6 +14,12 @@ export type ChronoReport = {
 };
 
 type CircuitTraitKey = "grip" | "overtaking" | "energy";
+export type PlanRiskRead = {
+  level: "safe" | "risky" | "high_upside";
+  strengthKey: TranslationKey;
+  failureKey: TranslationKey;
+  bandKey: TranslationKey;
+};
 
 const CIRCUIT_TRAITS: CircuitTraitKey[] = ["grip", "overtaking", "energy"];
 const CIRCUIT_TRAIT_LABELS: Record<CircuitTraitKey, TranslationKey> = {
@@ -86,6 +92,46 @@ export function traitImpacts(form: FormState, selectedCardId: FormState["cardId"
   }
 
   return impacts;
+}
+
+function traitImpactTotal(impacts: MapTraitImpacts, trait: CircuitTraitKey) {
+  return (impacts[trait] ?? []).reduce((total, impact) => total + impact.value, 0);
+}
+
+export function buildPlanRiskRead(input: {
+  form: FormState;
+  selectedCardId: FormState["cardId"];
+  forecastPick: string;
+  circuitTraits: Record<CircuitTraitKey, number>;
+  qualifyingAttemptsUsed: number;
+  qualifyingAttemptsLeft: number;
+  gridPosition: number;
+  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
+}): PlanRiskRead {
+  const impacts = traitImpacts(input.form, input.selectedCardId, input.tt);
+  const grip = traitImpactTotal(impacts, "grip");
+  const attack = traitImpactTotal(impacts, "overtaking");
+  const endurance = traitImpactTotal(impacts, "energy");
+  const rainy = input.forecastPick === "light_rain" || input.forecastPick === "heavy_rain";
+  let risk = 0;
+
+  if (input.form.approach === "aggressive") risk += 2;
+  if (input.form.preparation === "speed" && rainy) risk += 2;
+  if (input.form.pitStrategy === "mini_pack") risk += 1;
+  if (grip < 0 || endurance < 0) risk += 1;
+  if (input.qualifyingAttemptsUsed === 0) risk += 1;
+  if (input.qualifyingAttemptsLeft > 0) risk += 1;
+  if (rainy && grip >= 3) risk -= 1;
+  if (input.form.approach === "prudent" || input.form.preparation === "reliability") risk -= 1;
+
+  const upside = attack >= 5 || (input.form.approach === "aggressive" && input.circuitTraits.overtaking >= 70) || (input.gridPosition > 0 && input.gridPosition <= 3);
+  const level = risk >= 4 ? "risky" : upside ? "high_upside" : "safe";
+  const strengthKey: TranslationKey = grip >= attack && grip >= endurance ? "plan_risk_strength_grip" : attack >= endurance ? "plan_risk_strength_attack" : "plan_risk_strength_endurance";
+  const failureKey: TranslationKey =
+    input.qualifyingAttemptsUsed === 0 ? "plan_risk_failure_no_chrono" : grip < 0 || (rainy && input.form.preparation !== "weather") ? "plan_risk_failure_grip" : endurance < 0 ? "plan_risk_failure_endurance" : "plan_risk_failure_pace";
+  const bandKey: TranslationKey = level === "safe" ? "plan_risk_band_safe" : level === "high_upside" ? "plan_risk_band_high_upside" : "plan_risk_band_risky";
+
+  return { level, strengthKey, failureKey, bandKey };
 }
 
 export function qualifyingReplayTower(run: QualifyingRun | null, runs: QualifyingRun[], tt: (key: TranslationKey, params?: Record<string, string | number>) => string) {

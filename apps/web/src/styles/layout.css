@@ -1647,6 +1647,47 @@ label small {
   position: relative;
 }
 
+.plan-risk-summary {
+  background: rgb(236 231 218 / 0.96);
+  border: 1px solid rgb(23 21 26 / 0.14);
+  border-left: 4px solid var(--plan-risk-accent, var(--color-accent));
+  color: var(--color-ink);
+  display: grid;
+  gap: 5px;
+  padding: 12px 14px;
+}
+
+.plan-risk-summary.compact {
+  margin-top: 8px;
+  width: 100%;
+}
+
+.plan-risk-summary strong,
+.plan-risk-summary em {
+  color: var(--plan-risk-accent, var(--color-accent));
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.plan-risk-summary span {
+  color: var(--color-ink);
+  font-size: 0.82rem;
+}
+
+.plan-risk-safe {
+  --plan-risk-accent: #15803d;
+}
+
+.plan-risk-risky {
+  --plan-risk-accent: #b45309;
+}
+
+.plan-risk-high_upside {
+  --plan-risk-accent: #1d4ed8;
+}
+
 .directive-lock-note {
   margin: 0;
 }

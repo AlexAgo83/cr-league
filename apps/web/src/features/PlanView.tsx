@@ -1,10 +1,11 @@
 import { type CardId, type QualifyingRun } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CardFit, Translator } from "../app/helpers.js";
-import { buildPlanRecommendation, type ChronoReport } from "../app/raceFlow.js";
+import { buildPlanRecommendation, type ChronoReport, type PlanRiskRead } from "../app/raceFlow.js";
 import type { PlanSubscreen } from "../app/routes.js";
 import type { FormState, GameView, LeagueState } from "../app/types.js";
 import { DirectivePanel, type DirectiveStep } from "./DirectivePanel.js";
+import { PlanRiskSummary } from "./PlanRiskSummary.js";
 import { PositionBadge } from "./PositionBadge.js";
 
 export function PlanView({
@@ -20,6 +21,7 @@ export function PlanView({
   locked,
   planSubscreen,
   playerQualifyingRuns,
+  planRiskRead,
   qualifyingAttemptLimit,
   qualifyingAttemptsLeft,
   selectedCardFit,
@@ -43,6 +45,7 @@ export function PlanView({
   locked: boolean;
   planSubscreen: PlanSubscreen;
   playerQualifyingRuns: QualifyingRun[];
+  planRiskRead: PlanRiskRead;
   qualifyingAttemptLimit: number;
   qualifyingAttemptsLeft: number;
   selectedCardFit: CardFit | null;
@@ -136,22 +139,25 @@ export function PlanView({
           </div>
         </section>
       ) : (
-        <DirectivePanel
-          form={form}
-          setForm={onSetForm}
-          ownedCardIds={ownedCardIds}
-          selectedCardId={selectedCardId}
-          selectedCardFit={selectedCardFit}
-          step={directiveStep}
-          circuitTraits={circuitTraits}
-          planRecommendation={planRecommendation}
-          cardLocked={cardLocked}
-          carriedOver={carriedOver}
-          disabled={disabled}
-          locked={locked}
-          onSelectStep={onSetDirectiveStep}
-          tt={tt}
-        />
+        <>
+          <PlanRiskSummary read={planRiskRead} tt={tt} />
+          <DirectivePanel
+            form={form}
+            setForm={onSetForm}
+            ownedCardIds={ownedCardIds}
+            selectedCardId={selectedCardId}
+            selectedCardFit={selectedCardFit}
+            step={directiveStep}
+            circuitTraits={circuitTraits}
+            planRecommendation={planRecommendation}
+            cardLocked={cardLocked}
+            carriedOver={carriedOver}
+            disabled={disabled}
+            locked={locked}
+            onSelectStep={onSetDirectiveStep}
+            tt={tt}
+          />
+        </>
       )}
     </div>
   );

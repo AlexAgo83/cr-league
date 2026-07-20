@@ -2,7 +2,7 @@ import type { CardId, QualifyingRun, RaceResult } from "@cr-league/shared";
 import { APP_VERSION } from "@cr-league/shared";
 import type { ReactNode } from "react";
 import type { CityCircuit } from "./circuits.js";
-import type { ChronoReport } from "./raceFlow.js";
+import type { ChronoReport, PlanRiskRead } from "./raceFlow.js";
 import type { GameView, FormState, LeagueState } from "./types.js";
 import type { CardFit, Translator } from "./helpers.js";
 import { ChangelogView } from "../features/ChangelogView.js";
@@ -32,6 +32,7 @@ export function GameViews({
   ownedCardIds,
   planSubscreen,
   playerQualifyingRuns,
+  planRiskRead,
   qualifyingAttemptLimit,
   qualifyingAttemptsLeft,
   selectedCardFit,
@@ -83,6 +84,7 @@ export function GameViews({
   ownedCardIds: CardId[];
   planSubscreen: PlanSubscreen;
   playerQualifyingRuns: QualifyingRun[];
+  planRiskRead: PlanRiskRead;
   qualifyingAttemptLimit: number;
   qualifyingAttemptsLeft: number;
   selectedCardFit: CardFit | null;
@@ -154,6 +156,7 @@ export function GameViews({
           locked={Boolean(playerDecision) || isResolved}
           planSubscreen={planSubscreen}
           playerQualifyingRuns={playerQualifyingRuns}
+          planRiskRead={planRiskRead}
           qualifyingAttemptLimit={qualifyingAttemptLimit}
           qualifyingAttemptsLeft={qualifyingAttemptsLeft}
           selectedCardFit={selectedCardFit}

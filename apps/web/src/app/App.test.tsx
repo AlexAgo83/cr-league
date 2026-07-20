@@ -420,6 +420,7 @@ describe("App", () => {
     expect(window.location.pathname).toBe("/plan/approach");
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(screen.getByText("Plan read:", { exact: false })).toBeTruthy();
+    expect(screen.getByText("High-upside plan")).toBeTruthy();
     expect(document.querySelector(".directive-briefing-panel")).toBeTruthy();
     expect(document.querySelector(".directive-selection-panel")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Plan" }).className).toContain("active");
@@ -559,6 +560,7 @@ describe("App", () => {
     const directiveDialog = screen.getByRole("dialog", { name: "Send race plan" });
     expect(directiveDialog.textContent).toContain("You still have chrono attempts left. Send the plan now? 2/3");
     expect(directiveDialog.textContent).toContain("Current planApproachBal.Tire prepWeatherPit strategyStd.CardRain Grip");
+    expect(directiveDialog.textContent).toContain("High-upside plan");
     fireEvent.click(screen.getAllByRole("button", { name: "Send plan" }).at(-1)!);
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(JSON.parse((fetch.mock.calls[2]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123" });

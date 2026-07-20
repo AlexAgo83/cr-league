@@ -1,4 +1,5 @@
 import type { AdminUser, FormState, LeagueState, ProfileSession } from "./types.js";
+import type { PlanRiskRead } from "./raceFlow.js";
 import type { CityCircuit } from "./circuits.js";
 import type { Translator } from "./helpers.js";
 import type { OnboardingHelpTopic } from "./OnboardingShell.js";
@@ -14,6 +15,7 @@ import {
   SeasonRecapModal
 } from "./AppModals.js";
 import { MapPlanPanel } from "../features/MapPlanPanel.js";
+import { PlanRiskSummary } from "../features/PlanRiskSummary.js";
 
 type SeasonRecap = Parameters<typeof SeasonRecapModal>[0]["recap"];
 type StartingGridEntry = Parameters<typeof ResolveGrandPrixConfirmModal>[0]["startingGridEntries"][number];
@@ -41,6 +43,7 @@ export function AppOverlays({
   qualifyingAttemptsUsed,
   qualifyingAttemptsLeft,
   qualifyingAttemptLimit,
+  planRiskRead,
   currentCircuit,
   forecastPick,
   startingGridEntries,
@@ -101,6 +104,7 @@ export function AppOverlays({
   qualifyingAttemptsUsed: number;
   qualifyingAttemptsLeft: number;
   qualifyingAttemptLimit: number;
+  planRiskRead: PlanRiskRead;
   currentCircuit: CityCircuit;
   forecastPick: string;
   startingGridEntries: StartingGridEntry[];
@@ -145,6 +149,7 @@ export function AppOverlays({
     <span className="directive-confirm-summary">
       <span>{qualifyingAttemptsUsed === 0 ? tt("directive_confirm_no_qualifying") : qualifyingAttemptsLeft > 0 ? `${tt("directive_confirm_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}` : tt("directive_confirm_ready")}</span>
       <MapPlanPanel className="directive-confirm-plan" decision={{ approach: form.approach, preparation: form.preparation, pitStrategy: form.pitStrategy, cardId: form.cardId || undefined }} tt={tt} />
+      <PlanRiskSummary read={planRiskRead} tt={tt} compact />
       {hasUnusedCard ? <strong>{tt("directive_confirm_unused_card_warning")}</strong> : null}
     </span>
   );

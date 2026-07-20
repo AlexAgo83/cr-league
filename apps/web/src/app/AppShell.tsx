@@ -244,6 +244,7 @@ export function AppShell({
           ownedCardIds={race.ownedCardIds}
           planSubscreen={planSubscreen}
           playerQualifyingRuns={race.playerQualifyingRuns}
+          planRiskRead={race.planRiskRead}
           qualifyingAttemptLimit={race.qualifyingAttemptLimit}
           qualifyingAttemptsLeft={race.qualifyingAttemptsLeft}
           selectedCardFit={race.selectedCardFit}

@@ -1,7 +1,7 @@
 ## req_067_plan_risk_readability_layer - Plan risk readability layer
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

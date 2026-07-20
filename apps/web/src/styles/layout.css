@@ -1684,6 +1684,10 @@ label small {
     grid-template-columns: 1fr;
   }
 
+  .directive-choice-card .card-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
   .race-day-steps {
     margin-left: 0;
     width: 100%;

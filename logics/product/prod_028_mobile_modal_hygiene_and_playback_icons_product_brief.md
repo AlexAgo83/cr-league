@@ -1,6 +1,6 @@
 ## prod_028_mobile_modal_hygiene_and_playback_icons_product_brief - Mobile Modal Hygiene and Playback Icons Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_064_mobile_modal_hygiene_and_real_playback_icons`
 > Related backlog: `item_154_lock_background_scroll_behind_modals`, `item_155_make_the_launch_grand_prix_modal_compact_on_mobile`, `item_156_replace_the_emoji_playback_control_with_a_themed_svg_icon`
 > Related task: `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons`

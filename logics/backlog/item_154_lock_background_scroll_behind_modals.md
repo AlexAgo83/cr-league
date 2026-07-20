@@ -1,10 +1,10 @@
 ## item_154_lock_background_scroll_behind_modals - Lock background scroll behind modals
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 65%
+> Progress: 100%
 > Complexity: Low
 > Theme: Playtest-ready loop polish
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -34,6 +34,8 @@
 - request-AC1 -> This backlog slice. Proof: AC1: Background does not scroll while a modal is open; only modal content scrolls; scroll position restores without a jump on close.
 - request-AC4 -> This backlog slice. Proof: AC4: Modal.test.tsx covers the lock and restore.
 - request-AC5 -> This backlog slice. Proof: AC4: Modal.test.tsx covers the lock and restore.
+- request-AC2 -> This backlog slice. Evidence needed: The launch-Grand-Prix confirmation modal fits within a 360px-wide phone viewport with no horizontal scroll and no vertical overflow beyond the modal's own internal scroll; the starting grid reads as a single column.
+- request-AC3 -> This backlog slice. Evidence needed: The replay pause/play control renders a drawn SVG icon (pause bars / play triangle) that follows the orange theme via currentColor, with the existing aria-label, title, and playing/paused state preserved.
 
 # Decision framing
 - Product framing: Not needed
@@ -54,3 +56,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons`
+
+# Notes
+- Task `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons` was finished via `logics-manager flow finish task` on 2026-07-20.

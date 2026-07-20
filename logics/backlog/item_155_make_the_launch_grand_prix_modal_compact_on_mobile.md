@@ -1,10 +1,10 @@
 ## item_155_make_the_launch_grand_prix_modal_compact_on_mobile - Make the launch-Grand-Prix modal compact on mobile
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 65%
+> Progress: 100%
 > Complexity: Low
 > Theme: Playtest-ready loop polish
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,6 +32,9 @@
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC2: The modal fits a 360px-wide viewport with no horizontal scroll and no vertical overflow beyond its internal scroll; grid is single-column.
 - request-AC5 -> This backlog slice. Proof: AC2: The modal fits a 360px-wide viewport with no horizontal scroll and no vertical overflow beyond its internal scroll; grid is single-column.
+- request-AC1 -> This backlog slice. Evidence needed: While any Modal is open on a mobile viewport, the content behind it does not scroll; scrolling works only inside the modal, and closing it restores the previous scroll position without a visible jump.
+- request-AC3 -> This backlog slice. Evidence needed: The replay pause/play control renders a drawn SVG icon (pause bars / play triangle) that follows the orange theme via currentColor, with the existing aria-label, title, and playing/paused state preserved.
+- request-AC4 -> This backlog slice. Evidence needed: The Modal test asserts the body scroll lock on mount and restore on unmount, and a render test asserts an svg (not emoji text) in both playback states; existing tests pass unchanged.
 
 # Decision framing
 - Product framing: Not needed
@@ -52,3 +55,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons`
+
+# Notes
+- Task `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons` was finished via `logics-manager flow finish task` on 2026-07-20.

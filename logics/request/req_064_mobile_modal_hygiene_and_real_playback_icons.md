@@ -1,7 +1,7 @@
 ## req_064_mobile_modal_hygiene_and_real_playback_icons - Mobile modal hygiene and real playback icons
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Low

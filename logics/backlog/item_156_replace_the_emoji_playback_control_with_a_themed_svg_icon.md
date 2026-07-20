@@ -1,10 +1,10 @@
 ## item_156_replace_the_emoji_playback_control_with_a_themed_svg_icon - Replace the emoji playback control with a themed SVG icon
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 65%
+> Progress: 100%
 > Complexity: Low
 > Theme: Playtest-ready loop polish
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,8 @@
 - request-AC3 -> This backlog slice. Proof: AC3: The control renders a themed SVG icon via currentColor with accessibility and state preserved.
 - request-AC4 -> This backlog slice. Proof: AC4: A render test asserts the svg in both playback states.
 - request-AC5 -> This backlog slice. Proof: AC4: A render test asserts the svg in both playback states.
+- request-AC1 -> This backlog slice. Evidence needed: While any Modal is open on a mobile viewport, the content behind it does not scroll; scrolling works only inside the modal, and closing it restores the previous scroll position without a visible jump.
+- request-AC2 -> This backlog slice. Evidence needed: The launch-Grand-Prix confirmation modal fits within a 360px-wide phone viewport with no horizontal scroll and no vertical overflow beyond the modal's own internal scroll; the starting grid reads as a single column.
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +55,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons`
+
+# Notes
+- Task `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons` was finished via `logics-manager flow finish task` on 2026-07-20.

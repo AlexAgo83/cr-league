@@ -176,6 +176,10 @@ export function PlanView({
                   <small>{tt("field_preparation")}</small>
                   <b>{tt(`preparation_${chronoReport.best.decision.preparation}` as TranslationKey)}</b>
                 </span>
+                <span className="chrono-session-choice type-pit is-faded">
+                  <small>{tt("field_pit_strategy")}</small>
+                  <b>{tt(`pit_strategy_${chronoReport.best.decision.pitStrategy ?? "standard"}` as TranslationKey)}</b>
+                </span>
                 <span className="chrono-session-choice type-card">
                   <small>{tt("field_card")}</small>
                   <b>{chronoReport.best.decision.cardId ? tt(`card_${chronoReport.best.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
@@ -205,6 +209,10 @@ export function PlanView({
                         <span className={`chrono-session-choice type-preparation preparation-${run.decision.preparation}`}>
                           <small>{tt("field_preparation")}</small>
                           <b>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</b>
+                        </span>
+                        <span className="chrono-session-choice type-pit is-faded">
+                          <small>{tt("field_pit_strategy")}</small>
+                          <b>{tt(`pit_strategy_${run.decision.pitStrategy ?? "standard"}` as TranslationKey)}</b>
                         </span>
                         <span className="chrono-session-choice type-card">
                           <small>{tt("field_card")}</small>

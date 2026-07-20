@@ -1462,7 +1462,7 @@ label small {
 }
 
 .chrono-best-config .chrono-session-setup {
-  grid-template-columns: repeat(3, 76px);
+  grid-template-columns: repeat(4, 76px);
   justify-content: start;
 }
 
@@ -1498,7 +1498,7 @@ label small {
   align-items: center;
   display: grid;
   gap: 6px;
-  grid-template-columns: auto 76px 76px 76px;
+  grid-template-columns: auto 76px 76px 76px 76px;
   min-width: 0;
 }
 
@@ -1540,8 +1540,16 @@ label small {
   --chrono-cell-accent: #0d9488;
 }
 
+.chrono-session-choice.type-pit {
+  --chrono-cell-accent: #8b5cf6;
+}
+
 .chrono-session-choice.type-card {
   --chrono-cell-accent: #b45309;
+}
+
+.chrono-session-choice.is-faded {
+  opacity: 0.48;
 }
 
 .chrono-session-lap small,

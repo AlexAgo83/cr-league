@@ -151,8 +151,19 @@ jobs:
             separator="&"
           fi
 
+          fetch_health() {
+            curl --ipv4 --location --connect-timeout 10 --max-time 15 --fail --silent --show-error \
+              --header "Accept: application/json" \
+              "$API_HEALTH_URL"
+          }
+
+          log_non_json_health() {
+            prefix="$(printf "%s" "${health:-}" | tr "\n" " " | head -c 160)"
+            echo "API health returned non-JSON body prefix: ${prefix:-<empty>}"
+          }
+
           health_matches_release() {
-            health="$(curl --ipv4 --connect-timeout 10 --max-time 15 --fail --silent --show-error "$API_HEALTH_URL")" || return 1
+            health="$(fetch_health)" || return 1
             jq -e . >/dev/null 2>&1 <<< "${health:-{}}" || return 1
             version="$(jq -r '.version // ""' <<< "${health:-{}}")"
             commit="$(jq -r '.commit // ""' <<< "${health:-{}}")"
@@ -168,8 +179,9 @@ jobs:
           echo "Render API deploy response: ${deploy_response}"
 
           for attempt in $(seq 1 60); do
-            health="$(curl --ipv4 --connect-timeout 10 --max-time 15 --fail --silent --show-error "$API_HEALTH_URL")" || health="{}"
+            health="$(fetch_health)" || health="{}"
             if ! jq -e . >/dev/null 2>&1 <<< "${health:-{}}"; then
+              log_non_json_health
               echo "API health returned non-JSON, waiting for ${RELEASE_VERSION}@${RELEASE_SHA} (${attempt}/60)."
               sleep 10
               continue

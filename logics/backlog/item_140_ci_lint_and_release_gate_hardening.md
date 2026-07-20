@@ -2,7 +2,7 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: Done
-> Understanding: 98
+> Understanding: 99
 > Confidence: 94
 > Progress: 100
 > Complexity: Low
@@ -49,6 +49,7 @@
 - 2026-07-20 completion wave: react-hooks rules and jsx-a11y recommended lint are enabled, the surfaced a11y issues were fixed locally, Vitest coverage uses V8 text/json-summary and CI unit lanes collect coverage, and reports/ ignore policy now distinguishes the committed playtest report from generated/local artifacts. item_140 is implementation-complete pending req_058 closeout validation.
 - 2026-07-20 release dependency triage: Dependabot's compatible GitHub Actions v7 bumps and `@fontsource/barlow-condensed` 5.3.0 were integrated into the release branch. ESLint 10 / `@eslint/js` 10, `@vitejs/plugin-react` 6, and Prisma 7 are intentionally deferred because they fail install or generation without broader ecosystem migrations.
 - 2026-07-20 release gate follow-up: the v0.3.22 Render API deploy reached correct `/health` shortly after the 3-minute polling window. The release workflow now allows 10 minutes before failing the versioned health gate.
+- 2026-07-20 release gate follow-up 2: GitHub Actions kept receiving HTTP-success non-JSON health bodies while external `/health` returned the correct JSON. The workflow now follows redirects, asks for JSON explicitly, and logs a short non-JSON body prefix for diagnosis.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`
@@ -70,6 +71,7 @@
 - 2026-07-20 closeout proof: Dependabot and npm audit gate are configured; Vitest coverage uses V8 output and CI unit lanes collect coverage; eslint enforces react-hooks and jsx-a11y with current lint clean; release health mismatch exits non-zero; package.json declares Node >=20; reports ignore policy is explicit. Verification in this pass: rtk npm run typecheck and rtk npm run lint passed.
 - 2026-07-20 release dependency proof: GitHub Actions v7 and `@fontsource/barlow-condensed` 5.3.0 were applied. Deferred Dependabot majors were checked against CI logs/dry-runs: ESLint 10 conflicts with the current jsx-a11y peer range, `@vitejs/plugin-react` 6 requires Vite 8, and Prisma 7 rejects the current datasource `url` schema configuration.
 - 2026-07-20 release gate proof: production `/health` returned `0.3.22` and `3eec53da21418de36d332ab479dca6a0f6e1a192`; deploy-release.yml now polls the API health gate for 60 attempts at 10-second intervals.
+- 2026-07-20 release gate proof 2: deploy-release.yml health fetches now use `curl --location` with `Accept: application/json` and emit a bounded body prefix when JSON parsing fails.
 
 # Tasks
 - `task_059_orchestrate_repo_review_remediation_pass_5`

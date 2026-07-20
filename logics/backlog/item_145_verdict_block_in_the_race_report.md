@@ -1,10 +1,10 @@
 ## item_145_verdict_block_in_the_race_report - Verdict block in the race report
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 85
+> Progress: 100%
 > Complexity: Low
 > Theme: Race learning and feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,7 @@
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: The verdict block appears above the phases in both locales.
 - request-AC4 -> This backlog slice. Proof: AC2: Existing report tests pass unchanged and the new ReportView test covers the block.
+- request-AC3 -> This backlog slice. Proof: Rendering consumes `buildRaceVerdict()` directly; the helper shares cause ranking and next-lesson derivation with recap builders.
 
 # Decision framing
 - Product framing: Not needed
@@ -58,3 +59,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_061_orchestrate_result_verdict_pass`
+
+# Notes
+- Task `task_061_orchestrate_result_verdict_pass` was finished via `logics-manager flow finish task` on 2026-07-20.

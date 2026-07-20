@@ -1,10 +1,10 @@
 ## item_144_deterministic_verdict_builder - Deterministic verdict builder
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 85
+> Progress: 100%
 > Complexity: Low
 > Theme: Race learning and feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -63,3 +63,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_061_orchestrate_result_verdict_pass`
+
+# Notes
+- Task `task_061_orchestrate_result_verdict_pass` was finished via `logics-manager flow finish task` on 2026-07-20.

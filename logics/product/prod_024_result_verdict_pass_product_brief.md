@@ -1,8 +1,8 @@
 ## prod_024_result_verdict_pass_product_brief - Result Verdict Pass Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next`
-> Related backlog: `item_144_deterministic_verdict_builder`, `item_145_verdict_block_in_the_race_report`
+> Related backlog: `item_144_deterministic_verdict_builder`
 > Related task: `task_061_orchestrate_result_verdict_pass`
 > Related architecture: (none yet)
 > Non-semantic edit: 2026-07-20 added overview Mermaid diagram.
@@ -45,5 +45,5 @@ Roadmap patch 0.3.14: open every race report with a direct verdict — why the p
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next`
+- Product back-reference: `item_144_deterministic_verdict_builder`
 - Task back-reference: `task_061_orchestrate_result_verdict_pass`

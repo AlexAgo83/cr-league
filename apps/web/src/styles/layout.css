@@ -1675,6 +1675,20 @@ label small {
   position: relative;
 }
 
+.directive-confirm-summary .plan-risk-summary.compact {
+  background: rgb(16 14 18 / 0.8);
+  border: 1px solid rgb(255 255 255 / 0.12);
+  border-left: 4px solid var(--plan-risk-accent, var(--color-accent));
+  border-radius: 8px;
+  color: var(--color-text);
+  margin-top: 0;
+  padding: 9px 10px;
+}
+
+.directive-confirm-summary .plan-risk-summary.compact span {
+  color: var(--color-muted);
+}
+
 .plan-risk-summary {
   background: rgb(236 231 218 / 0.96);
   border: 1px solid rgb(23 21 26 / 0.14);

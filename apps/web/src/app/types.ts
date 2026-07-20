@@ -114,6 +114,15 @@ export type AdminUser = {
   leagueCount: number;
 };
 
+export type AdminPagination = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasPrevious: boolean;
+  hasNext: boolean;
+};
+
 export type AdminLeague = {
   id: string;
   code: string;

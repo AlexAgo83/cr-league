@@ -1,7 +1,7 @@
 import { type QualifyingRun } from "@cr-league/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
-import { type AdminLeague, type AdminUser, type LeagueState, type ProfileSession } from "./types.js";
+import { type AdminLeague, type AdminPagination, type AdminUser, type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY } from "../features/ChampionshipView.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
@@ -39,6 +39,7 @@ import { useRaceDerivations } from "./useRaceDerivations.js";
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
 const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "race", "plan", "garage"]);
 const CARRIED_OVER_PLAN_SEEN_KEY_PREFIX = "cr-league-carried-plan-seen";
+const EMPTY_ADMIN_PAGINATION: AdminPagination = { page: 1, limit: 100, total: 0, totalPages: 1, hasPrevious: false, hasNext: false };
 
 function initialLocale() {
   const saved = localStorage.getItem(LANGUAGE_KEY);
@@ -126,6 +127,10 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const [adminTab, setAdminTab] = useState<AdminTab>("users");
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
   const [adminLeagues, setAdminLeagues] = useState<AdminLeague[]>([]);
+  const [adminUserQuery, setAdminUserQuery] = useState("");
+  const [adminLeagueQuery, setAdminLeagueQuery] = useState("");
+  const [adminUserPagination, setAdminUserPagination] = useState(EMPTY_ADMIN_PAGINATION);
+  const [adminLeaguePagination, setAdminLeaguePagination] = useState(EMPTY_ADMIN_PAGINATION);
   const [adminRecoveryCode, setAdminRecoveryCode] = useState<{ email: string; code: string } | null>(null);
   const [adminDeleteUser, setAdminDeleteUser] = useState<AdminUser | null>(null);
   const [adminInspecting, setAdminInspecting] = useState(false);
@@ -229,16 +234,24 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     withCurrentPlayer,
     rememberPlayer
   });
-  const { openAdminConsole, refreshAdminData, resetAdminRecoveryCode, deleteAdminUserConfirmed, inspectAdminLeague } = createAdminActions({
+  const { openAdminConsole, refreshAdminData, resetAdminRecoveryCode, deleteAdminUserConfirmed, inspectAdminLeague, searchAdminUsers, searchAdminLeagues, pageAdminUsers, pageAdminLeagues } = createAdminActions({
     profileIsAdmin: Boolean(profileSession?.admin),
     adminToken,
     adminDeleteUser,
+    adminUserQuery,
+    adminLeagueQuery,
+    adminUserPagination,
+    adminLeaguePagination,
     run,
     tt,
     setProfileOpen,
     setGameView,
     setAdminUsers,
     setAdminLeagues,
+    setAdminUserQuery,
+    setAdminLeagueQuery,
+    setAdminUserPagination,
+    setAdminLeaguePagination,
     setAdminRecoveryCode,
     setAdminDeleteUser,
     setLeagueState,
@@ -603,15 +616,25 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       adminTab={adminTab}
       adminToken={adminToken}
       adminUsers={adminUsers}
+      adminUserPagination={adminUserPagination}
+      adminUserQuery={adminUserQuery}
+      adminLeaguePagination={adminLeaguePagination}
+      adminLeagueQuery={adminLeagueQuery}
       locale={locale}
       loading={status === "loading"}
       pendingMessage={pendingMessage}
       onDeleteUser={setAdminDeleteUser}
       onInspectLeague={(league) => void inspectAdminLeague(league)}
+      onPageLeagues={(page) => void pageAdminLeagues(page)}
+      onPageUsers={(page) => void pageAdminUsers(page)}
       onRefresh={() => void refreshAdminData()}
       onResetRecoveryCode={(user) => void resetAdminRecoveryCode(user)}
+      onSearchLeagues={() => void searchAdminLeagues()}
+      onSearchUsers={() => void searchAdminUsers()}
+      onSetAdminLeagueQuery={setAdminLeagueQuery}
       onSetAdminTab={setAdminTab}
       onSetAdminToken={setAdminToken}
+      onSetAdminUserQuery={setAdminUserQuery}
       tt={tt}
     />
   );

@@ -2,7 +2,13 @@ import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import type { PrismaClient } from "@prisma/client";
 import { timingSafeEqual } from "node:crypto";
 import type { ApiConfig } from "../../config.js";
-import { deleteAdminUser, inspectAdminLeague, listAdminLeagues, listAdminUsers, resetAdminUserRecoveryCode } from "./store.js";
+import { deleteAdminUser, inspectAdminLeague, listAdminLeagues, listAdminUsers, resetAdminUserRecoveryCode, type AdminListInput } from "./store.js";
+
+type AdminListQuery = {
+  q?: string;
+  page?: string;
+  limit?: string;
+};
 
 export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient, config: ApiConfig) {
   app.addHook("preHandler", async (request, reply) => {
@@ -11,7 +17,7 @@ export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient
     if (!sameToken(adminTokenFrom(request), config.adminToken)) return reply.code(403).send({ error: "Forbidden", message: "Admin token is required." });
   });
 
-  app.get("/admin/users", async () => listAdminUsers(db));
+  app.get<{ Querystring: AdminListQuery }>("/admin/users", async (request) => listAdminUsers(db, adminListInput(request.query)));
 
   app.post<{ Params: { profileId: string } }>("/admin/users/:profileId/recovery-code", async (request, reply) => {
     try {
@@ -29,13 +35,26 @@ export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient
     }
   });
 
-  app.get("/admin/leagues", async () => listAdminLeagues(db));
+  app.get<{ Querystring: AdminListQuery }>("/admin/leagues", async (request) => listAdminLeagues(db, adminListInput(request.query)));
 
   app.get<{ Params: { leagueId: string } }>("/admin/leagues/:leagueId", async (request, reply) => {
     const state = await inspectAdminLeague(db, request.params.leagueId);
     if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
     return state;
   });
+}
+
+function adminListInput(query: AdminListQuery): AdminListInput {
+  return {
+    q: query.q,
+    page: numberParam(query.page),
+    limit: numberParam(query.limit)
+  };
+}
+
+function numberParam(value: string | undefined) {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) ? parsed : undefined;
 }
 
 function adminTokenFrom(request: FastifyRequest) {

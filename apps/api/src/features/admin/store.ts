@@ -4,7 +4,13 @@ import { createRecoveryCode, hashRecoveryCode } from "../leagues/utils.js";
 
 type Db = Pick<PrismaClient, "profile" | "team" | "league">;
 
-export async function listAdminUsers(db: Db) {
+export type AdminListInput = {
+  q?: string;
+  page?: number;
+  limit?: number;
+};
+
+export async function listAdminUsers(db: Db, input: AdminListInput = {}) {
   const profiles = await db.profile.findMany({
     orderBy: { createdAt: "desc" },
     include: {
@@ -14,8 +20,8 @@ export async function listAdminUsers(db: Db) {
     }
   });
 
-  return {
-    users: profiles.map((profile) => {
+  const users = profiles
+    .map((profile) => {
       const leagueIds = new Set(profile.teams.map((team) => team.leagueId));
       return {
         id: profile.id,
@@ -25,7 +31,10 @@ export async function listAdminUsers(db: Db) {
         leagueCount: leagueIds.size
       };
     })
-  };
+    .filter((profile) => matchesAdminQuery(input.q, profile.id, profile.email));
+  const page = paginate(users, input);
+
+  return { users: page.items, pagination: page.pagination };
 }
 
 export async function resetAdminUserRecoveryCode(db: Db, profileId: string) {
@@ -50,7 +59,7 @@ export async function deleteAdminUser(db: Db, profileId: string) {
   return { ok: true };
 }
 
-export async function listAdminLeagues(db: Db) {
+export async function listAdminLeagues(db: Db, input: AdminListInput = {}) {
   const leagues = await db.league.findMany({
     orderBy: { createdAt: "desc" },
     include: {
@@ -62,8 +71,8 @@ export async function listAdminLeagues(db: Db) {
     }
   });
 
-  return {
-    leagues: leagues.map((league) => {
+  const adminLeagues = leagues
+    .map((league) => {
       const currentGrandPrix = league.grandPrixes[0] ?? null;
       return {
         id: league.id,
@@ -77,9 +86,38 @@ export async function listAdminLeagues(db: Db) {
         createdAt: league.createdAt.toISOString()
       };
     })
-  };
+    .filter((league) => matchesAdminQuery(input.q, league.id, league.code, league.name, league.status));
+  const page = paginate(adminLeagues, input);
+
+  return { leagues: page.items, pagination: page.pagination };
 }
 
 export async function inspectAdminLeague(db: Db, leagueId: string) {
   return getLeagueState(db as Parameters<typeof getLeagueState>[0], leagueId, { includeInviteCode: true });
+}
+
+function matchesAdminQuery(query: string | undefined, ...values: Array<string | null | undefined>) {
+  const needle = query?.trim().toLowerCase();
+  if (!needle) return true;
+  return values.some((value) => value?.toLowerCase().includes(needle));
+}
+
+function paginate<T>(items: T[], input: AdminListInput) {
+  const limit = Math.min(100, Math.max(1, input.limit ?? 100));
+  const total = items.length;
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const page = Math.min(totalPages, Math.max(1, input.page ?? 1));
+  const start = (page - 1) * limit;
+
+  return {
+    items: items.slice(start, start + limit),
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages,
+      hasPrevious: page > 1,
+      hasNext: page < totalPages
+    }
+  };
 }

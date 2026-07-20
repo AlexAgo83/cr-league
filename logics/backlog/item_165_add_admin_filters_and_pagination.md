@@ -1,10 +1,10 @@
 ## item_165_add_admin_filters_and_pagination - Add admin filters and pagination
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Admin support
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -1,10 +1,10 @@
 ## item_166_add_safe_admin_test_data_cleanup - Add safe admin test-data cleanup
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: High
 > Theme: Admin support safety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

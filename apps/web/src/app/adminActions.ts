@@ -1,17 +1,28 @@
 import type { TranslationKey } from "../i18n/index.js";
 import { ApiError, api } from "./appStorage.js";
-import type { AdminLeague, AdminUser, GameView, LeagueState } from "./types.js";
+import type { AdminLeague, AdminPagination, AdminUser, GameView, LeagueState } from "./types.js";
+
+type AdminUsersResponse = { users: AdminUser[]; pagination: AdminPagination };
+type AdminLeaguesResponse = { leagues: AdminLeague[]; pagination: AdminPagination };
 
 export function createAdminActions({
   profileIsAdmin,
   adminToken,
   adminDeleteUser,
+  adminUserQuery,
+  adminLeagueQuery,
+  adminUserPagination,
+  adminLeaguePagination,
   run,
   tt,
   setProfileOpen,
   setGameView,
   setAdminUsers,
   setAdminLeagues,
+  setAdminUserQuery,
+  setAdminLeagueQuery,
+  setAdminUserPagination,
+  setAdminLeaguePagination,
   setAdminRecoveryCode,
   setAdminDeleteUser,
   setLeagueState,
@@ -21,12 +32,20 @@ export function createAdminActions({
   profileIsAdmin: boolean;
   adminToken: string;
   adminDeleteUser: AdminUser | null;
+  adminUserQuery: string;
+  adminLeagueQuery: string;
+  adminUserPagination: AdminPagination;
+  adminLeaguePagination: AdminPagination;
   run: (nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify?: boolean, errorText?: (error: unknown) => string) => Promise<void>;
   tt: (key: TranslationKey) => string;
   setProfileOpen: (open: boolean) => void;
   setGameView: (view: GameView) => void;
   setAdminUsers: (users: AdminUser[]) => void;
   setAdminLeagues: (leagues: AdminLeague[]) => void;
+  setAdminUserQuery: (query: string) => void;
+  setAdminLeagueQuery: (query: string) => void;
+  setAdminUserPagination: (pagination: AdminPagination) => void;
+  setAdminLeaguePagination: (pagination: AdminPagination) => void;
   setAdminRecoveryCode: (recovery: { email: string; code: string } | null) => void;
   setAdminDeleteUser: (user: AdminUser | null) => void;
   setLeagueState: (state: LeagueState | null) => void;
@@ -34,6 +53,11 @@ export function createAdminActions({
   showStatus: (text: string, tone?: "info" | "error", notify?: boolean) => void;
 }) {
   const adminHeaders = () => ({ authorization: `Bearer ${adminToken.trim()}` });
+  const adminListPath = (path: string, query: string, page: number) => {
+    const params = new URLSearchParams({ page: String(page), limit: "100" });
+    if (query.trim()) params.set("q", query.trim());
+    return `${path}?${params.toString()}`;
+  };
 
   const adminApiErrorMessage = (error: unknown) => {
     if (error instanceof ApiError && error.statusCode === 503) return tt("admin_error_unconfigured");
@@ -42,9 +66,16 @@ export function createAdminActions({
     return tt("status_request_failed");
   };
 
-  const refreshAdminUsers = async () => {
-    const response = await api<{ users: AdminUser[] }>("/admin/users", { method: "GET", headers: adminHeaders() });
+  const refreshAdminUsers = async (page = adminUserPagination.page, query = adminUserQuery) => {
+    const response = await api<AdminUsersResponse>(adminListPath("/admin/users", query, page), { method: "GET", headers: adminHeaders() });
     setAdminUsers(response.users);
+    setAdminUserPagination(response.pagination);
+  };
+
+  const refreshAdminLeagues = async (page = adminLeaguePagination.page, query = adminLeagueQuery) => {
+    const response = await api<AdminLeaguesResponse>(adminListPath("/admin/leagues", query, page), { method: "GET", headers: adminHeaders() });
+    setAdminLeagues(response.leagues);
+    setAdminLeaguePagination(response.pagination);
   };
 
   const refreshAdminData = async () => {
@@ -55,11 +86,13 @@ export function createAdminActions({
 
     await run(tt("status_admin_loading"), async () => {
       const [users, leagues] = await Promise.all([
-        api<{ users: AdminUser[] }>("/admin/users", { method: "GET", headers: adminHeaders() }),
-        api<{ leagues: AdminLeague[] }>("/admin/leagues", { method: "GET", headers: adminHeaders() })
+        api<AdminUsersResponse>(adminListPath("/admin/users", adminUserQuery, 1), { method: "GET", headers: adminHeaders() }),
+        api<AdminLeaguesResponse>(adminListPath("/admin/leagues", adminLeagueQuery, 1), { method: "GET", headers: adminHeaders() })
       ]);
       setAdminUsers(users.users);
       setAdminLeagues(leagues.leagues);
+      setAdminUserPagination(users.pagination);
+      setAdminLeaguePagination(leagues.pagination);
       showStatus(tt("status_admin_loaded"), "info", false);
     }, undefined, false, adminApiErrorMessage);
   };
@@ -82,6 +115,22 @@ export function createAdminActions({
       await refreshAdminUsers();
       showStatus(tt("status_admin_recovery_reset"), "info", false);
     }, undefined, false, adminApiErrorMessage);
+  };
+
+  const searchAdminUsers = async () => {
+    await run(tt("status_admin_loading"), () => refreshAdminUsers(1), undefined, false, adminApiErrorMessage);
+  };
+
+  const searchAdminLeagues = async () => {
+    await run(tt("status_admin_loading"), () => refreshAdminLeagues(1), undefined, false, adminApiErrorMessage);
+  };
+
+  const pageAdminUsers = async (page: number) => {
+    await run(tt("status_admin_loading"), () => refreshAdminUsers(page), undefined, false, adminApiErrorMessage);
+  };
+
+  const pageAdminLeagues = async (page: number) => {
+    await run(tt("status_admin_loading"), () => refreshAdminLeagues(page), undefined, false, adminApiErrorMessage);
   };
 
   const deleteAdminUserConfirmed = async () => {
@@ -112,5 +161,17 @@ export function createAdminActions({
     }, undefined, false, adminApiErrorMessage);
   };
 
-  return { openAdminConsole, refreshAdminData, resetAdminRecoveryCode, deleteAdminUserConfirmed, inspectAdminLeague };
+  return {
+    openAdminConsole,
+    refreshAdminData,
+    resetAdminRecoveryCode,
+    deleteAdminUserConfirmed,
+    inspectAdminLeague,
+    searchAdminUsers,
+    searchAdminLeagues,
+    pageAdminUsers,
+    pageAdminLeagues,
+    setAdminUserQuery,
+    setAdminLeagueQuery
+  };
 }

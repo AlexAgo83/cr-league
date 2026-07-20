@@ -326,6 +326,7 @@ describe("api app profile and admin", () => {
         leagueCount: 1
       })
     ]);
+    expect(usersResponse.json().pagination).toMatchObject({ page: 1, limit: 100, total: 1, totalPages: 1, hasNext: false, hasPrevious: false });
     expect(usersResponse.body).not.toContain("recoveryCodeHash");
     expect(resetResponse.statusCode).toBe(200);
     expect(resetResponse.json().recoveryCode).toMatch(/^[0-9A-F]{12}$/);
@@ -370,5 +371,30 @@ describe("api app profile and admin", () => {
       currentGrandPrix: { season: 1, round: 1 }
     });
     expect(inspectResponse.json().player).toBeUndefined();
+  });
+
+  it("filters and paginates admin users and leagues", async () => {
+    const app = await createTestApp(createMemoryDb(), "secret-admin-token");
+    const adminHeaders = { authorization: "Bearer secret-admin-token" };
+    await app.inject({ method: "POST", url: "/profiles", payload: { email: "alpha@example.test" } });
+    await app.inject({ method: "POST", url: "/profiles", payload: { email: "beta@example.test" } });
+    await app.inject({ method: "POST", url: "/leagues", payload: { name: "Alpha Cup", teamName: "Volt Union" } });
+    await app.inject({ method: "POST", url: "/leagues", payload: { name: "Beta Bowl", teamName: "Apex Team" } });
+
+    const firstUserPage = await app.inject({ method: "GET", url: "/admin/users?limit=1&page=1", headers: adminHeaders });
+    const secondUserPage = await app.inject({ method: "GET", url: "/admin/users?limit=1&page=2", headers: adminHeaders });
+    const filteredUsers = await app.inject({ method: "GET", url: "/admin/users?q=alpha", headers: adminHeaders });
+    const filteredLeagues = await app.inject({ method: "GET", url: "/admin/leagues?q=Beta", headers: adminHeaders });
+
+    await app.close();
+
+    expect(firstUserPage.json().users).toHaveLength(1);
+    expect(firstUserPage.json().pagination).toMatchObject({ page: 1, limit: 1, total: 2, totalPages: 2, hasNext: true, hasPrevious: false });
+    expect(secondUserPage.json().users).toHaveLength(1);
+    expect(secondUserPage.json().pagination).toMatchObject({ page: 2, limit: 1, total: 2, totalPages: 2, hasNext: false, hasPrevious: true });
+    expect(filteredUsers.json().users).toEqual([expect.objectContaining({ email: "alpha@example.test" })]);
+    expect(filteredUsers.json().pagination.total).toBe(1);
+    expect(filteredLeagues.json().leagues).toEqual([expect.objectContaining({ name: "Beta Bowl" })]);
+    expect(filteredLeagues.json().pagination.total).toBe(1);
   });
 });

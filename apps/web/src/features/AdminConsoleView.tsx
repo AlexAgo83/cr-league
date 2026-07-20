@@ -1,5 +1,5 @@
 import type { Locale, TranslationKey } from "../i18n/index.js";
-import type { AdminLeague, AdminUser } from "../app/types.js";
+import type { AdminLeague, AdminPagination, AdminUser } from "../app/types.js";
 import { PendingFeedback } from "./PendingFeedback.js";
 
 export type AdminTab = "users" | "leagues";
@@ -10,15 +10,25 @@ export function AdminConsoleView({
   adminTab,
   adminToken,
   adminUsers,
+  adminUserPagination,
+  adminUserQuery,
+  adminLeaguePagination,
+  adminLeagueQuery,
   locale,
   loading,
   pendingMessage,
   onDeleteUser,
   onInspectLeague,
+  onPageLeagues,
+  onPageUsers,
   onRefresh,
   onResetRecoveryCode,
+  onSearchLeagues,
+  onSearchUsers,
+  onSetAdminLeagueQuery,
   onSetAdminTab,
   onSetAdminToken,
+  onSetAdminUserQuery,
   tt
 }: {
   adminLeagues: AdminLeague[];
@@ -26,15 +36,25 @@ export function AdminConsoleView({
   adminTab: AdminTab;
   adminToken: string;
   adminUsers: AdminUser[];
+  adminUserPagination: AdminPagination;
+  adminUserQuery: string;
+  adminLeaguePagination: AdminPagination;
+  adminLeagueQuery: string;
   locale: Locale;
   loading: boolean;
   pendingMessage: string | null;
   onDeleteUser: (user: AdminUser) => void;
   onInspectLeague: (league: AdminLeague) => void;
+  onPageLeagues: (page: number) => void;
+  onPageUsers: (page: number) => void;
   onRefresh: () => void;
   onResetRecoveryCode: (user: AdminUser) => void;
+  onSearchLeagues: () => void;
+  onSearchUsers: () => void;
+  onSetAdminLeagueQuery: (query: string) => void;
   onSetAdminTab: (tab: AdminTab) => void;
   onSetAdminToken: (token: string) => void;
+  onSetAdminUserQuery: (query: string) => void;
   tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }) {
   return (
@@ -79,6 +99,16 @@ export function AdminConsoleView({
         </div>
         {adminTab === "users" ? (
           <div className="admin-table-wrap">
+            <AdminListControls
+              label={tt("admin_filter_users_label")}
+              loading={loading}
+              onPage={onPageUsers}
+              onSearch={onSearchUsers}
+              onSetQuery={onSetAdminUserQuery}
+              pagination={adminUserPagination}
+              query={adminUserQuery}
+              tt={tt}
+            />
             <table className="admin-table">
               <thead>
                 <tr>
@@ -115,6 +145,16 @@ export function AdminConsoleView({
           </div>
         ) : (
           <div className="admin-table-wrap">
+            <AdminListControls
+              label={tt("admin_filter_leagues_label")}
+              loading={loading}
+              onPage={onPageLeagues}
+              onSearch={onSearchLeagues}
+              onSetQuery={onSetAdminLeagueQuery}
+              pagination={adminLeaguePagination}
+              query={adminLeagueQuery}
+              tt={tt}
+            />
             <table className="admin-table">
               <thead>
                 <tr>
@@ -156,6 +196,55 @@ export function AdminConsoleView({
         )}
       </div>
     </section>
+  );
+}
+
+function AdminListControls({
+  label,
+  loading,
+  onPage,
+  onSearch,
+  onSetQuery,
+  pagination,
+  query,
+  tt
+}: {
+  label: string;
+  loading: boolean;
+  onPage: (page: number) => void;
+  onSearch: () => void;
+  onSetQuery: (query: string) => void;
+  pagination: AdminPagination;
+  query: string;
+  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
+}) {
+  return (
+    <div className="admin-list-controls">
+      <form
+        className="admin-filter-form"
+        onSubmit={(event) => {
+          event.preventDefault();
+          onSearch();
+        }}
+      >
+        <label>
+          {label}
+          <input value={query} onChange={(event) => onSetQuery(event.target.value)} placeholder={tt("admin_filter_placeholder")} />
+        </label>
+        <button type="submit" disabled={loading}>
+          {tt("admin_action_filter")}
+        </button>
+      </form>
+      <div className="admin-pagination" aria-label={tt("admin_pagination_label")}>
+        <span>{tt("admin_pagination_status", { page: pagination.page, totalPages: pagination.totalPages, total: pagination.total })}</span>
+        <button type="button" onClick={() => onPage(pagination.page - 1)} disabled={loading || !pagination.hasPrevious}>
+          {tt("admin_action_previous_page")}
+        </button>
+        <button type="button" onClick={() => onPage(pagination.page + 1)} disabled={loading || !pagination.hasNext}>
+          {tt("admin_action_next_page")}
+        </button>
+      </div>
+    </div>
   );
 }
 

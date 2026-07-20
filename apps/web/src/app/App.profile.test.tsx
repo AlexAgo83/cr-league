@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { APP_VERSION } from "@cr-league/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
@@ -391,7 +391,9 @@ describe("App profile and admin", () => {
 
   it("opens the admin console from the profile menu and performs primary admin actions", async () => {
     saveProfile({ admin: true });
+    const pagination = { page: 1, limit: 100, total: 1, totalPages: 1, hasPrevious: false, hasNext: false };
     const users = {
+      pagination,
       users: [
         {
           id: "profile_1",
@@ -402,8 +404,9 @@ describe("App profile and admin", () => {
         }
       ]
     };
-    const emptyUsers = { users: [] };
+    const emptyUsers = { pagination: { ...pagination, total: 0 }, users: [] };
     const leagues = {
+      pagination,
       leagues: [
         {
           id: "league_1",
@@ -422,6 +425,7 @@ describe("App profile and admin", () => {
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(response(users))
       .mockResolvedValueOnce(response(leagues))
+      .mockResolvedValueOnce(response(users))
       .mockResolvedValueOnce(response({ recoveryCode: "FACE1234" }))
       .mockResolvedValueOnce(response(users))
       .mockResolvedValueOnce(response({ ok: true }))
@@ -439,8 +443,18 @@ describe("App profile and admin", () => {
     await screen.findByText("pilot@example.test");
     expect(fetch).toHaveBeenNthCalledWith(
       1,
-      "http://localhost:4874/admin/users",
+      "http://localhost:4874/admin/users?page=1&limit=100",
       expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
+    );
+    expect(screen.getByText("Page 1/1 · 1 total")).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Filter users"), { target: { value: "pilot" } });
+    fireEvent.click(screen.getByRole("button", { name: "Filter" }));
+    await waitFor(() =>
+      expect(fetch).toHaveBeenNthCalledWith(
+        3,
+        "http://localhost:4874/admin/users?page=1&limit=100&q=pilot",
+        expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
+      )
     );
     expect(screen.getByText("1 teams · 1 leagues")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Reset recovery" }));

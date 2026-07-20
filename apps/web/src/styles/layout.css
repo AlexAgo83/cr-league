@@ -665,6 +665,34 @@
   overflow-x: auto;
 }
 
+.admin-list-controls {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.admin-filter-form,
+.admin-pagination {
+  align-items: end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.admin-filter-form label {
+  display: grid;
+  gap: 0.35rem;
+  min-width: min(100%, 260px);
+}
+
+.admin-pagination span {
+  color: var(--color-muted);
+  font-size: 0.85rem;
+}
+
 .admin-table {
   border-collapse: collapse;
   min-width: 760px;

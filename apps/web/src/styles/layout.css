@@ -142,6 +142,7 @@
 
 .home-splash-title img {
   display: block;
+  filter: drop-shadow(0 1px 0 #000) drop-shadow(0 0 4px rgb(0 0 0 / 0.9)) drop-shadow(0 0 12px rgb(0 0 0 / 0.55));
   height: auto;
   max-width: 100%;
 }

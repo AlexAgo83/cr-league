@@ -369,12 +369,14 @@ test("keeps first-click commands animated and result shortcuts wired", async ({ 
 
   await page.getByRole("button", { name: "Race", exact: true }).click();
   await dismissOnboarding(page);
-  await expectAnimatedHighlight(page.getByRole("button", { name: "Edit plan" }));
+  await expectAnimatedHighlight(page.getByRole("button", { name: "New chrono" }));
+  await expect(page.getByRole("button", { name: "Edit plan" })).not.toHaveClass(/highlight-command/);
+  await expect(page.getByRole("button", { name: "Send plan" })).not.toHaveClass(/highlight-command/);
   await page.getByRole("button", { name: "Edit plan" }).click();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
   await page.getByRole("button", { name: "Race", exact: true }).click();
   await expect(page.getByRole("button", { name: "Edit plan" })).not.toHaveClass(/highlight-command/);
-  await expectAnimatedHighlight(page.getByRole("button", { name: "Send plan" }));
+  await expect(page.getByRole("button", { name: "Send plan" })).not.toHaveClass(/highlight-command/);
   await page.getByRole("button", { name: "Send plan" }).click();
   await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send plan" }).click();
   await expectAnimatedHighlight(page.getByRole("button", { name: "Launch GP" }));

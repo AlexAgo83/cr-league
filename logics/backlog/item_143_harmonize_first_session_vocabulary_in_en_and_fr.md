@@ -1,10 +1,10 @@
 ## item_143_harmonize_first_session_vocabulary_in_en_and_fr - Harmonize first-session vocabulary in EN and FR
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 0
+> Progress: 30
 > Complexity: Low
 > Theme: i18n
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -28,6 +28,13 @@
 - AC1: The EN chrono CTA reads 'New chrono' and each of the five concepts uses one term per locale.
 - AC2: The parity test and all pinned-label tests pass.
 - AC3: The playtest checklist matches the shipped labels.
+
+# Implementation Notes
+- 2026-07-20 wave 1: renamed the EN primary chrono CTA values from `New lap time` / `Review lap time` to `New chrono` / `Review chrono`, and updated pinned unit/e2e expectations to match.
+- Remaining: complete the broader EN/FR vocabulary audit for the five listed concepts, including the `Run chrono` family and the championship bot status wording.
+
+# Validation
+- 2026-07-20 targeted: `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts`; `rtk npx playwright test tests/e2e/private-league.spec.ts -g "first-click commands"`.
 
 # AC Traceability
 - request-AC3 -> This backlog slice. Proof: AC1: The EN chrono CTA reads 'New chrono' and each of the five concepts uses one term per locale.

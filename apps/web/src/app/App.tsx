@@ -275,7 +275,7 @@ export function App() {
             disabled: status === "loading" || !leagueState?.actionState.canStartNextGrandPrix
           };
   const primaryCommandClass = `primary-command${
-    (deskState === "prepare" && !commandClicks.directive) ||
+    (deskState === "prepare" && qualifyingAttemptsUsed > 0 && !commandClicks.directive) ||
     (deskState === "ready" && !commandClicks.launchGrandPrix) ||
     (deskState === "resolved" && !commandClicks.nextGrandPrix)
       ? " highlight-command"

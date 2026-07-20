@@ -1,10 +1,10 @@
 ## item_141_single_recommended_cta_at_grand_prix_start - Single recommended CTA at Grand Prix start
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: In progress
+> Understanding: 95
+> Confidence: 90
+> Progress: 65
 > Complexity: Low
 > Theme: First-session UX
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -27,6 +27,14 @@
 - AC1: With no plan and zero attempts, only the chrono CTA carries highlight-command.
 - AC2: After one attempt, the plan path highlights as today.
 - AC3: Unit and e2e highlight tests pass with the new rule.
+
+# Implementation Notes
+- 2026-07-20 wave 1: gated the prepare/send-plan highlight path on at least one qualifying attempt in `App.tsx` and gated the edit-plan highlight in `DriveView.tsx`, leaving `New chrono` as the only fresh-GP highlighted CTA.
+- Unit coverage now asserts a single highlighted race action at zero attempts and `Send plan` returning after the first chrono.
+- E2E coverage now asserts the initial single highlighted CTA; the mocked flow does not run a qualifying attempt, so post-chrono highlight recovery stays covered by the unit test.
+
+# Validation
+- 2026-07-20 targeted: `rtk npm run typecheck`; `rtk npm run lint`; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts`; `rtk npx playwright test tests/e2e/private-league.spec.ts -g "first-click commands"`.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: With no plan and zero attempts, only the chrono CTA carries highlight-command.

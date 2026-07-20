@@ -352,7 +352,7 @@ function DriveActions({
       <PendingFeedback className="map-pending-feedback" message={pendingMessage} />
       {deskState === "prepare" ? (
         <>
-          <button className={`primary-command${!commandClicks.editPlan ? " highlight-command" : ""}`} type="button" onClick={() => {
+          <button className={`primary-command${qualifyingAttemptsUsed > 0 && !commandClicks.editPlan ? " highlight-command" : ""}`} type="button" onClick={() => {
             markCommandClicked("editPlan");
             setPlanSubscreen("plan");
             setGameView("plan");

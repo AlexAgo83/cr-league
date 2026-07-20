@@ -9,7 +9,7 @@
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 > Owner: codex
-> Non-semantic edit: 2026-07-20 updated splash background proof from blurred fill to black page fill.
+> Non-semantic edit: 2026-07-20 updated splash background proof from blurred fill to black page fill; noted alpha-keyed title asset refresh.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -48,12 +48,13 @@
 - Run scaffold command tests.
 - 2026-07-20 wave 1 targeted proof: `rtk npm run typecheck` passed; `rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx apps/web/src/app/routes.test.ts apps/web/src/i18n/index.test.ts` passed (52 tests); `rtk npm run lint` passed with no warnings; `rtk npm run test:e2e` passed (4 tests).
 - 2026-07-20 full proof: `rtk npm test` passed (199 tests, 4 skipped); `rtk npm run build` passed; `rtk npm run logics:validate` passed before closeout with only deferred request traceability warnings.
+- 2026-07-20 follow-up proof: violet-matte CR/League title sources were keyed to transparent PNG assets; `rtk npm run test:e2e` passed after the refresh.
 - command: `rtk npm run logics:validate` | result: passed: lint ok, audit ok | date: 2026-07-20
 - Finish workflow executed on 2026-07-20.
 - Linked backlog/request close verification passed.
 
 # Report
-- Wave 1 implemented: desktop splash background fits by height over black page fill, mobile splash header is compacted with scoped CSS, locale ownership is centralized in App, and the App.tsx Hooks warning is removed.
+- Wave 1 implemented: desktop splash background fits by height over black page fill, mobile splash header is compacted with scoped CSS, title assets use transparent alpha-keyed PNGs, locale ownership is centralized in App, and the App.tsx Hooks warning is removed.
 - Finished on 2026-07-20.
 - Linked backlog item(s): `item_159_compact_the_splash_header_on_narrow_mobile`, `item_160_clean_up_app_root_locale_ownership_and_hooks_warning`
 - Related request(s): `req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup`

@@ -4837,7 +4837,7 @@ label small {
   }
 
   .launch-gp-modal .modal-hero {
-    margin-bottom: 10px;
+    margin: -14px -14px 10px;
     min-height: 118px;
   }
 

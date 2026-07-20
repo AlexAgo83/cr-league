@@ -1,10 +1,10 @@
 ## item_138_split_replayview_and_extract_the_replay_clock - Split ReplayView and extract the replay clock
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 84%
+> Progress: 100%
 > Complexity: Low
 > Theme: Web architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -53,3 +53,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-20 closeout proof: AC1 useReplayClock owns the replay rAF playback loop, speed/play state, seek/restart, live lap/segment state, and position-pop timer cleanup; ReplayView delegates stage presentation to ReplayStageOverlay. AC2 ReplayView.test.ts passes unchanged (26 tests), and full suite passes (172 tests). AC3 replay folder files are below 400 lines: ReplayProgress 104, ReplayStageOverlay 283, ReplayTower 57, useReplayClock 184.

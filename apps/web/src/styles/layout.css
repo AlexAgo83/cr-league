@@ -4990,12 +4990,19 @@ label small {
 
 @media (max-width: 520px) {
   .modal-overlay {
-    align-items: flex-start;
-    padding: 10px;
+    align-items: stretch;
+    padding: 0;
+  }
+
+  .modal {
+    border-radius: 0;
+    height: 100dvh;
+    max-height: none;
+    max-width: none;
+    width: 100dvw;
   }
 
   .launch-gp-modal {
-    max-height: calc(100dvh - 20px);
     min-width: 0;
   }
 

@@ -75,6 +75,7 @@ export type ProfileSession = {
   };
   admin?: boolean;
   recoveryCode?: string;
+  recoveryEmailSent?: boolean;
   teams: Array<{
     leagueId: string;
     leagueName: string;

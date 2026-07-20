@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 45%
+> Progress: 75%
 > Complexity: Medium
 > Theme: Ship rails
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -51,6 +51,8 @@
 - Wave 1: added `Profile.recoveryEmailSentAt`, `POST /profiles/recovery-code`, neutral success response for known/unknown/cooldown/send-failure cases, and reuse of the existing recovery limiter for email/IP throttling.
 - Wave 1: the re-issue path rotates the stored hash only after an active mailer accepts the new code, avoiding no-SMTP lockout in local/no-op mode.
 - Validation wave 1: `rtk npm run typecheck` passed; `rtk npm test -- apps/api/src/app.admin.test.ts` covers rotation, neutral unknown response, limiter, and cooldown.
+- Wave 2: recover form now includes the neutral request-by-email path, and runtime configuration documents `POST /profiles/recovery-code` plus Gmail app-password notes.
+- Validation wave 2: `rtk npm test -- apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts` passed.
 
 # AI Context
 - Summary: Self-service recovery-code re-issue by email

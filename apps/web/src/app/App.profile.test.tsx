@@ -41,6 +41,31 @@ describe("App profile and admin", () => {
     expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
   });
 
+  it("mentions email delivery when profile creation sends the recovery code", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ profile: { id: "profile_1", email: "pilot@example.test" }, admin: false, recoveryCode: "ABCD1234", recoveryEmailSent: true, teams: [] }));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Create profile/ }));
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
+    fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
+
+    expect(await screen.findByText("Profile created. We also emailed this recovery code: ABCD1234")).toBeTruthy();
+  });
+
+  it("requests a fresh recovery code by email from the recover form", async () => {
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ ok: true, message: "If a profile exists for this email, a fresh recovery code will be sent." }));
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
+    fireEvent.click(screen.getByRole("button", { name: "Email me a fresh code" }));
+
+    expect(await screen.findByText("If a profile exists for this email, a fresh recovery code will be sent.")).toBeTruthy();
+    expect(fetch).toHaveBeenCalledWith("http://localhost:4874/profiles/recovery-code", expect.objectContaining({ method: "POST", body: JSON.stringify({ email: "pilot@example.test" }) }));
+  });
+
   it("opens release notes from the centered profile version", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));

@@ -21,6 +21,7 @@ export function ProfileSetupView({
   status,
   onCreateProfile,
   onRecoverProfile,
+  onRequestRecoveryCode,
   onSetMode,
   onSetProfileForm,
   onSetProfileFormError,
@@ -34,6 +35,7 @@ export function ProfileSetupView({
   status: "idle" | "loading" | "error";
   onCreateProfile: () => void;
   onRecoverProfile: () => void;
+  onRequestRecoveryCode: () => void;
   onSetMode: (mode: ProfileMode) => void;
   onSetProfileForm: (form: { email: string; recoveryCode: string }) => void;
   onSetProfileFormError: (error: string | null) => void;
@@ -112,6 +114,11 @@ export function ProfileSetupView({
               <button type="submit" disabled={status === "loading"}>
                 {mode === "create" ? tt("action_create_profile") : tt("action_recover_profile")}
               </button>
+              {mode === "recover" ? (
+                <button type="button" className="secondary-button" onClick={onRequestRecoveryCode} disabled={status === "loading"}>
+                  {tt("action_request_recovery_code")}
+                </button>
+              ) : null}
               <button
                 type="button"
                 className="secondary-button"

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 45%
+> Progress: 75%
 > Complexity: Low
 > Theme: Ship rails
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -45,6 +45,7 @@
 - Wave 1: `apps/api/src/mailer.ts` exposes `sendRecoveryCode`, activates from `SMTP_HOST`/`SMTP_PORT`/`SMTP_USER`/`SMTP_PASS`/`MAIL_FROM`, and no-ops without logging the recovery code when SMTP is absent.
 - Wave 1: `buildApp` accepts an injected recovery mailer; tests use a recording fake, so no test opens SMTP.
 - Validation wave 1: `rtk npm run typecheck` passed; `rtk npm test -- apps/api/src/app.admin.test.ts` passed.
+- Wave 2: runtime docs now document Gmail ports; the mailer enables secure mode automatically when `SMTP_PORT=465`.
 
 # AI Context
 - Summary: Minimal SMTP mailer module and configuration

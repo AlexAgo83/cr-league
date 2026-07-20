@@ -33,11 +33,12 @@ export function createProfileActions({
     return null;
   };
 
-  const profileApiErrorMessage = (error: unknown, mode: Exclude<ProfileMode, "choice">) => {
+  const profileApiErrorMessage = (error: unknown, mode: Exclude<ProfileMode, "choice"> | "requestCode") => {
     if (error instanceof TypeError) return tt("status_api_unavailable");
     if (error instanceof ApiError && error.statusCode >= 500) return tt("status_request_failed");
     if (mode === "recover" && error instanceof ApiError && [400, 401, 403, 404].includes(error.statusCode)) return tt("profile_error_recovery_failed");
     if (mode === "create" && error instanceof ApiError && error.statusCode === 409) return tt("profile_error_create_conflict");
+    if (mode === "requestCode") return tt("profile_error_create_failed");
     return mode === "create" ? tt("profile_error_create_failed") : tt("profile_error_recovery_failed");
   };
 
@@ -60,9 +61,27 @@ export function createProfileActions({
       setSavedClaims(claimsFromProfile(session));
       setSetupMode("choice");
       setProfileOpen(false);
-      showStatus(`${tt("status_profile_created")} ${session.recoveryCode ?? ""}`, "info", false);
+      showStatus(`${tt(session.recoveryEmailSent ? "status_profile_created_email_sent" : "status_profile_created")} ${session.recoveryCode ?? ""}`, "info", false);
       openProfileCodeHelp();
     }, undefined, true, (error) => profileApiErrorMessage(error, "create"));
+  };
+
+  const requestRecoveryCode = async () => {
+    const email = profileForm.email.trim();
+    const error = validateProfileForm(email);
+    if (error) {
+      setProfileFormError(error);
+      return;
+    }
+    setProfileFormError(null);
+
+    await run(tt("status_requesting_recovery_code"), async () => {
+      await api("/profiles/recovery-code", {
+        method: "POST",
+        body: JSON.stringify({ email })
+      });
+      showStatus(tt("status_recovery_code_requested"), "info", false);
+    }, undefined, true, (error) => profileApiErrorMessage(error, "requestCode"));
   };
 
   const recoverProfileSession = async () => {
@@ -91,5 +110,5 @@ export function createProfileActions({
     }, undefined, true, (error) => profileApiErrorMessage(error, "recover"));
   };
 
-  return { createProfileSession, recoverProfileSession };
+  return { createProfileSession, recoverProfileSession, requestRecoveryCode };
 }

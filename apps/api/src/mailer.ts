@@ -18,7 +18,7 @@ export function createRecoveryMailer(config: Pick<ApiConfig, "smtp">, log: Pick<
     };
   }
 
-  const transport = nodemailer.createTransport({ host, port, auth: { user, pass } });
+  const transport = nodemailer.createTransport({ host, port, secure: port === 465, auth: { user, pass } });
   return {
     active: true,
     async sendRecoveryCode(email, code) {

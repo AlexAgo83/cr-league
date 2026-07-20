@@ -201,7 +201,7 @@ export function App() {
     setAdminInspecting,
     showStatus
   });
-  const { createProfileSession, recoverProfileSession } = createProfileActions({
+  const { createProfileSession, recoverProfileSession, requestRecoveryCode } = createProfileActions({
     profileForm,
     run,
     tt,
@@ -625,6 +625,7 @@ export function App() {
       setQualifyingPanelOpen={setQualifyingPanelOpen}
       createProfileSession={() => void createProfileSession()}
       recoverProfileSession={() => void recoverProfileSession()}
+      requestRecoveryCode={() => void requestRecoveryCode()}
       createLeague={() => void createLeague()}
       joinLeague={() => void joinLeague()}
       switchLeague={(teamId) => void switchLeague(teamId)}

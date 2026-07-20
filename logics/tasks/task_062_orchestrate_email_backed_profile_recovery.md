@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 45%
+> Progress: 75%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -16,9 +16,9 @@
 # Plan
 - [x] 1. Gate on req_058 item_135 being Done: this chain consumes its code generator, scrypt hashing, and rate limiter; do not start before it lands on main.
 - [x] 2. Build the mailer module and config wiring with the injected fake and both-mode tests.
-- [ ] 3. Wire send-on-create with the sent flag, web copy updates, and failure tolerance.
-- [ ] 4. Add the Prisma cooldown migration, the neutral re-issue endpoint with limiter and cooldown, and the web request-by-email path.
-- [ ] 5. Update docs/runtime-configuration.md with the shipped endpoints and Gmail notes.
+- [x] 3. Wire send-on-create with the sent flag, web copy updates, and failure tolerance.
+- [x] 4. Add the Prisma cooldown migration, the neutral re-issue endpoint with limiter and cooldown, and the web request-by-email path.
+- [x] 5. Update docs/runtime-configuration.md with the shipped endpoints and Gmail notes.
 - [ ] 6. Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout and mark roadmap patch 0.4.1 shipped when released.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
@@ -49,6 +49,8 @@
 - Wave 1 gate: req_058 item_135 had landed; `createRecoveryCode`, scrypt hashing, legacy upgrade, and the in-process recovery limiter are present in `apps/api/src/features/leagues/utils.ts` and `routes.ts`.
 - Wave 1 implementation: added SMTP config, `createRecoveryMailer`, mailer injection, profile-creation email send flag/failure tolerance, `recoveryEmailSentAt` Prisma migration, and neutral `POST /profiles/recovery-code` re-issue with rate limiting and cooldown.
 - Wave 1 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/api/src/app.admin.test.ts`.
+- Wave 2 implementation: web profile creation copy now mentions emailed recovery codes when `recoveryEmailSent` is true; the recover form can request a fresh code by email with neutral copy. `docs/runtime-configuration.md` now lists the shipped profile recovery endpoints and Gmail notes.
+- Wave 2 validation passed: `rtk npm run typecheck`; `rtk npm test -- apps/api/src/app.admin.test.ts`; `rtk npm test -- apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts`.
 
 # AI Context
 - Summary: Orchestrate email-backed profile recovery

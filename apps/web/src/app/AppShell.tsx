@@ -70,6 +70,7 @@ export function AppShell({
   setQualifyingPanelOpen,
   createProfileSession,
   recoverProfileSession,
+  requestRecoveryCode,
   createLeague,
   joinLeague,
   switchLeague,
@@ -140,6 +141,7 @@ export function AppShell({
   setQualifyingPanelOpen: (open: boolean) => void;
   createProfileSession: () => void;
   recoverProfileSession: () => void;
+  requestRecoveryCode: () => void;
   createLeague: () => void;
   joinLeague: () => void;
   switchLeague: (teamId: string) => void;
@@ -186,6 +188,7 @@ export function AppShell({
         setSavedLeagueIndex={setSavedLeagueIndex}
         createProfileSession={createProfileSession}
         recoverProfileSession={recoverProfileSession}
+        requestRecoveryCode={requestRecoveryCode}
         createLeague={createLeague}
         joinLeague={joinLeague}
         switchLeague={switchLeague}

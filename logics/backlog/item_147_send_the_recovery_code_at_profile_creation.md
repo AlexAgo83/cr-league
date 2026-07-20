@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 45%
+> Progress: 75%
 > Complexity: Low
 > Theme: Ship rails
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -45,6 +45,8 @@
 # Implementation Notes
 - Wave 1: `createProfile` calls the injected mailer after the profile exists, returns `recoveryEmailSent`, and keeps profile creation successful when the mailer is inactive or throws.
 - Validation wave 1: `rtk npm run typecheck` passed; `rtk npm test -- apps/api/src/app.admin.test.ts` covers active, inactive, and failing mailers.
+- Wave 2: web creation status uses the emailed-code copy when `recoveryEmailSent` is true; the save-your-code panel remains unchanged.
+- Validation wave 2: `rtk npm test -- apps/web/src/app/App.profile.test.tsx apps/web/src/i18n/index.test.ts` passed.
 
 # AI Context
 - Summary: Send the recovery code at profile creation

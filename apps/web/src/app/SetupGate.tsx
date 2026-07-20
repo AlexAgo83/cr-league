@@ -33,6 +33,7 @@ export function SetupGate({
   setSavedLeagueIndex,
   createProfileSession,
   recoverProfileSession,
+  requestRecoveryCode,
   createLeague,
   joinLeague,
   switchLeague,
@@ -63,6 +64,7 @@ export function SetupGate({
   setSavedLeagueIndex: (updater: (index: number) => number) => void;
   createProfileSession: () => void;
   recoverProfileSession: () => void;
+  requestRecoveryCode: () => void;
   createLeague: () => void;
   joinLeague: () => void;
   switchLeague: (teamId: string) => void;
@@ -80,6 +82,7 @@ export function SetupGate({
           pendingMessage={pendingMessage}
           onCreateProfile={createProfileSession}
           onRecoverProfile={recoverProfileSession}
+          onRequestRecoveryCode={requestRecoveryCode}
           onSetMode={setProfileMode}
           onSetProfileForm={setProfileForm}
           onSetProfileFormError={setProfileFormError}

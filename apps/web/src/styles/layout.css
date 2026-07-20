@@ -2705,13 +2705,13 @@ label small {
 }
 
 .map-trait-overtaking i {
-  background: rgb(103 232 249 / 0.18);
-  color: #67e8f9;
+  background: rgb(255 77 0 / 0.18);
+  color: #ff4d00;
 }
 
 .map-trait-overtaking {
-  --trait-fill: rgb(103 232 249 / 0.32);
-  --trait-tone: #67e8f9;
+  --trait-fill: rgb(255 77 0 / 0.32);
+  --trait-tone: #ff4d00;
 }
 
 .map-trait-energy i {
@@ -7131,7 +7131,7 @@ button.highlight-command:not(:disabled) {
 }
 
 .plan-view .map-trait-overtaking .directive-trait-modifier.bonus {
-  color: #0b7a8f;
+  color: #c53a00;
 }
 
 .directive-trait-modifier.weakness,
@@ -7174,7 +7174,7 @@ button.highlight-command:not(:disabled) {
 }
 
 .plan-view .map-trait-overtaking {
-  --trait-tone: #3a3340;
+  --trait-tone: #c53a00;
 }
 
 .plan-view .map-trait-energy {

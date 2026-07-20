@@ -2,8 +2,8 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 96
-> Confidence: 90
+> Understanding: 97
+> Confidence: 91
 > Progress: 99
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -50,6 +50,7 @@
 - Run scaffold command tests.
 - 2026-07-20 wave 22 full validation: rtk npm test passed (21 files, 172 tests), rtk npm run build passed, and rtk npm run logics:validate passed with 0 blocking issues.
 - 2026-07-20 wave 23 targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed after plan-form and race-derivation extraction.
+- 2026-07-20 wave 24 targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed after App shell, race action, session action, command click, and notification extraction.
 
 # Report
 - Implementation complete.
@@ -76,6 +77,7 @@
 - 2026-07-20 wave 21: continued item_137 by extracting notification and overlay assembly into AppChrome.tsx and apps/web/src/app/AppOverlays.tsx. NotificationStack now owns toast rendering; AppOverlays owns profile/error/directive/qualifying/next-GP/season/settings/restart/onboarding/admin-delete modal composition. App.tsx is now 1042 lines and AppOverlays.tsx is 166 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 - 2026-07-20 wave 22: continued item_137 by extracting local player-claim helpers into apps/web/src/app/claimHelpers.ts. rememberPlayerClaim, withCurrentPlayer, and withoutPlayerClaim now own claim persistence/restoration while App keeps the rejoin side effect and stale-error handling. App.tsx is now 1034 lines and claimHelpers.ts is 22 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile/helpers tests passed.
 - 2026-07-20 wave 23: continued item_137 by extracting persisted plan-form state into apps/web/src/app/usePlanForm.ts and race-derived view-model calculations into apps/web/src/app/useRaceDerivations.ts. App.tsx is now 968 lines; the new files are 39 and 127 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed. Remaining item_137 work: App.tsx still needs a larger app shell/controller split to reach the ~700-line AC.
+- 2026-07-20 wave 24: completed item_137's line-count decomposition target by extracting AppShell.tsx, raceActions.ts, sessionActions.ts, useCommandClicks.ts, and useNotifications.ts. App.tsx is now 658 lines and no extracted app module exceeds 400 lines. Targeted proof: rtk npm run typecheck, rtk npm run lint, and App/App.profile tests passed.
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 5

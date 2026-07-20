@@ -2,9 +2,9 @@
 > From version: 0.3.11
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 96
-> Confidence: 90
-> Progress: 99
+> Understanding: 98
+> Confidence: 92
+> Progress: 100
 > Complexity: Medium
 > Theme: Web architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -54,6 +54,7 @@
 - 2026-07-20 twelfth implementation wave: AppOverlays.tsx owns overlay/modal composition and NotificationStack moved to AppChrome.tsx. App.tsx is 1042 lines; AppOverlays.tsx is 166 lines. AC1 remains open; remaining meaningful work is local-claim/rejoin helpers or deeper controller extraction.
 - 2026-07-20 thirteenth implementation wave: claimHelpers.ts now owns local player-claim persistence and current-player restoration helpers. App.tsx is 1034 lines; claimHelpers.ts is 22 lines. AC1 remains open; reaching ~700 now needs a deeper controller split rather than more helper extraction.
 - 2026-07-20 fourteenth implementation wave: usePlanForm.ts now owns persisted plan-form loading/saving and useRaceDerivations.ts owns the race-derived view model for player team, qualifying state, map plan, result state, and season summaries. App.tsx is now 968 lines; usePlanForm.ts is 39 lines and useRaceDerivations.ts is 127 lines. AC1 remains open; the next useful reduction is extracting the remaining app shell/controller assembly rather than one-off helpers.
+- 2026-07-20 fifteenth implementation wave: AppShell.tsx now owns the setup/game render shell, useCommandClicks.ts and useNotifications.ts own their focused UI state, and raceActions.ts/sessionActions.ts own the remaining setup, directive, qualifying, rejoin, profile, and local-session actions. App.tsx is now 658 lines; extracted app modules remain below 400 lines, so AC1 is met.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`
@@ -74,3 +75,4 @@
 # Validation
 - 2026-07-20 thirteenth implementation wave validation: full suite passed after claimHelpers extraction: rtk npm test, rtk npm run build, and rtk npm run logics:validate.
 - 2026-07-20 fourteenth implementation wave targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed.
+- 2026-07-20 fifteenth implementation wave targeted validation: rtk npm run typecheck, rtk npm run lint, and rtk npm test -- apps/web/src/app/App.test.tsx apps/web/src/app/App.profile.test.tsx passed.

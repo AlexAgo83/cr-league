@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 45%
+> Progress: 55%
 > Complexity: Medium
 > Theme: Test integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-20 implementation: added a POSTGRES_INTEGRATION-gated Vitest file for real Postgres concurrency paths and a CI postgres-integration job using postgres:16 plus prisma migrate deploy. The test covers concurrent qualifying attempts, concurrent resolve claims, and concurrent credit-guarded card purchases. Verified locally with Docker using DATABASE_URL schema=cr_league.
 
 # Links
 - Product brief(s): `prod_022_repo_review_remediation_pass_5_product_brief`

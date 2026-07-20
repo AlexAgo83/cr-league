@@ -54,6 +54,37 @@ jobs:
       - run: npm run db:generate
       - run: npm test -- --coverage ${{ matrix.test_path }}
 
+  postgres-integration:
+    name: Postgres integration
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: cr_league
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/cr_league?schema=cr_league
+      POSTGRES_INTEGRATION: "1"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - run: npm run db:generate
+      - run: npm run db:deploy
+      - run: npm test -- apps/api/src/app.postgres.test.ts
+
   e2e:
     name: E2E
     runs-on: ubuntu-latest
@@ -99,6 +130,7 @@ jobs:
     needs:
       - quality
       - unit
+      - postgres-integration
       - e2e
       - build
     steps:
@@ -106,6 +138,7 @@ jobs:
         run: |
           if [ "${{ needs.quality.result }}" != "success" ] ||
              [ "${{ needs.unit.result }}" != "success" ] ||
+             [ "${{ needs.postgres-integration.result }}" != "success" ] ||
              [ "${{ needs.e2e.result }}" != "success" ] ||
              [ "${{ needs.build.result }}" != "success" ]; then
             echo "A required CI lane failed."

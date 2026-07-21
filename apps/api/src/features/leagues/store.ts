@@ -292,6 +292,7 @@ export async function rejoinLeague(db: Db, input: RejoinLeagueInput = {}) {
     where: { id: input.teamId },
     include: { league: true }
   });
+  // ponytail: plain !== is fine — claim codes are 40-bit random, network timing attack is impractical; use timingSafeEqual only if codes ever get shorter/predictable.
   if (!team || team.claimCode !== input.claimCode) return null;
 
   const state = await getLeagueState(db, team.leagueId, { includeInviteCode: true });
@@ -615,7 +616,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
       decision,
       primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
       secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
-      traits: normalizeRaceTraits(input.traits),
+      // ponytail: qualifying uses the GP's canonical track traits (like bots); client traits are ignored so a team can't tune conditions to favor its own run.
       trackLengthMeters: state.currentGrandPrix.trackLengthMeters,
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
       laps: clampInteger(input.laps, 3, 1, 3)
@@ -981,6 +982,7 @@ async function requireTeamClaim(db: Db, leagueId: string, input: { teamId?: stri
     throw new LeagueRuleError("A valid team claim is required.");
   }
   const team = await db.team.findUnique({ where: { id: input.teamId } });
+  // ponytail: plain !== is fine — 40-bit random claim codes; revisit with timingSafeEqual only if codes get shorter/predictable.
   if (!team || team.leagueId !== leagueId || team.kind !== "human" || team.claimCode !== input.claimCode) {
     throw new LeagueRuleError("A valid team claim is required.");
   }

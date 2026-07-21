@@ -5,9 +5,8 @@ import { sortCardIdsByName, type CardFit, type Translator } from "../app/helpers
 import type { PlanRiskRead } from "../app/raceFlow.js";
 import type { FormState } from "../app/types.js";
 import { AssetImage } from "./AssetImage.js";
-import { CARD_BADGES, CardArtImage, CardStatBadges } from "./CardStatBadges.js";
+import { CARD_BADGES, CardArtImage, CardStatBadges, StatBadges } from "./CardStatBadges.js";
 import { PlanRiskSummary } from "./PlanRiskSummary.js";
-import { VisualIcon } from "./VisualIcon.js";
 
 type TraitStats = {
   grip: number;
@@ -66,12 +65,6 @@ const TRAIT_HINT: Record<TraitKey, TranslationKey> = {
   energy: "circuit_energy_hint"
 };
 
-const BADGE_TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
-  grip: "circuit_grip_short",
-  overtaking: "circuit_overtaking_short",
-  energy: "circuit_energy_short"
-};
-
 // Player-facing read of what each directive choice shifts, mirrored from the race
 // simulation's applyDecision() and expressed on the grip/attack/endurance vocabulary
 // the map already uses. UI hint only — no balance logic lives here.
@@ -98,20 +91,7 @@ const PIT_BADGES: Record<(typeof PIT_STRATEGIES)[number], ImpactBadge[]> = {
 };
 
 function ImpactBadges({ badges, tt }: { badges: ImpactBadge[]; tt: Translator }) {
-  return (
-    <span className="card-stat-badges">
-      {badges.map((entry) => (
-        <span key={`${entry.sign}-${entry.trait}`} className={`card-stat-badge map-trait-${entry.trait} ${entry.sign === "-" ? "weakness" : "bonus"}`}>
-          <i aria-hidden="true">
-            <VisualIcon name={entry.trait} />
-          </i>
-          <span>
-            {entry.sign} {tt(BADGE_TRAIT_LABEL[entry.trait])}
-          </span>
-        </span>
-      ))}
-    </span>
-  );
+  return <span className="card-stat-badges"><StatBadges badges={badges} tt={tt} /></span>;
 }
 
 function DirectiveChoiceArt({ src }: { src: string }) {

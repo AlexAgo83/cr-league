@@ -362,7 +362,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
-    expect(screen.getByRole("dialog", { name: "Rain Grip" })).toBeTruthy();
+    const sellDialog = screen.getByRole("dialog", { name: "Rain Grip" });
+    expect(sellDialog).toBeTruthy();
+    expect(within(sellDialog).getByRole("heading", { name: "Stats" })).toBeTruthy();
+    expect(sellDialog.querySelector(".card-stat-badges")).toBe(null);
     expect(screen.getByText("Pays off if rain appears around mid-race.")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Buy card" })).toBe(null);
     expect(screen.queryByText("This card will join your garage and can shape your next directive.")).toBe(null);
@@ -376,7 +379,10 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
     fireEvent.click(screen.getByRole("button", { name: /Soft Tires/ }));
-    expect(screen.getByRole("dialog", { name: "Confirm card purchase" })).toBeTruthy();
+    const buyDialog = screen.getByRole("dialog", { name: "Confirm card purchase" });
+    expect(buyDialog).toBeTruthy();
+    expect(within(buyDialog).getByRole("heading", { name: "Stats" })).toBeTruthy();
+    expect(buyDialog.querySelector(".card-stat-badges")).toBe(null);
     expect(screen.getByRole("button", { name: "Buy card" })).toBeTruthy();
     expect(screen.getByText("You do not have enough credits to buy this card yet.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-garage-panel")).toBe("shop");

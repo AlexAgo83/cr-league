@@ -5,7 +5,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, sortCardIdsByName, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { GARAGE_PANEL_KEY, type CardPanel } from "../app/viewPreferences.js";
-import { CardArtImage, CardStatBadges } from "./CardStatBadges.js";
+import { CardArtImage, CardStatBadges, CardStatDetails } from "./CardStatBadges.js";
 import { MapCarSprite } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
@@ -247,7 +247,7 @@ export function GarageView({
               <RewardValue type="credits" value={pendingBuy.price * buyQuantity} tt={tt} />
             </strong>
             <small>{tt(`card_fit_${pendingBuy.fit.level}` as TranslationKey)}</small>
-            <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
+            <CardStatDetails cardId={pendingBuy.cardId} tt={tt} />
           </div>
           <p>{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
           <PendingFeedback message={pendingMessage} />
@@ -274,7 +274,7 @@ export function GarageView({
           <div className="garage-buy-card">
             <CardArtImage cardId={viewingCardId} />
             <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>
-            <CardStatBadges cardId={viewingCardId} tt={tt} />
+            <CardStatDetails cardId={viewingCardId} tt={tt} />
           </div>
           <PendingFeedback message={pendingMessage} />
           <div className="modal-actions">

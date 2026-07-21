@@ -26,7 +26,10 @@ export function CardArtImage({ cardId }: { cardId: CardId }) {
   return <AssetImage className="card-cell-art" src={CARD_ART[cardId]} alt="" />;
 }
 
-export const CARD_BADGES: Record<CardId, Array<{ trait: "grip" | "overtaking" | "energy"; sign: "+" | "-"; label: TranslationKey }>> = {
+type StatTrait = "grip" | "overtaking" | "energy";
+export type StatBadge = { trait: StatTrait; sign: "+" | "-"; label: TranslationKey };
+
+export const CARD_BADGES: Record<CardId, StatBadge[]> = {
   rain_grip: [
     { trait: "grip", sign: "+", label: "circuit_grip" },
     { trait: "overtaking", sign: "-", label: "circuit_overtaking" }
@@ -98,25 +101,22 @@ const CARD_STRENGTH_LABEL: Record<CardStrengthBand, TranslationKey> = {
   strong: "card_strength_strong"
 };
 
-const BADGE_TRAIT_LABEL: Record<"grip" | "overtaking" | "energy", TranslationKey> = {
+const BADGE_TRAIT_LABEL: Record<StatTrait, TranslationKey> = {
   grip: "circuit_grip_short",
   overtaking: "circuit_overtaking_short",
   energy: "circuit_energy_short"
 };
 
-const BADGE_TRAIT_HINT: Record<"grip" | "overtaking" | "energy", TranslationKey> = {
+const BADGE_TRAIT_HINT: Record<StatTrait, TranslationKey> = {
   grip: "circuit_grip_hint",
   overtaking: "circuit_overtaking_hint",
   energy: "circuit_energy_hint"
 };
 
-export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator }) {
-  const infoLabel = CARD_INFO_BADGES[cardId];
-  const descriptor = CARD_DESCRIPTORS[cardId];
-
+export function StatBadges({ badges, tt }: { badges: StatBadge[]; tt: Translator }) {
   return (
-    <span className="card-stat-badges">
-      {CARD_BADGES[cardId].map((badge) => {
+    <>
+      {badges.map((badge) => {
         const label = `${badge.sign} ${tt(BADGE_TRAIT_LABEL[badge.trait])}`;
         const title = `${badge.sign} ${tt(badge.label)}. ${tt(BADGE_TRAIT_HINT[badge.trait])}`;
         return (
@@ -127,6 +127,17 @@ export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator 
           </span>
         );
       })}
+    </>
+  );
+}
+
+export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator }) {
+  const infoLabel = CARD_INFO_BADGES[cardId];
+  const descriptor = CARD_DESCRIPTORS[cardId];
+
+  return (
+    <span className="card-stat-badges">
+      <StatBadges badges={CARD_BADGES[cardId]} tt={tt} />
       {infoLabel ? (
         <span className="card-stat-badge card-info-badge">
           <i aria-hidden="true">i</i>
@@ -146,5 +157,25 @@ export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator 
         <span>{tt(descriptor.downsideKey as TranslationKey)}</span>
       </span>
     </span>
+  );
+}
+
+export function CardStatDetails({ cardId, tt }: { cardId: CardId; tt: Translator }) {
+  return (
+    <section className="card-stat-details" aria-label={tt("card_stats_title")}>
+      <h3>{tt("card_stats_title")}</h3>
+      <ul>
+        {CARD_BADGES[cardId].map((badge) => (
+          <li key={`${badge.sign}-${badge.trait}`} className={`map-trait-${badge.trait}`}>
+            <span>
+              <VisualIcon name={badge.trait} />
+              <strong>{tt(badge.label)}</strong>
+            </span>
+            <b>{badge.sign}</b>
+            <small>{tt(BADGE_TRAIT_HINT[badge.trait])}</small>
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }

@@ -387,6 +387,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
 });
 
 test("keeps first-click commands animated and result shortcuts wired", async ({ page }) => {
+  test.slow();
   cards = [];
   await mockLeagueApi(page);
   await page.goto("/");

@@ -40,3 +40,13 @@ Current measurement is below that threshold. The data is meaningful, but the app
 ## Follow-Up Trigger
 
 Reopen lazy route loading when adding a large circuit batch, when the production main chunk grows past the current budget again, or when route geometry crosses the threshold above.
+
+## Addendum - Cannes Houssam Loop
+
+After adding `circuit_cannes_houssam_loop`, the detailed route catalogue remains at 25 modules:
+
+- Route source directory: 324 KB on disk.
+- Route module source bytes: 277,428 bytes across 25 modules and 7,390 lines.
+- Latest Vite production index JS: 694.89 KB, 196.17 KB gzip.
+
+This stays below the lazy-loading trigger of 75 KB route gzip, 30% route source share, or more than 40 detailed route modules.

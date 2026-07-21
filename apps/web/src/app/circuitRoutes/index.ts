@@ -1,5 +1,6 @@
 import { route as circuitBrusselsGrandPlaceLoop } from "./circuit_brussels_grand_place_loop.js";
 import { route as circuitCanalLoop } from "./circuit_canal_loop.js";
+import { route as circuitCannesHoussamLoop } from "./circuit_cannes_houssam_loop.js";
 import { route as circuitCapeTownWaterfrontLoop } from "./circuit_cape_town_waterfront_loop.js";
 import { route as circuitCopenhagenHarborLoop } from "./circuit_copenhagen_harbor_loop.js";
 import { route as circuitDocklandsSprint } from "./circuit_docklands_sprint.js";
@@ -28,6 +29,7 @@ type CircuitRoute = Array<{ lat: number; lng: number }>;
 export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_brussels_grand_place_loop: circuitBrusselsGrandPlaceLoop,
   circuit_canal_loop: circuitCanalLoop,
+  circuit_cannes_houssam_loop: circuitCannesHoussamLoop,
   circuit_cape_town_waterfront_loop: circuitCapeTownWaterfrontLoop,
   circuit_copenhagen_harbor_loop: circuitCopenhagenHarborLoop,
   circuit_docklands_sprint: circuitDocklandsSprint,

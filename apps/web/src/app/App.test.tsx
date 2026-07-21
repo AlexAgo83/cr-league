@@ -759,7 +759,7 @@ describe("App", () => {
     expect(document.querySelector(".replay-map-panel .map-plan-panel")?.textContent).toContain("Current plan");
 
     // Timeline markers carry the key moments and seek on click
-    expect(document.querySelectorAll(".replay-tick").length).toBe(7);
+    expect(document.querySelectorAll(".replay-tick").length).toBe(roundOneCircuit.laps);
     expect(document.querySelectorAll(".replay-weather").length).toBe(5);
     expect(screen.queryByText("dot markers are pace and race moments.")).toBe(null);
     expect(screen.queryByText("cloud icons map to the five race phases.")).toBe(null);

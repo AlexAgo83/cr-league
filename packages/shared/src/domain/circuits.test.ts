@@ -39,6 +39,15 @@ describe("circuit identities", () => {
     ]);
   });
 
+  it("includes Houssam's Cannes street loop", () => {
+    expect(CITY_CIRCUIT_IDENTITIES.find((circuit) => circuit.layoutKey === "circuit_cannes_houssam_loop")).toMatchObject({
+      city: "Cannes",
+      country: "FR",
+      laps: 8,
+      trackLengthMeters: 5530
+    });
+  });
+
   it("adds global city circuits outside the European catalog", () => {
     expect(CITY_CIRCUIT_IDENTITIES.slice(-6).map((circuit) => circuit.city)).toEqual(["Tokyo", "Rio de Janeiro", "Cape Town", "Seoul", "Montreal", "Istanbul"]);
   });

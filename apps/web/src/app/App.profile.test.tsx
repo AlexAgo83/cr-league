@@ -469,7 +469,9 @@ describe("App profile and admin", () => {
       )
     );
     vi.spyOn(window, "confirm").mockReturnValue(true);
-    fireEvent.click(screen.getAllByRole("button", { name: "Clean test data" }).at(0)!);
+    const cleanupButton = screen.getAllByRole("button", { name: "Clean test data" }).at(0)!;
+    await waitFor(() => expect(cleanupButton.disabled).toBe(false));
+    fireEvent.click(cleanupButton);
     await waitFor(() =>
       expect(fetch).toHaveBeenNthCalledWith(
         4,

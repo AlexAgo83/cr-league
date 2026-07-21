@@ -99,6 +99,7 @@ describe("ReportView", () => {
 
     const comparison = container.querySelector(".opponent-config-comparison") as HTMLElement;
     expect(comparison.textContent).toContain("Launch Boost");
+    expect(comparison.textContent).not.toContain("Descriptive comparison only");
   });
 
   it("maps GP event laps to the circuit lap count without using the chrono scale", () => {

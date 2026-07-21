@@ -177,24 +177,26 @@ export function ReportView({
               <p>{tt("report_clean_race")}</p>
             )}
           </section>
-          <OpponentConfigComparison state={state} result={result} playerTeamId={playerTeamId} title={tt("opponent_config_title_report")} tt={tt} />
         </div>
 
-        <section className="panel report-phases">
-          <h3>{tt("report_phases")}</h3>
-          <ol className="report-phases-list" aria-label={tt("report_phases")}>
-            {RACE_SEGMENTS.map((segment, index) => (
-              <li key={segment}>
-                <strong>
-                  {tt("result_replay_phase")} {index + 1}
-                </strong>
-                <span>
-                  <VisualIcon name={result.resolvedWeather[segment]} /> {tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
-                </span>
-              </li>
-            ))}
-          </ol>
-        </section>
+        <div className="report-side-column">
+          <section className="panel report-phases">
+            <h3>{tt("report_phases")}</h3>
+            <ol className="report-phases-list" aria-label={tt("report_phases")}>
+              {RACE_SEGMENTS.map((segment, index) => (
+                <li key={segment}>
+                  <strong>
+                    {tt("result_replay_phase")} {index + 1}
+                  </strong>
+                  <span>
+                    <VisualIcon name={result.resolvedWeather[segment]} /> {tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </section>
+          <OpponentConfigComparison state={state} result={result} playerTeamId={playerTeamId} title={tt("opponent_config_title_report")} tt={tt} />
+        </div>
       </div>
     </div>
   );

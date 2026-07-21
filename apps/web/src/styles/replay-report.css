@@ -509,6 +509,11 @@ button.command-icon-button {
   gap: 16px;
 }
 
+.report-side-column {
+  display: grid;
+  gap: 16px;
+}
+
 .lap-marker {
   align-self: start;
   background: rgb(255 77 0 / 0.12);

@@ -23,7 +23,6 @@ export function OpponentConfigComparison({ state, result = state.currentGrandPri
   return (
     <section className="panel opponent-config-comparison" aria-label={title}>
       <h3>{title}</h3>
-      <p>{tt("opponent_config_body")}</p>
       <div className="opponent-config-table">
         {rows.map(({ decision, cardId, result, teamName }) => (
           <article key={decision.teamId} className="opponent-config-row">

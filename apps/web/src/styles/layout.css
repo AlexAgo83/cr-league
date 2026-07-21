@@ -1510,6 +1510,15 @@ label small {
   grid-template-columns: repeat(4, minmax(56px, 76px));
 }
 
+.opponent-config-cells .chrono-session-choice {
+  aspect-ratio: auto;
+  background: transparent;
+  border: 0;
+  clip-path: none;
+  min-height: 34px;
+  padding-inline: 2px;
+}
+
 .chrono-session-lap,
 .chrono-session-choice {
   --chrono-cell-accent: rgb(23 21 26 / 0.18);

@@ -147,11 +147,22 @@ export function ProfileMenu({
   );
 }
 
-export function SetupTopbar({ profileMenu, languageSwitcher, onHome }: { profileMenu: ReactNode; languageSwitcher: ReactNode; onHome: () => void }) {
+function BrandLoadingIndicator({ pendingMessage }: { pendingMessage: string | null }) {
+  return pendingMessage ? (
+    <span className="brand-loading-spinner" role="status" title={pendingMessage}>
+      <span className="visually-hidden">{pendingMessage}</span>
+    </span>
+  ) : null;
+}
+
+export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = null, onHome }: { profileMenu: ReactNode; languageSwitcher: ReactNode; pendingMessage?: string | null; onHome: () => void }) {
   return (
     <header className="setup-topbar">
       <button type="button" className="brand brand-button" onClick={onHome}>
-        <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.png" alt="" loading="eager" />
+        <span className="brand-icon-slot">
+          <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.png" alt="" loading="eager" />
+          <BrandLoadingIndicator pendingMessage={pendingMessage} />
+        </span>
         <AssetImage className="brand-wordmark" src="/assets/crl/home-title-league.png" alt={APP_NAME} loading="eager" />
       </button>
       <div className="setup-topbar-actions">{profileMenu ?? languageSwitcher}</div>
@@ -162,6 +173,7 @@ export function SetupTopbar({ profileMenu, languageSwitcher, onHome }: { profile
 export function GameTopbar({
   leagueName,
   gameView,
+  pendingMessage = null,
   profileMenu,
   tt,
   onHome,
@@ -169,6 +181,7 @@ export function GameTopbar({
 }: {
   leagueName: string;
   gameView: GameView;
+  pendingMessage?: string | null;
   profileMenu: ReactNode;
   tt: Translator;
   onHome: () => void;
@@ -177,7 +190,10 @@ export function GameTopbar({
   return (
     <header className="topbar">
       <button type="button" className="brand brand-button" onClick={onHome}>
-        <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.png" alt="" loading="eager" />
+        <span className="brand-icon-slot">
+          <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.png" alt="" loading="eager" />
+          <BrandLoadingIndicator pendingMessage={pendingMessage} />
+        </span>
         <strong>{leagueName}</strong>
       </button>
       <nav className="game-nav" aria-label={tt("cockpit_sections")}>

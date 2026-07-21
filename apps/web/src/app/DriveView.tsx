@@ -6,7 +6,6 @@ import type { LeagueState } from "./types.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { MapPlanPanel } from "../features/MapPlanPanel.js";
 import { Modal } from "../features/Modal.js";
-import { PendingFeedback } from "../features/PendingFeedback.js";
 import { ReplayTower } from "../features/replay/ReplayTower.js";
 import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
 import type { PlanSubscreen } from "./routes.js";
@@ -41,7 +40,6 @@ export function DriveView({
   primaryCommandClass,
   primaryCommand,
   deskState,
-  pendingMessage,
   preferencesResetSignal,
   qualifyingReplayInitialLap,
   setQualifyingPanelOpen,
@@ -72,7 +70,6 @@ export function DriveView({
   primaryCommandClass: string;
   primaryCommand: PrimaryCommand;
   deskState: DeskState;
-  pendingMessage: string | null;
   preferencesResetSignal: number;
   qualifyingReplayInitialLap?: number;
   setQualifyingPanelOpen: (open: boolean) => void;
@@ -236,7 +233,6 @@ export function DriveView({
                   primaryCommandClass={primaryCommandClass}
                   primaryCommand={primaryCommand}
                   deskState={deskState}
-                  pendingMessage={pendingMessage}
                   canRunQualifying={deskState === "prepare" && qualifyingAttemptsLeft > 0}
                   qualifyingCommandClass={`primary-command${qualifyingAttemptsUsed ? "" : " highlight-command"}`}
                   onOpenQualifyingRun={onOpenQualifyingRun}
@@ -430,7 +426,6 @@ function DriveActions({
   primaryCommandClass,
   primaryCommand,
   deskState,
-  pendingMessage,
   canRunQualifying,
   qualifyingCommandClass,
   onOpenQualifyingRun,
@@ -440,7 +435,6 @@ function DriveActions({
   primaryCommandClass: string;
   primaryCommand: PrimaryCommand;
   deskState: DeskState;
-  pendingMessage: string | null;
   canRunQualifying: boolean;
   qualifyingCommandClass: string;
   onOpenQualifyingRun: () => void;
@@ -449,7 +443,6 @@ function DriveActions({
   if (result) {
     return (
       <div className="race-phase-actions map-race-actions">
-        <PendingFeedback className="map-pending-feedback" message={pendingMessage} />
         <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
           {primaryCommand.label}
         </button>
@@ -459,7 +452,6 @@ function DriveActions({
 
   return (
     <div className="race-phase-actions map-race-actions">
-      <PendingFeedback className="map-pending-feedback" message={pendingMessage} />
       {canRunQualifying ? (
         <button className={qualifyingCommandClass} type="button" onClick={onOpenQualifyingRun}>
           {tt("action_qualifying")}

@@ -212,7 +212,7 @@ export function AppShell({
 
   return (
     <main className={isMapScreen ? "app-shell game-shell map-screen" : "app-shell game-shell"}>
-      <GameTopbar leagueName={leagueState.league.name} gameView={gameView} profileMenu={gameProfileMenu} tt={tt} onHome={goHome} onSelectView={selectGameView} />
+      <GameTopbar leagueName={leagueState.league.name} gameView={gameView} pendingMessage={pendingMessage} profileMenu={gameProfileMenu} tt={tt} onHome={goHome} onSelectView={selectGameView} />
 
       <section className="view-container">
         {adminInspecting ? (
@@ -300,7 +300,6 @@ export function AppShell({
             primaryCommandClass={primaryCommandClass}
             primaryCommand={primaryCommand}
             deskState={race.deskState}
-            pendingMessage={pendingMessage}
             preferencesResetSignal={preferencesResetSignal}
             qualifyingReplayInitialLap={qualifyingReplayInitialLap}
             setQualifyingPanelOpen={setQualifyingPanelOpen}

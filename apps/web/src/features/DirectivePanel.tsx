@@ -2,7 +2,7 @@ import { type CSSProperties, useState } from "react";
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { sortCardIdsByName, type CardFit, type Translator } from "../app/helpers.js";
-import type { PlanRiskRead } from "../app/raceFlow.js";
+import type { PlanRecommendation, PlanRiskRead } from "../app/raceFlow.js";
 import type { FormState } from "../app/types.js";
 import { AssetImage } from "./AssetImage.js";
 import { CARD_BADGES, CardArtImage, CardStatBadges, StatBadges } from "./CardStatBadges.js";
@@ -163,7 +163,7 @@ export function DirectivePanel({
   step: DirectiveStep;
   circuitTraits: TraitStats;
   planRiskRead: PlanRiskRead;
-  planRecommendation?: string;
+  planRecommendation?: PlanRecommendation;
   primaryCommand: PrimaryCommand;
   qualifyingRunCount?: number;
   qualifyingAttemptsLeft?: number;
@@ -222,7 +222,26 @@ export function DirectivePanel({
       <header className="directive-heading">
         <span className="section-kicker">{tt("directive_kicker")}</span>
         <h2>{tt("directive_title")}</h2>
-        {planRecommendation ? <p>{planRecommendation}</p> : null}
+        {planRecommendation ? (
+          <dl className="plan-recommendation">
+            <div>
+              <dt>{tt("plan_recommendation_trait_label")}</dt>
+              <dd>{planRecommendation.trait}</dd>
+            </div>
+            <div>
+              <dt>{tt("plan_recommendation_weather_label")}</dt>
+              <dd>{planRecommendation.weather}</dd>
+            </div>
+            <div>
+              <dt>{tt("plan_recommendation_priority_label")}</dt>
+              <dd>{planRecommendation.traitAdvice}</dd>
+            </div>
+            <div>
+              <dt>{tt("plan_recommendation_advice_label")}</dt>
+              <dd>{planRecommendation.weatherAdvice}</dd>
+            </div>
+          </dl>
+        ) : null}
       </header>
 
       <div className="directive-briefing" aria-label={tt("directive_track_read")}>

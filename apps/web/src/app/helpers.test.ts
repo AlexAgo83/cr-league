@@ -365,7 +365,7 @@ describe("buildRaceVerdict", () => {
 
     expect(verdict.outcome).toBe("hold");
     expect(verdict.cause.key).toBe("recap_difference_headline_0");
-    expect(translateLine(verdict.stance, (key, params) => t(key, "en", params))).toContain("held station");
+    expect(translateLine(verdict.stance, (key, params) => t(key, "en", params))).toContain("held position");
   });
 
   it("uses approach as the cause when a quiet race gains positions", () => {

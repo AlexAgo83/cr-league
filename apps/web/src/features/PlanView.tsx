@@ -3,7 +3,7 @@ import { RACE_SEGMENTS, type CardId, type QualifyingRun, type RaceResult } from 
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import type { CardFit, Translator } from "../app/helpers.js";
-import { buildPlanRecommendation, type ChronoReport, type PlanRiskRead } from "../app/raceFlow.js";
+import { buildPlanRecommendationParts, type ChronoReport, type PlanRiskRead } from "../app/raceFlow.js";
 import type { PlanSubscreen } from "../app/routes.js";
 import type { FormState, GameView, LeagueState } from "../app/types.js";
 import { APPROACH_ART, DirectivePanel, PIT_ART, PREPARATION_ART, type DirectiveStep } from "./DirectivePanel.js";
@@ -79,7 +79,7 @@ export function PlanView({
   onOpenQualifyingHistory: (run: QualifyingRun) => void;
   tt: Translator;
 }) {
-  const planRecommendation = buildPlanRecommendation({ circuitTraits, forecastPick, tt });
+  const planRecommendation = buildPlanRecommendationParts({ circuitTraits, forecastPick, tt });
   const activeSubscreen = planSubscreen;
   const reportTitle = `${reportCircuit.city} ${tt(reportCircuit.layoutKey)}`;
   const chronoCardClass = (cardId?: CardId) => `chrono-session-choice type-card${isChronoCardRelevant(cardId, forecastPick) ? "" : " is-faded"}`;

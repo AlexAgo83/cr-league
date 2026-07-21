@@ -20,6 +20,12 @@ export type PlanRiskRead = {
   failureKey: TranslationKey;
   bandKey: TranslationKey;
 };
+export type PlanRecommendation = {
+  trait: string;
+  weather: string;
+  traitAdvice: string;
+  weatherAdvice: string;
+};
 
 const CIRCUIT_TRAITS: CircuitTraitKey[] = ["grip", "overtaking", "energy"];
 const CIRCUIT_TRAIT_LABELS: Record<CircuitTraitKey, TranslationKey> = {
@@ -192,14 +198,28 @@ export function buildPlanRecommendation(input: {
   forecastPick: string;
   tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }) {
+  const recommendation = buildPlanRecommendationParts(input);
+  return input.tt("plan_recommendation", {
+    trait: recommendation.trait,
+    weather: recommendation.weather,
+    traitAdvice: recommendation.traitAdvice,
+    weatherAdvice: recommendation.weatherAdvice
+  });
+}
+
+export function buildPlanRecommendationParts(input: {
+  circuitTraits: Record<CircuitTraitKey, number>;
+  forecastPick: string;
+  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
+}): PlanRecommendation {
   const trait = CIRCUIT_TRAITS.reduce((best, current) => (input.circuitTraits[current] > input.circuitTraits[best] ? current : best), "grip");
   const weather = WEATHER_VALUES.includes(input.forecastPick as Weather) ? (input.forecastPick as Weather) : "dry";
-  return input.tt("plan_recommendation", {
+  return {
     trait: input.tt(CIRCUIT_TRAIT_LABELS[trait]),
     weather: input.tt(`weather_${weather}` as TranslationKey),
     traitAdvice: input.tt(`plan_recommendation_trait_${trait}` as TranslationKey),
     weatherAdvice: input.tt(`plan_recommendation_weather_${weather}` as TranslationKey)
-  });
+  };
 }
 
 function chronoReportSuggestion(

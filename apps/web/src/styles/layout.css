@@ -1423,6 +1423,42 @@ label small {
   gap: 14px;
 }
 
+.plan-recommendation {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 0;
+}
+
+.plan-recommendation div {
+  background: rgb(255 255 255 / 0.06);
+  border: 1px solid rgb(255 255 255 / 0.1);
+  border-radius: 6px;
+  display: grid;
+  gap: 2px;
+  padding: 8px 9px;
+}
+
+.plan-recommendation div:nth-child(n + 3) {
+  grid-column: 1 / -1;
+}
+
+.plan-recommendation dt {
+  color: var(--color-muted);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.plan-recommendation dd {
+  color: var(--color-text);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.25;
+  margin: 0;
+}
+
 .directive-command-row {
   display: grid;
   gap: 10px;

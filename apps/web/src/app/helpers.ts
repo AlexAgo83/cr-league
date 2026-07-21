@@ -268,7 +268,7 @@ function raceDominantCause(
     return {
       key: pickRecapKey("recap_difference_event", variant),
       params: {
-        event: eventReplayText(impactful, names, tt),
+        event: impactful.cardId ? tt(`card_${impactful.cardId}` as TranslationKey) : eventReplayText(impactful, names, tt),
         lap: displayLapForEvent(impactful, maxEventLap(result), circuitLaps),
         segment: tt(`segment_${impactful.segment}` as TranslationKey),
         delta: signedDelta(impactful.positionDelta)

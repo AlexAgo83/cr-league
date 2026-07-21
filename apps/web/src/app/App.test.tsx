@@ -589,7 +589,8 @@ describe("App", () => {
     fireEvent.click(within(document.querySelector(".map-plan-panel") as HTMLElement).getByRole("button", { name: "Edit" }));
     expect(window.location.pathname).toBe("/plan/approach");
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
-    expect(screen.getByText("Plan read:", { exact: false })).toBeTruthy();
+    expect(document.querySelector(".plan-recommendation")).toBeTruthy();
+    expect(screen.getByText("Priority")).toBeTruthy();
     expect(screen.getByText("High-upside plan")).toBeTruthy();
     expect(document.querySelector(".directive-briefing-panel")).toBeTruthy();
     expect(document.querySelector(".directive-selection-panel")).toBeTruthy();
@@ -889,7 +890,7 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
     expect(screen.getByText(/Weather prep fit the race weather/)).toBeTruthy();
-    expect(screen.getByText(/Rain Grip produced/)).toBeTruthy();
+    expect(screen.getByText(/Rain Grip had a visible effect/)).toBeTruthy();
     const nextCircuit = testCircuit(2);
     expect(screen.getAllByText(new RegExp(nextCircuit.title)).length).toBeGreaterThan(0);
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);

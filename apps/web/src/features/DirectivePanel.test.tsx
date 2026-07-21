@@ -51,7 +51,7 @@ describe("DirectivePanel", () => {
 
     const warning = document.querySelector(".directive-lock-note") as HTMLElement;
     expect(warning).not.toBeNull();
-    expect(warning.previousElementSibling?.className).toContain("directive-command-row");
+    expect(warning.previousElementSibling?.className).toContain("plan-risk-summary");
     expect(warning.textContent).toContain("Rain Grip");
     expect(warning.querySelector("strong")?.textContent).toBe("will be consumed when this Grand Prix is launched.");
   });
@@ -62,7 +62,7 @@ describe("DirectivePanel", () => {
     const warning = document.querySelector(".directive-selection-panel > .directive-lock-note") as HTMLElement;
     expect(warning).not.toBeNull();
     expect(warning.textContent).toContain("Rain Grip");
-    expect(warning.previousElementSibling?.className).toContain("directive-command-row");
+    expect(warning.previousElementSibling?.className).toContain("plan-risk-summary");
   });
 
   it("runs the provided primary command from the directive tab", () => {

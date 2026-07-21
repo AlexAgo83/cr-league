@@ -12,7 +12,7 @@ export type HealthStatus = {
   timestamp: string;
 };
 
-export { CARD_DEFINITIONS, type CardDefinition } from "./cards/definitions.js";
+export { CARD_DEFINITIONS, CARD_DESCRIPTORS, type CardDefinition, type CardDescriptor, type CardStrengthBand } from "./cards/definitions.js";
 export { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, seasonCircuitIdentities, type CityCircuitIdentity } from "./domain/circuits.js";
 export * from "./domain/race.js";
 export {

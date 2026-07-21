@@ -6,9 +6,17 @@
 > Related task: `task_078_orchestrate_deterministic_qualifying`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: 2026-07-21 added overview diagram for audit hygiene.
 
 # Overview
 Bring the qualifying/chrono path in line with the deterministic, seeded race simulation so the whole competitive loop is reproducible from stored state, honoring ADR-004 and restoring the chrono-driven learning loop.
+
+```mermaid
+flowchart LR
+  StoredState[Stored state] --> SeededQualifying[Seeded qualifying]
+  SeededQualifying --> ReproducibleGrid[Reproducible grid]
+  ReproducibleGrid --> SeededRace[Seeded race]
+```
 
 # Goals
 - Guarantee reproducible qualifying results from a seed, matching the race engine's determinism.

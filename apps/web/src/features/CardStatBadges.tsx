@@ -1,4 +1,4 @@
-import type { CardId } from "@cr-league/shared";
+import { CARD_DESCRIPTORS, type CardId, type CardStrengthBand } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { Translator } from "../app/helpers.js";
 import { AssetImage } from "./AssetImage.js";
@@ -92,6 +92,12 @@ const CARD_INFO_BADGES: Partial<Record<CardId, TranslationKey>> = {
   calculated_attack: "card_info_rival"
 };
 
+const CARD_STRENGTH_LABEL: Record<CardStrengthBand, TranslationKey> = {
+  weak: "card_strength_weak",
+  medium: "card_strength_medium",
+  strong: "card_strength_strong"
+};
+
 const BADGE_TRAIT_LABEL: Record<"grip" | "overtaking" | "energy", TranslationKey> = {
   grip: "circuit_grip_short",
   overtaking: "circuit_overtaking_short",
@@ -100,6 +106,7 @@ const BADGE_TRAIT_LABEL: Record<"grip" | "overtaking" | "energy", TranslationKey
 
 export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator }) {
   const infoLabel = CARD_INFO_BADGES[cardId];
+  const descriptor = CARD_DESCRIPTORS[cardId];
 
   return (
     <span className="card-stat-badges">
@@ -117,6 +124,18 @@ export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator 
           <span>{tt(infoLabel)}</span>
         </span>
       ) : null}
+      <span className={`card-stat-badge card-info-badge card-strength-${descriptor.strength}`}>
+        <i aria-hidden="true">i</i>
+        <span>{tt(descriptor.conditionKey as TranslationKey)}</span>
+      </span>
+      <span className={`card-stat-badge card-info-badge card-strength-${descriptor.strength}`}>
+        <i aria-hidden="true">i</i>
+        <span>{tt(CARD_STRENGTH_LABEL[descriptor.strength]!)}</span>
+      </span>
+      <span className="card-stat-badge card-info-badge weakness">
+        <i aria-hidden="true">i</i>
+        <span>{tt(descriptor.downsideKey as TranslationKey)}</span>
+      </span>
     </span>
   );
 }

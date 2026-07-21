@@ -1,7 +1,7 @@
 ## req_078_expose_card_trigger_conditions_and_relative_strength_in_plan_and_garage - Expose card trigger conditions and relative strength in plan and garage
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

@@ -1,10 +1,10 @@
 ## item_176_add_a_shared_card_descriptor_condition_strength_band_and_surface_it_in_card_ui - Add a shared card descriptor (condition + strength band) and surface it in card UI
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Race legibility
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -61,3 +61,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_079_orchestrate_card_effect_legibility` was finished via `logics-manager flow finish task` on 2026-07-21.

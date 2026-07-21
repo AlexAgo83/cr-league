@@ -98,12 +98,18 @@ export function GarageView({
   return (
     <div className="garage-grid">
       <section className="panel garage-overview">
-        <div>
-          <span className="section-kicker">{tt("dashboard_garage")}</span>
-          <div className="garage-team-title">
-            <h2>{playerTeam.name}</h2>
-            <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
+        <div className="garage-overview-header">
+          <div>
+            <span className="section-kicker">{tt("dashboard_garage")}</span>
+            <div className="garage-team-title">
+              <h2>{playerTeam.name}</h2>
+              <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
+            </div>
           </div>
+          <span className="garage-credit-summary">
+            <small>{tt("payoff_credits")}</small>
+            <RewardValue type="credits" value={playerTeam.credits} tt={tt} />
+          </span>
         </div>
         <div className="garage-stats">
           <span className="garage-livery-visuals">
@@ -117,10 +123,6 @@ export function GarageView({
                 <span className="garage-car-gradient" aria-hidden="true" />
               </span>
             </span>
-          </span>
-          <span>
-            <small>{tt("payoff_credits")}</small>
-            <RewardValue type="credits" value={playerTeam.credits} tt={tt} />
           </span>
         </div>
       </section>

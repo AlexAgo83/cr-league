@@ -305,6 +305,7 @@ export function AppShell({
             qualifyingReplayInitialLap={qualifyingReplayInitialLap}
             setQualifyingPanelOpen={setQualifyingPanelOpen}
             setQualifyingResult={setQualifyingResult}
+            onOpenQualifyingRun={() => openQualifyingRun({ confirm: true })}
             setPlanSubscreen={setPlanSubscreen}
             setGameView={setGameView}
             markCommandClicked={markCommandClicked}

@@ -553,10 +553,10 @@ describe("App", () => {
     expect(screen.getAllByText(t(roundOneCircuit.layoutKey, "en")).length).toBeGreaterThan(0);
     expect(screen.queryByRole("heading", { name: "Tune the race plan" })).toBe(null);
     expect(screen.getByRole("button", { name: "Plan" })).toBeTruthy();
-    expect(document.querySelector(".race-phase-actions")?.textContent).not.toContain("New chrono");
+    expect([...document.querySelectorAll(".race-phase-actions button")].map((button) => button.textContent)).toEqual(["New chrono", "Send plan"]);
     expect(document.querySelector(".race-phase-actions")?.textContent).not.toContain("Edit plan");
     expect(within(document.querySelector(".map-plan-panel") as HTMLElement).getByRole("button", { name: "Edit" }).className).toContain("map-plan-edit-button");
-    expect(document.querySelectorAll(".race-phase-actions button.highlight-command")).toHaveLength(0);
+    expect(document.querySelectorAll(".race-phase-actions button.highlight-command")).toHaveLength(1);
     fireEvent.click(within(document.querySelector(".map-plan-panel") as HTMLElement).getByRole("button", { name: "Edit" }));
     expect(window.location.pathname).toBe("/plan/approach");
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
@@ -605,8 +605,9 @@ describe("App", () => {
     expect(screen.getAllByText("Chronos", { exact: false }).length).toBeGreaterThan(0);
     expect(screen.getByText("0/3")).toBeTruthy();
     expect(screen.getByText("No chronos")).toBeTruthy();
-    expect(document.querySelector(".race-phase-actions")?.textContent).not.toContain("Review chrono");
-    expect(document.querySelector(".race-phase-actions")?.textContent).not.toContain("New chrono");
+    const mapActions = document.querySelector(".race-phase-actions") as HTMLElement;
+    expect(mapActions.textContent).not.toContain("Review chrono");
+    expect([...mapActions.querySelectorAll("button")].map((button) => button.textContent)).toEqual(["New chrono", "Send plan"]);
 
     // First chrono is launched from the chrono plan screen.
     expect(screen.queryByText("Wait for directives")).toBe(null);
@@ -615,7 +616,7 @@ describe("App", () => {
     expect(screen.getByRole("button", { name: "New chrono" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
     expect(JSON.parse((fetch.mock.calls[1]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123", laps: 3 });
     expect(await screen.findByRole("heading", { name: "Chrono replay" })).toBeTruthy();
@@ -1082,7 +1083,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
 
     expect((await screen.findByRole("status")).textContent).toContain("Running qualifying lap...");
     expect(document.querySelector(".pending-feedback")?.textContent).toContain("Running qualifying lap...");

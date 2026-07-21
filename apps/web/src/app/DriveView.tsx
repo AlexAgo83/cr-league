@@ -46,6 +46,7 @@ export function DriveView({
   qualifyingReplayInitialLap,
   setQualifyingPanelOpen,
   setQualifyingResult,
+  onOpenQualifyingRun,
   setPlanSubscreen,
   setGameView,
   markCommandClicked,
@@ -76,6 +77,7 @@ export function DriveView({
   qualifyingReplayInitialLap?: number;
   setQualifyingPanelOpen: (open: boolean) => void;
   setQualifyingResult: (result: null) => void;
+  onOpenQualifyingRun: () => void;
   setPlanSubscreen: (screen: PlanSubscreen) => void;
   setGameView: (view: "drive" | "plan") => void;
   markCommandClicked: (command: CommandClick) => void;
@@ -235,6 +237,10 @@ export function DriveView({
                   primaryCommand={primaryCommand}
                   deskState={deskState}
                   pendingMessage={pendingMessage}
+                  canRunQualifying={deskState === "prepare" && qualifyingAttemptsLeft > 0}
+                  qualifyingCommandClass={`primary-command${qualifyingAttemptsUsed ? "" : " highlight-command"}`}
+                  onOpenQualifyingRun={onOpenQualifyingRun}
+                  tt={tt}
                 />
               </>
             }
@@ -424,13 +430,21 @@ function DriveActions({
   primaryCommandClass,
   primaryCommand,
   deskState,
-  pendingMessage
+  pendingMessage,
+  canRunQualifying,
+  qualifyingCommandClass,
+  onOpenQualifyingRun,
+  tt
 }: {
   result: RaceResult | null | undefined;
   primaryCommandClass: string;
   primaryCommand: PrimaryCommand;
   deskState: DeskState;
   pendingMessage: string | null;
+  canRunQualifying: boolean;
+  qualifyingCommandClass: string;
+  onOpenQualifyingRun: () => void;
+  tt: Translator;
 }) {
   if (result) {
     return (
@@ -446,6 +460,11 @@ function DriveActions({
   return (
     <div className="race-phase-actions map-race-actions">
       <PendingFeedback className="map-pending-feedback" message={pendingMessage} />
+      {canRunQualifying ? (
+        <button className={qualifyingCommandClass} type="button" onClick={onOpenQualifyingRun}>
+          {tt("action_qualifying")}
+        </button>
+      ) : null}
       {deskState === "prepare" ? (
         <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
           {primaryCommand.label}

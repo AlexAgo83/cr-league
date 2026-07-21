@@ -94,7 +94,6 @@ export function ReplayView({
   towerEntries,
   initialLap,
   preferencesResetSignal = 0,
-  onOpenReport,
   onOpenPlanReport,
   onOpenPlan,
   onClose,
@@ -117,7 +116,6 @@ export function ReplayView({
   towerEntries?: ReplayTowerEntry[];
   initialLap?: number;
   preferencesResetSignal?: number;
-  onOpenReport?: () => void;
   onOpenPlanReport?: () => void;
   onOpenPlan?: () => void;
   onClose?: () => void;
@@ -394,7 +392,6 @@ export function ReplayView({
                 setDriverFocus={setDriverFocus}
                 restart={restart}
                 seek={seek}
-                onOpenReport={replayComplete ? onOpenReport : undefined}
                 onOpenTowerReport={onOpenPlanReport}
                 onOpenPlan={onOpenPlan}
                 onClose={onClose}

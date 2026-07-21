@@ -832,6 +832,7 @@ describe("App", () => {
     expect(document.querySelectorAll(".replay-tower li").length).toBe(resolvedState.currentGrandPrix.result.classification.length);
     expect(document.querySelector(".replay-tower")?.textContent).toContain("Volt Union");
     expect(document.querySelector(".replay-tower")?.textContent).not.toContain("25 pts");
+    expect(document.querySelector(".replay-report-button")).toBe(null);
     expect(screen.queryByRole("button", { name: "Replay" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
     expect(screen.getByRole("button", { name: "Next GP" })).toBeTruthy();

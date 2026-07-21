@@ -25,7 +25,6 @@ export function ResultView({
   preferencesResetSignal,
   showReplayIntro = true,
   onOpenReplay,
-  onOpenReport,
   onOpenPlanReport,
   onOpenPlan,
   onClose,
@@ -42,7 +41,6 @@ export function ResultView({
   preferencesResetSignal?: number;
   showReplayIntro?: boolean;
   onOpenReplay?: () => void;
-  onOpenReport?: () => void;
   onOpenPlanReport?: () => void;
   onOpenPlan?: () => void;
   onClose?: () => void;
@@ -117,7 +115,6 @@ export function ResultView({
               preferencesResetSignal={preferencesResetSignal}
               showIntro={showReplayIntro}
               onClose={onClose}
-              onOpenReport={onOpenReport}
               onOpenPlanReport={onOpenPlanReport}
               onOpenPlan={onOpenPlan}
               closeLabel={tt("action_back_to_race")}

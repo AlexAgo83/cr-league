@@ -143,7 +143,6 @@ export function GameViews({
             preferencesResetSignal={preferencesResetSignal}
             showReplayIntro={!historyReplay}
             onOpenReplay={() => setResultTab("replay")}
-            onOpenReport={() => setResultTab("report")}
             onOpenPlanReport={() => {
               if (historyReplay) closeHistoryReplay();
               setPlanSubscreen("report");

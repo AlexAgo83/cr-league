@@ -2682,6 +2682,17 @@ label small {
   padding: 0;
 }
 
+.race-weather-legend {
+  display: grid;
+  gap: 4px;
+}
+
+.race-weather-legend span {
+  align-items: center;
+  display: inline-flex;
+  gap: 5px;
+}
+
 .race-weather-phase-list li {
   align-items: center;
   border: 1px solid var(--color-border);

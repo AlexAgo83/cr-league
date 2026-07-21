@@ -1,4 +1,5 @@
 import { type KeyboardEvent, type ReactNode, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 const FOCUSABLE_SELECTOR = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
@@ -89,7 +90,7 @@ export function Modal({
     }
   }
 
-  return (
+  return createPortal(
     <div
       className="modal-overlay"
       role="presentation"
@@ -110,6 +111,7 @@ export function Modal({
         ) : null}
         {children}
       </section>
-    </div>
+    </div>,
+    document.body
   );
 }

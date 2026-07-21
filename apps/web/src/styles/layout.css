@@ -2698,14 +2698,19 @@ label small {
 
 .race-weather-legend p {
   display: grid;
-  gap: 4px;
+  gap: 6px;
   margin: 0;
 }
 
-.race-weather-legend span {
+.race-weather-legend p > span {
   align-items: center;
-  display: inline-flex;
-  gap: 5px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 28px minmax(0, 1fr);
+}
+
+.race-weather-legend p > span > :first-child {
+  justify-self: center;
 }
 
 .race-weather-legend .replay-legend-marker {

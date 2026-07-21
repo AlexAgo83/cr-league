@@ -488,8 +488,8 @@
   background: var(--color-accent);
   border-radius: 999px;
   box-shadow: 0 0 8px rgb(255 77 0 / 0.55);
-  height: 5px;
-  width: 5px;
+  height: 7px;
+  width: 7px;
 }
 
 .brand-loading-spinner > span:nth-child(2) {

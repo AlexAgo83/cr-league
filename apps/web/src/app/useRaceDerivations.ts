@@ -30,7 +30,7 @@ export function useRaceDerivations(input: {
   const currentQualifyingResult = qualifyingResult && playerQualifyingRuns.some((run) => run.teamId === qualifyingResult.teamId && run.attempts === qualifyingResult.attempts) ? qualifyingResult : null;
   const replayQualifyingRun = currentQualifyingResult ?? lastQualifyingRun;
   const qualifyingReplayEntries = qualifyingReplayTower(replayQualifyingRun, qualifyingRuns, tt);
-  const qualifyingLeaderboardRuns = playerDecision ? bestQualifyingRuns(qualifyingRuns) : qualifyingRuns;
+  const qualifyingLeaderboardRuns = bestQualifyingRuns(qualifyingRuns);
   const qualifyingLeaderboard = [...qualifyingLeaderboardRuns]
     .sort((left, right) => left.time - right.time)
     .slice(0, 10)

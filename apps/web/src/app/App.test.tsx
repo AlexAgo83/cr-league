@@ -665,10 +665,9 @@ describe("App", () => {
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
     expect(document.querySelector(".map-qualifying-times .position-badge")).toBe(null);
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("#1");
-    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("E1T1");
-    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("75.18s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("E1T2");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).not.toContain("75.18s");
     const chronoCloseButton = await screen.findByRole("button", { name: "Back to stand" });
     expect(chronoCloseButton.className).toContain("replay-close-button");
     expect(chronoCloseButton.querySelector(".replay-close-label")?.textContent).toBe("Back to stand");
@@ -676,8 +675,8 @@ describe("App", () => {
     fireEvent.click(chronoCloseButton);
     expect(screen.queryByRole("heading", { name: "Chrono replay" })).toBe(null);
     expect(screen.getByText("72.42s")).toBeTruthy();
-    expect(screen.getByText("75.18s")).toBeTruthy();
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("E1T2");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).not.toContain("75.18s");
     expect(screen.getByRole("button", { name: "Send plan" }).className).toContain("highlight-command");
     expect(document.querySelector(".race-phase-actions")?.textContent).not.toContain("Review chrono");
     expect(screen.getByRole("heading", { name: "2. Chrono / plan" })).toBeTruthy();

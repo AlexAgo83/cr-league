@@ -1,9 +1,9 @@
 ## req_076_refresh_league_state_when_the_player_returns_to_the_tab - Refresh league state when the player returns to the tab
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Low
 > Theme: Hosted beta responsiveness
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -26,6 +26,13 @@
 - AC3: Successful refresh updates league state without forcing the player back to the drive view, clearing non-conflicting local plan form state, or showing a noisy notification.
 - AC4: Stale/expired claims still use the existing stale-claim handling path and remove only the invalid claim.
 - AC5: Unit tests cover visible-tab refresh, hidden/no-claim skip, and stale-claim handling; build, typecheck, lint, and private-league e2e pass.
+
+# AC Traceability
+- AC1 -> `item_174_refresh_active_league_on_tab_return`. Proof: `GameApp` refreshes active saved claims through `/leagues/rejoin` on visible `visibilitychange`.
+- AC2 -> `item_174_refresh_active_league_on_tab_return`. Proof: tests cover hidden/no-claim/loading skip states; code also skips admin inspection and in-flight refreshes.
+- AC3 -> `item_174_refresh_active_league_on_tab_return`. Proof: silent refresh uses `setDrive: false`, `notify: false`, and `preserveLocalState: true`; focused test keeps Garage open after refresh.
+- AC4 -> `item_174_refresh_active_league_on_tab_return`. Proof: stale 404 refresh errors still flow through `run` and `forgetClaim`, clearing only the invalid active claim.
+- AC5 -> `item_174_refresh_active_league_on_tab_return`. Proof: focused App tests, typecheck, lint, full tests, build, e2e, and Logics validation passed.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

@@ -35,7 +35,7 @@ export function createSessionActions({
   savedClaims: SavedClaim[];
   technicalError: string | null;
   initialStatusText: string;
-  run: (nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify?: boolean) => Promise<void>;
+  run: (nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify?: boolean, errorText?: (error: unknown) => string, closeReplays?: boolean) => Promise<void>;
   tt: (key: TranslationKey) => string;
   setProfileSession: (session: ProfileSession | null) => void;
   setLeagueState: (state: LeagueState | null) => void;
@@ -54,7 +54,7 @@ export function createSessionActions({
   showStatus: (text: string, tone?: NotificationTone, notify?: boolean) => void;
   pushCommandHint: (nextDeskState: "prepare" | "ready" | "resolved") => void;
 }) {
-  async function rejoinClaim(claim: SavedClaim, options: { setDrive: boolean; notify: boolean }) {
+  async function rejoinClaim(claim: SavedClaim, options: { setDrive: boolean; notify: boolean; preserveLocalState?: boolean }) {
     await run(
       tt("status_rejoining_league"),
       async () => {
@@ -71,7 +71,9 @@ export function createSessionActions({
         if (options.setDrive) pushCommandHint("prepare");
       },
       claim.teamId,
-      options.notify
+      options.notify,
+      undefined,
+      !options.preserveLocalState
     );
   }
 

@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { act } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
@@ -10,6 +10,34 @@ import { t } from "../i18n/index.js";
 beforeEach(() => {
   window.history.replaceState(null, "", "/drive");
 });
+
+function setDocumentVisibility(visibilityState: DocumentVisibilityState) {
+  Object.defineProperty(document, "visibilityState", { configurable: true, value: visibilityState });
+}
+
+function saveActiveClaim() {
+  const claim = {
+    teamId: "team_1",
+    claimCode: "CLAIM123",
+    leagueId: "league_1",
+    leagueName: "Office League",
+    leagueCode: "ABC123",
+    teamName: "Volt Union"
+  };
+  localStorage.setItem("cr-league-player-claims", JSON.stringify([claim]));
+  localStorage.setItem("cr-league-active-player-claim", "team_1");
+  localStorage.setItem("cr-league-help-league-intro:league_1", "1");
+  localStorage.setItem("cr-league-help-race:league_1", "1");
+  localStorage.setItem("cr-league-help-garage:league_1", "1");
+}
+
+function staleResponse() {
+  return {
+    ok: false,
+    status: 404,
+    json: async () => ({ message: "Claim expired" })
+  } as Response;
+}
 
 async function openRaceReplayFromFinalClassification() {
   const reportButton = screen
@@ -25,6 +53,7 @@ afterEach(() => {
   vi.restoreAllMocks();
   vi.useRealTimers();
   localStorage.clear();
+  setDocumentVisibility("visible");
   window.history.replaceState(null, "", "/");
 });
 
@@ -177,6 +206,84 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(fetch).toHaveBeenCalledWith("http://localhost:4874/leagues", expect.objectContaining({ method: "POST" }));
+  });
+
+  it("refreshes the active league once when returning to a visible tab", async () => {
+    saveProfile();
+    saveActiveClaim();
+    const refreshedState = { ...baseState, league: { ...baseState.league, name: "Office League Fresh" } };
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(refreshedState));
+
+    render(<App />);
+
+    await screen.findByRole("button", { name: "Stand" });
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    await waitFor(() => expect(document.querySelector(".garage-grid")).toBeTruthy());
+
+    setDocumentVisibility("visible");
+    document.dispatchEvent(new Event("visibilitychange"));
+
+    await screen.findByText("Office League Fresh");
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://localhost:4874/leagues/rejoin",
+      expect.objectContaining({ body: JSON.stringify({ teamId: "team_1", claimCode: "CLAIM123" }) })
+    );
+    expect(document.querySelector(".garage-grid")).toBeTruthy();
+    expect(screen.queryByText("League rejoined.")).toBe(null);
+  });
+
+  it("skips tab-return refresh while hidden, without a claim, or already loading", async () => {
+    saveProfile();
+    let finishQualifying!: (value: Response) => void;
+    const pendingQualifying = new Promise<Response>((resolve) => {
+      finishQualifying = resolve;
+    });
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockReturnValueOnce(pendingQualifying);
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    await screen.findByRole("button", { name: "Stand" });
+    setDocumentVisibility("hidden");
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
+    fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
+    await screen.findByRole("status");
+
+    setDocumentVisibility("visible");
+    document.dispatchEvent(new Event("visibilitychange"));
+    expect(fetch).toHaveBeenCalledTimes(2);
+
+    finishQualifying(response({ state: qualifiedState, run: qualifyingRun, isBest: true }));
+    await screen.findByText("New best qualifying time saved.");
+    cleanup();
+    localStorage.clear();
+    fetch.mockClear();
+
+    render(<App />);
+    document.dispatchEvent(new Event("visibilitychange"));
+
+    expect(fetch).toHaveBeenCalledTimes(0);
+  });
+
+  it("clears a stale active claim on tab-return refresh", async () => {
+    saveProfile();
+    saveActiveClaim();
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(staleResponse());
+
+    render(<App />);
+
+    await screen.findByRole("button", { name: "Stand" });
+    document.dispatchEvent(new Event("visibilitychange"));
+
+    await waitFor(() => expect(localStorage.getItem("cr-league-player-claims")).toBe("[]"));
+    expect(fetch).toHaveBeenCalledTimes(2);
+    expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
   });
 
   it("shows an explicit no-card payoff when no race card was consumed", async () => {

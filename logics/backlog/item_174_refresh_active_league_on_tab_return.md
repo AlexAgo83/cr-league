@@ -1,10 +1,10 @@
 ## item_174_refresh_active_league_on_tab_return - Refresh active league on tab return
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: State freshness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -35,11 +35,16 @@
 - AC5: Tests and build gates pass.
 
 # AC Traceability
-- request-AC1 -> This backlog slice. Proof: AC1: Returning to a visible tab refreshes the active league exactly once per visibility event.
-- request-AC2 -> This backlog slice. Proof: AC2: Hidden/no-active-claim/loading states do not trigger a request.
-- request-AC3 -> This backlog slice. Proof: AC3: Successful refresh is silent and keeps the current view stable.
-- request-AC4 -> This backlog slice. Proof: AC4: Stale claim errors clear the invalid saved claim through existing behavior.
-- request-AC5 -> This backlog slice. Proof: AC5: Tests and build gates pass.
+- request-AC1 -> This backlog slice. Proof: visible-tab `visibilitychange` calls the existing rejoin path for the active saved claim.
+- request-AC2 -> This backlog slice. Proof: tests cover hidden, no-claim, and loading skip states; handler also skips admin inspection and in-flight tab refreshes.
+- request-AC3 -> This backlog slice. Proof: successful refresh uses `preserveLocalState` and a test verifies the Garage view remains open.
+- request-AC4 -> This backlog slice. Proof: stale 404 still clears the invalid active claim through `run`/`forgetClaim`.
+- request-AC5 -> This backlog slice. Proof: focused App tests plus typecheck, lint, full tests, build, and e2e passed.
+
+# Notes
+- No polling, SSE, websocket, service worker, or API contract change was added.
+- Task `task_077_orchestrate_league_state_freshness_on_return` owns closeout validation.
+- Task `task_077_orchestrate_league_state_freshness_on_return` was finished via `logics-manager flow finish task` on 2026-07-21.
 
 # Decision framing
 - Product framing: Not needed

@@ -134,6 +134,11 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const snoozedOnboardingHelp = useRef(new Set<string>());
   const initialProfileSession = useRef(profileSession);
   const initialActiveClaim = useRef(getActiveClaim(savedClaims));
+  const savedClaimsRef = useRef(savedClaims);
+  const statusRef = useRef(status);
+  const adminInspectingRef = useRef(false);
+  const leagueStateRef = useRef(leagueState);
+  const tabRefreshInFlight = useRef(false);
   const onboardingStorageKey = useCallback(
     (topic: OnboardingHelpTopic) => (LEAGUE_SCOPED_HELP_TOPICS.has(topic) && leagueState ? `${ONBOARDING_HELP_KEYS[topic]}:${leagueState.league.id}` : ONBOARDING_HELP_KEYS[topic]),
     [leagueState]
@@ -201,6 +206,22 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   useEffect(() => {
     setSavedLeagueIndex((index) => Math.min(index, Math.max(0, savedClaims.length - 1)));
   }, [savedClaims.length]);
+
+  useEffect(() => {
+    savedClaimsRef.current = savedClaims;
+  }, [savedClaims]);
+
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
+
+  useEffect(() => {
+    adminInspectingRef.current = adminInspecting;
+  }, [adminInspecting]);
+
+  useEffect(() => {
+    leagueStateRef.current = leagueState;
+  }, [leagueState]);
 
   useEffect(() => {
     if (!initialProfileSession.current) return;
@@ -292,6 +313,22 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     showStatus,
     pushCommandHint
   });
+  useEffect(() => {
+    function refreshOnVisible() {
+      if (document.visibilityState !== "visible" || statusRef.current === "loading" || adminInspectingRef.current || tabRefreshInFlight.current) return;
+      if (!leagueStateRef.current?.player) return;
+      const claim = getActiveClaim(savedClaimsRef.current);
+      if (!claim) return;
+
+      tabRefreshInFlight.current = true;
+      void rejoinClaim(claim, { setDrive: false, notify: false, preserveLocalState: true }).finally(() => {
+        tabRefreshInFlight.current = false;
+      });
+    }
+
+    document.addEventListener("visibilitychange", refreshOnVisible);
+    return () => document.removeEventListener("visibilitychange", refreshOnVisible);
+  }, [rejoinClaim]);
   const { createLeague, joinLeague, submitDirective, submitDirectiveConfirmed, openQualifyingRun, openResolveConfirm, openNextGrandPrixConfirm, startQualifyingRunConfirmed } = createRaceActions({
     leagueState,
     profileSession,
@@ -418,8 +455,8 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     await restartLeagueState();
   }
 
-  async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify = true, errorText?: (error: unknown) => string) {
-    closeOpenReplays();
+  async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify = true, errorText?: (error: unknown) => string, closeReplays = true) {
+    if (closeReplays) closeOpenReplays();
     setStatus("loading");
     setMessage(nextMessage);
     if (notify) pushNotification(nextMessage);

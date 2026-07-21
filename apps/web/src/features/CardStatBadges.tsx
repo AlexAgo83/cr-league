@@ -102,9 +102,9 @@ const CARD_STRENGTH_LABEL: Record<CardStrengthBand, TranslationKey> = {
 };
 
 const BADGE_TRAIT_LABEL: Record<StatTrait, TranslationKey> = {
-  grip: "circuit_grip_short",
-  overtaking: "circuit_overtaking_short",
-  energy: "circuit_energy_short"
+  grip: "circuit_grip",
+  overtaking: "circuit_overtaking",
+  energy: "circuit_energy"
 };
 
 const BADGE_TRAIT_HINT: Record<StatTrait, TranslationKey> = {

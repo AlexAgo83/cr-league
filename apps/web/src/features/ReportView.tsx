@@ -118,20 +118,16 @@ export function ReportView({
 
       <div className="report-main-grid">
         <div className="report-content-column">
-          <section className="panel report-phases">
-            <h3>{tt("report_phases")}</h3>
-            <ol className="report-phases-list" aria-label={tt("report_phases")}>
-              {RACE_SEGMENTS.map((segment, index) => (
-                <li key={segment}>
-                  <strong>
-                    {tt("result_replay_phase")} {index + 1}
-                  </strong>
-                  <span>
-                    <VisualIcon name={result.resolvedWeather[segment]} /> {tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
-                  </span>
-                </li>
+          <section className="panel report-side-recap report-main-recap">
+            <h2>{tt("result_recap_title")}</h2>
+            <div className="recap-grid">
+              {recap.map((item) => (
+                <section key={item.title} className={`recap-card ${item.className}`}>
+                  <h3>{item.title}</h3>
+                  <p>{item.body}</p>
+                </section>
               ))}
-            </ol>
+            </div>
           </section>
 
           <section className="panel report-rewards">
@@ -184,16 +180,20 @@ export function ReportView({
           <OpponentConfigComparison state={state} result={result} playerTeamId={playerTeamId} title={tt("opponent_config_title_report")} tt={tt} />
         </div>
 
-        <section className="panel report-side-recap">
-          <h2>{tt("result_recap_title")}</h2>
-          <div className="recap-grid">
-            {recap.map((item) => (
-              <section key={item.title} className={`recap-card ${item.className}`}>
-                <h3>{item.title}</h3>
-                <p>{item.body}</p>
-              </section>
+        <section className="panel report-phases">
+          <h3>{tt("report_phases")}</h3>
+          <ol className="report-phases-list" aria-label={tt("report_phases")}>
+            {RACE_SEGMENTS.map((segment, index) => (
+              <li key={segment}>
+                <strong>
+                  {tt("result_replay_phase")} {index + 1}
+                </strong>
+                <span>
+                  <VisualIcon name={result.resolvedWeather[segment]} /> {tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}
+                </span>
+              </li>
             ))}
-          </div>
+          </ol>
         </section>
       </div>
     </div>

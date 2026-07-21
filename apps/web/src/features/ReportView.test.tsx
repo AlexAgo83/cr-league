@@ -54,9 +54,11 @@ describe("ReportView", () => {
     );
 
     const recap = screen.getByRole("heading", { name: "Race recap" }).closest("section")!;
+    const phases = screen.getByRole("heading", { name: "Race phases" });
     expect(container.querySelector(".report-verdict")).toBe(null);
     expect(recap.textContent).toContain("Verdict:");
     expect(recap.textContent).toContain("Rain Grip");
+    expect(recap.compareDocumentPosition(phases) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
     const tokyo = render(
       <ReportView

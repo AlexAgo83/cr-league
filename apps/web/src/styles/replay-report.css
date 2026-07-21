@@ -560,8 +560,16 @@ button.command-icon-button {
   top: 92px;
 }
 
+.report-main-recap {
+  position: static;
+}
+
 .report-side-recap .recap-grid {
   grid-template-columns: 1fr;
+}
+
+.report-side-recap.report-main-recap .recap-grid {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
 }
 
 .report-key-moments ol,

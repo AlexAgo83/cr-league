@@ -20,6 +20,10 @@ export function OpponentConfigComparison({ state, playerTeamId, title, tt }: { s
       <div className="opponent-config-table">
         {rows.map(({ decision, result, teamName }) => (
           <article key={decision.teamId} className="opponent-config-row">
+            <strong className="opponent-config-team">
+              {result ? <PositionBadge position={result.position} /> : null}
+              <span>{teamName}</span>
+            </strong>
             <div className="chrono-session-setup opponent-config-cells">
               <span className={`chrono-session-choice type-approach approach-${decision.approach}`}>
                 <small>{tt("opponent_config_approach")}</small>
@@ -38,10 +42,6 @@ export function OpponentConfigComparison({ state, playerTeamId, title, tt }: { s
                 <b>{decision.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : tt("card_none")}</b>
               </span>
             </div>
-            <strong className="opponent-config-team">
-              {result ? <PositionBadge position={result.position} /> : null}
-              <span>{teamName}</span>
-            </strong>
           </article>
         ))}
       </div>

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 30%
+> Progress: 32%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -47,6 +47,7 @@
 - 2026-07-21 wave: moved the selected-card consumption warning into the plan risk panel, keeping the warning visible with the risk read instead of burying it inside the card picker.
 - 2026-07-21 wave: moved the Plan primary command below the active configuration choices, so the user reviews the setup list before sending or launching.
 - 2026-07-21 wave: split session history into its own panel attached to the chrono header and restyled opponent configuration rows to reuse the session-history cell language with the team name as the row action.
+- 2026-07-21 wave: removed the leftover chrono header surface strip and changed opponent rows to team-first, two-column configuration cells.
 - Remaining: resolved-weather info modal, card badge wrapping, and badge stat explanations.
 
 # AI Context

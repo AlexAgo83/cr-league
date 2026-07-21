@@ -1382,6 +1382,7 @@ label small {
   display: grid;
   gap: 14px;
   overflow: hidden;
+  padding: 0;
 }
 
 .chrono-report-hero {
@@ -1395,7 +1396,6 @@ label small {
   color: var(--color-text);
   display: grid;
   gap: 14px;
-  margin: -20px -20px 0;
   padding: 20px;
 }
 
@@ -1502,7 +1502,7 @@ label small {
 }
 
 .opponent-config-cells {
-  grid-template-columns: repeat(4, 76px);
+  grid-template-columns: repeat(2, 76px);
 }
 
 .chrono-session-lap,
@@ -3556,15 +3556,16 @@ label small {
 }
 
 .opponent-config-row {
-  grid-template-columns: minmax(84px, 1fr) auto;
+  align-items: start;
+  grid-template-columns: 1fr;
 }
 
 .opponent-config-team {
   align-items: center;
   display: flex;
   gap: 7px;
-  justify-self: end;
-  text-align: right;
+  justify-self: start;
+  text-align: left;
 }
 
 .replay-moment-notification {

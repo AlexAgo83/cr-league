@@ -323,15 +323,15 @@ export function DirectivePanel({
         </fieldset>
       ) : null}
 
-      <button type="button" className="primary-command directive-primary-command" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-        {primaryCommand.label}
-      </button>
       {locked ? (
         <div className="directive-lock-note">
           <strong>{tt("directive_locked_title")}</strong>
           <span>{tt("directive_locked_body")}</span>
         </div>
       ) : null}
+      <button type="button" className="primary-command directive-primary-command" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+        {primaryCommand.label}
+      </button>
     </section>
     </>
   );

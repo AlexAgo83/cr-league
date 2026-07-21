@@ -6,6 +6,7 @@ import { buildPlanRecommendation, type ChronoReport, type PlanRiskRead } from ".
 import type { PlanSubscreen } from "../app/routes.js";
 import type { FormState, GameView, LeagueState } from "../app/types.js";
 import { DirectivePanel, type DirectiveStep } from "./DirectivePanel.js";
+import { OpponentConfigComparison } from "./OpponentConfigComparison.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { lazy, Suspense } from "react";
 
@@ -154,100 +155,103 @@ export function PlanView({
           </>
         )
       ) : activeSubscreen === "chrono" ? (
-        <section className="panel chrono-report-panel" aria-label={tt("chrono_report_title")}>
-          <div className="chrono-report-hero">
-            <header className="chrono-report-header">
-              <div>
-                <span className="section-kicker">{tt("chrono_report_kicker")}</span>
-                <h2>{tt("chrono_report_title")}</h2>
-              </div>
-              <div className="chrono-report-prompt">
-                <p>{chronoReport.suggestion}</p>
-                <button
-                  type="button"
-                  className={`primary-command${chronoReport.best ? "" : " highlight-command"}`}
-                  onClick={() => {
-                    onSetGameView("drive");
-                    onOpenQualifyingRun();
-                  }}
-                  disabled={disabled || qualifyingAttemptsLeft <= 0}
-                >
-                  {tt("action_qualifying")}
-                </button>
-              </div>
-            </header>
-            <div className="chrono-report-stats">
-              <div>
-                <span>{tt("qualifying_best")}</span>
-                <strong>{chronoReport.best ? `${chronoReport.best.time.toFixed(2)}s` : "--"}</strong>
-              </div>
-              <div>
-                <span>{tt("qualifying_result_rank")}</span>
-                <strong>{chronoReport.gridPosition ? <PositionBadge position={chronoReport.gridPosition} /> : chronoReport.gridLabel}</strong>
-              </div>
-              <div>
-                <span>{tt("chrono_report_delta")}</span>
-                <strong>{chronoReport.deltaLabel}</strong>
-              </div>
-              <div>
-                <span>{tt("qualifying_remaining")}</span>
-                <strong>
-                  {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
-                </strong>
+        <>
+          <section className="panel chrono-report-panel" aria-label={tt("chrono_report_title")}>
+            <div className="chrono-report-hero">
+              <header className="chrono-report-header">
+                <div>
+                  <span className="section-kicker">{tt("chrono_report_kicker")}</span>
+                  <h2>{tt("chrono_report_title")}</h2>
+                </div>
+                <div className="chrono-report-prompt">
+                  <p>{chronoReport.suggestion}</p>
+                  <button
+                    type="button"
+                    className={`primary-command${chronoReport.best ? "" : " highlight-command"}`}
+                    onClick={() => {
+                      onSetGameView("drive");
+                      onOpenQualifyingRun();
+                    }}
+                    disabled={disabled || qualifyingAttemptsLeft <= 0}
+                  >
+                    {tt("action_qualifying")}
+                  </button>
+                </div>
+              </header>
+              <div className="chrono-report-stats">
+                <div>
+                  <span>{tt("qualifying_best")}</span>
+                  <strong>{chronoReport.best ? `${chronoReport.best.time.toFixed(2)}s` : "--"}</strong>
+                </div>
+                <div>
+                  <span>{tt("qualifying_result_rank")}</span>
+                  <strong>{chronoReport.gridPosition ? <PositionBadge position={chronoReport.gridPosition} /> : chronoReport.gridLabel}</strong>
+                </div>
+                <div>
+                  <span>{tt("chrono_report_delta")}</span>
+                  <strong>{chronoReport.deltaLabel}</strong>
+                </div>
+                <div>
+                  <span>{tt("qualifying_remaining")}</span>
+                  <strong>
+                    {qualifyingAttemptsLeft}/{qualifyingAttemptLimit}
+                  </strong>
+                </div>
               </div>
             </div>
-          </div>
-          <div className="chrono-report-history">
-            <strong>{tt("chrono_report_history_title")}</strong>
-            {playerQualifyingRuns.length ? (
-              <ol>
-                {[...playerQualifyingRuns]
-                  .sort((left, right) => right.attempts - left.attempts || (right.lap ?? 0) - (left.lap ?? 0))
-                  .map((run) => (
-                    <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run === chronoReport.best ? "best-session" : undefined}>
-                      <div className="chrono-session-setup">
-                        <span className="chrono-session-lap">
-                          <small>
-                            {tt("qualifying_attempt_short")} {run.attempts}
-                          </small>
-                          <b>{tt("qualifying_result_lap_value", { lap: run.lap ?? 1 })}</b>
-                        </span>
-                        <span className={`chrono-session-choice type-approach approach-${run.decision.approach}`}>
-                          <small>{tt("field_approach")}</small>
-                          <b>{tt(`approach_${run.decision.approach}` as TranslationKey)}</b>
-                        </span>
-                        <span className={`chrono-session-choice type-preparation preparation-${run.decision.preparation}`}>
-                          <small>{tt("field_preparation")}</small>
-                          <b>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</b>
-                        </span>
-                        <span className="chrono-session-choice type-pit is-faded">
-                          <small>{tt("field_pit_strategy")}</small>
-                          <b>{tt(`pit_strategy_${run.decision.pitStrategy ?? "standard"}` as TranslationKey)}</b>
-                        </span>
-                        <span className={chronoCardClass(run.decision.cardId)}>
-                          <small>{tt("field_card")}</small>
-                          <b>{run.decision.cardId ? tt(`card_${run.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
-                        </span>
-                      </div>
-                      <em>{run.time.toFixed(2)}s</em>
-                      <button
-                        type="button"
-                        className="secondary-button"
-                        onClick={() => {
-                          onOpenQualifyingHistory(run);
-                          onSetGameView("drive");
-                        }}
-                      >
-                        {tt("action_qualifying_history")}
-                      </button>
-                    </li>
-                  ))}
-              </ol>
-            ) : (
-              <p>{tt("chrono_report_history_empty")}</p>
-            )}
-          </div>
-        </section>
+            <div className="chrono-report-history">
+              <strong>{tt("chrono_report_history_title")}</strong>
+              {playerQualifyingRuns.length ? (
+                <ol>
+                  {[...playerQualifyingRuns]
+                    .sort((left, right) => right.attempts - left.attempts || (right.lap ?? 0) - (left.lap ?? 0))
+                    .map((run) => (
+                      <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run === chronoReport.best ? "best-session" : undefined}>
+                        <div className="chrono-session-setup">
+                          <span className="chrono-session-lap">
+                            <small>
+                              {tt("qualifying_attempt_short")} {run.attempts}
+                            </small>
+                            <b>{tt("qualifying_result_lap_value", { lap: run.lap ?? 1 })}</b>
+                          </span>
+                          <span className={`chrono-session-choice type-approach approach-${run.decision.approach}`}>
+                            <small>{tt("field_approach")}</small>
+                            <b>{tt(`approach_${run.decision.approach}` as TranslationKey)}</b>
+                          </span>
+                          <span className={`chrono-session-choice type-preparation preparation-${run.decision.preparation}`}>
+                            <small>{tt("field_preparation")}</small>
+                            <b>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</b>
+                          </span>
+                          <span className="chrono-session-choice type-pit is-faded">
+                            <small>{tt("field_pit_strategy")}</small>
+                            <b>{tt(`pit_strategy_${run.decision.pitStrategy ?? "standard"}` as TranslationKey)}</b>
+                          </span>
+                          <span className={chronoCardClass(run.decision.cardId)}>
+                            <small>{tt("field_card")}</small>
+                            <b>{run.decision.cardId ? tt(`card_${run.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
+                          </span>
+                        </div>
+                        <em>{run.time.toFixed(2)}s</em>
+                        <button
+                          type="button"
+                          className="secondary-button"
+                          onClick={() => {
+                            onOpenQualifyingHistory(run);
+                            onSetGameView("drive");
+                          }}
+                        >
+                          {tt("action_qualifying_history")}
+                        </button>
+                      </li>
+                    ))}
+                </ol>
+              ) : (
+                <p>{tt("chrono_report_history_empty")}</p>
+              )}
+            </div>
+          </section>
+          {!reportResult ? <OpponentConfigComparison state={state} playerTeamId={playerTeamId} title={tt("opponent_config_title_locked")} tt={tt} /> : null}
+        </>
       ) : (
         <DirectivePanel
           form={form}

@@ -187,6 +187,7 @@ export function DirectivePanel({
 }) {
   const cardChoices = ["", ...sortCardIdsByName(ownedCardIds, tt)] as Array<"" | CardId>;
   const selectedCardLabel = selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none");
+  const selectedCardWarning = selectedCardId ? tt("directive_card_consumption_warning", { card: selectedCardLabel }) : undefined;
   const modifiers = directiveModifiers(form, selectedCardId);
 
   const steps = [
@@ -230,7 +231,7 @@ export function DirectivePanel({
     </section>
 
     <section className="panel directive-panel directive-selection-panel">
-      <PlanRiskSummary read={planRiskRead} tt={tt} />
+      <PlanRiskSummary read={planRiskRead} tt={tt} note={selectedCardWarning} />
       {locked ? (
         <div className="directive-lock-note">
           <strong>{tt("directive_locked_title")}</strong>
@@ -327,7 +328,6 @@ export function DirectivePanel({
               );
             })}
           </div>
-          {selectedCardId ? <p className="directive-lock-note">{tt("directive_card_consumption_warning", { card: selectedCardLabel })}</p> : null}
           {cardLocked ? <p className="directive-lock-note">{tt("directive_card_locked")}</p> : null}
           {ownedCardIds.length ? null : <p className="directive-lock-note">{tt("garage_empty_inventory")}</p>}
         </fieldset>

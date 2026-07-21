@@ -1,10 +1,10 @@
 ## task_084_orchestrate_weather_and_card_stat_readability - Orchestrate weather and card stat readability
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 20%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -13,12 +13,12 @@
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
 
 # Plan
-- [ ] 1. Trace the resolved-weather UI path from ReplayProgress and DriveView before editing.
+- [x] 1. Trace the resolved-weather UI path from ReplayProgress and DriveView before editing.
 - [ ] 2. Move resolved-weather detail into a compact circuit info modal using existing modal patterns.
 - [ ] 3. Adjust shared card badge CSS to wrap to at least two rows in card cells.
 - [ ] 4. Add native localized hover/focus explanations to CardStatBadges using existing stat hint copy.
 - [ ] 5. Run typecheck, focused tests, lint, full tests, build, e2e, and Logics validation.
-- [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
+- [x] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.
 
@@ -43,7 +43,9 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- 2026-07-21 wave: moved pre-race opponent configurations out of Drive and into Plan > Chrono after session history, so comparison lives with chrono learning instead of cluttering the circuit view.
+- 2026-07-21 wave: moved the selected-card consumption warning into the plan risk panel, keeping the warning visible with the risk read instead of burying it inside the card picker.
+- Remaining: resolved-weather info modal, card badge wrapping, and badge stat explanations.
 
 # AI Context
 - Summary: Orchestrate weather and card stat readability

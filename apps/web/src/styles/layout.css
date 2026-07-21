@@ -1846,6 +1846,12 @@ label small {
   font-size: 0.82rem;
 }
 
+.plan-risk-summary .plan-risk-note {
+  border-top: 1px solid rgb(23 21 26 / 0.12);
+  margin-top: 3px;
+  padding-top: 7px;
+}
+
 .plan-risk-safe {
   --plan-risk-accent: #15803d;
 }

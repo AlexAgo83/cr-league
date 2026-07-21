@@ -1,10 +1,10 @@
 ## item_181_move_resolved_weather_details_to_a_circuit_info_modal - Move resolved weather details to a circuit info modal
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 20%
 > Complexity: Low
 > Theme: Race readability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

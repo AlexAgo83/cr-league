@@ -6,9 +6,18 @@
 > Related task: `task_079_orchestrate_card_effect_legibility`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: 2026-07-21 added overview Mermaid diagram.
 
 # Overview
 Make the race readable before making it deeper: expose the objective rules behind cards (and later weather) so a player can predict the direction and rough strength of a choice before committing, without the game ever recommending a choice.
+
+```mermaid
+flowchart LR
+  Rules[Shared card descriptors] --> UI[Plan and garage display]
+  UI --> Player[Player prediction]
+  Player --> Choice[Locked plan choice]
+  Choice --> Replay[Race feedback loop]
+```
 
 # Goals
 - Let a player understand what a card does and when it fires before locking a plan.

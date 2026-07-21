@@ -6,9 +6,18 @@
 > Related task: `task_071_orchestrate_web_view_code_splitting`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: 2026-07-21 added overview Mermaid diagram.
 
 # Overview
 Reduce CR League's initial web payload by lazy-loading secondary application views while keeping the first screen fast, stable, and visually consistent.
+
+```mermaid
+flowchart LR
+  Initial[Initial app shell] --> Lazy[Lazy secondary views]
+  Lazy --> Fallback[Stable loading fallback]
+  Fallback --> Build[Build output measurement]
+  Build --> Handoff[Reusable split pattern]
+```
 
 # Goals
 - Move heavy non-initial views out of the initial JavaScript bundle.

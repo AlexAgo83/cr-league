@@ -241,7 +241,9 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
     return { league, playerClaimCode };
   });
 
-  const state = await getLeagueState(db, league.id, { includeInviteCode: true });
+  const createdState = await getLeagueState(db, league.id, { includeInviteCode: true });
+  if (createdState?.league.fillWithBots) await fillLeagueWithBots(db, createdState);
+  const state = createdState?.league.fillWithBots ? await getLeagueState(db, league.id, { includeInviteCode: true }) : createdState;
   const playerTeam = state?.teams.find((team) => team.kind === "human");
   return state && playerTeam ? withPlayer(state, playerTeam.id, playerClaimCode) : state;
 }

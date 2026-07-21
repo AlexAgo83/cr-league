@@ -227,12 +227,8 @@ describe("api app", () => {
     expect(created.cardShop).toContainEqual({ cardId: "adjustable_wing", price: CARD_PRICES.adjustable_wing });
     expect(readResponse.statusCode).toBe(200);
     expect(readResponse.json().league).toMatchObject({ id: leagueId, name: "Office League" });
-    expect(joinResponse.statusCode).toBe(200);
+    expect(joinResponse.statusCode).toBe(409);
     expect(starterBuyResponse.statusCode).toBe(200);
-    expect(joinResponse.json().teams.find((team: { name: string }) => team.name === "Late Apex").livery).toMatchObject({
-      primary: expect.stringMatching(/^#[0-9a-f]{6}$/i),
-      secondary: expect.stringMatching(/^#[0-9a-f]{6}$/i)
-    });
     expect(decisionResponse.statusCode).toBe(200);
     expect(qualifyingResponse.statusCode).toBe(200);
     expect(qualifyingResponse.json()).toMatchObject({
@@ -380,7 +376,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union" }
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
     });
     const created = createResponse.json();
     const leagueId = created.league.id;
@@ -494,7 +490,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union" }
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
     });
     const created = createResponse.json();
     const qualifyingResponse = await app.inject({
@@ -627,7 +623,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union" }
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
     });
     const created = createResponse.json();
     const payload = {
@@ -651,7 +647,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union" }
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
     });
     const created = createResponse.json();
     const botIds = created.teams.filter((team: { kind: string }) => team.kind === "bot").map((team: { id: string }) => team.id);
@@ -757,7 +753,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union" }
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
     });
     const code = createResponse.json().league.code;
 
@@ -1066,7 +1062,7 @@ describe("api app", () => {
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union" }
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
     });
     const created = createResponse.json();
     const joinResponse = await app.inject({

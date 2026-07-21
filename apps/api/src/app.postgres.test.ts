@@ -1,3 +1,4 @@
+import { execFileSync } from "node:child_process";
 import { PrismaClient } from "@prisma/client";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 import { createTestApp } from "./app.testHelpers.js";
@@ -5,12 +6,26 @@ import { restartLeague } from "./features/leagues/store.js";
 import type { Db } from "./features/leagues/types.js";
 
 const run = process.env.POSTGRES_INTEGRATION === "1" ? describe : describe.skip;
+const TEST_DATABASE = process.env.POSTGRES_TEST_DATABASE ?? "cr_league_test";
 
 run("api app postgres integration", () => {
   let prisma: PrismaClient;
 
-  beforeAll(() => {
-    prisma = new PrismaClient();
+  beforeAll(async () => {
+    const { databaseUrl, maintenanceUrl } = testDatabaseUrls();
+    process.env.DATABASE_URL = databaseUrl;
+
+    const bootstrap = new PrismaClient({ datasources: { db: { url: maintenanceUrl } } });
+    await bootstrap.$executeRawUnsafe(`DROP DATABASE IF EXISTS ${quotedTestDatabase()} WITH (FORCE)`);
+    await bootstrap.$executeRawUnsafe(`CREATE DATABASE ${quotedTestDatabase()}`);
+    await bootstrap.$disconnect();
+
+    execFileSync("npx", ["prisma", "migrate", "deploy"], {
+      env: { ...process.env, DATABASE_URL: databaseUrl },
+      stdio: "ignore"
+    });
+
+    prisma = new PrismaClient({ datasources: { db: { url: databaseUrl } } });
   });
 
   beforeEach(async () => {
@@ -18,7 +33,12 @@ run("api app postgres integration", () => {
   });
 
   afterAll(async () => {
+    if (!prisma) return;
     await prisma.$disconnect();
+    const { maintenanceUrl } = testDatabaseUrls();
+    const cleanup = new PrismaClient({ datasources: { db: { url: maintenanceUrl } } });
+    await cleanup.$executeRawUnsafe(`DROP DATABASE IF EXISTS ${quotedTestDatabase()} WITH (FORCE)`);
+    await cleanup.$disconnect();
   });
 
   it("serializes concurrent qualifying attempts against the real row lock", async () => {
@@ -127,6 +147,28 @@ run("api app postgres integration", () => {
     expect(after.grandPrixHistory.map((grandPrix: { id: string }) => grandPrix.id)).toEqual(before.grandPrixHistory.map((grandPrix: { id: string }) => grandPrix.id));
   });
 });
+
+function testDatabaseUrls() {
+  if (TEST_DATABASE === "cr_league") {
+    throw new Error("POSTGRES_TEST_DATABASE must not be the dev database `cr_league`.");
+  }
+  const databaseUrl = process.env.DATABASE_URL;
+  if (!databaseUrl) throw new Error("DATABASE_URL is required for Postgres integration tests.");
+  const url = new URL(databaseUrl);
+  url.pathname = `/${TEST_DATABASE}`;
+  url.searchParams.set("schema", "cr_league");
+  const maintenance = new URL(databaseUrl);
+  maintenance.pathname = "/postgres";
+  maintenance.searchParams.set("schema", "public");
+  return { databaseUrl: url.toString(), maintenanceUrl: maintenance.toString() };
+}
+
+function quotedTestDatabase() {
+  if (!/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(TEST_DATABASE)) {
+    throw new Error("POSTGRES_TEST_DATABASE must be a simple PostgreSQL identifier.");
+  }
+  return `"${TEST_DATABASE}"`;
+}
 
 function dbWithFailingGrandPrixCreate(prisma: PrismaClient): Db {
   return {

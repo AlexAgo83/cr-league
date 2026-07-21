@@ -5,6 +5,7 @@ import type { Translator } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { MapPlanPanel } from "../features/MapPlanPanel.js";
+import { OpponentConfigComparison } from "../features/OpponentConfigComparison.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { ReplayTower } from "../features/replay/ReplayTower.js";
 import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
@@ -216,6 +217,7 @@ export function DriveView({
                     {tt("qualifying_times_title")} {qualifyingAttemptsUsed}/{qualifyingAttemptLimit}
                   </button>
                 )}
+                {!result ? <OpponentConfigComparison state={state} playerTeamId={playerTeam?.id} title={tt("opponent_config_title_locked")} tt={tt} /> : null}
                 <DriveActions
                   result={result}
                   primaryCommandClass={primaryCommandClass}

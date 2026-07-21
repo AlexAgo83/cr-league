@@ -13,6 +13,7 @@ import {
 } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { PositionBadge } from "./PositionBadge.js";
+import { OpponentConfigComparison } from "./OpponentConfigComparison.js";
 import { RewardValue } from "./RewardValue.js";
 import { VisualIcon } from "./VisualIcon.js";
 
@@ -182,6 +183,7 @@ export function ReportView({
               <p>{tt("report_clean_race")}</p>
             )}
           </section>
+          <OpponentConfigComparison state={state} playerTeamId={playerTeamId} title={tt("opponent_config_title_report")} tt={tt} />
         </div>
 
         <section className="panel report-side-recap">

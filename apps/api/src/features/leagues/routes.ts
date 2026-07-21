@@ -7,7 +7,9 @@ import {
   createDemoLeague,
   createProfile,
   getLeagueState,
+  getOpponentConfigComparison,
   joinLeagueByCode,
+  publicLeagueState,
   recoverProfile,
   requestRecoveryCode,
   rejoinLeague,
@@ -19,9 +21,11 @@ import {
   submitQualifyingRun,
   updateLeagueSettings,
   updateTeamLivery,
-  updateTeamName
+  updateTeamName,
+  withPlayer
 } from "./store.js";
 import type { RecoveryMailer } from "../../mailer.js";
+import type { LeagueState } from "./types.js";
 
 const RECOVERY_REQUEST_OK = { ok: true, message: "If a profile exists for this email, a fresh recovery code will be sent." };
 
@@ -119,7 +123,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
   });
 
   app.post("/leagues/rejoin", async (request, reply) => {
-    if (!isRejoinBody(request.body)) {
+    if (!isTeamClaimBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and claim code." });
     }
 
@@ -138,7 +142,24 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
   app.get<{ Params: { leagueId: string } }>("/leagues/:leagueId", async (request, reply) => {
     const state = await getLeagueState(db, request.params.leagueId);
     if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-    return state;
+    return publicLeagueState(state);
+  });
+
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/opponent-configs", async (request, reply) => {
+    if (!isTeamClaimBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and claim code." });
+    }
+
+    try {
+      const comparison = await getOpponentConfigComparison(db, request.params.leagueId, request.body);
+      if (!comparison) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return comparison;
+    } catch (error) {
+      if (error instanceof LeagueRuleError) {
+        return sendLeagueRuleError(reply, error);
+      }
+      throw error;
+    }
   });
 
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/settings", async (request, reply) => {
@@ -149,7 +170,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     try {
       const state = await updateLeagueSettings(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return state;
+      return stateForBody(state, request.body);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -166,7 +187,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     try {
       const state = await buyCard(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return state;
+      return stateForBody(state, request.body);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -183,7 +204,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     try {
       const state = await sellCard(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return state;
+      return stateForBody(state, request.body);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -200,7 +221,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     try {
       const state = await updateTeamLivery(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return state;
+      return stateForBody(state, request.body);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -217,7 +238,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     try {
       const state = await updateTeamName(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return state;
+      return stateForBody(state, request.body);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -234,7 +255,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     try {
       const state = await submitDecision(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return state;
+      return stateForBody(state, request.body);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -251,7 +272,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     try {
       const response = await submitQualifyingRun(db, request.params.leagueId, request.body);
       if (!response?.state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return response;
+      return { ...response, state: stateForBody(response.state, request.body) };
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -267,7 +288,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       }
       const state = await resolveCurrentGrandPrix(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return state;
+      return stateForBody(state, request.body);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -283,7 +304,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       }
       const state = await startNextGrandPrix(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return state;
+      return stateForBody(state, request.body);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -299,7 +320,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     try {
       const state = await restartLeague(db, request.params.leagueId, request.body);
       if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return state;
+      return stateForBody(state, request.body);
     } catch (error) {
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
@@ -347,6 +368,10 @@ function sendLeagueRuleError(reply: FastifyReply, error: LeagueRuleError) {
   return reply.code(error.statusCode).send({ error: label, message: error.message });
 }
 
+function stateForBody(state: LeagueState, body: unknown) {
+  return isTeamClaimBody(body) ? withPlayer(state, body.teamId, body.claimCode) : publicLeagueState(state);
+}
+
 function isCreateProfileBody(value: unknown): value is Parameters<typeof createProfile>[1] {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Record<string, unknown>;
@@ -372,7 +397,7 @@ function isJoinBody(value: unknown): value is Parameters<typeof joinLeagueByCode
   return typeof candidate.code === "string" && typeof candidate.teamName === "string";
 }
 
-function isRejoinBody(value: unknown): value is Parameters<typeof rejoinLeague>[1] {
+function isTeamClaimBody(value: unknown): value is { teamId: string; claimCode: string } {
   if (!value || typeof value !== "object") return false;
 
   const candidate = value as Record<string, unknown>;

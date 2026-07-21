@@ -4,6 +4,68 @@ import { CARD_PRICE, CARD_PRICES, circuitIdentityForRound, circuitSeasonSeed, ra
 import { createTestApp } from "./app.testHelpers.js";
 
 describe("api app", () => {
+  it("gates opponent configuration reveal at the API boundary", async () => {
+    const app = await createTestApp(createMemoryDb());
+    const createdResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Reveal League", teamName: "Volt Union" }
+    });
+    const created = createdResponse.json();
+    const leagueId = created.league.id;
+    const claim = created.player;
+
+    const blocked = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/opponent-configs`,
+      payload: { teamId: claim.teamId, claimCode: claim.claimCode }
+    });
+    const locked = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/decisions`,
+      payload: {
+        teamId: claim.teamId,
+        claimCode: claim.claimCode,
+        approach: "balanced",
+        preparation: "speed"
+      }
+    });
+    const publicRead = await app.inject({ method: "GET", url: `/leagues/${leagueId}` });
+    const revealed = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/opponent-configs`,
+      payload: { teamId: claim.teamId, claimCode: claim.claimCode }
+    });
+    const resolved = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/resolve`,
+      payload: { teamId: claim.teamId, claimCode: claim.claimCode }
+    });
+    const revealedAfterRace = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/opponent-configs`,
+      payload: { teamId: claim.teamId, claimCode: claim.claimCode }
+    });
+
+    await app.close();
+
+    expect(blocked.statusCode).toBe(409);
+    expect(locked.statusCode).toBe(200);
+    expect(locked.json().decisions.length).toBeGreaterThan(1);
+    expect(publicRead.json().decisions).toEqual([]);
+    expect(revealed.statusCode).toBe(200);
+    expect(revealed.json().teams[0]).toMatchObject({
+      teamId: expect.any(String),
+      teamName: expect.any(String),
+      approach: expect.any(String),
+      preparation: expect.any(String),
+      pitStrategy: expect.any(String),
+      result: null
+    });
+    expect(resolved.statusCode).toBe(200);
+    expect(revealedAfterRace.json().teams[0].result).toMatchObject({ position: expect.any(Number), points: expect.any(Number), credits: expect.any(Number) });
+  });
+
   it("creates, updates, and resolves a persisted demo league", async () => {
     const app = await createTestApp(createMemoryDb());
 

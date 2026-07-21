@@ -1,10 +1,10 @@
 ## item_180_add_api_gated_opponent_config_reveal_and_a_comparison_view - Add API-gated opponent config reveal and a comparison view
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: High
 > Theme: Competitive comparison
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -30,6 +30,12 @@
 - AC2: The comparison is descriptive only, legible without color alone, with EN/FR copy.
 - AC3: No simulation, reward, or economy change; existing flows still pass.
 - AC4: Typecheck, test, build, lint, e2e, and logics:validate pass.
+
+# Implementation notes
+- `apps/api/src/features/leagues/store.ts` now filters public decision exposure and provides `getOpponentConfigComparison`.
+- `apps/api/src/features/leagues/routes.ts` adds `/leagues/:leagueId/opponent-configs` and projects league state through player/public visibility.
+- `apps/web/src/features/OpponentConfigComparison.tsx` renders the descriptive comparison from revealed decisions.
+- `DriveView` shows comparison after lock; `ReportView` shows it after the race.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Opponent configs and results are viewable in a comparison after lock and after the race, and blocked before lock (API-enforced), covered by tests.
@@ -59,3 +65,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_083_orchestrate_opponent_config_comparison` was finished via `logics-manager flow finish task` on 2026-07-21.

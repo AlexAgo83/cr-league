@@ -129,6 +129,19 @@ export type ResolveGrandPrixInput = {
   pitLaneProgress?: unknown;
 };
 
+export type OpponentConfigComparison = {
+  grandPrixId: string;
+  teams: Array<{
+    teamId: string;
+    teamName: string;
+    approach: string;
+    preparation: string;
+    pitStrategy: RaceDecision["pitStrategy"];
+    cardId: string | null;
+    result: { position: number; points: number; credits: number } | null;
+  }>;
+};
+
 export type UpdateTeamLiveryInput = {
   teamId?: string;
   claimCode?: string;

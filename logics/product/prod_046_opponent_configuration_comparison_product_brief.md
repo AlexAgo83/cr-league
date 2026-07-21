@@ -1,6 +1,6 @@
 ## prod_046_opponent_configuration_comparison_product_brief - Opponent Configuration Comparison Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_082_show_opponents_configurations_for_comparison_after_lock_and_after_the_race`
 > Related backlog: `item_180_add_api_gated_opponent_config_reveal_and_a_comparison_view`
 > Related task: `task_083_orchestrate_opponent_config_comparison`
@@ -9,6 +9,14 @@
 
 # Overview
 Close the most-requested gap by letting players compare opponents' setups and results objectively, revealed only after commit and after the race, so comparison drives learning without eroding pre-race uncertainty or becoming a recommendation.
+
+```mermaid
+flowchart LR
+  PlayerLock[Player plan locked] --> ApiReveal[API reveal gate]
+  ApiReveal --> Comparison[Opponent comparison]
+  RaceResolved[Race resolved] --> Results[Result fields]
+  Results --> Comparison
+```
 
 # Goals
 - Let players see what setups produced what results across the field.
@@ -27,12 +35,14 @@ Close the most-requested gap by letting players compare opponents' setups and re
 - Out: unrelated workflow docs and implementation of generated tasks.
 
 # Key product decisions
-- Use structured input as the source of truth for generated docs.
-- Keep generated write paths local and repo-bounded.
+- Enforce reveal timing in the league API projection, not only in the client.
+- Keep comparison descriptive: show setup and result fields, no best-setup ranking.
+- Reuse existing decision and classification data; do not change simulation.
 
 # Success signals
-- Generated docs pass lint and audit without broad manual rewrites.
-- Context-pack output can be handed to an implementation agent directly.
+- Public reads do not expose opponent decisions before player lock.
+- Player can compare revealed opponent setups after lock and after race.
+- Typecheck, lint, unit tests, build, e2e, and Logics validation pass.
 
 # References
 - Product back-reference: `req_082_show_opponents_configurations_for_comparison_after_lock_and_after_the_race`

@@ -1,9 +1,9 @@
 ## req_082_show_opponents_configurations_for_comparison_after_lock_and_after_the_race - Show opponents' configurations for comparison after lock and after the race
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 88
 > Complexity: High
 > Theme: Competitive comparison
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -31,6 +31,11 @@
 - AC5: No simulation behavior changes; the feature reads existing decision and classification data.
 - AC6: Unit tests cover the reveal-timing rule (allowed after lock/after race, blocked before) and the view model; existing report/replay/qualifying flows still pass.
 - AC7: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
+
+# Delivery notes
+- Public league state no longer exposes opponent decisions; player-scoped responses reveal opponents only after the player's plan is locked or the race is resolved.
+- A dedicated opponent-config endpoint enforces the reveal rule and returns descriptive rows.
+- The web comparison is reachable after lock on Drive and after the race in Report, with EN/FR copy and no recommendation framing.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

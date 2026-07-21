@@ -102,7 +102,7 @@ export function ResultView({
     <div className="result-view">
       {tab === "report" ? payoffPanel : null}
       <div id={`result-${tab}-panel`}>
-        <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+        <Suspense fallback={null}>
           {tab === "replay" ? (
             <ReplayView
               result={result}

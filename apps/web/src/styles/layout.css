@@ -474,8 +474,10 @@
   border-radius: 999px;
   border-top-color: var(--color-accent);
   height: 24px;
+  pointer-events: none;
   position: absolute;
   width: 24px;
+  z-index: 3;
 }
 
 .visually-hidden {

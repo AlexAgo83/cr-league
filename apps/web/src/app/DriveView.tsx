@@ -91,7 +91,7 @@ export function DriveView({
       <div className="drive-content-column">
         {!result && currentQualifyingResult ? (
           <div className="qualifying-replay-inline drive-map-panel">
-            <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+            <Suspense fallback={null}>
               <ReplayView
                 result={currentQualifyingResult.result}
                 circuit={qualifyingReplayCircuit}

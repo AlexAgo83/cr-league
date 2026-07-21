@@ -100,7 +100,7 @@ export function PlanView({
       {activeSubscreen === "report" ? (
         reportResult ? (
           <div className="plan-gp-report-shell">
-            <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+            <Suspense fallback={null}>
               <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} onOpenReplay={onOpenRaceReplay} replayActionVariant="primary" tt={tt} />
             </Suspense>
           </div>

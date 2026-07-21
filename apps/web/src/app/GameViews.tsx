@@ -128,7 +128,7 @@ export function GameViews({
     <>
       {gameView === "admin" && profileIsAdmin ? adminView : null}
       {gameView === "drive" && visibleResult && !qualifyingReplayOpen ? (
-        <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+        <Suspense fallback={null}>
           <ResultView
             state={state}
             result={visibleResult}
@@ -197,12 +197,12 @@ export function GameViews({
         />
       ) : null}
       {gameView === "championship" ? (
-        <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+        <Suspense fallback={null}>
           <ChampionshipView state={state} playerTeamId={playerTeam?.id} recordTab={championshipRecordTab} onReplayGrandPrix={openHistoryReplay} onOpenSeasonRecap={setSeasonRecapSeason} onSelectRecordTab={setChampionshipRecordTab} tt={tt} />
         </Suspense>
       ) : null}
       {gameView === "garage" ? (
-        <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+        <Suspense fallback={null}>
           <GarageView
             state={state}
             playerTeam={playerTeam}

@@ -1,4 +1,4 @@
-import { type CSSProperties } from "react";
+import { type CSSProperties, useState } from "react";
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { sortCardIdsByName, type CardFit, type Translator } from "../app/helpers.js";
@@ -6,6 +6,8 @@ import type { PlanRiskRead } from "../app/raceFlow.js";
 import type { FormState } from "../app/types.js";
 import { AssetImage } from "./AssetImage.js";
 import { CARD_BADGES, CardArtImage, CardStatBadges, StatBadges } from "./CardStatBadges.js";
+import { Modal } from "./Modal.js";
+import { ModalHero } from "./ModalHero.js";
 import { PlanRiskSummary } from "./PlanRiskSummary.js";
 
 type TraitStats = {
@@ -28,6 +30,7 @@ const PLAN_MARKERS = {
 } as const;
 export type DirectiveStep = "approach" | "preparation" | "pit" | "card";
 export const DIRECTIVE_STEP_KEY = "cr-league-directive-step";
+const CARD_CONSUMPTION_HELP_KEY = "cr-league-card-consumption-help";
 type PrimaryCommand = { label: string; action: () => void | Promise<void>; disabled: boolean };
 
 export const APPROACH_ART: Record<(typeof APPROACHES)[number], string> = {
@@ -176,6 +179,20 @@ export function DirectivePanel({
   const canRunQualifying = Boolean(onQualifying && !locked && qualifyingAttemptsLeft > 0);
   const hasQualifyingRun = qualifyingRunCount > 0;
   const modifiers = directiveModifiers(form, selectedCardId);
+  const [cardHelpOpen, setCardHelpOpen] = useState(false);
+  const [dismissCardHelp, setDismissCardHelp] = useState(false);
+
+  function selectCard(cardId: "" | CardId) {
+    setForm({ ...form, cardId });
+    if (!cardId || localStorage.getItem(CARD_CONSUMPTION_HELP_KEY)) return;
+    setDismissCardHelp(false);
+    setCardHelpOpen(true);
+  }
+
+  function closeCardHelp() {
+    if (dismissCardHelp) localStorage.setItem(CARD_CONSUMPTION_HELP_KEY, "1");
+    setCardHelpOpen(false);
+  }
 
   const steps = [
     { key: "approach" as const, label: tt("field_approach"), value: tt(`approach_${form.approach}` as TranslationKey) },
@@ -186,6 +203,21 @@ export function DirectivePanel({
 
   return (
     <>
+    {cardHelpOpen ? (
+      <Modal label={tt("directive_card_consumption_help_title")} closeLabel={tt("action_close")} showCloseButton onClose={closeCardHelp}>
+        <ModalHero image="/assets/crl/send-plan-modal.png" kicker={tt("field_card")} title={tt("directive_card_consumption_help_title")} />
+        <p>{tt("directive_card_consumption_help_body")}</p>
+        <label className="modal-checkbox">
+          <input type="checkbox" checked={dismissCardHelp} onChange={(event) => setDismissCardHelp(event.currentTarget.checked)} />
+          <span>{tt("directive_card_consumption_help_dismiss")}</span>
+        </label>
+        <div className="actions">
+          <button type="button" onClick={closeCardHelp}>
+            {tt("action_got_it")}
+          </button>
+        </div>
+      </Modal>
+    ) : null}
     <section className="panel directive-panel directive-briefing-panel">
       <header className="directive-heading">
         <span className="section-kicker">{tt("directive_kicker")}</span>
@@ -298,7 +330,7 @@ export function DirectivePanel({
             {cardChoices.map((cardId) => {
               const selected = selectedCardId === cardId;
               return (
-                <button key={cardId || "none"} type="button" className={`${selected ? "choice-card selected" : "choice-card"}${cardId ? " card-art-cell" : ""}`} aria-label={`${tt("field_card")}: ${cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}`} aria-pressed={selected} onClick={() => setForm({ ...form, cardId })} disabled={disabled || cardLocked}>
+                <button key={cardId || "none"} type="button" className={`${selected ? "choice-card selected" : "choice-card"}${cardId ? " card-art-cell" : ""}`} aria-label={`${tt("field_card")}: ${cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}`} aria-pressed={selected} onClick={() => selectCard(cardId)} disabled={disabled || cardLocked}>
                   <span className="plan-choice-title">
                     <PlanCardMarker active={Boolean(cardId)} />
                     <strong>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</strong>

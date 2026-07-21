@@ -2088,6 +2088,13 @@ label small {
   gap: 10px;
 }
 
+.modal-checkbox {
+  align-items: center;
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
 .profile-form-actions,
 .setup-form-actions {
   justify-content: flex-end;

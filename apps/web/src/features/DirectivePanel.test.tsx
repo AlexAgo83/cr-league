@@ -44,6 +44,7 @@ const baseProps = {
 describe("DirectivePanel", () => {
   afterEach(() => {
     cleanup();
+    localStorage.clear();
   });
 
   it("does not show selected-card consumption copy in the plan summary", () => {
@@ -59,6 +60,22 @@ describe("DirectivePanel", () => {
     const notes = [...document.querySelectorAll(".directive-summary-stack > .directive-lock-note")];
     expect(notes.map((note) => note.textContent)).toEqual(["Plan lockedThis directive is sent for the current Grand Prix. Choices stay visible but cannot be changed."]);
     expect(notes[0]?.previousElementSibling?.className).toContain("plan-risk-summary");
+  });
+
+  it("keeps explaining card consumption until the reminder is dismissed", () => {
+    render(<DirectivePanel {...baseProps} selectedCardId="" setForm={vi.fn()} onSelectStep={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Card: Rain Grip" }));
+    expect(screen.getByRole("dialog", { name: "Card committed" }).textContent).toContain("If it is used during the Grand Prix");
+    fireEvent.click(screen.getByRole("button", { name: "Got it" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Card: Rain Grip" }));
+    expect(screen.getByRole("dialog", { name: "Card committed" })).toBeTruthy();
+    fireEvent.click(screen.getByLabelText("Do not show this reminder again."));
+    fireEvent.click(screen.getByRole("button", { name: "Got it" }));
+
+    fireEvent.click(screen.getByRole("button", { name: "Card: Rain Grip" }));
+    expect(screen.queryByRole("dialog", { name: "Card committed" })).toBe(null);
   });
 
   it("runs the provided primary command from the directive tab", () => {

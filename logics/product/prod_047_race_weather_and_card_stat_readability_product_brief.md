@@ -1,8 +1,8 @@
 ## prod_047_race_weather_and_card_stat_readability_product_brief - Race Weather And Card Stat Readability Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability`
-> Related backlog: `item_181_move_resolved_weather_details_to_a_circuit_info_modal`, `item_182_wrap_card_stat_badges_and_add_stat_explanations`
+> Related backlog: `item_181_move_resolved_weather_details_to_a_circuit_info_modal`
 > Related task: `task_084_orchestrate_weather_and_card_stat_readability`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -47,5 +47,5 @@ flowchart LR
 - Card stat badges remain readable in Plan, Inventory, Shop, and card detail surfaces.
 
 # References
-- Product back-reference: `req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability`
+- Product back-reference: `item_181_move_resolved_weather_details_to_a_circuit_info_modal`
 - Task back-reference: `task_084_orchestrate_weather_and_card_stat_readability`

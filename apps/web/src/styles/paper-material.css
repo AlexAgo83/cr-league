@@ -253,8 +253,8 @@
 .plan-view .directive-choice-group .choice-card .card-stat-badges,
 .garage-panel-inventory .card-inventory-button .card-stat-badges,
 .garage-panel-shop .card-shop button .card-stat-badges {
-  flex-wrap: nowrap;
   gap: 3px;
+  min-height: 43px;
 }
 
 .plan-view .choice-card.card-art-cell .card-stat-badge,

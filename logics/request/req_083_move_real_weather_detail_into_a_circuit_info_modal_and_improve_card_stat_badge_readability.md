@@ -1,7 +1,7 @@
 ## req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability - Move real-weather detail into a circuit info modal and improve card stat badge readability
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

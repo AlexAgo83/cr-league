@@ -104,20 +104,29 @@ const BADGE_TRAIT_LABEL: Record<"grip" | "overtaking" | "energy", TranslationKey
   energy: "circuit_energy_short"
 };
 
+const BADGE_TRAIT_HINT: Record<"grip" | "overtaking" | "energy", TranslationKey> = {
+  grip: "circuit_grip_hint",
+  overtaking: "circuit_overtaking_hint",
+  energy: "circuit_energy_hint"
+};
+
 export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator }) {
   const infoLabel = CARD_INFO_BADGES[cardId];
   const descriptor = CARD_DESCRIPTORS[cardId];
 
   return (
     <span className="card-stat-badges">
-      {CARD_BADGES[cardId].map((badge) => (
-        <span key={`${badge.sign}-${badge.trait}`} className={`card-stat-badge map-trait-${badge.trait} ${badge.sign === "-" ? "weakness" : "bonus"}`}>
-          <i aria-hidden="true"><VisualIcon name={badge.trait} /></i>
-          <span>
-            {badge.sign} {tt(BADGE_TRAIT_LABEL[badge.trait])}
+      {CARD_BADGES[cardId].map((badge) => {
+        const label = `${badge.sign} ${tt(BADGE_TRAIT_LABEL[badge.trait])}`;
+        const title = `${badge.sign} ${tt(badge.label)}. ${tt(BADGE_TRAIT_HINT[badge.trait])}`;
+        return (
+          // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- informational stat badges need keyboard focus so native title/ARIA explanations are reachable outside hover.
+          <span key={`${badge.sign}-${badge.trait}`} className={`card-stat-badge map-trait-${badge.trait} ${badge.sign === "-" ? "weakness" : "bonus"}`} title={title} aria-label={title} tabIndex={0}>
+            <i aria-hidden="true"><VisualIcon name={badge.trait} /></i>
+            <span>{label}</span>
           </span>
-        </span>
-      ))}
+        );
+      })}
       {infoLabel ? (
         <span className="card-stat-badge card-info-badge">
           <i aria-hidden="true">i</i>

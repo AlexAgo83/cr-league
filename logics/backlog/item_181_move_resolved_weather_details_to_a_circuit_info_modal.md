@@ -2,9 +2,9 @@
 > From version: 0.3.26
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 100%
+> Understanding: 90
+> Confidence: 85
+> Progress: 100
 > Complexity: Low
 > Theme: Race readability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -35,6 +35,7 @@
 - request-AC3 -> This backlog slice. Proof: AC3: The modal lists start, early, mid, late, and finish weather in EN/FR.
 - request-AC6 -> This backlog slice. Proof: AC4: Existing replay weather markers remain visible and tested.
 - request-AC7 -> This backlog slice. Proof: AC4: Existing replay weather markers remain visible and tested.
+- request-AC5 -> This backlog slice. Evidence needed: Each stat badge has hover/focus accessible explanatory text for Grip, Attack, and Endurance.
 
 # Decision framing
 - Product framing: Not needed
@@ -55,3 +56,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_084_orchestrate_weather_and_card_stat_readability`
+
+# Notes
+- Task `task_084_orchestrate_weather_and_card_stat_readability` was finished via `logics-manager flow finish task` on 2026-07-21.

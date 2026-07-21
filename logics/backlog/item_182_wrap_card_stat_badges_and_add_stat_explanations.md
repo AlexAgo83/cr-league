@@ -1,10 +1,10 @@
 ## item_182_wrap_card_stat_badges_and_add_stat_explanations - Wrap card stat badges and add stat explanations
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 60%
+> Progress: 100%
 > Complexity: Low
 > Theme: Card readability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -54,3 +54,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_084_orchestrate_weather_and_card_stat_readability`
+
+# Notes
+- Task `task_084_orchestrate_weather_and_card_stat_readability` was finished via `logics-manager flow finish task` on 2026-07-21.

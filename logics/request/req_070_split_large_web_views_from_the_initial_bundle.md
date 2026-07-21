@@ -1,7 +1,7 @@
 ## req_070_split_large_web_views_from_the_initial_bundle - Split large web views from the initial bundle
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

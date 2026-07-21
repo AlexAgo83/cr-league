@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, sortCardIdsByName, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
+import { GARAGE_PANEL_KEY, type CardPanel } from "../app/viewPreferences.js";
 import { CardArtImage, CardStatBadges } from "./CardStatBadges.js";
 import { MapCarSprite } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
@@ -12,15 +13,8 @@ import { ModalHero } from "./ModalHero.js";
 import { PendingFeedback } from "./PendingFeedback.js";
 import { RewardValue } from "./RewardValue.js";
 
-export type CardPanel = "team" | "inventory" | "shop";
-export const GARAGE_PANEL_KEY = "cr-league-garage-panel";
 const MAX_PRIMARY_LIVERY_CHANNEL = 120;
 const MIN_SECONDARY_LIVERY_CHANNEL = 150;
-
-export function savedCardPanel(): CardPanel {
-  const saved = localStorage.getItem(GARAGE_PANEL_KEY);
-  return saved === "team" || saved === "shop" ? saved : "inventory";
-}
 
 function boundedLiveryColor(color: string, mode: "primary" | "secondary") {
   return `#${[1, 3, 5].map((index) => {

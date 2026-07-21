@@ -4,12 +4,14 @@ import type { Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import type { TranslationKey } from "../i18n/index.js";
 import type { MapTraitImpacts } from "./CircuitMap.js";
-import { ReplayView } from "./ReplayView.js";
-import { ReportView } from "./ReportView.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
+import { lazy, Suspense } from "react";
 
 export type ResultTab = "replay" | "report";
+
+const ReplayView = lazy(() => import("./ReplayView.js").then((module) => ({ default: module.ReplayView })));
+const ReportView = lazy(() => import("./ReportView.js").then((module) => ({ default: module.ReportView })));
 
 export function ResultView({
   state,
@@ -102,37 +104,39 @@ export function ResultView({
     <div className="result-view">
       {tab === "report" ? payoffPanel : null}
       <div id={`result-${tab}-panel`}>
-        {tab === "replay" ? (
-          <ReplayView
-            result={result}
-            circuit={circuit}
-            playerTeamId={playerTeamId}
-            teamLiveries={teamLiveries}
-            traitImpacts={traitImpacts}
-            planDecisions={planDecisions}
-            planDecision={playerDecision ? { ...playerDecision, cardId: playerDecision.cardId ?? undefined } : undefined}
-            preferencesResetSignal={preferencesResetSignal}
-            showIntro={showReplayIntro}
-            onClose={onClose}
-            onOpenReport={onOpenReport}
-            onOpenPlanReport={onOpenPlanReport}
-            onOpenPlan={onOpenPlan}
-            closeLabel={tt("action_back_to_race")}
-            afterMapContent={payoffPanel}
-            tt={tt}
-          />
-        ) : (
-          <ReportView
-            state={state}
-            result={result}
-            circuit={circuit}
-            playerTeamId={playerTeamId}
-            playerDecision={playerDecision}
-            onOpenReplay={onOpenReplay}
-            onClose={onClose}
-            tt={tt}
-          />
-        )}
+        <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+          {tab === "replay" ? (
+            <ReplayView
+              result={result}
+              circuit={circuit}
+              playerTeamId={playerTeamId}
+              teamLiveries={teamLiveries}
+              traitImpacts={traitImpacts}
+              planDecisions={planDecisions}
+              planDecision={playerDecision ? { ...playerDecision, cardId: playerDecision.cardId ?? undefined } : undefined}
+              preferencesResetSignal={preferencesResetSignal}
+              showIntro={showReplayIntro}
+              onClose={onClose}
+              onOpenReport={onOpenReport}
+              onOpenPlanReport={onOpenPlanReport}
+              onOpenPlan={onOpenPlan}
+              closeLabel={tt("action_back_to_race")}
+              afterMapContent={payoffPanel}
+              tt={tt}
+            />
+          ) : (
+            <ReportView
+              state={state}
+              result={result}
+              circuit={circuit}
+              playerTeamId={playerTeamId}
+              playerDecision={playerDecision}
+              onOpenReplay={onOpenReplay}
+              onClose={onClose}
+              tt={tt}
+            />
+          )}
+        </Suspense>
       </div>
     </div>
   );

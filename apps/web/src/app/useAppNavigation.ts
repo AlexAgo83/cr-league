@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { CHAMPIONSHIP_RECORD_TAB_KEY, savedRecordTab, type ChampionshipRecordTab } from "../features/ChampionshipView.js";
 import { DIRECTIVE_STEP_KEY, savedDirectiveStep, type DirectiveStep } from "../features/DirectivePanel.js";
-import { GARAGE_PANEL_KEY, savedCardPanel, type CardPanel } from "../features/GarageView.js";
 import type { GameView, ProfileSession } from "./types.js";
 import { parseAppRoute, pathForAppRoute, type PlanSubscreen } from "./routes.js";
+import { CHAMPIONSHIP_RECORD_TAB_KEY, GARAGE_PANEL_KEY, savedCardPanel, savedRecordTab, type CardPanel, type ChampionshipRecordTab } from "./viewPreferences.js";
 
 export function useAppNavigation(profileSession: ProfileSession | null, onRouteChange: () => void, activeReplayGrandPrixId?: string) {
   const initialRoute = useMemo(() => parseAppRoute(window.location.pathname), []);

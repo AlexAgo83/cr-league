@@ -6,10 +6,12 @@ import type { LeagueState } from "./types.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { MapPlanPanel } from "../features/MapPlanPanel.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
-import { ReplayView } from "../features/ReplayView.js";
 import { ReplayTower } from "../features/replay/ReplayTower.js";
 import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
 import type { PlanSubscreen } from "./routes.js";
+import { lazy, Suspense } from "react";
+
+const ReplayView = lazy(() => import("../features/ReplayView.js").then((module) => ({ default: module.ReplayView })));
 
 type CommandClick = "qualifying" | "editPlan" | "directive" | "chronoReport" | "launchGrandPrix" | "resultReport" | "nextGrandPrix";
 type DeskState = "prepare" | "ready" | "resolved";
@@ -85,42 +87,44 @@ export function DriveView({
       <div className="drive-content-column">
         {!result && currentQualifyingResult ? (
           <div className="qualifying-replay-inline drive-map-panel">
-            <ReplayView
-              result={currentQualifyingResult.result}
-              circuit={qualifyingReplayCircuit}
-              playerTeamId={playerTeam?.id}
-              teamLiveries={teamLiveries}
-              traitImpacts={directiveTraitImpacts}
-              planDecision={currentQualifyingResult.decision}
-              towerEntries={qualifyingReplayEntries}
-              towerReplacement={
-                <QualifyingTimesPanel
-                  replay
-                  entries={qualifyingLeaderboard}
-                  playerTeamId={playerTeam?.id}
-                  attemptsUsed={qualifyingAttemptsUsed}
-                  attemptLimit={qualifyingAttemptLimit}
-                  onReport={() => {
-                    markCommandClicked("chronoReport");
-                    setPlanSubscreen("chrono");
-                    setGameView("plan");
-                  }}
-                  tt={tt}
-                />
-              }
-              titleKey="qualifying_replay_title"
-              explainerKey="qualifying_replay_explainer"
-              initialLap={qualifyingReplayInitialLap}
-              preferencesResetSignal={preferencesResetSignal}
-              onClose={() => setQualifyingResult(null)}
-              onOpenPlan={() => {
-                markCommandClicked("editPlan");
-                setPlanSubscreen("plan");
-                setGameView("plan");
-              }}
-              closeLabel={tt("action_back_to_race")}
-              tt={tt}
-            />
+            <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+              <ReplayView
+                result={currentQualifyingResult.result}
+                circuit={qualifyingReplayCircuit}
+                playerTeamId={playerTeam?.id}
+                teamLiveries={teamLiveries}
+                traitImpacts={directiveTraitImpacts}
+                planDecision={currentQualifyingResult.decision}
+                towerEntries={qualifyingReplayEntries}
+                towerReplacement={
+                  <QualifyingTimesPanel
+                    replay
+                    entries={qualifyingLeaderboard}
+                    playerTeamId={playerTeam?.id}
+                    attemptsUsed={qualifyingAttemptsUsed}
+                    attemptLimit={qualifyingAttemptLimit}
+                    onReport={() => {
+                      markCommandClicked("chronoReport");
+                      setPlanSubscreen("chrono");
+                      setGameView("plan");
+                    }}
+                    tt={tt}
+                  />
+                }
+                titleKey="qualifying_replay_title"
+                explainerKey="qualifying_replay_explainer"
+                initialLap={qualifyingReplayInitialLap}
+                preferencesResetSignal={preferencesResetSignal}
+                onClose={() => setQualifyingResult(null)}
+                onOpenPlan={() => {
+                  markCommandClicked("editPlan");
+                  setPlanSubscreen("plan");
+                  setGameView("plan");
+                }}
+                closeLabel={tt("action_back_to_race")}
+                tt={tt}
+              />
+            </Suspense>
           </div>
         ) : (
           <CircuitMap

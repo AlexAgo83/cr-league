@@ -743,6 +743,7 @@
   "admin_error_unconfigured": "Les opérations admin ne sont pas configurées sur l'API.",
   "admin_error_forbidden": "Token admin refusé.",
   "status_admin_loading": "Chargement de la console admin...",
+  "status_loading_view": "Chargement de la vue...",
   "status_admin_loaded": "Console admin chargée.",
   "status_admin_resetting_recovery": "Réinitialisation du code recovery...",
   "status_admin_recovery_reset": "Code recovery réinitialisé.",

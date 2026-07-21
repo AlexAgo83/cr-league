@@ -1,7 +1,6 @@
-import type { ChampionshipRecordTab } from "../features/ChampionshipView.js";
 import type { DirectiveStep } from "../features/DirectivePanel.js";
-import type { CardPanel } from "../features/GarageView.js";
 import type { GameView } from "./types.js";
+import type { CardPanel, ChampionshipRecordTab } from "./viewPreferences.js";
 
 export type PlanSubscreen = "plan" | "chrono" | "report";
 

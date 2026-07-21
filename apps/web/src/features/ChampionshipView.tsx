@@ -3,19 +3,12 @@ import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, type CityCircuit } from "../app/circuits.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
+import { CHAMPIONSHIP_RECORD_TAB_KEY, type ChampionshipRecordTab } from "../app/viewPreferences.js";
 import { CircuitMap, analyzeCircuitRoute } from "./CircuitMap.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
-
-export type ChampionshipRecordTab = "standings" | "calendar" | "palmares" | "history";
-export const CHAMPIONSHIP_RECORD_TAB_KEY = "cr-league-championship-record-tab";
-
-export function savedRecordTab(): ChampionshipRecordTab {
-  const saved = localStorage.getItem(CHAMPIONSHIP_RECORD_TAB_KEY);
-  return saved === "standings" || saved === "palmares" || saved === "history" ? saved : "calendar";
-}
 
 export function ChampionshipView({
   state,

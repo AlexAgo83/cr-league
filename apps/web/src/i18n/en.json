@@ -743,6 +743,7 @@
   "admin_error_unconfigured": "Admin operations are not configured on the API.",
   "admin_error_forbidden": "Admin token rejected.",
   "status_admin_loading": "Loading admin console...",
+  "status_loading_view": "Loading view...",
   "status_admin_loaded": "Admin console loaded.",
   "status_admin_resetting_recovery": "Resetting recovery code...",
   "status_admin_recovery_reset": "Recovery code reset.",

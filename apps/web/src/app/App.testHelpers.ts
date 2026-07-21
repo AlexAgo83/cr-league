@@ -30,7 +30,7 @@ export async function closeLeagueIntro() {
 
 export async function expectGarageCode(code: string) {
   fireEvent.click(await screen.findByRole("button", { name: "Garage" }));
-  expect(document.querySelector(".garage-overview")?.textContent).toContain(code);
+  await waitFor(() => expect(document.querySelector(".garage-overview")?.textContent).toContain(code));
 }
 
 export function response(body: unknown) {

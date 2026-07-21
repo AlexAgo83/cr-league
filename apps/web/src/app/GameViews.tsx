@@ -1,18 +1,21 @@
 import type { CardId, QualifyingRun, RaceResult } from "@cr-league/shared";
 import { APP_VERSION } from "@cr-league/shared";
-import type { ReactNode } from "react";
+import { lazy, Suspense, type ReactNode } from "react";
 import type { CityCircuit } from "./circuits.js";
 import type { ChronoReport, PlanRiskRead } from "./raceFlow.js";
 import type { GameView, FormState, LeagueState } from "./types.js";
 import type { CardFit, Translator } from "./helpers.js";
 import { ChangelogView } from "../features/ChangelogView.js";
-import { ChampionshipView, type ChampionshipRecordTab } from "../features/ChampionshipView.js";
 import type { MapTraitImpacts } from "../features/CircuitMap.js";
-import { GarageView, type CardPanel } from "../features/GarageView.js";
 import { PlanView } from "../features/PlanView.js";
 import type { DirectiveStep } from "../features/DirectivePanel.js";
-import { ResultView, type ResultTab } from "../features/ResultView.js";
+import type { ResultTab } from "../features/ResultView.js";
 import type { PlanSubscreen } from "./routes.js";
+import type { CardPanel, ChampionshipRecordTab } from "./viewPreferences.js";
+
+const ChampionshipView = lazy(() => import("../features/ChampionshipView.js").then((module) => ({ default: module.ChampionshipView })));
+const GarageView = lazy(() => import("../features/GarageView.js").then((module) => ({ default: module.GarageView })));
+const ResultView = lazy(() => import("../features/ResultView.js").then((module) => ({ default: module.ResultView })));
 
 export function GameViews({
   gameView,
@@ -127,34 +130,36 @@ export function GameViews({
     <>
       {gameView === "admin" && profileIsAdmin ? adminView : null}
       {gameView === "drive" && visibleResult && !qualifyingReplayOpen ? (
-        <ResultView
-          state={state}
-          result={visibleResult}
-          circuit={visibleResultCircuit}
-          playerTeamId={playerTeam?.id}
-          playerDecision={playerDecision}
-          planDecisions={historyReplay ? [] : state.decisions}
-          tab={resultTab}
-          traitImpacts={replayTraitImpacts}
-          preferencesResetSignal={preferencesResetSignal}
-          showReplayIntro={!historyReplay}
-          onOpenReplay={() => setResultTab("replay")}
-          onOpenReport={() => setResultTab("report")}
-          onOpenPlanReport={() => {
-            if (historyReplay) closeHistoryReplay();
-            setPlanSubscreen("report");
-            setGameView("plan");
-          }}
-          onOpenPlan={() => {
-            setPlanSubscreen("plan");
-            setGameView("plan");
-          }}
-          onClose={() => {
-            if (historyReplay) closeHistoryReplay();
-            else setResultOpen(false);
-          }}
-          tt={tt}
-        />
+        <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+          <ResultView
+            state={state}
+            result={visibleResult}
+            circuit={visibleResultCircuit}
+            playerTeamId={playerTeam?.id}
+            playerDecision={playerDecision}
+            planDecisions={historyReplay ? [] : state.decisions}
+            tab={resultTab}
+            traitImpacts={replayTraitImpacts}
+            preferencesResetSignal={preferencesResetSignal}
+            showReplayIntro={!historyReplay}
+            onOpenReplay={() => setResultTab("replay")}
+            onOpenReport={() => setResultTab("report")}
+            onOpenPlanReport={() => {
+              if (historyReplay) closeHistoryReplay();
+              setPlanSubscreen("report");
+              setGameView("plan");
+            }}
+            onOpenPlan={() => {
+              setPlanSubscreen("plan");
+              setGameView("plan");
+            }}
+            onClose={() => {
+              if (historyReplay) closeHistoryReplay();
+              else setResultOpen(false);
+            }}
+            tt={tt}
+          />
+        </Suspense>
       ) : null}
       {gameView === "plan" ? (
         <PlanView
@@ -195,27 +200,31 @@ export function GameViews({
         />
       ) : null}
       {gameView === "championship" ? (
-        <ChampionshipView state={state} playerTeamId={playerTeam?.id} recordTab={championshipRecordTab} onReplayGrandPrix={openHistoryReplay} onOpenSeasonRecap={setSeasonRecapSeason} onSelectRecordTab={setChampionshipRecordTab} tt={tt} />
+        <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+          <ChampionshipView state={state} playerTeamId={playerTeam?.id} recordTab={championshipRecordTab} onReplayGrandPrix={openHistoryReplay} onOpenSeasonRecap={setSeasonRecapSeason} onSelectRecordTab={setChampionshipRecordTab} tt={tt} />
+        </Suspense>
       ) : null}
       {gameView === "garage" ? (
-        <GarageView
-          state={state}
-          playerTeam={playerTeam}
-          playerResult={playerResult}
-          consumedCardIds={consumedCardIds}
-          ownedCardIds={ownedCardIds}
-          forecastPick={forecastPick}
-          isResolved={isResolved}
-          loading={status === "loading"}
-          pendingMessage={pendingMessage}
-          cardPanel={garagePanel}
-          onBuyCard={buyCard}
-          onSellCard={sellCard}
-          onSelectCardPanel={setGaragePanel}
-          onUpdateLivery={updateLivery}
-          onUpdateTeamName={updateTeamName}
-          tt={tt}
-        />
+        <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+          <GarageView
+            state={state}
+            playerTeam={playerTeam}
+            playerResult={playerResult}
+            consumedCardIds={consumedCardIds}
+            ownedCardIds={ownedCardIds}
+            forecastPick={forecastPick}
+            isResolved={isResolved}
+            loading={status === "loading"}
+            pendingMessage={pendingMessage}
+            cardPanel={garagePanel}
+            onBuyCard={buyCard}
+            onSellCard={sellCard}
+            onSelectCardPanel={setGaragePanel}
+            onUpdateLivery={updateLivery}
+            onUpdateTeamName={updateTeamName}
+            tt={tt}
+          />
+        </Suspense>
       ) : null}
       {gameView === "changelog" ? <ChangelogView currentVersion={APP_VERSION} tt={tt} /> : null}
     </>

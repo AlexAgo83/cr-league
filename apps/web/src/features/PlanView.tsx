@@ -7,7 +7,9 @@ import type { PlanSubscreen } from "../app/routes.js";
 import type { FormState, GameView, LeagueState } from "../app/types.js";
 import { DirectivePanel, type DirectiveStep } from "./DirectivePanel.js";
 import { PositionBadge } from "./PositionBadge.js";
-import { ReportView } from "./ReportView.js";
+import { lazy, Suspense } from "react";
+
+const ReportView = lazy(() => import("./ReportView.js").then((module) => ({ default: module.ReportView })));
 
 export function PlanView({
   cardLocked,
@@ -93,7 +95,9 @@ export function PlanView({
       {activeSubscreen === "report" ? (
         reportResult ? (
           <div className="plan-gp-report-shell">
-            <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} onOpenReplay={onOpenRaceReplay} replayActionVariant="primary" tt={tt} />
+            <Suspense fallback={<p className="pending-feedback" role="status">{tt("status_loading_view")}</p>}>
+              <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} onOpenReplay={onOpenRaceReplay} replayActionVariant="primary" tt={tt} />
+            </Suspense>
           </div>
         ) : (
           <>

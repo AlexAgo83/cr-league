@@ -3,9 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { type AdminLeague, type AdminPagination, type AdminUser, type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
-import { CHAMPIONSHIP_RECORD_TAB_KEY } from "../features/ChampionshipView.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
-import { GARAGE_PANEL_KEY } from "../features/GarageView.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY } from "../features/ReplayView.js";
 import type { ResultTab } from "../features/ResultView.js";
 import { LanguageSwitcher, NotificationStack, ProfileMenu, SetupTopbar } from "./AppChrome.js";
@@ -35,6 +33,7 @@ import { useCommandClicks } from "./useCommandClicks.js";
 import { useNotifications, type Notification } from "./useNotifications.js";
 import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
+import { CHAMPIONSHIP_RECORD_TAB_KEY, GARAGE_PANEL_KEY } from "./viewPreferences.js";
 
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
 const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "race", "plan", "garage"]);

@@ -2,9 +2,7 @@ import type { CardId, QualifyingRun } from "@cr-league/shared";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { GameTopbar } from "./AppChrome.js";
-import type { ChampionshipRecordTab } from "../features/ChampionshipView.js";
 import type { DirectiveStep } from "../features/DirectivePanel.js";
-import type { CardPanel } from "../features/GarageView.js";
 import { DriveView } from "./DriveView.js";
 import { GameViews } from "./GameViews.js";
 import { SetupGate } from "./SetupGate.js";
@@ -13,6 +11,7 @@ import type { PlanSubscreen } from "./routes.js";
 import type { FormState, GameView, LeagueState, ProfileSession } from "./types.js";
 import type { CommandClick } from "./useCommandClicks.js";
 import type { useRaceDerivations } from "./useRaceDerivations.js";
+import type { CardPanel, ChampionshipRecordTab } from "./viewPreferences.js";
 
 type RaceDerivations = ReturnType<typeof useRaceDerivations>;
 type ResultTab = "replay" | "report";

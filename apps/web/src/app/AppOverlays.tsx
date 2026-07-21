@@ -162,6 +162,7 @@ export function AppOverlays({
     <span className="directive-confirm-summary">
       <span>{`${tt("qualifying_confirm_body")} ${tt("qualifying_remaining")} ${qualifyingAttemptsLeft}/${qualifyingAttemptLimit}`}</span>
       <MapPlanPanel className="directive-confirm-plan" decision={currentPlan} tt={tt} />
+      <PlanRiskSummary read={planRiskRead} tt={tt} compact />
     </span>
   );
 

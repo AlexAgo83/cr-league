@@ -1,5 +1,5 @@
 import type { TranslationKey } from "../i18n/index.js";
-import { ApiError, api, claimsFromProfile, storePlayerClaims, storeProfileSession } from "./appStorage.js";
+import { ApiError, api, claimsFromProfile, storePlayerClaims, storeProfileEmail, storeProfileSession } from "./appStorage.js";
 import type { ProfileMode } from "./SetupViews.js";
 import type { ProfileSession } from "./types.js";
 
@@ -80,6 +80,7 @@ export function createProfileActions({
         method: "POST",
         body: JSON.stringify({ email })
       });
+      storeProfileEmail(email);
       showStatus(tt("status_recovery_code_requested"), "info", false);
     }, undefined, true, (error) => profileApiErrorMessage(error, "requestCode"));
   };

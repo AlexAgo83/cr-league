@@ -66,6 +66,15 @@ describe("App profile and admin", () => {
     expect(await screen.findByText("Profile created. We also emailed this recovery code: ABCD1234")).toBeTruthy();
   });
 
+  it("prefills the profile email field from the last local profile email", () => {
+    localStorage.setItem("cr-league-profile-email", "pilot@example.test");
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Create profile/ }));
+    expect((screen.getByLabelText("Email") as HTMLInputElement).value).toBe("pilot@example.test");
+  });
+
   it("requests a fresh recovery code by email from the recover form", async () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ ok: true, message: "If a profile exists for this email, a fresh recovery code will be sent." }));
 

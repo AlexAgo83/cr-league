@@ -16,6 +16,7 @@ import {
   SEASON_RECAP_KEY_PREFIX,
   getActiveClaim,
   loadPlayerClaims,
+  loadProfileEmail,
   loadProfileSession,
   seasonRecapStorageKey,
 } from "./appStorage.js";
@@ -130,7 +131,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
   const [restartConfirmOpen, setRestartConfirmOpen] = useState(false);
   const [form, setForm] = usePlanForm(locale);
-  const [profileForm, setProfileForm] = useState({ email: "", recoveryCode: "" });
+  const [profileForm, setProfileForm] = useState(() => ({ email: loadProfileEmail(), recoveryCode: "" }));
   const [savedClaims, setSavedClaims] = useState(loadPlayerClaims);
   const [savedLeagueIndex, setSavedLeagueIndex] = useState(0);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");

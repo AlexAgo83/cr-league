@@ -86,6 +86,7 @@ export function ProfileSetupView({
                 {tt("field_email")}
                 <input
                   type="email"
+                  autoComplete="email"
                   value={profileForm.email}
                   aria-invalid={profileFormError ? true : undefined}
                   onChange={(event) => {

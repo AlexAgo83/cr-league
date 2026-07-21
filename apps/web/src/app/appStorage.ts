@@ -5,6 +5,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874
 export const PLAYER_CLAIMS_KEY = "cr-league-player-claims";
 export const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
 export const PROFILE_SESSION_KEY = "cr-league-profile-session";
+export const PROFILE_EMAIL_KEY = "cr-league-profile-email";
 export const LANGUAGE_KEY = "cr-league-language";
 export const SEASON_RECAP_KEY_PREFIX = "cr-league-season-recap";
 
@@ -82,12 +83,21 @@ export function loadProfileSession(): ProfileSession | null {
   }
 }
 
+export function loadProfileEmail() {
+  return localStorage.getItem(PROFILE_EMAIL_KEY) ?? "";
+}
+
 export function seasonRecapStorageKey(leagueId: string, season: number) {
   return `${SEASON_RECAP_KEY_PREFIX}:${leagueId}:${season}`;
 }
 
 export function storeProfileSession(session: ProfileSession) {
   localStorage.setItem(PROFILE_SESSION_KEY, JSON.stringify(session));
+  localStorage.setItem(PROFILE_EMAIL_KEY, session.profile.email);
+}
+
+export function storeProfileEmail(email: string) {
+  localStorage.setItem(PROFILE_EMAIL_KEY, email);
 }
 
 export function claimsFromProfile(session: ProfileSession): StoredPlayerClaim[] {

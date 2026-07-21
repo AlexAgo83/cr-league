@@ -1,0 +1,105 @@
+{
+  "title": "Refresh league state when the player returns to the tab",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/sessionActions.ts",
+    "apps/web/src/app/appStorage.ts",
+    "apps/web/src/app/types.ts",
+    "apps/web/src/app/App.test.tsx",
+    "tests/e2e/private-league.spec.ts",
+    "Current diagnostic: GameApp automatically rejoins the saved league once on initial mount, and explicit actions refresh league state after mutations.",
+    "Current diagnostic: the web app currently has no visibilitychange/focus refresh hook for returning to a previously open league tab.",
+    "Current diagnostic: rejoinClaim already knows how to fetch a LeagueState from a saved teamId/claimCode pair and handle stale claims through the existing run/isStaleLeagueError path."
+  ],
+  "request": {
+    "complexity": "Low",
+    "theme": "Hosted beta responsiveness",
+    "needs": [
+      "Refresh the active league state when a player returns to an already-open browser tab so opponent submissions and resolved GP state do not remain stale.",
+      "Use a simple visibilitychange/focus-style refetch, not polling, SSE, websockets, or background sync.",
+      "Keep the refresh silent unless it fails in a way that invalidates the saved claim or requires user action.",
+      "Preserve current local navigation, replay/report state, and modal behavior while the refreshed state is applied."
+    ],
+    "context": [
+      "The current product is moving from the 0.3 playtest loop into the 0.4 beta-readiness line.",
+      "Private leagues are asynchronous: another player or admin action can change the league while a tab is hidden.",
+      "The app already stores profile/team claims locally and can rejoin a league through /leagues/rejoin.",
+      "Polling and live subscriptions are intentionally deferred until beta evidence proves they are needed."
+    ],
+    "acceptance_criteria": [
+      "AC1: When document.visibilityState changes back to visible and an active player claim exists, the app refreshes the current LeagueState once without polling.",
+      "AC2: The refresh is skipped when no league/player claim is active, while an existing request is already loading, or when the tab is still hidden.",
+      "AC3: Successful refresh updates league state without forcing the player back to the drive view, clearing non-conflicting local plan form state, or showing a noisy notification.",
+      "AC4: Stale/expired claims still use the existing stale-claim handling path and remove only the invalid claim.",
+      "AC5: Unit tests cover visible-tab refresh, hidden/no-claim skip, and stale-claim handling; build, typecheck, lint, and private-league e2e pass."
+    ]
+  },
+  "product": {
+    "title": "League State Freshness On Return Product Brief",
+    "overview": "Keep asynchronous private-league tabs fresh by silently refetching league state when a player returns, avoiding stale opponent or GP information without introducing realtime infrastructure.",
+    "goals": [
+      "Make hosted beta sessions feel current after tab switching.",
+      "Reuse existing rejoin/claim behavior instead of adding a new sync system.",
+      "Avoid background polling and live transport complexity.",
+      "Keep the UI stable during silent refreshes."
+    ],
+    "non_goals": [
+      "Do not add polling, SSE, websockets, push notifications, service workers, or background sync.",
+      "Do not change league cadence, resolution rules, API contracts, or profile recovery.",
+      "Do not refresh admin lists, changelogs, static assets, or unrelated setup screens.",
+      "Do not show a notification for every successful silent refresh."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Refresh active league on tab return",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "State freshness",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5"],
+      "problem": [
+        "Players can leave CR League open while another participant submits a plan or a GP is resolved.",
+        "When the player returns, the tab may continue showing the old league state until they perform a local action.",
+        "A lightweight visibility refresh should solve this without realtime infrastructure."
+      ],
+      "scope_in": [
+        "Add a visibilitychange handler around the existing active league/player claim state.",
+        "Reuse /leagues/rejoin or the smallest existing API path that returns a full LeagueState for the current player.",
+        "Prevent overlapping refreshes and skip refreshes during active loading/mutation work.",
+        "Apply refreshed LeagueState silently and preserve the current selected view unless the claim is stale.",
+        "Add focused unit coverage for the visibility handler behavior."
+      ],
+      "scope_out": [
+        "Polling or timed refresh intervals.",
+        "SSE, websocket, push notification, or service worker support.",
+        "Refreshing admin console data or saved league lists.",
+        "Changing copy unless an existing status/error label already fits."
+      ],
+      "acceptance_criteria": [
+        "AC1: Returning to a visible tab refreshes the active league exactly once per visibility event.",
+        "AC2: Hidden/no-active-claim/loading states do not trigger a request.",
+        "AC3: Successful refresh is silent and keeps the current view stable.",
+        "AC4: Stale claim errors clear the invalid saved claim through existing behavior.",
+        "AC5: Tests and build gates pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate league-state freshness on return",
+    "plan": [
+      "Trace the current rejoinClaim, saved-claim, and run error-handling flow before editing.",
+      "Add the smallest visibilitychange refresh hook that reuses the existing full-state fetch path.",
+      "Guard against hidden tabs, missing claims, admin inspection, and overlapping loading state.",
+      "Add focused tests for refresh, skip, and stale-claim behavior.",
+      "Run typecheck, lint, unit tests, build, and private-league e2e; record any follow-up needed for 0.6 realtime decisions."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/league-state-freshness-on-return.json",
+    "mode": "summary-only",
+    "profile": "tiny"
+  }
+}

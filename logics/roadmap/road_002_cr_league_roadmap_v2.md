@@ -2,7 +2,7 @@
 > Date: 2026-07-21
 > Status: Accepted
 > Related product: `prod_001_cr_league_product_brief`
-> Related request: `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_070_split_large_web_views_from_the_initial_bundle`, `req_071_modularize_the_large_web_layout_stylesheet`, `req_072_serve_large_web_artwork_as_webp`, `req_073_lazy_load_non_critical_web_artwork`, `req_074_audit_circuit_data_impact_before_optimizing_route_loading`, `req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook`
+> Related request: `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_070_split_large_web_views_from_the_initial_bundle`, `req_071_modularize_the_large_web_layout_stylesheet`, `req_072_serve_large_web_artwork_as_webp`, `req_073_lazy_load_non_critical_web_artwork`, `req_074_audit_circuit_data_impact_before_optimizing_route_loading`, `req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook`, `req_076_refresh_league_state_when_the_player_returns_to_the_tab`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
 > Confidence: 90
 > Non-semantic edit: 2026-07-19 release roadmap wording refresh.
@@ -18,6 +18,7 @@
 > Semantic edit: 2026-07-20 added 0.3.25 plan stat vocabulary alignment after post-release UI review.
 > Semantic edit: 2026-07-21 closed the active 0.3 line at v0.3.26 and moved new performance, maintainability, and beta-readiness work into the 0.4 milestone.
 > Semantic edit: 2026-07-21 split non-shipped 0.3 ideas into an explicit post-0.3 carry-over queue so the closed 0.3 line no longer hides pending work.
+> Semantic edit: 2026-07-21 scaffolded league-state freshness on return (`req_076`) and kept dynamic objectives plus 0.5/0.6/1.0 themes explicitly unscaffolded until evidence warrants them.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -37,7 +38,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - The 0.3 playtest-ready loop line has shipped through `v0.3.26`: the hosted app, CI/release flow, map/replay/report polish, mobile fixes, garage presentation, chrono/plan clarity, home splash, and production health evidence are real.
 - The next release line is 0.4, focused on beta-readiness through performance, maintainability, support/admin hardening, and operational confidence rather than more 0.3 playtest-loop polish.
 - Repo review remediation and beta support hardening (`req_058`, `req_069`) are already Done and count as delivered 0.4 foundation, not future patch slots.
-- Seven implementation chains are open and ready to dev: `req_068` (non-winning success feedback), `req_070` (web view code-splitting), `req_071` (stylesheet modularization), `req_072` (WebP artwork delivery), `req_073` (lazy artwork loading), `req_074` (circuit route loading audit), and `req_075` (GameApp admin-panel hook extraction).
+- Eight implementation chains are open and ready to dev: `req_068` (non-winning success feedback), `req_070` (web view code-splitting), `req_071` (stylesheet modularization), `req_072` (WebP artwork delivery), `req_073` (lazy artwork loading), `req_074` (circuit route loading audit), `req_075` (GameApp admin-panel hook extraction), and `req_076` (league-state freshness on return).
 - Still not real: automatic scheduler, full auth, dynamic objectives, broad beta operations evidence, and multi-person playtest evidence for the current balance.
 
 # Milestones
@@ -87,7 +88,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Purpose: keep useful 0.3 gameplay/readability ideas visible after the active 0.3 release line is closed, without forcing them into the 0.4 performance/support theme.
 - Dynamic race objectives: open a fresh request only after 3-to-5 tester evidence shows players need explicit side goals to understand non-winning success. Candidate future slot: 0.5 if tied to light rewards/economy, otherwise 0.6 beta-feedback patch.
 - Non-winning success feedback: `req_068` / `task_069` remain ready to dev and can ship as a gameplay-feedback patch whenever tester comprehension outranks payload/support work.
-- League-state freshness on return: keep as a small future responsiveness patch if hosted testers report stale opponent state after tab switching; visibility refetch remains the intended first implementation, with polling/SSE deferred to 0.6.
+- League-state freshness on return: `req_076` / `task_077` are ready to dev as the small visibility-refetch implementation; keep polling/SSE deferred to 0.6 unless beta evidence proves realtime is necessary.
 - Plan risk/readability is no longer pending: `req_067` / `task_068` are Done, so future work here should be new follow-up evidence, not the old 0.3.13 slot.
 
 ## 0.4 - Ship rails
@@ -102,6 +103,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
   - 0.4.4 — GameApp admin-panel hook extraction: move the admin-panel state cluster out of the main app component to reduce frontend maintenance risk. (`req_075`, `task_076`, ready to dev)
   - 0.4.5 — Web stylesheet modularization: extract bounded feature CSS from the monolithic layout stylesheet without visual redesign. (`req_071`, `task_072`, ready to dev)
   - 0.4.6 — Circuit route loading audit: measure detailed circuit route data cost and lazy-load route geometry only if the byte savings justify the async complexity. (`req_074`, `task_075`, ready to dev)
+  - 0.4.7 — League-state freshness on return: silently refetch the active league when the player returns to a visible tab, without polling or realtime infrastructure. (`req_076`, `task_077`, ready to dev)
 - Exit signal:
   - publishing a GitHub Release vX.Y.Z is the only deploy path and ends with production /health reporting that version;
   - the initial web payload and largest artwork costs are measured and materially lower than the 0.3.26 baseline;
@@ -113,6 +115,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Goal: Add enough card and currency depth for repeated sessions without burying the casual player.
 - Status: Planned; balance kit and 15-card catalogue already exist (see `road_001` 0.4 for the delivered foundation).
 - Scope to slice into patches when requests exist: card acquisition variety (draft/sell only after fixed-shop playtest evidence), season rollover economy with partial credit carry-over capped around 25-35%, cosmetic-only champion rewards with a clear palmares/history home, inventory cap tuning only if max 5 cards frustrates or encourages hoarding, catch-up mechanisms that help low-ranked players without making first place feel random, balance telemetry from real playtests, economy rules documented before broadening the card list.
+- Corpus policy: do not scaffold 0.5 request chains until repeated-GP playtest evidence identifies which economy/card pressure is real; split future work into small chains instead of one broad economy corpus.
 - Exit signal: players earn and spend across multiple GPs, card choices create visible replay/report moments, and bottom-table players have comeback options while leaders still feel rewarded.
 - Linked docs: `item_004_design_and_implement_the_v1_card_and_inventory_system`, `item_005_define_balancing_and_retention_mechanics_for_social_leagues`, `spec_001_grand_prix_core_loop_and_simulation_v1`.
 
@@ -120,6 +123,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Goal: Run a real beta season long enough to validate cadence, replay comprehension, economy pressure, and return behavior.
 - Status: Planned (renumbered from road_001's 0.7; same intent).
 - Scope to slice into patches when requests exist: beta season lifecycle, playtest and season presets (3 GP for quick tests, 6 GP for default leagues), async cadence V1 (all-ready resolution by default, deadline resolution, lightly visible absent-player defaults, force-resolve or pause only if playtest ops needs them, bot replacement after repeated absences only if leagues stall), feedback capture across GP cycles, balance tweaks from observed behavior, notifications/reminders only if usage proves the need.
+- Corpus policy: the first 0.6 corpus should be beta season lifecycle once 0.4 is stable; do not pre-scaffold polling/SSE, reminders, or bot replacement without beta evidence.
 - Exit signal: beta players complete a short season with enough feedback to decide what belongs in 1.0; remaining 1.0 work is known, not guessed.
 - Linked docs: `prod_001_cr_league_product_brief`, `spec_016_implementation_roadmap`.
 
@@ -127,6 +131,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Goal: Ship a stable private-league experience that can run cheaply and be shared with non-gamer colleagues.
 - Status: Post-beta target.
 - Scope: production hardening of the 0.4 rails, league lifecycle completeness, accessibility and i18n baseline, operational docs (configuration, smoke, backups, known limits), minimal abuse/security guardrails for invite-code leagues.
+- Corpus policy: keep 1.0 as a product target, not an implementation corpus, until the 0.6 beta produces enough evidence to define the remaining release blockers.
 - Exit signal: a private league runs a full short championship without manual database intervention; validation and smoke gates are repeatable from a clean environment; the cost model stays hobby-compatible.
 - Linked docs: `adr_001_cr_league_v1_static_pwa_api_architecture`, `adr_004_data_security`, `adr_006_accessibility`, `adr_007_i18n`, `adr_008_testing_quality`, `spec_016_implementation_roadmap`.
 
@@ -135,6 +140,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Start the 0.4 implementation line with `req_073` (small lazy image default) and `req_070` (high-impact code-splitting); they are independent enough to run in separate branches if needed.
 - Follow with `req_072` WebP conversion only after the lazy-loading default is stable, so image call-site changes stay minimal.
 - Run `req_075` admin-panel extraction as a maintainability follow-up to the already-delivered admin/support hardening.
+- Keep `req_076` available as a small 0.4 responsiveness patch before invited multi-player testing, or pull it forward as a hotfix if stale tab state appears in hosted use.
 - Keep `req_071` CSS modularization behind the view/code boundaries unless a feature edit already touches the same selectors.
 - Treat `req_074` circuit route loading as measure-first: close as deferred if the byte cost is not material.
 - Do not start 0.5 economy depth until 0.3.x playtest feedback exists; do not start 1.0 hardening until the 0.6 beta has produced real usage.
@@ -151,6 +157,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Watch qualifying impact in playtests: if pole wins too often, soften grid advantage or increase overtaking windows before changing the whole qualifying model.
 - Keep admin accident recovery minimal: prefer confirmation, runbooks, and test-data cleanup before adding undo/reset-recent-action tooling.
 - Post-0.3 carry-over discipline: do not silently append gameplay/readability work back into 0.3.x; promote it from the carry-over queue into 0.5, 0.6, or a focused hotfix only when evidence justifies it.
+- No-corpus discipline: dynamic race objectives, broad 0.5 economy/card depth, 0.6 live beta season, and 1.0 V1 remain unscaffolded by design until their evidence gates are met.
 
 - After the existing coverage lane from `req_058` identifies weak screens, add render/interaction tests for the 2-3 weakest game screens (PlanView, GarageView, ResultView first) as a backlog item on an existing chain — not a dedicated corpus.
 - Keep `submitDecision`'s repeated full-state reloads as-is until the existing Postgres integration lane measures a real cost; the fix (thread loaded state through) is mechanical when justified.
@@ -160,6 +167,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Release `0.4.0` next from the current local asset-optimization work once CI/deploy are green.
 - Then start `task_074` / `req_073` for lazy artwork loading: smallest 0.4 code change, clear performance upside.
 - Then start `task_071` / `req_070` for web view code-splitting: highest-impact JavaScript payload slice.
+- Keep `task_077` / `req_076` ready as the next small responsiveness patch before real multi-player testing.
 - Keep `task_069` / `req_068` available as the next gameplay-feedback slice if tester comprehension becomes more urgent than payload work.
 - After `0.4.0` is green in CI/deploy, decide whether to batch small performance patches or release each 0.4.x chain independently.
 
@@ -174,9 +182,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Product brief(s): `prod_001_cr_league_product_brief`
 - Superseded roadmap: `road_001_cr_league_roadmap` (kept for 0.1/0.2 delivered detail)
 - Implementation roadmap spec: `spec_016_implementation_roadmap`
-- Request(s): `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`, `req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization`, `req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next`, `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`, `req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest`, `req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count`, `req_064_mobile_modal_hygiene_and_real_playback_icons`, `req_065_home_splash_landing_screen_with_floating_title_and_press_start`, `req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup`, `req_067_plan_risk_readability_layer`, `req_068_non_winning_success_feedback`, `req_069_beta_support_hardening`, `req_070_split_large_web_views_from_the_initial_bundle`, `req_071_modularize_the_large_web_layout_stylesheet`, `req_072_serve_large_web_artwork_as_webp`, `req_073_lazy_load_non_critical_web_artwork`, `req_074_audit_circuit_data_impact_before_optimizing_route_loading`, `req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook`
+- Request(s): `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`, `req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization`, `req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next`, `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`, `req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest`, `req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count`, `req_064_mobile_modal_hygiene_and_real_playback_icons`, `req_065_home_splash_landing_screen_with_floating_title_and_press_start`, `req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup`, `req_067_plan_risk_readability_layer`, `req_068_non_winning_success_feedback`, `req_069_beta_support_hardening`, `req_070_split_large_web_views_from_the_initial_bundle`, `req_071_modularize_the_large_web_layout_stylesheet`, `req_072_serve_large_web_artwork_as_webp`, `req_073_lazy_load_non_critical_web_artwork`, `req_074_audit_circuit_data_impact_before_optimizing_route_loading`, `req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook`, `req_076_refresh_league_state_when_the_player_returns_to_the_tab`
 - Backlog item(s): (tracked per request chain)
-- Task(s): `task_034_orchestrate_over_engineering_cleanup_pass_1`, `task_035_orchestrate_personalized_race_recap`, `task_036_orchestrate_garage_inventory_card_consultation`, `task_037_orchestrate_ci_render_blueprint_and_release_contract`, `task_038_orchestrate_starting_grid_and_season_narrative`, `task_059_orchestrate_repo_review_remediation_pass_5`, `task_060_orchestrate_first_gp_action_clarity`, `task_061_orchestrate_result_verdict_pass`, `task_062_orchestrate_email_backed_profile_recovery`, `task_063_orchestrate_replay_suspense_and_first_contact_polish`, `task_064_orchestrate_lap_scale_coherence_fix`, `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons`, `task_066_orchestrate_the_home_splash_landing_screen`, `task_067_orchestrate_post_splash_playtest_polish`, `task_068_orchestrate_plan_risk_readability_layer`, `task_069_orchestrate_non_winning_success_feedback`, `task_070_orchestrate_beta_support_hardening`, `task_071_orchestrate_web_view_code_splitting`, `task_072_orchestrate_web_stylesheet_modularization`, `task_073_orchestrate_webp_artwork_conversion`, `task_074_orchestrate_lazy_artwork_loading`, `task_075_orchestrate_circuit_route_loading_audit`, `task_076_orchestrate_gameapp_admin_panel_hook_extraction`
+- Task(s): `task_034_orchestrate_over_engineering_cleanup_pass_1`, `task_035_orchestrate_personalized_race_recap`, `task_036_orchestrate_garage_inventory_card_consultation`, `task_037_orchestrate_ci_render_blueprint_and_release_contract`, `task_038_orchestrate_starting_grid_and_season_narrative`, `task_059_orchestrate_repo_review_remediation_pass_5`, `task_060_orchestrate_first_gp_action_clarity`, `task_061_orchestrate_result_verdict_pass`, `task_062_orchestrate_email_backed_profile_recovery`, `task_063_orchestrate_replay_suspense_and_first_contact_polish`, `task_064_orchestrate_lap_scale_coherence_fix`, `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons`, `task_066_orchestrate_the_home_splash_landing_screen`, `task_067_orchestrate_post_splash_playtest_polish`, `task_068_orchestrate_plan_risk_readability_layer`, `task_069_orchestrate_non_winning_success_feedback`, `task_070_orchestrate_beta_support_hardening`, `task_071_orchestrate_web_view_code_splitting`, `task_072_orchestrate_web_stylesheet_modularization`, `task_073_orchestrate_webp_artwork_conversion`, `task_074_orchestrate_lazy_artwork_loading`, `task_075_orchestrate_circuit_route_loading_audit`, `task_076_orchestrate_gameapp_admin_panel_hook_extraction`, `task_077_orchestrate_league_state_freshness_on_return`
 
 # AI Context
 - Summary: Release-level roadmap for CR League with a three-level version scheme (theme minors, feature-drop patches) from playable prototype to private league V1.

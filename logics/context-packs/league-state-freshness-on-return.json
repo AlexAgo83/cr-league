@@ -1,0 +1,257 @@
+{
+  "budgets": {
+    "max_docs": 6,
+    "max_docs_per_ref": 2
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_076_refresh_league_state_when_the_player_returns_to_the_tab item_174_refresh_active_league_on_tab_return task_077_orchestrate_league_state_freshness_on_return --mode summary-only --profile tiny --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_174_refresh_active_league_on_tab_return"
+        ],
+        "prod": [
+          "prod_040_league_state_freshness_on_return_product_brief"
+        ],
+        "req": [
+          "req_076_refresh_league_state_when_the_player_returns_to_the_tab"
+        ],
+        "task": [
+          "task_077_orchestrate_league_state_freshness_on_return"
+        ]
+      },
+      "path": "logics/product/prod_040_league_state_freshness_on_return_product_brief.md",
+      "ref": "prod_040_league_state_freshness_on_return_product_brief",
+      "status": "Proposed",
+      "title": "League State Freshness On Return Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, refresh league state when the player returns to the tab, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Refresh league state when the player returns to the tab",
+        "use when": "You need to implement or review the scaffolded workflow for Refresh league state when the player returns to the tab."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_174_refresh_active_league_on_tab_return"
+        ],
+        "prod": [
+          "prod_040_league_state_freshness_on_return_product_brief"
+        ],
+        "req": [
+          "req_076_refresh_league_state_when_the_player_returns_to_the_tab"
+        ]
+      },
+      "path": "logics/request/req_076_refresh_league_state_when_the_player_returns_to_the_tab.md",
+      "ref": "req_076_refresh_league_state_when_the_player_returns_to_the_tab",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Refresh league state when the player returns to the tab"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, refresh active league on tab return, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Refresh active league on tab return",
+        "use when": "Implementing the scaffolded slice for Refresh active league on tab return."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_174_refresh_active_league_on_tab_return"
+        ],
+        "prod": [
+          "prod_040_league_state_freshness_on_return_product_brief"
+        ],
+        "req": [
+          "req_076_refresh_league_state_when_the_player_returns_to_the_tab"
+        ],
+        "task": [
+          "task_077_orchestrate_league_state_freshness_on_return"
+        ]
+      },
+      "path": "logics/backlog/item_174_refresh_active_league_on_tab_return.md",
+      "ref": "item_174_refresh_active_league_on_tab_return",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Refresh active league on tab return"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate league-state freshness on return",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_174_refresh_active_league_on_tab_return"
+        ],
+        "prod": [
+          "prod_040_league_state_freshness_on_return_product_brief"
+        ],
+        "req": [
+          "req_076_refresh_league_state_when_the_player_returns_to_the_tab"
+        ],
+        "task": [
+          "task_077_orchestrate_league_state_freshness_on_return"
+        ]
+      },
+      "path": "logics/tasks/task_077_orchestrate_league_state_freshness_on_return.md",
+      "ref": "task_077_orchestrate_league_state_freshness_on_return",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate league-state freshness on return"
+    }
+  ],
+  "estimates": {
+    "char_count": 3122,
+    "companion_doc_count": 1,
+    "doc_count": 3
+  },
+  "generated_at": "2026-07-21T06:59:19Z",
+  "handoff": {
+    "companion_doc_count": 1,
+    "enabled": true,
+    "source_refs": [
+      "req_076_refresh_league_state_when_the_player_returns_to_the_tab",
+      "item_174_refresh_active_league_on_tab_return",
+      "task_077_orchestrate_league_state_freshness_on_return"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 729,
+      "fr": 729
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "tiny",
+  "ref": "req_076_refresh_league_state_when_the_player_returns_to_the_tab,item_174_refresh_active_league_on_tab_return,task_077_orchestrate_league_state_freshness_on_return",
+  "refs": [
+    "req_076_refresh_league_state_when_the_player_returns_to_the_tab",
+    "item_174_refresh_active_league_on_tab_return",
+    "task_077_orchestrate_league_state_freshness_on_return"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "version_metadata: evidence targets a different commit",
+      "changelog: evidence targets a different commit",
+      "local_validation: evidence targets a different commit",
+      "git_push: evidence targets a different commit",
+      "ci: evidence targets a different commit"
+    ],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "version_metadata: evidence targets a different commit",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "blocked",
+    "target_version": "0.3.26"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_077_orchestrate_league_state_freshness_on_return.md",
+      "ref": "task_077_orchestrate_league_state_freshness_on_return"
+    }
+  ]
+}

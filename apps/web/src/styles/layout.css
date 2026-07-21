@@ -1449,8 +1449,7 @@ label small {
   background: rgb(255 77 0 / 0.18);
 }
 
-.chrono-report-stats span,
-.chrono-report-history > strong {
+.chrono-report-stats span {
   color: var(--color-muted);
   font-size: 0.72rem;
   font-weight: 800;
@@ -1466,6 +1465,10 @@ label small {
   gap: 8px;
 }
 
+.chrono-report-panel + .chrono-report-history.attached-panel {
+  margin-top: -16px;
+}
+
 .chrono-report-history ol {
   display: grid;
   gap: 7px;
@@ -1474,7 +1477,8 @@ label small {
   padding: 0;
 }
 
-.chrono-report-history li {
+.chrono-report-history li,
+.opponent-config-row {
   align-items: center;
   background: rgb(248 243 232 / 0.72);
   border: 1px solid rgb(23 21 26 / 0.14);
@@ -1495,6 +1499,10 @@ label small {
   gap: 6px;
   grid-template-columns: auto 76px 76px 76px 76px;
   min-width: 0;
+}
+
+.opponent-config-cells {
+  grid-template-columns: repeat(4, 76px);
 }
 
 .chrono-session-lap,
@@ -3548,40 +3556,15 @@ label small {
 }
 
 .opponent-config-row {
-  border: 1px solid rgb(255 255 255 / 0.12);
-  border-radius: 6px;
-  display: grid;
-  gap: 8px;
-  padding: 9px;
+  grid-template-columns: minmax(84px, 1fr) auto;
 }
 
-.opponent-config-row > strong {
+.opponent-config-team {
   align-items: center;
   display: flex;
   gap: 7px;
-}
-
-.opponent-config-row dl {
-  display: grid;
-  gap: 6px;
-  grid-template-columns: repeat(auto-fit, minmax(92px, 1fr));
-  margin: 0;
-}
-
-.opponent-config-row div {
-  display: grid;
-  gap: 2px;
-}
-
-.opponent-config-row dt {
-  color: var(--color-muted);
-  font-size: 0.68rem;
-  font-weight: 800;
-  text-transform: uppercase;
-}
-
-.opponent-config-row dd {
-  margin: 0;
+  justify-self: end;
+  text-align: right;
 }
 
 .replay-moment-notification {

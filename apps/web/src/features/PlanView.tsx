@@ -199,56 +199,56 @@ export function PlanView({
                 </div>
               </div>
             </div>
-            <div className="chrono-report-history">
-              <strong>{tt("chrono_report_history_title")}</strong>
-              {playerQualifyingRuns.length ? (
-                <ol>
-                  {[...playerQualifyingRuns]
-                    .sort((left, right) => right.attempts - left.attempts || (right.lap ?? 0) - (left.lap ?? 0))
-                    .map((run) => (
-                      <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run === chronoReport.best ? "best-session" : undefined}>
-                        <div className="chrono-session-setup">
-                          <span className="chrono-session-lap">
-                            <small>
-                              {tt("qualifying_attempt_short")} {run.attempts}
-                            </small>
-                            <b>{tt("qualifying_result_lap_value", { lap: run.lap ?? 1 })}</b>
-                          </span>
-                          <span className={`chrono-session-choice type-approach approach-${run.decision.approach}`}>
-                            <small>{tt("field_approach")}</small>
-                            <b>{tt(`approach_${run.decision.approach}` as TranslationKey)}</b>
-                          </span>
-                          <span className={`chrono-session-choice type-preparation preparation-${run.decision.preparation}`}>
-                            <small>{tt("field_preparation")}</small>
-                            <b>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</b>
-                          </span>
-                          <span className="chrono-session-choice type-pit is-faded">
-                            <small>{tt("field_pit_strategy")}</small>
-                            <b>{tt(`pit_strategy_${run.decision.pitStrategy ?? "standard"}` as TranslationKey)}</b>
-                          </span>
-                          <span className={chronoCardClass(run.decision.cardId)}>
-                            <small>{tt("field_card")}</small>
-                            <b>{run.decision.cardId ? tt(`card_${run.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
-                          </span>
-                        </div>
-                        <em>{run.time.toFixed(2)}s</em>
-                        <button
-                          type="button"
-                          className="secondary-button"
-                          onClick={() => {
-                            onOpenQualifyingHistory(run);
-                            onSetGameView("drive");
-                          }}
-                        >
-                          {tt("action_qualifying_history")}
-                        </button>
-                      </li>
-                    ))}
-                </ol>
-              ) : (
-                <p>{tt("chrono_report_history_empty")}</p>
-              )}
-            </div>
+          </section>
+          <section className="panel chrono-report-history attached-panel" aria-label={tt("chrono_report_history_title")}>
+            <h3>{tt("chrono_report_history_title")}</h3>
+            {playerQualifyingRuns.length ? (
+              <ol>
+                {[...playerQualifyingRuns]
+                  .sort((left, right) => right.attempts - left.attempts || (right.lap ?? 0) - (left.lap ?? 0))
+                  .map((run) => (
+                    <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run === chronoReport.best ? "best-session" : undefined}>
+                      <div className="chrono-session-setup">
+                        <span className="chrono-session-lap">
+                          <small>
+                            {tt("qualifying_attempt_short")} {run.attempts}
+                          </small>
+                          <b>{tt("qualifying_result_lap_value", { lap: run.lap ?? 1 })}</b>
+                        </span>
+                        <span className={`chrono-session-choice type-approach approach-${run.decision.approach}`}>
+                          <small>{tt("field_approach")}</small>
+                          <b>{tt(`approach_${run.decision.approach}` as TranslationKey)}</b>
+                        </span>
+                        <span className={`chrono-session-choice type-preparation preparation-${run.decision.preparation}`}>
+                          <small>{tt("field_preparation")}</small>
+                          <b>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</b>
+                        </span>
+                        <span className="chrono-session-choice type-pit is-faded">
+                          <small>{tt("field_pit_strategy")}</small>
+                          <b>{tt(`pit_strategy_${run.decision.pitStrategy ?? "standard"}` as TranslationKey)}</b>
+                        </span>
+                        <span className={chronoCardClass(run.decision.cardId)}>
+                          <small>{tt("field_card")}</small>
+                          <b>{run.decision.cardId ? tt(`card_${run.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
+                        </span>
+                      </div>
+                      <em>{run.time.toFixed(2)}s</em>
+                      <button
+                        type="button"
+                        className="secondary-button"
+                        onClick={() => {
+                          onOpenQualifyingHistory(run);
+                          onSetGameView("drive");
+                        }}
+                      >
+                        {tt("action_qualifying_history")}
+                      </button>
+                    </li>
+                  ))}
+              </ol>
+            ) : (
+              <p>{tt("chrono_report_history_empty")}</p>
+            )}
           </section>
           {!reportResult ? <OpponentConfigComparison state={state} playerTeamId={playerTeamId} title={tt("opponent_config_title_locked")} tt={tt} /> : null}
         </>

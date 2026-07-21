@@ -638,9 +638,9 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
     expect(screen.getByRole("heading", { name: "Understand the chrono" })).toBeTruthy();
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("72.42s");
-    expect(screen.getByLabelText("Understand the chrono").textContent).toContain("75.18s");
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("P2");
     expect(screen.getByLabelText("Understand the chrono").textContent).toContain("Best run");
+    expect(screen.getByLabelText("Session history").textContent).toContain("75.18s");
     expect(document.querySelector(".chrono-report-history li.best-session")?.textContent).toContain("72.42s");
     expect(document.querySelector(".chrono-report-history .type-approach")).toBeTruthy();
     expect(document.querySelector(".chrono-report-history .type-preparation")).toBeTruthy();

@@ -20,34 +20,28 @@ export function OpponentConfigComparison({ state, playerTeamId, title, tt }: { s
       <div className="opponent-config-table">
         {rows.map(({ decision, result, teamName }) => (
           <article key={decision.teamId} className="opponent-config-row">
-            <strong>
+            <div className="chrono-session-setup opponent-config-cells">
+              <span className={`chrono-session-choice type-approach approach-${decision.approach}`}>
+                <small>{tt("opponent_config_approach")}</small>
+                <b>{tt(`approach_${decision.approach}` as TranslationKey)}</b>
+              </span>
+              <span className={`chrono-session-choice type-preparation preparation-${decision.preparation}`}>
+                <small>{tt("opponent_config_preparation")}</small>
+                <b>{tt(`preparation_${decision.preparation}` as TranslationKey)}</b>
+              </span>
+              <span className="chrono-session-choice type-pit">
+                <small>{tt("opponent_config_pit")}</small>
+                <b>{tt(`pit_strategy_${decision.pitStrategy ?? "standard"}_short` as TranslationKey)}</b>
+              </span>
+              <span className={`chrono-session-choice type-card${decision.cardId ? "" : " is-faded"}`}>
+                <small>{tt("opponent_config_card")}</small>
+                <b>{decision.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : tt("card_none")}</b>
+              </span>
+            </div>
+            <strong className="opponent-config-team">
               {result ? <PositionBadge position={result.position} /> : null}
               <span>{teamName}</span>
             </strong>
-            <dl>
-              <div>
-                <dt>{tt("opponent_config_approach")}</dt>
-                <dd>{tt(`approach_${decision.approach}` as TranslationKey)}</dd>
-              </div>
-              <div>
-                <dt>{tt("opponent_config_preparation")}</dt>
-                <dd>{tt(`preparation_${decision.preparation}` as TranslationKey)}</dd>
-              </div>
-              <div>
-                <dt>{tt("opponent_config_pit")}</dt>
-                <dd>{tt(`pit_strategy_${decision.pitStrategy ?? "standard"}_short` as TranslationKey)}</dd>
-              </div>
-              <div>
-                <dt>{tt("opponent_config_card")}</dt>
-                <dd>{decision.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : tt("card_none")}</dd>
-              </div>
-              {result ? (
-                <div>
-                  <dt>{tt("opponent_config_result")}</dt>
-                  <dd>{tt("opponent_config_result_value", { points: result.points, credits: result.credits })}</dd>
-                </div>
-              ) : null}
-            </dl>
           </article>
         ))}
       </div>

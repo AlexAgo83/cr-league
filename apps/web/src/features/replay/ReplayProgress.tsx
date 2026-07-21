@@ -39,8 +39,6 @@ export function ReplayProgress({
   directorMarkers: ReplayTimelineMarker[];
   tt: Translator;
 }) {
-  const phaseSummary = RACE_SEGMENTS.map((segment) => `${tt(`segment_${segment}` as TranslationKey)}: ${tt(`weather_${resolvedWeather[segment]}` as TranslationKey)}`).join(" · ");
-
   return (
     <>
       <div className="replay-progress">
@@ -104,9 +102,6 @@ export function ReplayProgress({
         ))}
       </div>
       <div className="replay-progress-legend" aria-label={tt("replay_timeline_legend_label")}>
-        <span>
-          <b>{tt("replay_weather_actual_label")}</b> {phaseSummary}
-        </span>
         <span>
           <i className="replay-legend-dot" aria-hidden="true" /> {tt("replay_pace_marker_legend")}
         </span>

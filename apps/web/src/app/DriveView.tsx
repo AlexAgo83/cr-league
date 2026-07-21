@@ -1,15 +1,16 @@
-import { DEMO_RACE_INPUT, type RaceDecision, type RaceResult, type TeamLivery, type Weather } from "@cr-league/shared";
+import { DEMO_RACE_INPUT, RACE_SEGMENTS, type RaceDecision, type RaceResult, type TeamLivery, type Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "./circuits.js";
 import type { Translator } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { MapPlanPanel } from "../features/MapPlanPanel.js";
+import { Modal } from "../features/Modal.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { ReplayTower } from "../features/replay/ReplayTower.js";
 import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
 import type { PlanSubscreen } from "./routes.js";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useState } from "react";
 
 const ReplayView = lazy(() => import("../features/ReplayView.js").then((module) => ({ default: module.ReplayView })));
 
@@ -81,9 +82,11 @@ export function DriveView({
   tt: Translator;
 }) {
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
+  const [weatherInfoOpen, setWeatherInfoOpen] = useState(false);
 
   return (
     <div className="drive-grid">
+      {weatherInfoOpen && result ? <RaceWeatherModal result={result} tt={tt} onClose={() => setWeatherInfoOpen(false)} /> : null}
       <div className="drive-content-column">
         {!result && currentQualifyingResult ? (
           <div className="qualifying-replay-inline drive-map-panel">
@@ -153,6 +156,11 @@ export function DriveView({
                         {tt(`weather_tendency_${forecastPick}` as TranslationKey)}
                       </span>
                     </small>
+                    {result ? (
+                      <button className="map-plan-edit-button map-weather-info-button" type="button" aria-label={tt("race_weather_info_title")} title={tt("race_weather_info_title")} onClick={() => setWeatherInfoOpen(true)}>
+                        {tt("action_info")}
+                      </button>
+                    ) : null}
                   </div>
                   <div className="map-plan-performance">
                     <MapPlanPanel
@@ -229,6 +237,26 @@ export function DriveView({
         )}
       </div>
     </div>
+  );
+}
+
+function RaceWeatherModal({ result, tt, onClose }: { result: RaceResult; tt: Translator; onClose: () => void }) {
+  return (
+    <Modal label={tt("race_weather_info_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+      <h2>{tt("race_weather_info_title")}</h2>
+      <p>{tt("race_weather_info_body")}</p>
+      <ol className="race-weather-phase-list">
+        {RACE_SEGMENTS.map((segment) => (
+          <li key={segment}>
+            <span>
+              <VisualIcon name={result.resolvedWeather[segment]} />
+              {tt(`segment_${segment}` as TranslationKey)}
+            </span>
+            <strong>{tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}</strong>
+          </li>
+        ))}
+      </ol>
+    </Modal>
   );
 }
 

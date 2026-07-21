@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 37%
+> Progress: 60%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -14,7 +14,7 @@
 
 # Plan
 - [x] 1. Trace the resolved-weather UI path from ReplayProgress and DriveView before editing.
-- [ ] 2. Move resolved-weather detail into a compact circuit info modal using existing modal patterns.
+- [x] 2. Move resolved-weather detail into a compact circuit info modal using existing modal patterns.
 - [ ] 3. Adjust shared card badge CSS to wrap to at least two rows in card cells.
 - [ ] 4. Add native localized hover/focus explanations to CardStatBadges using existing stat hint copy.
 - [ ] 5. Run typecheck, focused tests, lint, full tests, build, e2e, and Logics validation.
@@ -52,7 +52,8 @@
 - 2026-07-21 wave: added the available New chrono action beside the bottom Plan command so players can retest before sending the plan without leaving the directive panel.
 - 2026-07-21 wave: tuned directive command emphasis so New chrono is highlighted before any run and Send plan is highlighted once at least one chrono exists.
 - 2026-07-21 wave: moved the chrono hero background onto the panel itself and removed the attached-panel overlap, preventing the light panel surface from showing behind the header on mobile.
-- Remaining: resolved-weather info modal, card badge wrapping, and badge stat explanations.
+- 2026-07-21 wave: moved resolved weather details from the replay legend into a Drive circuit Info modal, with five phase rows and preserved timeline weather markers.
+- Remaining: card badge wrapping and badge stat explanations.
 
 # AI Context
 - Summary: Orchestrate weather and card stat readability

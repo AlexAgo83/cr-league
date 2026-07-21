@@ -760,6 +760,7 @@ describe("App", () => {
     // Timeline markers carry the key moments and seek on click
     expect(document.querySelectorAll(".replay-tick").length).toBe(7);
     expect(document.querySelectorAll(".replay-weather").length).toBe(5);
+    expect(screen.getByLabelText("Replay timeline legend").textContent).not.toContain("Actual weather by phase:");
     expect(document.querySelector(".replay-marker")?.getAttribute("title")).toContain("Rain Grip");
     fireEvent.click(document.querySelector(".replay-marker")!);
     expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("Rain Grip");
@@ -804,6 +805,10 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Replay" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
     expect(screen.getByRole("button", { name: "Next GP" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Actual race weather" }));
+    expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("startDry");
+    expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("mid-raceLight rain");
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
     const finalReportButton = document.querySelector(".replay-tower .map-plan-edit-button") as HTMLButtonElement;
     expect(finalReportButton).toBeTruthy();
     expect(finalReportButton.textContent).toBe("View");

@@ -1,7 +1,7 @@
 ## req_068_non_winning_success_feedback - Non-winning success feedback
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 95
 > Confidence: 90
 > Complexity: Medium
@@ -31,6 +31,15 @@
 - AC5: EN/FR copy is present for labels and explanations.
 - AC6: Unit tests cover positive and negative derivations; existing report/replay/result e2e flow still passes.
 - AC7: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
+
+# AC Traceability
+- AC1 -> `item_164_surface_non_winning_feedback_in_reports`. Proof: `ReportView` renders `deriveNonWinningFeedback` below the race verdict when a concrete non-winning success is detected.
+- AC2 -> `item_163_derive_non_winning_success_verdicts`. Proof: `deriveNonWinningFeedback` covers preserved/limited loss, weather/card mitigation, and economy/future-option value with deterministic branches.
+- AC3 -> `item_163_derive_non_winning_success_verdicts`. Proof: poor zero-point losses return `tone: "miss"` and miss/try-next copy, covered in `helpers.test.ts`.
+- AC4 -> `item_163_derive_non_winning_success_verdicts`. Proof: the change is a web-only derived view model; no simulation, reward, standings, or persisted result files were changed.
+- AC5 -> `item_164_surface_non_winning_feedback_in_reports`. Proof: `apps/web/src/i18n/en.json` and `apps/web/src/i18n/fr.json` include the non-winning label, success copy, and miss copy.
+- AC6 -> `item_164_surface_non_winning_feedback_in_reports`. Proof: `helpers.test.ts` covers helper derivations, `ReportView.test.tsx` covers visible feedback, and Playwright e2e passed.
+- AC7 -> `item_164_surface_non_winning_feedback_in_reports`. Proof: typecheck, targeted tests, full tests, build, lint, e2e, and Logics validation passed at closeout.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

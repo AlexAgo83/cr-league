@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRaceVerdict, clampNumber, completedSeasonSummaries, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid, translateLine } from "./helpers.js";
+import { buildRaceVerdict, clampNumber, completedSeasonSummaries, deriveNonWinningFeedback, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid, translateLine } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { circuitIdentityForRound, circuitSeasonSeed, type CardId, type RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
@@ -394,6 +394,58 @@ describe("buildRaceVerdict", () => {
     expect(buildRaceVerdict(first, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params)).stance.key).not.toBe(
       buildRaceVerdict(second, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params)).stance.key
     );
+  });
+});
+
+describe("deriveNonWinningFeedback", () => {
+  it("names preserved position as a useful non-winning result", () => {
+    const race = result("team_2", "team_1");
+    race.classification[1]!.position = 4;
+    race.classification[1]!.points = 12;
+    race.classification[1]!.positionChange = 0;
+
+    const feedback = deriveNonWinningFeedback(race, "team_1", { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null });
+
+    expect(feedback?.tone).toBe("success");
+    expect(feedback?.title.key).toBe("non_winning_success_title_hold");
+  });
+
+  it("names weather mitigation when a weather plan limits loss in rain", () => {
+    const race = result("team_2", "team_1");
+    race.resolvedWeather.mid = "heavy_rain";
+    race.classification[1]!.position = 5;
+    race.classification[1]!.points = 10;
+    race.classification[1]!.positionChange = -1;
+
+    const feedback = deriveNonWinningFeedback(race, "team_1", { teamId: "team_1", approach: "balanced", preparation: "weather", cardId: "rain_grip" });
+
+    expect(feedback?.tone).toBe("success");
+    expect(feedback?.title.key).toBe("non_winning_success_title_weather");
+  });
+
+  it("names future value when points are scored without spending a card", () => {
+    const race = result("team_2", "team_1");
+    race.classification[1]!.position = 6;
+    race.classification[1]!.points = 8;
+    race.classification[1]!.credits = 55;
+    race.classification[1]!.positionChange = -1;
+
+    const feedback = deriveNonWinningFeedback(race, "team_1", { teamId: "team_1", approach: "prudent", preparation: "reliability", cardId: null });
+
+    expect(feedback?.tone).toBe("success");
+    expect(feedback?.title.key).toBe("non_winning_success_title_economy");
+  });
+
+  it("does not label a poor zero-point loss as success", () => {
+    const race = result("team_2", "team_1");
+    race.classification[1]!.position = 8;
+    race.classification[1]!.points = 0;
+    race.classification[1]!.positionChange = -3;
+
+    const feedback = deriveNonWinningFeedback(race, "team_1", { teamId: "team_1", approach: "aggressive", preparation: "speed", cardId: "launch_boost" });
+
+    expect(feedback?.tone).toBe("miss");
+    expect(feedback?.title.key).toBe("non_winning_miss_title");
   });
 });
 

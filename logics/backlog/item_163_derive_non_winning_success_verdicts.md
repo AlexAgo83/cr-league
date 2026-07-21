@@ -1,10 +1,10 @@
 ## item_163_derive_non_winning_success_verdicts - Derive non-winning success verdicts
 > From version: 0.3.11
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Result interpretation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -29,12 +29,17 @@
 - AC4: No simulation/reward/standings changes.
 
 # AC Traceability
-- request-AC1 -> This backlog slice. Proof: AC2: Three deterministic non-winning success patterns are supported.
-- request-AC2 -> This backlog slice. Proof: AC3: Poor results do not receive success verdicts.
-- request-AC3 -> This backlog slice. Proof: AC4: No simulation/reward/standings changes.
-- request-AC4 -> This backlog slice. Proof: AC4: No simulation/reward/standings changes.
-- request-AC6 -> This backlog slice. Proof: AC4: No simulation/reward/standings changes.
-- request-AC7 -> This backlog slice. Proof: AC4: No simulation/reward/standings changes.
+- request-AC1 -> This backlog slice. Proof: `deriveNonWinningFeedback` emits success verdicts for concrete non-winning outcomes.
+- request-AC2 -> This backlog slice. Proof: helper branches cover held/improved position, rain/weather-card mitigation, and points/credits without card spend.
+- request-AC3 -> This backlog slice. Proof: helper returns a miss verdict for poor zero-point losses.
+- request-AC4 -> This backlog slice. Proof: helper is derived in the web app and does not mutate result storage, rewards, standings, or simulation data.
+- request-AC6 -> This backlog slice. Proof: `helpers.test.ts` covers all three success branches and the negative miss branch.
+- request-AC7 -> This backlog slice. Proof: covered by the task closeout validation suite.
+
+# Notes
+- Implemented in `apps/web/src/app/helpers.ts` via `deriveNonWinningFeedback`.
+- Task `task_069_orchestrate_non_winning_success_feedback` owns closeout validation.
+- Task `task_069_orchestrate_non_winning_success_feedback` was finished via `logics-manager flow finish task` on 2026-07-21.
 
 # Decision framing
 - Product framing: Not needed

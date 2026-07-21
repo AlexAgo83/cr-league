@@ -143,4 +143,29 @@ describe("ReportView", () => {
     expect(keyMomentText).toContain("holds position");
     expect(keyMomentText).toContain("makes a key overtake");
   });
+
+  it("surfaces honest non-winning feedback", () => {
+    const typedBaseState = baseState as unknown as LeagueState;
+    const state = {
+      ...typedBaseState,
+      decisions: [{ teamId: "team_1", approach: "prudent", preparation: "reliability", cardId: null }]
+    } satisfies LeagueState;
+    const result: RaceResult = {
+      grandPrixName: "Hold GP",
+      seed: "hold",
+      resolvedWeather: { start: "dry", early: "dry", mid: "dry", late: "dry", finish: "dry" },
+      classification: [
+        { teamId: "team_2", teamName: "Mika Blitz", position: 1, points: 25, credits: 100, score: 90, positionChange: 1, status: "finished", resultTags: [] },
+        { teamId: "team_1", teamName: "Volt Union", position: 5, points: 10, credits: 60, score: 70, positionChange: 0, status: "finished", resultTags: [] }
+      ],
+      events: [],
+      consumedCards: [],
+      report: { headline: "Test", blocks: [] }
+    };
+
+    render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+
+    expect(screen.getByLabelText("Non-winning outcome").textContent).toContain("Useful result");
+    expect(screen.getByLabelText("Non-winning outcome").textContent).toContain("protected track position");
+  });
 });

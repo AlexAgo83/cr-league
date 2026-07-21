@@ -4,6 +4,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import { displayLapForEvent, maxEventLap } from "../app/lapDisplay.js";
 import {
   buildRaceVerdict,
+  deriveNonWinningFeedback,
   eventReportText,
   raceRecapCards,
   resultHeadline,
@@ -44,6 +45,7 @@ export function ReportView({
   const keyEvents = keyMomentEvents(result.events, rawMaxLap, circuit.laps);
   const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
   const verdict = buildRaceVerdict(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
+  const nonWinningFeedback = deriveNonWinningFeedback(result, playerTeamId, playerDecision);
   const recap = [
     {
       className: "difference",
@@ -105,6 +107,12 @@ export function ReportView({
           <p>{translateLine(verdict.cause, tt)}</p>
           <small>{translateLine(verdict.tryNext, tt)}</small>
         </section>
+        {nonWinningFeedback ? (
+          <section className={`non-winning-feedback ${nonWinningFeedback.tone}`} aria-label={tt("non_winning_feedback_label")}>
+            <strong>{translateLine(nonWinningFeedback.title, tt)}</strong>
+            <p>{translateLine(nonWinningFeedback.body, tt)}</p>
+          </section>
+        ) : null}
         <ol className="report-podium">
           {result.classification.map((entry) => (
             <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>

@@ -1384,7 +1384,7 @@ label small {
   --color-muted: rgb(248 243 232 / 0.78);
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.9), rgb(16 14 18 / 0.48)),
-    url("/assets/crl/onboarding-chrono.png") center / cover no-repeat,
+    url("/assets/crl/onboarding-chrono.webp") center / cover no-repeat,
     linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
   color: var(--color-text);
@@ -1883,7 +1883,7 @@ label small {
   --color-muted: rgb(248 243 232 / 0.78);
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.42)),
-    url("/assets/crl/plan-header.png") center / cover no-repeat,
+    url("/assets/crl/plan-header.webp") center / cover no-repeat,
     linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
   color: var(--color-text);

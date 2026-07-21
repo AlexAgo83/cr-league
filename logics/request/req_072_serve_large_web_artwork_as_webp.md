@@ -1,9 +1,9 @@
 ## req_072_serve_large_web_artwork_as_webp - Serve large web artwork as WebP
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Medium
 > Theme: Asset delivery performance
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -26,6 +26,13 @@
 - AC3: PNG source files remain available only if they are required as fallbacks or source masters; otherwise the choice to remove or keep them is documented.
 - AC4: The public/dist asset size decreases compared with the post-PNG-optimization baseline.
 - AC5: Build, typecheck, lint, unit tests, and representative visual/e2e checks pass.
+
+# AC Traceability
+- AC1 -> `item_170_convert_largest_artwork_assets_to_webp`. Proof: seven selected assets were converted to WebP at `1672x941`, with 74.3%-81.3% smaller files.
+- AC2 -> `item_170_convert_largest_artwork_assets_to_webp`. Proof: targeted CSS and React references now point to `.webp`, and the production build includes those WebP files.
+- AC3 -> `item_170_convert_largest_artwork_assets_to_webp`. Proof: replaced PNGs were removed from `public`; fallback was not kept because the target browsers support WebP.
+- AC4 -> `item_170_convert_largest_artwork_assets_to_webp`. Proof: `apps/web/dist` decreased from 22720 KB to 19264 KB and `apps/web/public/assets/crl` from 19220 KB to 14832 KB.
+- AC5 -> `item_170_convert_largest_artwork_assets_to_webp`. Proof: build, typecheck, lint, unit tests, e2e, dimension check, and Logics validation passed.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

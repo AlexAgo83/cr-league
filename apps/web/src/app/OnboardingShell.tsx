@@ -16,14 +16,14 @@ export const ONBOARDING_HELP_KEYS = {
 export const ONBOARDING_HELP_IMAGES = {
   race: "/assets/crl/track-briefing.png",
   plan: "/assets/crl/strategy-cards.png",
-  garage: "/assets/crl/garage-empty.png"
+  garage: "/assets/crl/garage-empty.webp"
 } as const;
 
 const LEAGUE_ONBOARDING_IMAGES = [
-  "/assets/crl/onboarding-pit-wall.png",
-  "/assets/crl/onboarding-setup.png",
-  "/assets/crl/onboarding-chrono.png",
-  "/assets/crl/onboarding-season.png"
+  "/assets/crl/onboarding-pit-wall.webp",
+  "/assets/crl/onboarding-setup.webp",
+  "/assets/crl/onboarding-chrono.webp",
+  "/assets/crl/onboarding-season.webp"
 ] as const;
 
 export type OnboardingHelpTopic = keyof typeof ONBOARDING_HELP_KEYS;

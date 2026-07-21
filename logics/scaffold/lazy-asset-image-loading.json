@@ -1,0 +1,101 @@
+{
+  "title": "Lazy-load non-critical web artwork",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/src/features/AssetImage.tsx",
+    "apps/web/src/features/ModalHero.tsx",
+    "apps/web/src/app/OnboardingShell.tsx",
+    "apps/web/src/app/AppModals.tsx",
+    "apps/web/src/app/AppOverlays.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "Current diagnostic: many artwork images are mounted in modals, onboarding help, garage panels, or secondary views and are not critical to the initial app shell.",
+    "Current diagnostic: lazy loading should be centralized in AssetImage where possible instead of repeating loading attributes at every call site."
+  ],
+  "request": {
+    "complexity": "Low",
+    "theme": "Frontend performance",
+    "needs": [
+      "Avoid eager decoding/downloading of non-critical artwork that is below the fold, inside modals, or behind secondary workflows.",
+      "Centralize image loading defaults so new artwork gets the correct behavior automatically.",
+      "Keep first-screen hero imagery eager only where it is truly needed for perceived load quality.",
+      "Preserve accessibility and alt behavior for decorative and informative images."
+    ],
+    "context": [
+      "The repo has an AssetImage component used by ModalHero and other artwork surfaces.",
+      "Most ModalHero images are decorative and can use empty alt text with async decoding.",
+      "Some first-screen backgrounds are CSS backgrounds and are not affected by img loading attributes.",
+      "The implementation should be a small component-level change, not a new image-loading library."
+    ],
+    "acceptance_criteria": [
+      "AC1: AssetImage defaults to lazy loading and async decoding for non-critical images.",
+      "AC2: Callers can opt into eager loading for first-screen or priority images without duplicating component code.",
+      "AC3: ModalHero and secondary artwork use lazy loading by default unless explicitly marked as priority.",
+      "AC4: Existing alt text semantics are preserved and lint/a11y rules pass.",
+      "AC5: Typecheck, lint, unit tests, build, and representative app flows pass."
+    ]
+  },
+  "product": {
+    "title": "Lazy Artwork Loading Product Brief",
+    "overview": "Make CR League's reusable image component lazy-load non-critical artwork by default so rich visuals do not compete with the first interaction path.",
+    "goals": [
+      "Reduce unnecessary initial image work.",
+      "Keep image behavior centralized and predictable.",
+      "Preserve priority loading for first-screen images where needed.",
+      "Avoid dependencies and broad call-site churn."
+    ],
+    "non_goals": [
+      "Do not change artwork files or formats.",
+      "Do not lazy-load CSS background images in this slice.",
+      "Do not implement custom IntersectionObserver logic.",
+      "Do not redesign ModalHero or image layout."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add lazy defaults to AssetImage",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Image loading performance",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5"],
+      "problem": [
+        "Artwork inside modals and secondary screens can be decoded or downloaded earlier than needed.",
+        "If loading attributes are added manually per image, future call sites can easily miss the convention.",
+        "A component-level default is the smallest maintainable fix."
+      ],
+      "scope_in": [
+        "Inspect AssetImage props and all call sites before editing.",
+        "Add loading and decoding defaults to AssetImage.",
+        "Add a minimal priority/eager escape hatch if current first-screen images use AssetImage.",
+        "Update only call sites that must remain eager.",
+        "Add or update the smallest relevant test if the component has coverage."
+      ],
+      "scope_out": [
+        "Adding a lazy-load polyfill.",
+        "Changing CSS background image behavior.",
+        "Converting images to WebP or resizing assets."
+      ],
+      "acceptance_criteria": [
+        "AC1: Rendered non-priority AssetImage elements include loading=\"lazy\" and decoding=\"async\".",
+        "AC2: Priority call sites can render loading=\"eager\" when needed.",
+        "AC3: Tests and build pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate lazy artwork loading",
+    "plan": [
+      "Read AssetImage and its call sites.",
+      "Add lazy/async defaults with one priority escape hatch if needed.",
+      "Update only eager-critical call sites.",
+      "Run typecheck, lint, unit tests, and build.",
+      "Record which images remain eager and why."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/lazy-asset-image-loading.json",
+    "mode": "summary-only",
+    "profile": "tiny"
+  }
+}

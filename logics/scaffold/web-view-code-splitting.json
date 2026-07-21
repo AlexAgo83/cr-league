@@ -1,0 +1,104 @@
+{
+  "title": "Split large web views from the initial bundle",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/package.json",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "apps/web/src/features/ChampionshipView.tsx",
+    "apps/web/src/features/ReportView.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/styles/layout.css",
+    "Current diagnostic: the web production build emits one main JS bundle around 714 kB uncompressed / 200 kB gzip, and the app currently has no React.lazy or dynamic imports in source.",
+    "Current diagnostic: secondary views such as garage, championship, report, and replay are not required for the first interactive screen but are included in the initial bundle."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Frontend performance",
+    "needs": [
+      "Reduce initial JavaScript downloaded and parsed by moving large secondary screens behind dynamic imports.",
+      "Keep the core league shell, navigation, authentication/profile state, and first useful screen immediately available.",
+      "Preserve every existing route/view transition, modal, and replay/report access path while splitting code.",
+      "Give future contributors a clear pattern for lazily loaded views without adding routing or state-management dependencies."
+    ],
+    "context": [
+      "The app is a Vite React workspace under apps/web.",
+      "The current dependency set is intentionally small: React, React DOM, Vite, and local shared package.",
+      "No router library is currently used, so code-splitting should fit the existing app state/view switch rather than introducing a routing framework.",
+      "Build warnings currently mention chunks over 500 kB after minification."
+    ],
+    "acceptance_criteria": [
+      "AC1: Garage, championship, report, and replay views are loaded through React.lazy or equivalent dynamic imports only when their view is selected.",
+      "AC2: The initial app shell keeps rendering without a blank page, with a small loading fallback that matches the existing visual system.",
+      "AC3: Switching to and from split views preserves current state, selected league, active GP/chrono context, and modal behavior.",
+      "AC4: The production build emits separate chunks for at least two secondary views and reduces the initial JS chunk compared with the pre-change baseline.",
+      "AC5: Typecheck, lint, unit tests, build, and the private league e2e flow pass."
+    ]
+  },
+  "product": {
+    "title": "Web View Code Splitting Product Brief",
+    "overview": "Reduce CR League's initial web payload by lazy-loading secondary application views while keeping the first screen fast, stable, and visually consistent.",
+    "goals": [
+      "Move heavy non-initial views out of the initial JavaScript bundle.",
+      "Keep the existing state-driven app architecture intact.",
+      "Provide a simple lazy-loading pattern that future views can reuse.",
+      "Measure the build output before and after the change."
+    ],
+    "non_goals": [
+      "Do not add a router library or replace the app shell.",
+      "Do not redesign navigation, loading screens, reports, replay, garage, or championship UI.",
+      "Do not split every small component; target only views that materially affect the bundle.",
+      "Do not change API contracts, persistence, gameplay, or i18n copy unless a fallback label already exists."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Lazy-load secondary web views",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Frontend performance",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5"],
+      "problem": [
+        "The current Vite build places the application into one main JavaScript chunk around 714 kB uncompressed.",
+        "Replay, reports, garage, and championship screens are not needed before a user chooses those surfaces.",
+        "Loading every major view upfront increases parse and execution cost on mobile."
+      ],
+      "scope_in": [
+        "Record the current Vite build chunk sizes as a baseline.",
+        "Introduce React.lazy and Suspense around secondary views from the existing App.tsx view switch.",
+        "Keep shared primitives, shell state, and frequently used controls eagerly loaded.",
+        "Use the existing panel/loading visual language for the fallback.",
+        "Verify navigation into each split view from normal UI flows, including report and replay entry points."
+      ],
+      "scope_out": [
+        "Adding a new router or bundle analysis dependency.",
+        "Splitting tiny helper modules with no measurable impact.",
+        "Changing visible workflow copy or game behavior."
+      ],
+      "acceptance_criteria": [
+        "AC1: Dynamic imports are present for the selected secondary views.",
+        "AC2: The initial JS chunk is smaller than the recorded baseline.",
+        "AC3: Lazy loading never leaves the app shell blank or inaccessible.",
+        "AC4: Existing tests and e2e pass without weakening assertions."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate web view code splitting",
+    "plan": [
+      "Run a production build and record the current chunk sizes.",
+      "Identify the App.tsx switch points that mount garage, championship, report, and replay surfaces.",
+      "Wrap the selected views in React.lazy/Suspense with one existing-style fallback.",
+      "Run build and compare chunk output against the baseline.",
+      "Run typecheck, lint, unit tests, and private-league e2e; record validation evidence in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/web-view-code-splitting.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

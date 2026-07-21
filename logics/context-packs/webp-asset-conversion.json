@@ -1,0 +1,280 @@
+{
+  "budgets": {
+    "max_docs": 12,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_072_serve_large_web_artwork_as_webp item_170_convert_largest_artwork_assets_to_webp task_073_orchestrate_webp_artwork_conversion --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_170_convert_largest_artwork_assets_to_webp"
+        ],
+        "prod": [
+          "prod_036_webp_artwork_delivery_product_brief"
+        ],
+        "req": [
+          "req_072_serve_large_web_artwork_as_webp"
+        ],
+        "task": [
+          "task_073_orchestrate_webp_artwork_conversion"
+        ]
+      },
+      "path": "logics/product/prod_036_webp_artwork_delivery_product_brief.md",
+      "ref": "prod_036_webp_artwork_delivery_product_brief",
+      "status": "Proposed",
+      "title": "WebP Artwork Delivery Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, serve large web artwork as webp, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Serve large web artwork as WebP",
+        "use when": "You need to implement or review the scaffolded workflow for Serve large web artwork as WebP."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_170_convert_largest_artwork_assets_to_webp"
+        ],
+        "prod": [
+          "prod_036_webp_artwork_delivery_product_brief"
+        ],
+        "req": [
+          "req_072_serve_large_web_artwork_as_webp"
+        ]
+      },
+      "path": "logics/request/req_072_serve_large_web_artwork_as_webp.md",
+      "ref": "req_072_serve_large_web_artwork_as_webp",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Serve large web artwork as WebP"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, convert largest artwork assets to webp, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Convert largest artwork assets to WebP",
+        "use when": "Implementing the scaffolded slice for Convert largest artwork assets to WebP."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_170_convert_largest_artwork_assets_to_webp"
+        ],
+        "prod": [
+          "prod_036_webp_artwork_delivery_product_brief"
+        ],
+        "req": [
+          "req_072_serve_large_web_artwork_as_webp"
+        ],
+        "task": [
+          "task_073_orchestrate_webp_artwork_conversion"
+        ]
+      },
+      "path": "logics/backlog/item_170_convert_largest_artwork_assets_to_webp.md",
+      "ref": "item_170_convert_largest_artwork_assets_to_webp",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Convert largest artwork assets to WebP"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_170_convert_largest_artwork_assets_to_webp"
+        ],
+        "prod": [
+          "prod_036_webp_artwork_delivery_product_brief"
+        ],
+        "req": [
+          "req_072_serve_large_web_artwork_as_webp"
+        ],
+        "task": [
+          "task_073_orchestrate_webp_artwork_conversion"
+        ]
+      },
+      "path": "logics/product/prod_036_webp_artwork_delivery_product_brief.md",
+      "ref": "prod_036_webp_artwork_delivery_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "WebP Artwork Delivery Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate WebP artwork conversion",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_170_convert_largest_artwork_assets_to_webp"
+        ],
+        "prod": [
+          "prod_036_webp_artwork_delivery_product_brief"
+        ],
+        "req": [
+          "req_072_serve_large_web_artwork_as_webp"
+        ],
+        "task": [
+          "task_073_orchestrate_webp_artwork_conversion"
+        ]
+      },
+      "path": "logics/tasks/task_073_orchestrate_webp_artwork_conversion.md",
+      "ref": "task_073_orchestrate_webp_artwork_conversion",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate WebP artwork conversion"
+    }
+  ],
+  "estimates": {
+    "char_count": 3279,
+    "companion_doc_count": 1,
+    "doc_count": 4
+  },
+  "generated_at": "2026-07-21T06:39:43Z",
+  "handoff": {
+    "companion_doc_count": 1,
+    "enabled": true,
+    "source_refs": [
+      "req_072_serve_large_web_artwork_as_webp",
+      "item_170_convert_largest_artwork_assets_to_webp",
+      "task_073_orchestrate_webp_artwork_conversion"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 729,
+      "fr": 729
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_072_serve_large_web_artwork_as_webp,item_170_convert_largest_artwork_assets_to_webp,task_073_orchestrate_webp_artwork_conversion",
+  "refs": [
+    "req_072_serve_large_web_artwork_as_webp",
+    "item_170_convert_largest_artwork_assets_to_webp",
+    "task_073_orchestrate_webp_artwork_conversion"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "version_metadata: evidence targets a different commit",
+      "changelog: evidence targets a different commit",
+      "local_validation: evidence targets a different commit",
+      "git_push: evidence targets a different commit",
+      "ci: evidence targets a different commit"
+    ],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "version_metadata: evidence targets a different commit",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "blocked",
+    "target_version": "0.3.26"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_073_orchestrate_webp_artwork_conversion.md",
+      "ref": "task_073_orchestrate_webp_artwork_conversion"
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "title": "Audit circuit data impact before optimizing route loading",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/app/circuitRoutes",
+    "apps/web/src/features/CircuitMap.tsx",
+    "packages/shared/src/domain/circuits.ts",
+    "Current diagnostic: several circuit route files are 300 to 580 lines each, and all detailed route data may contribute to the initial bundle if imported eagerly.",
+    "Current diagnostic: this is not yet proven to be a major byte problem compared with images and the main app chunk, so the first task should measure before changing architecture."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Frontend data loading performance",
+    "needs": [
+      "Measure how much detailed circuit route data contributes to the initial web bundle before optimizing it.",
+      "Avoid premature route-data architecture changes if the byte impact is small.",
+      "If route data is material, load detailed circuit geometry only when the map needs that circuit.",
+      "Keep shared circuit identity, laps, weather traits, and web display routes aligned."
+    ],
+    "context": [
+      "Circuit identity data exists in the shared package while detailed SVG/display route geometry exists under apps/web/src/app/circuitRoutes.",
+      "CircuitMap renders route geometry and car positions from the web route data.",
+      "Earlier replay work already depends on circuit lap counts and route geometry staying coherent.",
+      "The simplest acceptable result may be an audit that proves no optimization is currently needed."
+    ],
+    "acceptance_criteria": [
+      "AC1: A repeatable measurement reports the current byte contribution of detailed circuit route modules to the web build or source bundle.",
+      "AC2: The task documents whether route-data lazy loading is worth doing now, with a threshold and measured evidence.",
+      "AC3: If implemented, detailed route modules are dynamically loaded by circuit id without breaking CircuitMap, replay, chrono, or GP views.",
+      "AC4: If deferred, the corpus closeout records why the measured cost does not justify the added loading complexity.",
+      "AC5: Typecheck, lint, unit tests, build, and private-league e2e pass."
+    ]
+  },
+  "product": {
+    "title": "Circuit Route Loading Audit Product Brief",
+    "overview": "Measure and, only if justified, reduce the initial bundle cost of detailed circuit geometry while preserving map, replay, and simulation coherence.",
+    "goals": [
+      "Make a measured decision about circuit route lazy loading.",
+      "Avoid speculative complexity if route modules are not a meaningful payload source.",
+      "Keep circuit identities and display routes aligned.",
+      "Leave a clear threshold for future circuit additions."
+    ],
+    "non_goals": [
+      "Do not redraw or redesign circuits.",
+      "Do not change race simulation, lap counts, or replay behavior unless a loading boundary requires a small adapter.",
+      "Do not introduce a data fetching endpoint for static circuit routes.",
+      "Do not add a bundle analyzer dependency unless simple Vite output is insufficient."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Measure and decide on circuit route lazy loading",
+      "priority": "Low",
+      "complexity": "Medium",
+      "theme": "Measured performance",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5"],
+      "problem": [
+        "Detailed circuit route modules are visibly large in source lines, but line count does not prove a runtime payload problem.",
+        "Dynamic route loading could add async state to map and replay flows, so it should only be added if the measured bundle gain is meaningful.",
+        "As more circuits are added, route data may become a clearer optimization target."
+      ],
+      "scope_in": [
+        "Measure the current compiled contribution of circuit route modules using build output, source inspection, or a temporary analyzer.",
+        "Define a threshold for implementing lazy loading now, such as a meaningful initial chunk reduction or expected near-term circuit growth.",
+        "If above threshold, implement circuit-id dynamic imports and loading states in the smallest number of modules.",
+        "If below threshold, leave code unchanged and document the measurement.",
+        "Add tests or assertions that route lookup failures are handled cleanly if lazy loading is implemented."
+      ],
+      "scope_out": [
+        "Optimizing unrelated app code.",
+        "Reworking the circuit data model without measured need.",
+        "Changing map visuals or replay choreography."
+      ],
+      "acceptance_criteria": [
+        "AC1: The implementation agent can point to measured circuit route byte cost.",
+        "AC2: Either route lazy loading is shipped with green gates, or the decision to defer is backed by measurement.",
+        "AC3: Existing circuit map, chrono, GP, and replay flows remain stable."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate circuit route loading audit",
+    "plan": [
+      "Measure the current route module size contribution using the smallest available tooling.",
+      "Decide whether the measured cost crosses the threshold for lazy loading.",
+      "If yes, implement dynamic circuit route imports and required loading/error states.",
+      "If no, close the work as a documented deferral with evidence.",
+      "Run typecheck, lint, tests, build, and private-league e2e."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/circuit-data-loading-audit.json",
+    "mode": "summary-only",
+    "profile": "tiny"
+  }
+}

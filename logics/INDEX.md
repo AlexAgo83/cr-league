@@ -50,6 +50,11 @@
 | [prod_031_plan_risk_readability_product_brief](product/prod_031_plan_risk_readability_product_brief.md) | Plan Risk Readability Product Brief | Proposed |  |  | product/prod_031_plan_risk_readability_product_brief.md |
 | [prod_032_non_winning_success_feedback_product_brief](product/prod_032_non_winning_success_feedback_product_brief.md) | Non-winning Success Feedback Product Brief | Proposed |  |  | product/prod_032_non_winning_success_feedback_product_brief.md |
 | [prod_033_beta_support_hardening_product_brief](product/prod_033_beta_support_hardening_product_brief.md) | Beta Support Hardening Product Brief | Proposed |  |  | product/prod_033_beta_support_hardening_product_brief.md |
+| [prod_034_web_view_code_splitting_product_brief](product/prod_034_web_view_code_splitting_product_brief.md) | Web View Code Splitting Product Brief | Proposed |  |  | product/prod_034_web_view_code_splitting_product_brief.md |
+| [prod_035_web_stylesheet_modularization_product_brief](product/prod_035_web_stylesheet_modularization_product_brief.md) | Web Stylesheet Modularization Product Brief | Proposed |  |  | product/prod_035_web_stylesheet_modularization_product_brief.md |
+| [prod_036_webp_artwork_delivery_product_brief](product/prod_036_webp_artwork_delivery_product_brief.md) | WebP Artwork Delivery Product Brief | Proposed |  |  | product/prod_036_webp_artwork_delivery_product_brief.md |
+| [prod_037_lazy_artwork_loading_product_brief](product/prod_037_lazy_artwork_loading_product_brief.md) | Lazy Artwork Loading Product Brief | Proposed |  |  | product/prod_037_lazy_artwork_loading_product_brief.md |
+| [prod_038_circuit_route_loading_audit_product_brief](product/prod_038_circuit_route_loading_audit_product_brief.md) | Circuit Route Loading Audit Product Brief | Proposed |  |  | product/prod_038_circuit_route_loading_audit_product_brief.md |
 
 ## Roadmaps
 
@@ -129,9 +134,14 @@
 | [req_064_mobile_modal_hygiene_and_real_playback_icons](request/req_064_mobile_modal_hygiene_and_real_playback_icons.md) | Mobile modal hygiene and real playback icons | Done |  |  | request/req_064_mobile_modal_hygiene_and_real_playback_icons.md |
 | [req_065_home_splash_landing_screen_with_floating_title_and_press_start](request/req_065_home_splash_landing_screen_with_floating_title_and_press_start.md) | Home splash landing screen with floating title and PRESS START | Done |  |  | request/req_065_home_splash_landing_screen_with_floating_title_and_press_start.md |
 | [req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup](request/req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup.md) | Post-splash playtest polish: mobile header and root shell cleanup | Done |  |  | request/req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup.md |
-| [req_067_plan_risk_readability_layer](request/req_067_plan_risk_readability_layer.md) | Plan risk readability layer | Draft |  |  | request/req_067_plan_risk_readability_layer.md |
+| [req_067_plan_risk_readability_layer](request/req_067_plan_risk_readability_layer.md) | Plan risk readability layer | Done |  |  | request/req_067_plan_risk_readability_layer.md |
 | [req_068_non_winning_success_feedback](request/req_068_non_winning_success_feedback.md) | Non-winning success feedback | Draft |  |  | request/req_068_non_winning_success_feedback.md |
-| [req_069_beta_support_hardening](request/req_069_beta_support_hardening.md) | Beta support hardening | Draft |  |  | request/req_069_beta_support_hardening.md |
+| [req_069_beta_support_hardening](request/req_069_beta_support_hardening.md) | Beta support hardening | Done |  |  | request/req_069_beta_support_hardening.md |
+| [req_070_split_large_web_views_from_the_initial_bundle](request/req_070_split_large_web_views_from_the_initial_bundle.md) | Split large web views from the initial bundle | Draft |  |  | request/req_070_split_large_web_views_from_the_initial_bundle.md |
+| [req_071_modularize_the_large_web_layout_stylesheet](request/req_071_modularize_the_large_web_layout_stylesheet.md) | Modularize the large web layout stylesheet | Draft |  |  | request/req_071_modularize_the_large_web_layout_stylesheet.md |
+| [req_072_serve_large_web_artwork_as_webp](request/req_072_serve_large_web_artwork_as_webp.md) | Serve large web artwork as WebP | Draft |  |  | request/req_072_serve_large_web_artwork_as_webp.md |
+| [req_073_lazy_load_non_critical_web_artwork](request/req_073_lazy_load_non_critical_web_artwork.md) | Lazy-load non-critical web artwork | Draft |  |  | request/req_073_lazy_load_non_critical_web_artwork.md |
+| [req_074_audit_circuit_data_impact_before_optimizing_route_loading](request/req_074_audit_circuit_data_impact_before_optimizing_route_loading.md) | Audit circuit data impact before optimizing route loading | Draft |  |  | request/req_074_audit_circuit_data_impact_before_optimizing_route_loading.md |
 
 ## Backlog
 
@@ -297,13 +307,18 @@
 | [item_158_build_the_splash_layout_header_covering_background_floating_titles_press_start](backlog/item_158_build_the_splash_layout_header_covering_background_floating_titles_press_start.md) | Build the splash layout: header, covering background, floating titles, PRESS START | Done |  | 100% | backlog/item_158_build_the_splash_layout_header_covering_background_floating_titles_press_start.md |
 | [item_159_compact_the_splash_header_on_narrow_mobile](backlog/item_159_compact_the_splash_header_on_narrow_mobile.md) | Compact the splash header on narrow mobile | Done |  | 100% | backlog/item_159_compact_the_splash_header_on_narrow_mobile.md |
 | [item_160_clean_up_app_root_locale_ownership_and_hooks_warning](backlog/item_160_clean_up_app_root_locale_ownership_and_hooks_warning.md) | Clean up App root locale ownership and Hooks warning | Done |  | 100% | backlog/item_160_clean_up_app_root_locale_ownership_and_hooks_warning.md |
-| [item_161_derive_deterministic_plan_risk_reads](backlog/item_161_derive_deterministic_plan_risk_reads.md) | Derive deterministic plan risk reads | Ready |  | 0% | backlog/item_161_derive_deterministic_plan_risk_reads.md |
-| [item_162_render_plan_risk_summary_before_commitment](backlog/item_162_render_plan_risk_summary_before_commitment.md) | Render plan risk summary before commitment | Ready |  | 0% | backlog/item_162_render_plan_risk_summary_before_commitment.md |
+| [item_161_derive_deterministic_plan_risk_reads](backlog/item_161_derive_deterministic_plan_risk_reads.md) | Derive deterministic plan risk reads | Done |  | 100% | backlog/item_161_derive_deterministic_plan_risk_reads.md |
+| [item_162_render_plan_risk_summary_before_commitment](backlog/item_162_render_plan_risk_summary_before_commitment.md) | Render plan risk summary before commitment | Done |  | 100% | backlog/item_162_render_plan_risk_summary_before_commitment.md |
 | [item_163_derive_non_winning_success_verdicts](backlog/item_163_derive_non_winning_success_verdicts.md) | Derive non-winning success verdicts | Ready |  | 0% | backlog/item_163_derive_non_winning_success_verdicts.md |
 | [item_164_surface_non_winning_feedback_in_reports](backlog/item_164_surface_non_winning_feedback_in_reports.md) | Surface non-winning feedback in reports | Ready |  | 0% | backlog/item_164_surface_non_winning_feedback_in_reports.md |
-| [item_165_add_admin_filters_and_pagination](backlog/item_165_add_admin_filters_and_pagination.md) | Add admin filters and pagination | Ready |  | 0% | backlog/item_165_add_admin_filters_and_pagination.md |
-| [item_166_add_safe_admin_test_data_cleanup](backlog/item_166_add_safe_admin_test_data_cleanup.md) | Add safe admin test-data cleanup | Ready |  | 0% | backlog/item_166_add_safe_admin_test_data_cleanup.md |
-| [item_167_write_beta_support_runbooks_and_known_limits](backlog/item_167_write_beta_support_runbooks_and_known_limits.md) | Write beta support runbooks and known limits | Ready |  | 0% | backlog/item_167_write_beta_support_runbooks_and_known_limits.md |
+| [item_165_add_admin_filters_and_pagination](backlog/item_165_add_admin_filters_and_pagination.md) | Add admin filters and pagination | Done |  | 100% | backlog/item_165_add_admin_filters_and_pagination.md |
+| [item_166_add_safe_admin_test_data_cleanup](backlog/item_166_add_safe_admin_test_data_cleanup.md) | Add safe admin test-data cleanup | Done |  | 100% | backlog/item_166_add_safe_admin_test_data_cleanup.md |
+| [item_167_write_beta_support_runbooks_and_known_limits](backlog/item_167_write_beta_support_runbooks_and_known_limits.md) | Write beta support runbooks and known limits | Done |  | 100% | backlog/item_167_write_beta_support_runbooks_and_known_limits.md |
+| [item_168_lazy_load_secondary_web_views](backlog/item_168_lazy_load_secondary_web_views.md) | Lazy-load secondary web views | Ready |  | 0% | backlog/item_168_lazy_load_secondary_web_views.md |
+| [item_169_extract_feature_css_from_layout_css](backlog/item_169_extract_feature_css_from_layout_css.md) | Extract feature CSS from layout.css | Ready |  | 0% | backlog/item_169_extract_feature_css_from_layout_css.md |
+| [item_170_convert_largest_artwork_assets_to_webp](backlog/item_170_convert_largest_artwork_assets_to_webp.md) | Convert largest artwork assets to WebP | Ready |  | 0% | backlog/item_170_convert_largest_artwork_assets_to_webp.md |
+| [item_171_add_lazy_defaults_to_assetimage](backlog/item_171_add_lazy_defaults_to_assetimage.md) | Add lazy defaults to AssetImage | Ready |  | 0% | backlog/item_171_add_lazy_defaults_to_assetimage.md |
+| [item_172_measure_and_decide_on_circuit_route_lazy_loading](backlog/item_172_measure_and_decide_on_circuit_route_lazy_loading.md) | Measure and decide on circuit route lazy loading | Ready |  | 0% | backlog/item_172_measure_and_decide_on_circuit_route_lazy_loading.md |
 
 ## Tasks
 
@@ -376,6 +391,11 @@
 | [task_065_orchestrate_mobile_modal_hygiene_and_playback_icons](tasks/task_065_orchestrate_mobile_modal_hygiene_and_playback_icons.md) | Orchestrate mobile modal hygiene and playback icons | Done | codex | 100% | tasks/task_065_orchestrate_mobile_modal_hygiene_and_playback_icons.md |
 | [task_066_orchestrate_the_home_splash_landing_screen](tasks/task_066_orchestrate_the_home_splash_landing_screen.md) | Orchestrate the home splash landing screen | Done | codex | 100% | tasks/task_066_orchestrate_the_home_splash_landing_screen.md |
 | [task_067_orchestrate_post_splash_playtest_polish](tasks/task_067_orchestrate_post_splash_playtest_polish.md) | Orchestrate post-splash playtest polish | Done | codex | 100% | tasks/task_067_orchestrate_post_splash_playtest_polish.md |
-| [task_068_orchestrate_plan_risk_readability_layer](tasks/task_068_orchestrate_plan_risk_readability_layer.md) | Orchestrate plan risk readability layer | Ready |  | 0% | tasks/task_068_orchestrate_plan_risk_readability_layer.md |
+| [task_068_orchestrate_plan_risk_readability_layer](tasks/task_068_orchestrate_plan_risk_readability_layer.md) | Orchestrate plan risk readability layer | Done |  | 100% | tasks/task_068_orchestrate_plan_risk_readability_layer.md |
 | [task_069_orchestrate_non_winning_success_feedback](tasks/task_069_orchestrate_non_winning_success_feedback.md) | Orchestrate non-winning success feedback | Ready |  | 0% | tasks/task_069_orchestrate_non_winning_success_feedback.md |
-| [task_070_orchestrate_beta_support_hardening](tasks/task_070_orchestrate_beta_support_hardening.md) | Orchestrate beta support hardening | Ready |  | 0% | tasks/task_070_orchestrate_beta_support_hardening.md |
+| [task_070_orchestrate_beta_support_hardening](tasks/task_070_orchestrate_beta_support_hardening.md) | Orchestrate beta support hardening | Done |  | 100% | tasks/task_070_orchestrate_beta_support_hardening.md |
+| [task_071_orchestrate_web_view_code_splitting](tasks/task_071_orchestrate_web_view_code_splitting.md) | Orchestrate web view code splitting | Ready |  | 0% | tasks/task_071_orchestrate_web_view_code_splitting.md |
+| [task_072_orchestrate_web_stylesheet_modularization](tasks/task_072_orchestrate_web_stylesheet_modularization.md) | Orchestrate web stylesheet modularization | Ready |  | 0% | tasks/task_072_orchestrate_web_stylesheet_modularization.md |
+| [task_073_orchestrate_webp_artwork_conversion](tasks/task_073_orchestrate_webp_artwork_conversion.md) | Orchestrate WebP artwork conversion | Ready |  | 0% | tasks/task_073_orchestrate_webp_artwork_conversion.md |
+| [task_074_orchestrate_lazy_artwork_loading](tasks/task_074_orchestrate_lazy_artwork_loading.md) | Orchestrate lazy artwork loading | Ready |  | 0% | tasks/task_074_orchestrate_lazy_artwork_loading.md |
+| [task_075_orchestrate_circuit_route_loading_audit](tasks/task_075_orchestrate_circuit_route_loading_audit.md) | Orchestrate circuit route loading audit | Ready |  | 0% | tasks/task_075_orchestrate_circuit_route_loading_audit.md |

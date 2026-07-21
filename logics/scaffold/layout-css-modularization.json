@@ -1,0 +1,101 @@
+{
+  "title": "Modularize the large web layout stylesheet",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/src/styles/layout.css",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "apps/web/src/features/ChampionshipView.tsx",
+    "apps/web/src/features/ReportView.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "Current diagnostic: apps/web/src/styles/layout.css is about 8,092 lines and the production CSS bundle is about 140 kB uncompressed / 25 kB gzip.",
+    "Current diagnostic: layout.css contains global shell, map, garage, championship, report, setup, modal, and replay styling in one file."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Frontend maintainability and CSS payload",
+    "needs": [
+      "Make the web stylesheet easier to maintain by extracting large feature sections into focused files.",
+      "Avoid risky visual churn: this is a mechanical organization pass, not a redesign.",
+      "Keep global tokens, resets, shell layout, and shared component primitives in a predictable base stylesheet.",
+      "Enable future view-level CSS loading once view code-splitting is in place, without forcing that work into this task."
+    ],
+    "context": [
+      "The current CSS is plain CSS imported by the Vite web app.",
+      "Many UI changes have accumulated in layout.css, making unrelated panels and views easy to disturb.",
+      "The first pass should prioritize maintainability and low-risk extraction; runtime CSS payload gains may require follow-up dynamic CSS loading.",
+      "No CSS-in-JS or component styling dependency should be introduced."
+    ],
+    "acceptance_criteria": [
+      "AC1: layout.css is reduced by moving at least three clearly bounded feature sections into dedicated CSS files.",
+      "AC2: Shared variables, reset/base rules, shell layout, buttons, panels, and modal primitives remain available to all views.",
+      "AC3: The extracted CSS preserves visual behavior for map, garage, championship, report, replay, setup, and modals.",
+      "AC4: The build CSS output remains equivalent or smaller, with no duplicate imports of the same feature file.",
+      "AC5: Typecheck, lint, unit tests, build, and representative e2e screenshots or flows pass."
+    ]
+  },
+  "product": {
+    "title": "Web Stylesheet Modularization Product Brief",
+    "overview": "Split CR League's large monolithic web stylesheet into maintainable feature files while preserving the current UI and preparing the codebase for later route-level CSS loading.",
+    "goals": [
+      "Reduce the blast radius of CSS edits.",
+      "Make feature styles discoverable by area.",
+      "Keep the visual design stable during extraction.",
+      "Create a simple import structure that supports future lazy-loaded CSS."
+    ],
+    "non_goals": [
+      "Do not redesign the UI or rename class names unless required for a conflict.",
+      "Do not adopt CSS modules, CSS-in-JS, Sass, Tailwind, or another styling framework.",
+      "Do not chase tiny gzip wins at the cost of risky selectors.",
+      "Do not change user-facing copy or application behavior."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Extract feature CSS from layout.css",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "CSS maintainability",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5"],
+      "problem": [
+        "One 8,000-line stylesheet mixes unrelated features, increasing the chance that a small UI edit affects another screen.",
+        "Future code-splitting will be cleaner if feature CSS boundaries already exist.",
+        "A large mechanical extraction can be safe if selectors and import order are preserved carefully."
+      ],
+      "scope_in": [
+        "Map layout.css sections by comments and selector groups before moving code.",
+        "Extract at least garage, championship/history, and report/replay styles into dedicated files.",
+        "Keep import order deterministic and document any dependency on base tokens or shared component styles.",
+        "Run visual or e2e checks on affected screens after extraction.",
+        "Leave a short index/import file if that matches the current app import style."
+      ],
+      "scope_out": [
+        "Converting styles to CSS modules or scoped component styles.",
+        "Renaming all selectors.",
+        "Restyling panels, controls, maps, or typography."
+      ],
+      "acceptance_criteria": [
+        "AC1: layout.css is materially shorter and feature CSS files are named after the views they style.",
+        "AC2: No selector is unintentionally duplicated or dropped.",
+        "AC3: Build output and representative UI flows remain green."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate web stylesheet modularization",
+    "plan": [
+      "Inventory layout.css sections and choose the lowest-risk feature blocks to extract.",
+      "Move one feature block at a time into a dedicated CSS file, preserving selector order.",
+      "Run build after the first extraction, then continue with the remaining selected blocks.",
+      "Run lint, typecheck, tests, build, and representative e2e flows or screenshots.",
+      "Record the before/after line counts and any CSS bundle change in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/layout-css-modularization.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

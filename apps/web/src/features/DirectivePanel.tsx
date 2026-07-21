@@ -336,7 +336,7 @@ export function DirectivePanel({
       ) : null}
       <div className="directive-command-row">
         {canRunQualifying ? (
-          <button type="button" className="secondary-button directive-secondary-command" onClick={onQualifying} disabled={disabled}>
+          <button type="button" className="primary-command directive-secondary-command" onClick={onQualifying} disabled={disabled}>
             {tt("action_qualifying")}
           </button>
         ) : null}

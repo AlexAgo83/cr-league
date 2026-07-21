@@ -464,19 +464,26 @@
 .brand-icon-slot {
   display: inline-grid;
   flex: 0 0 auto;
+  height: 30px;
   place-items: center;
   position: relative;
+  width: 86px;
+}
+
+.brand-icon-slot > * {
+  grid-area: 1 / 1;
 }
 
 .brand-loading-spinner {
   animation: pending-feedback-spin 0.8s linear infinite;
-  border: 2px solid rgb(248 243 232 / 0.45);
+  background: rgb(16 14 18 / 0.46);
+  border: 3px solid rgb(248 243 232 / 0.82);
   border-radius: 999px;
   border-top-color: var(--color-accent);
-  height: 24px;
+  box-shadow: 0 0 0 2px rgb(16 14 18 / 0.28);
+  height: 26px;
   pointer-events: none;
-  position: absolute;
-  width: 24px;
+  width: 26px;
   z-index: 3;
 }
 

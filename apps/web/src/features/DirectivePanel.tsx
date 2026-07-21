@@ -145,7 +145,6 @@ export function DirectivePanel({
   primaryCommand,
   qualifyingRunCount = 0,
   qualifyingAttemptsLeft = 0,
-  cardConsumed,
   cardLocked,
   disabled,
   locked,
@@ -165,7 +164,6 @@ export function DirectivePanel({
   primaryCommand: PrimaryCommand;
   qualifyingRunCount?: number;
   qualifyingAttemptsLeft?: number;
-  cardConsumed?: boolean;
   cardLocked?: boolean;
   disabled?: boolean;
   locked?: boolean;
@@ -175,7 +173,6 @@ export function DirectivePanel({
 }) {
   const cardChoices = ["", ...sortCardIdsByName(ownedCardIds, tt)] as Array<"" | CardId>;
   const selectedCardLabel = selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none");
-  const selectedCardWarning = selectedCardId ? { card: selectedCardLabel, action: tt(cardConsumed ? "directive_card_consumed_action" : "directive_card_consumption_warning_action") } : undefined;
   const canRunQualifying = Boolean(onQualifying && !locked && qualifyingAttemptsLeft > 0);
   const hasQualifyingRun = qualifyingRunCount > 0;
   const modifiers = directiveModifiers(form, selectedCardId);
@@ -223,11 +220,6 @@ export function DirectivePanel({
     <section className="panel directive-panel directive-selection-panel">
       <div className="directive-summary-stack">
         <PlanRiskSummary read={planRiskRead} tt={tt} />
-        {selectedCardWarning ? (
-          <p className="directive-lock-note">
-            {selectedCardWarning.card} <strong>{selectedCardWarning.action}</strong>
-          </p>
-        ) : null}
         {locked ? (
           <div className="directive-lock-note">
             <strong>{tt("directive_locked_title")}</strong>

@@ -381,7 +381,7 @@ button.command-icon-button {
 }
 
 .report-hero h2 {
-  font-size: clamp(1.8rem, 3vw, 2.6rem);
+  font-size: clamp(1.35rem, 2vw, 1.8rem);
   line-height: 1;
   margin-bottom: 10px;
 }

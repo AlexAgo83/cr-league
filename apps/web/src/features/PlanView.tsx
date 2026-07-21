@@ -270,7 +270,6 @@ export function PlanView({
           primaryCommand={primaryCommand}
           qualifyingRunCount={playerQualifyingRuns.length}
           qualifyingAttemptsLeft={qualifyingAttemptsLeft}
-          cardConsumed={Boolean(reportResult)}
           cardLocked={cardLocked}
           disabled={disabled}
           locked={locked}

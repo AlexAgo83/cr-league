@@ -46,42 +46,19 @@ describe("DirectivePanel", () => {
     cleanup();
   });
 
-  it("warns that the selected card will be consumed when the GP launches", () => {
+  it("does not show selected-card consumption copy in the plan summary", () => {
     render(<DirectivePanel {...baseProps} setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
-    const warning = document.querySelector(".directive-lock-note") as HTMLElement;
-    expect(warning).not.toBeNull();
-    expect(warning.previousElementSibling?.className).toContain("plan-risk-summary");
-    expect(warning.closest(".directive-summary-stack")).toBeTruthy();
-    expect(warning.textContent).toContain("Rain Grip");
-    expect(warning.querySelector("strong")?.textContent).toBe("will be consumed when this Grand Prix is launched.");
+    expect(document.querySelector(".directive-summary-stack > .directive-lock-note")).toBe(null);
+    expect(document.querySelector(".directive-summary-stack")?.textContent).not.toContain("Rain Grip");
   });
 
-  it("keeps the selected-card warning outside the card sub-screen", () => {
-    render(<DirectivePanel {...baseProps} step="approach" setForm={vi.fn()} onSelectStep={vi.fn()} />);
-
-    const warning = document.querySelector(".directive-summary-stack > .directive-lock-note") as HTMLElement;
-    expect(warning).not.toBeNull();
-    expect(warning.textContent).toContain("Rain Grip");
-    expect(warning.previousElementSibling?.className).toContain("plan-risk-summary");
-  });
-
-  it("shows the locked plan note after the selected-card warning", () => {
+  it("shows the locked plan note after the risk summary", () => {
     render(<DirectivePanel {...baseProps} locked step="approach" setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
     const notes = [...document.querySelectorAll(".directive-summary-stack > .directive-lock-note")];
-    expect(notes.map((note) => note.textContent)).toEqual([
-      "Rain Grip will be consumed when this Grand Prix is launched.",
-      "Plan lockedThis directive is sent for the current Grand Prix. Choices stay visible but cannot be changed."
-    ]);
-  });
-
-  it("says the selected card is consumed after the Grand Prix has run", () => {
-    render(<DirectivePanel {...baseProps} cardConsumed setForm={vi.fn()} onSelectStep={vi.fn()} />);
-
-    const warning = document.querySelector(".directive-summary-stack > .directive-lock-note") as HTMLElement;
-    expect(warning.textContent).toContain("Rain Grip");
-    expect(warning.querySelector("strong")?.textContent).toBe("has been consumed for this Grand Prix.");
+    expect(notes.map((note) => note.textContent)).toEqual(["Plan lockedThis directive is sent for the current Grand Prix. Choices stay visible but cannot be changed."]);
+    expect(notes[0]?.previousElementSibling?.className).toContain("plan-risk-summary");
   });
 
   it("runs the provided primary command from the directive tab", () => {

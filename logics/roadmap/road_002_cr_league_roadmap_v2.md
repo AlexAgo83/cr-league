@@ -19,6 +19,7 @@
 > Semantic edit: 2026-07-21 closed the active 0.3 line at v0.3.26 and moved new performance, maintainability, and beta-readiness work into the 0.4 milestone.
 > Semantic edit: 2026-07-21 split non-shipped 0.3 ideas into an explicit post-0.3 carry-over queue so the closed 0.3 line no longer hides pending work.
 > Semantic edit: 2026-07-21 scaffolded league-state freshness on return (`req_076`) and kept dynamic objectives plus 0.5/0.6/1.0 themes explicitly unscaffolded until evidence warrants them.
+> Semantic edit: 2026-07-21 audit_trial_2107: an AI playtest met the 0.5 card-economy evidence gate (dead cards, dominant cheap cluster), so scaffolded card economy rebalance (`req_081`) and opponent config comparison (`req_082`); sequenced stat differentiation to follow the card rebalance rather than scaffolding it now.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -113,11 +114,12 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 ## 0.5 - Economy and card depth
 - Goal: Add enough card and currency depth for repeated sessions without burying the casual player.
-- Status: Planned; balance kit and 15-card catalogue already exist (see `road_001` 0.4 for the delivered foundation).
+- Status: Opening; the card-economy evidence gate is met (audit_trial_2107 AI playtest), and the first two chains are scaffolded: card economy rebalance (`req_081`) and opponent config comparison (`req_082`).
 - Scope to slice into patches when requests exist: card acquisition variety (draft/sell only after fixed-shop playtest evidence), season rollover economy with partial credit carry-over capped around 25-35%, cosmetic-only champion rewards with a clear palmares/history home, inventory cap tuning only if max 5 cards frustrates or encourages hoarding, catch-up mechanisms that help low-ranked players without making first place feel random, balance telemetry from real playtests, economy rules documented before broadening the card list.
-- Corpus policy: do not scaffold 0.5 request chains until repeated-GP playtest evidence identifies which economy/card pressure is real; split future work into small chains instead of one broad economy corpus.
+- Sequenced next (stat differentiation): the three circuit traits share one formula shape and the trait interaction is far weaker than the flat pace terms (audit cause A), so circuit identity barely changes the best answer. Scaffold a stat-differentiation request only after `req_081` (card economy rebalance) lands, because rebalancing cards shifts the numbers stat work would measure; open it against a fresh AI-playtest baseline and co-design it with the card economy so per-circuit strategies actually diverge.
+- Corpus policy: keep scaffolding 0.5 work as small evidence-backed chains (not one broad economy corpus); each new 0.5 chain still needs its own playtest/balance evidence before it opens, as `req_081`/`req_082` did.
 - Exit signal: players earn and spend across multiple GPs, card choices create visible replay/report moments, and bottom-table players have comeback options while leaders still feel rewarded.
-- Linked docs: `item_004_design_and_implement_the_v1_card_and_inventory_system`, `item_005_define_balancing_and_retention_mechanics_for_social_leagues`, `spec_001_grand_prix_core_loop_and_simulation_v1`.
+- Linked docs: `req_081_rebalance_card_economy_to_remove_dead_cards_and_redundant_duplicates`, `req_082_show_opponents_configurations_for_comparison_after_lock_and_after_the_race`, `item_004_design_and_implement_the_v1_card_and_inventory_system`, `item_005_define_balancing_and_retention_mechanics_for_social_leagues`, `spec_001_grand_prix_core_loop_and_simulation_v1`.
 
 ## 0.6 - Live beta season
 - Goal: Run a real beta season long enough to validate cadence, replay comprehension, economy pressure, and return behavior.

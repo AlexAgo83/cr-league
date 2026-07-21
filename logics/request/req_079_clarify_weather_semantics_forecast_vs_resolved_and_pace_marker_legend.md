@@ -1,9 +1,9 @@
 ## req_079_clarify_weather_semantics_forecast_vs_resolved_and_pace_marker_legend - Clarify weather semantics: forecast vs resolved and pace-marker legend
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Low
 > Theme: Race legibility
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -31,6 +31,11 @@
 - AC5: Meaning is not conveyed by color alone (ADR-006); EN/FR copy is present and compact.
 - AC6: No simulation behavior or weather model changes.
 - AC7: npm run typecheck, npm test, npm run build, npm run lint, and npm run logics:validate pass after implementation.
+
+# Delivery notes
+- The pre-race map weather readout now says the forecast is not final and uses qualitative tendency copy.
+- The replay timeline now labels resolved weather by phase and includes a text legend for pace/race markers and five phase cloud icons.
+- No simulation or weather model code changed.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

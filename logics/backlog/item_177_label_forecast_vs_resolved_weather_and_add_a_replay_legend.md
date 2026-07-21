@@ -1,10 +1,10 @@
 ## item_177_label_forecast_vs_resolved_weather_and_add_a_replay_legend - Label forecast vs resolved weather and add a replay legend
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Race legibility
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,6 +32,12 @@
 - AC3: A legend explains the pace marker and the five-phase cloud mapping, not color-only, with EN/FR copy.
 - AC4: No framing contradicts the model; no simulation change.
 - AC5: Typecheck, test, build, lint, and logics:validate pass.
+
+# Implementation notes
+- `apps/web/src/app/DriveView.tsx` now frames forecast weather as non-final and qualitative.
+- `apps/web/src/features/replay/ReplayProgress.tsx` now labels resolved weather and adds a text legend for markers and phase icons.
+- `apps/web/src/i18n/en.json` and `apps/web/src/i18n/fr.json` carry the new compact copy.
+- `packages/shared/src/simulation/simulateRace.ts` was inspected but not changed.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Pre-race weather reads as a forecast (not final) with a qualitative tendency and no per-phase percentages.
@@ -61,3 +67,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_080_orchestrate_weather_forecast_legibility` was finished via `logics-manager flow finish task` on 2026-07-21.

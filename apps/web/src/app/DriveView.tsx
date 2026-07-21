@@ -148,7 +148,10 @@ export function DriveView({
                     </small>
                     <small className="map-weather-readout">
                       <VisualIcon name={forecastPick as Weather} />
-                      <span>{tt(`weather_${forecastPick}` as TranslationKey)}</span>
+                      <span>
+                        <b>{tt("briefing_forecast_not_final")}</b>
+                        {tt(`weather_tendency_${forecastPick}` as TranslationKey)}
+                      </span>
                     </small>
                   </div>
                   <div className="map-plan-performance">

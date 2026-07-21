@@ -1502,7 +1502,7 @@ label small {
 }
 
 .opponent-config-cells {
-  grid-template-columns: repeat(2, 76px);
+  grid-template-columns: repeat(4, minmax(56px, 76px));
 }
 
 .chrono-session-lap,
@@ -3553,6 +3553,7 @@ label small {
 .opponent-config-table {
   display: grid;
   gap: 8px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 350px), 1fr));
 }
 
 .opponent-config-row {

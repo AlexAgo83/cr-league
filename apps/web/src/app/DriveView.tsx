@@ -1,4 +1,4 @@
-import { DEMO_RACE_INPUT, RACE_SEGMENTS, type RaceDecision, type RaceResult, type TeamLivery, type Weather } from "@cr-league/shared";
+import { DEMO_RACE_INPUT, RACE_SEGMENTS, type RaceDecision, type RaceResult, type RaceSegment, type TeamLivery, type Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "./circuits.js";
 import type { Translator } from "./helpers.js";
@@ -248,13 +248,8 @@ export function DriveView({
 function RaceWeatherModal({ result, forecastWeather, tt, onClose }: { result: RaceResult | null | undefined; forecastWeather: Weather; tt: Translator; onClose: () => void }) {
   const title = tt(result ? "race_weather_info_title" : "race_forecast_info_title");
   const body = tt(result ? "race_weather_info_body" : "race_forecast_info_body");
-  const weatherBySegment: RaceResult["resolvedWeather"] = result?.resolvedWeather ?? {
-    start: forecastWeather,
-    early: forecastWeather,
-    mid: forecastWeather,
-    late: forecastWeather,
-    finish: forecastWeather
-  };
+  const segments = result ? RACE_SEGMENTS : ["start", "finish"] as const;
+  const weatherForSegment = (segment: RaceSegment) => (result ? result.resolvedWeather[segment] : segment === "start" ? "dry" : forecastWeather);
 
   return (
     <Modal label={title} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
@@ -265,13 +260,13 @@ function RaceWeatherModal({ result, forecastWeather, tt, onClose }: { result: Ra
         <span><VisualIcon name="light_rain" /> {tt("replay_weather_phase_legend")}</span>
       </p>
       <ol className="race-weather-phase-list">
-        {RACE_SEGMENTS.map((segment) => (
+        {segments.map((segment) => (
           <li key={segment}>
             <span>
-              <VisualIcon name={weatherBySegment[segment]} />
+              <VisualIcon name={weatherForSegment(segment)} />
               {tt(`segment_${segment}` as TranslationKey)}
             </span>
-            <strong>{tt(`weather_${weatherBySegment[segment]}` as TranslationKey)}</strong>
+            <strong>{tt(`weather_${weatherForSegment(segment)}` as TranslationKey)}</strong>
           </li>
         ))}
       </ol>

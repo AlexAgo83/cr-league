@@ -65,6 +65,25 @@ describe("createQualifyingRuns", () => {
     expect(first.map((run) => run.createdAt)).toEqual(second.map((run) => run.createdAt));
   });
 
+  it("ramps chrono weather from start to finish forecast", () => {
+    const runs = createQualifyingRuns({
+      seed: "qualifying-weather-ramp",
+      teamId: "team",
+      teamName: "Team",
+      decision: { approach: "balanced", preparation: "weather" },
+      primaryTrait: "technical",
+      secondaryTrait: "weather_sensitive",
+      forecast: { dry: 0, light_rain: 0, heavy_rain: 100 },
+      laps: 3
+    });
+
+    expect(runs[0]!.result.resolvedWeather).toMatchObject({
+      start: "dry",
+      mid: "light_rain",
+      finish: "heavy_rain"
+    });
+  });
+
   it("varies across teams and across attempts (seed changes)", () => {
     const base = {
       teamName: "Team",

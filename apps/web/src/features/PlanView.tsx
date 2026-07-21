@@ -259,6 +259,7 @@ export function PlanView({
           circuitTraits={circuitTraits}
           planRiskRead={planRiskRead}
           planRecommendation={planRecommendation}
+          primaryCommand={primaryCommand}
           cardLocked={cardLocked}
           disabled={disabled}
           locked={locked}

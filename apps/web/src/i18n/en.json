@@ -132,6 +132,7 @@
   "plan_report_empty_placeholder": "Coming after the GP",
   "directive_plan_summary": "{approach} pace, {preparation} tires, {pitStrategy} battery, {card}. Test it in chrono, then lock it for the GP.",
   "directive_card_locked": "Qualifying has locked the selected chrono card for this GP.",
+  "directive_card_consumption_warning": "{card} will be consumed when this Grand Prix is launched.",
   "field_league": "League",
   "field_join_code": "Join code",
   "field_team": "Team",

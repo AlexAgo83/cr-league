@@ -1373,6 +1373,11 @@ label small {
   gap: 14px;
 }
 
+.directive-primary-command {
+  justify-self: stretch;
+  width: 100%;
+}
+
 .chrono-report-panel {
   display: grid;
   gap: 14px;

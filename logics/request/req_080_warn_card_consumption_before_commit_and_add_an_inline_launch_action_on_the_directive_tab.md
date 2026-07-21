@@ -1,9 +1,9 @@
 ## req_080_warn_card_consumption_before_commit_and_add_an_inline_launch_action_on_the_directive_tab - Warn card consumption before commit and add an inline launch action on the directive tab
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Low
 > Theme: Plan commit clarity
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -29,6 +29,14 @@
 - AC4: EN/FR copy is present for the consumption warning and the inline action.
 - AC5: No simulation behavior, card consumption rule, reward, or API contract changes.
 - AC6: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation.
+
+# AC Traceability
+- AC1 -> `item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action`. Proof: the selected-card section renders `directive_card_consumption_warning` before plan commit, and the focused component test asserts the Rain Grip warning.
+- AC2 -> `item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action`. Proof: `PlanView` threads the existing `primaryCommand` into `DirectivePanel`; the inline button calls the provided action and renders the provided label.
+- AC3 -> `item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action`. Proof: the inline button reads `primaryCommand.disabled`, and tests assert the disabled state is preserved.
+- AC4 -> `item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action`. Proof: `directive_card_consumption_warning` exists in `en.json` and `fr.json`; inline action labels reuse existing localized primary-command copy.
+- AC5 -> `item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action`. Proof: no shared model, simulation, reward, consumption-rule, or API files changed.
+- AC6 -> `item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action`. Proof: typecheck, lint, full unit tests, build, Playwright e2e, and Logics validation passed.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

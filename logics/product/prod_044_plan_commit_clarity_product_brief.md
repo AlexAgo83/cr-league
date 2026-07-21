@@ -1,6 +1,6 @@
 ## prod_044_plan_commit_clarity_product_brief - Plan Commit Clarity Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_080_warn_card_consumption_before_commit_and_add_an_inline_launch_action_on_the_directive_tab`
 > Related backlog: `item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action`
 > Related task: `task_081_orchestrate_plan_commit_clarity`
@@ -9,6 +9,14 @@
 
 # Overview
 Reduce first-session confusion at the moment of committing a race plan: make card consumption explicit before it happens and let the player launch from the directive tab without hunting for the action.
+
+```mermaid
+flowchart LR
+  Card[Selected card] --> Warning[Consumption warning]
+  Plan[Directive tab] --> Command[Inline primary command]
+  Command --> Existing[Existing submit/launch action]
+  Existing --> Rules[Unchanged race and card rules]
+```
 
 # Goals
 - Make the cost of playing a card (its consumption) visible before commit.
@@ -23,16 +31,20 @@ Reduce first-session confusion at the moment of committing a race plan: make car
 - Do not redesign the plan navigation or subtab structure.
 
 # Scope and guardrails
-- In: scaffolded request, product, backlog, orchestration task, validation, and handoff context.
-- Out: unrelated workflow docs and implementation of generated tasks.
+- In: selected-card consumption warning inside the directive card selector.
+- In: directive-tab inline action that reuses the resolved `primaryCommand` label, action, and disabled state.
+- In: EN/FR copy and focused component coverage.
+- Out: card consumption rules, banking, resale, simulation, rewards, API contracts, and plan navigation redesign.
 
 # Key product decisions
-- Use structured input as the source of truth for generated docs.
-- Keep generated write paths local and repo-bounded.
+- Warn only when a real card is selected; "No card" remains a saving choice without extra noise.
+- Reuse the existing `primaryCommand` rather than branching submit/launch behavior inside the directive panel.
+- Keep the inline command compact and local to the directive selection panel.
 
 # Success signals
-- Generated docs pass lint and audit without broad manual rewrites.
-- Context-pack output can be handed to an implementation agent directly.
+- A selected card shows pre-commit consumption copy in EN/FR.
+- The directive tab can send or launch through the same command used elsewhere.
+- Full validation passes without model, API, reward, or consumption-rule changes.
 
 # References
 - Product back-reference: `req_080_warn_card_consumption_before_commit_and_add_an_inline_launch_action_on_the_directive_tab`

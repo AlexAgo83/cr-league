@@ -1,10 +1,10 @@
 ## item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action - Add pre-commit card consumption warning and inline directive launch action
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Plan commit clarity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,12 +32,17 @@
 - AC4: No model, reward, consumption-rule, or API change; typecheck, test, build, lint, e2e, and logics:validate pass.
 
 # AC Traceability
-- request-AC1 -> This backlog slice. Proof: AC1: Selecting a card for the race plan shows a pre-commit consumption notice.
-- request-AC2 -> This backlog slice. Proof: AC2: The directive tab launches/sends via the existing primaryCommand with identical gating and no duplicated logic.
-- request-AC3 -> This backlog slice. Proof: AC3: EN/FR copy present; plan UI stays compact.
-- request-AC4 -> This backlog slice. Proof: AC4: No model, reward, consumption-rule, or API change; typecheck, test, build, lint, e2e, and logics:validate pass.
-- request-AC5 -> This backlog slice. Proof: AC4: No model, reward, consumption-rule, or API change; typecheck, test, build, lint, e2e, and logics:validate pass.
-- request-AC6 -> This backlog slice. Proof: AC4: No model, reward, consumption-rule, or API change; typecheck, test, build, lint, e2e, and logics:validate pass.
+- request-AC1 -> This backlog slice. Proof: `DirectivePanel` shows `directive_card_consumption_warning` with the selected card label when `selectedCardId` is set.
+- request-AC2 -> This backlog slice. Proof: `PlanView` passes the existing `primaryCommand` into `DirectivePanel`, whose inline button calls `primaryCommand.action` and renders `primaryCommand.label`.
+- request-AC3 -> This backlog slice. Proof: the inline button uses `primaryCommand.disabled`; no launch/submit branching or new API path was added.
+- request-AC4 -> This backlog slice. Proof: EN/FR warning copy was added and the inline action reuses existing localized primary-command labels.
+- request-AC5 -> This backlog slice. Proof: only web UI, CSS, i18n, tests, and Logics docs changed; no shared model, simulation, reward, consumption, or API files changed.
+- request-AC6 -> This backlog slice. Proof: typecheck, lint, unit tests, build, e2e, and Logics validation passed.
+
+# Notes
+- Added focused coverage in `apps/web/src/features/DirectivePanel.test.tsx`.
+- Task `task_081_orchestrate_plan_commit_clarity` owns closeout validation.
+- Task `task_081_orchestrate_plan_commit_clarity` was finished via `logics-manager flow finish task` on 2026-07-21.
 
 # Decision framing
 - Product framing: Not needed

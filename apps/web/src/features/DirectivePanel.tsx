@@ -29,6 +29,7 @@ const PLAN_MARKERS = {
 } as const;
 export type DirectiveStep = "approach" | "preparation" | "pit" | "card";
 export const DIRECTIVE_STEP_KEY = "cr-league-directive-step";
+type PrimaryCommand = { label: string; action: () => void | Promise<void>; disabled: boolean };
 
 const APPROACH_ART: Record<(typeof APPROACHES)[number], string> = {
   prudent: "/assets/crl/approach-prudent.png",
@@ -161,6 +162,7 @@ export function DirectivePanel({
   circuitTraits,
   planRiskRead,
   planRecommendation,
+  primaryCommand,
   cardLocked,
   disabled,
   locked,
@@ -176,6 +178,7 @@ export function DirectivePanel({
   circuitTraits: TraitStats;
   planRiskRead: PlanRiskRead;
   planRecommendation?: string;
+  primaryCommand: PrimaryCommand;
   cardLocked?: boolean;
   disabled?: boolean;
   locked?: boolean;
@@ -242,6 +245,9 @@ export function DirectivePanel({
           </button>
         ))}
       </div>
+      <button type="button" className="primary-command directive-primary-command" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+        {primaryCommand.label}
+      </button>
 
       {step === "approach" ? (
         <fieldset className="choice-group directive-choice-group directive-choice-approach" aria-label={tt("field_approach")}>
@@ -321,6 +327,7 @@ export function DirectivePanel({
               );
             })}
           </div>
+          {selectedCardId ? <p className="directive-lock-note">{tt("directive_card_consumption_warning", { card: selectedCardLabel })}</p> : null}
           {cardLocked ? <p className="directive-lock-note">{tt("directive_card_locked")}</p> : null}
           {ownedCardIds.length ? null : <p className="directive-lock-note">{tt("garage_empty_inventory")}</p>}
         </fieldset>

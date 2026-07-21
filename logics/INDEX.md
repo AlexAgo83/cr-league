@@ -61,6 +61,8 @@
 | [prod_042_race_legibility_product_brief](product/prod_042_race_legibility_product_brief.md) | Race Legibility Product Brief | Proposed |  |  | product/prod_042_race_legibility_product_brief.md |
 | [prod_043_weather_legibility_product_brief](product/prod_043_weather_legibility_product_brief.md) | Weather Legibility Product Brief | Proposed |  |  | product/prod_043_weather_legibility_product_brief.md |
 | [prod_044_plan_commit_clarity_product_brief](product/prod_044_plan_commit_clarity_product_brief.md) | Plan Commit Clarity Product Brief | Proposed |  |  | product/prod_044_plan_commit_clarity_product_brief.md |
+| [prod_045_card_economy_rebalance_product_brief](product/prod_045_card_economy_rebalance_product_brief.md) | Card Economy Rebalance Product Brief | Proposed |  |  | product/prod_045_card_economy_rebalance_product_brief.md |
+| [prod_046_opponent_configuration_comparison_product_brief](product/prod_046_opponent_configuration_comparison_product_brief.md) | Opponent Configuration Comparison Product Brief | Proposed |  |  | product/prod_046_opponent_configuration_comparison_product_brief.md |
 
 ## Roadmaps
 
@@ -154,6 +156,8 @@
 | [req_078_expose_card_trigger_conditions_and_relative_strength_in_plan_and_garage](request/req_078_expose_card_trigger_conditions_and_relative_strength_in_plan_and_garage.md) | Expose card trigger conditions and relative strength in plan and garage | Draft |  |  | request/req_078_expose_card_trigger_conditions_and_relative_strength_in_plan_and_garage.md |
 | [req_079_clarify_weather_semantics_forecast_vs_resolved_and_pace_marker_legend](request/req_079_clarify_weather_semantics_forecast_vs_resolved_and_pace_marker_legend.md) | Clarify weather semantics: forecast vs resolved and pace-marker legend | Draft |  |  | request/req_079_clarify_weather_semantics_forecast_vs_resolved_and_pace_marker_legend.md |
 | [req_080_warn_card_consumption_before_commit_and_add_an_inline_launch_action_on_the_directive_tab](request/req_080_warn_card_consumption_before_commit_and_add_an_inline_launch_action_on_the_directive_tab.md) | Warn card consumption before commit and add an inline launch action on the directive tab | Draft |  |  | request/req_080_warn_card_consumption_before_commit_and_add_an_inline_launch_action_on_the_directive_tab.md |
+| [req_081_rebalance_card_economy_to_remove_dead_cards_and_redundant_duplicates](request/req_081_rebalance_card_economy_to_remove_dead_cards_and_redundant_duplicates.md) | Rebalance card economy to remove dead cards and redundant duplicates | Draft |  |  | request/req_081_rebalance_card_economy_to_remove_dead_cards_and_redundant_duplicates.md |
+| [req_082_show_opponents_configurations_for_comparison_after_lock_and_after_the_race](request/req_082_show_opponents_configurations_for_comparison_after_lock_and_after_the_race.md) | Show opponents' configurations for comparison after lock and after the race | Draft |  |  | request/req_082_show_opponents_configurations_for_comparison_after_lock_and_after_the_race.md |
 
 ## Backlog
 
@@ -337,6 +341,8 @@
 | [item_176_add_a_shared_card_descriptor_condition_strength_band_and_surface_it_in_card_ui](backlog/item_176_add_a_shared_card_descriptor_condition_strength_band_and_surface_it_in_card_ui.md) | Add a shared card descriptor (condition + strength band) and surface it in card UI | Ready |  | 0% | backlog/item_176_add_a_shared_card_descriptor_condition_strength_band_and_surface_it_in_card_ui.md |
 | [item_177_label_forecast_vs_resolved_weather_and_add_a_replay_legend](backlog/item_177_label_forecast_vs_resolved_weather_and_add_a_replay_legend.md) | Label forecast vs resolved weather and add a replay legend | Ready |  | 0% | backlog/item_177_label_forecast_vs_resolved_weather_and_add_a_replay_legend.md |
 | [item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action](backlog/item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action.md) | Add pre-commit card consumption warning and inline directive launch action | Ready |  | 0% | backlog/item_178_add_pre_commit_card_consumption_warning_and_inline_directive_launch_action.md |
+| [item_179_reprice_and_re_role_dead_and_duplicate_cards_with_balance_kit_validation](backlog/item_179_reprice_and_re_role_dead_and_duplicate_cards_with_balance_kit_validation.md) | Reprice and re-role dead and duplicate cards with balance-kit validation | Ready |  | 0% | backlog/item_179_reprice_and_re_role_dead_and_duplicate_cards_with_balance_kit_validation.md |
+| [item_180_add_api_gated_opponent_config_reveal_and_a_comparison_view](backlog/item_180_add_api_gated_opponent_config_reveal_and_a_comparison_view.md) | Add API-gated opponent config reveal and a comparison view | Ready |  | 0% | backlog/item_180_add_api_gated_opponent_config_reveal_and_a_comparison_view.md |
 
 ## Tasks
 
@@ -423,3 +429,5 @@
 | [task_079_orchestrate_card_effect_legibility](tasks/task_079_orchestrate_card_effect_legibility.md) | Orchestrate card effect legibility | Ready |  | 0% | tasks/task_079_orchestrate_card_effect_legibility.md |
 | [task_080_orchestrate_weather_forecast_legibility](tasks/task_080_orchestrate_weather_forecast_legibility.md) | Orchestrate weather forecast legibility | Ready |  | 0% | tasks/task_080_orchestrate_weather_forecast_legibility.md |
 | [task_081_orchestrate_plan_commit_clarity](tasks/task_081_orchestrate_plan_commit_clarity.md) | Orchestrate plan commit clarity | Ready |  | 0% | tasks/task_081_orchestrate_plan_commit_clarity.md |
+| [task_082_orchestrate_card_economy_rebalance](tasks/task_082_orchestrate_card_economy_rebalance.md) | Orchestrate card economy rebalance | Ready |  | 0% | tasks/task_082_orchestrate_card_economy_rebalance.md |
+| [task_083_orchestrate_opponent_config_comparison](tasks/task_083_orchestrate_opponent_config_comparison.md) | Orchestrate opponent config comparison | Ready |  | 0% | tasks/task_083_orchestrate_opponent_config_comparison.md |

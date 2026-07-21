@@ -1,0 +1,111 @@
+{
+  "title": "Rebalance card economy to remove dead cards and redundant duplicates",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md",
+    "reports/playtest/audit-2107-ai.md",
+    "reports/balance/latest.json",
+    "packages/shared/src/economy/constants.ts",
+    "packages/shared/src/cards/definitions.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "scripts/balance-simulations.ts",
+    "scripts/ai-playtest.ts",
+    "docs/balance-simulations.md",
+    "Playtest evidence (reports/playtest/audit-2107-ai.md, 50 agents x 3 seasons x 6 GP): adjustable_wing bought 0 times (price 500), pit_relay bought 0, fleet_maintenance bought 0, defensive_order 3, rain_mapping 5 versus rain_grip 149; a cheap cluster (rain_grip, final_surge, qualifying_focus, fleet_sponsorship, economy_mode) dominates purchases.",
+    "Balance evidence (reports/balance/latest.json): avgPoints spread of 9.45 between best (balanced/speed/rain_grip 13.04) and worst (prudent/weather/fleet_sponsorship 3.59); speed preparation outperforms reliability on average.",
+    "Code truth: rain_grip (120) and rain_mapping (250) share the same mid-only weather check but rain_grip pays more for less money; adjustable_wing (500) underperforms launch_boost (180); pit_relay (250) has no downside; soft_tires/hard_tires partly re-sell what free approach/preparation knobs already grant (simulateRace.ts:498-537)."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Economy and card depth",
+    "needs": [
+      "Give every card a reason to exist by removing dead cards and near-duplicate cards, using the playtest and balance evidence as the starting diagnosis.",
+      "Reprice or re-role the confirmed outliers: adjustable_wing (unbought at 500), pit_relay and fleet_maintenance (unbought), and rain_mapping (dominated by rain_grip).",
+      "Differentiate paid cards from the free approach/preparation knobs so a card offers something the free directive tuning does not.",
+      "Validate every change with the balance kit and an AI playtest so no single card dominates points, win rate, and credit margin at once, and no card is dead.",
+      "Preserve determinism and change no card magnitude in a way that breaks existing deterministic tests without updating them intentionally.",
+      "Keep card copy honest and never recommend a card."
+    ],
+    "context": [
+      "This is 0.5 economy and card-depth work; the roadmap gates it on repeated-GP playtest evidence, which reports/playtest/audit-2107-ai.md now provides.",
+      "Card effects are defined in simulateRace.ts (applyDecision and maybeAddCardEvent), prices in economy/constants.ts, prose in cards/definitions.ts; the balance kit (scripts/balance-simulations.ts) and AI playtest (scripts/ai-playtest.ts) already measure card outcomes.",
+      "The design pillars require dilemmas with real trade-offs and forbid recommendations or a single best card.",
+      "This request pairs with a later stat-differentiation request; because rebalancing cards shifts the numbers that stat work would measure, card economy is sequenced first and stat differentiation follows once this lands."
+    ],
+    "acceptance_criteria": [
+      "AC1: No card is a dead choice: after the change, an AI playtest of comparable size shows every card is bought or played a non-trivial number of times, with no card at zero purchases.",
+      "AC2: No single card dominates points, win rate, and credit margin simultaneously in the balance kit economy summary.",
+      "AC3: The confirmed outliers (adjustable_wing, pit_relay, fleet_maintenance, rain_mapping) are repriced or re-roled so each has a distinct, evidenced reason to be picked; near-duplicate weather cards are consolidated or differentiated.",
+      "AC4: Each paid card provides an effect or condition the free approach/preparation knobs do not already grant.",
+      "AC5: Card copy remains descriptive and never labels a card as best, recommended, or optimal.",
+      "AC6: Determinism holds; updated deterministic tests reflect intended magnitude changes and still pass.",
+      "AC7: Balance and playtest evidence (updated reports) is recorded, and npm run typecheck, npm test, npm run build, npm run lint, and npm run logics:validate pass."
+    ]
+  },
+  "product": {
+    "title": "Card Economy Rebalance Product Brief",
+    "overview": "Turn the 15-card catalogue into a set of real choices: kill dead cards, differentiate duplicates, and make paid cards worth more than free tuning, all validated by the balance kit and AI playtest rather than intuition.",
+    "goals": [
+      "Every card has an evidenced reason to be bought or played.",
+      "No dominant cheap card and no dead expensive card.",
+      "Paid cards are distinct from the free directive knobs.",
+      "Changes are driven and proven by balance and playtest evidence."
+    ],
+    "non_goals": [
+      "Do not add new cards or a new card family in this request.",
+      "Do not change the stat model or the core simulation formula (separate stat-differentiation request).",
+      "Do not recommend cards or expose a best-card ranking.",
+      "Do not break determinism or ship magnitude changes without updating the tests intentionally."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Reprice and re-role dead and duplicate cards with balance-kit validation",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Economy and card depth",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7"],
+      "problem": [
+        "Playtest shows adjustable_wing, pit_relay, and fleet_maintenance are never bought and rain_mapping is dominated by rain_grip.",
+        "A cheap card cluster dominates purchases while expensive cards are dead, so card choice is shallow.",
+        "Some cards re-sell stat effects the free approach/preparation knobs already grant, weakening the reason to buy."
+      ],
+      "scope_in": [
+        "Adjust prices and/or effects of the confirmed dead/duplicate cards using balance-kit and playtest measurement.",
+        "Differentiate or consolidate the redundant weather cards (rain_grip vs rain_mapping).",
+        "Ensure each paid card offers something the free directive knobs do not.",
+        "Update deterministic tests to reflect intended magnitude changes and record updated balance/playtest evidence."
+      ],
+      "scope_out": [
+        "Adding new cards or card families.",
+        "Changing the stat model or core simulation formula.",
+        "Any recommendation or best-card ranking in UI or copy."
+      ],
+      "acceptance_criteria": [
+        "AC1: A post-change AI playtest shows no card at zero purchases and no single dominant card across points, win rate, and credit margin.",
+        "AC2: The four confirmed outliers are repriced or re-roled with a distinct evidenced reason to pick each.",
+        "AC3: Each paid card is differentiated from the free approach/preparation knobs.",
+        "AC4: Determinism holds and updated tests pass; balance and playtest evidence is recorded.",
+        "AC5: Typecheck, test, build, lint, and logics:validate pass; no recommendation copy is introduced."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate card economy rebalance",
+    "plan": [
+      "Baseline the current economy with scripts/balance-simulations.ts and scripts/ai-playtest.ts and confirm the dead/duplicate cards from reports/playtest/audit-2107-ai.md.",
+      "Propose price and effect changes for adjustable_wing, pit_relay, fleet_maintenance, and rain_mapping, and a consolidation or differentiation for the weather duplicates, keeping each distinct from the free knobs.",
+      "Apply the changes in economy/constants.ts and simulateRace.ts, updating deterministic tests to the intended magnitudes.",
+      "Re-run the balance kit and AI playtest; iterate until no card is dead and no card dominates all three of points, win rate, and credit margin.",
+      "Record updated balance/playtest evidence and run typecheck, test, build, lint, and logics:validate in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/card-economy-rebalance.json",
+    "mode": "summary-only",
+    "profile": "deep"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "title": "Show opponents' configurations for comparison after lock and after the race",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/architecture/adr_004_data_security.md",
+    "logics/architecture/adr_006_accessibility.md",
+    "logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md",
+    "apps/web/src/app/DriveView.tsx",
+    "apps/web/src/features/replay/ReplayTower.tsx",
+    "apps/web/src/features/ReportView.tsx",
+    "apps/web/src/features/ResultView.tsx",
+    "apps/web/src/app/helpers.ts",
+    "apps/api/src/features/leagues",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "Current diagnostic: opponents' configurations are shown only as abstract dot markers (approach/prep/pit plus a card dot) in the qualifying leaderboard (DriveView ChronoPlanAsset) and replay tower (ReplayTower ReplayPlanAsset); they are never shown numerically or side by side.",
+    "Current diagnostic: the only textual opponent comparison is the winner's setup in the report via recapPlanRead (helpers.ts:346-381); there is no field-wide config comparison.",
+    "Product decision (audit TICKET-06): let the player compare opponents' configurations objectively, revealed only after the player's plan is locked and after the race, never before lock, to preserve pre-race uncertainty; the API decides what is revealed and when (ADR-004)."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Competitive comparison",
+    "needs": [
+      "Let a player see opponents' configurations (approach, preparation, pit strategy, card, and result) in a readable side-by-side comparison.",
+      "Reveal opponent configurations only after the player's own plan is locked and after the race, never before lock, to preserve pre-race uncertainty.",
+      "Keep the reveal an objective information display, never a recommendation, ranking of best setup, or suggested counter-strategy.",
+      "Enforce the reveal rules at the API trust boundary so the client cannot obtain opponent plans earlier than allowed (ADR-004).",
+      "Support EN/FR copy, keep it compact, and do not rely on color alone (ADR-006).",
+      "Change no simulation behavior and add no new dependency."
+    ],
+    "context": [
+      "Today opponent setups are only abstract dot markers; the audit identifies this as the single clean unplanned gap and the most requested feature from the user review.",
+      "This is a comparison and legibility feature rather than an economy rebalance, so it is not blocked by the 0.5 economy evidence gate, but it is a larger feature touching data exposure and the API trust boundary.",
+      "The design pillars value comparison and objective information while forbidding recommendations and preserving uncertainty, so reveal timing is the key constraint.",
+      "The decision data (approach, preparation, pit, card, classification) already exists server-side and is used post-race by recapPlanRead."
+    ],
+    "acceptance_criteria": [
+      "AC1: After the player's plan is locked and after the race, the player can view each opponent's approach, preparation, pit strategy, card, and result in a readable comparison view.",
+      "AC2: Opponent configurations are not obtainable before the player's own plan is locked; the API enforces this and does not return opponent plans earlier than allowed.",
+      "AC3: The comparison is purely descriptive; no copy recommends, ranks as best, or suggests a counter-setup.",
+      "AC4: The comparison is legible without color alone (ADR-006) and has EN/FR copy.",
+      "AC5: No simulation behavior changes; the feature reads existing decision and classification data.",
+      "AC6: Unit tests cover the reveal-timing rule (allowed after lock/after race, blocked before) and the view model; existing report/replay/qualifying flows still pass.",
+      "AC7: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Opponent Configuration Comparison Product Brief",
+    "overview": "Close the most-requested gap by letting players compare opponents' setups and results objectively, revealed only after commit and after the race, so comparison drives learning without eroding pre-race uncertainty or becoming a recommendation.",
+    "goals": [
+      "Let players see what setups produced what results across the field.",
+      "Preserve pre-race uncertainty by gating the reveal to post-lock and post-race.",
+      "Keep the comparison objective and free of recommendations.",
+      "Enforce reveal rules at the API trust boundary."
+    ],
+    "non_goals": [
+      "Do not reveal opponent plans before the player's plan is locked.",
+      "Do not recommend, rank as best, or suggest counter-setups.",
+      "Do not change the simulation, rewards, or card economy.",
+      "Do not add a UI or data dependency."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add API-gated opponent config reveal and a comparison view",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Competitive comparison",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7"],
+      "problem": [
+        "Opponent setups are only abstract dot markers and never comparable numerically (audit cause C).",
+        "The only opponent comparison is the winner's setup in the report; players cannot see what setups produced what results across the field.",
+        "Revealing opponent plans naively would break pre-race uncertainty and must be enforced server-side, not just hidden in the client."
+      ],
+      "scope_in": [
+        "Expose opponent configurations and results through the API only after the player's plan is locked and after the race, enforced at the trust boundary.",
+        "Build a readable side-by-side comparison view reachable from qualifying (post-lock) and the report (post-race).",
+        "Keep the view descriptive, legible without color alone, with EN/FR copy.",
+        "Add unit tests for the reveal-timing rule and the comparison view model."
+      ],
+      "scope_out": [
+        "Revealing opponent plans before lock.",
+        "Any recommendation, best-setup ranking, or counter-strategy suggestion.",
+        "Any simulation, reward, or economy change."
+      ],
+      "acceptance_criteria": [
+        "AC1: Opponent configs and results are viewable in a comparison after lock and after the race, and blocked before lock (API-enforced), covered by tests.",
+        "AC2: The comparison is descriptive only, legible without color alone, with EN/FR copy.",
+        "AC3: No simulation, reward, or economy change; existing flows still pass.",
+        "AC4: Typecheck, test, build, lint, e2e, and logics:validate pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate opponent config comparison",
+    "plan": [
+      "Map where opponent decision and classification data already exists server-side and how the client currently renders the abstract dot markers.",
+      "Add an API path that returns opponent configurations and results only after the player's plan is locked and after the race, with the reveal rule enforced and unit-tested at the trust boundary.",
+      "Build a readable comparison view reachable from qualifying (post-lock) and the report (post-race), legible without color alone, with EN/FR copy.",
+      "Verify no reveal is possible before lock and no copy reads as a recommendation.",
+      "Run typecheck, test, build, lint, e2e, and logics:validate; record validation evidence in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/opponent-config-comparison.json",
+    "mode": "summary-only",
+    "profile": "deep"
+  }
+}

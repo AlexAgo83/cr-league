@@ -162,6 +162,34 @@ describe("simulateRace", () => {
     expect(new Set(atlasPitPoints.map((point) => point.cars?.atlas?.trackProgress))).toHaveLength(1);
   });
 
+  it("makes circuit traits favor distinct setup pressures", () => {
+    const participants: RaceInput["participants"] = [
+      { teamId: "heavy", teamName: "Heavy", kind: "human", standingsRank: 1, decision: { approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack" } },
+      { teamId: "attack", teamName: "Attack", kind: "human", standingsRank: 2, decision: { approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack" } },
+      { teamId: "grip", teamName: "Grip", kind: "human", standingsRank: 3, decision: { approach: "balanced", preparation: "weather", pitStrategy: "standard" } }
+    ];
+    const race = (
+      traits: RaceInput["traits"],
+      primaryTrait: RaceInput["primaryTrait"],
+      secondaryTrait: RaceInput["secondaryTrait"],
+      forecast: RaceInput["forecast"] = { dry: 100, light_rain: 0, heavy_rain: 0 }
+    ) =>
+      simulateRace({
+        ...baseRace,
+        seed: "trait-pressure",
+        primaryTrait,
+        secondaryTrait,
+        traits,
+        forecast,
+        participants
+      }).classification[0]!.teamId;
+
+    expect(race({ grip: 25, overtaking: 25, energy: 98 }, "high_wear", "high_wear")).toBe("heavy");
+    expect(race({ grip: 45, overtaking: 92, energy: 45 }, "urban", "fast")).toBe("attack");
+    expect(race({ grip: 100, overtaking: 25, energy: 35 }, "technical", "weather_sensitive", { dry: 0, light_rain: 0, heavy_rain: 100 })).toBe("grip");
+    expect(race({ grip: 45, overtaking: 92, energy: 45 }, "urban", "fast")).toBe(race({ grip: 45, overtaking: 92, energy: 45 }, "urban", "fast"));
+  });
+
   it("stagger pit trace loss when most cars stop together", () => {
     const input: RaceInput = {
       ...baseRace,

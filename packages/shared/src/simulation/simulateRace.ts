@@ -639,7 +639,7 @@ function applySegment(
     circuitBonus +
     variance -
     weatherPenalty +
-    ((traits.grip - 60) * scores.control + (traits.overtaking - 60) * scores.aggression + (traits.energy - 60) * scores.reliability) / 650;
+    ((traits.grip - 60) * scores.control + (traits.overtaking - 60) * scores.aggression + (traits.energy - 60) * scores.reliability) / 360;
 
   if (segment === "start") {
     delta += scores.pace * 0.35 + scores.aggression * 0.35 + scores.control * 0.3;

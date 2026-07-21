@@ -209,6 +209,8 @@
   "plan_risk_level_safe": "Safe plan",
   "plan_risk_level_risky": "Risky plan",
   "plan_risk_level_high_upside": "High-upside plan",
+  "plan_risk_strength_label": "Strength:",
+  "plan_risk_failure_label": "Watch:",
   "plan_risk_strength": "Strength: {value}",
   "plan_risk_failure": "Watch: {value}",
   "plan_risk_band": "Target: {value}",

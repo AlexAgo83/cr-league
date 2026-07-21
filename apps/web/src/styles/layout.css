@@ -1889,6 +1889,7 @@ label small {
   color: var(--color-ink);
   display: grid;
   gap: 5px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   padding: 12px 14px;
   position: relative;
 }
@@ -1907,9 +1908,19 @@ label small {
   text-transform: uppercase;
 }
 
+.plan-risk-summary strong,
+.plan-risk-summary em,
+.plan-risk-summary .plan-risk-note {
+  grid-column: 1 / -1;
+}
+
 .plan-risk-summary span {
   color: var(--color-ink);
   font-size: 0.82rem;
+}
+
+.plan-risk-line-label {
+  font-weight: 900;
 }
 
 .plan-risk-summary .plan-risk-note {
@@ -1949,6 +1960,12 @@ label small {
 
 .plan-risk-high_upside {
   --plan-risk-accent: #1d4ed8;
+}
+
+@media (max-width: 640px) {
+  .plan-risk-summary {
+    grid-template-columns: 1fr;
+  }
 }
 
 .directive-lock-note {

@@ -11,8 +11,12 @@ export function PlanRiskSummary({ read, tt, compact = false, note, lockLabel, lo
           {lockLabel}
         </span>
       ) : null}
-      <span>{tt("plan_risk_strength", { value: tt(read.strengthKey) })}</span>
-      <span>{tt("plan_risk_failure", { value: tt(read.failureKey) })}</span>
+      <span className="plan-risk-strength">
+        <b className="plan-risk-line-label">{tt("plan_risk_strength_label")}</b> {tt(read.strengthKey)}
+      </span>
+      <span className="plan-risk-failure">
+        <b className="plan-risk-line-label">{tt("plan_risk_failure_label")}</b> {tt(read.failureKey)}
+      </span>
       <em>{tt("plan_risk_band", { value: tt(read.bandKey) })}</em>
       {note ? <span className="plan-risk-note">{note}</span> : null}
     </section>

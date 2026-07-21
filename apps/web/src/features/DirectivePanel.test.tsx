@@ -78,6 +78,14 @@ describe("DirectivePanel", () => {
     expect(screen.queryByRole("dialog", { name: "Card committed" })).toBe(null);
   });
 
+  it("ignores the old auto-dismissed card help preference", () => {
+    localStorage.setItem("cr-league-card-consumption-help", "1");
+    render(<DirectivePanel {...baseProps} selectedCardId="" setForm={vi.fn()} onSelectStep={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "Card: Rain Grip" }));
+    expect(screen.getByRole("dialog", { name: "Card committed" })).toBeTruthy();
+  });
+
   it("runs the provided primary command from the directive tab", () => {
     const action = vi.fn();
     const { rerender } = render(<DirectivePanel {...baseProps} primaryCommand={{ label: "Launch GP", action, disabled: false }} setForm={vi.fn()} onSelectStep={vi.fn()} />);

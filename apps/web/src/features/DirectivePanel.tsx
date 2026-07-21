@@ -30,7 +30,7 @@ const PLAN_MARKERS = {
 } as const;
 export type DirectiveStep = "approach" | "preparation" | "pit" | "card";
 export const DIRECTIVE_STEP_KEY = "cr-league-directive-step";
-const CARD_CONSUMPTION_HELP_KEY = "cr-league-card-consumption-help";
+const CARD_CONSUMPTION_HELP_KEY = "cr-league-card-consumption-help-v2";
 type PrimaryCommand = { label: string; action: () => void | Promise<void>; disabled: boolean };
 
 export const APPROACH_ART: Record<(typeof APPROACHES)[number], string> = {

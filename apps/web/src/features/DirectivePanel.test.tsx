@@ -56,6 +56,15 @@ describe("DirectivePanel", () => {
     expect(warning.querySelector("strong")?.textContent).toBe("will be consumed when this Grand Prix is launched.");
   });
 
+  it("keeps the selected-card warning outside the card sub-screen", () => {
+    render(<DirectivePanel {...baseProps} step="approach" setForm={vi.fn()} onSelectStep={vi.fn()} />);
+
+    const warning = document.querySelector(".directive-selection-panel > .directive-lock-note") as HTMLElement;
+    expect(warning).not.toBeNull();
+    expect(warning.textContent).toContain("Rain Grip");
+    expect(warning.previousElementSibling?.className).toContain("directive-command-row");
+  });
+
   it("runs the provided primary command from the directive tab", () => {
     const action = vi.fn();
     const { rerender } = render(<DirectivePanel {...baseProps} primaryCommand={{ label: "Launch GP", action, disabled: false }} setForm={vi.fn()} onSelectStep={vi.fn()} />);

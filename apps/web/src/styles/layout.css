@@ -2708,6 +2708,41 @@ label small {
   gap: 5px;
 }
 
+.race-weather-legend .replay-legend-marker {
+  background: var(--color-telemetry);
+  border: 2px solid #121014;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgb(255 77 0 / 0.45);
+  flex: 0 0 auto;
+  height: 12px;
+  width: 12px;
+}
+
+.race-weather-legend .replay-legend-marker.player {
+  background: var(--color-accent);
+}
+
+.race-weather-legend .replay-legend-marker.director {
+  background: #f1ede4;
+  height: 9px;
+  width: 9px;
+}
+
+.race-weather-legend .replay-legend-marker.pit-stop {
+  background: #facc15;
+  box-shadow: 0 0 8px rgb(250 204 21 / 0.65);
+}
+
+.race-weather-legend .replay-legend-finish-line {
+  background:
+    linear-gradient(90deg, #121014 0 25%, transparent 25% 50%, #121014 50% 75%, transparent 75%) 0 0 / 8px 8px,
+    #f1ede4;
+  border: 1px solid #121014;
+  flex: 0 0 auto;
+  height: 14px;
+  width: 24px;
+}
+
 .race-weather-phase-list li {
   align-items: center;
   border: 1px solid var(--color-border);

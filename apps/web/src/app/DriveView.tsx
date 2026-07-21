@@ -269,8 +269,12 @@ function RaceWeatherModal({ result, forecastWeather, tt, onClose }: { result: Ra
       <section className="race-weather-legend" aria-label={tt("legend_title")}>
         <h3>{tt("legend_title")}</h3>
         <p>
-          <span><span className="replay-legend-dot" aria-hidden="true" /> {tt("replay_pace_marker_legend")}</span>
+          <span><span className="replay-legend-dot replay-legend-marker" aria-hidden="true" /> {tt("replay_pace_marker_legend")}</span>
+          <span><span className="replay-legend-marker player" aria-hidden="true" /> {tt("replay_player_marker_legend")}</span>
+          <span><span className="replay-legend-marker director" aria-hidden="true" /> {tt("replay_director_marker_legend")}</span>
+          <span><span className="replay-legend-marker pit-stop" aria-hidden="true" /> {tt("replay_pit_marker_legend")}</span>
           <span><VisualIcon name="light_rain" /> {tt("replay_weather_phase_legend")}</span>
+          <span><span className="replay-legend-finish-line" aria-hidden="true" /> {tt("replay_finish_line_legend")}</span>
         </p>
       </section>
     </Modal>

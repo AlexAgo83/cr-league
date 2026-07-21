@@ -784,7 +784,11 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Actual race weather" }));
     expect(within(screen.getByRole("dialog", { name: "Actual race weather" })).getByRole("heading", { name: "Legends" })).toBeTruthy();
     expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("dot markers are pace and race moments.");
+    expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("orange dots mark your important moments.");
+    expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("small white dots mark race director moments.");
+    expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("yellow dots mark pit stops.");
     expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("cloud icons map to the five race phases.");
+    expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("the finish line marks the end of the replay.");
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(document.querySelector(".replay-marker")?.getAttribute("title")).toContain("Rain Grip");
     fireEvent.click(document.querySelector(".replay-marker")!);

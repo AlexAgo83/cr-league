@@ -219,7 +219,7 @@ export function DirectivePanel({
     </section>
 
     <section className="panel directive-panel directive-selection-panel">
-      <PlanRiskSummary read={planRiskRead} tt={tt} note={selectedCardWarning} />
+      <PlanRiskSummary read={planRiskRead} tt={tt} />
       <div className="plan-steps directive-plan-steps" role="tablist" aria-label={tt("directive_title")}>
         {steps.map((entry) => (
           <button key={entry.key} type="button" role="tab" aria-selected={step === entry.key} aria-label={`${entry.label}: ${entry.value}`} className={`plan-step plan-step-${entry.key}${step === entry.key ? " active" : ""}`} onClick={() => onSelectStep(entry.key)}>
@@ -327,6 +327,7 @@ export function DirectivePanel({
           {primaryCommand.label}
         </button>
       </div>
+      {selectedCardWarning ? <p className="directive-lock-note">{selectedCardWarning}</p> : null}
     </section>
     </>
   );

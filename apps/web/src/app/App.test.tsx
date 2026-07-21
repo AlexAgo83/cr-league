@@ -366,6 +366,8 @@ describe("App", () => {
     expect(sellDialog).toBeTruthy();
     expect(within(sellDialog).getByRole("heading", { name: "Stats" })).toBeTruthy();
     expect(sellDialog.querySelector(".card-stat-badges")).toBe(null);
+    expect(sellDialog.querySelector(".garage-buy-card .card-stat-details")).toBe(null);
+    expect(sellDialog.querySelector(".garage-buy-modal > .card-stat-details")).toBeTruthy();
     expect(screen.getByText("Pays off if rain appears around mid-race.")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Buy card" })).toBe(null);
     expect(screen.queryByText("This card will join your garage and can shape your next directive.")).toBe(null);
@@ -383,6 +385,8 @@ describe("App", () => {
     expect(buyDialog).toBeTruthy();
     expect(within(buyDialog).getByRole("heading", { name: "Stats" })).toBeTruthy();
     expect(buyDialog.querySelector(".card-stat-badges")).toBe(null);
+    expect(buyDialog.querySelector(".garage-buy-card .card-stat-details")).toBe(null);
+    expect(buyDialog.querySelector(".garage-buy-modal > .card-stat-details")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Buy card" })).toBeTruthy();
     expect(screen.getByText("You do not have enough credits to buy this card yet.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-garage-panel")).toBe("shop");
@@ -410,11 +414,11 @@ describe("App", () => {
     saveProfile();
     const emptyGarageState = {
       ...baseState,
-      teams: [{ ...baseState.teams[0], credits: 300, cards: [] }, baseState.teams[1]]
+      teams: [{ ...baseState.teams[0], credits: 2000, cards: [] }, baseState.teams[1]]
     };
     const boughtState = {
       ...emptyGarageState,
-      teams: [{ ...emptyGarageState.teams[0], credits: 60, cards: ["rain_grip", "rain_grip"] }, baseState.teams[1]]
+      teams: [{ ...emptyGarageState.teams[0], credits: 1760, cards: ["rain_grip", "rain_grip"] }, baseState.teams[1]]
     };
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(emptyGarageState)).mockResolvedValueOnce(response(boughtState));
 
@@ -425,6 +429,9 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
     fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
+    const quantitySelect = screen.getByRole("combobox", { name: "Quantity" });
+    expect(within(screen.getByRole("dialog", { name: "Confirm card purchase" })).queryByText("Quantity")).toBe(null);
+    expect(within(quantitySelect).getAllByRole("option")).toHaveLength(10);
     fireEvent.change(screen.getByRole("combobox", { name: "Quantity" }), { target: { value: "2" } });
     fireEvent.click(screen.getByRole("button", { name: "Buy card" }));
     await act(async () => {});

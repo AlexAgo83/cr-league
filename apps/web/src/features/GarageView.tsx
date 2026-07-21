@@ -91,7 +91,7 @@ export function GarageView({
   const viewingFit = viewingCardId ? cardFit(viewingCardId, state, forecastPick) : null;
   const viewingSellPrice = (state.cardShop.find((item) => item.cardId === viewingCardId)?.price ?? 0) / 2;
   const viewingCardLocked = Boolean(viewingCardId && isCardLocked(viewingCardId));
-  const maxBuyQuantity = pendingBuy ? Math.min(99, Math.floor(playerTeam.credits / pendingBuy.price)) : 0;
+  const maxBuyQuantity = pendingBuy ? Math.min(10, Math.floor(playerTeam.credits / pendingBuy.price)) : 0;
   const buyQuantityOptions = Array.from({ length: maxBuyQuantity }, (_, index) => index + 1);
   const pendingBuyAffordable = Boolean(pendingBuy && maxBuyQuantity > 0);
   const panelTitle = cardPanel === "team" ? tt("dashboard_my_team") : cardPanel === "inventory" ? tt("garage_inventory") : tt("garage_shop");
@@ -247,8 +247,8 @@ export function GarageView({
               <RewardValue type="credits" value={pendingBuy.price * buyQuantity} tt={tt} />
             </strong>
             <small>{tt(`card_fit_${pendingBuy.fit.level}` as TranslationKey)}</small>
-            <CardStatDetails cardId={pendingBuy.cardId} tt={tt} />
           </div>
+          <CardStatDetails cardId={pendingBuy.cardId} tt={tt} />
           <p>{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
           <PendingFeedback message={pendingMessage} />
           <div className="modal-actions">
@@ -274,8 +274,8 @@ export function GarageView({
           <div className="garage-buy-card">
             <CardArtImage cardId={viewingCardId} />
             <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>
-            <CardStatDetails cardId={viewingCardId} tt={tt} />
           </div>
+          <CardStatDetails cardId={viewingCardId} tt={tt} />
           <PendingFeedback message={pendingMessage} />
           <div className="modal-actions">
             <button

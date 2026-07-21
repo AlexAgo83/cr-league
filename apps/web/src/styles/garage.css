@@ -420,11 +420,11 @@
   grid-column: 1 / -1;
 }
 
-.garage-buy-card .card-stat-details {
+.garage-buy-modal .card-stat-details {
   background: rgb(16 14 18 / 0.48);
   border: 1px solid rgb(248 243 232 / 0.14);
   border-radius: 8px;
-  grid-column: 1 / -1;
+  margin: 14px 0;
   padding: 10px;
 }
 
@@ -446,7 +446,6 @@
 .card-stat-details li {
   display: grid;
   gap: 4px;
-  grid-template-columns: minmax(0, 1fr) auto;
 }
 
 .card-stat-details li > span {
@@ -462,14 +461,8 @@
   flex: 0 0 auto;
 }
 
-.card-stat-details li > b {
-  color: var(--trait-tone);
-  font-family: var(--font-display);
-}
-
 .card-stat-details li > small {
   color: var(--color-muted);
-  grid-column: 1 / -1;
   line-height: 1.35;
 }
 

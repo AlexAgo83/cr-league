@@ -169,9 +169,8 @@ export function CardStatDetails({ cardId, tt }: { cardId: CardId; tt: Translator
           <li key={`${badge.sign}-${badge.trait}`} className={`map-trait-${badge.trait}`}>
             <span>
               <VisualIcon name={badge.trait} />
-              <strong>{tt(badge.label)}</strong>
+              <strong>{badge.sign} {tt(BADGE_TRAIT_LABEL[badge.trait])}</strong>
             </span>
-            <b>{badge.sign}</b>
             <small>{tt(BADGE_TRAIT_HINT[badge.trait])}</small>
           </li>
         ))}

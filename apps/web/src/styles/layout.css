@@ -4223,6 +4223,7 @@ label small {
 }
 
 .card-stat-badges {
+  align-items: flex-start;
   display: flex;
   flex-wrap: wrap;
   gap: 3px;

@@ -847,7 +847,7 @@ describe("App", () => {
     // Report view
     expect(window.location.pathname).toBe("/plan/report");
     expect(screen.getByRole("tab", { name: "GP" }).getAttribute("aria-selected")).toBe("true");
-    expect(screen.getByText("Volt Union wins.")).toBeTruthy();
+    expect(screen.queryByText("Volt Union wins.")).toBe(null);
     expect(document.querySelector(".report-replay-button")).toBe(null);
     expect(document.querySelector(".report-close-button")).toBe(null);
     expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();

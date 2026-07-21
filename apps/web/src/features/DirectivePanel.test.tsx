@@ -52,6 +52,7 @@ describe("DirectivePanel", () => {
     const warning = document.querySelector(".directive-lock-note") as HTMLElement;
     expect(warning).not.toBeNull();
     expect(warning.previousElementSibling?.className).toContain("plan-risk-summary");
+    expect(warning.closest(".directive-summary-stack")).toBeTruthy();
     expect(warning.textContent).toContain("Rain Grip");
     expect(warning.querySelector("strong")?.textContent).toBe("will be consumed when this Grand Prix is launched.");
   });
@@ -59,7 +60,7 @@ describe("DirectivePanel", () => {
   it("keeps the selected-card warning outside the card sub-screen", () => {
     render(<DirectivePanel {...baseProps} step="approach" setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
-    const warning = document.querySelector(".directive-selection-panel > .directive-lock-note") as HTMLElement;
+    const warning = document.querySelector(".directive-summary-stack > .directive-lock-note") as HTMLElement;
     expect(warning).not.toBeNull();
     expect(warning.textContent).toContain("Rain Grip");
     expect(warning.previousElementSibling?.className).toContain("plan-risk-summary");
@@ -68,7 +69,7 @@ describe("DirectivePanel", () => {
   it("shows the locked plan note after the selected-card warning", () => {
     render(<DirectivePanel {...baseProps} locked step="approach" setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
-    const notes = [...document.querySelectorAll(".directive-selection-panel > .directive-lock-note")];
+    const notes = [...document.querySelectorAll(".directive-summary-stack > .directive-lock-note")];
     expect(notes.map((note) => note.textContent)).toEqual([
       "Rain Grip will be consumed when this Grand Prix is launched.",
       "Plan lockedThis directive is sent for the current Grand Prix. Choices stay visible but cannot be changed."
@@ -78,7 +79,7 @@ describe("DirectivePanel", () => {
   it("says the selected card is consumed after the Grand Prix has run", () => {
     render(<DirectivePanel {...baseProps} cardConsumed setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
-    const warning = document.querySelector(".directive-selection-panel > .directive-lock-note") as HTMLElement;
+    const warning = document.querySelector(".directive-summary-stack > .directive-lock-note") as HTMLElement;
     expect(warning.textContent).toContain("Rain Grip");
     expect(warning.querySelector("strong")?.textContent).toBe("has been consumed for this Grand Prix.");
   });

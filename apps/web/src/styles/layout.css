@@ -1378,6 +1378,11 @@ label small {
   gap: 10px;
 }
 
+.directive-summary-stack {
+  display: grid;
+  gap: 8px;
+}
+
 .directive-primary-command,
 .directive-secondary-command {
   justify-self: stretch;
@@ -1878,7 +1883,7 @@ label small {
   margin: 0;
 }
 
-.directive-selection-panel > .directive-lock-note {
+.directive-summary-stack > .directive-lock-note {
   background: rgb(236 231 218 / 0.96);
   border: 1px solid rgb(23 21 26 / 0.14);
   color: var(--color-ink);
@@ -1887,14 +1892,14 @@ label small {
   padding: 12px 14px;
 }
 
-.directive-selection-panel > .directive-lock-note strong {
+.directive-summary-stack > .directive-lock-note strong {
   color: var(--color-accent);
   font-family: var(--font-display);
   font-weight: 800;
   text-transform: uppercase;
 }
 
-.directive-selection-panel > .directive-lock-note span {
+.directive-summary-stack > .directive-lock-note span {
   color: var(--color-ink);
   font-size: 0.88rem;
 }

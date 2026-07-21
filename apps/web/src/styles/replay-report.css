@@ -318,6 +318,10 @@ button.command-icon-button {
   z-index: 1;
 }
 
+.report-hero .report-headline-full {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .report-actions {
   display: flex;
   gap: 6px;
@@ -395,6 +399,10 @@ button.command-icon-button {
 
 .report-hero .chrono-report-prompt p {
   flex: 1 1 auto;
+}
+
+.report-hero .chrono-report-prompt {
+  justify-content: flex-end;
 }
 
 .plan-empty-report h2 {

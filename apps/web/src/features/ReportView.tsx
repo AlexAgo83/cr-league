@@ -7,7 +7,6 @@ import {
   deriveNonWinningFeedback,
   eventReportText,
   raceRecapCards,
-  resultHeadline,
   teamNamesFromResult,
   translateLine,
   type Translator
@@ -40,7 +39,9 @@ export function ReportView({
   tt: Translator;
 }) {
   const names = teamNamesFromResult(result);
-  const raceTitle = `${circuit.city} ${tt(circuit.layoutKey)}`;
+  const layoutTitle = tt(circuit.layoutKey);
+  const raceTitle = layoutTitle.toLowerCase().startsWith(circuit.city.toLowerCase()) ? layoutTitle : `${circuit.city} ${layoutTitle}`;
+  const hasPrimaryReplayAction = Boolean(onOpenReplay && replayActionVariant === "primary");
   const rawMaxLap = maxEventLap(result);
   const keyEvents = keyMomentEvents(result.events, rawMaxLap, circuit.laps);
   const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
@@ -73,19 +74,18 @@ export function ReportView({
   return (
     <div className="view-stack report-view">
       <section className="panel report-hero">
-        <header className="chrono-report-header report-headline">
+        <header className={`chrono-report-header report-headline${hasPrimaryReplayAction ? "" : " report-headline-full"}`}>
           <div>
             <span className="section-kicker">{tt("result_race_report")}</span>
             <h2>{raceTitle}</h2>
           </div>
-          <div className="chrono-report-prompt">
-            <p>{resultHeadline(result, tt, "")}</p>
-            {onOpenReplay && replayActionVariant === "primary" ? (
+          {hasPrimaryReplayAction ? (
+            <div className="chrono-report-prompt">
               <button type="button" className="primary-command" onClick={onOpenReplay}>
                 {tt("action_review_race")}
               </button>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </header>
         {(onOpenReplay && replayActionVariant === "icon") || onClose ? (
           <div className="report-actions">

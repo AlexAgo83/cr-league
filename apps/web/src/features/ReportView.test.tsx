@@ -57,6 +57,18 @@ describe("ReportView", () => {
     expect(container.querySelector(".report-verdict")).toBe(null);
     expect(recap.textContent).toContain("Verdict:");
     expect(recap.textContent).toContain("Rain Grip");
+
+    const tokyo = render(
+      <ReportView
+        state={state}
+        result={result}
+        circuit={{ ...circuitForRound(1), city: "Tokyo", layoutKey: "circuit_tokyo_bay_loop" }}
+        playerTeamId="team_1"
+        playerDecision={state.decisions[0]}
+        tt={(key, params) => t(key, "en", params)}
+      />
+    );
+    expect(tokyo.container.querySelector(".report-headline h2")?.textContent).toBe("Tokyo Street Circuit");
   });
 
   it("maps GP event laps to the circuit lap count without using the chrono scale", () => {

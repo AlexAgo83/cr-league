@@ -1,9 +1,9 @@
 ## req_073_lazy_load_non_critical_web_artwork - Lazy-load non-critical web artwork
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Low
 > Theme: Frontend performance
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -26,6 +26,11 @@
 - AC3: ModalHero and secondary artwork use lazy loading by default unless explicitly marked as priority.
 - AC4: Existing alt text semantics are preserved and lint/a11y rules pass.
 - AC5: Typecheck, lint, unit tests, build, and representative app flows pass.
+
+# Delivery notes
+- Implemented through native image attributes on `AssetImage`; no loader library or IntersectionObserver was added.
+- Eager exceptions are limited to the brand images rendered in the topbars.
+- Validation passed through targeted AssetImage tests, typecheck, lint, full unit tests, and production build.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

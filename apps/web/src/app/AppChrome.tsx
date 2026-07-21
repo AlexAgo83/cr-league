@@ -151,8 +151,8 @@ export function SetupTopbar({ profileMenu, languageSwitcher, onHome }: { profile
   return (
     <header className="setup-topbar">
       <button type="button" className="brand brand-button" onClick={onHome}>
-        <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.png" alt="" />
-        <AssetImage className="brand-wordmark" src="/assets/crl/home-title-league.png" alt={APP_NAME} />
+        <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.png" alt="" loading="eager" />
+        <AssetImage className="brand-wordmark" src="/assets/crl/home-title-league.png" alt={APP_NAME} loading="eager" />
       </button>
       <div className="setup-topbar-actions">{profileMenu ?? languageSwitcher}</div>
     </header>
@@ -177,7 +177,7 @@ export function GameTopbar({
   return (
     <header className="topbar">
       <button type="button" className="brand brand-button" onClick={onHome}>
-        <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.png" alt="" />
+        <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.png" alt="" loading="eager" />
         <strong>{leagueName}</strong>
       </button>
       <nav className="game-nav" aria-label={tt("cockpit_sections")}>

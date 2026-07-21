@@ -11,6 +11,8 @@ describe("AssetImage", () => {
     const { rerender } = render(<AssetImage className="modal-hero-image" src="/first.png" alt="Preview" />);
     const image = screen.getByRole("img", { name: "Preview" });
 
+    expect(image.getAttribute("loading")).toBe("lazy");
+    expect(image.getAttribute("decoding")).toBe("async");
     expect(image.parentElement?.getAttribute("data-state")).toBe("loading");
     fireEvent.load(image);
     expect(image.parentElement?.getAttribute("data-state")).toBe("loaded");
@@ -29,5 +31,11 @@ describe("AssetImage", () => {
     render(<AssetImage className="brand-icon" src="/favicon.svg" alt="Logo" />);
 
     expect((await screen.findByRole("img", { name: "Logo" })).parentElement?.getAttribute("data-state")).toBe("loaded");
+  });
+
+  it("allows priority callers to opt into eager loading", () => {
+    const { getByRole } = render(<AssetImage className="brand-icon" src="/favicon.svg" alt="Priority logo" loading="eager" />);
+
+    expect(getByRole("img", { name: "Priority logo" }).getAttribute("loading")).toBe("eager");
   });
 });

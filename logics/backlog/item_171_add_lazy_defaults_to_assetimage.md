@@ -1,10 +1,10 @@
 ## item_171_add_lazy_defaults_to_assetimage - Add lazy defaults to AssetImage
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Image loading performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -30,6 +30,11 @@
 - AC1: Rendered non-priority AssetImage elements include loading="lazy" and decoding="async".
 - AC2: Priority call sites can render loading="eager" when needed.
 - AC3: Tests and build pass.
+
+# Implementation notes
+- `apps/web/src/features/AssetImage.tsx` defaults `loading` to `lazy` and `decoding` to `async` while preserving caller overrides.
+- `apps/web/src/app/AppChrome.tsx` marks topbar brand images as eager because they are first-screen shell imagery.
+- Existing decorative alt semantics are unchanged; ModalHero and secondary artwork keep inheriting `alt=""`.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Rendered non-priority AssetImage elements include loading="lazy" and decoding="async".
@@ -57,3 +62,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_074_orchestrate_lazy_artwork_loading` was finished via `logics-manager flow finish task` on 2026-07-21.

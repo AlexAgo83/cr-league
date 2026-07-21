@@ -2,7 +2,7 @@ import { type ImgHTMLAttributes, useEffect, useRef, useState } from "react";
 
 type AssetImageState = "loading" | "loaded" | "error";
 
-export function AssetImage({ className = "", onError, onLoad, src, ...props }: ImgHTMLAttributes<HTMLImageElement> & { src: string }) {
+export function AssetImage({ className = "", decoding = "async", loading = "lazy", onError, onLoad, src, ...props }: ImgHTMLAttributes<HTMLImageElement> & { src: string }) {
   const [state, setState] = useState<AssetImageState>("loading");
   const imageRef = useRef<HTMLImageElement>(null);
 
@@ -20,6 +20,8 @@ export function AssetImage({ className = "", onError, onLoad, src, ...props }: I
       <img
         {...props}
         alt={props.alt ?? ""}
+        decoding={decoding}
+        loading={loading}
         ref={imageRef}
         src={src}
         onError={(event) => {

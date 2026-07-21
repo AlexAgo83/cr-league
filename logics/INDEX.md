@@ -66,6 +66,7 @@
 | [prod_047_race_weather_and_card_stat_readability_product_brief](product/prod_047_race_weather_and_card_stat_readability_product_brief.md) | Race Weather And Card Stat Readability Product Brief | Settled |  |  | product/prod_047_race_weather_and_card_stat_readability_product_brief.md |
 | [prod_048_circuit_stat_differentiation_and_bot_strategy_product_brief](product/prod_048_circuit_stat_differentiation_and_bot_strategy_product_brief.md) | Circuit Stat Differentiation And Bot Strategy Product Brief | Settled |  |  | product/prod_048_circuit_stat_differentiation_and_bot_strategy_product_brief.md |
 | [prod_049_repo_review_remediation_pass_6_product_brief](product/prod_049_repo_review_remediation_pass_6_product_brief.md) | Repo Review Remediation Pass 6 Product Brief | Proposed |  |  | product/prod_049_repo_review_remediation_pass_6_product_brief.md |
+| [prod_050_gameplay_and_economy_integrity_product_brief](product/prod_050_gameplay_and_economy_integrity_product_brief.md) | Gameplay and Economy Integrity Product Brief | Proposed |  |  | product/prod_050_gameplay_and_economy_integrity_product_brief.md |
 
 ## Roadmaps
 
@@ -164,6 +165,7 @@
 | [req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability](request/req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability.md) | Move real-weather detail into a circuit info modal and improve card stat badge readability | Done |  |  | request/req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability.md |
 | [req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity](request/req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity.md) | Differentiate circuit stats and make bot configurations react to circuit identity | Done |  |  | request/req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity.md |
 | [req_085_repo_review_remediation_pass_6_json_column_race_locks_simulation_finishing_order_fidelity_destructive_op_guards_and_over_engineering_cleanup](request/req_085_repo_review_remediation_pass_6_json_column_race_locks_simulation_finishing_order_fidelity_destructive_op_guards_and_over_engineering_cleanup.md) | Repo review remediation pass 6: JSON-column race locks, simulation finishing-order fidelity, destructive-op guards, and over-engineering cleanup | Draft |  |  | request/req_085_repo_review_remediation_pass_6_json_column_race_locks_simulation_finishing_order_fidelity_destructive_op_guards_and_over_engineering_cleanup.md |
+| [req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation](request/req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation.md) | Gameplay and economy integrity: comeback payout curve, unplayed-card consumption, resolve determinism, and decision validation | Draft |  |  | request/req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation.md |
 
 ## Backlog
 
@@ -358,6 +360,9 @@
 | [item_187_guard_destructive_delete_and_league_admin_authority](backlog/item_187_guard_destructive_delete_and_league_admin_authority.md) | Guard destructive delete and league-admin authority | Ready |  | 0% | backlog/item_187_guard_destructive_delete_and_league_admin_authority.md |
 | [item_188_derive_plan_badges_from_a_single_shared_stat_delta_descriptor](backlog/item_188_derive_plan_badges_from_a_single_shared_stat_delta_descriptor.md) | Derive plan badges from a single shared stat-delta descriptor | Ready |  | 0% | backlog/item_188_derive_plan_badges_from_a_single_shared_stat_delta_descriptor.md |
 | [item_189_over_engineering_cleanup_sweep](backlog/item_189_over_engineering_cleanup_sweep.md) | Over-engineering cleanup sweep | Ready |  | 0% | backlog/item_189_over_engineering_cleanup_sweep.md |
+| [item_190_monotonic_payout_and_no_unplayed_card_consumption](backlog/item_190_monotonic_payout_and_no_unplayed_card_consumption.md) | Monotonic payout and no unplayed-card consumption | Ready |  | 0% | backlog/item_190_monotonic_payout_and_no_unplayed_card_consumption.md |
+| [item_191_deterministic_resolution_and_self_rival_rejection](backlog/item_191_deterministic_resolution_and_self_rival_rejection.md) | Deterministic resolution and self-rival rejection | Ready |  | 0% | backlog/item_191_deterministic_resolution_and_self_rival_rejection.md |
+| [item_192_limiter_pruning_profileid_index_and_bot_card_write_hygiene](backlog/item_192_limiter_pruning_profileid_index_and_bot_card_write_hygiene.md) | Limiter pruning, profileId index, and bot-card write hygiene | Ready |  | 0% | backlog/item_192_limiter_pruning_profileid_index_and_bot_card_write_hygiene.md |
 
 ## Tasks
 
@@ -449,3 +454,4 @@
 | [task_084_orchestrate_weather_and_card_stat_readability](tasks/task_084_orchestrate_weather_and_card_stat_readability.md) | Orchestrate weather and card stat readability | Done |  | 100% | tasks/task_084_orchestrate_weather_and_card_stat_readability.md |
 | [task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy](tasks/task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy.md) | Orchestrate circuit stat differentiation and bot strategy | Done |  | 100% | tasks/task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy.md |
 | [task_086_orchestrate_repo_review_remediation_pass_6](tasks/task_086_orchestrate_repo_review_remediation_pass_6.md) | Orchestrate repo review remediation pass 6 | Ready |  | 0% | tasks/task_086_orchestrate_repo_review_remediation_pass_6.md |
+| [task_087_orchestrate_gameplay_and_economy_integrity_fixes](tasks/task_087_orchestrate_gameplay_and_economy_integrity_fixes.md) | Orchestrate gameplay and economy integrity fixes | Ready |  | 0% | tasks/task_087_orchestrate_gameplay_and_economy_integrity_fixes.md |

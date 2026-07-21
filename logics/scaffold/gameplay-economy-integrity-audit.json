@@ -1,0 +1,158 @@
+{
+  "title": "Gameplay and economy integrity: comeback payout curve, unplayed-card consumption, resolve determinism, and decision validation",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_085_repo_review_remediation_pass_6_json_column_race_locks_simulation_finishing_order_fidelity_destructive_op_guards_and_over_engineering_cleanup.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "packages/shared/src/economy/constants.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/features/leagues/routes.ts",
+    "prisma/schema.prisma",
+    "Second audit sweep on 2026-07-22 (v0.3.26+), covering areas the pass-6 structural review did not: economy payout curve, default-resolve card handling, resolve input trust, decision validation, and rate-limit/index hygiene. Findings: (1) The comeback credit bonus is non-monotonic. classify (simulateRace.ts:924-925) awards baseCredits from RACE_CREDITS_BY_POSITION=[150,130,115,105,100,100] plus comebackBonus = min(40, max(0, position-6)*10), so P7=110, P8=120, P9=130, P10+=140 credits while P3=115, P4=105, P5=P6=100 — finishing 8th-10th earns MORE than finishing 3rd-6th, inverting the incentive to place well. (2) On a default/deadline resolve, buildParticipants (store.ts:966-988) assigns a human who never submitted the decision { ...demo.decision, cardId: defaultCardForTeam(team, ...) }, and defaultCardForTeam (store.ts:1067-1069) returns team.cards[0]; that card then appears in result.consumedCards and is removed from the player's inventory (store.ts:733-742) even though the player never chose to play it. (3) resolveCurrentGrandPrix (store.ts:708-711) feeds input.traits/laps/trackLengthMeters/pitLaneProgress from the resolve HTTP body straight into simulateRace, and normalizeRaceTraits(input.traits) overrides the circuit's canonical traits, so whoever holds the owner claim can nudge the result away from the seed-deterministic circuit configuration; qualifying already derives these from stored circuit identity. (4) validateDecisionValues (store.ts:992-1010) checks that rivalTeamId is some team in the league but not that it differs from the submitting team, so urban_draft/calculated_attack (simulateRace.ts:736-807) can apply their rival buff/penalty to the team's own state. (5) The recovery limiter (routes.ts:344-362) never prunes expired buckets (unbounded Map growth, one entry per email + IP) and its take(email) && take(ip) short-circuits so a legit user's email attempt is still consumed when only the IP bucket rejects. (6) Team.profileId (schema.prisma) has no index though profile-session and ownership lookups query by it. (7) buyBotCards (store.ts:1049-1064) read-modify-writes each bot's cards from a pre-loop freshState snapshot rather than re-reading, the same JSON-column staleness class as the human buyCard path already scheduled for locking in req_085."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Gameplay and economy integrity",
+    "needs": [
+      "Make the finishing-position credit payout monotonic: a worse finish must never pay more credits than a better one, while keeping an intentional comeback cushion for the tail of the field.",
+      "Stop consuming a card a player never chose: a human who does not submit a decision before a default/deadline resolve must not have an inventory card auto-played and removed.",
+      "Keep race resolution deterministic from stored circuit identity: resolveCurrentGrandPrix must derive traits and track parameters from the circuit, not from the caller's HTTP body.",
+      "Reject self-targeted rival decisions so rival-card effects cannot apply to the submitting team.",
+      "Tidy the rate limiter and an index gap: prune expired limiter buckets without short-circuit miscounting, and add the missing Team.profileId index; fold the bot-card write into the same locking approach as the human path."
+    ],
+    "context": [
+      "The comeback bonus is intentional rubber-banding (COMEBACK_CREDIT_BONUS_* constants exist), but its magnitude overshoots the base table so the curve is non-monotonic for a full field. The fix should preserve a tail cushion while guaranteeing monotonicity, e.g. clamp baseCredits+comebackBonus below the credits of the next-better scoring position, or reshape the base table plus a smaller bonus. Leagues do reach 10+ teams (a 20-player simulation report is committed), so P7-P10 are real, not hypothetical. Validate the new curve with npm run balance:sim.",
+      "buildParticipants assigns non-submitting humans a full demo decision including a defaulted card via defaultCardForTeam = team.cards[0]; combined with the consumedCards inventory removal in resolveCurrentGrandPrix, the player silently loses a card. The minimal fix is to leave cardId undefined for auto-defaulted humans (play no card) so nothing is consumed; bots keep their default-card behavior. Confirm result.consumedCards only ever contains explicitly chosen cards afterward.",
+      "resolveCurrentGrandPrix currently trusts input.traits/laps/trackLengthMeters/pitLaneProgress. traits especially override the circuit's canonical stats via normalizeRaceTraits, breaking seed-determinism and letting the owner tilt outcomes. Derive all of these from the stored circuit (as qualifying does) and ignore or drop the client-supplied render params; if the admin replay view needs render hints, keep them display-only and out of the scored simulation input.",
+      "validateDecisionValues validates rivalTeamId membership but not that it is not the submitting team's own id; add rivalTeamId === input.teamId rejection with a 400 so urban_draft/calculated_attack cannot self-target.",
+      "The recovery limiter Map grows unbounded and its combined take(email) && take(ip) consumes the email budget even when the IP branch rejects; sweep expired buckets on access (or on a size threshold) and evaluate both take() results before combining so a rejected IP does not burn a legit email attempt. Keep it in-process per the existing ponytail note; no Redis. Add @@index([profileId]) to Team. buyBotCards should re-read each bot row (or DB-append) instead of writing from the stale freshState snapshot, aligning with the req_085 locking work for the human buy path.",
+      "Out of scope: retuning individual card magnitudes or approach deltas (that is a balance pass, not integrity); the JSON-column locking of the human buyCard/submitDecision/join paths is already owned by req_085 and is only referenced here for the bot-card sibling."
+    ],
+    "acceptance_criteria": [
+      "AC1: The finishing-position credit payout is monotonic non-increasing (a lower finish never pays more than a higher finish) while the tail of the field still receives a comeback cushion, verified by a unit test over the full position range and a balance:sim check.",
+      "AC2: A human who does not submit a decision before a default/deadline resolve has no card consumed, and result.consumedCards contains only explicitly chosen cards, covered by a test.",
+      "AC3: resolveCurrentGrandPrix produces identical results for a given seed and circuit regardless of any traits/laps/track values in the request body, covered by a test that varies the body and asserts unchanged output.",
+      "AC4: A decision with rivalTeamId equal to the submitting team is rejected with 400, covered by a test.",
+      "AC5: The recovery limiter prunes expired buckets and does not consume the email attempt when the IP branch rejects; Team.profileId is indexed; buyBotCards no longer writes bot cards from a stale snapshot.",
+      "AC6: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Gameplay and Economy Integrity Product Brief",
+    "overview": "A follow-on audit after review pass 6 surfaced correctness issues in the game's economy and resolution rather than its structure: a non-monotonic credit payout that rewards finishing near-last, silent consumption of a card a non-submitting player never chose, race resolution that trusts client-supplied traits and thus loses seed-determinism, a decision validator that allows self-targeted rival cards, plus limiter and index hygiene. This request makes payouts monotonic, stops unplayed-card loss, restores deterministic resolution, and tightens decision validation.",
+    "goals": [
+      "Placing better always pays at least as well as placing worse.",
+      "No player loses a card they did not choose to play.",
+      "A given seed and circuit always resolve to the same race, independent of the request body.",
+      "Rival-card effects can never target the player's own team.",
+      "The recovery limiter and hot lookup paths are free of leaks and missing indexes."
+    ],
+    "non_goals": [
+      "Do not retune individual card or approach stat deltas; this is integrity, not balance.",
+      "Do not remove the comeback cushion; keep helping the tail of the field, just monotonically.",
+      "Do not implement the JSON-column locking of the human buy/decision/join paths here (owned by req_085).",
+      "Do not add distributed rate limiting or new dependencies.",
+      "Do not change the admin replay/render tooling beyond decoupling it from the scored simulation input."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Monotonic payout and no unplayed-card consumption",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Economy integrity",
+      "request_acs": ["AC1", "AC2", "AC6"],
+      "problem": [
+        "classify (simulateRace.ts:924-925) adds comebackBonus = min(40, max(0, position-6)*10) on top of RACE_CREDITS_BY_POSITION=[150,130,115,105,100,100], so P8=120, P9=130, P10+=140 credits beat P3=115, P4=105, P5=P6=100 — finishing near-last pays more than mid-pack.",
+        "On a default/deadline resolve, buildParticipants (store.ts:966-988) gives a non-submitting human defaultCardForTeam(team,...) = team.cards[0] (store.ts:1067-1069), which resolveCurrentGrandPrix then removes from inventory via result.consumedCards (store.ts:733-742) though the player never played it."
+      ],
+      "scope_in": [
+        "Reshape the payout so baseCredits+comebackBonus is monotonic non-increasing across positions while retaining a tail cushion (clamp the sum below the next-better position's credits, or adjust the base table plus a smaller bonus).",
+        "Leave cardId undefined for auto-defaulted humans in buildParticipants so no card is played or consumed; keep bot default-card behavior unchanged.",
+        "Unit test the full-range payout monotonicity and a default-resolve case asserting an empty/unchanged human inventory; run balance:sim to confirm no unintended shift."
+      ],
+      "scope_out": [
+        "Retuning per-card or per-approach deltas.",
+        "Changing points (RACE_POINTS_BY_POSITION) rather than credits.",
+        "Removing the comeback mechanic."
+      ],
+      "acceptance_criteria": [
+        "AC1: For every adjacent pair of positions, the worse position's total credits do not exceed the better position's.",
+        "AC2: The tail of the field still receives a comeback cushion above the flat base.",
+        "AC3: A non-submitting human loses no card on default resolve and consumedCards holds only chosen cards.",
+        "AC4: balance:sim shows no unintended economy regression."
+      ]
+    },
+    {
+      "title": "Deterministic resolution and self-rival rejection",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Simulation integrity",
+      "request_acs": ["AC3", "AC4", "AC6"],
+      "problem": [
+        "resolveCurrentGrandPrix (store.ts:708-711) feeds input.traits/laps/trackLengthMeters/pitLaneProgress from the HTTP body into simulateRace, and normalizeRaceTraits(input.traits) overrides the circuit's canonical traits, so the owner can tilt a result and replays lose seed-determinism.",
+        "validateDecisionValues (store.ts:992-1010) checks rivalTeamId membership but not that it differs from the submitting team, so urban_draft/calculated_attack can self-target."
+      ],
+      "scope_in": [
+        "Derive traits, laps, trackLengthMeters, and pitLaneProgress from the stored circuit identity in resolveCurrentGrandPrix and ignore the client-supplied values in the scored input; keep any render hints display-only.",
+        "Reject rivalTeamId === input.teamId in validateDecisionValues with a 400.",
+        "Tests: identical resolve output for a seed+circuit across varied request bodies; self-rival decision rejected."
+      ],
+      "scope_out": [
+        "Reworking the admin resolve route contract beyond dropping the trusted render params.",
+        "Changing how qualifying derives its inputs (already correct).",
+        "Rival-card effect magnitudes."
+      ],
+      "acceptance_criteria": [
+        "AC1: Resolve output depends only on seed and stored circuit, not on request-body traits/track params.",
+        "AC2: A self-targeted rival decision is rejected with 400.",
+        "AC3: Existing resolve and decision tests still pass."
+      ]
+    },
+    {
+      "title": "Limiter pruning, profileId index, and bot-card write hygiene",
+      "priority": "Low",
+      "complexity": "Low",
+      "theme": "Hardening",
+      "request_acs": ["AC5", "AC6"],
+      "problem": [
+        "The recovery limiter (routes.ts:344-362) never prunes expired buckets (unbounded Map, one entry per email + IP) and take(email) && take(ip) consumes the email attempt even when the IP branch rejects.",
+        "Team.profileId has no index though profile-session and ownership lookups query by it.",
+        "buyBotCards (store.ts:1049-1064) writes each bot's cards from a pre-loop freshState snapshot rather than re-reading, the same JSON-staleness class as the human buy path."
+      ],
+      "scope_in": [
+        "Sweep expired limiter buckets on access (or above a size threshold) and evaluate both take() results before combining so a rejected IP does not burn the email attempt; keep it in-process.",
+        "Add @@index([profileId]) to the Team model with a migration.",
+        "Re-read each bot row inside its update (or DB-append) in buyBotCards, aligning with the req_085 locking approach for the human path."
+      ],
+      "scope_out": [
+        "Distributed/Redis rate limiting or new dependencies.",
+        "Broader schema indexing beyond profileId.",
+        "Locking the human buy/decision/join paths (owned by req_085)."
+      ],
+      "acceptance_criteria": [
+        "AC1: The limiter does not grow unbounded and does not consume the email attempt on an IP-only rejection.",
+        "AC2: Team.profileId is indexed via a migration.",
+        "AC3: buyBotCards no longer writes bot cards from a stale snapshot."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate gameplay and economy integrity fixes",
+    "plan": [
+      "Read req_085 first; this request is the gameplay/economy sibling of that structural pass and must not collide with its JSON-column locking work (only the bot-card path is touched here).",
+      "Fix the economy item: make the payout curve monotonic with a retained tail cushion, and stop auto-consuming a non-submitting human's card; add the payout-monotonicity and default-resolve inventory tests and run balance:sim.",
+      "Make resolution deterministic from the stored circuit and reject self-targeted rivals, with tests that vary the request body and assert unchanged output.",
+      "Do the hardening item: limiter pruning without short-circuit miscount, the Team.profileId index migration, and the bot-card re-read.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout and note any balance:sim deltas."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/gameplay-economy-integrity-audit.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

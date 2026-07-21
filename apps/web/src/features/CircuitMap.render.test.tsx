@@ -21,4 +21,16 @@ describe("CircuitMap rendering", () => {
 
     expect(container.querySelector(".circuit-map-content")?.getAttribute("transform")).toBeNull();
   });
+
+  it("only renders tire trails for moving cars", () => {
+    const stopped: MapCar = { id: "stopped", label: "S", player: false, delay: 0, duration: 10, progress: 0 };
+    const moving: MapCar = { id: "moving", label: "M", player: false, delay: 0, duration: 10, progress: 1 };
+
+    const stoppedMap = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[stopped]} />);
+    expect(stoppedMap.container.querySelector(".map-car-trails")).toBeNull();
+    stoppedMap.unmount();
+
+    const movingMap = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[moving]} />);
+    expect(movingMap.container.querySelector(".map-car-trails")).not.toBeNull();
+  });
 });

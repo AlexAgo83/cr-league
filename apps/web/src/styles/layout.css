@@ -3896,6 +3896,25 @@ label small {
   mask-type: alpha;
 }
 
+.map-car-trails {
+  filter: blur(0.45px);
+  opacity: 0.94;
+}
+
+.map-car-trails path {
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 2.8;
+}
+
+.map-car-trail-start {
+  stop-color: rgb(4 3 5 / 0.78);
+}
+
+.map-car-trail-end {
+  stop-color: rgb(4 3 5 / 0);
+}
+
 .map-car-backplate {
   filter: brightness(0) drop-shadow(0 3px 4px rgb(0 0 0 / 0.55));
   opacity: 0.38;
@@ -4922,9 +4941,17 @@ label small {
     grid-template-columns: 1fr;
   }
 
-  .chrono-report-header,
-  .chrono-report-history li {
+  .chrono-report-header {
     grid-template-columns: 1fr;
+  }
+
+  .chrono-report-history li {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .chrono-report-history li .secondary-button {
+    justify-self: stretch;
+    grid-column: 1 / -1;
   }
 
   .chrono-session-lap {
@@ -4939,6 +4966,15 @@ label small {
 
   .chrono-session-lap b {
     font-size: 0.62rem;
+  }
+
+  .chrono-session-setup {
+    align-items: stretch;
+    grid-template-columns: 58px repeat(2, minmax(0, 58px));
+  }
+
+  .chrono-session-lap {
+    grid-row: span 2;
   }
 
   .chrono-report-stats {
@@ -5071,10 +5107,6 @@ label small {
 }
 
 @media (max-width: 440px) {
-  .chrono-report-stats {
-    grid-template-columns: 1fr;
-  }
-
   .dashboard-summary {
     grid-template-columns: 1fr;
   }
@@ -6563,6 +6595,10 @@ button.highlight-command:not(:disabled) {
   .game-shell .drive-map-panel .circuit-map-stage > svg,
   .game-shell .replay-map-panel .circuit-map-stage > svg {
     height: 100%;
+    left: 50%;
+    max-width: none;
+    min-width: 100%;
+    transform: translateX(-50%);
     width: auto;
   }
 

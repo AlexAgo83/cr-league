@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 20%
+> Progress: 25%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -45,6 +45,7 @@
 # Report
 - 2026-07-21 wave: moved pre-race opponent configurations out of Drive and into Plan > Chrono after session history, so comparison lives with chrono learning instead of cluttering the circuit view.
 - 2026-07-21 wave: moved the selected-card consumption warning into the plan risk panel, keeping the warning visible with the risk read instead of burying it inside the card picker.
+- 2026-07-21 wave: moved the Plan primary command below the active configuration choices, so the user reviews the setup list before sending or launching.
 - Remaining: resolved-weather info modal, card badge wrapping, and badge stat explanations.
 
 # AI Context

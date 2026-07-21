@@ -246,10 +246,6 @@ export function DirectivePanel({
           </button>
         ))}
       </div>
-      <button type="button" className="primary-command directive-primary-command" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-        {primaryCommand.label}
-      </button>
-
       {step === "approach" ? (
         <fieldset className="choice-group directive-choice-group directive-choice-approach" aria-label={tt("field_approach")}>
           <div className="choice-grid directive-choice-grid">
@@ -332,6 +328,10 @@ export function DirectivePanel({
           {ownedCardIds.length ? null : <p className="directive-lock-note">{tt("garage_empty_inventory")}</p>}
         </fieldset>
       ) : null}
+
+      <button type="button" className="primary-command directive-primary-command" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+        {primaryCommand.label}
+      </button>
     </section>
     </>
   );

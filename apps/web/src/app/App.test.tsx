@@ -404,11 +404,11 @@ describe("App", () => {
     saveProfile();
     const emptyGarageState = {
       ...baseState,
-      teams: [{ ...baseState.teams[0], credits: 200, cards: [] }, baseState.teams[1]]
+      teams: [{ ...baseState.teams[0], credits: 300, cards: [] }, baseState.teams[1]]
     };
     const boughtState = {
       ...emptyGarageState,
-      teams: [{ ...emptyGarageState.teams[0], credits: 80, cards: ["rain_grip"] }, baseState.teams[1]]
+      teams: [{ ...emptyGarageState.teams[0], credits: 60, cards: ["rain_grip", "rain_grip"] }, baseState.teams[1]]
     };
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(emptyGarageState)).mockResolvedValueOnce(response(boughtState));
 
@@ -419,11 +419,12 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
     fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
+    fireEvent.change(screen.getByRole("combobox", { name: "Quantity" }), { target: { value: "2" } });
     fireEvent.click(screen.getByRole("button", { name: "Buy card" }));
     await act(async () => {});
     expect(fetch).toHaveBeenLastCalledWith(
       "http://localhost:4874/leagues/league_1/cards/buy",
-      expect.objectContaining({ method: "POST", body: JSON.stringify({ teamId: "team_1", claimCode: "CLAIM123", cardId: "rain_grip" }) })
+      expect.objectContaining({ method: "POST", body: JSON.stringify({ teamId: "team_1", claimCode: "CLAIM123", cardId: "rain_grip", quantity: 2 }) })
     );
 
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
@@ -768,6 +769,7 @@ describe("App", () => {
     expect(screen.queryByText("dot markers are pace and race moments.")).toBe(null);
     expect(screen.queryByText("cloud icons map to the five race phases.")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Actual race weather" }));
+    expect(within(screen.getByRole("dialog", { name: "Actual race weather" })).getByRole("heading", { name: "Legends" })).toBeTruthy();
     expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("dot markers are pace and race moments.");
     expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("cloud icons map to the five race phases.");
     fireEvent.click(screen.getByRole("button", { name: "Close" }));

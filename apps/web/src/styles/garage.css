@@ -448,11 +448,32 @@
 }
 
 .modal-actions {
+  align-items: center;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
   justify-content: flex-end;
   margin-top: 16px;
+}
+
+.garage-buy-quantity {
+  align-items: center;
+  color: var(--color-muted);
+  display: inline-flex;
+  font-family: var(--font-display);
+  font-size: 0.78rem;
+  font-weight: 800;
+  gap: 8px;
+  text-transform: uppercase;
+}
+
+.garage-buy-quantity select {
+  background: var(--color-cockpit);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-text);
+  font: inherit;
+  padding: 6px 10px;
 }
 
 .modal-actions button:last-child:not(:disabled) {

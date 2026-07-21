@@ -255,10 +255,6 @@ function RaceWeatherModal({ result, forecastWeather, tt, onClose }: { result: Ra
     <Modal label={title} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <h2>{title}</h2>
       <p>{body}</p>
-      <p className="race-weather-legend">
-        <span><span className="replay-legend-dot" aria-hidden="true" /> {tt("replay_pace_marker_legend")}</span>
-        <span><VisualIcon name="light_rain" /> {tt("replay_weather_phase_legend")}</span>
-      </p>
       <ol className="race-weather-phase-list">
         {segments.map((segment) => (
           <li key={segment}>
@@ -270,6 +266,13 @@ function RaceWeatherModal({ result, forecastWeather, tt, onClose }: { result: Ra
           </li>
         ))}
       </ol>
+      <section className="race-weather-legend" aria-label={tt("legend_title")}>
+        <h3>{tt("legend_title")}</h3>
+        <p>
+          <span><span className="replay-legend-dot" aria-hidden="true" /> {tt("replay_pace_marker_legend")}</span>
+          <span><VisualIcon name="light_rain" /> {tt("replay_weather_phase_legend")}</span>
+        </p>
+      </section>
     </Modal>
   );
 }

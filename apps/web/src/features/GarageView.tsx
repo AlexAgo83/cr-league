@@ -52,7 +52,7 @@ export function GarageView({
   loading: boolean;
   pendingMessage: string | null;
   cardPanel: CardPanel;
-  onBuyCard: (cardId: CardId) => void;
+  onBuyCard: (cardId: CardId, quantity?: number) => void;
   onSellCard: (cardId: CardId) => void;
   onSelectCardPanel: (panel: CardPanel) => void;
   onUpdateLivery: (livery: LeagueState["teams"][number]["livery"]) => void;
@@ -62,6 +62,7 @@ export function GarageView({
   const [livery, setLivery] = useState(playerTeam?.livery ?? { primary: "#16c784", secondary: "#38bdf8" });
   const [teamName, setTeamName] = useState(playerTeam?.name ?? "");
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
+  const [buyQuantity, setBuyQuantity] = useState(1);
   const [viewingCardId, setViewingCardId] = useState<CardId | undefined>();
 
   useEffect(() => {
@@ -90,13 +91,16 @@ export function GarageView({
   const viewingFit = viewingCardId ? cardFit(viewingCardId, state, forecastPick) : null;
   const viewingSellPrice = (state.cardShop.find((item) => item.cardId === viewingCardId)?.price ?? 0) / 2;
   const viewingCardLocked = Boolean(viewingCardId && isCardLocked(viewingCardId));
-  const pendingBuyAffordable = Boolean(pendingBuy && playerTeam.credits >= pendingBuy.price);
+  const maxBuyQuantity = pendingBuy ? Math.min(99, Math.floor(playerTeam.credits / pendingBuy.price)) : 0;
+  const buyQuantityOptions = Array.from({ length: maxBuyQuantity }, (_, index) => index + 1);
+  const pendingBuyAffordable = Boolean(pendingBuy && maxBuyQuantity > 0);
   const panelTitle = cardPanel === "team" ? tt("dashboard_my_team") : cardPanel === "inventory" ? tt("garage_inventory") : tt("garage_shop");
   const seasonWins = seasonWinsByTeamId(state).get(playerTeam.id) ?? 0;
   const confirmBuy = () => {
     if (!pendingBuy || !pendingBuyAffordable) return;
-    onBuyCard(pendingBuy.cardId);
+    onBuyCard(pendingBuy.cardId, buyQuantity);
     setPendingBuyCardId(undefined);
+    setBuyQuantity(1);
   };
   const selectCardPanel = (nextPanel: CardPanel) => {
     localStorage.setItem(GARAGE_PANEL_KEY, nextPanel);
@@ -218,7 +222,7 @@ export function GarageView({
           <div className="card-shop">
             <PendingFeedback className="card-shop-feedback" message={pendingMessage} />
             {shopOffers.map((item) => (
-              <button key={item.cardId} className="card-art-cell" type="button" onClick={() => setPendingBuyCardId(item.cardId)} disabled={loading}>
+              <button key={item.cardId} className="card-art-cell" type="button" onClick={() => { setPendingBuyCardId(item.cardId); setBuyQuantity(1); }} disabled={loading}>
                 <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
                 <strong className="card-price-badge">
                   <span aria-hidden="true" className="reward-icon">●</span>
@@ -240,7 +244,7 @@ export function GarageView({
           <div className="garage-buy-card">
             <CardArtImage cardId={pendingBuy.cardId} />
             <strong>
-              <RewardValue type="credits" value={pendingBuy.price} tt={tt} />
+              <RewardValue type="credits" value={pendingBuy.price * buyQuantity} tt={tt} />
             </strong>
             <small>{tt(`card_fit_${pendingBuy.fit.level}` as TranslationKey)}</small>
             <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
@@ -248,6 +252,16 @@ export function GarageView({
           <p>{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
           <PendingFeedback message={pendingMessage} />
           <div className="modal-actions">
+            {pendingBuyAffordable ? (
+              <label className="garage-buy-quantity">
+                {tt("garage_buy_quantity")}
+                <select value={buyQuantity} onChange={(event) => setBuyQuantity(Number(event.target.value))}>
+                  {buyQuantityOptions.map((quantity) => (
+                    <option key={quantity} value={quantity}>x{quantity}</option>
+                  ))}
+                </select>
+              </label>
+            ) : null}
             <button type="button" onClick={confirmBuy} disabled={loading || !pendingBuyAffordable}>
               {tt("garage_buy_confirm_action")}
             </button>

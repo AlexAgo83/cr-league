@@ -422,7 +422,7 @@ function isBuyCardBody(value: unknown): value is Parameters<typeof buyCard>[2] {
   if (!value || typeof value !== "object") return false;
 
   const candidate = value as Record<string, unknown>;
-  return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.cardId === "string";
+  return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.cardId === "string" && (candidate.quantity === undefined || typeof candidate.quantity === "number");
 }
 
 function isLiveryBody(value: unknown): value is Parameters<typeof updateTeamLivery>[2] {

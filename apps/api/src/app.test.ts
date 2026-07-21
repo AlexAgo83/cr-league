@@ -319,6 +319,32 @@ describe("api app", () => {
     expect(lockedSellResponse.statusCode).toBe(409);
   });
 
+  it("buys multiple affordable copies of a card", async () => {
+    const db = createMemoryDb();
+    const app = await createTestApp(db);
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Bulk Buy League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const claim = created.player;
+    await db.team.update({ where: { id: claim.teamId }, data: { credits: 300 } });
+
+    const buyResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/cards/buy`,
+      payload: { teamId: claim.teamId, claimCode: claim.claimCode, cardId: "rain_grip", quantity: 2 }
+    });
+    const team = buyResponse.json().teams.find((candidate: { id: string }) => candidate.id === claim.teamId);
+
+    await app.close();
+
+    expect(buyResponse.statusCode).toBe(200);
+    expect(team.cards.filter((cardId: string) => cardId === "rain_grip")).toHaveLength(2);
+    expect(team.credits).toBe(300 - CARD_PRICES.rain_grip * 2);
+  });
+
   it("keeps custom livery colors in dark-primary and light-secondary ranges", async () => {
     const app = await createTestApp(createMemoryDb());
     const createResponse = await app.inject({

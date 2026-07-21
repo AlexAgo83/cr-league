@@ -2683,8 +2683,23 @@ label small {
 }
 
 .race-weather-legend {
+  border-top: 1px solid var(--color-border);
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+  padding-top: 12px;
+}
+
+.race-weather-legend h3 {
+  font-size: 0.8rem;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.race-weather-legend p {
   display: grid;
   gap: 4px;
+  margin: 0;
 }
 
 .race-weather-legend span {

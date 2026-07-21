@@ -381,31 +381,33 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
   };
 }
 
-export async function buyCard(db: Db, leagueId: string, input: { teamId?: string; claimCode?: string; cardId?: string } = {}) {
+export async function buyCard(db: Db, leagueId: string, input: { teamId?: string; claimCode?: string; cardId?: string; quantity?: number } = {}) {
   const cardId = input.cardId;
   if (typeof cardId !== "string" || !isCardId(cardId)) {
     throw new LeagueRuleError("Expected a team and a valid card.");
   }
+  const quantity = clampInteger(input.quantity, 1, 1, 99);
 
   const state = await getLeagueState(db, leagueId);
   if (!state) return null;
 
   const team = await requireTeamClaim(db, leagueId, input);
   const price = CARD_PRICES[cardId];
-  if (team.credits < price) {
+  const totalPrice = price * quantity;
+  if (team.credits < totalPrice) {
     throw new LeagueRuleError("Not enough credits to buy this card.");
   }
 
   await runWrite(db, async (tx) => {
     const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
-    if (!freshTeam || freshTeam.leagueId !== leagueId || freshTeam.credits < price) {
+    if (!freshTeam || freshTeam.leagueId !== leagueId || freshTeam.credits < totalPrice) {
       throw new LeagueRuleError("Not enough credits to buy this card.");
     }
     const updated = await tx.team.updateMany({
-      where: { id: freshTeam.id, credits: { gte: price } },
+      where: { id: freshTeam.id, credits: { gte: totalPrice } },
       data: {
-        credits: { decrement: price },
-        cards: appendCard(normalizeCards(freshTeam.cards), cardId)
+        credits: { decrement: totalPrice },
+        cards: [...normalizeCards(freshTeam.cards), ...Array.from({ length: quantity }, () => cardId)]
       }
     });
     if (updated.count !== 1) throw new LeagueRuleError("Not enough credits to buy this card.");

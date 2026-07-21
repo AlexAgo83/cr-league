@@ -124,7 +124,7 @@ export function createLeagueMutations({
     });
   }
 
-  async function buyCard(cardId: CardId) {
+  async function buyCard(cardId: CardId, quantity = 1) {
     if (!leagueState || !playerTeam) return;
 
     await mutateLeague(
@@ -133,7 +133,8 @@ export function createLeagueMutations({
       {
         teamId: playerTeam.id,
         claimCode: leagueState.player?.claimCode,
-        cardId
+        cardId,
+        quantity
       },
       "status_card_bought"
     );

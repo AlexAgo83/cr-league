@@ -119,7 +119,7 @@ export function GameViews({
   openHistoryReplay: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
   setSeasonRecapSeason: (season: number) => void;
   setChampionshipRecordTab: (tab: ChampionshipRecordTab) => void;
-  buyCard: (cardId: CardId) => void;
+  buyCard: (cardId: CardId, quantity?: number) => void;
   sellCard: (cardId: CardId) => void;
   setGaragePanel: (panel: CardPanel) => void;
   updateLivery: (livery: LeagueState["teams"][number]["livery"]) => void;

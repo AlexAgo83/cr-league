@@ -149,7 +149,7 @@ export function AppShell({
   switchLeague: (teamId: string) => void;
   closeHistoryReplay: () => void;
   openHistoryReplay: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
-  buyCard: (cardId: CardId) => void;
+  buyCard: (cardId: CardId, quantity?: number) => void;
   sellCard: (cardId: CardId) => void;
   updateLivery: (livery: LeagueState["teams"][number]["livery"]) => void;
   updateTeamName: (name: string) => void;

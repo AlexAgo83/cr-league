@@ -155,17 +155,27 @@ export function createLeagueMutations({
     );
   }
 
-  async function updateLivery(livery: LeagueState["teams"][number]["livery"]) {
+  async function updateLivery(livery: LeagueState["teams"][number]["livery"], options: { silent?: boolean } = {}) {
     if (!leagueState || !playerTeam) return;
+
+    const body = {
+      teamId: playerTeam.id,
+      claimCode: leagueState.player?.claimCode,
+      livery
+    };
+    if (options.silent) {
+      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/teams/livery`, {
+        method: "POST",
+        body: JSON.stringify(body)
+      });
+      setLeagueState(withCurrentPlayer(state));
+      return;
+    }
 
     await mutateLeague(
       "status_livery_updating",
       `/leagues/${leagueState.league.id}/teams/livery`,
-      {
-        teamId: playerTeam.id,
-        claimCode: leagueState.player?.claimCode,
-        livery
-      },
+      body,
       "status_livery_updated"
     );
   }

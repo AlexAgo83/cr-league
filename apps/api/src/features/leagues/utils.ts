@@ -167,7 +167,8 @@ export function normalizeLivery(value: unknown): TeamLivery {
   const livery = value as Partial<Record<keyof TeamLivery, unknown>>;
   return {
     primary: typeof livery.primary === "string" && isHexColor(livery.primary) ? livery.primary : DEFAULT_LIVERY.primary,
-    secondary: typeof livery.secondary === "string" && isHexColor(livery.secondary) ? livery.secondary : DEFAULT_LIVERY.secondary
+    secondary: typeof livery.secondary === "string" && isHexColor(livery.secondary) ? livery.secondary : DEFAULT_LIVERY.secondary,
+    ...(typeof livery.carAssetId === "string" && /^car-\d{3}$/.test(livery.carAssetId) ? { carAssetId: livery.carAssetId } : {})
   };
 }
 
@@ -183,10 +184,10 @@ export function uniqueBotLivery(startIndex: number, used: Set<string>): TeamLive
     const livery = pairs[(startIndex + offset) % pairs.length];
     if (livery && !used.has(liveryKey(livery))) {
       used.add(liveryKey(livery));
-      return livery;
+      return { ...livery, carAssetId: carAssetIdForIndex(startIndex) };
     }
   }
-  return randomLivery();
+  return { ...randomLivery(), carAssetId: carAssetIdForIndex(startIndex) };
 }
 
 export function liveryKey(livery: TeamLivery) {
@@ -195,6 +196,10 @@ export function liveryKey(livery: TeamLivery) {
 
 function isHexColor(value: string) {
   return /^#[0-9a-f]{6}$/i.test(value);
+}
+
+function carAssetIdForIndex(index: number) {
+  return `car-${String((index % 13) + 1).padStart(3, "0")}`;
 }
 
 export function appendCard(cards: CardId[], cardId: CardId): Prisma.InputJsonValue {

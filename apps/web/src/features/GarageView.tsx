@@ -42,7 +42,7 @@ export function GarageView({
   onBuyCard: (cardId: CardId, quantity?: number) => void;
   onSellCard: (cardId: CardId) => void;
   onSelectCardPanel: (panel: CardPanel) => void;
-  onUpdateLivery: (livery: LeagueState["teams"][number]["livery"]) => void;
+  onUpdateLivery: (livery: LeagueState["teams"][number]["livery"], options?: { silent?: boolean }) => void;
   onUpdateTeamName: (name: string) => void;
   tt: Translator;
 }) {
@@ -54,7 +54,10 @@ export function GarageView({
   const [carAssetIndex, setCarAssetIndex] = useState(0);
 
   useEffect(() => {
-    if (playerTeam?.livery) setLivery(playerTeam.livery);
+    if (playerTeam?.livery) {
+      setLivery(playerTeam.livery);
+      setCarAssetIndex(Math.max(0, CAR_ASSETS.findIndex((asset) => asset.id === playerTeam.livery.carAssetId)));
+    }
   }, [playerTeam?.livery]);
 
   useEffect(() => {
@@ -90,6 +93,13 @@ export function GarageView({
     setPendingBuyCardId(undefined);
     setBuyQuantity(1);
   };
+  const selectCarAsset = (nextIndex: number) => {
+    const nextAsset = CAR_ASSETS[nextIndex] ?? CAR_ASSETS[0]!;
+    const nextLivery = { ...livery, carAssetId: nextAsset.id };
+    setCarAssetIndex(nextIndex);
+    setLivery(nextLivery);
+    onUpdateLivery(nextLivery, { silent: true });
+  };
   const selectCardPanel = (nextPanel: CardPanel) => {
     localStorage.setItem(GARAGE_PANEL_KEY, nextPanel);
     onSelectCardPanel(nextPanel);
@@ -117,7 +127,7 @@ export function GarageView({
           </span>
         </div>
         <div className="garage-car-showcase">
-          <button className="garage-car-skin-button" type="button" aria-label="Previous car skin" disabled={!canChangeCarAsset} onClick={() => setCarAssetIndex((index) => (index + CAR_ASSETS.length - 1) % CAR_ASSETS.length)}>
+          <button className="garage-car-skin-button" type="button" aria-label="Previous car skin" disabled={!canChangeCarAsset} onClick={() => selectCarAsset((carAssetIndex + CAR_ASSETS.length - 1) % CAR_ASSETS.length)}>
             ‹
           </button>
           <span className="garage-car-preview-frame garage-car-preview-top" style={topCarStyle}>
@@ -128,7 +138,7 @@ export function GarageView({
             <AssetImage className="garage-car-preview" src={selectedCarAsset.side} alt="" />
             <span className="garage-car-gradient" aria-hidden="true" />
           </span>
-          <button className="garage-car-skin-button" type="button" aria-label="Next car skin" disabled={!canChangeCarAsset} onClick={() => setCarAssetIndex((index) => (index + 1) % CAR_ASSETS.length)}>
+          <button className="garage-car-skin-button" type="button" aria-label="Next car skin" disabled={!canChangeCarAsset} onClick={() => selectCarAsset((carAssetIndex + 1) % CAR_ASSETS.length)}>
             ›
           </button>
         </div>

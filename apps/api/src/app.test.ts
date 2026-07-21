@@ -219,6 +219,8 @@ describe("api app", () => {
     expect(createdTeam.livery.primary).not.toBe(createdTeam.livery.secondary);
     expect(new Set(createdBots.map((team: { name: string }) => team.name.toLowerCase())).size).toBe(createdBots.length);
     expect(new Set(createdBots.map((team: { livery: { primary: string; secondary: string } }) => `${team.livery.primary}:${team.livery.secondary}`)).size).toBe(createdBots.length);
+    expect(createdBots.every((team: { livery: { carAssetId?: string } }) => /^car-0(0[1-9]|1[0-3])$/.test(team.livery.carAssetId ?? ""))).toBe(true);
+    expect(new Set(createdBots.map((team: { livery: { carAssetId?: string } }) => team.livery.carAssetId)).size).toBe(createdBots.length);
     expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: CARD_PRICES.rain_grip });
     expect(created.cardShop).toContainEqual({ cardId: "soft_tires", price: CARD_PRICES.soft_tires });
     expect(created.cardShop).toContainEqual({ cardId: "qualifying_focus", price: CARD_PRICES.qualifying_focus });

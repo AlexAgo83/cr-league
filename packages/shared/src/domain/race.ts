@@ -71,6 +71,7 @@ export type RaceTraits = {
 export type TeamLivery = {
   primary: string;
   secondary: string;
+  carAssetId?: string;
 };
 
 export type RaceInput = {

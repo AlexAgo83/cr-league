@@ -23,15 +23,17 @@ describe("CircuitMap rendering", () => {
     expect(container.querySelector(".circuit-map-content")?.getAttribute("transform")).toBeNull();
   });
 
-  it("only renders tire trails for moving cars", () => {
-    const stopped: MapCar = { id: "stopped", label: "S", player: false, delay: 0, duration: 10, progress: 0 };
+  it("does not render tire trails behind cars", () => {
     const moving: MapCar = { id: "moving", label: "M", player: false, delay: 0, duration: 10, progress: 1 };
 
-    const stoppedMap = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[stopped]} />);
-    expect(stoppedMap.container.querySelector(".map-car-trails")).toBeNull();
-    stoppedMap.unmount();
-
     const movingMap = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[moving]} />);
-    expect(movingMap.container.querySelector(".map-car-trails")).not.toBeNull();
+    expect(movingMap.container.querySelector(".map-car-trails")).toBeNull();
+  });
+
+  it("uses the car skin selected in the team livery", () => {
+    const car: MapCar = { id: "player", label: "P", player: true, delay: 0, duration: 10, progress: 0, livery: { primary: "#111111", secondary: "#ff0000", carAssetId: "car-005" } };
+    const { container } = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[car]} />);
+
+    expect(container.querySelector(".map-car-detail")?.getAttribute("href")).toContain("/assets/cars/crl-v2/car-005/top.png");
   });
 });

@@ -4,7 +4,7 @@ import type { TeamLivery, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
-import { DEFAULT_CAR_ASSET } from "./carAssets.js";
+import { DEFAULT_CAR_ASSET, carAssetForId } from "./carAssets.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
 export type MapCar = {
@@ -78,16 +78,16 @@ export type CircuitRouteAnalysis = {
 };
 
 const CAR_SPRITES: Record<CarSprite, string> = {
-  idle: DEFAULT_CAR_ASSET.sprite,
-  boost: "/assets/cars/boost.png",
-  brake: "/assets/cars/brake.png"
+  idle: DEFAULT_CAR_ASSET.top,
+  boost: DEFAULT_CAR_ASSET.top,
+  brake: DEFAULT_CAR_ASSET.top
 };
 const CAR_SPRITE_ANCHOR: Record<CarSprite, { x: number; y: number }> = {
   idle: { x: 0, y: 0 },
-  boost: { x: 0, y: -0.35 },
-  brake: { x: 0.35, y: -0.35 }
+  boost: { x: 0, y: 0 },
+  brake: { x: 0, y: 0 }
 };
-const CAR_SPRITE_BOX = { x: -24, y: -36, width: 48, height: 72 };
+const CAR_SPRITE_BOX = { x: -17, y: -8.8, width: 34, height: 17.65 };
 
 function spriteForCar(car: MapCar): CarSprite {
   if ((car.positionDelta ?? 0) > 0) return "boost";
@@ -451,14 +451,13 @@ export function CircuitMap({
                   const pose = car.progress === undefined ? null : poseOnRoute(renderPoints, stageProgress(car.progress));
                   const drift = car.progress === undefined ? 0 : driftAngle(renderPoints, stageProgress(car.progress));
                   const sprite = spriteForCar(car);
-                  const carMoving = car.progress === undefined || (car.progress > 0.015 && car.progress < circuit.laps - 0.015);
                   const carStyle = car.livery
                     ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
                     : undefined;
                   return (
                     <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
                       <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                        <MapCarSprite sprite={sprite} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift + 90})` : "rotate(90)"} trailLag={-drift} showTrail={carMoving} />
+                        <MapCarSprite asset={carAssetForId(car.livery?.carAssetId).top} sprite={sprite} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift + 180})` : "rotate(180)"} />
                         <text textAnchor="middle" dominantBaseline="central">
                           {car.label}
                         </text>
@@ -522,29 +521,32 @@ export function CircuitMap({
   );
 }
 
-export function MapCarSprite({ maskId, sprite, transform, trailLag = 0, showTrail = false }: { maskId: string; sprite: CarSprite; transform?: string; trailLag?: number; showTrail?: boolean }) {
+export function MapCarSprite({ asset, maskId, sprite, transform }: { asset?: string; maskId: string; sprite: CarSprite; transform?: string }) {
   const anchor = CAR_SPRITE_ANCHOR[sprite];
+  const carAsset = asset ?? CAR_SPRITES[sprite];
 
   return (
     <g className="map-car-sprite" transform={transform}>
       <defs>
         <mask id={maskId} className="map-car-tint-mask">
-          <image href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
+          <image href={carAsset} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
         </mask>
-        <linearGradient id={`${maskId}-trail`} x1="0" y1="10" x2="0" y2="38" gradientUnits="userSpaceOnUse">
-          <stop offset="0" className="map-car-trail-start" />
-          <stop offset="1" className="map-car-trail-end" />
+        <linearGradient id={`${maskId}-livery`} x1={CAR_SPRITE_BOX.x} y1="0" x2={CAR_SPRITE_BOX.x + CAR_SPRITE_BOX.width} y2="0" gradientUnits="userSpaceOnUse">
+          <stop offset="18%" className="map-car-livery-start" />
+          <stop offset="62%" className="map-car-livery-mid" />
+          <stop offset="100%" className="map-car-livery-end" />
         </linearGradient>
       </defs>
-      {showTrail ? (
-        <g className="map-car-trails" transform={`translate(${anchor.x + 1.1} ${anchor.y}) rotate(${trailLag})`} aria-hidden="true">
-          <path d="M4.6 10 C5.5 20 7 30 8.4 42" stroke={`url(#${maskId}-trail)`} />
-          <path d="M4.6 10 C5.5 20 7 30 8.4 42" transform="scale(-1 1)" stroke={`url(#${maskId}-trail)`} />
-        </g>
-      ) : null}
-      <image className="map-car-backplate" href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
-      <rect className="map-car-tint" x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
-      <image className="map-car-detail" href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
+      {([
+        [-0.6, 0],
+        [0.6, 0],
+        [0, -0.6],
+        [0, 0.6]
+      ] as Array<[number, number]>).map(([x, y]) => (
+        <rect key={`${x}-${y}`} className="map-car-stroke" x={CAR_SPRITE_BOX.x + anchor.x + x} y={CAR_SPRITE_BOX.y + anchor.y + y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
+      ))}
+      <image className="map-car-detail" href={carAsset} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
+      <rect className="map-car-tint" x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} fill={`url(#${maskId}-livery)`} />
     </g>
   );
 }

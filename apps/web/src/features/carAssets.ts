@@ -22,3 +22,8 @@ export const CAR_ASSETS: CarAsset[] = Array.from({ length: 13 }, (_, index) => {
 });
 
 export const DEFAULT_CAR_ASSET = CAR_ASSETS[0]!;
+export const CAR_ASSET_BY_ID = new Map(CAR_ASSETS.map((asset) => [asset.id, asset]));
+
+export function carAssetForId(id: string | undefined) {
+  return (id && CAR_ASSET_BY_ID.get(id as CarAssetId)) || DEFAULT_CAR_ASSET;
+}

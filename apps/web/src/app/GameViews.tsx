@@ -120,7 +120,7 @@ export function GameViews({
   buyCard: (cardId: CardId, quantity?: number) => void;
   sellCard: (cardId: CardId) => void;
   setGaragePanel: (panel: CardPanel) => void;
-  updateLivery: (livery: LeagueState["teams"][number]["livery"]) => void;
+  updateLivery: (livery: LeagueState["teams"][number]["livery"], options?: { silent?: boolean }) => void;
   updateTeamName: (name: string) => void;
   tt: Translator;
 }) {

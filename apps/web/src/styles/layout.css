@@ -4139,40 +4139,30 @@ label small {
   mask-type: alpha;
 }
 
-.map-car-trails {
-  filter: blur(0.45px);
-  opacity: 0.94;
-}
-
-.map-car-trails path {
-  fill: none;
-  stroke-linecap: round;
-  stroke-width: 2.8;
-}
-
-.map-car-trail-start {
-  stop-color: rgb(4 3 5 / 0.78);
-}
-
-.map-car-trail-end {
-  stop-color: rgb(4 3 5 / 0);
-}
-
-.map-car-backplate {
-  filter: brightness(0) drop-shadow(0 3px 4px rgb(0 0 0 / 0.55));
-  opacity: 0.58;
-  transform: scale(1.1);
-  transform-box: fill-box;
-  transform-origin: center;
-}
-
 .map-car-tint {
+  mix-blend-mode: overlay;
+  opacity: 0.92;
+}
+
+.map-car-stroke {
   fill: var(--car-primary, var(--color-accent));
-  opacity: 0.78;
 }
 
 .map-car-detail {
+  mix-blend-mode: luminosity;
   opacity: 1;
+}
+
+.map-car-livery-start {
+  stop-color: transparent;
+}
+
+.map-car-livery-mid {
+  stop-color: color-mix(in srgb, var(--car-secondary, var(--color-telemetry)) 55%, #000 45%);
+}
+
+.map-car-livery-end {
+  stop-color: color-mix(in srgb, var(--car-secondary, var(--color-telemetry)) 82%, #fff 18%);
 }
 
 .map-car-wheel {

@@ -151,7 +151,7 @@ export function AppShell({
   openHistoryReplay: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
   buyCard: (cardId: CardId, quantity?: number) => void;
   sellCard: (cardId: CardId) => void;
-  updateLivery: (livery: LeagueState["teams"][number]["livery"]) => void;
+  updateLivery: (livery: LeagueState["teams"][number]["livery"], options?: { silent?: boolean }) => void;
   updateTeamName: (name: string) => void;
   clearTransientNotifications: () => void;
   clearScreenOnboardingSnoozes: () => void;

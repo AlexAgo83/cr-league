@@ -2672,6 +2672,9 @@ label small {
 
 .map-weather-info-button {
   left: auto;
+  padding: 3px 6px;
+  right: 3px;
+  top: 3px;
 }
 
 .race-weather-phase-list {

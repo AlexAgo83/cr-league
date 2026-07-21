@@ -1,7 +1,7 @@
 ## task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy - Orchestrate circuit stat differentiation and bot strategy
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
 > Progress: 0%

@@ -1,10 +1,10 @@
 ## item_183_make_circuit_traits_force_distinct_setup_tradeoffs - Make circuit traits force distinct setup tradeoffs
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 10%
 > Complexity: Medium
 > Theme: Circuit identity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

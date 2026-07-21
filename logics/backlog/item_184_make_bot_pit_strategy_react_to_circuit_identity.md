@@ -1,10 +1,10 @@
 ## item_184_make_bot_pit_strategy_react_to_circuit_identity - Make bot pit strategy react to circuit identity
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 10%
 > Complexity: Medium
 > Theme: Bot strategy
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

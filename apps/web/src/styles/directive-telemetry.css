@@ -1,0 +1,103 @@
+/* ---------- Directive briefing telemetry + impact badges ---------- */
+
+.directive-trait {
+  gap: 6px;
+  padding: 12px;
+}
+
+.directive-trait-head {
+  align-items: baseline;
+  display: flex;
+  gap: 8px;
+  justify-content: space-between;
+}
+
+.directive-trait-head span {
+  background: transparent;
+  border: 0;
+}
+
+.directive-trait-score {
+  align-items: baseline;
+  display: inline-flex;
+  gap: 6px;
+}
+
+.directive-trait-value {
+  color: var(--color-text);
+  font-size: 1.55rem;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.directive-trait-modifier {
+  color: var(--trait-tone);
+  font-size: 0.92rem;
+  line-height: 1;
+}
+
+.directive-trait-modifier.weakness,
+.directive-trait-modifier.neutral {
+  color: var(--color-muted);
+}
+
+.directive-trait-gauge {
+  background: color-mix(in srgb, var(--color-text) 12%, transparent);
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.directive-trait-gauge i {
+  background: var(--trait-tone);
+  display: block;
+  height: 100%;
+  width: var(--trait-value, 0%);
+}
+
+.directive-briefing .directive-trait em {
+  color: var(--trait-tone);
+  font-family: var(--font-display);
+  font-size: 0.92rem;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.directive-trait .card-stat-badges {
+  margin-top: 2px;
+}
+
+/* Paper-scoped trait tones so gauges + badge icons read on chalk (asphalt tones are too light). */
+.plan-view .map-trait-grip,
+.plan-view .map-trait-overtaking,
+.plan-view .map-trait-energy {
+  --trait-tone: var(--trait-tone-paper);
+}
+
+/* Stat badges need real contrast on the paper material (white-alpha vanishes). */
+.plan-view .card-stat-badge,
+.garage-grid .card-stat-badge,
+.report-view .card-stat-badge,
+.championship-view .card-stat-badge {
+  background: rgb(23 21 26 / 0.06);
+  border-color: rgb(23 21 26 / 0.22);
+  color: var(--color-ink);
+}
+
+.plan-view .card-stat-badge.bonus,
+.garage-grid .card-stat-badge.bonus,
+.report-view .card-stat-badge.bonus,
+.championship-view .card-stat-badge.bonus {
+  border-color: color-mix(in srgb, var(--trait-tone) 55%, transparent);
+}
+
+.plan-view .card-stat-badge.weakness i,
+.garage-grid .card-stat-badge.weakness i,
+.report-view .card-stat-badge.weakness i,
+.championship-view .card-stat-badge.weakness i {
+  background: rgb(23 21 26 / 0.1);
+  color: var(--color-ink-muted);
+}

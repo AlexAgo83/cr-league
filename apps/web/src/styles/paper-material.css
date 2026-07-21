@@ -1,0 +1,725 @@
+/* ---------- Chalk paper material (documents: championship, garage, report) ---------- */
+
+.championship-view,
+.garage-grid,
+.report-view,
+.plan-view,
+.setup-form-panel {
+  --color-surface: var(--color-paper);
+  --color-cockpit: #e2dccb;
+  --color-text: var(--color-ink);
+  --color-muted: var(--color-ink-muted);
+  --color-border: var(--color-paper-line);
+  --color-telemetry: var(--color-ink-muted);
+  --color-accent: #c53a00;
+  --color-danger-text: #a1170f;
+  color: var(--color-ink);
+}
+
+.championship-view .panel,
+.garage-overview,
+.garage-grid .panel:not(.garage-overview),
+.report-view .panel,
+.plan-view .panel,
+.setup-form-panel {
+  border: 0;
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.35);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+}
+
+/* dark translucent chips become print tints on paper */
+.championship-view .standings-table li,
+.championship-view .palmares-button,
+.championship-view .season-history-group,
+.championship-view .season-podium-list li,
+.championship-view .season-standings-list li,
+.championship-view .round-chip,
+.report-view .report-podium li,
+.report-view .report-key-moments li,
+.report-view .report-rewards li,
+.report-view .replay-timeline li,
+.plan-view .directive-briefing > span,
+.changelog-entry,
+.plan-view .choice-card,
+.plan-view .directive-summary,
+.setup-main-panel .setup-choice {
+  background: rgb(23 21 26 / 0.05);
+  border-color: rgb(23 21 26 / 0.16);
+}
+
+.championship-view .standings-table li,
+.championship-view .palmares-button,
+.championship-view .season-history-group {
+  background:
+    linear-gradient(90deg, rgb(197 58 0 / 0.1), transparent 46%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.36), rgb(255 255 255 / 0)),
+    rgb(23 21 26 / 0.045);
+  border: 1px solid rgb(23 21 26 / 0.18);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.34),
+    0 1px 0 rgb(23 21 26 / 0.08);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+}
+
+.championship-view .standings-table li.current-team,
+.championship-view .palmares-button:hover,
+.championship-view .palmares-button:focus-visible,
+.championship-view .season-history-group[open] {
+  background:
+    linear-gradient(90deg, rgb(197 58 0 / 0.18), transparent 52%),
+    linear-gradient(180deg, rgb(255 255 255 / 0.42), rgb(255 255 255 / 0)),
+    rgb(197 58 0 / 0.08);
+  border-color: rgb(197 58 0 / 0.38);
+}
+
+.championship-view .season-history-group summary {
+  border-bottom: 1px solid transparent;
+  padding-bottom: 0;
+}
+
+.championship-view .season-history-group[open] summary {
+  border-bottom-color: rgb(23 21 26 / 0.12);
+  padding-bottom: 8px;
+}
+
+.card-choice-grid .choice-card,
+.card-inventory-button,
+.card-shop button {
+  background: linear-gradient(90deg, rgb(236 231 218 / 0.94), rgb(236 231 218 / 0.78));
+  border: 1px solid rgb(23 21 26 / 0.16);
+  color: var(--color-ink);
+  overflow: hidden;
+  position: relative;
+}
+
+.card-choice-grid .choice-card::after,
+.card-inventory-button::after,
+.card-shop button::after {
+  background: url("/assets/crl/card-frame.png") center / 260% 180% no-repeat;
+  content: "";
+  inset: 0 0 0 auto;
+  mask-image: linear-gradient(90deg, transparent, #000 42%);
+  opacity: 0.1;
+  pointer-events: none;
+  position: absolute;
+  width: 46%;
+}
+
+.card-choice-grid .choice-card:first-child::after {
+  display: none;
+}
+
+.card-choice-grid .choice-card > *,
+.card-inventory-button > *,
+.card-shop button > * {
+  position: relative;
+  z-index: 1;
+}
+
+.card-choice-grid .choice-card.selected {
+  background: linear-gradient(90deg, rgb(236 231 218 / 0.9), color-mix(in srgb, var(--color-accent) 18%, rgb(236 231 218 / 0.72)));
+}
+
+.card-art-cell {
+  --card-art-bg: rgb(236 231 218 / 0.98);
+}
+
+.card-choice-grid .choice-card.card-art-cell,
+.card-choice-grid .choice-card.card-art-cell.selected {
+  min-height: 118px;
+  padding-right: min(52%, 190px);
+}
+
+.card-choice-grid .choice-card.card-art-cell,
+.card-choice-grid .choice-card.card-art-cell.selected {
+  background:
+    linear-gradient(90deg, var(--card-art-bg) 0 46%, rgb(236 231 218 / 0.88) 60%, transparent 78%),
+    var(--card-art-bg);
+}
+
+.card-choice-grid .choice-card.card-art-cell.selected {
+  --card-art-bg: color-mix(in srgb, var(--color-accent) 12%, rgb(236 231 218 / 0.96));
+}
+
+.card-cell-art {
+  border-radius: 0;
+  height: 136%;
+  inset: 50% -38px auto auto;
+  mask-image: linear-gradient(90deg, transparent 0, #000 32%);
+  object-fit: contain;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  transform: translateY(-50%);
+  width: min(58%, 230px);
+  z-index: 0;
+}
+
+.card-cell-art.asset-image-shell {
+  position: absolute;
+}
+
+.card-cell-art > img {
+  object-fit: contain;
+}
+
+.card-cell-art .asset-image-placeholder {
+  background:
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.12), transparent),
+    linear-gradient(135deg, rgb(197 58 0 / 0.08), transparent 62%),
+    var(--card-art-bg);
+  background-size: 220% 100%, 100% 100%, 100% 100%;
+  border: 0;
+}
+
+.card-choice-grid .choice-card > .card-cell-art,
+.card-inventory-button > .card-cell-art,
+.card-shop button > .card-cell-art {
+  position: absolute;
+  z-index: 0;
+}
+
+.garage-panel-inventory,
+.garage-panel-shop {
+  --garage-card-accent: #b45309;
+}
+
+.garage-panel-inventory .card-inventory-button,
+.garage-panel-shop .card-shop button {
+  background: rgb(236 231 218 / 0.98);
+  border-color: color-mix(in srgb, var(--garage-card-accent) 36%, transparent);
+  border-left: 6px solid var(--garage-card-accent);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  overflow: hidden;
+  position: relative;
+}
+
+.garage-panel-inventory .card-inventory li {
+  background: transparent;
+  border: 0;
+  clip-path: none;
+  display: block;
+  overflow: visible;
+  padding: 0;
+}
+
+.garage-panel-inventory .card-inventory li:first-child {
+  border-top: 0;
+}
+
+.garage-panel-inventory .card-inventory-button,
+.garage-panel-shop .card-shop button {
+  min-height: 84px;
+  padding: 11px 42px 11px 11px;
+}
+
+.garage-panel-inventory .card-inventory-button {
+  display: grid;
+  font-family: var(--font-sans);
+  font-size: 1em;
+  font-style: normal;
+  gap: 4px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  justify-items: start;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.garage-panel-inventory .card-inventory-button small {
+  font-family: inherit;
+  font-style: normal;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.garage-panel-inventory .card-inventory-button > span:not(.card-cell-art) {
+  gap: 2px;
+}
+
+.garage-panel-inventory .card-inventory-button.card-art-cell,
+.garage-panel-shop .card-shop button.card-art-cell {
+  --card-art-bg: rgb(236 231 218 / 0.98);
+  padding-right: min(46%, 190px);
+}
+
+.garage-panel-inventory .card-inventory-button .card-cell-art,
+.garage-panel-shop .card-shop button .card-cell-art {
+  height: 136%;
+  inset: 50% -38px auto auto;
+  width: min(58%, 230px);
+}
+
+.plan-view .choice-card.card-art-cell .card-stat-badges,
+.plan-view .directive-choice-group .choice-card .card-stat-badges,
+.garage-panel-inventory .card-inventory-button .card-stat-badges,
+.garage-panel-shop .card-shop button .card-stat-badges {
+  flex-wrap: nowrap;
+  gap: 3px;
+}
+
+.plan-view .choice-card.card-art-cell .card-stat-badge,
+.plan-view .directive-choice-group .choice-card .card-stat-badge,
+.garage-panel-inventory .card-inventory-button .card-stat-badge,
+.garage-panel-shop .card-shop button .card-stat-badge {
+  font-size: 0.58rem;
+  gap: 2px;
+  padding: 2px 5px 2px 2px;
+}
+
+.plan-view .choice-card.card-art-cell .card-stat-badge i,
+.plan-view .directive-choice-group .choice-card .card-stat-badge i,
+.garage-panel-inventory .card-inventory-button .card-stat-badge i,
+.garage-panel-shop .card-shop button .card-stat-badge i {
+  height: 14px;
+  width: 14px;
+}
+
+.garage-panel-inventory .card-inventory-button {
+  background: transparent;
+}
+
+.garage-panel-inventory .card-inventory-button.card-art-cell {
+  min-height: 84px;
+}
+
+.garage-panel-shop .card-shop button {
+  background: transparent;
+}
+
+.garage-panel-inventory .card-inventory-button.card-art-cell {
+  background: linear-gradient(90deg, transparent 0 48%, rgb(236 231 218 / 0.76) 62%, transparent 80%);
+}
+
+.garage-panel-shop .card-shop button.card-art-cell {
+  background: linear-gradient(90deg, rgb(236 231 218 / 0) 0 48%, rgb(236 231 218 / 0.72) 62%, transparent 80%);
+}
+
+.garage-panel-inventory .card-inventory-button::after,
+.garage-panel-shop .card-shop button::after {
+  display: none;
+}
+
+.garage-panel-inventory .card-inventory-button:not(:disabled):hover,
+.garage-panel-inventory .card-inventory-button:not(:disabled):focus-visible,
+.garage-panel-shop .card-shop button:not(:disabled):hover,
+.garage-panel-shop .card-shop button:not(:disabled):focus-visible {
+  border-color: var(--garage-card-accent);
+  box-shadow: inset 0 0 0 1px var(--garage-card-accent);
+}
+
+.garage-panel-inventory .card-inventory-button .card-owned-count,
+.garage-panel-shop .card-shop button .card-owned-count,
+.garage-panel-shop .card-shop button .card-price-badge {
+  align-items: center;
+  background: color-mix(in srgb, var(--garage-card-accent) 12%, rgb(236 231 218));
+  border: 2px solid color-mix(in srgb, var(--garage-card-accent) 42%, transparent);
+  border-radius: 999px;
+  color: var(--color-ink);
+  display: inline-flex;
+  font-size: 0.78rem;
+  font-weight: 900;
+  justify-content: center;
+  min-height: 22px;
+  min-width: 22px;
+}
+
+.garage-panel-shop .card-shop button .card-owned-count,
+.garage-panel-inventory .card-inventory-button .card-owned-count {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.garage-panel-shop .card-shop button .card-price-badge {
+  background: color-mix(in srgb, var(--garage-card-accent) 18%, rgb(236 231 218));
+  border-color: color-mix(in srgb, var(--garage-card-accent) 55%, transparent);
+  bottom: 10px;
+  color: #17151a;
+  font-size: 0.82rem;
+  gap: 5px;
+  grid-column: auto;
+  grid-row: auto;
+  padding: 0 9px;
+  position: absolute;
+  right: 10px;
+  top: auto;
+}
+
+.garage-panel-shop .card-shop button .card-price-badge .reward-value,
+.garage-panel-shop .card-shop button .card-price-badge .reward-icon {
+  color: #17151a;
+}
+
+.garage-panel-inventory .card-inventory-button small,
+.garage-panel-shop .card-shop button small {
+  color: rgb(23 21 26 / 0.78);
+}
+
+.plan-view .directive-choice-group .choice-card {
+  --choice-check-size: 18px;
+  background: rgb(236 231 218 / 0.98);
+  border-color: color-mix(in srgb, var(--directive-choice-accent) 36%, transparent);
+  border-left: 6px solid var(--directive-choice-accent);
+  clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
+  overflow: hidden;
+  padding-right: 42px;
+  position: relative;
+}
+
+.plan-view .directive-choice-group .choice-card::after {
+  background: transparent;
+  border: 2px solid rgb(23 21 26 / 0.28);
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: var(--choice-check-size);
+  inset: 10px 10px auto auto;
+  mask-image: none;
+  opacity: 1;
+  pointer-events: none;
+  position: absolute;
+  width: var(--choice-check-size);
+}
+
+.plan-view .directive-choice-group .choice-card::before {
+  display: none;
+}
+
+.plan-view .directive-choice-group .choice-card strong {
+  color: var(--color-ink);
+}
+
+.plan-view .directive-choice-group .choice-card small {
+  color: rgb(23 21 26 / 0.78);
+}
+
+.plan-view .directive-choice-group .choice-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.directive-choice-art {
+  border-radius: 0;
+  height: 136%;
+  inset: 50% -38px auto auto;
+  mask-image: linear-gradient(90deg, transparent 0, #000 32%);
+  object-fit: contain;
+  overflow: hidden;
+  pointer-events: none;
+  position: absolute;
+  transform: translateY(-50%);
+  width: min(58%, 230px);
+  z-index: 0;
+}
+
+.directive-choice-art.asset-image-shell {
+  position: absolute;
+}
+
+.plan-view .directive-choice-group .choice-card > .directive-choice-art {
+  position: absolute;
+  z-index: 0;
+}
+
+.directive-choice-art > img {
+  object-fit: contain;
+}
+
+.directive-choice-art .asset-image-placeholder {
+  background:
+    linear-gradient(90deg, transparent, rgb(197 58 0 / 0.12), transparent),
+    linear-gradient(135deg, rgb(197 58 0 / 0.08), transparent 62%),
+    var(--directive-cell-bg, rgb(236 231 218 / 0.98));
+  background-size: 220% 100%, 100% 100%, 100% 100%;
+  border: 0;
+}
+
+.approach-balance-badge,
+.approach-chrono-badge,
+.approach-skull-badge {
+  align-items: center;
+  animation: approach-chrono-shine 1.45s ease-in-out infinite;
+  background: color-mix(in srgb, var(--directive-choice-accent) 18%, rgb(236 231 218));
+  border: 2px solid color-mix(in srgb, var(--directive-choice-accent) 52%, transparent);
+  border-radius: 999px;
+  display: inline-flex;
+  height: var(--choice-check-size);
+  justify-content: center;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  width: var(--choice-check-size);
+  z-index: 2;
+}
+
+.approach-balance-badge,
+.approach-chrono-badge,
+.approach-skull-badge {
+  display: none;
+}
+
+.approach-balance-badge::before {
+  background:
+    linear-gradient(var(--directive-choice-accent), var(--directive-choice-accent)) 50% 20% / 2px 11px no-repeat,
+    linear-gradient(90deg, var(--directive-choice-accent), var(--directive-choice-accent)) 50% 35% / 12px 2px no-repeat,
+    linear-gradient(90deg, var(--directive-choice-accent), var(--directive-choice-accent)) 50% 82% / 10px 2px no-repeat;
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.approach-balance-badge::after {
+  background:
+    radial-gradient(ellipse at 50% 100%, transparent 0 45%, var(--directive-choice-accent) 46% 54%, transparent 55%) 3px 7px / 5px 6px no-repeat,
+    radial-gradient(ellipse at 50% 100%, transparent 0 45%, var(--directive-choice-accent) 46% 54%, transparent 55%) 10px 7px / 5px 6px no-repeat;
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.approach-chrono-badge::before {
+  border: 2px solid var(--directive-choice-accent);
+  border-radius: 999px;
+  content: "";
+  height: 10px;
+  position: absolute;
+  width: 10px;
+}
+
+.approach-chrono-badge::after {
+  background:
+    linear-gradient(var(--directive-choice-accent), var(--directive-choice-accent)) 50% 45% / 2px 5px no-repeat,
+    linear-gradient(90deg, var(--directive-choice-accent), var(--directive-choice-accent)) 58% 58% / 5px 2px no-repeat;
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+.approach-skull-badge {
+  background: color-mix(in srgb, #17151a 78%, var(--directive-choice-accent));
+  border-color: color-mix(in srgb, var(--directive-choice-accent) 62%, #17151a);
+}
+
+.approach-skull-badge::before {
+  background:
+    radial-gradient(circle at 38% 42%, #17151a 0 1.4px, transparent 1.8px),
+    radial-gradient(circle at 62% 42%, #17151a 0 1.4px, transparent 1.8px),
+    radial-gradient(circle at 50% 60%, #17151a 0 1.4px, transparent 1.8px),
+    #f8f3e8;
+  border-radius: 50% 50% 46% 46%;
+  content: "";
+  height: 10px;
+  position: absolute;
+  top: 4px;
+  width: 11px;
+}
+
+.approach-skull-badge::after {
+  background:
+    linear-gradient(#f8f3e8, #f8f3e8) 3px 0 / 2px 4px no-repeat,
+    linear-gradient(#f8f3e8, #f8f3e8) 6px 0 / 2px 4px no-repeat,
+    linear-gradient(#f8f3e8, #f8f3e8) 9px 0 / 2px 4px no-repeat;
+  bottom: 3px;
+  content: "";
+  height: 4px;
+  position: absolute;
+  width: 14px;
+}
+
+.plan-view .directive-choice-approach .choice-card > .approach-balance-badge,
+.plan-view .directive-choice-approach .choice-card > .approach-chrono-badge,
+.plan-view .directive-choice-approach .choice-card > .approach-skull-badge {
+  bottom: 10px;
+  position: absolute;
+  right: 10px;
+  z-index: 2;
+}
+
+@keyframes approach-chrono-shine {
+  50% {
+    box-shadow: 0 0 14px color-mix(in srgb, var(--directive-choice-accent) 62%, transparent);
+  }
+}
+
+.plan-view .directive-choice-approach .choice-card {
+  --approach-cell-bg: rgb(236 231 218 / 0.98);
+  --directive-cell-bg: var(--approach-cell-bg);
+  min-height: 128px;
+  padding-right: min(52%, 200px);
+}
+
+.plan-view .directive-choice-pit .choice-card {
+  --pit-cell-bg: rgb(236 231 218 / 0.98);
+  --directive-cell-bg: var(--pit-cell-bg);
+  min-height: 128px;
+  padding-right: min(52%, 200px);
+}
+
+.plan-view .directive-choice-group .choice-card:not(:disabled):hover,
+.plan-view .directive-choice-group .choice-card:not(:disabled):focus-visible,
+.plan-view .directive-choice-group .choice-card.selected {
+  border-color: var(--directive-choice-accent);
+}
+
+.plan-view .directive-choice-group .choice-card.selected {
+  background: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
+  box-shadow: inset 0 0 0 1px var(--directive-choice-accent);
+}
+
+.plan-view .directive-choice-group .choice-card.selected::after {
+  background:
+    var(--directive-choice-accent)
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'%3E%3Cpath d='M5 9.2l2.5 2.5L13 6.3' fill='none' stroke='white' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")
+    center / 18px 18px no-repeat;
+  border-color: var(--directive-choice-accent);
+}
+
+.plan-view .directive-choice-group .choice-card.selected::before {
+  display: none;
+}
+
+.plan-view .directive-choice-approach .choice-card,
+.plan-view .directive-choice-approach .choice-card.selected {
+  background:
+    linear-gradient(90deg, var(--approach-cell-bg) 0 48%, rgb(236 231 218 / 0.86) 62%, transparent 78%),
+    var(--approach-cell-bg);
+}
+
+.plan-view .directive-choice-approach .choice-card.selected {
+  --approach-cell-bg: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
+}
+
+.plan-view .directive-choice-preparation .choice-card {
+  --preparation-cell-bg: rgb(236 231 218 / 0.98);
+  --directive-cell-bg: var(--preparation-cell-bg);
+  min-height: 128px;
+  padding-right: min(52%, 200px);
+}
+
+.plan-view .directive-choice-preparation .choice-card,
+.plan-view .directive-choice-preparation .choice-card.selected {
+  background:
+    linear-gradient(90deg, var(--preparation-cell-bg) 0 48%, rgb(236 231 218 / 0.86) 62%, transparent 78%),
+    var(--preparation-cell-bg);
+}
+
+.plan-view .directive-choice-preparation .choice-card.selected {
+  --preparation-cell-bg: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
+}
+
+.plan-view .directive-choice-pit .choice-card,
+.plan-view .directive-choice-pit .choice-card.selected {
+  background:
+    linear-gradient(90deg, var(--pit-cell-bg) 0 48%, rgb(236 231 218 / 0.86) 62%, transparent 78%),
+    var(--pit-cell-bg);
+}
+
+.plan-view .directive-choice-pit .choice-card.selected {
+  --pit-cell-bg: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
+}
+
+.plan-view .directive-choice-card .choice-card.card-art-cell,
+.plan-view .directive-choice-card .choice-card.card-art-cell.selected {
+  --card-art-bg: rgb(236 231 218 / 0.98);
+  background: linear-gradient(90deg, rgb(236 231 218 / 0) 0 48%, rgb(236 231 218 / 0.72) 62%, transparent 80%);
+  min-height: 84px;
+  padding-right: min(46%, 190px);
+}
+
+.plan-view .directive-choice-card .choice-card > .card-cell-art {
+  height: 136%;
+  inset: 50% -38px auto auto;
+  position: absolute;
+  width: min(58%, 230px);
+  z-index: 0;
+}
+
+.plan-view .directive-choice-card .choice-card.card-art-cell small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.plan-view .directive-choice-card .choice-card.card-art-cell.selected {
+  --card-art-bg: color-mix(in srgb, var(--directive-choice-accent) 8%, rgb(236 231 218 / 0.98));
+}
+
+.card-inventory-button {
+  padding: 10px 42px 10px 10px;
+}
+
+.card-inventory-button > .card-owned-count {
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+
+.garage-panel-inventory .card-inventory-button {
+  padding: 11px 42px 11px 11px;
+}
+
+.garage-panel-inventory .card-inventory-button > .card-owned-count {
+  right: 10px;
+  top: 10px;
+}
+
+.garage-grid .garage-livery-fields input[type="color"] {
+  border-color: rgb(23 21 26 / 0.3);
+}
+
+.championship-view .ready-pill.missing {
+  background: rgb(146 95 0 / 0.16);
+  color: #7c5200;
+}
+
+.plan-view .report-close-button {
+  background: #b2231a;
+  border: 1px solid rgb(255 255 255 / 0.3);
+  color: #fff;
+  font-size: 1.15rem;
+  z-index: 2;
+}
+
+.plan-view .report-close-button:hover,
+.plan-view .report-close-button:focus-visible {
+  background: #cc2a1e;
+  border-color: #fff;
+  color: #fff;
+}
+
+.championship-view button:focus-visible,
+.garage-grid button:focus-visible,
+.report-view button:focus-visible,
+.plan-view button:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
+}
+
+
+.championship-view .card-info-badge,
+.garage-grid .card-info-badge,
+.report-view .card-info-badge,
+.plan-view .card-info-badge {
+  border-color: rgb(124 82 0 / 0.5);
+  color: #7c5200;
+}
+
+.championship-view .card-info-badge i,
+.garage-grid .card-info-badge i,
+.report-view .card-info-badge i,
+.plan-view .card-info-badge i {
+  color: #7c5200;
+}
+
+
+/* Round icon buttons: no CTA chamfer clip (it would crop circles and the play spinner ring). */
+.replay-map-controls button,
+.replay-speed-options button,
+.profile-menu-button,
+.context-panel-close,
+.report-close-button,
+.map-qualifying-times header button,
+.map-qualifying-toggle,
+.round-history-button {
+  clip-path: none;
+}

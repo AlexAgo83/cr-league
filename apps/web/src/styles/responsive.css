@@ -1,0 +1,745 @@
+/* ---------- Responsive ---------- */
+
+@media (max-width: 860px) {
+  .app-shell {
+    padding: 12px;
+  }
+
+  .game-shell {
+    padding-bottom: 92px;
+  }
+
+  .notification-stack {
+    align-items: center;
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 24px);
+  }
+
+  .game-shell.map-screen {
+    height: 100dvh;
+    max-width: none;
+    overflow: hidden;
+    padding: 0;
+  }
+
+  .topbar {
+    align-items: center;
+    border-width: 0 0 1px;
+    border-radius: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 6px;
+    margin: -12px -12px 0;
+    padding: 8px;
+    top: 0;
+    width: calc(100% + 24px);
+  }
+
+  .map-screen .topbar {
+    margin: 0;
+    position: sticky;
+    width: 100%;
+    z-index: 60;
+  }
+
+  .map-screen .view-container {
+    inset: 0;
+    position: fixed;
+    z-index: 1;
+  }
+
+  .map-screen .map-status,
+  .map-screen .map-qualifying-times,
+  .map-screen .map-qualifying-toggle,
+  .map-screen .map-final-classification,
+  .map-screen .replay-map-controls {
+    top: 68px;
+  }
+
+  .map-screen .replay-tower {
+    top: 114px;
+  }
+
+  .map-screen .replay-map-panel .replay-qualifying-times {
+    top: 116px;
+    z-index: 19;
+  }
+
+  .map-screen .result-view,
+  .map-screen .result-view > div,
+  .map-screen .view-stack,
+  .map-screen .replay-main-grid,
+  .map-screen .replay-content-column,
+  .map-screen .drive-grid,
+  .map-screen .drive-content-column {
+    height: 100%;
+  }
+
+  .map-screen .replay-copy-panel {
+    display: none;
+  }
+
+  .map-screen .race-payoff-recap {
+    display: none;
+  }
+
+  .setup-topbar {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .setup-topbar .brand strong {
+    display: inline;
+  }
+
+  .setup-topbar .language-select {
+    font-size: 0;
+    gap: 0;
+  }
+
+  .setup-topbar .language-select select {
+    font-size: 0.875rem;
+  }
+
+  .setup-choice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .brand {
+    grid-column: 1;
+    grid-row: 1;
+    gap: 0;
+    min-width: 0;
+  }
+
+  .brand strong,
+  .brand > .invite-code {
+    display: none;
+  }
+
+  .profile-menu {
+    grid-column: 3;
+    grid-row: 1;
+    justify-self: end;
+  }
+
+  .profile-menu-panel {
+    width: min(280px, calc(100vw - 24px));
+  }
+
+  .game-nav {
+    display: grid;
+    grid-column: 2;
+    grid-row: 1;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-width: 0;
+  }
+
+  .game-nav button {
+    font-size: 0.72rem;
+    min-height: 32px;
+    padding: 5px 1px;
+  }
+
+  .nav-label-full {
+    display: none;
+  }
+
+  .nav-label-short {
+    display: inline;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  .game-shell .view-container,
+  .game-shell .result-view,
+  .game-shell .drive-grid,
+  .game-shell .drive-content-column,
+  .game-shell .replay-main-grid {
+    min-height: 0;
+  }
+
+  .game-shell .drive-map-panel,
+  .game-shell .replay-map-panel {
+    margin-left: 0;
+    margin-right: 0;
+    min-height: 100dvh;
+    width: 100%;
+  }
+
+  .game-shell .drive-map-panel .circuit-map-stage,
+  .game-shell .replay-map-panel .circuit-map-stage {
+    border: 0;
+    border-radius: 0;
+    min-height: inherit;
+  }
+
+  .starting-grid-list li {
+    align-items: center;
+    grid-template-areas:
+      "pos team plate"
+      "pos time plate";
+    grid-template-columns: 42px minmax(0, 1fr) auto;
+  }
+
+  .starting-grid-list li > span {
+    grid-area: pos;
+  }
+
+  .starting-grid-list li > .standings-livery-plate {
+    grid-area: plate;
+  }
+
+  .starting-grid-list li > strong {
+    grid-area: team;
+    line-height: 1.1;
+    min-width: 0;
+  }
+
+  .starting-grid-list li > small {
+    grid-area: time;
+  }
+
+  .circuit-map-stage > svg {
+    height: min(84vw, 520px);
+    left: 50%;
+    min-width: 100%;
+    position: relative;
+    transform: translateX(-50%);
+    width: auto;
+  }
+
+  .game-shell .drive-map-panel .circuit-map-stage > svg,
+  .game-shell .replay-map-panel .circuit-map-stage > svg {
+    height: 100%;
+    left: 50%;
+    max-width: none;
+    min-width: 100%;
+    transform: translateX(-50%);
+    width: auto;
+  }
+
+  .map-status {
+    border-radius: 6px;
+    gap: 1px;
+    left: 8px;
+    max-width: 118px;
+    padding: 5px 7px;
+    top: 8px;
+  }
+
+  .map-info-stack {
+    display: grid;
+    gap: 8px;
+    left: 8px;
+    position: absolute;
+    top: 68px;
+    z-index: 4;
+  }
+
+  .map-info-stack > .map-status,
+  .map-info-stack > .map-plan-performance,
+  .map-info-stack > .map-traits-panel {
+    bottom: auto;
+    left: auto;
+    position: static;
+    top: auto;
+  }
+
+  .map-info-stack > .map-plan-performance {
+    display: grid;
+    gap: 4px;
+    grid-template-columns: repeat(2, minmax(70px, 1fr));
+    max-width: 204px;
+    padding: 7px 8px;
+    position: relative;
+  }
+
+  .replay-map-panel .map-info-stack > .map-plan-performance {
+    bottom: auto;
+  }
+
+  .drive-map-panel .map-info-stack {
+    display: contents;
+    position: static;
+  }
+
+  .drive-map-panel .map-info-stack > .map-status {
+    left: 8px;
+    position: absolute;
+    top: 64px;
+  }
+
+  .drive-map-panel .map-info-stack > .map-plan-performance {
+    bottom: 104px;
+    left: 8px;
+    position: absolute;
+    top: auto;
+  }
+
+  .qualifying-replay-inline .replay-map-panel .map-info-stack > .map-plan-performance {
+    bottom: auto;
+    left: 8px;
+    position: absolute;
+    top: 154px;
+  }
+
+  .map-info-stack > .map-plan-performance .map-plan-panel > strong {
+    font-size: 0.58rem;
+    margin-bottom: 1px;
+  }
+
+  .map-info-stack > .map-plan-performance .map-plan-panel > span {
+    gap: 5px;
+  }
+
+  .map-info-stack > .map-plan-performance .map-plan-panel b {
+    font-size: 0.48rem;
+  }
+
+  .map-info-stack > .map-plan-performance .map-plan-panel em {
+    font-size: 0.62rem;
+  }
+
+  .map-info-stack > .map-plan-performance .map-plan-edit-button {
+    font-size: 0.5rem;
+    padding: 3px 6px;
+    right: 6px;
+    top: 6px;
+  }
+
+  .map-status .circuit-city {
+    font-size: 0.56rem;
+  }
+
+  .map-status strong {
+    font-size: 0.72rem;
+    line-height: 1.1;
+  }
+
+  .map-status small {
+    font-size: 0.6rem;
+    line-height: 1.15;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .map-workflow-panel {
+    align-items: start;
+    bottom: 8px;
+    gap: 7px;
+    grid-template-columns: 1fr;
+    left: 8px;
+    padding: 8px 10px;
+    right: 8px;
+  }
+
+  .map-workflow-panel h2 {
+    font-size: 0.8rem;
+  }
+
+  .map-workflow-panel p {
+    font-size: 0.72rem;
+    line-height: 1.25;
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
+  }
+
+  .map-workflow-panel .race-day-steps span {
+    font-size: 0.5rem;
+    padding: 2px 5px;
+  }
+
+  .map-workflow-panel .race-day-steps {
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .circuit-map-stage > .map-traits-panel {
+    min-width: 104px;
+  }
+
+  .drive-map-panel .circuit-map-stage > .map-traits-panel {
+    bottom: auto;
+  }
+
+  .replay-map-panel .circuit-map-stage > .map-traits-panel {
+    bottom: auto;
+  }
+
+  .map-qualifying-times,
+  .map-final-classification {
+    border-radius: 6px;
+    gap: 3px;
+    max-width: min(190px, calc(100% - 146px));
+    min-width: 0;
+    padding: 5px 7px;
+    right: 8px;
+    top: 64px;
+  }
+
+  .map-qualifying-times strong,
+  .map-final-classification strong,
+  .map-qualifying-toggle {
+    font-size: 0.58rem;
+  }
+
+  .map-qualifying-times header button:not(.map-plan-edit-button) {
+    height: 18px;
+    width: 18px;
+  }
+
+  .map-qualifying-toggle {
+    padding: 5px 7px;
+    right: 8px;
+    top: 8px;
+  }
+
+  .map-race-actions {
+    align-items: flex-end;
+    bottom: 118px;
+    flex-direction: column;
+    left: auto;
+    overflow: visible;
+    right: 8px;
+  }
+
+  .map-race-actions button {
+    flex: 0 0 auto;
+    min-height: 34px;
+    min-width: 0;
+    padding: 7px 10px;
+    width: max-content;
+  }
+
+  .map-race-actions button.primary-command,
+  .map-race-actions button.result-toggle-command {
+    min-width: 0;
+  }
+
+  .map-qualifying-times li,
+  .map-final-classification li {
+    font-size: 0.54rem;
+    gap: 6px;
+  }
+
+  .map-qualifying-times li {
+    grid-template-columns: 22px 27px minmax(0, 1fr) 41px;
+  }
+
+  .map-qualifying-times .chrono-team-name {
+    max-width: 42px;
+  }
+
+  .chrono-run-code {
+    display: none;
+  }
+
+  .map-final-classification .reward-label {
+    display: none;
+  }
+
+  .final-classification-title-full {
+    display: none;
+  }
+
+  .final-classification-title-short {
+    display: inline;
+  }
+
+  .map-traits-panel {
+    border-radius: 6px;
+    gap: 2px;
+    padding: 5px 7px;
+  }
+
+  .map-traits-panel > span {
+    font-size: 0.52rem;
+    gap: 5px;
+    grid-template-columns: auto auto minmax(0, 1fr) auto;
+  }
+
+  .map-traits-panel i {
+    height: 14px;
+    width: 14px;
+  }
+
+  .map-traits-panel strong {
+    font-size: 0.7rem;
+    height: 18px;
+    min-width: 26px;
+  }
+
+  .map-traits-panel em {
+    font-size: 0.62rem;
+    padding: 0 4px;
+  }
+
+  .replay-map-controls {
+    left: auto;
+    right: 8px;
+    top: 8px;
+    transform: none;
+  }
+
+  .replay-map-controls .replay-report-button {
+    display: none;
+  }
+
+  .replay-overlay-stack {
+    bottom: 64px;
+    right: 8px;
+    top: auto;
+    width: min(260px, calc(100% - 24px));
+  }
+
+  .map-screen .replay-map-panel .replay-overlay-stack {
+    bottom: 64px;
+    top: auto;
+  }
+
+  .replay-moment-notification {
+    top: 60%;
+    transform: translate(-50%, -50%);
+  }
+
+  .map-qualifying-times,
+  .replay-tower {
+    border-radius: 6px;
+    gap: 2px;
+    padding: 4px 6px;
+    right: 8px;
+    top: 176px;
+  }
+
+  .map-screen .replay-map-panel .replay-tower {
+    top: 116px;
+  }
+
+  .map-screen .drive-map-panel.circuit-map > .circuit-map-stage > .replay-tower {
+    top: 64px;
+  }
+
+  .replay-tower > header > strong {
+    font-size: 0.55rem;
+    padding-right: 36px;
+  }
+
+  .replay-tower > header .map-plan-edit-button {
+    font-size: 0.5rem;
+    padding: 3px 6px;
+    right: 5px;
+    top: 5px;
+  }
+
+  .replay-map-panel .replay-qualifying-times {
+    bottom: auto;
+    left: auto;
+    max-height: calc(100% - 132px);
+    max-width: none;
+    right: 8px;
+    top: 116px;
+    width: min(168px, calc(100% - 16px));
+    z-index: 19;
+  }
+
+  .qualifying-replay-inline .replay-map-panel .replay-qualifying-times {
+    top: 116px;
+  }
+
+  .map-screen .drive-map-panel .map-qualifying-times {
+    gap: 8px;
+    max-height: none;
+    max-width: none;
+    min-height: 84px;
+    padding: 6px 8px;
+    right: 8px;
+    top: 64px;
+    width: min(168px, calc(100% - 146px));
+  }
+
+  .map-screen .drive-map-panel .map-qualifying-times.is-empty:not(.has-action) {
+    gap: 4px;
+    min-height: 0;
+    padding: 5px 7px;
+    width: max-content;
+  }
+
+  .map-screen .drive-map-panel .map-qualifying-times.is-empty.has-action {
+    min-height: 0;
+    width: min(156px, calc(100% - 146px));
+  }
+
+  .map-qualifying-times.is-empty small {
+    line-height: 1;
+    text-align: left;
+    white-space: nowrap;
+  }
+
+  .map-screen .qualifying-replay-inline.drive-map-panel .replay-map-panel .replay-qualifying-times {
+    top: 116px;
+    width: min(168px, calc(100% - 16px));
+  }
+
+  .replay-director-panel,
+  .replay-player-focus-panel {
+    padding: 7px 8px;
+  }
+
+  .replay-info-stack {
+    align-items: flex-end;
+    bottom: 64px;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 8px;
+    pointer-events: none;
+    position: absolute;
+    right: 8px;
+    width: min(260px, calc(100% - 24px));
+    z-index: 3;
+  }
+
+  .replay-director-panel {
+    max-width: 100%;
+  }
+
+  .replay-player-focus-panel {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .replay-info-stack .replay-director-panel,
+  .replay-info-stack .replay-player-focus-panel {
+    bottom: auto;
+    left: auto;
+    pointer-events: auto;
+    position: static;
+    right: auto;
+    transform: none;
+    width: 100%;
+  }
+
+  .replay-director-panel strong,
+  .replay-player-focus-panel strong {
+    font-size: 0.76rem;
+  }
+
+  .replay-director-panel small,
+  .replay-player-focus-panel small {
+    font-size: 0.62rem;
+  }
+
+  .replay-tower li {
+    font-size: 0.52rem;
+    gap: 4px;
+  }
+
+  .replay-tower-livery {
+    font-size: 0.46rem;
+    height: 13px;
+    width: 13px;
+  }
+
+  .replay-tower-team {
+    max-width: 66px;
+  }
+
+  .result-toggle-command {
+    font-size: 0.82rem;
+    height: 38px;
+    min-height: 38px;
+    min-width: 76px;
+    padding-inline: 8px;
+  }
+
+  .command-icon-button {
+    min-width: 38px;
+    padding-inline: 0;
+  }
+
+  button.primary-command {
+    font-size: 0.9rem;
+    min-height: 40px;
+    min-width: 112px;
+    padding-inline: 12px;
+  }
+
+  .report-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .standings-table li {
+    gap: 6px 10px;
+    padding: 10px;
+  }
+
+  .standings-team {
+    font-size: 0.95rem;
+  }
+
+  .standings-score {
+    min-width: 48px;
+  }
+
+  .report-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .replay-main-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .report-side-recap {
+    position: static;
+  }
+
+  .recap-grid {
+    gap: 10px;
+  }
+
+  .recap-grid section {
+    padding: 10px 12px;
+  }
+
+  .recap-grid p {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .report-key-moments li {
+    gap: 8px;
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 10px;
+  }
+
+  .report-key-moments p {
+    font-size: 0.9rem;
+    line-height: 1.35;
+  }
+
+  .report-rewards li {
+    gap: 6px 10px;
+    grid-template-columns: auto minmax(0, 1fr);
+    padding: 10px;
+  }
+
+  .report-rewards dl {
+    gap: 6px;
+    grid-column: 1 / -1;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .report-rewards dt {
+    font-size: 0.62rem;
+  }
+
+  .report-rewards dd {
+    font-size: 0.78rem;
+  }
+}

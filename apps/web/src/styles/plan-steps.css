@@ -1,0 +1,121 @@
+/* ---------- Plan sub-screen switcher (Approach / Preparation / Card) ---------- */
+
+.plan-steps {
+  border-bottom: 1px solid var(--color-border);
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.directive-plan-steps {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.plan-step {
+  --plan-step-accent: var(--color-accent);
+  background: transparent;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  clip-path: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  display: grid;
+  font-family: var(--font-sans);
+  font-style: normal;
+  gap: 3px;
+  justify-items: start;
+  letter-spacing: normal;
+  margin-bottom: -1px;
+  min-width: 0;
+  padding: 10px 8px;
+  text-align: left;
+  text-transform: none;
+}
+
+.plan-step-approach {
+  --plan-step-accent: #db2777;
+}
+
+.plan-step-preparation {
+  --plan-step-accent: #0d9488;
+}
+
+.plan-step-pit {
+  --plan-step-accent: #8b5cf6;
+}
+
+.plan-step-card {
+  --plan-step-accent: #b45309;
+}
+
+.plan-step:not(.active):hover,
+.plan-step:not(.active):focus-visible {
+  background: rgb(248 243 232 / 0.12);
+  color: var(--color-text);
+}
+
+.plan-view .plan-step:not(.active):hover,
+.plan-view .plan-step:not(.active):focus-visible,
+.plan-view .plan-step:not(.active):hover .plan-step-value,
+.plan-view .plan-step:not(.active):focus-visible .plan-step-value {
+  color: var(--color-ink);
+}
+
+.plan-view .plan-subscreen-tabs .plan-step:not(.active):hover,
+.plan-view .plan-subscreen-tabs .plan-step:not(.active):focus-visible {
+  background: transparent;
+  color: rgb(248 243 232 / 0.96);
+}
+
+.plan-step-label {
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.plan-step-value {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-style: italic;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.plan-step:not(.active) .plan-step-value {
+  color: var(--color-muted);
+}
+
+.plan-step.active {
+  background: color-mix(in srgb, var(--plan-step-accent) 12%, transparent);
+  border-bottom-color: var(--plan-step-accent);
+}
+
+.plan-step.active .plan-step-label {
+  color: var(--plan-step-accent);
+}
+
+.plan-step.active .plan-step-value {
+  color: var(--plan-step-accent);
+}
+
+@media (max-width: 820px) {
+  .directive-plan-steps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 460px) {
+  .directive-plan-steps {
+    grid-template-columns: 1fr;
+  }
+}

@@ -10,6 +10,14 @@ import "@fontsource/barlow-condensed/800-italic.css";
 import "./styles/tokens.css";
 import "./styles/base.css";
 import "./styles/layout.css";
+import "./styles/championship.css";
+import "./styles/garage.css";
+import "./styles/replay-report.css";
+import "./styles/responsive.css";
+import "./styles/pit-wall.css";
+import "./styles/paper-material.css";
+import "./styles/directive-telemetry.css";
+import "./styles/plan-steps.css";
 
 const root = document.getElementById("root");
 

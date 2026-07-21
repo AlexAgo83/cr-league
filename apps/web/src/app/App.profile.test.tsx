@@ -116,7 +116,8 @@ describe("App profile and admin", () => {
     createLeagueFromSetup();
 
     expect(await screen.findByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
+    fireEvent.click(document.querySelector(".map-final-classification .map-plan-edit-button") as HTMLButtonElement);
+    fireEvent.click(screen.getByRole("button", { name: "Review race" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
     expect(document.querySelector(".replay-progress")).toBeTruthy();
@@ -140,7 +141,8 @@ describe("App profile and admin", () => {
     createLeagueFromSetup();
 
     expect(await screen.findByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
+    fireEvent.click(document.querySelector(".map-final-classification .map-plan-edit-button") as HTMLButtonElement);
+    fireEvent.click(screen.getByRole("button", { name: "Review race" }));
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Speed ×1" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Focus driver" }).className).not.toContain("active");

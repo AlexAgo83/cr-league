@@ -36,6 +36,8 @@ export {
   segmentAtProgress,
   shouldSmoothReplayTrace,
   smoothCarProgress,
+  traceGapsAt,
+  traceTimesAt,
   type ReplayPlan
 } from "./replay/replayMath.js";
 export {
@@ -66,10 +68,13 @@ import {
   segmentAtProgress,
   shouldSmoothReplayTrace,
   smoothCarProgress,
+  traceGapsAt,
+  traceTimesAt,
   REPLAY_FOCUS_KEY
 } from "./replay/replayMath.js";
 import { buildQualifyingMomentEvents, buildRaceDirectorBeats, directorBeatCopy } from "./replay/replayDirector.js";
-type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
+type ReplayPlanDecision = RaceDecision & { teamId: string };
+type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string; decision?: RaceDecision };
 
 function renderPositionBadges(text: string): ReactNode {
   return text.split(/(P\d+)/g).map((part, index) => {
@@ -91,10 +96,13 @@ export function ReplayView({
   initialLap,
   preferencesResetSignal = 0,
   onOpenReport,
+  onOpenPlanReport,
+  onOpenPlan,
   onClose,
   closeLabel,
   overlayActions,
   towerReplacement,
+  planDecisions,
   planDecision,
   afterMapContent,
   tt
@@ -111,10 +119,13 @@ export function ReplayView({
   initialLap?: number;
   preferencesResetSignal?: number;
   onOpenReport?: () => void;
+  onOpenPlanReport?: () => void;
+  onOpenPlan?: () => void;
   onClose?: () => void;
   closeLabel?: string;
   overlayActions?: ReactNode;
   towerReplacement?: ReactNode;
+  planDecisions?: ReplayPlanDecision[];
   planDecision?: RaceDecision;
   afterMapContent?: ReactNode;
   tt: Translator;
@@ -236,7 +247,36 @@ export function ReplayView({
       positionDeltaKey: positionPops[entry.teamId]?.key
   }));
   const playerCar = cars.find((car) => car.player) ?? cars[0];
-  const tower: ReplayTowerEntry[] = towerEntries ?? snapshot.tower.map((entry) => ({ teamId: entry.teamId, teamName: entry.teamName, value: "" }));
+  const towerPlanByTeam = new Map(planDecisions?.map((decision) => [decision.teamId, decision]));
+  const traceLiveTimes = traceTimesAt(replayTrace, currentRaceProgress);
+  const traceLiveGaps = traceGapsAt(replayTrace, currentRaceProgress);
+  const hasTraceLiveTimes = Object.keys(traceLiveTimes).length > 0;
+  const hasTraceLiveGaps = Object.keys(traceLiveGaps).length > 0;
+  const towerLiveTimes = Object.fromEntries(
+    snapshot.tower.map((entry) => {
+      if (hasTraceLiveTimes) return [entry.teamId, traceLiveTimes[entry.teamId]];
+      const finishTime = replayTimes.times[entry.teamId] ?? replayTimes.leader;
+      const progress = Math.min(circuit.laps, snapshot.carProgress[entry.teamId] ?? 0);
+      return [entry.teamId, (progress / Math.max(1, circuit.laps)) * finishTime];
+    })
+  );
+  const towerLeaderTime = towerLiveTimes[snapshot.tower[0]?.teamId ?? ""] ?? 0;
+  const tower: ReplayTowerEntry[] = towerEntries ?? snapshot.tower.map((entry, index) => {
+    const previous = snapshot.tower[index - 1];
+    const time = towerLiveTimes[entry.teamId];
+    const previousTime = previous ? towerLiveTimes[previous.teamId] ?? towerLeaderTime : towerLeaderTime;
+    const currentTime = time ?? previousTime;
+    const previousGap = previous ? traceLiveGaps[previous.teamId] ?? 0 : 0;
+    const gap = hasTraceLiveGaps
+      ? Math.max(0, (traceLiveGaps[entry.teamId] ?? 0) - previousGap)
+      : Math.max(0, currentTime - previousTime);
+    return {
+      teamId: entry.teamId,
+      teamName: entry.teamName,
+      value: time === undefined ? "" : index === 0 ? `${time.toFixed(1)}s` : `+${gap.toFixed(1)}s`,
+      decision: towerPlanByTeam.get(entry.teamId)
+    };
+  });
 
   // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.
   const markerByLap = new Map<number, { texts: string[]; player: boolean; time: number }>();
@@ -333,6 +373,7 @@ export function ReplayView({
                 activeMoment={activeMomentNotice}
                 activeDirector={activeDirector}
                 playerFocus={playerFocus}
+                replayMode={replayMode}
                 overlayActions={overlayActions}
                 playing={playing}
                 speed={speed}
@@ -357,6 +398,8 @@ export function ReplayView({
                 restart={restart}
                 seek={seek}
                 onOpenReport={replayComplete ? onOpenReport : undefined}
+                onOpenTowerReport={onOpenPlanReport}
+                onOpenPlan={onOpenPlan}
                 onClose={onClose}
                 closeLabel={closeLabel}
               />

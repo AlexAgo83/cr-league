@@ -55,6 +55,7 @@ export function GameViews({
   setForm,
   setGameView,
   setPlanSubscreen,
+  openQualifyingRun,
   openQualifyingHistory,
   openHistoryReplay,
   setSeasonRecapSeason,
@@ -106,6 +107,7 @@ export function GameViews({
   setForm: (form: FormState) => void;
   setGameView: (view: GameView) => void;
   setPlanSubscreen: (screen: PlanSubscreen) => void;
+  openQualifyingRun: (options?: { confirm?: boolean }) => void;
   openQualifyingHistory: (run: QualifyingRun) => void;
   openHistoryReplay: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
   setSeasonRecapSeason: (season: number) => void;
@@ -127,12 +129,22 @@ export function GameViews({
           circuit={visibleResultCircuit}
           playerTeamId={playerTeam?.id}
           playerDecision={playerDecision}
+          planDecisions={historyReplay ? [] : state.decisions}
           tab={resultTab}
           traitImpacts={replayTraitImpacts}
           preferencesResetSignal={preferencesResetSignal}
           showReplayIntro={!historyReplay}
           onOpenReplay={() => setResultTab("replay")}
           onOpenReport={() => setResultTab("report")}
+          onOpenPlanReport={() => {
+            if (historyReplay) closeHistoryReplay();
+            setPlanSubscreen("report");
+            setGameView("plan");
+          }}
+          onOpenPlan={() => {
+            setPlanSubscreen("plan");
+            setGameView("plan");
+          }}
           onClose={() => {
             if (historyReplay) closeHistoryReplay();
             else setResultOpen(false);
@@ -167,6 +179,12 @@ export function GameViews({
           onSetForm={setForm}
           onSetGameView={setGameView}
           onSetPlanSubscreen={setPlanSubscreen}
+          onOpenRaceReplay={() => {
+            setResultTab("replay");
+            setResultOpen(true);
+            setGameView("drive");
+          }}
+          onOpenQualifyingRun={() => openQualifyingRun({ confirm: true })}
           onOpenQualifyingHistory={openQualifyingHistory}
           tt={tt}
         />

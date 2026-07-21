@@ -22,6 +22,11 @@ const APPROACHES = ["prudent", "balanced", "aggressive"] as const;
 const PREPARATIONS = ["speed", "reliability", "weather"] as const;
 const PIT_STRATEGIES = ["heavy_pack", "standard", "mini_pack"] as const;
 const TRAITS = ["grip", "overtaking", "energy"] as const;
+const PLAN_MARKERS = {
+  approach: { prudent: 1, balanced: 2, aggressive: 3 },
+  preparation: { speed: 1, reliability: 2, weather: 3 },
+  pitStrategy: { heavy_pack: 1, standard: 2, mini_pack: 3 }
+} as const;
 export type DirectiveStep = "approach" | "preparation" | "pit" | "card";
 export const DIRECTIVE_STEP_KEY = "cr-league-directive-step";
 
@@ -110,6 +115,20 @@ function ImpactBadges({ badges, tt }: { badges: ImpactBadge[]; tt: Translator })
 
 function DirectiveChoiceArt({ src }: { src: string }) {
   return <AssetImage className="directive-choice-art" src={src} alt="" />;
+}
+
+function PlanChoiceMarker({ value }: { value: 1 | 2 | 3 }) {
+  return (
+    <span className="plan-choice-title-marker map-plan-choice-marker" aria-hidden="true">
+      {[1, 2, 3].map((step) => (
+        <i key={step} className={step === value ? "active" : undefined} />
+      ))}
+    </span>
+  );
+}
+
+function PlanCardMarker({ active }: { active: boolean }) {
+  return <span className={active ? "plan-choice-title-marker map-plan-card-marker active" : "plan-choice-title-marker map-plan-card-marker"} aria-hidden="true" />;
 }
 
 function directiveModifiers(form: FormState, selectedCardId: FormState["cardId"]) {
@@ -232,7 +251,10 @@ export function DirectivePanel({
                 {approach === "prudent" ? <span className="approach-chrono-badge" aria-hidden="true" /> : null}
                 {approach === "balanced" ? <span className="approach-balance-badge" aria-hidden="true" /> : null}
                 {approach === "aggressive" ? <span className="approach-skull-badge" aria-hidden="true" /> : null}
-                <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
+                <span className="plan-choice-title">
+                  <PlanChoiceMarker value={PLAN_MARKERS.approach[approach]} />
+                  <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
+                </span>
                 <small>{tt(`approach_${approach}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={APPROACH_BADGES[approach]} tt={tt} />
                 <DirectiveChoiceArt src={APPROACH_ART[approach]} />
@@ -247,7 +269,10 @@ export function DirectivePanel({
           <div className="choice-grid directive-choice-grid">
             {PREPARATIONS.map((preparation) => (
               <button key={preparation} type="button" className={`${form.preparation === preparation ? "choice-card selected" : "choice-card"} preparation-${preparation}`} aria-label={`${tt("field_preparation")}: ${tt(`preparation_${preparation}` as TranslationKey)}`} aria-pressed={form.preparation === preparation} onClick={() => setForm({ ...form, preparation })} disabled={disabled}>
-                <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
+                <span className="plan-choice-title">
+                  <PlanChoiceMarker value={PLAN_MARKERS.preparation[preparation]} />
+                  <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
+                </span>
                 <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={PREPARATION_BADGES[preparation]} tt={tt} />
                 <DirectiveChoiceArt src={PREPARATION_ART[preparation]} />
@@ -262,7 +287,10 @@ export function DirectivePanel({
           <div className="choice-grid directive-choice-grid">
             {PIT_STRATEGIES.map((pitStrategy) => (
               <button key={pitStrategy} type="button" className={`${form.pitStrategy === pitStrategy ? "choice-card selected" : "choice-card"} pit-strategy-${pitStrategy}`} aria-label={`${tt("field_pit_strategy")}: ${tt(`pit_strategy_${pitStrategy}` as TranslationKey)}`} aria-pressed={form.pitStrategy === pitStrategy} onClick={() => setForm({ ...form, pitStrategy })} disabled={disabled}>
-                <strong>{tt(`pit_strategy_${pitStrategy}` as TranslationKey)}</strong>
+                <span className="plan-choice-title">
+                  <PlanChoiceMarker value={PLAN_MARKERS.pitStrategy[pitStrategy]} />
+                  <strong>{tt(`pit_strategy_${pitStrategy}` as TranslationKey)}</strong>
+                </span>
                 <small>{tt(`pit_strategy_${pitStrategy}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={PIT_BADGES[pitStrategy]} tt={tt} />
                 <DirectiveChoiceArt src={PIT_ART[pitStrategy]} />
@@ -279,7 +307,10 @@ export function DirectivePanel({
               const selected = selectedCardId === cardId;
               return (
                 <button key={cardId || "none"} type="button" className={`${selected ? "choice-card selected" : "choice-card"}${cardId ? " card-art-cell" : ""}`} aria-label={`${tt("field_card")}: ${cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}`} aria-pressed={selected} onClick={() => setForm({ ...form, cardId })} disabled={disabled || cardLocked}>
-                  <strong>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</strong>
+                  <span className="plan-choice-title">
+                    <PlanCardMarker active={Boolean(cardId)} />
+                    <strong>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</strong>
+                  </span>
                   <small>
                     {cardId && selectedCardFit && selected ? `${tt(`card_fit_${selectedCardFit.level}` as TranslationKey)} · ` : ""}
                     {cardId ? tt(`card_${cardId}_hint` as TranslationKey) : tt("card_none_hint")}

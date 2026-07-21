@@ -1,4 +1,4 @@
-import type { RaceDecision, RaceResult, Weather } from "@cr-league/shared";
+import { DEMO_RACE_INPUT, type RaceDecision, type RaceResult, type TeamLivery, type Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "./circuits.js";
 import type { Translator } from "./helpers.js";
@@ -6,9 +6,8 @@ import type { LeagueState } from "./types.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { MapPlanPanel } from "../features/MapPlanPanel.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
-import { PositionBadge } from "../features/PositionBadge.js";
 import { ReplayView } from "../features/ReplayView.js";
-import { RewardValue } from "../features/RewardValue.js";
+import { ReplayTower } from "../features/replay/ReplayTower.js";
 import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
 import type { ResultTab } from "../features/ResultView.js";
 import type { PlanSubscreen } from "./routes.js";
@@ -16,7 +15,7 @@ import type { PlanSubscreen } from "./routes.js";
 type CommandClick = "qualifying" | "editPlan" | "directive" | "chronoReport" | "launchGrandPrix" | "resultReport" | "nextGrandPrix";
 type DeskState = "prepare" | "ready" | "resolved";
 type PrimaryCommand = { label: string; action: () => void; disabled: boolean };
-type QualifyingEntry = { teamId: string; teamName: string; position: number; attempts: number; lap?: number; createdAt: string; time: number };
+type QualifyingEntry = { teamId: string; teamName: string; position: number; attempts: number; lap?: number; createdAt: string; time: number; decision: RaceDecision };
 type QualifyingReplay = { result: RaceResult; decision: RaceDecision } | null;
 
 export function DriveView({
@@ -41,7 +40,6 @@ export function DriveView({
   primaryCommandClass,
   primaryCommand,
   deskState,
-  lastQualifyingRun,
   qualifyingDisabled,
   pendingMessage,
   preferencesResetSignal,
@@ -54,7 +52,6 @@ export function DriveView({
   setResultOpen,
   markCommandClicked,
   openQualifyingRun,
-  openLastQualifyingRun,
   tt
 }: {
   state: LeagueState;
@@ -78,7 +75,6 @@ export function DriveView({
   primaryCommandClass: string;
   primaryCommand: PrimaryCommand;
   deskState: DeskState;
-  lastQualifyingRun: unknown;
   qualifyingDisabled: boolean;
   pendingMessage: string | null;
   preferencesResetSignal: number;
@@ -91,7 +87,6 @@ export function DriveView({
   setResultOpen: (open: boolean) => void;
   markCommandClicked: (command: CommandClick) => void;
   openQualifyingRun: () => void;
-  openLastQualifyingRun: () => void;
   tt: Translator;
 }) {
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
@@ -109,34 +104,32 @@ export function DriveView({
               traitImpacts={directiveTraitImpacts}
               planDecision={currentQualifyingResult.decision}
               towerEntries={qualifyingReplayEntries}
-              towerReplacement={<QualifyingTimesPanel replay entries={qualifyingLeaderboard} playerTeamId={playerTeam?.id} attemptsUsed={qualifyingAttemptsUsed} attemptLimit={qualifyingAttemptLimit} tt={tt} />}
+              towerReplacement={
+                <QualifyingTimesPanel
+                  replay
+                  entries={qualifyingLeaderboard}
+                  playerTeamId={playerTeam?.id}
+                  attemptsUsed={qualifyingAttemptsUsed}
+                  attemptLimit={qualifyingAttemptLimit}
+                  onReport={() => {
+                    markCommandClicked("chronoReport");
+                    setPlanSubscreen("chrono");
+                    setGameView("plan");
+                  }}
+                  tt={tt}
+                />
+              }
               titleKey="qualifying_replay_title"
               explainerKey="qualifying_replay_explainer"
               initialLap={qualifyingReplayInitialLap}
               preferencesResetSignal={preferencesResetSignal}
               onClose={() => setQualifyingResult(null)}
+              onOpenPlan={() => {
+                markCommandClicked("editPlan");
+                setPlanSubscreen("plan");
+                setGameView("plan");
+              }}
               closeLabel={tt("action_back_to_race")}
-              overlayActions={
-                <>
-                  <button
-                    className={!commandClicks.chronoReport ? "highlight-command" : undefined}
-                    type="button"
-                    onClick={() => {
-                      markCommandClicked("chronoReport");
-                      setPlanSubscreen("chrono");
-                      setGameView("plan");
-                    }}
-                  >
-                    {tt("result_tab_report")}
-                  </button>
-                  <button type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
-                    {tt("action_qualifying")}
-                  </button>
-                  <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                    {primaryCommand.label}
-                  </button>
-                </>
-              }
               tt={tt}
             />
           </div>
@@ -165,8 +158,19 @@ export function DriveView({
                       <span>{tt(`weather_${forecastPick}` as TranslationKey)}</span>
                     </small>
                   </div>
-                  <MapPlanPanel decision={mapPlan} tt={tt} />
-                  <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />
+                  <div className="map-plan-performance">
+                    <MapPlanPanel
+                      decision={mapPlan}
+                      editLabel={tt(deskState === "prepare" ? "action_edit_plan" : "action_view_plan")}
+                      onEdit={() => {
+                        markCommandClicked("editPlan");
+                        setPlanSubscreen("plan");
+                        setGameView("plan");
+                      }}
+                      tt={tt}
+                    />
+                    <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />
+                  </div>
                 </div>
                 <div className="map-workflow-panel">
                   <h2>{tt(`race_phase_${raceDayPhase}_title` as TranslationKey)}</h2>
@@ -186,14 +190,29 @@ export function DriveView({
                   </div>
                 </div>
                 {result ? (
-                  <FinalClassification result={result} playerTeamId={playerTeam?.id} tt={tt} />
+                  <FinalClassification
+                    state={state}
+                    result={result}
+                    playerTeamId={playerTeam?.id}
+                    teamLiveries={teamLiveries}
+                    onReport={() => {
+                      markCommandClicked("resultReport");
+                      setPlanSubscreen("report");
+                      setGameView("plan");
+                    }}
+                    tt={tt}
+                  />
                 ) : qualifyingPanelOpen ? (
                   <QualifyingTimesPanel
                     entries={qualifyingLeaderboard}
                     playerTeamId={playerTeam?.id}
                     attemptsUsed={qualifyingAttemptsUsed}
                     attemptLimit={qualifyingAttemptLimit}
-                    onClose={() => setQualifyingPanelOpen(false)}
+                    onReport={() => {
+                      markCommandClicked("chronoReport");
+                      setPlanSubscreen("chrono");
+                      setGameView("plan");
+                    }}
                     tt={tt}
                   />
                 ) : (
@@ -203,21 +222,10 @@ export function DriveView({
                 )}
                 <DriveActions
                   result={result}
-                  commandClicks={commandClicks}
                   primaryCommandClass={primaryCommandClass}
                   primaryCommand={primaryCommand}
                   deskState={deskState}
-                  lastQualifyingRun={lastQualifyingRun}
-                  qualifyingDisabled={qualifyingDisabled}
-                  qualifyingAttemptsUsed={qualifyingAttemptsUsed}
                   pendingMessage={pendingMessage}
-                  setPlanSubscreen={setPlanSubscreen}
-                  setGameView={setGameView}
-                  setResultTab={setResultTab}
-                  setResultOpen={setResultOpen}
-                  markCommandClicked={markCommandClicked}
-                  openQualifyingRun={openQualifyingRun}
-                  openLastQualifyingRun={openLastQualifyingRun}
                   tt={tt}
                 />
               </>
@@ -235,7 +243,7 @@ function QualifyingTimesPanel({
   attemptsUsed,
   attemptLimit,
   replay = false,
-  onClose,
+  onReport,
   tt
 }: {
   entries: QualifyingEntry[];
@@ -243,18 +251,25 @@ function QualifyingTimesPanel({
   attemptsUsed: number;
   attemptLimit: number;
   replay?: boolean;
-  onClose?: () => void;
+  onReport?: () => void;
   tt: Translator;
 }) {
+  const reportLabel = tt("action_view_plan").split(" ")[0];
+  const panelClassName = [
+    "map-qualifying-times",
+    replay ? "replay-qualifying-times" : "",
+    entries.length ? "" : "is-empty",
+    onReport ? "has-action" : ""
+  ].filter(Boolean).join(" ");
   return (
-    <div className={replay ? "map-qualifying-times replay-qualifying-times" : "map-qualifying-times"}>
+    <div className={panelClassName}>
       <header>
         <strong>
           {tt("qualifying_times_title")} <span>{attemptsUsed}/{attemptLimit}</span>
         </strong>
-        {onClose ? (
-          <button type="button" aria-label={`${tt("action_close")} ${tt("qualifying_times_title")}`} onClick={onClose}>
-            ×
+        {onReport ? (
+          <button className="map-plan-edit-button" type="button" aria-label={reportLabel} title={tt("result_tab_report")} onClick={onReport}>
+            {reportLabel}
           </button>
         ) : null}
       </header>
@@ -262,10 +277,14 @@ function QualifyingTimesPanel({
         <ol>
           {entries.map((run) => (
             <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeamId ? "player" : undefined}>
-              <span>
-                <span className="chrono-rank">#{run.position}</span> {run.teamName}
-                {run.attempts ? ` · ${tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}` : ""}
-              </span>
+              <span className="chrono-rank">#{run.position}</span>
+              <ChronoPlanAsset decision={run.decision} />
+              <span className="chrono-team-name">{run.teamName}</span>
+              {run.attempts ? (
+                <span className="chrono-run-code" aria-label={tt("qualifying_attempt_label", { attempt: run.attempts, lap: run.lap ?? 1 })}>
+                  E<b>{run.attempts}</b>T<b>{run.lap ?? 1}</b>
+                </span>
+              ) : null}
               <em>{run.time.toFixed(2)}s</em>
             </li>
           ))}
@@ -277,73 +296,104 @@ function QualifyingTimesPanel({
   );
 }
 
-function FinalClassification({ result, playerTeamId, tt }: { result: RaceResult; playerTeamId?: string; tt: Translator }) {
+const CHRONO_PLAN_MARKERS = {
+  approach: { prudent: 1, balanced: 2, aggressive: 3 },
+  preparation: { speed: 1, reliability: 2, weather: 3 },
+  pitStrategy: { heavy_pack: 1, standard: 2, mini_pack: 3 }
+} as const;
+
+function ChronoPlanAsset({ decision }: { decision: RaceDecision }) {
   return (
-    <div className="map-final-classification">
-      <strong>{tt("result_final_classification")}</strong>
-      <ol>
-        {result.classification.map((entry) => (
-          <li key={entry.teamId} className={entry.teamId === playerTeamId ? "player" : undefined}>
-            <span>
-              <PositionBadge position={entry.position} /> {entry.teamName}
-            </span>
-            <em>
-              <RewardValue type="points" value={entry.points} tt={tt} />
-            </em>
-          </li>
-        ))}
-      </ol>
-    </div>
+    <span className="chrono-plan-asset" aria-hidden="true">
+      <ChronoPlanDots className="approach" value={CHRONO_PLAN_MARKERS.approach[decision.approach]} />
+      <ChronoPlanDots className="preparation" value={CHRONO_PLAN_MARKERS.preparation[decision.preparation]} />
+      <ChronoPlanDots className="pit" value={CHRONO_PLAN_MARKERS.pitStrategy[decision.pitStrategy ?? "standard"]} />
+      <i className={decision.cardId ? "card active" : "card"} />
+    </span>
+  );
+}
+
+function ChronoPlanDots({ className, value }: { className: string; value: 1 | 2 | 3 }) {
+  return (
+    <i className={className}>
+      {[1, 2, 3].map((step) => (
+        <i key={step} className={step === value ? "active" : undefined} />
+      ))}
+    </i>
+  );
+}
+
+function FinalClassification({
+  state,
+  result,
+  playerTeamId,
+  teamLiveries,
+  onReport,
+  tt
+}: {
+  state: LeagueState;
+  result: RaceResult;
+  playerTeamId?: string;
+  teamLiveries: Record<string, TeamLivery>;
+  onReport: () => void;
+  tt: Translator;
+}) {
+  const finalTrace = result.replayTrace?.at(-1);
+  const explicitPlans = new Map(state.decisions.map((decision) => [decision.teamId, decision]));
+  const consumedCardByTeam = new Map(result.consumedCards.map((card) => [card.teamId, card.cardId]));
+  const teamIndex = new Map(state.teams.map((team, index) => [team.id, index]));
+  const entries = result.classification.map((entry, index) => {
+    const previous = result.classification[index - 1];
+    const decision = explicitPlans.get(entry.teamId);
+    const fallback = DEMO_RACE_INPUT.participants[(teamIndex.get(entry.teamId) ?? index) % DEMO_RACE_INPUT.participants.length]?.decision;
+    const time = finalTrace?.times[entry.teamId];
+    const previousGap = previous ? finalTrace?.gaps[previous.teamId] ?? finalTrace?.times[previous.teamId] ?? 0 : 0;
+    const gap = finalTrace?.gaps[entry.teamId] ?? (time ?? 0);
+    return {
+      teamId: entry.teamId,
+      teamName: entry.teamName,
+      value: time === undefined ? "" : index === 0 ? `${time.toFixed(1)}s` : `+${Math.max(0, gap - previousGap).toFixed(1)}s`,
+      decision: {
+        approach: decision?.approach ?? fallback?.approach ?? "balanced",
+        preparation: decision?.preparation ?? fallback?.preparation ?? "speed",
+        pitStrategy: decision?.pitStrategy ?? fallback?.pitStrategy ?? "standard",
+        cardId: decision?.cardId ?? consumedCardByTeam.get(entry.teamId)
+      }
+    };
+  });
+  const positionPops = Object.fromEntries(result.classification.map((entry) => [entry.teamId, { delta: entry.positionChange, key: 0 }]));
+  return (
+    <ReplayTower
+      entries={entries}
+      playerTeamId={playerTeamId}
+      positionPops={positionPops}
+      title={tt("result_final_classification")}
+      onReport={onReport}
+      reportLabel={tt("action_view_plan").split(" ")[0] ?? tt("result_tab_report")}
+      teamLiveries={teamLiveries}
+    />
   );
 }
 
 function DriveActions({
   result,
-  commandClicks,
   primaryCommandClass,
   primaryCommand,
   deskState,
-  lastQualifyingRun,
-  qualifyingDisabled,
-  qualifyingAttemptsUsed,
   pendingMessage,
-  setPlanSubscreen,
-  setGameView,
-  setResultTab,
-  setResultOpen,
-  markCommandClicked,
-  openQualifyingRun,
-  openLastQualifyingRun,
   tt
 }: {
   result: RaceResult | null | undefined;
-  commandClicks: Record<CommandClick, boolean>;
   primaryCommandClass: string;
   primaryCommand: PrimaryCommand;
   deskState: DeskState;
-  lastQualifyingRun: unknown;
-  qualifyingDisabled: boolean;
-  qualifyingAttemptsUsed: number;
   pendingMessage: string | null;
-  setPlanSubscreen: (screen: PlanSubscreen) => void;
-  setGameView: (view: "drive" | "plan") => void;
-  setResultTab: (tab: ResultTab) => void;
-  setResultOpen: (open: boolean) => void;
-  markCommandClicked: (command: CommandClick) => void;
-  openQualifyingRun: () => void;
-  openLastQualifyingRun: () => void;
   tt: Translator;
 }) {
   if (result) {
     return (
       <div className="race-phase-actions map-race-actions">
         <PendingFeedback className="map-pending-feedback" message={pendingMessage} />
-        <button className="result-toggle-command" type="button" onClick={() => { setResultTab("replay"); setResultOpen(true); }}>
-          {tt("result_tab_replay")}
-        </button>
-        <button className={`result-toggle-command${!commandClicks.resultReport ? " highlight-command" : ""}`} type="button" onClick={() => { markCommandClicked("resultReport"); setPlanSubscreen("report"); setGameView("plan"); }}>
-          {tt("result_tab_report")}
-        </button>
         <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
           {primaryCommand.label}
         </button>
@@ -355,38 +405,13 @@ function DriveActions({
     <div className="race-phase-actions map-race-actions">
       <PendingFeedback className="map-pending-feedback" message={pendingMessage} />
       {deskState === "prepare" ? (
-        <>
-          <button className={`primary-command${qualifyingAttemptsUsed > 0 && !commandClicks.editPlan ? " highlight-command" : ""}`} type="button" onClick={() => {
-            markCommandClicked("editPlan");
-            setPlanSubscreen("plan");
-            setGameView("plan");
-          }}>
-            {tt("action_edit_plan")}
-          </button>
-          <button className={`primary-command${!commandClicks.qualifying && qualifyingAttemptsUsed === 0 ? " highlight-command" : ""}`} type="button" onClick={openQualifyingRun} disabled={qualifyingDisabled}>
-            {tt("action_qualifying")}
-          </button>
-          <button className="primary-command" type="button" onClick={openLastQualifyingRun} disabled={!lastQualifyingRun}>
-            {tt("action_qualifying_history")}
-          </button>
-          <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-            {primaryCommand.label}
-          </button>
-        </>
+        <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+          {primaryCommand.label}
+        </button>
       ) : (
-        <>
-          {deskState === "ready" ? (
-            <button className="primary-command" type="button" onClick={() => {
-              setPlanSubscreen("plan");
-              setGameView("plan");
-            }}>
-              {tt("action_view_plan")}
-            </button>
-          ) : null}
-          <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-            {primaryCommand.label}
-          </button>
-        </>
+        <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+          {primaryCommand.label}
+        </button>
       )}
     </div>
   );

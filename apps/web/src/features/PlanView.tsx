@@ -35,6 +35,8 @@ export function PlanView({
   onSetForm,
   onSetGameView,
   onSetPlanSubscreen,
+  onOpenRaceReplay,
+  onOpenQualifyingRun,
   onOpenQualifyingHistory,
   tt
 }: {
@@ -63,6 +65,8 @@ export function PlanView({
   onSetForm: (form: FormState) => void;
   onSetGameView: (view: GameView) => void;
   onSetPlanSubscreen: (subscreen: PlanSubscreen) => void;
+  onOpenRaceReplay: () => void;
+  onOpenQualifyingRun: () => void;
   onOpenQualifyingHistory: (run: QualifyingRun) => void;
   tt: Translator;
 }) {
@@ -86,7 +90,12 @@ export function PlanView({
       </div>
       {activeSubscreen === "report" ? (
         reportResult ? (
-          <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} tt={tt} />
+          <div className="plan-gp-report-shell">
+            <button className="plan-gp-replay-button" type="button" onClick={onOpenRaceReplay}>
+              {tt("action_review_race")}
+            </button>
+            <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} tt={tt} />
+          </div>
         ) : (
           <>
             <section className="panel report-hero plan-empty-report" aria-label={tt("result_tab_report")}>
@@ -142,7 +151,20 @@ export function PlanView({
                 <span className="section-kicker">{tt("chrono_report_kicker")}</span>
                 <h2>{tt("chrono_report_title")}</h2>
               </div>
-              <p>{chronoReport.suggestion}</p>
+              <div className="chrono-report-prompt">
+                <p>{chronoReport.suggestion}</p>
+                <button
+                  type="button"
+                  className="primary-command"
+                  onClick={() => {
+                    onSetGameView("drive");
+                    onOpenQualifyingRun();
+                  }}
+                  disabled={disabled || qualifyingAttemptsLeft <= 0}
+                >
+                  {tt("action_qualifying")}
+                </button>
+              </div>
             </header>
             <div className="chrono-report-stats">
               <div>

@@ -162,10 +162,10 @@ export function createRaceActions({
     });
   }
 
-  function openQualifyingRun() {
+  function openQualifyingRun(options?: { confirm?: boolean }) {
     if (qualifyingDisabled) return;
     markCommandClicked("qualifying");
-    if (qualifyingAttemptsLeft > 1) {
+    if (!options?.confirm && qualifyingAttemptsLeft > 1) {
       setQualifyingResult(null);
       void launchQualifyingRun();
       return;

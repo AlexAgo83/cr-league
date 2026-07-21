@@ -35,7 +35,7 @@ export function replayOrderAtProgress(result: RaceResult, trace: ReplayTracePoin
   return order.length ? order : result.classification.map((entry) => entry.teamId);
 }
 
-function traceGapsAt(trace: ReplayTracePoint[], progress: number) {
+export function traceGapsAt(trace: ReplayTracePoint[], progress: number) {
   const from = tracePointAt(trace, progress);
   const to = trace.find((point) => point.progress > progress) ?? from;
   const span = to.progress - from.progress || 1;
@@ -48,7 +48,7 @@ function traceGapsAt(trace: ReplayTracePoint[], progress: number) {
   );
 }
 
-function traceTimesAt(trace: ReplayTracePoint[], progress: number) {
+export function traceTimesAt(trace: ReplayTracePoint[], progress: number) {
   const from = tracePointAt(trace, progress);
   const to = trace.find((point) => point.progress > progress) ?? from;
   const span = to.progress - from.progress || 1;

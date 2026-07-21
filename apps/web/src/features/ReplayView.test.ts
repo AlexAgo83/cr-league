@@ -22,7 +22,9 @@ import {
   scaleFinishTimes,
   segmentAtProgress,
   shouldSmoothReplayTrace,
-  smoothCarProgress
+  smoothCarProgress,
+  traceGapsAt,
+  traceTimesAt
 } from "./ReplayView.js";
 import { t } from "../i18n/index.js";
 
@@ -71,6 +73,18 @@ describe("ReplayView timing", () => {
     expect(times).toEqual({ leader: 100, last: 104, times: { leader: 100, last: 104 } });
     expect(carProgressAtRaceTime(result, times.times, 100, 5)).toEqual({ leader: 5, last: 100 / 104 * 5 });
     expect(carProgressAtRaceTime(result, times.times, 104, 5)).toEqual({ leader: 5, last: 5 });
+  });
+
+  it("interpolates live tower gaps so rows can compare to the car ahead", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "mid", "last"], times: { leader: 0, mid: 0, last: 0 }, gaps: { leader: 0, mid: 0, last: 0 } },
+      { segment: "mid", lap: 3, progress: 0.5, order: ["leader", "mid", "last"], times: { leader: 50, mid: 52, last: 55 }, gaps: { leader: 0, mid: 2, last: 5 } }
+    ];
+    const times = traceTimesAt(trace, 0.25);
+    const gaps = traceGapsAt(trace, 0.25);
+
+    expect(times.leader).toBe(25);
+    expect((gaps.last ?? 0) - (gaps.mid ?? 0)).toBe(1.5);
   });
 
   it("scales visual replay time with race distance", () => {

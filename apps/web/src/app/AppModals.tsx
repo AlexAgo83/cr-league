@@ -52,11 +52,15 @@ export function ConfirmActionModal({
   title,
   body,
   actionLabel,
+  secondaryActionLabel,
+  extraActionLabel,
   status,
   pendingMessage,
   danger = false,
   tt,
   onClose,
+  onSecondaryAction,
+  onExtraAction,
   onConfirm
 }: {
   label: string;
@@ -65,11 +69,15 @@ export function ConfirmActionModal({
   title: string;
   body: ReactNode;
   actionLabel: string;
+  secondaryActionLabel?: string;
+  extraActionLabel?: string;
   status: string;
   pendingMessage?: string | null;
   danger?: boolean;
   tt: Translator;
   onClose: () => void;
+  onSecondaryAction?: () => void;
+  onExtraAction?: () => void;
   onConfirm: () => void;
 }) {
   return (
@@ -78,6 +86,16 @@ export function ConfirmActionModal({
       {typeof body === "string" ? <p>{body}</p> : <div className="modal-body">{body}</div>}
       <div className="actions secondary-actions">
         {pendingMessage !== undefined ? <PendingFeedback message={pendingMessage} /> : null}
+        {secondaryActionLabel && onSecondaryAction ? (
+          <button type="button" className="secondary-button" onClick={onSecondaryAction} disabled={status === "loading"}>
+            {secondaryActionLabel}
+          </button>
+        ) : null}
+        {extraActionLabel && onExtraAction ? (
+          <button type="button" className="secondary-button" onClick={onExtraAction} disabled={status === "loading"}>
+            {extraActionLabel}
+          </button>
+        ) : null}
         <button type="button" className={danger ? "danger-button" : undefined} onClick={onConfirm} disabled={status === "loading"}>
           {actionLabel}
         </button>
@@ -113,11 +131,11 @@ export function NextGrandPrixConfirmModal({
       <p>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_body" : "next_gp_confirm_body")}</p>
       <div className="actions secondary-actions">
         <PendingFeedback message={pendingMessage} />
-        <button type="button" onClick={onStartNextGrandPrix} disabled={status === "loading"}>
-          {nextGrandPrixActionLabel}
-        </button>
         <button type="button" onClick={onOpenReport} disabled={!hasResult}>
           {tt("result_tab_report")}
+        </button>
+        <button type="button" onClick={onStartNextGrandPrix} disabled={status === "loading"}>
+          {nextGrandPrixActionLabel}
         </button>
       </div>
     </Modal>

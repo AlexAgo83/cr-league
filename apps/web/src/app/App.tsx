@@ -291,7 +291,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     showStatus,
     pushCommandHint
   });
-  const { createLeague, joinLeague, submitDirective, submitDirectiveConfirmed, openQualifyingRun, openResolveConfirm, openNextGrandPrixConfirm, startQualifyingRunConfirmed, openLastQualifyingRun } = createRaceActions({
+  const { createLeague, joinLeague, submitDirective, submitDirectiveConfirmed, openQualifyingRun, openResolveConfirm, openNextGrandPrixConfirm, startQualifyingRunConfirmed } = createRaceActions({
     leagueState,
     profileSession,
     playerTeam,
@@ -571,14 +571,24 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       onResetUiPreferences={resetUiPreferences}
       onCopyTechnicalError={() => void copyTechnicalError()}
       onSubmitDirectiveConfirmed={submitDirectiveConfirmed}
+      onEditPlan={() => {
+        setDirectiveConfirmOpen(false);
+        setQualifyingConfirmOpen(false);
+        setPlanSubscreen("plan");
+        setGameView("plan");
+      }}
+      onOpenChronoPlan={() => {
+        setDirectiveConfirmOpen(false);
+        setPlanSubscreen("chrono");
+        setGameView("plan");
+      }}
       onResolveGrandPrix={() => void resolveGrandPrix()}
       onStartQualifyingRunConfirmed={startQualifyingRunConfirmed}
       onStartNextGrandPrix={() => void startNextGrandPrix()}
       onOpenResultReport={() => {
         setNextGrandPrixConfirmOpen(false);
-        setGameView("drive");
-        setResultTab("report");
-        setResultOpen(true);
+        setPlanSubscreen("report");
+        setGameView("plan");
       }}
       onUpdateSettings={updateSettings}
       onForgetPlayer={forgetPlayer}
@@ -707,7 +717,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       clearScreenOnboardingSnoozes={clearScreenOnboardingSnoozes}
       markCommandClicked={markCommandClicked}
       openQualifyingRun={openQualifyingRun}
-      openLastQualifyingRun={openLastQualifyingRun}
       goHome={goHome}
       backToAdminConsole={() => {
         setGameView("admin");

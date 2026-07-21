@@ -58,6 +58,8 @@ export function AppOverlays({
   onResetUiPreferences,
   onCopyTechnicalError,
   onSubmitDirectiveConfirmed,
+  onEditPlan,
+  onOpenChronoPlan,
   onResolveGrandPrix,
   onStartQualifyingRunConfirmed,
   onStartNextGrandPrix,
@@ -119,6 +121,8 @@ export function AppOverlays({
   onResetUiPreferences: () => void;
   onCopyTechnicalError: () => void;
   onSubmitDirectiveConfirmed: () => void;
+  onEditPlan: () => void;
+  onOpenChronoPlan: () => void;
   onResolveGrandPrix: () => void;
   onStartQualifyingRunConfirmed: () => void;
   onStartNextGrandPrix: () => void;
@@ -175,9 +179,9 @@ export function AppOverlays({
       {preferencesResetOpen ? <ConfirmActionModal label={tt("preferences_reset_title")} image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("preferences_reset_title")} body={tt("preferences_reset_confirm")} actionLabel={tt("action_reset_ui_preferences")} status={status} danger tt={tt} onClose={onClosePreferencesReset} onConfirm={onResetUiPreferences} /> : null}
       {technicalError ? <ConfirmActionModal label={tt("error_modal_title")} image="/assets/crl/pit-wall-mobile.png" kicker={tt("error_modal_kicker")} title={tt("error_modal_title")} body={tt("error_modal_body")} actionLabel={tt("action_copy_error")} status={status} tt={tt} onClose={onCloseTechnicalError} onConfirm={onCopyTechnicalError} /> : null}
       {adminDeleteUser ? <AdminDeleteUserModal user={adminDeleteUser} tt={tt} onClose={onCloseAdminDelete} onDelete={onDeleteAdminUser} /> : null}
-      {directiveConfirmOpen ? <ConfirmActionModal label={tt("directive_confirm_title")} image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} body={directiveConfirmBody} actionLabel={tt("action_submit_directive")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseDirectiveConfirm} onConfirm={onSubmitDirectiveConfirmed} /> : null}
+      {directiveConfirmOpen ? <ConfirmActionModal label={tt("directive_confirm_title")} image="/assets/crl/send-plan-modal.png" kicker={tt("qualifying_kicker")} title={tt("directive_confirm_title")} body={directiveConfirmBody} actionLabel={tt("action_submit_directive")} secondaryActionLabel={tt("action_modify_plan")} extraActionLabel={tt("plan_subscreen_chrono")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseDirectiveConfirm} onSecondaryAction={onEditPlan} onExtraAction={onOpenChronoPlan} onConfirm={onSubmitDirectiveConfirmed} /> : null}
       {resolveConfirmOpen ? <ResolveGrandPrixConfirmModal currentCircuit={currentCircuit} forecastPick={forecastPick} playerTeamId={playerTeamId} startingGridEntries={startingGridEntries} status={status} pendingMessage={pendingMessage} startingGridExpanded={startingGridExpanded} tt={tt} onClose={onCloseResolveConfirm} onShowFullGrid={onShowFullGrid} onResolve={onResolveGrandPrix} /> : null}
-      {qualifyingConfirmOpen ? <ConfirmActionModal label={tt("qualifying_confirm_title")} image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} body={qualifyingConfirmBody} actionLabel={tt("action_qualifying")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseQualifyingConfirm} onConfirm={onStartQualifyingRunConfirmed} /> : null}
+      {qualifyingConfirmOpen ? <ConfirmActionModal label={tt("qualifying_confirm_title")} image="/assets/crl/qualifying-modal.png" kicker={tt("qualifying_kicker")} title={tt("qualifying_confirm_title")} body={qualifyingConfirmBody} actionLabel={tt("action_qualifying")} secondaryActionLabel={tt("action_modify_plan")} status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseQualifyingConfirm} onSecondaryAction={onEditPlan} onConfirm={onStartQualifyingRunConfirmed} /> : null}
       {nextGrandPrixConfirmOpen ? <NextGrandPrixConfirmModal isSeasonFinalGrandPrix={isSeasonFinalGrandPrix} nextGrandPrixActionLabel={nextGrandPrixActionLabel} status={status} pendingMessage={pendingMessage} hasResult={hasResult} tt={tt} onClose={onCloseNextGrandPrixConfirm} onStartNextGrandPrix={onStartNextGrandPrix} onOpenReport={onOpenResultReport} /> : null}
       {seasonRecap ? <SeasonRecapModal recap={seasonRecap} playerTeamId={playerTeamId} tt={tt} onClose={onCloseSeasonRecap} /> : null}
       {leagueControlsOpen && leagueState ? (

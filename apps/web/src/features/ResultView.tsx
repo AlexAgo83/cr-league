@@ -1,4 +1,4 @@
-import type { RaceResult } from "@cr-league/shared";
+import { DEMO_RACE_INPUT, type RaceDecision, type RaceResult } from "@cr-league/shared";
 import type { CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
@@ -17,12 +17,15 @@ export function ResultView({
   circuit,
   playerTeamId,
   playerDecision,
+  planDecisions: replayPlanDecisions,
   tab,
   traitImpacts,
   preferencesResetSignal,
   showReplayIntro = true,
   onOpenReplay,
   onOpenReport,
+  onOpenPlanReport,
+  onOpenPlan,
   onClose,
   tt
 }: {
@@ -31,16 +34,32 @@ export function ResultView({
   circuit: CityCircuit;
   playerTeamId: string | undefined;
   playerDecision: LeagueState["decisions"][number] | undefined;
+  planDecisions?: LeagueState["decisions"];
   tab: ResultTab;
   traitImpacts: MapTraitImpacts;
   preferencesResetSignal?: number;
   showReplayIntro?: boolean;
   onOpenReplay?: () => void;
   onOpenReport?: () => void;
+  onOpenPlanReport?: () => void;
+  onOpenPlan?: () => void;
   onClose?: () => void;
   tt: Translator;
 }) {
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
+  const explicitPlans = new Map((replayPlanDecisions ?? state.decisions).map((decision) => [decision.teamId, decision]));
+  const consumedCardByTeam = new Map(result.consumedCards.map((card) => [card.teamId, card.cardId]));
+  const planDecisions = state.teams.map((team, index) => {
+    const decision = explicitPlans.get(team.id);
+    const fallback = DEMO_RACE_INPUT.participants[index % DEMO_RACE_INPUT.participants.length]?.decision;
+    return {
+      teamId: team.id,
+      approach: decision?.approach ?? fallback?.approach ?? "balanced",
+      preparation: decision?.preparation ?? fallback?.preparation ?? "speed",
+      pitStrategy: decision?.pitStrategy ?? fallback?.pitStrategy ?? "standard",
+      cardId: decision?.cardId ?? consumedCardByTeam.get(team.id)
+    } satisfies RaceDecision & { teamId: string };
+  });
   const payoff = playerRacePayoff(state, result, playerTeamId, tt);
   const payoffPanel = payoff ? (
     <section className="panel race-payoff-recap" aria-label={tt("payoff_title")}>
@@ -90,11 +109,14 @@ export function ResultView({
             playerTeamId={playerTeamId}
             teamLiveries={teamLiveries}
             traitImpacts={traitImpacts}
+            planDecisions={planDecisions}
             planDecision={playerDecision ? { ...playerDecision, cardId: playerDecision.cardId ?? undefined } : undefined}
             preferencesResetSignal={preferencesResetSignal}
             showIntro={showReplayIntro}
             onClose={onClose}
             onOpenReport={onOpenReport}
+            onOpenPlanReport={onOpenPlanReport}
+            onOpenPlan={onOpenPlan}
             closeLabel={tt("action_back_to_race")}
             afterMapContent={payoffPanel}
             tt={tt}

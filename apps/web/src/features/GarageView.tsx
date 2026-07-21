@@ -123,6 +123,7 @@ export function GarageView({
         </div>
         <div className="garage-stats">
           <span className="garage-livery-visuals">
+            <small>{tt("garage_identity")}</small>
             <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
             <span className="garage-car-stage">
               <svg className="garage-car-preview map-car" viewBox="-20 -24 40 48" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
@@ -131,9 +132,7 @@ export function GarageView({
             </span>
           </span>
           <span>
-            <RewardValue type="points" value={playerTeam.points} tt={tt} />
-          </span>
-          <span>
+            <small>{tt("payoff_credits")}</small>
             <RewardValue type="credits" value={playerTeam.credits} tt={tt} />
           </span>
         </div>

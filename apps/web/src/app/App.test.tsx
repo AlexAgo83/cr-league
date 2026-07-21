@@ -406,17 +406,17 @@ describe("App", () => {
     expect(document.querySelector(".command-bar")).toBe(null);
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(document.querySelector(".map-workflow-panel")?.textContent).toContain("1. Read the circuit");
-    expect(document.querySelector(".map-plan-panel")?.textContent).toContain("Current planApproachBal.Tire prepWeatherPit strategyStd.CardNo card");
+    expect(document.querySelector(".map-plan-panel")?.textContent).toContain("Current planApproachBal.Tire prepWeatherPit strategyStd.Card-");
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();
     const roundOneCircuit = testCircuit(1);
     expect(screen.getAllByText(t(roundOneCircuit.layoutKey, "en")).length).toBeGreaterThan(0);
     expect(screen.queryByRole("heading", { name: "Tune the race plan" })).toBe(null);
     expect(screen.getByRole("button", { name: "Plan" })).toBeTruthy();
-    expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Edit planNew chrono");
-    expect(screen.getByRole("button", { name: "Edit plan" }).className).not.toContain("highlight-command");
-    expect(screen.getByRole("button", { name: "New chrono" }).className).toContain("highlight-command");
-    expect(document.querySelectorAll(".race-phase-actions button.highlight-command")).toHaveLength(1);
-    fireEvent.click(screen.getByRole("button", { name: "Edit plan" }));
+    expect(document.querySelector(".race-phase-actions")?.textContent).not.toContain("New chrono");
+    expect(document.querySelector(".race-phase-actions")?.textContent).not.toContain("Edit plan");
+    expect(within(document.querySelector(".map-plan-panel") as HTMLElement).getByRole("button", { name: "Edit" }).className).toContain("map-plan-edit-button");
+    expect(document.querySelectorAll(".race-phase-actions button.highlight-command")).toHaveLength(0);
+    fireEvent.click(within(document.querySelector(".map-plan-panel") as HTMLElement).getByRole("button", { name: "Edit" }));
     expect(window.location.pathname).toBe("/plan/approach");
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(screen.getByText("Plan read:", { exact: false })).toBeTruthy();
@@ -457,28 +457,29 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "Card: Rain Grip" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Edit plan" }).className).not.toContain("highlight-command");
+    expect(within(document.querySelector(".map-plan-panel") as HTMLElement).getByRole("button", { name: "Edit" }).className).toContain("map-plan-edit-button");
     expect(screen.queryByRole("button", { name: "Result" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getAllByText("Chronos", { exact: false }).length).toBeGreaterThan(0);
     expect(screen.getByText("0/3")).toBeTruthy();
     expect(screen.getByText("No chronos")).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Review chrono" }).hasAttribute("disabled")).toBe(true);
-    expect(screen.getByRole("button", { name: "Review chrono" }).className).toContain("primary-command");
-    expect(document.querySelector(".race-phase-actions")?.textContent).toContain("New chrono");
-    expect(screen.getByRole("button", { name: "New chrono" }).className).toContain("highlight-command");
+    expect(document.querySelector(".race-phase-actions")?.textContent).not.toContain("Review chrono");
+    expect(document.querySelector(".race-phase-actions")?.textContent).not.toContain("New chrono");
 
-    // First chrono runs directly from the race phase panel.
+    // First chrono is launched from the chrono plan screen.
     expect(screen.queryByText("Wait for directives")).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
-    expect([...document.querySelectorAll(".race-phase-actions button.highlight-command")].map((button) => button.textContent)).not.toContain("New chrono");
-    expect(screen.queryByRole("dialog", { name: "Run chrono?" })).toBe(null);
+    expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     expect(await screen.findByText("New best qualifying time saved.")).toBeTruthy();
     expect(JSON.parse((fetch.mock.calls[1]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123", laps: 3 });
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 1/3");
     expect(screen.getByText("Relive this run lap by lap:", { exact: false })).toBeTruthy();
-    expect(document.querySelector(".replay-overlay-actions")?.textContent).not.toContain("Attempts left");
+    expect(document.querySelector(".replay-overlay-actions")).toBe(null);
+    expect(screen.queryByRole("button", { name: "Send plan" })).toBe(null);
     expect(screen.queryByRole("heading", { name: "Run chrono" })).toBe(null);
     expect(screen.queryByText("Your best time sets your grid slot.", { exact: false })).toBe(null);
     expect(screen.queryByRole("button", { name: "Run chrono" })).toBe(null);
@@ -489,9 +490,9 @@ describe("App", () => {
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
     expect(document.querySelector(".map-qualifying-times .position-badge")).toBe(null);
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("#1");
-    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 1");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("E1T1");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("75.18s");
-    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 2");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("E1T2");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
     const chronoCloseButton = screen.getByRole("button", { name: "Back to stand" });
     expect(chronoCloseButton.className).toContain("replay-close-button");
@@ -501,10 +502,9 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "Chrono replay" })).toBe(null);
     expect(screen.getByText("72.42s")).toBeTruthy();
     expect(screen.getByText("75.18s")).toBeTruthy();
-    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Attempt 1 · lap 2");
+    expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("E1T2");
     expect(screen.getByRole("button", { name: "Send plan" }).className).toContain("highlight-command");
-    expect(screen.getByRole("button", { name: "Review chrono" }).hasAttribute("disabled")).toBe(false);
-    expect(screen.getByRole("button", { name: "Review chrono" }).className).toContain("primary-command");
+    expect(document.querySelector(".race-phase-actions")?.textContent).not.toContain("Review chrono");
     expect(screen.getByRole("heading", { name: "2. Chrono / plan" })).toBeTruthy();
     expect(screen.getByText("Chrono 1/3 is logged. Adjust the directive or lock the plan before the GP.")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
@@ -526,14 +526,16 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/3");
-    expect(screen.getByRole("button", { name: "Report" }).className).toContain("highlight-command");
-    fireEvent.click(screen.getByRole("button", { name: "Report" }));
+    expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
+    expect(screen.queryByRole("button", { name: "New chrono" })).toBe(null);
+    fireEvent.click(within(document.querySelector(".map-qualifying-times") as HTMLElement).getByRole("button", { name: "View" }));
     expect(screen.getByRole("heading", { name: "Understand the chrono" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Report" }).className).not.toContain("highlight-command");
+    expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
-    fireEvent.click(screen.getByRole("button", { name: "Review chrono" }));
+    fireEvent.click(within(document.querySelector(".map-qualifying-times") as HTMLElement).getByRole("button", { name: "View" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
 
@@ -588,8 +590,8 @@ describe("App", () => {
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).not.toContain("75.18s");
-    expect(document.querySelector(".race-phase-actions")?.textContent).toContain("View planLaunch GP");
-    fireEvent.click(screen.getByRole("button", { name: "View plan" }));
+    expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Launch GP");
+    fireEvent.click(within(document.querySelector(".map-plan-performance") as HTMLElement).getByRole("button", { name: "View" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(screen.getByText("Plan locked")).toBeTruthy();
     for (const button of document.querySelectorAll(".directive-panel .choice-card")) {
@@ -655,39 +657,18 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
     expect(window.location.pathname).toBe("/drive");
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
-    expect(document.querySelectorAll(".map-final-classification li").length).toBe(resolvedState.currentGrandPrix.result.classification.length);
-    expect(document.querySelector(".map-final-classification")?.textContent).toContain("Volt Union");
-    expect(document.querySelector(".map-final-classification")?.textContent).toContain("25 pts");
-    expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Report" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Report" }).className).toContain("highlight-command");
+    expect(document.querySelectorAll(".replay-tower li").length).toBe(resolvedState.currentGrandPrix.result.classification.length);
+    expect(document.querySelector(".replay-tower")?.textContent).toContain("Volt Union");
+    expect(document.querySelector(".replay-tower")?.textContent).not.toContain("25 pts");
+    expect(screen.queryByRole("button", { name: "Replay" })).toBe(null);
+    expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
     expect(screen.getByRole("button", { name: "Next GP" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
-    expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(window.location.pathname).toBe("/replay/gp_1");
-    expect(Array.from(document.querySelector(".result-view")!.children).map((child) => child.id || child.className)).toEqual([
-      "result-replay-panel"
-    ]);
-    expect(Array.from(document.querySelector(".replay-content-column")!.children).map((child) => child.className)).toEqual([
-      "circuit-map circuit-map-unframed replay-map-panel circuit-weather-dry",
-      "panel race-context-panel replay-result-gate",
-      "panel race-context-panel replay-copy-panel"
-    ]);
-    expect(screen.queryByLabelText("What you gained")).toBe(null);
-    expect(document.querySelector(".replay-report-button")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Skip to result" }));
-    expect(screen.getByLabelText("What you gained")).toBeTruthy();
-    expect(document.querySelector('image[href="/assets/cars/idle.png"]')).toBeTruthy();
-    const replayReportButton = document.querySelector(".replay-report-button") as HTMLButtonElement;
-    expect(replayReportButton).toBeTruthy();
-    fireEvent.click(replayReportButton);
-    expect(screen.getByText(`${roundOneCircuit.title}: Volt Union wins.`)).toBeTruthy();
-    expect(window.location.pathname).toBe("/drive");
-    expect(screen.queryByText("Movement")).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Back to circuit" }));
+    const finalReportButton = document.querySelector(".replay-tower .map-plan-edit-button") as HTMLButtonElement;
+    expect(finalReportButton).toBeTruthy();
+    expect(finalReportButton.textContent).toBe("View");
+    fireEvent.click(finalReportButton);
 
     // Report view
-    fireEvent.click(screen.getByRole("button", { name: "Report" }));
     expect(window.location.pathname).toBe("/plan/report");
     expect(screen.getByRole("tab", { name: "GP" }).getAttribute("aria-selected")).toBe("true");
     expect(screen.getByText(`${roundOneCircuit.title}: Volt Union wins.`)).toBeTruthy();
@@ -705,7 +686,7 @@ describe("App", () => {
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
-    expect(screen.getByRole("button", { name: "Report" }).className).not.toContain("highlight-command");
+    expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
 
     // Garage view
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
@@ -729,7 +710,7 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Send plan" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Launch GP" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
-    expect(screen.getByRole("button", { name: "Replay" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Replay" })).toBe(null);
     expect(screen.getByRole("button", { name: "Next GP" }).hasAttribute("disabled")).toBe(false);
     expect(screen.getByRole("button", { name: "Next GP" }).className).toContain("highlight-command");
 
@@ -737,6 +718,12 @@ describe("App", () => {
     expect(document.querySelector(".race-phase-actions .primary-command")?.className).not.toContain("highlight-command");
     expect(screen.getByRole("dialog", { name: "Start the next race day?" })).toBeTruthy();
     expect(screen.getByText("This opens the next Grand Prix and moves every player back into preparation.")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Report" }));
+    expect(window.location.pathname).toBe("/plan/report");
+    expect(screen.getByRole("tab", { name: "GP" }).getAttribute("aria-selected")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
+    expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
@@ -916,6 +903,10 @@ describe("App", () => {
     createLeagueFromSetup();
 
     await screen.findByRole("button", { name: "Stand" });
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
+    fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
+    expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
 
     expect((await screen.findByRole("status")).textContent).toContain("Running qualifying lap...");
@@ -942,11 +933,14 @@ describe("App", () => {
     createLeagueFromSetup();
 
     await screen.findByRole("button", { name: "Stand" });
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
 
     expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Modify" })).toBeTruthy();
     expect(screen.getByText("This attempt uses your current directive and the forecast conditions. Attempts left 1/3")).toBeTruthy();
-    expect(screen.getByRole("dialog", { name: "Run chrono?" }).textContent).toContain("Current planApproachBal.Tire prepWeatherPit strategyStd.CardNo card");
+    expect(screen.getByRole("dialog", { name: "Run chrono?" }).textContent).toContain("Current planApproachBal.Tire prepWeatherPit strategyStd.Card-");
   });
 
   it("closes an open replay when an API action starts", async () => {
@@ -964,10 +958,15 @@ describe("App", () => {
     createLeagueFromSetup();
 
     await screen.findByRole("button", { name: "Stand" });
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Chrono replay" })).toBeTruthy();
 
+    fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
 

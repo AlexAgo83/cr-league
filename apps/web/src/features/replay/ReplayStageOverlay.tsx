@@ -13,7 +13,7 @@ import type { ReplaySpeed } from "./useReplayClock.js";
 
 const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
 
-type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string };
+type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string; decision?: RaceDecision };
 
 function PlaybackIcon({ playing }: { playing: boolean }) {
   return (
@@ -51,6 +51,7 @@ export function ReplayStageOverlay({
   activeMoment,
   activeDirector,
   playerFocus,
+  replayMode,
   overlayActions,
   playing,
   speed,
@@ -75,6 +76,8 @@ export function ReplayStageOverlay({
   restart,
   seek,
   onOpenReport,
+  onOpenTowerReport,
+  onOpenPlan,
   onClose,
   closeLabel
 }: {
@@ -88,6 +91,7 @@ export function ReplayStageOverlay({
   activeMoment?: { player: boolean; lap: number; icon: VisualIconName; context: string; detail: string; impact: string };
   activeDirector?: { type: string; lap: number; title: string; detail: ReactNode };
   playerFocus?: { position: number; delta: number; gapItems: Array<{ label: string; value: string }>; latestDetail?: ReactNode };
+  replayMode: "race" | "qualifying";
   overlayActions?: ReactNode;
   playing: boolean;
   speed: ReplaySpeed;
@@ -112,10 +116,13 @@ export function ReplayStageOverlay({
   restart: () => void;
   seek: (time: number) => void;
   onOpenReport?: () => void;
+  onOpenTowerReport?: () => void;
+  onOpenPlan?: () => void;
   onClose?: () => void;
   closeLabel?: string;
 }) {
   const directorTitle = tt(activeDirector?.type === "qualifying_start" || activeDirector?.type === "qualifying_pace" || activeDirector?.type === "qualifying_final" ? "replay_director_chrono_title" : "replay_director_title");
+  const playerFocusTitle = replayMode === "qualifying" ? tt("replay_player_focus_chrono") : tt("replay_player_focus");
   const seekValueText = `${tt("unit_lap")} ${liveLap}/${circuit.laps}, ${Math.round(clockSeconds)}s`;
 
   return (
@@ -135,8 +142,10 @@ export function ReplayStageOverlay({
           </small>
           <small>{circuitDistance}</small>
         </div>
-        <MapPlanPanel decision={planDecision} tt={tt} />
-        <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, liveLap)} impacts={traitImpacts} tt={tt} />
+        <div className="map-plan-performance">
+          <MapPlanPanel decision={planDecision} editLabel={tt("action_view_plan")} onEdit={onOpenPlan} tt={tt} />
+          <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, liveLap)} impacts={traitImpacts} tt={tt} />
+        </div>
       </div>
       {activeMoment ? (
         <div className={activeMoment.player ? "replay-moment-notification player" : "replay-moment-notification"} role="status" aria-live="polite">
@@ -161,19 +170,18 @@ export function ReplayStageOverlay({
           ) : null}
           {playerFocus ? (
             <div className="replay-player-focus-panel">
-              <span>{tt("replay_player_focus")}</span>
-              <strong>
-                <PositionBadge position={playerFocus.position} /> {playerFocus.delta ? `(${playerFocus.delta > 0 ? "+" : ""}${playerFocus.delta})` : ""}
-              </strong>
-              {playerFocus.gapItems.length ? (
-                <small className="replay-player-gaps">
-                  {playerFocus.gapItems.map((item) => (
-                    <span key={item.label}>
-                      {item.label} <b>{item.value}</b>
-                    </span>
-                  ))}
-                </small>
-              ) : null}
+              <span>{playerFocusTitle}</span>
+              <small className="replay-player-gaps">
+                <span className="position" aria-label={`P${playerFocus.position}`} title={`P${playerFocus.position}`}>
+                  <PositionBadge position={playerFocus.position} />
+                </span>
+                {playerFocus.gapItems.map((item, index) => (
+                  <span key={item.label} className={index === 0 ? "ahead" : "behind"} aria-label={`${item.label} ${item.value}`} title={`${item.label} ${item.value}`}>
+                    <i aria-hidden="true" />
+                    <b><GapValue value={item.value} /></b>
+                  </span>
+                ))}
+              </small>
               {playerFocus.latestDetail ? <small>{playerFocus.latestDetail}</small> : null}
             </div>
           ) : null}
@@ -235,7 +243,17 @@ export function ReplayStageOverlay({
         </div>
       ) : null}
       {overlayActions ? <div className="replay-overlay-stack"><div className="replay-overlay-actions">{overlayActions}</div></div> : null}
-      {towerReplacement ?? <ReplayTower entries={tower} playerTeamId={playerTeamId} positionPops={positionPops} teamLiveries={teamLiveries} />}
+      {towerReplacement ?? (
+        <ReplayTower
+          entries={tower}
+          playerTeamId={playerTeamId}
+          positionPops={positionPops}
+          title={tt("result_final_classification")}
+          onReport={onOpenTowerReport}
+          reportLabel={tt("action_view_plan").split(" ")[0] ?? tt("result_tab_report")}
+          teamLiveries={teamLiveries}
+        />
+      )}
       <ReplayProgress
         progressRef={progressRef}
         rangeRef={rangeRef}
@@ -292,6 +310,10 @@ function ReplaySpeedMenu({ speed, setSpeed, tt }: { speed: ReplaySpeed; setSpeed
       ) : null}
     </div>
   );
+}
+
+function GapValue({ value }: { value: string }) {
+  return value.endsWith("s") ? <>{value.slice(0, -1)}<span className="replay-gap-unit">s</span></> : value;
 }
 
 function clampStat(value: number) {

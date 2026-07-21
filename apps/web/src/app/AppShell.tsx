@@ -87,7 +87,6 @@ export function AppShell({
   clearScreenOnboardingSnoozes,
   markCommandClicked,
   openQualifyingRun,
-  openLastQualifyingRun,
   goHome,
   backToAdminConsole,
   tt
@@ -160,8 +159,7 @@ export function AppShell({
   clearTransientNotifications: () => void;
   clearScreenOnboardingSnoozes: () => void;
   markCommandClicked: (command: CommandClick) => void;
-  openQualifyingRun: () => void;
-  openLastQualifyingRun: () => void;
+  openQualifyingRun: (options?: { confirm?: boolean }) => void;
   goHome: () => void;
   backToAdminConsole: () => void;
   tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
@@ -269,6 +267,7 @@ export function AppShell({
           setForm={setForm}
           setGameView={setGameView}
           setPlanSubscreen={setPlanSubscreen}
+          openQualifyingRun={openQualifyingRun}
           openQualifyingHistory={openQualifyingHistory}
           openHistoryReplay={openHistoryReplay}
           setSeasonRecapSeason={setSeasonRecapSeason}
@@ -303,7 +302,6 @@ export function AppShell({
             primaryCommandClass={primaryCommandClass}
             primaryCommand={primaryCommand}
             deskState={race.deskState}
-            lastQualifyingRun={race.lastQualifyingRun}
             qualifyingDisabled={race.qualifyingDisabled}
             pendingMessage={pendingMessage}
             preferencesResetSignal={preferencesResetSignal}
@@ -316,7 +314,6 @@ export function AppShell({
             setResultOpen={setResultOpen}
             markCommandClicked={markCommandClicked}
             openQualifyingRun={openQualifyingRun}
-            openLastQualifyingRun={openLastQualifyingRun}
             tt={tt}
           />
         ) : null}

@@ -9,7 +9,7 @@ export type CarAsset = {
   metadata: string;
 };
 
-export const CAR_ASSETS: CarAsset[] = Array.from({ length: 13 }, (_, index) => {
+export const CAR_ASSETS: CarAsset[] = Array.from({ length: 16 }, (_, index) => {
   const id = `car-${String(index + 1).padStart(3, "0")}` as CarAssetId;
   return {
     id,
@@ -21,8 +21,9 @@ export const CAR_ASSETS: CarAsset[] = Array.from({ length: 13 }, (_, index) => {
   };
 });
 
-export const DEFAULT_CAR_ASSET = CAR_ASSETS[0]!;
 export const CAR_ASSET_BY_ID = new Map(CAR_ASSETS.map((asset) => [asset.id, asset]));
+export const DEFAULT_CAR_ASSET = CAR_ASSET_BY_ID.get("car-008") ?? CAR_ASSETS[0]!;
+export const DEFAULT_CAR_ASSET_INDEX = Math.max(0, CAR_ASSETS.findIndex((asset) => asset.id === DEFAULT_CAR_ASSET.id));
 
 export function carAssetForId(id: string | undefined) {
   return (id && CAR_ASSET_BY_ID.get(id as CarAssetId)) || DEFAULT_CAR_ASSET;

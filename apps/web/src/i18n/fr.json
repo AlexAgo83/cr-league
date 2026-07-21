@@ -498,6 +498,8 @@
   "garage_livery_primary": "Principale",
   "garage_livery_secondary": "Secondaire",
   "garage_livery_save": "Enregistrer couleurs",
+  "garage_car_skin_select": "Sélectionner",
+  "garage_car_skin_selected": "Sélectionné",
   "card_fit_recommended": "Affinité haute",
   "card_fit_risky": "Risquée",
   "card_fit_low": "Peu adaptée",

@@ -251,13 +251,7 @@ export function DirectivePanel({
 
     <section className="panel directive-panel directive-selection-panel">
       <div className="directive-summary-stack">
-        <PlanRiskSummary read={planRiskRead} tt={tt} />
-        {locked ? (
-          <div className="directive-lock-note">
-            <strong>{tt("directive_locked_title")}</strong>
-            <span>{tt("directive_locked_body")}</span>
-          </div>
-        ) : null}
+        <PlanRiskSummary read={planRiskRead} tt={tt} lockLabel={locked ? tt("race_step_locked") : undefined} lockTitle={locked ? `${tt("directive_locked_title")}. ${tt("directive_locked_body")}` : undefined} />
       </div>
       <div className="plan-steps directive-plan-steps" role="tablist" aria-label={tt("directive_title")}>
         {steps.map((entry) => (

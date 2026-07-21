@@ -7,7 +7,7 @@ import type { LeagueState } from "../app/types.js";
 import { GARAGE_PANEL_KEY, type CardPanel } from "../app/viewPreferences.js";
 import { AssetImage } from "./AssetImage.js";
 import { CardArtImage, CardStatBadges } from "./CardStatBadges.js";
-import { CAR_ASSETS } from "./carAssets.js";
+import { CAR_ASSETS, DEFAULT_CAR_ASSET, DEFAULT_CAR_ASSET_INDEX } from "./carAssets.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
 import { ModalHero } from "./ModalHero.js";
@@ -51,12 +51,12 @@ export function GarageView({
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
   const [buyQuantity, setBuyQuantity] = useState(1);
   const [viewingCardId, setViewingCardId] = useState<CardId | undefined>();
-  const [carAssetIndex, setCarAssetIndex] = useState(0);
+  const [carAssetIndex, setCarAssetIndex] = useState(DEFAULT_CAR_ASSET_INDEX);
 
   useEffect(() => {
     if (playerTeam?.livery) {
       setLivery(playerTeam.livery);
-      setCarAssetIndex(Math.max(0, CAR_ASSETS.findIndex((asset) => asset.id === playerTeam.livery.carAssetId)));
+      setCarAssetIndex(playerTeam.livery.carAssetId ? Math.max(0, CAR_ASSETS.findIndex((asset) => asset.id === playerTeam.livery.carAssetId)) : DEFAULT_CAR_ASSET_INDEX);
     }
   }, [playerTeam?.livery]);
 
@@ -93,10 +93,12 @@ export function GarageView({
     setPendingBuyCardId(undefined);
     setBuyQuantity(1);
   };
-  const selectCarAsset = (nextIndex: number) => {
-    const nextAsset = CAR_ASSETS[nextIndex] ?? CAR_ASSETS[0]!;
-    const nextLivery = { ...livery, carAssetId: nextAsset.id };
+  const previewCarAsset = (nextIndex: number) => {
     setCarAssetIndex(nextIndex);
+  };
+  const saveCarAsset = () => {
+    const nextAsset = CAR_ASSETS[carAssetIndex] ?? DEFAULT_CAR_ASSET;
+    const nextLivery = { ...livery, carAssetId: nextAsset.id };
     setLivery(nextLivery);
     onUpdateLivery(nextLivery, { silent: true });
   };
@@ -104,11 +106,12 @@ export function GarageView({
     localStorage.setItem(GARAGE_PANEL_KEY, nextPanel);
     onSelectCardPanel(nextPanel);
   };
-  const selectedCarAsset = CAR_ASSETS[carAssetIndex] ?? CAR_ASSETS[0]!;
+  const selectedCarAsset = CAR_ASSETS[carAssetIndex] ?? DEFAULT_CAR_ASSET;
   const carTintStyle = { "--garage-car-secondary": livery.secondary, "--garage-car-stroke": livery.primary } as CSSProperties & Record<string, string>;
   const topCarStyle = { ...carTintStyle, "--garage-car-mask": `url("${selectedCarAsset.top}")` } as CSSProperties & Record<string, string>;
   const sideCarStyle = { ...carTintStyle, "--garage-car-mask": `url("${selectedCarAsset.side}")` } as CSSProperties & Record<string, string>;
   const canChangeCarAsset = CAR_ASSETS.length > 1;
+  const selectedSkinSaved = selectedCarAsset.id === livery.carAssetId || (!livery.carAssetId && selectedCarAsset.id === DEFAULT_CAR_ASSET.id);
 
   return (
     <div className="garage-grid">
@@ -127,18 +130,21 @@ export function GarageView({
           </span>
         </div>
         <div className="garage-car-showcase">
-          <button className="garage-car-skin-button" type="button" aria-label="Previous car skin" disabled={!canChangeCarAsset} onClick={() => selectCarAsset((carAssetIndex + CAR_ASSETS.length - 1) % CAR_ASSETS.length)}>
+          <button className="garage-car-skin-button" type="button" aria-label="Previous car skin" disabled={!canChangeCarAsset} onClick={() => previewCarAsset((carAssetIndex + CAR_ASSETS.length - 1) % CAR_ASSETS.length)}>
             ‹
           </button>
           <span className="garage-car-preview-frame garage-car-preview-top" style={topCarStyle}>
             <AssetImage className="garage-car-preview" src={selectedCarAsset.top} alt="" />
             <span className="garage-car-gradient" aria-hidden="true" />
           </span>
+          <button className="garage-car-select-button" type="button" disabled={loading || selectedSkinSaved} onClick={saveCarAsset}>
+            {tt(selectedSkinSaved ? "garage_car_skin_selected" : "garage_car_skin_select")}
+          </button>
           <span className="garage-car-preview-frame garage-car-preview-side" style={sideCarStyle}>
             <AssetImage className="garage-car-preview" src={selectedCarAsset.side} alt="" />
             <span className="garage-car-gradient" aria-hidden="true" />
           </span>
-          <button className="garage-car-skin-button" type="button" aria-label="Next car skin" disabled={!canChangeCarAsset} onClick={() => selectCarAsset((carAssetIndex + 1) % CAR_ASSETS.length)}>
+          <button className="garage-car-skin-button" type="button" aria-label="Next car skin" disabled={!canChangeCarAsset} onClick={() => previewCarAsset((carAssetIndex + 1) % CAR_ASSETS.length)}>
             ›
           </button>
         </div>

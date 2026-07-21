@@ -54,12 +54,13 @@ describe("DirectivePanel", () => {
     expect(document.querySelector(".directive-summary-stack")?.textContent).not.toContain("Rain Grip");
   });
 
-  it("shows the locked plan note after the risk summary", () => {
+  it("shows the locked plan badge on the risk summary", () => {
     render(<DirectivePanel {...baseProps} locked step="approach" setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
-    const notes = [...document.querySelectorAll(".directive-summary-stack > .directive-lock-note")];
-    expect(notes.map((note) => note.textContent)).toEqual(["Plan lockedThis directive is sent for the current Grand Prix. Choices stay visible but cannot be changed."]);
-    expect(notes[0]?.previousElementSibling?.className).toContain("plan-risk-summary");
+    expect(document.querySelector(".directive-summary-stack > .directive-lock-note")).toBe(null);
+    const badge = document.querySelector(".plan-risk-lock-badge");
+    expect(badge?.textContent).toBe("Locked");
+    expect(badge?.getAttribute("title")).toBe("Plan locked. This directive is sent for the current Grand Prix. Choices stay visible but cannot be changed.");
   });
 
   it("keeps explaining card consumption until the reminder is dismissed", () => {

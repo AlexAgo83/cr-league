@@ -199,7 +199,7 @@ function isHexColor(value: string) {
 }
 
 function carAssetIdForIndex(index: number) {
-  return `car-${String((index % 13) + 1).padStart(3, "0")}`;
+  return `car-${String((index % 16) + 1).padStart(3, "0")}`;
 }
 
 export function appendCard(cards: CardId[], cardId: CardId): Prisma.InputJsonValue {

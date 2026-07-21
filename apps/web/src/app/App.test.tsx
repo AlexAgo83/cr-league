@@ -233,6 +233,27 @@ describe("App", () => {
     expect(screen.queryByText("League rejoined.")).toBe(null);
   });
 
+  it("previews garage car skins before saving the selected skin", async () => {
+    saveProfile();
+    saveActiveClaim();
+    const updatedState = { ...baseState, teams: [{ ...baseState.teams[0]!, livery: { ...baseState.teams[0]!.livery, carAssetId: "car-009" } }, baseState.teams[1]!] };
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(updatedState));
+
+    render(<App />);
+
+    await screen.findByRole("button", { name: "Stand" });
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    await waitFor(() => expect(document.querySelector(".garage-grid")).toBeTruthy());
+
+    fireEvent.click(screen.getByRole("button", { name: "Next car skin" }));
+    expect(fetch).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: "Select" }));
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    expect(JSON.parse((fetch.mock.calls[1]?.[1] as RequestInit).body as string).livery.carAssetId).toBe("car-009");
+    expect(screen.queryByText("Car colors updated.")).toBe(null);
+  });
+
   it("skips tab-return refresh while hidden, without a claim, or already loading", async () => {
     saveProfile();
     let finishQualifying!: (value: Response) => void;
@@ -745,7 +766,8 @@ describe("App", () => {
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Launch GP");
     fireEvent.click(within(document.querySelector(".map-plan-performance") as HTMLElement).getByRole("button", { name: "View" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
-    expect(screen.getByText("Plan locked")).toBeTruthy();
+    expect(document.querySelector(".plan-risk-lock-badge")?.textContent).toBe("Locked");
+    expect(document.querySelector(".plan-risk-lock-badge")?.getAttribute("title")).toContain("Plan locked.");
     for (const button of document.querySelectorAll(".directive-panel .choice-card")) {
       expect(button.hasAttribute("disabled")).toBe(true);
     }

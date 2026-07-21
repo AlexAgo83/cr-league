@@ -85,6 +85,16 @@ Then update `apps/web/src/features/carAssets.ts` so `CAR_ASSETS` exposes every i
   - all `x`, `center_x`, `y`, `center_y`, and `ground_y` coordinates are shifted by the crop offset.
 - Keep `top.png`, `side.png`, and `metadata.json` together under `apps/web/public/assets/cars/crl-v2/car-XXX/`.
 
+## Raw Green-Screen Imports
+
+If new files are added only to `logics/external/CRL Cars V2`, split each raw PNG into its top half and bottom half, remove the green background with a chroma key, crop to the alpha bounds, and save the result as the next `car-XXX/top.png`, `car-XXX/side.png`, and `car-XXX/metadata.json`.
+
+After adding more cars:
+
+- increase the `CAR_ASSETS` length in `apps/web/src/features/carAssets.ts`;
+- update the bot skin modulo in `apps/api/src/features/leagues/utils.ts`;
+- keep `car-008` as `DEFAULT_CAR_ASSET` unless the default changes again.
+
 ## Quick Check
 
 ```sh

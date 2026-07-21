@@ -1890,6 +1890,7 @@ label small {
   display: grid;
   gap: 5px;
   padding: 12px 14px;
+  position: relative;
 }
 
 .plan-risk-summary.compact {
@@ -1915,6 +1916,21 @@ label small {
   border-top: 1px solid rgb(23 21 26 / 0.12);
   margin-top: 3px;
   padding-top: 7px;
+}
+
+.plan-risk-lock-badge {
+  background: var(--color-ink);
+  border: 1px solid rgb(23 21 26 / 0.22);
+  color: rgb(236 231 218);
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 900;
+  line-height: 1;
+  padding: 5px 7px;
+  position: absolute;
+  right: 8px;
+  text-transform: uppercase;
+  top: 8px;
 }
 
 .plan-risk-safe {

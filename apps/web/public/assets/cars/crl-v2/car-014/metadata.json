@@ -1,0 +1,48 @@
+{
+  "id": "car-014",
+  "source": "ChatGPT Image 21 juil. 2026, 23_31_25.png",
+  "assets": {
+    "top": {
+      "file": "top/car-014-top.png",
+      "canvas": {
+        "width": 1104,
+        "height": 445
+      },
+      "source_box": [
+        185,
+        34,
+        1289,
+        479
+      ],
+      "placed_at": {
+        "x": 0,
+        "y": 0
+      },
+      "anchor": {
+        "center_x": 552,
+        "center_y": 222
+      }
+    },
+    "side": {
+      "file": "side/car-014-side.png",
+      "canvas": {
+        "width": 1148,
+        "height": 368
+      },
+      "source_box": [
+        173,
+        548,
+        1321,
+        916
+      ],
+      "placed_at": {
+        "x": 0,
+        "y": 0
+      },
+      "anchor": {
+        "center_x": 574,
+        "ground_y": 367
+      }
+    }
+  }
+}

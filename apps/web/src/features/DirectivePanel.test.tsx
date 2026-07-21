@@ -65,6 +65,24 @@ describe("DirectivePanel", () => {
     expect(warning.previousElementSibling?.className).toContain("plan-risk-summary");
   });
 
+  it("shows the locked plan note after the selected-card warning", () => {
+    render(<DirectivePanel {...baseProps} locked step="approach" setForm={vi.fn()} onSelectStep={vi.fn()} />);
+
+    const notes = [...document.querySelectorAll(".directive-selection-panel > .directive-lock-note")];
+    expect(notes.map((note) => note.textContent)).toEqual([
+      "Rain Grip will be consumed when this Grand Prix is launched.",
+      "Plan lockedThis directive is sent for the current Grand Prix. Choices stay visible but cannot be changed."
+    ]);
+  });
+
+  it("says the selected card is consumed after the Grand Prix has run", () => {
+    render(<DirectivePanel {...baseProps} cardConsumed setForm={vi.fn()} onSelectStep={vi.fn()} />);
+
+    const warning = document.querySelector(".directive-selection-panel > .directive-lock-note") as HTMLElement;
+    expect(warning.textContent).toContain("Rain Grip");
+    expect(warning.querySelector("strong")?.textContent).toBe("has been consumed for this Grand Prix.");
+  });
+
   it("runs the provided primary command from the directive tab", () => {
     const action = vi.fn();
     const { rerender } = render(<DirectivePanel {...baseProps} primaryCommand={{ label: "Launch GP", action, disabled: false }} setForm={vi.fn()} onSelectStep={vi.fn()} />);

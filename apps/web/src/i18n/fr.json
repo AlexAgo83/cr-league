@@ -133,6 +133,7 @@
   "directive_plan_summary": "Rythme {approach}, pneus {preparation}, batterie {pitStrategy}, {card}. Teste en chrono, puis verrouille pour le GP.",
   "directive_card_locked": "Le chrono a verrouillé la carte qualif sélectionnée pour ce GP.",
   "directive_card_consumption_warning_action": "sera consommé au lancement de ce Grand Prix.",
+  "directive_card_consumed_action": "est consommé pour ce Grand Prix.",
   "field_league": "Ligue",
   "field_join_code": "Code d'invitation",
   "field_team": "Écurie",

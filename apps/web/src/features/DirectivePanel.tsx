@@ -145,6 +145,7 @@ export function DirectivePanel({
   primaryCommand,
   qualifyingRunCount = 0,
   qualifyingAttemptsLeft = 0,
+  cardConsumed,
   cardLocked,
   disabled,
   locked,
@@ -164,6 +165,7 @@ export function DirectivePanel({
   primaryCommand: PrimaryCommand;
   qualifyingRunCount?: number;
   qualifyingAttemptsLeft?: number;
+  cardConsumed?: boolean;
   cardLocked?: boolean;
   disabled?: boolean;
   locked?: boolean;
@@ -173,7 +175,7 @@ export function DirectivePanel({
 }) {
   const cardChoices = ["", ...sortCardIdsByName(ownedCardIds, tt)] as Array<"" | CardId>;
   const selectedCardLabel = selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none");
-  const selectedCardWarning = selectedCardId ? { card: selectedCardLabel, action: tt("directive_card_consumption_warning_action") } : undefined;
+  const selectedCardWarning = selectedCardId ? { card: selectedCardLabel, action: tt(cardConsumed ? "directive_card_consumed_action" : "directive_card_consumption_warning_action") } : undefined;
   const canRunQualifying = Boolean(onQualifying && !locked && qualifyingAttemptsLeft > 0);
   const hasQualifyingRun = qualifyingRunCount > 0;
   const modifiers = directiveModifiers(form, selectedCardId);
@@ -224,6 +226,12 @@ export function DirectivePanel({
         <p className="directive-lock-note">
           {selectedCardWarning.card} <strong>{selectedCardWarning.action}</strong>
         </p>
+      ) : null}
+      {locked ? (
+        <div className="directive-lock-note">
+          <strong>{tt("directive_locked_title")}</strong>
+          <span>{tt("directive_locked_body")}</span>
+        </div>
       ) : null}
       <div className="plan-steps directive-plan-steps" role="tablist" aria-label={tt("directive_title")}>
         {steps.map((entry) => (
@@ -316,12 +324,6 @@ export function DirectivePanel({
         </fieldset>
       ) : null}
 
-      {locked ? (
-        <div className="directive-lock-note">
-          <strong>{tt("directive_locked_title")}</strong>
-          <span>{tt("directive_locked_body")}</span>
-        </div>
-      ) : null}
       <div className="directive-command-row">
         {canRunQualifying ? (
           <button type="button" className={`primary-command directive-secondary-command${hasQualifyingRun ? "" : " highlight-command"}`} onClick={onQualifying} disabled={disabled}>

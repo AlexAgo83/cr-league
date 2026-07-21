@@ -15,7 +15,7 @@ import type { RaceInput } from "../domain/race.js";
 // Seed chosen so that, deterministically, one economy_mode participant lands in the top four,
 // one misses the top four, and fleet_sponsorship keeps its credit bonus.
 const rewardRace: RaceInput = {
-  seed: "reward-006",
+  seed: "reward-000",
   grandPrixName: "Reward Test GP",
   primaryTrait: "fast",
   secondaryTrait: "technical",
@@ -80,36 +80,36 @@ describe("simulateRace rewards", () => {
     const result = simulateRace(rewardRace);
 
     expect(result.classification.map((entry) => entry.teamId)).toEqual([
-      "eco-four",
-      "plain-b",
-      "sponsor",
       "plain-a",
+      "plain-b",
+      "eco-four",
+      "sponsor",
       "eco-five",
       "plain-c"
     ]);
-    expect(entryFor("sponsor").position).toBe(3);
-    expect(entryFor("eco-four").position).toBe(1);
+    expect(entryFor("sponsor").position).toBe(4);
+    expect(entryFor("eco-four").position).toBe(3);
     expect(entryFor("eco-five").position).toBe(5);
   });
 
   it("adds the fleet sponsorship credit bonus on top of position credits", () => {
     const sponsor = entryFor("sponsor");
 
-    expect(sponsor.position).toBe(3);
-    expect(sponsor.credits).toBe(RACE_CREDITS_BY_POSITION[2] + FLEET_SPONSORSHIP_CREDIT_BONUS);
-    expect(sponsor.credits).toBe(165);
-    expect(sponsor.points).toBe(RACE_POINTS_BY_POSITION[2]);
-    expect(sponsor.points).toBe(15);
+    expect(sponsor.position).toBe(4);
+    expect(sponsor.credits).toBe(RACE_CREDITS_BY_POSITION[3] + FLEET_SPONSORSHIP_CREDIT_BONUS);
+    expect(sponsor.credits).toBe(155);
+    expect(sponsor.points).toBe(RACE_POINTS_BY_POSITION[3]);
+    expect(sponsor.points).toBe(12);
   });
 
   it("grants the economy mode bonus inside the top four", () => {
     const ecoFour = entryFor("eco-four");
 
-    expect(ecoFour.position).toBe(1);
-    expect(ecoFour.credits).toBe(RACE_CREDITS_BY_POSITION[0] + ECONOMY_MODE_CREDIT_BONUS);
-    expect(ecoFour.credits).toBe(195);
-    expect(ecoFour.points).toBe(RACE_POINTS_BY_POSITION[0]);
-    expect(ecoFour.points).toBe(25);
+    expect(ecoFour.position).toBe(3);
+    expect(ecoFour.credits).toBe(RACE_CREDITS_BY_POSITION[2] + ECONOMY_MODE_CREDIT_BONUS);
+    expect(ecoFour.credits).toBe(160);
+    expect(ecoFour.points).toBe(RACE_POINTS_BY_POSITION[2]);
+    expect(ecoFour.points).toBe(15);
   });
 
   it("does not grant the economy mode bonus at position 5", () => {

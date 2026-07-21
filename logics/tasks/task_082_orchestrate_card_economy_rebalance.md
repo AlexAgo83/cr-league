@@ -39,6 +39,10 @@
 - request-AC4 -> This task. Proof: optional context-pack handoff is supported.
 - request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
 - request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC2 -> This task. Evidence needed: Representative tests show at least one circuit where heavy_pack/reliability is favored, one where mini_pack/aggression is favored, and one where grip/weather control is favored.
+- request-AC3 -> This task. Evidence needed: Bot default decisions vary pit strategy across standard, heavy_pack, and mini_pack based on circuit traits, likely weather, standings/archetype, or deterministic seed.
+- request-AC5 -> This task. Evidence needed: Plan risk/readability copy and trait hints remain honest after the stat model change.
+- request-AC7 -> This task. Evidence needed: Balance simulation and AI playtest evidence are recorded to establish the new baseline before unblocking card economy.
 
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.

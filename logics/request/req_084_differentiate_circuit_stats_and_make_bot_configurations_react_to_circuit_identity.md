@@ -1,9 +1,9 @@
 ## req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity - Differentiate circuit stats and make bot configurations react to circuit identity
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 85
 > Complexity: High
 > Theme: Circuit identity and strategic depth
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -30,6 +30,16 @@
 - AC6: No card price/effect rebalance is included in this request except tests or docs needed to keep the blocked dependency clear.
 - AC7: Balance simulation and AI playtest evidence are recorded to establish the new baseline before unblocking card economy.
 - AC8: Typecheck, lint, unit tests, build, e2e, balance smoke, AI playtest, and Logics validation pass.
+
+# AC Traceability
+- AC1 -> `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`. Proof: `packages/shared/src/simulation/simulateRace.ts` increases numeric trait fit pressure so circuit stats affect segment scoring.
+- AC2 -> `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`. Proof: `packages/shared/src/simulation/simulateRace.test.ts` covers heavy_pack/reliability, mini_pack/aggression, and grip/weather winners under deterministic seeds.
+- AC3 -> `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`. Proof: `apps/api/src/features/leagues/store.ts` derives default bot pit strategy from circuit identity, wet risk, and archetype; `apps/api/src/app.test.ts` proves all three pit strategies appear across a real GP rotation.
+- AC4 -> `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`. Proof: bot choices are derived from persisted league/GP/circuit state without random input and covered by the repeated API rotation test.
+- AC5 -> `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`. Proof: Plan trait hints continue to use the existing `raceFlow` pressure model; no player-facing copy was made inaccurate by the server-side trait and bot strategy changes.
+- AC6 -> `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`. Proof: no card price or effect values were changed; reward fixture updates only follow the changed deterministic finishing order.
+- AC7 -> `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`. Proof: `docs/audits/playtest-ai.md`, `docs/audits/playtest-ai.json`, and `docs/audits/balance-latest.json` were refreshed as the new baseline evidence.
+- AC8 -> `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`. Proof: `npm test`, `npm run test:e2e`, `npm run typecheck`, `npm run build`, `npm run lint`, `npm run logics:validate`, and `git diff --check` passed.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

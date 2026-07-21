@@ -92,6 +92,11 @@ const agents = Array.from({ length: args.agents }, (_, index) => ({
 }));
 const profileStats = new Map(profiles.map((profile) => [profile.name, emptyCounter()]));
 const approachStats = new Map(RACE_APPROACHES.map((approach) => [approach, emptyCounter()]));
+const pitStats = new Map<PitStrategy, Counter>([
+  ["heavy_pack", emptyCounter()],
+  ["standard", emptyCounter()],
+  ["mini_pack", emptyCounter()]
+]);
 const cardStats = new Map(cardIds.map((cardId) => [cardId, { played: 0, triggered: 0, bought: 0 }]));
 const incidents: string[] = [];
 const champions: string[] = [];
@@ -123,6 +128,7 @@ const payload = {
   champions,
   profiles: profileRows,
   approaches: approachRows,
+  pits: rows(pitStats),
   cards: cardRows,
   agents: agents.map((agent) => row(agent.name, counterFromAgent(agent))),
   alerts: alertRows
@@ -180,6 +186,7 @@ function runRace(season: number, round: number, circuit: CityCircuitIdentity, gr
     agent.frustration += raceFrustration;
     addCounter(profileStats.get(agent.profile.name)!, entry, raceFun, raceFrustration);
     addCounter(approachStats.get(participant.decision.approach)!, entry, raceFun, raceFrustration);
+    addCounter(pitStats.get(participant.decision.pitStrategy ?? "standard")!, entry, raceFun, raceFrustration);
   }
 
   for (const participant of participants) {
@@ -202,10 +209,20 @@ function decisionFor(agent: Agent, circuit: CityCircuitIdentity, ranked: Agent[]
   return {
     approach: agent.profile.approach,
     preparation: circuit.likelyWeather === "dry" ? agent.profile.preparation : "weather",
-    pitStrategy: agent.profile.pitStrategy,
+    pitStrategy: pitStrategyFor(agent, circuit),
     cardId,
     rivalTeamId: cardId === "urban_draft" || cardId === "calculated_attack" ? rival : undefined
   };
+}
+
+function pitStrategyFor(agent: Agent, circuit: CityCircuitIdentity): PitStrategy {
+  const wantsAttack = circuit.traits.overtaking >= 72;
+  const wantsEndurance = circuit.traits.energy <= 58 || circuit.trackLengthMeters >= 5600;
+  if (circuit.likelyWeather === "heavy_rain") return "standard";
+  if ((agent.profile.name === "sprinter" || agent.profile.name === "rival-hunter") && wantsAttack) return "mini_pack";
+  if ((agent.profile.name === "banker" || agent.profile.name === "defender") && wantsEndurance) return "heavy_pack";
+  if (agent.profile.name === "rain-reader" && circuit.likelyWeather !== "dry") return "standard";
+  return agent.profile.pitStrategy;
 }
 
 function playableCard(agent: Agent, circuit: CityCircuitIdentity) {
@@ -286,6 +303,9 @@ function writeReport(path: string) {
         "",
         "## Approach Mix",
         table(["Approach", "Starts", "Win %", "Podium %", "Avg pos", "Pts/race"], payload.approaches.map((item) => [item.name, item.starts, item.winRate, item.podiumRate, item.avgPosition, item.points])),
+        "",
+        "## Pit Strategy Mix",
+        table(["Pit strategy", "Starts", "Win %", "Podium %", "Avg pos", "Pts/race"], payload.pits.map((item) => [item.name, item.starts, item.winRate, item.podiumRate, item.avgPosition, item.points])),
         "",
         "## Season Champions",
         ...champions.map((name, index) => `- Season ${index + 1}: ${name}`),

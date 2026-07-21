@@ -1,6 +1,6 @@
 ## prod_048_circuit_stat_differentiation_and_bot_strategy_product_brief - Circuit Stat Differentiation And Bot Strategy Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity`
 > Related backlog: `item_183_make_circuit_traits_force_distinct_setup_tradeoffs`, `item_184_make_bot_pit_strategy_react_to_circuit_identity`
 > Related task: `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`

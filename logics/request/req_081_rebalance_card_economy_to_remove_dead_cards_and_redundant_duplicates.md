@@ -10,7 +10,7 @@
 > Non-semantic edit: 2026-07-21 repointed audit/playtest evidence references to tracked docs/audits copies.
 
 # Status note
-- HELD (owner decision 2026-07-21): do not start. Coupled with stat differentiation (audit cause A); see `req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity`, road_002 (0.5), and docs/audits/AUDIT_CR_LEAGUE.md (TICKET-07/08). Orchestration task task_082 is Blocked.
+- READY AFTER PREREQUISITE (2026-07-21): `req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity` has landed with refreshed baseline evidence. Start from `docs/audits/playtest-ai.md` and `docs/audits/balance-latest.json`; task_082 can be unblocked when implementation starts.
 
 # Needs
 - Give every card a reason to exist by removing dead cards and near-duplicate cards, using the playtest and balance evidence as the starting diagnosis.
@@ -60,8 +60,8 @@
 - scripts/ai-playtest.ts
 - logics/request/req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity.md
 - docs/balance-simulations.md
-- Playtest evidence (docs/audits/playtest-ai.md, 50 agents x 3 seasons x 6 GP): adjustable_wing bought 0 times (price 500), pit_relay bought 0, fleet_maintenance bought 0, defensive_order 3, rain_mapping 5 versus rain_grip 149; a cheap cluster (rain_grip, final_surge, qualifying_focus, fleet_sponsorship, economy_mode) dominates purchases.
-- Balance evidence (docs/audits/balance-latest.json): avgPoints spread of 9.45 between best (balanced/speed/rain_grip 13.04) and worst (prudent/weather/fleet_sponsorship 3.59); speed preparation outperforms reliability on average.
+- Playtest evidence (docs/audits/playtest-ai.md, 50 agents x 3 seasons x 6 GP after req_084): adjustable_wing bought 0 times (price 500), pit_relay bought 0, fleet_maintenance bought 1, defensive_order 3, rain_mapping 15 versus rain_grip 136; the cheap cluster (rain_grip, final_surge, qualifying_focus, fleet_sponsorship, economy_mode) still dominates purchases. Pit Strategy Mix now covers heavy_pack, standard, and mini_pack, but rival-hunter/aggressive remains weak.
+- Balance evidence (docs/audits/balance-latest.json, 300 runs x 4 circuits after req_084): hard_tires dominates the top strategies (best: aggressive/weather/hard_tires 18.45 avg points) while prudent/reliability/fleet_sponsorship remains worst at 2.58 avg points; the spread is 15.87 avg points and confirms card economy still needs a dedicated rebalance.
 - Code truth: rain_grip (120) and rain_mapping (250) share the same mid-only weather check but rain_grip pays more for less money; adjustable_wing (500) underperforms launch_boost (180); pit_relay (250) has no downside; soft_tires/hard_tires partly re-sell what free approach/preparation knobs already grant (simulateRace.ts:498-537).
 
 # AI Context

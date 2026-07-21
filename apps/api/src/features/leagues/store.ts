@@ -937,6 +937,7 @@ function botPitStrategyForCircuit(state: LeagueState, team: LeagueState["teams"]
   const wantsAttack = traits.overtaking >= 72 || state.currentGrandPrix.primaryTrait === "fast" || state.currentGrandPrix.primaryTrait === "urban";
   const wantsEndurance = traits.energy <= 58 || circuit.trackLengthMeters >= 5600 || state.currentGrandPrix.primaryTrait === "high_wear";
 
+  if (wetRisk >= 100) return "standard";
   if (archetype === "aggressive" && wantsAttack) return "mini_pack";
   if (archetype === "prudent" && wantsEndurance) return "heavy_pack";
   if (archetype === "rain" && wetRisk >= 70) return "standard";

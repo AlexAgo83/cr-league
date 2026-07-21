@@ -1,10 +1,10 @@
 ## item_183_make_circuit_traits_force_distinct_setup_tradeoffs - Make circuit traits force distinct setup tradeoffs
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Circuit identity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,7 @@
 - request-AC5 -> This backlog slice. Proof: AC4: Balance smoke and full gates pass.
 - request-AC6 -> This backlog slice. Proof: AC4: Balance smoke and full gates pass.
 - request-AC8 -> This backlog slice. Proof: AC4: Balance smoke and full gates pass.
+- request-AC7 -> This backlog slice. Evidence needed: Balance simulation and AI playtest evidence are recorded to establish the new baseline before unblocking card economy.
 
 # Decision framing
 - Product framing: Not needed
@@ -56,3 +57,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`
+
+# Notes
+- Task `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy` was finished via `logics-manager flow finish task` on 2026-07-21.

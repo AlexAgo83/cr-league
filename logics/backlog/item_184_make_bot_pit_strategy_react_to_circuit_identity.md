@@ -1,10 +1,10 @@
 ## item_184_make_bot_pit_strategy_react_to_circuit_identity - Make bot pit strategy react to circuit identity
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Bot strategy
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -56,3 +56,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy`
+
+# Notes
+- Task `task_085_orchestrate_circuit_stat_differentiation_and_bot_strategy` was finished via `logics-manager flow finish task` on 2026-07-21.

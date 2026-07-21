@@ -35,7 +35,17 @@ import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, GARAGE_PANEL_KEY } from "./viewPreferences.js";
 
-const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
+const UI_PREFERENCE_KEYS = [
+  DISMISSED_REPLAY_HELP_KEY,
+  REPLAY_SPEED_KEY,
+  REPLAY_FOCUS_KEY,
+  GARAGE_PANEL_KEY,
+  CHAMPIONSHIP_RECORD_TAB_KEY,
+  DIRECTIVE_STEP_KEY,
+  "cr-league-card-consumption-help",
+  "cr-league-card-consumption-help-v2",
+  ...Object.values(ONBOARDING_HELP_KEYS)
+] as const;
 const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "race", "plan", "garage"]);
 
 function initialLocale() {

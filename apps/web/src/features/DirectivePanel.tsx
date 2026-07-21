@@ -207,7 +207,7 @@ export function DirectivePanel({
       <Modal label={tt("directive_card_consumption_help_title")} closeLabel={tt("action_close")} showCloseButton onClose={closeCardHelp}>
         <ModalHero image="/assets/crl/send-plan-modal.png" kicker={tt("field_card")} title={tt("directive_card_consumption_help_title")} />
         <p>{tt("directive_card_consumption_help_body")}</p>
-        <label className="modal-checkbox">
+        <label className="checkbox-field modal-checkbox">
           <input type="checkbox" checked={dismissCardHelp} onChange={(event) => setDismissCardHelp(event.currentTarget.checked)} />
           <span>{tt("directive_card_consumption_help_dismiss")}</span>
         </label>

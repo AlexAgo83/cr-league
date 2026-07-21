@@ -143,6 +143,8 @@ describe("App profile and admin", () => {
     localStorage.setItem("cr-league-help-plan", "1");
     localStorage.setItem("cr-league-help-garage", "1");
     localStorage.setItem("cr-league-help-profile-code", "1");
+    localStorage.setItem("cr-league-card-consumption-help", "1");
+    localStorage.setItem("cr-league-card-consumption-help-v2", "1");
     localStorage.setItem("cr-league-season-recap:league_1:1", "1");
 
     render(<App />);
@@ -178,6 +180,8 @@ describe("App profile and admin", () => {
     expect(localStorage.getItem("cr-league-help-plan")).toBe(null);
     expect(localStorage.getItem("cr-league-help-garage")).toBe(null);
     expect(localStorage.getItem("cr-league-help-profile-code")).toBe(null);
+    expect(localStorage.getItem("cr-league-card-consumption-help")).toBe(null);
+    expect(localStorage.getItem("cr-league-card-consumption-help-v2")).toBe(null);
     expect(localStorage.getItem("cr-league-season-recap:league_1:1")).toBe(null);
     expect(localStorage.getItem("cr-league-language")).toBe("en");
     expect(localStorage.getItem("cr-league-profile-session")).toContain("profile_1");

@@ -161,6 +161,8 @@
   "trait_brief_energy": "Peu d'énergie punit l'usure tardive ; la fiabilité est plus sûre.",
   "briefing_next_action": "Prochaine action",
   "race_info": "Info course",
+  "race_forecast_info_title": "Météo du GP",
+  "race_forecast_info_body": "Avant le lancement, ce sont les prévisions actuelles. Après le lancement, ce panel affiche la météo utilisée dans le replay.",
   "race_weather_info_title": "Météo réelle du GP",
   "race_weather_info_body": "La météo est fixée au lancement du GP. Voici les conditions utilisées par le replay.",
   "qualifying_kicker": "Essai chrono",

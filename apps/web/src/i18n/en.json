@@ -161,6 +161,8 @@
   "trait_brief_energy": "Low energy punishes late wear; reliability is safer.",
   "briefing_next_action": "Next action",
   "race_info": "Race info",
+  "race_forecast_info_title": "Race weather",
+  "race_forecast_info_body": "Before launch, this shows the current forecast. After launch, this panel shows the weather used in the replay.",
   "race_weather_info_title": "Actual race weather",
   "race_weather_info_body": "The race weather is fixed when the GP starts. These are the conditions used by the replay.",
   "qualifying_kicker": "Qualifying run",

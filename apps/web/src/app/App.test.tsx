@@ -528,6 +528,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(document.querySelector(".command-bar")).toBe(null);
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Race weather" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Race weather" }));
+    expect(screen.getByRole("dialog", { name: "Race weather" }).textContent).toContain("Before launch");
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(document.querySelector(".map-workflow-panel")?.textContent).toContain("1. Read the circuit");
     expect(document.querySelector(".map-plan-panel")?.textContent).toContain("Current planApproachBal.Tire prepWeatherPit strategyStd.Card-");
     expect(screen.getByText("Check the track and forecast, then run a chrono with your current directive to improve the grid.")).toBeTruthy();

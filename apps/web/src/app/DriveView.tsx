@@ -83,10 +83,12 @@ export function DriveView({
 }) {
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
   const [weatherInfoOpen, setWeatherInfoOpen] = useState(false);
+  const forecastWeather = forecastPick as Weather;
+  const weatherInfoTitle = tt(result ? "race_weather_info_title" : "race_forecast_info_title");
 
   return (
     <div className="drive-grid">
-      {weatherInfoOpen && result ? <RaceWeatherModal result={result} tt={tt} onClose={() => setWeatherInfoOpen(false)} /> : null}
+      {weatherInfoOpen ? <RaceWeatherModal result={result} forecastWeather={forecastWeather} tt={tt} onClose={() => setWeatherInfoOpen(false)} /> : null}
       <div className="drive-content-column">
         {!result && currentQualifyingResult ? (
           <div className="qualifying-replay-inline drive-map-panel">
@@ -137,7 +139,7 @@ export function DriveView({
             showHeading={false}
             framed={false}
             showTraits={false}
-            weather={forecastPick as Weather}
+            weather={forecastWeather}
             overlay={
               <>
                 <div className="map-info-stack">
@@ -155,17 +157,15 @@ export function DriveView({
                       {circuitDistanceLabel(currentCircuit)}
                     </small>
                     <small className="map-weather-readout map-weather-forecast">
-                      <VisualIcon name={forecastPick as Weather} />
+                      <VisualIcon name={forecastWeather} />
                       <span>
                         <b>{tt("briefing_forecast_not_final")}</b>
                         <span className="map-weather-tendency">{tt(`weather_tendency_${forecastPick}` as TranslationKey)}</span>
                       </span>
                     </small>
-                    {result ? (
-                      <button className="map-plan-edit-button map-weather-info-button" type="button" aria-label={tt("race_weather_info_title")} title={tt("race_weather_info_title")} onClick={() => setWeatherInfoOpen(true)}>
-                        {tt("action_info")}
-                      </button>
-                    ) : null}
+                    <button className="map-plan-edit-button map-weather-info-button" type="button" aria-label={weatherInfoTitle} title={weatherInfoTitle} onClick={() => setWeatherInfoOpen(true)}>
+                      {tt("action_info")}
+                    </button>
                   </div>
                   <div className="map-plan-performance">
                     <MapPlanPanel
@@ -245,11 +245,21 @@ export function DriveView({
   );
 }
 
-function RaceWeatherModal({ result, tt, onClose }: { result: RaceResult; tt: Translator; onClose: () => void }) {
+function RaceWeatherModal({ result, forecastWeather, tt, onClose }: { result: RaceResult | null | undefined; forecastWeather: Weather; tt: Translator; onClose: () => void }) {
+  const title = tt(result ? "race_weather_info_title" : "race_forecast_info_title");
+  const body = tt(result ? "race_weather_info_body" : "race_forecast_info_body");
+  const weatherBySegment: RaceResult["resolvedWeather"] = result?.resolvedWeather ?? {
+    start: forecastWeather,
+    early: forecastWeather,
+    mid: forecastWeather,
+    late: forecastWeather,
+    finish: forecastWeather
+  };
+
   return (
-    <Modal label={tt("race_weather_info_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <h2>{tt("race_weather_info_title")}</h2>
-      <p>{tt("race_weather_info_body")}</p>
+    <Modal label={title} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+      <h2>{title}</h2>
+      <p>{body}</p>
       <p className="race-weather-legend">
         <span><span className="replay-legend-dot" aria-hidden="true" /> {tt("replay_pace_marker_legend")}</span>
         <span><VisualIcon name="light_rain" /> {tt("replay_weather_phase_legend")}</span>
@@ -258,10 +268,10 @@ function RaceWeatherModal({ result, tt, onClose }: { result: RaceResult; tt: Tra
         {RACE_SEGMENTS.map((segment) => (
           <li key={segment}>
             <span>
-              <VisualIcon name={result.resolvedWeather[segment]} />
+              <VisualIcon name={weatherBySegment[segment]} />
               {tt(`segment_${segment}` as TranslationKey)}
             </span>
-            <strong>{tt(`weather_${result.resolvedWeather[segment]}` as TranslationKey)}</strong>
+            <strong>{tt(`weather_${weatherBySegment[segment]}` as TranslationKey)}</strong>
           </li>
         ))}
       </ol>

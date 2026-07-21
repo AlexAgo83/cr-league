@@ -1,0 +1,106 @@
+{
+  "title": "Warn card consumption before commit and add an inline launch action on the directive tab",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md",
+    "apps/web/src/features/PlanView.tsx",
+    "apps/web/src/features/DirectivePanel.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/DriveView.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "Current diagnostic: card consumption is only surfaced after the race, in the garage summary (GarageView.tsx:189-191, garage_consumed / garage_no_card_consumed); nothing in the plan card selector warns that committing a card to the race consumes it.",
+    "Current diagnostic: the directive editing tab renders DirectivePanel, which never receives primaryCommand, so there is no launch/send button on that tab; the primary action lives on the Stand (DriveView) view and the plan GP subtab, forcing a tab switch to act.",
+    "Product decision (audit TICKET-05): warn before commit that a played card is consumed, and add a contextual launch/send action on the directive tab, reusing the existing primaryCommand rather than duplicating launch logic."
+  ],
+  "request": {
+    "complexity": "Low",
+    "theme": "Plan commit clarity",
+    "needs": [
+      "Tell the player, at the moment a card is attached to the race plan, that playing the card will consume it if the race is launched.",
+      "Add a contextual launch/send action on the directive tab so the player can commit without switching tabs, reusing the existing primaryCommand.",
+      "Keep a single source of truth for the launch action; do not duplicate or fork launch logic or create a second competing launch button.",
+      "Support EN/FR copy and keep the plan UI compact.",
+      "Change no simulation behavior, no card consumption rules, and no API contract."
+    ],
+    "context": [
+      "Cards are banked and consumed only when played; today that consumption is communicated only after the race in the garage summary, so a player can think cards are reusable equipment (audit cause).",
+      "The plan screen has Plan / Chrono / GP subtabs; the directive tab (DirectivePanel) shows only the choice cards and has no launch button, while primaryCommand resolves the correct action (submit plan / launch GP / next GP) on the Stand view.",
+      "This is a small readability and navigation fix with no model change; it is a post-0.3 gameplay/legibility carry-over, not part of the 0.4 performance theme.",
+      "Care is needed not to multiply launch buttons or diverge from the existing primaryCommand behavior and gating."
+    ],
+    "acceptance_criteria": [
+      "AC1: When a card is selected for the race plan, the plan UI states that the card will be consumed if the race is launched, before the player commits.",
+      "AC2: The directive tab exposes a contextual launch/send action that calls the existing primaryCommand action and label, with no duplicated launch logic.",
+      "AC3: The inline action respects the same enabled/locked/loading gating as the existing primary command; it does not create a divergent or second competing launch path.",
+      "AC4: EN/FR copy is present for the consumption warning and the inline action.",
+      "AC5: No simulation behavior, card consumption rule, reward, or API contract changes.",
+      "AC6: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Plan Commit Clarity Product Brief",
+    "overview": "Reduce first-session confusion at the moment of committing a race plan: make card consumption explicit before it happens and let the player launch from the directive tab without hunting for the action.",
+    "goals": [
+      "Make the cost of playing a card (its consumption) visible before commit.",
+      "Let the player launch or send from the directive tab in one place.",
+      "Reuse the existing primaryCommand so behavior stays consistent.",
+      "Ship the smallest safe change with no model impact."
+    ],
+    "non_goals": [
+      "Do not change card consumption rules, banking, or resale.",
+      "Do not change the simulation, rewards, or any API contract.",
+      "Do not add a second competing launch button or fork launch logic.",
+      "Do not redesign the plan navigation or subtab structure."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add pre-commit card consumption warning and inline directive launch action",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Plan commit clarity",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6"],
+      "problem": [
+        "Card consumption is shown only after the race (GarageView.tsx:189-191), so a player does not know a played card is destroyed until it is gone.",
+        "The directive tab has no launch/send action because DirectivePanel never receives primaryCommand, forcing a tab switch to commit.",
+        "Any added launch button risks duplicating launch logic or competing with the Stand-view primary command."
+      ],
+      "scope_in": [
+        "Show a consumption notice in the plan card selector when a card is attached to the race plan.",
+        "Pass primaryCommand into the directive tab and render a contextual launch/send action from it.",
+        "Reuse the existing enabled/locked/loading gating from primaryCommand.",
+        "Add EN/FR copy for the warning and the action."
+      ],
+      "scope_out": [
+        "Any change to card consumption, banking, or resale rules.",
+        "Any simulation, reward, or API change.",
+        "Redesigning plan navigation or adding a second launch button elsewhere."
+      ],
+      "acceptance_criteria": [
+        "AC1: Selecting a card for the race plan shows a pre-commit consumption notice.",
+        "AC2: The directive tab launches/sends via the existing primaryCommand with identical gating and no duplicated logic.",
+        "AC3: EN/FR copy present; plan UI stays compact.",
+        "AC4: No model, reward, consumption-rule, or API change; typecheck, test, build, lint, e2e, and logics:validate pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate plan commit clarity",
+    "plan": [
+      "Confirm where the plan card selector lives in PlanView/DirectivePanel and where primaryCommand is resolved in App.tsx and consumed by DriveView.",
+      "Add a pre-commit consumption notice in the plan card selector with EN/FR copy.",
+      "Thread primaryCommand into DirectivePanel and render a contextual launch/send action reusing its action, label, and gating.",
+      "Verify there is no second competing launch path and no change to consumption rules or the simulation.",
+      "Run typecheck, test, build, lint, e2e, and logics:validate; record validation evidence in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/plan-commit-clarity.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

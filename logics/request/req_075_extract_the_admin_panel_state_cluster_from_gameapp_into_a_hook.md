@@ -1,9 +1,9 @@
 ## req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook - Extract the admin-panel state cluster from GameApp into a hook
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Medium
 > Theme: Frontend maintainability
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -26,6 +26,11 @@
 - AC3: The admin console behaves identically — token gating, tab switching, search, pagination, recovery-code reset, user delete, league inspect, and test-data cleanup all work as before, with no UI or copy change.
 - AC4: No API contract, request shape, or endpoint changes; the network calls issued are byte-for-byte the same.
 - AC5: Typecheck, lint, unit tests, and the admin/private-league e2e flow pass without weakening any assertion.
+
+# Delivery notes
+- Delivered as a narrow hook extraction: `useAdminPanel()` owns the admin state cluster and reuses `createAdminActions`.
+- `GameApp` now consumes the hook and still passes the same data/handlers into `AdminConsoleView`.
+- Validation passed through typecheck, targeted admin tests, lint, full unit tests, build, and the private-league Playwright flow.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

@@ -1,10 +1,10 @@
 ## item_173_extract_useadminpanel_from_gameapp - Extract useAdminPanel() from GameApp
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Frontend maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -30,6 +30,11 @@
 - AC2: useAdminPanel() returns the admin state and handlers and is the single source for the admin console props.
 - AC3: Admin console behavior and network calls are unchanged.
 - AC4: Typecheck, lint, unit tests, and admin e2e pass without weakened assertions.
+
+# Implementation notes
+- Added `apps/web/src/app/useAdminPanel.ts` to hold the 11 admin state values and the existing `createAdminActions` call.
+- Removed the inline admin state cluster and direct `createAdminActions` import from `apps/web/src/app/App.tsx`.
+- Kept `adminActions.ts` and `AdminConsoleView.tsx` behavior unchanged.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: GameApp declares no admin-only useState inline after the change.
@@ -57,3 +62,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_076_orchestrate_gameapp_admin_panel_hook_extraction` was finished via `logics-manager flow finish task` on 2026-07-21.

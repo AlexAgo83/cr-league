@@ -1,8 +1,8 @@
 import { type QualifyingRun } from "@cr-league/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
-import { type AdminLeague, type AdminPagination, type AdminUser, type LeagueState, type ProfileSession } from "./types.js";
-import { AdminConsoleView, type AdminTab } from "../features/AdminConsoleView.js";
+import { type LeagueState, type ProfileSession } from "./types.js";
+import { AdminConsoleView } from "../features/AdminConsoleView.js";
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY } from "../features/ReplayView.js";
 import type { ResultTab } from "../features/ResultView.js";
@@ -19,7 +19,6 @@ import {
   loadProfileSession,
   seasonRecapStorageKey,
 } from "./appStorage.js";
-import { createAdminActions } from "./adminActions.js";
 import { AppShell } from "./AppShell.js";
 import { rememberPlayerClaim, withCurrentPlayer as restoreCurrentPlayer, withoutPlayerClaim } from "./claimHelpers.js";
 import { createProfileActions } from "./profileActions.js";
@@ -30,6 +29,7 @@ import { type ProfileMode, type SetupMode } from "./SetupViews.js";
 import { createLeagueMutations } from "./leagueMutations.js";
 import { useAppNavigation } from "./useAppNavigation.js";
 import { useCommandClicks } from "./useCommandClicks.js";
+import { useAdminPanel } from "./useAdminPanel.js";
 import { useNotifications, type Notification } from "./useNotifications.js";
 import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
@@ -37,7 +37,6 @@ import { CHAMPIONSHIP_RECORD_TAB_KEY, GARAGE_PANEL_KEY } from "./viewPreferences
 
 const UI_PREFERENCE_KEYS = [DISMISSED_REPLAY_HELP_KEY, REPLAY_SPEED_KEY, REPLAY_FOCUS_KEY, GARAGE_PANEL_KEY, CHAMPIONSHIP_RECORD_TAB_KEY, DIRECTIVE_STEP_KEY, ...Object.values(ONBOARDING_HELP_KEYS)] as const;
 const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "race", "plan", "garage"]);
-const EMPTY_ADMIN_PAGINATION: AdminPagination = { page: 1, limit: 100, total: 0, totalPages: 1, hasPrevious: false, hasNext: false };
 
 function initialLocale() {
   const saved = localStorage.getItem(LANGUAGE_KEY);
@@ -122,17 +121,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const [restartConfirmOpen, setRestartConfirmOpen] = useState(false);
   const [form, setForm] = usePlanForm(locale);
   const [profileForm, setProfileForm] = useState({ email: "", recoveryCode: "" });
-  const [adminToken, setAdminToken] = useState("");
-  const [adminTab, setAdminTab] = useState<AdminTab>("users");
-  const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
-  const [adminLeagues, setAdminLeagues] = useState<AdminLeague[]>([]);
-  const [adminUserQuery, setAdminUserQuery] = useState("");
-  const [adminLeagueQuery, setAdminLeagueQuery] = useState("");
-  const [adminUserPagination, setAdminUserPagination] = useState(EMPTY_ADMIN_PAGINATION);
-  const [adminLeaguePagination, setAdminLeaguePagination] = useState(EMPTY_ADMIN_PAGINATION);
-  const [adminRecoveryCode, setAdminRecoveryCode] = useState<{ email: string; code: string } | null>(null);
-  const [adminDeleteUser, setAdminDeleteUser] = useState<AdminUser | null>(null);
-  const [adminInspecting, setAdminInspecting] = useState(false);
   const [savedClaims, setSavedClaims] = useState(loadPlayerClaims);
   const [savedLeagueIndex, setSavedLeagueIndex] = useState(0);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
@@ -171,6 +159,44 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   function clearScreenOnboardingSnoozes() {
     for (const topic of SCREEN_ONBOARDING_HELP_TOPICS) snoozedOnboardingHelp.current.delete(onboardingStorageKey(topic));
   }
+
+  const {
+    adminToken,
+    adminTab,
+    adminUsers,
+    adminLeagues,
+    adminUserQuery,
+    adminLeagueQuery,
+    adminUserPagination,
+    adminLeaguePagination,
+    adminRecoveryCode,
+    adminDeleteUser,
+    adminInspecting,
+    setAdminToken,
+    setAdminTab,
+    setAdminDeleteUser,
+    setAdminInspecting,
+    openAdminConsole,
+    refreshAdminData,
+    resetAdminRecoveryCode,
+    deleteAdminUserConfirmed,
+    inspectAdminLeague,
+    cleanupAdminTestData,
+    searchAdminUsers,
+    searchAdminLeagues,
+    pageAdminUsers,
+    pageAdminLeagues,
+    setAdminUserQuery,
+    setAdminLeagueQuery
+  } = useAdminPanel({
+    profileIsAdmin: Boolean(profileSession?.admin),
+    run,
+    tt,
+    setProfileOpen,
+    setGameView,
+    setLeagueState,
+    showStatus
+  });
 
   useEffect(() => {
     setSavedLeagueIndex((index) => Math.min(index, Math.max(0, savedClaims.length - 1)));
@@ -228,30 +254,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     pushCommandHint,
     withCurrentPlayer,
     rememberPlayer
-  });
-  const { openAdminConsole, refreshAdminData, resetAdminRecoveryCode, deleteAdminUserConfirmed, inspectAdminLeague, cleanupAdminTestData, searchAdminUsers, searchAdminLeagues, pageAdminUsers, pageAdminLeagues } = createAdminActions({
-    profileIsAdmin: Boolean(profileSession?.admin),
-    adminToken,
-    adminDeleteUser,
-    adminUserQuery,
-    adminLeagueQuery,
-    adminUserPagination,
-    adminLeaguePagination,
-    run,
-    tt,
-    setProfileOpen,
-    setGameView,
-    setAdminUsers,
-    setAdminLeagues,
-    setAdminUserQuery,
-    setAdminLeagueQuery,
-    setAdminUserPagination,
-    setAdminLeaguePagination,
-    setAdminRecoveryCode,
-    setAdminDeleteUser,
-    setLeagueState,
-    setAdminInspecting,
-    showStatus
   });
   const { createProfileSession, recoverProfileSession, requestRecoveryCode } = createProfileActions({
     profileForm,

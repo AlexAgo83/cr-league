@@ -1,6 +1,6 @@
 ## prod_039_gameapp_decomposition_product_brief - GameApp Decomposition Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook`
 > Related backlog: `item_173_extract_useadminpanel_from_gameapp`
 > Related task: `task_076_orchestrate_gameapp_admin_panel_hook_extraction`
@@ -9,6 +9,13 @@
 
 # Overview
 Incrementally break the oversized GameApp root component into cohesive custom hooks, starting with the admin panel, to lower maintenance risk without changing behavior.
+
+```mermaid
+flowchart LR
+  GameApp[GameApp root] --> AdminHook[useAdminPanel]
+  AdminHook --> Actions[Existing admin actions]
+  AdminHook --> View[AdminConsoleView props]
+```
 
 # Goals
 - Reduce the number of hooks and lines living directly in GameApp.
@@ -27,12 +34,14 @@ Incrementally break the oversized GameApp root component into cohesive custom ho
 - Out: unrelated workflow docs and implementation of generated tasks.
 
 # Key product decisions
-- Use structured input as the source of truth for generated docs.
-- Keep generated write paths local and repo-bounded.
+- Extract only the admin state cluster first; leave replay, onboarding/help, and profile clusters for later requests.
+- Reuse `createAdminActions` unchanged inside `useAdminPanel`.
+- Keep `AdminConsoleView` props stable to avoid UI churn.
 
 # Success signals
-- Generated docs pass lint and audit without broad manual rewrites.
-- Context-pack output can be handed to an implementation agent directly.
+- `GameApp` no longer declares admin-only `useState` hooks inline.
+- Admin console tests and private-league Playwright flow pass unchanged.
+- Typecheck, lint, unit tests, build, and Logics validation pass.
 
 # References
 - Product back-reference: `req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook`

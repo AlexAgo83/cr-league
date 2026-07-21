@@ -67,8 +67,17 @@ describe("DirectivePanel", () => {
     const onQualifying = vi.fn();
     render(<DirectivePanel {...baseProps} qualifyingAttemptsLeft={1} onQualifying={onQualifying} setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
+    const chronoButton = screen.getByRole("button", { name: "New chrono" });
+    expect(chronoButton.className).toContain("highlight-command");
+    fireEvent.click(chronoButton);
     expect(onQualifying).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("button", { name: "Launch GP" }).parentElement?.className).toContain("directive-command-row");
+  });
+
+  it("highlights the primary command after a chrono exists", () => {
+    render(<DirectivePanel {...baseProps} qualifyingRunCount={1} qualifyingAttemptsLeft={1} onQualifying={vi.fn()} primaryCommand={{ label: "Send plan", action: vi.fn(), disabled: false }} setForm={vi.fn()} onSelectStep={vi.fn()} />);
+
+    expect(screen.getByRole("button", { name: "New chrono" }).className).not.toContain("highlight-command");
+    expect(screen.getByRole("button", { name: "Send plan" }).className).toContain("highlight-command");
   });
 });

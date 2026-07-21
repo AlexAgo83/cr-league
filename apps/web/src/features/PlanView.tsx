@@ -264,6 +264,7 @@ export function PlanView({
           planRiskRead={planRiskRead}
           planRecommendation={planRecommendation}
           primaryCommand={primaryCommand}
+          qualifyingRunCount={playerQualifyingRuns.length}
           qualifyingAttemptsLeft={qualifyingAttemptsLeft}
           cardLocked={cardLocked}
           disabled={disabled}

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 35%
+> Progress: 36%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -50,6 +50,7 @@
 - 2026-07-21 wave: removed the leftover chrono header surface strip and changed opponent rows to team-first, two-column configuration cells.
 - 2026-07-21 wave: corrected opponent layout so each team's four config cells stay on one line while the opponent entries themselves flow into two columns when space allows.
 - 2026-07-21 wave: added the available New chrono action beside the bottom Plan command so players can retest before sending the plan without leaving the directive panel.
+- 2026-07-21 wave: tuned directive command emphasis so New chrono is highlighted before any run and Send plan is highlighted once at least one chrono exists.
 - Remaining: resolved-weather info modal, card badge wrapping, and badge stat explanations.
 
 # AI Context

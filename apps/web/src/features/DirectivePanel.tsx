@@ -163,9 +163,11 @@ export function DirectivePanel({
   planRiskRead,
   planRecommendation,
   primaryCommand,
+  qualifyingAttemptsLeft = 0,
   cardLocked,
   disabled,
   locked,
+  onQualifying,
   onSelectStep,
   tt
 }: {
@@ -179,15 +181,18 @@ export function DirectivePanel({
   planRiskRead: PlanRiskRead;
   planRecommendation?: string;
   primaryCommand: PrimaryCommand;
+  qualifyingAttemptsLeft?: number;
   cardLocked?: boolean;
   disabled?: boolean;
   locked?: boolean;
+  onQualifying?: () => void;
   onSelectStep: (step: DirectiveStep) => void;
   tt: Translator;
 }) {
   const cardChoices = ["", ...sortCardIdsByName(ownedCardIds, tt)] as Array<"" | CardId>;
   const selectedCardLabel = selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none");
   const selectedCardWarning = selectedCardId ? tt("directive_card_consumption_warning", { card: selectedCardLabel }) : undefined;
+  const canRunQualifying = Boolean(onQualifying && !locked && qualifyingAttemptsLeft > 0);
   const modifiers = directiveModifiers(form, selectedCardId);
 
   const steps = [
@@ -329,9 +334,16 @@ export function DirectivePanel({
           <span>{tt("directive_locked_body")}</span>
         </div>
       ) : null}
-      <button type="button" className="primary-command directive-primary-command" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-        {primaryCommand.label}
-      </button>
+      <div className="directive-command-row">
+        {canRunQualifying ? (
+          <button type="button" className="secondary-button directive-secondary-command" onClick={onQualifying} disabled={disabled}>
+            {tt("action_qualifying")}
+          </button>
+        ) : null}
+        <button type="button" className="primary-command directive-primary-command" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+          {primaryCommand.label}
+        </button>
+      </div>
     </section>
     </>
   );

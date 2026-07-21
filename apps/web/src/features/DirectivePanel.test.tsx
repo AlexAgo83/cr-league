@@ -62,4 +62,13 @@ describe("DirectivePanel", () => {
     rerender(<DirectivePanel {...baseProps} primaryCommand={{ label: "Launch GP", action, disabled: true }} setForm={vi.fn()} onSelectStep={vi.fn()} />);
     expect(screen.getByRole("button", { name: "Launch GP" })).toHaveProperty("disabled", true);
   });
+
+  it("shows a chrono command beside the primary command when attempts remain", () => {
+    const onQualifying = vi.fn();
+    render(<DirectivePanel {...baseProps} qualifyingAttemptsLeft={1} onQualifying={onQualifying} setForm={vi.fn()} onSelectStep={vi.fn()} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
+    expect(onQualifying).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole("button", { name: "Launch GP" }).parentElement?.className).toContain("directive-command-row");
+  });
 });

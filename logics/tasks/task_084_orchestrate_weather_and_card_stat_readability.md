@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 33%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -49,6 +49,7 @@
 - 2026-07-21 wave: split session history into its own panel attached to the chrono header and restyled opponent configuration rows to reuse the session-history cell language with the team name as the row action.
 - 2026-07-21 wave: removed the leftover chrono header surface strip and changed opponent rows to team-first, two-column configuration cells.
 - 2026-07-21 wave: corrected opponent layout so each team's four config cells stay on one line while the opponent entries themselves flow into two columns when space allows.
+- 2026-07-21 wave: added the available New chrono action beside the bottom Plan command so players can retest before sending the plan without leaving the directive panel.
 - Remaining: resolved-weather info modal, card badge wrapping, and badge stat explanations.
 
 # AI Context

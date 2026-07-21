@@ -1373,7 +1373,14 @@ label small {
   gap: 14px;
 }
 
-.directive-primary-command {
+.directive-command-row {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+}
+
+.directive-primary-command,
+.directive-secondary-command {
   justify-self: stretch;
   width: 100%;
 }

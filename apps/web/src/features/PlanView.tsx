@@ -264,9 +264,14 @@ export function PlanView({
           planRiskRead={planRiskRead}
           planRecommendation={planRecommendation}
           primaryCommand={primaryCommand}
+          qualifyingAttemptsLeft={qualifyingAttemptsLeft}
           cardLocked={cardLocked}
           disabled={disabled}
           locked={locked}
+          onQualifying={() => {
+            onSetGameView("drive");
+            onOpenQualifyingRun();
+          }}
           onSelectStep={onSetDirectiveStep}
           tt={tt}
         />

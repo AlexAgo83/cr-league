@@ -1,8 +1,8 @@
 ## road_002_cr_league_roadmap_v2 - CR League Roadmap v2
-> Date: 2026-07-20
+> Date: 2026-07-21
 > Status: Accepted
 > Related product: `prod_001_cr_league_product_brief`
-> Related request: `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`
+> Related request: `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_070_split_large_web_views_from_the_initial_bundle`, `req_071_modularize_the_large_web_layout_stylesheet`, `req_072_serve_large_web_artwork_as_webp`, `req_073_lazy_load_non_critical_web_artwork`, `req_074_audit_circuit_data_impact_before_optimizing_route_loading`, `req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook`
 > Reminder: Update status, milestone scope, linked refs, risks, and success signals when you edit this doc.
 > Confidence: 90
 > Non-semantic edit: 2026-07-19 release roadmap wording refresh.
@@ -16,6 +16,7 @@
 > Semantic edit: 2026-07-20 release prep: marked completed 0.3.14, 0.3.16, 0.3.18-0.3.21, and 0.4.1 work as shipped; marked 0.3.13, 0.3.15, and 0.4.3 corpora as ready to dev.
 > Semantic edit: 2026-07-20 release dependency triage: integrated compatible Dependabot maintenance and parked incompatible major migrations in the watchlist.
 > Semantic edit: 2026-07-20 added 0.3.25 plan stat vocabulary alignment after post-release UI review.
+> Semantic edit: 2026-07-21 closed the active 0.3 line at v0.3.26 and moved new performance, maintainability, and beta-readiness work into the 0.4 milestone.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -29,12 +30,13 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Insertion rule: a new feature idea = a new patch under the closest active theme. A new minor is created only for a genuinely new theme.
 - Version labels are planning targets, not release promises.
 
-# Current Position (2026-07-20)
+# Current Position (2026-07-21)
 - 0.1 (vertical slice) and 0.2 (private league prototype) are implemented; their detail is preserved in `road_001` and the specs.
 - The prototype runs the full private-league loop: profiles, invite codes, qualifying, directives, resolution, animated replay, reports, seasons, garage with a 15-card economy, EN/FR, balance simulations.
-- Five request chains are scaffolded, validated, and ready to dev with handoff context packs: `req_033` (code cleanup), `req_034` (personalized recap + GP identity), `req_035` (garage card consultation), `req_036` (CI, Render blueprint, release contract), `req_037` (starting grid + season narrative).
-- Cross-chain sequencing is encoded in the request docs: `req_033` ships first (shared files and the logics-manager devDependency the CI needs); `req_034`/`req_035`/`req_037` follow on the web side; `req_036` is independent of the gameplay chains.
-- Hosted environment, CI, release contract, and versioned release flow are now real. Recent shipped work also covers result verdicts, first-GP action clarity, email-backed recovery, replay suspense/first-contact polish, lap-scale coherence, mobile modal/replay hygiene, and the branded home splash. Still not real: automatic scheduler, full auth, dynamic objectives, and multi-person playtest evidence for the current balance.
+- The 0.3 playtest-ready loop line has shipped through `v0.3.26`: the hosted app, CI/release flow, map/replay/report polish, mobile fixes, garage presentation, chrono/plan clarity, home splash, and production health evidence are real.
+- The next release line is 0.4, focused on beta-readiness through performance, maintainability, support/admin hardening, and operational confidence rather than more 0.3 playtest-loop polish.
+- Seven implementation chains are open and ready to dev: `req_068` (non-winning success feedback), `req_070` (web view code-splitting), `req_071` (stylesheet modularization), `req_072` (WebP artwork delivery), `req_073` (lazy artwork loading), `req_074` (circuit route loading audit), and `req_075` (GameApp admin-panel hook extraction).
+- Still not real: automatic scheduler, full auth, dynamic objectives, broad beta operations evidence, and multi-person playtest evidence for the current balance.
 
 # Milestones
 ## 0.1 - Playable vertical slice
@@ -45,7 +47,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 ## 0.3 - Playtest-ready loop
 - Goal: Make the 3-GP private playtest loop feel designed, legible, and worth a tester's hour — and keep the codebase small enough to iterate fast.
-- Status: Active.
+- Status: Closed for the current release line at `v0.3.26`; only critical hotfixes should reopen 0.3.x.
 - Planned patches:
   - 0.3.1 — Over-engineering cleanup: ~550 lines deleted/consolidated, single validation layer, honest data shapes. (`req_033`, ready to dev)
   - 0.3.2 — Garage card consultation: inventory cards open the read-only detail modal. (`req_035`, ready to dev)
@@ -71,7 +73,8 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
   - 0.3.22 — Post-playtest clarity and release hardening: result verdicts, first-GP action clarity, replay suspense, lap-scale labels, mobile modal polish, branded splash, compatible Dependabot updates, and release health-gate fixes. Shipped in `changelogs/CHANGELOGS_0_3_22.md`.
   - 0.3.23 — Post-release UI polish: main cockpit copy is now `Stand`, profile and join-league validation errors stay inline, emailed recovery codes use a readable 12-character format, mobile modals are full-screen with bottom-pinned actions and compact launch-GP grid cells, plan card choices collapse to one column on phones, replay controls use stable SVG icons, topbar branding uses the splash title assets without ratio distortion, and send-plan/chrono confirmations reuse the styled current-plan summary. Shipped in `changelogs/CHANGELOGS_0_3_23.md`.
   - 0.3.24 — Setup background and trait-color polish: removes the setup page background assets behind Profile/League setup, unifies Grip/Attack/Energy stat colors across map and Plan screens, and colors the active directive step summary by category. Shipped in `changelogs/CHANGELOGS_0_3_24.md`.
-  - 0.3.25 — Plan stat vocabulary alignment: Plan now uses the same Adhérence/Attaque/Endurance names, hints, and stat-color mapping as the Course/Replay stats panels; Attaque moves to blue while Approche and Prépa pneus get distinct category accents; Course/Replay stat badges show signed setup values instead of raw config counts. Implemented locally; release pending.
+  - 0.3.25 — Plan stat vocabulary alignment: Plan now uses the same Adhérence/Attaque/Endurance names, hints, and stat-color mapping as the Course/Replay stats panels; Attaque moves to blue while Approche and Prépa pneus get distinct category accents; Course/Replay stat badges show signed setup values instead of raw config counts. Shipped.
+  - 0.3.26 — Map, chrono, replay, garage, and release polish: completed the post-release UI pass across Plan/GP/Chrono map panels, final classification/report entry points, garage presentation, race replay visuals, mobile layout fixes, copy polish, CI fixes, and release evidence. Shipped in `changelogs/CHANGELOGS_0_3_26.md`.
 - Exit signal:
   - 3 to 5 testers complete a 3-GP session on the polished loop;
   - feedback answers whether choices feel causal, recaps feel personal, and seasons feel like arcs;
@@ -79,18 +82,24 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Linked docs: `req_032_redesign_the_cr_league_race_cockpit_v0`, `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_037_starting_grid_modal_and_season_narrative`, `spec_016_implementation_roadmap`.
 
 ## 0.4 - Ship rails
-- Goal: Make releases a one-gesture, verified operation: parallel CI on every change, a reproducible Render environment in the repo, and version tags that deploy themselves.
-- Status: Implemented for the current release path.
+- Goal: Make the hosted beta loop fast, maintainable, observable, and supportable: verified releases stay intact, initial payload and artwork cost shrink, large frontend surfaces become easier to work on, and admin/support paths are hardened for invited testers.
+- Status: Active; the release path foundation is implemented, and the next patch starts the 0.4 performance/maintainability line.
 - Planned patches:
-  - 0.4.0 — CI, Render blueprint, and release contract: parallel test lanes, render.yaml (API + static web + Postgres), release-published deploy via Render hooks with CI gate and /health version verification. Shipped.
-  - 0.4.1 — Email-backed profile recovery: add a minimal transactional email path so account creation can send the player recovery code by email, and players who know their email can request the code again without manual admin support. Shipped.
-  - 0.4.2 — Real Postgres integration-test CI lane: exercise the production-like DB path in automation without relying only on unit/in-memory coverage. Covered by `req_058` (repo review remediation pass 5).
-  - 0.4.3 — Beta support hardening: admin reset/support path, backup/restore/support runbooks, known-limits page for testers, admin filters and 100-by-100 pagination on both admin screens, a safe admin action to delete test data sets (test accounts, test leagues, and related rows), and small operational affordances discovered during hosted playtests. (`req_069`, `task_070`, ready to dev)
-  - 0.4.4 — Repo review remediation pass 5: brute-force-resistant account recovery (scrypt, rate limiting), API trust boundaries (profile-ownership proof, hidden invite code, constant-time admin token, production CORS), atomic league restart, App.tsx/ReplayView decomposition, Postgres integration-test lane (implements 0.4.2), and CI/lint/release-gate hardening (Dependabot, npm audit, coverage, react-hooks/jsx-a11y, hard-fail health check). (`req_058`, ready to dev)
+  - 0.4.0 — Asset payload optimization and roadmap transition: optimized the large PNG artwork set, established `v0.3.26` as the end of the active 0.3 line, and starts 0.4 as the performance/maintainability/beta-readiness release line. Implemented locally; release pending.
+  - 0.4.1 — Lazy artwork loading: default reusable artwork images to lazy loading and async decoding, with an eager escape hatch for true first-screen assets. (`req_073`, `task_074`, ready to dev)
+  - 0.4.2 — Web view code-splitting: lazy-load secondary views such as garage, championship, report, and replay to reduce the initial JS chunk without changing navigation. (`req_070`, `task_071`, ready to dev)
+  - 0.4.3 — WebP artwork delivery: generate and serve WebP variants for the largest remaining artwork where measured savings justify the conversion. (`req_072`, `task_073`, ready to dev)
+  - 0.4.4 — GameApp admin-panel hook extraction: move the admin-panel state cluster out of the main app component to reduce frontend maintenance risk. (`req_075`, `task_076`, ready to dev)
+  - 0.4.5 — Web stylesheet modularization: extract bounded feature CSS from the monolithic layout stylesheet without visual redesign. (`req_071`, `task_072`, ready to dev)
+  - 0.4.6 — Circuit route loading audit: measure detailed circuit route data cost and lazy-load route geometry only if the byte savings justify the async complexity. (`req_074`, `task_075`, ready to dev)
+  - 0.4.7 — Beta support hardening: admin reset/support path, backup/restore/support runbooks, known-limits page for testers, admin filters and 100-by-100 pagination on both admin screens, a safe admin action to delete test data sets (test accounts, test leagues, and related rows), and small operational affordances discovered during hosted playtests. (`req_069`, `task_070`, ready to dev)
+  - 0.4.8 — Repo review remediation pass 5: brute-force-resistant account recovery (scrypt, rate limiting), API trust boundaries (profile-ownership proof, hidden invite code, constant-time admin token, production CORS), atomic league restart, App.tsx/ReplayView decomposition, Postgres integration-test lane, and CI/lint/release-gate hardening (Dependabot, npm audit, coverage, react-hooks/jsx-a11y, hard-fail health check). (`req_058`, ready to dev)
 - Exit signal:
   - publishing a GitHub Release vX.Y.Z is the only deploy path and ends with production /health reporting that version;
-  - a small invited group can play on the hosted environment without local dev tooling.
-- Linked docs: `req_036_github_ci_render_blueprint_and_release_contract`, `adr_001_cr_league_v1_static_pwa_api_architecture`, `adr_004_data_security`.
+  - the initial web payload and largest artwork costs are measured and materially lower than the 0.3.26 baseline;
+  - large web surfaces have clear ownership boundaries for future AI/dev work;
+  - a small invited group can play on the hosted environment without local dev tooling or manual support.
+- Linked docs: `req_036_github_ci_render_blueprint_and_release_contract`, `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`, `req_069_beta_support_hardening`, `req_070_split_large_web_views_from_the_initial_bundle`, `req_071_modularize_the_large_web_layout_stylesheet`, `req_072_serve_large_web_artwork_as_webp`, `req_073_lazy_load_non_critical_web_artwork`, `req_074_audit_circuit_data_impact_before_optimizing_route_loading`, `req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook`, `adr_001_cr_league_v1_static_pwa_api_architecture`, `adr_004_data_security`.
 
 ## 0.5 - Economy and card depth
 - Goal: Add enough card and currency depth for repeated sessions without burying the casual player.
@@ -114,9 +123,12 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Linked docs: `adr_001_cr_league_v1_static_pwa_api_architecture`, `adr_004_data_security`, `adr_006_accessibility`, `adr_007_i18n`, `adr_008_testing_quality`, `spec_016_implementation_roadmap`.
 
 # Sequencing
-- 0.3.1 (`req_033`) ships first: it deletes code every other chain would otherwise conflict with and adds the logics-manager devDependency the CI needs.
-- 0.4.0 (`req_036`) can run in parallel with the remaining 0.3.x gameplay patches — different files, independent teams.
-- Within 0.3.x, `req_035` and `req_037` precede `req_034` only by convenience (smaller first); all three are sequenced after `req_033` in their request docs.
+- 0.4.0 is the next release target from the current local HEAD: it packages asset optimization and the roadmap transition after `v0.3.26`.
+- Start the 0.4 implementation line with `req_073` (small lazy image default) and `req_070` (high-impact code-splitting); they are independent enough to run in separate branches if needed.
+- Follow with `req_072` WebP conversion only after the lazy-loading default is stable, so image call-site changes stay minimal.
+- Run `req_075` admin-panel extraction before broad admin/support work (`req_069`) to reduce App.tsx churn.
+- Keep `req_071` CSS modularization behind the view/code boundaries unless a feature edit already touches the same selectors.
+- Treat `req_074` circuit route loading as measure-first: close as deferred if the byte cost is not material.
 - Do not start 0.5 economy depth until 0.3.x playtest feedback exists; do not start 1.0 hardening until the 0.6 beta has produced real usage.
 
 # Watchlist
@@ -136,10 +148,11 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Dependabot major migrations parked after 0.3.22 release triage: ESLint 10 needs jsx-a11y peer support or replacement, `@vitejs/plugin-react` 6 should move with Vite 8, and Prisma 7 needs datasource/client configuration migration. Do not force these into a patch release without a focused migration chain.
 
 # Next Recommended Requests
-- Start `task_068` / `req_067` next: the plan risk/readability layer is the highest-impact remaining gameplay clarity slice.
-- Then dev `task_069` / `req_068` so non-winning plans get visible success feedback after the pre-race readability layer exists.
-- Keep `task_070` / `req_069` as the next ship-rails/support slice before broader beta testers.
-- After the next tagged release is green in CI/deploy, run the 3-to-5 tester session and turn its feedback into 0.3.x patches or 0.5 slices.
+- Release `0.4.0` next from the current local asset-optimization work once CI/deploy are green.
+- Then start `task_074` / `req_073` for lazy artwork loading: smallest 0.4 code change, clear performance upside.
+- Then start `task_071` / `req_070` for web view code-splitting: highest-impact JavaScript payload slice.
+- Keep `task_069` / `req_068` available as the next gameplay-feedback slice if tester comprehension becomes more urgent than payload work.
+- After `0.4.0` is green in CI/deploy, decide whether to batch small performance patches or release each 0.4.x chain independently.
 
 # Risks
 - Building the card economy before repeated-GP playtest truth would tune the wrong game.
@@ -153,8 +166,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Superseded roadmap: `road_001_cr_league_roadmap` (kept for 0.1/0.2 delivered detail)
 - Implementation roadmap spec: `spec_016_implementation_roadmap`
 - Request(s): `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`, `req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization`, `req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next`, `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`, `req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest`, `req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count`, `req_064_mobile_modal_hygiene_and_real_playback_icons`, `req_065_home_splash_landing_screen_with_floating_title_and_press_start`, `req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup`, `req_067_plan_risk_readability_layer`, `req_068_non_winning_success_feedback`, `req_069_beta_support_hardening`
+- Request(s): `req_033_over_engineering_cleanup_pass_1`, `req_034_personalized_race_recap`, `req_035_make_garage_inventory_cards_open_the_card_detail_modal`, `req_036_github_ci_render_blueprint_and_release_contract`, `req_037_starting_grid_modal_and_season_narrative`, `req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening`, `req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization`, `req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next`, `req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue`, `req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest`, `req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count`, `req_064_mobile_modal_hygiene_and_real_playback_icons`, `req_065_home_splash_landing_screen_with_floating_title_and_press_start`, `req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup`, `req_067_plan_risk_readability_layer`, `req_068_non_winning_success_feedback`, `req_069_beta_support_hardening`, `req_070_split_large_web_views_from_the_initial_bundle`, `req_071_modularize_the_large_web_layout_stylesheet`, `req_072_serve_large_web_artwork_as_webp`, `req_073_lazy_load_non_critical_web_artwork`, `req_074_audit_circuit_data_impact_before_optimizing_route_loading`, `req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook`
 - Backlog item(s): (tracked per request chain)
-- Task(s): `task_034_orchestrate_over_engineering_cleanup_pass_1`, `task_035_orchestrate_personalized_race_recap`, `task_036_orchestrate_garage_inventory_card_consultation`, `task_037_orchestrate_ci_render_blueprint_and_release_contract`, `task_038_orchestrate_starting_grid_and_season_narrative`, `task_059_orchestrate_repo_review_remediation_pass_5`, `task_060_orchestrate_first_gp_action_clarity`, `task_061_orchestrate_result_verdict_pass`, `task_062_orchestrate_email_backed_profile_recovery`, `task_063_orchestrate_replay_suspense_and_first_contact_polish`, `task_064_orchestrate_lap_scale_coherence_fix`, `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons`, `task_066_orchestrate_the_home_splash_landing_screen`, `task_067_orchestrate_post_splash_playtest_polish`, `task_068_orchestrate_plan_risk_readability_layer`, `task_069_orchestrate_non_winning_success_feedback`, `task_070_orchestrate_beta_support_hardening`
+- Task(s): `task_034_orchestrate_over_engineering_cleanup_pass_1`, `task_035_orchestrate_personalized_race_recap`, `task_036_orchestrate_garage_inventory_card_consultation`, `task_037_orchestrate_ci_render_blueprint_and_release_contract`, `task_038_orchestrate_starting_grid_and_season_narrative`, `task_059_orchestrate_repo_review_remediation_pass_5`, `task_060_orchestrate_first_gp_action_clarity`, `task_061_orchestrate_result_verdict_pass`, `task_062_orchestrate_email_backed_profile_recovery`, `task_063_orchestrate_replay_suspense_and_first_contact_polish`, `task_064_orchestrate_lap_scale_coherence_fix`, `task_065_orchestrate_mobile_modal_hygiene_and_playback_icons`, `task_066_orchestrate_the_home_splash_landing_screen`, `task_067_orchestrate_post_splash_playtest_polish`, `task_068_orchestrate_plan_risk_readability_layer`, `task_069_orchestrate_non_winning_success_feedback`, `task_070_orchestrate_beta_support_hardening`, `task_071_orchestrate_web_view_code_splitting`, `task_072_orchestrate_web_stylesheet_modularization`, `task_073_orchestrate_webp_artwork_conversion`, `task_074_orchestrate_lazy_artwork_loading`, `task_075_orchestrate_circuit_route_loading_audit`, `task_076_orchestrate_gameapp_admin_panel_hook_extraction`
 
 # AI Context
 - Summary: Release-level roadmap for CR League with a three-level version scheme (theme minors, feature-drop patches) from playable prototype to private league V1.

@@ -1,0 +1,112 @@
+{
+  "title": "Expose card trigger conditions and relative strength in plan and garage",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/architecture/adr_005_theme_design_system.md",
+    "logics/architecture/adr_006_accessibility.md",
+    "logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md",
+    "packages/shared/src/cards/definitions.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "apps/web/src/features/CardStatBadges.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "apps/web/src/features/PlanView.tsx",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "Current diagnostic: card effects live as hardcoded magnitudes in simulateRace.ts applyDecision (lines 498-572) and maybeAddCardEvent (lines 709-811); e.g. rain_grip pays +26 score / +18 position if the mid segment is not dry and -4 / -2 otherwise, calculated_attack pays +24 only when the car ahead is within 3.0s.",
+    "Current diagnostic: the player never sees these magnitudes or trigger conditions; the UI shows only direction-only badges (CardStatBadges.tsx:101-121, e.g. '+ Grip', '- Att.') plus one info tag and a prose promise in definitions.ts (e.g. 'Pays off if rain appears around mid-race').",
+    "Product decision (audit TICKET-01): reveal each card's exact trigger condition (segment, weather requirement, proximity threshold) and a relative strength band (weak / medium / strong) and its downside, but NOT raw numeric magnitudes, to preserve uncertainty and the 'explain the rules, never the solution' pillar."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Race legibility",
+    "needs": [
+      "Show, for every card, the exact condition under which its main effect triggers (race segment, weather requirement, or proximity threshold) in objective rule language.",
+      "Show the relative strength of each card effect as a calibrated band (weak / medium / strong) plus its downside, derived from the card's real coded magnitude, without displaying raw numbers.",
+      "Drive these labels from a single shared source of truth colocated with the card effects so the displayed condition and strength cannot drift from the simulation.",
+      "Keep the presentation objective and never phrase it as a recommendation, a best card, or a best setting.",
+      "Support EN/FR copy and keep the card UI compact; keep condition and strength legible without relying on color alone.",
+      "Change no simulation behavior, no card magnitude, no economy, and add no new dependency."
+    ],
+    "context": [
+      "apps/web is a Vite React workspace with a small dependency set and plain CSS custom properties (ADR-005); ADR-006 requires that meaning is not conveyed by color alone.",
+      "Card metadata today is split: prose promise and family in packages/shared cards/definitions.ts, direction-only badges in CardStatBadges.tsx, prices in economy/constants.ts, and the actual magnitudes and trigger conditions inline in simulateRace.ts.",
+      "The design pillars (Decisions_Log) require objective information and preserved uncertainty: the game explains rules and consequences but never recommends a card, setting, or strategy.",
+      "This is a readability change with no model change; it is a post-0.3 gameplay/legibility carry-over, not part of the 0.4 performance theme, and it does not depend on the 0.5 economy/card-depth evidence gate because it exposes existing rules rather than rebalancing them."
+    ],
+    "acceptance_criteria": [
+      "AC1: Each card surfaces its trigger condition in objective terms (segment and/or weather and/or proximity threshold) wherever the card is inspected in plan and garage.",
+      "AC2: Each card surfaces a relative strength band (weak / medium / strong) for its main effect and names its downside, without any raw numeric magnitude shown to the player.",
+      "AC3: The condition and strength band are derived from a single shared descriptor colocated with the card effects in packages/shared, so UI labels and simulation behavior share one source; a unit test asserts every card has a descriptor consistent with its coded effect.",
+      "AC4: No copy phrases any card as best, recommended, optimal, or as a suggested strategy; wording stays descriptive of the rule only.",
+      "AC5: Condition and strength are legible without relying on color alone (ADR-006), with EN/FR copy present.",
+      "AC6: No simulation behavior, card magnitude, price, or economy value changes.",
+      "AC7: npm run typecheck, npm test, npm run build, npm run lint, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Race Legibility Product Brief",
+    "overview": "Make the race readable before making it deeper: expose the objective rules behind cards (and later weather) so a player can predict the direction and rough strength of a choice before committing, without the game ever recommending a choice.",
+    "goals": [
+      "Let a player understand what a card does and when it fires before locking a plan.",
+      "Replace vague direction-only badges with objective condition plus a calibrated relative strength band.",
+      "Keep a single shared source of truth so displayed rules never drift from the simulation.",
+      "Preserve uncertainty and the no-recommendation design pillar."
+    ],
+    "non_goals": [
+      "Do not display raw numeric magnitudes or let the optimum be directly computed from the UI.",
+      "Do not recommend cards, settings, or strategies.",
+      "Do not change card magnitudes, prices, economy, or simulation behavior (that is 0.5 economy/card-depth work).",
+      "Do not add a UI framework, state, or data dependency."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add a shared card descriptor (condition + strength band) and surface it in card UI",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race legibility",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7"],
+      "problem": [
+        "Card magnitudes and trigger conditions are hardcoded in simulateRace.ts and never shown; the UI shows only '+ Grip' style badges and prose.",
+        "Players cannot tell when a card fires or how strict its condition is, so they over- or under-value cards blindly (audit cause B).",
+        "Any UI that restates card effects risks drifting from the simulation because there is no shared source of truth for card metadata."
+      ],
+      "scope_in": [
+        "Define a shared per-card descriptor colocated with card effects in packages/shared: trigger condition (segment / weather / proximity) and a relative strength band derived from the coded magnitude, plus the downside.",
+        "Render the condition and strength band (and downside) in CardStatBadges and the garage/plan card surfaces, legible without color alone.",
+        "Add EN/FR copy for conditions, strength bands, and downsides.",
+        "Add a unit test asserting each card's descriptor is consistent with its actual coded effect and that no card is missing a descriptor."
+      ],
+      "scope_out": [
+        "Displaying raw numeric magnitudes or a computed per-circuit estimate (deferred).",
+        "Any recommendation, ranking, or best-card labeling.",
+        "Any change to card magnitudes, prices, economy, or the simulation.",
+        "Weather timeline semantics (handled in a separate legibility request)."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every card shows its trigger condition and a weak/medium/strong band plus downside in plan and garage, with no raw numbers.",
+        "AC2: A single shared descriptor in packages/shared feeds both the UI and stays consistent with simulation magnitudes, covered by a unit test.",
+        "AC3: No copy recommends or ranks cards; wording is rule-descriptive only.",
+        "AC4: Meaning is not color-only; EN/FR copy present.",
+        "AC5: No simulation, magnitude, price, or economy change; typecheck, test, build, lint, and logics:validate pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate card effect legibility",
+    "plan": [
+      "Catalogue each card's real trigger condition and magnitude from simulateRace.ts applyDecision and maybeAddCardEvent, and map magnitudes to weak/medium/strong bands.",
+      "Add a shared per-card descriptor (condition, strength band, downside) colocated with card effects in packages/shared, with a unit test asserting consistency with the coded effects.",
+      "Surface the descriptor in CardStatBadges and the garage/plan card surfaces, legible without color alone, with EN/FR copy.",
+      "Verify no simulation, magnitude, price, or economy value changed and no copy reads as a recommendation.",
+      "Run typecheck, test, build, lint, and logics:validate; record validation evidence in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/card-effect-legibility.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

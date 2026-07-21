@@ -43,7 +43,7 @@ flowchart LR
 # Key product decisions
 - Owner decision 2026-07-21: hold this request until stat differentiation direction is decided.
 - Treat card economy and stat differentiation as one coupled depth pass; card tuning against the current flat stat model would be invalidated.
-- Unblock only with a fresh AI-playtest baseline and a co-designed stat/card plan.
+- Unblock only after `req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity` lands with a fresh AI-playtest baseline and a co-designed stat/card plan.
 
 # Success signals
 - When unblocked, every card is bought or played a non-trivial number of times in comparable AI playtest evidence.
@@ -55,3 +55,4 @@ flowchart LR
 - Task back-reference: `task_082_orchestrate_card_economy_rebalance`
 - Roadmap hold: `logics/roadmap/road_002_cr_league_roadmap_v2.md`
 - Audit evidence: `docs/audits/AUDIT_CR_LEAGUE.md`
+- Prerequisite request: `req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity`

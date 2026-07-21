@@ -1,0 +1,136 @@
+{
+  "title": "Differentiate circuit stats and make bot configurations react to circuit identity",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "docs/audits/AUDIT_CR_LEAGUE.md",
+    "docs/audits/playtest-ai.md",
+    "docs/audits/balance-latest.json",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/domain/circuits.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "scripts/ai-playtest.ts",
+    "scripts/balance-simulations.ts",
+    "apps/web/src/app/raceFlow.ts",
+    "apps/web/src/features/DirectivePanel.tsx",
+    "User decision 2026-07-21: if needed, force circuit stats to matter so changing race configurations makes sense.",
+    "User feedback 2026-07-21: bots show too little pit-stop variation; this should be treated with circuit/stat differentiation rather than isolated bot randomness."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Circuit identity and strategic depth",
+    "needs": [
+      "Make Grip, Attack, and Endurance meaningfully change which configurations are strong on each circuit.",
+      "Force circuit traits into the race outcome enough that moving approach, preparation, and pit strategy choices has visible value.",
+      "Make bot decisions vary pit strategy and setup based on circuit identity, weather, and simple archetype intent instead of mostly fixed templates.",
+      "Preserve deterministic race results for a given seed and update tests intentionally.",
+      "Use this as the prerequisite for the blocked card economy rebalance, not as a separate speculative tuning pass."
+    ],
+    "context": [
+      "The card economy rebalance is blocked by owner decision because tuning cards against the current flat stat model would be invalidated once stats diverge.",
+      "Current bot decisions mostly inherit fixed demo/profile pit strategies, which makes opponent configurations feel repetitive.",
+      "The player-facing Plan already uses Grip, Attack, and Endurance vocabulary, so simulation and bot choices should make those labels matter.",
+      "Balance evidence and AI playtest reports already show shallow card choices; this request should create the stat foundation before card prices/effects are changed."
+    ],
+    "acceptance_criteria": [
+      "AC1: Simulation scoring makes Grip, Attack, and Endurance produce distinct strategic pressures instead of one flat pace-dominant shape.",
+      "AC2: Representative tests show at least one circuit where heavy_pack/reliability is favored, one where mini_pack/aggression is favored, and one where grip/weather control is favored.",
+      "AC3: Bot default decisions vary pit strategy across standard, heavy_pack, and mini_pack based on circuit traits, likely weather, standings/archetype, or deterministic seed.",
+      "AC4: Bot strategy variation remains deterministic for the same league, GP, team, and seed.",
+      "AC5: Plan risk/readability copy and trait hints remain honest after the stat model change.",
+      "AC6: No card price/effect rebalance is included in this request except tests or docs needed to keep the blocked dependency clear.",
+      "AC7: Balance simulation and AI playtest evidence are recorded to establish the new baseline before unblocking card economy.",
+      "AC8: Typecheck, lint, unit tests, build, e2e, balance smoke, AI playtest, and Logics validation pass."
+    ]
+  },
+  "product": {
+    "title": "Circuit Stat Differentiation And Bot Strategy Product Brief",
+    "overview": "Make circuit identity drive real configuration choices: Grip, Attack, and Endurance should change the best setup, bots should react to those traits, and the resulting baseline should unblock card economy work.",
+    "goals": [
+      "Make configuration changes feel causally meaningful by circuit.",
+      "Make pit strategy choices matter differently on different tracks.",
+      "Give bots enough deterministic variation to make opponent plans worth comparing.",
+      "Create a fresh measured baseline for the blocked card economy rebalance."
+    ],
+    "non_goals": [
+      "Do not rebalance card prices or card effects in this request.",
+      "Do not add random non-deterministic bot behavior.",
+      "Do not add new circuit traits or rename the current Grip, Attack, and Endurance vocabulary.",
+      "Do not redesign the Plan UI beyond copy updates needed for honesty."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Make circuit traits force distinct setup tradeoffs",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Circuit identity",
+      "request_acs": ["AC1", "AC2", "AC4", "AC5", "AC6", "AC8"],
+      "problem": [
+        "The current stat model does not make circuit identity strong enough to force different player configurations.",
+        "If setups do not diverge by circuit, card economy tuning will rebalance around the wrong game."
+      ],
+      "scope_in": [
+        "Adjust simulation trait weighting so Grip, Attack, and Endurance create distinct setup pressures.",
+        "Add representative deterministic tests around circuit trait extremes and pit strategy outcomes.",
+        "Update Plan risk/readability derivation if the changed stat pressures make existing hints inaccurate."
+      ],
+      "scope_out": [
+        "Changing card prices or card effects.",
+        "Adding new stats.",
+        "Changing replay choreography except where test expectations follow changed race outcomes."
+      ],
+      "acceptance_criteria": [
+        "AC1: Tests demonstrate distinct winners or expected advantages across Grip, Attack, and Endurance circuit scenarios.",
+        "AC2: The same seed remains deterministic after stat weighting changes.",
+        "AC3: Plan risk/readability still points at the relevant setup pressure.",
+        "AC4: Balance smoke and full gates pass."
+      ]
+    },
+    {
+      "title": "Make bot pit strategy react to circuit identity",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Bot strategy",
+      "request_acs": ["AC3", "AC4", "AC5", "AC6", "AC7", "AC8"],
+      "problem": [
+        "Bots currently show limited pit-stop variation because their setup templates are mostly fixed.",
+        "Opponent comparison loses value if bots rarely expose different pit strategies."
+      ],
+      "scope_in": [
+        "Derive default bot pit strategy from circuit traits, likely weather, archetype, and deterministic seed.",
+        "Keep bot choices deterministic and simple.",
+        "Record AI playtest evidence showing bot pit strategy mix after the change."
+      ],
+      "scope_out": [
+        "Adding ML or a complex bot planning engine.",
+        "Making bots optimal or adaptive to hidden player intent.",
+        "Changing card economy values."
+      ],
+      "acceptance_criteria": [
+        "AC1: AI playtest or focused tests show all three pit strategies appear in bot decisions across representative circuits.",
+        "AC2: Same league/GP/team seed produces the same bot plan.",
+        "AC3: Opponent configuration comparison remains valid after lock and after race.",
+        "AC4: New baseline evidence is recorded before card economy is unblocked."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate circuit stat differentiation and bot strategy",
+    "plan": [
+      "Baseline current trait and bot pit-strategy behavior using focused tests, balance smoke, and AI playtest output.",
+      "Adjust simulation trait weighting with the smallest deterministic change that makes Grip, Attack, and Endurance favor different setups.",
+      "Derive bot pit strategy from circuit traits, weather, archetype, and deterministic seed without adding a planning engine.",
+      "Update Plan risk/readability copy or tests only where the new model makes old hints inaccurate.",
+      "Record balance and AI-playtest evidence, then update the blocked card economy docs with the new baseline dependency.",
+      "Run typecheck, lint, unit tests, build, e2e, balance smoke, AI playtest, and Logics validation."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/circuit-stat-differentiation-and-bot-strategy.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

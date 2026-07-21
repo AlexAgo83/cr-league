@@ -1,0 +1,133 @@
+{
+  "title": "Move real-weather detail into a circuit info modal and improve card stat badge readability",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/src/app/DriveView.tsx",
+    "apps/web/src/features/replay/ReplayProgress.tsx",
+    "apps/web/src/features/CardStatBadges.tsx",
+    "apps/web/src/features/GarageView.tsx",
+    "apps/web/src/features/DirectivePanel.tsx",
+    "apps/web/src/styles/layout.css",
+    "apps/web/src/styles/paper-material.css",
+    "apps/web/src/styles/directive-telemetry.css",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "User feedback 2026-07-21: the inline 'actual weather by phase' text feels too raw and should move behind an info action on the circuit presentation panel.",
+    "User feedback 2026-07-21: card stat badges should naturally wrap to at least two lines, and hovering/focusing a stat badge should explain the stat."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Race readability",
+    "needs": [
+      "Replace the raw inline real-weather-by-phase copy with a compact circuit info action in the circuit presentation panel.",
+      "Open a focused modal from that circuit info action to explain the resolved weather phases after the GP has run.",
+      "Make card stat badges wrap cleanly inside plan, garage, shop, and card-detail cells, with space for at least two lines by default.",
+      "Expose more information on card stat badges on hover and keyboard focus using the smallest accessible mechanism.",
+      "Preserve existing replay weather markers, forecast labels, and race mechanics."
+    ],
+    "context": [
+      "The Drive circuit panel already presents city, layout, lap count, weather tendency, and map status; it is the natural place for a compact info action.",
+      "ReplayProgress currently summarizes resolved weather phases inline, which is accurate but visually noisy.",
+      "CardStatBadges already centralizes the badge rendering used by Plan and Garage surfaces, so stat explanations should be added there instead of per caller.",
+      "The desired badge explanation can start with native title/aria-label text before adding any custom tooltip component."
+    ],
+    "acceptance_criteria": [
+      "AC1: The raw resolved-weather phase sentence is no longer shown inline in the replay progress panel.",
+      "AC2: The circuit presentation panel exposes a compact info action styled like existing view/edit actions when resolved weather details are available.",
+      "AC3: Activating the info action opens a modal that explains the resolved weather phases with EN/FR copy and closes through existing modal behavior.",
+      "AC4: Card stat badges wrap without squeezing text, and card cells reserve enough vertical space for at least two badge rows on representative Plan and Garage surfaces.",
+      "AC5: Each stat badge has hover/focus accessible explanatory text for Grip, Attack, and Endurance.",
+      "AC6: No simulation, weather resolution, card effect, API, or replay marker behavior changes.",
+      "AC7: Typecheck, lint, unit tests, build, e2e, and Logics validation pass."
+    ]
+  },
+  "product": {
+    "title": "Race Weather And Card Stat Readability Product Brief",
+    "overview": "Keep race information useful without clutter: move detailed resolved-weather explanation behind a circuit info action and make card stat badges readable and self-explanatory.",
+    "goals": [
+      "Make the circuit panel carry the weather detail at the moment it matters.",
+      "Reduce replay progress text noise after a GP.",
+      "Make card stat badges scan cleanly on compact card surfaces.",
+      "Let players understand Grip, Attack, and Endurance from the badge itself."
+    ],
+    "non_goals": [
+      "Do not change weather generation or resolved race data.",
+      "Do not change card effects, card prices, or simulation balance.",
+      "Do not add a custom tooltip system unless native hover/focus text is insufficient.",
+      "Do not redesign card layouts beyond badge wrapping and spacing."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Move resolved weather details to a circuit info modal",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Race readability",
+      "request_acs": ["AC1", "AC2", "AC3", "AC6", "AC7"],
+      "problem": [
+        "Resolved weather by phase is currently accurate but exposed as a long inline sentence that competes with replay controls.",
+        "The circuit panel has no compact way to reveal post-race weather details even though it already owns the race context."
+      ],
+      "scope_in": [
+        "Add a compact circuit weather info action near the Drive circuit presentation details when resolved weather is available.",
+        "Reuse existing modal patterns to show phase-by-phase resolved weather copy.",
+        "Remove or hide the long inline weather sentence from replay progress while preserving weather markers."
+      ],
+      "scope_out": [
+        "Changing forecast or resolved weather data.",
+        "Changing replay progress marker behavior.",
+        "Adding a broad help or tutorial system."
+      ],
+      "acceptance_criteria": [
+        "AC1: Replay progress no longer renders the raw phase summary sentence inline.",
+        "AC2: The Drive circuit panel shows a compact info action after race resolution.",
+        "AC3: The modal lists start, early, mid, late, and finish weather in EN/FR.",
+        "AC4: Existing replay weather markers remain visible and tested."
+      ]
+    },
+    {
+      "title": "Wrap card stat badges and add stat explanations",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Card readability",
+      "request_acs": ["AC4", "AC5", "AC6", "AC7"],
+      "problem": [
+        "Card stat badges can feel squeezed in card cells and are not laid out with a default two-line allowance.",
+        "A badge such as +Attack or -Endurance does not explain what the stat changes for the player."
+      ],
+      "scope_in": [
+        "Adjust shared badge CSS so card badges wrap naturally and reserve two rows on Plan and Garage card cells.",
+        "Add native hover/focus explanatory text in CardStatBadges for Grip, Attack, and Endurance using existing i18n hints.",
+        "Keep the badge component shared across plan, inventory, shop, and detail surfaces."
+      ],
+      "scope_out": [
+        "Building a custom tooltip component.",
+        "Changing card descriptors, strength bands, prices, or effects.",
+        "Changing non-card trait panels unless needed for consistency."
+      ],
+      "acceptance_criteria": [
+        "AC1: Badge containers wrap to multiple rows without overflowing card cells.",
+        "AC2: Plan and Garage card cells have enough reserved space for at least two badge rows.",
+        "AC3: Trait badges expose the localized stat hint on hover and focus.",
+        "AC4: Focused component or UI tests cover the new badge explanatory text."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate weather and card stat readability",
+    "plan": [
+      "Trace the resolved-weather UI path from ReplayProgress and DriveView before editing.",
+      "Move resolved-weather detail into a compact circuit info modal using existing modal patterns.",
+      "Adjust shared card badge CSS to wrap to at least two rows in card cells.",
+      "Add native localized hover/focus explanations to CardStatBadges using existing stat hint copy.",
+      "Run typecheck, focused tests, lint, full tests, build, e2e, and Logics validation."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/race-weather-and-card-stat-readability.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

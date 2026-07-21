@@ -3,14 +3,14 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 90
 > Complexity: High
 > Theme: Economy and card depth
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
 > Non-semantic edit: 2026-07-21 repointed audit/playtest evidence references to tracked docs/audits copies.
 
 # Status note
-- HELD (owner decision 2026-07-21): do not start. Coupled with stat differentiation (audit cause A); see road_002 (0.5) and docs/audits/AUDIT_CR_LEAGUE.md (TICKET-07/08). Orchestration task task_082 is Blocked.
+- HELD (owner decision 2026-07-21): do not start. Coupled with stat differentiation (audit cause A); see `req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity`, road_002 (0.5), and docs/audits/AUDIT_CR_LEAGUE.md (TICKET-07/08). Orchestration task task_082 is Blocked.
 
 # Needs
 - Give every card a reason to exist by removing dead cards and near-duplicate cards, using the playtest and balance evidence as the starting diagnosis.
@@ -24,7 +24,7 @@
 - This is 0.5 economy and card-depth work; the roadmap gates it on repeated-GP playtest evidence, which docs/audits/playtest-ai.md now provides.
 - Card effects are defined in simulateRace.ts (applyDecision and maybeAddCardEvent), prices in economy/constants.ts, prose in cards/definitions.ts; the balance kit (scripts/balance-simulations.ts) and AI playtest (scripts/ai-playtest.ts) already measure card outcomes.
 - The design pillars require dilemmas with real trade-offs and forbid recommendations or a single best card.
-- This request pairs with a later stat-differentiation request; because rebalancing cards shifts the numbers that stat work would measure, card economy is sequenced first and stat differentiation follows once this lands.
+- This request is now sequenced after `req_084`: first make Grip, Attack, Endurance, and bot pit strategy produce distinct configuration pressure, then rebalance cards against that fresh baseline.
 
 # Acceptance criteria
 - AC1: No card is a dead choice: after the change, an AI playtest of comparable size shows every card is bought or played a non-trivial number of times, with no card at zero purchases.
@@ -58,6 +58,7 @@
 - packages/shared/src/simulation/simulateRace.ts
 - scripts/balance-simulations.ts
 - scripts/ai-playtest.ts
+- logics/request/req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity.md
 - docs/balance-simulations.md
 - Playtest evidence (docs/audits/playtest-ai.md, 50 agents x 3 seasons x 6 GP): adjustable_wing bought 0 times (price 500), pit_relay bought 0, fleet_maintenance bought 0, defensive_order 3, rain_mapping 5 versus rain_grip 149; a cheap cluster (rain_grip, final_surge, qualifying_focus, fleet_sponsorship, economy_mode) dominates purchases.
 - Balance evidence (docs/audits/balance-latest.json): avgPoints spread of 9.45 between best (balanced/speed/rain_grip 13.04) and worst (prudent/weather/fleet_sponsorship 3.59); speed preparation outperforms reliability on average.

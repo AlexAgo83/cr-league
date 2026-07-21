@@ -1,0 +1,314 @@
+{
+  "budgets": {
+    "max_docs": 16,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability item_181_move_resolved_weather_details_to_a_circuit_info_modal item_182_wrap_card_stat_badges_and_add_stat_explanations task_084_orchestrate_weather_and_card_stat_readability --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_181_move_resolved_weather_details_to_a_circuit_info_modal",
+          "item_182_wrap_card_stat_badges_and_add_stat_explanations"
+        ],
+        "prod": [
+          "prod_047_race_weather_and_card_stat_readability_product_brief"
+        ],
+        "req": [
+          "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability"
+        ],
+        "task": [
+          "task_084_orchestrate_weather_and_card_stat_readability"
+        ]
+      },
+      "path": "logics/product/prod_047_race_weather_and_card_stat_readability_product_brief.md",
+      "ref": "prod_047_race_weather_and_card_stat_readability_product_brief",
+      "status": "Proposed",
+      "title": "Race Weather And Card Stat Readability Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, move real-weather detail into a circuit info modal and improve card stat badge readability, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Move real-weather detail into a circuit info modal and improve card stat badge readability",
+        "use when": "You need to implement or review the scaffolded workflow for Move real-weather detail into a circuit info modal and improve card stat badge readability."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_181_move_resolved_weather_details_to_a_circuit_info_modal",
+          "item_182_wrap_card_stat_badges_and_add_stat_explanations"
+        ],
+        "prod": [
+          "prod_047_race_weather_and_card_stat_readability_product_brief"
+        ],
+        "req": [
+          "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability"
+        ]
+      },
+      "path": "logics/request/req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability.md",
+      "ref": "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Move real-weather detail into a circuit info modal and improve card stat badge readability"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, move resolved weather details to a circuit info modal, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Move resolved weather details to a circuit info modal",
+        "use when": "Implementing the scaffolded slice for Move resolved weather details to a circuit info modal."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_181_move_resolved_weather_details_to_a_circuit_info_modal"
+        ],
+        "prod": [
+          "prod_047_race_weather_and_card_stat_readability_product_brief"
+        ],
+        "req": [
+          "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability"
+        ],
+        "task": [
+          "task_084_orchestrate_weather_and_card_stat_readability"
+        ]
+      },
+      "path": "logics/backlog/item_181_move_resolved_weather_details_to_a_circuit_info_modal.md",
+      "ref": "item_181_move_resolved_weather_details_to_a_circuit_info_modal",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Move resolved weather details to a circuit info modal"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, wrap card stat badges and add stat explanations, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Wrap card stat badges and add stat explanations",
+        "use when": "Implementing the scaffolded slice for Wrap card stat badges and add stat explanations."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_182_wrap_card_stat_badges_and_add_stat_explanations"
+        ],
+        "prod": [
+          "prod_047_race_weather_and_card_stat_readability_product_brief"
+        ],
+        "req": [
+          "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability"
+        ],
+        "task": [
+          "task_084_orchestrate_weather_and_card_stat_readability"
+        ]
+      },
+      "path": "logics/backlog/item_182_wrap_card_stat_badges_and_add_stat_explanations.md",
+      "ref": "item_182_wrap_card_stat_badges_and_add_stat_explanations",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Wrap card stat badges and add stat explanations"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_181_move_resolved_weather_details_to_a_circuit_info_modal",
+          "item_182_wrap_card_stat_badges_and_add_stat_explanations"
+        ],
+        "prod": [
+          "prod_047_race_weather_and_card_stat_readability_product_brief"
+        ],
+        "req": [
+          "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability"
+        ],
+        "task": [
+          "task_084_orchestrate_weather_and_card_stat_readability"
+        ]
+      },
+      "path": "logics/product/prod_047_race_weather_and_card_stat_readability_product_brief.md",
+      "ref": "prod_047_race_weather_and_card_stat_readability_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Race Weather And Card Stat Readability Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate weather and card stat readability",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_181_move_resolved_weather_details_to_a_circuit_info_modal",
+          "item_182_wrap_card_stat_badges_and_add_stat_explanations"
+        ],
+        "prod": [
+          "prod_047_race_weather_and_card_stat_readability_product_brief"
+        ],
+        "req": [
+          "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability"
+        ],
+        "task": [
+          "task_084_orchestrate_weather_and_card_stat_readability"
+        ]
+      },
+      "path": "logics/tasks/task_084_orchestrate_weather_and_card_stat_readability.md",
+      "ref": "task_084_orchestrate_weather_and_card_stat_readability",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate weather and card stat readability"
+    }
+  ],
+  "estimates": {
+    "char_count": 5563,
+    "companion_doc_count": 1,
+    "doc_count": 5
+  },
+  "generated_at": "2026-07-21T14:48:12Z",
+  "handoff": {
+    "companion_doc_count": 1,
+    "enabled": true,
+    "source_refs": [
+      "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability",
+      "item_181_move_resolved_weather_details_to_a_circuit_info_modal",
+      "item_182_wrap_card_stat_badges_and_add_stat_explanations",
+      "task_084_orchestrate_weather_and_card_stat_readability"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 783,
+      "fr": 783
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability,item_181_move_resolved_weather_details_to_a_circuit_info_modal,item_182_wrap_card_stat_badges_and_add_stat_explanations,task_084_orchestrate_weather_and_card_stat_readability",
+  "refs": [
+    "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability",
+    "item_181_move_resolved_weather_details_to_a_circuit_info_modal",
+    "item_182_wrap_card_stat_badges_and_add_stat_explanations",
+    "task_084_orchestrate_weather_and_card_stat_readability"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "version_metadata: evidence targets a different commit",
+      "changelog: evidence targets a different commit",
+      "local_validation: evidence targets a different commit",
+      "git_push: evidence targets a different commit",
+      "ci: evidence targets a different commit"
+    ],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "version_metadata: evidence targets a different commit",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different commit",
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "blocked",
+    "target_version": "0.3.26"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_084_orchestrate_weather_and_card_stat_readability.md",
+      "ref": "task_084_orchestrate_weather_and_card_stat_readability"
+    }
+  ]
+}

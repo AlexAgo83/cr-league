@@ -3,16 +3,17 @@
 > Schema version: 1.0
 > Status: Blocked
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 85
 > Progress: 0%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 > Non-semantic edit: 2026-07-21 set Status Blocked per owner decision (held, coupled with stat differentiation); repointed audit reference to docs/audits.
-> Blocked by: owner decision 2026-07-21 - HELD and coupled with stat differentiation (audit cause A). Do NOT start: rebalancing cards against the current flat stat model would be invalidated once stats diverge. Unblock only when the stat-model direction is decided, then co-design both against a fresh AI-playtest baseline. See road_002 (0.5) and docs/audits/AUDIT_CR_LEAGUE.md (TICKET-07/08).
+> Blocked by: owner decision 2026-07-21 - HELD and coupled with stat differentiation (audit cause A). Do NOT start: rebalancing cards against the current flat stat model would be invalidated once stats diverge. Unblock only after `req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity` lands with a fresh AI-playtest baseline. See road_002 (0.5) and docs/audits/AUDIT_CR_LEAGUE.md (TICKET-07/08).
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
+- `req_084` is the prerequisite chain for forcing circuit traits and bot strategy variation to matter before this card-economy rebalance starts.
 
 # Plan
 - [ ] 1. Baseline the current economy with scripts/balance-simulations.ts and scripts/ai-playtest.ts and confirm the dead/duplicate cards from docs/audits/playtest-ai.md.

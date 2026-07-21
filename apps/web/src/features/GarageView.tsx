@@ -253,14 +253,13 @@ export function GarageView({
           <PendingFeedback message={pendingMessage} />
           <div className="modal-actions">
             {pendingBuyAffordable ? (
-              <label className="garage-buy-quantity">
-                {tt("garage_buy_quantity")}
-                <select value={buyQuantity} onChange={(event) => setBuyQuantity(Number(event.target.value))}>
+              <div className="garage-buy-quantity">
+                <select aria-label={tt("garage_buy_quantity")} value={buyQuantity} onChange={(event) => setBuyQuantity(Number(event.target.value))}>
                   {buyQuantityOptions.map((quantity) => (
                     <option key={quantity} value={quantity}>x{quantity}</option>
                   ))}
                 </select>
-              </label>
+              </div>
             ) : null}
             <button type="button" onClick={confirmBuy} disabled={loading || !pendingBuyAffordable}>
               {tt("garage_buy_confirm_action")}
@@ -272,7 +271,7 @@ export function GarageView({
         <Modal label={tt(`card_${viewingCardId}` as TranslationKey)} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setViewingCardId(undefined)}>
           <ModalHero image="/assets/crl/garage-sell-modal.png" kicker={tt("garage_inventory")} title={tt(`card_${viewingCardId}` as TranslationKey)} />
           <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
-          <div className="garage-buy-card garage-detail-card">
+          <div className="garage-buy-card">
             <CardArtImage cardId={viewingCardId} />
             <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>
             <CardStatBadges cardId={viewingCardId} tt={tt} />

@@ -102,17 +102,23 @@
   color: var(--color-ink-muted);
 }
 
+.plan-view .directive-choice-approach .card-stat-badges,
+.plan-view .directive-choice-preparation .card-stat-badges,
+.plan-view .directive-choice-pit .card-stat-badges {
+  min-height: 0;
+}
+
 .plan-view .directive-choice-approach .card-stat-badge,
 .plan-view .directive-choice-preparation .card-stat-badge,
 .plan-view .directive-choice-pit .card-stat-badge {
-  font-size: 0.5rem;
+  font-size: 0.48rem;
   gap: 1px;
-  padding: 1px 4px 1px 1px;
+  padding: 1px 3px 1px 1px;
 }
 
 .plan-view .directive-choice-approach .card-stat-badge i,
 .plan-view .directive-choice-preparation .card-stat-badge i,
 .plan-view .directive-choice-pit .card-stat-badge i {
-  height: 10px;
-  width: 10px;
+  height: 9px;
+  width: 9px;
 }

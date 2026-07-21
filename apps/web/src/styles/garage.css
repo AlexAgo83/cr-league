@@ -420,33 +420,6 @@
   grid-column: 1 / -1;
 }
 
-.garage-detail-card {
-  border-color: rgb(197 58 0 / 0.48);
-  gap: 10px;
-  grid-template-columns: 1fr;
-  min-height: 118px;
-  padding: 16px;
-  padding-right: min(46%, 190px);
-}
-
-.garage-detail-card > small {
-  color: var(--color-accent);
-  font-family: var(--font-display);
-  font-size: 0.92rem;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.garage-detail-card .card-stat-badges {
-  gap: 4px;
-}
-
-.garage-detail-card .card-stat-badge {
-  background: rgb(236 231 218 / 0.62);
-  border-color: rgb(23 21 26 / 0.28);
-}
-
 .modal-actions {
   align-items: center;
   display: flex;

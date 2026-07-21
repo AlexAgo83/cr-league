@@ -7,6 +7,7 @@
 > Complexity: Low
 > Theme: Plan commit clarity
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
+> Non-semantic edit: 2026-07-21 repointed audit/playtest evidence references to tracked docs/audits copies.
 
 # Needs
 - Tell the player, at the moment a card is attached to the race plan, that playing the card will consume it if the race is launched.
@@ -43,7 +44,7 @@
 - AGENTS.md
 - LOGICS.md
 - logics/instructions.md
-- logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md
+- docs/audits/AUDIT_CR_LEAGUE.md
 - apps/web/src/features/PlanView.tsx
 - apps/web/src/features/DirectivePanel.tsx
 - apps/web/src/features/GarageView.tsx

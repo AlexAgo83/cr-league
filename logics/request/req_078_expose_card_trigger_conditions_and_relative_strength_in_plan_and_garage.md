@@ -7,6 +7,7 @@
 > Complexity: Medium
 > Theme: Race legibility
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
+> Non-semantic edit: 2026-07-21 repointed audit/playtest evidence references to tracked docs/audits copies.
 
 # Needs
 - Show, for every card, the exact condition under which its main effect triggers (race segment, weather requirement, or proximity threshold) in objective rule language.
@@ -47,7 +48,7 @@
 - logics/instructions.md
 - logics/architecture/adr_005_theme_design_system.md
 - logics/architecture/adr_006_accessibility.md
-- logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md
+- docs/audits/AUDIT_CR_LEAGUE.md
 - packages/shared/src/cards/definitions.ts
 - packages/shared/src/simulation/simulateRace.ts
 - apps/web/src/features/CardStatBadges.tsx

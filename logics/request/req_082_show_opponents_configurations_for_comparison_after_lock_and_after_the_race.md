@@ -7,6 +7,7 @@
 > Complexity: High
 > Theme: Competitive comparison
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
+> Non-semantic edit: 2026-07-21 repointed audit/playtest evidence references to tracked docs/audits copies.
 
 # Needs
 - Let a player see opponents' configurations (approach, preparation, pit strategy, card, and result) in a readable side-by-side comparison.
@@ -47,7 +48,7 @@
 - logics/instructions.md
 - logics/architecture/adr_004_data_security.md
 - logics/architecture/adr_006_accessibility.md
-- logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md
+- docs/audits/AUDIT_CR_LEAGUE.md
 - apps/web/src/app/DriveView.tsx
 - apps/web/src/features/replay/ReplayTower.tsx
 - apps/web/src/features/ReportView.tsx

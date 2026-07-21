@@ -7,6 +7,7 @@
 > Complexity: Low
 > Theme: Race legibility
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
+> Non-semantic edit: 2026-07-21 repointed audit/playtest evidence references to tracked docs/audits copies.
 
 # Needs
 - Frame the pre-race weather pill as a forecast that is not guaranteed, with a qualitative tendency (for example dry likely, rain possible around mid-race), and no per-phase percentages.
@@ -46,7 +47,7 @@
 - LOGICS.md
 - logics/instructions.md
 - logics/architecture/adr_006_accessibility.md
-- logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md
+- docs/audits/AUDIT_CR_LEAGUE.md
 - apps/web/src/app/DriveView.tsx
 - apps/web/src/features/replay/ReplayProgress.tsx
 - apps/web/src/features/replay/replayDirector.ts

@@ -7,6 +7,7 @@
 > Complexity: Medium
 > Theme: Outcome comprehension beyond winning
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
+> Non-semantic edit: 2026-07-21 repointed audit/playtest evidence references to tracked docs/audits copies.
 
 # Needs
 - Make non-winning races feel understandable and sometimes successful when the player executed a defensive, economy, or weather plan well.
@@ -46,7 +47,7 @@
 - LOGICS.md
 - logics/instructions.md
 - logics/roadmap/road_002_cr_league_roadmap_v2.md
-- logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md
+- docs/audits/AUDIT_CR_LEAGUE.md
 - packages/shared/src/economy/constants.ts
 - packages/shared/src/simulation/simulateRace.ts
 - logics/request/req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next.md

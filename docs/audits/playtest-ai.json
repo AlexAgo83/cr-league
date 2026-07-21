@@ -1,0 +1,781 @@
+{
+  "args": {
+    "agents": 50,
+    "seasons": 3,
+    "rounds": 6,
+    "leagueSize": 8,
+    "report": "reports/playtest/audit-2107-ai.md",
+    "json": "reports/playtest/audit-2107-ai.json"
+  },
+  "generatedAt": "2026-07-21T08:43:13.765Z",
+  "champions": [
+    "AI 50",
+    "AI 12",
+    "AI 50"
+  ],
+  "profiles": [
+    {
+      "name": "sprinter",
+      "starts": 162,
+      "winRate": 15.43,
+      "podiumRate": 49.38,
+      "avgPosition": 3.99,
+      "points": 12.67,
+      "credits": 136.73,
+      "fun": 5.66,
+      "frustration": 5.07
+    },
+    {
+      "name": "rain-reader",
+      "starts": 162,
+      "winRate": 12.35,
+      "podiumRate": 40.74,
+      "avgPosition": 4.03,
+      "points": 12.59,
+      "credits": 115.34,
+      "fun": 5.72,
+      "frustration": 3.4
+    },
+    {
+      "name": "banker",
+      "starts": 144,
+      "winRate": 15.28,
+      "podiumRate": 41.67,
+      "avgPosition": 4.54,
+      "points": 11,
+      "credits": 149.13,
+      "fun": 5.24,
+      "frustration": 4.19
+    },
+    {
+      "name": "defender",
+      "starts": 144,
+      "winRate": 13.19,
+      "podiumRate": 39.58,
+      "avgPosition": 4.5,
+      "points": 10.81,
+      "credits": 128.82,
+      "fun": 5.16,
+      "frustration": 4.19
+    },
+    {
+      "name": "rival-hunter",
+      "starts": 144,
+      "winRate": 18.75,
+      "podiumRate": 36.11,
+      "avgPosition": 4.69,
+      "points": 10.66,
+      "credits": 119.58,
+      "fun": 5.39,
+      "frustration": 5.25
+    },
+    {
+      "name": "closer",
+      "starts": 144,
+      "winRate": 9.03,
+      "podiumRate": 31.25,
+      "avgPosition": 4.63,
+      "points": 10.49,
+      "credits": 113.51,
+      "fun": 4.92,
+      "frustration": 3.22
+    }
+  ],
+  "approaches": [
+    {
+      "name": "prudent",
+      "starts": 288,
+      "winRate": 14.24,
+      "podiumRate": 40.63,
+      "avgPosition": 4.52,
+      "points": 10.91,
+      "credits": 138.98,
+      "fun": 5.2,
+      "frustration": 4.19
+    },
+    {
+      "name": "balanced",
+      "starts": 306,
+      "winRate": 10.78,
+      "podiumRate": 36.27,
+      "avgPosition": 4.31,
+      "points": 11.6,
+      "credits": 114.48,
+      "fun": 5.34,
+      "frustration": 3.31
+    },
+    {
+      "name": "aggressive",
+      "starts": 306,
+      "winRate": 16.99,
+      "podiumRate": 43.14,
+      "avgPosition": 4.32,
+      "points": 11.73,
+      "credits": 128.66,
+      "fun": 5.53,
+      "frustration": 5.15
+    }
+  ],
+  "cards": [
+    {
+      "card": "rain_grip",
+      "played": 146,
+      "triggered": 146,
+      "bought": 149,
+      "triggerRate": 100
+    },
+    {
+      "card": "final_surge",
+      "played": 126,
+      "triggered": 126,
+      "bought": 129,
+      "triggerRate": 100
+    },
+    {
+      "card": "qualifying_focus",
+      "played": 116,
+      "triggered": 116,
+      "bought": 121,
+      "triggerRate": 100
+    },
+    {
+      "card": "fleet_sponsorship",
+      "played": 115,
+      "triggered": 115,
+      "bought": 120,
+      "triggerRate": 100
+    },
+    {
+      "card": "economy_mode",
+      "played": 114,
+      "triggered": 114,
+      "bought": 120,
+      "triggerRate": 100
+    },
+    {
+      "card": "launch_boost",
+      "played": 57,
+      "triggered": 57,
+      "bought": 56,
+      "triggerRate": 100
+    },
+    {
+      "card": "soft_tires",
+      "played": 55,
+      "triggered": 55,
+      "bought": 53,
+      "triggerRate": 100
+    },
+    {
+      "card": "urban_draft",
+      "played": 54,
+      "triggered": 44,
+      "bought": 53,
+      "triggerRate": 81.48
+    },
+    {
+      "card": "hard_tires",
+      "played": 36,
+      "triggered": 36,
+      "bought": 34,
+      "triggerRate": 100
+    },
+    {
+      "card": "calculated_attack",
+      "played": 9,
+      "triggered": 9,
+      "bought": 7,
+      "triggerRate": 100
+    },
+    {
+      "card": "rain_mapping",
+      "played": 8,
+      "triggered": 8,
+      "bought": 5,
+      "triggerRate": 100
+    },
+    {
+      "card": "defensive_order",
+      "played": 6,
+      "triggered": 6,
+      "bought": 3,
+      "triggerRate": 100
+    },
+    {
+      "card": "fleet_maintenance",
+      "played": 4,
+      "triggered": 4,
+      "bought": 0,
+      "triggerRate": 100
+    },
+    {
+      "card": "adjustable_wing",
+      "played": 3,
+      "triggered": 3,
+      "bought": 0,
+      "triggerRate": 100
+    },
+    {
+      "card": "pit_relay",
+      "played": 3,
+      "triggered": 3,
+      "bought": 0,
+      "triggerRate": 100
+    }
+  ],
+  "agents": [
+    {
+      "name": "AI 01",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 50,
+      "avgPosition": 3.72,
+      "points": 13.5,
+      "credits": 132.78,
+      "fun": 5.56,
+      "frustration": 4.5
+    },
+    {
+      "name": "AI 02",
+      "starts": 18,
+      "winRate": 33.33,
+      "podiumRate": 83.33,
+      "avgPosition": 2.44,
+      "points": 18.11,
+      "credits": 127.22,
+      "fun": 7.44,
+      "frustration": 2.89
+    },
+    {
+      "name": "AI 03",
+      "starts": 18,
+      "winRate": 16.67,
+      "podiumRate": 44.44,
+      "avgPosition": 4.5,
+      "points": 11.33,
+      "credits": 146.11,
+      "fun": 5.28,
+      "frustration": 4.11
+    },
+    {
+      "name": "AI 04",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 16.67,
+      "avgPosition": 5.17,
+      "points": 8.61,
+      "credits": 110,
+      "fun": 4.44,
+      "frustration": 3.44
+    },
+    {
+      "name": "AI 05",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 27.78,
+      "avgPosition": 5.11,
+      "points": 8.56,
+      "credits": 133.33,
+      "fun": 4.78,
+      "frustration": 4.61
+    },
+    {
+      "name": "AI 06",
+      "starts": 18,
+      "winRate": 22.22,
+      "podiumRate": 38.89,
+      "avgPosition": 4.67,
+      "points": 10.94,
+      "credits": 123.61,
+      "fun": 5.67,
+      "frustration": 5.22
+    },
+    {
+      "name": "AI 07",
+      "starts": 18,
+      "winRate": 5.56,
+      "podiumRate": 16.67,
+      "avgPosition": 5.39,
+      "points": 8.11,
+      "credits": 127.22,
+      "fun": 4.78,
+      "frustration": 5.67
+    },
+    {
+      "name": "AI 08",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 22.22,
+      "avgPosition": 5,
+      "points": 8.83,
+      "credits": 110,
+      "fun": 5.06,
+      "frustration": 3.94
+    },
+    {
+      "name": "AI 09",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 33.33,
+      "avgPosition": 5.39,
+      "points": 7.56,
+      "credits": 148.61,
+      "fun": 4.94,
+      "frustration": 4.78
+    },
+    {
+      "name": "AI 10",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 50,
+      "avgPosition": 3.56,
+      "points": 14.17,
+      "credits": 113.89,
+      "fun": 5.39,
+      "frustration": 2.5
+    },
+    {
+      "name": "AI 11",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 44.44,
+      "avgPosition": 4.56,
+      "points": 10.39,
+      "credits": 130.83,
+      "fun": 5.11,
+      "frustration": 4.22
+    },
+    {
+      "name": "AI 12",
+      "starts": 18,
+      "winRate": 38.89,
+      "podiumRate": 50,
+      "avgPosition": 3.67,
+      "points": 14.83,
+      "credits": 128.33,
+      "fun": 6.06,
+      "frustration": 4.94
+    },
+    {
+      "name": "AI 13",
+      "starts": 18,
+      "winRate": 5.56,
+      "podiumRate": 27.78,
+      "avgPosition": 5.06,
+      "points": 9.44,
+      "credits": 132.22,
+      "fun": 4.78,
+      "frustration": 5.5
+    },
+    {
+      "name": "AI 14",
+      "starts": 18,
+      "winRate": 5.56,
+      "podiumRate": 50,
+      "avgPosition": 3.78,
+      "points": 13.22,
+      "credits": 113.89,
+      "fun": 5.56,
+      "frustration": 3
+    },
+    {
+      "name": "AI 15",
+      "starts": 18,
+      "winRate": 16.67,
+      "podiumRate": 38.89,
+      "avgPosition": 3.89,
+      "points": 13.61,
+      "credits": 149.17,
+      "fun": 5.17,
+      "frustration": 3.72
+    },
+    {
+      "name": "AI 16",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 5.56,
+      "avgPosition": 6.11,
+      "points": 4.78,
+      "credits": 109.17,
+      "fun": 4.17,
+      "frustration": 4.11
+    },
+    {
+      "name": "AI 17",
+      "starts": 18,
+      "winRate": 27.78,
+      "podiumRate": 55.56,
+      "avgPosition": 3.56,
+      "points": 14.83,
+      "credits": 130.83,
+      "fun": 6,
+      "frustration": 3.72
+    },
+    {
+      "name": "AI 18",
+      "starts": 18,
+      "winRate": 16.67,
+      "podiumRate": 44.44,
+      "avgPosition": 4.22,
+      "points": 12.11,
+      "credits": 118.61,
+      "fun": 5.72,
+      "frustration": 4.89
+    },
+    {
+      "name": "AI 19",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 44.44,
+      "avgPosition": 4.11,
+      "points": 11.83,
+      "credits": 136.39,
+      "fun": 5.44,
+      "frustration": 4.94
+    },
+    {
+      "name": "AI 20",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 22.22,
+      "avgPosition": 4.44,
+      "points": 11.06,
+      "credits": 106.39,
+      "fun": 5,
+      "frustration": 3.44
+    },
+    {
+      "name": "AI 21",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 44.44,
+      "avgPosition": 4.89,
+      "points": 9.56,
+      "credits": 151.39,
+      "fun": 5.28,
+      "frustration": 4.44
+    },
+    {
+      "name": "AI 22",
+      "starts": 18,
+      "winRate": 22.22,
+      "podiumRate": 27.78,
+      "avgPosition": 4.72,
+      "points": 11,
+      "credits": 118.61,
+      "fun": 5.06,
+      "frustration": 3.39
+    },
+    {
+      "name": "AI 23",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 27.78,
+      "avgPosition": 5.11,
+      "points": 8.17,
+      "credits": 121.94,
+      "fun": 4.83,
+      "frustration": 4.61
+    },
+    {
+      "name": "AI 24",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 33.33,
+      "avgPosition": 4.94,
+      "points": 9.44,
+      "credits": 110.28,
+      "fun": 4.94,
+      "frustration": 5.17
+    },
+    {
+      "name": "AI 25",
+      "starts": 18,
+      "winRate": 44.44,
+      "podiumRate": 72.22,
+      "avgPosition": 2.44,
+      "points": 18.61,
+      "credits": 144.44,
+      "fun": 6.89,
+      "frustration": 4.22
+    },
+    {
+      "name": "AI 26",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 38.89,
+      "avgPosition": 3.89,
+      "points": 13.28,
+      "credits": 115.28,
+      "fun": 5.61,
+      "frustration": 3.22
+    },
+    {
+      "name": "AI 27",
+      "starts": 18,
+      "winRate": 22.22,
+      "podiumRate": 50,
+      "avgPosition": 4.11,
+      "points": 12.83,
+      "credits": 151.39,
+      "fun": 5.56,
+      "frustration": 3.94
+    },
+    {
+      "name": "AI 28",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 50,
+      "avgPosition": 3.33,
+      "points": 14.72,
+      "credits": 116.11,
+      "fun": 5.33,
+      "frustration": 2.56
+    },
+    {
+      "name": "AI 29",
+      "starts": 18,
+      "winRate": 5.56,
+      "podiumRate": 33.33,
+      "avgPosition": 5,
+      "points": 8.83,
+      "credits": 123.06,
+      "fun": 4.78,
+      "frustration": 4.44
+    },
+    {
+      "name": "AI 30",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 11.11,
+      "avgPosition": 5.78,
+      "points": 6.56,
+      "credits": 107.78,
+      "fun": 4.39,
+      "frustration": 5.39
+    },
+    {
+      "name": "AI 31",
+      "starts": 18,
+      "winRate": 5.56,
+      "podiumRate": 33.33,
+      "avgPosition": 5.56,
+      "points": 6.94,
+      "credits": 136.67,
+      "fun": 5.06,
+      "frustration": 5.83
+    },
+    {
+      "name": "AI 32",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 11.11,
+      "avgPosition": 5.89,
+      "points": 6.22,
+      "credits": 107.22,
+      "fun": 4.89,
+      "frustration": 4.33
+    },
+    {
+      "name": "AI 33",
+      "starts": 18,
+      "winRate": 16.67,
+      "podiumRate": 55.56,
+      "avgPosition": 3.94,
+      "points": 12.61,
+      "credits": 150,
+      "fun": 5.72,
+      "frustration": 4
+    },
+    {
+      "name": "AI 34",
+      "starts": 18,
+      "winRate": 22.22,
+      "podiumRate": 72.22,
+      "avgPosition": 2.89,
+      "points": 16.56,
+      "credits": 122.78,
+      "fun": 6.17,
+      "frustration": 2.39
+    },
+    {
+      "name": "AI 35",
+      "starts": 18,
+      "winRate": 16.67,
+      "podiumRate": 44.44,
+      "avgPosition": 4.22,
+      "points": 12.06,
+      "credits": 134.44,
+      "fun": 5.39,
+      "frustration": 3.89
+    },
+    {
+      "name": "AI 36",
+      "starts": 18,
+      "winRate": 27.78,
+      "podiumRate": 33.33,
+      "avgPosition": 4.83,
+      "points": 10.5,
+      "credits": 124.72,
+      "fun": 5.61,
+      "frustration": 6
+    },
+    {
+      "name": "AI 37",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 27.78,
+      "avgPosition": 5.06,
+      "points": 8.67,
+      "credits": 128.33,
+      "fun": 5.06,
+      "frustration": 5.67
+    },
+    {
+      "name": "AI 38",
+      "starts": 18,
+      "winRate": 5.56,
+      "podiumRate": 22.22,
+      "avgPosition": 4.61,
+      "points": 10.61,
+      "credits": 110.83,
+      "fun": 5.17,
+      "frustration": 3.72
+    },
+    {
+      "name": "AI 39",
+      "starts": 18,
+      "winRate": 5.56,
+      "podiumRate": 22.22,
+      "avgPosition": 5.22,
+      "points": 8.67,
+      "credits": 145.28,
+      "fun": 4.56,
+      "frustration": 4.44
+    },
+    {
+      "name": "AI 40",
+      "starts": 18,
+      "winRate": 5.56,
+      "podiumRate": 22.22,
+      "avgPosition": 5.22,
+      "points": 8.33,
+      "credits": 110,
+      "fun": 4.61,
+      "frustration": 3.5
+    },
+    {
+      "name": "AI 41",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 55.56,
+      "avgPosition": 4,
+      "points": 12.17,
+      "credits": 130.83,
+      "fun": 5.61,
+      "frustration": 3.94
+    },
+    {
+      "name": "AI 42",
+      "starts": 18,
+      "winRate": 44.44,
+      "podiumRate": 61.11,
+      "avgPosition": 3.33,
+      "points": 15.5,
+      "credits": 131.67,
+      "fun": 6.28,
+      "frustration": 4.28
+    },
+    {
+      "name": "AI 43",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 72.22,
+      "avgPosition": 3,
+      "points": 15.83,
+      "credits": 140,
+      "fun": 6,
+      "frustration": 4.06
+    },
+    {
+      "name": "AI 44",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 16.67,
+      "avgPosition": 4.78,
+      "points": 10.06,
+      "credits": 106.11,
+      "fun": 4.94,
+      "frustration": 3.67
+    },
+    {
+      "name": "AI 45",
+      "starts": 18,
+      "winRate": 22.22,
+      "podiumRate": 44.44,
+      "avgPosition": 4.39,
+      "points": 11.83,
+      "credits": 151.11,
+      "fun": 5.39,
+      "frustration": 4.11
+    },
+    {
+      "name": "AI 46",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 5.56,
+      "avgPosition": 6,
+      "points": 5.72,
+      "credits": 107.5,
+      "fun": 4.17,
+      "frustration": 3.89
+    },
+    {
+      "name": "AI 47",
+      "starts": 18,
+      "winRate": 11.11,
+      "podiumRate": 27.78,
+      "avgPosition": 4.44,
+      "points": 11.5,
+      "credits": 125.28,
+      "fun": 4.78,
+      "frustration": 4.06
+    },
+    {
+      "name": "AI 48",
+      "starts": 18,
+      "winRate": 0,
+      "podiumRate": 16.67,
+      "avgPosition": 6.06,
+      "points": 5.39,
+      "credits": 111.67,
+      "fun": 4.44,
+      "frustration": 6.11
+    },
+    {
+      "name": "AI 49",
+      "starts": 18,
+      "winRate": 44.44,
+      "podiumRate": 100,
+      "avgPosition": 1.56,
+      "points": 21.11,
+      "credits": 152.5,
+      "fun": 7.39,
+      "frustration": 5.22
+    },
+    {
+      "name": "AI 50",
+      "starts": 18,
+      "winRate": 55.56,
+      "podiumRate": 100,
+      "avgPosition": 1.44,
+      "points": 21.89,
+      "credits": 141.11,
+      "fun": 7.78,
+      "frustration": 2.33
+    }
+  ],
+  "alerts": [
+    "weak profile: closer win 9.03%, fun 4.92"
+  ]
+}

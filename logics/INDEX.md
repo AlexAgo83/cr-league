@@ -429,5 +429,5 @@
 | [task_079_orchestrate_card_effect_legibility](tasks/task_079_orchestrate_card_effect_legibility.md) | Orchestrate card effect legibility | Ready |  | 0% | tasks/task_079_orchestrate_card_effect_legibility.md |
 | [task_080_orchestrate_weather_forecast_legibility](tasks/task_080_orchestrate_weather_forecast_legibility.md) | Orchestrate weather forecast legibility | Ready |  | 0% | tasks/task_080_orchestrate_weather_forecast_legibility.md |
 | [task_081_orchestrate_plan_commit_clarity](tasks/task_081_orchestrate_plan_commit_clarity.md) | Orchestrate plan commit clarity | Ready |  | 0% | tasks/task_081_orchestrate_plan_commit_clarity.md |
-| [task_082_orchestrate_card_economy_rebalance](tasks/task_082_orchestrate_card_economy_rebalance.md) | Orchestrate card economy rebalance | Ready |  | 0% | tasks/task_082_orchestrate_card_economy_rebalance.md |
+| [task_082_orchestrate_card_economy_rebalance](tasks/task_082_orchestrate_card_economy_rebalance.md) | Orchestrate card economy rebalance | Blocked |  | 0% | tasks/task_082_orchestrate_card_economy_rebalance.md |
 | [task_083_orchestrate_opponent_config_comparison](tasks/task_083_orchestrate_opponent_config_comparison.md) | Orchestrate opponent config comparison | Ready |  | 0% | tasks/task_083_orchestrate_opponent_config_comparison.md |

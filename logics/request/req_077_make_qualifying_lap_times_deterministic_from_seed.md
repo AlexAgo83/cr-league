@@ -7,6 +7,7 @@
 > Complexity: Low
 > Theme: Simulation determinism and beta-readiness
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
+> Non-semantic edit: 2026-07-21 repointed audit/playtest evidence references to tracked docs/audits copies.
 
 # Needs
 - Make qualifying lap times fully reproducible from a seed so identical inputs always produce identical qualifying results and grids.
@@ -45,7 +46,7 @@
 - LOGICS.md
 - logics/instructions.md
 - logics/architecture/adr_004_data_security.md
-- logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md
+- docs/audits/AUDIT_CR_LEAGUE.md
 - apps/api/src/features/leagues/qualifying.ts
 - packages/shared/src/simulation/prng.ts
 - packages/shared/src/simulation/simulateRace.ts

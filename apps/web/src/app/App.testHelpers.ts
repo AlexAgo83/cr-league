@@ -29,8 +29,8 @@ export async function closeLeagueIntro() {
 }
 
 export async function expectGarageCode(code: string) {
-  fireEvent.click(await screen.findByRole("button", { name: "Garage" }));
-  await waitFor(() => expect(document.querySelector(".garage-overview")?.textContent).toContain(code));
+  fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
+  await waitFor(() => expect(document.querySelector(".championship-overview")?.textContent).toContain(code));
 }
 
 export function response(body: unknown) {

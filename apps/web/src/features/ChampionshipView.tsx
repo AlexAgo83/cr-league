@@ -65,7 +65,10 @@ export function ChampionshipView({
       <section className="panel championship-overview">
         <div>
           <span className="section-kicker">{tt("championship_kicker")}</span>
-          <h2>{state.league.name}</h2>
+          <div className="championship-title">
+            <h2>{state.league.name}</h2>
+            {state.league.code ? <span className="invite-code">{state.league.code}</span> : null}
+          </div>
         </div>
         <div className="dashboard-summary" aria-label={tt("dashboard_summary")}>
           <div className="current-race-summary">

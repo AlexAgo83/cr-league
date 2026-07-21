@@ -53,6 +53,12 @@
   margin: 0;
 }
 
+.garage-team-title {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+}
+
 .garage-overview .garage-stats {
   gap: 8px;
 }
@@ -129,14 +135,9 @@
 }
 
 .garage-stats > .garage-livery-visuals {
-  min-height: 96px;
+  min-height: 168px;
   overflow: hidden;
   position: relative;
-}
-
-.garage-livery-visuals > small {
-  position: relative;
-  z-index: 2;
 }
 
 .garage-stats > span:not(.garage-livery-visuals) {
@@ -190,14 +191,6 @@
   width: 62px;
 }
 
-.garage-livery-visuals .garage-livery-preview {
-  left: 50%;
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%) skewX(-10deg);
-  z-index: 2;
-}
-
 .garage-livery-preview .livery-plate-text {
   -webkit-text-stroke: 0.8px var(--livery-primary);
 }
@@ -215,26 +208,66 @@
 
 .garage-car-stage {
   align-items: center;
-  display: flex;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   inset: 0;
-  justify-content: center;
   min-width: 0;
-  opacity: 0.82;
+  padding: 12px 18px;
   pointer-events: none;
   position: absolute;
   width: 100%;
   z-index: 1;
 }
 
-.garage-car-preview {
+.garage-car-preview-frame {
+  align-self: center;
+  display: block;
   filter: drop-shadow(0 4px 4px rgb(0 0 0 / 0.42));
-  height: min(160%, 150px);
-  overflow: visible;
+  height: 96px;
+  justify-self: center;
+  max-width: 100%;
   position: relative;
-  top: -10px;
-  transform: rotate(90deg);
-  width: min(92%, 220px);
+  width: 100%;
   z-index: 1;
+}
+
+.garage-car-preview {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.garage-car-preview > img {
+  filter:
+    drop-shadow(2px 0 0 var(--garage-car-stroke))
+    drop-shadow(-2px 0 0 var(--garage-car-stroke))
+    drop-shadow(0 2px 0 var(--garage-car-stroke))
+    drop-shadow(0 -2px 0 var(--garage-car-stroke));
+  mix-blend-mode: luminosity;
+}
+
+.garage-car-gradient {
+  background: linear-gradient(90deg, transparent 18%, color-mix(in srgb, var(--garage-car-secondary) 55%, #000 45%) 62%, color-mix(in srgb, var(--garage-car-secondary) 82%, #fff 18%) 100%);
+  inset: 0;
+  mask: var(--garage-car-mask) center / contain no-repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.92;
+  pointer-events: none;
+  position: absolute;
+  -webkit-mask: var(--garage-car-mask) center / contain no-repeat;
+  z-index: 3;
+}
+
+.garage-car-preview-top {
+  aspect-ratio: 1278 / 605;
+  height: 144px;
+  --garage-car-mask: url("/assets/cars/crl-v2/car-001/top.png");
+}
+
+.garage-car-preview-side {
+  aspect-ratio: 1351 / 525;
+  --garage-car-mask: url("/assets/cars/crl-v2/car-001/side.png");
 }
 
 .garage-name-fields {

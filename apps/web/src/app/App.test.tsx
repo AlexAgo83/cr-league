@@ -459,8 +459,8 @@ describe("App", () => {
     expect(window.location.pathname).toBe("/garage/team");
     fireEvent.change(screen.getByLabelText("Primary"), { target: { value: "#ffffff" } });
     fireEvent.change(screen.getByLabelText("Secondary"), { target: { value: "#000000" } });
-    expect((screen.getByLabelText("Primary") as HTMLInputElement).value).toBe("#787878");
-    expect((screen.getByLabelText("Secondary") as HTMLInputElement).value).toBe("#969696");
+    expect((screen.getByLabelText("Primary") as HTMLInputElement).value).toBe("#ffffff");
+    expect((screen.getByLabelText("Secondary") as HTMLInputElement).value).toBe("#000000");
     expect(localStorage.getItem("cr-league-garage-panel")).toBe("team");
 
     cleanup();
@@ -708,8 +708,9 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "Circuits" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("tab", { name: "Standings" }));
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
-    expect(document.querySelector(".garage-overview")?.textContent).toContain("ABC123");
+    expect(document.querySelector(".garage-overview")?.textContent).not.toContain("ABC123");
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
+    expect(document.querySelector(".championship-overview")?.textContent).toContain("ABC123");
     expect(document.querySelector(".standings-table")?.textContent).toContain("Volt Union");
     fireEvent.click(screen.getByRole("tab", { name: "Grand Prix history" }));
     expect(document.querySelector(".round-timeline")?.textContent).toContain("R1");

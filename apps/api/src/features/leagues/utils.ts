@@ -4,8 +4,6 @@ import type { Prisma } from "@prisma/client";
 import {
   DEFAULT_LIVERY,
   LEAGUE_CADENCES,
-  MAX_PRIMARY_LIVERY_CHANNEL,
-  MIN_SECONDARY_LIVERY_CHANNEL,
   PRIMARY_LIVERY_COLORS,
   SECONDARY_LIVERY_COLORS
 } from "./constants.js";
@@ -168,17 +166,9 @@ export function normalizeLivery(value: unknown): TeamLivery {
   if (!value || typeof value !== "object") return DEFAULT_LIVERY;
   const livery = value as Partial<Record<keyof TeamLivery, unknown>>;
   return {
-    primary: typeof livery.primary === "string" && isHexColor(livery.primary) ? darkenPrimaryLiveryColor(livery.primary) : DEFAULT_LIVERY.primary,
-    secondary: typeof livery.secondary === "string" && isHexColor(livery.secondary) ? lightenSecondaryLiveryColor(livery.secondary) : DEFAULT_LIVERY.secondary
+    primary: typeof livery.primary === "string" && isHexColor(livery.primary) ? livery.primary : DEFAULT_LIVERY.primary,
+    secondary: typeof livery.secondary === "string" && isHexColor(livery.secondary) ? livery.secondary : DEFAULT_LIVERY.secondary
   };
-}
-
-function darkenPrimaryLiveryColor(color: string) {
-  return `#${[1, 3, 5].map((index) => Math.min(Number.parseInt(color.slice(index, index + 2), 16), MAX_PRIMARY_LIVERY_CHANNEL).toString(16).padStart(2, "0")).join("")}`;
-}
-
-function lightenSecondaryLiveryColor(color: string) {
-  return `#${[1, 3, 5].map((index) => Math.max(Number.parseInt(color.slice(index, index + 2), 16), MIN_SECONDARY_LIVERY_CHANNEL).toString(16).padStart(2, "0")).join("")}`;
 }
 
 export function randomLivery(): TeamLivery {

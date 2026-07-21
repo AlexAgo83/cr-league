@@ -5,23 +5,13 @@ import type { TranslationKey } from "../i18n/index.js";
 import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, sortCardIdsByName, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { GARAGE_PANEL_KEY, type CardPanel } from "../app/viewPreferences.js";
+import { AssetImage } from "./AssetImage.js";
 import { CardArtImage, CardStatBadges } from "./CardStatBadges.js";
-import { MapCarSprite } from "./CircuitMap.js";
+import { DEFAULT_CAR_ASSET } from "./carAssets.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
 import { ModalHero } from "./ModalHero.js";
 import { RewardValue } from "./RewardValue.js";
-
-const MAX_PRIMARY_LIVERY_CHANNEL = 120;
-const MIN_SECONDARY_LIVERY_CHANNEL = 150;
-
-function boundedLiveryColor(color: string, mode: "primary" | "secondary") {
-  return `#${[1, 3, 5].map((index) => {
-    const channel = Number.parseInt(color.slice(index, index + 2), 16);
-    const bounded = mode === "primary" ? Math.min(channel, MAX_PRIMARY_LIVERY_CHANNEL) : Math.max(channel, MIN_SECONDARY_LIVERY_CHANNEL);
-    return bounded.toString(16).padStart(2, "0");
-  }).join("")}`;
-}
 
 export function GarageView({
   state,
@@ -103,27 +93,29 @@ export function GarageView({
     localStorage.setItem(GARAGE_PANEL_KEY, nextPanel);
     onSelectCardPanel(nextPanel);
   };
+  const carTintStyle = { "--garage-car-secondary": livery.secondary, "--garage-car-stroke": livery.primary } as CSSProperties & Record<string, string>;
 
   return (
     <div className="garage-grid">
       <section className="panel garage-overview">
         <div>
           <span className="section-kicker">{tt("dashboard_garage")}</span>
-          <h2>{playerTeam.name}</h2>
-          {state.league.code ? (
-            <div className="championship-meta">
-              <span className="invite-code">{state.league.code}</span>
-            </div>
-          ) : null}
+          <div className="garage-team-title">
+            <h2>{playerTeam.name}</h2>
+            <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
+          </div>
         </div>
         <div className="garage-stats">
           <span className="garage-livery-visuals">
-            <small>{tt("garage_identity")}</small>
-            <LiveryPlate className="garage-livery-preview" livery={livery} name={playerTeam.name} wins={seasonWins} />
             <span className="garage-car-stage">
-              <svg className="garage-car-preview map-car" viewBox="-20 -24 40 48" style={{ "--car-primary": livery.primary, "--car-secondary": livery.secondary } as CSSProperties & Record<string, string>} aria-hidden="true">
-                <MapCarSprite sprite="idle" maskId="garage-car-preview-mask" transform="scale(1.45)" />
-              </svg>
+              <span className="garage-car-preview-frame garage-car-preview-top" style={carTintStyle}>
+                <AssetImage className="garage-car-preview" src={DEFAULT_CAR_ASSET.top} alt="" />
+                <span className="garage-car-gradient" aria-hidden="true" />
+              </span>
+              <span className="garage-car-preview-frame garage-car-preview-side" style={carTintStyle}>
+                <AssetImage className="garage-car-preview" src={DEFAULT_CAR_ASSET.side} alt="" />
+                <span className="garage-car-gradient" aria-hidden="true" />
+              </span>
             </span>
           </span>
           <span>
@@ -163,11 +155,11 @@ export function GarageView({
             <div className="field-grid garage-livery-fields">
               <label>
                 <span>{tt("garage_livery_primary")}</span>
-                <input type="color" value={livery.primary} aria-label={tt("garage_livery_primary")} onChange={(event) => setLivery({ ...livery, primary: boundedLiveryColor(event.target.value, "primary") })} />
+                <input type="color" value={livery.primary} aria-label={tt("garage_livery_primary")} onChange={(event) => setLivery({ ...livery, primary: event.target.value })} />
               </label>
               <label>
                 <span>{tt("garage_livery_secondary")}</span>
-                <input type="color" value={livery.secondary} aria-label={tt("garage_livery_secondary")} onChange={(event) => setLivery({ ...livery, secondary: boundedLiveryColor(event.target.value, "secondary") })} />
+                <input type="color" value={livery.secondary} aria-label={tt("garage_livery_secondary")} onChange={(event) => setLivery({ ...livery, secondary: event.target.value })} />
               </label>
               <button type="button" onClick={() => onUpdateLivery(livery)} disabled={loading}>
                 {tt("garage_livery_save")}

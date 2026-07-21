@@ -2730,6 +2730,11 @@ label small {
   left: auto;
 }
 
+.map-status:has(.map-weather-info-button) {
+  min-width: 172px;
+  padding-right: 46px;
+}
+
 .race-weather-phase-list {
   display: grid;
   gap: 8px;
@@ -4155,7 +4160,7 @@ label small {
 
 .map-car-backplate {
   filter: brightness(0) drop-shadow(0 3px 4px rgb(0 0 0 / 0.55));
-  opacity: 0.38;
+  opacity: 0.58;
   transform: scale(1.1);
   transform-box: fill-box;
   transform-origin: center;
@@ -4167,12 +4172,7 @@ label small {
 }
 
 .map-car-detail {
-  opacity: 0.72;
-}
-
-.map-car-accent {
-  fill: var(--car-secondary, var(--color-telemetry));
-  opacity: 0.62;
+  opacity: 1;
 }
 
 .map-car-wheel {

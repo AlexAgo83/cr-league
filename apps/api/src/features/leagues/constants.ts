@@ -5,10 +5,8 @@ export const STARTING_CREDITS = 180;
 export const STARTER_CARDS: CardId[] = [];
 export const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICES[cardId as CardId] }));
 export const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
-export const PRIMARY_LIVERY_COLORS = ["#0f172a", "#1e1b4b", "#312e81", "#3f1d2d", "#1f2937", "#064e3b", "#451a03", "#172554"] as const;
-export const SECONDARY_LIVERY_COLORS = ["#f8fafc", "#fde68a", "#bfdbfe", "#bbf7d0", "#fecdd3", "#ddd6fe", "#fed7aa", "#ccfbf1"] as const;
-export const MAX_PRIMARY_LIVERY_CHANNEL = 120;
-export const MIN_SECONDARY_LIVERY_CHANNEL = 150;
+export const PRIMARY_LIVERY_COLORS = ["#020617", "#050816", "#09090b", "#0b1020", "#111827", "#0f172a", "#120712", "#07120f"] as const;
+export const SECONDARY_LIVERY_COLORS = ["#00f5ff", "#39ff14", "#ff2bd6", "#ffea00", "#ff6b00", "#7c3cff", "#00ff9d", "#ff1744"] as const;
 export const BOT_TEAM_NAMES = [
   "Apex Foundry",
   "Blackline GP",

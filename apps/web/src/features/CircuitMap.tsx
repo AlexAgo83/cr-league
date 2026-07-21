@@ -4,6 +4,7 @@ import type { TeamLivery, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
+import { DEFAULT_CAR_ASSET } from "./carAssets.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
 export type MapCar = {
@@ -77,7 +78,7 @@ export type CircuitRouteAnalysis = {
 };
 
 const CAR_SPRITES: Record<CarSprite, string> = {
-  idle: "/assets/cars/idle.png",
+  idle: DEFAULT_CAR_ASSET.sprite,
   boost: "/assets/cars/boost.png",
   brake: "/assets/cars/brake.png"
 };
@@ -86,7 +87,7 @@ const CAR_SPRITE_ANCHOR: Record<CarSprite, { x: number; y: number }> = {
   boost: { x: 0, y: -0.35 },
   brake: { x: 0.35, y: -0.35 }
 };
-const CAR_SPRITE_BOX = { x: -12, y: -18, width: 24, height: 36 };
+const CAR_SPRITE_BOX = { x: -24, y: -36, width: 48, height: 72 };
 
 function spriteForCar(car: MapCar): CarSprite {
   if ((car.positionDelta ?? 0) > 0) return "boost";
@@ -544,7 +545,6 @@ export function MapCarSprite({ maskId, sprite, transform, trailLag = 0, showTrai
       <image className="map-car-backplate" href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
       <rect className="map-car-tint" x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
       <image className="map-car-detail" href={CAR_SPRITES[sprite]} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
-      <rect className="map-car-accent" x="-4" y={CAR_SPRITE_BOX.y + anchor.y} width="8" height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
     </g>
   );
 }

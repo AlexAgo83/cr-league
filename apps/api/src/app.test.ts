@@ -345,7 +345,7 @@ describe("api app", () => {
     expect(team.credits).toBe(300 - CARD_PRICES.rain_grip * 2);
   });
 
-  it("keeps custom livery colors in dark-primary and light-secondary ranges", async () => {
+  it("keeps custom livery colors exact", async () => {
     const app = await createTestApp(createMemoryDb());
     const createResponse = await app.inject({
       method: "POST",
@@ -369,7 +369,7 @@ describe("api app", () => {
     await app.close();
 
     expect(updateResponse.statusCode).toBe(200);
-    expect(updatedTeam.livery).toEqual({ primary: "#787878", secondary: "#969696" });
+    expect(updatedTeam.livery).toEqual({ primary: "#ffffff", secondary: "#000000" });
   });
 
   it("renames a team with readable unique names only", async () => {

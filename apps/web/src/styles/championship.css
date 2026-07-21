@@ -37,13 +37,14 @@
   margin: 0;
 }
 
-.championship-overview .invite-code {
-  background: rgb(16 14 18 / 0.64);
-  border-color: rgb(248 243 232 / 0.24);
-  color: var(--color-text);
+.championship-title {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
-.garage-overview .invite-code {
+.championship-overview .invite-code {
   background: rgb(16 14 18 / 0.64);
   border-color: rgb(248 243 232 / 0.24);
   color: var(--color-text);

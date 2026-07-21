@@ -232,6 +232,12 @@
     top: 8px;
   }
 
+  .map-status:has(.map-weather-info-button) {
+    max-width: none;
+    min-width: 156px;
+    padding-right: 42px;
+  }
+
   .map-info-stack {
     display: grid;
     gap: 8px;

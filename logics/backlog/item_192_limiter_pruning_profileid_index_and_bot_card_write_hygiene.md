@@ -1,10 +1,10 @@
 ## item_192_limiter_pruning_profileid_index_and_bot_card_write_hygiene - Limiter pruning, profileId index, and bot-card write hygiene
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Hardening
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,6 +32,8 @@
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: The limiter does not grow unbounded and does not consume the email attempt on an IP-only rejection.
 - request-AC6 -> This backlog slice. Proof: AC2: Team.profileId is indexed via a migration.
+- request-AC3 -> This backlog slice. Evidence needed: resolveCurrentGrandPrix produces identical results for a given seed and circuit regardless of any traits/laps/track values in the request body, covered by a test that varies the body and asserts unchanged output.
+- request-AC4 -> This backlog slice. Evidence needed: A decision with rivalTeamId equal to the submitting team is rejected with 400, covered by a test.
 
 # Decision framing
 - Product framing: Not needed
@@ -52,3 +54,6 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_087_orchestrate_gameplay_and_economy_integrity_fixes` was finished via `logics-manager flow finish task` on 2026-07-22.

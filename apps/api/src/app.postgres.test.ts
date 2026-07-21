@@ -117,6 +117,50 @@ run("api app postgres integration", () => {
     expect(team).toMatchObject({ credits: 0, cards: ["launch_boost"] });
   });
 
+  it("serializes concurrent card sales against the same inventory", async () => {
+    const app = await createTestApp(prisma);
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
+    });
+    const created = createResponse.json();
+    await prisma.team.update({ where: { id: created.player.teamId }, data: { credits: 0, cards: ["rain_grip"] } });
+    const payload = { teamId: created.player.teamId, claimCode: created.player.claimCode, cardId: "rain_grip" };
+
+    const responses = await Promise.all([
+      app.inject({ method: "POST", url: `/leagues/${created.league.id}/cards/sell`, payload }),
+      app.inject({ method: "POST", url: `/leagues/${created.league.id}/cards/sell`, payload })
+    ]);
+    const team = await prisma.team.findUnique({ where: { id: created.player.teamId } });
+
+    await app.close();
+
+    expect(responses.map((response) => response.statusCode).sort()).toEqual([200, 409]);
+    expect(team).toMatchObject({ credits: 60, cards: [] });
+  });
+
+  it("enforces max players under concurrent joins", async () => {
+    const app = await createTestApp(prisma);
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false, maxPlayers: 2 }
+    });
+    const created = createResponse.json();
+
+    const responses = await Promise.all([
+      app.inject({ method: "POST", url: "/leagues/join", payload: { code: created.league.code, teamName: "Late Apex" } }),
+      app.inject({ method: "POST", url: "/leagues/join", payload: { code: created.league.code, teamName: "Spare Slot" } })
+    ]);
+    const teams = await prisma.team.findMany({ where: { leagueId: created.league.id } });
+
+    await app.close();
+
+    expect(responses.map((response) => response.statusCode).sort()).toEqual([200, 409]);
+    expect(teams).toHaveLength(2);
+  });
+
   it("rolls back restartLeague when the replacement Grand Prix insert fails", async () => {
     const app = await createTestApp(prisma);
     const createResponse = await app.inject({

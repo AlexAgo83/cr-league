@@ -23,6 +23,9 @@ type AdminCleanupBody = {
   leagueIds?: string[];
   confirmation?: string;
 };
+type AdminDeleteBody = {
+  confirmation?: string;
+};
 
 export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient, config: ApiConfig) {
   app.addHook("preHandler", async (request, reply) => {
@@ -41,10 +44,11 @@ export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient
     }
   });
 
-  app.delete<{ Params: { profileId: string } }>("/admin/users/:profileId", async (request, reply) => {
+  app.delete<{ Params: { profileId: string }; Body: AdminDeleteBody }>("/admin/users/:profileId", async (request, reply) => {
     try {
-      return await deleteAdminUser(db, request.params.profileId);
+      return await deleteAdminUser(db, request.params.profileId, request.body ?? {});
     } catch (error) {
+      if (error instanceof AdminCleanupError) return reply.code(400).send({ error: "Bad Request", message: error.message });
       return sendAdminStoreError(reply, error, "Profile not found.");
     }
   });

@@ -500,6 +500,7 @@ describe("App profile and admin", () => {
     expect(await screen.findByDisplayValue("FACE1234")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Delete user" }));
     expect(screen.getByRole("dialog", { name: "Delete user?" })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("Type the email to confirm"), { target: { value: "pilot@example.test" } });
     fireEvent.click(screen.getAllByRole("button", { name: "Delete user" }).at(-1)!);
     await screen.findByText("No profiles found.");
 

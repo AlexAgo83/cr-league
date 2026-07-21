@@ -20,6 +20,7 @@ import type {
   ReplayTracePoint,
   Weather
 } from "../domain/race.js";
+import { APPROACH_DELTAS, CARD_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type DecisionDeltas } from "../domain/decisionDeltas.js";
 import { RACE_SEGMENTS, clampTrait } from "../domain/race.js";
 import { createPrng } from "./prng.js";
 
@@ -99,11 +100,12 @@ export function simulateRace(input: RaceInput): RaceResult {
     }
 
     const pitCosts = new Map<string, number>();
+    const elapsedTimes = new Map(states.map((state) => [state.participant.teamId, state.elapsedTime]));
     for (const state of states) {
       applySegment(state, segment, weather[segment], input, prng.next);
       const pitCost = maybeAddPitStopEvent(state, segment, events);
       if (pitCost) pitCosts.set(state.participant.teamId, pitCost);
-      maybeAddCardEvent(state, segment, weather[segment], input, events, states);
+      maybeAddCardEvent(state, segment, weather[segment], input, events, states, elapsedTimes);
       maybeAddRiskEvent(state, segment, events, prng.next);
     }
 
@@ -298,7 +300,7 @@ function createDistanceReplayTracePoint(states: TeamState[], plans: Map<string, 
     })
   );
   const order = progress >= 1
-    ? states.slice().sort((left, right) => left.elapsedTime - right.elapsedTime || right.scores.score - left.scores.score).map((state) => state.participant.teamId)
+    ? states.slice().sort((left, right) => right.scores.score - left.scores.score || left.elapsedTime - right.elapsedTime).map((state) => state.participant.teamId)
     : orderFromCars(cars, states);
   const leaderProgress = Math.max(...Object.values(cars).map((car) => car.trackProgress));
   return {
@@ -496,45 +498,9 @@ function createTeamState(participant: RaceParticipant): TeamState {
 }
 
 function applyDecision(scores: InternalScores, participant: RaceParticipant) {
-  const { approach, preparation } = participant.decision;
-
-  if (approach === "prudent") {
-    scores.pace -= 8;
-    scores.control += 10;
-    scores.reliability += 9;
-    scores.aggression -= 12;
-  } else if (approach === "balanced") {
-    scores.control += 4;
-    scores.reliability += 4;
-    scores.weatherReadiness += 4;
-  } else if (approach === "aggressive") {
-    scores.pace += 16;
-    scores.control -= 6;
-    scores.reliability -= 5;
-    scores.aggression += 16;
-  }
-
-  if (preparation === "speed") {
-    scores.pace += 9;
-    scores.reliability -= 4;
-  } else if (preparation === "reliability") {
-    scores.reliability += 12;
-    scores.control += 6;
-    scores.pace -= 2;
-  } else {
-    scores.weatherReadiness += 14;
-    scores.control += 4;
-  }
-
-  if (pitStrategy(participant.decision) === "heavy_pack") {
-    scores.pace -= 14;
-    scores.reliability += 4;
-    scores.control += 2;
-  } else if (pitStrategy(participant.decision) === "mini_pack") {
-    scores.pace += 8;
-    scores.aggression += 4;
-    scores.reliability -= 5;
-  }
+  applyDeltas(scores, APPROACH_DELTAS[participant.decision.approach]);
+  applyDeltas(scores, PREPARATION_DELTAS[participant.decision.preparation]);
+  applyDeltas(scores, PIT_STRATEGY_DELTAS[pitStrategy(participant.decision)]);
 
   if (participant.botArchetype === "rain_specialist") {
     scores.weatherReadiness += 6;
@@ -545,29 +511,12 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.reliability += 6;
   }
 
-  if (participant.decision.cardId === "soft_tires") {
-    scores.pace += 8;
-    scores.aggression += 6;
-    scores.reliability -= 10;
-  } else if (participant.decision.cardId === "defensive_order") {
-    scores.control += 6;
-    scores.reliability += 3;
-    scores.aggression -= 11;
-    scores.pace -= 8;
-  } else if (participant.decision.cardId === "adjustable_wing") {
-    scores.pace += 4;
-    scores.aggression += 5;
-    scores.reliability -= 6;
-  } else if (participant.decision.cardId === "economy_mode") {
-    scores.pace -= 4;
-    scores.control += 6;
-    scores.reliability += 2;
-  } else if (participant.decision.cardId === "hard_tires") {
-    scores.pace -= 6;
-    scores.reliability += 7;
-    scores.control += 3;
-  } else if (participant.decision.cardId === "calculated_attack") {
-    scores.aggression += 7;
+  if (participant.decision.cardId) applyDeltas(scores, CARD_DELTAS[participant.decision.cardId]);
+}
+
+function applyDeltas(scores: InternalScores, deltas: DecisionDeltas = {}) {
+  for (const [key, value] of Object.entries(deltas) as Array<[keyof InternalScores, number]>) {
+    scores[key] += value;
   }
 }
 
@@ -656,6 +605,9 @@ function applySegment(
   if (state.participant.decision.cardId === "fleet_sponsorship") {
     delta -= 0.65;
   }
+  if (state.participant.decision.preparation === "weather" && weather !== "dry" && input.forecast.dry < 100) {
+    delta += weather === "heavy_rain" ? 8 : 4;
+  }
 
   scores.score += delta;
   state.elapsedTime += segmentTime(segment, delta);
@@ -699,7 +651,7 @@ function circuitFit(state: TeamState, input: RaceInput) {
   for (const trait of traits) {
     if (trait === "fast") bonus += state.scores.pace * 0.08;
     if (trait === "technical" || trait === "urban") bonus += state.scores.control * 0.08;
-    if (trait === "high_wear") bonus += state.scores.reliability * 0.08;
+    if (trait === "high_wear") bonus += state.scores.reliability * 0.1;
     if (trait === "weather_sensitive") bonus += state.scores.weatherReadiness * 0.08;
   }
 
@@ -712,7 +664,8 @@ function maybeAddCardEvent(
   weather: Weather,
   input: RaceInput,
   events: RaceEvent[],
-  states: TeamState[]
+  states: TeamState[],
+  elapsedTimes: Map<string, number>
 ) {
   const cardId = state.participant.decision.cardId;
   if (!cardId) return;
@@ -795,7 +748,7 @@ function maybeAddCardEvent(
     state.resultTags.add("hard_tires");
     events.push(createCardEvent(events.length, state, segment, "late_push_gain", 5));
   } else if (cardId === "calculated_attack" && segment === "mid") {
-    const target = carAhead(state, states);
+    const target = carAhead(state, states, elapsedTimes);
     const closeEnough = target && state.elapsedTime - target.elapsedTime <= 3;
     if (closeEnough) {
       state.scores.score += 24;
@@ -810,8 +763,8 @@ function maybeAddCardEvent(
   }
 }
 
-function carAhead(state: TeamState, states: TeamState[]) {
-  const sorted = [...states].sort((left, right) => left.elapsedTime - right.elapsedTime);
+function carAhead(state: TeamState, states: TeamState[], elapsedTimes: Map<string, number>) {
+  const sorted = [...states].sort((left, right) => (elapsedTimes.get(left.participant.teamId) ?? left.elapsedTime) - (elapsedTimes.get(right.participant.teamId) ?? right.elapsedTime));
   return sorted[sorted.findIndex((candidate) => candidate.participant.teamId === state.participant.teamId) - 1];
 }
 
@@ -917,12 +870,17 @@ function maybeAddFlavorEvent(
 }
 
 function classify(states: TeamState[]): ClassificationEntry[] {
-  const sorted = [...states].sort((left, right) => left.elapsedTime - right.elapsedTime || right.scores.score - left.scores.score);
+  const sorted = [...states].sort((left, right) => right.scores.score - left.scores.score || left.elapsedTime - right.elapsedTime);
+  const positionCredits: number[] = [];
+  for (let index = 0; index < sorted.length; index += 1) {
+    const baseCredits = RACE_CREDITS_BY_POSITION[index] ?? RACE_CREDITS_BY_POSITION.at(-1) ?? 0;
+    const comebackBonus = Math.min(COMEBACK_CREDIT_BONUS_CAP, Math.max(0, index + 1 - RACE_POINTS_BY_POSITION.length) * COMEBACK_CREDIT_BONUS_PER_POSITION);
+    const previous = index > 0 ? positionCredits[index - 1] : undefined;
+    positionCredits.push(previous === undefined ? baseCredits + comebackBonus : Math.min(previous, baseCredits + comebackBonus));
+  }
 
   return sorted.map((state, index) => {
     const position = index + 1;
-    const baseCredits = RACE_CREDITS_BY_POSITION[index] ?? 100;
-    const comebackBonus = Math.min(COMEBACK_CREDIT_BONUS_CAP, Math.max(0, position - RACE_POINTS_BY_POSITION.length) * COMEBACK_CREDIT_BONUS_PER_POSITION);
     const sponsorBonus = state.participant.decision.cardId === "fleet_sponsorship" ? FLEET_SPONSORSHIP_CREDIT_BONUS : 0;
     const economyBonus = state.participant.decision.cardId === "economy_mode" && position <= 4 ? ECONOMY_MODE_CREDIT_BONUS : 0;
 
@@ -931,7 +889,7 @@ function classify(states: TeamState[]): ClassificationEntry[] {
       teamId: state.participant.teamId,
       teamName: state.participant.teamName,
       points: RACE_POINTS_BY_POSITION[index] ?? 0,
-      credits: baseCredits + comebackBonus + sponsorBonus + economyBonus,
+      credits: (positionCredits[index] ?? 0) + sponsorBonus + economyBonus,
       score: Number(state.scores.score.toFixed(2)),
       positionChange: state.participant.standingsRank - position,
       status: "finished",
@@ -1061,7 +1019,7 @@ function lapForSegment(segment: RaceSegment) {
   return laps[segment];
 }
 
-function lapForProgress(progress: number, laps: number) {
+export function lapForProgress(progress: number, laps: number) {
   return Math.max(1, Math.min(laps, Math.round(1 + Math.max(0, Math.min(1, progress)) * (laps - 1))));
 }
 

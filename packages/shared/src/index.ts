@@ -14,6 +14,7 @@ export type HealthStatus = {
 
 export { CARD_DEFINITIONS, CARD_DESCRIPTORS, type CardDefinition, type CardDescriptor, type CardStrengthBand } from "./cards/definitions.js";
 export { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, seasonCircuitIdentities, type CityCircuitIdentity } from "./domain/circuits.js";
+export { APPROACH_DELTAS, CARD_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type DecisionDeltaKey, type DecisionDeltas } from "./domain/decisionDeltas.js";
 export * from "./domain/race.js";
 export {
   CARD_PRICES,
@@ -27,5 +28,5 @@ export {
 } from "./economy/constants.js";
 export { DEMO_RACE_INPUT } from "./simulation/demoRace.js";
 export { createPrng } from "./simulation/prng.js";
-export { RACE_REPLAY_BASE_SECONDS, simulateRace } from "./simulation/simulateRace.js";
+export { RACE_REPLAY_BASE_SECONDS, lapForProgress, simulateRace } from "./simulation/simulateRace.js";
 export { validateReplayTrace } from "./simulation/validateReplayTrace.js";

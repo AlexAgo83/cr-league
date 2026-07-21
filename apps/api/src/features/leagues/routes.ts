@@ -343,22 +343,37 @@ function isAdminEmail(email: string, config?: Pick<ApiConfig, "adminEmails">) {
 
 function createRecoveryLimiter(limit = 5, windowMs = 15 * 60 * 1000) {
   const buckets = new Map<string, { count: number; resetAt: number }>();
-  const take = (key: string) => {
-    const now = Date.now();
+  const prune = (now: number) => {
+    for (const [bucketKey, bucket] of buckets) {
+      if (bucket.resetAt <= now) buckets.delete(bucketKey);
+    }
+  };
+  const canTake = (key: string, now: number) => {
+    const bucket = buckets.get(key);
+    return !bucket || bucket.resetAt <= now || bucket.count < limit;
+  };
+  const increment = (key: string, now: number) => {
     const bucket = buckets.get(key);
     if (!bucket || bucket.resetAt <= now) {
       buckets.set(key, { count: 1, resetAt: now + windowMs });
-      return true;
+    } else {
+      bucket.count += 1;
     }
-    if (bucket.count >= limit) return false;
-    bucket.count += 1;
+  };
+
+  const takePair = (emailKey: string, ipKey: string) => {
+    const now = Date.now();
+    prune(now);
+    if (!canTake(emailKey, now) || !canTake(ipKey, now)) return false;
+    increment(emailKey, now);
+    increment(ipKey, now);
     return true;
   };
 
   return {
     take(email: string, ip: string) {
       // ponytail: in-process limiter is enough for single-node Render; use Redis if API scales horizontally.
-      return take(`email:${email.trim().toLowerCase()}`) && take(`ip:${ip}`);
+      return takePair(`email:${email.trim().toLowerCase()}`, `ip:${ip}`);
     }
   };
 }

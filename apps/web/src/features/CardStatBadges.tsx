@@ -1,4 +1,4 @@
-import { CARD_DESCRIPTORS, type CardId, type CardStrengthBand } from "@cr-league/shared";
+import { CARD_DESCRIPTORS, type CardId, type CardStrengthBand, type DecisionDeltaKey } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { Translator } from "../app/helpers.js";
 import { AssetImage } from "./AssetImage.js";
@@ -26,8 +26,8 @@ export function CardArtImage({ cardId }: { cardId: CardId }) {
   return <AssetImage className="card-cell-art" src={CARD_ART[cardId]} alt="" />;
 }
 
-type StatTrait = "grip" | "overtaking" | "energy";
-export type StatBadge = { trait: StatTrait; sign: "+" | "-"; label: TranslationKey };
+type StatTrait = "grip" | "overtaking" | "energy" | DecisionDeltaKey;
+export type StatBadge = { trait: StatTrait; sign: "+" | "-"; label: TranslationKey; value?: number };
 
 export const CARD_BADGES: Record<CardId, StatBadge[]> = {
   rain_grip: [
@@ -104,25 +104,36 @@ const CARD_STRENGTH_LABEL: Record<CardStrengthBand, TranslationKey> = {
 const BADGE_TRAIT_LABEL: Record<StatTrait, TranslationKey> = {
   grip: "circuit_grip",
   overtaking: "circuit_overtaking",
-  energy: "circuit_energy"
+  energy: "circuit_energy",
+  pace: "engine_stat_pace",
+  control: "engine_stat_control",
+  reliability: "engine_stat_reliability",
+  weatherReadiness: "engine_stat_weather",
+  aggression: "engine_stat_aggression"
 };
 
 const BADGE_TRAIT_HINT: Record<StatTrait, TranslationKey> = {
   grip: "circuit_grip_hint",
   overtaking: "circuit_overtaking_hint",
-  energy: "circuit_energy_hint"
+  energy: "circuit_energy_hint",
+  pace: "engine_stat_pace_hint",
+  control: "engine_stat_control_hint",
+  reliability: "engine_stat_reliability_hint",
+  weatherReadiness: "engine_stat_weather_hint",
+  aggression: "engine_stat_aggression_hint"
 };
 
 export function StatBadges({ badges, tt }: { badges: StatBadge[]; tt: Translator }) {
   return (
     <>
       {badges.map((badge) => {
-        const label = `${badge.sign} ${tt(BADGE_TRAIT_LABEL[badge.trait])}`;
-        const title = `${badge.sign} ${tt(badge.label)}. ${tt(BADGE_TRAIT_HINT[badge.trait])}`;
+        const label = `${badge.sign}${badge.value ?? ""} ${tt(BADGE_TRAIT_LABEL[badge.trait])}`;
+        const title = `${badge.sign}${badge.value ?? ""} ${tt(badge.label)}. ${tt(BADGE_TRAIT_HINT[badge.trait])}`;
+        const icon = badge.trait === "grip" || badge.trait === "overtaking" || badge.trait === "energy" ? <VisualIcon name={badge.trait} /> : tt(BADGE_TRAIT_LABEL[badge.trait]).charAt(0);
         return (
           // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- informational stat badges need keyboard focus so native title/ARIA explanations are reachable outside hover.
           <span key={`${badge.sign}-${badge.trait}`} className={`card-stat-badge map-trait-${badge.trait} ${badge.sign === "-" ? "weakness" : "bonus"}`} title={title} aria-label={title} tabIndex={0}>
-            <i aria-hidden="true"><VisualIcon name={badge.trait} /></i>
+            <i aria-hidden="true">{icon}</i>
             <span>{label}</span>
           </span>
         );

@@ -132,7 +132,7 @@ export function AppOverlays({
   onRestartLeague: () => void;
   onCloseOnboardingHelp: (topic: OnboardingHelpTopic, dismiss: boolean) => void;
   onCloseAdminDelete: () => void;
-  onDeleteAdminUser: () => void;
+  onDeleteAdminUser: (confirmation: string) => void;
   onCloseProfileCode: () => void;
   onCloseProfileLogout: () => void;
   onClosePreferencesReset: () => void;

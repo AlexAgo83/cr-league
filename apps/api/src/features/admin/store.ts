@@ -55,7 +55,13 @@ export async function resetAdminUserRecoveryCode(db: Db, profileId: string) {
   };
 }
 
-export async function deleteAdminUser(db: Db, profileId: string) {
+export async function deleteAdminUser(db: Db, profileId: string, input: { confirmation?: string } = {}) {
+  const profile = await db.profile.findUnique({ where: { id: profileId } });
+  if (!profile) {
+    await db.profile.delete({ where: { id: profileId } });
+    return { ok: true };
+  }
+  if (!isTestProfile(profile.email) && input.confirmation !== profile.email) throw new AdminCleanupError("Type the profile email to confirm deletion.");
   await db.profile.delete({ where: { id: profileId } });
   return { ok: true };
 }

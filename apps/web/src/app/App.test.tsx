@@ -611,7 +611,7 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "Pit strategy: Standard swap" })).toBeTruthy();
     expect(screen.getByRole("tab", { name: "Card: No card" })).toBeTruthy();
     expect(screen.getByText("Higher means aggressive and offensive plans gain more time.")).toBeTruthy();
-    expect([...document.querySelectorAll(".directive-trait-modifier")].map((element) => element.textContent)).toEqual(["+7", "±0", "+3"]);
+    expect([...document.querySelectorAll(".directive-trait-modifier")].map((element) => element.textContent)).toEqual(["+26", "±0", "+4"]);
     // Approach sub-screen is shown first.
     expect(document.querySelector(".choice-grid")?.className).toContain("directive-choice-grid");
     expect(screen.getByRole("button", { name: "Approach: Balanced" }).getAttribute("aria-pressed")).toBe("true");

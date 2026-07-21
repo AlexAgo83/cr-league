@@ -31,7 +31,7 @@ import {
   TEAM_NAME_LIMIT
 } from "./constants.js";
 import { LeagueRuleError } from "./errors.js";
-import { getCurrentGrandPrix, isUniqueConstraintError, lockGrandPrixRow, retryUnique, runWrite } from "./persistence.js";
+import { getCurrentGrandPrix, isUniqueConstraintError, lockGrandPrixRow, lockLeagueRow, lockTeamRow, retryUnique, runWrite } from "./persistence.js";
 import { bestQualifyingRuns, createQualifyingRuns, qualifyingCardForTeam } from "./qualifying.js";
 import type {
   AdminProofInput,
@@ -55,7 +55,6 @@ import type {
 import {
   appendCard,
   clampInteger,
-  clampNumber,
   createClaimCode,
   createLeagueCode,
   createRecoveryCode,
@@ -69,7 +68,6 @@ import {
   normalizeEmail,
   normalizeLivery,
   normalizeQualifyingRuns,
-  normalizeRaceTraits,
   profileSession,
   randomLivery,
   removeOneCard,
@@ -259,31 +257,34 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
   const league = await db.league.findUnique({ where: { code } });
   if (!league) return null;
 
-  const state = await getLeagueState(db, league.id);
-  if (!state) return null;
-  if (state.currentGrandPrix.status === "resolved") {
-    throw new LeagueRuleError("This league is not accepting new teams after the Grand Prix is resolved.");
-  }
-  if (state.teams.length >= state.league.maxPlayers) {
-    throw new LeagueRuleError("This league is full.");
-  }
-  if (state.teams.some((team) => team.name.toLowerCase() === teamName.toLowerCase())) {
-    throw new LeagueRuleError("This team name is already taken.");
-  }
-
   const team = await retryUnique(() =>
-    db.team.create({
-      data: {
-        leagueId: league.id,
-        profileId: input.profileId,
-        name: teamName,
-        kind: "human",
-        claimCode: createClaimCode(),
-        points: 0,
-        credits: STARTING_CREDITS,
-        cards: STARTER_CARDS,
-        livery: randomLivery()
+    runWrite(db, async (tx) => {
+      await lockLeagueRow(tx, league.id);
+      const state = await getLeagueState(tx, league.id);
+      if (!state) throw new LeagueRuleError("League not found.");
+      if (state.currentGrandPrix.status === "resolved") {
+        throw new LeagueRuleError("This league is not accepting new teams after the Grand Prix is resolved.");
       }
+      if (state.teams.length >= state.league.maxPlayers) {
+        throw new LeagueRuleError("This league is full.");
+      }
+      if (state.teams.some((team) => team.name.toLowerCase() === teamName.toLowerCase())) {
+        throw new LeagueRuleError("This team name is already taken.");
+      }
+
+      return tx.team.create({
+        data: {
+          leagueId: league.id,
+          profileId: input.profileId,
+          name: teamName,
+          kind: "human",
+          claimCode: createClaimCode(),
+          points: 0,
+          credits: STARTING_CREDITS,
+          cards: STARTER_CARDS,
+          livery: randomLivery()
+        }
+      });
     })
   );
 
@@ -401,6 +402,7 @@ export async function buyCard(db: Db, leagueId: string, input: { teamId?: string
   }
 
   await runWrite(db, async (tx) => {
+    await lockTeamRow(tx, team.id);
     const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
     if (!freshTeam || freshTeam.leagueId !== leagueId || freshTeam.credits < totalPrice) {
       throw new LeagueRuleError("Not enough credits to buy this card.");
@@ -436,6 +438,7 @@ export async function sellCard(db: Db, leagueId: string, input: { teamId?: strin
   }
 
   await runWrite(db, async (tx) => {
+    await lockTeamRow(tx, team.id);
     const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
     const cards = freshTeam && freshTeam.leagueId === leagueId ? normalizeCards(freshTeam.cards) : [];
     if (!freshTeam || !cards.includes(cardId)) {
@@ -536,29 +539,36 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
     throw new LeagueRuleError("This card is not in your inventory.");
   }
 
-  await db.raceDecision.upsert({
-    where: {
-      grandPrixId_teamId: {
-        grandPrixId: grandPrix.id,
-        teamId: input.teamId
-      }
-    },
-    update: {
-      approach: input.approach,
-      preparation: input.preparation,
-      pitStrategy: input.pitStrategy ?? "standard",
-      cardId,
-      rivalTeamId: input.rivalTeamId
-    },
-    create: {
-      grandPrixId: grandPrix.id,
-      teamId: input.teamId,
-      approach: input.approach,
-      preparation: input.preparation,
-      pitStrategy: input.pitStrategy ?? "standard",
-      cardId,
-      rivalTeamId: input.rivalTeamId
+  await runWrite(db, async (tx) => {
+    await lockGrandPrixRow(tx, grandPrix.id);
+    const freshGrandPrix = await getCurrentGrandPrix(tx, leagueId);
+    if (!freshGrandPrix || freshGrandPrix.id !== grandPrix.id || freshGrandPrix.status === "resolved") {
+      throw new LeagueRuleError("This Grand Prix is already resolved.");
     }
+    await tx.raceDecision.upsert({
+      where: {
+        grandPrixId_teamId: {
+          grandPrixId: freshGrandPrix.id,
+          teamId: input.teamId
+        }
+      },
+      update: {
+        approach: input.approach,
+        preparation: input.preparation,
+        pitStrategy: input.pitStrategy ?? "standard",
+        cardId,
+        rivalTeamId: input.rivalTeamId
+      },
+      create: {
+        grandPrixId: freshGrandPrix.id,
+        teamId: input.teamId,
+        approach: input.approach,
+        preparation: input.preparation,
+        pitStrategy: input.pitStrategy ?? "standard",
+        cardId,
+        rivalTeamId: input.rivalTeamId
+      }
+    });
   });
 
   const lockedState = await getLeagueState(db, leagueId);
@@ -705,10 +715,10 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
       grandPrixName: freshGrandPrix.name,
       primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
       secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
-      traits: normalizeRaceTraits(input.traits),
-      trackLengthMeters: clampInteger(input.trackLengthMeters, circuit.trackLengthMeters, 1200, 8000),
-      laps: clampInteger(input.laps, circuit.laps, 1, 99),
-      pitLaneProgress: clampNumber(input.pitLaneProgress, 0.5, 0, 0.999),
+      traits: circuit.traits,
+      trackLengthMeters: circuit.trackLengthMeters,
+      laps: circuit.laps,
+      pitLaneProgress: 0.5,
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
       participants
     });
@@ -984,7 +994,7 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
             cardId: (decision.cardId ?? undefined) as RaceDecision["cardId"],
             rivalTeamId: decision.rivalTeamId ?? undefined
           }
-        : { ...demo.decision, cardId: defaultCardForTeam(team, demo.decision.cardId) }
+        : { ...demo.decision, cardId: undefined }
     };
   });
 }
@@ -1005,6 +1015,9 @@ function validateDecisionValues(state: LeagueState, input: SubmitDecisionInput) 
   if (input.rivalTeamId != null && !state.teams.some((team) => team.id === input.rivalTeamId)) {
     throw new LeagueRuleError("Unknown rival team.", 400);
   }
+  if (input.rivalTeamId === input.teamId) {
+    throw new LeagueRuleError("A rival must be another team.", 400);
+  }
 }
 
 function normalizePitStrategy(value: unknown): NonNullable<RaceDecision["pitStrategy"]> {
@@ -1021,14 +1034,10 @@ async function requireAdminClaim(db: Db, leagueId: string, input: AdminProofInpu
     throw new LeagueRuleError("Only the league owner can perform this action.", 403);
   }
   const owner = league.teams.find((candidate) => candidate.id === league.ownerTeamId && candidate.kind === "human");
-  const fallbackOwner = owner ?? league.teams.find((candidate) => candidate.kind === "human");
-  if (!fallbackOwner) {
+  if (!owner) {
     throw new LeagueRuleError("Only the league owner can perform this action.", 403);
   }
-  if (league.ownerTeamId !== fallbackOwner.id) {
-    await db.league.update({ where: { id: leagueId }, data: { ownerTeamId: fallbackOwner.id } });
-  }
-  if (fallbackOwner.id !== team.id) {
+  if (owner.id !== team.id) {
     throw new LeagueRuleError("Only the league owner can perform this action.", 403);
   }
   return team;
@@ -1047,21 +1056,22 @@ async function requireTeamClaim(db: Db, leagueId: string, input: { teamId?: stri
 }
 
 async function buyBotCards(db: Db, state: LeagueState, seed: string) {
-  await Promise.all(
-    state.teams
-      .filter((team) => team.kind === "bot" && affordableCardIds(team.credits).length > 0)
-      .map((team) => {
-        const cardId = randomCardId(`${seed}-${team.id}-${team.credits}-${team.cards.length}`, affordableCardIds(team.credits));
-        const price = CARD_PRICES[cardId];
-        return db.team.update({
-          where: { id: team.id },
-          data: {
-            credits: { decrement: price },
-            cards: appendCard(team.cards, cardId)
-          }
-        });
-      })
-  );
+  for (const team of state.teams.filter((team) => team.kind === "bot")) {
+    await lockTeamRow(db, team.id);
+    const freshTeam = await db.team.findUnique({ where: { id: team.id } });
+    const credits = freshTeam?.leagueId === state.league.id ? freshTeam.credits : 0;
+    const cards = freshTeam ? normalizeCards(freshTeam.cards) : team.cards;
+    const affordable = affordableCardIds(credits);
+    if (!freshTeam || !affordable.length) continue;
+    const cardId = randomCardId(`${seed}-${team.id}-${credits}-${cards.length}`, affordable);
+    await db.team.update({
+      where: { id: team.id },
+      data: {
+        credits: { decrement: CARD_PRICES[cardId] },
+        cards: appendCard(cards, cardId)
+      }
+    });
+  }
 }
 
 function defaultCardForTeam(team: LeagueState["teams"][number], preferred?: CardId) {

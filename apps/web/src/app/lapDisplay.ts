@@ -1,9 +1,9 @@
-import type { RaceResult } from "@cr-league/shared";
+import { lapForProgress, type RaceResult } from "@cr-league/shared";
 
 type RaceEvent = RaceResult["events"][number];
 
 export function displayLapAtProgress(progress: number, laps: number) {
-  return Math.max(1, Math.min(laps, Math.round(1 + Math.max(0, Math.min(1, progress)) * (laps - 1))));
+  return lapForProgress(progress, laps);
 }
 
 export function displayLapForEvent(event: RaceEvent, maxEventLap: number, circuitLaps: number) {

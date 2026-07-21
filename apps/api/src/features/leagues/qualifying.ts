@@ -15,19 +15,8 @@ import { strongestForecast } from "./utils.js";
 
 const QUALIFYING_REFERENCE_LAP_SECONDS = 90;
 const WEATHER_STEPS: Weather[] = ["dry", "light_rain", "heavy_rain"];
-// Fixed reference epoch (2024-01-01T00:00:00Z) so createdAt is derived from the seed, never from the wall clock.
+// Fixed reference epoch (2024-01-01T00:00:00Z) keeps generated chronos reproducible without using the wall clock.
 const QUALIFYING_CREATED_AT_EPOCH_MS = 1704067200000;
-
-// Deterministic stand-in for a creation timestamp: same seed always yields the same value, so a chrono is reproducible.
-function deterministicCreatedAt(seed: string): string {
-  let hash = 2166136261;
-  for (let index = 0; index < seed.length; index += 1) {
-    hash ^= seed.charCodeAt(index);
-    hash = Math.imul(hash, 16777619);
-  }
-  const offsetMs = (hash >>> 0) % 31_536_000_000; // spread across a one-year window
-  return new Date(QUALIFYING_CREATED_AT_EPOCH_MS + offsetMs).toISOString();
-}
 
 export function bestQualifyingRuns(runs: QualifyingRun[]) {
   return [...runs]
@@ -82,7 +71,6 @@ export function createQualifyingRuns(input: {
     return Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + warmupPenalty + tyreDelta + variance).toFixed(2));
   });
   const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, finishWeather, input.trackLengthMeters ?? 3200);
-  const createdAt = deterministicCreatedAt(input.seed);
 
   return lapTimes.map((time, index) => ({
     teamId: input.teamId,
@@ -91,7 +79,7 @@ export function createQualifyingRuns(input: {
     attempts: 1,
     decision: input.decision,
     result,
-    createdAt
+    createdAt: new Date(QUALIFYING_CREATED_AT_EPOCH_MS + index * 1000).toISOString()
   }));
 }
 

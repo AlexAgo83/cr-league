@@ -1,10 +1,10 @@
 ## item_189_over_engineering_cleanup_sweep - Over-engineering cleanup sweep
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Over-engineering cleanup
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,8 @@
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: The duplicated lap helper, dead ternary, FNV-1a timestamp, and unused export are gone and the tree still typechecks.
 - request-AC6 -> This backlog slice. Proof: AC2: tt is memoized and replay order is computed once per interior point.
+- request-AC3 -> This backlog slice. Evidence needed: deleteAdminUser refuses to delete a non-test profile without an explicit matching confirmation, and requireAdminClaim rejects with 403 when there is no valid recorded owner instead of transferring ownership; tests cover both.
+- request-AC4 -> This backlog slice. Evidence needed: Approach, preparation, and pit badges in DirectivePanel are derived from a single shared stat-delta descriptor that applyDecision also consumes, include pace, and match the real deltas, pinned by a snapshot test.
 
 # Decision framing
 - Product framing: Not needed
@@ -58,3 +60,6 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_086_orchestrate_repo_review_remediation_pass_6` was finished via `logics-manager flow finish task` on 2026-07-22.

@@ -1,10 +1,10 @@
 ## item_187_guard_destructive_delete_and_league_admin_authority - Guard destructive delete and league-admin authority
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Admin safety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,6 +31,8 @@
 # AC Traceability
 - request-AC3 -> This backlog slice. Proof: AC1: A non-test profile cannot be deleted without an explicit matching confirmation.
 - request-AC6 -> This backlog slice. Proof: AC2: requireAdminClaim returns 403 when no valid owner is recorded and never mutates ownerTeamId as a side effect.
+- request-AC4 -> This backlog slice. Evidence needed: Approach, preparation, and pit badges in DirectivePanel are derived from a single shared stat-delta descriptor that applyDecision also consumes, include pace, and match the real deltas, pinned by a snapshot test.
+- request-AC5 -> This backlog slice. Evidence needed: The duplicated lap helper, dead DriveView ternary, FNV-1a qualifying timestamp, unused ensureProfileExists export, and doubly-computed replay order are removed, and tt is memoized; behavior is unchanged and all existing tests pass.
 
 # Decision framing
 - Product framing: Not needed
@@ -51,3 +53,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_086_orchestrate_repo_review_remediation_pass_6` was finished via `logics-manager flow finish task` on 2026-07-22.

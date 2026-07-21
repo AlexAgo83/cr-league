@@ -1,10 +1,10 @@
 ## item_190_monotonic_payout_and_no_unplayed_card_consumption - Monotonic payout and no unplayed-card consumption
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Economy integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,8 @@
 - request-AC1 -> This backlog slice. Proof: AC1: For every adjacent pair of positions, the worse position's total credits do not exceed the better position's.
 - request-AC2 -> This backlog slice. Proof: AC2: The tail of the field still receives a comeback cushion above the flat base.
 - request-AC6 -> This backlog slice. Proof: AC3: A non-submitting human loses no card on default resolve and consumedCards holds only chosen cards.
+- request-AC4 -> This backlog slice. Evidence needed: A decision with rivalTeamId equal to the submitting team is rejected with 400, covered by a test.
+- request-AC5 -> This backlog slice. Evidence needed: The recovery limiter prunes expired buckets and does not consume the email attempt when the IP branch rejects; Team.profileId is indexed; buyBotCards no longer writes bot cards from a stale snapshot.
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +55,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_087_orchestrate_gameplay_and_economy_integrity_fixes` was finished via `logics-manager flow finish task` on 2026-07-22.

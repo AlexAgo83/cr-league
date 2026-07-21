@@ -1,13 +1,14 @@
 ## task_086_orchestrate_repo_review_remediation_pass_6 - Orchestrate repo review remediation pass 6
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: Codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -32,23 +33,31 @@
 - `item_189_over_engineering_cleanup_sweep`
 
 # Definition of Done (DoD)
-- [ ] Generated request, product, backlog, and task docs are present.
-- [ ] Context-pack handoff is available when requested.
-- [ ] Validation passes.
-- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+- [x] Generated request, product, backlog, and task docs are present.
+- [x] Context-pack handoff is available when requested.
+- [x] Validation passes.
+- [x] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
 - request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
 - request-AC4 -> This task. Proof: optional context-pack handoff is supported.
 - request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
 - request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC2 -> This task. Evidence needed: Final Classification shows real per-team finishing intervals (no all-zero +0.0s), classify tie-breaks on scores.score so finishing order tracks the score model rather than clamp noise, and card look-ahead reads a consistent elapsedTime snapshot; balance:sim confirms order stability did not regress.
+- request-AC3 -> This task. Evidence needed: deleteAdminUser refuses to delete a non-test profile without an explicit matching confirmation, and requireAdminClaim rejects with 403 when there is no valid recorded owner instead of transferring ownership; tests cover both.
+- request-AC5 -> This task. Evidence needed: The duplicated lap helper, dead DriveView ternary, FNV-1a qualifying timestamp, unused ensureProfileExists export, and doubly-computed replay order are removed, and tt is memoized; behavior is unchanged and all existing tests pass.
 
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- Finish workflow executed on 2026-07-22.
+- Linked backlog/request close verification passed.
 
 # Report
 - Implementation complete.
+- Finished on 2026-07-22.
+- Linked backlog item(s): `item_185_lock_the_json_column_read_modify_write_paths`, `item_186_restore_simulation_finishing_order_and_interval_fidelity`, `item_187_guard_destructive_delete_and_league_admin_authority`, `item_188_derive_plan_badges_from_a_single_shared_stat_delta_descriptor`, `item_189_over_engineering_cleanup_sweep`
+- Related request(s): `req_085_repo_review_remediation_pass_6_json_column_race_locks_simulation_finishing_order_fidelity_destructive_op_guards_and_over_engineering_cleanup`
 
 # AI Context
 - Summary: Orchestrate repo review remediation pass 6

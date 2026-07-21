@@ -133,14 +133,15 @@ export function createAdminActions({
     await run(tt("status_admin_loading"), () => refreshAdminLeagues(page), undefined, false, adminApiErrorMessage);
   };
 
-  const deleteAdminUserConfirmed = async () => {
+  const deleteAdminUserConfirmed = async (confirmation: string) => {
     if (!adminDeleteUser) return;
     const user = adminDeleteUser;
     setAdminDeleteUser(null);
     await run(tt("status_admin_deleting_user"), async () => {
       await api<{ ok: boolean }>(`/admin/users/${user.id}`, {
         method: "DELETE",
-        headers: adminHeaders()
+        headers: { ...adminHeaders(), "content-type": "application/json" },
+        body: JSON.stringify({ confirmation })
       });
       setAdminRecoveryCode(null);
       await refreshAdminUsers();

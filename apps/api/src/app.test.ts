@@ -672,7 +672,7 @@ describe("api app", () => {
     }
   });
 
-  it("self-heals a missing league owner from the earliest human team", async () => {
+  it("rejects admin actions when the league owner is missing", async () => {
     const db = createMemoryDb();
     const app = await createTestApp(db);
 
@@ -689,15 +689,15 @@ describe("api app", () => {
       url: `/leagues/${created.league.id}/settings`,
       payload: { ...created.player, cadence: "fast" }
     });
-    const repaired = await db.league.findUnique({ where: { id: created.league.id } });
+    const league = await db.league.findUnique({ where: { id: created.league.id } });
 
     await app.close();
 
-    expect(settingsResponse.statusCode).toBe(200);
-    expect(repaired?.ownerTeamId).toBe(created.player.teamId);
+    expect(settingsResponse.statusCode).toBe(403);
+    expect(league?.ownerTeamId).toBeNull();
   });
 
-  it("self-heals a dangling league owner from the earliest human team", async () => {
+  it("rejects admin actions when the league owner is dangling", async () => {
     const db = createMemoryDb();
     const app = await createTestApp(db);
 
@@ -714,12 +714,12 @@ describe("api app", () => {
       url: `/leagues/${created.league.id}/settings`,
       payload: { ...created.player, cadence: "weekly" }
     });
-    const repaired = await db.league.findUnique({ where: { id: created.league.id } });
+    const league = await db.league.findUnique({ where: { id: created.league.id } });
 
     await app.close();
 
-    expect(settingsResponse.statusCode).toBe(200);
-    expect(repaired?.ownerTeamId).toBe(created.player.teamId);
+    expect(settingsResponse.statusCode).toBe(403);
+    expect(league?.ownerTeamId).toBe("missing-team");
   });
 
   it("rejects resolving before the player submits a directive", async () => {
@@ -745,6 +745,69 @@ describe("api app", () => {
     expect(resolveResponse.json()).toMatchObject({
       message: "Submit your race directive before launching the Grand Prix."
     });
+  });
+
+  it("resolves from the stored circuit instead of client simulation overrides", async () => {
+    const app = await createTestApp(createMemoryDb());
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const circuit = circuitIdentityForRound(1, circuitSeasonSeed(created.league.id, 1));
+
+    await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/decisions`,
+      payload: { ...created.player, approach: "balanced", preparation: "speed" }
+    });
+    const resolveResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/resolve`,
+      payload: { ...created.player, traits: { grip: 1, overtaking: 1, energy: 1 }, trackLengthMeters: 8000, laps: 99, pitLaneProgress: 0.999 }
+    });
+
+    await app.close();
+
+    const trace = resolveResponse.json().currentGrandPrix.result.replayTrace;
+    expect(resolveResponse.statusCode).toBe(200);
+    expect(trace.at(-1).distanceMeters).toBe(circuit.trackLengthMeters);
+    expect(Math.max(...trace.map((point: { lap: number }) => point.lap))).toBe(circuit.laps);
+  });
+
+  it("does not consume a card for a human that never submitted a plan", async () => {
+    const app = await createTestApp(createMemoryDb());
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
+    });
+    const created = createResponse.json();
+    const joinResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code: created.league.code, teamName: "Late Apex" }
+    });
+    const joinedTeam = joinResponse.json().teams.find((team: { name: string }) => team.name === "Late Apex");
+
+    await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/decisions`,
+      payload: { ...created.player, approach: "balanced", preparation: "speed" }
+    });
+    const resolveResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/resolve`,
+      payload: created.player
+    });
+    const teamAfterRace = resolveResponse.json().teams.find((team: { id: string }) => team.id === joinedTeam.id);
+
+    await app.close();
+
+    expect(resolveResponse.statusCode).toBe(200);
+    expect(resolveResponse.json().currentGrandPrix.result.consumedCards).not.toContainEqual(expect.objectContaining({ teamId: joinedTeam.id }));
+    expect(teamAfterRace.cards).toEqual(joinedTeam.cards);
   });
 
   it("lets a player join an active league by code", async () => {
@@ -1127,11 +1190,16 @@ describe("api app", () => {
       url: `/leagues/${created.league.id}/qualifying`,
       payload: { ...base, approach: "balanced", preparation: "speed", rivalTeamId: "team_missing" }
     });
+    const selfRival = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/decisions`,
+      payload: { ...base, approach: "balanced", preparation: "speed", rivalTeamId: base.teamId }
+    });
     const stateResponse = await app.inject({ method: "GET", url: `/leagues/${created.league.id}` });
 
     await app.close();
 
-    for (const response of [badApproach, badPreparation, badCard, badRival]) {
+    for (const response of [badApproach, badPreparation, badCard, badRival, selfRival]) {
       expect(response.statusCode).toBe(400);
     }
     expect(stateResponse.json().decisions).toHaveLength(0);

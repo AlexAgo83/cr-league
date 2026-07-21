@@ -59,7 +59,7 @@ function initialLocale() {
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
   const [entered, setEntered] = useState(() => !isStartPath(window.location.pathname));
-  const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
+  const tt = useCallback((key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params), [locale]);
 
   const changeLocale = useCallback((nextLocale: Locale) => {
     localStorage.setItem(LANGUAGE_KEY, nextLocale);
@@ -109,7 +109,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     routeReplayGrandPrixId,
     setRouteReplayGrandPrixId
   } = useAppNavigation(profileSession, clearRouteReplay, activeReplayGrandPrixId);
-  const tt = (key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params);
+  const tt = useCallback((key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params), [locale]);
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
@@ -644,7 +644,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       onRestartLeague={() => void restartLeague()}
       onCloseOnboardingHelp={closeOnboardingHelp}
       onCloseAdminDelete={() => setAdminDeleteUser(null)}
-      onDeleteAdminUser={() => void deleteAdminUserConfirmed()}
+      onDeleteAdminUser={(confirmation) => void deleteAdminUserConfirmed(confirmation)}
       onCloseProfileCode={() => setProfileCodeOpen(false)}
       onCloseProfileLogout={() => setProfileLogoutOpen(false)}
       onClosePreferencesReset={() => setPreferencesResetOpen(false)}

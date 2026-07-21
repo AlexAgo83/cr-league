@@ -10,6 +10,16 @@ export async function lockGrandPrixRow(db: Db, grandPrixId: string) {
   await db.$queryRaw`SELECT id FROM "grand_prixes" WHERE id = ${grandPrixId} FOR UPDATE`;
 }
 
+export async function lockLeagueRow(db: Db, leagueId: string) {
+  if (!db.$queryRaw) return;
+  await db.$queryRaw`SELECT id FROM "leagues" WHERE id = ${leagueId} FOR UPDATE`;
+}
+
+export async function lockTeamRow(db: Db, teamId: string) {
+  if (!db.$queryRaw) return;
+  await db.$queryRaw`SELECT id FROM "teams" WHERE id = ${teamId} FOR UPDATE`;
+}
+
 export async function retryUnique<T>(fn: () => Promise<T>) {
   for (let attempt = 0; attempt < 5; attempt += 1) {
     try {

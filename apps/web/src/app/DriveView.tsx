@@ -232,7 +232,6 @@ export function DriveView({
                   result={result}
                   primaryCommandClass={primaryCommandClass}
                   primaryCommand={primaryCommand}
-                  deskState={deskState}
                   canRunQualifying={deskState === "prepare" && qualifyingAttemptsLeft > 0}
                   qualifyingCommandClass={`primary-command${qualifyingAttemptsUsed ? "" : " highlight-command"}`}
                   onOpenQualifyingRun={onOpenQualifyingRun}
@@ -393,12 +392,11 @@ function FinalClassification({
     const decision = explicitPlans.get(entry.teamId);
     const fallback = DEMO_RACE_INPUT.participants[(teamIndex.get(entry.teamId) ?? index) % DEMO_RACE_INPUT.participants.length]?.decision;
     const time = finalTrace?.times[entry.teamId];
-    const previousGap = previous ? finalTrace?.gaps[previous.teamId] ?? finalTrace?.times[previous.teamId] ?? 0 : 0;
-    const gap = finalTrace?.gaps[entry.teamId] ?? (time ?? 0);
+    const previousTime = previous ? finalTrace?.times[previous.teamId] : undefined;
     return {
       teamId: entry.teamId,
       teamName: entry.teamName,
-      value: time === undefined ? "" : index === 0 ? `${time.toFixed(1)}s` : `+${Math.max(0, gap - previousGap).toFixed(1)}s`,
+      value: time === undefined ? "" : index === 0 ? `${time.toFixed(1)}s` : `+${Math.max(0, time - (previousTime ?? time)).toFixed(1)}s`,
       decision: {
         approach: decision?.approach ?? fallback?.approach ?? "balanced",
         preparation: decision?.preparation ?? fallback?.preparation ?? "speed",
@@ -425,7 +423,6 @@ function DriveActions({
   result,
   primaryCommandClass,
   primaryCommand,
-  deskState,
   canRunQualifying,
   qualifyingCommandClass,
   onOpenQualifyingRun,
@@ -434,7 +431,6 @@ function DriveActions({
   result: RaceResult | null | undefined;
   primaryCommandClass: string;
   primaryCommand: PrimaryCommand;
-  deskState: DeskState;
   canRunQualifying: boolean;
   qualifyingCommandClass: string;
   onOpenQualifyingRun: () => void;
@@ -457,15 +453,9 @@ function DriveActions({
           {tt("action_qualifying")}
         </button>
       ) : null}
-      {deskState === "prepare" ? (
-        <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-          {primaryCommand.label}
-        </button>
-      ) : (
-        <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-          {primaryCommand.label}
-        </button>
-      )}
+      <button className={primaryCommandClass} type="button" onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+        {primaryCommand.label}
+      </button>
     </div>
   );
 }

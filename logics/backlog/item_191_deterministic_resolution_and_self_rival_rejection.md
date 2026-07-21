@@ -1,10 +1,10 @@
 ## item_191_deterministic_resolution_and_self_rival_rejection - Deterministic resolution and self-rival rejection
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Simulation integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,6 +32,7 @@
 - request-AC3 -> This backlog slice. Proof: AC1: Resolve output depends only on seed and stored circuit, not on request-body traits/track params.
 - request-AC4 -> This backlog slice. Proof: AC2: A self-targeted rival decision is rejected with 400.
 - request-AC6 -> This backlog slice. Proof: AC3: Existing resolve and decision tests still pass.
+- request-AC5 -> This backlog slice. Evidence needed: The recovery limiter prunes expired buckets and does not consume the email attempt when the IP branch rejects; Team.profileId is indexed; buyBotCards no longer writes bot cards from a stale snapshot.
 
 # Decision framing
 - Product framing: Not needed
@@ -52,3 +53,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_087_orchestrate_gameplay_and_economy_integrity_fixes` was finished via `logics-manager flow finish task` on 2026-07-22.

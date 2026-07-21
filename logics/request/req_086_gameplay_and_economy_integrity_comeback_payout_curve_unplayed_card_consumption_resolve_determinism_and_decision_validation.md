@@ -1,7 +1,7 @@
 ## req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation - Gameplay and economy integrity: comeback payout curve, unplayed-card consumption, resolve determinism, and decision validation
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

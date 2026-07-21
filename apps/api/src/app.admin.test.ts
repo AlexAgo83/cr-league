@@ -361,7 +361,7 @@ describe("api app profile and admin", () => {
         currentSeason: 1,
         currentRound: 1,
         playerCount: 1,
-        teamCount: 1,
+        teamCount: 8,
         createdAt: expect.any(String)
       })
     ]);
@@ -431,7 +431,7 @@ describe("api app profile and admin", () => {
       deleted: {
         profiles: 1,
         leagues: 1,
-        teams: 1,
+        teams: 8,
         grandPrixes: 1,
         decisions: 0
       }

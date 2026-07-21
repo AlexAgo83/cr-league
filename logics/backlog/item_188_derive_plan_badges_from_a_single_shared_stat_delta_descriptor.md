@@ -1,10 +1,10 @@
 ## item_188_derive_plan_badges_from_a_single_shared_stat_delta_descriptor - Derive plan badges from a single shared stat-delta descriptor
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Balance legibility
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -30,6 +30,8 @@
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: applyDecision and DirectivePanel read the same descriptor; there is no second hand-written delta table.
 - request-AC6 -> This backlog slice. Proof: AC2: Badges reflect the real signed deltas including pace.
+- request-AC3 -> This backlog slice. Evidence needed: deleteAdminUser refuses to delete a non-test profile without an explicit matching confirmation, and requireAdminClaim rejects with 403 when there is no valid recorded owner instead of transferring ownership; tests cover both.
+- request-AC5 -> This backlog slice. Evidence needed: The duplicated lap helper, dead DriveView ternary, FNV-1a qualifying timestamp, unused ensureProfileExists export, and doubly-computed replay order are removed, and tt is memoized; behavior is unchanged and all existing tests pass.
 
 # Decision framing
 - Product framing: Not needed
@@ -50,3 +52,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_086_orchestrate_repo_review_remediation_pass_6` was finished via `logics-manager flow finish task` on 2026-07-22.

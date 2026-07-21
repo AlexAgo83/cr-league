@@ -1,11 +1,11 @@
 import { type CSSProperties, useState } from "react";
-import type { CardId } from "@cr-league/shared";
+import { APPROACH_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type CardId, type DecisionDeltaKey, type DecisionDeltas } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { sortCardIdsByName, type CardFit, type Translator } from "../app/helpers.js";
 import type { PlanRecommendation, PlanRiskRead } from "../app/raceFlow.js";
 import type { FormState } from "../app/types.js";
 import { AssetImage } from "./AssetImage.js";
-import { CARD_BADGES, CardArtImage, CardStatBadges, StatBadges } from "./CardStatBadges.js";
+import { CARD_BADGES, CardArtImage, CardStatBadges, StatBadges, type StatBadge } from "./CardStatBadges.js";
 import { Modal } from "./Modal.js";
 import { ModalHero } from "./ModalHero.js";
 import { PlanRiskSummary } from "./PlanRiskSummary.js";
@@ -17,7 +17,6 @@ type TraitStats = {
 };
 
 type TraitKey = "grip" | "overtaking" | "energy";
-type ImpactBadge = { trait: TraitKey; sign: "+" | "-"; label: TranslationKey; value?: number };
 
 const APPROACHES = ["prudent", "balanced", "aggressive"] as const;
 const PREPARATIONS = ["speed", "reliability", "weather"] as const;
@@ -68,32 +67,24 @@ const TRAIT_HINT: Record<TraitKey, TranslationKey> = {
   energy: "circuit_energy_hint"
 };
 
-// Player-facing read of what each directive choice shifts, mirrored from the race
-// simulation's applyDecision() and expressed on the grip/attack/endurance vocabulary
-// the map already uses. UI hint only — no balance logic lives here.
-function badge(trait: TraitKey, sign: "+" | "-", value = 3): ImpactBadge {
-  return { trait, sign, label: TRAIT_LABEL[trait], value };
+function badgesFromDeltas(deltas: DecisionDeltas): StatBadge[] {
+  return (Object.entries(deltas) as Array<[DecisionDeltaKey, number | undefined]>)
+    .filter((entry): entry is [DecisionDeltaKey, number] => Boolean(entry[1]))
+    .map(([trait, value]) => ({ trait, sign: value > 0 ? "+" : "-", label: ENGINE_STAT_LABELS[trait], value: Math.abs(value) }));
 }
 
-const APPROACH_BADGES: Record<(typeof APPROACHES)[number], ImpactBadge[]> = {
-  prudent: [badge("grip", "+"), badge("energy", "+"), badge("overtaking", "-")],
-  balanced: [badge("grip", "+"), badge("energy", "+")],
-  aggressive: [badge("overtaking", "+"), badge("grip", "-"), badge("energy", "-")]
+const ENGINE_STAT_LABELS: Record<NonNullable<StatBadge["trait"]>, TranslationKey> = {
+  grip: "circuit_grip",
+  overtaking: "circuit_overtaking",
+  energy: "circuit_energy",
+  pace: "engine_stat_pace",
+  control: "engine_stat_control",
+  reliability: "engine_stat_reliability",
+  weatherReadiness: "engine_stat_weather",
+  aggression: "engine_stat_aggression"
 };
 
-const PREPARATION_BADGES: Record<(typeof PREPARATIONS)[number], ImpactBadge[]> = {
-  speed: [badge("overtaking", "+"), badge("energy", "-")],
-  reliability: [badge("energy", "+"), badge("grip", "+")],
-  weather: [badge("grip", "+")]
-};
-
-const PIT_BADGES: Record<(typeof PIT_STRATEGIES)[number], ImpactBadge[]> = {
-  heavy_pack: [badge("energy", "+"), badge("overtaking", "-")],
-  standard: [badge("grip", "+", 1)],
-  mini_pack: [badge("overtaking", "+"), badge("energy", "-")]
-};
-
-function ImpactBadges({ badges, tt }: { badges: ImpactBadge[]; tt: Translator }) {
+function ImpactBadges({ badges, tt }: { badges: StatBadge[]; tt: Translator }) {
   return <span className="card-stat-badges"><StatBadges badges={badges} tt={tt} /></span>;
 }
 
@@ -117,16 +108,26 @@ function PlanCardMarker({ active }: { active: boolean }) {
 
 function directiveModifiers(form: FormState, selectedCardId: FormState["cardId"]) {
   const modifiers: Record<TraitKey, number> = { grip: 0, overtaking: 0, energy: 0 };
-  const add = (entry: ImpactBadge) => {
-    modifiers[entry.trait] += (entry.sign === "+" ? 1 : -1) * (entry.value ?? 1);
+  const add = (entry: StatBadge) => {
+    const trait = traitFromBadge(entry.trait);
+    if (!trait) return;
+    modifiers[trait] += (entry.sign === "+" ? 1 : -1) * (entry.value ?? 1);
   };
 
-  APPROACH_BADGES[form.approach].forEach(add);
-  PREPARATION_BADGES[form.preparation].forEach(add);
-  PIT_BADGES[form.pitStrategy].forEach(add);
+  badgesFromDeltas(APPROACH_DELTAS[form.approach]).forEach(add);
+  badgesFromDeltas(PREPARATION_DELTAS[form.preparation]).forEach(add);
+  badgesFromDeltas(PIT_STRATEGY_DELTAS[form.pitStrategy]).forEach(add);
   if (selectedCardId) CARD_BADGES[selectedCardId].forEach((entry) => add({ ...entry, value: 2 }));
 
   return modifiers;
+}
+
+function traitFromBadge(trait: StatBadge["trait"]): TraitKey | null {
+  if (trait === "grip" || trait === "overtaking" || trait === "energy") return trait;
+  if (trait === "pace" || trait === "aggression") return "overtaking";
+  if (trait === "control" || trait === "weatherReadiness") return "grip";
+  if (trait === "reliability") return "energy";
+  return null;
 }
 
 function signedModifier(value: number) {
@@ -293,7 +294,7 @@ export function DirectivePanel({
                   <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
                 </span>
                 <small>{tt(`approach_${approach}_hint` as TranslationKey)}</small>
-                <ImpactBadges badges={APPROACH_BADGES[approach]} tt={tt} />
+                <ImpactBadges badges={badgesFromDeltas(APPROACH_DELTAS[approach])} tt={tt} />
                 <DirectiveChoiceArt src={APPROACH_ART[approach]} />
               </button>
             ))}
@@ -311,7 +312,7 @@ export function DirectivePanel({
                   <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
                 </span>
                 <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
-                <ImpactBadges badges={PREPARATION_BADGES[preparation]} tt={tt} />
+                <ImpactBadges badges={badgesFromDeltas(PREPARATION_DELTAS[preparation])} tt={tt} />
                 <DirectiveChoiceArt src={PREPARATION_ART[preparation]} />
               </button>
             ))}
@@ -329,7 +330,7 @@ export function DirectivePanel({
                   <strong>{tt(`pit_strategy_${pitStrategy}` as TranslationKey)}</strong>
                 </span>
                 <small>{tt(`pit_strategy_${pitStrategy}_hint` as TranslationKey)}</small>
-                <ImpactBadges badges={PIT_BADGES[pitStrategy]} tt={tt} />
+                <ImpactBadges badges={badgesFromDeltas(PIT_STRATEGY_DELTAS[pitStrategy])} tt={tt} />
                 <DirectiveChoiceArt src={PIT_ART[pitStrategy]} />
               </button>
             ))}

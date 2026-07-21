@@ -1,5 +1,6 @@
 import type { AdminUser, FormState, ProfileSession } from "./types.js";
 import type { ReactNode } from "react";
+import { useState } from "react";
 import type { Translator } from "./helpers.js";
 import { completedSeasonSummaries } from "./helpers.js";
 import type { CityCircuit } from "./circuits.js";
@@ -229,14 +230,19 @@ export function AdminDeleteUserModal({
   user: AdminUser;
   tt: Translator;
   onClose: () => void;
-  onDelete: () => void;
+  onDelete: (confirmation: string) => void;
 }) {
+  const [confirmation, setConfirmation] = useState("");
   return (
     <Modal label={tt("admin_delete_user_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/league-arrival.png" kicker={tt("admin_kicker")} title={tt("admin_delete_user_title")} />
       <p>{tt("admin_delete_user_confirm", { email: user.email })}</p>
+      <label className="field">
+        <span>{tt("admin_delete_user_confirmation_label")}</span>
+        <input value={confirmation} onChange={(event) => setConfirmation(event.currentTarget.value)} />
+      </label>
       <div className="actions secondary-actions">
-        <button type="button" className="danger-button" onClick={onDelete}>
+        <button type="button" className="danger-button" onClick={() => onDelete(confirmation)} disabled={confirmation !== user.email}>
           {tt("admin_action_delete_user")}
         </button>
       </div>

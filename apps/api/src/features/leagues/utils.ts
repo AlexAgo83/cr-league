@@ -93,12 +93,6 @@ export function normalizeDisplayName(value: unknown, maxLength: number) {
   return /^[\p{L}\p{N}' -]+$/u.test(name) ? name : "";
 }
 
-export async function ensureProfileExists(db: Db, profileId: string | undefined) {
-  if (!profileId) return;
-  const profile = await db.profile.findUnique({ where: { id: profileId } });
-  if (!profile) throw new LeagueRuleError("Profile not found.");
-}
-
 export async function ensureProfileOwnership(db: Db, profileId: string | undefined, recoveryCode: string | undefined) {
   if (!profileId) return;
   if (!recoveryCode) throw new LeagueRuleError("A valid profile proof is required.", 403);

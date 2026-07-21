@@ -173,7 +173,7 @@ export function DirectivePanel({
 }) {
   const cardChoices = ["", ...sortCardIdsByName(ownedCardIds, tt)] as Array<"" | CardId>;
   const selectedCardLabel = selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none");
-  const selectedCardWarning = selectedCardId ? tt("directive_card_consumption_warning", { card: selectedCardLabel }) : undefined;
+  const selectedCardWarning = selectedCardId ? { card: selectedCardLabel, action: tt("directive_card_consumption_warning_action") } : undefined;
   const canRunQualifying = Boolean(onQualifying && !locked && qualifyingAttemptsLeft > 0);
   const hasQualifyingRun = qualifyingRunCount > 0;
   const modifiers = directiveModifiers(form, selectedCardId);
@@ -327,7 +327,11 @@ export function DirectivePanel({
           {primaryCommand.label}
         </button>
       </div>
-      {selectedCardWarning ? <p className="directive-lock-note">{selectedCardWarning}</p> : null}
+      {selectedCardWarning ? (
+        <p className="directive-lock-note">
+          {selectedCardWarning.card} <strong>{selectedCardWarning.action}</strong>
+        </p>
+      ) : null}
     </section>
     </>
   );

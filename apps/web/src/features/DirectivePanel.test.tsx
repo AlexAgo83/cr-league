@@ -49,9 +49,11 @@ describe("DirectivePanel", () => {
   it("warns that the selected card will be consumed when the GP launches", () => {
     render(<DirectivePanel {...baseProps} setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
-    const warning = screen.getByText("Rain Grip will be consumed when this Grand Prix is launched.");
+    const warning = document.querySelector(".directive-lock-note") as HTMLElement;
     expect(warning).not.toBeNull();
     expect(warning.previousElementSibling?.className).toContain("directive-command-row");
+    expect(warning.textContent).toContain("Rain Grip");
+    expect(warning.querySelector("strong")?.textContent).toBe("will be consumed when this Grand Prix is launched.");
   });
 
   it("runs the provided primary command from the directive tab", () => {

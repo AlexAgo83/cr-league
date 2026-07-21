@@ -3435,7 +3435,7 @@ label small {
   position: absolute;
   top: 12px;
   transform: translateX(-50%);
-  z-index: 20;
+  z-index: 9;
 }
 
 .replay-map-controls button {

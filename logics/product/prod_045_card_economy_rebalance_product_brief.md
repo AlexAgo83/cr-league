@@ -6,9 +6,21 @@
 > Related task: `task_082_orchestrate_card_economy_rebalance`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: 2026-07-21 added hold diagram and clarified existing owner-blocked scope without starting implementation.
+> Semantic edit: 2026-07-21 documented owner hold, stat-differentiation coupling, and unblock criteria.
+> Confidence: 90
 
 # Overview
 Turn the 15-card catalogue into a set of real choices: kill dead cards, differentiate duplicates, and make paid cards worth more than free tuning, all validated by the balance kit and AI playtest rather than intuition.
+
+```mermaid
+flowchart LR
+  Evidence[Audit and playtest evidence] --> Hold[Owner hold]
+  Hold --> Stats[Decide stat differentiation]
+  Stats --> Rebaseline[Fresh balance and AI-playtest baseline]
+  Rebaseline --> Cards[Co-design card rebalance]
+  Cards --> Validate[Balance kit and playtest validation]
+```
 
 # Goals
 - Every card has an evidenced reason to be bought or played.
@@ -23,17 +35,23 @@ Turn the 15-card catalogue into a set of real choices: kill dead cards, differen
 - Do not break determinism or ship magnitude changes without updating the tests intentionally.
 
 # Scope and guardrails
-- In: scaffolded request, product, backlog, orchestration task, validation, and handoff context.
-- Out: unrelated workflow docs and implementation of generated tasks.
+- In when unblocked: card price/effect changes for confirmed dead or duplicate cards, balance-kit validation, AI-playtest validation, and deterministic test updates.
+- In before unblocked: preserve the evidence chain and the owner hold.
+- Out while blocked: code changes to card effects, prices, simulation, copy, or tests.
+- Out: adding new card families, recommending a best card, or tuning cards against the current flat stat model.
 
 # Key product decisions
-- Use structured input as the source of truth for generated docs.
-- Keep generated write paths local and repo-bounded.
+- Owner decision 2026-07-21: hold this request until stat differentiation direction is decided.
+- Treat card economy and stat differentiation as one coupled depth pass; card tuning against the current flat stat model would be invalidated.
+- Unblock only with a fresh AI-playtest baseline and a co-designed stat/card plan.
 
 # Success signals
-- Generated docs pass lint and audit without broad manual rewrites.
-- Context-pack output can be handed to an implementation agent directly.
+- When unblocked, every card is bought or played a non-trivial number of times in comparable AI playtest evidence.
+- No card dominates points, win rate, and credit margin simultaneously.
+- Paid cards create trade-offs that free directive knobs do not already provide.
 
 # References
 - Product back-reference: `req_081_rebalance_card_economy_to_remove_dead_cards_and_redundant_duplicates`
 - Task back-reference: `task_082_orchestrate_card_economy_rebalance`
+- Roadmap hold: `logics/roadmap/road_002_cr_league_roadmap_v2.md`
+- Audit evidence: `docs/audits/AUDIT_CR_LEAGUE.md`

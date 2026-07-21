@@ -66,6 +66,44 @@ describe("api app", () => {
     expect(revealedAfterRace.json().teams[0].result).toMatchObject({ position: expect.any(Number), points: expect.any(Number), credits: expect.any(Number) });
   });
 
+  it("varies default bot pit strategies across circuit identities", async () => {
+    const app = await createTestApp(createMemoryDb());
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Bot Strategy League", teamName: "Volt Union", maxGrandPrixPerSeason: 24 }
+    });
+    const created = createResponse.json();
+    const leagueId = created.league.id;
+    const claim = created.player;
+    const pitStrategies = new Set<string>();
+    const signatures = new Set<string>();
+
+    for (let round = 0; round < 8; round += 1) {
+      await app.inject({
+        method: "POST",
+        url: `/leagues/${leagueId}/decisions`,
+        payload: { teamId: claim.teamId, claimCode: claim.claimCode, approach: "balanced", preparation: "speed" }
+      });
+      const revealed = await app.inject({
+        method: "POST",
+        url: `/leagues/${leagueId}/opponent-configs`,
+        payload: { teamId: claim.teamId, claimCode: claim.claimCode }
+      });
+      const configs = revealed.json().teams as Array<{ teamName: string; pitStrategy: string }>;
+      configs.forEach((config) => pitStrategies.add(config.pitStrategy));
+      signatures.add(configs.map((config) => `${config.teamName}:${config.pitStrategy}`).join("|"));
+
+      await app.inject({ method: "POST", url: `/leagues/${leagueId}/resolve`, payload: { teamId: claim.teamId, claimCode: claim.claimCode } });
+      if (round < 7) await app.inject({ method: "POST", url: `/leagues/${leagueId}/next-grand-prix`, payload: { teamId: claim.teamId, claimCode: claim.claimCode } });
+    }
+
+    await app.close();
+
+    expect([...pitStrategies].sort()).toEqual(["heavy_pack", "mini_pack", "standard"]);
+    expect(signatures.size).toBeGreaterThan(1);
+  });
+
   it("creates, updates, and resolves a persisted demo league", async () => {
     const app = await createTestApp(createMemoryDb());
 

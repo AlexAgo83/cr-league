@@ -923,10 +923,26 @@ function defaultBotDecision(state: LeagueState, team: LeagueState["teams"][numbe
   return {
     approach: fallback?.approach ?? "balanced",
     preparation: fallback?.preparation ?? "speed",
-    pitStrategy: normalizePitStrategy(fallback?.pitStrategy),
+    pitStrategy: botPitStrategyForCircuit(state, team, fallback),
     cardId: defaultCardForTeam(team, fallback?.cardId),
     rivalTeamId: fallback?.rivalTeamId
   };
+}
+
+function botPitStrategyForCircuit(state: LeagueState, team: LeagueState["teams"][number], fallback?: RaceDecision): NonNullable<RaceDecision["pitStrategy"]> {
+  const circuit = circuitIdentityForRound(state.currentGrandPrix.round, circuitSeasonSeed(state.league.id, state.currentGrandPrix.season));
+  const traits = circuit.traits;
+  const wetRisk = state.currentGrandPrix.forecast.light_rain + state.currentGrandPrix.forecast.heavy_rain * 2;
+  const archetype = fallback?.preparation === "weather" ? "rain" : fallback?.approach;
+  const wantsAttack = traits.overtaking >= 72 || state.currentGrandPrix.primaryTrait === "fast" || state.currentGrandPrix.primaryTrait === "urban";
+  const wantsEndurance = traits.energy <= 58 || circuit.trackLengthMeters >= 5600 || state.currentGrandPrix.primaryTrait === "high_wear";
+
+  if (archetype === "aggressive" && wantsAttack) return "mini_pack";
+  if (archetype === "prudent" && wantsEndurance) return "heavy_pack";
+  if (archetype === "rain" && wetRisk >= 70) return "standard";
+  if (wantsEndurance && team.id.length % 2 === 0) return "heavy_pack";
+  if (wantsAttack) return "mini_pack";
+  return normalizePitStrategy(fallback?.pitStrategy);
 }
 
 function buildParticipants(state: LeagueState): RaceParticipant[] {
@@ -955,7 +971,7 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
       kind: team.kind === "bot" ? "bot" : "human",
       standingsRank: qualifyingRank.get(team.id) ?? index + 1,
       botArchetype: demo.botArchetype,
-      decision: decision
+      decision: team.kind === "bot" ? defaultBotDecision(state, team, demo.decision) : decision
         ? {
             approach: decision.approach as RaceDecision["approach"],
             preparation: decision.preparation as RaceDecision["preparation"],

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 35%
+> Progress: 70%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -46,7 +46,8 @@
 # Report
 - 2026-07-21 baseline: focused simulation check showed Endurance and Grip scenarios could already win, while high Attack/aggressive/mini lost narrowly to heavy_pack because the numeric trait fit was too flat.
 - 2026-07-21 wave: increased the central numeric trait-fit weight in `simulateRace` and added a deterministic test proving three distinct winners: heavy/reliability on high-wear endurance, aggressive/mini on attack, and weather/standard on heavy-rain grip.
-- Remaining: make default bot pit strategy react to circuit identity, record balance/AI-playtest evidence, then close the dependency chain for card economy.
+- 2026-07-21 wave: default bot pit strategy now derives from the current circuit identity, weather risk, and bot fallback archetype; `apps/api/src/app.test.ts` proves all three pit strategies appear across a real GP rotation and opponent signatures change by circuit.
+- Remaining: record balance/AI-playtest evidence, run full gates, then close the dependency chain for card economy.
 
 # AI Context
 - Summary: Orchestrate circuit stat differentiation and bot strategy

@@ -75,7 +75,7 @@ export function ReportView({
             <h2>{raceTitle}</h2>
           </div>
           <div className="chrono-report-prompt">
-            <p>{resultHeadline(result, tt, raceTitle)}</p>
+            <p>{resultHeadline(result, tt, "")}</p>
             {onOpenReplay && replayActionVariant === "primary" ? (
               <button type="button" className="primary-command" onClick={onOpenReplay}>
                 {tt("action_review_race")}

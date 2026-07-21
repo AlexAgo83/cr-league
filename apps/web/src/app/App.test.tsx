@@ -11,6 +11,15 @@ beforeEach(() => {
   window.history.replaceState(null, "", "/drive");
 });
 
+function openRaceReplayFromFinalClassification() {
+  const reportButton = screen
+    .getAllByRole("button", { name: "View" })
+    .find((button) => button.getAttribute("title") === "Final classification");
+  expect(reportButton).toBeTruthy();
+  fireEvent.click(reportButton!);
+  fireEvent.click(screen.getByRole("button", { name: "Review race" }));
+}
+
 afterEach(() => {
   cleanup();
   vi.restoreAllMocks();
@@ -146,7 +155,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     await closeLeagueIntro();
-    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
+    openRaceReplayFromFinalClassification();
     fireEvent.click(screen.getByRole("button", { name: "Skip to result" }));
 
     const payoff = screen.getByLabelText("What you gained");
@@ -189,7 +198,7 @@ describe("App", () => {
 
     expect(await screen.findByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     await closeLeagueIntro();
-    fireEvent.click(screen.getByRole("button", { name: "Replay" }));
+    openRaceReplayFromFinalClassification();
     fireEvent.click(screen.getByRole("button", { name: "Skip to result" }));
 
     expect(screen.getByLabelText("What you gained").textContent).toContain("No card spent");
@@ -696,7 +705,7 @@ describe("App", () => {
     // Report view
     expect(window.location.pathname).toBe("/plan/report");
     expect(screen.getByRole("tab", { name: "GP" }).getAttribute("aria-selected")).toBe("true");
-    expect(screen.getByText(`${roundOneCircuit.title}: Volt Union wins.`)).toBeTruthy();
+    expect(screen.getByText("Volt Union wins.")).toBeTruthy();
     expect(document.querySelector(".report-replay-button")).toBe(null);
     expect(document.querySelector(".report-close-button")).toBe(null);
     expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();

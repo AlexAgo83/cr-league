@@ -9,7 +9,6 @@ import { PendingFeedback } from "../features/PendingFeedback.js";
 import { ReplayView } from "../features/ReplayView.js";
 import { ReplayTower } from "../features/replay/ReplayTower.js";
 import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
-import type { ResultTab } from "../features/ResultView.js";
 import type { PlanSubscreen } from "./routes.js";
 
 type CommandClick = "qualifying" | "editPlan" | "directive" | "chronoReport" | "launchGrandPrix" | "resultReport" | "nextGrandPrix";
@@ -36,11 +35,9 @@ export function DriveView({
   qualifyingPanelOpen,
   qualifyingLeaderboard,
   qualifyingReplayEntries,
-  commandClicks,
   primaryCommandClass,
   primaryCommand,
   deskState,
-  qualifyingDisabled,
   pendingMessage,
   preferencesResetSignal,
   qualifyingReplayInitialLap,
@@ -48,10 +45,7 @@ export function DriveView({
   setQualifyingResult,
   setPlanSubscreen,
   setGameView,
-  setResultTab,
-  setResultOpen,
   markCommandClicked,
-  openQualifyingRun,
   tt
 }: {
   state: LeagueState;
@@ -71,11 +65,9 @@ export function DriveView({
   qualifyingPanelOpen: boolean;
   qualifyingLeaderboard: QualifyingEntry[];
   qualifyingReplayEntries: Array<{ id?: string; teamId: string; teamName: string; value: string }>;
-  commandClicks: Record<CommandClick, boolean>;
   primaryCommandClass: string;
   primaryCommand: PrimaryCommand;
   deskState: DeskState;
-  qualifyingDisabled: boolean;
   pendingMessage: string | null;
   preferencesResetSignal: number;
   qualifyingReplayInitialLap?: number;
@@ -83,10 +75,7 @@ export function DriveView({
   setQualifyingResult: (result: null) => void;
   setPlanSubscreen: (screen: PlanSubscreen) => void;
   setGameView: (view: "drive" | "plan") => void;
-  setResultTab: (tab: ResultTab) => void;
-  setResultOpen: (open: boolean) => void;
   markCommandClicked: (command: CommandClick) => void;
-  openQualifyingRun: () => void;
   tt: Translator;
 }) {
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
@@ -226,7 +215,6 @@ export function DriveView({
                   primaryCommand={primaryCommand}
                   deskState={deskState}
                   pendingMessage={pendingMessage}
-                  tt={tt}
                 />
               </>
             }
@@ -380,15 +368,13 @@ function DriveActions({
   primaryCommandClass,
   primaryCommand,
   deskState,
-  pendingMessage,
-  tt
+  pendingMessage
 }: {
   result: RaceResult | null | undefined;
   primaryCommandClass: string;
   primaryCommand: PrimaryCommand;
   deskState: DeskState;
   pendingMessage: string | null;
-  tt: Translator;
 }) {
   if (result) {
     return (

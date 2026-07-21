@@ -671,7 +671,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       preferencesResetSignal={preferencesResetSignal}
       qualifyingReplayInitialLap={qualifyingReplayInitialLap}
       qualifyingPanelOpen={qualifyingPanelOpen}
-      commandClicks={commandClicks}
       primaryCommandClass={primaryCommandClass}
       primaryCommand={primaryCommand}
       race={race}

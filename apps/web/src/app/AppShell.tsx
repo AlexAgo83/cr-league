@@ -44,7 +44,6 @@ export function AppShell({
   preferencesResetSignal,
   qualifyingReplayInitialLap,
   qualifyingPanelOpen,
-  commandClicks,
   primaryCommandClass,
   primaryCommand,
   race,
@@ -117,7 +116,6 @@ export function AppShell({
   preferencesResetSignal: number;
   qualifyingReplayInitialLap?: number;
   qualifyingPanelOpen: boolean;
-  commandClicks: Record<CommandClick, boolean>;
   primaryCommandClass: string;
   primaryCommand: { label: string; action: () => void | Promise<void>; disabled: boolean };
   race: RaceDerivations;
@@ -300,11 +298,9 @@ export function AppShell({
             qualifyingPanelOpen={qualifyingPanelOpen}
             qualifyingLeaderboard={race.qualifyingLeaderboard}
             qualifyingReplayEntries={race.qualifyingReplayEntries}
-            commandClicks={commandClicks}
             primaryCommandClass={primaryCommandClass}
             primaryCommand={primaryCommand}
             deskState={race.deskState}
-            qualifyingDisabled={race.qualifyingDisabled}
             pendingMessage={pendingMessage}
             preferencesResetSignal={preferencesResetSignal}
             qualifyingReplayInitialLap={qualifyingReplayInitialLap}
@@ -312,10 +308,7 @@ export function AppShell({
             setQualifyingResult={setQualifyingResult}
             setPlanSubscreen={setPlanSubscreen}
             setGameView={setGameView}
-            setResultTab={setResultTab}
-            setResultOpen={setResultOpen}
             markCommandClicked={markCommandClicked}
-            openQualifyingRun={openQualifyingRun}
             tt={tt}
           />
         ) : null}

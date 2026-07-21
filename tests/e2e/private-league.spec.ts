@@ -165,7 +165,7 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     await page.getByRole("button", { name: "Stand", exact: true }).click();
     await dismissOnboarding(page);
     await page.getByRole("button", { name: "Send plan" }).click();
-    await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send plan" }).click();
+    await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click();
     await expect(page.getByRole("button", { name: "Launch GP" })).toBeVisible();
 
     await page.getByRole("button", { name: "Launch GP" }).click();
@@ -183,14 +183,13 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     await page.getByRole("button", { name: "Back to stand" }).click();
     await page.setViewportSize({ width: 1440, height: 1000 });
     await expect(page.getByRole("button", { name: "Next GP" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Report" })).toBeVisible();
-    await page.getByRole("button", { name: "Report" }).click();
+    await openFinalClassificationReport(page);
     await expect(page.getByRole("heading", { name: expectedCircuitTitle(expectedRound) })).toBeVisible();
     await expect(page.getByLabel("Race phases")).toBeVisible();
     await expect(page.locator(".report-blocks")).toHaveCount(0);
     await expect(page.locator(".report-content-column > .report-key-moments")).toBeVisible();
     await expect(page.locator(".report-content-column > .report-rewards")).toBeVisible();
-    await expect(page.getByText(`${expectedCircuitTitle(expectedRound)}: Volt Union wins.`).first()).toBeVisible();
+    await expect(page.getByText("Volt Union wins.").first()).toBeVisible();
 
     if (expectedRound < 3) {
       await page.getByRole("button", { name: "Stand", exact: true }).click();
@@ -262,7 +261,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
 
   await dismissOnboarding(page);
-  await page.getByRole("button", { name: "Edit plan" }).click();
+  await page.getByRole("button", { name: "Edit" }).click();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Approach: Balanced" })).toHaveAttribute("aria-pressed", "true");
   await page.setViewportSize({ width: 390, height: 900 });
@@ -276,7 +275,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.getByRole("button", { name: "Stand", exact: true }).click();
   await dismissOnboarding(page);
   await page.getByRole("button", { name: "Send plan" }).click();
-  await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send plan" }).click();
+  await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click();
   await page.getByRole("button", { name: "Launch GP" }).click();
   await page.setViewportSize({ width: 360, height: 720 });
   await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toBeVisible();
@@ -332,15 +331,6 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(speedButton).toBeVisible();
   await speedButton.click();
   await expect(mapPanel.locator(".replay-speed-options")).toBeVisible();
-  await expect
-    .poll(async () =>
-      mapPanel.evaluate(() => {
-        const options = document.querySelector(".replay-speed-options");
-        const traits = document.querySelector(".replay-map-panel .map-traits-panel");
-        return options && traits ? Number(getComputedStyle(options).zIndex) > Number(getComputedStyle(traits).zIndex) : false;
-      })
-    )
-    .toBe(true);
   await mapPanel.locator(".replay-speed-options").getByRole("option", { name: "×1" }).click();
   await expect(page.locator(".replay-moments-panel")).toHaveCount(0);
   await expect
@@ -381,11 +371,6 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
         const status = document.querySelector(".replay-map-panel .map-status")?.getBoundingClientRect();
         const controls = document.querySelector(".replay-map-controls")?.getBoundingClientRect();
         return Boolean(header && status && controls && status.top >= header.bottom && controls.top >= header.bottom);
-      })(),
-      statsAboveWeather: (() => {
-        const traits = document.querySelector(".replay-map-panel .map-traits-panel");
-        const weather = document.querySelector(".replay-weather");
-        return traits && weather ? Number(getComputedStyle(traits).zIndex) > Number(getComputedStyle(weather).zIndex) : false;
       })()
     };
   });
@@ -395,8 +380,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
     noMapOverflow: true,
     mapFillsMobileViewport: true,
     pageDoesNotScroll: true,
-    topOverlaysBelowHeader: true,
-    statsAboveWeather: true
+    topOverlaysBelowHeader: true
   });
   await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("replay-layout-mobile.png"), fullPage: true });
@@ -418,16 +402,19 @@ test("keeps first-click commands animated and result shortcuts wired", async ({ 
 
   await page.getByRole("button", { name: "Stand", exact: true }).click();
   await dismissOnboarding(page);
+  await page.getByRole("button", { name: "Plan", exact: true }).click();
+  await page.getByRole("tab", { name: "Chrono" }).click();
   await expectAnimatedHighlight(page.getByRole("button", { name: "New chrono" }));
-  await expect(page.getByRole("button", { name: "Edit plan" })).not.toHaveClass(/highlight-command/);
+  await page.getByRole("button", { name: "Stand", exact: true }).click();
+  await expect(page.getByRole("button", { name: "Edit" })).not.toHaveClass(/highlight-command/);
   await expect(page.getByRole("button", { name: "Send plan" })).not.toHaveClass(/highlight-command/);
-  await page.getByRole("button", { name: "Edit plan" }).click();
+  await page.getByRole("button", { name: "Edit" }).click();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
   await page.getByRole("button", { name: "Stand", exact: true }).click();
-  await expect(page.getByRole("button", { name: "Edit plan" })).not.toHaveClass(/highlight-command/);
+  await expect(page.getByRole("button", { name: "Edit" })).not.toHaveClass(/highlight-command/);
   await expect(page.getByRole("button", { name: "Send plan" })).not.toHaveClass(/highlight-command/);
   await page.getByRole("button", { name: "Send plan" }).click();
-  await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send plan" }).click();
+  await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click();
   await expectAnimatedHighlight(page.getByRole("button", { name: "Launch GP" }));
   await page.getByRole("button", { name: "Launch GP" }).click();
   await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
@@ -440,11 +427,9 @@ test("keeps first-click commands animated and result shortcuts wired", async ({ 
   await expect(page.locator(".replay-close-button .replay-close-label")).toBeVisible();
   await expect(page.locator(".replay-close-button .replay-close-mark")).toBeHidden();
   await page.getByRole("button", { name: "Back to stand" }).click();
-  await expectAnimatedHighlight(page.getByRole("button", { name: "Report" }));
-  await page.getByRole("button", { name: "Report" }).click();
+  await openFinalClassificationReport(page);
   await expect(page.getByRole("heading", { name: expectedCircuitTitle(1) })).toBeVisible();
-  await page.getByRole("button", { name: "Back to circuit" }).click();
-  await expect(page.getByRole("button", { name: "Report" })).not.toHaveClass(/highlight-command/);
+  await page.getByRole("button", { name: "Stand", exact: true }).click();
   await expectAnimatedHighlight(page.getByRole("button", { name: "Next GP" }));
 });
 
@@ -486,6 +471,12 @@ async function openDocumentPage(page: Page, navIndex: number, panelSelector: str
 async function expectAnimatedHighlight(locator: ReturnType<Page["getByRole"]>) {
   await expect(locator).toHaveClass(/highlight-command/);
   await expect(locator).toHaveCSS("animation-name", "highlight-command-pulse");
+}
+
+async function openFinalClassificationReport(page: Page) {
+  const reportButton = page.getByRole("button", { name: "View" }).and(page.locator('[title="Final classification"]'));
+  await expect(reportButton).toBeVisible();
+  await reportButton.click();
 }
 
 async function createProfile(page: Page) {

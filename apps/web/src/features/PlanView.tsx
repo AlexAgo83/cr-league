@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { RACE_SEGMENTS, type CardId, type QualifyingRun, type RaceResult } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
@@ -5,12 +6,15 @@ import type { CardFit, Translator } from "../app/helpers.js";
 import { buildPlanRecommendation, type ChronoReport, type PlanRiskRead } from "../app/raceFlow.js";
 import type { PlanSubscreen } from "../app/routes.js";
 import type { FormState, GameView, LeagueState } from "../app/types.js";
-import { DirectivePanel, type DirectiveStep } from "./DirectivePanel.js";
+import { APPROACH_ART, DirectivePanel, PIT_ART, PREPARATION_ART, type DirectiveStep } from "./DirectivePanel.js";
+import { CARD_ART } from "./CardStatBadges.js";
 import { OpponentConfigComparison } from "./OpponentConfigComparison.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { lazy, Suspense } from "react";
 
 const ReportView = lazy(() => import("./ReportView.js").then((module) => ({ default: module.ReportView })));
+
+const chronoChoiceStyle = (src?: string) => (src ? ({ "--chrono-choice-image": `url("${src}")` } as CSSProperties) : undefined);
 
 export function PlanView({
   cardLocked,
@@ -215,19 +219,19 @@ export function PlanView({
                           </small>
                           <b>{tt("qualifying_result_lap_value", { lap: run.lap ?? 1 })}</b>
                         </span>
-                        <span className={`chrono-session-choice type-approach approach-${run.decision.approach}`}>
+                        <span className={`chrono-session-choice type-approach approach-${run.decision.approach}`} style={chronoChoiceStyle(APPROACH_ART[run.decision.approach])}>
                           <small>{tt("field_approach")}</small>
                           <b>{tt(`approach_${run.decision.approach}` as TranslationKey)}</b>
                         </span>
-                        <span className={`chrono-session-choice type-preparation preparation-${run.decision.preparation}`}>
+                        <span className={`chrono-session-choice type-preparation preparation-${run.decision.preparation}`} style={chronoChoiceStyle(PREPARATION_ART[run.decision.preparation])}>
                           <small>{tt("field_preparation")}</small>
                           <b>{tt(`preparation_${run.decision.preparation}` as TranslationKey)}</b>
                         </span>
-                        <span className="chrono-session-choice type-pit is-faded">
+                        <span className="chrono-session-choice type-pit is-faded" style={chronoChoiceStyle(PIT_ART[run.decision.pitStrategy ?? "standard"])}>
                           <small>{tt("field_pit_strategy")}</small>
                           <b>{tt(`pit_strategy_${run.decision.pitStrategy ?? "standard"}` as TranslationKey)}</b>
                         </span>
-                        <span className={chronoCardClass(run.decision.cardId)}>
+                        <span className={chronoCardClass(run.decision.cardId)} style={chronoChoiceStyle(run.decision.cardId ? CARD_ART[run.decision.cardId] : undefined)}>
                           <small>{tt("field_card")}</small>
                           <b>{run.decision.cardId ? tt(`card_${run.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
                         </span>

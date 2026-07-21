@@ -4,7 +4,7 @@ import type { Translator } from "../app/helpers.js";
 import { AssetImage } from "./AssetImage.js";
 import { VisualIcon } from "./VisualIcon.js";
 
-const CARD_ART: Record<CardId, string> = {
+export const CARD_ART: Record<CardId, string> = {
   rain_grip: "/assets/crl/card-rain-grip.png",
   fleet_maintenance: "/assets/crl/card-fleet-maintenance.png",
   launch_boost: "/assets/crl/card-launch-boost.png",

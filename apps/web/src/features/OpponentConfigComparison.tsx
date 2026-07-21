@@ -1,7 +1,12 @@
+import type { CSSProperties } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import type { Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
+import { CARD_ART } from "./CardStatBadges.js";
+import { APPROACH_ART, PIT_ART, PREPARATION_ART } from "./DirectivePanel.js";
 import { PositionBadge } from "./PositionBadge.js";
+
+const chronoChoiceStyle = (src?: string) => (src ? ({ "--chrono-choice-image": `url("${src}")` } as CSSProperties) : undefined);
 
 export function OpponentConfigComparison({ state, playerTeamId, title, tt }: { state: LeagueState; playerTeamId?: string; title: string; tt: Translator }) {
   const resultByTeam = new Map(state.currentGrandPrix.result?.classification.map((entry) => [entry.teamId, entry]));
@@ -25,19 +30,19 @@ export function OpponentConfigComparison({ state, playerTeamId, title, tt }: { s
               <span>{teamName}</span>
             </strong>
             <div className="chrono-session-setup opponent-config-cells">
-              <span className={`chrono-session-choice type-approach approach-${decision.approach}`}>
+              <span className={`chrono-session-choice type-approach approach-${decision.approach}`} style={chronoChoiceStyle(APPROACH_ART[decision.approach])}>
                 <small>{tt("opponent_config_approach")}</small>
                 <b>{tt(`approach_${decision.approach}` as TranslationKey)}</b>
               </span>
-              <span className={`chrono-session-choice type-preparation preparation-${decision.preparation}`}>
+              <span className={`chrono-session-choice type-preparation preparation-${decision.preparation}`} style={chronoChoiceStyle(PREPARATION_ART[decision.preparation])}>
                 <small>{tt("opponent_config_preparation")}</small>
                 <b>{tt(`preparation_${decision.preparation}` as TranslationKey)}</b>
               </span>
-              <span className="chrono-session-choice type-pit">
+              <span className="chrono-session-choice type-pit" style={chronoChoiceStyle(PIT_ART[decision.pitStrategy ?? "standard"])}>
                 <small>{tt("opponent_config_pit")}</small>
                 <b>{tt(`pit_strategy_${decision.pitStrategy ?? "standard"}_short` as TranslationKey)}</b>
               </span>
-              <span className={`chrono-session-choice type-card${decision.cardId ? "" : " is-faded"}`}>
+              <span className={`chrono-session-choice type-card${decision.cardId ? "" : " is-faded"}`} style={chronoChoiceStyle(decision.cardId ? CARD_ART[decision.cardId] : undefined)}>
                 <small>{tt("opponent_config_card")}</small>
                 <b>{decision.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : tt("card_none")}</b>
               </span>

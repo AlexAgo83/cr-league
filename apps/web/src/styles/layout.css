@@ -1510,6 +1510,8 @@ label small {
   --chrono-cell-accent: rgb(23 21 26 / 0.18);
   background:
     linear-gradient(var(--chrono-cell-accent), var(--chrono-cell-accent)) 0 0 / 100% 3px no-repeat,
+    linear-gradient(rgb(248 243 232 / 0.76), rgb(248 243 232 / 0.9)),
+    var(--chrono-choice-image, none) center / cover no-repeat,
     rgb(248 243 232 / 0.72);
   border: 1px solid rgb(23 21 26 / 0.12);
   display: grid;

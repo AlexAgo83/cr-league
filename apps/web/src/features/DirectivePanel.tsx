@@ -30,19 +30,19 @@ export type DirectiveStep = "approach" | "preparation" | "pit" | "card";
 export const DIRECTIVE_STEP_KEY = "cr-league-directive-step";
 type PrimaryCommand = { label: string; action: () => void | Promise<void>; disabled: boolean };
 
-const APPROACH_ART: Record<(typeof APPROACHES)[number], string> = {
+export const APPROACH_ART: Record<(typeof APPROACHES)[number], string> = {
   prudent: "/assets/crl/approach-prudent.png",
   balanced: "/assets/crl/approach-balanced.png",
   aggressive: "/assets/crl/approach-aggressive.png"
 };
 
-const PREPARATION_ART: Record<(typeof PREPARATIONS)[number], string> = {
+export const PREPARATION_ART: Record<(typeof PREPARATIONS)[number], string> = {
   speed: "/assets/crl/preparation-speed.png",
   reliability: "/assets/crl/preparation-reliability.png",
   weather: "/assets/crl/preparation-weather.png"
 };
 
-const PIT_ART: Record<(typeof PIT_STRATEGIES)[number], string> = {
+export const PIT_ART: Record<(typeof PIT_STRATEGIES)[number], string> = {
   heavy_pack: "/assets/crl/pit-strategy-heavy-pack.png",
   standard: "/assets/crl/pit-strategy-standard.png",
   mini_pack: "/assets/crl/pit-strategy-mini-pack.png"

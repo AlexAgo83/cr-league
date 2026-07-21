@@ -610,7 +610,8 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
       throw new LeagueRuleError("No qualifying attempts left.");
     }
     const attemptRuns = createQualifyingRuns({
-      seed: `${freshGrandPrix.seed}-${team.id}-${Date.now()}-${Math.random()}`,
+      // Deterministic per (GP, team, attempt): retries still differ via the attempt counter, but a given attempt is reproducible (ADR-004), mirroring the bot seed convention.
+      seed: `${freshGrandPrix.seed}-${team.id}-qualifying-${attempts}`,
       teamId: team.id,
       teamName: team.name,
       decision,

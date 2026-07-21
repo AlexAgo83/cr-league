@@ -1,7 +1,7 @@
 ## req_077_make_qualifying_lap_times_deterministic_from_seed - Make qualifying lap times deterministic from seed
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Low

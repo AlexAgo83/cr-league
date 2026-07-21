@@ -1,6 +1,6 @@
 ## prod_041_simulation_determinism_hardening_product_brief - Simulation Determinism Hardening Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_077_make_qualifying_lap_times_deterministic_from_seed`
 > Related backlog: `item_175_seed_qualifying_lap_time_variance_and_timestamp_deterministically`
 > Related task: `task_078_orchestrate_deterministic_qualifying`

@@ -1,10 +1,10 @@
 ## item_175_seed_qualifying_lap_time_variance_and_timestamp_deterministically - Seed qualifying lap-time variance and timestamp deterministically
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Simulation determinism and beta-readiness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -60,3 +60,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_078_orchestrate_deterministic_qualifying` was finished via `logics-manager flow finish task` on 2026-07-21.

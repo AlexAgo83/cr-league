@@ -1,4 +1,5 @@
 import {
+  createPrng,
   type QualifyingRun,
   RACE_REPLAY_BASE_SECONDS,
   type RaceDecision,
@@ -12,6 +13,19 @@ import {
 import { strongestForecast } from "./utils.js";
 
 const QUALIFYING_REFERENCE_LAP_SECONDS = 90;
+// Fixed reference epoch (2024-01-01T00:00:00Z) so createdAt is derived from the seed, never from the wall clock.
+const QUALIFYING_CREATED_AT_EPOCH_MS = 1704067200000;
+
+// Deterministic stand-in for a creation timestamp: same seed always yields the same value, so a chrono is reproducible.
+function deterministicCreatedAt(seed: string): string {
+  let hash = 2166136261;
+  for (let index = 0; index < seed.length; index += 1) {
+    hash ^= seed.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  const offsetMs = (hash >>> 0) % 31_536_000_000; // spread across a one-year window
+  return new Date(QUALIFYING_CREATED_AT_EPOCH_MS + offsetMs).toISOString();
+}
 
 export function bestQualifyingRuns(runs: QualifyingRun[]) {
   return [...runs]
@@ -56,14 +70,16 @@ export function createQualifyingRuns(input: {
         : input.decision.cardId === "rain_grip" && weather !== "dry"
           ? -0.7
           : 0;
+  // Seed the per-lap variance so the same setup and seed always produce the same chrono (reproducible learning loop; ADR-004).
+  const prng = createPrng(`${input.seed}:qualifying:${input.teamId}`);
   const lapTimes = Array.from({ length: input.laps }, (_, index) => {
     const warmupPenalty = index === 0 && input.laps > 1 ? 1.1 : 0;
     const tyreDelta = index > 1 ? (index - 1) * 0.16 : 0;
-    const variance = (Math.random() - 0.5) * 2.4;
+    const variance = (prng.next() - 0.5) * 2.4;
     return Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + warmupPenalty + tyreDelta + variance).toFixed(2));
   });
   const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, weather, input.trackLengthMeters ?? 3200);
-  const createdAt = new Date().toISOString();
+  const createdAt = deterministicCreatedAt(input.seed);
 
   return lapTimes.map((time, index) => ({
     teamId: input.teamId,

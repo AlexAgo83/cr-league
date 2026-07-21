@@ -409,7 +409,7 @@ export function eventReportText(event: RaceEvent, names: Map<string, string>, tt
 
 export function resultHeadline(result: RaceResult, tt: Translator, title = result.grandPrixName) {
   const winner = result.classification[0];
-  return winner ? `${title}: ${winner.teamName} ${tt("report_wins")}.` : title;
+  return winner ? `${winner.teamName} ${tt("report_wins")}.` : title;
 }
 
 function signedDelta(delta: number) {

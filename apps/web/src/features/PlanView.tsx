@@ -93,10 +93,7 @@ export function PlanView({
       {activeSubscreen === "report" ? (
         reportResult ? (
           <div className="plan-gp-report-shell">
-            <button className="plan-gp-replay-button" type="button" onClick={onOpenRaceReplay}>
-              {tt("action_review_race")}
-            </button>
-            <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} tt={tt} />
+            <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} onOpenReplay={onOpenRaceReplay} replayActionVariant="primary" tt={tt} />
           </div>
         ) : (
           <>

@@ -24,6 +24,7 @@ export function ReportView({
   playerDecision,
   onOpenReplay,
   onClose,
+  replayActionVariant = "icon",
   tt
 }: {
   state: LeagueState;
@@ -33,6 +34,7 @@ export function ReportView({
   playerDecision: LeagueState["decisions"][number] | undefined;
   onOpenReplay?: () => void;
   onClose?: () => void;
+  replayActionVariant?: "icon" | "primary";
   tt: Translator;
 }) {
   const names = teamNamesFromResult(result);
@@ -67,14 +69,23 @@ export function ReportView({
   return (
     <div className="view-stack report-view">
       <section className="panel report-hero">
-        <div className="report-headline">
-          <span className="section-kicker">{tt("result_race_report")}</span>
-          <h2>{raceTitle}</h2>
-          <p>{resultHeadline(result, tt, raceTitle)}</p>
-        </div>
-        {onOpenReplay || onClose ? (
+        <header className="chrono-report-header report-headline">
+          <div>
+            <span className="section-kicker">{tt("result_race_report")}</span>
+            <h2>{raceTitle}</h2>
+          </div>
+          <div className="chrono-report-prompt">
+            <p>{resultHeadline(result, tt, raceTitle)}</p>
+            {onOpenReplay && replayActionVariant === "primary" ? (
+              <button type="button" className="primary-command" onClick={onOpenReplay}>
+                {tt("action_review_race")}
+              </button>
+            ) : null}
+          </div>
+        </header>
+        {(onOpenReplay && replayActionVariant === "icon") || onClose ? (
           <div className="report-actions">
-            {onOpenReplay ? (
+            {onOpenReplay && replayActionVariant === "icon" ? (
               <button type="button" className="report-replay-button" aria-label={tt("result_tab_replay")} title={tt("result_tab_replay")} onClick={onOpenReplay}>
                 <svg className="report-play-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
                   <path d="M8 5v14l11-7z" />

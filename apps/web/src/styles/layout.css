@@ -6120,11 +6120,19 @@ button.command-icon-button {
   margin-bottom: 10px;
 }
 
+.report-hero .chrono-report-header h2 {
+  margin: 0;
+}
+
 .report-hero p {
   color: var(--color-text);
   font-size: 1.05rem;
   font-weight: 700;
   margin: 0;
+}
+
+.report-hero .chrono-report-prompt p {
+  flex: 1 1 auto;
 }
 
 .plan-empty-report h2 {
@@ -6138,26 +6146,6 @@ button.command-icon-button {
 
 .plan-gp-report-shell {
   position: relative;
-}
-
-.plan-gp-replay-button {
-  background: var(--color-accent);
-  border: 1px solid rgb(255 255 255 / 0.2);
-  border-radius: 999px;
-  color: var(--color-accent-ink);
-  font-family: var(--font-display);
-  font-size: 0.72rem;
-  font-style: normal;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  line-height: 1;
-  min-height: 0;
-  padding: 8px 11px;
-  position: absolute;
-  right: 0;
-  text-transform: uppercase;
-  top: 0;
-  z-index: 4;
 }
 
 .report-verdict {

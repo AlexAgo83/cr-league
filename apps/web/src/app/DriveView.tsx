@@ -149,11 +149,11 @@ export function DriveView({
                     <small>
                       {currentCircuit.laps} {tt("unit_laps")}
                     </small>
-                    <small className="map-weather-readout">
+                    <small className="map-weather-readout map-weather-forecast">
                       <VisualIcon name={forecastPick as Weather} />
                       <span>
                         <b>{tt("briefing_forecast_not_final")}</b>
-                        {tt(`weather_tendency_${forecastPick}` as TranslationKey)}
+                        <span className="map-weather-tendency">{tt(`weather_tendency_${forecastPick}` as TranslationKey)}</span>
                       </span>
                     </small>
                     {result ? (

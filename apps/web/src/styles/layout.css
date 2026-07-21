@@ -2826,6 +2826,15 @@ label small {
   grid-template-columns: 16px minmax(0, max-content);
 }
 
+.map-status .map-weather-forecast {
+  grid-template-columns: 16px minmax(0, 9.5rem);
+}
+
+.map-weather-tendency {
+  display: block;
+  line-height: 1.15;
+}
+
 .map-weather-readout b {
   color: var(--color-text);
   display: block;

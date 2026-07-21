@@ -2826,6 +2826,13 @@ label small {
   grid-template-columns: 16px minmax(0, max-content);
 }
 
+.map-status .map-laps-readout {
+  align-items: center;
+  display: inline-grid;
+  gap: 5px;
+  grid-template-columns: 16px max-content;
+}
+
 .map-status .map-weather-forecast {
   grid-template-columns: 16px minmax(0, 9.5rem);
 }

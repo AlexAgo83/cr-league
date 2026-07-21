@@ -146,7 +146,8 @@ export function DriveView({
                       <CountryBadge country={currentCircuit.country} /> {currentCircuit.city}
                     </span>
                     <strong>{tt(currentCircuit.layoutKey)}</strong>
-                    <small>
+                    <small className="map-laps-readout">
+                      <VisualIcon name="laps" />
                       {currentCircuit.laps} {tt("unit_laps")}
                     </small>
                     <small className="map-weather-readout map-weather-forecast">

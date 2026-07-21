@@ -1,6 +1,6 @@
 import { AssetImage } from "./AssetImage.js";
 
-export type VisualIconName = "grip" | "overtaking" | "energy" | "dry" | "light_rain" | "heavy_rain" | "card" | "position" | "dot";
+export type VisualIconName = "grip" | "overtaking" | "energy" | "dry" | "light_rain" | "heavy_rain" | "card" | "position" | "laps" | "dot";
 
 export function VisualIcon({ name }: { name: VisualIconName }) {
   return (
@@ -38,6 +38,12 @@ export function VisualIcon({ name }: { name: VisualIconName }) {
         <>
           <path d="M5 17 17 5" />
           <path d="M10 5h7v7" />
+        </>
+      ) : null}
+      {name === "laps" ? (
+        <>
+          <path d="M7 7h10a4 4 0 0 1 0 8H7a4 4 0 0 1 0-8Z" />
+          <path d="M8 12h8" />
         </>
       ) : null}
       {name === "dot" ? <circle cx="12" cy="12" r="4" /> : null}

@@ -498,7 +498,8 @@ export function CircuitMap({
                   <CountryBadge country={circuit.country} /> {circuit.city}
                 </span>
                 <strong>{tt(circuit.layoutKey)}</strong>
-                <small>
+                <small className="map-laps-readout">
+                  <VisualIcon name="laps" />
                   {circuit.laps} {tt("unit_laps")}
                 </small>
                 <small className="map-weather-readout">

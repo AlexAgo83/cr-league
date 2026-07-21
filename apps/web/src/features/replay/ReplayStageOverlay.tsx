@@ -136,7 +136,8 @@ export function ReplayStageOverlay({
             <CountryBadge country={circuit.country} /> {circuit.city}
           </span>
           <strong>{tt(circuit.layoutKey)}</strong>
-          <small>
+          <small className="map-laps-readout">
+            <VisualIcon name="laps" />
             {tt("unit_lap")} {liveLap}/{circuit.laps}
           </small>
           <small className="map-weather-readout">

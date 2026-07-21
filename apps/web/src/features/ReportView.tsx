@@ -46,11 +46,12 @@ export function ReportView({
   const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
   const verdict = buildRaceVerdict(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
   const nonWinningFeedback = deriveNonWinningFeedback(result, playerTeamId, playerDecision);
+  const nonWinningRead = nonWinningFeedback ? `${translateLine(nonWinningFeedback.title, tt)}: ${translateLine(nonWinningFeedback.body, tt)}` : "";
   const recap = [
     {
       className: "difference",
       title: tt("result_difference"),
-      body: recapCards.difference
+      body: `${translateLine(verdict.stance, tt)} ${translateLine(verdict.cause, tt)}`
     },
     {
       className: "directive",
@@ -60,7 +61,7 @@ export function ReportView({
     {
       className: "plan-read",
       title: tt("result_plan_read"),
-      body: recapCards.planRead
+      body: [recapCards.planRead, nonWinningRead].filter(Boolean).join(" ")
     },
     {
       className: "lesson",
@@ -101,17 +102,6 @@ export function ReportView({
               </button>
             ) : null}
           </div>
-        ) : null}
-        <section className="report-verdict" aria-label={tt("result_verdict")}>
-          <strong>{translateLine(verdict.stance, tt)}</strong>
-          <p>{translateLine(verdict.cause, tt)}</p>
-          <small>{translateLine(verdict.tryNext, tt)}</small>
-        </section>
-        {nonWinningFeedback ? (
-          <section className={`non-winning-feedback ${nonWinningFeedback.tone}`} aria-label={tt("non_winning_feedback_label")}>
-            <strong>{translateLine(nonWinningFeedback.title, tt)}</strong>
-            <p>{translateLine(nonWinningFeedback.body, tt)}</p>
-          </section>
         ) : null}
         <ol className="report-podium">
           {result.classification.map((entry) => (

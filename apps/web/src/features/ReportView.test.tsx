@@ -8,7 +8,7 @@ import { t } from "../i18n/index.js";
 import { ReportView } from "./ReportView.js";
 
 describe("ReportView", () => {
-  it("renders the race verdict above report phases", () => {
+  it("integrates the race verdict into the race recap", () => {
     const typedBaseState = baseState as unknown as LeagueState;
     const state = {
       ...typedBaseState,
@@ -53,9 +53,10 @@ describe("ReportView", () => {
       />
     );
 
-    expect(screen.getByLabelText("Race verdict").textContent).toContain("Verdict:");
-    expect(screen.getByLabelText("Race verdict").textContent).toContain("Rain Grip");
-    expect(container.querySelector(".report-verdict")!.compareDocumentPosition(container.querySelector(".report-phases")!)).toBe(Node.DOCUMENT_POSITION_FOLLOWING);
+    const recap = screen.getByRole("heading", { name: "Race recap" }).closest("section")!;
+    expect(container.querySelector(".report-verdict")).toBe(null);
+    expect(recap.textContent).toContain("Verdict:");
+    expect(recap.textContent).toContain("Rain Grip");
   });
 
   it("maps GP event laps to the circuit lap count without using the chrono scale", () => {
@@ -163,9 +164,10 @@ describe("ReportView", () => {
       report: { headline: "Test", blocks: [] }
     };
 
-    render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+    const { container } = render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
 
-    expect(screen.getByLabelText("Non-winning outcome").textContent).toContain("Useful result");
-    expect(screen.getByLabelText("Non-winning outcome").textContent).toContain("protected track position");
+    const recap = container.querySelector(".report-side-recap") as HTMLElement;
+    expect(recap.textContent).toContain("Useful result");
+    expect(recap.textContent).toContain("protected track position");
   });
 });

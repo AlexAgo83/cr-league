@@ -130,32 +130,6 @@ export function ReportView({
             </div>
           </section>
 
-          <section className="panel report-rewards">
-            <h3>{tt("report_rewards")}</h3>
-            <ol>
-              {result.classification.map((entry) => (
-                <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>
-                  <PositionBadge position={entry.position} />
-                  <span>{entry.teamName}</span>
-                  <dl>
-                    <div>
-                      <dt>{tt("report_reward_points")}</dt>
-                      <dd>
-                        <RewardValue type="points" value={entry.points} tt={tt} />
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>{tt("report_reward_credits")}</dt>
-                      <dd>
-                        <RewardValue type="credits" value={entry.credits} tt={tt} />
-                      </dd>
-                    </div>
-                  </dl>
-                </li>
-              ))}
-            </ol>
-          </section>
-
           <section className="panel report-key-moments">
             <h3>{tt("report_key_moments")}</h3>
             {keyEvents.length ? (

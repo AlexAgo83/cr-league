@@ -2,7 +2,7 @@ import { useEffect, useRef, type Ref } from "react";
 import type { CSSProperties } from "react";
 import type { TeamLivery, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
-import type { CityCircuit } from "../app/circuits.js";
+import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
@@ -501,6 +501,10 @@ export function CircuitMap({
                 <small className="map-laps-readout">
                   <VisualIcon name="laps" />
                   {circuit.laps} {tt("unit_laps")}
+                </small>
+                <small className="map-distance-readout">
+                  <VisualIcon name="distance" />
+                  {circuitDistanceLabel(circuit)}
                 </small>
                 <small className="map-weather-readout">
                   <VisualIcon name={displayWeather} />

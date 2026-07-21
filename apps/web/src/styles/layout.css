@@ -2826,7 +2826,8 @@ label small {
   grid-template-columns: 16px minmax(0, max-content);
 }
 
-.map-status .map-laps-readout {
+.map-status .map-laps-readout,
+.map-status .map-distance-readout {
   align-items: center;
   display: inline-grid;
   gap: 5px;

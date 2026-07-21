@@ -1,6 +1,6 @@
 import { DEMO_RACE_INPUT, RACE_SEGMENTS, type RaceDecision, type RaceResult, type TeamLivery, type Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
-import type { CityCircuit } from "./circuits.js";
+import { circuitDistanceLabel, type CityCircuit } from "./circuits.js";
 import type { Translator } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
@@ -149,6 +149,10 @@ export function DriveView({
                     <small className="map-laps-readout">
                       <VisualIcon name="laps" />
                       {currentCircuit.laps} {tt("unit_laps")}
+                    </small>
+                    <small className="map-distance-readout">
+                      <VisualIcon name="distance" />
+                      {circuitDistanceLabel(currentCircuit)}
                     </small>
                     <small className="map-weather-readout map-weather-forecast">
                       <VisualIcon name={forecastPick as Weather} />

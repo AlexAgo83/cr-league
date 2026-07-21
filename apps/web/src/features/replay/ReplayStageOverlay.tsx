@@ -140,11 +140,14 @@ export function ReplayStageOverlay({
             <VisualIcon name="laps" />
             {tt("unit_lap")} {liveLap}/{circuit.laps}
           </small>
+          <small className="map-distance-readout">
+            <VisualIcon name="distance" />
+            {circuitDistance}
+          </small>
           <small className="map-weather-readout">
             <VisualIcon name={liveWeather} />
             <span>{tt(`weather_${liveWeather}` as TranslationKey)}</span>
           </small>
-          <small>{circuitDistance}</small>
           <button className="map-plan-edit-button map-weather-info-button" type="button" aria-label={tt("race_weather_info_title")} title={tt("race_weather_info_title")} onClick={() => setWeatherInfoOpen(true)}>
             {tt("action_info")}
           </button>

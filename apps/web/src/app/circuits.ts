@@ -38,3 +38,7 @@ export function circuitForRound(round: number, leagueId = "default", season = 1)
   const circuits = circuitsForSeason(leagueId, season);
   return circuits[(Math.max(1, round) - 1) % circuits.length] ?? circuits[0];
 }
+
+export function circuitDistanceLabel(circuit: Pick<CityCircuit, "trackLengthMeters">) {
+  return `${(circuit.trackLengthMeters / 1000).toFixed(1)} km`;
+}

@@ -1,7 +1,7 @@
 import { type RaceDecision, type RaceResult, type TeamLivery } from "@cr-league/shared";
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
-import type { CityCircuit } from "../app/circuits.js";
+import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
 import type { RaceEvent } from "../app/helpers.js";
 import { CircuitMap, type MapCar, type MapTraitImpacts } from "./CircuitMap.js";
@@ -52,7 +52,6 @@ import {
   FINISH_HOLD_SECONDS,
   MOMENT_NOTIFICATION_SECONDS,
   buildReplayPlan,
-  circuitLengthMeters,
   displayLapAtProgress,
   eventTraceProgress,
   finishTimes,
@@ -149,7 +148,7 @@ export function ReplayView({
   const raceDuration = smoothTracePositions ? replayTimes.leader : replayTimes.last;
   const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
   const raceTimeAtProgress = useCallback((progress: number) => START_HOLD_SECONDS + progress * raceDuration, [raceDuration]);
-  const circuitDistance = `${(circuitLengthMeters(circuit) / 1000).toFixed(1)} km`;
+  const circuitDistance = circuitDistanceLabel(circuit);
   const lastFinishTime = replayTimes.last;
   const replayEnd = START_HOLD_SECONDS + lastFinishTime + FINISH_HOLD_SECONDS;
   const replayPercentAtRaceProgress = (progress: number) => (raceTimeAtProgress(progress) / replayEnd) * 100;

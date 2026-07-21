@@ -1,0 +1,112 @@
+{
+  "title": "Clarify weather semantics: forecast vs resolved and pace-marker legend",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/architecture/adr_006_accessibility.md",
+    "logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md",
+    "apps/web/src/app/DriveView.tsx",
+    "apps/web/src/features/replay/ReplayProgress.tsx",
+    "apps/web/src/features/replay/replayDirector.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "apps/web/src/i18n/en.json",
+    "apps/web/src/i18n/fr.json",
+    "Current diagnostic: before the race, DriveView.tsx (lines 133-147) shows a single forecastPick weather pill labeled only with the weather name (weather_<value>), with no framing that it is a probability and not the final weather.",
+    "Current diagnostic: in the replay, ReplayProgress.tsx (lines 70-79) renders resolvedWeather per segment with only the weather name as tooltip, never labeling it as the actual resolved weather versus the earlier forecast.",
+    "Current diagnostic: the orange pace marker is the qualifying_pace director beat at progress 0.5 (replayDirector.ts:22); its only label is the marker title, with no legend explaining the moving playhead or that the cloud icons map to the five race phases.",
+    "Simulation truth: resolveWeather in simulateRace.ts uses the forecast only for the mid segment; early is a fixed 80/18/2 roll and late/finish are derived, so a precise per-phase probability display would misrepresent the model. Framing must stay qualitative and honest.",
+    "Scope note: weather visual states (icons/colors) already shipped (item_121); this request changes semantics and labeling only, not the icon set."
+  ],
+  "request": {
+    "complexity": "Low",
+    "theme": "Race legibility",
+    "needs": [
+      "Frame the pre-race weather pill as a forecast that is not guaranteed, with a qualitative tendency (for example dry likely, rain possible around mid-race), and no per-phase percentages.",
+      "Label the replay weather timeline as the actual resolved weather per phase, distinct from the pre-race forecast.",
+      "Add a short legend explaining the moving pace marker (chrono rhythm) and that the cloud icons map to the five race phases.",
+      "Keep framing honest with the model: do not present a precise per-phase probability the simulation does not apply.",
+      "Support EN/FR copy, keep it compact, and do not rely on color alone (ADR-006).",
+      "Change no simulation behavior, no weather model, and add no new dependency."
+    ],
+    "context": [
+      "The pre-race forecast pill (DriveView) and the replay timeline (ReplayProgress) currently both show only a weather name, so players cannot tell probability from actuality (audit cause D).",
+      "The simulation resolves weather per segment; only the mid segment reads the forecast, so any displayed probability must stay qualitative to avoid misleading the player.",
+      "This is a readability change with no model change; it is a post-0.3 gameplay/legibility carry-over, not part of the 0.4 performance theme, and it does not depend on the 0.5 evidence gate.",
+      "Weather icons and colors already exist; this request adds framing, labels, and a legend around them."
+    ],
+    "acceptance_criteria": [
+      "AC1: The pre-race weather pill is clearly labeled as a forecast that is not final and conveys a qualitative tendency, without per-phase percentages.",
+      "AC2: The replay weather timeline is clearly labeled as the actual resolved weather per phase, distinct from the pre-race forecast.",
+      "AC3: A concise legend explains the pace marker and that cloud icons map to the five race phases.",
+      "AC4: No displayed weather probability contradicts the simulation model (no precise per-phase percentages implied to be exact).",
+      "AC5: Meaning is not conveyed by color alone (ADR-006); EN/FR copy is present and compact.",
+      "AC6: No simulation behavior or weather model changes.",
+      "AC7: npm run typecheck, npm test, npm run build, npm run lint, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Weather Legibility Product Brief",
+    "overview": "Make weather understandable by clearly separating the pre-race forecast (a probability, not a promise) from the actual per-phase weather shown in the replay, and by explaining the pace marker, without changing the weather model.",
+    "goals": [
+      "Let a player tell a forecast apart from the weather that actually happened.",
+      "Explain the replay pace marker and phase mapping so the timeline is self-describing.",
+      "Keep all weather framing honest with the underlying model.",
+      "Preserve uncertainty; do not turn the forecast into a solved prediction."
+    ],
+    "non_goals": [
+      "Do not change the weather model, its per-segment rolls, or any simulation behavior.",
+      "Do not display precise per-phase probabilities the model does not apply.",
+      "Do not redesign the weather icon set or colors (already shipped).",
+      "Do not add a charting or UI dependency."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Label forecast vs resolved weather and add a replay legend",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Race legibility",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7"],
+      "problem": [
+        "The pre-race pill and replay timeline both show only a weather name, so probability and actuality look identical (audit cause D).",
+        "The orange pace marker and the cloud-to-phase mapping have no legend, so the timeline is unreadable at first contact.",
+        "A naive probability display would misrepresent the model, since only the mid segment uses the forecast."
+      ],
+      "scope_in": [
+        "Reframe the DriveView forecast pill as a non-final forecast with a qualitative tendency and EN/FR copy.",
+        "Label the ReplayProgress timeline as actual resolved weather per phase.",
+        "Add a compact legend for the pace marker and the phase mapping, legible without color alone.",
+        "Keep all framing consistent with the simulation's per-segment weather behavior."
+      ],
+      "scope_out": [
+        "Any change to the weather model or simulation behavior.",
+        "Precise per-phase probability figures.",
+        "Redesign of weather icons or colors.",
+        "Card weather-condition labeling (handled in the card legibility request)."
+      ],
+      "acceptance_criteria": [
+        "AC1: Pre-race weather reads as a forecast (not final) with a qualitative tendency and no per-phase percentages.",
+        "AC2: Replay weather reads as actual resolved weather per phase, distinct from the forecast.",
+        "AC3: A legend explains the pace marker and the five-phase cloud mapping, not color-only, with EN/FR copy.",
+        "AC4: No framing contradicts the model; no simulation change.",
+        "AC5: Typecheck, test, build, lint, and logics:validate pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate weather forecast legibility",
+    "plan": [
+      "Confirm the pre-race forecast pill (DriveView.tsx:133-147) and replay timeline (ReplayProgress.tsx:70-79) render only weather names, and confirm resolveWeather's per-segment behavior in simulateRace.ts.",
+      "Reframe the pre-race pill as a non-final forecast with a qualitative tendency and EN/FR copy.",
+      "Label the replay timeline as actual resolved weather per phase and add a compact legend for the pace marker and phase mapping, legible without color alone.",
+      "Verify no framing implies a per-phase probability the model does not apply and no simulation behavior changed.",
+      "Run typecheck, test, build, lint, and logics:validate; record validation evidence in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/weather-forecast-legibility.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

@@ -59,6 +59,7 @@
 | [prod_040_league_state_freshness_on_return_product_brief](product/prod_040_league_state_freshness_on_return_product_brief.md) | League State Freshness On Return Product Brief | Proposed |  |  | product/prod_040_league_state_freshness_on_return_product_brief.md |
 | [prod_041_simulation_determinism_hardening_product_brief](product/prod_041_simulation_determinism_hardening_product_brief.md) | Simulation Determinism Hardening Product Brief | Proposed |  |  | product/prod_041_simulation_determinism_hardening_product_brief.md |
 | [prod_042_race_legibility_product_brief](product/prod_042_race_legibility_product_brief.md) | Race Legibility Product Brief | Proposed |  |  | product/prod_042_race_legibility_product_brief.md |
+| [prod_043_weather_legibility_product_brief](product/prod_043_weather_legibility_product_brief.md) | Weather Legibility Product Brief | Proposed |  |  | product/prod_043_weather_legibility_product_brief.md |
 
 ## Roadmaps
 
@@ -150,6 +151,7 @@
 | [req_076_refresh_league_state_when_the_player_returns_to_the_tab](request/req_076_refresh_league_state_when_the_player_returns_to_the_tab.md) | Refresh league state when the player returns to the tab | Draft |  |  | request/req_076_refresh_league_state_when_the_player_returns_to_the_tab.md |
 | [req_077_make_qualifying_lap_times_deterministic_from_seed](request/req_077_make_qualifying_lap_times_deterministic_from_seed.md) | Make qualifying lap times deterministic from seed | Draft |  |  | request/req_077_make_qualifying_lap_times_deterministic_from_seed.md |
 | [req_078_expose_card_trigger_conditions_and_relative_strength_in_plan_and_garage](request/req_078_expose_card_trigger_conditions_and_relative_strength_in_plan_and_garage.md) | Expose card trigger conditions and relative strength in plan and garage | Draft |  |  | request/req_078_expose_card_trigger_conditions_and_relative_strength_in_plan_and_garage.md |
+| [req_079_clarify_weather_semantics_forecast_vs_resolved_and_pace_marker_legend](request/req_079_clarify_weather_semantics_forecast_vs_resolved_and_pace_marker_legend.md) | Clarify weather semantics: forecast vs resolved and pace-marker legend | Draft |  |  | request/req_079_clarify_weather_semantics_forecast_vs_resolved_and_pace_marker_legend.md |
 
 ## Backlog
 
@@ -331,6 +333,7 @@
 | [item_174_refresh_active_league_on_tab_return](backlog/item_174_refresh_active_league_on_tab_return.md) | Refresh active league on tab return | Ready |  | 0% | backlog/item_174_refresh_active_league_on_tab_return.md |
 | [item_175_seed_qualifying_lap_time_variance_and_timestamp_deterministically](backlog/item_175_seed_qualifying_lap_time_variance_and_timestamp_deterministically.md) | Seed qualifying lap-time variance and timestamp deterministically | Ready |  | 0% | backlog/item_175_seed_qualifying_lap_time_variance_and_timestamp_deterministically.md |
 | [item_176_add_a_shared_card_descriptor_condition_strength_band_and_surface_it_in_card_ui](backlog/item_176_add_a_shared_card_descriptor_condition_strength_band_and_surface_it_in_card_ui.md) | Add a shared card descriptor (condition + strength band) and surface it in card UI | Ready |  | 0% | backlog/item_176_add_a_shared_card_descriptor_condition_strength_band_and_surface_it_in_card_ui.md |
+| [item_177_label_forecast_vs_resolved_weather_and_add_a_replay_legend](backlog/item_177_label_forecast_vs_resolved_weather_and_add_a_replay_legend.md) | Label forecast vs resolved weather and add a replay legend | Ready |  | 0% | backlog/item_177_label_forecast_vs_resolved_weather_and_add_a_replay_legend.md |
 
 ## Tasks
 
@@ -415,3 +418,4 @@
 | [task_077_orchestrate_league_state_freshness_on_return](tasks/task_077_orchestrate_league_state_freshness_on_return.md) | Orchestrate league-state freshness on return | Ready |  | 0% | tasks/task_077_orchestrate_league_state_freshness_on_return.md |
 | [task_078_orchestrate_deterministic_qualifying](tasks/task_078_orchestrate_deterministic_qualifying.md) | Orchestrate deterministic qualifying | Ready |  | 0% | tasks/task_078_orchestrate_deterministic_qualifying.md |
 | [task_079_orchestrate_card_effect_legibility](tasks/task_079_orchestrate_card_effect_legibility.md) | Orchestrate card effect legibility | Ready |  | 0% | tasks/task_079_orchestrate_card_effect_legibility.md |
+| [task_080_orchestrate_weather_forecast_legibility](tasks/task_080_orchestrate_weather_forecast_legibility.md) | Orchestrate weather forecast legibility | Ready |  | 0% | tasks/task_080_orchestrate_weather_forecast_legibility.md |

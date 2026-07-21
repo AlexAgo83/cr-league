@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 85%
-> Confidence: 85
+> Confidence: 87
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -13,12 +13,20 @@
 Define how to test whether the CR League loop is fun before building too much.
 
 # Current Status
-Keep this spec in Draft. The repository has a private-league checklist and balance evidence workflow, but the current qualifying/replay/garage loop still needs a real 3-to-5 tester session before the playtest plan is settled.
+Keep this spec in Draft. The repository has a private-league checklist, AI playtest report, and balance evidence workflow, but the current qualifying/replay/garage loop still needs a real 3-to-5 tester session before the playtest plan is settled.
 
 # Test Goal
 Validate the core product question:
 
 > Does making a few pre-race decisions create enough tension, understanding, and story to make players want the next Grand Prix?
+
+# Automated Preflight
+Run automated evidence before human sessions so obvious balance or replay regressions are fixed first:
+
+- `npm run playtest:ai -- --agents 50 --seasons 3 --rounds 6 --report docs/audits/playtest-ai.md --json docs/audits/playtest-ai.json`
+- `npm run balance:sim -- --runs 300 --circuits 4 --limit 10 --json docs/audits/balance-latest.json`
+
+These reports are guards, not substitutes for observation: a PASS means the build is ready to put in front of testers, not that the loop is proven fun.
 
 # First Playtest
 Participants:

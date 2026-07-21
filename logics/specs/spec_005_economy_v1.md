@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 85%
-> Confidence: 81
+> Confidence: 84
 > Related request: `req_002_define_cr_league_v1_planning_specs`
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
@@ -15,7 +15,7 @@ Define the minimal economy for V1.
 The economy should create useful choices between races without becoming the game.
 
 # Current Status
-Keep this spec in Draft. The prototype has credits, fixed-price card buying, recommendations, bot card buying, 15 consumable cards, and a balance simulation kit, but prices, payouts, comeback pressure, and shop shape are still active balancing topics.
+Keep this spec in Draft. The prototype has credits, fixed-price card buying, bot card buying, 15 consumable cards, an AI playtest report, and a balance simulation kit. The 2026-07-21 baseline removed known dead-card pricing outliers, but payouts, comeback pressure, and shop shape are still active balancing topics until human playtest evidence exists.
 
 # Resources
 V1 has three resource concepts:
@@ -27,14 +27,14 @@ V1 has three resource concepts:
 No permanent car upgrades in V1.
 
 # Credit Awards
-Initial placeholder payout for 6-team races:
+Current implementation baseline for 6-team races:
 
 - P1: 150 credits
 - P2: 130 credits
 - P3: 115 credits
 - P4: 105 credits
 - P5: 100 credits
-- P6: 95 credits
+- P6: 100 credits
 
 Rationale:
 
@@ -52,14 +52,17 @@ Rationale:
 Bonuses should be visible and capped.
 
 # Card Pricing
-Initial placeholder prices:
+Current implementation baseline:
 
-- common tactical card: 100 credits;
-- strong conditional card: 140 credits;
-- economy card: 80 credits;
-- defensive card: 120 credits.
+- 120-credit cards: `rain_grip`, `fleet_maintenance`, `final_surge`, `fleet_sponsorship`, `qualifying_focus`, `economy_mode`.
+- 180-credit cards: `launch_boost`, `urban_draft`, `soft_tires`, `defensive_order`, `adjustable_wing`, `rain_mapping`, `pit_relay`, `hard_tires`, `calculated_attack`.
 
-The vertical slice can avoid a shop and give one card reward per race if that is faster.
+The balance kit must read real `CARD_PRICES` rather than a generic price, so credit-margin evidence stays aligned with shipped prices.
+
+Latest AI playtest and balance evidence:
+
+- AI playtest PASS: every card was bought at least 16 times, including cards that were previously dead or overpriced.
+- Balance simulation: no card dominates points, win rate, and credit margin simultaneously; economy cards can lead margin without also leading sporting output.
 
 # Inventory
 V1 recommendation:

@@ -103,9 +103,9 @@ export const CARD_DESCRIPTORS: Record<CardId, CardDescriptor> = {
   qualifying_focus: { conditionKey: "card_condition_chrono", strength: "weak", downsideKey: "card_downside_low_race_value" },
   defensive_order: { conditionKey: "card_condition_late", strength: "weak", downsideKey: "card_downside_attack" },
   adjustable_wing: { conditionKey: "card_condition_fast_urban_early", strength: "medium", downsideKey: "card_downside_reliability" },
-  rain_mapping: { conditionKey: "card_condition_rain_mid", strength: "strong", downsideKey: "card_downside_dry_baseline" },
+  rain_mapping: { conditionKey: "card_condition_rain_mid", strength: "weak", downsideKey: "card_downside_dry_baseline" },
   economy_mode: { conditionKey: "card_condition_top4_finish", strength: "weak", downsideKey: "card_downside_pace" },
   pit_relay: { conditionKey: "card_condition_late", strength: "medium", downsideKey: "card_downside_none" },
-  hard_tires: { conditionKey: "card_condition_late", strength: "medium", downsideKey: "card_downside_start_pace" },
+  hard_tires: { conditionKey: "card_condition_late", strength: "weak", downsideKey: "card_downside_start_pace" },
   calculated_attack: { conditionKey: "card_condition_close_car_mid", strength: "strong", downsideKey: "card_downside_needs_gap" }
 };

@@ -120,7 +120,10 @@ for (let season = 1; season <= args.seasons; season += 1) {
 const reportPath = args.report ?? `reports/playtest/${new Date().toISOString().slice(0, 10)}-ai-playtest.md`;
 const profileRows = rows(profileStats);
 const approachRows = rows(approachStats);
-const cardRows: CardRow[] = [...cardStats.entries()].map(([card, stats]) => ({ card, ...stats, triggerRate: pct(stats.triggered / Math.max(1, stats.played)) }));
+const cardRows: CardRow[] = [...cardStats.entries()].map(([card, stats]) => {
+  const triggered = Math.min(stats.triggered, stats.played);
+  return { card, played: stats.played, triggered, bought: stats.bought, triggerRate: pct(triggered / Math.max(1, stats.played)) };
+});
 const alertRows = alerts(profileRows, cardRows);
 const payload = {
   args,

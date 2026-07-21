@@ -9,18 +9,18 @@ export const COMEBACK_CREDIT_BONUS_CAP = 40;
 export const CARD_PRICE = 120;
 export const CARD_PRICES: Record<CardId, number> = {
   rain_grip: 120,
-  fleet_maintenance: 250,
+  fleet_maintenance: 120,
   launch_boost: 180,
   urban_draft: 180,
   final_surge: 120,
   fleet_sponsorship: 120,
   soft_tires: 180,
   qualifying_focus: 120,
-  defensive_order: 250,
-  adjustable_wing: 500,
-  rain_mapping: 250,
+  defensive_order: 180,
+  adjustable_wing: 180,
+  rain_mapping: 180,
   economy_mode: 120,
-  pit_relay: 250,
-  hard_tires: 250,
-  calculated_attack: 250
+  pit_relay: 180,
+  hard_tires: 180,
+  calculated_attack: 180
 };

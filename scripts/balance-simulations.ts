@@ -3,6 +3,7 @@ import { dirname } from "node:path";
 import {
   CARD_DEFINITIONS,
   CARD_PRICE,
+  CARD_PRICES,
   createPrng,
   simulateRace,
   type BotArchetype,
@@ -159,7 +160,7 @@ function addRun(totals: Totals, candidate: Strategy, circuit: (typeof selectedCi
   if (!entry) throw new Error("Candidate missing from classification.");
   const grid = participants.find((participant) => participant.teamId === "candidate")?.standingsRank ?? 0;
   const cardTriggered = Boolean(candidate.cardId && result.events.some((event) => event.teamId === "candidate" && event.cardId === candidate.cardId));
-  const cardPrice = candidate.cardId ? CARD_PRICE : 0;
+  const cardPrice = candidate.cardId ? CARD_PRICES[candidate.cardId] : 0;
 
   const circuitTotal = circuitTotals.get(String(circuit.layoutKey));
   addResult(totals, entry.position, entry.points, entry.score, entry.credits, cardPrice, grid, cardTriggered);

@@ -563,9 +563,9 @@ function applyDecision(scores: InternalScores, participant: RaceParticipant) {
     scores.control += 6;
     scores.reliability += 2;
   } else if (participant.decision.cardId === "hard_tires") {
-    scores.pace -= 4;
-    scores.reliability += 10;
-    scores.control += 5;
+    scores.pace -= 6;
+    scores.reliability += 7;
+    scores.control += 3;
   } else if (participant.decision.cardId === "calculated_attack") {
     scores.aggression += 7;
   }
@@ -776,10 +776,10 @@ function maybeAddCardEvent(
     events.push(createCardEvent(events.length, state, segment, "card_triggered", suitedCircuit ? 8 : 0));
   } else if (cardId === "rain_mapping" && segment === "mid") {
     const rained = weather !== "dry";
-    state.scores.score += rained ? 22 : 5;
-    state.positionDelta += rained ? 10 : 0;
+    state.scores.score += rained ? 18 : 10;
+    state.positionDelta += rained ? 6 : 2;
     state.resultTags.add(rained ? "rain_mapping" : "rain_mapping_baseline");
-    events.push(createCardEvent(events.length, state, segment, rained ? "weather_gamble_paid" : "card_triggered", rained ? 10 : 0));
+    events.push(createCardEvent(events.length, state, segment, rained ? "weather_gamble_paid" : "card_triggered", rained ? 6 : 2));
   } else if (cardId === "economy_mode" && segment === "finish") {
     state.resultTags.add("economy_mode");
     events.push(createCardEvent(events.length, state, segment, "sponsor_payout", 0));
@@ -790,10 +790,10 @@ function maybeAddCardEvent(
     state.resultTags.add("pit_relay");
     events.push(createCardEvent(events.length, state, segment, "held_position", 8));
   } else if (cardId === "hard_tires" && segment === "late") {
-    state.scores.score += 16;
-    state.positionDelta += 8;
+    state.scores.score += 10;
+    state.positionDelta += 5;
     state.resultTags.add("hard_tires");
-    events.push(createCardEvent(events.length, state, segment, "late_push_gain", 8));
+    events.push(createCardEvent(events.length, state, segment, "late_push_gain", 5));
   } else if (cardId === "calculated_attack" && segment === "mid") {
     const target = carAhead(state, states);
     const closeEnough = target && state.elapsedTime - target.elapsedTime <= 3;

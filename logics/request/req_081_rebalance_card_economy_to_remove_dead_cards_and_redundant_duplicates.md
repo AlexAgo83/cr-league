@@ -1,7 +1,7 @@
 ## req_081_rebalance_card_economy_to_remove_dead_cards_and_redundant_duplicates - Rebalance card economy to remove dead cards and redundant duplicates
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 90
 > Complexity: High
@@ -10,7 +10,7 @@
 > Non-semantic edit: 2026-07-21 repointed audit/playtest evidence references to tracked docs/audits copies.
 
 # Status note
-- READY AFTER PREREQUISITE (2026-07-21): `req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity` has landed with refreshed baseline evidence. Start from `docs/audits/playtest-ai.md` and `docs/audits/balance-latest.json`; task_082 can be unblocked when implementation starts.
+- IMPLEMENTED (2026-07-21): `task_082_orchestrate_card_economy_rebalance` repriced dead cards, differentiated `rain_mapping`, reduced `hard_tires` dominance, and refreshed balance/playtest evidence.
 
 # Needs
 - Give every card a reason to exist by removing dead cards and near-duplicate cards, using the playtest and balance evidence as the starting diagnosis.
@@ -34,6 +34,15 @@
 - AC5: Card copy remains descriptive and never labels a card as best, recommended, or optimal.
 - AC6: Determinism holds; updated deterministic tests reflect intended magnitude changes and still pass.
 - AC7: Balance and playtest evidence (updated reports) is recorded, and npm run typecheck, npm test, npm run build, npm run lint, and npm run logics:validate pass.
+
+# AC Traceability
+- AC1 -> `task_082_orchestrate_card_economy_rebalance`. Proof: `docs/audits/playtest-ai.md` shows every card bought at least 16 times after the rebalance.
+- AC2 -> `task_082_orchestrate_card_economy_rebalance`. Proof: `docs/audits/balance-latest.json` uses real `CARD_PRICES`; no single card dominates points, win rate, and credit margin together.
+- AC3 -> `task_082_orchestrate_card_economy_rebalance`. Proof: `packages/shared/src/economy/constants.ts` reprices the confirmed outliers and `packages/shared/src/simulation/simulateRace.ts` differentiates weather/reliability effects.
+- AC4 -> `task_082_orchestrate_card_economy_rebalance`. Proof: changed cards now lean on distinct trigger/effect shapes: mechanic save, dry-baseline rain map, late pit steadiness, moderated hard tire closing stint, and circuit attack wing.
+- AC5 -> `task_082_orchestrate_card_economy_rebalance`. Proof: card prose remains descriptive and no recommendation copy was introduced.
+- AC6 -> `task_082_orchestrate_card_economy_rebalance`. Proof: deterministic simulation, card descriptor, API, and e2e tests passed after intentional expectation updates.
+- AC7 -> `task_082_orchestrate_card_economy_rebalance`. Proof: updated audit reports are tracked and `npm test`, `npm run test:e2e`, `npm run typecheck`, `npm run build`, `npm run lint`, `npm run logics:validate`, and `git diff --check` passed.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.
@@ -60,9 +69,9 @@
 - scripts/ai-playtest.ts
 - logics/request/req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity.md
 - docs/balance-simulations.md
-- Playtest evidence (docs/audits/playtest-ai.md, 50 agents x 3 seasons x 6 GP after req_084): adjustable_wing bought 0 times (price 500), pit_relay bought 0, fleet_maintenance bought 1, defensive_order 3, rain_mapping 15 versus rain_grip 136; the cheap cluster (rain_grip, final_surge, qualifying_focus, fleet_sponsorship, economy_mode) still dominates purchases. Pit Strategy Mix now covers heavy_pack, standard, and mini_pack, but rival-hunter/aggressive remains weak.
-- Balance evidence (docs/audits/balance-latest.json, 300 runs x 4 circuits after req_084): hard_tires dominates the top strategies (best: aggressive/weather/hard_tires 18.45 avg points) while prudent/reliability/fleet_sponsorship remains worst at 2.58 avg points; the spread is 15.87 avg points and confirms card economy still needs a dedicated rebalance.
-- Code truth: rain_grip (120) and rain_mapping (250) share the same mid-only weather check but rain_grip pays more for less money; adjustable_wing (500) underperforms launch_boost (180); pit_relay (250) has no downside; soft_tires/hard_tires partly re-sell what free approach/preparation knobs already grant (simulateRace.ts:498-537).
+- Playtest evidence (docs/audits/playtest-ai.md, 50 agents x 3 seasons x 6 GP after rebalance): PASS; every card is bought at least 16 times, with prior dead cards now active (`adjustable_wing` 16, `pit_relay` 24, `fleet_maintenance` 92, `rain_mapping` 37, `calculated_attack` 42).
+- Balance evidence (docs/audits/balance-latest.json, 300 runs x 4 circuits after rebalance): `hard_tires` no longer dominates the top strategies; `rain_grip` leads points/win but not credit margin, while economy cards lead margin without dominating points/win.
+- Code truth: `CARD_PRICES` now backs both purchase behavior and balance margin reporting; `rain_mapping` is less explosive than `rain_grip` in rain but gives baseline dry value, and `hard_tires` is a moderated late-race reliability choice rather than the dominant setup.
 
 # AI Context
 - Summary: Rebalance card economy to remove dead cards and redundant duplicates

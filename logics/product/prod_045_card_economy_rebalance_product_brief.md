@@ -1,6 +1,6 @@
 ## prod_045_card_economy_rebalance_product_brief - Card Economy Rebalance Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_081_rebalance_card_economy_to_remove_dead_cards_and_redundant_duplicates`
 > Related backlog: `item_179_reprice_and_re_role_dead_and_duplicate_cards_with_balance_kit_validation`
 > Related task: `task_082_orchestrate_card_economy_rebalance`
@@ -51,7 +51,7 @@ flowchart LR
 - Paid cards create trade-offs that free directive knobs do not already provide.
 
 # References
-- Product back-reference: `req_081_rebalance_card_economy_to_remove_dead_cards_and_redundant_duplicates`
+- Product back-reference: `item_179_reprice_and_re_role_dead_and_duplicate_cards_with_balance_kit_validation`
 - Task back-reference: `task_082_orchestrate_card_economy_rebalance`
 - Roadmap hold: `logics/roadmap/road_002_cr_league_roadmap_v2.md`
 - Audit evidence: `docs/audits/AUDIT_CR_LEAGUE.md`

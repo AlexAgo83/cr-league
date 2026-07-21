@@ -1,0 +1,234 @@
+{
+  "title": "Repo review remediation pass 6: JSON-column race locks, simulation finishing-order fidelity, destructive-op guards, and over-engineering cleanup",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/features/leagues/persistence.ts",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/admin/store.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "apps/web/src/app/DriveView.tsx",
+    "apps/web/src/app/lapDisplay.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/features/DirectivePanel.tsx",
+    "apps/api/src/features/leagues/qualifying.ts",
+    "apps/api/src/features/leagues/utils.ts",
+    "Full-repo review from 2026-07-21 on v0.3.26, after pass 5 (req_058) closed. Concurrency: buyCard (store.ts:401-413) and sellCard (store.ts:436-448) read the team.cards JSON array via an unlocked findUnique and write it back as a static JS value inside runWrite; the updateMany credits guard re-checks atomically but the cards array does not, so two concurrent buys both charge and both overwrite the array, losing one card and its credits. submitDecision (store.ts:518-560) checks GP status via getCurrentGrandPrix outside the transaction and upserts the decision with no GP lock and no status re-check, so a decision can land after resolveCurrentGrandPrix has snapshotted, marking a team ready on a resolved GP. joinLeagueByCode (store.ts:265-286) checks teams.length >= maxPlayers then creates a team with no league-row lock, a TOCTOU that lets concurrent joins exceed the cap. Simulation: FinalClassification (DriveView.tsx:391-405) derives intervals from finalTrace.gaps, but gaps at the final trace point is (leaderProgress - trackProgress) * raceDuration (simulateRace.ts:311) and every car's trackProgress is clamped to 1 at progress>=1 (simulateRace.ts:292), so all non-leader intervals render +0.0s. The segmentTime clamp [base*0.72, base*1.28] (simulateRace.ts:664-666) saturates for competitive deltas, so elapsedTime (the primary classify key, simulateRace.ts:920) stops tracking scores.score and finishing order collapses to sub-clamp noise. Card triggers calculated_attack/urban_draft evaluate carAhead (simulateRace.ts:797-815) inside the per-state loop where some states have the current segment applied and some do not, so the <=3s gap check mixes pre- and post-segment elapsedTime. Destructive ops: deleteAdminUser (admin/store.ts:58-61) permanently deletes any profile with no isTestProfile guard and no confirmation token, unlike its sibling cleanupAdminTestData which already gates on isTestProfile and ADMIN_TEST_DATA_CLEANUP_CONFIRMATION. requireAdminClaim (store.ts:1021-1028) silently reassigns and persists ownerTeamId to the oldest human team when the recorded owner is missing, transferring league-admin powers with no explicit action. Legibility: DirectivePanel APPROACH/PREPARATION/PIT_BADGES (DirectivePanel.tsx:74-88) hand-mirror applyDecision's stat deltas with a flat magnitude of 3 and drop pace, so player-facing hints have drifted from real balance. Over-engineering: lapDisplay.ts:5-7 is a verbatim copy of the unexported lapForProgress (simulateRace.ts:1064-1066); DriveView.tsx:468-476 has a dead ternary whose branches render an identical button; qualifying.ts:22-30 hand-rolls an FNV-1a hash to fabricate a fake createdAt nothing depends on temporally; utils.ts:98-102 ensureProfileExists is exported but never called; App.tsx tt is a fresh closure every render (App.tsx:61,111) threaded through the whole tree defeating downstream memoization; createDistanceReplayTracePoint computes order via orderFromCars for interior points (simulateRace.ts:300) that stabilizeReplayTraceOrders immediately overwrites."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Repo review remediation",
+    "needs": [
+      "Close the JSON-column read-modify-write races: serialize buyCard/sellCard, submitDecision, and joinLeagueByCode under row/table locks so concurrent requests cannot lose cards, write decisions onto a resolved Grand Prix, or push a league past maxPlayers, reusing the existing runWrite/lockGrandPrixRow machinery from passes 3-5.",
+      "Restore simulation finishing-order fidelity: make Final Classification show real finishing intervals instead of +0.0s, keep elapsedTime discriminant so results track the score model instead of clamp noise, and evaluate card look-ahead on a consistent time snapshot.",
+      "Guard destructive and authority-changing operations: deleteAdminUser must not delete a non-test profile without explicit confirmation, and requireAdminClaim must stop silently transferring league ownership.",
+      "Stop the card directive badges from lying: derive APPROACH/PREPARATION/PIT badges from a single shared stat-delta descriptor that applyDecision also consumes, so hints can never drift from balance again.",
+      "Delete the accumulated over-engineering the review surfaced: duplicated lap helper, dead ternary, fabricated qualifying timestamp, unused export, unmemoized translator closure, and a doubly-computed replay order."
+    ],
+    "context": [
+      "runWrite (persistence.ts:4-6) and lockGrandPrixRow (persistence.ts:8-11) already establish the transaction + FOR UPDATE row-lock pattern used by resolve/next-grand-prix/restart; these fixes extend that same pattern to the card and join paths. lockGrandPrixRow and $queryRaw are no-ops on the in-memory test DB, so a Postgres integration test (the lane added in pass 5, req_058) is the only place the lock is actually exercised — concurrency ACs must run there, not only against the memory DB.",
+      "buyCard's updateMany already guards credits atomically with where credits >= totalPrice, but the cards value is a plain JS array built from an unlocked findUnique read; a lockTeamRow(tx, teamId) helper (SELECT id FROM \"teams\" WHERE id = ... FOR UPDATE, no-op when $queryRaw is absent) taken before the read makes the whole read-modify-write serial. sellCard has the same shape and gets the same lock.",
+      "submitDecision reads status through getCurrentGrandPrix outside runWrite; the fix moves the raceDecision.upsert inside a runWrite that lockGrandPrixRow-locks the GP and re-reads status, rejecting with a 409 when the GP is already resolved. This mirrors how resolveCurrentGrandPrix already claims the GP under the lock.",
+      "joinLeagueByCode counts teams then creates outside any lock; enforcing the cap inside a runWrite that locks the league row (SELECT id FROM \"leagues\" WHERE id = ... FOR UPDATE) and recounts closes the TOCTOU. Keep the unique-code retry behavior (retryUnique) intact.",
+      "FinalClassification should compute intervals from finalTrace.times (absolute elapsed time per team, already populated) rather than finalTrace.gaps, which is structurally zero at the final trace point because trackProgress is clamped to 1 there. The leader row keeps showing absolute time; each following row shows the positive difference of consecutive times. No change to the trace format is needed.",
+      "The segmentTime clamp saturates because base*0.72 is a hard floor and competitive deltas drive base - delta*0.16 below it, flattening elapsedTime. The lower-risk fix keeps the clamp for physical realism but makes classify (simulateRace.ts:920) tie-break on scores.score before elapsedTime, so the score model stays the source of truth and elapsedTime only refines within a score tier; validate order stability before/after with npm run balance:sim. Widening the clamp is the fallback if the tie-break alone does not restore spread.",
+      "carAhead sorts on state.elapsedTime while the enclosing loop has already mutated elapsedTime for earlier states and not yet for later ones. Snapshot every state's elapsedTime into a Map before the card-effect loop and have carAhead read the snapshot, so all look-ahead comparisons see a single consistent frame. No card should change which car is 'ahead' based on loop iteration order.",
+      "deleteAdminUser must reuse the guardrails cleanupAdminTestData already has: refuse when isTestProfile(email) is false unless the caller passes an explicit confirmation matching the profile email (type-to-confirm), keeping the operation irreversible-by-accident-proof. This is a store + admin route + admin UI change; keep it minimal.",
+      "requireAdminClaim's fallback that reassigns ownerTeamId to the oldest human team (store.ts:1022,1026-1028) should be removed: a missing or non-human recorded owner means 'no active owner' and the action is rejected with 403, not silently transferred. An explicit ownership-transfer path is out of scope (YAGNI) until a real need exists. Note this narrows the pass-4 self-healing behavior deliberately; call it out at closeout.",
+      "DirectivePanel's badge tables encode a fixed magnitude of 3 and omit pace, while applyDecision applies real per-axis deltas (e.g. prudent is pace-8/control+10/reliability+9/aggression-12). Extract the delta descriptors into a shared module both applyDecision and the panel import, and render badges from the signed deltas so the two can never diverge; snapshot tests on the badge output pin the mapping.",
+      "Cleanup items are independent and low-risk: export lapForProgress from simulateRace and delete the lapDisplay.ts copy; collapse the identical-branch ternary in DriveView.tsx:468-476 to one button; delete the FNV-1a deterministicCreatedAt in qualifying.ts and use a fixed epoch (or drop createdAt from qualifying runs if unordered); delete the unused ensureProfileExists export; wrap tt in useMemo/useCallback keyed on locale in App.tsx; and skip the orderFromCars call for interior points in createDistanceReplayTracePoint since stabilizeReplayTraceOrders overwrites it."
+    ],
+    "acceptance_criteria": [
+      "AC1: buyCard, sellCard, submitDecision, and joinLeagueByCode are serialized under row/table locks inside runWrite, with Postgres integration tests proving no card/credit loss under concurrent buys, no decision written onto a resolved Grand Prix, and no league exceeding maxPlayers under concurrent joins.",
+      "AC2: Final Classification shows real per-team finishing intervals (no all-zero +0.0s), classify tie-breaks on scores.score so finishing order tracks the score model rather than clamp noise, and card look-ahead reads a consistent elapsedTime snapshot; balance:sim confirms order stability did not regress.",
+      "AC3: deleteAdminUser refuses to delete a non-test profile without an explicit matching confirmation, and requireAdminClaim rejects with 403 when there is no valid recorded owner instead of transferring ownership; tests cover both.",
+      "AC4: Approach, preparation, and pit badges in DirectivePanel are derived from a single shared stat-delta descriptor that applyDecision also consumes, include pace, and match the real deltas, pinned by a snapshot test.",
+      "AC5: The duplicated lap helper, dead DriveView ternary, FNV-1a qualifying timestamp, unused ensureProfileExists export, and doubly-computed replay order are removed, and tt is memoized; behavior is unchanged and all existing tests pass.",
+      "AC6: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Repo Review Remediation Pass 6 Product Brief",
+    "overview": "A sixth remediation pass driven by the v0.3.26 full-repo review: close the JSON-column read-modify-write races on the card, decision, and join paths using the transaction/row-lock machinery established in passes 3-5; restore simulation finishing-order fidelity so results and displayed gaps reflect the score model; guard the two remaining destructive/authority operations; stop the card directive badges from drifting from balance; and delete the over-engineering the review catalogued.",
+    "goals": [
+      "Concurrent card, decision, and join requests can never lose data or violate an invariant.",
+      "Race results and the finishing-interval display reflect the simulation's score model, not clamp saturation or clamped-progress artifacts.",
+      "An irreversible admin delete and league-admin authority cannot happen by accident.",
+      "Player-facing plan badges always match the balance the simulation actually applies.",
+      "The codebase sheds the duplicated, dead, and fabricated code the review found."
+    ],
+    "non_goals": [
+      "Do not build ownership-transfer UX or full session auth; a missing owner simply rejects.",
+      "Do not migrate qualifyingRuns or cards to dedicated tables or convert Prisma string columns to enums.",
+      "Do not rebalance card or approach values; the badge work exposes existing deltas, it does not retune them.",
+      "Do not add new rate-limiting or caching infrastructure.",
+      "Do not restyle any screen beyond the confirm prompt required by the delete guard."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Lock the JSON-column read-modify-write paths",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "API integrity",
+      "request_acs": ["AC1", "AC6"],
+      "problem": [
+        "buyCard (store.ts:401-413) and sellCard (store.ts:436-448) read team.cards via an unlocked findUnique and write it back as a static JS array; the updateMany credits guard is atomic but the cards write is not, so two concurrent buys both charge and both overwrite the array, losing one card and its credits.",
+        "submitDecision (store.ts:518-560) checks GP status outside the transaction and upserts with no GP lock or status re-check, so a decision can land after resolveCurrentGrandPrix snapshots, marking a team ready on a resolved GP.",
+        "joinLeagueByCode (store.ts:265-286) checks teams.length >= maxPlayers then creates a team with no lock, a TOCTOU letting concurrent joins exceed the cap."
+      ],
+      "scope_in": [
+        "Add a lockTeamRow(tx, teamId) helper in persistence.ts mirroring lockGrandPrixRow (SELECT id FROM \"teams\" WHERE id = ... FOR UPDATE, no-op when $queryRaw is absent).",
+        "In buyCard and sellCard, take lockTeamRow before the findUnique so the whole cards read-modify-write is serial; keep the existing credits guard as belt-and-braces.",
+        "In submitDecision, move the raceDecision.upsert inside runWrite, lockGrandPrixRow the current GP, re-read status, and reject with 409 when already resolved.",
+        "In joinLeagueByCode, enforce the maxPlayers cap inside a runWrite that locks the league row and recounts human teams, preserving the retryUnique code-allocation behavior.",
+        "Add Postgres integration tests (pass-5 lane) for concurrent buys, decision-vs-resolve, and concurrent joins."
+      ],
+      "scope_out": [
+        "Replacing the in-memory unit DB or changing its no-op $transaction/$queryRaw.",
+        "Moving cards or decisions to dedicated tables.",
+        "Any change to card pricing or join UX."
+      ],
+      "acceptance_criteria": [
+        "AC1: Concurrent buyCard/sellCard on one team never lose a card or miscount credits.",
+        "AC2: A decision cannot be written onto a Grand Prix that is already resolved.",
+        "AC3: Concurrent joins cannot push a league above maxPlayers.",
+        "AC4: The new guarantees are proven by Postgres integration tests, not only the memory DB."
+      ]
+    },
+    {
+      "title": "Restore simulation finishing-order and interval fidelity",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Simulation fidelity",
+      "request_acs": ["AC2", "AC6"],
+      "problem": [
+        "FinalClassification (DriveView.tsx:391-405) derives intervals from finalTrace.gaps, which is (leaderProgress - trackProgress) * raceDuration and structurally zero at the final trace point because trackProgress is clamped to 1 (simulateRace.ts:292,311), so every non-leader row shows +0.0s.",
+        "The segmentTime clamp [base*0.72, base*1.28] (simulateRace.ts:664-666) saturates for competitive deltas, so elapsedTime (the primary classify key, :920) stops tracking scores.score and order collapses to sub-clamp noise.",
+        "calculated_attack/urban_draft call carAhead (simulateRace.ts:797-815) inside the per-state loop, comparing elapsedTime values that are half-updated across the iteration, so 'the car ahead' depends on loop order."
+      ],
+      "scope_in": [
+        "Compute Final Classification intervals from finalTrace.times: leader shows absolute time, each following row shows the positive difference of consecutive elapsed times.",
+        "Make classify tie-break on scores.score before elapsedTime so finishing order follows the score model; keep the segment clamp for realism.",
+        "Snapshot every state's elapsedTime into a Map before the card-effect loop and have carAhead read the snapshot so all look-ahead sees one consistent frame.",
+        "Validate finishing-order stability before/after with npm run balance:sim; widen the clamp only if the tie-break alone does not restore spread."
+      ],
+      "scope_out": [
+        "Changing the replay trace format or gaps semantics for mid-race beats.",
+        "Retuning card magnitudes or approach deltas.",
+        "Reworking the scoring model itself."
+      ],
+      "acceptance_criteria": [
+        "AC1: Final Classification shows distinct, non-zero finishing intervals matching elapsed-time differences.",
+        "AC2: Finishing order tracks scores.score, with elapsedTime only refining within a score tier.",
+        "AC3: Card look-ahead selects the same 'car ahead' regardless of state iteration order.",
+        "AC4: balance:sim shows no unintended finishing-order regression."
+      ]
+    },
+    {
+      "title": "Guard destructive delete and league-admin authority",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Admin safety",
+      "request_acs": ["AC3", "AC6"],
+      "problem": [
+        "deleteAdminUser (admin/store.ts:58-61) permanently deletes any profile with no isTestProfile guard and no confirmation, unlike cleanupAdminTestData which already gates on isTestProfile and a confirmation constant.",
+        "requireAdminClaim (store.ts:1021-1028) silently reassigns and persists ownerTeamId to the oldest human team when the recorded owner is missing, transferring league-admin powers with no explicit action."
+      ],
+      "scope_in": [
+        "Make deleteAdminUser refuse when isTestProfile(email) is false unless the caller passes an explicit confirmation matching the profile email (type-to-confirm), threading the confirmation through the admin route and the admin panel UI.",
+        "Remove the ownerTeamId self-reassignment in requireAdminClaim: a missing or non-human recorded owner rejects with 403 rather than transferring ownership.",
+        "Tests: non-test-profile delete rejected without confirmation and allowed with it; admin action rejected when the recorded owner is absent."
+      ],
+      "scope_out": [
+        "Building an explicit ownership-transfer flow (deferred until a real need).",
+        "Reworking the admin authentication model.",
+        "Soft-delete or audit-log infrastructure."
+      ],
+      "acceptance_criteria": [
+        "AC1: A non-test profile cannot be deleted without an explicit matching confirmation.",
+        "AC2: requireAdminClaim returns 403 when no valid owner is recorded and never mutates ownerTeamId as a side effect.",
+        "AC3: Both behaviors are covered by tests and the closeout notes the deliberate narrowing of pass-4 self-healing."
+      ]
+    },
+    {
+      "title": "Derive plan badges from a single shared stat-delta descriptor",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Balance legibility",
+      "request_acs": ["AC4", "AC6"],
+      "problem": [
+        "APPROACH/PREPARATION/PIT_BADGES in DirectivePanel.tsx:74-88 hand-mirror applyDecision's stat deltas with a flat magnitude of 3 and omit pace, so the player-facing hints have drifted from the balance the simulation applies (e.g. prudent is really pace-8/control+10/reliability+9/aggression-12)."
+      ],
+      "scope_in": [
+        "Extract the per-approach, per-preparation, and per-pit stat-delta descriptors into a shared module that applyDecision consumes as its source of truth.",
+        "Render DirectivePanel badges from the signed deltas of that descriptor, including pace, so panel and simulation cannot diverge.",
+        "Add a snapshot test pinning the badge output to the descriptor."
+      ],
+      "scope_out": [
+        "Changing any delta value (this exposes existing balance, it does not retune it).",
+        "Redesigning the badge visual style.",
+        "Localizing new copy beyond existing badge labels."
+      ],
+      "acceptance_criteria": [
+        "AC1: applyDecision and DirectivePanel read the same descriptor; there is no second hand-written delta table.",
+        "AC2: Badges reflect the real signed deltas including pace.",
+        "AC3: A snapshot test fails if the descriptor and rendered badges drift apart."
+      ]
+    },
+    {
+      "title": "Over-engineering cleanup sweep",
+      "priority": "Low",
+      "complexity": "Low",
+      "theme": "Over-engineering cleanup",
+      "request_acs": ["AC5", "AC6"],
+      "problem": [
+        "lapDisplay.ts:5-7 is a verbatim copy of the unexported lapForProgress (simulateRace.ts:1064-1066).",
+        "DriveView.tsx:468-476 has a dead ternary whose two branches render an identical button.",
+        "qualifying.ts:22-30 hand-rolls an FNV-1a hash to fabricate a createdAt nothing depends on temporally.",
+        "utils.ts:98-102 ensureProfileExists is exported but never called.",
+        "App.tsx tt is a fresh closure every render (App.tsx:61,111), threaded through the tree and defeating downstream memoization.",
+        "createDistanceReplayTracePoint computes order via orderFromCars for interior points (simulateRace.ts:300) that stabilizeReplayTraceOrders immediately overwrites."
+      ],
+      "scope_in": [
+        "Export lapForProgress from simulateRace and delete the lapDisplay.ts copy, updating imports.",
+        "Collapse the identical-branch ternary in DriveView.tsx:468-476 to a single button.",
+        "Delete deterministicCreatedAt and use a fixed epoch constant, or drop createdAt from qualifying runs if nothing orders by it.",
+        "Delete the unused ensureProfileExists export.",
+        "Wrap tt in useMemo/useCallback keyed on locale in App.tsx.",
+        "Skip the orderFromCars call for interior trace points since stabilizeReplayTraceOrders overwrites them."
+      ],
+      "scope_out": [
+        "Any behavioral change to lap display, qualifying results, or replay ordering.",
+        "Broader App.tsx decomposition (covered by pass 5).",
+        "Performance work beyond the tt memoization."
+      ],
+      "acceptance_criteria": [
+        "AC1: The duplicated lap helper, dead ternary, FNV-1a timestamp, and unused export are gone and the tree still typechecks.",
+        "AC2: tt is memoized and replay order is computed once per interior point.",
+        "AC3: All existing unit, integration, and e2e tests pass with no behavioral change."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate repo review remediation pass 6",
+    "plan": [
+      "Read req_058 (pass 5) and its Postgres integration lane first; these fixes extend the same runWrite/lockGrandPrixRow patterns and the concurrency ACs must run in that lane, not against the no-op memory DB.",
+      "Land the concurrency locks: add lockTeamRow, serialize buyCard/sellCard, move submitDecision under the GP lock with a status re-check, and lock joinLeagueByCode's cap; add the Postgres integration tests proving each invariant.",
+      "Fix the simulation: intervals from times in FinalClassification, classify tie-break on scores.score, and the carAhead elapsedTime snapshot; run balance:sim before and after to confirm order stability.",
+      "Add the destructive-op guards: confirmation-gated deleteAdminUser and the requireAdminClaim ownership-transfer removal, with tests; note the deliberate narrowing of pass-4 self-healing.",
+      "Extract the shared stat-delta descriptor and render DirectivePanel badges from it with a snapshot test.",
+      "Do the cleanup sweep last (lap helper, dead ternary, FNV timestamp, unused export, tt memo, single order computation), keeping every existing test green.",
+      "Run typecheck, tests, build, lint, e2e, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/repo-review-remediation-pass-6.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

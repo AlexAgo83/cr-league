@@ -1933,6 +1933,12 @@ label small {
   top: 8px;
 }
 
+.plan-risk-summary .plan-risk-lock-badge {
+  color: rgb(255 247 237);
+  display: inline-flex;
+  letter-spacing: 0;
+}
+
 .plan-risk-safe {
   --plan-risk-accent: #15803d;
 }

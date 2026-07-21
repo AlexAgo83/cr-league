@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
+import type { TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, type CityCircuit } from "../app/circuits.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, type ChampionshipRecordTab } from "../app/viewPreferences.js";
+import { AssetImage } from "./AssetImage.js";
 import { CircuitMap, analyzeCircuitRoute } from "./CircuitMap.js";
+import { carAssetForId } from "./carAssets.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
@@ -122,6 +125,7 @@ export function ChampionshipView({
             <ol className="standings-table">
               {state.teams.map((team, index) => (
                 <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
+                  <ChampionshipCarBackdrop livery={team.livery} />
                   <PositionBadge position={index + 1} className="standings-rank" />
                   <LiveryPlate className="standings-livery-plate" livery={team.livery} name={team.name} wins={seasonWins.get(team.id) ?? 0} />
                   <span className="standings-team">
@@ -199,13 +203,20 @@ export function ChampionshipView({
             <ol className="palmares-list">
               {completedSeasons.map((season) => (
                 <li key={season.season}>
-                  <button type="button" className="palmares-button" onClick={() => onOpenSeasonRecap(season.season)}>
-                    <span>{season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} /> : null}</span>
-                    <strong>
-                      {tt("league_season")} {season.season}
-                    </strong>
-                    <span>{season.champion.teamName}</span>
-                    <small>
+                  <button
+                    type="button"
+                    className="palmares-button"
+                    aria-label={`${tt("league_season")} ${season.season} ${season.champion.teamName}`}
+                    onClick={() => onOpenSeasonRecap(season.season)}
+                  >
+                    <ChampionshipCarBackdrop livery={season.champion.livery} />
+                    <span className="palmares-season-badge">S{season.season}</span>
+                    {season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} /> : <span />}
+                    <span className="standings-team">
+                      {season.champion.teamName}
+                      <small>{tt("season_champion")}</small>
+                    </span>
+                    <small className="palmares-gp-count">
                       {season.gpCount} {tt("season_gp_count")}
                     </small>
                   </button>
@@ -262,6 +273,21 @@ export function ChampionshipView({
         </section>
       </div>
     </div>
+  );
+}
+
+function ChampionshipCarBackdrop({ livery }: { livery?: TeamLivery }) {
+  const asset = carAssetForId(livery?.carAssetId);
+  const style = {
+    "--championship-car-mask": `url("${asset.side}")`,
+    "--championship-car-secondary": livery?.secondary ?? "#16c784",
+    "--championship-car-stroke": livery?.primary ?? "#38bdf8"
+  } as CSSProperties & Record<string, string>;
+  return (
+    <span className="championship-car-backdrop" style={style} aria-hidden="true">
+      <AssetImage className="championship-car-backdrop-image" src={asset.side} alt="" />
+      <span className="championship-car-backdrop-gradient" />
+    </span>
   );
 }
 

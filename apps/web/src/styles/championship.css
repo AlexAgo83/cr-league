@@ -455,7 +455,14 @@
   display: grid;
   gap: 10px;
   grid-template-columns: 46px 48px minmax(0, 1fr) auto auto auto;
+  overflow: hidden;
   padding: 10px 12px;
+  position: relative;
+}
+
+.standings-table li > *:not(.championship-car-backdrop) {
+  position: relative;
+  z-index: 1;
 }
 
 .standings-table li.current-team {
@@ -591,10 +598,70 @@
   color: inherit;
   display: grid;
   gap: 10px;
-  grid-template-columns: 48px minmax(82px, auto) minmax(0, 1fr) auto;
+  grid-template-columns: 46px 48px minmax(0, 1fr) auto;
+  overflow: hidden;
   padding: 10px 12px;
+  position: relative;
   text-align: left;
   width: 100%;
+}
+
+.palmares-button > *:not(.championship-car-backdrop) {
+  position: relative;
+  z-index: 1;
+}
+
+.championship-car-backdrop {
+  aspect-ratio: 764 / 403;
+  opacity: 0.2;
+  pointer-events: none;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: min(18%, 96px);
+  z-index: 0;
+}
+
+.championship-car-backdrop-image {
+  height: auto;
+  object-fit: contain;
+  width: 100%;
+}
+
+.championship-car-backdrop-image > img {
+  filter:
+    drop-shadow(2px 0 0 var(--championship-car-stroke))
+    drop-shadow(-2px 0 0 var(--championship-car-stroke))
+    drop-shadow(0 2px 0 var(--championship-car-stroke))
+    drop-shadow(0 -2px 0 var(--championship-car-stroke));
+  mix-blend-mode: luminosity;
+}
+
+.championship-car-backdrop-image .asset-image-placeholder {
+  display: none;
+}
+
+.championship-car-backdrop-gradient {
+  background: linear-gradient(90deg, transparent 18%, color-mix(in srgb, var(--championship-car-secondary) 55%, #000 45%) 62%, color-mix(in srgb, var(--championship-car-secondary) 82%, #fff 18%) 100%);
+  inset: 0;
+  mask: var(--championship-car-mask) center / contain no-repeat;
+  mix-blend-mode: overlay;
+  opacity: 0.92;
+  position: absolute;
+  -webkit-mask: var(--championship-car-mask) center / contain no-repeat;
+}
+
+.palmares-season-badge {
+  color: var(--color-accent);
+  font-family: var(--font-display);
+  font-size: 0.82rem;
+  font-weight: 900;
+  justify-self: center;
+}
+
+.palmares-gp-count {
+  justify-self: end;
 }
 
 .palmares-button:hover,

@@ -236,8 +236,9 @@ describe("App", () => {
   it("previews garage car skins before saving the selected skin", async () => {
     saveProfile();
     saveActiveClaim();
+    const stateWithSavedSkin = { ...baseState, teams: [{ ...baseState.teams[0]!, livery: { ...baseState.teams[0]!.livery, carAssetId: "car-008" } }, baseState.teams[1]!] };
     const updatedState = { ...baseState, teams: [{ ...baseState.teams[0]!, livery: { ...baseState.teams[0]!.livery, carAssetId: "car-009" } }, baseState.teams[1]!] };
-    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(updatedState));
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(stateWithSavedSkin)).mockResolvedValueOnce(response(updatedState)).mockResolvedValueOnce(response(updatedState));
 
     render(<App />);
 
@@ -252,6 +253,13 @@ describe("App", () => {
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
     expect(JSON.parse((fetch.mock.calls[1]?.[1] as RequestInit).body as string).livery.carAssetId).toBe("car-009");
     expect(screen.queryByText("Car colors updated.")).toBe(null);
+
+    fireEvent.click(screen.getByRole("button", { name: "Next car skin" }));
+    fireEvent.click(screen.getByRole("tab", { name: "My team" }));
+    fireEvent.change(screen.getByLabelText("Primary"), { target: { value: "#111111" } });
+    fireEvent.click(screen.getByRole("button", { name: "Save colors" }));
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
+    expect(JSON.parse((fetch.mock.calls[2]?.[1] as RequestInit).body as string).livery.carAssetId).toBe("car-009");
   });
 
   it("skips tab-return refresh while hidden, without a claim, or already loading", async () => {

@@ -1,47 +1,47 @@
 {
-  "id": "car-001",
-  "source": "ChatGPT Image 21 juil. 2026, 17_22_47.png",
+  "id": "car-002",
+  "source": "ChatGPT Image 21 juil. 2026, 17_22_52.png",
   "assets": {
     "top": {
-      "file": "top/car-001-top.png",
+      "file": "top/car-002-top.png",
       "canvas": {
-        "width": 766,
+        "width": 753,
         "height": 398
       },
       "source_box": [
-        410,
-        71,
-        1176,
-        469
+        409,
+        72,
+        1162,
+        470
       ],
       "placed_at": {
         "x": 0,
         "y": 0
       },
       "anchor": {
-        "center_x": 383,
+        "center_x": 377,
         "center_y": 199
       },
       "wheel_contacts_projected": [
         {
           "wheel": "front_left",
-          "x": 115,
-          "y": 22
+          "x": 121,
+          "y": 15
         },
         {
           "wheel": "front_right",
-          "x": 115,
-          "y": 376
+          "x": 121,
+          "y": 382
         },
         {
           "wheel": "rear_left",
-          "x": 655,
-          "y": 22
+          "x": 648,
+          "y": 15
         },
         {
           "wheel": "rear_right",
-          "x": 655,
-          "y": 376
+          "x": 648,
+          "y": 382
         }
       ],
       "wheel_contact_method": "side-contact-x-mapped-to-top-alpha-span",
@@ -50,89 +50,89 @@
         "y": 200
       },
       "rear_point": {
-        "x": 765,
+        "x": 752,
         "y": 199
       },
-      "heading_angle_degrees": 179.925,
+      "heading_angle_degrees": 179.924,
       "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
       "light_points_detected": {
         "front_lights": [
           {
-            "x": 47,
-            "y": 82
+            "x": 59,
+            "y": 89
           },
           {
-            "x": 47,
-            "y": 316
+            "x": 59,
+            "y": 309
           }
         ],
         "rear_lights": [
           {
-            "x": 742,
-            "y": 135
+            "x": 730,
+            "y": 102
           },
           {
-            "x": 743,
-            "y": 260
+            "x": 730,
+            "y": 295
           }
         ],
-        "method": "manual-review-top-visible-white-red"
+        "method": "manual-review-visible-lights"
       }
     },
     "side": {
-      "file": "side/car-001-side.png",
+      "file": "side/car-002-side.png",
       "canvas": {
-        "width": 764,
-        "height": 403
+        "width": 749,
+        "height": 411
       },
       "source_box": [
         409,
-        558,
-        1173,
-        961
+        551,
+        1158,
+        962
       ],
       "placed_at": {
         "x": 0,
         "y": 0
       },
       "anchor": {
-        "center_x": 382,
-        "ground_y": 403
+        "center_x": 374,
+        "ground_y": 411
       },
       "wheel_contacts": [
         {
           "wheel": "front",
-          "x": 115,
-          "y": 402
+          "x": 120,
+          "y": 410
         },
         {
           "wheel": "rear",
-          "x": 653,
-          "y": 402
+          "x": 645,
+          "y": 410
         }
       ],
       "wheel_contact_method": "bottom-alpha-clusters",
       "front_point": {
         "x": 0,
-        "y": 277
+        "y": 298
       },
       "rear_point": {
-        "x": 763,
-        "y": 252
+        "x": 748,
+        "y": 288
       },
-      "heading_angle_degrees": 178.123,
+      "heading_angle_degrees": 179.234,
       "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
       "light_points_detected": {
         "front_lights": [
           {
-            "x": 80,
-            "y": 179
+            "x": 97,
+            "y": 171
           }
         ],
         "rear_lights": [
           {
-            "x": 732,
-            "y": 144
+            "x": 723,
+            "y": 137
           }
         ],
         "method": "manual-review-side-tight-headlight-rear-red"

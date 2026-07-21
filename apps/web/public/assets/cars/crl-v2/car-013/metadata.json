@@ -1,0 +1,114 @@
+{
+  "id": "car-013",
+  "source": "ChatGPT Image 21 juil. 2026, 21_00_11.png",
+  "assets": {
+    "top": {
+      "file": "top/car-013-top.png",
+      "canvas": {
+        "width": 1154,
+        "height": 474
+      },
+      "source_box": [
+        148,
+        99,
+        1302,
+        573
+      ],
+      "placed_at": {
+        "x": 0,
+        "y": 0
+      },
+      "anchor": {
+        "center_x": 577,
+        "center_y": 237
+      },
+      "wheel_contacts_projected": [
+        {
+          "wheel": "front_left",
+          "x": 264,
+          "y": 51
+        },
+        {
+          "wheel": "front_right",
+          "x": 264,
+          "y": 428
+        },
+        {
+          "wheel": "rear_left",
+          "x": 977,
+          "y": 51
+        },
+        {
+          "wheel": "rear_right",
+          "x": 977,
+          "y": 428
+        }
+      ],
+      "wheel_contact_method": "manual-review-wheel-centers",
+      "front_point": {
+        "x": 0,
+        "y": 244
+      },
+      "rear_point": {
+        "x": 1153,
+        "y": 226
+      },
+      "heading_angle_degrees": 179.106,
+      "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
+      "light_points_detected": {
+        "front_lights": [],
+        "rear_lights": [],
+        "method": "manual-review-no-visible-lights"
+      }
+    },
+    "side": {
+      "file": "side/car-013-side.png",
+      "canvas": {
+        "width": 1177,
+        "height": 265
+      },
+      "source_box": [
+        136,
+        705,
+        1313,
+        970
+      ],
+      "placed_at": {
+        "x": 0,
+        "y": 0
+      },
+      "anchor": {
+        "center_x": 588,
+        "ground_y": 265
+      },
+      "wheel_contacts": [
+        {
+          "wheel": "front",
+          "x": 247,
+          "y": 264
+        },
+        {
+          "wheel": "rear",
+          "x": 996,
+          "y": 264
+        }
+      ],
+      "wheel_contact_method": "manual-review-bottom-wheel-contact",
+      "front_point": {
+        "x": 0,
+        "y": 211
+      },
+      "rear_point": {
+        "x": 1176,
+        "y": 75
+      },
+      "heading_angle_degrees": 173.403,
+      "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
+      "light_points_detected": {
+        "front_lights": [],
+        "rear_lights": [],
+        "method": "manual-review-no-visible-lights"
+      }
+    }
+  }
+}

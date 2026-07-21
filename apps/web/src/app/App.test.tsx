@@ -605,6 +605,7 @@ describe("App", () => {
     expect(screen.getAllByText("Chronos", { exact: false }).length).toBeGreaterThan(0);
     expect(screen.getByText("0/3")).toBeTruthy();
     expect(screen.getByText("No chronos")).toBeTruthy();
+    expect(within(document.querySelector(".map-qualifying-times") as HTMLElement).getByRole("button", { name: "View" })).toBeTruthy();
     const mapActions = document.querySelector(".race-phase-actions") as HTMLElement;
     expect(mapActions.textContent).not.toContain("Review chrono");
     expect([...mapActions.querySelectorAll("button")].map((button) => button.textContent)).toEqual(["New chrono", "Send plan"]);
@@ -630,6 +631,7 @@ describe("App", () => {
     expect(screen.queryByText("Track note")).toBe(null);
     expect(screen.queryByText("Race pace settles")).toBe(null);
     expect(document.querySelector(".replay-tower")).toBe(null);
+    expect(within(document.querySelector(".map-qualifying-times") as HTMLElement).getByRole("button", { name: "Review" })).toBeTruthy();
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Chronos");
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("Mika Blitz");
     expect(document.querySelector(".map-qualifying-times .position-badge")).toBe(null);
@@ -672,13 +674,13 @@ describe("App", () => {
     expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/3");
     expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
     expect(screen.queryByRole("button", { name: "New chrono" })).toBe(null);
-    fireEvent.click(within(document.querySelector(".map-qualifying-times") as HTMLElement).getByRole("button", { name: "View" }));
+    fireEvent.click(within(document.querySelector(".map-qualifying-times") as HTMLElement).getByRole("button", { name: "Review" }));
     expect(screen.getByRole("heading", { name: "Understand the chrono" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(await screen.findByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
-    fireEvent.click(within(document.querySelector(".map-qualifying-times") as HTMLElement).getByRole("button", { name: "View" }));
+    fireEvent.click(within(document.querySelector(".map-qualifying-times") as HTMLElement).getByRole("button", { name: "Review" }));
     fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(await screen.findByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));

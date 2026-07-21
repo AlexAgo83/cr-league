@@ -1,138 +1,138 @@
 {
-  "id": "car-001",
-  "source": "ChatGPT Image 21 juil. 2026, 17_22_47.png",
+  "id": "car-008",
+  "source": "ChatGPT Image 21 juil. 2026, 18_05_02.png",
   "assets": {
     "top": {
-      "file": "top/car-001-top.png",
+      "file": "top/car-008-top.png",
       "canvas": {
-        "width": 766,
-        "height": 398
+        "width": 977,
+        "height": 541
       },
       "source_box": [
-        410,
-        71,
-        1176,
-        469
+        267,
+        32,
+        1244,
+        573
       ],
       "placed_at": {
         "x": 0,
         "y": 0
       },
       "anchor": {
-        "center_x": 383,
-        "center_y": 199
+        "center_x": 489,
+        "center_y": 270
       },
       "wheel_contacts_projected": [
         {
           "wheel": "front_left",
-          "x": 115,
-          "y": 22
+          "x": 212,
+          "y": 52
         },
         {
           "wheel": "front_right",
-          "x": 115,
-          "y": 376
+          "x": 212,
+          "y": 489
         },
         {
           "wheel": "rear_left",
-          "x": 655,
-          "y": 22
+          "x": 808,
+          "y": 52
         },
         {
           "wheel": "rear_right",
-          "x": 655,
-          "y": 376
+          "x": 808,
+          "y": 489
         }
       ],
       "wheel_contact_method": "side-contact-x-mapped-to-top-alpha-span",
       "front_point": {
         "x": 0,
-        "y": 200
+        "y": 272
       },
       "rear_point": {
-        "x": 765,
-        "y": 199
+        "x": 976,
+        "y": 270
       },
-      "heading_angle_degrees": 179.925,
+      "heading_angle_degrees": 179.883,
       "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
       "light_points_detected": {
         "front_lights": [
           {
-            "x": 47,
-            "y": 82
+            "x": 61,
+            "y": 149
           },
           {
-            "x": 47,
-            "y": 316
+            "x": 64,
+            "y": 388
           }
         ],
         "rear_lights": [
           {
-            "x": 742,
-            "y": 135
+            "x": 967,
+            "y": 150
           },
           {
-            "x": 743,
-            "y": 260
+            "x": 967,
+            "y": 400
           }
         ],
-        "method": "manual-review-top-visible-white-red"
+        "method": "manual-review-visible-lights"
       }
     },
     "side": {
-      "file": "side/car-001-side.png",
+      "file": "side/car-008-side.png",
       "canvas": {
-        "width": 764,
-        "height": 403
+        "width": 1015,
+        "height": 430
       },
       "source_box": [
-        409,
-        558,
-        1173,
-        961
+        237,
+        597,
+        1252,
+        1027
       ],
       "placed_at": {
         "x": 0,
         "y": 0
       },
       "anchor": {
-        "center_x": 382,
-        "ground_y": 403
+        "center_x": 507,
+        "ground_y": 430
       },
       "wheel_contacts": [
         {
           "wheel": "front",
-          "x": 115,
-          "y": 402
+          "x": 220,
+          "y": 429
         },
         {
           "wheel": "rear",
-          "x": 653,
-          "y": 402
+          "x": 839,
+          "y": 429
         }
       ],
       "wheel_contact_method": "bottom-alpha-clusters",
       "front_point": {
         "x": 0,
-        "y": 277
+        "y": 365
       },
       "rear_point": {
-        "x": 763,
-        "y": 252
+        "x": 1014,
+        "y": 291
       },
-      "heading_angle_degrees": 178.123,
+      "heading_angle_degrees": 175.826,
       "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
       "light_points_detected": {
         "front_lights": [
           {
-            "x": 80,
-            "y": 179
+            "x": 153,
+            "y": 204
           }
         ],
         "rear_lights": [
           {
-            "x": 732,
-            "y": 144
+            "x": 901,
+            "y": 128
           }
         ],
         "method": "manual-review-side-tight-headlight-rear-red"

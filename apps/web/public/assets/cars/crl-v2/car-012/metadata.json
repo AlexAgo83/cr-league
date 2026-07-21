@@ -1,0 +1,114 @@
+{
+  "id": "car-012",
+  "source": "ChatGPT Image 21 juil. 2026, 21_00_07.png",
+  "assets": {
+    "top": {
+      "file": "top/car-012-top.png",
+      "canvas": {
+        "width": 1036,
+        "height": 500
+      },
+      "source_box": [
+        196,
+        99,
+        1232,
+        599
+      ],
+      "placed_at": {
+        "x": 0,
+        "y": 0
+      },
+      "anchor": {
+        "center_x": 518,
+        "center_y": 250
+      },
+      "wheel_contacts_projected": [
+        {
+          "wheel": "front_left",
+          "x": 211,
+          "y": 4
+        },
+        {
+          "wheel": "front_right",
+          "x": 211,
+          "y": 497
+        },
+        {
+          "wheel": "rear_left",
+          "x": 872,
+          "y": 0
+        },
+        {
+          "wheel": "rear_right",
+          "x": 872,
+          "y": 498
+        }
+      ],
+      "wheel_contact_method": "side-contact-x-mapped-to-top-alpha-span",
+      "front_point": {
+        "x": 0,
+        "y": 261
+      },
+      "rear_point": {
+        "x": 1035,
+        "y": 247
+      },
+      "heading_angle_degrees": 179.225,
+      "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
+      "light_points_detected": {
+        "front_lights": [],
+        "rear_lights": [],
+        "method": "manual-review-no-visible-lights"
+      }
+    },
+    "side": {
+      "file": "side/car-012-side.png",
+      "canvas": {
+        "width": 1103,
+        "height": 278
+      },
+      "source_box": [
+        178,
+        687,
+        1281,
+        965
+      ],
+      "placed_at": {
+        "x": 0,
+        "y": 0
+      },
+      "anchor": {
+        "center_x": 551,
+        "ground_y": 278
+      },
+      "wheel_contacts": [
+        {
+          "wheel": "front",
+          "x": 225,
+          "y": 277
+        },
+        {
+          "wheel": "rear",
+          "x": 928,
+          "y": 277
+        }
+      ],
+      "wheel_contact_method": "bottom-alpha-clusters",
+      "front_point": {
+        "x": 0,
+        "y": 239
+      },
+      "rear_point": {
+        "x": 1102,
+        "y": 108
+      },
+      "heading_angle_degrees": 173.221,
+      "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
+      "light_points_detected": {
+        "front_lights": [],
+        "rear_lights": [],
+        "method": "manual-review-no-visible-lights"
+      }
+    }
+  }
+}

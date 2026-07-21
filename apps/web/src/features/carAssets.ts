@@ -1,4 +1,4 @@
-export type CarAssetId = "car-001";
+export type CarAssetId = `car-${string}`;
 
 export type CarAsset = {
   id: CarAssetId;
@@ -9,15 +9,16 @@ export type CarAsset = {
   metadata: string;
 };
 
-export const CAR_ASSETS: CarAsset[] = [
-  {
-    id: "car-001",
-    name: "CRL 001",
-    sprite: "/assets/cars/idle.png?v=crl-v2-car-001",
-    top: "/assets/cars/crl-v2/car-001/top.png",
-    side: "/assets/cars/crl-v2/car-001/side.png",
-    metadata: "/assets/cars/crl-v2/car-001/metadata.json"
-  }
-];
+export const CAR_ASSETS: CarAsset[] = Array.from({ length: 13 }, (_, index) => {
+  const id = `car-${String(index + 1).padStart(3, "0")}` as CarAssetId;
+  return {
+    id,
+    name: `CRL ${String(index + 1).padStart(3, "0")}`,
+    sprite: `/assets/cars/idle.png?v=crl-v2-${id}`,
+    top: `/assets/cars/crl-v2/${id}/top.png`,
+    side: `/assets/cars/crl-v2/${id}/side.png`,
+    metadata: `/assets/cars/crl-v2/${id}/metadata.json`
+  };
+});
 
 export const DEFAULT_CAR_ASSET = CAR_ASSETS[0]!;

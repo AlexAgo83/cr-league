@@ -7,7 +7,7 @@ import type { LeagueState } from "../app/types.js";
 import { GARAGE_PANEL_KEY, type CardPanel } from "../app/viewPreferences.js";
 import { AssetImage } from "./AssetImage.js";
 import { CardArtImage, CardStatBadges } from "./CardStatBadges.js";
-import { DEFAULT_CAR_ASSET } from "./carAssets.js";
+import { CAR_ASSETS } from "./carAssets.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
 import { ModalHero } from "./ModalHero.js";
@@ -51,6 +51,7 @@ export function GarageView({
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
   const [buyQuantity, setBuyQuantity] = useState(1);
   const [viewingCardId, setViewingCardId] = useState<CardId | undefined>();
+  const [carAssetIndex, setCarAssetIndex] = useState(0);
 
   useEffect(() => {
     if (playerTeam?.livery) setLivery(playerTeam.livery);
@@ -93,7 +94,11 @@ export function GarageView({
     localStorage.setItem(GARAGE_PANEL_KEY, nextPanel);
     onSelectCardPanel(nextPanel);
   };
+  const selectedCarAsset = CAR_ASSETS[carAssetIndex] ?? CAR_ASSETS[0]!;
   const carTintStyle = { "--garage-car-secondary": livery.secondary, "--garage-car-stroke": livery.primary } as CSSProperties & Record<string, string>;
+  const topCarStyle = { ...carTintStyle, "--garage-car-mask": `url("${selectedCarAsset.top}")` } as CSSProperties & Record<string, string>;
+  const sideCarStyle = { ...carTintStyle, "--garage-car-mask": `url("${selectedCarAsset.side}")` } as CSSProperties & Record<string, string>;
+  const canChangeCarAsset = CAR_ASSETS.length > 1;
 
   return (
     <div className="garage-grid">
@@ -111,19 +116,21 @@ export function GarageView({
             <RewardValue type="credits" value={playerTeam.credits} tt={tt} />
           </span>
         </div>
-        <div className="garage-stats">
-          <span className="garage-livery-visuals">
-            <span className="garage-car-stage">
-              <span className="garage-car-preview-frame garage-car-preview-top" style={carTintStyle}>
-                <AssetImage className="garage-car-preview" src={DEFAULT_CAR_ASSET.top} alt="" />
-                <span className="garage-car-gradient" aria-hidden="true" />
-              </span>
-              <span className="garage-car-preview-frame garage-car-preview-side" style={carTintStyle}>
-                <AssetImage className="garage-car-preview" src={DEFAULT_CAR_ASSET.side} alt="" />
-                <span className="garage-car-gradient" aria-hidden="true" />
-              </span>
-            </span>
+        <div className="garage-car-showcase">
+          <button className="garage-car-skin-button" type="button" aria-label="Previous car skin" disabled={!canChangeCarAsset} onClick={() => setCarAssetIndex((index) => (index + CAR_ASSETS.length - 1) % CAR_ASSETS.length)}>
+            ‹
+          </button>
+          <span className="garage-car-preview-frame garage-car-preview-top" style={topCarStyle}>
+            <AssetImage className="garage-car-preview" src={selectedCarAsset.top} alt="" />
+            <span className="garage-car-gradient" aria-hidden="true" />
           </span>
+          <span className="garage-car-preview-frame garage-car-preview-side" style={sideCarStyle}>
+            <AssetImage className="garage-car-preview" src={selectedCarAsset.side} alt="" />
+            <span className="garage-car-gradient" aria-hidden="true" />
+          </span>
+          <button className="garage-car-skin-button" type="button" aria-label="Next car skin" disabled={!canChangeCarAsset} onClick={() => setCarAssetIndex((index) => (index + 1) % CAR_ASSETS.length)}>
+            ›
+          </button>
         </div>
       </section>
       <section className={`panel garage-card-panel garage-panel-${cardPanel}`}>

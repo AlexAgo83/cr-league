@@ -300,7 +300,7 @@ function QualifyingTimesPanel({
   onReport?: () => void;
   tt: Translator;
 }) {
-  const reportLabel = tt("action_view_plan").split(" ")[0];
+  const reportLabel = tt(attemptsUsed > 0 ? "action_qualifying_history" : "action_view_plan").split(" ")[0];
   const panelClassName = [
     "map-qualifying-times",
     replay ? "replay-qualifying-times" : "",

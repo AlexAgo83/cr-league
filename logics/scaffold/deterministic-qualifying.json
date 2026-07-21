@@ -1,0 +1,107 @@
+{
+  "title": "Make qualifying lap times deterministic from seed",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/architecture/adr_004_data_security.md",
+    "logics/external/audit_trial_2107/AUDIT_CR_LEAGUE.md",
+    "apps/api/src/features/leagues/qualifying.ts",
+    "packages/shared/src/simulation/prng.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "apps/api/src/app.ts",
+    "Current diagnostic: createQualifyingRuns in apps/api/src/features/leagues/qualifying.ts computes per-lap variance with Math.random() at line 62 ((Math.random() - 0.5) * 2.4) and stamps createdAt with new Date().toISOString() at line 66, so identical inputs produce different qualifying times and grids on each call.",
+    "Current diagnostic: the function already receives input.seed and forwards it to createQualifyingResult (line 65), but the seed is never used to drive lap-time variance; the race simulation is fully deterministic via createPrng(seed) in packages/shared/src/simulation/prng.ts.",
+    "Current diagnostic: ADR-004 states race outcomes are deterministic from stored state plus submitted plans; the non-deterministic qualifying path is inconsistent with that contract and with the seeded race engine.",
+    "Product impact (audit TICKET-02): a non-reproducible chrono breaks the intended learning loop where a player runs a chrono to understand how a setup change affects lap time; two identical chronos returning different times obscures cause and effect."
+  ],
+  "request": {
+    "complexity": "Low",
+    "theme": "Simulation determinism and beta-readiness",
+    "needs": [
+      "Make qualifying lap times fully reproducible from a seed so identical inputs always produce identical qualifying results and grids.",
+      "Replace the Math.random() lap-time variance in createQualifyingRuns with a seeded PRNG draw derived from stable inputs (seed plus team and lap).",
+      "Replace the non-deterministic createdAt timestamp with a value derived from state so run records are reproducible.",
+      "Keep qualifying lap-time behavior statistically similar (same spread and ordering characteristics) so existing balance expectations do not shift, changing only reproducibility.",
+      "Change no API contract, no persisted result shape, and add no new dependency."
+    ],
+    "context": [
+      "apps/api is a Fastify TypeScript service; the shared package packages/shared exposes createPrng(seed), an FNV-1a-hashed LCG already used by the deterministic race simulation.",
+      "createQualifyingRuns is called per team when qualifying/chrono runs are generated; input.seed is available and already passed through to createQualifyingResult.",
+      "The only non-deterministic elements on the qualifying path are the Math.random() variance (line 62) and the new Date() createdAt (line 66); everything else (traitBonus, weatherPenalty, approach/prep/card deltas, warmup and tyre deltas) is already deterministic.",
+      "This is a theme-agnostic correctness/hardening fix; it fits as a small 0.4.x beta-readiness patch alongside the active 0.4 performance line and is a prerequisite for later gameplay-legibility work, but it does not belong to the 0.4 performance theme itself."
+    ],
+    "acceptance_criteria": [
+      "AC1: createQualifyingRuns derives its per-lap variance from a seeded PRNG (reusing createPrng from packages/shared) keyed on stable inputs such as seed, teamId, and lap index; no Math.random() remains on the qualifying path.",
+      "AC2: The createdAt field is derived deterministically from state rather than new Date(); no Date.now()/new Date() remains on the qualifying path.",
+      "AC3: Two invocations of createQualifyingRuns with identical inputs return identical times, laps, and derived result for every run.",
+      "AC4: Qualifying variance keeps a comparable magnitude to the previous +/- 1.2s band so grid spread and expected ordering are not materially shifted; only reproducibility changes.",
+      "AC5: No API contract, request/response shape, or persisted QualifyingRun shape changes.",
+      "AC6: A unit test asserts determinism (identical inputs produce identical output) and that different teams/attempts still differ; existing qualifying/report/replay flows still pass.",
+      "AC7: npm run typecheck, npm test, npm run build, npm run lint, and npm run logics:validate pass after implementation."
+    ]
+  },
+  "product": {
+    "title": "Simulation Determinism Hardening Product Brief",
+    "overview": "Bring the qualifying/chrono path in line with the deterministic, seeded race simulation so the whole competitive loop is reproducible from stored state, honoring ADR-004 and restoring the chrono-driven learning loop.",
+    "goals": [
+      "Guarantee reproducible qualifying results from a seed, matching the race engine's determinism.",
+      "Restore a reliable cause-and-effect learning loop where a chrono isolates the effect of a setup change.",
+      "Honor the ADR-004 determinism contract across the full plan/chrono/race path.",
+      "Ship the smallest safe fix without altering balance, API, or persistence."
+    ],
+    "non_goals": [
+      "Do not redesign qualifying scoring, tyre or warmup modeling, or grid derivation.",
+      "Do not change gameplay balance, card effects, or reward/points values.",
+      "Do not change any API contract, request shape, or persisted result shape.",
+      "Do not add a random-number, date, or other dependency; reuse the existing shared PRNG."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Seed qualifying lap-time variance and timestamp deterministically",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Simulation determinism and beta-readiness",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5", "AC6", "AC7"],
+      "problem": [
+        "createQualifyingRuns uses Math.random() for per-lap variance (qualifying.ts:62) so identical setups yield different chrono times each call.",
+        "createdAt is stamped with new Date() (qualifying.ts:66), making run records non-reproducible.",
+        "The available input.seed is never used to drive variance even though the race simulation is fully seeded, breaking the chrono learning loop and the ADR-004 determinism contract."
+      ],
+      "scope_in": [
+        "Replace the Math.random() variance in createQualifyingRuns with a seeded PRNG draw using createPrng, keyed on seed plus teamId plus lap index.",
+        "Replace the new Date() createdAt with a deterministic value derived from state.",
+        "Preserve the current variance magnitude band so grid spread stays comparable.",
+        "Add a unit test proving determinism for identical inputs and difference across teams/attempts."
+      ],
+      "scope_out": [
+        "Any change to qualifying scoring, tyre/warmup deltas, or grid ordering rules.",
+        "Any change to gameplay balance, cards, rewards, or the race simulation.",
+        "Any API contract, request shape, or persisted QualifyingRun shape change."
+      ],
+      "acceptance_criteria": [
+        "AC1: No Math.random() or new Date()/Date.now() remains on the qualifying path; variance and timestamp are both derived deterministically.",
+        "AC2: Identical inputs to createQualifyingRuns produce byte-identical output across repeated calls.",
+        "AC3: Different teams and attempts still produce different lap times; variance magnitude stays comparable to the previous band.",
+        "AC4: A unit test covers both the determinism and the difference-across-teams cases and passes.",
+        "AC5: Typecheck, test, build, lint, and logics:validate pass with no weakened assertions."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate deterministic qualifying",
+    "plan": [
+      "Trace createQualifyingRuns in apps/api/src/features/leagues/qualifying.ts and confirm the only non-deterministic inputs are the Math.random() variance (line 62) and the new Date() createdAt (line 66); confirm input.seed availability.",
+      "Introduce a seeded PRNG via createPrng from packages/shared keyed on seed+teamId+lap for the per-lap variance, keeping a comparable variance magnitude to the previous +/- 1.2s band.",
+      "Derive createdAt deterministically from state instead of new Date().",
+      "Add a unit test asserting identical inputs give identical output and different teams/attempts differ.",
+      "Run typecheck, test, build, lint, and logics:validate; record validation evidence in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/deterministic-qualifying.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

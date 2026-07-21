@@ -57,6 +57,7 @@
 | [prod_038_circuit_route_loading_audit_product_brief](product/prod_038_circuit_route_loading_audit_product_brief.md) | Circuit Route Loading Audit Product Brief | Proposed |  |  | product/prod_038_circuit_route_loading_audit_product_brief.md |
 | [prod_039_gameapp_decomposition_product_brief](product/prod_039_gameapp_decomposition_product_brief.md) | GameApp Decomposition Product Brief | Proposed |  |  | product/prod_039_gameapp_decomposition_product_brief.md |
 | [prod_040_league_state_freshness_on_return_product_brief](product/prod_040_league_state_freshness_on_return_product_brief.md) | League State Freshness On Return Product Brief | Proposed |  |  | product/prod_040_league_state_freshness_on_return_product_brief.md |
+| [prod_041_simulation_determinism_hardening_product_brief](product/prod_041_simulation_determinism_hardening_product_brief.md) | Simulation Determinism Hardening Product Brief | Proposed |  |  | product/prod_041_simulation_determinism_hardening_product_brief.md |
 
 ## Roadmaps
 
@@ -146,6 +147,7 @@
 | [req_074_audit_circuit_data_impact_before_optimizing_route_loading](request/req_074_audit_circuit_data_impact_before_optimizing_route_loading.md) | Audit circuit data impact before optimizing route loading | Draft |  |  | request/req_074_audit_circuit_data_impact_before_optimizing_route_loading.md |
 | [req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook](request/req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook.md) | Extract the admin-panel state cluster from GameApp into a hook | Draft |  |  | request/req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook.md |
 | [req_076_refresh_league_state_when_the_player_returns_to_the_tab](request/req_076_refresh_league_state_when_the_player_returns_to_the_tab.md) | Refresh league state when the player returns to the tab | Draft |  |  | request/req_076_refresh_league_state_when_the_player_returns_to_the_tab.md |
+| [req_077_make_qualifying_lap_times_deterministic_from_seed](request/req_077_make_qualifying_lap_times_deterministic_from_seed.md) | Make qualifying lap times deterministic from seed | Draft |  |  | request/req_077_make_qualifying_lap_times_deterministic_from_seed.md |
 
 ## Backlog
 
@@ -325,6 +327,7 @@
 | [item_172_measure_and_decide_on_circuit_route_lazy_loading](backlog/item_172_measure_and_decide_on_circuit_route_lazy_loading.md) | Measure and decide on circuit route lazy loading | Ready |  | 0% | backlog/item_172_measure_and_decide_on_circuit_route_lazy_loading.md |
 | [item_173_extract_useadminpanel_from_gameapp](backlog/item_173_extract_useadminpanel_from_gameapp.md) | Extract useAdminPanel() from GameApp | Ready |  | 0% | backlog/item_173_extract_useadminpanel_from_gameapp.md |
 | [item_174_refresh_active_league_on_tab_return](backlog/item_174_refresh_active_league_on_tab_return.md) | Refresh active league on tab return | Ready |  | 0% | backlog/item_174_refresh_active_league_on_tab_return.md |
+| [item_175_seed_qualifying_lap_time_variance_and_timestamp_deterministically](backlog/item_175_seed_qualifying_lap_time_variance_and_timestamp_deterministically.md) | Seed qualifying lap-time variance and timestamp deterministically | Ready |  | 0% | backlog/item_175_seed_qualifying_lap_time_variance_and_timestamp_deterministically.md |
 
 ## Tasks
 
@@ -407,3 +410,4 @@
 | [task_075_orchestrate_circuit_route_loading_audit](tasks/task_075_orchestrate_circuit_route_loading_audit.md) | Orchestrate circuit route loading audit | Ready |  | 0% | tasks/task_075_orchestrate_circuit_route_loading_audit.md |
 | [task_076_orchestrate_gameapp_admin_panel_hook_extraction](tasks/task_076_orchestrate_gameapp_admin_panel_hook_extraction.md) | Orchestrate GameApp admin-panel hook extraction | Ready |  | 0% | tasks/task_076_orchestrate_gameapp_admin_panel_hook_extraction.md |
 | [task_077_orchestrate_league_state_freshness_on_return](tasks/task_077_orchestrate_league_state_freshness_on_return.md) | Orchestrate league-state freshness on return | Ready |  | 0% | tasks/task_077_orchestrate_league_state_freshness_on_return.md |
+| [task_078_orchestrate_deterministic_qualifying](tasks/task_078_orchestrate_deterministic_qualifying.md) | Orchestrate deterministic qualifying | Ready |  | 0% | tasks/task_078_orchestrate_deterministic_qualifying.md |

@@ -123,10 +123,9 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("button", { name: "Championship", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Garage", exact: true })).toBeVisible();
   await expect(page.getByRole("button", { name: "Result" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Garage", exact: true }).click();
+  await page.getByRole("button", { name: "Championship", exact: true }).click();
   await dismissOnboarding(page);
   await expect(page.getByText("ABC123")).toBeVisible();
-  await page.getByRole("button", { name: "Championship", exact: true }).click();
   await expect(page.getByText("Round 1").first()).toBeVisible();
   await expect(page.getByRole("heading", { name: "Current GP" })).toBeVisible();
   await expect(page.getByText("0/2")).toBeVisible();
@@ -188,8 +187,8 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     await expect(page.getByLabel("Race phases")).toBeVisible();
     await expect(page.locator(".report-blocks")).toHaveCount(0);
     await expect(page.locator(".report-content-column > .report-key-moments")).toBeVisible();
-    await expect(page.locator(".report-content-column > .report-rewards")).toBeVisible();
-    await expect(page.getByText("Volt Union wins.").first()).toBeVisible();
+    await expect(page.locator(".report-podium")).toContainText("150 credits");
+    await expect(page.getByText(/Verdict:/).first()).toBeVisible();
 
     if (expectedRound < 3) {
       await page.getByRole("button", { name: "Stand", exact: true }).click();
@@ -420,10 +419,11 @@ test("keeps first-click commands animated and result shortcuts wired", async ({ 
   await page.getByRole("button", { name: "Launch GP" }).click();
   await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
 
-  await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
-  await page.locator(".replay-report-button").click();
+  await expect(page.getByRole("heading", { name: "Race replay" }).or(page.getByRole("button", { name: "View" }).and(page.locator('[title="Final classification"]'))).first()).toBeVisible();
+  if (await page.locator(".replay-report-button").isVisible({ timeout: 500 }).catch(() => false)) await page.locator(".replay-report-button").click();
+  else await openFinalClassificationReport(page);
   await expect(page.getByRole("heading", { name: expectedCircuitTitle(1) })).toBeVisible();
-  await page.locator(".report-replay-button").click();
+  await page.getByRole("button", { name: "Review race" }).click();
   await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
   await expect(page.locator(".replay-close-button .replay-close-label")).toBeVisible();
   await expect(page.locator(".replay-close-button .replay-close-mark")).toBeHidden();

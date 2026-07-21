@@ -251,7 +251,6 @@ export function AppShell({
           consumedCardIds={race.consumedCardIds}
           forecastPick={race.forecastPick}
           isResolved={race.isResolved}
-          pendingMessage={pendingMessage}
           garagePanel={garagePanel}
           adminView={adminView}
           chronoReport={race.chronoReport}

@@ -45,7 +45,6 @@ export function GameViews({
   consumedCardIds,
   forecastPick,
   isResolved,
-  pendingMessage,
   garagePanel,
   adminView,
   chronoReport,
@@ -99,7 +98,6 @@ export function GameViews({
   consumedCardIds: CardId[];
   forecastPick: string;
   isResolved: boolean;
-  pendingMessage: string | null;
   garagePanel: CardPanel;
   adminView: ReactNode;
   chronoReport: ChronoReport;
@@ -214,7 +212,6 @@ export function GameViews({
             forecastPick={forecastPick}
             isResolved={isResolved}
             loading={status === "loading"}
-            pendingMessage={pendingMessage}
             cardPanel={garagePanel}
             onBuyCard={buyCard}
             onSellCard={sellCard}

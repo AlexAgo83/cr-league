@@ -159,22 +159,3 @@ export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator 
     </span>
   );
 }
-
-export function CardStatDetails({ cardId, tt }: { cardId: CardId; tt: Translator }) {
-  return (
-    <section className="card-stat-details" aria-label={tt("card_stats_title")}>
-      <h3>{tt("card_stats_title")}</h3>
-      <ul>
-        {CARD_BADGES[cardId].map((badge) => (
-          <li key={`${badge.sign}-${badge.trait}`} className={`map-trait-${badge.trait}`}>
-            <span>
-              <VisualIcon name={badge.trait} />
-              <strong>{badge.sign} {tt(BADGE_TRAIT_LABEL[badge.trait])}</strong>
-            </span>
-            <small>{tt(BADGE_TRAIT_HINT[badge.trait])}</small>
-          </li>
-        ))}
-      </ul>
-    </section>
-  );
-}

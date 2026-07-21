@@ -364,10 +364,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
     const sellDialog = screen.getByRole("dialog", { name: "Rain Grip" });
     expect(sellDialog).toBeTruthy();
-    expect(within(sellDialog).getByRole("heading", { name: "Stats" })).toBeTruthy();
-    expect(sellDialog.querySelector(".card-stat-badges")).toBe(null);
+    expect(within(sellDialog).queryByRole("heading", { name: "Stats" })).toBe(null);
+    expect(sellDialog.querySelector(".garage-buy-card .card-stat-badges")).toBeTruthy();
     expect(sellDialog.querySelector(".garage-buy-card .card-stat-details")).toBe(null);
-    expect(sellDialog.querySelector(".garage-buy-modal > .card-stat-details")).toBeTruthy();
+    expect(sellDialog.querySelector(".garage-buy-modal > .card-stat-details")).toBe(null);
     expect(screen.getByText("Pays off if rain appears around mid-race.")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Buy card" })).toBe(null);
     expect(screen.queryByText("This card will join your garage and can shape your next directive.")).toBe(null);
@@ -383,10 +383,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: /Soft Tires/ }));
     const buyDialog = screen.getByRole("dialog", { name: "Confirm card purchase" });
     expect(buyDialog).toBeTruthy();
-    expect(within(buyDialog).getByRole("heading", { name: "Stats" })).toBeTruthy();
-    expect(buyDialog.querySelector(".card-stat-badges")).toBe(null);
+    expect(within(buyDialog).queryByRole("heading", { name: "Stats" })).toBe(null);
+    expect(buyDialog.querySelector(".garage-buy-card .card-stat-badges")).toBeTruthy();
     expect(buyDialog.querySelector(".garage-buy-card .card-stat-details")).toBe(null);
-    expect(buyDialog.querySelector(".garage-buy-modal > .card-stat-details")).toBeTruthy();
+    expect(buyDialog.querySelector(".garage-buy-modal > .card-stat-details")).toBe(null);
     expect(screen.getByRole("button", { name: "Buy card" })).toBeTruthy();
     expect(screen.getByText("You do not have enough credits to buy this card yet.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-garage-panel")).toBe("shop");

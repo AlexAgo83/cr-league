@@ -150,6 +150,9 @@ export function ProfileMenu({
 function BrandLoadingIndicator({ pendingMessage }: { pendingMessage: string | null }) {
   return pendingMessage ? (
     <span className="brand-loading-spinner" role="status" title={pendingMessage}>
+      <span />
+      <span />
+      <span />
       <span className="visually-hidden">{pendingMessage}</span>
     </span>
   ) : null;

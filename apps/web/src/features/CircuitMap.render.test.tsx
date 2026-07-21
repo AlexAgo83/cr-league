@@ -13,6 +13,7 @@ describe("CircuitMap rendering", () => {
     expect(content?.getAttribute("transform")).toContain("scale(");
     expect(content?.querySelector(".circuit-map-tile")).not.toBeNull();
     expect(content?.querySelector(".circuit-route-layer")).not.toBeNull();
+    expect((content?.querySelector(".circuit-route-layer") as SVGElement | null)?.style.getPropertyValue("--route-asphalt-width")).not.toBe("");
   });
 
   it("keeps replay focus mode in the native tile coordinate space", () => {

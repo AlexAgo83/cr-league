@@ -47,7 +47,9 @@ export function GameViews({
   adminView,
   chronoReport,
   qualifyingLockedCardId,
+  qualifyingReplayOpen,
   profileIsAdmin,
+  primaryCommand,
   setResultTab,
   setResultOpen,
   closeHistoryReplay,
@@ -99,7 +101,9 @@ export function GameViews({
   adminView: ReactNode;
   chronoReport: ChronoReport;
   qualifyingLockedCardId: string | null | undefined;
+  qualifyingReplayOpen: boolean;
   profileIsAdmin: boolean;
+  primaryCommand: { label: string; action: () => void | Promise<void>; disabled: boolean };
   setResultTab: (tab: ResultTab) => void;
   setResultOpen: (open: boolean) => void;
   closeHistoryReplay: () => void;
@@ -122,7 +126,7 @@ export function GameViews({
   return (
     <>
       {gameView === "admin" && profileIsAdmin ? adminView : null}
-      {gameView === "drive" && visibleResult ? (
+      {gameView === "drive" && visibleResult && !qualifyingReplayOpen ? (
         <ResultView
           state={state}
           result={visibleResult}
@@ -172,6 +176,7 @@ export function GameViews({
           qualifyingAttemptsLeft={qualifyingAttemptsLeft}
           selectedCardFit={selectedCardFit}
           selectedCardId={selectedCardId}
+          primaryCommand={primaryCommand}
           reportCircuit={currentCircuit}
           reportResult={state.currentGrandPrix.result}
           state={state}

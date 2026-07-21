@@ -3542,6 +3542,9 @@ label small {
 
 .replay-player-focus-panel {
   bottom: 74px;
+  align-items: start;
+  grid-template-columns: minmax(0, 1fr) auto;
+  min-width: 230px;
   right: 12px;
 }
 
@@ -3567,12 +3570,12 @@ label small {
 }
 
 .replay-player-gaps {
-  position: absolute;
-  right: 8px;
-  top: 8px;
   display: flex;
   flex-wrap: wrap;
   gap: 4px;
+  grid-column: 2;
+  grid-row: 1;
+  justify-content: flex-end;
 }
 
 .replay-player-gaps > span {
@@ -3780,17 +3783,17 @@ label small {
 
 .circuit-route-glow {
   stroke: rgb(255 77 0 / 0.16);
-  stroke-width: 22;
+  stroke-width: var(--route-glow-width, 22);
 }
 
 .circuit-route-asphalt {
   stroke: #2a2530;
-  stroke-width: 12;
+  stroke-width: var(--route-asphalt-width, 12);
 }
 
 .circuit-route-edge {
   stroke: #f1ede4;
-  stroke-width: 2.5;
+  stroke-width: var(--route-edge-width, 2.5);
   stroke-dasharray: 1 14;
 }
 
@@ -3798,7 +3801,7 @@ label small {
   animation: route-flow 6s linear infinite;
   stroke: var(--color-accent);
   stroke-dasharray: 30 44;
-  stroke-width: 4;
+  stroke-width: var(--route-accent-width, 4);
 }
 
 .replay-muted-route {
@@ -6046,6 +6049,7 @@ button.command-icon-button {
 }
 
 .report-hero .report-headline,
+.report-hero .chrono-report-header,
 .report-hero .report-verdict,
 .report-hero .report-podium {
   position: relative;
@@ -6989,6 +6993,7 @@ button.highlight-command:not(:disabled) {
   }
 
   .replay-player-focus-panel {
+    min-width: 0;
     max-width: 100%;
   }
 

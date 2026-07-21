@@ -383,12 +383,19 @@ describe("App", () => {
 
   it("plays through the demo league flow", async () => {
     saveProfile();
+    const resolvedStateWithQualifying = {
+      ...resolvedState,
+      currentGrandPrix: {
+        ...resolvedState.currentGrandPrix,
+        qualifyingRuns: decidedStateWithQualifying.currentGrandPrix.qualifyingRuns
+      }
+    };
     const fetch = vi
       .spyOn(globalThis, "fetch")
       .mockResolvedValueOnce(response(baseState))
       .mockResolvedValueOnce(response({ state: qualifiedState, run: qualifyingRun, isBest: true }))
       .mockResolvedValueOnce(response(decidedStateWithQualifying))
-      .mockResolvedValueOnce(response(resolvedState))
+      .mockResolvedValueOnce(response(resolvedStateWithQualifying))
       .mockResolvedValueOnce(response(nextGrandPrixState))
       .mockResolvedValueOnce(response(settingsState))
       .mockResolvedValueOnce(response(baseState));
@@ -428,7 +435,8 @@ describe("App", () => {
     expect(window.location.pathname).toBe("/plan/report");
     expect(screen.getByRole("heading", { name: `${roundOneCircuit.city} ${t(roundOneCircuit.layoutKey, "en")}` })).toBeTruthy();
     expect(screen.getByText("Race report")).toBeTruthy();
-    expect(screen.getByText("This report is still empty because the Grand Prix has not been run yet.", { exact: false })).toBeTruthy();
+    expect(screen.getByText("Send your plan to unlock the GP and fill this report.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Send" }).className).toContain("primary-command");
     expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Rewards" })).toBeTruthy();
     expect(screen.getAllByText("Coming after the GP").length).toBeGreaterThan(1);
@@ -470,6 +478,7 @@ describe("App", () => {
     expect(screen.queryByText("Wait for directives")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
+    expect(screen.getByRole("button", { name: "New chrono" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
@@ -572,6 +581,11 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Standings" }));
 
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "GP" }));
+    expect(screen.getByRole("button", { name: "Send" }).className).toContain("primary-command");
+    expect(screen.getByRole("button", { name: "Send" }).className).toContain("highlight-command");
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("button", { name: "Send plan" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
     expect(document.querySelector(".race-phase-actions button.highlight-command")).toBe(null);
@@ -579,7 +593,7 @@ describe("App", () => {
     expect(directiveDialog.textContent).toContain("You still have chrono attempts left. Send the plan now? 2/3");
     expect(directiveDialog.textContent).toContain("Current planApproachBal.Tire prepWeatherPit strategyStd.CardRain Grip");
     expect(directiveDialog.textContent).toContain("High-upside plan");
-    fireEvent.click(screen.getAllByRole("button", { name: "Send plan" }).at(-1)!);
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(JSON.parse((fetch.mock.calls[2]?.[1] as RequestInit).body as string)).toMatchObject({ teamId: "team_1", claimCode: "CLAIM123" });
     fireEvent.click(screen.getByText("Directive locked. You can launch the Grand Prix.").closest(".floating-notification")!.querySelector("button")!);
@@ -601,6 +615,10 @@ describe("App", () => {
     expect(screen.queryByRole("button", { name: "Chrono" })).toBe(null);
     expect(screen.getByRole("button", { name: "Launch GP" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Launch GP" }).className).toContain("highlight-command");
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "GP" }));
+    expect(screen.getByRole("button", { name: "Launch GP" }).className).toContain("primary-command");
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
 
     // Launch: Course becomes the race replay.
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
@@ -635,6 +653,13 @@ describe("App", () => {
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Volt Union");
     fireEvent.click(screen.getByRole("button", { name: /Restart/ }));
     expect((document.querySelector(".replay-progress-fill") as HTMLElement).style.width).toBe("0%");
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
+    expect(screen.getByRole("heading", { name: "Chrono replay" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
+    expect(screen.getByRole("heading", { name: "Race replay" })).toBeTruthy();
 
     // Replay playback controls
     const pauseButton = screen.getByRole("button", { name: "Pause" });
@@ -804,7 +829,7 @@ describe("App", () => {
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 
     fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
-    fireEvent.click(screen.getAllByRole("button", { name: "Send plan" }).at(-1)!);
+    fireEvent.click(screen.getByRole("button", { name: "Send" }));
     expect(await screen.findByText("Directive locked. You can launch the Grand Prix.")).toBeTruthy();
     expect(document.querySelector(".profile-menu-button")?.textContent).toBe("VO");
 

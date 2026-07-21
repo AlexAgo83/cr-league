@@ -28,6 +28,7 @@ export function PlanView({
   qualifyingAttemptsLeft,
   selectedCardFit,
   selectedCardId,
+  primaryCommand,
   reportCircuit,
   reportResult,
   state,
@@ -58,6 +59,7 @@ export function PlanView({
   qualifyingAttemptsLeft: number;
   selectedCardFit: CardFit | null;
   selectedCardId: FormState["cardId"];
+  primaryCommand: { label: string; action: () => void | Promise<void>; disabled: boolean };
   reportCircuit: CityCircuit;
   reportResult: RaceResult | null;
   state: LeagueState;
@@ -99,11 +101,18 @@ export function PlanView({
         ) : (
           <>
             <section className="panel report-hero plan-empty-report" aria-label={tt("result_tab_report")}>
-              <div className="report-headline">
-                <span className="section-kicker">{tt("result_race_report")}</span>
-                <h2>{reportTitle}</h2>
-                <p>{tt("plan_report_empty_body")}</p>
-              </div>
+              <header className="chrono-report-header">
+                <div>
+                  <span className="section-kicker">{tt("result_race_report")}</span>
+                  <h2>{reportTitle}</h2>
+                </div>
+                <div className="chrono-report-prompt">
+                  <p>{locked ? tt("plan_report_empty_body") : tt("plan_report_pending_plan_body")}</p>
+                  <button type="button" className={`primary-command${!locked && chronoReport.best ? " highlight-command" : ""}`} onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                    {locked ? primaryCommand.label : tt("directive_confirm_action")}
+                  </button>
+                </div>
+              </header>
             </section>
             <div className="report-main-grid">
               <div className="report-content-column">
@@ -155,7 +164,7 @@ export function PlanView({
                 <p>{chronoReport.suggestion}</p>
                 <button
                   type="button"
-                  className="primary-command"
+                  className={`primary-command${chronoReport.best ? "" : " highlight-command"}`}
                   onClick={() => {
                     onSetGameView("drive");
                     onOpenQualifyingRun();

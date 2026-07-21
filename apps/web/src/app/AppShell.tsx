@@ -259,7 +259,9 @@ export function AppShell({
           adminView={adminView}
           chronoReport={race.chronoReport}
           qualifyingLockedCardId={race.qualifyingLockedCardId}
+          qualifyingReplayOpen={Boolean(race.currentQualifyingResult)}
           profileIsAdmin={profileIsAdmin}
+          primaryCommand={primaryCommand}
           setResultTab={setResultTab}
           setResultOpen={setResultOpen}
           closeHistoryReplay={closeHistoryReplay}
@@ -279,10 +281,10 @@ export function AppShell({
           updateTeamName={updateTeamName}
           tt={tt}
         />
-        {gameView === "drive" && !historyReplay && (!race.result || !resultOpen) ? (
+        {gameView === "drive" && !historyReplay && (race.currentQualifyingResult || !race.result || !resultOpen) ? (
           <DriveView
             state={leagueState}
-            result={race.result}
+            result={race.currentQualifyingResult ? null : race.result}
             currentQualifyingResult={race.currentQualifyingResult}
             currentCircuit={race.currentCircuit}
             qualifyingReplayCircuit={race.qualifyingReplayCircuit}

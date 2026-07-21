@@ -90,7 +90,7 @@ export function ReplayStageOverlay({
   resolvedWeather: RaceResult["resolvedWeather"];
   activeMoment?: { player: boolean; lap: number; icon: VisualIconName; context: string; detail: string; impact: string };
   activeDirector?: { type: string; lap: number; title: string; detail: ReactNode };
-  playerFocus?: { position: number; delta: number; gapItems: Array<{ label: string; value: string }>; latestDetail?: ReactNode };
+  playerFocus?: { position: number; delta: number; gapItems: Array<{ label: string; value: string }> };
   replayMode: "race" | "qualifying";
   overlayActions?: ReactNode;
   playing: boolean;
@@ -182,7 +182,6 @@ export function ReplayStageOverlay({
                   </span>
                 ))}
               </small>
-              {playerFocus.latestDetail ? <small>{playerFocus.latestDetail}</small> : null}
             </div>
           ) : null}
         </div>

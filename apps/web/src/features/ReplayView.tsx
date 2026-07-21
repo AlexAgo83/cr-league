@@ -336,13 +336,11 @@ export function ReplayView({
     : undefined;
   const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId);
   const playerGapItems = replayPlayerGapItems(playerContext, tt);
-  const latestPlayerBeat = [...directorBeats].reverse().find((beat) => beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId);
-  const playerFocus = playerContext
+  const playerFocus = playerContext && replayMode !== "qualifying"
     ? {
         position: playerContext.position,
         delta: playerContext.delta,
-        gapItems: playerGapItems,
-        latestDetail: latestPlayerBeat ? renderPositionBadges(directorBeatCopy(latestPlayerBeat, names, tt).detail) : undefined
+        gapItems: playerGapItems
       }
     : undefined;
 

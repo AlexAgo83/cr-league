@@ -50,6 +50,12 @@ const HEADING_LOOKAHEAD = 0.006;
 const MAX_DRIFT_ANGLE = 14;
 const STRAIGHT_TURN_TOLERANCE_DEG = 18;
 const ROUTE_FIT_PADDING = 58;
+const ROUTE_STROKES = {
+  glow: 22,
+  asphalt: 12,
+  edge: 2.5,
+  accent: 4
+};
 type CameraZoomMode = "normal" | "traffic" | "close";
 export type CarSprite = "idle" | "boost" | "brake";
 type RoutePoint = { x: number; y: number };
@@ -333,6 +339,13 @@ export function CircuitMap({
   const hasCars = cars.length > 0;
   const mapFit = focusEnabled ? null : routeFitTransform(points);
   const mapTransform = mapFit?.value;
+  const routeDecorScale = Math.max(1, mapFit?.scale ?? 1);
+  const routeDecorStyle = {
+    "--route-glow-width": `${ROUTE_STROKES.glow / routeDecorScale}`,
+    "--route-asphalt-width": `${ROUTE_STROKES.asphalt / routeDecorScale}`,
+    "--route-edge-width": `${ROUTE_STROKES.edge / routeDecorScale}`,
+    "--route-accent-width": `${ROUTE_STROKES.accent / routeDecorScale}`
+  } as CSSProperties;
   const renderPoints = points;
   const renderD = d;
   const routeAnalysis = analyzeCircuitRoute(renderPoints);
@@ -416,7 +429,7 @@ export function CircuitMap({
                   />
                 </g>
               ))}
-              <g className="circuit-route-layer">
+              <g className="circuit-route-layer" style={routeDecorStyle}>
                 <path ref={routeRef} className={hasCars ? "circuit-route-glow replay-muted-glow" : "circuit-route-glow"} d={renderD} />
                 <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={renderD} />
                 <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={renderD} />

@@ -439,14 +439,12 @@
 }
 
 .garage-detail-card .card-stat-badges {
-  gap: 8px;
+  gap: 4px;
 }
 
 .garage-detail-card .card-stat-badge {
   background: rgb(236 231 218 / 0.62);
   border-color: rgb(23 21 26 / 0.28);
-  font-size: 0.86rem;
-  padding: 5px 9px;
 }
 
 .modal-actions {

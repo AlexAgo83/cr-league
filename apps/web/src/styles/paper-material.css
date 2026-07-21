@@ -261,17 +261,17 @@
 .plan-view .directive-choice-group .choice-card .card-stat-badge,
 .garage-panel-inventory .card-inventory-button .card-stat-badge,
 .garage-panel-shop .card-shop button .card-stat-badge {
-  font-size: 0.58rem;
+  font-size: 0.54rem;
   gap: 2px;
-  padding: 2px 5px 2px 2px;
+  padding: 2px 4px 2px 2px;
 }
 
 .plan-view .choice-card.card-art-cell .card-stat-badge i,
 .plan-view .directive-choice-group .choice-card .card-stat-badge i,
 .garage-panel-inventory .card-inventory-button .card-stat-badge i,
 .garage-panel-shop .card-shop button .card-stat-badge i {
-  height: 14px;
-  width: 14px;
+  height: 12px;
+  width: 12px;
 }
 
 .garage-panel-inventory .card-inventory-button {

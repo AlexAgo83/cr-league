@@ -4198,7 +4198,7 @@ label small {
 .card-stat-badges {
   display: flex;
   flex-wrap: wrap;
-  gap: 5px;
+  gap: 3px;
   position: relative;
   z-index: 2;
 }
@@ -4210,10 +4210,11 @@ label small {
   border-radius: 999px;
   color: var(--color-muted);
   display: inline-flex;
-  font-size: 0.64rem;
+  font-size: 0.56rem;
   font-weight: 900;
-  gap: 4px;
-  padding: 3px 7px 3px 3px;
+  gap: 3px;
+  line-height: 1;
+  padding: 2px 5px 2px 2px;
   text-transform: uppercase;
 }
 
@@ -4224,9 +4225,9 @@ label small {
   color: var(--trait-tone);
   display: inline-flex;
   font-style: normal;
-  height: 16px;
+  height: 13px;
   justify-content: center;
-  width: 16px;
+  width: 13px;
 }
 
 .card-stat-badge.bonus {

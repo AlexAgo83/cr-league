@@ -1,6 +1,6 @@
 ## prod_038_circuit_route_loading_audit_product_brief - Circuit Route Loading Audit Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_074_audit_circuit_data_impact_before_optimizing_route_loading`
 > Related backlog: `item_172_measure_and_decide_on_circuit_route_lazy_loading`
 > Related task: `task_075_orchestrate_circuit_route_loading_audit`
@@ -9,6 +9,15 @@
 
 # Overview
 Measure and, only if justified, reduce the initial bundle cost of detailed circuit geometry while preserving map, replay, and simulation coherence.
+
+```mermaid
+flowchart LR
+  Source[Route modules] --> Measure[Measure JS contribution]
+  Measure --> Threshold{Above lazy-load threshold?}
+  Threshold -->|No| Defer[Document deferral]
+  Threshold -->|Yes| Lazy[Dynamic route loading]
+  Defer --> Recheck[Recheck after route growth]
+```
 
 # Goals
 - Make a measured decision about circuit route lazy loading.
@@ -23,17 +32,21 @@ Measure and, only if justified, reduce the initial bundle cost of detailed circu
 - Do not add a bundle analyzer dependency unless simple Vite output is insufficient.
 
 # Scope and guardrails
-- In: scaffolded request, product, backlog, orchestration task, validation, and handoff context.
-- Out: unrelated workflow docs and implementation of generated tasks.
+- In: route module byte measurement, Vite/esbuild evidence, threshold decision, and closeout documentation.
+- Out: dynamic imports for route geometry unless the measured threshold is crossed.
+- Out: circuit redraws, simulation/lap behavior, replay choreography, and static route API work.
 
 # Key product decisions
-- Use structured input as the source of truth for generated docs.
-- Keep generated write paths local and repo-bounded.
+- Defer route lazy loading at the current 25-route catalog size.
+- Ship lazy loading only when route geometry exceeds 75 KB gzip in initial JS measurement, 30% of production main chunk source share, or 40 detailed route modules.
+- Keep the current synchronous route contract while route data remains below threshold because Drive, chrono, replay, and qualifying trace generation all depend on ready route geometry.
 
 # Success signals
-- Generated docs pass lint and audit without broad manual rewrites.
-- Context-pack output can be handed to an implementation agent directly.
+- Measured route contribution is recorded in a tracked report.
+- The lazy-loading decision includes a concrete future trigger.
+- Existing map, chrono, GP, and replay flows stay unchanged and validation passes.
 
 # References
 - Product back-reference: `req_074_audit_circuit_data_impact_before_optimizing_route_loading`
 - Task back-reference: `task_075_orchestrate_circuit_route_loading_audit`
+- Measurement report: `docs/audits/circuit-route-loading-audit-2026-07-21.md`

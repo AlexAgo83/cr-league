@@ -101,14 +101,6 @@ export function ReplayProgress({
           />
         ))}
       </div>
-      <div className="replay-progress-legend" aria-label={tt("replay_timeline_legend_label")}>
-        <span>
-          <i className="replay-legend-dot" aria-hidden="true" /> {tt("replay_pace_marker_legend")}
-        </span>
-        <span>
-          <VisualIcon name="light_rain" /> {tt("replay_weather_phase_legend")}
-        </span>
-      </div>
     </>
   );
 }

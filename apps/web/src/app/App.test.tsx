@@ -753,6 +753,7 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Actual race weather" })).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Volt Union");
     expect(document.querySelector(".replay-map-panel .map-plan-panel")?.textContent).toContain("Current plan");
@@ -760,7 +761,12 @@ describe("App", () => {
     // Timeline markers carry the key moments and seek on click
     expect(document.querySelectorAll(".replay-tick").length).toBe(7);
     expect(document.querySelectorAll(".replay-weather").length).toBe(5);
-    expect(screen.getByLabelText("Replay timeline legend").textContent).not.toContain("Actual weather by phase:");
+    expect(screen.queryByText("dot markers are pace and race moments.")).toBe(null);
+    expect(screen.queryByText("cloud icons map to the five race phases.")).toBe(null);
+    fireEvent.click(screen.getByRole("button", { name: "Actual race weather" }));
+    expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("dot markers are pace and race moments.");
+    expect(screen.getByRole("dialog", { name: "Actual race weather" }).textContent).toContain("cloud icons map to the five race phases.");
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
     expect(document.querySelector(".replay-marker")?.getAttribute("title")).toContain("Rain Grip");
     fireEvent.click(document.querySelector(".replay-marker")!);
     expect(document.querySelector(".replay-moment-notification")?.textContent).toContain("Rain Grip");

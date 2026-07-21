@@ -55,6 +55,7 @@
 | [prod_036_webp_artwork_delivery_product_brief](product/prod_036_webp_artwork_delivery_product_brief.md) | WebP Artwork Delivery Product Brief | Proposed |  |  | product/prod_036_webp_artwork_delivery_product_brief.md |
 | [prod_037_lazy_artwork_loading_product_brief](product/prod_037_lazy_artwork_loading_product_brief.md) | Lazy Artwork Loading Product Brief | Proposed |  |  | product/prod_037_lazy_artwork_loading_product_brief.md |
 | [prod_038_circuit_route_loading_audit_product_brief](product/prod_038_circuit_route_loading_audit_product_brief.md) | Circuit Route Loading Audit Product Brief | Proposed |  |  | product/prod_038_circuit_route_loading_audit_product_brief.md |
+| [prod_039_gameapp_decomposition_product_brief](product/prod_039_gameapp_decomposition_product_brief.md) | GameApp Decomposition Product Brief | Proposed |  |  | product/prod_039_gameapp_decomposition_product_brief.md |
 
 ## Roadmaps
 
@@ -142,6 +143,7 @@
 | [req_072_serve_large_web_artwork_as_webp](request/req_072_serve_large_web_artwork_as_webp.md) | Serve large web artwork as WebP | Draft |  |  | request/req_072_serve_large_web_artwork_as_webp.md |
 | [req_073_lazy_load_non_critical_web_artwork](request/req_073_lazy_load_non_critical_web_artwork.md) | Lazy-load non-critical web artwork | Draft |  |  | request/req_073_lazy_load_non_critical_web_artwork.md |
 | [req_074_audit_circuit_data_impact_before_optimizing_route_loading](request/req_074_audit_circuit_data_impact_before_optimizing_route_loading.md) | Audit circuit data impact before optimizing route loading | Draft |  |  | request/req_074_audit_circuit_data_impact_before_optimizing_route_loading.md |
+| [req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook](request/req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook.md) | Extract the admin-panel state cluster from GameApp into a hook | Draft |  |  | request/req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook.md |
 
 ## Backlog
 
@@ -319,6 +321,7 @@
 | [item_170_convert_largest_artwork_assets_to_webp](backlog/item_170_convert_largest_artwork_assets_to_webp.md) | Convert largest artwork assets to WebP | Ready |  | 0% | backlog/item_170_convert_largest_artwork_assets_to_webp.md |
 | [item_171_add_lazy_defaults_to_assetimage](backlog/item_171_add_lazy_defaults_to_assetimage.md) | Add lazy defaults to AssetImage | Ready |  | 0% | backlog/item_171_add_lazy_defaults_to_assetimage.md |
 | [item_172_measure_and_decide_on_circuit_route_lazy_loading](backlog/item_172_measure_and_decide_on_circuit_route_lazy_loading.md) | Measure and decide on circuit route lazy loading | Ready |  | 0% | backlog/item_172_measure_and_decide_on_circuit_route_lazy_loading.md |
+| [item_173_extract_useadminpanel_from_gameapp](backlog/item_173_extract_useadminpanel_from_gameapp.md) | Extract useAdminPanel() from GameApp | Ready |  | 0% | backlog/item_173_extract_useadminpanel_from_gameapp.md |
 
 ## Tasks
 
@@ -399,3 +402,4 @@
 | [task_073_orchestrate_webp_artwork_conversion](tasks/task_073_orchestrate_webp_artwork_conversion.md) | Orchestrate WebP artwork conversion | Ready |  | 0% | tasks/task_073_orchestrate_webp_artwork_conversion.md |
 | [task_074_orchestrate_lazy_artwork_loading](tasks/task_074_orchestrate_lazy_artwork_loading.md) | Orchestrate lazy artwork loading | Ready |  | 0% | tasks/task_074_orchestrate_lazy_artwork_loading.md |
 | [task_075_orchestrate_circuit_route_loading_audit](tasks/task_075_orchestrate_circuit_route_loading_audit.md) | Orchestrate circuit route loading audit | Ready |  | 0% | tasks/task_075_orchestrate_circuit_route_loading_audit.md |
+| [task_076_orchestrate_gameapp_admin_panel_hook_extraction](tasks/task_076_orchestrate_gameapp_admin_panel_hook_extraction.md) | Orchestrate GameApp admin-panel hook extraction | Ready |  | 0% | tasks/task_076_orchestrate_gameapp_admin_panel_hook_extraction.md |

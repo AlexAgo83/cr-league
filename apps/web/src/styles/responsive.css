@@ -233,9 +233,9 @@
   }
 
   .map-status:has(.map-weather-info-button) {
-    max-width: none;
-    min-width: 156px;
-    padding-right: 42px;
+    max-width: 118px;
+    min-width: 0;
+    padding-right: 36px;
   }
 
   .map-info-stack {

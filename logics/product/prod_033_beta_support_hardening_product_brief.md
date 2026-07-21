@@ -1,6 +1,6 @@
 ## prod_033_beta_support_hardening_product_brief - Beta Support Hardening Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_069_beta_support_hardening`
 > Related backlog: `item_165_add_admin_filters_and_pagination`, `item_166_add_safe_admin_test_data_cleanup`, `item_167_write_beta_support_runbooks_and_known_limits`
 > Related task: `task_070_orchestrate_beta_support_hardening`

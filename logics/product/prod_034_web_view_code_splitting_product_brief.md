@@ -1,6 +1,6 @@
 ## prod_034_web_view_code_splitting_product_brief - Web View Code Splitting Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_070_split_large_web_views_from_the_initial_bundle`
 > Related backlog: `item_168_lazy_load_secondary_web_views`
 > Related task: `task_071_orchestrate_web_view_code_splitting`

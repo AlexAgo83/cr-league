@@ -1,6 +1,6 @@
 ## prod_031_plan_risk_readability_product_brief - Plan Risk Readability Product Brief
 > Date: 2026-07-20
-> Status: Proposed
+> Status: Settled
 > Related request: `req_067_plan_risk_readability_layer`
 > Related backlog: `item_161_derive_deterministic_plan_risk_reads`, `item_162_render_plan_risk_summary_before_commitment`
 > Related task: `task_068_orchestrate_plan_risk_readability_layer`

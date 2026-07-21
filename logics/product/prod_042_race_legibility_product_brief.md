@@ -1,6 +1,6 @@
 ## prod_042_race_legibility_product_brief - Race Legibility Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_078_expose_card_trigger_conditions_and_relative_strength_in_plan_and_garage`
 > Related backlog: `item_176_add_a_shared_card_descriptor_condition_strength_band_and_surface_it_in_card_ui`
 > Related task: `task_079_orchestrate_card_effect_legibility`

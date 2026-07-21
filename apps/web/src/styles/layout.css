@@ -2657,11 +2657,11 @@ label small {
   letter-spacing: 0.08em;
   line-height: 1;
   min-height: 0;
-  padding: 4px 7px;
+  padding: 3px 6px;
   position: absolute;
-  right: 7px;
+  right: 3px;
   text-transform: uppercase;
-  top: 7px;
+  top: 3px;
 }
 
 .map-plan-edit-button:hover,
@@ -2672,9 +2672,6 @@ label small {
 
 .map-weather-info-button {
   left: auto;
-  padding: 3px 6px;
-  right: 3px;
-  top: 3px;
 }
 
 .race-weather-phase-list {

@@ -162,7 +162,7 @@
   "briefing_next_action": "Prochaine action",
   "race_info": "Info course",
   "race_weather_info_title": "Météo réelle du GP",
-  "race_weather_info_body": "Conditions résolues par phase de course. Les icônes météo du replay suivent cette même séquence.",
+  "race_weather_info_body": "La météo est fixée au lancement du GP. Voici les conditions utilisées par le replay.",
   "qualifying_kicker": "Essai chrono",
   "qualifying_title": "Lancer un chrono",
   "qualifying_explainer": "La voiture part seule avec la directive actuelle et la météo prévue. Ton meilleur temps fixe ta place sur la grille.",

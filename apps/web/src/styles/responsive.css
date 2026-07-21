@@ -308,8 +308,8 @@
   .map-info-stack > .map-plan-performance .map-plan-edit-button {
     font-size: 0.5rem;
     padding: 3px 6px;
-    right: 6px;
-    top: 6px;
+    right: 3px;
+    top: 3px;
   }
 
   .map-status .circuit-city {

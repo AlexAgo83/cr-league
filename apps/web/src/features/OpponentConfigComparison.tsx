@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import type { CardId, RaceResult } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
@@ -8,12 +9,13 @@ import { PositionBadge } from "./PositionBadge.js";
 
 const chronoChoiceStyle = (src?: string) => (src ? ({ "--chrono-choice-image": `url("${src}")` } as CSSProperties) : undefined);
 
-export function OpponentConfigComparison({ state, playerTeamId, title, tt }: { state: LeagueState; playerTeamId?: string; title: string; tt: Translator }) {
-  const resultByTeam = new Map(state.currentGrandPrix.result?.classification.map((entry) => [entry.teamId, entry]));
+export function OpponentConfigComparison({ state, result = state.currentGrandPrix.result, playerTeamId, title, tt }: { state: LeagueState; result?: RaceResult | null; playerTeamId?: string; title: string; tt: Translator }) {
+  const resultByTeam = new Map(result?.classification.map((entry) => [entry.teamId, entry]));
+  const consumedCardByTeam = new Map(result?.consumedCards.map((entry) => [entry.teamId, entry.cardId]));
   const teamName = new Map(state.teams.map((team) => [team.id, team.name]));
   const rows = state.decisions
     .filter((decision) => decision.teamId !== playerTeamId)
-    .map((decision) => ({ decision, result: resultByTeam.get(decision.teamId), teamName: teamName.get(decision.teamId) ?? decision.teamId }))
+    .map((decision) => ({ decision, cardId: (decision.cardId ?? consumedCardByTeam.get(decision.teamId)) as CardId | undefined, result: resultByTeam.get(decision.teamId), teamName: teamName.get(decision.teamId) ?? decision.teamId }))
     .sort((left, right) => (left.result?.position ?? 999) - (right.result?.position ?? 999) || left.teamName.localeCompare(right.teamName));
 
   if (!rows.length) return null;
@@ -23,7 +25,7 @@ export function OpponentConfigComparison({ state, playerTeamId, title, tt }: { s
       <h3>{title}</h3>
       <p>{tt("opponent_config_body")}</p>
       <div className="opponent-config-table">
-        {rows.map(({ decision, result, teamName }) => (
+        {rows.map(({ decision, cardId, result, teamName }) => (
           <article key={decision.teamId} className="opponent-config-row">
             <strong className="opponent-config-team">
               {result ? <PositionBadge position={result.position} /> : null}
@@ -42,9 +44,9 @@ export function OpponentConfigComparison({ state, playerTeamId, title, tt }: { s
                 <small>{tt("opponent_config_pit")}</small>
                 <b>{tt(`pit_strategy_${decision.pitStrategy ?? "standard"}_short` as TranslationKey)}</b>
               </span>
-              <span className={`chrono-session-choice type-card${decision.cardId ? "" : " is-faded"}`} style={chronoChoiceStyle(decision.cardId ? CARD_ART[decision.cardId] : undefined)}>
+              <span className={`chrono-session-choice type-card${cardId ? "" : " is-faded"}`} style={chronoChoiceStyle(cardId ? CARD_ART[cardId] : undefined)}>
                 <small>{tt("opponent_config_card")}</small>
-                <b>{decision.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : tt("card_none")}</b>
+                <b>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</b>
               </span>
             </div>
           </article>

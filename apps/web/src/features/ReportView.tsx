@@ -181,7 +181,7 @@ export function ReportView({
               <p>{tt("report_clean_race")}</p>
             )}
           </section>
-          <OpponentConfigComparison state={state} playerTeamId={playerTeamId} title={tt("opponent_config_title_report")} tt={tt} />
+          <OpponentConfigComparison state={state} result={result} playerTeamId={playerTeamId} title={tt("opponent_config_title_report")} tt={tt} />
         </div>
 
         <section className="panel report-side-recap">

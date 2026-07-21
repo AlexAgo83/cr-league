@@ -71,6 +71,34 @@ describe("ReportView", () => {
     expect(tokyo.container.querySelector(".report-headline h2")?.textContent).toBe("Tokyo Street Circuit");
   });
 
+  it("shows opponent cards from consumed race cards when decision card ids are gone", () => {
+    const typedBaseState = baseState as unknown as LeagueState;
+    const state = {
+      ...typedBaseState,
+      decisions: [
+        { teamId: "team_1", approach: "balanced", preparation: "weather", cardId: null },
+        { teamId: "team_2", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", cardId: null }
+      ]
+    } satisfies LeagueState;
+    const result: RaceResult = {
+      grandPrixName: "Card GP",
+      seed: "cards",
+      resolvedWeather: { start: "dry", early: "dry", mid: "dry", late: "dry", finish: "dry" },
+      classification: [
+        { teamId: "team_2", teamName: "Mika Blitz", position: 1, points: 25, credits: 100, score: 90, positionChange: 1, status: "finished", resultTags: [] },
+        { teamId: "team_1", teamName: "Volt Union", position: 2, points: 18, credits: 80, score: 80, positionChange: 0, status: "finished", resultTags: [] }
+      ],
+      events: [],
+      consumedCards: [{ teamId: "team_2", cardId: "launch_boost" }],
+      report: { headline: "Test", blocks: [] }
+    };
+
+    const { container } = render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+
+    const comparison = container.querySelector(".opponent-config-comparison") as HTMLElement;
+    expect(comparison.textContent).toContain("Launch Boost");
+  });
+
   it("maps GP event laps to the circuit lap count without using the chrono scale", () => {
     const typedBaseState = baseState as unknown as LeagueState;
     const state = {

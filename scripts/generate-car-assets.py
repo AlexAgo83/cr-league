@@ -23,8 +23,10 @@ SRC_DIR = "logics/external/CRL Cars V2"
 
 # ponytail: chroma-key thresholds tuned to the ChatGPT green background (~RGB 74,213,60).
 # These are real-world calibration knobs — re-tune if a future batch uses a different backdrop.
-GREEN_MIN = 90        # green channel floor for "is background"
-GREEN_MARGIN = 40     # how much G must beat R and B
+# Keyed on green *dominance relative to the pixel's own brightness* (not an absolute floor) so
+# the darkened green of the drop shadow is also removed instead of surviving as a dark blob.
+GREEN_RATIO = 0.28    # G must beat R and B by this fraction of G ...
+GREEN_BIAS = 8        # ... plus this bias, to avoid keying near-black noise
 # Headlight = bright, near-neutral cluster; taillight = red-dominant cluster.
 WHITE_MIN = 190       # min of RGB for "bright"
 WHITE_SAT_MAX = 40    # max(RGB)-min(RGB) for "near-neutral"
@@ -36,7 +38,8 @@ BAND_GAP = 15         # min transparent rows separating the top view from the si
 
 def car_mask(rgb):
     R, G, B = rgb[..., 0], rgb[..., 1], rgb[..., 2]
-    green = (G > GREEN_MIN) & (G - R > GREEN_MARGIN) & (G - B > GREEN_MARGIN)
+    mx = np.maximum(np.maximum(R, G), B)
+    green = (G == mx) & (G - R > GREEN_RATIO * G + GREEN_BIAS) & (G - B > GREEN_RATIO * G + GREEN_BIAS)
     return ~green
 
 

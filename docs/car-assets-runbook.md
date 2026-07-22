@@ -120,8 +120,11 @@ What it derives:
   row (ground contacts), each also carrying the hub centre (`center_x`/`center_y`). The hub is
   directly above the contact at a height equal to the wheel radius, fitted from the tyre's
   outer edges at low heights (below the arch) via the tangent-circle relation
-  `r = (halfwidth² + h²) / 2h` — a plain centroid drifts high because the dark arch and body
-  cladding above the tyre pull it up. Top view: the side wheel positions (fraction front→rear)
+  `r = (halfwidth² + h²) / 2h` (with a ~0.87 factor for contact-patch flattening), then refined
+  by averaging with a rim-interior flood-fill centroid when that flood has strong support
+  (silver rims); a plain centroid drifts high because the dark arch and cladding above the tyre
+  pull it up. Accurate to a few px on normal cars; open-wheel (F1) hubs are approximate.
+  Top view: the side wheel positions (fraction front→rear)
   mapped onto the top and placed at the lateral silhouette extremes, where the tyres stick out.
 
 Preview overlays colour detected front lamps cyan, detected rear lamps red, geometric

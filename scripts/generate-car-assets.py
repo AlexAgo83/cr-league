@@ -173,6 +173,40 @@ def analyze_view(rgb, mask, box, max_lights):
     return crop, view, m, front_low, dark
 
 
+def _flood_rim_center(dark, cx, cy, r):
+    """Best-effort hub refinement: flood the non-dark rim interior bounded by the dark tyre
+    ring, starting near the tangent-fit centre. Returns (x, y, size) or None. The tyre ring
+    encloses the rim, so this naturally excludes the wheel arch and body outside it."""
+    H, W = dark.shape
+    x0, x1 = max(0, cx - r), min(W - 1, cx + r)
+    y0, y1 = max(0, cy - r), min(H - 1, cy + r)
+    seed = None
+    for dy in range(r):
+        for sy in (cy - dy, cy + dy):
+            if y0 <= sy <= y1 and not dark[sy, cx]:
+                seed = (cx, sy)
+                break
+        if seed:
+            break
+    if seed is None:
+        return None
+    seen = np.zeros((y1 - y0 + 1, x1 - x0 + 1), bool)
+    stack, sx, sy, n = [seed], 0, 0, 0
+    while stack:
+        x, y = stack.pop()
+        if not (x0 <= x <= x1 and y0 <= y <= y1):
+            continue
+        ly, lx = y - y0, x - x0
+        if seen[ly, lx] or dark[y, x]:
+            continue
+        seen[ly, lx] = True
+        sx += x
+        sy += y
+        n += 1
+        stack.extend([(x + 1, y), (x - 1, y), (x, y + 1), (x, y - 1)])
+    return (sx / n, sy / n, n) if n else None
+
+
 def detect_side_wheels(m, front_low, dark):
     """Ground contacts from the bottom alpha edge: the two widest column-clusters touching
     the lowest row are the front and rear wheels. Each point also carries the hub centre
@@ -211,8 +245,15 @@ def detect_side_wheels(m, front_low, dark):
             half = (idx.max() - idx.min()) / 2.0
             radii.append((half * half + h * h) / (2 * h))
         r = float(np.median(radii)) if radii else 0.15 * wheelbase
+        r *= 0.87  # the tyre flattens at the contact patch, so the tangent fit overestimates the radius
         r = max(0.08 * wheelbase, min(r, 0.20 * wheelbase))  # keep the hub on-canvas when the fit is fooled (open-wheel floors, wide arches)
-        pts.append({"wheel": lab, "x": x, "y": ground, "center_x": x, "center_y": int(round(ground - r))})
+        cy = int(round(ground - r))
+        # Best-effort: the tangent fit and the rim-flood centroid bracket the true hub; average
+        # them when the flood has strong support, otherwise keep the tangent fit.
+        fr = _flood_rim_center(dark, x, cy, int(0.9 * r))
+        if fr and fr[2] > max(150, 0.10 * np.pi * r * r) and abs(fr[1] - cy) < 0.6 * r:
+            cy = int(round((cy + fr[1]) / 2))
+        pts.append({"wheel": lab, "x": x, "y": ground, "center_x": x, "center_y": cy})
         fracs[lab] = abs(x - xfront) / length
     return pts, fracs
 

@@ -6,43 +6,145 @@
       "file": "top/car-014-top.png",
       "canvas": {
         "width": 1104,
-        "height": 445
+        "height": 443
       },
       "source_box": [
         185,
         34,
         1289,
-        479
+        477
       ],
       "placed_at": {
         "x": 0,
         "y": 0
       },
       "anchor": {
-        "center_x": 552,
-        "center_y": 222
-      }
+        "center_x": 551,
+        "center_y": 221
+      },
+      "front_point": {
+        "x": 1103,
+        "y": 213
+      },
+      "rear_point": {
+        "x": 0,
+        "y": 228
+      },
+      "heading_angle_degrees": 0.779,
+      "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
+      "light_points_detected": {
+        "front_lights": [
+          {
+            "x": 1103,
+            "y": 78,
+            "geometric": true
+          },
+          {
+            "x": 1103,
+            "y": 372,
+            "geometric": true
+          }
+        ],
+        "rear_lights": [
+          {
+            "x": 0,
+            "y": 73,
+            "geometric": true
+          },
+          {
+            "x": 0,
+            "y": 376,
+            "geometric": true
+          }
+        ],
+        "method": "auto-corner-geometry+color-refine+partial-geometry"
+      },
+      "wheel_contacts": [
+        {
+          "wheel": "front_left",
+          "x": 891,
+          "y": 31
+        },
+        {
+          "wheel": "front_right",
+          "x": 891,
+          "y": 413
+        },
+        {
+          "wheel": "rear_left",
+          "x": 223,
+          "y": 33
+        },
+        {
+          "wheel": "rear_right",
+          "x": 223,
+          "y": 416
+        }
+      ],
+      "wheel_contact_method": "auto-side-frac-mapped-to-top-lateral"
     },
     "side": {
       "file": "side/car-014-side.png",
       "canvas": {
-        "width": 1148,
-        "height": 368
+        "width": 1147,
+        "height": 367
       },
       "source_box": [
-        173,
+        174,
         548,
         1321,
-        916
+        915
       ],
       "placed_at": {
         "x": 0,
         "y": 0
       },
       "anchor": {
-        "center_x": 574,
-        "ground_y": 367
-      }
+        "center_x": 573,
+        "center_y": 183
+      },
+      "front_point": {
+        "x": 0,
+        "y": 323
+      },
+      "rear_point": {
+        "x": 1146,
+        "y": 22
+      },
+      "heading_angle_degrees": -165.284,
+      "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
+      "light_points_detected": {
+        "front_lights": [
+          {
+            "x": 81,
+            "y": 222
+          }
+        ],
+        "rear_lights": [
+          {
+            "x": 1069,
+            "y": 139
+          }
+        ],
+        "method": "auto-corner-geometry+color-refine"
+      },
+      "wheel_contacts": [
+        {
+          "wheel": "front",
+          "x": 220,
+          "y": 366,
+          "center_x": 220,
+          "center_y": 282
+        },
+        {
+          "wheel": "rear",
+          "x": 914,
+          "y": 366,
+          "center_x": 914,
+          "center_y": 284
+        }
+      ],
+      "wheel_contact_method": "auto-bottom-alpha-clusters"
     }
   }
 }

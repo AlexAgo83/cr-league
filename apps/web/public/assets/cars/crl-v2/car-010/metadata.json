@@ -5,14 +5,14 @@
     "top": {
       "file": "top/car-010-top.png",
       "canvas": {
-        "width": 842,
-        "height": 427
+        "width": 843,
+        "height": 424
       },
       "source_box": [
-        353,
-        55,
+        352,
+        56,
         1195,
-        482
+        480
       ],
       "placed_at": {
         "x": 0,
@@ -20,74 +20,74 @@
       },
       "anchor": {
         "center_x": 421,
-        "center_y": 213
+        "center_y": 211
       },
-      "wheel_contacts_projected": [
-        {
-          "wheel": "front_left",
-          "x": 154,
-          "y": 16
-        },
-        {
-          "wheel": "front_right",
-          "x": 154,
-          "y": 408
-        },
-        {
-          "wheel": "rear_left",
-          "x": 687,
-          "y": 17
-        },
-        {
-          "wheel": "rear_right",
-          "x": 687,
-          "y": 408
-        }
-      ],
-      "wheel_contact_method": "side-contact-x-mapped-to-top-alpha-span",
       "front_point": {
         "x": 0,
-        "y": 213
+        "y": 211
       },
       "rear_point": {
-        "x": 841,
-        "y": 213
+        "x": 842,
+        "y": 211
       },
       "heading_angle_degrees": 180.0,
       "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
       "light_points_detected": {
         "front_lights": [
           {
-            "x": 73,
-            "y": 63
+            "x": 64,
+            "y": 70
           },
           {
-            "x": 96,
-            "y": 369
+            "x": 63,
+            "y": 345
           }
         ],
         "rear_lights": [
           {
-            "x": 728,
-            "y": 97
+            "x": 770,
+            "y": 86
           },
           {
-            "x": 728,
-            "y": 328
+            "x": 770,
+            "y": 334
           }
         ],
-        "method": "manual-review-top-visible-white-red"
-      }
+        "method": "auto-corner-geometry+color-refine"
+      },
+      "wheel_contacts": [
+        {
+          "wheel": "front_left",
+          "x": 152,
+          "y": 38
+        },
+        {
+          "wheel": "front_right",
+          "x": 152,
+          "y": 384
+        },
+        {
+          "wheel": "rear_left",
+          "x": 688,
+          "y": 38
+        },
+        {
+          "wheel": "rear_right",
+          "x": 688,
+          "y": 384
+        }
+      ],
+      "wheel_contact_method": "auto-side-frac-mapped-to-top-lateral"
     },
     "side": {
       "file": "side/car-010-side.png",
       "canvas": {
         "width": 882,
-        "height": 407
+        "height": 408
       },
       "source_box": [
         330,
-        555,
+        554,
         1212,
         962
       ],
@@ -96,47 +96,51 @@
         "y": 0
       },
       "anchor": {
-        "center_x": 441,
-        "ground_y": 407
+        "center_x": 440,
+        "center_y": 203
       },
-      "wheel_contacts": [
-        {
-          "wheel": "front",
-          "x": 161,
-          "y": 406
-        },
-        {
-          "wheel": "rear",
-          "x": 720,
-          "y": 406
-        }
-      ],
-      "wheel_contact_method": "bottom-alpha-clusters",
       "front_point": {
         "x": 0,
-        "y": 282
+        "y": 348
       },
       "rear_point": {
         "x": 881,
-        "y": 253
+        "y": 261
       },
-      "heading_angle_degrees": 178.115,
+      "heading_angle_degrees": -174.36,
       "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
       "light_points_detected": {
         "front_lights": [
           {
-            "x": 108,
-            "y": 192
+            "x": 49,
+            "y": 233
           }
         ],
         "rear_lights": [
           {
-            "x": 862,
-            "y": 266
+            "x": 815,
+            "y": 125
           }
         ],
-        "method": "manual-review-side-tight-headlight-rear-red"
-      }
+        "method": "auto-corner-geometry+color-refine"
+      },
+      "wheel_contacts": [
+        {
+          "wheel": "front",
+          "x": 160,
+          "y": 407,
+          "center_x": 160,
+          "center_y": 323
+        },
+        {
+          "wheel": "rear",
+          "x": 720,
+          "y": 407,
+          "center_x": 720,
+          "center_y": 326
+        }
+      ],
+      "wheel_contact_method": "auto-bottom-alpha-clusters"
     }
   }
 }

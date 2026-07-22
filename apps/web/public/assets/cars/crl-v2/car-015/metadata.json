@@ -5,44 +5,143 @@
     "top": {
       "file": "top/car-015-top.png",
       "canvas": {
-        "width": 1179,
-        "height": 488
+        "width": 1178,
+        "height": 494
       },
       "source_box": [
-        195,
-        24,
+        196,
+        27,
         1374,
-        512
+        521
       ],
       "placed_at": {
         "x": 0,
         "y": 0
       },
       "anchor": {
-        "center_x": 589,
-        "center_y": 244
-      }
+        "center_x": 588,
+        "center_y": 246
+      },
+      "front_point": {
+        "x": 0,
+        "y": 254
+      },
+      "rear_point": {
+        "x": 1177,
+        "y": 248
+      },
+      "heading_angle_degrees": -179.708,
+      "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
+      "light_points_detected": {
+        "front_lights": [
+          {
+            "x": 74,
+            "y": 121
+          },
+          {
+            "x": 77,
+            "y": 378
+          }
+        ],
+        "rear_lights": [
+          {
+            "x": 1061,
+            "y": 49
+          },
+          {
+            "x": 1177,
+            "y": 410,
+            "geometric": true
+          }
+        ],
+        "method": "auto-corner-geometry+color-refine+partial-geometry"
+      },
+      "wheel_contacts": [
+        {
+          "wheel": "front_left",
+          "x": 243,
+          "y": 32
+        },
+        {
+          "wheel": "front_right",
+          "x": 243,
+          "y": 463
+        },
+        {
+          "wheel": "rear_left",
+          "x": 942,
+          "y": 32
+        },
+        {
+          "wheel": "rear_right",
+          "x": 942,
+          "y": 459
+        }
+      ],
+      "wheel_contact_method": "auto-side-frac-mapped-to-top-lateral"
     },
     "side": {
       "file": "side/car-015-side.png",
       "canvas": {
-        "width": 1257,
-        "height": 477
+        "width": 1254,
+        "height": 398
       },
       "source_box": [
-        164,
-        512,
-        1421,
-        989
+        165,
+        590,
+        1419,
+        988
       ],
       "placed_at": {
         "x": 0,
         "y": 0
       },
       "anchor": {
-        "center_x": 628,
-        "ground_y": 476
-      }
+        "center_x": 626,
+        "center_y": 198
+      },
+      "front_point": {
+        "x": 0,
+        "y": 340
+      },
+      "rear_point": {
+        "x": 1253,
+        "y": 14
+      },
+      "heading_angle_degrees": -165.416,
+      "heading_angle_reference": "degrees from +x axis, vector rear_point -> front_point",
+      "light_points_detected": {
+        "front_lights": [
+          {
+            "x": 79,
+            "y": 230
+          }
+        ],
+        "rear_lights": [
+          {
+            "x": 1161,
+            "y": 149
+          }
+        ],
+        "method": "auto-corner-geometry+color-refine"
+      },
+      "wheel_contacts": [
+        {
+          "wheel": "front",
+          "x": 259,
+          "y": 397,
+          "center_x": 259,
+          "center_y": 278
+        },
+        {
+          "wheel": "rear",
+          "x": 1003,
+          "y": 397,
+          "center_x": 1003,
+          "center_y": 280
+        }
+      ],
+      "wheel_contact_method": "auto-bottom-alpha-clusters"
     }
   }
 }

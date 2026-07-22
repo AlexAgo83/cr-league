@@ -3,34 +3,34 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 85
 > Progress: 0%
 > Complexity: Low
 > Theme: Replay fidelity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
 
 # Problem
-- resolveCurrentGrandPrix hardcodes pitLaneProgress: 0.5 (store.ts:724), so the car always stops at half a lap regardless of where the pit is drawn.
-- The map draws the pit from geometry and the car from the sim value with a start-line offset (stageProgress/progressFromStart, CircuitMap.tsx:354), so the two only align if the sim is fed the from-start pit fraction.
+- The sim halts the car at hardcoded pitLaneProgress: 0.5 (store.ts:724) and the map draws the marker from its OWN independently-derived pitProgress (CircuitMap.tsx:240,247) — two origins that must instead both READ the single canonical value from item_202.
+- The car is projected with stageProgress = progressFromStart(progress, startProgress) (CircuitMap.tsx:354); the marker aligns with the car only if it is drawn with the SAME projection fed the same canonical value, so alignment must be structural, not a matched pair of separate derivations.
 
 # Scope
 - In:
-  - Replace the hardcoded 0.5 in resolveCurrentGrandPrix with the circuit's shared pitLaneProgress, and pass the same value into the qualifying, preview, and demo/default sim inputs.
-  - Ensure the map marker and the car both resolve to the same drawn position (feed the from-start value to the sim so progressFromStart maps the car back onto the raw pitProgress the marker uses).
-  - Add a test asserting the sim's pit target progress equals the map's drawn pit progress after the start-line offset, for a representative set of circuits.
+  - Sim: replace the hardcoded 0.5 in resolveCurrentGrandPrix with the circuit's canonical pitLaneProgress, and pass the same value into the qualifying, preview, and demo/default sim inputs.
+  - Map: draw the pit marker with the same projection used for cars -- poseOnRoute(renderPoints, stageProgress(pitLaneProgress)) -- instead of the independent pitProgress; remove analyzeCircuitRoute's pitProgress/pitStop self-derivation and route the pitLapProgress / pitStopTraceProgress consumers (replayMath.ts:166 and callers) to the canonical value.
+  - Because the marker is then "where a car at pitLaneProgress is drawn," alignment is structural; add a test asserting the sim's pit target progress equals the drawn marker progress across a representative set of circuits.
 - Out:
   - Changing the replay dwell/time-vs-distance behavior.
   - Altering pit-stop cost or the number of stops.
-  - Reworking the resolve request contract beyond dropping the hardcoded value.
+  - Keeping any second, independent pit-position derivation anywhere.
 
 # Acceptance criteria
-- AC1: The simulation stops a pitting car at the circuit's geometry-derived pit position, not 0.5.
-- AC2: On the replay map, the pitting car's rendered pose equals the drawn pit-garage marker for every tested circuit.
+- AC1: The simulation and the map both read the one canonical pitLaneProgress; neither computes an independent pit position.
+- AC2: The map draws the marker with the same projection as cars, so a pitting car's rendered pose equals the marker for every tested circuit.
 - AC3: Replays stay seed-deterministic and the full validation suite passes.
 
 # AC Traceability
-- request-AC2 -> This backlog slice. Proof: AC1: The simulation stops a pitting car at the circuit's geometry-derived pit position, not 0.5.
-- request-AC3 -> This backlog slice. Proof: AC2: On the replay map, the pitting car's rendered pose equals the drawn pit-garage marker for every tested circuit.
+- request-AC2 -> This backlog slice. Proof: AC1: Sim and map both read the one canonical pitLaneProgress; no independent pit derivation remains.
+- request-AC3 -> This backlog slice. Proof: AC2: The marker is drawn with the car projection, so the pitting car's pose equals the marker for every tested circuit.
 - request-AC4 -> This backlog slice. Proof: AC3: Replays stay seed-deterministic and the full validation suite passes.
 
 # Decision framing

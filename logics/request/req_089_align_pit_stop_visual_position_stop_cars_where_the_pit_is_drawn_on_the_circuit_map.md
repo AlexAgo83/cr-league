@@ -3,28 +3,28 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 85
 > Complexity: Medium
 > Theme: Replay fidelity
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
 
 # Needs
-- Make the simulated pit-stop position and the drawn pit-garage position the same per-circuit value, so cars visibly halt exactly where the pit is rendered on the map.
-- Expose each circuit's geometry-derived pit-lane progress (currently web-only) to the shared/simulation side as a single source of truth, so the sim stops using the hardcoded 0.5 and the map keeps matching it.
-- Preserve the start-line offset math so the aligned value lands the car on the exact marker, and keep replays seed-deterministic.
+- Make the pit-stop position a single generated property of the circuit that BOTH the simulation (to stop the car) and the map (to draw the garage) READ, instead of each side deciding its own position — so cars visibly halt exactly where the pit is rendered.
+- Generate that per-circuit pit-lane progress from the route geometry at circuit-generation time and store it as shared circuit data, so the sim stops using the hardcoded 0.5 and the map stops re-deriving its own pitProgress.
+- Draw the marker with the same projection the map uses for cars, so alignment is structural (not two derivations that happen to match), and keep replays seed-deterministic.
 
 # Context
-- The user chose the clean option: the geometry-derived pit location is the source of truth, and the car must stop there — not move the marker to 0.5. So the value the map already uses (pitLapProgress, the from-start fraction of pitProgress) must drive the simulation.
+- The user chose the clean option, then sharpened it: the pit is a generated property of the circuit with exactly ONE origin. The geometry-derived pit location is the source of truth, the car must stop there (not move the marker to 0.5), and — critically — the map must READ that canonical value rather than re-derive its own pitProgress. Two derivations that "match by construction" are rejected; there is one value, generated once, read by both sides.
 - Because route geometry and its pit derivation live only in the web (circuitScene/analyzeCircuitRoute over apps/web/src/app/circuitRoutes/*.ts) while simulateRace runs shared/API-side, the cleanest single-source-of-truth is to precompute each circuit's from-start pit-lane progress once and store it as shared circuit data — a pitLaneProgress field on the circuit identity in packages/shared/src/domain/circuits.ts (or a companion map keyed by layoutKey). The value is deterministic from the route geometry, so it can be generated offline by the same longest-straight heuristic analyzeCircuitRoute uses (compute pitProgress and startProgress from the route points, then pitLaneProgress = ((pitProgress - startProgress) % 1 + 1) % 1).
 - To keep the baked value from drifting when a route file changes, generate it through the existing scripts (scripts/generate-circuit.mjs to emit it, scripts/audit-circuits.mjs to validate that the stored value still matches the route geometry). Treat a mismatch as an audit failure.
-- Once the value is shared data: replace the hardcoded pitLaneProgress: 0.5 in resolveCurrentGrandPrix (store.ts:724) with the circuit's pitLaneProgress, and pass the same value anywhere else the sim is fed a pit position (qualifying and preview paths, and the demo/default race input). The web map should read the same shared value (or keep deriving it from geometry, which equals the baked value by construction) so the marker and the car stay in lockstep.
-- Offset correctness: feed the FROM-START fraction (pitLapProgress) into the sim, not the raw pitProgress. The car is drawn through progressFromStart(carProgress, startProgress), so a from-start sim value maps the car back onto the raw pitProgress the marker is drawn at; verify the car's rendered pose equals routeAnalysis.pitStop for a pitting car.
+- Once the value is shared data: replace the hardcoded pitLaneProgress: 0.5 in resolveCurrentGrandPrix (store.ts:724) with the circuit's pitLaneProgress, and pass the same value anywhere else the sim is fed a pit position (qualifying and preview paths, and the demo/default race input). The web map must READ the same shared value — analyzeCircuitRoute stops computing its own pitProgress/pitStop, and pitLapProgress / pitStopTraceProgress (replayMath.ts:166 and callers) resolve to the canonical value.
+- Structural alignment via the car projection: draw the marker as poseOnRoute(renderPoints, stageProgress(pitLaneProgress)) — the SAME transform applied to cars (stageProgress = progressFromStart(progress, startProgress), CircuitMap.tsx:354). Then the marker is literally "where a car at pitLaneProgress is drawn", so a pitting car's pose equals the marker by construction. startProgress stays a map-only projection concern (it never reaches the sim) and is applied identically to cars and marker, so its exact value cannot break alignment. Feed the FROM-START fraction into the sim (its progress is start-relative), not a raw route value.
 - Out of scope: changing the longest-straight pit-placement heuristic itself, moving the full route geometry into shared (only the derived scalar is needed), the distance-vs-time replay dwell behavior (separate concern), and any pit-stop timing/cost balance.
 
 # Acceptance criteria
-- AC1: Each circuit exposes a single geometry-derived from-start pit-lane progress as shared data, generated from the route geometry and validated by the circuit audit so it cannot silently drift.
-- AC2: resolveCurrentGrandPrix (and the qualifying/preview/demo sim inputs) feed that circuit value into simulateRace instead of the hardcoded 0.5.
-- AC3: On the replay map, a pitting car halts at the exact drawn pit-garage position for every circuit (the car's rendered pose equals the marker pose), verified by a test asserting the sim's pit target progress equals the map's drawn pit progress after the start-line offset.
+- AC1: Each circuit exposes exactly one canonical, generated from-start pit-lane progress as shared data, produced by a single shared implementation of the longest-straight heuristic and validated by the circuit audit so it cannot silently drift; no second pit-position derivation remains in the codebase.
+- AC2: The simulation reads that canonical value — resolveCurrentGrandPrix and the qualifying/preview/demo sim inputs feed it into simulateRace instead of the hardcoded 0.5.
+- AC3: The map reads the same canonical value and draws the marker with the same projection it uses for cars, so a pitting car's rendered pose equals the drawn pit-garage marker for every circuit, verified by a test.
 - AC4: Replays remain seed-deterministic and npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, npm run audit:circuits, and npm run logics:validate pass.
 
 # Definition of Ready (DoR)

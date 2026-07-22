@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 85
 > Progress: 0%
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -14,10 +14,11 @@
 
 # Plan
 - [ ] 1. Read req_087 first; this is a sibling replay-fidelity fix and must not regress the qualifying-trait, memoization, or robustness work it landed.
-- [ ] 2. Derive each circuit's from-start pit-lane progress from the route geometry (same longest-straight heuristic as analyzeCircuitRoute), store it as shared circuit data, and generate/validate it through the circuit scripts so it cannot drift.
-- [ ] 3. Replace the hardcoded pitLaneProgress: 0.5 in resolveCurrentGrandPrix with the circuit value and pass it into the qualifying/preview/demo sim inputs.
-- [ ] 4. Confirm the start-line offset resolves: the pitting car's rendered pose must equal the drawn marker; add the alignment test across circuits.
-- [ ] 5. Run typecheck, tests, build, lint, e2e, audit:circuits, and Logics validation; record proof at closeout.
+- [ ] 2. Establish ONE canonical origin: extract the longest-straight pit/start heuristic out of analyzeCircuitRoute into a shared pure module, compute each circuit's from-start pit-lane progress at generation time, store it as shared circuit data, and generate/validate it through the circuit scripts so it cannot drift.
+- [ ] 3. Make the sim a reader: replace the hardcoded pitLaneProgress: 0.5 in resolveCurrentGrandPrix with the canonical circuit value and pass it into the qualifying/preview/demo sim inputs.
+- [ ] 4. Make the map a reader: draw the pit marker with the same projection cars use, poseOnRoute(renderPoints, stageProgress(pitLaneProgress)); remove analyzeCircuitRoute's independent pitProgress/pitStop derivation and route pitLapProgress/pitStopTraceProgress consumers to the canonical value.
+- [ ] 5. Confirm structural alignment: the pitting car's rendered pose must equal the drawn marker (same projection, same value); add the alignment test across circuits.
+- [ ] 6. Run typecheck, tests, build, lint, e2e, audit:circuits, and Logics validation; record proof at closeout.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.

@@ -73,7 +73,12 @@
 /* Paper-scoped trait tones so gauges + badge icons read on chalk (asphalt tones are too light). */
 .plan-view .map-trait-grip,
 .plan-view .map-trait-overtaking,
-.plan-view .map-trait-energy {
+.plan-view .map-trait-energy,
+.plan-view .map-trait-pace,
+.plan-view .map-trait-control,
+.plan-view .map-trait-reliability,
+.plan-view .map-trait-weatherReadiness,
+.plan-view .map-trait-aggression {
   --trait-tone: var(--trait-tone-paper);
 }
 

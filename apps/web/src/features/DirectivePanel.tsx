@@ -16,12 +16,10 @@ type TraitStats = {
   energy: number;
 };
 
-type TraitKey = "grip" | "overtaking" | "energy";
-
 const APPROACHES = ["prudent", "balanced", "aggressive"] as const;
 const PREPARATIONS = ["speed", "reliability", "weather"] as const;
 const PIT_STRATEGIES = ["heavy_pack", "standard", "mini_pack"] as const;
-const TRAITS = ["grip", "overtaking", "energy"] as const;
+const ENGINE_STATS = ["pace", "control", "reliability", "weatherReadiness", "aggression"] as const satisfies readonly DecisionDeltaKey[];
 const PLAN_MARKERS = {
   approach: { prudent: 1, balanced: 2, aggressive: 3 },
   preparation: { speed: 1, reliability: 2, weather: 3 },
@@ -55,18 +53,6 @@ export function savedDirectiveStep(): DirectiveStep {
   return saved === "preparation" || saved === "pit" || saved === "card" ? saved : "approach";
 }
 
-const TRAIT_LABEL: Record<TraitKey, TranslationKey> = {
-  grip: "circuit_grip",
-  overtaking: "circuit_overtaking",
-  energy: "circuit_energy"
-};
-
-const TRAIT_HINT: Record<TraitKey, TranslationKey> = {
-  grip: "circuit_grip_hint",
-  overtaking: "circuit_overtaking_hint",
-  energy: "circuit_energy_hint"
-};
-
 function badgesFromDeltas(deltas: DecisionDeltas): StatBadge[] {
   return (Object.entries(deltas) as Array<[DecisionDeltaKey, number | undefined]>)
     .filter((entry): entry is [DecisionDeltaKey, number] => Boolean(entry[1]))
@@ -82,6 +68,14 @@ const ENGINE_STAT_LABELS: Record<NonNullable<StatBadge["trait"]>, TranslationKey
   reliability: "engine_stat_reliability",
   weatherReadiness: "engine_stat_weather",
   aggression: "engine_stat_aggression"
+};
+
+const ENGINE_STAT_HINTS: Record<DecisionDeltaKey, TranslationKey> = {
+  pace: "engine_stat_pace_hint",
+  control: "engine_stat_control_hint",
+  reliability: "engine_stat_reliability_hint",
+  weatherReadiness: "engine_stat_weather_hint",
+  aggression: "engine_stat_aggression_hint"
 };
 
 function ImpactBadges({ badges, tt }: { badges: StatBadge[]; tt: Translator }) {
@@ -107,11 +101,10 @@ function PlanCardMarker({ active }: { active: boolean }) {
 }
 
 function directiveModifiers(form: FormState, selectedCardId: FormState["cardId"]) {
-  const modifiers: Record<TraitKey, number> = { grip: 0, overtaking: 0, energy: 0 };
+  const modifiers: Record<DecisionDeltaKey, number> = { pace: 0, control: 0, reliability: 0, weatherReadiness: 0, aggression: 0 };
   const add = (entry: StatBadge) => {
-    const trait = traitFromBadge(entry.trait);
-    if (!trait) return;
-    modifiers[trait] += (entry.sign === "+" ? 1 : -1) * (entry.value ?? 1);
+    if (!entry.trait || entry.trait === "grip" || entry.trait === "overtaking" || entry.trait === "energy") return;
+    modifiers[entry.trait] += (entry.sign === "+" ? 1 : -1) * (entry.value ?? 1);
   };
 
   badgesFromDeltas(APPROACH_DELTAS[form.approach]).forEach(add);
@@ -120,14 +113,6 @@ function directiveModifiers(form: FormState, selectedCardId: FormState["cardId"]
   if (selectedCardId) CARD_BADGES[selectedCardId].forEach((entry) => add({ ...entry, value: 2 }));
 
   return modifiers;
-}
-
-function traitFromBadge(trait: StatBadge["trait"]): TraitKey | null {
-  if (trait === "grip" || trait === "overtaking" || trait === "energy") return trait;
-  if (trait === "pace" || trait === "aggression") return "overtaking";
-  if (trait === "control" || trait === "weatherReadiness") return "grip";
-  if (trait === "reliability") return "energy";
-  return null;
 }
 
 function signedModifier(value: number) {
@@ -143,7 +128,7 @@ export function DirectivePanel({
   selectedCardId,
   selectedCardFit,
   step,
-  circuitTraits,
+  circuitTraits: _circuitTraits,
   planRiskRead,
   planRecommendation,
   primaryCommand,
@@ -246,13 +231,13 @@ export function DirectivePanel({
       </header>
 
       <div className="directive-briefing" aria-label={tt("directive_track_read")}>
-        {TRAITS.map((trait) => {
-          const value = Math.max(0, Math.min(100, Math.round(circuitTraits[trait])));
+        {ENGINE_STATS.map((trait) => {
           const modifier = modifiers[trait];
+          const value = Math.max(0, Math.min(100, 50 + modifier));
           return (
             <span key={trait} className={`directive-trait map-trait-${trait}`}>
               <span className="directive-trait-head">
-                <strong>{tt(TRAIT_LABEL[trait])}</strong>
+                <strong>{tt(ENGINE_STAT_LABELS[trait])}</strong>
                 <b className="directive-trait-score">
                   <span className="directive-trait-value type-chrono">{value}</span>
                   <span className={`directive-trait-modifier type-chrono ${modifier > 0 ? "bonus" : modifier < 0 ? "weakness" : "neutral"}`}>{signedModifier(modifier)}</span>
@@ -261,8 +246,8 @@ export function DirectivePanel({
               <span className="directive-trait-gauge" role="presentation">
                 <i style={{ "--trait-value": `${value}%` } as CSSProperties} />
               </span>
-              <em>{tt(`trait_level_${traitLevel(circuitTraits[trait])}` as TranslationKey)}</em>
-              <small>{tt(TRAIT_HINT[trait])}</small>
+              <em>{tt(`trait_level_${traitLevel(value)}` as TranslationKey)}</em>
+              <small>{tt(ENGINE_STAT_HINTS[trait])}</small>
             </span>
           );
         })}

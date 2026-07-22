@@ -1703,7 +1703,7 @@ label small {
 .directive-briefing {
   display: grid;
   gap: 8px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .directive-briefing > span,
@@ -2050,6 +2050,18 @@ label small {
 .championship-overview,
 .garage-overview {
   height: 240px;
+}
+
+@media (max-width: 1180px) {
+  .directive-briefing {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .directive-briefing {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {

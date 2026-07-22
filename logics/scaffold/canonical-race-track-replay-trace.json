@@ -1,0 +1,262 @@
+{
+  "title": "Canonical race-track replay trace and simulation handoff",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map.md",
+    "logics/request/req_093_canonical_track_zones_for_spatial_race_simulation.md",
+    "logics/request/req_095_canonical_corner_speed_profile_for_replay_motion.md",
+    "logics/product/prod_054_canonical_race_track_geometry_product_brief.md",
+    "logics/product/prod_058_canonical_corner_speed_profile_product_brief.md",
+    "logics/scaffold/canonical-corner-speed-profile.json",
+    "packages/shared/src/domain/circuits.ts",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/simulation/validateReplayTrace.ts",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/replay/replayMath.ts",
+    "apps/web/src/features/replay/replayDirector.ts",
+    "scripts/audit-circuits.mjs",
+    "scripts/generate-circuit-speed-profiles.mjs",
+    "Current replay state: the race-track work now has canonical route markers, generated track zones, generated speed profiles, visible corner slowdown, strict live classification for generated car traces, and route-length-based replay pacing. The remaining architecture gap is that replay rendering still contains compatibility reconstruction and visual speed remapping that can drift from the simulation trace.",
+    "Code pointers: `simulateRace.ts` already emits `replayTrace.cars`, `replayFacts.directorBeats`, order changes, event `trackProgress`, and zone metadata. `ReplayView.tsx` and `replayMath.ts` still combine trace, facts, fallback plans, local progress mapping, and live tower ordering. `replayDirector.ts` still has a fallback director path. `circuits.ts` still carries both `trackLengthMeters` and `routeLengthMeters`, so the source of truth for simulation distance, display labels, and replay pacing needs an explicit contract."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Race-track replay architecture",
+    "needs": [
+      "Make the generated replay car trace the canonical source for live replay map positions, tower ordering, player context, pit alignment, event placement, and director markers for newly resolved races.",
+      "Move circuit speed variation into the shared simulation trace generation or a shared trace-preparation layer so braking, cornering, exit recovery, and straight-line pace are represented once instead of applied as a web-only visual remap.",
+      "Retire or strictly isolate legacy web fallback reconstruction paths now that generated race results carry replay facts, order changes, car traces, and zone metadata.",
+      "Resolve the dual distance semantics between `trackLengthMeters` and `routeLengthMeters` with a documented source-of-truth contract for simulation scoring, replay pacing, circuit audit, and UI distance labels.",
+      "Connect generated track zones and speed-profile spans so simulation events and replay facts can explain where a race moment happens without client-side semantic inference.",
+      "Add a lightweight race-track replay inspection path that makes trace progress, speed phase, zone, ordering, and distance decisions visible to developers before deeper gameplay tuning begins."
+    ],
+    "context": [
+      "The current behavior is acceptable visually after the recent race-track fixes, but it is not yet the final architecture. The web replay layer still protects older or incomplete race results with fallback logic, while new results increasingly carry enough canonical data to avoid duplicated reasoning.",
+      "The replay tower and map can disagree if one surface reads canonical trace car progress while another reads final rankings, inferred order changes, or a visually remapped progress value. Generated traces should provide the live race order contract; final classification remains the final result contract.",
+      "The speed-profile work proved that route curvature can produce useful braking/corner/exit/straight rhythm. The next step is to place that rhythm at the trace boundary so every consumer sees the same car state instead of reapplying a rendering-only transform.",
+      "`trackLengthMeters` currently feeds simulation distance and some labels, while `routeLengthMeters` now feeds replay pacing for map movement. Some circuits intentionally or historically have large differences between the two. That may be valid, but it must be named, audited, and consumed consistently.",
+      "Backward compatibility matters only for already-persisted legacy results. New race resolution should have a stricter contract: complete replay facts, complete car trace data, canonical event progress, and zone metadata are expected.",
+      "This request is an architecture consolidation, not a gameplay balance retune. It should not change winners, rewards, card effects, bot strategy, league cadence, or economy unless a later request explicitly uses track speed and zones for simulation scoring."
+    ],
+    "acceptance_criteria": [
+      "AC1: Newly resolved races produce a complete canonical replay trace with per-car track progress, phase, speed/profile state where needed, canonical event progress, order changes, director beats, and zone metadata required by current replay consumers.",
+      "AC2: Replay map positions, live tower ordering, player replay context, pit-stop placement, director markers, and event markers all prefer the canonical generated trace/facts for new races and cannot independently infer contradictory race semantics.",
+      "AC3: Circuit speed-profile effects are applied at the shared trace-generation or trace-preparation boundary, and web replay motion does not apply an additional independent speed remap for canonical traces.",
+      "AC4: Legacy fallback behavior is isolated behind an explicit adapter or guard with tests that prove older persisted results still replay, while generated traces use stricter validation and do not silently fall back to inferred facts.",
+      "AC5: A documented distance contract explains `trackLengthMeters` versus `routeLengthMeters`, identifies which one owns simulation scoring, replay pacing, and display labels, and circuit audit fails on undocumented or suspicious drift.",
+      "AC6: Generated track zones and speed-profile spans are connected enough that replay facts/events can expose useful braking, corner, exit, straight, pit, overtake, and sector context without importing web projection logic into shared code.",
+      "AC7: A developer inspection artifact or command summarizes representative race-track replay traces, including progress, live order, zone, speed phase, pit moments, and distance basis for at least Prague, Monaco, Montreal, and one pit-stop race.",
+      "AC8: Validation passes with `npm run typecheck`, `npm run lint`, focused replay/simulation tests, `npm run audit:circuits`, and `npm run logics:validate`; broader `npm test`/`npm run build` are run or explicitly justified in closeout."
+    ]
+  },
+  "product": {
+    "title": "Canonical Race-Track Replay Trace Product Brief",
+    "overview": "CR League's race-track replay is now visually stronger, but the architecture still has two competing layers: the simulation emits more canonical race facts, while the web replay can still reconstruct or remap race meaning locally. This feature makes the generated replay trace the handoff contract between simulation and rendering. The simulation/shared layer owns car progress, speed phase, zone context, event progress, and live ordering for new races; the web layer renders those facts and keeps a small legacy adapter only for old persisted results.",
+    "goals": [
+      "Make replay map, tower, event markers, and director markers agree because they consume the same canonical race trace.",
+      "Represent braking, cornering, exits, straights, pit movement, and overtake context at the shared trace boundary.",
+      "Remove or isolate duplicated replay fallbacks that can drift from simulation facts.",
+      "Clarify distance semantics so simulation distance, route distance, replay pacing, and UI labels are auditable.",
+      "Give developers an inspection path for race-track trace health before using zones and speed profiles for gameplay balance."
+    ],
+    "non_goals": [
+      "Do not build a physics engine, collision model, tire model, racing-line solver, or per-driver steering model.",
+      "Do not rebalance race outcomes, rewards, cards, bot strategy, or economy in this request.",
+      "Do not remove compatibility for already-persisted legacy results that lack complete replay traces.",
+      "Do not move map projection, camera, tile rendering, SVG placement, CSS, or animation-frame details into shared simulation code.",
+      "Do not add user-facing replay controls or explanatory UI unless needed to consume existing canonical facts."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Define the canonical replay trace contract for generated races",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay data model",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC4",
+        "AC8"
+      ],
+      "problem": [
+        "New race results carry rich replay facts, but the exact completeness contract is implicit.",
+        "Replay consumers still tolerate missing facts by reconstructing order changes, director beats, pit progress, and live context.",
+        "Without a strict generated-trace contract, future replay and simulation changes can add another local interpretation path."
+      ],
+      "scope_in": [
+        "Document and type-check the required replay trace/facts shape for newly resolved races.",
+        "Require per-car `trackProgress`, phase, and enough timing/order data for live tower and map rendering.",
+        "Require canonical event progress, director beats, order changes, and zone metadata where current consumers need them.",
+        "Keep optional fields only where persisted legacy results need compatibility, not as the default generated-race path.",
+        "Extend or add replay trace validation so generated races fail loudly when required canonical fields are missing."
+      ],
+      "scope_out": [
+        "Changing final classification or result scoring.",
+        "Deleting legacy replay support before an adapter exists.",
+        "Adding physics-only fields that have no current consumer."
+      ],
+      "acceptance_criteria": [
+        "AC1: The required generated-race replay trace/facts contract is documented in Logics closeout or code-adjacent docs.",
+        "AC2: Tests or validation prove newly resolved races include complete car progress, event progress, order changes, director beats, and zone metadata needed by current replay consumers.",
+        "AC3: Generated-race consumers can distinguish canonical trace data from legacy fallback data."
+      ]
+    },
+    {
+      "title": "Move speed-profile motion into the shared trace handoff",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Simulation and replay fidelity",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC3",
+        "AC6",
+        "AC8"
+      ],
+      "problem": [
+        "The current replay can apply speed-profile easing in the web layer, which improves visuals but leaves speed variation outside the canonical trace.",
+        "If tower order, event progress, and map progress read different notions of car progress, users can see positions that do not match the ranking.",
+        "Future simulation gameplay cannot safely use corner speed profiles until the trace boundary represents speed phases consistently."
+      ],
+      "scope_in": [
+        "Choose the smallest shared boundary for speed-profile application: inside `simulateRace` trace generation or a shared trace-preparation helper called by simulation.",
+        "Emit canonical per-car progress that already reflects braking, cornering, exit recovery, straights, and pit phases for generated traces.",
+        "Expose speed/profile state only at the granularity needed for replay inspection and current UI consistency.",
+        "Update web replay math so canonical traces are rendered directly, with speed remapping reserved only for legacy adapter output if still needed.",
+        "Add tests proving speed-profile trace progress is deterministic, monotonic, endpoint-preserving, and aligned with events/pits/order changes."
+      ],
+      "scope_out": [
+        "Changing elapsed finish times or winner selection.",
+        "Retuning card effects based on speed zones.",
+        "Creating a continuous physics model."
+      ],
+      "acceptance_criteria": [
+        "AC1: Generated trace car progress already includes bounded speed-profile variation before the web renders it.",
+        "AC2: Web replay does not double-apply speed-profile easing on canonical traces.",
+        "AC3: Pit stops, event markers, live tower order, and final classification remain aligned after the handoff change."
+      ]
+    },
+    {
+      "title": "Isolate legacy replay fallbacks behind an explicit adapter",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay architecture",
+      "request_acs": [
+        "AC2",
+        "AC4",
+        "AC8"
+      ],
+      "problem": [
+        "`replayMath.ts` and `replayDirector.ts` still contain fallback reconstruction paths for facts that the simulation now emits.",
+        "Those fallbacks are useful for older persisted results but dangerous if they silently mask incomplete newly generated results.",
+        "Mixing canonical and inferred data in the same helper makes it harder to reason about tower/map/event disagreements."
+      ],
+      "scope_in": [
+        "Identify every replay fallback path for director beats, order changes, pit-stop trace progress, player context, generated car progress, and final-time-only movement.",
+        "Move legacy reconstruction into one explicit adapter or guard that marks the resulting replay data as legacy/fallback.",
+        "Make generated races use the canonical path and fail validation or tests if required facts are missing.",
+        "Keep older persisted results watchable through the adapter with focused compatibility tests.",
+        "Update replay tests so canonical traces and legacy traces have separate expectations."
+      ],
+      "scope_out": [
+        "Deleting stored legacy race results.",
+        "Changing public result schemas in a migration-unsafe way.",
+        "Rewriting ReplayView as part of this request."
+      ],
+      "acceptance_criteria": [
+        "AC1: Replay fallback reconstruction is centralized or clearly guarded as legacy-only.",
+        "AC2: New generated races no longer silently fall back when canonical replay facts are missing.",
+        "AC3: Tests prove at least one legacy result without complete trace data still produces a valid replay."
+      ]
+    },
+    {
+      "title": "Normalize circuit distance semantics and audit drift",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Race-track data model",
+      "request_acs": [
+        "AC5",
+        "AC8"
+      ],
+      "problem": [
+        "The circuit identity carries both `trackLengthMeters` and `routeLengthMeters`, and their values can differ significantly on some circuits.",
+        "`trackLengthMeters` currently feeds simulation distance and some labels, while `routeLengthMeters` feeds replay pacing.",
+        "The difference may be intentional, but without a named contract and audit threshold it reads as inconsistent data."
+      ],
+      "scope_in": [
+        "Define the meaning of `trackLengthMeters` and `routeLengthMeters` in docs and code comments only where necessary.",
+        "Choose the owner for simulation scoring distance, replay pacing, and UI distance labels.",
+        "Extend circuit audit so large differences are either accepted with documented intent or flagged.",
+        "Update affected helpers so distance labels and replay scaling use the chosen source consistently.",
+        "Add focused tests for the distance contract where current behavior has changed or was ambiguous."
+      ],
+      "scope_out": [
+        "Regenerating all route geometry unless audit proves it is required.",
+        "Changing race balance by recalculating historical results.",
+        "Adding user-facing technical labels for both distances."
+      ],
+      "acceptance_criteria": [
+        "AC1: The distance contract is documented and reflected in the relevant helper names or tests.",
+        "AC2: `audit:circuits` fails or warns on suspicious undocumented drift between simulation and route distances.",
+        "AC3: Replay pacing, simulation distance, and circuit distance labels use the chosen sources consistently."
+      ]
+    },
+    {
+      "title": "Add race-track replay trace inspection and representative validation",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Developer validation",
+      "request_acs": [
+        "AC6",
+        "AC7",
+        "AC8"
+      ],
+      "problem": [
+        "Race-track replay correctness is hard to judge from unit tests alone because it combines trace progress, ordering, zones, pit phases, and speed-profile spans.",
+        "Recent Prague feedback showed that subjective visibility matters, but future fixes need a repeatable developer artifact before relying on manual watching.",
+        "A lightweight inspector can expose enough state to debug without adding product UI."
+      ],
+      "scope_in": [
+        "Add or extend a developer command/script/test artifact that prints or snapshots representative replay trace state.",
+        "Include progress, live order, car phase, speed-profile kind, zone label, pit moments, and distance basis where available.",
+        "Cover at least Prague, Monaco, Montreal, and one race with a pit stop.",
+        "Use the artifact during closeout and record the representative validation proof in the orchestration task.",
+        "Keep the artifact deterministic and cheap enough for local investigation."
+      ],
+      "scope_out": [
+        "Shipping a new user-facing debug panel.",
+        "Pixel-perfect animation screenshots as the primary validation gate.",
+        "Full telemetry or analytics infrastructure."
+      ],
+      "acceptance_criteria": [
+        "AC1: A developer can inspect representative canonical replay traces without opening the app UI.",
+        "AC2: The inspection output shows enough race-track state to diagnose tower/map/event disagreements.",
+        "AC3: Closeout records the exact representative circuits and validation commands used."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate canonical race-track replay trace and simulation handoff",
+    "plan": [
+      "Read the completed canonical geometry, track-zone, and corner-speed-profile requests first; treat this work as consolidation of those contracts, not a new visual tweak.",
+      "Map the current replay data flow from `simulateRace` through `RaceResult.replayTrace`, `replayFacts`, `ReplayView`, `replayMath`, and `replayDirector`, listing every canonical field and every fallback reconstruction path.",
+      "Define and validate the generated-race replay trace contract, keeping legacy compatibility separate from the stricter new-race path.",
+      "Move speed-profile progress effects to the shared trace handoff and update web replay consumers so canonical traces are rendered without a second independent remap.",
+      "Centralize or guard legacy fallback reconstruction and add focused tests for both canonical generated results and older incomplete results.",
+      "Document and enforce the circuit distance contract across simulation distance, replay pacing, labels, and circuit audit.",
+      "Add a deterministic trace-inspection artifact and validate representative Prague, Monaco, Montreal, and pit-stop scenarios.",
+      "Update Logics docs during implementation, run typecheck, lint, focused tests, audit:circuits, and Logics validation, then record exact proof and residual risks in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/canonical-race-track-replay-trace.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

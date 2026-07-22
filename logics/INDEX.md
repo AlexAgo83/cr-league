@@ -75,6 +75,7 @@
 | [prod_056_admin_privacy_and_entry_payload_hardening_product_brief](product/prod_056_admin_privacy_and_entry_payload_hardening_product_brief.md) | Admin Privacy and Entry Payload Hardening Product Brief | Settled |  |  | product/prod_056_admin_privacy_and_entry_payload_hardening_product_brief.md |
 | [prod_057_canonical_track_zones_product_brief](product/prod_057_canonical_track_zones_product_brief.md) | Canonical Track Zones Product Brief | Settled |  |  | product/prod_057_canonical_track_zones_product_brief.md |
 | [prod_058_canonical_corner_speed_profile_product_brief](product/prod_058_canonical_corner_speed_profile_product_brief.md) | Canonical Corner Speed Profile Product Brief | Settled |  |  | product/prod_058_canonical_corner_speed_profile_product_brief.md |
+| [prod_059_canonical_race_track_replay_trace_product_brief](product/prod_059_canonical_race_track_replay_trace_product_brief.md) | Canonical Race-Track Replay Trace Product Brief | Proposed |  |  | product/prod_059_canonical_race_track_replay_trace_product_brief.md |
 
 ## Roadmaps
 
@@ -183,6 +184,7 @@
 | [req_093_canonical_track_zones_for_spatial_race_simulation](request/req_093_canonical_track_zones_for_spatial_race_simulation.md) | Canonical track zones for spatial race simulation | Done |  |  | request/req_093_canonical_track_zones_for_spatial_race_simulation.md |
 | [req_094_enrich_ai_playtest_balance_runner](request/req_094_enrich_ai_playtest_balance_runner.md) | Enrich AI playtest balance runner | Done |  |  | request/req_094_enrich_ai_playtest_balance_runner.md |
 | [req_095_canonical_corner_speed_profile_for_replay_motion](request/req_095_canonical_corner_speed_profile_for_replay_motion.md) | Canonical corner speed profile for replay motion | Done |  |  | request/req_095_canonical_corner_speed_profile_for_replay_motion.md |
+| [req_096_canonical_race_track_replay_trace_and_simulation_handoff](request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md) | Canonical race-track replay trace and simulation handoff | Draft |  |  | request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md |
 
 ## Backlog
 
@@ -406,6 +408,11 @@
 | [item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes](backlog/item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes.md) | Apply speed profiles to replay motion without changing race outcomes | Done |  | 100% | backlog/item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes.md |
 | [item_217_validate_replay_speed_profiles_across_representative_circuits](backlog/item_217_validate_replay_speed_profiles_across_representative_circuits.md) | Validate replay speed profiles across representative circuits | Done |  | 100% | backlog/item_217_validate_replay_speed_profiles_across_representative_circuits.md |
 | [item_218_document_the_simulation_handoff_for_speed_profile_gameplay](backlog/item_218_document_the_simulation_handoff_for_speed_profile_gameplay.md) | Document the simulation handoff for speed-profile gameplay | Done |  | 100% | backlog/item_218_document_the_simulation_handoff_for_speed_profile_gameplay.md |
+| [item_219_define_the_canonical_replay_trace_contract_for_generated_races](backlog/item_219_define_the_canonical_replay_trace_contract_for_generated_races.md) | Define the canonical replay trace contract for generated races | Ready |  | 0% | backlog/item_219_define_the_canonical_replay_trace_contract_for_generated_races.md |
+| [item_220_move_speed_profile_motion_into_the_shared_trace_handoff](backlog/item_220_move_speed_profile_motion_into_the_shared_trace_handoff.md) | Move speed-profile motion into the shared trace handoff | Ready |  | 0% | backlog/item_220_move_speed_profile_motion_into_the_shared_trace_handoff.md |
+| [item_221_isolate_legacy_replay_fallbacks_behind_an_explicit_adapter](backlog/item_221_isolate_legacy_replay_fallbacks_behind_an_explicit_adapter.md) | Isolate legacy replay fallbacks behind an explicit adapter | Ready |  | 0% | backlog/item_221_isolate_legacy_replay_fallbacks_behind_an_explicit_adapter.md |
+| [item_222_normalize_circuit_distance_semantics_and_audit_drift](backlog/item_222_normalize_circuit_distance_semantics_and_audit_drift.md) | Normalize circuit distance semantics and audit drift | Ready |  | 0% | backlog/item_222_normalize_circuit_distance_semantics_and_audit_drift.md |
+| [item_223_add_race_track_replay_trace_inspection_and_representative_validation](backlog/item_223_add_race_track_replay_trace_inspection_and_representative_validation.md) | Add race-track replay trace inspection and representative validation | Ready |  | 0% | backlog/item_223_add_race_track_replay_trace_inspection_and_representative_validation.md |
 
 ## Tasks
 
@@ -506,4 +513,5 @@
 | [task_093_orchestrate_admin_privacy_and_entry_payload_hardening](tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md) | Orchestrate admin privacy and entry payload hardening | Done | codex | 100% | tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md |
 | [task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation](tasks/task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation.md) | Orchestrate canonical track zones for spatial race simulation | Done | codex | 100% | tasks/task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation.md |
 | [task_095_enrich_ai_playtest_balance_runner](tasks/task_095_enrich_ai_playtest_balance_runner.md) | Enrich AI playtest balance runner | Done | codex | 100% | tasks/task_095_enrich_ai_playtest_balance_runner.md |
-| [task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion](tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md) | Orchestrate canonical corner speed profile for replay motion | Done | codex | 100% | tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md |
+| [task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion](tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md) | Orchestrate canonical corner speed profile for replay motion | Done | codex | 100 | tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md |
+| [task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff](tasks/task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff.md) | Orchestrate canonical race-track replay trace and simulation handoff | Ready |  | 0% | tasks/task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff.md |

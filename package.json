@@ -30,6 +30,7 @@
     "playtest:simulate": "tsx scripts/simulate-playtest.ts",
     "playtest:ai": "tsx scripts/ai-playtest.ts",
     "replay:validate": "tsx scripts/validate-replay-trace.ts",
+    "replay:inspect": "tsx scripts/inspect-replay-trace.ts",
     "balance:sim": "tsx scripts/balance-simulations.ts",
     "generate:circuit": "node scripts/generate-circuit.mjs",
     "generate:speed-profiles": "node scripts/generate-circuit-speed-profiles.mjs",

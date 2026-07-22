@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 15%
+> Progress: 20%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -52,6 +52,7 @@
 # Report
 - Wave 1: added a canonical `launch` car phase to generated replay traces for the early car-progress window. This keeps launch/first-corner behavior trace-level and does not change final race scoring.
 - Wave 1 validation: `npm test -- packages/shared/src/simulation/simulateRace.test.ts` and `npm run typecheck` passed.
+- Wave 2 support: `npm run replay:inspect` now provides the representative trace inspection artifact required before layering more realism effects.
 
 # AI Context
 - Summary: Orchestrate race replay realism layers after canonical trace

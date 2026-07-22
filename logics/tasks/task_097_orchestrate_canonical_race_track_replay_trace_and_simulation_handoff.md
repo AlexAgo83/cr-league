@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 35%
+> Progress: 55%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -52,6 +52,8 @@
 # Report
 - Wave 1: moved speed-profile motion into the generated replay trace handoff. `RaceInput` accepts `speedProfile`, league race resolution passes the circuit profile to `simulateRace`, generated car trace progress reflects the profile, and web replay no longer double-applies speed-profile easing to canonical `cars` traces.
 - Wave 1 validation: `npm test -- packages/shared/src/simulation/simulateRace.test.ts apps/web/src/features/ReplayView.test.ts`, `npm run lint`, and `npm run typecheck` passed.
+- Wave 2: added `npm run replay:inspect` for deterministic replay trace inspection across Prague, Monaco, and Montreal. Output includes trace point counts, phases, sample live order, gaps, lap, and phase state.
+- Wave 2 validation: `npm run replay:inspect`, `npm run typecheck`, and `npm run lint` passed.
 
 # AI Context
 - Summary: Orchestrate canonical race-track replay trace and simulation handoff

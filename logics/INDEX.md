@@ -72,6 +72,7 @@
 | [prod_053_pit_stop_visual_alignment_product_brief](product/prod_053_pit_stop_visual_alignment_product_brief.md) | Pit-Stop Visual Alignment Product Brief | Settled |  |  | product/prod_053_pit_stop_visual_alignment_product_brief.md |
 | [prod_054_canonical_race_track_geometry_product_brief](product/prod_054_canonical_race_track_geometry_product_brief.md) | Canonical Race-Track Geometry Product Brief | Settled |  |  | product/prod_054_canonical_race_track_geometry_product_brief.md |
 | [prod_055_leagues_store_modularization_product_brief](product/prod_055_leagues_store_modularization_product_brief.md) | Leagues Store Modularization Product Brief | Proposed |  |  | product/prod_055_leagues_store_modularization_product_brief.md |
+| [prod_056_admin_privacy_and_entry_payload_hardening_product_brief](product/prod_056_admin_privacy_and_entry_payload_hardening_product_brief.md) | Admin Privacy and Entry Payload Hardening Product Brief | Proposed |  |  | product/prod_056_admin_privacy_and_entry_payload_hardening_product_brief.md |
 
 ## Roadmaps
 
@@ -176,6 +177,7 @@
 | [req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map](request/req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map.md) | Align pit-stop visual position: stop cars where the pit is drawn on the circuit map | Done |  |  | request/req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map.md |
 | [req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map](request/req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map.md) | Canonical race-track geometry: generate semantic track markers instead of interpreting them on the map | Done |  |  | request/req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map.md |
 | [req_091_modularize_the_oversized_leagues_store](request/req_091_modularize_the_oversized_leagues_store.md) | Modularize the oversized leagues store | Draft |  |  | request/req_091_modularize_the_oversized_leagues_store.md |
+| [req_092_admin_status_privacy_and_entry_bundle_hardening](request/req_092_admin_status_privacy_and_entry_bundle_hardening.md) | Admin-status privacy and entry-bundle hardening | Draft |  |  | request/req_092_admin_status_privacy_and_entry_bundle_hardening.md |
 
 ## Backlog
 
@@ -388,6 +390,8 @@
 | [item_205_base_replay_scale_on_canonical_meters_and_reconcile_track_length](backlog/item_205_base_replay_scale_on_canonical_meters_and_reconcile_track_length.md) | Base replay scale on canonical meters and reconcile track length | Done |  | 100% | backlog/item_205_base_replay_scale_on_canonical_meters_and_reconcile_track_length.md |
 | [item_206_delete_client_side_replay_beat_re_derivation_replayfacts_is_the_sole_source](backlog/item_206_delete_client_side_replay_beat_re_derivation_replayfacts_is_the_sole_source.md) | Delete client-side replay beat re-derivation; replayFacts is the sole source | Done |  | 100% | backlog/item_206_delete_client_side_replay_beat_re_derivation_replayfacts_is_the_sole_source.md |
 | [item_207_split_leagues_store_into_lifecycle_modules_behind_a_barrel](backlog/item_207_split_leagues_store_into_lifecycle_modules_behind_a_barrel.md) | Split leagues store into lifecycle modules behind a barrel | Ready |  | 0% | backlog/item_207_split_leagues_store_into_lifecycle_modules_behind_a_barrel.md |
+| [item_208_remove_public_admin_eligibility_lookup](backlog/item_208_remove_public_admin_eligibility_lookup.md) | Remove public admin eligibility lookup | Ready |  | 0% | backlog/item_208_remove_public_admin_eligibility_lookup.md |
+| [item_209_measure_and_reduce_the_main_entry_bundle_warning](backlog/item_209_measure_and_reduce_the_main_entry_bundle_warning.md) | Measure and reduce the main entry bundle warning | Ready |  | 0% | backlog/item_209_measure_and_reduce_the_main_entry_bundle_warning.md |
 
 ## Tasks
 
@@ -485,3 +489,4 @@
 | [task_090_orchestrate_pit_stop_visual_alignment](tasks/task_090_orchestrate_pit_stop_visual_alignment.md) | Orchestrate pit-stop visual alignment | Done | codex | 100% | tasks/task_090_orchestrate_pit_stop_visual_alignment.md |
 | [task_091_orchestrate_canonical_race_track_geometry](tasks/task_091_orchestrate_canonical_race_track_geometry.md) | Orchestrate canonical race-track geometry | Done | codex | 100% | tasks/task_091_orchestrate_canonical_race_track_geometry.md |
 | [task_092_orchestrate_leagues_store_modularization](tasks/task_092_orchestrate_leagues_store_modularization.md) | Orchestrate leagues store modularization | Ready |  | 0% | tasks/task_092_orchestrate_leagues_store_modularization.md |
+| [task_093_orchestrate_admin_privacy_and_entry_payload_hardening](tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md) | Orchestrate admin privacy and entry payload hardening | Ready |  | 0% | tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md |

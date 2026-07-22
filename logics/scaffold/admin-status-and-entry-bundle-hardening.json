@@ -1,0 +1,144 @@
+{
+  "title": "Admin-status privacy and entry-bundle hardening",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/app.admin.test.ts",
+    "apps/web/src/app/sessionActions.ts",
+    "apps/web/src/app/profileActions.ts",
+    "apps/web/src/app/appStorage.ts",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/app/circuitRoutes/index.ts",
+    "apps/web/src/app/GameViews.tsx",
+    "apps/web/src/app/DriveView.tsx",
+    "apps/web/src/features/ResultView.tsx",
+    "package.json",
+    "Review finding on 2026-07-22: GET /profiles/:profileId/admin-status returns admin eligibility with only a profile id. The client calls it from refreshProfileAdminStatus without a recovery code, and app.admin.test.ts currently asserts the public behavior. This leaks whether a profile email is listed in ADMIN_EMAILS when a profile id is known.",
+    "Review finding on 2026-07-22: npm run build succeeds but Vite reports the main entry chunk at 714.77 kB minified. Existing lazy imports split several feature views, so the remaining likely payload is the eager circuit route/index path imported by circuits.ts."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Privacy and frontend payload hardening",
+    "needs": [
+      "Remove the public admin-status lookup so admin eligibility is only returned when a user proves profile ownership through the existing profile create/recover flows.",
+      "Keep the admin console UX intact for users whose recovered profile session already includes admin: true, without adding a new auth system.",
+      "Turn the Vite chunk-size warning into a bounded performance follow-up by measuring the entry bundle and deferring heavy circuit-route data until a game screen needs it.",
+      "Leave the repo with runnable proof for API privacy, client session behavior, build output, and Logics validation."
+    ],
+    "context": [
+      "Current API surface: apps/api/src/features/leagues/routes.ts:92-95 exposes GET /profiles/:profileId/admin-status and returns { admin: true|false } from the profile's email plus ADMIN_EMAILS. The endpoint accepts no recoveryCode, claimCode, admin token, or session token.",
+      "Current client surface: apps/web/src/app/sessionActions.ts:86-97 calls /profiles/:profileId/admin-status to refresh a stored profile session. If it fails, the client stores admin: false. The create/recover flows in apps/web/src/app/profileActions.ts already receive profile sessions from /profiles and /profiles/recover, and those API responses already pass through withAdminFlag in routes.ts.",
+      "Current test contract: apps/api/src/app.admin.test.ts:266-278 asserts that admin-status is publicly readable by profile id. That test should be replaced with a privacy regression proving the endpoint is gone or requires profile proof, plus client tests proving recovered admin sessions keep admin access.",
+      "Preferred implementation: delete the admin-status endpoint and delete refreshProfileAdminStatus. Do not add a replacement endpoint unless implementation proves the stored-session refresh is required. If refresh is required, use POST /profiles/admin-status with { profileId, recoveryCode } and reuse ensureProfileOwnership-style proof before returning the flag.",
+      "Do not build a full server-side session/token system in this request. That is the right future direction only if broader auth requirements appear; this request is about closing the leak with the current claim/recovery-code model.",
+      "Current performance signal: npm run build passes but reports the main entry chunk at 714.77 kB minified. Existing lazy imports are present in GameViews.tsx, DriveView.tsx, ResultView.tsx, and PlanView.tsx, so the next likely entry payload is eager circuit metadata/routes. apps/web/src/app/circuits.ts imports CIRCUIT_ROUTES from app/circuitRoutes/index.ts at module load.",
+      "Performance follow-up should be measured and narrow: first inspect bundle output and imports, then lazy-load the full circuit route coordinates only for views that render maps/replays. Keep lightweight circuit identity data from @cr-league/shared eager if needed for labels and setup.",
+      "Out of scope: full authentication/session redesign, new dependencies, broad UI redesign, rewriting circuit generation, changing gameplay/simulation behavior, or suppressing the Vite warning without reducing real entry payload."
+    ],
+    "acceptance_criteria": [
+      "AC1: The app no longer exposes a public GET /profiles/:profileId/admin-status endpoint that returns admin eligibility from profile id alone.",
+      "AC2: Admin eligibility still appears in profile sessions returned by /profiles and /profiles/recover after profile ownership is proven, and an admin recovered session can still open/use the admin console with the existing admin token flow.",
+      "AC3: Client stored-session startup no longer makes an unauthenticated admin-status lookup, and deleting that refresh does not break normal profile recovery, league rejoin, sign-out, or admin console access.",
+      "AC4: The build warning is either materially reduced by lazy-loading heavy circuit route data, or a measured follow-up note records why the remaining entry chunk is acceptable and what exact import still dominates it.",
+      "AC5: npm run typecheck, npm run lint, npm test, npm run build, and npm run logics:validate pass."
+    ]
+  },
+  "product": {
+    "title": "Admin Privacy and Entry Payload Hardening Product Brief",
+    "overview": "A focused hardening pass that closes the public admin eligibility leak and turns the remaining production build chunk warning into measured frontend payload work. The fix should stay small: admin status comes only from proven profile create/recover responses, and route-heavy circuit data is deferred only where measurement shows it is causing the entry bundle warning.",
+    "goals": [
+      "Stop revealing admin eligibility from a bare profile id.",
+      "Preserve the existing admin UX for legitimately recovered admin profiles.",
+      "Reduce or explain the main entry chunk warning with measured evidence.",
+      "Avoid new auth infrastructure until there is a broader session requirement.",
+      "Leave a clean validation trail for another implementation agent."
+    ],
+    "non_goals": [
+      "Do not implement full server-side login sessions or token refresh.",
+      "Do not change the admin token mechanism.",
+      "Do not rewrite the circuit map, replay engine, or route generation tools.",
+      "Do not hide the Vite warning by only raising chunkSizeWarningLimit.",
+      "Do not touch unrelated Logics tasks such as leagues-store modularization."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Remove public admin eligibility lookup",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "API privacy",
+      "request_acs": ["AC1", "AC2", "AC3", "AC5"],
+      "problem": [
+        "GET /profiles/:profileId/admin-status returns whether a profile email is configured as admin from a profile id alone.",
+        "The endpoint is not needed for first-login correctness because /profiles and /profiles/recover already return the admin flag after profile proof.",
+        "The current API test suite asserts this public lookup, so the unsafe contract is locked in by tests."
+      ],
+      "scope_in": [
+        "Delete GET /profiles/:profileId/admin-status from apps/api/src/features/leagues/routes.ts, or replace it with a proof-required POST only if a live client need is proven.",
+        "Remove refreshProfileAdminStatus and its startup call path from apps/web/src/app/sessionActions.ts/App.tsx if the endpoint is deleted.",
+        "Update app.admin.test.ts to assert that admin eligibility is not exposed by profile id alone.",
+        "Add or update web profile tests to prove create/recover sessions preserve admin: true and the admin console remains reachable for an admin profile."
+      ],
+      "scope_out": [
+        "Introducing server-side sessions, JWTs, OAuth, CSRF, or cookies.",
+        "Changing the admin token requirement on /admin/* endpoints.",
+        "Changing the profile recovery code format."
+      ],
+      "acceptance_criteria": [
+        "AC1: No public route returns admin eligibility from only profileId.",
+        "AC2: /profiles and /profiles/recover still include admin: true for configured admin emails.",
+        "AC3: The web client starts without calling admin-status and keeps admin access from a recovered session.",
+        "AC4: API and web tests cover the new privacy contract."
+      ]
+    },
+    {
+      "title": "Measure and reduce the main entry bundle warning",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Frontend performance",
+      "request_acs": ["AC4", "AC5"],
+      "problem": [
+        "npm run build succeeds but Vite reports the main entry chunk at 714.77 kB minified.",
+        "Feature views are already lazy-loaded, so suppressing the warning would hide rather than solve the likely eager data/import issue.",
+        "apps/web/src/app/circuits.ts eagerly imports app/circuitRoutes/index.ts, which likely pulls all route coordinate arrays into the first chunk."
+      ],
+      "scope_in": [
+        "Capture the current build output and inspect which imports land in the main entry chunk.",
+        "If circuit route data dominates, split lightweight circuit identity from heavy route coordinates and lazy-load coordinates only for map/replay consumers.",
+        "Keep setup labels and season circuit selection working before route coordinates load.",
+        "Add one focused test or smoke assertion for the lazy route loading path if logic changes.",
+        "Record final build output and whether the main chunk warning is gone or materially reduced."
+      ],
+      "scope_out": [
+        "Adding a bundle-analyzer dependency unless the existing Vite output is insufficient.",
+        "Raising chunkSizeWarningLimit as the only change.",
+        "Changing route geometry, simulation, or replay semantics.",
+        "Broad code-splitting unrelated screens."
+      ],
+      "acceptance_criteria": [
+        "AC1: The implementation records before/after main chunk sizes from npm run build.",
+        "AC2: Heavy circuit route data is lazy-loaded if it is confirmed as the main entry contributor.",
+        "AC3: Map, replay, setup, and season circuit flows still render with the same circuit identities and coordinates.",
+        "AC4: The remaining warning, if any, has a concrete measured explanation and next import target."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate admin privacy and entry payload hardening",
+    "plan": [
+      "Start by deleting or proof-gating the admin-status route; prefer deletion unless a client test proves refresh is required.",
+      "Remove the unauthenticated client refresh path and update profile/admin tests to lock the new privacy contract.",
+      "Run the API and web profile/admin test slices, then the full test suite.",
+      "Measure the current build output and inspect whether circuitRoutes are in the main entry path.",
+      "If route coordinates dominate, lazy-load route coordinates for map/replay consumers while keeping lightweight circuit identity eager.",
+      "Run typecheck, lint, tests, build, and logics validation; record before/after build evidence in task closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/admin-status-and-entry-bundle-hardening.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

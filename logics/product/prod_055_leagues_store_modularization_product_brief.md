@@ -6,9 +6,17 @@
 > Related task: `task_092_orchestrate_leagues_store_modularization`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
 
 # Overview
 Reorganize CR League's oversized leagues store into cohesive lifecycle modules behind an unchanged barrel export, improving maintainability without touching behavior or the public API.
+
+```mermaid
+flowchart TD
+  Req[req_091 store modularization] --> Slice[item_207 split store modules]
+  Slice --> Task[task_092 delivery]
+  Task --> Gate[behavior unchanged]
+```
 
 # Goals
 - Reduce store.ts from a 1197-line catch-all to a thin barrel over focused modules.

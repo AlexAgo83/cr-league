@@ -208,9 +208,10 @@ export function liveClassificationByCarProgress(
   if (progress >= 1) return result.classification;
   const traceOrder = tracePointAt(trace, progress).order;
   const stableOrder = new Map((currentOrder.length ? currentOrder : traceOrder).map((teamId, index) => [teamId, index]));
+  const positionChangeMargin = shouldSmoothReplayTrace(trace) ? POSITION_CHANGE_MARGIN_LAPS : 0;
   return [...result.classification].sort((left, right) => {
     const progressDiff = (carProgress[right.teamId] ?? 0) - (carProgress[left.teamId] ?? 0);
-    return Math.abs(progressDiff) > POSITION_CHANGE_MARGIN_LAPS
+    return Math.abs(progressDiff) > positionChangeMargin
       ? progressDiff
       : (stableOrder.get(left.teamId) ?? 999) - (stableOrder.get(right.teamId) ?? 999) || left.position - right.position;
   });

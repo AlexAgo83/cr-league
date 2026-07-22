@@ -114,6 +114,18 @@ describe("ReplayView timing", () => {
     ]);
   });
 
+  it("sorts generated car traces directly from track position", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0, speed: 0, phase: "grid" }, last: { trackProgress: 0, speed: 0, phase: "grid" } } },
+      { segment: "early", lap: 2, progress: 0.2, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0.2, speed: 1, phase: "racing" }, last: { trackProgress: 0.202, speed: 1, phase: "racing" } } }
+    ];
+
+    expect(liveClassificationByCarProgress(result, trace, 0.2, { leader: 1, last: 1.002 }, ["leader", "last"]).map((entry) => entry.teamId)).toEqual([
+      "last",
+      "leader"
+    ]);
+  });
+
   it("uses replay trace gaps before finish instead of final pace", () => {
     const trace: ReplayTracePoint[] = [
       { segment: "start", lap: 1, progress: 0, order: ["last", "leader"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },

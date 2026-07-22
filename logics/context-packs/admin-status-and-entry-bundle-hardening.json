@@ -30,7 +30,7 @@
       "path": "logics/request/req_092_admin_status_privacy_and_entry_bundle_hardening.md",
       "ref": "req_092_admin_status_privacy_and_entry_bundle_hardening",
       "schema_version": "1.0",
-      "status": "Ready",
+      "status": "Done",
       "title": "Admin-status privacy and entry-bundle hardening"
     },
     {
@@ -58,7 +58,7 @@
       "path": "logics/backlog/item_208_remove_public_admin_eligibility_lookup.md",
       "ref": "item_208_remove_public_admin_eligibility_lookup",
       "schema_version": "1.0",
-      "status": "Ready",
+      "status": "Done",
       "title": "Remove public admin eligibility lookup"
     },
     {
@@ -86,7 +86,7 @@
       "path": "logics/backlog/item_209_measure_and_reduce_the_main_entry_bundle_warning.md",
       "ref": "item_209_measure_and_reduce_the_main_entry_bundle_warning",
       "schema_version": "1.0",
-      "status": "Ready",
+      "status": "Done",
       "title": "Measure and reduce the main entry bundle warning"
     },
     {
@@ -94,8 +94,7 @@
       "kind": "product",
       "linked_refs": {
         "item": [
-          "item_208_remove_public_admin_eligibility_lookup",
-          "item_209_measure_and_reduce_the_main_entry_bundle_warning"
+          "item_208_remove_public_admin_eligibility_lookup"
         ],
         "prod": [
           "prod_056_admin_privacy_and_entry_payload_hardening_product_brief"
@@ -110,7 +109,7 @@
       "path": "logics/product/prod_056_admin_privacy_and_entry_payload_hardening_product_brief.md",
       "ref": "prod_056_admin_privacy_and_entry_payload_hardening_product_brief",
       "schema_version": "1.0",
-      "status": "Proposed",
+      "status": "Settled",
       "title": "Admin Privacy and Entry Payload Hardening Product Brief"
     },
     {
@@ -139,16 +138,16 @@
       "path": "logics/tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md",
       "ref": "task_093_orchestrate_admin_privacy_and_entry_payload_hardening",
       "schema_version": "1.0",
-      "status": "Ready",
+      "status": "Done",
       "title": "Orchestrate admin privacy and entry payload hardening"
     }
   ],
   "estimates": {
-    "char_count": 4362,
+    "char_count": 4296,
     "companion_doc_count": 0,
     "doc_count": 5
   },
-  "generated_at": "2026-07-22T13:04:50Z",
+  "generated_at": "2026-07-22T13:33:10Z",
   "handoff": {
     "companion_doc_count": 0,
     "enabled": false,

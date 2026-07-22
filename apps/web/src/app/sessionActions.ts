@@ -1,5 +1,5 @@
 import type { TranslationKey } from "../i18n/index.js";
-import { PROFILE_SESSION_KEY, api, copyText, storePlayerClaims, storeProfileSession } from "./appStorage.js";
+import { PROFILE_SESSION_KEY, api, copyText, storePlayerClaims } from "./appStorage.js";
 import type { GameView, LeagueState, ProfileSession } from "./types.js";
 
 type NotificationTone = "info" | "error";
@@ -83,19 +83,6 @@ export function createSessionActions({
     await rejoinClaim(claim, { setDrive: true, notify: true });
   }
 
-  async function refreshProfileAdminStatus(session: ProfileSession) {
-    try {
-      const response = await api<{ admin: boolean }>(`/profiles/${session.profile.id}/admin-status`, { method: "GET" });
-      const nextSession = { ...session, admin: response.admin };
-      storeProfileSession(nextSession);
-      setProfileSession(nextSession);
-    } catch {
-      const nextSession = { ...session, admin: false };
-      storeProfileSession(nextSession);
-      setProfileSession(nextSession);
-    }
-  }
-
   function goHome() {
     setLeagueState(null);
     setAdminInspecting(false);
@@ -150,7 +137,6 @@ export function createSessionActions({
   return {
     rejoinClaim,
     switchLeague,
-    refreshProfileAdminStatus,
     goHome,
     addLeague: goHome,
     forgetPlayer,

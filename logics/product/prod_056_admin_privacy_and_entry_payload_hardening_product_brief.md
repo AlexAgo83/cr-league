@@ -1,8 +1,8 @@
 ## prod_056_admin_privacy_and_entry_payload_hardening_product_brief - Admin Privacy and Entry Payload Hardening Product Brief
 > Date: 2026-07-22
-> Status: Proposed
+> Status: Settled
 > Related request: `req_092_admin_status_privacy_and_entry_bundle_hardening`
-> Related backlog: `item_208_remove_public_admin_eligibility_lookup`, `item_209_measure_and_reduce_the_main_entry_bundle_warning`
+> Related backlog: `item_208_remove_public_admin_eligibility_lookup`
 > Related task: `task_093_orchestrate_admin_privacy_and_entry_payload_hardening`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -46,5 +46,5 @@ flowchart TD
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_092_admin_status_privacy_and_entry_bundle_hardening`
+- Product back-reference: `item_208_remove_public_admin_eligibility_lookup`
 - Task back-reference: `task_093_orchestrate_admin_privacy_and_entry_payload_hardening`

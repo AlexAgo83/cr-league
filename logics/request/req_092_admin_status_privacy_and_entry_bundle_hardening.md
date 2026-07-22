@@ -1,7 +1,7 @@
 ## req_092_admin_status_privacy_and_entry_bundle_hardening - Admin-status privacy and entry-bundle hardening
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

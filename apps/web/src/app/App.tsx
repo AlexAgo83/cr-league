@@ -298,7 +298,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     showStatus,
     openProfileCodeHelp: () => openOnboardingHelp("profileCode")
   });
-  const { rejoinClaim, switchLeague, refreshProfileAdminStatus, goHome, addLeague, forgetPlayer, copyProfileCode, copyTechnicalError, forgetProfile } = createSessionActions({
+  const { rejoinClaim, switchLeague, goHome, addLeague, forgetPlayer, copyProfileCode, copyTechnicalError, forgetProfile } = createSessionActions({
     profileSession,
     leagueState,
     savedClaims,
@@ -370,10 +370,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     showStatus,
     pushCommandHint
   });
-  useEffect(() => {
-    if (!profileSession || profileSession.admin !== undefined) return;
-    void refreshProfileAdminStatus(profileSession);
-  }, [profileSession, refreshProfileAdminStatus]);
   const primaryCommand =
     deskState === "prepare"
       ? { label: tt("action_submit_directive"), action: submitDirective, disabled: status === "loading" || isResolved }

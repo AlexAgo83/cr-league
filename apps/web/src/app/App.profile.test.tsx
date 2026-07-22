@@ -417,16 +417,16 @@ describe("App profile and admin", () => {
     expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
   });
 
-  it("refreshes admin eligibility for an older saved profile session", async () => {
-    saveProfile({ admin: undefined });
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ admin: true }));
+  it("keeps stored admin eligibility without a public admin-status refresh", () => {
+    saveProfile({ admin: true });
+    const fetch = vi.spyOn(globalThis, "fetch");
 
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
-    expect(screen.queryByRole("button", { name: "Admin" })).toBe(null);
 
-    expect(await screen.findByRole("button", { name: "Admin" })).toBeTruthy();
+    expect(screen.getByRole("button", { name: "Admin" })).toBeTruthy();
+    expect(fetch).not.toHaveBeenCalled();
     expect(JSON.parse(localStorage.getItem("cr-league-profile-session") ?? "{}").admin).toBe(true);
   });
 

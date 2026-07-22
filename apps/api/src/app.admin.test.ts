@@ -263,18 +263,16 @@ describe("api app profile and admin", () => {
   });
 
 
-  it("reports admin eligibility for a saved profile session refresh", async () => {
+  it("does not expose admin eligibility from a bare profile id", async () => {
     const app = await createTestApp(createMemoryDb(), undefined, ["pilot@example.test"]);
     const adminProfile = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
-    const regularProfile = await app.inject({ method: "POST", url: "/profiles", payload: { email: "driver@example.test" } });
 
     const adminStatus = await app.inject({ method: "GET", url: `/profiles/${adminProfile.json().profile.id}/admin-status` });
-    const regularStatus = await app.inject({ method: "GET", url: `/profiles/${regularProfile.json().profile.id}/admin-status` });
 
     await app.close();
 
-    expect(adminStatus.json()).toEqual({ admin: true });
-    expect(regularStatus.json()).toEqual({ admin: false });
+    expect(adminProfile.json()).toMatchObject({ admin: true });
+    expect(adminStatus.statusCode).toBe(404);
   });
 
   it("lists admin users, resets recovery codes, and deletes profiles without deleting teams", async () => {

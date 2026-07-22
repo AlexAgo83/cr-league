@@ -89,11 +89,6 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.get<{ Params: { profileId: string } }>("/profiles/:profileId/admin-status", async (request) => {
-    const profile = await db.profile.findUnique({ where: { id: request.params.profileId } });
-    return { admin: Boolean(profile && isAdminEmail(profile.email, config)) };
-  });
-
   app.post("/leagues", async (request, reply) => {
     try {
       return await createDemoLeague(db, request.body ?? {});

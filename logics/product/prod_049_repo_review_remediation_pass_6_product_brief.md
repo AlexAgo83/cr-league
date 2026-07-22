@@ -6,9 +6,19 @@
 > Related task: `task_086_orchestrate_repo_review_remediation_pass_6`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
 
 # Overview
 A sixth remediation pass driven by the v0.3.26 full-repo review: close the JSON-column read-modify-write races on the card, decision, and join paths using the transaction/row-lock machinery established in passes 3-5; restore simulation finishing-order fidelity so results and displayed gaps reflect the score model; guard the two remaining destructive/authority operations; stop the card directive badges from drifting from balance; and delete the over-engineering the review catalogued.
+
+```mermaid
+flowchart TD
+  Req[req_085 review pass 6] --> Locks[item_185 JSON locks]
+  Req --> Fidelity[item_186 result fidelity]
+  Req --> Guards[item_187 destructive guards]
+  Req --> Cleanup[item_188 to item_189 badges and cleanup]
+  Cleanup --> Task[task_086 delivery]
+```
 
 # Goals
 - Concurrent card, decision, and join requests can never lose data or violate an invariant.

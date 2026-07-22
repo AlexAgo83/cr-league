@@ -6,9 +6,18 @@
 > Related task: `task_087_orchestrate_gameplay_and_economy_integrity_fixes`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
 
 # Overview
 A follow-on audit after review pass 6 surfaced correctness issues in the game's economy and resolution rather than its structure: a non-monotonic credit payout that rewards finishing near-last, silent consumption of a card a non-submitting player never chose, race resolution that trusts client-supplied traits and thus loses seed-determinism, a decision validator that allows self-targeted rival cards, plus limiter and index hygiene. This request makes payouts monotonic, stops unplayed-card loss, restores deterministic resolution, and tightens decision validation.
+
+```mermaid
+flowchart TD
+  Req[req_086 gameplay integrity] --> Economy[item_190 payout and cards]
+  Req --> Resolve[item_191 deterministic resolve]
+  Req --> Hygiene[item_192 limiter and index hygiene]
+  Hygiene --> Task[task_087 delivery]
+```
 
 # Goals
 - Placing better always pays at least as well as placing worse.

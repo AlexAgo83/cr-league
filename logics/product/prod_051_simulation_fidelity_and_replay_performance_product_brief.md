@@ -6,9 +6,19 @@
 > Related task: `task_088_orchestrate_simulation_fidelity_and_replay_performance_fixes`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
 
 # Overview
 A third audit after review pass 6 and the gameplay-integrity pass found issues in how faithfully the game reads the track and how cheaply the replay renders: qualifying times do not respond to circuit traits at all, the circuit map re-runs an O(n^2) scene analysis on every replay frame, the recap mislabels heavy rain, and a public simulation route can be made to return NaN. This request makes qualifying track-sensitive, bounds replay render cost, corrects recap and overlay accuracy, and hardens simulation inputs.
+
+```mermaid
+flowchart TD
+  Req[req_087 fidelity and replay] --> Qualifying[item_193 track response]
+  Req --> Replay[item_194 render cost]
+  Req --> Copy[item_195 recap accuracy]
+  Req --> Robustness[item_196 input robustness]
+  Robustness --> Task[task_088 delivery]
+```
 
 # Goals
 - The circuit's character visibly shapes qualifying, not just the race.

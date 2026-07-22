@@ -42,6 +42,7 @@ const PIT_EXIT_SECONDS = 1.2;
 const LAUNCH_PHASE_PROGRESS = 0.06;
 const MIN_VISIBLE_GAP_PROGRESS = 0.004;
 const MAX_VISIBLE_GAP_PROGRESS = 0.12;
+const DEFENSE_GAP_PROGRESS = 0.012;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -320,7 +321,7 @@ function createDistanceReplayTracePoint(states: TeamState[], plans: Map<string, 
       ];
     })
   );
-  const cars = applyVisualChronoGaps(rawCars, trackLengthMeters, raceDuration);
+  const cars = annotateTrafficDefense(applyVisualChronoGaps(rawCars, trackLengthMeters, raceDuration), states);
   const order = progress >= 1
     ? states.slice().sort((left, right) => right.scores.score - left.scores.score || left.elapsedTime - right.elapsedTime).map((state) => state.participant.teamId)
     : orderFromCars(cars, states);
@@ -350,6 +351,21 @@ function applyVisualChronoGaps(cars: NonNullable<ReplayTracePoint["cars"]>, trac
       return [teamId, { ...car, trackProgress: Number(trackProgress.toFixed(4)), distanceMeters: Number((trackProgress * trackLengthMeters).toFixed(1)) }];
     })
   );
+}
+
+function annotateTrafficDefense(cars: NonNullable<ReplayTracePoint["cars"]>, states: TeamState[]) {
+  const order = orderFromCars(cars, states);
+  const updates = new Map<string, NonNullable<ReplayTracePoint["cars"]>[string]>();
+  for (let index = 0; index < order.length - 1; index += 1) {
+    const aheadId = order[index]!;
+    const behindId = order[index + 1]!;
+    const ahead = cars[aheadId];
+    const behind = cars[behindId];
+    if (!ahead || !behind || ahead.phase !== "racing" || behind.phase !== "racing") continue;
+    const close = ahead.trackProgress - behind.trackProgress <= DEFENSE_GAP_PROGRESS;
+    if (close) updates.set(aheadId, { ...ahead, phase: "defending", speed: Number(Math.min(ahead.speed, 0.96).toFixed(3)) });
+  }
+  return updates.size ? { ...cars, ...Object.fromEntries(updates) } : cars;
 }
 
 function teamTracePlan(state: TeamState, snapshots: TraceSegmentSnapshot[], laps: number, pitLaneProgress: number): TeamTracePlan {
@@ -405,6 +421,7 @@ function orderFromCars(cars: ReplayTracePoint["cars"], states: TeamState[]) {
 function replayCarSpeed(phase: NonNullable<ReplayTracePoint["cars"]>[string]["phase"], weather: Weather = "dry") {
   if (phase === "pit_stop" || phase === "grid" || phase === "finished") return 0;
   if (phase === "launch") return 0.7;
+  if (phase === "defending") return 0.96;
   if (phase === "pit_entry" || phase === "pit_exit") return 0.35;
   if (phase === "overtake_approach" || phase === "overtake_overlap" || phase === "overtake_pass") return 1.08;
   if (phase === "overtake_settle") return 1;

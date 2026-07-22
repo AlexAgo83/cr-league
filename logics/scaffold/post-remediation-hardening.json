@@ -1,0 +1,232 @@
+{
+  "title": "Post-remediation hardening: submit/sell concurrency, client security and privacy, accessibility, data-model integrity, and config validation",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_085_repo_review_remediation_pass_6_json_column_race_locks_simulation_finishing_order_fidelity_destructive_op_guards_and_over_engineering_cleanup.md",
+    "logics/request/req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation.md",
+    "logics/request/req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/features/leagues/persistence.ts",
+    "apps/api/src/config.ts",
+    "apps/api/src/app.ts",
+    "prisma/schema.prisma",
+    "render.yaml",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/LiveryPlate.tsx",
+    "apps/web/src/app/sessionActions.ts",
+    "apps/web/src/app/appStorage.ts",
+    "apps/web/src/features/replay/useReplayClock.ts",
+    "apps/web/src/features/replay/ReplayStageOverlay.tsx",
+    "apps/web/src/ui/Modal.tsx",
+    "apps/web/index.html",
+    "Fourth audit sweep on 2026-07-22 after req_085/req_086/req_087 all landed (HEAD 611bd57), targeting surfaces the prior passes did not open. Findings. (1) submit-vs-sell card race: submitDecision now locks the GP row and re-checks status inside runWrite (store.ts:542-547), closing the decision-vs-resolve race, but the card-ownership guard (store.ts:538, cardId && !team.cards.includes(cardId)) reads team.cards from the pre-transaction requireTeamClaim read (store.ts:532) and is never re-checked inside the lock; submitDecision locks the GP row while sellCard locks the team row (different rows, no mutual exclusion), so a concurrent sell-then-submit can attach a just-sold card to the plan. sellCard's own in-use guards (store.ts:433-438) are the mirror image and are only covered by sell-vs-sell in app.postgres.test.ts; sell-vs-submit is uncovered. (2) Livery colors are injected unsanitized: CircuitMap.tsx:456 sets --car-primary/--car-secondary straight from car.livery.primary/secondary while LiveryPlate.tsx:6-13 sanitizes identical values through safeHex(/^#[0-9a-f]{6}$/). (3) copyProfileCode (sessionActions.ts:126) interpolates the raw long-lived recovery code into the aria-live status string and notification history. (4) API_BASE_URL (appStorage.ts:3) falls back to plaintext http://localhost:4874, so a missing VITE_API_BASE_URL at build time posts claimCode/recoveryCode bodies over unencrypted HTTP. (5) No prefers-reduced-motion: useReplayClock auto-plays via requestAnimationFrame (useReplayClock.ts:128) and CircuitMap ambient cars use SVG animateMotion (CircuitMap.tsx:484); neither consults matchMedia and the CSS reduce-block only disables decorative accents. (6) Modal focus trap (ui/Modal.tsx:77) selects focusable elements without filtering hidden/zero-size ones and focuses the dialog container rather than the first control. (7) The replay speed menu (ReplayStageOverlay.tsx:312-327) uses role=listbox/option with no arrow-key roving focus. (8) index.html has no Content-Security-Policy or frame-ancestors, so the app is iframe-embeddable (clickjacking) while recoveryCode/claimCode persist in localStorage. (9) RaceDecision.teamId has no standalone index (schema.prisma:93); the composite unique (grandPrixId, teamId) cannot lead on teamId, so the Team->RaceDecision cascade and teamId filters seq-scan. (10) RaceDecision.rivalTeamId (schema.prisma:98) stores a Team id with no FK/relation/onDelete/index, leaving dangling references that simulateRace consumes. (11) Enum-like columns (status, kind, cadence, approach, preparation, pitStrategy) are free-text String with no DB constraint, so an invalid value can persist and later crash the sim's as RaceInput casts (e.g. store.ts:719-725). (12) The profileId index migration (prisma/migrations/20260722110000_add_team_profile_index) uses non-concurrent CREATE INDEX, taking a write lock on teams during db:deploy. (13) No required-env validation (config.ts:16-35): WEB_ORIGIN silently defaults to http://localhost:4873 so a missing prod env makes CORS reject the real frontend with no startup error (app.ts:22-32), and render.yaml never sets ADMIN_TOKEN/ADMIN_EMAILS so admin token routes 503 and the admin flag is never granted in production."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Post-remediation hardening",
+    "needs": [
+      "Close the last JSON-column concurrency axis: re-validate card ownership inside the locked transaction for submitDecision and sellCard so a concurrent sell/submit can never attach or keep a card that is no longer valid, and cover the sell-vs-submit pair in the Postgres integration suite.",
+      "Harden the web client's security and privacy: sanitize livery colors before injecting them into the map, stop announcing/logging the raw recovery code, refuse plaintext API origins in production, and add a clickjacking/credential-exposure baseline (CSP and secret storage).",
+      "Meet an accessibility baseline for the replay: honor prefers-reduced-motion, fix the modal focus trap, and make the speed menu behave like the listbox its ARIA advertises.",
+      "Tighten the data model: index and FK the RaceDecision references, constrain the enum-like string columns, and make the new index migration deploy without locking the teams table.",
+      "Validate required environment on boot and declare the admin envs so production cannot silently misconfigure CORS or the admin surface."
+    ],
+    "context": [
+      "submitDecision already locks the GP row and re-checks status (store.ts:542-547); the remaining gap is that the card-ownership guard at store.ts:538 runs on the pre-transaction team read. Move the cards.includes check (and the qualifying-lock check) inside the runWrite block after a fresh team read; because sellCard locks the team row and submitDecision locks the GP row, also take lockTeamRow in submitDecision (or re-read and re-validate cards under it) so the two operations serialize on the same row. sellCard's in-use guards (store.ts:433-438) should likewise re-check fresh decisions/qualifying inside its transaction. Add a sell-vs-submit integration test to app.postgres.test.ts alongside the existing sell-vs-sell coverage.",
+      "LiveryPlate.tsx:6-13 already has the safeHex helper; export it (or move it to a shared web util) and run car.livery.primary/secondary through it in CircuitMap.tsx:456 before building carStyle, mirroring the plate. No visual change for valid liveries.",
+      "copyProfileCode (sessionActions.ts:126) should show a generic copied confirmation (tt key only) and never interpolate the code into the announced/persisted status; the code is already placed on the clipboard by copyText, so the display string does not need it.",
+      "appStorage.ts:3 should require VITE_API_BASE_URL (throw at module load when missing in a production build) or default to an https origin, and reject non-https bases outside dev, so credential-bearing POSTs cannot go cleartext. Keep the localhost default only for dev mode.",
+      "Add a prefers-reduced-motion gate: read matchMedia('(prefers-reduced-motion: reduce)') once and default the replay clock to paused (no auto-rAF) and the ambient animateMotion to static when reduce is set, per ADR-006. Modal.tsx:77 should filter the focusable query by visibility (offsetParent/getClientRects().length) and focus the first visible control instead of the dialog container. The ReplayStageOverlay speed menu should either implement arrow-key roving focus per the listbox pattern or drop the listbox/option roles and be a plain button menu.",
+      "index.html should carry a restrictive Content-Security-Policy meta including frame-ancestors 'none' (or the host should send the header); given recoveryCode/claimCode live in localStorage, also consider scoping those secrets to sessionStorage. Keep the CSP compatible with the inlined Vite assets.",
+      "Data model: add @@index([teamId]) to RaceDecision; model rivalTeamId as a real relation to Team with onDelete: SetNull plus an index (or clean it up on team delete) so deleting a team cannot leave a dangling rival the sim reads; convert status/kind/cadence/approach/preparation/pitStrategy to Prisma enums or add CHECK constraints so an invalid value cannot persist and crash the as RaceInput casts; and split the profileId index into a CREATE INDEX CONCURRENTLY migration run outside a transaction so db:deploy does not write-lock teams on a populated database.",
+      "config.ts should throw on missing WEB_ORIGIN and DATABASE_URL outside development (fail fast rather than silently defaulting to localhost), and render.yaml should declare ADMIN_TOKEN and ADMIN_EMAILS so the admin routes and admin flag work in production. Keep the dev defaults for local runs.",
+      "Out of scope: full session auth or CSRF tokens (the claim-code model stays); rewriting the replay animation; broad schema migration beyond the referenced columns; new dependencies or a rate-limit/CSP infrastructure layer."
+    ],
+    "acceptance_criteria": [
+      "AC1: submitDecision and sellCard re-validate card ownership/in-use state inside their locked transactions on a fresh read, and a Postgres integration test proves a concurrent sell-then-submit cannot attach or keep an invalid card.",
+      "AC2: Livery colors are sanitized before map injection, the recovery code is never interpolated into announced or persisted status text, non-https API bases are refused in production, and index.html carries a CSP with frame-ancestors restriction.",
+      "AC3: The replay honors prefers-reduced-motion (defaults to no auto-motion when reduce is set), the modal focus trap skips hidden elements and focuses the first visible control, and the speed menu either implements listbox keyboard navigation or drops the listbox roles.",
+      "AC4: RaceDecision.teamId is indexed, rivalTeamId is a FK/relation with onDelete handling and an index, the enum-like columns are DB-constrained, and the profileId index migration runs without write-locking teams.",
+      "AC5: The API fails fast on missing WEB_ORIGIN/DATABASE_URL outside development, and render.yaml declares ADMIN_TOKEN and ADMIN_EMAILS.",
+      "AC6: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass, and the Postgres integration lane stays green."
+    ]
+  },
+  "product": {
+    "title": "Post-Remediation Hardening Product Brief",
+    "overview": "After the three review-driven remediation passes (req_085/req_086/req_087) all shipped, a fourth audit of the not-yet-reviewed surfaces found a final concurrency axis plus client-security, accessibility, data-model, and config hardening. This request closes the submit-vs-sell card race, sanitizes and protects client-side secrets and rendering, meets an accessibility baseline for the replay, tightens the RaceDecision data model, and makes production config fail fast instead of silently misconfiguring.",
+    "goals": [
+      "No concurrent operation can attach or keep an invalid card on a plan.",
+      "The web client does not leak credentials, inject unsanitized user values, or ship cleartext in production.",
+      "The replay respects reduced-motion and its dialogs and menus are keyboard-accessible.",
+      "The RaceDecision model has the indexes, FKs, and constraints its access patterns require.",
+      "Production cannot boot into a silently broken CORS or admin configuration."
+    ],
+    "non_goals": [
+      "Do not add session auth, CSRF tokens, or replace the claim-code model.",
+      "Do not rewrite the replay animation or trace format.",
+      "Do not migrate schema columns beyond the referenced RaceDecision/enum fields.",
+      "Do not add new dependencies or a CSP/rate-limit infrastructure service.",
+      "Do not redesign any screen; accessibility work is behavior, not visual."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Close the submit-vs-sell card race",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "API integrity",
+      "request_acs": ["AC1", "AC6"],
+      "problem": [
+        "submitDecision's card-ownership guard (store.ts:538) reads team.cards from the pre-transaction requireTeamClaim read (store.ts:532) and is not re-checked inside runWrite; submitDecision locks the GP row while sellCard locks the team row, so a concurrent sell-then-submit can attach a just-sold card to the plan.",
+        "sellCard's in-use guards (store.ts:433-438) are the mirror image and only sell-vs-sell is covered by app.postgres.test.ts; sell-vs-submit is uncovered."
+      ],
+      "scope_in": [
+        "Move the card-ownership and qualifying-lock checks in submitDecision inside the runWrite block on a fresh team read, and take lockTeamRow so submit and sell serialize on the same row.",
+        "Re-validate sellCard's in-use guards (current decisions and qualifying lock) against fresh state inside its transaction.",
+        "Add a sell-vs-submit Postgres integration test alongside the existing sell-vs-sell coverage."
+      ],
+      "scope_out": [
+        "Changing the claim-code model or the decision API shape.",
+        "Reworking the GP-lock/resolve path already fixed in req_085.",
+        "Locking unrelated write paths."
+      ],
+      "acceptance_criteria": [
+        "AC1: submitDecision and sellCard re-check card validity inside their locked transactions on a fresh read.",
+        "AC2: A concurrent sell-then-submit cannot attach or keep an invalid card, proven by an integration test.",
+        "AC3: The existing concurrency tests stay green."
+      ]
+    },
+    {
+      "title": "Client security and privacy hardening",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Web security",
+      "request_acs": ["AC2", "AC6"],
+      "problem": [
+        "CircuitMap.tsx:456 injects car.livery.primary/secondary into CSS vars unsanitized, while LiveryPlate.tsx:6-13 sanitizes identical values via safeHex.",
+        "copyProfileCode (sessionActions.ts:126) interpolates the raw recovery code into the aria-live status and notification history.",
+        "API_BASE_URL (appStorage.ts:3) falls back to plaintext http, so a missing build env posts credentials over cleartext.",
+        "index.html has no CSP/frame-ancestors, so the app is iframe-embeddable while recoveryCode/claimCode persist in localStorage."
+      ],
+      "scope_in": [
+        "Sanitize both livery values through the shared safeHex helper before building the map carStyle.",
+        "Show a generic copied confirmation and never interpolate the recovery code into announced or persisted status text.",
+        "Require VITE_API_BASE_URL (or default to https) and refuse non-https bases outside dev.",
+        "Add a restrictive CSP meta with frame-ancestors 'none' to index.html and consider scoping the stored secrets to sessionStorage."
+      ],
+      "scope_out": [
+        "Full session auth or CSRF tokens.",
+        "A server-side CSP/header infrastructure layer beyond the meta and Render config.",
+        "Changing the invite/claim-code format."
+      ],
+      "acceptance_criteria": [
+        "AC1: Livery colors are sanitized before map injection.",
+        "AC2: The recovery code never appears in announced or logged status text.",
+        "AC3: Non-https API bases are refused in production builds.",
+        "AC4: index.html carries a CSP restricting frame-ancestors."
+      ]
+    },
+    {
+      "title": "Replay and dialog accessibility baseline",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Accessibility",
+      "request_acs": ["AC3", "AC6"],
+      "problem": [
+        "useReplayClock auto-plays via requestAnimationFrame (useReplayClock.ts:128) and CircuitMap ambient cars use SVG animateMotion (CircuitMap.tsx:484); neither consults prefers-reduced-motion and the CSS reduce-block only disables decorative accents.",
+        "Modal.tsx:77 selects focusable elements without filtering hidden/zero-size ones and focuses the dialog container rather than the first control.",
+        "The replay speed menu (ReplayStageOverlay.tsx:312-327) uses role=listbox/option with no keyboard navigation."
+      ],
+      "scope_in": [
+        "Read matchMedia('(prefers-reduced-motion: reduce)') once and default the replay clock to paused and the ambient animation to static when reduce is set (ADR-006).",
+        "Filter the modal focusable query by visibility and focus the first visible interactive control.",
+        "Give the speed menu arrow-key roving focus per the listbox pattern, or drop the listbox/option roles for a plain button menu."
+      ],
+      "scope_out": [
+        "Restyling the replay or modals.",
+        "A broader a11y audit of every screen.",
+        "Changing the replay timing model."
+      ],
+      "acceptance_criteria": [
+        "AC1: With reduce-motion set, the replay does not auto-animate and ambient motion is static.",
+        "AC2: The modal focus trap skips hidden elements and focuses the first visible control.",
+        "AC3: The speed menu is keyboard-navigable or no longer advertises listbox semantics it does not implement."
+      ]
+    },
+    {
+      "title": "RaceDecision data-model integrity",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Data model",
+      "request_acs": ["AC4", "AC6"],
+      "problem": [
+        "RaceDecision.teamId has no standalone index (schema.prisma:93); the composite unique cannot lead on teamId, so the cascade and teamId filters seq-scan.",
+        "RaceDecision.rivalTeamId (schema.prisma:98) stores a Team id with no FK/relation/onDelete/index, leaving dangling references the sim consumes.",
+        "status/kind/cadence/approach/preparation/pitStrategy are free-text String with no DB constraint, so an invalid value can persist and crash the as RaceInput casts.",
+        "The profileId index migration uses non-concurrent CREATE INDEX, write-locking teams during db:deploy."
+      ],
+      "scope_in": [
+        "Add @@index([teamId]) to RaceDecision.",
+        "Model rivalTeamId as a relation to Team with onDelete: SetNull plus an index (or clean it up on team delete).",
+        "Convert the enum-like columns to Prisma enums or add CHECK constraints.",
+        "Split the profileId index into a CREATE INDEX CONCURRENTLY migration run outside a transaction."
+      ],
+      "scope_out": [
+        "Migrating qualifyingRuns/cards/result JSON columns to dedicated tables.",
+        "Broad re-indexing beyond the RaceDecision references.",
+        "Changing the simulation's consumption of these fields beyond the safety the constraints add."
+      ],
+      "acceptance_criteria": [
+        "AC1: RaceDecision.teamId is indexed and rivalTeamId is a FK/relation with onDelete handling and an index.",
+        "AC2: The enum-like columns are DB-constrained so an invalid value cannot persist.",
+        "AC3: The profileId index migration deploys without write-locking teams, and prisma migrate deploy is clean."
+      ]
+    },
+    {
+      "title": "Required-env validation and admin config",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Config integrity",
+      "request_acs": ["AC5", "AC6"],
+      "problem": [
+        "config.ts (16-35) silently defaults WEB_ORIGIN to localhost, so a missing prod env makes CORS reject the real frontend with no startup error (app.ts:22-32).",
+        "render.yaml never sets ADMIN_TOKEN/ADMIN_EMAILS, so admin token routes 503 and the admin flag is never granted in production."
+      ],
+      "scope_in": [
+        "Throw at startup on missing WEB_ORIGIN and DATABASE_URL outside development so misconfiguration fails fast.",
+        "Declare ADMIN_TOKEN and ADMIN_EMAILS in render.yaml (as sync:false secrets / configured values) so the admin surface works in production.",
+        "Keep the dev defaults for local runs."
+      ],
+      "scope_out": [
+        "A full config schema/validation library.",
+        "Changing the admin authentication mechanism.",
+        "Adding new runtime secrets beyond the admin envs."
+      ],
+      "acceptance_criteria": [
+        "AC1: The API fails fast with a clear error on missing WEB_ORIGIN or DATABASE_URL outside development.",
+        "AC2: render.yaml declares ADMIN_TOKEN and ADMIN_EMAILS.",
+        "AC3: Local development still runs on the existing defaults."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate post-remediation hardening",
+    "plan": [
+      "Read req_085/req_086/req_087 first; this pass builds on their landed locking, integrity, and fidelity work and must not regress the Postgres integration lane.",
+      "Close the submit-vs-sell race: re-validate card ownership inside the locked transactions, serialize submit/sell on the team row, and add the sell-vs-submit integration test.",
+      "Harden the client: sanitize livery colors, stop leaking the recovery code, refuse non-https API bases, and add the CSP/frame-ancestors baseline.",
+      "Add the accessibility baseline: prefers-reduced-motion gating, the modal focus-trap fix, and the speed-menu keyboard behavior.",
+      "Tighten the data model: RaceDecision teamId index, rivalTeamId FK/relation, enum constraints, and the concurrent profileId index migration.",
+      "Add required-env validation and declare the admin envs in render.yaml.",
+      "Run typecheck, tests, build, lint, e2e, the Postgres lane, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/post-remediation-hardening.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

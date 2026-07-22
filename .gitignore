@@ -16,3 +16,4 @@ coverage/
 logics/external/
 
 __pycache__/
+tmp/

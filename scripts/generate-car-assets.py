@@ -40,6 +40,7 @@ WHITE_MIN = 190       # min of RGB for "bright"
 WHITE_SAT_MAX = 40    # max(RGB)-min(RGB) for "near-neutral"
 RED_MIN = 120         # red floor
 RED_MARGIN = 55       # how much R must beat G and B
+TIRE_DARK_MAX = 70    # max(RGB) ceiling for "near-black tyre" (side wheel hub centres)
 LIGHT_BAND_FRAC = 0.16  # fraction of car length at each end searched for lights
 BAND_GAP = 15         # min transparent rows separating the top view from the side view
 
@@ -117,6 +118,7 @@ def analyze_view(rgb, mask, box, max_lights):
     mx = np.maximum(np.maximum(r, g), b)
     white = m & (mn > WHITE_MIN) & (mx - mn < WHITE_SAT_MAX)
     red = m & (r > RED_MIN) & (r - g > RED_MARGIN) & (r - b > RED_MARGIN)
+    dark = m & (mx < TIRE_DARK_MAX)  # near-black tyres, for side wheel hub centres
 
     xs = np.argwhere(m)[:, 1]
     xmin, xmax = int(xs.min()), int(xs.max())
@@ -168,12 +170,14 @@ def analyze_view(rgb, mask, box, max_lights):
             "method": method,
         },
     }
-    return crop, view, m, front_low
+    return crop, view, m, front_low, dark
 
 
-def detect_side_wheels(m, front_low):
+def detect_side_wheels(m, front_low, dark):
     """Ground contacts from the bottom alpha edge: the two widest column-clusters touching
-    the lowest row are the front and rear wheels. Returns (points, {axle: frac-from-front})."""
+    the lowest row are the front and rear wheels. Each point also carries the hub centre
+    (`center_x`/`center_y`), taken as the centroid of the near-black tyre disc above the
+    contact. Returns (points, {axle: frac-from-front})."""
     H, W = m.shape
     bottom = np.where(m.any(axis=0), (m * np.arange(H)[:, None]).max(axis=0), -1)
     ground = int(bottom.max())
@@ -189,10 +193,17 @@ def detect_side_wheels(m, front_low):
     length = max(1.0, xmax - xmin)
     xfront = xmin if front_low else xmax
     labels = ["front", "rear"] if front_low else ["rear", "front"]
+    win = max(8, int(0.09 * W))
     pts, fracs = [], {}
     for lab, g in zip(labels, groups):
         x = int(g.mean())
-        pts.append({"wheel": lab, "x": x, "y": ground})
+        cx, cy = x, ground  # fall back to the contact if the tyre isn't isolated
+        reg = dark[int(0.45 * H):, max(0, x - win):x + win]
+        ty, tx = np.where(reg)
+        if len(tx) > 50:
+            cx = int(tx.mean() + max(0, x - win))
+            cy = int(ty.mean() + int(0.45 * H))
+        pts.append({"wheel": lab, "x": x, "y": ground, "center_x": cx, "center_y": cy})
         fracs[lab] = abs(x - xfront) / length
     return pts, fracs
 
@@ -232,14 +243,14 @@ def process_source(src_path):
     for name, (yb0, yb1) in zip(("top", "side"), bands):  # top view is the upper band
         cols = np.where(mask[yb0:yb1 + 1].sum(axis=0) > 5)[0]
         raw[name] = analyze_view(rgb, mask, (int(cols[0]), yb0, int(cols[-1]), yb1), max_lights[name])
-    # Wheels: side from bottom-alpha clusters, top mapped from the side fractions.
-    side_wheels, fracs = detect_side_wheels(raw["side"][2], raw["side"][3])
+    # Wheels: side from bottom-alpha clusters (+ hub centre), top mapped from the side fractions.
+    side_wheels, fracs = detect_side_wheels(raw["side"][2], raw["side"][3], raw["side"][4])
     top_wheels = detect_top_wheels(raw["top"][2], fracs, raw["top"][3])
     wheels = {"side": (side_wheels, "auto-bottom-alpha-clusters"),
               "top": (top_wheels, "auto-side-frac-mapped-to-top-lateral")}
     views = {}
     for name in ("top", "side"):
-        crop, view, _, _ = raw[name]
+        crop, view = raw[name][0], raw[name][1]
         pts, method = wheels[name]
         views[name] = (crop, {**view, "wheel_contacts": pts, "wheel_contact_method": method})
     return views
@@ -290,7 +301,11 @@ def overlay(crop, view):
     dot(view["rear_point"], (180, 120, 255, 255), r=9)  # purple = tail
     for wc in view.get("wheel_contacts", []):
         x, y = wc["x"], wc["y"]
-        dr.rectangle([x - 6, y - 6, x + 6, y + 6], outline=(50, 230, 80, 255), width=3)  # green = wheel contact
+        dr.rectangle([x - 6, y - 6, x + 6, y + 6], outline=(50, 230, 80, 255), width=3)  # green = ground contact
+        if "center_x" in wc:
+            cx, cy = wc["center_x"], wc["center_y"]
+            dr.line([cx - 7, cy, cx + 7, cy], fill=(120, 255, 140, 255), width=3)          # light-green cross = hub centre
+            dr.line([cx, cy - 7, cx, cy + 7], fill=(120, 255, 140, 255), width=3)
     return img
 
 

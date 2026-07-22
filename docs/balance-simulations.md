@@ -48,14 +48,14 @@ Run the AI playtest when you want many simulated players to play seasons and pro
 
 ```bash
 npm run playtest:ai
-npm run playtest:ai -- --agents 50 --seasons 3 --rounds 6 --report reports/playtest/latest-ai.md --json reports/playtest/latest-ai.json
+npm run playtest:ai -- --agents 50 --seasons 3 --rounds 6 --report docs/audits/playtest-ai.md --json docs/audits/playtest-ai.json
 ```
 
 What it adds on top of `balance:sim`:
 
-- multiple AI profiles with different approach, preparation, pit, and buying habits;
+- multiple AI profiles, including deterministic edge-case profiles for all-in attack, economy hoarding, rain gambling, no-card saving, rival targeting, mini-pack spam, endurance conservatism, and a random-valid baseline;
 - inventory use, card consumption, and card purchases between GP;
-- season standings, champions, card trigger rates, dead-card checks, and profile win rates;
+- season standings, champions, card trigger rates, card impact, dead-card checks, profile win rates, average position delta, position distribution, net credits after purchases, and canonical track-zone usage;
 - deterministic fun/frustration scores from finish position and concrete race events.
 
 Use the alerts this way:
@@ -63,5 +63,7 @@ Use the alerts this way:
 - `dominant profile` means one AI style is probably too efficient across circuits;
 - `dead card trigger` means a card was played but never produced an event;
 - `never played` means the simulated profile mix did not cover that card.
+- `swingy card` means the average position impact of triggered card events is large enough to inspect.
+- `missing zone coverage` means race events are escaping canonical track-zone metadata.
 
 This is still a mechanics runner. Use `npm run playtest:simulate` for API workflow pressure and browser QA for layout, animation, copy, and replay feel.

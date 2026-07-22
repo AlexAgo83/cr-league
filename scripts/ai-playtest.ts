@@ -24,6 +24,7 @@ type AgentProfile = {
   preparation: TechnicalPreparation;
   pitStrategy: PitStrategy;
   buy: CardId[];
+  mode?: "all_in" | "hoarder" | "rain_gambler" | "no_card" | "rival_tunnel" | "mini_spam" | "endurance" | "random";
 };
 
 type Agent = {
@@ -40,6 +41,9 @@ type Agent = {
   positionSum: number;
   pointsSum: number;
   creditsSum: number;
+  creditsSpent: number;
+  positionDeltaSum: number;
+  positionCounts: number[];
   fun: number;
   frustration: number;
 };
@@ -51,6 +55,9 @@ type Counter = {
   positionSum: number;
   points: number;
   credits: number;
+  creditsSpent: number;
+  positionDeltaSum: number;
+  positionCounts: number[];
   fun: number;
   frustration: number;
 };
@@ -60,20 +67,35 @@ type CardRow = {
   played: number;
   triggered: number;
   bought: number;
+  avgImpact: number;
   triggerRate: number;
 };
 
+type ZoneRow = {
+  zone: string;
+  events: number;
+  major: number;
+};
+
+const cardIds = Object.keys(CARD_DEFINITIONS) as CardId[];
 const profiles: AgentProfile[] = [
   { name: "sprinter", approach: "aggressive", preparation: "speed", pitStrategy: "standard", buy: ["launch_boost", "soft_tires", "adjustable_wing"] },
   { name: "rain-reader", approach: "balanced", preparation: "weather", pitStrategy: "standard", buy: ["rain_grip", "rain_mapping", "fleet_maintenance"] },
   { name: "banker", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["fleet_sponsorship", "economy_mode", "hard_tires"] },
   { name: "closer", approach: "balanced", preparation: "speed", pitStrategy: "standard", buy: ["final_surge", "calculated_attack", "pit_relay"] },
   { name: "defender", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["defensive_order", "hard_tires", "pit_relay"] },
-  { name: "rival-hunter", approach: "aggressive", preparation: "speed", pitStrategy: "standard", buy: ["urban_draft", "calculated_attack", "qualifying_focus"] }
+  { name: "rival-hunter", approach: "aggressive", preparation: "speed", pitStrategy: "standard", buy: ["urban_draft", "calculated_attack", "qualifying_focus"] },
+  { name: "all-in-attack", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", buy: ["launch_boost", "soft_tires", "calculated_attack"], mode: "all_in" },
+  { name: "economy-hoarder", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["economy_mode", "fleet_sponsorship"], mode: "hoarder" },
+  { name: "rain-gambler", approach: "aggressive", preparation: "weather", pitStrategy: "standard", buy: ["rain_grip", "rain_mapping"], mode: "rain_gambler" },
+  { name: "no-card-saver", approach: "balanced", preparation: "reliability", pitStrategy: "standard", buy: [], mode: "no_card" },
+  { name: "tunnel-rival", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", buy: ["urban_draft", "calculated_attack"], mode: "rival_tunnel" },
+  { name: "mini-spammer", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", buy: ["soft_tires", "adjustable_wing", "pit_relay"], mode: "mini_spam" },
+  { name: "endurance-conservative", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["hard_tires", "fleet_maintenance", "defensive_order"], mode: "endurance" },
+  { name: "random-baseline", approach: "balanced", preparation: "speed", pitStrategy: "standard", buy: cardIds, mode: "random" }
 ];
 
 const args = parseArgs();
-const cardIds = Object.keys(CARD_DEFINITIONS) as CardId[];
 const agents = Array.from({ length: args.agents }, (_, index) => ({
   id: `agent_${index + 1}`,
   name: `AI ${String(index + 1).padStart(2, "0")}`,
@@ -88,6 +110,9 @@ const agents = Array.from({ length: args.agents }, (_, index) => ({
   positionSum: 0,
   pointsSum: 0,
   creditsSum: 0,
+  creditsSpent: 0,
+  positionDeltaSum: 0,
+  positionCounts: [],
   fun: 0,
   frustration: 0
 }));
@@ -98,7 +123,9 @@ const pitStats = new Map<PitStrategy, Counter>([
   ["standard", emptyCounter()],
   ["mini_pack", emptyCounter()]
 ]);
-const cardStats = new Map(cardIds.map((cardId) => [cardId, { played: 0, triggered: 0, bought: 0 }]));
+const cardStats = new Map(cardIds.map((cardId) => [cardId, { played: 0, triggered: 0, bought: 0, impact: 0 }]));
+const zoneStats = new Map<string, { events: number; major: number }>();
+let missingZoneEvents = 0;
 const incidents: string[] = [];
 const champions: string[] = [];
 
@@ -123,8 +150,9 @@ const profileRows = rows(profileStats);
 const approachRows = rows(approachStats);
 const cardRows: CardRow[] = [...cardStats.entries()].map(([card, stats]) => {
   const triggered = Math.min(stats.triggered, stats.played);
-  return { card, played: stats.played, triggered, bought: stats.bought, triggerRate: pct(triggered / Math.max(1, stats.played)) };
+  return { card, played: stats.played, triggered, bought: stats.bought, avgImpact: round(stats.impact / Math.max(1, stats.triggered)), triggerRate: pct(triggered / Math.max(1, stats.played)) };
 });
+const zoneRows: ZoneRow[] = [...zoneStats.entries()].map(([zone, stats]) => ({ zone, ...stats })).sort((left, right) => right.events - left.events || left.zone.localeCompare(right.zone));
 const alertRows = alerts(profileRows, cardRows);
 const payload = {
   args,
@@ -134,6 +162,8 @@ const payload = {
   approaches: approachRows,
   pits: rows(pitStats),
   cards: cardRows,
+  zones: zoneRows,
+  missingZoneEvents,
   agents: agents.map((agent) => row(agent.name, counterFromAgent(agent))),
   alerts: alertRows
 };
@@ -188,6 +218,8 @@ function runRace(season: number, round: number, circuit: CityCircuitIdentity, gr
     agent.pointsSum += entry.points;
     agent.credits += entry.credits;
     agent.creditsSum += entry.credits;
+    agent.positionDeltaSum += entry.positionChange;
+    agent.positionCounts[entry.position] = (agent.positionCounts[entry.position] ?? 0) + 1;
     agent.fun += raceFun;
     agent.frustration += raceFrustration;
     addCounter(profileStats.get(agent.profile.name)!, entry, raceFun, raceFrustration);
@@ -199,7 +231,19 @@ function runRace(season: number, round: number, circuit: CityCircuitIdentity, gr
     if (participant.decision.cardId) cardStats.get(participant.decision.cardId)!.played += 1;
   }
   for (const event of result.events) {
-    if (event.cardId) cardStats.get(event.cardId)!.triggered += 1;
+    if (event.cardId) {
+      const stats = cardStats.get(event.cardId)!;
+      stats.triggered += 1;
+      stats.impact += event.positionDelta;
+    }
+    if (event.zoneLabel) {
+      const stats = zoneStats.get(event.zoneLabel) ?? { events: 0, major: 0 };
+      stats.events += 1;
+      stats.major += event.severity === "major" ? 1 : 0;
+      zoneStats.set(event.zoneLabel, stats);
+    } else {
+      missingZoneEvents += 1;
+    }
   }
   for (const consumed of result.consumedCards) {
     const agent = group.find((candidate) => candidate.id === consumed.teamId);
@@ -211,19 +255,36 @@ function runRace(season: number, round: number, circuit: CityCircuitIdentity, gr
 
 function decisionFor(agent: Agent, circuit: CityCircuitIdentity, ranked: Agent[]): RaceDecision {
   const cardId = playableCard(agent, circuit);
-  const rival = ranked.find((candidate) => candidate.id !== agent.id && candidate.points >= agent.points)?.id;
+  const rival = agent.profile.mode === "rival_tunnel"
+    ? ranked.find((candidate) => candidate.id !== agent.id)?.id
+    : ranked.find((candidate) => candidate.id !== agent.id && candidate.points >= agent.points)?.id;
   return {
-    approach: agent.profile.approach,
-    preparation: circuit.likelyWeather === "dry" ? agent.profile.preparation : "weather",
+    approach: approachFor(agent, circuit),
+    preparation: preparationFor(agent, circuit),
     pitStrategy: pitStrategyFor(agent, circuit),
     cardId,
     rivalTeamId: cardId === "urban_draft" || cardId === "calculated_attack" ? rival : undefined
   };
 }
 
+function approachFor(agent: Agent, circuit: CityCircuitIdentity): RaceApproach {
+  if (agent.profile.mode !== "random") return agent.profile.approach;
+  return RACE_APPROACHES[(agent.starts + circuit.city.length) % RACE_APPROACHES.length]!;
+}
+
+function preparationFor(agent: Agent, circuit: CityCircuitIdentity): TechnicalPreparation {
+  if (agent.profile.mode === "rain_gambler") return "weather";
+  if (agent.profile.mode !== "random") return circuit.likelyWeather === "dry" ? agent.profile.preparation : "weather";
+  return ["speed", "reliability", "weather"][(agent.starts + circuit.country.length) % 3] as TechnicalPreparation;
+}
+
 function pitStrategyFor(agent: Agent, circuit: CityCircuitIdentity): PitStrategy {
   const wantsAttack = circuit.traits.overtaking >= 72;
   const wantsEndurance = circuit.traits.energy <= 58 || circuit.trackLengthMeters >= 5600;
+  if (agent.profile.mode === "mini_spam") return "mini_pack";
+  if (agent.profile.mode === "all_in" && circuit.likelyWeather !== "heavy_rain") return "mini_pack";
+  if (agent.profile.mode === "endurance" || agent.profile.mode === "hoarder") return "heavy_pack";
+  if (agent.profile.mode === "random") return ["heavy_pack", "standard", "mini_pack"][(agent.starts + circuit.layoutKey.length) % 3] as PitStrategy;
   if (circuit.likelyWeather === "heavy_rain") return "standard";
   if ((agent.profile.name === "sprinter" || agent.profile.name === "rival-hunter") && wantsAttack) return "mini_pack";
   if ((agent.profile.name === "banker" || agent.profile.name === "defender") && wantsEndurance) return "heavy_pack";
@@ -232,20 +293,24 @@ function pitStrategyFor(agent: Agent, circuit: CityCircuitIdentity): PitStrategy
 }
 
 function playableCard(agent: Agent, circuit: CityCircuitIdentity) {
+  if (agent.profile.mode === "no_card") return undefined;
+  if (agent.profile.mode === "random") return agent.cards[(agent.starts + circuit.city.length) % Math.max(1, agent.cards.length)];
   const useful = agent.cards.filter((card) => {
-    if ((card === "rain_grip" || card === "rain_mapping") && circuit.likelyWeather === "dry") return false;
+    if (agent.profile.mode !== "rain_gambler" && (card === "rain_grip" || card === "rain_mapping") && circuit.likelyWeather === "dry") return false;
     return agent.profile.buy.includes(card);
   });
   return useful.sort((left, right) => cardStats.get(left)!.played - cardStats.get(right)!.played)[0] ?? agent.cards[0];
 }
 
 function buyNextCard(agent: Agent) {
+  if (agent.profile.mode === "no_card") return;
   for (let offset = 0; offset < agent.profile.buy.length; offset += 1) {
     const index = (agent.nextBuyIndex + offset) % agent.profile.buy.length;
     const candidate = agent.profile.buy[index]!;
     if (CARD_PRICES[candidate] > agent.credits) continue;
+    if (agent.profile.mode === "hoarder" && agent.credits - CARD_PRICES[candidate] < 300) continue;
     agent.nextBuyIndex = (index + 1) % agent.profile.buy.length;
-    agent.credits -= CARD_PRICES[candidate];
+    spendCredits(agent, CARD_PRICES[candidate]);
     agent.cards.push(candidate);
     cardStats.get(candidate)!.bought += 1;
     return;
@@ -254,9 +319,15 @@ function buyNextCard(agent: Agent) {
     .filter((candidate) => CARD_PRICES[candidate] <= agent.credits)
     .sort((left, right) => cardStats.get(left)!.bought - cardStats.get(right)!.bought)[0];
   if (!cardId) return;
-  agent.credits -= CARD_PRICES[cardId];
+  spendCredits(agent, CARD_PRICES[cardId]);
   agent.cards.push(cardId);
   cardStats.get(cardId)!.bought += 1;
+}
+
+function spendCredits(agent: Agent, credits: number) {
+  agent.credits -= credits;
+  agent.creditsSpent += credits;
+  profileStats.get(agent.profile.name)!.creditsSpent += credits;
 }
 
 function funScore(position: number, result: RaceResult, teamId: string) {
@@ -274,11 +345,14 @@ function alerts(profileRows: ReturnType<typeof rows>, cardRows: CardRow[]) {
   const raceEventCards = new Set<CardId>(cardIds.filter((cardId) => cardId !== "qualifying_focus"));
   const avgWin = profileRows.reduce((sum, item) => sum + item.winRate, 0) / Math.max(1, profileRows.length);
   const avgPlayed = cardRows.reduce((sum, item) => sum + item.played, 0) / Math.max(1, cardRows.length);
+  const missingZoneRate = missingZoneEvents / Math.max(1, zoneRows.reduce((sum, row) => sum + row.events, 0) + missingZoneEvents);
   const found = profileRows.filter((item) => item.winRate >= avgWin + 15).map((item) => `dominant profile: ${item.name} win ${item.winRate}% vs avg ${round(avgWin)}%`);
   found.push(...profileRows.filter((item) => item.winRate <= avgWin - 10 || item.fun < 5).map((item) => `weak profile: ${item.name} win ${item.winRate}%, fun ${item.fun}`));
   found.push(...cardRows.filter((item) => item.played >= Math.max(30, avgPlayed * 3)).map((item) => `overplayed card: ${item.card} played ${item.played} times`));
   found.push(...cardRows.filter((item) => raceEventCards.has(item.card) && item.played >= 5 && item.triggered === 0).map((item) => `dead card trigger: ${item.card} played ${item.played} times, triggered 0`));
+  found.push(...cardRows.filter((item) => item.triggered >= 5 && Math.abs(item.avgImpact) >= 12).map((item) => `swingy card: ${item.card} avg impact ${item.avgImpact}`));
   found.push(...cardRows.filter((item) => item.played === 0).map((item) => `never played: ${item.card}`));
+  if (missingZoneRate > 0.05) found.push(`missing zone coverage: ${pct(missingZoneRate)}% of events`);
   if (incidents.length) found.push(...incidents);
   return found.length ? found : ["none"];
 }
@@ -302,10 +376,14 @@ function writeReport(path: string) {
         ...payload.alerts.map((alert) => `- ${alert === "none" ? "PASS: no automatic balance or replay alert." : `CHECK: ${alert}`}`),
         "",
         "## Strategy Profiles",
-        table(["Profile", "Starts", "Win %", "Podium %", "Avg pos", "Pts/race", "Credits/race", "Fun", "Frustration"], profileRows.map((item) => [item.name, item.starts, item.winRate, item.podiumRate, item.avgPosition, item.points, item.credits, item.fun, item.frustration])),
+        table(["Profile", "Starts", "Win %", "Podium %", "Avg pos", "Avg +/-", "Pos dist", "Pts/race", "Credits/race", "Net credits", "Fun", "Frustration"], profileRows.map((item) => [item.name, item.starts, item.winRate, item.podiumRate, item.avgPosition, item.avgDelta, item.positionDistribution, item.points, item.credits, item.netCredits, item.fun, item.frustration])),
         "",
         "## Cards",
-        table(["Card", "Bought", "Played", "Triggered", "Trigger %"], cardRows.map((item) => [item.card, item.bought, item.played, item.triggered, item.triggerRate])),
+        table(["Card", "Bought", "Played", "Triggered", "Trigger %", "Avg impact"], cardRows.map((item) => [item.card, item.bought, item.played, item.triggered, item.triggerRate, item.avgImpact])),
+        "",
+        "## Track Zones",
+        table(["Zone", "Events", "Major"], payload.zones.map((item) => [item.zone, item.events, item.major])),
+        `Missing zone events: ${payload.missingZoneEvents}`,
         "",
         "## Approach Mix",
         table(["Approach", "Starts", "Win %", "Podium %", "Avg pos", "Pts/race"], payload.approaches.map((item) => [item.name, item.starts, item.winRate, item.podiumRate, item.avgPosition, item.points])),
@@ -317,7 +395,7 @@ function writeReport(path: string) {
         ...champions.map((name, index) => `- Season ${index + 1}: ${name}`),
         "",
         "## Notes",
-        "- Fun and frustration are deterministic scores from finish position plus concrete race events.",
+        "- Fun, frustration, average delta, card impact, and zone usage are deterministic scores from finish position plus concrete race events.",
         "- This is a mechanics runner; use browser QA for layout, animation, and copy."
       ].join("\n") + "\n",
       "utf8"
@@ -326,7 +404,7 @@ function writeReport(path: string) {
 }
 
 function emptyCounter(): Counter {
-  return { starts: 0, wins: 0, podiums: 0, positionSum: 0, points: 0, credits: 0, fun: 0, frustration: 0 };
+  return { starts: 0, wins: 0, podiums: 0, positionSum: 0, points: 0, credits: 0, creditsSpent: 0, positionDeltaSum: 0, positionCounts: [], fun: 0, frustration: 0 };
 }
 
 function counterFromAgent(agent: Agent): Counter {
@@ -337,6 +415,9 @@ function counterFromAgent(agent: Agent): Counter {
     positionSum: agent.positionSum,
     points: agent.pointsSum,
     credits: agent.creditsSum,
+    creditsSpent: agent.creditsSpent,
+    positionDeltaSum: agent.positionDeltaSum,
+    positionCounts: agent.positionCounts,
     fun: agent.fun,
     frustration: agent.frustration
   };
@@ -349,6 +430,8 @@ function addCounter(counter: Counter, entry: RaceResult["classification"][number
   counter.positionSum += entry.position;
   counter.points += entry.points;
   counter.credits += entry.credits;
+  counter.positionDeltaSum += entry.positionChange;
+  counter.positionCounts[entry.position] = (counter.positionCounts[entry.position] ?? 0) + 1;
   counter.fun += fun;
   counter.frustration += frustration;
 }
@@ -364,11 +447,21 @@ function row(name: string, counter: Counter) {
     winRate: pct(counter.wins / Math.max(1, counter.starts)),
     podiumRate: pct(counter.podiums / Math.max(1, counter.starts)),
     avgPosition: round(counter.positionSum / Math.max(1, counter.starts)),
+    avgDelta: round(counter.positionDeltaSum / Math.max(1, counter.starts)),
+    positionDistribution: positionDistribution(counter.positionCounts),
     points: round(counter.points / Math.max(1, counter.starts)),
     credits: round(counter.credits / Math.max(1, counter.starts)),
+    netCredits: round((counter.credits - counter.creditsSpent) / Math.max(1, counter.starts)),
     fun: round(counter.fun / Math.max(1, counter.starts)),
     frustration: round(counter.frustration / Math.max(1, counter.starts))
   };
+}
+
+function positionDistribution(counts: number[]) {
+  return counts
+    .map((count, position) => count ? `P${position}:${count}` : "")
+    .filter(Boolean)
+    .join(" ");
 }
 
 function table(headers: string[], rows: Array<Array<string | number>>) {

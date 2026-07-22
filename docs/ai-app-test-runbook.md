@@ -17,7 +17,7 @@ For replay or simulation changes, add:
 ```bash
 npm run test:e2e
 npm run balance:sim -- --runs 300 --limit 10 --json reports/balance/latest.json
-npm run playtest:ai -- --agents 50 --seasons 3 --rounds 6 --report reports/playtest/latest-ai.md --json reports/playtest/latest-ai.json
+npm run playtest:ai -- --agents 50 --seasons 3 --rounds 6 --report docs/audits/playtest-ai.md --json docs/audits/playtest-ai.json
 ```
 
 For circuit route changes, add:

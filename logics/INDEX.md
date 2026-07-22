@@ -180,6 +180,7 @@
 | [req_091_modularize_the_oversized_leagues_store](request/req_091_modularize_the_oversized_leagues_store.md) | Modularize the oversized leagues store | Draft |  |  | request/req_091_modularize_the_oversized_leagues_store.md |
 | [req_092_admin_status_privacy_and_entry_bundle_hardening](request/req_092_admin_status_privacy_and_entry_bundle_hardening.md) | Admin-status privacy and entry-bundle hardening | Done |  |  | request/req_092_admin_status_privacy_and_entry_bundle_hardening.md |
 | [req_093_canonical_track_zones_for_spatial_race_simulation](request/req_093_canonical_track_zones_for_spatial_race_simulation.md) | Canonical track zones for spatial race simulation | Done |  |  | request/req_093_canonical_track_zones_for_spatial_race_simulation.md |
+| [req_094_enrich_ai_playtest_balance_runner](request/req_094_enrich_ai_playtest_balance_runner.md) | Enrich AI playtest balance runner | Done |  |  | request/req_094_enrich_ai_playtest_balance_runner.md |
 
 ## Backlog
 
@@ -398,6 +399,7 @@
 | [item_211_annotate_simulation_events_and_replay_facts_with_track_zones](backlog/item_211_annotate_simulation_events_and_replay_facts_with_track_zones.md) | Annotate simulation events and replay facts with track zones | Done |  | 100% | backlog/item_211_annotate_simulation_events_and_replay_facts_with_track_zones.md |
 | [item_212_consume_canonical_track_zones_in_replay_map_and_reports](backlog/item_212_consume_canonical_track_zones_in_replay_map_and_reports.md) | Consume canonical track zones in replay, map, and reports | Done |  | 100% | backlog/item_212_consume_canonical_track_zones_in_replay_map_and_reports.md |
 | [item_213_document_deferred_zone_driven_gameplay_tuning](backlog/item_213_document_deferred_zone_driven_gameplay_tuning.md) | Document deferred zone-driven gameplay tuning | Done |  | 100% | backlog/item_213_document_deferred_zone_driven_gameplay_tuning.md |
+| [item_214_enrich_ai_playtest_balance_runner](backlog/item_214_enrich_ai_playtest_balance_runner.md) | Enrich AI playtest balance runner | Done | codex | 100% | backlog/item_214_enrich_ai_playtest_balance_runner.md |
 
 ## Tasks
 
@@ -497,3 +499,4 @@
 | [task_092_orchestrate_leagues_store_modularization](tasks/task_092_orchestrate_leagues_store_modularization.md) | Orchestrate leagues store modularization | Ready |  | 0% | tasks/task_092_orchestrate_leagues_store_modularization.md |
 | [task_093_orchestrate_admin_privacy_and_entry_payload_hardening](tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md) | Orchestrate admin privacy and entry payload hardening | Done | codex | 100% | tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md |
 | [task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation](tasks/task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation.md) | Orchestrate canonical track zones for spatial race simulation | Done | codex | 100% | tasks/task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation.md |
+| [task_095_enrich_ai_playtest_balance_runner](tasks/task_095_enrich_ai_playtest_balance_runner.md) | Enrich AI playtest balance runner | Done | codex | 100% | tasks/task_095_enrich_ai_playtest_balance_runner.md |

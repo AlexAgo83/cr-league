@@ -11,6 +11,7 @@ import {
   displayLapAtProgress,
   eventTraceProgress,
   finishTimes,
+  isCanonicalReplayTrace,
   liveClassificationByCarProgress,
   playerReplayContext,
   replayPlayerGapItems,
@@ -267,6 +268,17 @@ describe("ReplayView timing", () => {
     expect(plan.source).toBe("facts");
     expect(plan.overtakes[0]?.phases.map((phase) => phase.phase)).toEqual(["setup", "close_gap", "overlap", "swap", "settle"]);
     expect(replayPlanDebugLines(plan)[0]).toContain("@ main straight");
+  });
+
+  it("marks generated car traces separately from legacy replay fallbacks", () => {
+    const generatedTrace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0, speed: 0, phase: "grid" }, last: { trackProgress: 0, speed: 0, phase: "grid" } } },
+      { segment: "finish", lap: 5, progress: 1, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 1, speed: 0, phase: "finished" }, last: { trackProgress: 1, speed: 0, phase: "finished" } } }
+    ];
+
+    expect(isCanonicalReplayTrace(generatedTrace)).toBe(true);
+    expect(buildReplayPlan(result, generatedTrace).source).toBe("trace");
+    expect(buildReplayPlan(result, []).source).toBe("fallback");
   });
 
   it("falls back to only grid and final director beats when replay facts are missing", () => {

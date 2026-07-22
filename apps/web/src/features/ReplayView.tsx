@@ -24,6 +24,7 @@ export {
   displayLapAtProgress,
   eventTraceProgress,
   finishTimes,
+  isCanonicalReplayTrace,
   liveClassificationByCarProgress,
   pitStopRaceProgress,
   pitStopTraceProgress,

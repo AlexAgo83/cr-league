@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 60%
+> Progress: 75%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -54,6 +54,8 @@
 - Wave 1 validation: `npm test -- packages/shared/src/simulation/simulateRace.test.ts apps/web/src/features/ReplayView.test.ts`, `npm run lint`, and `npm run typecheck` passed.
 - Wave 2: added `npm run replay:inspect` for deterministic replay trace inspection across Prague, Monaco, and Montreal. Output includes trace point counts, phases, sample live order, gaps, lap, and phase state.
 - Wave 2 validation: `npm run replay:inspect`, `npm run typecheck`, and `npm run lint` passed.
+- Wave 3: separated generated canonical traces from legacy fallback replay plans. `buildReplayPlan` now reports `source: "trace"` for complete generated `cars` traces without order-change facts, and `source: "fallback"` only for legacy/incomplete traces.
+- Wave 3 validation: `npm test -- apps/web/src/features/ReplayView.test.ts` and `npm run typecheck` passed.
 
 # AI Context
 - Summary: Orchestrate canonical race-track replay trace and simulation handoff

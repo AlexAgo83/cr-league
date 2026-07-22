@@ -82,16 +82,20 @@ function visualCarProgress(car: NonNullable<ReplayTracePoint["cars"]>[string] | 
   return car?.phase === "grid" && progress < 0 ? progress : progress * laps;
 }
 
-export function buildReplayPlan(result: RaceResult, _trace: ReplayTracePoint[]): ReplayPlan {
+export function buildReplayPlan(result: RaceResult, trace: ReplayTracePoint[]): ReplayPlan {
   const factChanges = result.replayFacts?.orderChanges ?? [];
   return {
-    source: factChanges.length ? "facts" : "fallback",
+    source: factChanges.length ? "facts" : isCanonicalReplayTrace(trace) ? "trace" : "fallback",
     overtakes: factChanges.map((change) => ({
       ...change,
       kind: "overtake",
       phases: replayBeatPhases(change.progress)
     }))
   };
+}
+
+export function isCanonicalReplayTrace(trace: ReplayTracePoint[]) {
+  return trace.length >= 2 && trace.every((point) => point.cars);
 }
 
 export function replayPlanDebugLines(plan: ReplayPlan) {

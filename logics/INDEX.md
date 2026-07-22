@@ -77,6 +77,7 @@
 | [prod_058_canonical_corner_speed_profile_product_brief](product/prod_058_canonical_corner_speed_profile_product_brief.md) | Canonical Corner Speed Profile Product Brief | Settled |  |  | product/prod_058_canonical_corner_speed_profile_product_brief.md |
 | [prod_059_canonical_race_track_replay_trace_product_brief](product/prod_059_canonical_race_track_replay_trace_product_brief.md) | Canonical Race-Track Replay Trace Product Brief | Settled |  |  | product/prod_059_canonical_race_track_replay_trace_product_brief.md |
 | [prod_060_race_replay_realism_layers_product_brief](product/prod_060_race_replay_realism_layers_product_brief.md) | Race Replay Realism Layers Product Brief | Settled |  |  | product/prod_060_race_replay_realism_layers_product_brief.md |
+| [prod_061_chrono_replay_race_track_parity_product_brief](product/prod_061_chrono_replay_race_track_parity_product_brief.md) | Chrono Replay Race-Track Parity Product Brief | Proposed |  |  | product/prod_061_chrono_replay_race_track_parity_product_brief.md |
 
 ## Roadmaps
 
@@ -187,6 +188,7 @@
 | [req_095_canonical_corner_speed_profile_for_replay_motion](request/req_095_canonical_corner_speed_profile_for_replay_motion.md) | Canonical corner speed profile for replay motion | Done |  |  | request/req_095_canonical_corner_speed_profile_for_replay_motion.md |
 | [req_096_canonical_race_track_replay_trace_and_simulation_handoff](request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md) | Canonical race-track replay trace and simulation handoff | Done |  |  | request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md |
 | [req_097_race_replay_realism_layers_after_canonical_trace](request/req_097_race_replay_realism_layers_after_canonical_trace.md) | Race replay realism layers after canonical trace | Done |  |  | request/req_097_race_replay_realism_layers_after_canonical_trace.md |
+| [req_098_chrono_replay_race_track_parity](request/req_098_chrono_replay_race_track_parity.md) | Chrono replay race-track parity | Draft |  |  | request/req_098_chrono_replay_race_track_parity.md |
 
 ## Backlog
 
@@ -422,6 +424,10 @@
 | [item_228_add_bounded_traffic_and_defense_behavior](backlog/item_228_add_bounded_traffic_and_defense_behavior.md) | Add bounded traffic and defense behavior | Done |  | 100% | backlog/item_228_add_bounded_traffic_and_defense_behavior.md |
 | [item_229_make_weather_visible_in_replay_handling](backlog/item_229_make_weather_visible_in_replay_handling.md) | Make weather visible in replay handling | Done |  | 100% | backlog/item_229_make_weather_visible_in_replay_handling.md |
 | [item_230_add_late_race_pace_fade_to_replay_traces](backlog/item_230_add_late_race_pace_fade_to_replay_traces.md) | Add late-race pace fade to replay traces | Done |  | 100% | backlog/item_230_add_late_race_pace_fade_to_replay_traces.md |
+| [item_231_apply_circuit_speed_profile_to_chrono_replay_traces](backlog/item_231_apply_circuit_speed_profile_to_chrono_replay_traces.md) | Apply circuit speed profile to chrono replay traces | Ready |  | 0% | backlog/item_231_apply_circuit_speed_profile_to_chrono_replay_traces.md |
+| [item_232_add_chrono_compatible_replay_phases](backlog/item_232_add_chrono_compatible_replay_phases.md) | Add chrono-compatible replay phases | Ready |  | 0% | backlog/item_232_add_chrono_compatible_replay_phases.md |
+| [item_233_make_chrono_weather_handling_visible_in_trace_speed](backlog/item_233_make_chrono_weather_handling_visible_in_trace_speed.md) | Make chrono weather handling visible in trace speed | Ready |  | 0% | backlog/item_233_make_chrono_weather_handling_visible_in_trace_speed.md |
+| [item_234_extend_replay_inspection_to_chrono_traces](backlog/item_234_extend_replay_inspection_to_chrono_traces.md) | Extend replay inspection to chrono traces | Ready |  | 0% | backlog/item_234_extend_replay_inspection_to_chrono_traces.md |
 
 ## Tasks
 
@@ -525,3 +531,4 @@
 | [task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion](tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md) | Orchestrate canonical corner speed profile for replay motion | Done | codex | 100 | tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md |
 | [task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff](tasks/task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff.md) | Orchestrate canonical race-track replay trace and simulation handoff | Done | codex | 100% | tasks/task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff.md |
 | [task_098_orchestrate_race_replay_realism_layers_after_canonical_trace](tasks/task_098_orchestrate_race_replay_realism_layers_after_canonical_trace.md) | Orchestrate race replay realism layers after canonical trace | Done | codex | 100% | tasks/task_098_orchestrate_race_replay_realism_layers_after_canonical_trace.md |
+| [task_099_orchestrate_chrono_replay_race_track_parity](tasks/task_099_orchestrate_chrono_replay_race_track_parity.md) | Orchestrate chrono replay race-track parity | Ready |  | 0% | tasks/task_099_orchestrate_chrono_replay_race_track_parity.md |

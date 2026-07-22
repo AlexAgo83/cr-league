@@ -1,0 +1,773 @@
+{
+  "budgets": {
+    "max_docs": 24,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [
+    "logics/backlog/item_231_apply_circuit_speed_profile_to_chrono_replay_traces.md",
+    "logics/backlog/item_232_add_chrono_compatible_replay_phases.md",
+    "logics/backlog/item_233_make_chrono_weather_handling_visible_in_trace_speed.md",
+    "logics/backlog/item_234_extend_replay_inspection_to_chrono_traces.md",
+    "logics/product/prod_061_chrono_replay_race_track_parity_product_brief.md",
+    "logics/request/req_098_chrono_replay_race_track_parity.md",
+    "logics/scaffold/chrono-replay-race-track-parity.json",
+    "logics/tasks/task_099_orchestrate_chrono_replay_race_track_parity.md"
+  ],
+  "command": "logics-manager sync context-pack req_098_chrono_replay_race_track_parity item_231_apply_circuit_speed_profile_to_chrono_replay_traces item_232_add_chrono_compatible_replay_phases item_233_make_chrono_weather_handling_visible_in_trace_speed item_234_extend_replay_inspection_to_chrono_traces task_099_orchestrate_chrono_replay_race_track_parity --mode diff-first --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_231_apply_circuit_speed_profile_to_chrono_replay_traces",
+          "item_232_add_chrono_compatible_replay_phases",
+          "item_233_make_chrono_weather_handling_visible_in_trace_speed",
+          "item_234_extend_replay_inspection_to_chrono_traces"
+        ],
+        "prod": [
+          "prod_061_chrono_replay_race_track_parity_product_brief"
+        ],
+        "req": [
+          "req_098_chrono_replay_race_track_parity"
+        ],
+        "task": [
+          "task_099_orchestrate_chrono_replay_race_track_parity"
+        ]
+      },
+      "path": "logics/product/prod_061_chrono_replay_race_track_parity_product_brief.md",
+      "ref": "prod_061_chrono_replay_race_track_parity_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make chrono replay motion respect circuit corners and straights.",
+          "- Expose simple chrono phases that match the race replay vocabulary where appropriate.",
+          "- Keep qualifying times and outcomes stable while improving replay readability.",
+          "- Give developers one inspection command that can compare race and chrono traces on representative circuits.",
+          "- Avoid fake race behavior in solo chronos."
+        ],
+        "Key product decisions": [
+          "- Use structured input as the source of truth for generated docs.",
+          "- Keep generated write paths local and repo-bounded."
+        ],
+        "Overview": [
+          "Chrono replays should feel like they are running on the same race track as Grand Prix replays, but only for concepts that make sense in a solo run. The goal is to reuse the canonical trace handoff for circuit speed profile, launch phase, weather-visible handling, and inspection proof while leaving race-only layers out of scope."
+        ],
+        "References": [
+          "- Product back-reference: `req_098_chrono_replay_race_track_parity`",
+          "- Task back-reference: `task_099_orchestrate_chrono_replay_race_track_parity`"
+        ]
+      },
+      "status": "Proposed",
+      "title": "Chrono Replay Race-Track Parity Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_204_generate_the_main_straight_and_start_line_as_canonical_track_data"
+        ],
+        "prod": [
+          "prod_054_canonical_race_track_geometry_product_brief"
+        ],
+        "req": [
+          "req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map"
+        ],
+        "task": [
+          "task_091_orchestrate_canonical_race_track_geometry"
+        ]
+      },
+      "path": "logics/product/prod_054_canonical_race_track_geometry_product_brief.md",
+      "ref": "prod_054_canonical_race_track_geometry_product_brief",
+      "sections": {
+        "Goals": [
+          "- Every semantic track position (start line, pit, main straight) is generated once and read by both the simulation and the map.",
+          "- No race geometry is decided on the client or improvised at render time.",
+          "- Replay pacing derives from canonical meters, not projected pixels.",
+          "- There is exactly one source of race beats (the simulation's replayFacts); the client duplicates are gone."
+        ],
+        "Key product decisions": [
+          "- Use structured input as the source of truth for generated docs.",
+          "- Keep generated write paths local and repo-bounded."
+        ],
+        "Overview": [
+          "An architecture audit after the pit-stop alignment fix found the same smell across the whole map: the race track's semantic geometry (main straight, start/finish line, real length, race beats) is never stored as canonical data \u2014 the web improvises it from raw route points with magic numbers, and the simulation improvises separately. This request extends the single-canonical-origin principle from the pit to the whole track: generate the semantic markers once, store them as shared circuit data read by both sides, base replay pacing on real meters, and delete the client-side beat re-derivation that only exists to drift.",
+          "```mermaid",
+          "flowchart TD",
+          "  Req[req_090 canonical geometry] --> Markers[item_204 semantic markers]",
+          "  Markers --> Meters[item_205 canonical meters]",
+          "  Meters --> Facts[item_206 replayFacts only]"
+        ],
+        "References": [
+          "- Product back-reference: `item_204_generate_the_main_straight_and_start_line_as_canonical_track_data`",
+          "- Task back-reference: `task_091_orchestrate_canonical_race_track_geometry`"
+        ]
+      },
+      "status": "Settled",
+      "title": "Canonical Race-Track Geometry Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_215_generate_canonical_speed_profiles_from_circuit_route_curvature"
+        ],
+        "prod": [
+          "prod_058_canonical_corner_speed_profile_product_brief"
+        ],
+        "req": [
+          "req_095_canonical_corner_speed_profile_for_replay_motion"
+        ],
+        "task": [
+          "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+        ]
+      },
+      "path": "logics/product/prod_058_canonical_corner_speed_profile_product_brief.md",
+      "ref": "prod_058_canonical_corner_speed_profile_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make replay motion feel more like cars driving a circuit, with visible braking before corners and recovery after them.",
+          "- Keep the speed model canonical and generated from route geometry, not hand-authored per circuit or recalculated every frame.",
+          "- Preserve replay determinism and alignment with events, pit stops, overtakes, and tower data.",
+          "- Finish a complete replay-visible feature and define the gate for future simulation use."
+        ],
+        "Key product decisions": [
+          "- Store speed profiles as canonical shared circuit data keyed by `layoutKey`; generate them from route curvature and main straight metadata.",
+          "- Use `braking`, `corner`, `exit`, and `straight` spans with bounded speed factors. Replay integrates these spans over a normalized lap so every lap still starts and ends at canonical progress.",
+          "- Apply profiles to replay car positions only. Trace times, pit events, director beats, tower gaps, simulation results, rewards, cards, and classification remain canonical.",
+          "- Future simulation use needs a separate request after replay validation, audit stability, and balance-baseline proof."
+        ],
+        "Overview": [
+          "CR League now has canonical route length, start, pit, main-straight, and zone data, but replay cars still move with mostly uniform progress along the track. This makes distance-faithful replays feel slow without giving the viewer the natural rhythm of braking, cornering, and exit acceleration. This feature generates a compact speed profile from circuit curvature and straights, stores it as canonical circuit data, and uses it in replay motion first while preserving simulation outcomes.",
+          "```mermaid",
+          "flowchart TD",
+          "  Req[req_095 corner speed profile] --> Profile[item_215 generated profiles]",
+          "  Profile --> Replay[item_216 replay motion]",
+          "  Replay --> Validate[item_217 validation]"
+        ],
+        "References": [
+          "- Product back-reference: `item_215_generate_canonical_speed_profiles_from_circuit_route_curvature`",
+          "- Task back-reference: `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion`"
+        ]
+      },
+      "status": "Settled",
+      "title": "Canonical Corner Speed Profile Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_219_define_the_canonical_replay_trace_contract_for_generated_races"
+        ],
+        "prod": [
+          "prod_059_canonical_race_track_replay_trace_product_brief"
+        ],
+        "req": [
+          "req_096_canonical_race_track_replay_trace_and_simulation_handoff"
+        ],
+        "task": [
+          "task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff"
+        ]
+      },
+      "path": "logics/product/prod_059_canonical_race_track_replay_trace_product_brief.md",
+      "ref": "prod_059_canonical_race_track_replay_trace_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make replay map, tower, event markers, and director markers agree because they consume the same canonical race trace.",
+          "- Represent braking, cornering, exits, straights, pit movement, and overtake context at the shared trace boundary.",
+          "- Remove or isolate duplicated replay fallbacks that can drift from simulation facts.",
+          "- Clarify distance semantics so simulation distance, route distance, replay pacing, and UI labels are auditable.",
+          "- Give developers an inspection path for race-track trace health before using zones and speed profiles for gameplay balance."
+        ],
+        "Key product decisions": [
+          "- Use structured input as the source of truth for generated docs.",
+          "- Keep generated write paths local and repo-bounded."
+        ],
+        "Overview": [
+          "CR League's race-track replay is now visually stronger, but the architecture still has two competing layers: the simulation emits more canonical race facts, while the web replay can still reconstruct or remap race meaning locally. This feature makes the generated replay trace the handoff contract between simulation and rendering. The simulation/shared layer owns car progress, speed phase, zone context, event progress, and live ordering for new races; the web layer renders those facts and keeps a small legacy adapter only for old persisted results.",
+          "```mermaid",
+          "flowchart TD",
+          "  Req[req_096 canonical replay trace] --> Contract[item_219 trace contract]",
+          "  Contract --> Speed[item_220 shared speed handoff]",
+          "  Speed --> Fallbacks[item_221 legacy fallback adapter]"
+        ],
+        "References": [
+          "- Product back-reference: `item_219_define_the_canonical_replay_trace_contract_for_generated_races`",
+          "- Task back-reference: `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff`"
+        ]
+      },
+      "status": "Settled",
+      "title": "Canonical Race-Track Replay Trace Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_224_add_launch_and_first_corner_replay_phase"
+        ],
+        "prod": [
+          "prod_060_race_replay_realism_layers_product_brief"
+        ],
+        "req": [
+          "req_097_race_replay_realism_layers_after_canonical_trace"
+        ],
+        "task": [
+          "task_098_orchestrate_race_replay_realism_layers_after_canonical_trace"
+        ]
+      },
+      "path": "logics/product/prod_060_race_replay_realism_layers_product_brief.md",
+      "ref": "prod_060_race_replay_realism_layers_product_brief",
+      "sections": {
+        "Goals": [
+          "- Make starts, battles, pit stops, weather, and late-race behavior more legible in replay.",
+          "- Keep every realism layer deterministic and trace-level.",
+          "- Preserve alignment between map position, tower order, event markers, director beats, and final classification.",
+          "- Ship the work in small slices with clear validation per layer.",
+          "- Avoid a broad physics engine or gameplay balance retune."
+        ],
+        "Key product decisions": [
+          "- Use structured input as the source of truth for generated docs.",
+          "- Keep generated write paths local and repo-bounded."
+        ],
+        "Overview": [
+          "CR League should make race replays feel more like a race without becoming a physics project. Once the canonical replay trace is the handoff between simulation and rendering, the next gains are small deterministic realism layers: better starts, chrono-gap spacing, pit-lane phases, prepared overtakes, traffic/defense, weather-visible handling, and late-race pace fade. Each layer must explain existing race facts more clearly, not invent a second race in the browser.",
+          "```mermaid",
+          "flowchart TD",
+          "  Req[req_097 replay realism layers] --> Launch[item_224 launch phase]",
+          "  Launch --> Gaps[item_225 chrono gaps]",
+          "  Gaps --> Pit[item_226 pit phases]"
+        ],
+        "References": [
+          "- Product back-reference: `item_224_add_launch_and_first_corner_replay_phase`",
+          "- Task back-reference: `task_098_orchestrate_race_replay_realism_layers_after_canonical_trace`"
+        ]
+      },
+      "status": "Settled",
+      "title": "Race Replay Realism Layers Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, chrono replay race-track parity, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Chrono replay race-track parity",
+        "use when": "You need to implement or review the scaffolded workflow for Chrono replay race-track parity."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_231_apply_circuit_speed_profile_to_chrono_replay_traces",
+          "item_232_add_chrono_compatible_replay_phases",
+          "item_233_make_chrono_weather_handling_visible_in_trace_speed",
+          "item_234_extend_replay_inspection_to_chrono_traces"
+        ],
+        "prod": [
+          "prod_061_chrono_replay_race_track_parity_product_brief"
+        ],
+        "req": [
+          "req_096_canonical_race_track_replay_trace_and_simulation_handoff",
+          "req_097_race_replay_realism_layers_after_canonical_trace",
+          "req_098_chrono_replay_race_track_parity"
+        ]
+      },
+      "path": "logics/request/req_098_chrono_replay_race_track_parity.md",
+      "ref": "req_098_chrono_replay_race_track_parity",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Chrono trace generation accepts and applies the circuit speed profile at the shared trace boundary, and all league chrono call sites pass the circuit profile.",
+          "- AC2: Chrono replay traces expose bounded `grid`, `launch`, `racing`, and `finished` phases with monotonic progress and stable final time.",
+          "- AC3: Weather-visible chrono handling is represented as deterministic trace-level `speed` metadata on relevant spans without changing qualifying lap-time calculation or grid outcomes.",
+          "- AC4: `npm run replay:inspect` or an equivalent existing inspection command includes representative chrono traces for Prague, Monaco, and Montreal, with progress, phase, speed, and weather context.",
+          "- AC5: Focused tests prove speed-profile application, launch phase presence, weather speed differences, deterministic output, and no lap-time regression for equal inputs.",
+          "- AC6: The corpus explicitly documents that pit stops, overtakes, defense, and multi-car gap spacing are not chrono parity requirements for this solo-run scope."
+        ],
+        "Needs": [
+          "- Make chrono replay traces use the same circuit speed-profile handoff as generated race traces where that concept applies to a single-car run.",
+          "- Expose chrono-compatible phases such as grid, launch, racing, and finished instead of keeping the whole moving lap as plain racing.",
+          "- Make weather and corner handling visible in chrono replay speed metadata without changing the qualifying time model or grid outcome.",
+          "- Extend the replay inspection artifact so developers can compare race and chrono traces on representative circuits.",
+          "- Keep race-only realism layers out of chrono until a real multi-car chrono or ghost feature exists."
+        ]
+      },
+      "status": "Draft",
+      "title": "Chrono replay race-track parity"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, canonical race-track replay trace and simulation handoff, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Canonical race-track replay trace and simulation handoff",
+        "use when": "You need to implement or review the scaffolded workflow for Canonical race-track replay trace and simulation handoff."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_219_define_the_canonical_replay_trace_contract_for_generated_races",
+          "item_220_move_speed_profile_motion_into_the_shared_trace_handoff",
+          "item_221_isolate_legacy_replay_fallbacks_behind_an_explicit_adapter",
+          "item_222_normalize_circuit_distance_semantics_and_audit_drift",
+          "item_223_add_race_track_replay_trace_inspection_and_representative_validation"
+        ],
+        "prod": [
+          "prod_054_canonical_race_track_geometry_product_brief",
+          "prod_058_canonical_corner_speed_profile_product_brief",
+          "prod_059_canonical_race_track_replay_trace_product_brief"
+        ],
+        "req": [
+          "req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map",
+          "req_093_canonical_track_zones_for_spatial_race_simulation",
+          "req_095_canonical_corner_speed_profile_for_replay_motion",
+          "req_096_canonical_race_track_replay_trace_and_simulation_handoff"
+        ]
+      },
+      "path": "logics/request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md",
+      "ref": "req_096_canonical_race_track_replay_trace_and_simulation_handoff",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Newly resolved races produce a complete canonical replay trace with per-car track progress, phase, speed/profile state where needed, canonical event progress, order changes, director beats, and zone metadata required by current replay consumers.",
+          "- AC2: Replay map positions, live tower ordering, player replay context, pit-stop placement, director markers, and event markers all prefer the canonical generated trace/facts for new races and cannot independently infer contradictory race semantics.",
+          "- AC3: Circuit speed-profile effects are applied at the shared trace-generation or trace-preparation boundary, and web replay motion does not apply an additional independent speed remap for canonical traces.",
+          "- AC4: Legacy fallback behavior is isolated behind an explicit adapter or guard with tests that prove older persisted results still replay, while generated traces use stricter validation and do not silently fall back to inferred facts.",
+          "- AC5: A documented distance contract explains `trackLengthMeters` versus `routeLengthMeters`, identifies which one owns simulation scoring, replay pacing, and display labels, and circuit audit fails on undocumented or suspicious drift.",
+          "- AC6: Generated track zones and speed-profile spans are connected enough that replay facts/events can expose useful braking, corner, exit, straight, pit, overtake, and sector context without importing web projection logic into shared code."
+        ],
+        "Needs": [
+          "- Make the generated replay car trace the canonical source for live replay map positions, tower ordering, player context, pit alignment, event placement, and director markers for newly resolved races.",
+          "- Move circuit speed variation into the shared simulation trace generation or a shared trace-preparation layer so braking, cornering, exit recovery, and straight-line pace are represented once instead of applied as a web-only visual remap.",
+          "- Retire or strictly isolate legacy web fallback reconstruction paths now that generated race results carry replay facts, order changes, car traces, and zone metadata.",
+          "- Resolve the dual distance semantics between `trackLengthMeters` and `routeLengthMeters` with a documented source-of-truth contract for simulation scoring, replay pacing, circuit audit, and UI distance labels.",
+          "- Connect generated track zones and speed-profile spans so simulation events and replay facts can explain where a race moment happens without client-side semantic inference.",
+          "- Add a lightweight race-track replay inspection path that makes trace progress, speed phase, zone, ordering, and distance decisions visible to developers before deeper gameplay tuning begins."
+        ]
+      },
+      "status": "Done",
+      "title": "Canonical race-track replay trace and simulation handoff"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, race replay realism layers after canonical trace, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Race replay realism layers after canonical trace",
+        "use when": "You need to implement or review the scaffolded workflow for Race replay realism layers after canonical trace."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_224_add_launch_and_first_corner_replay_phase",
+          "item_225_map_chrono_gaps_to_visual_replay_spacing",
+          "item_226_represent_pit_stops_as_entry_stop_and_exit_trace_phases",
+          "item_227_turn_order_changes_into_prepared_overtake_stories",
+          "item_228_add_bounded_traffic_and_defense_behavior",
+          "item_229_make_weather_visible_in_replay_handling",
+          "item_230_add_late_race_pace_fade_to_replay_traces"
+        ],
+        "prod": [
+          "prod_060_race_replay_realism_layers_product_brief"
+        ],
+        "req": [
+          "req_046_make_race_simulation_and_replay_feel_coherent_across_circuits",
+          "req_048_make_race_replay_feel_like_a_fun_race_spectacle",
+          "req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map",
+          "req_093_canonical_track_zones_for_spatial_race_simulation",
+          "req_095_canonical_corner_speed_profile_for_replay_motion",
+          "req_096_canonical_race_track_replay_trace_and_simulation_handoff",
+          "req_097_race_replay_realism_layers_after_canonical_trace"
+        ]
+      },
+      "path": "logics/request/req_097_race_replay_realism_layers_after_canonical_trace.md",
+      "ref": "req_097_race_replay_realism_layers_after_canonical_trace",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: The implementation order is documented and gated on the canonical replay trace handoff, so no realism layer depends on web-only semantic inference.",
+          "- AC2: Launch and first-corner replay behavior produces compact starts, bounded launch variation, and smooth early field separation without changing final race outcomes.",
+          "- AC3: Visual spacing for canonical traces is derived from chrono gaps with documented clamps, so close gaps, medium gaps, and large gaps read consistently on the map and tower.",
+          "- AC4: Pit-stop trace output includes pit entry, pit stop, and pit exit phases with aligned event markers, live ordering, and visible time loss.",
+          "- AC5: Overtake facts can render as closing, attempt, and settled phases tied to canonical zones and order changes, with no renderer-invented overtakes.",
+          "- AC6: Traffic/defense effects apply only under canonical proximity and zone conditions, remain bounded, and do not contradict the final classification."
+        ],
+        "Needs": [
+          "- Plan the next replay realism layers as small deterministic slices that build on the canonical race-track replay trace instead of introducing a physics engine.",
+          "- Add a launch and first-corner replay phase so race starts feel compact, variable, and readable without changing winners or economy.",
+          "- Make visual car spacing reflect chrono gaps so close battles look close and large gaps look isolated while preserving final classification.",
+          "- Represent pit stops as a full trace sequence with pit entry, stop, and exit phases instead of a single visual halt.",
+          "- Turn canonical order changes into prepared overtake stories with closing, attempt, and settled phases driven by simulation facts.",
+          "- Add lightweight traffic/defense behavior only when canonical gaps and zones show cars are close enough, especially outside overtake zones."
+        ]
+      },
+      "status": "Done",
+      "title": "Race replay realism layers after canonical trace"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, apply circuit speed profile to chrono replay traces, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Apply circuit speed profile to chrono replay traces",
+        "use when": "Implementing the scaffolded slice for Apply circuit speed profile to chrono replay traces."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_231_apply_circuit_speed_profile_to_chrono_replay_traces"
+        ],
+        "prod": [
+          "prod_061_chrono_replay_race_track_parity_product_brief"
+        ],
+        "req": [
+          "req_098_chrono_replay_race_track_parity"
+        ],
+        "task": [
+          "task_099_orchestrate_chrono_replay_race_track_parity"
+        ]
+      },
+      "path": "logics/backlog/item_231_apply_circuit_speed_profile_to_chrono_replay_traces.md",
+      "ref": "item_231_apply_circuit_speed_profile_to_chrono_replay_traces",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: All league chrono generation call sites pass the circuit speed profile.",
+          "- AC2: Generated chrono car progress reflects the speed profile and still finishes at 1.0.",
+          "- AC3: Focused qualifying tests cover deterministic speed-profile output and unchanged final trace timing."
+        ],
+        "Problem": [
+          "- Chrono traces currently advance linearly through the lap even when the circuit has corner speed-profile spans.",
+          "- Grand Prix traces already apply circuit speed-profile effects in the shared trace handoff, so chrono replay motion can look inconsistent on the same circuit.",
+          "- Fixing this in the web renderer would risk a second independent mapping instead of making the generated trace canonical."
+        ]
+      },
+      "status": "Ready",
+      "title": "Apply circuit speed profile to chrono replay traces"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate chrono replay race-track parity",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_231_apply_circuit_speed_profile_to_chrono_replay_traces",
+          "item_232_add_chrono_compatible_replay_phases",
+          "item_233_make_chrono_weather_handling_visible_in_trace_speed",
+          "item_234_extend_replay_inspection_to_chrono_traces"
+        ],
+        "prod": [
+          "prod_061_chrono_replay_race_track_parity_product_brief"
+        ],
+        "req": [
+          "req_098_chrono_replay_race_track_parity"
+        ],
+        "task": [
+          "task_099_orchestrate_chrono_replay_race_track_parity"
+        ]
+      },
+      "path": "logics/tasks/task_099_orchestrate_chrono_replay_race_track_parity.md",
+      "ref": "task_099_orchestrate_chrono_replay_race_track_parity",
+      "schema_version": "1.0",
+      "sections": {
+        "Context": [
+          "- Orchestrate the scaffolded request chain and keep sibling implementation slices linked."
+        ],
+        "Validation": [
+          "- Run `python3 -m logics_manager lint --require-status`.",
+          "- Run scaffold command tests."
+        ]
+      },
+      "status": "Ready",
+      "title": "Orchestrate chrono replay race-track parity"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_231_apply_circuit_speed_profile_to_chrono_replay_traces",
+          "item_232_add_chrono_compatible_replay_phases",
+          "item_233_make_chrono_weather_handling_visible_in_trace_speed",
+          "item_234_extend_replay_inspection_to_chrono_traces"
+        ],
+        "prod": [
+          "prod_061_chrono_replay_race_track_parity_product_brief"
+        ],
+        "req": [
+          "req_098_chrono_replay_race_track_parity"
+        ],
+        "task": [
+          "task_099_orchestrate_chrono_replay_race_track_parity"
+        ]
+      },
+      "path": "logics/product/prod_061_chrono_replay_race_track_parity_product_brief.md",
+      "ref": "prod_061_chrono_replay_race_track_parity_product_brief",
+      "schema_version": "1.0",
+      "sections": {},
+      "status": "Proposed",
+      "title": "Chrono Replay Race-Track Parity Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, add chrono-compatible replay phases, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Add chrono-compatible replay phases",
+        "use when": "Implementing the scaffolded slice for Add chrono-compatible replay phases."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_232_add_chrono_compatible_replay_phases"
+        ],
+        "prod": [
+          "prod_061_chrono_replay_race_track_parity_product_brief"
+        ],
+        "req": [
+          "req_098_chrono_replay_race_track_parity"
+        ],
+        "task": [
+          "task_099_orchestrate_chrono_replay_race_track_parity"
+        ]
+      },
+      "path": "logics/backlog/item_232_add_chrono_compatible_replay_phases.md",
+      "ref": "item_232_add_chrono_compatible_replay_phases",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Chrono traces expose `grid`, `launch`, `racing`, and `finished` in the expected order.",
+          "- AC2: No race-only phases are emitted by solo chrono trace generation.",
+          "- AC3: Phase tests pass without changing final chrono result data."
+        ],
+        "Problem": [
+          "- Chrono traces currently mark all moving points as `racing`, so the start lacks the launch semantics recently added to race traces.",
+          "- Solo chronos need only the phases that match a single-car lap.",
+          "- Adding race-only phases would make the replay vocabulary less trustworthy."
+        ]
+      },
+      "status": "Ready",
+      "title": "Add chrono-compatible replay phases"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, make chrono weather handling visible in trace speed, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Make chrono weather handling visible in trace speed",
+        "use when": "Implementing the scaffolded slice for Make chrono weather handling visible in trace speed."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_233_make_chrono_weather_handling_visible_in_trace_speed"
+        ],
+        "prod": [
+          "prod_061_chrono_replay_race_track_parity_product_brief"
+        ],
+        "req": [
+          "req_098_chrono_replay_race_track_parity"
+        ],
+        "task": [
+          "task_099_orchestrate_chrono_replay_race_track_parity"
+        ]
+      },
+      "path": "logics/backlog/item_233_make_chrono_weather_handling_visible_in_trace_speed.md",
+      "ref": "item_233_make_chrono_weather_handling_visible_in_trace_speed",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: Heavy-rain chrono traces expose lower relevant `speed` metadata than dry traces on the same profile.",
+          "- AC2: Chrono final time and deterministic generated run behavior remain stable for equal inputs.",
+          "- AC3: Tests cover dry versus rainy trace speed without asserting fragile animation details."
+        ],
+        "Problem": [
+          "- Chrono weather affects lap-time calculation, but the generated replay trace speed metadata is currently too flat to show dry versus rainy handling.",
+          "- The race replay work already made weather visible as bounded trace-level speed changes.",
+          "- Chrono should show the same kind of handling cue without changing the qualifying time model."
+        ]
+      },
+      "status": "Ready",
+      "title": "Make chrono weather handling visible in trace speed"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, extend replay inspection to chrono traces, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Extend replay inspection to chrono traces",
+        "use when": "Implementing the scaffolded slice for Extend replay inspection to chrono traces."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_234_extend_replay_inspection_to_chrono_traces"
+        ],
+        "prod": [
+          "prod_061_chrono_replay_race_track_parity_product_brief"
+        ],
+        "req": [
+          "req_098_chrono_replay_race_track_parity"
+        ],
+        "task": [
+          "task_099_orchestrate_chrono_replay_race_track_parity"
+        ]
+      },
+      "path": "logics/backlog/item_234_extend_replay_inspection_to_chrono_traces.md",
+      "ref": "item_234_extend_replay_inspection_to_chrono_traces",
+      "schema_version": "1.0",
+      "sections": {
+        "Acceptance criteria": [
+          "- AC1: `npm run replay:inspect` includes a chrono section for Prague, Monaco, and Montreal.",
+          "- AC2: The output includes enough phase/speed/weather context to compare race and chrono trace behavior.",
+          "- AC3: Closeout records the command output as validation proof."
+        ],
+        "Problem": [
+          "- The existing replay inspection artifact focuses on generated races, so chrono parity cannot be checked without launching the app or reading raw traces.",
+          "- Representative trace output is the cheapest way to validate whether chrono motion now matches race-track expectations.",
+          "- The inspection should stay developer-facing and avoid a new test harness."
+        ]
+      },
+      "status": "Ready",
+      "title": "Extend replay inspection to chrono traces"
+    }
+  ],
+  "estimates": {
+    "char_count": 29745,
+    "companion_doc_count": 5,
+    "doc_count": 9
+  },
+  "generated_at": "2026-07-22T23:43:37Z",
+  "handoff": {
+    "companion_doc_count": 5,
+    "enabled": true,
+    "source_refs": [
+      "req_098_chrono_replay_race_track_parity",
+      "item_231_apply_circuit_speed_profile_to_chrono_replay_traces",
+      "item_232_add_chrono_compatible_replay_phases",
+      "item_233_make_chrono_weather_handling_visible_in_trace_speed",
+      "item_234_extend_replay_inspection_to_chrono_traces",
+      "task_099_orchestrate_chrono_replay_race_track_parity"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 835,
+      "fr": 835
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "diff-first",
+  "profile": "normal",
+  "ref": "req_098_chrono_replay_race_track_parity,item_231_apply_circuit_speed_profile_to_chrono_replay_traces,item_232_add_chrono_compatible_replay_phases,item_233_make_chrono_weather_handling_visible_in_trace_speed,item_234_extend_replay_inspection_to_chrono_traces,task_099_orchestrate_chrono_replay_race_track_parity",
+  "refs": [
+    "req_098_chrono_replay_race_track_parity",
+    "item_231_apply_circuit_speed_profile_to_chrono_replay_traces",
+    "item_232_add_chrono_compatible_replay_phases",
+    "item_233_make_chrono_weather_handling_visible_in_trace_speed",
+    "item_234_extend_replay_inspection_to_chrono_traces",
+    "task_099_orchestrate_chrono_replay_race_track_parity"
+  ],
+  "release": {
+    "blocking_reasons": [],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Release evidence is complete.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": null,
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "ready",
+    "target_version": "0.3.28"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_099_orchestrate_chrono_replay_race_track_parity.md",
+      "ref": "task_099_orchestrate_chrono_replay_race_track_parity"
+    }
+  ]
+}

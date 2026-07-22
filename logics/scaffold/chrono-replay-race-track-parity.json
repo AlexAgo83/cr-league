@@ -1,0 +1,216 @@
+{
+  "title": "Chrono replay race-track parity",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md",
+    "logics/request/req_097_race_replay_realism_layers_after_canonical_trace.md",
+    "logics/scaffold/canonical-race-track-replay-trace.json",
+    "logics/scaffold/race-replay-realism-layers.json",
+    "apps/api/src/features/leagues/qualifying.ts",
+    "apps/api/src/features/leagues/qualifying.test.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/ReplayView.test.ts",
+    "apps/web/src/features/replay/replayMath.ts",
+    "apps/web/src/features/replay/replayDirector.ts",
+    "packages/shared/src/domain/circuits.ts",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "scripts/inspect-replay-trace.ts",
+    "Current product direction: chrono replays should reuse the same race-track motion semantics that are meaningful for a solo run: circuit speed profile, launch/racing/finished phases, weather-visible handling, and inspection proof. Race-only concepts such as pit stops, overtakes, defense, and multi-car gap spacing are intentionally out of scope unless a future ghost or comparison mode adds multiple visible cars."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Replay parity",
+    "needs": [
+      "Make chrono replay traces use the same circuit speed-profile handoff as generated race traces where that concept applies to a single-car run.",
+      "Expose chrono-compatible phases such as grid, launch, racing, and finished instead of keeping the whole moving lap as plain racing.",
+      "Make weather and corner handling visible in chrono replay speed metadata without changing the qualifying time model or grid outcome.",
+      "Extend the replay inspection artifact so developers can compare race and chrono traces on representative circuits.",
+      "Keep race-only realism layers out of chrono until a real multi-car chrono or ghost feature exists."
+    ],
+    "context": [
+      "The user asked whether the recent race simulation and replay realism work also applies to chronos. The current answer is no: chronos use `createQualifyingRuns` and `createQualifyingReplayTrace`, not `simulateRace`.",
+      "Chrono replays already produce a canonical single-car `replayTrace.cars` payload and the web replay pipeline can consume it. The missing part is parity at the trace-generation boundary.",
+      "`apps/api/src/features/leagues/store.ts` already computes the circuit identity for chrono attempts and imports `trackSpeedProfileForCircuit`; the implementation should pass the circuit speed profile into all `createQualifyingRuns` call sites.",
+      "The qualifying time model is a learning loop. This request should not retune lap times, grid positions, cards, pit strategy, bot strategy, rewards, or economy.",
+      "Race-only concepts from `req_097` remain out of scope for chrono: pit phases, overtake stories, defense, and chrono-gap spacing require multiple cars or race events and would be fake for a solo lap."
+    ],
+    "acceptance_criteria": [
+      "AC1: Chrono trace generation accepts and applies the circuit speed profile at the shared trace boundary, and all league chrono call sites pass the circuit profile.",
+      "AC2: Chrono replay traces expose bounded `grid`, `launch`, `racing`, and `finished` phases with monotonic progress and stable final time.",
+      "AC3: Weather-visible chrono handling is represented as deterministic trace-level `speed` metadata on relevant spans without changing qualifying lap-time calculation or grid outcomes.",
+      "AC4: `npm run replay:inspect` or an equivalent existing inspection command includes representative chrono traces for Prague, Monaco, and Montreal, with progress, phase, speed, and weather context.",
+      "AC5: Focused tests prove speed-profile application, launch phase presence, weather speed differences, deterministic output, and no lap-time regression for equal inputs.",
+      "AC6: The corpus explicitly documents that pit stops, overtakes, defense, and multi-car gap spacing are not chrono parity requirements for this solo-run scope."
+    ]
+  },
+  "product": {
+    "title": "Chrono Replay Race-Track Parity Product Brief",
+    "overview": "Chrono replays should feel like they are running on the same race track as Grand Prix replays, but only for concepts that make sense in a solo run. The goal is to reuse the canonical trace handoff for circuit speed profile, launch phase, weather-visible handling, and inspection proof while leaving race-only layers out of scope.",
+    "goals": [
+      "Make chrono replay motion respect circuit corners and straights.",
+      "Expose simple chrono phases that match the race replay vocabulary where appropriate.",
+      "Keep qualifying times and outcomes stable while improving replay readability.",
+      "Give developers one inspection command that can compare race and chrono traces on representative circuits.",
+      "Avoid fake race behavior in solo chronos."
+    ],
+    "non_goals": [
+      "Do not add pit stops, overtakes, traffic, defense, or multi-car gap spacing to solo chrono replays.",
+      "Do not change qualifying lap-time formulas, grid sorting, card effects, bot choices, rewards, or economy.",
+      "Do not build a new physics engine or duplicate `simulateRace` for chronos.",
+      "Do not add new user-facing replay controls or explanatory UI copy.",
+      "Do not optimize legacy persisted chrono traces beyond existing replay fallback compatibility."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Apply circuit speed profile to chrono replay traces",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay parity",
+      "request_acs": [
+        "AC1",
+        "AC5"
+      ],
+      "problem": [
+        "Chrono traces currently advance linearly through the lap even when the circuit has corner speed-profile spans.",
+        "Grand Prix traces already apply circuit speed-profile effects in the shared trace handoff, so chrono replay motion can look inconsistent on the same circuit.",
+        "Fixing this in the web renderer would risk a second independent mapping instead of making the generated trace canonical."
+      ],
+      "scope_in": [
+        "Add an optional `speedProfile` input to `createQualifyingRuns` and `createQualifyingReplayTrace`.",
+        "Pass `trackSpeedProfileForCircuit(circuit)` from each league chrono creation call site in `apps/api/src/features/leagues/store.ts`.",
+        "Apply the profile when writing `cars[teamId].trackProgress` for generated chrono traces.",
+        "Preserve `progress`, `times`, final time, lap count, and deterministic output.",
+        "Add a focused test showing a chrono trace with a non-empty speed profile is not linear while the final point remains complete."
+      ],
+      "scope_out": [
+        "Changing qualifying lap-time formulas.",
+        "Adding a second speed-profile remap in the web replay consumer.",
+        "Changing legacy persisted traces."
+      ],
+      "acceptance_criteria": [
+        "AC1: All league chrono generation call sites pass the circuit speed profile.",
+        "AC2: Generated chrono car progress reflects the speed profile and still finishes at 1.0.",
+        "AC3: Focused qualifying tests cover deterministic speed-profile output and unchanged final trace timing."
+      ]
+    },
+    {
+      "title": "Add chrono-compatible replay phases",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Replay parity",
+      "request_acs": [
+        "AC2",
+        "AC5",
+        "AC6"
+      ],
+      "problem": [
+        "Chrono traces currently mark all moving points as `racing`, so the start lacks the launch semantics recently added to race traces.",
+        "Solo chronos need only the phases that match a single-car lap.",
+        "Adding race-only phases would make the replay vocabulary less trustworthy."
+      ],
+      "scope_in": [
+        "Emit `grid` at the first trace point, `launch` during a small bounded early progress window, `racing` for the rest of the moving lap, and `finished` at completion.",
+        "Keep phase transitions deterministic and based on trace progress rather than wall-clock animation state.",
+        "Use existing `ReplayTracePoint.cars[].phase` vocabulary where possible.",
+        "Add a focused test proving the generated chrono trace contains `launch` and no race-only phases.",
+        "Document the deliberate exclusion of pit, overtake, defense, and gap-spacing phases."
+      ],
+      "scope_out": [
+        "Reaction-time, false-start, or clutch modeling.",
+        "Overtake, pit, defending, or traffic phases.",
+        "New director beat types unless the existing chrono beats need a tiny label alignment."
+      ],
+      "acceptance_criteria": [
+        "AC1: Chrono traces expose `grid`, `launch`, `racing`, and `finished` in the expected order.",
+        "AC2: No race-only phases are emitted by solo chrono trace generation.",
+        "AC3: Phase tests pass without changing final chrono result data."
+      ]
+    },
+    {
+      "title": "Make chrono weather handling visible in trace speed",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Replay parity",
+      "request_acs": [
+        "AC3",
+        "AC5"
+      ],
+      "problem": [
+        "Chrono weather affects lap-time calculation, but the generated replay trace speed metadata is currently too flat to show dry versus rainy handling.",
+        "The race replay work already made weather visible as bounded trace-level speed changes.",
+        "Chrono should show the same kind of handling cue without changing the qualifying time model."
+      ],
+      "scope_in": [
+        "Use existing qualifying weather progression and circuit speed-profile spans to lower trace `speed` on rainy and non-straight portions.",
+        "Keep the effect deterministic and bounded, with final `times` derived from the existing chrono visual duration.",
+        "Prefer a small shared helper only if it avoids duplicating an already-existing race speed-profile/weather calculation.",
+        "Add a test comparing dry and heavy-rain chrono traces on the same seed/profile.",
+        "Keep the web renderer as a consumer of generated trace metadata."
+      ],
+      "scope_out": [
+        "Retuning lap-time weather penalties.",
+        "Changing card/preparation outcomes.",
+        "Adding wet-line, tire-temperature, or grip physics."
+      ],
+      "acceptance_criteria": [
+        "AC1: Heavy-rain chrono traces expose lower relevant `speed` metadata than dry traces on the same profile.",
+        "AC2: Chrono final time and deterministic generated run behavior remain stable for equal inputs.",
+        "AC3: Tests cover dry versus rainy trace speed without asserting fragile animation details."
+      ]
+    },
+    {
+      "title": "Extend replay inspection to chrono traces",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Developer validation",
+      "request_acs": [
+        "AC4",
+        "AC5"
+      ],
+      "problem": [
+        "The existing replay inspection artifact focuses on generated races, so chrono parity cannot be checked without launching the app or reading raw traces.",
+        "Representative trace output is the cheapest way to validate whether chrono motion now matches race-track expectations.",
+        "The inspection should stay developer-facing and avoid a new test harness."
+      ],
+      "scope_in": [
+        "Extend `scripts/inspect-replay-trace.ts` or the existing `npm run replay:inspect` path to include representative chrono traces.",
+        "Print Prague, Monaco, and Montreal chrono samples with trace count, progress, phase, speed, weather, and final time.",
+        "Reuse `createQualifyingRuns` rather than introducing a separate fixture generator.",
+        "Add or update the smallest focused test only if the script exposes reusable logic; otherwise validate with the command output in task closeout.",
+        "Document how to read the chrono section in the orchestration task report."
+      ],
+      "scope_out": [
+        "A new CLI package or interactive viewer.",
+        "Golden snapshot files for full script output.",
+        "User-facing chrono diagnostics."
+      ],
+      "acceptance_criteria": [
+        "AC1: `npm run replay:inspect` includes a chrono section for Prague, Monaco, and Montreal.",
+        "AC2: The output includes enough phase/speed/weather context to compare race and chrono trace behavior.",
+        "AC3: Closeout records the command output as validation proof."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate chrono replay race-track parity",
+    "plan": [
+      "Read the current qualifying trace generator, all `createQualifyingRuns` call sites, and the recent race replay realism docs before implementing.",
+      "Apply speed-profile parity first at the chrono trace-generation boundary; do not add web-only remapping.",
+      "Add only solo-chrono phases: grid, launch, racing, finished.",
+      "Layer weather-visible speed metadata after speed-profile parity is test-covered.",
+      "Extend replay inspection to include representative chrono traces.",
+      "Update affected Logics docs after each meaningful wave and keep the repo commit-ready.",
+      "Run focused qualifying/replay tests, `npm run typecheck`, `npm run lint`, `npm run replay:inspect`, and Logics validation before closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/chrono-replay-race-track-parity.json",
+    "mode": "diff-first",
+    "profile": "normal"
+  }
+}

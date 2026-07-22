@@ -210,7 +210,8 @@ def detect_side_wheels(m, front_low, dark):
                 continue
             half = (idx.max() - idx.min()) / 2.0
             radii.append((half * half + h * h) / (2 * h))
-        r = float(np.median(radii)) if radii else win
+        r = float(np.median(radii)) if radii else 0.15 * wheelbase
+        r = max(0.08 * wheelbase, min(r, 0.20 * wheelbase))  # keep the hub on-canvas when the fit is fooled (open-wheel floors, wide arches)
         pts.append({"wheel": lab, "x": x, "y": ground, "center_x": x, "center_y": int(round(ground - r))})
         fracs[lab] = abs(x - xfront) / length
     return pts, fracs

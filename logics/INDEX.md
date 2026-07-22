@@ -76,6 +76,7 @@
 | [prod_057_canonical_track_zones_product_brief](product/prod_057_canonical_track_zones_product_brief.md) | Canonical Track Zones Product Brief | Settled |  |  | product/prod_057_canonical_track_zones_product_brief.md |
 | [prod_058_canonical_corner_speed_profile_product_brief](product/prod_058_canonical_corner_speed_profile_product_brief.md) | Canonical Corner Speed Profile Product Brief | Settled |  |  | product/prod_058_canonical_corner_speed_profile_product_brief.md |
 | [prod_059_canonical_race_track_replay_trace_product_brief](product/prod_059_canonical_race_track_replay_trace_product_brief.md) | Canonical Race-Track Replay Trace Product Brief | Proposed |  |  | product/prod_059_canonical_race_track_replay_trace_product_brief.md |
+| [prod_060_race_replay_realism_layers_product_brief](product/prod_060_race_replay_realism_layers_product_brief.md) | Race Replay Realism Layers Product Brief | Proposed |  |  | product/prod_060_race_replay_realism_layers_product_brief.md |
 
 ## Roadmaps
 
@@ -185,6 +186,7 @@
 | [req_094_enrich_ai_playtest_balance_runner](request/req_094_enrich_ai_playtest_balance_runner.md) | Enrich AI playtest balance runner | Done |  |  | request/req_094_enrich_ai_playtest_balance_runner.md |
 | [req_095_canonical_corner_speed_profile_for_replay_motion](request/req_095_canonical_corner_speed_profile_for_replay_motion.md) | Canonical corner speed profile for replay motion | Done |  |  | request/req_095_canonical_corner_speed_profile_for_replay_motion.md |
 | [req_096_canonical_race_track_replay_trace_and_simulation_handoff](request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md) | Canonical race-track replay trace and simulation handoff | Draft |  |  | request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md |
+| [req_097_race_replay_realism_layers_after_canonical_trace](request/req_097_race_replay_realism_layers_after_canonical_trace.md) | Race replay realism layers after canonical trace | Draft |  |  | request/req_097_race_replay_realism_layers_after_canonical_trace.md |
 
 ## Backlog
 
@@ -413,6 +415,13 @@
 | [item_221_isolate_legacy_replay_fallbacks_behind_an_explicit_adapter](backlog/item_221_isolate_legacy_replay_fallbacks_behind_an_explicit_adapter.md) | Isolate legacy replay fallbacks behind an explicit adapter | Ready |  | 0% | backlog/item_221_isolate_legacy_replay_fallbacks_behind_an_explicit_adapter.md |
 | [item_222_normalize_circuit_distance_semantics_and_audit_drift](backlog/item_222_normalize_circuit_distance_semantics_and_audit_drift.md) | Normalize circuit distance semantics and audit drift | Ready |  | 0% | backlog/item_222_normalize_circuit_distance_semantics_and_audit_drift.md |
 | [item_223_add_race_track_replay_trace_inspection_and_representative_validation](backlog/item_223_add_race_track_replay_trace_inspection_and_representative_validation.md) | Add race-track replay trace inspection and representative validation | Ready |  | 0% | backlog/item_223_add_race_track_replay_trace_inspection_and_representative_validation.md |
+| [item_224_add_launch_and_first_corner_replay_phase](backlog/item_224_add_launch_and_first_corner_replay_phase.md) | Add launch and first-corner replay phase | Ready |  | 0% | backlog/item_224_add_launch_and_first_corner_replay_phase.md |
+| [item_225_map_chrono_gaps_to_visual_replay_spacing](backlog/item_225_map_chrono_gaps_to_visual_replay_spacing.md) | Map chrono gaps to visual replay spacing | Ready |  | 0% | backlog/item_225_map_chrono_gaps_to_visual_replay_spacing.md |
+| [item_226_represent_pit_stops_as_entry_stop_and_exit_trace_phases](backlog/item_226_represent_pit_stops_as_entry_stop_and_exit_trace_phases.md) | Represent pit stops as entry stop and exit trace phases | Ready |  | 0% | backlog/item_226_represent_pit_stops_as_entry_stop_and_exit_trace_phases.md |
+| [item_227_turn_order_changes_into_prepared_overtake_stories](backlog/item_227_turn_order_changes_into_prepared_overtake_stories.md) | Turn order changes into prepared overtake stories | Ready |  | 0% | backlog/item_227_turn_order_changes_into_prepared_overtake_stories.md |
+| [item_228_add_bounded_traffic_and_defense_behavior](backlog/item_228_add_bounded_traffic_and_defense_behavior.md) | Add bounded traffic and defense behavior | Ready |  | 0% | backlog/item_228_add_bounded_traffic_and_defense_behavior.md |
+| [item_229_make_weather_visible_in_replay_handling](backlog/item_229_make_weather_visible_in_replay_handling.md) | Make weather visible in replay handling | Ready |  | 0% | backlog/item_229_make_weather_visible_in_replay_handling.md |
+| [item_230_add_late_race_pace_fade_to_replay_traces](backlog/item_230_add_late_race_pace_fade_to_replay_traces.md) | Add late-race pace fade to replay traces | Ready |  | 0% | backlog/item_230_add_late_race_pace_fade_to_replay_traces.md |
 
 ## Tasks
 
@@ -515,3 +524,4 @@
 | [task_095_enrich_ai_playtest_balance_runner](tasks/task_095_enrich_ai_playtest_balance_runner.md) | Enrich AI playtest balance runner | Done | codex | 100% | tasks/task_095_enrich_ai_playtest_balance_runner.md |
 | [task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion](tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md) | Orchestrate canonical corner speed profile for replay motion | Done | codex | 100 | tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md |
 | [task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff](tasks/task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff.md) | Orchestrate canonical race-track replay trace and simulation handoff | Ready |  | 0% | tasks/task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff.md |
+| [task_098_orchestrate_race_replay_realism_layers_after_canonical_trace](tasks/task_098_orchestrate_race_replay_realism_layers_after_canonical_trace.md) | Orchestrate race replay realism layers after canonical trace | Ready |  | 0% | tasks/task_098_orchestrate_race_replay_realism_layers_after_canonical_trace.md |

@@ -1,0 +1,324 @@
+{
+  "title": "Race replay realism layers after canonical trace",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_046_make_race_simulation_and_replay_feel_coherent_across_circuits.md",
+    "logics/request/req_048_make_race_replay_feel_like_a_fun_race_spectacle.md",
+    "logics/request/req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map.md",
+    "logics/request/req_093_canonical_track_zones_for_spatial_race_simulation.md",
+    "logics/request/req_095_canonical_corner_speed_profile_for_replay_motion.md",
+    "logics/request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md",
+    "logics/scaffold/canonical-race-track-replay-trace.json",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/domain/circuits.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/simulation/validateReplayTrace.ts",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/replay/replayMath.ts",
+    "apps/web/src/features/replay/replayDirector.ts",
+    "apps/web/src/features/replay/useReplayClock.ts",
+    "apps/web/src/features/CircuitMap.tsx",
+    "scripts/audit-circuits.mjs",
+    "Current product direction: after the canonical race-track trace work, replay realism should improve through small deterministic layers: launch/first-corner behavior, chrono-gap visual spacing, pit-lane phases, prepared overtakes, traffic/defense, weather-visible handling, and late-race pace fade.",
+    "Architecture constraint: these layers must build on the canonical replay trace handoff from `req_096`. The simulation/shared layer decides race facts and trace semantics; the web layer renders them. Avoid adding independent visual-only inference that can make map, tower, events, and final classification disagree."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Replay realism",
+    "needs": [
+      "Plan the next replay realism layers as small deterministic slices that build on the canonical race-track replay trace instead of introducing a physics engine.",
+      "Add a launch and first-corner replay phase so race starts feel compact, variable, and readable without changing winners or economy.",
+      "Make visual car spacing reflect chrono gaps so close battles look close and large gaps look isolated while preserving final classification.",
+      "Represent pit stops as a full trace sequence with pit entry, stop, and exit phases instead of a single visual halt.",
+      "Turn canonical order changes into prepared overtake stories with closing, attempt, and settled phases driven by simulation facts.",
+      "Add lightweight traffic/defense behavior only when canonical gaps and zones show cars are close enough, especially outside overtake zones.",
+      "Make weather and late-race fatigue visible through bounded pace/handling modifiers after the trace contract can keep those effects aligned."
+    ],
+    "context": [
+      "The user feedback is that race-track replay now feels cleaner, but the next realism gains should be deliberate rather than speculative. The right scope is not full physics; it is a set of trace-level storytelling layers that make existing race facts easier to read.",
+      "`req_096` is the dependency. It should make generated `replayTrace.cars`, replay facts, event progress, live ordering, speed phase, zone metadata, and distance semantics canonical. This request should not bypass that contract.",
+      "The safest order is chrono-gap spacing before traffic/defense, because proximity behavior needs a reliable definition of who is actually close. Pit-lane phases can run in parallel once canonical pit progress exists. Weather and fatigue should come later because they add variability that can hide basic trace issues.",
+      "Every layer should be deterministic from seed, circuit, weather, traits, events, and replay facts. If a layer cannot be explained from existing canonical race data, it should be deferred instead of invented in the renderer.",
+      "Backward compatibility with old persisted results remains a legacy adapter concern. These realism layers target newly generated canonical traces."
+    ],
+    "acceptance_criteria": [
+      "AC1: The implementation order is documented and gated on the canonical replay trace handoff, so no realism layer depends on web-only semantic inference.",
+      "AC2: Launch and first-corner replay behavior produces compact starts, bounded launch variation, and smooth early field separation without changing final race outcomes.",
+      "AC3: Visual spacing for canonical traces is derived from chrono gaps with documented clamps, so close gaps, medium gaps, and large gaps read consistently on the map and tower.",
+      "AC4: Pit-stop trace output includes pit entry, pit stop, and pit exit phases with aligned event markers, live ordering, and visible time loss.",
+      "AC5: Overtake facts can render as closing, attempt, and settled phases tied to canonical zones and order changes, with no renderer-invented overtakes.",
+      "AC6: Traffic/defense effects apply only under canonical proximity and zone conditions, remain bounded, and do not contradict the final classification.",
+      "AC7: Weather and late-race pace effects are visible, deterministic, bounded, and trace-level; they do not retune rewards, cards, bot strategy, or economy in this request.",
+      "AC8: Each shipped layer includes focused replay/simulation tests or inspection proof, plus `npm run typecheck`, `npm run lint`, `npm run audit:circuits`, and `npm run logics:validate`; broader tests/build are run or explicitly justified in closeout."
+    ]
+  },
+  "product": {
+    "title": "Race Replay Realism Layers Product Brief",
+    "overview": "CR League should make race replays feel more like a race without becoming a physics project. Once the canonical replay trace is the handoff between simulation and rendering, the next gains are small deterministic realism layers: better starts, chrono-gap spacing, pit-lane phases, prepared overtakes, traffic/defense, weather-visible handling, and late-race pace fade. Each layer must explain existing race facts more clearly, not invent a second race in the browser.",
+    "goals": [
+      "Make starts, battles, pit stops, weather, and late-race behavior more legible in replay.",
+      "Keep every realism layer deterministic and trace-level.",
+      "Preserve alignment between map position, tower order, event markers, director beats, and final classification.",
+      "Ship the work in small slices with clear validation per layer.",
+      "Avoid a broad physics engine or gameplay balance retune."
+    ],
+    "non_goals": [
+      "Do not build tire simulation, collision handling, racing-line selection, steering physics, or continuous vehicle dynamics.",
+      "Do not change rewards, economy, card effects, bot strategy, or league cadence.",
+      "Do not create overtakes, pit moments, weather incidents, or fatigue losses in the renderer.",
+      "Do not add new replay controls or explanatory user-facing UI unless a specific slice requires it.",
+      "Do not optimize every legacy persisted result; keep legacy compatibility in the fallback adapter from the canonical trace work."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add launch and first-corner replay phase",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay realism",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC8"
+      ],
+      "problem": [
+        "Race starts can look too linear because the field immediately follows normal progress interpolation.",
+        "The first few percent of a race should feel compact and variable, but a full launch model would be unnecessary scope.",
+        "Start behavior must not change winners or final classification unless a later gameplay request explicitly does so."
+      ],
+      "scope_in": [
+        "Add a deterministic `launch` or `race_start` trace phase for the first small normalized race window.",
+        "Apply bounded launch variation from existing deterministic inputs such as seed, grid position, relevant traits, and circuit start/first-sector metadata.",
+        "Keep the pack compact early, then smoothly transition to normal trace spacing before the first sustained sector.",
+        "Expose enough phase metadata for replay/director inspection.",
+        "Add focused tests for deterministic launch variation, monotonic progress, and unchanged final classification."
+      ],
+      "scope_out": [
+        "Clutch, reaction-time, tire-temperature, collision, or false-start models.",
+        "Changing race outcome scoring.",
+        "Adding new UI controls or copy."
+      ],
+      "acceptance_criteria": [
+        "AC1: Canonical traces include a bounded launch/first-corner phase for newly generated races.",
+        "AC2: The early field is visibly compact and separates smoothly into normal race progress.",
+        "AC3: Tests prove deterministic output and unchanged final result ordering."
+      ]
+    },
+    {
+      "title": "Map chrono gaps to visual replay spacing",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Replay realism",
+      "request_acs": [
+        "AC1",
+        "AC3",
+        "AC8"
+      ],
+      "problem": [
+        "A car at +0.2s and a car at +4s can read too similarly if visual spacing is driven mostly by normalized progress interpolation.",
+        "The replay tower and map are easier to trust when visual distance roughly matches race gaps.",
+        "Gap spacing must be clamped so large gaps do not make the map unreadable."
+      ],
+      "scope_in": [
+        "Define a simple gap-to-distance mapping at the canonical trace boundary.",
+        "Use existing race times/gaps and circuit distance basis from the canonical trace work.",
+        "Clamp tiny, medium, and large gaps so close battles stay visible and isolated cars remain on-map.",
+        "Keep generated car progress monotonic and endpoint-preserving.",
+        "Add tests for close gap, medium gap, large gap, lapped/finished edge cases, and tower/map agreement."
+      ],
+      "scope_out": [
+        "Exact motorsport telemetry modeling.",
+        "Infinite map separation for very large gaps.",
+        "Changing final result times to fit the visual model."
+      ],
+      "acceptance_criteria": [
+        "AC1: Canonical trace spacing visibly distinguishes close, medium, and large chrono gaps.",
+        "AC2: Map order and live tower order stay aligned for generated traces.",
+        "AC3: Gap clamps and distance basis are documented and covered by focused tests."
+      ]
+    },
+    {
+      "title": "Represent pit stops as entry stop and exit trace phases",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay realism",
+      "request_acs": [
+        "AC1",
+        "AC4",
+        "AC8"
+      ],
+      "problem": [
+        "Pit stops are currently aligned better than before, but they can still read as a point event rather than a small sequence.",
+        "A realistic replay needs visible deceleration into the pit, a stable stop, and acceleration back onto the route.",
+        "Pit sequencing must stay tied to canonical pit progress and event timing."
+      ],
+      "scope_in": [
+        "Emit canonical pit phases such as `pit_entry`, `pit_stop`, and `pit_exit` in the generated car trace.",
+        "Use existing pit lane progress, event progress, and deterministic pit duration data.",
+        "Keep event markers, director beats, tower ordering, and visible time loss aligned with the phase sequence.",
+        "Add focused tests for a pit-stop race covering entry, stop, exit, marker placement, and live order changes.",
+        "Expose pit phase data in the developer trace inspection artifact."
+      ],
+      "scope_out": [
+        "Changing pit strategy selection or pit duration balance.",
+        "Drawing a separate pit lane route unless a later visual request needs it.",
+        "Manual per-circuit pit-lane geometry."
+      ],
+      "acceptance_criteria": [
+        "AC1: Canonical pit-stop traces include entry, stop, and exit phases.",
+        "AC2: The car slows, stops, and rejoins without marker or tower desync.",
+        "AC3: Tests cover at least one pit-stop scenario end to end."
+      ]
+    },
+    {
+      "title": "Turn order changes into prepared overtake stories",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Replay storytelling",
+      "request_acs": [
+        "AC1",
+        "AC5",
+        "AC8"
+      ],
+      "problem": [
+        "Order changes can read as sudden swaps if the replay does not show a setup before the pass.",
+        "The simulation already decides order changes, so the replay should stage them rather than inventing them.",
+        "Overtake staging needs to respect canonical zones and live order."
+      ],
+      "scope_in": [
+        "Enrich canonical overtake/order-change replay facts with deterministic phases such as `closing`, `attempt`, and `settled`.",
+        "Place the attempt inside a canonical overtake zone when possible, otherwise attach the best available sector/zone context.",
+        "Keep the staged story aligned with existing order-change progress and final classification.",
+        "Update replay/director consumers to render the phases from facts rather than reconstructing them independently.",
+        "Add tests for successful overtake staging, non-overtake races, and zone fallback behavior."
+      ],
+      "scope_out": [
+        "Creating new overtakes for spectacle.",
+        "Adding failed overtake incidents unless simulation already emits a fact for them.",
+        "New camera choreography."
+      ],
+      "acceptance_criteria": [
+        "AC1: Canonical order changes expose closing, attempt, and settled phases.",
+        "AC2: Replay consumers use those phases without creating extra overtakes.",
+        "AC3: Tests prove staged overtakes preserve live order and final classification."
+      ]
+    },
+    {
+      "title": "Add bounded traffic and defense behavior",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Replay realism",
+      "request_acs": [
+        "AC1",
+        "AC6",
+        "AC8"
+      ],
+      "problem": [
+        "When two cars are close, the following car should not always look like it can drive its ideal pace through every zone.",
+        "Traffic and defense are useful only after chrono-gap spacing defines proximity reliably.",
+        "The effect must be subtle enough not to contradict simulation results."
+      ],
+      "scope_in": [
+        "Apply a small deterministic blocked/defense effect only when canonical gaps, live order, and zone data show cars are close.",
+        "Prefer non-overtake or technical zones for blocked behavior and overtake zones for release/attack behavior.",
+        "Keep the effect bounded and trace-level, preserving monotonic progress and final ordering.",
+        "Expose traffic/defense state in replay facts or trace metadata only where current consumers need it.",
+        "Add tests for close-following, not-close, overtake-zone, and final-classification cases."
+      ],
+      "scope_out": [
+        "A full dirty-air model.",
+        "Driver-specific defense AI.",
+        "Changing race outcome or overtake probability in this request."
+      ],
+      "acceptance_criteria": [
+        "AC1: Traffic/defense effects only apply under canonical proximity and zone conditions.",
+        "AC2: The following car remains visually constrained without breaking tower/map alignment.",
+        "AC3: Tests prove the effect is bounded and deterministic."
+      ]
+    },
+    {
+      "title": "Make weather visible in replay handling",
+      "priority": "Low",
+      "complexity": "Medium",
+      "theme": "Replay realism",
+      "request_acs": [
+        "AC1",
+        "AC7",
+        "AC8"
+      ],
+      "problem": [
+        "Weather affects race context, but replay motion can look similar across dry, light rain, and heavy rain.",
+        "Weather should be visible through braking and acceleration behavior before it changes balance.",
+        "Adding weather too early can hide trace alignment bugs, so it should depend on canonical trace and gap stability."
+      ],
+      "scope_in": [
+        "Apply bounded trace-level modifiers from existing weather facts: dry baseline, light rain slightly longer braking, heavy rain slower corners and softer exits.",
+        "Use existing circuit speed-profile spans and zone metadata instead of route projection logic.",
+        "Keep weather modifiers deterministic and visible in the developer trace inspection artifact.",
+        "Add tests comparing dry, light-rain, and heavy-rain trace behavior on the same representative circuit.",
+        "Document that this slice does not rebalance race outcomes."
+      ],
+      "scope_out": [
+        "Changing weather probability, weather event generation, or race scoring.",
+        "Wet-line, standing-water, tire-choice, or grip-map simulation.",
+        "New weather UI."
+      ],
+      "acceptance_criteria": [
+        "AC1: Weather changes trace-level braking/corner/exit behavior in a bounded deterministic way.",
+        "AC2: Dry, light rain, and heavy rain remain distinguishable in inspection/tests.",
+        "AC3: Final results and economy outputs are unchanged by this visual realism layer."
+      ]
+    },
+    {
+      "title": "Add late-race pace fade to replay traces",
+      "priority": "Low",
+      "complexity": "Medium",
+      "theme": "Replay realism",
+      "request_acs": [
+        "AC1",
+        "AC7",
+        "AC8"
+      ],
+      "problem": [
+        "Late-race replay motion can feel too linear when every car keeps the same visible rhythm until the finish.",
+        "A small pace fade can make energy, grip, and weather feel more meaningful without introducing a tire model.",
+        "The effect must stay trace-level and bounded unless a later gameplay request chooses to rebalance outcomes."
+      ],
+      "scope_in": [
+        "Add a small deterministic late-race pace fade or stability state based on existing traits, weather, and race phase.",
+        "Apply the effect only after earlier trace/gap/pit/overtake layers are stable.",
+        "Keep final trace endpoints and final classification intact.",
+        "Expose late-race state in inspection output where useful.",
+        "Add tests for high-energy, low-energy, dry, and wet representative cases."
+      ],
+      "scope_out": [
+        "Tire compounds, tire wear, fuel loads, mechanical failures, or safety cars.",
+        "Changing final race times or rewards.",
+        "Per-driver long-run strategy AI."
+      ],
+      "acceptance_criteria": [
+        "AC1: Late-race pace fade is visible, deterministic, and bounded.",
+        "AC2: The effect reflects existing energy/grip/weather inputs without changing scored outcomes.",
+        "AC3: Tests prove endpoints, live order consistency, and final classification are preserved."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate race replay realism layers after canonical trace",
+    "plan": [
+      "Read `req_096` first and confirm the canonical replay trace handoff is ready enough before implementing any realism layer.",
+      "Implement or schedule the layers in dependency order: launch/first corner, chrono-gap spacing, pit-lane phases, overtake stories, traffic/defense, weather handling, late-race pace fade.",
+      "For each layer, keep logic at the shared trace boundary, keep the web renderer as a consumer, and avoid outcome/balance changes unless a future request explicitly asks for them.",
+      "After each meaningful layer, update affected Logics docs with scope, validation proof, and any deferred ceiling.",
+      "Use the developer trace inspection artifact from the canonical trace work to compare representative races before and after each layer.",
+      "Run focused replay/simulation tests, typecheck, lint, audit:circuits, and Logics validation before closing; run broader tests/build when the touched surface justifies it."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/race-replay-realism-layers.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

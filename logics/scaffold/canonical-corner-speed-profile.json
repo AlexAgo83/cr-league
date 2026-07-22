@@ -1,0 +1,212 @@
+{
+  "title": "Canonical corner speed profile for replay motion",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/request/req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map.md",
+    "logics/request/req_093_canonical_track_zones_for_spatial_race_simulation.md",
+    "packages/shared/src/domain/circuits.ts",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/replay/replayMath.ts",
+    "apps/web/src/features/replay/useReplayClock.ts",
+    "apps/web/src/features/replay/ReplayStageOverlay.tsx",
+    "scripts/generate-circuit.mjs",
+    "scripts/audit-circuits.mjs",
+    "Current replay context: canonical track geometry made replay pacing distance-faithful, which made playback feel slower. A short-term calibration removed the 0.5x speed option and doubled the effective replay clock. The next step is not another global speed tweak: the track should expose where cars naturally slow down and speed up, derived from route curvature and straights.",
+    "Code pointers: CircuitMap.tsx already computes route poses and turn feel with poseOnRoute, angleDelta, driftAngle, DRIFT_LOOKAHEAD, HEADING_LOOKAHEAD, routeSegments, routeLength, and stageProgress. Shared circuit identities already carry routeLengthMeters, startProgress, pitLaneProgress, mainStraightStartProgress, mainStraightEndProgress, track traits, and generated track zones. replayMath.ts owns replayDistanceScale and carProgressAtTrace; useReplayClock.ts owns elapsed replay time, while CircuitMap renders a known progress value onto the route."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Replay fidelity",
+    "needs": [
+      "Generate a canonical per-circuit speed profile from route geometry so replay motion can slow before corners, carry lower speed through apex-like curved spans, and accelerate on exits/straights without hand-authoring every route.",
+      "Store the speed profile as shared circuit data or deterministic shared helpers so the map/replay consumes a single stable source instead of recalculating curvature every animation frame.",
+      "Use the speed profile in replay motion first, without changing simulation outcomes, classification, gaps, pit timing, rewards, cards, or event ordering.",
+      "Validate that every current circuit has sane speed-profile coverage, no zero-speed dead zones, smooth enough transitions for watchable replay, and deterministic generated data.",
+      "Document the explicit handoff criteria for a later simulation integration pass, so this slice reaches a complete replay-visible endpoint instead of becoming an open-ended physics project."
+    ],
+    "context": [
+      "The product observation is valid: after canonical race-track fixes, replay playback became more distance-faithful and therefore felt slower. Global speed calibration helped, but the better model is not a bigger multiplier; the circuit should describe where cars visually slow and recover.",
+      "The current map already has the raw ingredients for a lazy v1. CircuitMap.tsx can compute heading changes from route points, and driftAngle already uses local angle deltas for visual turn feel. That same local curvature concept should be promoted into generated/shared speed-profile data, not recomputed in render loops.",
+      "The first implementation must stay replay-only. The simulation trace, tower gaps, overtakes, event timings, pit-stop windows, and final classification remain the source of truth. The speed profile only changes how a car's visual progress is eased between canonical trace points on the route.",
+      "The generated profile should be small and inspectable: normalized progress ranges with a factor and kind such as braking, corner, exit, or straight. It should be derived from route segment angles and lengths, then smoothed/merged so the replay does not stutter from tiny route-point noise.",
+      "Main straight and track zones already exist as canonical geometry. Use them where helpful: main-straight spans can receive a mild speed-up, technical/curved zones can receive slowdown, but the first version should remain geometry-led rather than a gameplay balance retune.",
+      "Simulation integration is deliberately a follow-up gate, not hidden scope. It becomes valid only after replay-only behavior is visually accepted and measured: no desync with events, pit stops still align, overtakes still read correctly, and generated profiles pass audit across all circuits."
+    ],
+    "acceptance_criteria": [
+      "AC1: A shared `TrackSpeedProfile` contract exists with normalized progress ranges, speed factors, and stable kinds/labels, and every current circuit exposes a generated profile from route geometry.",
+      "AC2: The generator/audit validates each profile: progress bounds are valid, factors stay within a documented safe range, adjacent noisy spans are merged or smoothed, coverage is complete enough for interpolation, and no profile can stall replay motion.",
+      "AC3: Replay map motion consumes the canonical speed profile to visually slow before/through high-curvature spans and recover on exits/straights, while simulation results, event order, pit-stop logic, tower gaps, and classification are unchanged.",
+      "AC4: Replay remains deterministic and watchable across representative circuits: a mostly straight route, a tight technical route, a long route, and a pit-stop race all keep aligned markers/events and non-jarring car motion.",
+      "AC5: The implementation leaves an explicit simulation-handoff note with criteria for a later pass, but does not change card balance, race scoring, bot strategy, or result generation in this slice.",
+      "AC6: Validation passes with `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npm run audit:circuits`, and `npm run logics:validate`."
+    ]
+  },
+  "product": {
+    "title": "Canonical Corner Speed Profile Product Brief",
+    "overview": "CR League now has canonical route length, start, pit, main-straight, and zone data, but replay cars still move with mostly uniform progress along the track. This makes distance-faithful replays feel slow without giving the viewer the natural rhythm of braking, cornering, and exit acceleration. This feature generates a compact speed profile from circuit curvature and straights, stores it as canonical circuit data, and uses it in replay motion first while preserving simulation outcomes.",
+    "goals": [
+      "Make replay motion feel more like cars driving a circuit, with visible braking before corners and recovery after them.",
+      "Keep the speed model canonical and generated from route geometry, not hand-authored per circuit or recalculated every frame.",
+      "Preserve replay determinism and alignment with events, pit stops, overtakes, and tower data.",
+      "Finish a complete replay-visible feature and define the gate for future simulation use."
+    ],
+    "non_goals": [
+      "Do not build a physics engine, racing-line solver, tire model, collision model, or per-driver steering model.",
+      "Do not change classification, simulation elapsed times, rewards, card effects, bot strategy, or economy balance in this request.",
+      "Do not hand-author full corner annotations for every circuit.",
+      "Do not introduce new runtime dependencies for geometry analysis.",
+      "Do not use speed-profile data for simulation until the replay-only pass has explicit acceptance proof."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Generate canonical speed profiles from circuit route curvature",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race-track data model",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC6"
+      ],
+      "problem": [
+        "Circuit geometry now exposes canonical start, pit, straight, length, and zones, but there is no canonical data for where the route is fast or slow.",
+        "CircuitMap.tsx can infer local heading/drift at render time, but using render-time geometry as race semantics repeats the pre-canonical-track smell.",
+        "Without generated profile data, any corner slowdown would either be hand-authored, recomputed per frame, or duplicated between replay and future simulation."
+      ],
+      "scope_in": [
+        "Define a compact shared `TrackSpeedProfile`/`TrackSpeedSpan` type with kind, startProgress, endProgress, factor, and optional reason/source fields only if useful.",
+        "Add a route-analysis helper or script path that computes local curvature from consecutive route segments using standard math already present in CircuitMap-style helpers.",
+        "Derive braking, corner, exit, and straight spans from angle deltas and segment lengths, then merge tiny/noisy adjacent spans.",
+        "Store generated profiles in shared circuit identities or expose deterministic shared helpers keyed by circuit identity, matching the existing canonical circuit data style.",
+        "Extend `scripts/generate-circuit.mjs` and `scripts/audit-circuits.mjs` so generated profiles are reproducible and route changes cannot silently drift."
+      ],
+      "scope_out": [
+        "Manual per-corner authoring.",
+        "Runtime geometry analysis inside animation frames.",
+        "Using the profile in replay rendering or simulation; those are separate backlog items."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every current circuit exposes a deterministic generated speed profile from route geometry.",
+        "AC2: Audit/test coverage validates progress bounds, factor range, minimum span size after merge, and no zero/negative-speed profile output.",
+        "AC3: The generated profile is small enough to inspect and stable across repeated generation."
+      ]
+    },
+    {
+      "title": "Apply speed profiles to replay motion without changing race outcomes",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay fidelity",
+      "request_acs": [
+        "AC3",
+        "AC4",
+        "AC6"
+      ],
+      "problem": [
+        "Replay cars currently follow canonical trace progress with limited local speed variation, so distance-faithful playback lacks the natural rhythm of braking and acceleration.",
+        "Changing simulation trace times directly would risk desyncing tower gaps, events, overtakes, pit stops, and classification.",
+        "The replay needs visual speed variation that respects canonical race facts but stays a rendering concern."
+      ],
+      "scope_in": [
+        "Add replay math that maps canonical race progress through the circuit speed profile for visual car progress only.",
+        "Apply a small, bounded slowdown before/through high-curvature spans and mild recovery/boost on exits or long straights.",
+        "Preserve monotonic progress and keep final progress, pit-stop holds, event markers, director beats, and tower ordering aligned with canonical trace data.",
+        "Use existing replay/CircuitMap patterns and no new dependency.",
+        "Add focused tests for straight, tight-corner, and pit-stop traces proving the visual mapping is deterministic, monotonic, and endpoint-preserving."
+      ],
+      "scope_out": [
+        "Changing `simulateRace` elapsed times or event generation.",
+        "Changing replay speed menu labels or global speed multiplier again.",
+        "Adding new UI copy or controls for speed profiles."
+      ],
+      "acceptance_criteria": [
+        "AC1: Replay car motion visibly slows near generated corner spans and recovers on exit/straight spans.",
+        "AC2: The visual progress mapping is deterministic, monotonic, and reaches the same endpoints as the canonical trace.",
+        "AC3: Pit-stop marker alignment, event markers, tower gaps, and final classification remain driven by canonical replay data."
+      ]
+    },
+    {
+      "title": "Validate replay speed profiles across representative circuits",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Validation",
+      "request_acs": [
+        "AC2",
+        "AC4",
+        "AC6"
+      ],
+      "problem": [
+        "A curvature heuristic can look good on one route and bad on another if not checked across route shapes.",
+        "Long circuits, tight technical circuits, mostly straight circuits, and pit-stop races stress different parts of the replay motion model.",
+        "The feature should not ship as a hidden subjective tweak without representative proof."
+      ],
+      "scope_in": [
+        "Add focused unit tests for generated profile shape and replay progress mapping.",
+        "Run or extend `audit:circuits` to summarize profile coverage and flag suspicious circuits.",
+        "Check representative circuits: mostly straight/main-straight-heavy, tight technical, long route, and pit-stop replay.",
+        "Record validation proof in the orchestration task closeout."
+      ],
+      "scope_out": [
+        "Manual visual review for every circuit as a blocking gate.",
+        "Playwright pixel-perfect animation assertions.",
+        "Balance simulation or card tuning."
+      ],
+      "acceptance_criteria": [
+        "AC1: Tests cover at least one straight route, one tight-corner route, one long route, and one pit-stop replay path.",
+        "AC2: Circuit audit reports or validates generated speed-profile health for every current circuit.",
+        "AC3: Validation evidence is recorded before closeout."
+      ]
+    },
+    {
+      "title": "Document the simulation handoff for speed-profile gameplay",
+      "priority": "Low",
+      "complexity": "Low",
+      "theme": "Simulation follow-up",
+      "request_acs": [
+        "AC5",
+        "AC6"
+      ],
+      "problem": [
+        "Speed profiles are likely useful for future gameplay, but wiring them into race outcomes before the replay behavior is proven would mix visual fidelity with balance changes.",
+        "The future simulation model needs clear criteria so it does not become speculative physics scope inside this replay request."
+      ],
+      "scope_in": [
+        "Document the later simulation gate: replay-only profile accepted, pit/events still aligned, no audit anomalies, and a fresh balance baseline available.",
+        "List likely future simulation uses: pace advantage on straights, control/grip advantage in corners, weather penalties amplified in curved zones, and overtake probability in fast zones.",
+        "State that this request intentionally leaves classification, scoring, card effects, bot strategy, and economy untouched."
+      ],
+      "scope_out": [
+        "Implementing simulation scoring from speed profiles.",
+        "Changing cards, rewards, bot strategies, or balance constants.",
+        "Creating a full physics model."
+      ],
+      "acceptance_criteria": [
+        "AC1: Closeout or a linked note clearly states the criteria for a future simulation integration pass.",
+        "AC2: No race outcome, card, reward, or bot-strategy behavior changes ship in this request."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate canonical corner speed profile for replay motion",
+    "plan": [
+      "Read the canonical race-track geometry and track-zone docs first; this work must extend generated shared circuit data, not reintroduce render-time race semantics.",
+      "Define the shared speed-profile contract and generator/audit path from route curvature, keeping the output compact, deterministic, and bounded.",
+      "Generate profiles for all current circuits and add audit/test coverage for sane ranges, merged spans, and no replay-stalling output.",
+      "Wire replay motion to consume the profile as visual-only progress easing, preserving canonical trace timing, pit alignment, event markers, tower gaps, overtakes, and final classification.",
+      "Validate representative straight, technical, long, and pit-stop replay cases; adjust only the bounded heuristic constants if validation shows jarring motion.",
+      "Document the simulation handoff criteria and explicitly defer outcome/balance usage until a later request.",
+      "Run typecheck, lint, tests, build, audit:circuits, and Logics validation; record exact proof in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/canonical-corner-speed-profile.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

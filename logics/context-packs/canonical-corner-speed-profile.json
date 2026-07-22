@@ -1,0 +1,585 @@
+{
+  "budgets": {
+    "max_docs": 24,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_095_canonical_corner_speed_profile_for_replay_motion item_215_generate_canonical_speed_profiles_from_circuit_route_curvature item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes item_217_validate_replay_speed_profiles_across_representative_circuits item_218_document_the_simulation_handoff_for_speed_profile_gameplay task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_215_generate_canonical_speed_profiles_from_circuit_route_curvature",
+          "item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes",
+          "item_217_validate_replay_speed_profiles_across_representative_circuits",
+          "item_218_document_the_simulation_handoff_for_speed_profile_gameplay"
+        ],
+        "prod": [
+          "prod_058_canonical_corner_speed_profile_product_brief"
+        ],
+        "req": [
+          "req_095_canonical_corner_speed_profile_for_replay_motion"
+        ],
+        "task": [
+          "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+        ]
+      },
+      "path": "logics/product/prod_058_canonical_corner_speed_profile_product_brief.md",
+      "ref": "prod_058_canonical_corner_speed_profile_product_brief",
+      "status": "Proposed",
+      "title": "Canonical Corner Speed Profile Product Brief"
+    },
+    {
+      "kind": "roadmap",
+      "linked_refs": {
+        "adr": [
+          "adr_001_cr_league_v1_static_pwa_api_architecture",
+          "adr_004_data_security",
+          "adr_006_accessibility",
+          "adr_007_i18n",
+          "adr_008_testing_quality"
+        ],
+        "item": [
+          "item_004_design_and_implement_the_v1_card_and_inventory_system",
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_032_redesign_the_cr_league_race_cockpit_v0",
+          "req_033_over_engineering_cleanup_pass_1",
+          "req_034_personalized_race_recap",
+          "req_035_make_garage_inventory_cards_open_the_card_detail_modal",
+          "req_036_github_ci_render_blueprint_and_release_contract",
+          "req_037_starting_grid_modal_and_season_narrative",
+          "req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening",
+          "req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization",
+          "req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next",
+          "req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue",
+          "req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest",
+          "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count",
+          "req_064_mobile_modal_hygiene_and_real_playback_icons",
+          "req_065_home_splash_landing_screen_with_floating_title_and_press_start",
+          "req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup",
+          "req_067_plan_risk_readability_layer",
+          "req_068_non_winning_success_feedback",
+          "req_069_beta_support_hardening",
+          "req_070_split_large_web_views_from_the_initial_bundle",
+          "req_071_modularize_the_large_web_layout_stylesheet",
+          "req_072_serve_large_web_artwork_as_webp",
+          "req_073_lazy_load_non_critical_web_artwork",
+          "req_074_audit_circuit_data_impact_before_optimizing_route_loading",
+          "req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook",
+          "req_076_refresh_league_state_when_the_player_returns_to_the_tab",
+          "req_081_rebalance_card_economy_to_remove_dead_cards_and_redundant_duplicates",
+          "req_082_show_opponents_configurations_for_comparison_after_lock_and_after_the_race",
+          "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability",
+          "req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity",
+          "req_085_repo_review_remediation_pass_6_json_column_race_locks_simulation_finishing_order_fidelity_destructive_op_guards_and_over_engineering_cleanup",
+          "req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation",
+          "req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness",
+          "req_088_post_remediation_hardening_submit_sell_concurrency_client_security_and_privacy_accessibility_data_model_integrity_and_config_validation",
+          "req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map",
+          "req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap",
+          "road_002_cr_league_roadmap_v2"
+        ],
+        "spec": [
+          "spec_001_grand_prix_core_loop_and_simulation_v1",
+          "spec_016_implementation_roadmap"
+        ],
+        "task": [
+          "task_034_orchestrate_over_engineering_cleanup_pass_1",
+          "task_035_orchestrate_personalized_race_recap",
+          "task_036_orchestrate_garage_inventory_card_consultation",
+          "task_037_orchestrate_ci_render_blueprint_and_release_contract",
+          "task_038_orchestrate_starting_grid_and_season_narrative",
+          "task_059_orchestrate_repo_review_remediation_pass_5",
+          "task_060_orchestrate_first_gp_action_clarity",
+          "task_061_orchestrate_result_verdict_pass",
+          "task_062_orchestrate_email_backed_profile_recovery",
+          "task_063_orchestrate_replay_suspense_and_first_contact_polish",
+          "task_064_orchestrate_lap_scale_coherence_fix",
+          "task_065_orchestrate_mobile_modal_hygiene_and_playback_icons",
+          "task_066_orchestrate_the_home_splash_landing_screen",
+          "task_067_orchestrate_post_splash_playtest_polish",
+          "task_068_orchestrate_plan_risk_readability_layer",
+          "task_069_orchestrate_non_winning_success_feedback",
+          "task_070_orchestrate_beta_support_hardening",
+          "task_071_orchestrate_web_view_code_splitting",
+          "task_072_orchestrate_web_stylesheet_modularization",
+          "task_073_orchestrate_webp_artwork_conversion",
+          "task_074_orchestrate_lazy_artwork_loading",
+          "task_075_orchestrate_circuit_route_loading_audit",
+          "task_076_orchestrate_gameapp_admin_panel_hook_extraction",
+          "task_077_orchestrate_league_state_freshness_on_return",
+          "task_086_orchestrate_repo_review_remediation_pass_6",
+          "task_087_orchestrate_gameplay_and_economy_integrity_fixes",
+          "task_088_orchestrate_simulation_fidelity_and_replay_performance_fixes",
+          "task_089_orchestrate_post_remediation_hardening",
+          "task_090_orchestrate_pit_stop_visual_alignment",
+          "task_091_orchestrate_canonical_race_track_geometry"
+        ]
+      },
+      "path": "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+      "ref": "road_002_cr_league_roadmap_v2",
+      "status": "Accepted",
+      "title": "CR League Roadmap v2"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_204_generate_the_main_straight_and_start_line_as_canonical_track_data"
+        ],
+        "prod": [
+          "prod_054_canonical_race_track_geometry_product_brief"
+        ],
+        "req": [
+          "req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map"
+        ],
+        "task": [
+          "task_091_orchestrate_canonical_race_track_geometry"
+        ]
+      },
+      "path": "logics/product/prod_054_canonical_race_track_geometry_product_brief.md",
+      "ref": "prod_054_canonical_race_track_geometry_product_brief",
+      "status": "Settled",
+      "title": "Canonical Race-Track Geometry Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_210_add_canonical_track_zone_model_and_derived_circuit_zones"
+        ],
+        "prod": [
+          "prod_057_canonical_track_zones_product_brief"
+        ],
+        "req": [
+          "req_093_canonical_track_zones_for_spatial_race_simulation"
+        ],
+        "task": [
+          "task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation"
+        ]
+      },
+      "path": "logics/product/prod_057_canonical_track_zones_product_brief.md",
+      "ref": "prod_057_canonical_track_zones_product_brief",
+      "status": "Settled",
+      "title": "Canonical Track Zones Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, canonical corner speed profile for replay motion, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Canonical corner speed profile for replay motion",
+        "use when": "You need to implement or review the scaffolded workflow for Canonical corner speed profile for replay motion."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_215_generate_canonical_speed_profiles_from_circuit_route_curvature",
+          "item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes",
+          "item_217_validate_replay_speed_profiles_across_representative_circuits",
+          "item_218_document_the_simulation_handoff_for_speed_profile_gameplay"
+        ],
+        "prod": [
+          "prod_058_canonical_corner_speed_profile_product_brief"
+        ],
+        "req": [
+          "req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map",
+          "req_093_canonical_track_zones_for_spatial_race_simulation",
+          "req_095_canonical_corner_speed_profile_for_replay_motion"
+        ],
+        "road": [
+          "road_002_cr_league_roadmap_v2"
+        ]
+      },
+      "path": "logics/request/req_095_canonical_corner_speed_profile_for_replay_motion.md",
+      "ref": "req_095_canonical_corner_speed_profile_for_replay_motion",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Canonical corner speed profile for replay motion"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, canonical race-track geometry: generate semantic track markers instead of interpreting them on the map, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Canonical race-track geometry: generate semantic track markers instead of interpreting them on the map",
+        "use when": "You need to implement or review the scaffolded workflow for Canonical race-track geometry: generate semantic track markers instead of interpreting them on the map."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_204_generate_the_main_straight_and_start_line_as_canonical_track_data",
+          "item_205_base_replay_scale_on_canonical_meters_and_reconcile_track_length",
+          "item_206_delete_client_side_replay_beat_re_derivation_replayfacts_is_the_sole_source"
+        ],
+        "prod": [
+          "prod_054_canonical_race_track_geometry_product_brief"
+        ],
+        "req": [
+          "req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness",
+          "req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map",
+          "req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map"
+        ],
+        "road": [
+          "road_002_cr_league_roadmap_v2"
+        ]
+      },
+      "path": "logics/request/req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map.md",
+      "ref": "req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map",
+      "schema_version": "1.0",
+      "status": "Done",
+      "title": "Canonical race-track geometry: generate semantic track markers instead of interpreting them on the map"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, canonical track zones for spatial race simulation, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Canonical track zones for spatial race simulation",
+        "use when": "You need to implement or review the scaffolded workflow for Canonical track zones for spatial race simulation."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_210_add_canonical_track_zone_model_and_derived_circuit_zones",
+          "item_211_annotate_simulation_events_and_replay_facts_with_track_zones",
+          "item_212_consume_canonical_track_zones_in_replay_map_and_reports",
+          "item_213_document_deferred_zone_driven_gameplay_tuning"
+        ],
+        "prod": [
+          "prod_057_canonical_track_zones_product_brief"
+        ],
+        "req": [
+          "req_090_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map",
+          "req_091_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map",
+          "req_093_canonical_track_zones_for_spatial_race_simulation"
+        ]
+      },
+      "path": "logics/request/req_093_canonical_track_zones_for_spatial_race_simulation.md",
+      "ref": "req_093_canonical_track_zones_for_spatial_race_simulation",
+      "schema_version": "1.0",
+      "status": "Done",
+      "title": "Canonical track zones for spatial race simulation"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, generate canonical speed profiles from circuit route curvature, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Generate canonical speed profiles from circuit route curvature",
+        "use when": "Implementing the scaffolded slice for Generate canonical speed profiles from circuit route curvature."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_215_generate_canonical_speed_profiles_from_circuit_route_curvature"
+        ],
+        "prod": [
+          "prod_058_canonical_corner_speed_profile_product_brief"
+        ],
+        "req": [
+          "req_095_canonical_corner_speed_profile_for_replay_motion"
+        ],
+        "task": [
+          "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+        ]
+      },
+      "path": "logics/backlog/item_215_generate_canonical_speed_profiles_from_circuit_route_curvature.md",
+      "ref": "item_215_generate_canonical_speed_profiles_from_circuit_route_curvature",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Generate canonical speed profiles from circuit route curvature"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate canonical corner speed profile for replay motion",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_215_generate_canonical_speed_profiles_from_circuit_route_curvature",
+          "item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes",
+          "item_217_validate_replay_speed_profiles_across_representative_circuits",
+          "item_218_document_the_simulation_handoff_for_speed_profile_gameplay"
+        ],
+        "prod": [
+          "prod_058_canonical_corner_speed_profile_product_brief"
+        ],
+        "req": [
+          "req_095_canonical_corner_speed_profile_for_replay_motion"
+        ],
+        "task": [
+          "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+        ]
+      },
+      "path": "logics/tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md",
+      "ref": "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate canonical corner speed profile for replay motion"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_215_generate_canonical_speed_profiles_from_circuit_route_curvature",
+          "item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes",
+          "item_217_validate_replay_speed_profiles_across_representative_circuits",
+          "item_218_document_the_simulation_handoff_for_speed_profile_gameplay"
+        ],
+        "prod": [
+          "prod_058_canonical_corner_speed_profile_product_brief"
+        ],
+        "req": [
+          "req_095_canonical_corner_speed_profile_for_replay_motion"
+        ],
+        "task": [
+          "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+        ]
+      },
+      "path": "logics/product/prod_058_canonical_corner_speed_profile_product_brief.md",
+      "ref": "prod_058_canonical_corner_speed_profile_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Canonical Corner Speed Profile Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, apply speed profiles to replay motion without changing race outcomes, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Apply speed profiles to replay motion without changing race outcomes",
+        "use when": "Implementing the scaffolded slice for Apply speed profiles to replay motion without changing race outcomes."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes"
+        ],
+        "prod": [
+          "prod_058_canonical_corner_speed_profile_product_brief"
+        ],
+        "req": [
+          "req_095_canonical_corner_speed_profile_for_replay_motion"
+        ],
+        "task": [
+          "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+        ]
+      },
+      "path": "logics/backlog/item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes.md",
+      "ref": "item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Apply speed profiles to replay motion without changing race outcomes"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, validate replay speed profiles across representative circuits, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Validate replay speed profiles across representative circuits",
+        "use when": "Implementing the scaffolded slice for Validate replay speed profiles across representative circuits."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_217_validate_replay_speed_profiles_across_representative_circuits"
+        ],
+        "prod": [
+          "prod_058_canonical_corner_speed_profile_product_brief"
+        ],
+        "req": [
+          "req_095_canonical_corner_speed_profile_for_replay_motion"
+        ],
+        "task": [
+          "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+        ]
+      },
+      "path": "logics/backlog/item_217_validate_replay_speed_profiles_across_representative_circuits.md",
+      "ref": "item_217_validate_replay_speed_profiles_across_representative_circuits",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Validate replay speed profiles across representative circuits"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, document the simulation handoff for speed-profile gameplay, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Document the simulation handoff for speed-profile gameplay",
+        "use when": "Implementing the scaffolded slice for Document the simulation handoff for speed-profile gameplay."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_218_document_the_simulation_handoff_for_speed_profile_gameplay"
+        ],
+        "prod": [
+          "prod_058_canonical_corner_speed_profile_product_brief"
+        ],
+        "req": [
+          "req_095_canonical_corner_speed_profile_for_replay_motion"
+        ],
+        "task": [
+          "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+        ]
+      },
+      "path": "logics/backlog/item_218_document_the_simulation_handoff_for_speed_profile_gameplay.md",
+      "ref": "item_218_document_the_simulation_handoff_for_speed_profile_gameplay",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Document the simulation handoff for speed-profile gameplay"
+    }
+  ],
+  "estimates": {
+    "char_count": 17474,
+    "companion_doc_count": 4,
+    "doc_count": 9
+  },
+  "generated_at": "2026-07-22T22:00:52Z",
+  "handoff": {
+    "companion_doc_count": 4,
+    "enabled": true,
+    "source_refs": [
+      "req_095_canonical_corner_speed_profile_for_replay_motion",
+      "item_215_generate_canonical_speed_profiles_from_circuit_route_curvature",
+      "item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes",
+      "item_217_validate_replay_speed_profiles_across_representative_circuits",
+      "item_218_document_the_simulation_handoff_for_speed_profile_gameplay",
+      "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 835,
+      "fr": 835
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_095_canonical_corner_speed_profile_for_replay_motion,item_215_generate_canonical_speed_profiles_from_circuit_route_curvature,item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes,item_217_validate_replay_speed_profiles_across_representative_circuits,item_218_document_the_simulation_handoff_for_speed_profile_gameplay,task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion",
+  "refs": [
+    "req_095_canonical_corner_speed_profile_for_replay_motion",
+    "item_215_generate_canonical_speed_profiles_from_circuit_route_curvature",
+    "item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes",
+    "item_217_validate_replay_speed_profiles_across_representative_circuits",
+    "item_218_document_the_simulation_handoff_for_speed_profile_gameplay",
+    "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+  ],
+  "release": {
+    "blocking_reasons": [],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Release evidence is complete.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": null,
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "ready",
+    "target_version": "0.3.28"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md",
+      "ref": "task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion"
+    }
+  ]
+}

@@ -6,6 +6,7 @@ export type ReplayClockSnapshot = {
   tower: RaceResult["classification"];
 };
 export type ReplaySpeed = 0.5 | 1 | 2 | 4;
+const REPLAY_SPEED_MULTIPLIER = 2;
 
 type ReplayClockOptions = {
   initialSnapshot: ReplayClockSnapshot;
@@ -127,7 +128,7 @@ export function useReplayClock({
     if (!playing) return;
     let last = performance.now();
     let frame = requestAnimationFrame(function tick(now: number) {
-      const replayDeltaSeconds = ((now - last) / 1000) * speed;
+      const replayDeltaSeconds = ((now - last) / 1000) * speed * REPLAY_SPEED_MULTIPLIER;
       clock.current = Math.min(clock.current + replayDeltaSeconds, replayEnd);
       last = now;
       svg.setCurrentTime(clock.current);

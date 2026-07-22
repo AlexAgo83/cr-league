@@ -13,7 +13,7 @@ import { ReplayProgress, type ReplayTimelineMarker } from "./ReplayProgress.js";
 import { ReplayTower } from "./ReplayTower.js";
 import type { ReplaySpeed } from "./useReplayClock.js";
 
-const REPLAY_SPEEDS = [0.5, 1, 2, 4] as const;
+const REPLAY_SPEEDS = [1, 2, 4] as const;
 
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string; decision?: RaceDecision };
 

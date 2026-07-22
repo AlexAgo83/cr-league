@@ -2821,32 +2821,76 @@ label small {
 .race-weather-legend {
   border-top: 1px solid var(--color-border);
   display: grid;
-  gap: 6px;
+  gap: 8px;
   margin-top: 14px;
   padding-top: 12px;
 }
 
-.race-weather-legend h3 {
+.race-info-switch {
+  background: rgb(255 255 255 / 0.06);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  padding: 3px;
+}
+
+.race-info-switch button {
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  color: var(--color-muted);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 900;
+  padding: 5px 10px;
+  text-transform: uppercase;
+}
+
+.race-info-switch button.active {
+  background: var(--color-accent);
+  color: #160f0c;
+}
+
+.race-info-subpanel {
+  display: grid;
+  gap: 6px;
+}
+
+.race-info-subpanel h3 {
   font-size: 0.8rem;
   margin: 0;
   text-transform: uppercase;
 }
 
-.race-weather-legend p {
+.race-info-subpanel p {
   display: grid;
   gap: 6px;
   margin: 0;
 }
 
-.race-weather-legend p > span {
+.race-info-subpanel p > span {
   align-items: center;
   display: grid;
   gap: 10px;
   grid-template-columns: 28px minmax(0, 1fr);
 }
 
-.race-weather-legend p > span > :first-child {
+.race-stats-explainer p > span {
+  align-items: start;
+  grid-template-columns: 92px minmax(0, 1fr);
+}
+
+.race-stats-explainer b {
+  color: var(--color-text);
+}
+
+.race-info-subpanel p > span > :first-child {
   justify-self: center;
+}
+
+.race-stats-explainer p > span > :first-child {
+  justify-self: start;
 }
 
 .race-weather-legend .replay-legend-marker {
@@ -3446,6 +3490,37 @@ label small {
   --trait-fill: rgb(250 204 21 / 0.3);
   --trait-tone: #facc15;
   --trait-tone-paper: #9a6b00;
+}
+
+.map-trait-pace,
+.map-trait-aggression {
+  --trait-fill: rgb(37 99 235 / 0.3);
+  --trait-tone: #2563eb;
+  --trait-tone-paper: #1d4ed8;
+}
+
+.map-trait-control,
+.map-trait-weatherReadiness {
+  --trait-fill: rgb(34 197 94 / 0.3);
+  --trait-tone: #22c55e;
+  --trait-tone-paper: #15803d;
+}
+
+.map-trait-reliability {
+  --trait-fill: rgb(250 204 21 / 0.3);
+  --trait-tone: #facc15;
+  --trait-tone-paper: #9a6b00;
+}
+
+.map-trait-pace i,
+.map-trait-aggression i,
+.map-trait-control i,
+.map-trait-weatherReadiness i,
+.map-trait-reliability i {
+  background: color-mix(in srgb, var(--trait-tone) 18%, transparent);
+  color: var(--trait-tone);
+  font-size: 0.72rem;
+  font-weight: 900;
 }
 
 .map-traits-panel strong {

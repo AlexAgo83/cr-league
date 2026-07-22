@@ -1,6 +1,6 @@
 import { useEffect, useRef, type Ref } from "react";
 import type { CSSProperties } from "react";
-import type { TeamLivery, Weather } from "@cr-league/shared";
+import type { DecisionDeltaKey, TeamLivery, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
@@ -28,7 +28,7 @@ export type MapTraitStats = {
 };
 
 export type MapTraitImpact = { label: string; value: number };
-export type MapTraitImpacts = Partial<Record<keyof MapTraitStats, MapTraitImpact[]>>;
+export type MapTraitImpacts = Partial<Record<DecisionDeltaKey, MapTraitImpact[]>>;
 
 const VIEW_WIDTH = 1000;
 const VIEW_HEIGHT = 560;
@@ -552,28 +552,38 @@ export function MapCarSprite({ asset, maskId, sprite, transform }: { asset?: str
 }
 
 export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitStats; tt: Translator; impacts?: MapTraitImpacts }) {
-  const rows: Array<{ key: keyof MapTraitStats; label: TranslationKey; hint: TranslationKey }> = [
+  const engineRows: Array<{ key: DecisionDeltaKey; label: TranslationKey; hint: TranslationKey }> = [
+    { key: "pace", label: "engine_stat_pace", hint: "engine_stat_pace_hint" },
+    { key: "control", label: "engine_stat_control", hint: "engine_stat_control_hint" },
+    { key: "reliability", label: "engine_stat_reliability", hint: "engine_stat_reliability_hint" },
+    { key: "weatherReadiness", label: "engine_stat_weather", hint: "engine_stat_weather_hint" },
+    { key: "aggression", label: "engine_stat_aggression", hint: "engine_stat_aggression_hint" }
+  ];
+  const circuitRows: Array<{ key: keyof MapTraitStats; label: TranslationKey; hint: TranslationKey }> = [
     { key: "grip", label: "circuit_grip", hint: "circuit_grip_hint" },
     { key: "overtaking", label: "circuit_overtaking", hint: "circuit_overtaking_hint" },
     { key: "energy", label: "circuit_energy", hint: "circuit_energy_hint" }
   ];
+  const hasPlanImpacts = Object.values(impacts).some((items) => items?.length);
+  const rows = hasPlanImpacts ? engineRows : circuitRows;
 
   return (
-    <div className="map-traits-panel">
+    <div className={hasPlanImpacts ? "map-traits-panel engine-stats" : "map-traits-panel"}>
       {rows.map((row) => {
-        const rowImpacts = impacts[row.key] ?? [];
+        const rowImpacts: MapTraitImpact[] = hasPlanImpacts ? impacts[row.key as DecisionDeltaKey] ?? [] : [];
         const impactValue = rowImpacts.reduce((total, impact) => total + impact.value, 0);
         const impactLabel = impactValue > 0 ? `+${impactValue}` : impactValue < 0 ? `${impactValue}` : "±0";
+        const value = hasPlanImpacts ? 50 + impactValue : traits[row.key as keyof MapTraitStats];
         return (
           <span key={row.key} className={`map-trait-${row.key}`} title={[tt(row.hint), ...rowImpacts.map((impact) => `${impact.value > 0 ? "+" : ""}${impact.value} ${impact.label}`)].join("\n")}>
             <i aria-hidden="true">
-              <VisualIcon name={row.key} />
+              {hasPlanImpacts ? tt(row.label).charAt(0) : <VisualIcon name={row.key as keyof MapTraitStats} />}
             </i>
-            <strong className="map-trait-value" style={{ "--trait-value": `${traits[row.key]}%` } as CSSProperties & Record<string, string>}>
-              <span>{traits[row.key]}</span>
+            <strong className="map-trait-value" style={{ "--trait-value": `${value}%` } as CSSProperties & Record<string, string>}>
+              <span>{value}</span>
             </strong>
             <span className="trait-label">{tt(row.label)}</span>
-            {rowImpacts.length ? <em className={impactValue > 0 ? "bonus" : impactValue < 0 ? "weakness" : "neutral"}>{impactLabel}</em> : null}
+            {hasPlanImpacts ? <em className={impactValue > 0 ? "bonus" : impactValue < 0 ? "weakness" : "neutral"}>{impactLabel}</em> : null}
           </span>
         );
       })}

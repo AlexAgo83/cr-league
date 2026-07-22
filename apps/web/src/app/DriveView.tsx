@@ -6,6 +6,7 @@ import type { LeagueState } from "./types.js";
 import { CircuitMap, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { MapPlanPanel } from "../features/MapPlanPanel.js";
 import { Modal } from "../features/Modal.js";
+import { RaceInfoDetails } from "../features/RaceInfoDetails.js";
 import { ReplayTower } from "../features/replay/ReplayTower.js";
 import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
 import type { PlanSubscreen } from "./routes.js";
@@ -253,31 +254,9 @@ function RaceWeatherModal({ result, forecastWeather, tt, onClose }: { result: Ra
   const weatherForSegment = (segment: RaceSegment) => (result ? result.resolvedWeather[segment] : segment === "start" ? "dry" : forecastWeather);
 
   return (
-    <Modal label={title} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <h2>{title}</h2>
-      <p>{body}</p>
-      <ol className="race-weather-phase-list">
-        {segments.map((segment) => (
-          <li key={segment}>
-            <span>
-              <VisualIcon name={weatherForSegment(segment)} />
-              {tt(`segment_${segment}` as TranslationKey)}
-            </span>
-            <strong>{tt(`weather_${weatherForSegment(segment)}` as TranslationKey)}</strong>
-          </li>
-        ))}
-      </ol>
-      <section className="race-weather-legend" aria-label={tt("legend_title")}>
-        <h3>{tt("legend_title")}</h3>
-        <p>
-          <span><span className="replay-legend-dot replay-legend-marker" aria-hidden="true" /> {tt("replay_pace_marker_legend")}</span>
-          <span><span className="replay-legend-marker player" aria-hidden="true" /> {tt("replay_player_marker_legend")}</span>
-          <span><span className="replay-legend-marker director" aria-hidden="true" /> {tt("replay_director_marker_legend")}</span>
-          <span><span className="replay-legend-marker pit-stop" aria-hidden="true" /> {tt("replay_pit_marker_legend")}</span>
-          <span><VisualIcon name="light_rain" /> {tt("replay_weather_phase_legend")}</span>
-          <span><span className="replay-legend-finish-line" aria-hidden="true" /> {tt("replay_finish_line_legend")}</span>
-        </p>
-      </section>
+    <Modal label={tt("race_gp_info_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+      <h2>{tt("race_gp_info_title")}</h2>
+      <RaceInfoDetails title={title} body={body} segments={segments} weatherForSegment={weatherForSegment} tt={tt} />
     </Modal>
   );
 }

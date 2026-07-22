@@ -1,4 +1,4 @@
-import { RACE_SEGMENTS, type RaceDecision, type RaceResult, type TeamLivery, type Weather } from "@cr-league/shared";
+import { type RaceDecision, type RaceResult, type TeamLivery, type Weather } from "@cr-league/shared";
 import { type ReactNode, useId, useState } from "react";
 import type { CityCircuit } from "../../app/circuits.js";
 import type { Translator } from "../../app/helpers.js";
@@ -7,6 +7,7 @@ import { MapTraitsPanel, type MapTraitImpacts } from "../CircuitMap.js";
 import { MapPlanPanel } from "../MapPlanPanel.js";
 import { Modal } from "../Modal.js";
 import { PositionBadge } from "../PositionBadge.js";
+import { RaceInfoDetailsForResolvedWeather } from "../RaceInfoDetails.js";
 import { CountryBadge, VisualIcon, type VisualIconName } from "../VisualIcon.js";
 import { ReplayProgress, type ReplayTimelineMarker } from "./ReplayProgress.js";
 import { ReplayTower } from "./ReplayTower.js";
@@ -283,31 +284,9 @@ export function ReplayStageOverlay({
 
 function ReplayWeatherModal({ resolvedWeather, tt, onClose }: { resolvedWeather: RaceResult["resolvedWeather"]; tt: Translator; onClose: () => void }) {
   return (
-    <Modal label={tt("race_weather_info_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <h2>{tt("race_weather_info_title")}</h2>
-      <p>{tt("race_weather_info_body")}</p>
-      <ol className="race-weather-phase-list">
-        {RACE_SEGMENTS.map((segment) => (
-          <li key={segment}>
-            <span>
-              <VisualIcon name={resolvedWeather[segment]} />
-              {tt(`segment_${segment}` as TranslationKey)}
-            </span>
-            <strong>{tt(`weather_${resolvedWeather[segment]}` as TranslationKey)}</strong>
-          </li>
-        ))}
-      </ol>
-      <section className="race-weather-legend" aria-label={tt("legend_title")}>
-        <h3>{tt("legend_title")}</h3>
-        <p>
-          <span><span className="replay-legend-dot replay-legend-marker" aria-hidden="true" /> {tt("replay_pace_marker_legend")}</span>
-          <span><span className="replay-legend-marker player" aria-hidden="true" /> {tt("replay_player_marker_legend")}</span>
-          <span><span className="replay-legend-marker director" aria-hidden="true" /> {tt("replay_director_marker_legend")}</span>
-          <span><span className="replay-legend-marker pit-stop" aria-hidden="true" /> {tt("replay_pit_marker_legend")}</span>
-          <span><VisualIcon name="light_rain" /> {tt("replay_weather_phase_legend")}</span>
-          <span><span className="replay-legend-finish-line" aria-hidden="true" /> {tt("replay_finish_line_legend")}</span>
-        </p>
-      </section>
+    <Modal label={tt("race_gp_info_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+      <h2>{tt("race_gp_info_title")}</h2>
+      <RaceInfoDetailsForResolvedWeather resolvedWeather={resolvedWeather} tt={tt} />
     </Modal>
   );
 }

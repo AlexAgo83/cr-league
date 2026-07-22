@@ -1,4 +1,14 @@
-import { type CardId, type QualifyingRun, type Weather } from "@cr-league/shared";
+import {
+  APPROACH_DELTAS,
+  CARD_DELTAS,
+  PIT_STRATEGY_DELTAS,
+  PREPARATION_DELTAS,
+  type CardId,
+  type DecisionDeltaKey,
+  type DecisionDeltas,
+  type QualifyingRun,
+  type Weather
+} from "@cr-league/shared";
 import { t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { type MapTraitImpacts } from "../features/CircuitMap.js";
 import { randomLeagueName, randomTeamName } from "./nameSeeds.js";
@@ -37,70 +47,23 @@ const WEATHER_VALUES: Weather[] = ["dry", "light_rain", "heavy_rain"];
 
 export function traitImpacts(form: FormState, selectedCardId: FormState["cardId"], tt: (key: TranslationKey) => string): MapTraitImpacts {
   const impacts: MapTraitImpacts = {};
-  const add = (trait: keyof MapTraitImpacts, value: number, label: string) => {
+  const add = (trait: DecisionDeltaKey, value: number, label: string) => {
+    if (!value) return;
     impacts[trait] = [...(impacts[trait] ?? []), { label, value }];
   };
+  const addDeltas = (deltas: DecisionDeltas, label: string) => {
+    for (const [trait, value] of Object.entries(deltas) as Array<[DecisionDeltaKey, number | undefined]>) add(trait, value ?? 0, label);
+  };
 
-  if (form.approach === "prudent") {
-    add("grip", 3, tt("approach_prudent"));
-    add("energy", 3, tt("approach_prudent"));
-    add("overtaking", -3, tt("approach_prudent"));
-  }
-  if (form.approach === "balanced") {
-    add("grip", 3, tt("approach_balanced"));
-    add("energy", 3, tt("approach_balanced"));
-  }
-  if (form.approach === "aggressive") {
-    add("overtaking", 3, tt("approach_aggressive"));
-    add("grip", -3, tt("approach_aggressive"));
-    add("energy", -3, tt("approach_aggressive"));
-  }
-  if (form.preparation === "weather") add("grip", 3, tt("preparation_weather"));
-  if (form.preparation === "speed") {
-    add("overtaking", 3, tt("preparation_speed"));
-    add("energy", -3, tt("preparation_speed"));
-  }
-  if (form.preparation === "reliability") {
-    add("energy", 3, tt("preparation_reliability"));
-    add("grip", 3, tt("preparation_reliability"));
-  }
-  if (form.pitStrategy === "heavy_pack") {
-    add("energy", 3, tt("pit_strategy_heavy_pack"));
-    add("overtaking", -3, tt("pit_strategy_heavy_pack"));
-  }
-  if (form.pitStrategy === "standard") add("grip", 1, tt("pit_strategy_standard"));
-  if (form.pitStrategy === "mini_pack") {
-    add("overtaking", 3, tt("pit_strategy_mini_pack"));
-    add("energy", -3, tt("pit_strategy_mini_pack"));
-  }
-  if (selectedCardId === "rain_grip" || selectedCardId === "rain_mapping") {
-    add("grip", 2, tt("field_card"));
-    add("overtaking", -2, tt("field_card"));
-  }
-  if (selectedCardId === "launch_boost" || selectedCardId === "soft_tires" || selectedCardId === "adjustable_wing") {
-    add("overtaking", 2, tt("field_card"));
-    add("energy", -2, tt("field_card"));
-  }
-  if (selectedCardId === "urban_draft" || selectedCardId === "qualifying_focus") add("overtaking", 2, tt("field_card"));
-  if (selectedCardId === "final_surge") {
-    add("energy", 2, tt("field_card"));
-    add("overtaking", 2, tt("field_card"));
-  }
-  if (selectedCardId === "defensive_order" || selectedCardId === "economy_mode" || selectedCardId === "hard_tires") {
-    add("energy", 2, tt("field_card"));
-    add("overtaking", -2, tt("field_card"));
-  }
-  if (selectedCardId === "fleet_sponsorship") add("overtaking", -2, tt("field_card"));
-  if (selectedCardId === "fleet_maintenance" || selectedCardId === "pit_relay") add("energy", 2, tt("field_card"));
-  if (selectedCardId === "calculated_attack") {
-    add("overtaking", 2, tt("field_card"));
-    add("grip", -2, tt("field_card"));
-  }
+  addDeltas(APPROACH_DELTAS[form.approach], tt(`approach_${form.approach}` as TranslationKey));
+  addDeltas(PREPARATION_DELTAS[form.preparation], tt(`preparation_${form.preparation}` as TranslationKey));
+  addDeltas(PIT_STRATEGY_DELTAS[form.pitStrategy], tt(`pit_strategy_${form.pitStrategy}` as TranslationKey));
+  if (selectedCardId) addDeltas(CARD_DELTAS[selectedCardId] ?? {}, tt("field_card"));
 
   return impacts;
 }
 
-function traitImpactTotal(impacts: MapTraitImpacts, trait: CircuitTraitKey) {
+function traitImpactTotal(impacts: MapTraitImpacts, trait: DecisionDeltaKey) {
   return (impacts[trait] ?? []).reduce((total, impact) => total + impact.value, 0);
 }
 
@@ -115,9 +78,9 @@ export function buildPlanRiskRead(input: {
   tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }): PlanRiskRead {
   const impacts = traitImpacts(input.form, input.selectedCardId, input.tt);
-  const grip = traitImpactTotal(impacts, "grip");
-  const attack = traitImpactTotal(impacts, "overtaking");
-  const endurance = traitImpactTotal(impacts, "energy");
+  const grip = traitImpactTotal(impacts, "control") + traitImpactTotal(impacts, "weatherReadiness");
+  const attack = traitImpactTotal(impacts, "pace") + traitImpactTotal(impacts, "aggression");
+  const endurance = traitImpactTotal(impacts, "reliability");
   const rainy = input.forecastPick === "light_rain" || input.forecastPick === "heavy_rain";
   let risk = 0;
 

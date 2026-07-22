@@ -3,6 +3,7 @@ import { trackZonesForCircuit, type RaceEvent, type RaceResult, type ReplayTrace
 import {
   carProgressAtRaceTime,
   carProgressAtTrace,
+  applyTrackSpeedProfile,
   buildReplayPlan,
   buildQualifyingMomentEvents,
   buildRaceDirectorBeats,
@@ -151,6 +152,40 @@ describe("ReplayView timing", () => {
 
     expect(carProgressAtTrace(result, trace, 0.5, 5)).toMatchObject({ leader: 2.5, last: 2.1 });
     expect(carProgressAtTrace(result, trace, 0, 5)).toMatchObject({ leader: 0, last: 0 });
+  });
+
+  it("applies corner speed profiles as visual-only lap progress", () => {
+    const speedProfile = [
+      { kind: "braking" as const, startProgress: 0.2, endProgress: 0.3, factor: 0.7 },
+      { kind: "corner" as const, startProgress: 0.3, endProgress: 0.4, factor: 0.6 },
+      { kind: "straight" as const, startProgress: 0.7, endProgress: 0.9, factor: 1.1 }
+    ];
+
+    expect(applyTrackSpeedProfile(0.25, speedProfile)).toBeLessThan(0.25);
+    expect(applyTrackSpeedProfile(0.8, speedProfile)).toBeLessThan(0.8);
+    expect(applyTrackSpeedProfile(1, speedProfile)).toBe(1);
+    expect(applyTrackSpeedProfile(1.25, speedProfile)).toBeCloseTo(1 + applyTrackSpeedProfile(0.25, speedProfile));
+  });
+
+  it("keeps pit trace positions unwarped by corner speed profiles", () => {
+    const speedProfile = [{ kind: "corner" as const, startProgress: 0.3, endProgress: 0.5, factor: 0.6 }];
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0, speed: 0, phase: "grid" }, last: { trackProgress: 0, speed: 0, phase: "grid" } } },
+      {
+        segment: "mid",
+        lap: 3,
+        progress: 0.5,
+        order: ["leader", "last"],
+        times: {},
+        gaps: {},
+        cars: { leader: { trackProgress: 0.38, speed: 1, phase: "racing" }, last: { trackProgress: 0.4, speed: 0, phase: "pit_stop" } }
+      }
+    ];
+
+    const progress = carProgressAtTrace(result, trace, 0.5, 5, undefined, speedProfile);
+
+    expect(progress.leader ?? 0).not.toBe(1.9);
+    expect(progress.last).toBe(2);
   });
 
   it("skips runtime smoothing for generated car traces", () => {
@@ -402,7 +437,7 @@ function testCircuit(laps: number, route: Array<{ lat: number; lng: number }>) {
     likelyWeather: "dry",
     route
   } as const;
-  return { ...circuit, trackZones: trackZonesForCircuit(circuit) };
+  return { ...circuit, speedProfile: [], trackZones: trackZonesForCircuit(circuit) };
 }
 
 function resultWithEvent(teamId: string, order: number): RaceEvent {

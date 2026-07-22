@@ -1,10 +1,10 @@
 ## item_217_validate_replay_speed_profiles_across_representative_circuits - Validate replay speed profiles across representative circuits
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Validation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -30,10 +30,16 @@
 - AC2: Circuit audit reports or validates generated speed-profile health for every current circuit.
 - AC3: Validation evidence is recorded before closeout.
 
+# Validation notes
+- Added shared circuit tests for generated profile presence, corner slowdown spans, straight acceleration spans, normalized bounds, and safe factor range.
+- Added replay tests for visual speed-profile remapping, lap endpoint preservation, repeated-lap behavior, and pit-stop trace alignment.
+- `npm run audit:circuits` now includes speed span counts and fails missing/out-of-range profiles.
+
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: Tests cover at least one straight route, one tight-corner route, one long route, and one pit-stop replay path.
 - request-AC4 -> This backlog slice. Proof: AC2: Circuit audit reports or validates generated speed-profile health for every current circuit.
 - request-AC6 -> This backlog slice. Proof: AC3: Validation evidence is recorded before closeout.
+- request-AC5 -> This backlog slice. Proof: Validation scope is replay/audit only; future simulation criteria live in `item_218`.
 
 # Decision framing
 - Product framing: Not needed
@@ -54,3 +60,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion`
+
+# Notes
+- Task `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion` was finished via `logics-manager flow finish task` on 2026-07-23.

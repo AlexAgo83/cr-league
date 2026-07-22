@@ -1,11 +1,15 @@
 ## prod_058_canonical_corner_speed_profile_product_brief - Canonical Corner Speed Profile Product Brief
 > Date: 2026-07-23
-> Status: Proposed
+> Status: Settled
 > Related request: `req_095_canonical_corner_speed_profile_for_replay_motion`
-> Related backlog: `item_215_generate_canonical_speed_profiles_from_circuit_route_curvature`, `item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes`, `item_217_validate_replay_speed_profiles_across_representative_circuits`, `item_218_document_the_simulation_handoff_for_speed_profile_gameplay`
+> Related backlog: `item_215_generate_canonical_speed_profiles_from_circuit_route_curvature`
 > Related task: `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Confidence: 90
+> Understanding: 90
+> Theme: Replay fidelity
+> Complexity: Medium
 
 # Overview
 CR League now has canonical route length, start, pit, main-straight, and zone data, but replay cars still move with mostly uniform progress along the track. This makes distance-faithful replays feel slow without giving the viewer the natural rhythm of braking, cornering, and exit acceleration. This feature generates a compact speed profile from circuit curvature and straights, stores it as canonical circuit data, and uses it in replay motion first while preserving simulation outcomes.
@@ -33,17 +37,20 @@ flowchart TD
 - Do not use speed-profile data for simulation until the replay-only pass has explicit acceptance proof.
 
 # Scope and guardrails
-- In: scaffolded request, product, backlog, orchestration task, validation, and handoff context.
-- Out: unrelated workflow docs and implementation of generated tasks.
+- In: shared speed-profile contract, generated per-circuit profiles, replay-only visual progress mapping, circuit audit coverage, focused unit tests, and simulation handoff documentation.
+- Out: race outcome changes, balance changes, per-driver physics, new UI controls, or runtime geometry analysis inside animation frames.
 
 # Key product decisions
-- Use structured input as the source of truth for generated docs.
-- Keep generated write paths local and repo-bounded.
+- Store speed profiles as canonical shared circuit data keyed by `layoutKey`; generate them from route curvature and main straight metadata.
+- Use `braking`, `corner`, `exit`, and `straight` spans with bounded speed factors. Replay integrates these spans over a normalized lap so every lap still starts and ends at canonical progress.
+- Apply profiles to replay car positions only. Trace times, pit events, director beats, tower gaps, simulation results, rewards, cards, and classification remain canonical.
+- Future simulation use needs a separate request after replay validation, audit stability, and balance-baseline proof.
 
 # Success signals
-- Generated docs pass lint and audit without broad manual rewrites.
-- Context-pack output can be handed to an implementation agent directly.
+- Every current circuit exposes a generated, bounded profile and `npm run audit:circuits` reports speed-profile health.
+- Replay tests prove the profile changes visual progress, preserves endpoints, and keeps pit-stop trace positions aligned.
+- Full closeout records typecheck, lint, tests, build, circuit audit, and Logics validation.
 
 # References
-- Product back-reference: `req_095_canonical_corner_speed_profile_for_replay_motion`
+- Product back-reference: `item_215_generate_canonical_speed_profiles_from_circuit_route_curvature`
 - Task back-reference: `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion`

@@ -1,10 +1,10 @@
 ## item_215_generate_canonical_speed_profiles_from_circuit_route_curvature - Generate canonical speed profiles from circuit route curvature
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Race-track data model
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,10 +31,17 @@
 - AC2: Audit/test coverage validates progress bounds, factor range, minimum span size after merge, and no zero/negative-speed profile output.
 - AC3: The generated profile is small enough to inspect and stable across repeated generation.
 
+# Implementation notes
+- Added shared `RaceTrackSpeedProfile`/`TrackSpeedProfile` data with `braking`, `corner`, `exit`, and `straight` spans.
+- Added `scripts/generate-circuit-speed-profiles.mjs`, wired as `npm run generate:speed-profiles`, to regenerate `CIRCUIT_SPEED_PROFILES` from current route files and main-straight metadata.
+- Added `trackSpeedProfileForCircuit()` so app code consumes the same canonical data style as `trackZonesForCircuit()`.
+
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Every current circuit exposes a deterministic generated speed profile from route geometry.
 - request-AC2 -> This backlog slice. Proof: AC2: Audit/test coverage validates progress bounds, factor range, minimum span size after merge, and no zero/negative-speed profile output.
 - request-AC6 -> This backlog slice. Proof: AC3: The generated profile is small enough to inspect and stable across repeated generation.
+- request-AC4 -> This backlog slice. Evidence needed: Replay remains deterministic and watchable across representative circuits: a mostly straight route, a tight technical route, a long route, and a pit-stop race all keep aligned markers/events and non-jarring car motion.
+- request-AC5 -> This backlog slice. Proof: Simulation use is documented as a later gate in `item_218`; this slice only adds shared data/generation.
 
 # Decision framing
 - Product framing: Not needed
@@ -55,3 +62,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion`
+
+# Notes
+- Task `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion` was finished via `logics-manager flow finish task` on 2026-07-23.

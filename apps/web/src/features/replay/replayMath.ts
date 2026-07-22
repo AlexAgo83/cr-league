@@ -1,4 +1,4 @@
-import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint } from "@cr-league/shared";
+import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TrackSpeedProfile } from "@cr-league/shared";
 import type { RaceEvent, Translator } from "../../app/helpers.js";
 import type { CityCircuit } from "../../app/circuits.js";
 export { displayLapAtProgress } from "../../app/lapDisplay.js";
@@ -60,7 +60,7 @@ export function traceTimesAt(trace: ReplayTracePoint[], progress: number) {
   );
 }
 
-function traceCarProgressAt(trace: ReplayTracePoint[], progress: number, laps: number) {
+function traceCarProgressAt(trace: ReplayTracePoint[], progress: number, laps: number, speedProfile?: TrackSpeedProfile) {
   const from = tracePointAt(trace, progress);
   const to = trace.find((point) => point.progress > progress) ?? from;
   if (!from.cars || !to.cars) return null;
@@ -70,16 +70,17 @@ function traceCarProgressAt(trace: ReplayTracePoint[], progress: number, laps: n
     Object.keys({ ...from.cars, ...to.cars }).map((teamId) => {
       const fromCar = from.cars?.[teamId];
       const toCar = to.cars?.[teamId];
-      const fromProgress = visualCarProgress(fromCar, toCar?.trackProgress ?? 0, laps);
-      const toProgress = visualCarProgress(toCar, fromCar?.trackProgress ?? 0, laps);
+      const fromProgress = visualCarProgress(fromCar, toCar?.trackProgress ?? 0, laps, speedProfile);
+      const toProgress = visualCarProgress(toCar, fromCar?.trackProgress ?? 0, laps, speedProfile);
       return [teamId, fromProgress + (toProgress - fromProgress) * ratio];
     })
   );
 }
 
-function visualCarProgress(car: NonNullable<ReplayTracePoint["cars"]>[string] | undefined, fallback: number, laps: number) {
+function visualCarProgress(car: NonNullable<ReplayTracePoint["cars"]>[string] | undefined, fallback: number, laps: number, speedProfile?: TrackSpeedProfile) {
   const progress = car?.trackProgress ?? fallback;
-  return car?.phase === "grid" && progress < 0 ? progress : progress * laps;
+  const raceProgress = car?.phase === "grid" && progress < 0 ? progress : progress * laps;
+  return car?.phase?.startsWith("pit") ? raceProgress : applyTrackSpeedProfile(raceProgress, speedProfile);
 }
 
 export function buildReplayPlan(result: RaceResult, _trace: ReplayTracePoint[]): ReplayPlan {
@@ -225,8 +226,8 @@ export function positionDeltas(currentOrder: string[], nextOrder: string[]) {
   );
 }
 
-export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[], progress: number, laps: number, plan?: ReplayPlan) {
-  const carProgress = traceCarProgressAt(trace, progress, laps);
+export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[], progress: number, laps: number, plan?: ReplayPlan, speedProfile?: TrackSpeedProfile) {
+  const carProgress = traceCarProgressAt(trace, progress, laps, speedProfile);
   if (carProgress) return carProgress;
 
   const gaps = traceGapsAt(trace, progress);
@@ -242,9 +243,17 @@ export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[]
       const timeGap = (Math.max(gaps[entry.teamId] ?? 0, absoluteDelay) / totalTime) * laps;
       const orderGap = (rankTargets[entry.teamId] ?? 0) * TRACE_ORDER_GAP_LAPS;
       const raceLaps = progress * laps - Math.max(timeGap, orderGap);
-      return [entry.teamId, Math.max(0, raceLaps)];
+      return [entry.teamId, applyTrackSpeedProfile(Math.max(0, raceLaps), speedProfile)];
     })
   );
+}
+
+export function applyTrackSpeedProfile(progressLaps: number, speedProfile: TrackSpeedProfile = []) {
+  if (!speedProfile.length || progressLaps <= 0) return progressLaps;
+  const completedLaps = Math.floor(progressLaps);
+  const lapProgress = progressLaps - completedLaps;
+  if (lapProgress <= 0) return progressLaps;
+  return completedLaps + mappedLapProgress(lapProgress, speedProfile);
 }
 
 export function pitStopTraceProgress(_result: RaceResult, _trace: ReplayTracePoint[], event: RaceEvent, maxLap: number, laps: number, lapProgress: number, _plan?: ReplayPlan) {
@@ -295,9 +304,10 @@ export function replaySnapshot(
   progress: number,
   laps: number,
   plan?: ReplayPlan,
-  currentOrder: string[] = []
+  currentOrder: string[] = [],
+  speedProfile?: TrackSpeedProfile
 ) {
-  const baseProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan);
+  const baseProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan, speedProfile);
   const tower = liveClassificationByCarProgress(result, trace, progress, baseProgress, currentOrder);
   return { carProgress: baseProgress, tower };
 }
@@ -323,4 +333,43 @@ export function carProgressAtRaceTime(result: RaceResult, times: Record<string, 
       return [entry.teamId, Math.min(laps, Math.max(0, (raceTime / finishTime) * laps))];
     })
   );
+}
+
+function mappedLapProgress(progress: number, speedProfile: TrackSpeedProfile) {
+  const total = integratedSpeed(1, speedProfile);
+  if (total <= 0) return progress;
+  return Math.min(1, Math.max(0, integratedSpeed(progress, speedProfile) / total));
+}
+
+function integratedSpeed(to: number, speedProfile: TrackSpeedProfile) {
+  const end = Math.min(1, Math.max(0, to));
+  const cuts = [...new Set([0, end, ...speedProfile.flatMap((span) => expandedSpan(span).flatMap((range) => [Math.min(end, range.start), Math.min(end, range.end)]))])]
+    .filter((point) => point >= 0 && point <= end)
+    .sort((left, right) => left - right);
+  return cuts.slice(0, -1).reduce((sum, start, index) => {
+    const finish = cuts[index + 1]!;
+    const midpoint = (start + finish) / 2;
+    return sum + (finish - start) * speedFactorAt(midpoint, speedProfile);
+  }, 0);
+}
+
+function speedFactorAt(progress: number, speedProfile: TrackSpeedProfile) {
+  const matches = speedProfile.filter((span) => progressInSpan(progress, span));
+  if (!matches.length) return 1;
+  return matches.some((span) => span.factor < 1) ? Math.min(...matches.map((span) => span.factor)) : Math.max(...matches.map((span) => span.factor));
+}
+
+function progressInSpan(progress: number, span: TrackSpeedProfile[number]) {
+  return span.startProgress <= span.endProgress
+    ? progress >= span.startProgress && progress <= span.endProgress
+    : progress >= span.startProgress || progress <= span.endProgress;
+}
+
+function expandedSpan(span: TrackSpeedProfile[number]) {
+  return span.startProgress <= span.endProgress
+    ? [{ start: span.startProgress, end: span.endProgress }]
+    : [
+        { start: 0, end: span.endProgress },
+        { start: span.startProgress, end: 1 }
+      ];
 }

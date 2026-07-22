@@ -74,7 +74,7 @@
 | [prod_055_leagues_store_modularization_product_brief](product/prod_055_leagues_store_modularization_product_brief.md) | Leagues Store Modularization Product Brief | Proposed |  |  | product/prod_055_leagues_store_modularization_product_brief.md |
 | [prod_056_admin_privacy_and_entry_payload_hardening_product_brief](product/prod_056_admin_privacy_and_entry_payload_hardening_product_brief.md) | Admin Privacy and Entry Payload Hardening Product Brief | Settled |  |  | product/prod_056_admin_privacy_and_entry_payload_hardening_product_brief.md |
 | [prod_057_canonical_track_zones_product_brief](product/prod_057_canonical_track_zones_product_brief.md) | Canonical Track Zones Product Brief | Settled |  |  | product/prod_057_canonical_track_zones_product_brief.md |
-| [prod_058_canonical_corner_speed_profile_product_brief](product/prod_058_canonical_corner_speed_profile_product_brief.md) | Canonical Corner Speed Profile Product Brief | Proposed |  |  | product/prod_058_canonical_corner_speed_profile_product_brief.md |
+| [prod_058_canonical_corner_speed_profile_product_brief](product/prod_058_canonical_corner_speed_profile_product_brief.md) | Canonical Corner Speed Profile Product Brief | Settled |  |  | product/prod_058_canonical_corner_speed_profile_product_brief.md |
 
 ## Roadmaps
 
@@ -182,7 +182,7 @@
 | [req_092_admin_status_privacy_and_entry_bundle_hardening](request/req_092_admin_status_privacy_and_entry_bundle_hardening.md) | Admin-status privacy and entry-bundle hardening | Done |  |  | request/req_092_admin_status_privacy_and_entry_bundle_hardening.md |
 | [req_093_canonical_track_zones_for_spatial_race_simulation](request/req_093_canonical_track_zones_for_spatial_race_simulation.md) | Canonical track zones for spatial race simulation | Done |  |  | request/req_093_canonical_track_zones_for_spatial_race_simulation.md |
 | [req_094_enrich_ai_playtest_balance_runner](request/req_094_enrich_ai_playtest_balance_runner.md) | Enrich AI playtest balance runner | Done |  |  | request/req_094_enrich_ai_playtest_balance_runner.md |
-| [req_095_canonical_corner_speed_profile_for_replay_motion](request/req_095_canonical_corner_speed_profile_for_replay_motion.md) | Canonical corner speed profile for replay motion | Draft |  |  | request/req_095_canonical_corner_speed_profile_for_replay_motion.md |
+| [req_095_canonical_corner_speed_profile_for_replay_motion](request/req_095_canonical_corner_speed_profile_for_replay_motion.md) | Canonical corner speed profile for replay motion | Done |  |  | request/req_095_canonical_corner_speed_profile_for_replay_motion.md |
 
 ## Backlog
 
@@ -402,10 +402,10 @@
 | [item_212_consume_canonical_track_zones_in_replay_map_and_reports](backlog/item_212_consume_canonical_track_zones_in_replay_map_and_reports.md) | Consume canonical track zones in replay, map, and reports | Done |  | 100% | backlog/item_212_consume_canonical_track_zones_in_replay_map_and_reports.md |
 | [item_213_document_deferred_zone_driven_gameplay_tuning](backlog/item_213_document_deferred_zone_driven_gameplay_tuning.md) | Document deferred zone-driven gameplay tuning | Done |  | 100% | backlog/item_213_document_deferred_zone_driven_gameplay_tuning.md |
 | [item_214_enrich_ai_playtest_balance_runner](backlog/item_214_enrich_ai_playtest_balance_runner.md) | Enrich AI playtest balance runner | Done | codex | 100% | backlog/item_214_enrich_ai_playtest_balance_runner.md |
-| [item_215_generate_canonical_speed_profiles_from_circuit_route_curvature](backlog/item_215_generate_canonical_speed_profiles_from_circuit_route_curvature.md) | Generate canonical speed profiles from circuit route curvature | Ready |  | 0% | backlog/item_215_generate_canonical_speed_profiles_from_circuit_route_curvature.md |
-| [item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes](backlog/item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes.md) | Apply speed profiles to replay motion without changing race outcomes | Ready |  | 0% | backlog/item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes.md |
-| [item_217_validate_replay_speed_profiles_across_representative_circuits](backlog/item_217_validate_replay_speed_profiles_across_representative_circuits.md) | Validate replay speed profiles across representative circuits | Ready |  | 0% | backlog/item_217_validate_replay_speed_profiles_across_representative_circuits.md |
-| [item_218_document_the_simulation_handoff_for_speed_profile_gameplay](backlog/item_218_document_the_simulation_handoff_for_speed_profile_gameplay.md) | Document the simulation handoff for speed-profile gameplay | Ready |  | 0% | backlog/item_218_document_the_simulation_handoff_for_speed_profile_gameplay.md |
+| [item_215_generate_canonical_speed_profiles_from_circuit_route_curvature](backlog/item_215_generate_canonical_speed_profiles_from_circuit_route_curvature.md) | Generate canonical speed profiles from circuit route curvature | Done |  | 100% | backlog/item_215_generate_canonical_speed_profiles_from_circuit_route_curvature.md |
+| [item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes](backlog/item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes.md) | Apply speed profiles to replay motion without changing race outcomes | Done |  | 100% | backlog/item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes.md |
+| [item_217_validate_replay_speed_profiles_across_representative_circuits](backlog/item_217_validate_replay_speed_profiles_across_representative_circuits.md) | Validate replay speed profiles across representative circuits | Done |  | 100% | backlog/item_217_validate_replay_speed_profiles_across_representative_circuits.md |
+| [item_218_document_the_simulation_handoff_for_speed_profile_gameplay](backlog/item_218_document_the_simulation_handoff_for_speed_profile_gameplay.md) | Document the simulation handoff for speed-profile gameplay | Done |  | 100% | backlog/item_218_document_the_simulation_handoff_for_speed_profile_gameplay.md |
 
 ## Tasks
 
@@ -506,4 +506,4 @@
 | [task_093_orchestrate_admin_privacy_and_entry_payload_hardening](tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md) | Orchestrate admin privacy and entry payload hardening | Done | codex | 100% | tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md |
 | [task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation](tasks/task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation.md) | Orchestrate canonical track zones for spatial race simulation | Done | codex | 100% | tasks/task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation.md |
 | [task_095_enrich_ai_playtest_balance_runner](tasks/task_095_enrich_ai_playtest_balance_runner.md) | Enrich AI playtest balance runner | Done | codex | 100% | tasks/task_095_enrich_ai_playtest_balance_runner.md |
-| [task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion](tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md) | Orchestrate canonical corner speed profile for replay motion | Ready |  | 0% | tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md |
+| [task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion](tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md) | Orchestrate canonical corner speed profile for replay motion | Done | codex | 100% | tasks/task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion.md |

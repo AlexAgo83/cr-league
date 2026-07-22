@@ -1,7 +1,7 @@
 ## req_095_canonical_corner_speed_profile_for_replay_motion - Canonical corner speed profile for replay motion
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

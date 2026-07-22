@@ -1,10 +1,10 @@
 ## item_218_document_the_simulation_handoff_for_speed_profile_gameplay - Document the simulation handoff for speed-profile gameplay
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Simulation follow-up
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -27,9 +27,16 @@
 - AC1: Closeout or a linked note clearly states the criteria for a future simulation integration pass.
 - AC2: No race outcome, card, reward, or bot-strategy behavior changes ship in this request.
 
+# Simulation handoff
+- A later simulation pass may use the profile for straight-line pace, corner control/grip, weather-amplified curved-zone penalties, and overtake probability in fast zones.
+- Gate that later pass on accepted replay behavior, passing circuit audit, pit/event alignment proof, and a fresh balance baseline.
+- This slice intentionally leaves `simulateRace`, card balance, bot strategy, scoring, rewards, economy, and classification untouched.
+
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: Closeout or a linked note clearly states the criteria for a future simulation integration pass.
 - request-AC6 -> This backlog slice. Proof: AC2: No race outcome, card, reward, or bot-strategy behavior changes ship in this request.
+- request-AC3 -> This backlog slice. Proof: The handoff explicitly keeps this request replay-only and defers simulation/outcome use.
+- request-AC4 -> This backlog slice. Evidence needed: Replay remains deterministic and watchable across representative circuits: a mostly straight route, a tight technical route, a long route, and a pit-stop race all keep aligned markers/events and non-jarring car motion.
 
 # Decision framing
 - Product framing: Not needed
@@ -50,3 +57,9 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion`
+
+# Notes
+- Task `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion` was finished via `logics-manager flow finish task` on 2026-07-23.

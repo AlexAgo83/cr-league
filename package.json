@@ -32,6 +32,7 @@
     "replay:validate": "tsx scripts/validate-replay-trace.ts",
     "balance:sim": "tsx scripts/balance-simulations.ts",
     "generate:circuit": "node scripts/generate-circuit.mjs",
+    "generate:speed-profiles": "node scripts/generate-circuit-speed-profiles.mjs",
     "audit:circuits": "node scripts/audit-circuits.mjs",
     "review:circuits:water": "node scripts/review-circuit-water.mjs",
     "logics:validate": "logics-manager lint --require-status && logics-manager audit --group-by-doc"

@@ -27,6 +27,17 @@ export type RaceTrackZone = {
   weight?: number;
 };
 
+export type TrackSpeedKind = "braking" | "corner" | "exit" | "straight";
+
+export type RaceTrackSpeedSpan = {
+  kind: TrackSpeedKind;
+  startProgress: number;
+  endProgress: number;
+  factor: number;
+};
+
+export type RaceTrackSpeedProfile = RaceTrackSpeedSpan[];
+
 export type Weather = "dry" | "light_rain" | "heavy_rain";
 
 export type BotArchetype =

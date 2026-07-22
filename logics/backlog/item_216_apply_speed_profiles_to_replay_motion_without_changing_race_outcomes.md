@@ -1,10 +1,10 @@
 ## item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes - Apply speed profiles to replay motion without changing race outcomes
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay fidelity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,10 +31,16 @@
 - AC2: The visual progress mapping is deterministic, monotonic, and reaches the same endpoints as the canonical trace.
 - AC3: Pit-stop marker alignment, event markers, tower gaps, and final classification remain driven by canonical replay data.
 
+# Implementation notes
+- Replay now remaps visual lap progress through the circuit speed profile by integrating speed factors over a normalized lap.
+- The remap is applied only to displayed car progress; canonical trace progress, timing, event markers, tower gaps, and classification stay unchanged.
+- Pit phases keep raw trace progress so pit-stop holds remain aligned with pit markers.
+
 # AC Traceability
 - request-AC3 -> This backlog slice. Proof: AC1: Replay car motion visibly slows near generated corner spans and recovers on exit/straight spans.
 - request-AC4 -> This backlog slice. Proof: AC2: The visual progress mapping is deterministic, monotonic, and reaches the same endpoints as the canonical trace.
 - request-AC6 -> This backlog slice. Proof: AC3: Pit-stop marker alignment, event markers, tower gaps, and final classification remain driven by canonical replay data.
+- request-AC5 -> This backlog slice. Proof: Replay remapping changes displayed car progress only; simulation and balance files are untouched.
 
 # Decision framing
 - Product framing: Not needed
@@ -55,3 +61,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion`
+
+# Notes
+- Task `task_096_orchestrate_canonical_corner_speed_profile_for_replay_motion` was finished via `logics-manager flow finish task` on 2026-07-23.

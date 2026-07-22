@@ -17,8 +17,10 @@ const thresholds = {
   crossings: 0
 };
 
-const identities = parseIdentities(readFileSync(identitiesPath, "utf8"));
-const circuits = parseCircuits(routesDir, identities);
+const identitiesSource = readFileSync(identitiesPath, "utf8");
+const identities = parseIdentities(identitiesSource);
+const speedProfiles = parseSpeedProfiles(identitiesSource);
+const circuits = parseCircuits(routesDir, identities, speedProfiles);
 
 if (circuits.length === 0) {
   console.error(`No circuits found in ${routesDir}`);
@@ -44,6 +46,7 @@ for (const report of reports) {
       `${formatMeters(totalDistanceMeters)} race`.padStart(13),
       `${recommendedLaps} rec`.padStart(6),
       `${report.turns} turns`.padStart(8),
+      `${report.speedSpans} speed`.padStart(9),
       `${Math.round(report.twistiness)}° twist`.padStart(10),
       pacingStatus.padStart(6),
       `${Math.round(report.closureGapMeters)}m close`.padStart(12),
@@ -85,11 +88,26 @@ function parseIdentities(source) {
   }));
 }
 
-function parseCircuits(routeDirectory, identitySources) {
+function parseSpeedProfiles(source) {
+  const profiles = new Map();
+  const profilePattern = /"(?<layoutKey>circuit_[^"]+)": \[(?<body>[\s\S]*?)\n {2}\]/g;
+  for (const match of source.matchAll(profilePattern)) {
+    profiles.set(match.groups.layoutKey, [...match.groups.body.matchAll(/\{ kind: "(?<kind>[^"]+)", startProgress: (?<start>\d+(?:\.\d+)?), endProgress: (?<end>\d+(?:\.\d+)?), factor: (?<factor>\d+(?:\.\d+)?) \}/g)].map((span) => ({
+      kind: span.groups.kind,
+      startProgress: Number(span.groups.start),
+      endProgress: Number(span.groups.end),
+      factor: Number(span.groups.factor)
+    })));
+  }
+  return profiles;
+}
+
+function parseCircuits(routeDirectory, identitySources, profiles) {
   return identitySources.map((identity) => {
     const source = readFileSync(join(routeDirectory, `${identity.layoutKey}.ts`), "utf8");
     return {
       ...identity,
+      speedProfile: profiles.get(identity.layoutKey) ?? [],
       points: parsePoints(source)
     };
   });
@@ -132,6 +150,7 @@ function auditCircuit(circuit) {
   if (sameDirectionReuseMeters > thresholds.sameDirectionReuseMeters) {
     failures.push(`${Math.round(sameDirectionReuseMeters)}m repris en boucle`);
   }
+  failures.push(...auditSpeedProfile(circuit.speedProfile));
 
   return {
     ...circuit,
@@ -143,10 +162,25 @@ function auditCircuit(circuit) {
     directUturns,
     turns,
     twistiness,
+    speedSpans: circuit.speedProfile.length,
     reverseReuseMeters,
     sameDirectionReuseMeters,
     failures
   };
+}
+
+function auditSpeedProfile(profile) {
+  const failures = [];
+  if (!profile.length) failures.push("profil de vitesse manquant");
+  if (!profile.some((span) => span.kind === "corner")) failures.push("profil sans virage ralenti");
+  if (!profile.some((span) => span.kind === "straight")) failures.push("profil sans ligne droite acceleree");
+  if (profile.some((span) => span.startProgress < 0 || span.startProgress >= 1 || span.endProgress < 0 || span.endProgress >= 1)) {
+    failures.push("profil de vitesse hors bornes");
+  }
+  if (profile.some((span) => span.factor < 0.58 || span.factor > 1.12)) {
+    failures.push("facteur de vitesse hors plage");
+  }
+  return failures;
 }
 
 function targetDistance(reports) {

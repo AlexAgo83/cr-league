@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import { describe, expect, it } from "vitest";
-import { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, pitWindowForCircuit, raceInputFromCircuit, seasonCircuitIdentities, trackZonesForCircuit, zoneForRaceSegment, zonesAtProgress } from "./circuits.js";
+import { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, pitWindowForCircuit, raceInputFromCircuit, seasonCircuitIdentities, trackSpeedProfileForCircuit, trackZonesForCircuit, zoneForRaceSegment, zonesAtProgress } from "./circuits.js";
 import { RACE_SEGMENTS } from "./race.js";
 
 describe("circuit identities", () => {
@@ -88,6 +88,17 @@ describe("circuit identities", () => {
       expect(zones.some((zone) => zone.kind === "pit" && zone.label === "pit_lane")).toBe(true);
       expect(zones.some((zone) => zone.kind === "technical")).toBe(true);
       expect(zones.every((zone) => zone.startProgress >= 0 && zone.startProgress < 1 && zone.endProgress >= 0 && zone.endProgress < 1)).toBe(true);
+    }
+  });
+
+  it("derives bounded speed profiles for every circuit", () => {
+    for (const circuit of CITY_CIRCUIT_IDENTITIES) {
+      const profile = trackSpeedProfileForCircuit(circuit);
+      expect(profile.length).toBeGreaterThan(0);
+      expect(profile.some((span) => span.kind === "corner" && span.factor < 1)).toBe(true);
+      expect(profile.some((span) => span.kind === "straight" && span.factor > 1)).toBe(true);
+      expect(profile.every((span) => span.startProgress >= 0 && span.startProgress < 1 && span.endProgress >= 0 && span.endProgress < 1)).toBe(true);
+      expect(profile.every((span) => span.factor >= 0.58 && span.factor <= 1.12)).toBe(true);
     }
   });
 

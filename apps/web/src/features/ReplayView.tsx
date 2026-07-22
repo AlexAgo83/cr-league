@@ -18,6 +18,7 @@ export {
   REPLAY_FOCUS_KEY,
   REPLAY_SPEED_KEY,
   buildReplayPlan,
+  applyTrackSpeedProfile,
   carProgressAtRaceTime,
   carProgressAtTrace,
   displayLapAtProgress,
@@ -139,7 +140,7 @@ export function ReplayView({
     () => buildRaceDirectorBeats(result, replayTrace, replayPlan, circuit.laps, playerTeamId, replayMode, pitProgress),
     [circuit.laps, pitProgress, playerTeamId, replayMode, replayPlan, replayTrace, result]
   );
-  const initialSnapshot = useMemo(() => replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, replayPlan), [circuit.laps, replayPlan, replayTimes, replayTrace, result]);
+  const initialSnapshot = useMemo(() => replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, replayPlan, [], circuit.speedProfile), [circuit.laps, circuit.speedProfile, replayPlan, replayTimes, replayTrace, result]);
   const names = teamNamesFromResult(result);
   const field = result.classification;
   const smoothTracePositions = shouldSmoothReplayTrace(replayTrace);
@@ -181,8 +182,8 @@ export function ReplayView({
   const eventTime = useCallback((event: RaceEvent) => raceTimeAtProgress(eventTraceProgress(event, maxLap)), [maxLap, raceTimeAtProgress]);
   const activeMomentIdAt = useCallback((time: number) => keyMoments.find((event) => Math.abs(eventTime(event) - time) <= MOMENT_NOTIFICATION_SECONDS)?.id ?? null, [eventTime, keyMoments]);
   const createTargetSnapshot = useCallback(
-    (raceTime: number, progress: number, currentOrder: string[]) => replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, currentOrder),
-    [circuit.laps, replayPlan, replayTimes, replayTrace, result]
+    (raceTime: number, progress: number, currentOrder: string[]) => replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, currentOrder, circuit.speedProfile),
+    [circuit.laps, circuit.speedProfile, replayPlan, replayTimes, replayTrace, result]
   );
   const createTower = useCallback(
     (progress: number, carProgress: Record<string, number>, currentOrder: string[]) => liveClassificationByCarProgress(result, replayTrace, progress, carProgress, currentOrder),

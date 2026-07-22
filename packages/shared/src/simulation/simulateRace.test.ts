@@ -249,6 +249,25 @@ describe("simulateRace", () => {
     expect(validateReplayTrace(wet)).toEqual([]);
   });
 
+  it("exposes bounded late-race pace fade in replay traces", () => {
+    const input: RaceInput = {
+      ...baseRace,
+      participants: baseRace.participants.slice(0, 2).map((participant) => ({
+        ...participant,
+        decision: { ...participant.decision, pitStrategy: "heavy_pack" }
+      })),
+      forecast: { dry: 100, light_rain: 0, heavy_rain: 0 }
+    };
+    const lowEnergy = simulateRace({ ...input, traits: { grip: 60, overtaking: 60, energy: 40 } });
+    const highEnergy = simulateRace({ ...input, traits: { grip: 60, overtaking: 60, energy: 90 } });
+    const lowPoint = lowEnergy.replayTrace?.find((point) => point.segment === "late" && point.order[0]);
+    const highPoint = highEnergy.replayTrace?.find((point) => point.progress === lowPoint?.progress);
+    const teamId = lowPoint?.order[0] ?? "";
+
+    expect(lowPoint?.cars?.[teamId]?.speed).toBeLessThan(highPoint?.cars?.[teamId]?.speed ?? 0);
+    expect(validateReplayTrace(lowEnergy)).toEqual([]);
+  });
+
   it("keeps replay trace movement realistic across generated races", () => {
     const pitStrategies = ["heavy_pack", "standard", "mini_pack"] as const;
 

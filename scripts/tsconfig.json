@@ -7,5 +7,5 @@
     "noEmit": true,
     "types": ["node"]
   },
-  "include": ["*.ts", "../packages/shared/src/**/*.ts", "../apps/web/src/app/circuits.ts"]
+  "include": ["*.ts", "../packages/shared/src/**/*.ts", "../apps/web/src/app/circuits.ts", "../apps/api/src/features/leagues/qualifying.ts", "../apps/api/src/features/leagues/utils.ts"]
 }

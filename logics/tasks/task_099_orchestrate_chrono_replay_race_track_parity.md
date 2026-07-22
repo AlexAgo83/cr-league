@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 65%
+> Progress: 85%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -50,6 +50,8 @@
 # Report
 - Wave 1: implemented chrono replay parity for circuit speed profile, solo phases, and weather-visible trace speed. `createQualifyingRuns` now accepts `speedProfile`, league chrono call sites pass `trackSpeedProfileForCircuit(circuit)`, generated chrono `cars` traces emit `grid`/`launch`/`racing`/`finished`, and rainy/non-straight spans lower trace speed without changing qualifying lap-time calculation.
 - Wave 1 validation: `npm test -- apps/api/src/features/leagues/qualifying.test.ts` and `npm run typecheck` passed.
+- Wave 2: extended `npm run replay:inspect` with representative chrono traces for Prague, Monaco, and Montreal. The output now includes trace count, phases, final chrono time, sample progress, lap, weather, phase, and speed alongside the race trace samples.
+- Wave 2 validation: `npm run replay:inspect` and `npm run typecheck` passed.
 
 # AI Context
 - Summary: Orchestrate chrono replay race-track parity

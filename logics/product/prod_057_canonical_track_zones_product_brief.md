@@ -1,8 +1,8 @@
 ## prod_057_canonical_track_zones_product_brief - Canonical Track Zones Product Brief
 > Date: 2026-07-22
-> Status: Proposed
+> Status: Settled
 > Related request: `req_093_canonical_track_zones_for_spatial_race_simulation`
-> Related backlog: `item_210_add_canonical_track_zone_model_and_derived_circuit_zones`, `item_211_annotate_simulation_events_and_replay_facts_with_track_zones`, `item_212_consume_canonical_track_zones_in_replay_map_and_reports`, `item_213_document_deferred_zone_driven_gameplay_tuning`
+> Related backlog: `item_210_add_canonical_track_zone_model_and_derived_circuit_zones`
 > Related task: `task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -50,5 +50,5 @@ flowchart TD
 - The requested validation gate passes and the closeout records exact command proof.
 
 # References
-- Product back-reference: `req_093_canonical_track_zones_for_spatial_race_simulation`
+- Product back-reference: `item_210_add_canonical_track_zone_model_and_derived_circuit_zones`
 - Task back-reference: `task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation`

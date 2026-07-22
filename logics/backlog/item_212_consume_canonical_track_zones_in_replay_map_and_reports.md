@@ -1,10 +1,10 @@
 ## item_212_consume_canonical_track_zones_in_replay_map_and_reports - Consume canonical track zones in replay, map, and reports
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay and race reporting
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -56,3 +56,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation`
+
+# Notes
+- Task `task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation` was finished via `logics-manager flow finish task` on 2026-07-22.

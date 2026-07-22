@@ -1,10 +1,10 @@
 ## item_210_add_canonical_track_zone_model_and_derived_circuit_zones - Add canonical track zone model and derived circuit zones
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Race-track data model
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -59,3 +59,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation`
+
+# Notes
+- Task `task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation` was finished via `logics-manager flow finish task` on 2026-07-22.

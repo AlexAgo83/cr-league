@@ -1,10 +1,10 @@
 ## item_211_annotate_simulation_events_and_replay_facts_with_track_zones - Annotate simulation events and replay facts with track zones
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Simulation fidelity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -37,6 +37,7 @@
 - request-AC3 -> This backlog slice. Proof: AC1: Representative simulation events carry canonical progress and zone metadata where applicable.
 - request-AC5 -> This backlog slice. Proof: AC2: Replay facts expose zone metadata without requiring the web layer to recompute race semantics.
 - request-AC6 -> This backlog slice. Proof: AC3: Determinism tests cover the new metadata as part of the result shape.
+- request-AC4 -> This backlog slice. Evidence needed: Replay/map/report consumers use the canonical zone metadata when displaying pit, overtake, technical, or segment context, and no shared domain code imports web-only route projection, camera, tile, marker, or styling concerns.
 
 # Decision framing
 - Product framing: Not needed
@@ -57,3 +58,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation`
+
+# Notes
+- Task `task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation` was finished via `logics-manager flow finish task` on 2026-07-22.

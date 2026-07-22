@@ -1,4 +1,4 @@
-import { CITY_CIRCUIT_IDENTITIES, circuitSeasonSeed, seasonCircuitIdentities } from "@cr-league/shared";
+import { CITY_CIRCUIT_IDENTITIES, circuitSeasonSeed, seasonCircuitIdentities, trackZonesForCircuit, type TrackZone } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 
 import { CIRCUIT_ROUTES } from "./circuitRoutes/index.js";
@@ -14,6 +14,7 @@ export type CityCircuit = {
   mainStraightEndProgress: number;
   startProgress: number;
   pitLaneProgress: number;
+  trackZones: TrackZone[];
   traits: {
     grip: number;
     overtaking: number;
@@ -26,6 +27,7 @@ export type CityCircuit = {
 export const CITY_CIRCUITS = CITY_CIRCUIT_IDENTITIES.map((identity) => ({
   ...identity,
   layoutKey: identity.layoutKey as TranslationKey,
+  trackZones: trackZonesForCircuit(identity),
   route: CIRCUIT_ROUTES[identity.layoutKey] ?? []
 })) as [CityCircuit, ...CityCircuit[]];
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import type { RaceEvent, RaceResult, ReplayTracePoint } from "@cr-league/shared";
+import { trackZonesForCircuit, type RaceEvent, type RaceResult, type ReplayTracePoint } from "@cr-league/shared";
 import {
   carProgressAtRaceTime,
   carProgressAtTrace,
@@ -18,6 +18,7 @@ import {
   positionDeltas,
   replayOrderAtProgress,
   replayDistanceScale,
+  replayPlanDebugLines,
   scaleFinishTimes,
   segmentAtProgress,
   shouldSmoothReplayTrace,
@@ -201,7 +202,7 @@ describe("ReplayView timing", () => {
         version: 1,
         directorBeats: [],
         orderChanges: [
-          { type: "order_change", segment: "early", lap: 2, progress: 0.2, overtakingTeamId: "last", overtakenTeamId: "leader", fromPosition: 2, toPosition: 1, gapSeconds: 0 }
+          { type: "order_change", segment: "early", lap: 2, progress: 0.2, trackProgress: 0.4, zoneKind: "overtake", zoneLabel: "main_straight", overtakingTeamId: "last", overtakenTeamId: "leader", fromPosition: 2, toPosition: 1, gapSeconds: 0 }
         ]
       }
     };
@@ -209,6 +210,7 @@ describe("ReplayView timing", () => {
 
     expect(plan.source).toBe("facts");
     expect(plan.overtakes[0]?.phases.map((phase) => phase.phase)).toEqual(["setup", "close_gap", "overlap", "swap", "settle"]);
+    expect(replayPlanDebugLines(plan)[0]).toContain("@ main straight");
   });
 
   it("falls back to only grid and final director beats when replay facts are missing", () => {
@@ -246,6 +248,16 @@ describe("ReplayView timing", () => {
 
     expect(copy.detail).toContain("payoff window");
     expect(copy.detail).toContain("risky approach");
+  });
+
+  it("adds canonical zone labels to race-director copy when available", () => {
+    const copy = directorBeatCopy(
+      { id: "pit", type: "pit_stop", progress: 0.4, lap: 3, teamId: "leader", zoneLabel: "pit_lane" },
+      new Map([["leader", "Leader"]]),
+      (key, params) => t(key, "en", params)
+    );
+
+    expect(copy.detail).toContain("pit lane");
   });
 
   it("shows pit stops as race-director beats", () => {
@@ -375,7 +387,7 @@ describe("ReplayView timing", () => {
 });
 
 function testCircuit(laps: number, route: Array<{ lat: number; lng: number }>) {
-  return {
+  const circuit = {
     city: "Test",
     country: "TT",
     layoutKey: "city_circuit_map",
@@ -390,6 +402,7 @@ function testCircuit(laps: number, route: Array<{ lat: number; lng: number }>) {
     likelyWeather: "dry",
     route
   } as const;
+  return { ...circuit, trackZones: trackZonesForCircuit(circuit) };
 }
 
 function resultWithEvent(teamId: string, order: number): RaceEvent {

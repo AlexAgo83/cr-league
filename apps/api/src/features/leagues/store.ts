@@ -9,6 +9,7 @@ import {
   circuitSeasonSeed,
   raceInputFromCircuit,
   simulateRace,
+  trackZonesForCircuit,
   type CardId,
   type QualifyingRun,
   type RaceDecision,
@@ -726,6 +727,7 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
       trackLengthMeters: circuit.trackLengthMeters,
       laps: circuit.laps,
       pitLaneProgress: circuit.pitLaneProgress,
+      trackZones: trackZonesForCircuit(circuit),
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
       participants
     });

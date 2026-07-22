@@ -21,6 +21,7 @@ import type {
   Weather
 } from "../domain/race.js";
 import { APPROACH_DELTAS, CARD_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type DecisionDeltas } from "../domain/decisionDeltas.js";
+import { zoneForRaceSegment, zonesAtProgress, type TrackZone } from "../domain/circuits.js";
 import { RACE_SEGMENTS, clampTrait } from "../domain/race.js";
 import { createPrng } from "./prng.js";
 
@@ -92,6 +93,7 @@ export function simulateRace(input: RaceInput): RaceResult {
   const trackLengthMeters = normalizeTrackLengthMeters(input.trackLengthMeters);
   const laps = normalizeLaps(input.laps);
   const pitLaneProgress = normalizePitLaneProgress(input.pitLaneProgress);
+  const trackZones = normalizeTrackZones(input.trackZones);
   const traceSegments: TraceSegmentSnapshot[] = [];
 
   for (const segment of RACE_SEGMENTS) {
@@ -118,7 +120,7 @@ export function simulateRace(input: RaceInput): RaceResult {
   addFinishEvents(events, classification);
   const distanceReplayTrace = createDistanceReplayTrace(states, traceSegments, trackLengthMeters, laps, pitLaneProgress);
   const annotatedReplayTrace = annotateReplayOvertakes(stabilizeReplayTraceOrders(distanceReplayTrace));
-  const replayEvents = withTraceEventProgress(events, annotatedReplayTrace);
+  const replayEvents = withTraceEventProgress(events, annotatedReplayTrace, laps, trackZones);
 
   return {
     grandPrixName: input.grandPrixName,
@@ -127,7 +129,7 @@ export function simulateRace(input: RaceInput): RaceResult {
     classification,
     events: replayEvents.map((event, order) => ({ ...event, id: `evt_${String(order + 1).padStart(3, "0")}`, order })),
     replayTrace: annotatedReplayTrace,
-    replayFacts: buildReplayFacts(annotatedReplayTrace, replayEvents, classification, weather),
+    replayFacts: buildReplayFacts(annotatedReplayTrace, replayEvents, classification, weather, laps, trackZones),
     consumedCards: states
       .filter((state): state is TeamState & { consumedCard: CardId } => Boolean(state.consumedCard))
       .map((state) => ({ teamId: state.participant.teamId, cardId: state.consumedCard })),
@@ -135,32 +137,35 @@ export function simulateRace(input: RaceInput): RaceResult {
   };
 }
 
-function buildReplayFacts(trace: ReplayTracePoint[], events: RaceEvent[], classification: ClassificationEntry[], weather: Record<RaceSegment, Weather>): RaceReplayFacts {
+function buildReplayFacts(trace: ReplayTracePoint[], events: RaceEvent[], classification: ClassificationEntry[], weather: Record<RaceSegment, Weather>, laps: number, trackZones: readonly TrackZone[]): RaceReplayFacts {
   const orderChanges = trace.slice(1).flatMap((point, index) => {
     const previous = trace[index]!;
     if (point.progress >= 1) return [];
     return point.order.flatMap((teamId, toIndex) => {
       const fromIndex = previous.order.indexOf(teamId);
       if (fromIndex === -1 || fromIndex <= toIndex) return [];
-      return previous.order.slice(toIndex, fromIndex).flatMap((overtakenTeamId) =>
-        pitRelatedOrderChange(previous, point, teamId, overtakenTeamId)
-          ? []
-          : [{
+      return previous.order.slice(toIndex, fromIndex).flatMap((overtakenTeamId) => {
+        if (pitRelatedOrderChange(previous, point, teamId, overtakenTeamId)) return [];
+        const trackProgress = trackProgressAtRaceProgress(point.progress, laps);
+        const zone = zoneSummary(trackZones, trackProgress, "overtake") ?? zoneSummary(trackZones, trackProgress, "sector");
+        return [{
               type: "order_change" as const,
               segment: point.segment,
               lap: point.lap,
               progress: point.progress,
+              trackProgress,
+              ...zone,
               overtakingTeamId: teamId,
               overtakenTeamId,
               fromPosition: fromIndex + 1,
               toPosition: toIndex + 1,
               gapSeconds: Number((point.gaps[teamId] ?? 0).toFixed(1))
-            }]
-      );
+            }];
+      });
     });
   });
 
-  return { version: 1, orderChanges, directorBeats: buildReplayDirectorBeats(trace, events, orderChanges, classification, weather) };
+  return { version: 1, orderChanges, directorBeats: buildReplayDirectorBeats(trace, events, orderChanges, classification, weather, laps, trackZones) };
 }
 
 function buildReplayDirectorBeats(
@@ -168,7 +173,9 @@ function buildReplayDirectorBeats(
   events: RaceEvent[],
   orderChanges: RaceReplayFacts["orderChanges"],
   classification: ClassificationEntry[],
-  weather: Record<RaceSegment, Weather>
+  weather: Record<RaceSegment, Weather>,
+  laps: number,
+  trackZones: readonly TrackZone[]
 ): NonNullable<RaceReplayFacts["directorBeats"]> {
   const beats: NonNullable<RaceReplayFacts["directorBeats"]> = [{ id: "grid-start", type: "grid_start", progress: 0, lap: 1 }];
 
@@ -178,6 +185,9 @@ function buildReplayDirectorBeats(
       type: "overtake",
       progress: change.progress,
       lap: change.lap,
+      trackProgress: change.trackProgress,
+      zoneKind: change.zoneKind,
+      zoneLabel: change.zoneLabel,
       teamId: change.overtakingTeamId,
       relatedTeamId: change.overtakenTeamId,
       fromPosition: change.fromPosition,
@@ -189,15 +199,19 @@ function buildReplayDirectorBeats(
   const weatherChange = RACE_SEGMENTS.find((segment, index) => index > 0 && weather[segment] !== weather[RACE_SEGMENTS[index - 1]!]);
   if (weatherChange) {
     const progress = Math.max(0.2, RACE_SEGMENTS.indexOf(weatherChange) / RACE_SEGMENTS.length);
-    beats.push({ id: `weather-${weatherChange}`, type: "weather", progress, lap: lapForSegment(weatherChange), weather: weather[weatherChange] });
+    const trackProgress = trackProgressAtRaceProgress(progress, laps);
+    beats.push({ id: `weather-${weatherChange}`, type: "weather", progress, lap: lapForSegment(weatherChange), trackProgress, ...zoneSummary(trackZones, trackProgress, "sector"), weather: weather[weatherChange] });
   }
 
   const quietTrace = trace.find((point, index) => index > 0 && point.progress > 0.35 && point.progress < 0.75 && Math.abs((point.gaps[point.order[1] ?? ""] ?? 99) - (point.gaps[point.order[0] ?? ""] ?? 0)) <= 1.5);
-  if (quietTrace) beats.push({ id: `pack-${quietTrace.progress.toFixed(3)}`, type: "pack", progress: quietTrace.progress, lap: quietTrace.lap, gapSeconds: quietTrace.gaps[quietTrace.order[1] ?? ""] });
+  if (quietTrace) {
+    const trackProgress = trackProgressAtRaceProgress(quietTrace.progress, laps);
+    beats.push({ id: `pack-${quietTrace.progress.toFixed(3)}`, type: "pack", progress: quietTrace.progress, lap: quietTrace.lap, trackProgress, ...zoneSummary(trackZones, trackProgress, "technical"), gapSeconds: quietTrace.gaps[quietTrace.order[1] ?? ""] });
+  }
 
   for (const event of events.filter((event) => event.type === "pit_stop").slice(0, 8)) {
     const progress = event.traceProgress ?? event.lap / Math.max(1, ...events.map((candidate) => candidate.lap));
-    beats.push({ id: `pit-${event.teamId}-${event.order}`, type: "pit_stop", progress, lap: event.lap, teamId: event.teamId });
+    beats.push({ id: `pit-${event.teamId}-${event.order}`, type: "pit_stop", progress, lap: event.lap, trackProgress: event.trackProgress, zoneKind: event.zoneKind, zoneLabel: event.zoneLabel, teamId: event.teamId });
   }
 
   beats.push({ id: "final-pressure", type: "final", progress: 1, lap: trace.at(-1)?.lap ?? lapForSegment("finish"), teamId: classification[0]?.teamId });
@@ -206,10 +220,12 @@ function buildReplayDirectorBeats(
     .sort((left, right) => left.progress - right.progress);
 }
 
-function withTraceEventProgress(events: RaceEvent[], trace: ReplayTracePoint[]) {
+function withTraceEventProgress(events: RaceEvent[], trace: ReplayTracePoint[], laps: number, trackZones: readonly TrackZone[]) {
   return events.map((event) => {
     const progress = event.type === "pit_stop" ? pitStopTraceProgressForTeam(trace, event) : eventTraceProgress(trace, event);
-    return progress === undefined ? event : { ...event, traceProgress: progress };
+    if (progress === undefined) return event;
+    const trackProgress = trackProgressAtRaceProgress(progress, laps);
+    return { ...event, traceProgress: progress, trackProgress, ...eventZoneSummary(event, trackZones, trackProgress) };
   });
 }
 
@@ -388,6 +404,47 @@ function normalizeLaps(value: number | undefined) {
 
 function normalizePitLaneProgress(value: number | undefined) {
   return typeof value === "number" && Number.isFinite(value) ? Math.max(0, Math.min(0.999, value)) : 0.5;
+}
+
+function normalizeTrackZones(zones: RaceInput["trackZones"]): TrackZone[] {
+  return zones?.length ? zones.filter(validTrackZone) : RACE_SEGMENTS.map(zoneForRaceSegment);
+}
+
+function validTrackZone(zone: TrackZone) {
+  return ["sector", "overtake", "technical", "pit"].includes(zone.kind) &&
+    zone.label.length > 0 &&
+    validProgress(zone.startProgress) &&
+    validProgress(zone.endProgress);
+}
+
+function validProgress(progress: number) {
+  return Number.isFinite(progress) && progress >= 0 && progress < 1;
+}
+
+function trackProgressAtRaceProgress(raceProgress: number, laps: number) {
+  if (raceProgress >= 1) return 0;
+  return Number(((((raceProgress * Math.max(1, laps)) % 1) + 1) % 1).toFixed(4));
+}
+
+function eventZoneSummary(event: RaceEvent, zones: readonly TrackZone[], trackProgress: number) {
+  if (event.tags.includes("pit_stop")) return firstZoneSummary(zones, "pit") ?? zoneSummary(zones, trackProgress, "sector");
+  if (event.tags.includes("overtake") || event.type === "rival_overtake" || event.type === "overtake_setup") return zoneSummary(zones, trackProgress, "overtake") ?? zoneSummary(zones, trackProgress, "sector");
+  if (event.tags.some((tag) => tag === "traffic" || tag === "defense" || tag === "error" || tag === "energy")) return zoneSummary(zones, trackProgress, "technical") ?? zoneSummary(zones, trackProgress, "sector");
+  return zoneSummary(zones, trackProgress, "sector") ?? zoneSummary([zoneForRaceSegment(event.segment)], trackProgress, "sector");
+}
+
+function firstZoneSummary(zones: readonly TrackZone[], kind: TrackZone["kind"]) {
+  const zone = zones.find((candidate) => candidate.kind === kind);
+  return zone ? { zoneKind: zone.kind, zoneLabel: zone.label } : undefined;
+}
+
+function zoneSummary(zones: readonly TrackZone[], trackProgress: number, kind?: TrackZone["kind"]) {
+  const zone = zonesAtProgress(zones, trackProgress, kind)[0] ?? (kind === "sector" ? zoneForRaceSegment(segmentAtTrackProgress(trackProgress)) : undefined);
+  return zone ? { zoneKind: zone.kind, zoneLabel: zone.label } : undefined;
+}
+
+function segmentAtTrackProgress(trackProgress: number): RaceSegment {
+  return RACE_SEGMENTS[Math.min(RACE_SEGMENTS.length - 1, Math.floor(Math.max(0, Math.min(0.999999, trackProgress)) * RACE_SEGMENTS.length))] ?? "start";
 }
 
 function createReplayTracePoint(segment: RaceSegment, progress: number, states: TeamState[], elapsedTimes?: Map<string, number>, trackLengthMeters = DEFAULT_TRACK_LENGTH_METERS): ReplayTracePoint {

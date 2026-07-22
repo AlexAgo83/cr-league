@@ -16,6 +16,17 @@ export type PitStrategy = (typeof PIT_STRATEGIES)[number];
 
 export type CircuitTrait = "fast" | "technical" | "urban" | "high_wear" | "weather_sensitive";
 
+export type TrackZoneKind = "sector" | "overtake" | "technical" | "pit";
+
+export type RaceTrackZone = {
+  kind: TrackZoneKind;
+  label: string;
+  startProgress: number;
+  endProgress: number;
+  segment?: RaceSegment;
+  weight?: number;
+};
+
 export type Weather = "dry" | "light_rain" | "heavy_rain";
 
 export type BotArchetype =
@@ -83,6 +94,7 @@ export type RaceInput = {
   trackLengthMeters?: number;
   laps?: number;
   pitLaneProgress?: number;
+  trackZones?: RaceTrackZone[];
   forecast: WeatherForecast;
   participants: RaceParticipant[];
 };
@@ -121,6 +133,9 @@ export type RaceEvent = {
   segment: RaceSegment;
   lap: number;
   traceProgress?: number;
+  trackProgress?: number;
+  zoneKind?: TrackZoneKind;
+  zoneLabel?: string;
   type: RaceEventType;
   teamId: string;
   relatedTeamId?: string;
@@ -173,6 +188,9 @@ export type ReplayOrderChangeFact = {
   segment: RaceSegment;
   lap: number;
   progress: number;
+  trackProgress?: number;
+  zoneKind?: TrackZoneKind;
+  zoneLabel?: string;
   overtakingTeamId: string;
   overtakenTeamId: string;
   fromPosition: number;
@@ -185,6 +203,9 @@ export type ReplayDirectorBeatFact = {
   type: "grid_start" | "overtake" | "pack" | "weather" | "pit_stop" | "final";
   progress: number;
   lap: number;
+  trackProgress?: number;
+  zoneKind?: TrackZoneKind;
+  zoneLabel?: string;
   teamId?: string;
   relatedTeamId?: string;
   fromPosition?: number;

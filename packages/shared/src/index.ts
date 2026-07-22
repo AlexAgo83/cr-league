@@ -13,7 +13,7 @@ export type HealthStatus = {
 };
 
 export { CARD_DEFINITIONS, CARD_DESCRIPTORS, type CardDefinition, type CardDescriptor, type CardStrengthBand } from "./cards/definitions.js";
-export { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, seasonCircuitIdentities, type CityCircuitIdentity } from "./domain/circuits.js";
+export { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, pitWindowForCircuit, progressRangeForRaceSegment, raceInputFromCircuit, seasonCircuitIdentities, trackZonesForCircuit, zoneForRaceSegment, zonesAtProgress, type CityCircuitIdentity, type TrackZone } from "./domain/circuits.js";
 export { APPROACH_DELTAS, CARD_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type DecisionDeltaKey, type DecisionDeltas } from "./domain/decisionDeltas.js";
 export * from "./domain/race.js";
 export {

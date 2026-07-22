@@ -1,10 +1,10 @@
 ## item_213_document_deferred_zone_driven_gameplay_tuning - Document deferred zone-driven gameplay tuning
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Gameplay follow-up
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -27,9 +27,17 @@
 - AC1: The implementation docs or closeout clearly list zone-driven gameplay tuning as deferred work.
 - AC2: No card, reward, scoring, or bot-strategy behavior changes are bundled into this request.
 
+# Deferred gameplay tuning
+- `launch_boost` can later key off the `sector_start` zone instead of only the abstract `start` segment.
+- `adjustable_wing`, `urban_draft`, and `calculated_attack` can later use `main_straight`/overtake zones for stronger positioning logic.
+- `hard_tires`, `pit_relay`, and pit strategy can later use `pit_lane` and technical zones for risk/reward tuning.
+- This delivery intentionally does not change scoring, rewards, card strength, bot strategy, or league cadence.
+
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: The implementation docs or closeout clearly list zone-driven gameplay tuning as deferred work.
 - request-AC6 -> This backlog slice. Proof: AC2: No card, reward, scoring, or bot-strategy behavior changes are bundled into this request.
+- request-AC3 -> This backlog slice. Evidence needed: Simulation events and replay facts that already refer to pit stops, overtakes/order changes, weather/traffic pressure, and segment beats carry optional canonical `trackProgress`, `zoneKind`, and `zoneLabel` metadata without changing scoring outcomes.
+- request-AC4 -> This backlog slice. Evidence needed: Replay/map/report consumers use the canonical zone metadata when displaying pit, overtake, technical, or segment context, and no shared domain code imports web-only route projection, camera, tile, marker, or styling concerns.
 
 # Decision framing
 - Product framing: Not needed
@@ -50,3 +58,9 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation`
+
+# Notes
+- Task `task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation` was finished via `logics-manager flow finish task` on 2026-07-22.

@@ -461,7 +461,8 @@ export function eventReplayText(event: RaceEvent, names: Map<string, string>, tt
 
 export function eventReportText(event: RaceEvent, names: Map<string, string>, tt: Translator) {
   const delta = event.positionDelta ? ` (${event.positionDelta > 0 ? "+" : ""}${event.positionDelta})` : "";
-  const text = `${eventReplayText(event, names, tt)}${delta}`;
+  const zone = event.zoneLabel ? ` · ${event.zoneLabel.replace(/^sector_/, "").replaceAll("_", " ")}` : "";
+  const text = `${eventReplayText(event, names, tt)}${delta}${zone}`;
   return /[.!?…]$/.test(text) ? text : `${text}.`;
 }
 

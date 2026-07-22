@@ -1,4 +1,5 @@
-import type { CircuitTrait, RaceInput, RaceTraits, Weather } from "./race.js";
+import type { CircuitTrait, RaceInput, RaceSegment, RaceTrackZone, RaceTraits, Weather } from "./race.js";
+import { RACE_SEGMENTS } from "./race.js";
 
 export const CITY_CIRCUIT_IDENTITIES = [
   { city: "Paris", country: "FR", layoutKey: "circuit_docklands_sprint", laps: 7, trackLengthMeters: 2800, routeLengthMeters: 6796, mainStraightStartProgress: 0.170137, mainStraightEndProgress: 0.250962, startProgress: 0.241263, pitLaneProgress: 0.943422, traits: { grip: 64, overtaking: 72, energy: 58 }, likelyWeather: "light_rain" },
@@ -48,6 +49,8 @@ type CityCircuitIdentitySource = {
 
 export type CityCircuitIdentity = (typeof CITY_CIRCUIT_IDENTITIES)[number];
 
+export type TrackZone = RaceTrackZone;
+
 export function circuitSeasonSeed(leagueId: string, season: number) {
   return `${leagueId}:season:${Math.max(1, season)}`;
 }
@@ -77,6 +80,78 @@ export function raceInputFromCircuit(circuit: CityCircuitIdentity): Pick<RaceInp
     trackLengthMeters: circuit.trackLengthMeters,
     forecast: forecastFromLikelyWeather(circuit.likelyWeather)
   };
+}
+
+export function trackZonesForCircuit(circuit: Pick<CityCircuitIdentitySource, "mainStraightStartProgress" | "mainStraightEndProgress" | "pitLaneProgress" | "traits">): TrackZone[] {
+  const sectorZones = RACE_SEGMENTS.map((segment, index) => ({
+    kind: "sector" as const,
+    label: `sector_${segment}`,
+    segment,
+    startProgress: roundProgress(index / RACE_SEGMENTS.length),
+    endProgress: roundProgress((index + 1) / RACE_SEGMENTS.length)
+  }));
+  const technicalProgress = circuit.traits.grip >= 70 ? 0.62 : 0.42;
+  return [
+    ...sectorZones,
+    {
+      kind: "overtake",
+      label: "main_straight",
+      startProgress: roundProgress(circuit.mainStraightStartProgress),
+      endProgress: roundProgress(circuit.mainStraightEndProgress),
+      weight: circuit.traits.overtaking
+    },
+    {
+      kind: "pit",
+      label: "pit_lane",
+      startProgress: offsetProgress(circuit.pitLaneProgress, -0.035),
+      endProgress: offsetProgress(circuit.pitLaneProgress, 0.035)
+    },
+    {
+      kind: "technical",
+      label: "technical_sector",
+      startProgress: offsetProgress(technicalProgress, -0.08),
+      endProgress: offsetProgress(technicalProgress, 0.08),
+      weight: circuit.traits.grip
+    }
+  ];
+}
+
+export function progressRangeForRaceSegment(segment: RaceSegment): Pick<TrackZone, "startProgress" | "endProgress"> {
+  return zoneForRaceSegment(segment);
+}
+
+export function zoneForRaceSegment(segment: RaceSegment): TrackZone {
+  const index = Math.max(0, RACE_SEGMENTS.indexOf(segment));
+  return {
+    kind: "sector",
+    label: `sector_${segment}`,
+    segment,
+    startProgress: roundProgress(index / RACE_SEGMENTS.length),
+    endProgress: roundProgress((index + 1) / RACE_SEGMENTS.length)
+  };
+}
+
+export function zonesAtProgress(zones: readonly TrackZone[], progress: number, kind?: TrackZone["kind"]) {
+  const value = roundProgress(progress);
+  return zones.filter((zone) => (!kind || zone.kind === kind) && progressInZone(value, zone));
+}
+
+export function pitWindowForCircuit(circuit: Pick<CityCircuitIdentitySource, "pitLaneProgress" | "mainStraightStartProgress" | "mainStraightEndProgress" | "traits">) {
+  return trackZonesForCircuit(circuit).find((zone) => zone.kind === "pit")!;
+}
+
+function progressInZone(progress: number, zone: Pick<TrackZone, "startProgress" | "endProgress">) {
+  return zone.startProgress <= zone.endProgress
+    ? progress >= zone.startProgress && progress <= zone.endProgress
+    : progress >= zone.startProgress || progress <= zone.endProgress;
+}
+
+function offsetProgress(progress: number, offset: number) {
+  return roundProgress(progress + offset);
+}
+
+function roundProgress(progress: number) {
+  return Number((((progress % 1) + 1) % 1).toFixed(6));
 }
 
 function rankedCircuitTraits(circuit: CityCircuitIdentity): [CircuitTrait, CircuitTrait] {

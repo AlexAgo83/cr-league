@@ -2,6 +2,7 @@ import { RACE_SEGMENTS, type RaceResult, type ReplayTracePoint, type Weather } f
 import type { TranslationKey } from "../../i18n/index.js";
 import type { RaceEvent, Translator } from "../../app/helpers.js";
 import { displayLapAtProgress, segmentAtProgress, type ReplayPlan } from "./replayMath.js";
+import { trackZoneDisplayLabel } from "./replayMath.js";
 
 export type ReplayDirectorBeat = {
   id: string;
@@ -14,6 +15,7 @@ export type ReplayDirectorBeat = {
   toPosition?: number;
   weather?: Weather;
   gapSeconds?: number;
+  zoneLabel?: string;
 };
 export function buildRaceDirectorBeats(result: RaceResult, _trace: ReplayTracePoint[], _plan: ReplayPlan, laps: number, playerTeamId?: string, mode: "race" | "qualifying" = "race", _pitProgress = 0.5): ReplayDirectorBeat[] {
   if (mode === "qualifying") {
@@ -65,14 +67,16 @@ export function buildQualifyingMomentEvents(beats: ReplayDirectorBeat[], result:
 export function directorBeatCopy(beat: ReplayDirectorBeat, names: Map<string, string>, tt: Translator) {
   const team = beat.teamId ? names.get(beat.teamId) ?? beat.teamId : "";
   const related = beat.relatedTeamId ? names.get(beat.relatedTeamId) ?? beat.relatedTeamId : "";
+  const zone = trackZoneDisplayLabel(beat.zoneLabel);
+  const withZone = (detail: string) => zone ? `${detail} · ${zone}` : detail;
   if (beat.type === "qualifying_start") return { title: tt("replay_director_qualifying_start"), detail: tt("replay_director_qualifying_start_detail") };
   if (beat.type === "qualifying_pace") return { title: tt("replay_director_qualifying_pace"), detail: tt("replay_director_qualifying_pace_detail", { team }) };
   if (beat.type === "qualifying_final") return { title: tt("replay_director_qualifying_final"), detail: tt("replay_director_qualifying_final_detail", { team }) };
   if (beat.type === "grid_start") return { title: tt("replay_director_grid_start"), detail: tt("replay_director_grid_detail") };
-  if (beat.type === "player") return { title: tt("replay_director_player"), detail: tt("replay_director_overtake_detail", { team, related, from: beat.fromPosition ?? "-", to: beat.toPosition ?? "-" }) };
-  if (beat.type === "overtake") return { title: tt("replay_director_overtake"), detail: tt("replay_director_overtake_detail", { team, related, from: beat.fromPosition ?? "-", to: beat.toPosition ?? "-" }) };
-  if (beat.type === "pack") return { title: tt("replay_director_pack"), detail: tt("replay_director_pack_detail", { gap: (beat.gapSeconds ?? 0).toFixed(1) }) };
-  if (beat.type === "weather") return { title: tt("replay_director_weather"), detail: tt("replay_director_weather_detail", { weather: tt(`weather_${beat.weather ?? "dry"}` as TranslationKey) }) };
-  if (beat.type === "pit_stop") return { title: tt("replay_director_pit_stop"), detail: tt("replay_director_pit_stop_detail", { team }) };
+  if (beat.type === "player") return { title: tt("replay_director_player"), detail: withZone(tt("replay_director_overtake_detail", { team, related, from: beat.fromPosition ?? "-", to: beat.toPosition ?? "-" })) };
+  if (beat.type === "overtake") return { title: tt("replay_director_overtake"), detail: withZone(tt("replay_director_overtake_detail", { team, related, from: beat.fromPosition ?? "-", to: beat.toPosition ?? "-" })) };
+  if (beat.type === "pack") return { title: tt("replay_director_pack"), detail: withZone(tt("replay_director_pack_detail", { gap: (beat.gapSeconds ?? 0).toFixed(1) })) };
+  if (beat.type === "weather") return { title: tt("replay_director_weather"), detail: withZone(tt("replay_director_weather_detail", { weather: tt(`weather_${beat.weather ?? "dry"}` as TranslationKey) })) };
+  if (beat.type === "pit_stop") return { title: tt("replay_director_pit_stop"), detail: withZone(tt("replay_director_pit_stop_detail", { team })) };
   return { title: tt("replay_director_final"), detail: tt("replay_director_final_detail", { team }) };
 }

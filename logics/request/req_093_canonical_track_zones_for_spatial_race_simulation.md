@@ -1,7 +1,7 @@
 ## req_093_canonical_track_zones_for_spatial_race_simulation - Canonical track zones for spatial race simulation
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

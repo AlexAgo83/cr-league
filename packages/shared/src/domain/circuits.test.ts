@@ -1,7 +1,8 @@
 // @vitest-environment node
 
 import { describe, expect, it } from "vitest";
-import { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, seasonCircuitIdentities } from "./circuits.js";
+import { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, pitWindowForCircuit, raceInputFromCircuit, seasonCircuitIdentities, trackZonesForCircuit, zoneForRaceSegment, zonesAtProgress } from "./circuits.js";
+import { RACE_SEGMENTS } from "./race.js";
 
 describe("circuit identities", () => {
   it("rotates deterministically by round", () => {
@@ -77,5 +78,22 @@ describe("circuit identities", () => {
       Seoul: 3976,
       Tokyo: 5720
     });
+  });
+
+  it("derives required track zones for every circuit", () => {
+    for (const circuit of CITY_CIRCUIT_IDENTITIES) {
+      const zones = trackZonesForCircuit(circuit);
+      expect(zones.filter((zone) => zone.kind === "sector")).toHaveLength(RACE_SEGMENTS.length);
+      expect(zones.some((zone) => zone.kind === "overtake" && zone.label === "main_straight")).toBe(true);
+      expect(zones.some((zone) => zone.kind === "pit" && zone.label === "pit_lane")).toBe(true);
+      expect(zones.some((zone) => zone.kind === "technical")).toBe(true);
+      expect(zones.every((zone) => zone.startProgress >= 0 && zone.startProgress < 1 && zone.endProgress >= 0 && zone.endProgress < 1)).toBe(true);
+    }
+  });
+
+  it("queries zones by segment and progress", () => {
+    expect(zoneForRaceSegment("mid")).toMatchObject({ kind: "sector", label: "sector_mid", startProgress: 0.4, endProgress: 0.6 });
+    expect(zonesAtProgress(trackZonesForCircuit(CITY_CIRCUIT_IDENTITIES[0]), 0.45, "sector")).toEqual([zoneForRaceSegment("mid")]);
+    expect(zonesAtProgress(trackZonesForCircuit(CITY_CIRCUIT_IDENTITIES[0]), CITY_CIRCUIT_IDENTITIES[0].pitLaneProgress, "pit")).toEqual([pitWindowForCircuit(CITY_CIRCUIT_IDENTITIES[0])]);
   });
 });

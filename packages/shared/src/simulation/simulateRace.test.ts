@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 import { simulateRace } from "./simulateRace.js";
 import { validateReplayTrace } from "./validateReplayTrace.js";
 import type { RaceInput } from "../domain/race.js";
+import { CITY_CIRCUIT_IDENTITIES, raceInputFromCircuit, trackZonesForCircuit } from "../domain/circuits.js";
 
 const baseRace: RaceInput = {
   seed: "silver-ridge-001",
@@ -347,6 +348,25 @@ describe("simulateRace", () => {
       "personal_record",
       "penalty_risk"
     ]));
+  });
+
+  it("annotates race events and replay facts with canonical track zones", () => {
+    const circuit = CITY_CIRCUIT_IDENTITIES[0];
+    const result = simulateRace({
+      ...baseRace,
+      ...raceInputFromCircuit(circuit),
+      traits: circuit.traits,
+      laps: circuit.laps,
+      pitLaneProgress: circuit.pitLaneProgress,
+      trackZones: trackZonesForCircuit(circuit)
+    });
+    const pitEvent = result.events.find((event) => event.type === "pit_stop");
+    const pitBeat = result.replayFacts?.directorBeats?.find((beat) => beat.type === "pit_stop");
+
+    expect(result.events.every((event) => typeof event.trackProgress === "number" && event.zoneKind && event.zoneLabel)).toBe(true);
+    expect(pitEvent).toMatchObject({ zoneKind: "pit", zoneLabel: "pit_lane" });
+    expect(pitBeat).toMatchObject({ zoneKind: "pit", zoneLabel: "pit_lane" });
+    expect(result.replayFacts?.orderChanges.every((change) => typeof change.trackProgress === "number" && change.zoneKind && change.zoneLabel)).toBe(true);
   });
 
   it("uses circuit trait values in race timing", () => {

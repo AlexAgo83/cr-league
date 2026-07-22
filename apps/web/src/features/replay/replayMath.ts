@@ -97,8 +97,12 @@ export function buildReplayPlan(result: RaceResult, _trace: ReplayTracePoint[]):
 export function replayPlanDebugLines(plan: ReplayPlan) {
   return plan.overtakes.map(
     (beat) =>
-      `${beat.progress.toFixed(3)} L${beat.lap} ${beat.overtakingTeamId}->${beat.overtakenTeamId} P${beat.fromPosition}->P${beat.toPosition} ${beat.phases.map((phase) => phase.phase).join("/")}`
+      `${beat.progress.toFixed(3)} L${beat.lap} ${beat.overtakingTeamId}->${beat.overtakenTeamId} P${beat.fromPosition}->P${beat.toPosition}${beat.zoneLabel ? ` @ ${trackZoneDisplayLabel(beat.zoneLabel)}` : ""} ${beat.phases.map((phase) => phase.phase).join("/")}`
   );
+}
+
+export function trackZoneDisplayLabel(label?: string) {
+  return label ? label.replace(/^sector_/, "").replaceAll("_", " ") : "";
 }
 
 function replayBeatPhases(progress: number) {

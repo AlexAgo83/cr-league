@@ -1,0 +1,159 @@
+{
+  "title": "Canonical race-track geometry: generate semantic track markers instead of interpreting them on the map",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness.md",
+    "logics/request/req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "packages/shared/src/domain/circuits.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/replay/replayMath.ts",
+    "apps/web/src/features/replay/replayDirector.ts",
+    "apps/web/src/app/leagueMutations.ts",
+    "apps/web/src/app/circuitRoutes",
+    "scripts/generate-circuit.mjs",
+    "scripts/audit-circuits.mjs",
+    "Architecture audit (2026-07-22) following the pit-stop alignment work (req_089): the race track's SEMANTIC geometry does not exist as canonical data anywhere. Route files (apps/web/src/app/circuitRoutes/*.ts) are pure {lat,lng}[] with no markers; the shared circuit identity (packages/shared/src/domain/circuits.ts) carries only city/layoutKey/laps/trackLengthMeters/traits/likelyWeather; the simulation works in an abstract 5-segment progress model that never sees geometry. So the web map IMPROVISES race meaning from raw points with magic numbers, and the sim improvises separately. Findings. (1) analyzeCircuitRoute (CircuitMap.tsx:215-254) greedily detects the longest straight (tolerance 18 degrees, CircuitMap.tsx:52) and from it derives TWO gameplay-relevant placements: pitProgress = straightStart + length*0.18 (CircuitMap.tsx:240) and startProgress/lineProgress = straightStart + length*0.88 (CircuitMap.tsx:241). startProgress is not just a marker: it is the ORIGIN of all on-map car progress via progressFromStart/stageProgress (CircuitMap.tsx:354,379,384,410) and the championship thumbnail (ChampionshipView.tsx:296); a render constant (0.88) silently defines the zero-point the sim's pit math is reconciled against. The longestStraight field (CircuitMap.tsx:248) is returned but has no consumer. (2) The pit value is currently computed CLIENT-SIDE: leagueMutations.ts:81-91 calls circuitRouteAnalysis on the web and sends pitLaneProgress = ((pitProgress - startProgress) % 1 + 1) % 1 into the resolve request, so the sim consumes a client-decided position (a determinism/trust concern, same family as req_086's client-supplied traits); req_089 makes the pit canonical but startProgress remains map-derived. (3) Replay pacing is scaled by PROJECTED PIXELS: replayDistanceScale = circuitDisplayLength(circuit) * laps / 9000 (replayMath.ts:200-202), where circuitDisplayLength is the pixel length of the projected route (CircuitMap.tsx:256), while the sim computes real distances from the authored trackLengthMeters. circuitLengthMeters (replayMath.ts:204-210) computes the true geodesic length of the same route but is exported and UNUSED, and nothing asserts the authored trackLengthMeters matches the geometry. (4) The client re-derives race beats the sim already emits: replayDirector.ts:43-74 re-implements simulateRace.ts buildReplayDirectorBeats (grid/overtake/weather/pack/pit/final) line-for-line, gated as a fallback behind result.replayFacts?.directorBeats?.length (replayDirector.ts:33); orderChangesFromTrace (replayMath.ts:120-139) duplicates buildReplayFacts.orderChanges; the weather-beat progress max(0.2, idx/5) (replayDirector.ts:27,61) and pack-beat window (replayDirector.ts:64) are byte-identical copies of simulateRace.ts:191,195; pitStopTraceProgress (replayMath.ts:270-288) is a magic-window binary search superseded by the sim's event.traceProgress. These fallbacks agree today only because facts win, and exist only to drift."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Race-track data model",
+    "needs": [
+      "Extend the single-canonical-origin principle from the pit (req_089) to the whole semantic track geometry: generate the main-straight span and the start/finish line position once from the route, store them as shared circuit data, and have both the simulation and the map READ them instead of the map improvising them with magic numbers.",
+      "Remove the client from deciding race geometry: the pit and start positions must come from canonical shared data at resolve time, not be computed on the web and sent into the simulation.",
+      "Base replay pacing on canonical meters rather than projected pixels, and reconcile the authored track length with the route's real geometry.",
+      "Delete the client-side re-derivation of director beats, overtakes, and weather/pack/pit positions now that the simulation emits them canonically in replayFacts, so there is nothing left to drift."
+    ],
+    "context": [
+      "This builds directly on req_089, which extracts the longest-straight heuristic into a shared module and makes the pit position canonical and single-origin. This request generalizes that: the SAME shared heuristic emits the start/finish line position and the main-straight span as canonical circuit fields too, so startProgress stops being a render constant (0.88) recomputed on the map. Do not re-do the pit work req_089 owns; consume its shared heuristic module and add the sibling markers.",
+      "startProgress is the load-bearing one: it is the zero-point of all on-map car progress (progressFromStart/stageProgress) and the value the pit reconciliation subtracts. Making it canonical means the map reads it from circuit data (no 0.88 scan), analyzeCircuitRoute's geometry scan is removed or reduced to producing render-only poses (startLine/pitStop via poseOnRoute) from the canonical scalars, and the unused longestStraight output is dropped or moved to canonical data.",
+      "The client-side pit computation in leagueMutations.ts:81-91 goes away: with the pit and start positions canonical in shared, resolveCurrentGrandPrix reads them directly (as req_089 already routes the sim), and the web no longer computes pitLaneProgress from a client-side circuitRouteAnalysis call. This closes a determinism/trust gap in the same family as req_086's client-supplied resolve inputs.",
+      "Replay scale: switch replayDistanceScale (replayMath.ts:200) from circuitDisplayLength (projected pixels, zoom-dependent) to a canonical meters basis. Either reconcile the authored trackLengthMeters (circuits.ts) with the geodesic circuitLengthMeters (replayMath.ts:204) by generating/validating it, or use the real meters directly; wire the currently-unused circuitLengthMeters into the canonical length or delete it. Nothing should depend on pixel length for pacing.",
+      "Delete the client beat duplication: replayDirector.ts:43-74 and the replayMath fallbacks (orderChangesFromTrace, weather/pack copies, pitStopTraceProgress magic search) re-implement what simulateRace already emits in result.replayFacts. Remove the fallback branches and rely on replayFacts as the sole source; guard with a test asserting a resolved race always carries directorBeats/orderChanges so the deletion is safe, and keep only the thin facts-consuming path.",
+      "Out of scope: introducing real per-corner or real sector geometry (the sim's abstract 5-segment model stays); changing the map projection, zoom-fit, tiling, camera, drift/heading, or path smoothing (all legitimately render-only); retuning any placement magic number's value (0.18/0.88 stay as the generation heuristic, just moved to one canonical origin); and the pit work owned by req_089."
+    ],
+    "acceptance_criteria": [
+      "AC1: The main-straight span and start/finish line position are generated once from the route geometry (via the shared heuristic from req_089), stored as canonical shared circuit data, and both the simulation and the map read them; the map no longer derives startProgress from a 0.88 render constant and the unused longestStraight output is gone.",
+      "AC2: The pit and start positions reach the simulation from canonical shared data at resolve time; the web no longer computes pitLaneProgress from a client-side route analysis (leagueMutations.ts:81-91 is removed).",
+      "AC3: Replay pacing is scaled from canonical meters, not projected pixels; the authored trackLengthMeters is reconciled with the route geometry (generated or validated), and circuitLengthMeters is either the canonical basis or deleted.",
+      "AC4: The client-side re-derivation of director beats, overtakes, and weather/pack/pit positions is deleted; replayFacts is the sole source, guarded by a test that a resolved race always carries them.",
+      "AC5: Replays remain seed-deterministic and npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, npm run audit:circuits, and npm run logics:validate pass."
+    ]
+  },
+  "product": {
+    "title": "Canonical Race-Track Geometry Product Brief",
+    "overview": "An architecture audit after the pit-stop alignment fix found the same smell across the whole map: the race track's semantic geometry (main straight, start/finish line, real length, race beats) is never stored as canonical data — the web improvises it from raw route points with magic numbers, and the simulation improvises separately. This request extends the single-canonical-origin principle from the pit to the whole track: generate the semantic markers once, store them as shared circuit data read by both sides, base replay pacing on real meters, and delete the client-side beat re-derivation that only exists to drift.",
+    "goals": [
+      "Every semantic track position (start line, pit, main straight) is generated once and read by both the simulation and the map.",
+      "No race geometry is decided on the client or improvised at render time.",
+      "Replay pacing derives from canonical meters, not projected pixels.",
+      "There is exactly one source of race beats (the simulation's replayFacts); the client duplicates are gone."
+    ],
+    "non_goals": [
+      "Do not introduce real per-corner or per-sector geometry; the abstract 5-segment sim model stays.",
+      "Do not change map projection, zoom, tiling, camera, or cosmetic drift/heading.",
+      "Do not retune the placement heuristic values; only move them to one canonical origin.",
+      "Do not redo the pit-position work owned by req_089."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Generate the main straight and start line as canonical track data",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race-track data model",
+      "request_acs": ["AC1", "AC2", "AC5"],
+      "problem": [
+        "analyzeCircuitRoute derives startProgress = 0.88 of the longest straight (CircuitMap.tsx:241) at render time, and startProgress is the origin of all on-map car progress (progressFromStart/stageProgress) plus the value the pit reconciliation subtracts — a render constant silently defining the sim's zero-point.",
+        "The pit is computed client-side and sent to resolve (leagueMutations.ts:81-91), so the sim consumes a client-decided position.",
+        "The longestStraight output (CircuitMap.tsx:248) is returned but unused."
+      ],
+      "scope_in": [
+        "Using req_089's shared longest-straight heuristic, generate the main-straight span and start/finish line position (from-start form) as canonical shared circuit data alongside the pit.",
+        "Have the map read startProgress (and pit) from canonical data; reduce analyzeCircuitRoute to producing render-only poses (startLine/pitStop via poseOnRoute) from the canonical scalars, and drop the unused longestStraight output.",
+        "Remove the client-side pit computation (leagueMutations.ts:81-91) so resolve reads the canonical start/pit from shared data.",
+        "Generate the markers via scripts/generate-circuit.mjs and validate them via scripts/audit-circuits.mjs so they cannot drift from the route."
+      ],
+      "scope_out": [
+        "Redoing the pit-position wiring owned by req_089 (consume it, do not duplicate).",
+        "Real per-corner/sector geometry.",
+        "Changing the 0.18/0.88 heuristic values."
+      ],
+      "acceptance_criteria": [
+        "AC1: The main-straight span and start line are canonical shared circuit data, generated and audited.",
+        "AC2: The map reads startProgress from canonical data and no longer scans geometry for it; longestStraight is gone.",
+        "AC3: The web no longer computes pitLaneProgress client-side; resolve reads canonical start/pit."
+      ]
+    },
+    {
+      "title": "Base replay scale on canonical meters and reconcile track length",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Replay fidelity",
+      "request_acs": ["AC3", "AC5"],
+      "problem": [
+        "replayDistanceScale = circuitDisplayLength(circuit) * laps / 9000 (replayMath.ts:200-202) scales replay pacing by PROJECTED PIXELS, which depend on map zoom/projection, not on the track.",
+        "The authored trackLengthMeters (circuits.ts) and the geodesic circuitLengthMeters (replayMath.ts:204) are two independent lengths with nothing asserting they match; circuitLengthMeters is exported but unused."
+      ],
+      "scope_in": [
+        "Switch replayDistanceScale to a canonical meters basis instead of projected pixels.",
+        "Reconcile trackLengthMeters with the route geometry: generate or validate it from the geodesic length, and either make circuitLengthMeters the canonical basis or delete it.",
+        "Confirm replay pacing is unchanged in feel for existing circuits (or intentionally corrected) and stays seed-deterministic."
+      ],
+      "scope_out": [
+        "Changing the projection or display units on the map.",
+        "Retuning race pacing beyond removing the pixel dependency.",
+        "Altering trackLengthMeters values that already match geometry."
+      ],
+      "acceptance_criteria": [
+        "AC1: Replay pacing derives from canonical meters, with no dependency on projected pixel length.",
+        "AC2: trackLengthMeters is reconciled with the route geometry (generated or validated), and circuitLengthMeters is either the basis or removed.",
+        "AC3: Replays stay seed-deterministic."
+      ]
+    },
+    {
+      "title": "Delete client-side replay beat re-derivation; replayFacts is the sole source",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Over-engineering cleanup",
+      "request_acs": ["AC4", "AC5"],
+      "problem": [
+        "replayDirector.ts:43-74 re-implements simulateRace's buildReplayDirectorBeats (grid/overtake/weather/pack/pit/final) line-for-line, gated as a fallback behind result.replayFacts?.directorBeats?.length (replayDirector.ts:33).",
+        "orderChangesFromTrace (replayMath.ts:120-139) duplicates buildReplayFacts.orderChanges; the weather-beat progress and pack window (replayDirector.ts:27,61,64) are byte-identical copies of simulateRace.ts:191,195; pitStopTraceProgress (replayMath.ts:270-288) is a magic-window binary search superseded by the sim's event.traceProgress.",
+        "These fallbacks agree today only because facts win, and exist only to drift."
+      ],
+      "scope_in": [
+        "Remove the fallback branches in replayDirector.ts and the replayMath duplicates (orderChangesFromTrace, weather/pack copies, pitStopTraceProgress) and rely on result.replayFacts as the sole source.",
+        "Keep only the thin facts-consuming path and add a test asserting a resolved race always carries directorBeats/orderChanges so the deletion is safe."
+      ],
+      "scope_out": [
+        "Changing the sim's replayFacts contents.",
+        "Removing the visual beat choreography (replayBeatPhases) which is render-only.",
+        "Touching the pit/start canonical work in the other items."
+      ],
+      "acceptance_criteria": [
+        "AC1: The client-side director/overtake/weather/pack/pit re-derivations are deleted.",
+        "AC2: replayFacts is the sole source of race beats, guarded by a test that resolved races always carry them.",
+        "AC3: Replay behavior is unchanged for existing races."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate canonical race-track geometry",
+    "plan": [
+      "Read req_089 first; this generalizes its single-canonical-origin pit work to the whole semantic track geometry and must consume its shared heuristic module rather than duplicate it.",
+      "Generate the main-straight span and start line as canonical shared circuit data, make the map and sim read them, drop the render-time geometry scan and the unused longestStraight, and remove the client-side pit computation (leagueMutations).",
+      "Base replay scale on canonical meters and reconcile trackLengthMeters with the geodesic geometry, wiring or deleting circuitLengthMeters.",
+      "Delete the client-side replay beat/overtake/weather/pack/pit re-derivation and rely on replayFacts, guarded by a resolved-race test.",
+      "Run typecheck, tests, build, lint, e2e, audit:circuits, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/canonical-race-track-geometry.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

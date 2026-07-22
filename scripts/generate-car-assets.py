@@ -16,7 +16,7 @@ Needs: Pillow, numpy (dev-only tools, not shipped in the app).
 """
 import argparse, glob, json, os, sys
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageDraw
 
 ASSETS_DIR = "apps/web/public/assets/cars/crl-v2"
 SRC_DIR = "logics/external/CRL Cars V2"
@@ -113,6 +113,19 @@ def analyze_view(rgb, mask, box, max_lights):
     fp, rp = edge_point(xfront), edge_point(xback)
     heading = float(np.degrees(np.arctan2(-(fp["y"] - rp["y"]), fp["x"] - rp["x"])))
 
+    # Fallback: no red found (dark rear design or under threshold) -> place taillights at the
+    # rear geometry. Top view spreads a left/right pair across the rear mask width; side uses the point.
+    method = "auto-green-key-white-front-red-rear"
+    if not rear_lights:
+        rband = m[:, max(0, rp["x"] - int(0.06 * length)):rp["x"] + 1] if rp["x"] >= length / 2 else m[:, rp["x"]:rp["x"] + int(0.06 * length) + 1]
+        rys = np.where(rband.any(axis=1))[0]
+        if max_lights == 2 and len(rys) >= 4:
+            inset = int(0.15 * (rys[-1] - rys[0]))
+            rear_lights = [{"x": rp["x"], "y": int(rys[0] + inset)}, {"x": rp["x"], "y": int(rys[-1] - inset)}]
+        else:
+            rear_lights = [dict(rp)]
+        method += "+rear-point-fallback"
+
     crop = Image.fromarray(np.dstack([sub.astype(np.uint8), (m * 255).astype(np.uint8)]), "RGBA")
     view = {
         "canvas": {"width": int(x1 - x0 + 1), "height": int(y1 - y0 + 1)},
@@ -126,7 +139,7 @@ def analyze_view(rgb, mask, box, max_lights):
         "light_points_detected": {
             "front_lights": front_lights,
             "rear_lights": rear_lights,
-            "method": "auto-green-key-white-front-red-rear",
+            "method": method,
         },
     }
     return crop, view
@@ -179,6 +192,63 @@ def run(write):
           f"{'Files updated.' if write else 'Re-run with --write to apply.'}")
 
 
+def overlay(crop, view):
+    """Return a copy of the cutout with detected points drawn on it for visual QA."""
+    img = crop.convert("RGBA").copy()
+    dr = ImageDraw.Draw(img)
+    def dot(p, color, r=6):
+        dr.ellipse([p["x"] - r, p["y"] - r, p["x"] + r, p["y"] + r], outline=color, width=3)
+    lp = view["light_points_detected"]
+    rear_fallback = "fallback" in lp["method"]
+    for p in lp["front_lights"]:
+        dot(p, (0, 220, 255, 255))          # cyan = headlights
+    for p in lp["rear_lights"]:
+        dot(p, (255, 150, 0, 255) if rear_fallback else (255, 40, 40, 255))  # orange = fallback, red = detected
+    dot(view["front_point"], (255, 220, 0, 255), r=9)   # yellow = nose
+    dot(view["rear_point"], (255, 140, 0, 255), r=9)    # orange = tail
+    return img
+
+
+def preview(out_dir):
+    os.makedirs(out_dir, exist_ok=True)
+    rows = []
+    for d in sorted(glob.glob(f"{ASSETS_DIR}/car-*")):
+        cid = os.path.basename(d)
+        cur = json.load(open(os.path.join(d, "metadata.json")))
+        views = process_source(os.path.join(SRC_DIR, cur["source"]))
+        cdir = os.path.join(out_dir, cid)
+        os.makedirs(cdir, exist_ok=True)
+        meta = {"id": cid, "source": cur["source"], "assets": {}}
+        cells = []
+        for name in ("top", "side"):
+            crop, view = views[name]
+            crop.save(os.path.join(cdir, f"{name}.png"))
+            overlay(crop, view).save(os.path.join(cdir, f"{name}.overlay.png"))
+            meta["assets"][name] = {"file": f"{name}/{cid}-{name}.png", **view}
+            lp = view["light_points_detected"]
+            tail = "rear (fallback)" if "fallback" in lp["method"] else "rear"
+            cells.append(
+                f'<figure><img src="{cid}/{name}.overlay.png" alt=""><figcaption>{name}: '
+                f'{len(lp["front_lights"])} front / {len(lp["rear_lights"])} {tail}</figcaption></figure>')
+        json.dump(meta, open(os.path.join(cdir, "metadata.json"), "w"), indent=2)
+        rows.append(f'<section><h2>{cid} <small>{cur["source"]}</small></h2><div class="pair">{"".join(cells)}</div></section>')
+    html = (
+        '<!doctype html><meta charset="utf-8"><title>Car asset preview</title>'
+        '<style>body{background:#111;color:#eee;font:14px system-ui;margin:0;padding:24px}'
+        'h2{margin:24px 0 8px;font-size:15px}small{color:#888;font-weight:400}'
+        '.pair{display:flex;gap:16px;flex-wrap:wrap}figure{margin:0;background:#1c1c1c;padding:8px;border-radius:8px}'
+        'img{max-height:200px;display:block;background:'
+        'repeating-conic-gradient(#2a2a2a 0 25%,#222 0 50%) 0 0/20px 20px}'
+        'figcaption{margin-top:6px;color:#aaa;font-size:12px}'
+        '.legend{position:sticky;top:0;background:#111;padding:8px 0}'
+        '.legend b{color:#0dc;} .legend i{color:#f44;font-style:normal} .legend u{color:#fc0;text-decoration:none}</style>'
+        '<div class="legend"><b>● front lights</b> &nbsp; <i>● rear lights</i> &nbsp; <u>● nose/tail</u></div>'
+        + "".join(rows))
+    with open(os.path.join(out_dir, "index.html"), "w") as f:
+        f.write(html)
+    print(f"preview written to {out_dir}/index.html ({len(rows)} cars)")
+
+
 def check():
     """Self-check: car-001 taillights must land within tolerance of the known-good manual points."""
     views = process_source(os.path.join(SRC_DIR, "ChatGPT Image 21 juil. 2026, 17_22_47.png"))
@@ -200,8 +270,11 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--write", action="store_true", help="overwrite top.png/side.png/metadata.json")
     ap.add_argument("--check", action="store_true", help="run the self-check and exit")
+    ap.add_argument("--preview", metavar="DIR", help="write cutouts + overlays + index.html to DIR (no project files touched)")
     args = ap.parse_args()
     if args.check:
         check()
+    elif args.preview:
+        preview(args.preview)
     else:
         run(write=args.write)

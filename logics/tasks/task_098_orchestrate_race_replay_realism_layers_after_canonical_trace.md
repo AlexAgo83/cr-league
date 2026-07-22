@@ -1,13 +1,14 @@
 ## task_098_orchestrate_race_replay_realism_layers_after_canonical_trace - Orchestrate race replay realism layers after canonical trace
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -49,7 +50,8 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- Wave 1: added a canonical `launch` car phase to generated replay traces for the early car-progress window. This keeps launch/first-corner behavior trace-level and does not change final race scoring.
+- Wave 1 validation: `npm test -- packages/shared/src/simulation/simulateRace.test.ts` and `npm run typecheck` passed.
 
 # AI Context
 - Summary: Orchestrate race replay realism layers after canonical trace

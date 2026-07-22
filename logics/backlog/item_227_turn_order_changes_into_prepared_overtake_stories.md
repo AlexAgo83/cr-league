@@ -1,10 +1,10 @@
 ## item_227_turn_order_changes_into_prepared_overtake_stories - Turn order changes into prepared overtake stories
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Replay storytelling
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

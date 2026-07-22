@@ -190,7 +190,7 @@ export type ReplayTracePoint = {
       trackProgress: number;
       distanceMeters?: number;
       speed: number;
-      phase: "grid" | "racing" | "pit_entry" | "pit_stop" | "pit_exit" | "overtake_approach" | "overtake_overlap" | "overtake_pass" | "overtake_settle" | "finished";
+      phase: "grid" | "launch" | "racing" | "pit_entry" | "pit_stop" | "pit_exit" | "overtake_approach" | "overtake_overlap" | "overtake_pass" | "overtake_settle" | "finished";
     }
   >;
 };

@@ -39,6 +39,7 @@ const DEFAULT_TRACK_LENGTH_METERS = 3200;
 const TRACE_ORDER_MARGIN = 0.006;
 const PIT_ENTRY_SECONDS = 1.2;
 const PIT_EXIT_SECONDS = 1.2;
+const LAUNCH_PHASE_PROGRESS = 0.06;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -353,9 +354,10 @@ function carAtRaceTime(plan: TeamTracePlan, raceTime: number): { progress: numbe
     const travelTime = Math.max(0, stop.targetProgress - progress) * plan.movingTime;
     const arrival = time + travelTime;
     if (raceTime < arrival) {
+      const nextProgress = progress + Math.max(0, raceTime - time) / plan.movingTime;
       return {
-        progress: progress + Math.max(0, raceTime - time) / plan.movingTime,
-        phase: arrival - raceTime <= PIT_ENTRY_SECONDS ? "pit_entry" : "racing"
+        progress: nextProgress,
+        phase: arrival - raceTime <= PIT_ENTRY_SECONDS ? "pit_entry" : nextProgress <= LAUNCH_PHASE_PROGRESS ? "launch" : "racing"
       };
     }
     const departure = arrival + stop.cost;
@@ -367,7 +369,8 @@ function carAtRaceTime(plan: TeamTracePlan, raceTime: number): { progress: numbe
     progress = stop.targetProgress;
   }
   if (raceTime >= plan.finalTime) return { progress: 1, phase: "finished" };
-  return { progress: Math.min(1, progress + Math.max(0, raceTime - time) / plan.movingTime), phase: "racing" };
+  const nextProgress = Math.min(1, progress + Math.max(0, raceTime - time) / plan.movingTime);
+  return { progress: nextProgress, phase: nextProgress <= LAUNCH_PHASE_PROGRESS ? "launch" : "racing" };
 }
 
 function orderFromCars(cars: ReplayTracePoint["cars"], states: TeamState[]) {
@@ -383,6 +386,7 @@ function orderFromCars(cars: ReplayTracePoint["cars"], states: TeamState[]) {
 
 function replayCarSpeed(phase: NonNullable<ReplayTracePoint["cars"]>[string]["phase"]) {
   if (phase === "pit_stop" || phase === "grid" || phase === "finished") return 0;
+  if (phase === "launch") return 0.7;
   if (phase === "pit_entry" || phase === "pit_exit") return 0.35;
   if (phase === "overtake_approach" || phase === "overtake_overlap" || phase === "overtake_pass") return 1.08;
   if (phase === "overtake_settle") return 1;

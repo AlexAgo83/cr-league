@@ -119,6 +119,7 @@ describe("simulateRace", () => {
     expect(result.replayFacts?.orderChanges.every((fact) => fact.type === "order_change" && fact.progress >= 0 && fact.progress <= 1)).toBe(true);
     expect(result.replayFacts?.directorBeats?.map((beat) => beat.type)).toEqual(expect.arrayContaining(["grid_start", "pit_stop", "final"]));
     expect(result.replayTrace?.some((point) => Object.values(point.cars ?? {}).some((car) => car.phase.startsWith("overtake")))).toBe(true);
+    expect(result.replayTrace?.some((point) => Object.values(point.cars ?? {}).some((car) => car.phase === "launch"))).toBe(true);
     expect(result.events.filter((event) => event.type === "pit_stop")).toHaveLength(6);
     expect(result.events.filter((event) => event.type === "pit_stop").every((event) => typeof event.traceProgress === "number")).toBe(true);
     expect(result.events.every((event) => typeof event.traceProgress === "number" && event.traceProgress >= 0 && event.traceProgress <= 1)).toBe(true);

@@ -1,10 +1,10 @@
 ## item_224_add_launch_and_first_corner_replay_phase - Add launch and first-corner replay phase
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Replay realism
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

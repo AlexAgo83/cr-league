@@ -1,6 +1,6 @@
 {
   "name": "@cr-league/api",
-  "version": "0.3.27",
+  "version": "0.3.28",
   "private": true,
   "type": "module",
   "main": "./dist/server.js",
@@ -13,7 +13,7 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@cr-league/shared": "0.3.27",
+    "@cr-league/shared": "0.3.28",
     "@fastify/cors": "^11.1.0",
     "@prisma/client": "^6.19.3",
     "@types/nodemailer": "^8.0.1",

@@ -176,8 +176,10 @@ def analyze_view(rgb, mask, box, max_lights):
 def detect_side_wheels(m, front_low, dark):
     """Ground contacts from the bottom alpha edge: the two widest column-clusters touching
     the lowest row are the front and rear wheels. Each point also carries the hub centre
-    (`center_x`/`center_y`), taken as the centroid of the near-black tyre disc above the
-    contact. Returns (points, {axle: frac-from-front})."""
+    (`center_x`/`center_y`). The hub sits directly above the ground contact at a height equal
+    to the wheel radius, so we fit the radius to the tyre's outer edges at low heights (pure
+    tyre, below the wheel arch) via the tangent-circle relation r = (halfwidth² + h²) / 2h.
+    Returns (points, {axle: frac-from-front})."""
     H, W = m.shape
     bottom = np.where(m.any(axis=0), (m * np.arange(H)[:, None]).max(axis=0), -1)
     ground = int(bottom.max())
@@ -193,17 +195,23 @@ def detect_side_wheels(m, front_low, dark):
     length = max(1.0, xmax - xmin)
     xfront = xmin if front_low else xmax
     labels = ["front", "rear"] if front_low else ["rear", "front"]
-    win = max(8, int(0.09 * W))
+    gx = [int(g.mean()) for g in groups]
+    wheelbase = abs(gx[1] - gx[0]) if len(gx) == 2 else int(0.5 * W)
+    win = max(12, int(0.28 * wheelbase))  # tyre never wider than ~half the wheelbase
     pts, fracs = [], {}
-    for lab, g in zip(labels, groups):
-        x = int(g.mean())
-        cx, cy = x, ground  # fall back to the contact if the tyre isn't isolated
-        reg = dark[int(0.45 * H):, max(0, x - win):x + win]
-        ty, tx = np.where(reg)
-        if len(tx) > 50:
-            cx = int(tx.mean() + max(0, x - win))
-            cy = int(ty.mean() + int(0.45 * H))
-        pts.append({"wheel": lab, "x": x, "y": ground, "center_x": cx, "center_y": cy})
+    for lab, x in zip(labels, gx):
+        radii = []
+        for h in range(4, 22, 2):  # low band only: pure tyre, below the arch
+            y = ground - h
+            if y < 0:
+                break
+            idx = np.where(dark[y, max(0, x - win):min(W, x + win)])[0]
+            if len(idx) < 3:
+                continue
+            half = (idx.max() - idx.min()) / 2.0
+            radii.append((half * half + h * h) / (2 * h))
+        r = float(np.median(radii)) if radii else win
+        pts.append({"wheel": lab, "x": x, "y": ground, "center_x": x, "center_y": int(round(ground - r))})
         fracs[lab] = abs(x - xfront) / length
     return pts, fracs
 
@@ -371,7 +379,11 @@ def check():
     swx = sorted(p["x"] for p in side_wheels)
     assert swx[0] < 250 and swx[1] > 500, f"side wheels should be front/rear split: {swx}"
     assert len(views["top"][1]["wheel_contacts"]) == 4, "expected 4 top wheel contacts"
-    print("check OK: lights", top["front_lights"], top["rear_lights"], "| side wheels", swx)
+    for wc in side_wheels:  # hub sits above the ground contact by a plausible radius
+        r = wc["y"] - wc["center_y"]
+        assert 40 < r < wc["y"], f"wheel radius out of range for {wc}"
+    print("check OK: lights", top["front_lights"], top["rear_lights"], "| side wheels", swx,
+          "| radii", [w["y"] - w["center_y"] for w in side_wheels])
 
 
 if __name__ == "__main__":

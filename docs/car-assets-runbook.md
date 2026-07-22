@@ -117,10 +117,12 @@ What it derives:
   point no longer drops onto the bumper or wheel. Geometric points carry `"geometric": true`
   and the method is tagged `+partial-geometry`.
 - **Wheel contacts** — side view: the two widest column-clusters touching the lowest alpha
-  row (ground contacts), each also carrying the hub centre (`center_x`/`center_y`) as the
-  centroid of the near-black tyre disc above the contact. Top view: the side wheel positions
-  (fraction front→rear) mapped onto the top and placed at the lateral silhouette extremes,
-  where the tyres stick out.
+  row (ground contacts), each also carrying the hub centre (`center_x`/`center_y`). The hub is
+  directly above the contact at a height equal to the wheel radius, fitted from the tyre's
+  outer edges at low heights (below the arch) via the tangent-circle relation
+  `r = (halfwidth² + h²) / 2h` — a plain centroid drifts high because the dark arch and body
+  cladding above the tyre pull it up. Top view: the side wheel positions (fraction front→rear)
+  mapped onto the top and placed at the lateral silhouette extremes, where the tyres stick out.
 
 Preview overlays colour detected front lamps cyan, detected rear lamps red, geometric
 corners orange, and the nose marker yellow — open `index.html` in the preview dir to scan

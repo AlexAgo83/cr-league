@@ -65,7 +65,7 @@ def vertical_bands(mask):
     return bands
 
 
-def end_lights(m, color, end_x, length, n):
+def end_lights(m, color, end_x, length, n, vband=None):
     """Light point(s) at one end of the car: anchored to the silhouette corners, then
     refined toward a nearby colored cluster when one is actually there.
 
@@ -74,27 +74,32 @@ def end_lights(m, color, end_x, length, n):
     corners (never mid-body) and only pull a point onto a real red/bright cluster if it
     sits inside the corner window. Geometric (unrefined) points carry {"geometric": true}.
 
-    n=2 -> top view left/right pair; n=1 -> side profile single light.
+    n=2 -> top view left/right pair (spread over the mask width).
+    n=1 -> side profile single light. `vband=(lo,hi)` restricts placement and refinement to
+    a vertical fraction of the crop height — for the side view lamps live in the upper band,
+    above the wheel line, so this keeps the point off the bumper/wheel it used to fall onto.
     """
     H, W = m.shape
     ex = min(max(end_x, 0), W - 1)
     lo, hi = max(0, ex - int(LIGHT_BAND_FRAC * length)), min(W - 1, ex + int(LIGHT_BAND_FRAC * length))
-    ys = np.where(m[:, lo:hi + 1].any(axis=1))[0]
+    ypresent = m[:, lo:hi + 1].any(axis=1)
+    ys = np.where(ypresent)[0]
     if len(ys) == 0:
         return []
     y0, y1 = int(ys[0]), int(ys[-1])
     span = max(1, y1 - y0)
+    vlo, vhi = (0, H) if vband is None else (int(y0 + vband[0] * span), int(y0 + vband[1] * span))
     if n == 2:
         inset = int(0.15 * span)
         anchors = [(ex, y0 + inset), (ex, y1 - inset)]
     else:
-        anchors = [(ex, (y0 + y1) // 2)]
+        anchors = [(ex, (vlo + vhi) // 2)]  # upper band centre for the side profile
     cy, cx = np.where(color)
     out = []
     for ax, ay in anchors:
         if len(cx):
-            near = (np.abs(cx - ax) <= 0.10 * length) & (np.abs(cy - ay) <= 0.25 * span)
-            if near.sum() >= 8:  # a real colored lamp sits at this corner
+            near = (np.abs(cx - ax) <= 0.10 * length) & (np.abs(cy - ay) <= 0.25 * span) & (cy >= vlo) & (cy <= vhi)
+            if near.sum() >= 8:  # a real colored lamp sits in this window
                 out.append({"x": int(cx[near].mean()), "y": int(cy[near].mean())})
                 continue
         out.append({"x": int(ax), "y": int(ay), "geometric": True})
@@ -126,9 +131,11 @@ def analyze_view(rgb, mask, box, max_lights):
         white_x = np.where(white)[1]
         front_low = white_x.mean() < midx if len(white_x) else True
 
+    # Side profile (max_lights==1): lamps sit in the upper band, above the wheel line.
+    vband = (0.12, 0.55) if max_lights == 1 else None
     xfront, xback = (xmin, xmax) if front_low else (xmax, xmin)
-    front_lights = end_lights(m, white, xfront, length, max_lights)
-    rear_lights = end_lights(m, red, xback, length, max_lights)
+    front_lights = end_lights(m, white, xfront, length, max_lights, vband)
+    rear_lights = end_lights(m, red, xback, length, max_lights, vband)
 
     # front/rear points at the vertical centre of the mask on each end (xfront/xback are local).
     def edge_point(xl):
@@ -161,7 +168,57 @@ def analyze_view(rgb, mask, box, max_lights):
             "method": method,
         },
     }
-    return crop, view
+    return crop, view, m, front_low
+
+
+def detect_side_wheels(m, front_low):
+    """Ground contacts from the bottom alpha edge: the two widest column-clusters touching
+    the lowest row are the front and rear wheels. Returns (points, {axle: frac-from-front})."""
+    H, W = m.shape
+    bottom = np.where(m.any(axis=0), (m * np.arange(H)[:, None]).max(axis=0), -1)
+    ground = int(bottom.max())
+    touch = np.where(bottom >= ground - 4)[0]
+    if len(touch) == 0:
+        return [], {}
+    groups = [g for g in np.split(touch, np.where(np.diff(touch) > 15)[0] + 1) if len(g) > 10]
+    groups = sorted(sorted(groups, key=len, reverse=True)[:2], key=lambda g: g.mean())
+    if not groups:
+        return [], {}
+    xs_all = np.argwhere(m)[:, 1]
+    xmin, xmax = float(xs_all.min()), float(xs_all.max())
+    length = max(1.0, xmax - xmin)
+    xfront = xmin if front_low else xmax
+    labels = ["front", "rear"] if front_low else ["rear", "front"]
+    pts, fracs = [], {}
+    for lab, g in zip(labels, groups):
+        x = int(g.mean())
+        pts.append({"wheel": lab, "x": x, "y": ground})
+        fracs[lab] = abs(x - xfront) / length
+    return pts, fracs
+
+
+def detect_top_wheels(m, fracs, front_low):
+    """Map the side view's wheel positions (fraction along the car, front->rear) onto the top
+    view and place each axle's pair at the lateral silhouette extremes (wheels stick out)."""
+    H, W = m.shape
+    xs_all = np.argwhere(m)[:, 1]
+    xmin, xmax = int(xs_all.min()), int(xs_all.max())
+    length = max(1, xmax - xmin)
+    xfront = xmin if front_low else xmax
+    direction = 1 if front_low else -1
+    out = []
+    for axle in ("front", "rear"):
+        if axle not in fracs:
+            continue
+        x = min(max(int(xfront + direction * fracs[axle] * length), 0), W - 1)
+        col = np.where(m[:, x])[0]
+        if len(col) == 0:
+            continue
+        ytop, ybot = int(col[0]), int(col[-1])
+        inset = int(0.06 * (ybot - ytop))
+        out.append({"wheel": f"{axle}_left", "x": x, "y": ytop + inset})
+        out.append({"wheel": f"{axle}_right", "x": x, "y": ybot - inset})
+    return out
 
 
 def process_source(src_path):
@@ -170,11 +227,21 @@ def process_source(src_path):
     bands = vertical_bands(mask)
     if len(bands) != 2:
         raise ValueError(f"{os.path.basename(src_path)}: expected 2 views (top/side), found {len(bands)}")
-    views = {}
     max_lights = {"top": 2, "side": 1}
+    raw = {}
     for name, (yb0, yb1) in zip(("top", "side"), bands):  # top view is the upper band
         cols = np.where(mask[yb0:yb1 + 1].sum(axis=0) > 5)[0]
-        views[name] = analyze_view(rgb, mask, (int(cols[0]), yb0, int(cols[-1]), yb1), max_lights[name])
+        raw[name] = analyze_view(rgb, mask, (int(cols[0]), yb0, int(cols[-1]), yb1), max_lights[name])
+    # Wheels: side from bottom-alpha clusters, top mapped from the side fractions.
+    side_wheels, fracs = detect_side_wheels(raw["side"][2], raw["side"][3])
+    top_wheels = detect_top_wheels(raw["top"][2], fracs, raw["top"][3])
+    wheels = {"side": (side_wheels, "auto-bottom-alpha-clusters"),
+              "top": (top_wheels, "auto-side-frac-mapped-to-top-lateral")}
+    views = {}
+    for name in ("top", "side"):
+        crop, view, _, _ = raw[name]
+        pts, method = wheels[name]
+        views[name] = (crop, {**view, "wheel_contacts": pts, "wheel_contact_method": method})
     return views
 
 
@@ -188,10 +255,7 @@ def run(write):
         meta = {"id": cid, "source": cur["source"], "assets": {}}
         for name in ("top", "side"):
             crop, view = views[name]
-            # Carry over the manually-projected wheel contacts — out of scope for auto-detection,
-            # and the crop is pixel-stable so the old coordinates stay valid.
-            carried = {k: cur["assets"][name][k] for k in ("wheel_contacts", "wheel_contacts_projected", "wheel_contact_method") if k in cur["assets"][name]}
-            view = {"file": f"{name}/{cid}-{name}.png", **view, **carried}
+            view = {"file": f"{name}/{cid}-{name}.png", **view}
             meta["assets"][name] = view
             if write:
                 crop.save(os.path.join(d, f"{name}.png"))
@@ -224,6 +288,9 @@ def overlay(crop, view):
         dot(p, (255, 150, 0, 255) if p.get("geometric") else (255, 40, 40, 255))   # orange = geometric, red = detected
     dot(view["front_point"], (255, 220, 0, 255), r=9)   # yellow = nose
     dot(view["rear_point"], (180, 120, 255, 255), r=9)  # purple = tail
+    for wc in view.get("wheel_contacts", []):
+        x, y = wc["x"], wc["y"]
+        dr.rectangle([x - 6, y - 6, x + 6, y + 6], outline=(50, 230, 80, 255), width=3)  # green = wheel contact
     return img
 
 
@@ -262,7 +329,8 @@ def preview(out_dir):
         '.legend{position:sticky;top:0;background:#111;padding:8px 0}'
         '.legend b{color:#0dc;} .legend i{color:#f44;font-style:normal} .legend u{color:#fc0;text-decoration:none}</style>'
         '<div class="legend"><b>● front (detected)</b> &nbsp; <i>● rear (detected)</i> &nbsp; '
-        '<span style="color:#f90">● geometric corner</span> &nbsp; <u>● nose</u></div>'
+        '<span style="color:#f90">● geometric corner</span> &nbsp; <u>● nose</u> &nbsp; '
+        '<span style="color:#3e6">▢ wheel contact</span></div>'
         + "".join(rows))
     with open(os.path.join(out_dir, "index.html"), "w") as f:
         f.write(html)
@@ -283,7 +351,12 @@ def check():
     w, h = v["canvas"]["width"], v["canvas"]["height"]
     for pt in (v["front_point"], v["rear_point"]):
         assert 0 <= pt["x"] < w and 0 <= pt["y"] < h, f"edge point out of bounds: {pt} in {w}x{h}"
-    print("check OK: car-001 top lights =", top["front_lights"], top["rear_lights"], "front/rear pt in bounds")
+    side_wheels = views["side"][1]["wheel_contacts"]
+    assert len(side_wheels) == 2, f"expected 2 side wheels, got {side_wheels}"
+    swx = sorted(p["x"] for p in side_wheels)
+    assert swx[0] < 250 and swx[1] > 500, f"side wheels should be front/rear split: {swx}"
+    assert len(views["top"][1]["wheel_contacts"]) == 4, "expected 4 top wheel contacts"
+    print("check OK: lights", top["front_lights"], top["rear_lights"], "| side wheels", swx)
 
 
 if __name__ == "__main__":

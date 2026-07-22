@@ -112,10 +112,13 @@ What it derives:
 - **Light points** — hybrid corner geometry + color refinement. Lamps are anchored to the
   silhouette corners (the only signal that holds when most cars are white/silver and plain
   brightness lands on bodywork), then pulled onto a real red (rear) or bright (front)
-  cluster when one sits at that corner. Geometric points carry `"geometric": true` and the
-  method is tagged `+partial-geometry`.
-- **Carried over** — manual `wheel_contacts` / `wheel_contacts_projected` are preserved from
-  the existing metadata (out of scope for auto-detection; the crop is pixel-stable).
+  cluster when one sits at that corner. On the side profile, placement and refinement are
+  constrained to the upper band (above the wheel line) where optics actually live, so the
+  point no longer drops onto the bumper or wheel. Geometric points carry `"geometric": true`
+  and the method is tagged `+partial-geometry`.
+- **Wheel contacts** — side view: the two widest column-clusters touching the lowest alpha
+  row (ground contacts). Top view: the side wheel positions (fraction front→rear) mapped onto
+  the top and placed at the lateral silhouette extremes, where the tyres stick out.
 
 Preview overlays colour detected front lamps cyan, detected rear lamps red, geometric
 corners orange, and the nose marker yellow — open `index.html` in the preview dir to scan

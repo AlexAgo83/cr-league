@@ -89,6 +89,24 @@ describe("App profile and admin", () => {
     expect(fetch).toHaveBeenCalledWith("http://localhost:4874/profiles/recovery-code", expect.objectContaining({ method: "POST", body: JSON.stringify({ email: "pilot@example.test" }) }));
   });
 
+  it("shows profile recovery misses inline without opening the technical error modal", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce({
+      ok: false,
+      status: 404,
+      json: async () => ({ message: "Profile not found." })
+    } as Response);
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
+    fireEvent.change(screen.getByLabelText("Email"), { target: { value: "missing@example.test" } });
+    fireEvent.change(screen.getByLabelText("Recovery code"), { target: { value: "BADCODE" } });
+    fireEvent.submit(screen.getByLabelText("Recovery code").closest("form")!);
+
+    expect(await screen.findAllByText("No profile matches this email and recovery code. Check both fields and try again.")).not.toHaveLength(0);
+    expect(screen.queryByRole("dialog", { name: "Action blocked" })).toBe(null);
+  });
+
   it("opens release notes from the centered profile version", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));

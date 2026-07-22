@@ -467,6 +467,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
 
   async function run(nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify = true, errorText?: (error: unknown) => string, closeReplays = true) {
     if (closeReplays) closeOpenReplays();
+    setTechnicalError(null);
     setStatus("loading");
     setMessage(nextMessage);
     if (notify) pushNotification(nextMessage);
@@ -476,14 +477,16 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       setStatus("idle");
     } catch (error) {
       setStatus("error");
-      if (isStaleLeagueError(error)) {
+      const friendlyError = errorText?.(error);
+      if (!friendlyError && isStaleLeagueError(error)) {
         forgetClaim(staleClaimTeamId);
         setLeagueState(null);
         showStatus(tt("status_saved_league_expired"), "error", false);
         return;
       }
-      const friendlyError = errorText?.(error);
-      setTechnicalError(error instanceof Error ? error.message : String(error));
+      if (!friendlyError || (error instanceof ApiError && error.statusCode >= 500)) {
+        setTechnicalError(error instanceof Error ? error.message : String(error));
+      }
       clearTransientNotifications();
       showStatus(friendlyError ?? (error instanceof TypeError ? tt("status_api_unavailable") : tt("status_request_failed")), "error", notify);
     }

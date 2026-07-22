@@ -1,0 +1,101 @@
+{
+  "title": "Modularize the oversized leagues store",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/admin/store.ts",
+    "Current diagnostic: apps/api/src/features/leagues/store.ts is 1197 lines and is by far the largest hand-written source file in the repo.",
+    "Current diagnostic: the file mixes several unrelated lifecycles — profile recovery, league create/join, card buy/sell, team livery/name, decision submission, qualifying, grand prix resolution, admin start/restart, opponent comparison, and state read/reveal — plus their private helpers.",
+    "Current diagnostic: the only external consumers of store.ts are leagues/routes.ts (named imports) and admin/store.ts (getLeagueState); the test suite imports from the same module path.",
+    "Current diagnostic: transaction primitives (runWrite, lockTeamRow, lockGrandPrixRow, getCurrentGrandPrix, normalizeQualifyingRuns, requireTeamClaim, requireAdminClaim) are shared across sellCard, submitDecision, submitQualifyingRun, and resolveCurrentGrandPrix."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Backend maintainability",
+    "needs": [
+      "Break apps/api/src/features/leagues/store.ts into cohesive modules organized by lifecycle so the file stops being a single 1197-line grab-bag.",
+      "Keep the public import surface identical: leagues/routes.ts, admin/store.ts, and every test must import the same named symbols from the same path with no source changes.",
+      "Preserve behavior exactly — no change to transaction boundaries, row locks, rule errors, or race-integrity guarantees added in the recent hardening pass.",
+      "Give contributors an obvious home for each concern (profiles, league lifecycle, cards, decisions, qualifying, resolution, state reads, shared transaction helpers)."
+    ],
+    "context": [
+      "This is a backend Fastify + Prisma workspace under apps/api.",
+      "store.ts is behavior-critical: it holds the race-integrity fixes (in-transaction re-checks with lockTeamRow/lockGrandPrixRow) landed in the current branch.",
+      "No new dependencies are wanted; this is a pure internal reorganization.",
+      "The repo convention keeps a module's public API as named exports; a barrel re-export from store.ts keeps consumers untouched."
+    ],
+    "acceptance_criteria": [
+      "AC1: store.ts is split into cohesive per-lifecycle modules (e.g. profiles, league lifecycle, cards, decisions, qualifying, resolution, state reads) plus one shared transaction-helpers module.",
+      "AC2: The shared transaction helpers (runWrite, lockTeamRow, lockGrandPrixRow, getCurrentGrandPrix, normalizeQualifyingRuns, requireTeamClaim, requireAdminClaim) live in one module and are imported by the lifecycle modules that need them, with no duplicated logic.",
+      "AC3: store.ts remains a barrel that re-exports every symbol currently imported by routes.ts, admin/store.ts, and the tests, so no consumer or test import path changes.",
+      "AC4: No behavior change — transaction boundaries, row locks, LeagueRuleError messages, and the in-transaction re-checks are preserved verbatim.",
+      "AC5: Typecheck, lint, and the full unit test suite (currently 250 passing) pass unchanged, with no weakened assertions."
+    ]
+  },
+  "product": {
+    "title": "Leagues Store Modularization Product Brief",
+    "overview": "Reorganize CR League's oversized leagues store into cohesive lifecycle modules behind an unchanged barrel export, improving maintainability without touching behavior or the public API.",
+    "goals": [
+      "Reduce store.ts from a 1197-line catch-all to a thin barrel over focused modules.",
+      "Give each lifecycle (profiles, leagues, cards, decisions, qualifying, resolution, reads) its own file.",
+      "Centralize the shared transaction helpers so race-integrity logic lives in one place.",
+      "Keep the change provably behavior-neutral via the existing test suite."
+    ],
+    "non_goals": [
+      "Do not change any function behavior, transaction boundary, lock, or rule-error message.",
+      "Do not alter the public import surface consumed by routes.ts, admin/store.ts, or tests.",
+      "Do not add dependencies or introduce a new architectural pattern beyond plain module files.",
+      "Do not refactor the simulation engine, Prisma schema, or API routes."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Split leagues store into lifecycle modules behind a barrel",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Backend maintainability",
+      "request_acs": ["AC1", "AC2", "AC3", "AC4", "AC5"],
+      "problem": [
+        "store.ts concentrates ~10 unrelated lifecycles and their private helpers in one 1197-line file.",
+        "The shared transaction primitives are interleaved with unrelated read and profile logic, making the race-integrity code hard to locate.",
+        "The size makes the file the first one that will become painful to extend or review."
+      ],
+      "scope_in": [
+        "Group top-level functions by lifecycle and move each group into its own module under features/leagues/.",
+        "Extract the shared transaction helpers into a single module imported by the lifecycle modules.",
+        "Turn store.ts into a barrel that re-exports the existing public symbols.",
+        "Move each function's private helpers alongside the lifecycle that uses them.",
+        "Run typecheck, lint, and unit tests after the move to prove behavior is unchanged."
+      ],
+      "scope_out": [
+        "Changing any function logic, signature, or error message.",
+        "Modifying routes.ts, admin/store.ts, or test import paths.",
+        "Adding dependencies or new abstractions."
+      ],
+      "acceptance_criteria": [
+        "AC1: Each lifecycle group lives in its own module and store.ts only re-exports.",
+        "AC2: Shared transaction helpers exist in exactly one module with no duplication.",
+        "AC3: No consumer or test import path changes.",
+        "AC4: Typecheck, lint, and the full unit suite pass with no weakened assertions."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate leagues store modularization",
+    "plan": [
+      "Map every top-level function in store.ts to a lifecycle group and list its private helpers and shared dependencies.",
+      "Create a shared transaction-helpers module and move runWrite/lockTeamRow/lockGrandPrixRow/getCurrentGrandPrix/normalizeQualifyingRuns/requireTeamClaim/requireAdminClaim into it.",
+      "Move each lifecycle group into its own module, importing the shared helpers where needed.",
+      "Reduce store.ts to a barrel that re-exports the public symbols consumed by routes.ts, admin/store.ts, and tests.",
+      "Run typecheck, lint, and the full unit suite; record validation evidence in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/leagues-store-modularization.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

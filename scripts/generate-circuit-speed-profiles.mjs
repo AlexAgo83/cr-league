@@ -18,11 +18,12 @@ console.log(`Generated ${Object.keys(profiles).length} circuit speed profiles`);
 
 function parseIdentities(text) {
   const pattern =
-    /\{\s*city:\s*"(?<city>[^"]+)",\s*country:\s*"(?<country>[^"]+)",\s*layoutKey:\s*"(?<layoutKey>[^"]+)",\s*laps:\s*(?<laps>\d+),[\s\S]*?mainStraightStartProgress:\s*(?<mainStraightStartProgress>\d+(?:\.\d+)?),\s*mainStraightEndProgress:\s*(?<mainStraightEndProgress>\d+(?:\.\d+)?),[\s\S]*?likelyWeather:\s*"(?<weather>[^"]+)"\s*\}/g;
+    /\{\s*city:\s*"(?<city>[^"]+)",\s*country:\s*"(?<country>[^"]+)",\s*layoutKey:\s*"(?<layoutKey>[^"]+)",\s*laps:\s*(?<laps>\d+),[\s\S]*?mainStraightStartProgress:\s*(?<mainStraightStartProgress>\d+(?:\.\d+)?),\s*mainStraightEndProgress:\s*(?<mainStraightEndProgress>\d+(?:\.\d+)?),\s*startProgress:\s*(?<startProgress>\d+(?:\.\d+)?),[\s\S]*?likelyWeather:\s*"(?<weather>[^"]+)"\s*\}/g;
   return [...text.matchAll(pattern)].map((match) => ({
     layoutKey: match.groups.layoutKey,
     mainStraightStartProgress: Number(match.groups.mainStraightStartProgress),
-    mainStraightEndProgress: Number(match.groups.mainStraightEndProgress)
+    mainStraightEndProgress: Number(match.groups.mainStraightEndProgress),
+    startProgress: Number(match.groups.startProgress)
   }));
 }
 
@@ -44,7 +45,7 @@ function speedProfileForRoute(points, identity) {
     if (delta < 28 || segments[index].length < 10 || segments[index + 1].length < 10) continue;
     const severity = Math.min(1, (delta - 28) / 72);
     candidates.push({
-      progress: roundProgress(cursor / Math.max(1, length)),
+      progress: roundProgress(cursor / Math.max(1, length) - identity.startProgress),
       severity,
       score: delta * Math.min(1, (segments[index].length + segments[index + 1].length) / 120)
     });

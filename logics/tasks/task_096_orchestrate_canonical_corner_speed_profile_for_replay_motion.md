@@ -2,9 +2,9 @@
 > From version: 0.3.28
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 100%
+> Understanding: 90
+> Confidence: 90
+> Progress: 100
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -58,6 +58,7 @@
 
 # Report
 - 2026-07-23: Added shared speed-profile contract, deterministic route-curvature generator, generated profiles for 25 circuits, replay-only visual progress remap, audit coverage, and focused unit tests.
+- 2026-07-23 follow-up: Recalibrated generated corner spans from raw route progress into replay progress relative to `startProgress`, matching the `CircuitMap` render frame so braking happens on the visible corner.
 - Proof: `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npm run audit:circuits`, and targeted replay/circuit tests passed.
 - Finished on 2026-07-23.
 - Linked backlog item(s): `item_215_generate_canonical_speed_profiles_from_circuit_route_curvature`, `item_216_apply_speed_profiles_to_replay_motion_without_changing_race_outcomes`, `item_217_validate_replay_speed_profiles_across_representative_circuits`, `item_218_document_the_simulation_handoff_for_speed_profile_gameplay`

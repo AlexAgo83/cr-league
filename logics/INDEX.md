@@ -73,6 +73,7 @@
 | [prod_054_canonical_race_track_geometry_product_brief](product/prod_054_canonical_race_track_geometry_product_brief.md) | Canonical Race-Track Geometry Product Brief | Settled |  |  | product/prod_054_canonical_race_track_geometry_product_brief.md |
 | [prod_055_leagues_store_modularization_product_brief](product/prod_055_leagues_store_modularization_product_brief.md) | Leagues Store Modularization Product Brief | Proposed |  |  | product/prod_055_leagues_store_modularization_product_brief.md |
 | [prod_056_admin_privacy_and_entry_payload_hardening_product_brief](product/prod_056_admin_privacy_and_entry_payload_hardening_product_brief.md) | Admin Privacy and Entry Payload Hardening Product Brief | Settled |  |  | product/prod_056_admin_privacy_and_entry_payload_hardening_product_brief.md |
+| [prod_057_canonical_track_zones_product_brief](product/prod_057_canonical_track_zones_product_brief.md) | Canonical Track Zones Product Brief | Proposed |  |  | product/prod_057_canonical_track_zones_product_brief.md |
 
 ## Roadmaps
 
@@ -178,6 +179,7 @@
 | [req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map](request/req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map.md) | Canonical race-track geometry: generate semantic track markers instead of interpreting them on the map | Done |  |  | request/req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map.md |
 | [req_091_modularize_the_oversized_leagues_store](request/req_091_modularize_the_oversized_leagues_store.md) | Modularize the oversized leagues store | Draft |  |  | request/req_091_modularize_the_oversized_leagues_store.md |
 | [req_092_admin_status_privacy_and_entry_bundle_hardening](request/req_092_admin_status_privacy_and_entry_bundle_hardening.md) | Admin-status privacy and entry-bundle hardening | Done |  |  | request/req_092_admin_status_privacy_and_entry_bundle_hardening.md |
+| [req_093_canonical_track_zones_for_spatial_race_simulation](request/req_093_canonical_track_zones_for_spatial_race_simulation.md) | Canonical track zones for spatial race simulation | Draft |  |  | request/req_093_canonical_track_zones_for_spatial_race_simulation.md |
 
 ## Backlog
 
@@ -392,6 +394,10 @@
 | [item_207_split_leagues_store_into_lifecycle_modules_behind_a_barrel](backlog/item_207_split_leagues_store_into_lifecycle_modules_behind_a_barrel.md) | Split leagues store into lifecycle modules behind a barrel | Ready |  | 0% | backlog/item_207_split_leagues_store_into_lifecycle_modules_behind_a_barrel.md |
 | [item_208_remove_public_admin_eligibility_lookup](backlog/item_208_remove_public_admin_eligibility_lookup.md) | Remove public admin eligibility lookup | Done |  | 100% | backlog/item_208_remove_public_admin_eligibility_lookup.md |
 | [item_209_measure_and_reduce_the_main_entry_bundle_warning](backlog/item_209_measure_and_reduce_the_main_entry_bundle_warning.md) | Measure and reduce the main entry bundle warning | Done |  | 100% | backlog/item_209_measure_and_reduce_the_main_entry_bundle_warning.md |
+| [item_210_add_canonical_track_zone_model_and_derived_circuit_zones](backlog/item_210_add_canonical_track_zone_model_and_derived_circuit_zones.md) | Add canonical track zone model and derived circuit zones | Ready |  | 0% | backlog/item_210_add_canonical_track_zone_model_and_derived_circuit_zones.md |
+| [item_211_annotate_simulation_events_and_replay_facts_with_track_zones](backlog/item_211_annotate_simulation_events_and_replay_facts_with_track_zones.md) | Annotate simulation events and replay facts with track zones | Ready |  | 0% | backlog/item_211_annotate_simulation_events_and_replay_facts_with_track_zones.md |
+| [item_212_consume_canonical_track_zones_in_replay_map_and_reports](backlog/item_212_consume_canonical_track_zones_in_replay_map_and_reports.md) | Consume canonical track zones in replay, map, and reports | Ready |  | 0% | backlog/item_212_consume_canonical_track_zones_in_replay_map_and_reports.md |
+| [item_213_document_deferred_zone_driven_gameplay_tuning](backlog/item_213_document_deferred_zone_driven_gameplay_tuning.md) | Document deferred zone-driven gameplay tuning | Ready |  | 0% | backlog/item_213_document_deferred_zone_driven_gameplay_tuning.md |
 
 ## Tasks
 
@@ -490,3 +496,4 @@
 | [task_091_orchestrate_canonical_race_track_geometry](tasks/task_091_orchestrate_canonical_race_track_geometry.md) | Orchestrate canonical race-track geometry | Done | codex | 100% | tasks/task_091_orchestrate_canonical_race_track_geometry.md |
 | [task_092_orchestrate_leagues_store_modularization](tasks/task_092_orchestrate_leagues_store_modularization.md) | Orchestrate leagues store modularization | Ready |  | 0% | tasks/task_092_orchestrate_leagues_store_modularization.md |
 | [task_093_orchestrate_admin_privacy_and_entry_payload_hardening](tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md) | Orchestrate admin privacy and entry payload hardening | Done | codex | 100% | tasks/task_093_orchestrate_admin_privacy_and_entry_payload_hardening.md |
+| [task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation](tasks/task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation.md) | Orchestrate canonical track zones for spatial race simulation | Ready |  | 0% | tasks/task_094_orchestrate_canonical_track_zones_for_spatial_race_simulation.md |

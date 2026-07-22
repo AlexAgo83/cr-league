@@ -1,0 +1,218 @@
+{
+  "title": "Canonical track zones for spatial race simulation",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_090_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map.md",
+    "logics/request/req_091_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map.md",
+    "packages/shared/src/domain/circuits.ts",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/app/raceFlow.ts",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/replay/replayMath.ts",
+    "apps/web/src/features/replay/replayDirector.ts",
+    "apps/web/src/features/replay/ReplayStageOverlay.tsx",
+    "apps/web/src/features/ReportView.tsx",
+    "scripts/audit-circuits.mjs"
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Race-track data model",
+    "needs": [
+      "Promote non-visual track semantics that currently live as map heuristics or abstract simulation phases into canonical shared circuit data.",
+      "Introduce a small `TrackZone` model for sector, overtake, technical, and pit ranges so the simulation, replay facts, and race reports can speak about the same physical part of the track.",
+      "Derive safe default zones from existing canonical circuit fields and route markers rather than hand-authoring full per-corner data for every circuit in v1.",
+      "Annotate simulation events and replay facts with canonical progress and zone metadata where the model already knows a race moment happened.",
+      "Keep visual-only map concerns, projection math, camera framing, marker poses, sprite drift, and tile/render details out of shared domain data."
+    ],
+    "context": [
+      "The current shared circuit identity already tracks real race facts: `trackLengthMeters`, `routeLengthMeters`, `laps`, `traits`, `likelyWeather`, `startProgress`, `pitLaneProgress`, `mainStraightStartProgress`, and `mainStraightEndProgress`. Those are the right source for race semantics.",
+      "`CircuitMap.tsx` and replay helpers still contain useful non-visual concepts that are not represented as race-track data: sector ranges, pit entry/exit window, main straight/overtake window, dense-traffic windows, and local technical zones.",
+      "The existing simulation mostly thinks in five abstract race segments (`start`, `early`, `mid`, `late`, `finish`). That is enough for v1 if each segment maps to a canonical progress range instead of staying detached from the circuit.",
+      "This request follows the same principle as the canonical race-track geometry work: the map may render positions, but it should not invent race semantics. Canonical track zones belong in shared data/helpers; projection, camera, marker scale, and visual fitting stay in the web map.",
+      "The first implementation should be deliberately small. Generate or derive zones from existing fields and traits, expose query helpers, and wire optional event/replay metadata without retuning cards or race scoring."
+    ],
+    "acceptance_criteria": [
+      "AC1: A shared `TrackZone` contract exists for sector, overtake, technical, and pit ranges, with validation that every zone has normalized progress bounds and a stable label/kind.",
+      "AC2: Every current circuit exposes canonical zones through shared helpers, derived from existing circuit fields where possible: five segment/sector ranges, a main-straight/overtake range, a pit entry/exit range, and trait-driven technical zones.",
+      "AC3: Simulation events and replay facts that already refer to pit stops, overtakes/order changes, weather/traffic pressure, and segment beats carry optional canonical `trackProgress`, `zoneKind`, and `zoneLabel` metadata without changing scoring outcomes.",
+      "AC4: Replay/map/report consumers use the canonical zone metadata when displaying pit, overtake, technical, or segment context, and no shared domain code imports web-only route projection, camera, tile, marker, or styling concerns.",
+      "AC5: Existing outputs remain deterministic; no card balance, reward, scoring, or league cadence retune is included in this request.",
+      "AC6: Validation passes with `npm run typecheck`, `npm run lint`, `npm test`, `npm run build`, `npm run audit:circuits`, and `npm run logics:validate`."
+    ]
+  },
+  "product": {
+    "title": "Canonical Track Zones Product Brief",
+    "overview": "CR League now has canonical circuit geometry for start, pit, length, and straight-line facts, but the race simulation still treats the track mostly as five abstract phases while the map/replay layer knows visual positions. This feature adds a compact shared track-zone contract so sectors, overtaking windows, pit entry/exit, and local technical areas are represented once and consumed by the simulation, replay, and reports without moving map projection or camera logic into the domain.",
+    "goals": [
+      "Give every circuit a canonical set of race-relevant zones that simulation and replay can share.",
+      "Map the existing five race segments to real progress ranges on the circuit.",
+      "Represent pit entry/exit and overtaking windows from existing canonical marker fields.",
+      "Allow simulation events and replay facts to identify where on the track something happened.",
+      "Keep the first slice data-driven and deterministic, with no gameplay retune."
+    ],
+    "non_goals": [
+      "Do not build a physics engine, racing-line solver, collision model, or corner-by-corner track database.",
+      "Do not move projection, camera, route fitting, tile rendering, marker pose, sprite drift, or CSS concerns into shared code.",
+      "Do not rebalance cards, scoring, rewards, bot strategy, or league cadence.",
+      "Do not require manual full-track annotation for every circuit in v1.",
+      "Do not change persisted race results unless optional fields are backward-compatible."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add canonical track zone model and derived circuit zones",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race-track data model",
+      "request_acs": [
+        "AC1",
+        "AC2",
+        "AC5",
+        "AC6"
+      ],
+      "problem": [
+        "The shared circuit model has canonical markers, but it does not expose a reusable concept for sector, overtake, technical, or pit ranges.",
+        "The simulation's five segments are abstract names instead of real circuit progress windows.",
+        "Pit and main-straight data are single points/spans today, so consumers still need local interpretation to know the surrounding window."
+      ],
+      "scope_in": [
+        "Define a compact shared `TrackZone` type with kind, label, startProgress, endProgress, and optional weight or source metadata only if needed by current consumers.",
+        "Add helpers in shared code for `trackZonesForCircuit`, `zonesAtProgress`, `zoneForRaceSegment`, `progressRangeForRaceSegment`, and `pitWindowForCircuit` or equivalent names that match local style.",
+        "Derive five sector zones for every circuit from the existing race segment model, preserving current segment order and determinism.",
+        "Derive the overtake/main-straight zone from `mainStraightStartProgress` and `mainStraightEndProgress`.",
+        "Derive a pit zone with entry, stop, and exit semantics from `pitLaneProgress` and a small documented window; do not use map projection to do this.",
+        "Add trait-driven technical zones only as lightweight defaults, such as tighter/lower-weight windows for technical circuits, without hand-authoring every corner.",
+        "Validate zones in `scripts/audit-circuits.mjs` or a focused shared test so invalid progress bounds fail locally."
+      ],
+      "scope_out": [
+        "Per-corner handcrafted geometry for every city route.",
+        "Visual poses, route coordinates, SVG placement, camera, or marker transforms.",
+        "Changing card effects, race segment weights, or final classification logic."
+      ],
+      "acceptance_criteria": [
+        "AC1: Shared types/helpers expose track zones without importing web route or projection modules.",
+        "AC2: Every current circuit has five sector zones, at least one overtake zone, and one pit zone.",
+        "AC3: Zone validation covers normalized progress bounds, wraparound ranges where needed, known zone kinds, and stable labels.",
+        "AC4: Existing circuit audit or tests fail if a circuit lacks required zone coverage."
+      ]
+    },
+    {
+      "title": "Annotate simulation events and replay facts with track zones",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Simulation fidelity",
+      "request_acs": [
+        "AC3",
+        "AC5",
+        "AC6"
+      ],
+      "problem": [
+        "Race events can describe a pit stop, weather issue, dense traffic, or overtake without consistently saying where on the circuit it happened.",
+        "Replay facts already carry some progress information, but consumers still infer the semantic location locally.",
+        "Without canonical zone metadata, future simulation/card changes will keep re-creating track logic in different modules."
+      ],
+      "scope_in": [
+        "Extend `RaceEvent` and replay-fact shapes with backward-compatible optional fields such as `trackProgress`, `zoneKind`, and `zoneLabel`.",
+        "Map each simulation segment to the canonical sector zone when building replay trace, director beats, and events.",
+        "Attach pit-zone metadata to pit-stop events and facts using the canonical pit window.",
+        "Attach overtake-zone metadata to order changes when progress falls inside a canonical overtake zone; otherwise attach the sector zone so the event still has a location.",
+        "Attach technical or traffic zone metadata to dense-pack, weather, and handling-related events only when the existing deterministic model already selects that moment.",
+        "Add tests proving the same seed/race inputs still produce deterministic results and that new metadata is present for representative pit, overtake, and weather/traffic cases."
+      ],
+      "scope_out": [
+        "Changing winner selection, time deltas, rewards, card consumption, or race report verdicts.",
+        "Adding random location generation that is not tied to existing deterministic simulation state.",
+        "Retuning card effectiveness around zones in this request."
+      ],
+      "acceptance_criteria": [
+        "AC1: Representative simulation events carry canonical progress and zone metadata where applicable.",
+        "AC2: Replay facts expose zone metadata without requiring the web layer to recompute race semantics.",
+        "AC3: Determinism tests cover the new metadata as part of the result shape.",
+        "AC4: Existing public API and stored-result compatibility is preserved through optional fields or documented migration-safe changes."
+      ]
+    },
+    {
+      "title": "Consume canonical track zones in replay, map, and reports",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Replay and race reporting",
+      "request_acs": [
+        "AC4",
+        "AC5",
+        "AC6"
+      ],
+      "problem": [
+        "The replay and map can show visually correct movement while still explaining moments with locally inferred or generic segment semantics.",
+        "Pit and overtake displays should use the same canonical zone identity that the simulation attached to the event.",
+        "Report and overlay copy can become more specific without turning visual helpers into domain logic."
+      ],
+      "scope_in": [
+        "Update replay helpers and overlays to prefer event/replay-fact `trackProgress`, `zoneKind`, and `zoneLabel` when positioning or describing race moments.",
+        "Use canonical pit and overtake zones for pit-stop and attack/defense annotations instead of re-deriving a semantic window from the map.",
+        "Keep `CircuitMap.tsx` responsible only for rendering a known progress value onto the route, not for deciding what the progress means.",
+        "Update race report or recap surfaces to include zone labels where they improve clarity and already come from simulation facts.",
+        "Add focused tests for replay math/director/report helpers that verify canonical metadata is consumed and visual-only behavior stays isolated."
+      ],
+      "scope_out": [
+        "Large visual redesigns, new map assets, camera choreography, or animation systems.",
+        "Moving route projection utilities into shared domain code.",
+        "Adding user-facing explanatory UI about the track-zone system."
+      ],
+      "acceptance_criteria": [
+        "AC1: Replay/map consumers prefer canonical zone metadata for pit, overtake, segment, and technical context.",
+        "AC2: Shared track-zone helpers stay independent from web-only route projection and render state.",
+        "AC3: Existing replay interactions and report rendering remain stable on desktop and mobile.",
+        "AC4: Tests cover at least one pit moment and one overtake/segment moment using canonical zone metadata."
+      ]
+    },
+    {
+      "title": "Document deferred zone-driven gameplay tuning",
+      "priority": "Low",
+      "complexity": "Low",
+      "theme": "Gameplay follow-up",
+      "request_acs": [
+        "AC5",
+        "AC6"
+      ],
+      "problem": [
+        "Track zones will make future card and strategy effects possible, but implementing those changes inside the data-model slice would mix schema work with balance changes.",
+        "Cards such as launch boost, adjustable wing, hard tires, or urban draft could eventually interact with start, straight, technical, pit, or traffic zones, but that needs a separate balance pass."
+      ],
+      "scope_in": [
+        "Add a short developer note or Logics follow-up section listing zone-aware gameplay opportunities that are explicitly deferred.",
+        "Name likely future consumers such as launch/start effects, DRS/main-straight boosts, technical-circuit handling, pit-window strategy, and traffic/overtake-risk modifiers.",
+        "State that this request intentionally does not change scoring, rewards, card strength, or bot strategy."
+      ],
+      "scope_out": [
+        "Implementing any zone-driven card behavior.",
+        "Changing balance constants or simulation outcome probabilities.",
+        "Adding user-facing strategy UI for zones."
+      ],
+      "acceptance_criteria": [
+        "AC1: The implementation docs or closeout clearly list zone-driven gameplay tuning as deferred work.",
+        "AC2: No card, reward, scoring, or bot-strategy behavior changes are bundled into this request."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate canonical track zones for spatial race simulation",
+    "plan": [
+      "Read the existing canonical geometry requests and the live circuit/simulation/replay code before editing, especially `circuits.ts`, `race.ts`, `simulateRace.ts`, `CircuitMap.tsx`, `replayMath.ts`, and `replayDirector.ts`.",
+      "Add the shared `TrackZone` contract and derived zone helpers first, with tests and circuit audit coverage proving every current circuit has sector, overtake, technical, and pit coverage.",
+      "Wire the simulation to attach optional canonical progress and zone metadata to existing events/replay facts while preserving deterministic outputs and scoring behavior.",
+      "Update replay, map, and report consumers to use zone metadata for pit/overtake/segment context while keeping projection and render-only logic inside the web layer.",
+      "Document deferred zone-driven gameplay/card tuning as a follow-up instead of implementing balance changes in this slice.",
+      "Run typecheck, lint, tests, build, audit:circuits, and Logics validation; record exact proof in the closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/canonical-track-zones-spatial-simulation.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

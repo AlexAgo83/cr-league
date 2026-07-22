@@ -40,6 +40,8 @@ const TRACE_ORDER_MARGIN = 0.006;
 const PIT_ENTRY_SECONDS = 1.2;
 const PIT_EXIT_SECONDS = 1.2;
 const LAUNCH_PHASE_PROGRESS = 0.06;
+const MIN_VISIBLE_GAP_PROGRESS = 0.004;
+const MAX_VISIBLE_GAP_PROGRESS = 0.12;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -302,7 +304,7 @@ function createDistanceReplayTrace(states: TeamState[], snapshots: TraceSegmentS
 }
 
 function createDistanceReplayTracePoint(states: TeamState[], plans: Map<string, TeamTracePlan>, raceTime: number, progress: number, segment: RaceSegment, trackLengthMeters: number, raceDuration: number, laps: number, speedProfile: NonNullable<RaceInput["speedProfile"]>, weather: Weather, paceFactor: number): ReplayTracePoint {
-  const cars = Object.fromEntries(
+  const rawCars = Object.fromEntries(
     states.map((state) => {
       const car = carAtRaceTime(plans.get(state.participant.teamId)!, raceTime);
       const phase = progress >= 1 ? "finished" : car.phase;
@@ -318,6 +320,7 @@ function createDistanceReplayTracePoint(states: TeamState[], plans: Map<string, 
       ];
     })
   );
+  const cars = applyVisualChronoGaps(rawCars, trackLengthMeters, raceDuration);
   const order = progress >= 1
     ? states.slice().sort((left, right) => right.scores.score - left.scores.score || left.elapsedTime - right.elapsedTime).map((state) => state.participant.teamId)
     : orderFromCars(cars, states);
@@ -332,6 +335,21 @@ function createDistanceReplayTracePoint(states: TeamState[], plans: Map<string, 
     gaps: Object.fromEntries(states.map((state) => [state.participant.teamId, Number(Math.max(0, (leaderProgress - (cars[state.participant.teamId]?.trackProgress ?? 0)) * raceDuration).toFixed(1))])),
     cars
   };
+}
+
+function applyVisualChronoGaps(cars: NonNullable<ReplayTracePoint["cars"]>, trackLengthMeters: number, raceDuration: number) {
+  const racing = Object.entries(cars).filter(([, car]) => car.phase === "racing" || car.phase === "launch" || car.phase.startsWith("overtake"));
+  if (racing.length < 2) return cars;
+  const leaderProgress = Math.max(...racing.map(([, car]) => car.trackProgress));
+  return Object.fromEntries(
+    Object.entries(cars).map(([teamId, car]) => {
+      if (!racing.some(([id]) => id === teamId) || car.trackProgress >= leaderProgress) return [teamId, car];
+      const rawGapSeconds = Math.max(0, (leaderProgress - car.trackProgress) * raceDuration);
+      const visualGap = Math.min(MAX_VISIBLE_GAP_PROGRESS, Math.max(MIN_VISIBLE_GAP_PROGRESS, rawGapSeconds / Math.max(1, raceDuration)));
+      const trackProgress = Math.max(0, Math.min(car.trackProgress, leaderProgress - visualGap));
+      return [teamId, { ...car, trackProgress: Number(trackProgress.toFixed(4)), distanceMeters: Number((trackProgress * trackLengthMeters).toFixed(1)) }];
+    })
+  );
 }
 
 function teamTracePlan(state: TeamState, snapshots: TraceSegmentSnapshot[], laps: number, pitLaneProgress: number): TeamTracePlan {

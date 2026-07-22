@@ -268,6 +268,27 @@ describe("simulateRace", () => {
     expect(validateReplayTrace(lowEnergy)).toEqual([]);
   });
 
+  it("keeps close chrono gaps visible but bounded in generated traces", () => {
+    const result = simulateRace({
+      ...baseRace,
+      participants: baseRace.participants.slice(0, 2).map((participant) => ({
+        ...participant,
+        decision: { ...participant.decision, pitStrategy: "heavy_pack" }
+      }))
+    });
+    const closePoint = result.replayTrace?.find((point) => {
+      const [leader, second] = point.order;
+      const gap = second ? point.gaps[second] ?? 99 : 99;
+      return point.segment === "early" && gap > 0 && gap < 1 && leader && second;
+    });
+    const [leader, second] = closePoint?.order ?? [];
+    const visualGap = (closePoint?.cars?.[leader ?? ""]?.trackProgress ?? 0) - (closePoint?.cars?.[second ?? ""]?.trackProgress ?? 0);
+
+    expect(visualGap).toBeGreaterThanOrEqual(0.004);
+    expect(visualGap).toBeLessThan(0.02);
+    expect(validateReplayTrace(result)).toEqual([]);
+  });
+
   it("keeps replay trace movement realistic across generated races", () => {
     const pitStrategies = ["heavy_pack", "standard", "mini_pack"] as const;
 

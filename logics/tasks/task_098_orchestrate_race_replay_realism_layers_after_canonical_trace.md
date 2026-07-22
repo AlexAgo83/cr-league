@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 50%
+> Progress: 65%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -57,6 +57,8 @@
 - Wave 3 validation: `npm test -- packages/shared/src/simulation/simulateRace.test.ts`, `npm run typecheck`, `npm run lint`, and `npm run replay:inspect` passed.
 - Wave 4: added bounded late-race pace fade to generated trace `speed` values for low-energy circuits in late/finish segments. This preserves final timing and classification.
 - Wave 4 validation: `npm test -- packages/shared/src/simulation/simulateRace.test.ts`, `npm run typecheck`, and `npm run lint` passed.
+- Wave 5: mapped close chrono gaps into bounded visual spacing in generated replay traces. Close battles now get a minimum visible gap while large gaps remain capped, with pit/grid/finish phases left untouched.
+- Wave 5 validation: `npm test -- packages/shared/src/simulation/simulateRace.test.ts`, `npm run typecheck`, and `npm run lint` passed.
 
 # AI Context
 - Summary: Orchestrate race replay realism layers after canonical trace

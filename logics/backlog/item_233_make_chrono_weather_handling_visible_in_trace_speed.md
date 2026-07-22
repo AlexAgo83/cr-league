@@ -1,10 +1,10 @@
 ## item_233_make_chrono_weather_handling_visible_in_trace_speed - Make chrono weather handling visible in trace speed
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 65%
 > Complexity: Medium
 > Theme: Replay parity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

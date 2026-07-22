@@ -643,6 +643,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
       // ponytail: qualifying uses the GP's canonical track traits (like bots); client traits are ignored so a team can't tune conditions to favor its own run.
       traits: circuit.traits,
       trackLengthMeters: circuit.trackLengthMeters,
+      speedProfile: trackSpeedProfileForCircuit(circuit),
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
       laps: clampInteger(input.laps, 3, 1, 3)
     });
@@ -663,6 +664,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
           secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
           traits: circuit.traits,
           trackLengthMeters: circuit.trackLengthMeters,
+          speedProfile: trackSpeedProfileForCircuit(circuit),
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
           laps: 1
         })[0]!
@@ -926,6 +928,7 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
           secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
           traits: circuit.traits,
           trackLengthMeters: circuit.trackLengthMeters,
+          speedProfile: trackSpeedProfileForCircuit(circuit),
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
           laps: 1
         })[0]!

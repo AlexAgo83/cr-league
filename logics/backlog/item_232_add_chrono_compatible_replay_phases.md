@@ -1,10 +1,10 @@
 ## item_232_add_chrono_compatible_replay_phases - Add chrono-compatible replay phases
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 65%
 > Complexity: Low
 > Theme: Replay parity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

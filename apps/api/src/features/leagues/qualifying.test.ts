@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { RACE_REPLAY_BASE_SECONDS } from "@cr-league/shared";
+import { RACE_REPLAY_BASE_SECONDS, type TrackSpeedProfile } from "@cr-league/shared";
 import { createQualifyingRuns } from "./qualifying.js";
 
 describe("createQualifyingRuns", () => {
@@ -100,6 +100,66 @@ describe("createQualifyingRuns", () => {
       mid: "light_rain",
       finish: "heavy_rain"
     });
+  });
+
+  it("applies speed profiles to chrono trace car progress without changing final time", () => {
+    const speedProfile: TrackSpeedProfile = [{ kind: "corner", startProgress: 0.2, endProgress: 0.4, factor: 0.5 }];
+    const base = {
+      seed: "qualifying-speed-profile",
+      teamId: "team",
+      teamName: "Team",
+      decision: { approach: "balanced" as const, preparation: "speed" as const },
+      primaryTrait: "technical" as const,
+      secondaryTrait: "fast" as const,
+      forecast: { dry: 100, light_rain: 0, heavy_rain: 0 },
+      laps: 1
+    };
+
+    const [linear] = createQualifyingRuns(base);
+    const [profiled] = createQualifyingRuns({ ...base, speedProfile });
+    const profiledPoint = profiled!.result.replayTrace!.find((point) => point.progress > 0.3 && point.progress < 0.4)!;
+
+    expect(profiledPoint.cars!.team!.trackProgress).not.toBe(profiledPoint.progress);
+    expect(profiled!.result.replayTrace!.at(-1)!.cars!.team!.trackProgress).toBe(1);
+    expect(profiled!.result.replayTrace!.at(-1)!.times.team).toBe(linear!.result.replayTrace!.at(-1)!.times.team);
+    expect(profiled!.time).toBe(linear!.time);
+  });
+
+  it("exposes only solo chrono replay phases", () => {
+    const [run] = createQualifyingRuns({
+      seed: "qualifying-phases",
+      teamId: "team",
+      teamName: "Team",
+      decision: { approach: "balanced", preparation: "speed" },
+      primaryTrait: "technical",
+      secondaryTrait: "fast",
+      forecast: { dry: 100, light_rain: 0, heavy_rain: 0 },
+      laps: 1
+    });
+
+    const phases = new Set(run!.result.replayTrace!.map((point) => point.cars!.team!.phase));
+
+    expect([...phases]).toEqual(["grid", "launch", "racing", "finished"]);
+  });
+
+  it("makes chrono weather visible in trace speed metadata", () => {
+    const speedProfile: TrackSpeedProfile = [{ kind: "corner", startProgress: 0.2, endProgress: 0.4, factor: 0.5 }];
+    const base = {
+      seed: "qualifying-weather-speed",
+      teamId: "team",
+      teamName: "Team",
+      decision: { approach: "balanced" as const, preparation: "speed" as const },
+      primaryTrait: "technical" as const,
+      secondaryTrait: "fast" as const,
+      speedProfile,
+      laps: 1
+    };
+
+    const [dry] = createQualifyingRuns({ ...base, forecast: { dry: 100, light_rain: 0, heavy_rain: 0 } });
+    const [wet] = createQualifyingRuns({ ...base, forecast: { dry: 0, light_rain: 0, heavy_rain: 100 } });
+
+    expect(wet!.result.replayTrace!.find((point) => point.progress > 0.3 && point.progress < 0.4)!.cars!.team!.speed)
+      .toBeLessThan(dry!.result.replayTrace!.find((point) => point.progress > 0.3 && point.progress < 0.4)!.cars!.team!.speed);
   });
 
   it("varies across teams and across attempts (seed changes)", () => {

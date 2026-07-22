@@ -1,10 +1,10 @@
 ## item_231_apply_circuit_speed_profile_to_chrono_replay_traces - Apply circuit speed profile to chrono replay traces
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 65%
 > Complexity: Medium
 > Theme: Replay parity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

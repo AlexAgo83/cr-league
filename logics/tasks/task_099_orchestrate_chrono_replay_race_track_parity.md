@@ -1,13 +1,14 @@
 ## task_099_orchestrate_chrono_replay_race_track_parity - Orchestrate chrono replay race-track parity
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 65%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -47,7 +48,8 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- Wave 1: implemented chrono replay parity for circuit speed profile, solo phases, and weather-visible trace speed. `createQualifyingRuns` now accepts `speedProfile`, league chrono call sites pass `trackSpeedProfileForCircuit(circuit)`, generated chrono `cars` traces emit `grid`/`launch`/`racing`/`finished`, and rainy/non-straight spans lower trace speed without changing qualifying lap-time calculation.
+- Wave 1 validation: `npm test -- apps/api/src/features/leagues/qualifying.test.ts` and `npm run typecheck` passed.
 
 # AI Context
 - Summary: Orchestrate chrono replay race-track parity

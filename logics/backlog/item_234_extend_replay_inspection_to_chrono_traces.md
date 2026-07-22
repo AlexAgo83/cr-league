@@ -1,10 +1,10 @@
 ## item_234_extend_replay_inspection_to_chrono_traces - Extend replay inspection to chrono traces
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 65%
 > Complexity: Low
 > Theme: Developer validation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -1,0 +1,126 @@
+{
+  "title": "Align pit-stop visual position: stop cars where the pit is drawn on the circuit map",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/domain/circuits.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/replay/replayMath.ts",
+    "apps/web/src/app/circuitRoutes",
+    "scripts/generate-circuit.mjs",
+    "scripts/audit-circuits.mjs",
+    "During-race pit stops render the car halting at the WRONG spot on the circuit map: it stops cleanly (not a glide), but not where the pit garage graphic is drawn. Root cause is two independent, unrelated pit positions. WHERE THE CAR STOPS is decided by the simulation: pitLaneTrackProgress (simulateRace.ts:374-378) returns (lapIndex + pitLaneProgress) / laps, and pitLaneProgress is a simulation input that resolveCurrentGrandPrix hardcodes to 0.5 (store.ts:724) — a flat half-lap constant that ignores circuit geometry entirely. WHERE THE PIT IS DRAWN is decided by the web map geometry: analyzeCircuitRoute (CircuitMap.tsx:240) computes pitProgress = (straightStart + (best.length / total) * 0.18) % 1 (18% into the longest straight) and draws the garage at poseOnRoute(points, pitProgress) (CircuitMap.tsx:439). These two values coincide only by accident. There is already a web helper pitLapProgress(circuit) (replayMath.ts:166) that expresses the drawn pit position as a fraction from the start line — exactly the quantity the sim's pitLaneProgress means — but it is never fed into the simulation. ARCHITECTURE CONSTRAINT: the route geometry (the point arrays in apps/web/src/app/circuitRoutes/*.ts, 26 files) and the pit-progress derivation (circuitScene/analyzeCircuitRoute) live only in the web, while simulateRace runs shared/API-side and has no access to route geometry; packages/shared/src/domain/circuits.ts carries only metadata (traits, laps, trackLengthMeters, layoutKey), not geometry. OFFSET DETAIL: the car is drawn via stageProgress = progressFromStart(progress, startProgress) (CircuitMap.tsx:354) which offsets by the start line, while the marker uses raw pitProgress; feeding the from-start value pitLapProgress into the sim makes the car's drawn position land back on raw pitProgress, so the offset resolves correctly ONLY if the value fed to the sim is the from-start pit fraction, not the raw one."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Replay fidelity",
+    "needs": [
+      "Make the simulated pit-stop position and the drawn pit-garage position the same per-circuit value, so cars visibly halt exactly where the pit is rendered on the map.",
+      "Expose each circuit's geometry-derived pit-lane progress (currently web-only) to the shared/simulation side as a single source of truth, so the sim stops using the hardcoded 0.5 and the map keeps matching it.",
+      "Preserve the start-line offset math so the aligned value lands the car on the exact marker, and keep replays seed-deterministic."
+    ],
+    "context": [
+      "The user chose the clean option: the geometry-derived pit location is the source of truth, and the car must stop there — not move the marker to 0.5. So the value the map already uses (pitLapProgress, the from-start fraction of pitProgress) must drive the simulation.",
+      "Because route geometry and its pit derivation live only in the web (circuitScene/analyzeCircuitRoute over apps/web/src/app/circuitRoutes/*.ts) while simulateRace runs shared/API-side, the cleanest single-source-of-truth is to precompute each circuit's from-start pit-lane progress once and store it as shared circuit data — a pitLaneProgress field on the circuit identity in packages/shared/src/domain/circuits.ts (or a companion map keyed by layoutKey). The value is deterministic from the route geometry, so it can be generated offline by the same longest-straight heuristic analyzeCircuitRoute uses (compute pitProgress and startProgress from the route points, then pitLaneProgress = ((pitProgress - startProgress) % 1 + 1) % 1).",
+      "To keep the baked value from drifting when a route file changes, generate it through the existing scripts (scripts/generate-circuit.mjs to emit it, scripts/audit-circuits.mjs to validate that the stored value still matches the route geometry). Treat a mismatch as an audit failure.",
+      "Once the value is shared data: replace the hardcoded pitLaneProgress: 0.5 in resolveCurrentGrandPrix (store.ts:724) with the circuit's pitLaneProgress, and pass the same value anywhere else the sim is fed a pit position (qualifying and preview paths, and the demo/default race input). The web map should read the same shared value (or keep deriving it from geometry, which equals the baked value by construction) so the marker and the car stay in lockstep.",
+      "Offset correctness: feed the FROM-START fraction (pitLapProgress) into the sim, not the raw pitProgress. The car is drawn through progressFromStart(carProgress, startProgress), so a from-start sim value maps the car back onto the raw pitProgress the marker is drawn at; verify the car's rendered pose equals routeAnalysis.pitStop for a pitting car.",
+      "Out of scope: changing the longest-straight pit-placement heuristic itself, moving the full route geometry into shared (only the derived scalar is needed), the distance-vs-time replay dwell behavior (separate concern), and any pit-stop timing/cost balance."
+    ],
+    "acceptance_criteria": [
+      "AC1: Each circuit exposes a single geometry-derived from-start pit-lane progress as shared data, generated from the route geometry and validated by the circuit audit so it cannot silently drift.",
+      "AC2: resolveCurrentGrandPrix (and the qualifying/preview/demo sim inputs) feed that circuit value into simulateRace instead of the hardcoded 0.5.",
+      "AC3: On the replay map, a pitting car halts at the exact drawn pit-garage position for every circuit (the car's rendered pose equals the marker pose), verified by a test asserting the sim's pit target progress equals the map's drawn pit progress after the start-line offset.",
+      "AC4: Replays remain seed-deterministic and npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, npm run audit:circuits, and npm run logics:validate pass."
+    ]
+  },
+  "product": {
+    "title": "Pit-Stop Visual Alignment Product Brief",
+    "overview": "During-race pit stops render the car stopping at the wrong place because the simulation halts the car at a flat hardcoded half-lap position while the map draws the pit garage from circuit geometry — two unrelated values. This request derives each circuit's pit-lane progress from its geometry once, exposes it as shared circuit data, and feeds it into the simulation so cars stop exactly where the pit is drawn, on every circuit.",
+    "goals": [
+      "A pitting car visibly halts at the drawn pit garage, not an arbitrary half-lap point.",
+      "The map and the simulation share one per-circuit pit-lane-progress source of truth.",
+      "The stored value is generated from geometry and audited so it cannot drift from the route."
+    ],
+    "non_goals": [
+      "Do not change the longest-straight heuristic that chooses the pit placement.",
+      "Do not move the full route geometry into the shared package; only the derived scalar is needed.",
+      "Do not address the separate replay time-vs-distance dwell behavior.",
+      "Do not retune pit-stop cost or timing."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Expose per-circuit pit-lane progress as shared circuit data",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay fidelity",
+      "request_acs": ["AC1", "AC4"],
+      "problem": [
+        "The geometry-derived pit position (analyzeCircuitRoute pitProgress, CircuitMap.tsx:240; from-start form pitLapProgress, replayMath.ts:166) lives only in the web, while simulateRace runs shared/API-side and has no access to route geometry.",
+        "packages/shared/src/domain/circuits.ts carries only metadata (traits, laps, trackLengthMeters, layoutKey), so the sim has no per-circuit pit position and falls back to a hardcoded 0.5."
+      ],
+      "scope_in": [
+        "Precompute each circuit's from-start pit-lane progress (((pitProgress - startProgress) % 1 + 1) % 1) from the route geometry using the same longest-straight heuristic the map uses.",
+        "Store it as a pitLaneProgress field on the circuit identity in shared (or a companion map keyed by layoutKey) so both the sim and the map can read one value.",
+        "Generate the value via scripts/generate-circuit.mjs and add a scripts/audit-circuits.mjs check that fails if the stored value no longer matches the route geometry."
+      ],
+      "scope_out": [
+        "Moving the route point arrays into the shared package.",
+        "Changing the pit-placement heuristic.",
+        "Wiring the value into the sim (next item)."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every selectable circuit exposes a geometry-derived from-start pit-lane progress as shared data.",
+        "AC2: The value is generated from the route geometry, not hand-entered.",
+        "AC3: audit:circuits fails if the stored value drifts from the route."
+      ]
+    },
+    {
+      "title": "Feed the circuit pit-lane progress into the simulation and align the marker",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Replay fidelity",
+      "request_acs": ["AC2", "AC3", "AC4"],
+      "problem": [
+        "resolveCurrentGrandPrix hardcodes pitLaneProgress: 0.5 (store.ts:724), so the car always stops at half a lap regardless of where the pit is drawn.",
+        "The map draws the pit from geometry and the car from the sim value with a start-line offset (stageProgress/progressFromStart, CircuitMap.tsx:354), so the two only align if the sim is fed the from-start pit fraction."
+      ],
+      "scope_in": [
+        "Replace the hardcoded 0.5 in resolveCurrentGrandPrix with the circuit's shared pitLaneProgress, and pass the same value into the qualifying, preview, and demo/default sim inputs.",
+        "Ensure the map marker and the car both resolve to the same drawn position (feed the from-start value to the sim so progressFromStart maps the car back onto the raw pitProgress the marker uses).",
+        "Add a test asserting the sim's pit target progress equals the map's drawn pit progress after the start-line offset, for a representative set of circuits."
+      ],
+      "scope_out": [
+        "Changing the replay dwell/time-vs-distance behavior.",
+        "Altering pit-stop cost or the number of stops.",
+        "Reworking the resolve request contract beyond dropping the hardcoded value."
+      ],
+      "acceptance_criteria": [
+        "AC1: The simulation stops a pitting car at the circuit's geometry-derived pit position, not 0.5.",
+        "AC2: On the replay map, the pitting car's rendered pose equals the drawn pit-garage marker for every tested circuit.",
+        "AC3: Replays stay seed-deterministic and the full validation suite passes."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate pit-stop visual alignment",
+    "plan": [
+      "Read req_087 first; this is a sibling replay-fidelity fix and must not regress the qualifying-trait, memoization, or robustness work it landed.",
+      "Derive each circuit's from-start pit-lane progress from the route geometry (same longest-straight heuristic as analyzeCircuitRoute), store it as shared circuit data, and generate/validate it through the circuit scripts so it cannot drift.",
+      "Replace the hardcoded pitLaneProgress: 0.5 in resolveCurrentGrandPrix with the circuit value and pass it into the qualifying/preview/demo sim inputs.",
+      "Confirm the start-line offset resolves: the pitting car's rendered pose must equal the drawn marker; add the alignment test across circuits.",
+      "Run typecheck, tests, build, lint, e2e, audit:circuits, and Logics validation; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/pit-stop-visual-alignment.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

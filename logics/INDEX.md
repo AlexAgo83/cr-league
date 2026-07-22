@@ -69,6 +69,7 @@
 | [prod_050_gameplay_and_economy_integrity_product_brief](product/prod_050_gameplay_and_economy_integrity_product_brief.md) | Gameplay and Economy Integrity Product Brief | Proposed |  |  | product/prod_050_gameplay_and_economy_integrity_product_brief.md |
 | [prod_051_simulation_fidelity_and_replay_performance_product_brief](product/prod_051_simulation_fidelity_and_replay_performance_product_brief.md) | Simulation Fidelity and Replay Performance Product Brief | Proposed |  |  | product/prod_051_simulation_fidelity_and_replay_performance_product_brief.md |
 | [prod_052_post_remediation_hardening_product_brief](product/prod_052_post_remediation_hardening_product_brief.md) | Post-Remediation Hardening Product Brief | Proposed |  |  | product/prod_052_post_remediation_hardening_product_brief.md |
+| [prod_053_pit_stop_visual_alignment_product_brief](product/prod_053_pit_stop_visual_alignment_product_brief.md) | Pit-Stop Visual Alignment Product Brief | Proposed |  |  | product/prod_053_pit_stop_visual_alignment_product_brief.md |
 
 ## Roadmaps
 
@@ -170,6 +171,7 @@
 | [req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation](request/req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation.md) | Gameplay and economy integrity: comeback payout curve, unplayed-card consumption, resolve determinism, and decision validation | Done |  |  | request/req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation.md |
 | [req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness](request/req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness.md) | Simulation fidelity and replay performance: qualifying track response, replay render cost, recap accuracy, and input robustness | Done |  |  | request/req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness.md |
 | [req_088_post_remediation_hardening_submit_sell_concurrency_client_security_and_privacy_accessibility_data_model_integrity_and_config_validation](request/req_088_post_remediation_hardening_submit_sell_concurrency_client_security_and_privacy_accessibility_data_model_integrity_and_config_validation.md) | Post-remediation hardening: submit/sell concurrency, client security and privacy, accessibility, data-model integrity, and config validation | Draft |  |  | request/req_088_post_remediation_hardening_submit_sell_concurrency_client_security_and_privacy_accessibility_data_model_integrity_and_config_validation.md |
+| [req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map](request/req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map.md) | Align pit-stop visual position: stop cars where the pit is drawn on the circuit map | Draft |  |  | request/req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map.md |
 
 ## Backlog
 
@@ -376,6 +378,8 @@
 | [item_199_replay_and_dialog_accessibility_baseline](backlog/item_199_replay_and_dialog_accessibility_baseline.md) | Replay and dialog accessibility baseline | Ready |  | 0% | backlog/item_199_replay_and_dialog_accessibility_baseline.md |
 | [item_200_racedecision_data_model_integrity](backlog/item_200_racedecision_data_model_integrity.md) | RaceDecision data-model integrity | Ready |  | 0% | backlog/item_200_racedecision_data_model_integrity.md |
 | [item_201_required_env_validation_and_admin_config](backlog/item_201_required_env_validation_and_admin_config.md) | Required-env validation and admin config | Ready |  | 0% | backlog/item_201_required_env_validation_and_admin_config.md |
+| [item_202_expose_per_circuit_pit_lane_progress_as_shared_circuit_data](backlog/item_202_expose_per_circuit_pit_lane_progress_as_shared_circuit_data.md) | Expose per-circuit pit-lane progress as shared circuit data | Ready |  | 0% | backlog/item_202_expose_per_circuit_pit_lane_progress_as_shared_circuit_data.md |
+| [item_203_feed_the_circuit_pit_lane_progress_into_the_simulation_and_align_the_marker](backlog/item_203_feed_the_circuit_pit_lane_progress_into_the_simulation_and_align_the_marker.md) | Feed the circuit pit-lane progress into the simulation and align the marker | Ready |  | 0% | backlog/item_203_feed_the_circuit_pit_lane_progress_into_the_simulation_and_align_the_marker.md |
 
 ## Tasks
 
@@ -470,3 +474,4 @@
 | [task_087_orchestrate_gameplay_and_economy_integrity_fixes](tasks/task_087_orchestrate_gameplay_and_economy_integrity_fixes.md) | Orchestrate gameplay and economy integrity fixes | Done | Codex | 100% | tasks/task_087_orchestrate_gameplay_and_economy_integrity_fixes.md |
 | [task_088_orchestrate_simulation_fidelity_and_replay_performance_fixes](tasks/task_088_orchestrate_simulation_fidelity_and_replay_performance_fixes.md) | Orchestrate simulation fidelity and replay performance fixes | Done | codex | 100% | tasks/task_088_orchestrate_simulation_fidelity_and_replay_performance_fixes.md |
 | [task_089_orchestrate_post_remediation_hardening](tasks/task_089_orchestrate_post_remediation_hardening.md) | Orchestrate post-remediation hardening | Ready |  | 0% | tasks/task_089_orchestrate_post_remediation_hardening.md |
+| [task_090_orchestrate_pit_stop_visual_alignment](tasks/task_090_orchestrate_pit_stop_visual_alignment.md) | Orchestrate pit-stop visual alignment | Ready |  | 0% | tasks/task_090_orchestrate_pit_stop_visual_alignment.md |

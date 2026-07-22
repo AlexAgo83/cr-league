@@ -590,7 +590,8 @@ describe("App", () => {
     expect(window.location.pathname).toBe("/plan/approach");
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(document.querySelector(".plan-recommendation")).toBeTruthy();
-    expect(screen.getByText("Priority")).toBeTruthy();
+    expect(screen.getByText("Your plan")).toBeTruthy();
+    expect(screen.getByText("This circuit needs a stable car: corners and rain can quickly cost time.")).toBeTruthy();
     expect(screen.getByText("High-upside plan")).toBeTruthy();
     expect(document.querySelector(".directive-briefing-panel")).toBeTruthy();
     expect(document.querySelector(".directive-selection-panel")).toBeTruthy();

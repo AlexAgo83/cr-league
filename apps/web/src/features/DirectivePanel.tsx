@@ -121,6 +121,41 @@ function signedModifier(value: number) {
   return "±0";
 }
 
+function planRecommendationRows({
+  form,
+  selectedCardId,
+  planRecommendation,
+  planRiskRead,
+  qualifyingRunCount,
+  locked,
+  tt
+}: {
+  form: FormState;
+  selectedCardId: FormState["cardId"];
+  planRecommendation: PlanRecommendation;
+  planRiskRead: PlanRiskRead;
+  qualifyingRunCount: number;
+  locked?: boolean;
+  tt: Translator;
+}) {
+  const planKey = planRiskRead.level === "high_upside" ? "high_upside" : planRiskRead.level;
+  const nextKey = locked ? "locked" : qualifyingRunCount > 0 ? "with_chrono" : "no_chrono";
+  return [
+    { label: tt("plan_recommendation_trait_label"), value: tt(`plan_recommendation_circuit_${planRecommendation.traitKey}` as TranslationKey) },
+    { label: tt("plan_recommendation_weather_label"), value: tt(`plan_recommendation_weather_read_${planRecommendation.weatherKey}` as TranslationKey) },
+    {
+      label: tt("plan_recommendation_plan_label"),
+      value: tt(`plan_recommendation_plan_${planKey}` as TranslationKey, {
+        approach: tt(`approach_${form.approach}` as TranslationKey),
+        preparation: tt(`preparation_${form.preparation}` as TranslationKey),
+        pitStrategy: tt(`pit_strategy_${form.pitStrategy}` as TranslationKey),
+        card: selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none")
+      })
+    },
+    { label: tt("plan_recommendation_next_label"), value: tt(`plan_recommendation_next_${nextKey}` as TranslationKey) }
+  ];
+}
+
 export function DirectivePanel({
   form,
   setForm,
@@ -209,24 +244,14 @@ export function DirectivePanel({
         <span className="section-kicker">{tt("directive_kicker")}</span>
         <h2>{tt("directive_title")}</h2>
         {planRecommendation ? (
-          <dl className="plan-recommendation">
-            <div>
-              <dt>{tt("plan_recommendation_trait_label")}</dt>
-              <dd>{planRecommendation.trait}</dd>
-            </div>
-            <div>
-              <dt>{tt("plan_recommendation_weather_label")}</dt>
-              <dd>{planRecommendation.weather}</dd>
-            </div>
-            <div>
-              <dt>{tt("plan_recommendation_priority_label")}</dt>
-              <dd>{planRecommendation.traitAdvice}</dd>
-            </div>
-            <div>
-              <dt>{tt("plan_recommendation_advice_label")}</dt>
-              <dd>{planRecommendation.weatherAdvice}</dd>
-            </div>
-          </dl>
+          <div className="plan-recommendation" aria-label={tt("plan_recommendation_title")}>
+            {planRecommendationRows({ form, selectedCardId, planRecommendation, planRiskRead, qualifyingRunCount, locked, tt }).map((row) => (
+              <section key={row.label}>
+                <strong>{row.label}</strong>
+                <p>{row.value}</p>
+              </section>
+            ))}
+          </div>
         ) : null}
       </header>
 

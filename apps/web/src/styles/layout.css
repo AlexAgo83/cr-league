@@ -1430,7 +1430,7 @@ label small {
   margin: 0;
 }
 
-.plan-recommendation div {
+.plan-recommendation section {
   background: rgb(255 255 255 / 0.06);
   border: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 6px;
@@ -1439,11 +1439,11 @@ label small {
   padding: 8px 9px;
 }
 
-.plan-recommendation div:nth-child(n + 3) {
+.plan-recommendation section:nth-child(n + 3) {
   grid-column: 1 / -1;
 }
 
-.plan-recommendation dt {
+.plan-recommendation strong {
   color: var(--color-muted);
   font-size: 0.62rem;
   font-weight: 800;
@@ -1451,7 +1451,7 @@ label small {
   text-transform: uppercase;
 }
 
-.plan-recommendation dd {
+.plan-recommendation p {
   color: var(--color-text);
   font-size: 0.82rem;
   font-weight: 800;

@@ -31,6 +31,8 @@ export type PlanRiskRead = {
   bandKey: TranslationKey;
 };
 export type PlanRecommendation = {
+  traitKey: CircuitTraitKey;
+  weatherKey: Weather;
   trait: string;
   weather: string;
   traitAdvice: string;
@@ -178,6 +180,8 @@ export function buildPlanRecommendationParts(input: {
   const trait = CIRCUIT_TRAITS.reduce((best, current) => (input.circuitTraits[current] > input.circuitTraits[best] ? current : best), "grip");
   const weather = WEATHER_VALUES.includes(input.forecastPick as Weather) ? (input.forecastPick as Weather) : "dry";
   return {
+    traitKey: trait,
+    weatherKey: weather,
     trait: input.tt(CIRCUIT_TRAIT_LABELS[trait]),
     weather: input.tt(`weather_${weather}` as TranslationKey),
     traitAdvice: input.tt(`plan_recommendation_trait_${trait}` as TranslationKey),

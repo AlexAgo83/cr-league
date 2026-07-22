@@ -98,7 +98,7 @@ describe("circuit identities", () => {
       expect(profile.some((span) => span.kind === "corner" && span.factor < 1)).toBe(true);
       expect(profile.some((span) => span.kind === "straight" && span.factor > 1)).toBe(true);
       expect(profile.every((span) => span.startProgress >= 0 && span.startProgress < 1 && span.endProgress >= 0 && span.endProgress < 1)).toBe(true);
-      expect(profile.every((span) => span.factor >= 0.58 && span.factor <= 1.12)).toBe(true);
+      expect(profile.every((span) => span.factor >= 0.45 && span.factor <= 1.16)).toBe(true);
     }
   });
 

@@ -55,9 +55,9 @@ function speedProfileForRoute(points, identity) {
     ...strongestTurns(candidates).flatMap(({ progress, severity }) => cornerSpans(progress, severity)),
     {
       kind: "straight",
-      startProgress: roundProgress(identity.mainStraightStartProgress),
-      endProgress: roundProgress(identity.mainStraightEndProgress),
-      factor: 1.08
+      startProgress: roundProgress(identity.mainStraightStartProgress - identity.startProgress),
+      endProgress: roundProgress(identity.mainStraightEndProgress - identity.startProgress),
+      factor: 1.14
     }
   ].sort((left, right) => left.startProgress - right.startProgress || kindOrder(left.kind) - kindOrder(right.kind));
 
@@ -72,13 +72,13 @@ function strongestTurns(candidates) {
 }
 
 function cornerSpans(progress, severity) {
-  const brakingWidth = 0.014 + 0.016 * severity;
-  const cornerWidth = 0.018 + 0.012 * severity;
-  const exitWidth = 0.014 + 0.008 * severity;
+  const brakingWidth = 0.02 + 0.025 * severity;
+  const cornerWidth = 0.025 + 0.02 * severity;
+  const exitWidth = 0.018 + 0.012 * severity;
   return [
-    { kind: "braking", startProgress: roundProgress(progress - brakingWidth), endProgress: roundProgress(progress - 0.004), factor: roundFactor(1 - 0.2 * severity) },
-    { kind: "corner", startProgress: roundProgress(progress - 0.006), endProgress: roundProgress(progress + cornerWidth), factor: roundFactor(1 - 0.34 * severity) },
-    { kind: "exit", startProgress: roundProgress(progress + cornerWidth), endProgress: roundProgress(progress + cornerWidth + exitWidth), factor: roundFactor(1 + 0.07 * (1 - severity)) }
+    { kind: "braking", startProgress: roundProgress(progress - brakingWidth), endProgress: roundProgress(progress - 0.004), factor: roundFactor(1 - 0.32 * severity) },
+    { kind: "corner", startProgress: roundProgress(progress - 0.006), endProgress: roundProgress(progress + cornerWidth), factor: roundFactor(1 - 0.55 * severity) },
+    { kind: "exit", startProgress: roundProgress(progress + cornerWidth), endProgress: roundProgress(progress + cornerWidth + exitWidth), factor: roundFactor(1 + 0.12 * severity) }
   ];
 }
 
@@ -135,5 +135,5 @@ function roundProgress(progress) {
 }
 
 function roundFactor(factor) {
-  return Number(Math.max(0.58, Math.min(1.12, factor)).toFixed(2));
+  return Number(Math.max(0.45, Math.min(1.16, factor)).toFixed(2));
 }

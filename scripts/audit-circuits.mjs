@@ -177,7 +177,7 @@ function auditSpeedProfile(profile) {
   if (profile.some((span) => span.startProgress < 0 || span.startProgress >= 1 || span.endProgress < 0 || span.endProgress >= 1)) {
     failures.push("profil de vitesse hors bornes");
   }
-  if (profile.some((span) => span.factor < 0.58 || span.factor > 1.12)) {
+  if (profile.some((span) => span.factor < 0.45 || span.factor > 1.16)) {
     failures.push("facteur de vitesse hors plage");
   }
   return failures;

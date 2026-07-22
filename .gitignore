@@ -14,3 +14,5 @@ coverage/
 *.tsbuildinfo
 .DS_Store
 logics/external/
+
+__pycache__/

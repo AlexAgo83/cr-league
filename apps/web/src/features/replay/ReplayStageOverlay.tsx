@@ -212,8 +212,8 @@ export function ReplayStageOverlay({
         </button>
         <button
           type="button"
-          aria-label="Focus driver"
-          title="Focus driver"
+          aria-label={tt("action_focus_driver")}
+          title={tt("action_focus_driver")}
           className={driverFocus ? "replay-focus-button active" : "replay-focus-button"}
           onClick={() => setDriverFocus(!driverFocus)}
         >

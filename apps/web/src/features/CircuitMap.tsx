@@ -1,4 +1,4 @@
-import { useEffect, useRef, type Ref } from "react";
+import { useEffect, useMemo, useRef, type Ref } from "react";
 import type { CSSProperties } from "react";
 import type { DecisionDeltaKey, TeamLivery, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
@@ -327,7 +327,7 @@ export function CircuitMap({
   showTraits?: boolean;
   weather?: Weather;
 }) {
-  const { zoom, tiles, points, d } = circuitScene(circuit);
+  const { zoom, tiles, points, d } = useMemo(() => circuitScene(circuit), [circuit]);
   const cameraRef = useRef<SVGGElement>(null);
   const routeRef = useRef<SVGPathElement>(null);
   const carsRef = useRef(cars);
@@ -338,9 +338,11 @@ export function CircuitMap({
   const focusEnabled = Boolean(camera?.enabled && camera.car);
   const markerScale = focusEnabled ? 1 / FOCUS_ZOOM : 0.62;
   const hasCars = cars.length > 0;
-  const mapFit = focusEnabled ? null : routeFitTransform(points);
-  const mapTransform = mapFit?.value;
-  const routeDecorScale = Math.max(1, mapFit?.scale ?? 1);
+  const routeAnalysis = useMemo(() => analyzeCircuitRoute(points), [points]);
+  const mapFit = useMemo(() => routeFitTransform(points), [points]);
+  const activeMapFit = focusEnabled ? null : mapFit;
+  const mapTransform = activeMapFit?.value;
+  const routeDecorScale = Math.max(1, activeMapFit?.scale ?? 1);
   const routeDecorStyle = {
     "--route-glow-width": `${ROUTE_STROKES.glow / routeDecorScale}`,
     "--route-asphalt-width": `${ROUTE_STROKES.asphalt / routeDecorScale}`,
@@ -349,7 +351,6 @@ export function CircuitMap({
   } as CSSProperties;
   const renderPoints = points;
   const renderD = d;
-  const routeAnalysis = analyzeCircuitRoute(renderPoints);
   const stageProgress = (progress: number) => progressFromStart(progress, routeAnalysis.startProgress);
   const displayWeather = weather ?? circuit.likelyWeather;
   carsRef.current = cars;
@@ -480,7 +481,7 @@ export function CircuitMap({
                         ) : null}
                       </g>
                       {car.progress === undefined ? (
-                        <animateMotion path={renderD} dur={`${car.duration}s`} begin={`${car.delay}s`} keyPoints={`${routeAnalysis.startProgress};1;${routeAnalysis.startProgress}`} keyTimes={`0;${1 - routeAnalysis.startProgress};1`} calcMode="linear" repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
+                        <animateMotion path={renderD} dur={`${car.duration}s`} begin={`${car.delay}s`} keyPoints="0;1" keyTimes="0;1" calcMode="linear" repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
                       ) : null}
                     </g>
                   );

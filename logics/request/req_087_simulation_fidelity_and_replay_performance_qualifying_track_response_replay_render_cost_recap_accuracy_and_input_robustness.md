@@ -1,9 +1,9 @@
 ## req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness - Simulation fidelity and replay performance: qualifying track response, replay render cost, recap accuracy, and input robustness
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Medium
 > Theme: Simulation fidelity and replay performance
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -25,10 +25,10 @@
 
 # Acceptance criteria
 - AC1: Qualifying times respond to circuit traits — two circuits with different numeric traits produce different qualifying chronos for the same seed and decision, proven by a test, and the store.ts:636 intent comment is now accurate.
-- AC2: CircuitMap's scene, route analysis, and fit transform are memoized on circuit and do not recompute per replay frame, and the useReplayClock pop-timer array does not grow unbounded across a long replay.
-- AC3: The recap labels the resolved rain intensity correctly (heavy_rain no longer shows as light rain), the podium-vs-loss verdict ordering is intentional and documented, the onboarding ambient cars never move backward, and the focus-driver aria-label is translated.
+- AC2: CircuitMap's scene, route analysis, and fit transform are memoized on circuit and do not recompute per replay frame, and the useReplayClock pop-timer array does not grow unbounded across a long replay. Proof: implemented in apps/web/src/features/CircuitMap.tsx and apps/web/src/features/replay/useReplayClock.ts, with CircuitMap.render.test.tsx covering forward-only ambient motion.
+- AC3: The recap labels the resolved rain intensity correctly (heavy_rain no longer shows as light rain), the podium-vs-loss verdict ordering is intentional and documented, the onboarding ambient cars never move backward, and the focus-driver aria-label is translated. Proof: helpers.test.ts covers heavy rain recap and podium-first verdicts; ReplayStageOverlay.tsx uses action_focus_driver from en/fr catalogs; CircuitMap.render.test.tsx covers forward-only ambient animation.
 - AC4: /simulation/preview rejects non-numeric traits with 400 instead of returning NaN results, and the per-season circuit shuffle draws from high bits so orderings are unbiased and still seed-deterministic.
-- AC5: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass; npm run balance:sim shows no unintended shift from the qualifying-trait change.
+- AC5: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate pass; npm run balance:sim shows no unintended shift from the qualifying-trait change. Proof: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, npm run balance:sim, and npm run logics:validate were run during task_088 closeout.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

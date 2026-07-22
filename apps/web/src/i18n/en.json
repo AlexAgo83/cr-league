@@ -422,6 +422,7 @@
   "action_play": "Play",
   "action_pause": "Pause",
   "action_replay_restart": "Restart",
+  "action_focus_driver": "Focus driver",
   "action_skip_to_result": "Skip to result",
   "replay_speed": "Speed",
   "replay_seek": "Replay position",

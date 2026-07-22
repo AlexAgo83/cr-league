@@ -53,7 +53,7 @@ export function seasonCircuitIdentities(seed = "default") {
   let state = hashCircuitSeed(seed);
   for (let index = circuits.length - 1; index > 0; index -= 1) {
     state = nextCircuitShuffleState(state);
-    const swapIndex = state % (index + 1);
+    const swapIndex = Math.floor(state / 65536) % (index + 1);
     [circuits[index], circuits[swapIndex]] = [circuits[swapIndex]!, circuits[index]!];
   }
   return circuits;

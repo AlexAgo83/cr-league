@@ -625,6 +625,7 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
     if (attempts > state.league.qualifyingAttemptLimit) {
       throw new LeagueRuleError("No qualifying attempts left.");
     }
+    const circuit = circuitIdentityForRound(freshGrandPrix.round, circuitSeasonSeed(leagueId, freshGrandPrix.season));
     const attemptRuns = createQualifyingRuns({
       // Deterministic per (GP, team, attempt): retries still differ via the attempt counter, but a given attempt is reproducible (ADR-004), mirroring the bot seed convention.
       seed: `${freshGrandPrix.seed}-${team.id}-qualifying-${attempts}`,
@@ -634,7 +635,8 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
       primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
       secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
       // ponytail: qualifying uses the GP's canonical track traits (like bots); client traits are ignored so a team can't tune conditions to favor its own run.
-      trackLengthMeters: state.currentGrandPrix.trackLengthMeters,
+      traits: circuit.traits,
+      trackLengthMeters: circuit.trackLengthMeters,
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
       laps: clampInteger(input.laps, 3, 1, 3)
     });
@@ -653,7 +655,8 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
           decision: defaultBotDecision(state, bot, demo?.decision),
           primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
           secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
-          trackLengthMeters: state.currentGrandPrix.trackLengthMeters,
+          traits: circuit.traits,
+          trackLengthMeters: circuit.trackLengthMeters,
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
           laps: 1
         })[0]!
@@ -902,6 +905,7 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
     if (!missingBots.length) return;
 
     const nextRuns = [...runs];
+    const circuit = circuitIdentityForRound(freshGrandPrix.round, circuitSeasonSeed(state.league.id, freshGrandPrix.season));
     for (const team of missingBots) {
       const demo = DEMO_RACE_INPUT.participants[state.teams.indexOf(team) % DEMO_RACE_INPUT.participants.length];
       nextRuns.push(
@@ -912,7 +916,8 @@ async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnType<typ
           decision: defaultBotDecision(state, team, demo?.decision),
           primaryTrait: freshGrandPrix.primaryTrait as RaceInput["primaryTrait"],
           secondaryTrait: freshGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
-          trackLengthMeters: state.currentGrandPrix.trackLengthMeters,
+          traits: circuit.traits,
+          trackLengthMeters: circuit.trackLengthMeters,
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
           laps: 1
         })[0]!

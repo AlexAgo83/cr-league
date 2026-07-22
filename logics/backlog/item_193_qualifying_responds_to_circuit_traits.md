@@ -1,10 +1,10 @@
 ## item_193_qualifying_responds_to_circuit_traits - Qualifying responds to circuit traits
 > From version: 0.3.26
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Simulation fidelity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -51,3 +51,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_088_orchestrate_simulation_fidelity_and_replay_performance_fixes` was finished via `logics-manager flow finish task` on 2026-07-22.

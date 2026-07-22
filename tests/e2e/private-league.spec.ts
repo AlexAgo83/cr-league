@@ -461,7 +461,7 @@ test("keeps mobile document pages usable", async ({ page }) => {
 
 function expectedCircuitTitle(resultRound: number) {
   const circuit = circuitForRound(resultRound, "league_1", 1);
-  return `${circuit.city} ${t(circuit.layoutKey, "en")}`;
+  return t(circuit.layoutKey, "en");
 }
 
 async function openDocumentPage(page: Page, navIndex: number, panelSelector: string) {

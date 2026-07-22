@@ -52,6 +52,7 @@ describe("api app smoke", () => {
       [
         { seed: "missing-race-shape" },
         { ...DEMO_RACE_INPUT, primaryTrait: "magic" },
+        { ...DEMO_RACE_INPUT, traits: { grip: "fast", overtaking: 62, energy: 62 } },
         { ...DEMO_RACE_INPUT, forecast: { dry: 0, light_rain: -1, heavy_rain: 0 } },
         { ...DEMO_RACE_INPUT, participants: [{ ...DEMO_RACE_INPUT.participants[0], decision: { approach: "wild", preparation: "speed" } }] }
       ].map((payload) =>
@@ -65,7 +66,7 @@ describe("api app smoke", () => {
 
     await app.close();
 
-    expect(responses.map((response) => response.statusCode)).toEqual([400, 400, 400, 400]);
+    expect(responses.map((response) => response.statusCode)).toEqual([400, 400, 400, 400, 400]);
   });
 
   it("accepts a valid custom simulation preview input", async () => {

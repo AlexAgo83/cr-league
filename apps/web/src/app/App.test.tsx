@@ -591,7 +591,8 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(document.querySelector(".plan-recommendation")).toBeTruthy();
     expect(screen.getByText("Your plan")).toBeTruthy();
-    expect(screen.getByText("This circuit needs a stable car: corners and rain can quickly cost time.")).toBeTruthy();
+    const mainTrait = Object.entries(roundOneCircuit.traits).sort((left, right) => right[1] - left[1])[0]![0];
+    expect(screen.getByText(t(`plan_recommendation_circuit_${mainTrait}` as Parameters<typeof t>[0], "en"))).toBeTruthy();
     expect(screen.getByText("High-upside plan")).toBeTruthy();
     expect(document.querySelector(".directive-briefing-panel")).toBeTruthy();
     expect(document.querySelector(".directive-selection-panel")).toBeTruthy();

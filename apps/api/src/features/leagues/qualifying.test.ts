@@ -65,6 +65,24 @@ describe("createQualifyingRuns", () => {
     expect(first.map((run) => run.createdAt)).toEqual(second.map((run) => run.createdAt));
   });
 
+  it("responds to numeric circuit traits for the same seed and decision", () => {
+    const base = {
+      seed: "same-seed",
+      teamId: "team",
+      teamName: "Team",
+      decision: { approach: "balanced" as const, preparation: "speed" as const },
+      primaryTrait: "fast" as const,
+      secondaryTrait: "technical" as const,
+      forecast: { dry: 100, light_rain: 0, heavy_rain: 0 },
+      laps: 3
+    };
+
+    const lowGrip = createQualifyingRuns({ ...base, traits: { grip: 52, overtaking: 54, energy: 55 } });
+    const highGrip = createQualifyingRuns({ ...base, traits: { grip: 82, overtaking: 78, energy: 74 } });
+
+    expect(lowGrip.map((run) => run.time)).not.toEqual(highGrip.map((run) => run.time));
+  });
+
   it("ramps chrono weather from start to finish forecast", () => {
     const runs = createQualifyingRuns({
       seed: "qualifying-weather-ramp",

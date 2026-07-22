@@ -6,7 +6,8 @@ import {
   TECHNICAL_PREPARATIONS,
   simulateRace,
   type RaceInput,
-  type RaceResult
+  type RaceResult,
+  type RaceTraits
 } from "@cr-league/shared";
 import type { FastifyInstance } from "fastify";
 
@@ -38,6 +39,7 @@ function isRaceInput(value: unknown): value is RaceInput {
     typeof candidate.grandPrixName === "string" &&
     isOneOf(candidate.primaryTrait, TRAITS) &&
     isOneOf(candidate.secondaryTrait, TRAITS) &&
+    (candidate.traits === undefined || isRaceTraits(candidate.traits)) &&
     isForecast(candidate.forecast) &&
     (candidate.trackLengthMeters === undefined || (typeof candidate.trackLengthMeters === "number" && Number.isFinite(candidate.trackLengthMeters))) &&
     Array.isArray(candidate.participants) &&
@@ -45,6 +47,12 @@ function isRaceInput(value: unknown): value is RaceInput {
     candidate.participants.length <= MAX_PREVIEW_PARTICIPANTS &&
     candidate.participants.every(isParticipant)
   );
+}
+
+function isRaceTraits(value: unknown): value is RaceTraits {
+  if (!value || typeof value !== "object") return false;
+  const traits = value as Partial<Record<keyof RaceTraits, unknown>>;
+  return ["grip", "overtaking", "energy"].every((key) => typeof traits[key as keyof RaceTraits] === "number" && Number.isFinite(traits[key as keyof RaceTraits]));
 }
 
 function isForecast(value: unknown): value is RaceInput["forecast"] {

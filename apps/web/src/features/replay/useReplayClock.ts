@@ -87,11 +87,11 @@ export function useReplayClock({
         const pops = Object.fromEntries(Object.entries(deltas).map(([teamId, delta]) => [teamId, { delta, key }]));
         setPositionPops((current) => ({ ...current, ...pops }));
         for (const teamId of Object.keys(pops)) {
-          positionPopTimers.current.push(
-            window.setTimeout(() => {
-              setPositionPops((current) => (current[teamId]?.key === key ? Object.fromEntries(Object.entries(current).filter(([id]) => id !== teamId)) : current));
-            }, 1100)
-          );
+          const timer = window.setTimeout(() => {
+            positionPopTimers.current = positionPopTimers.current.filter((id) => id !== timer);
+            setPositionPops((current) => (current[teamId]?.key === key ? Object.fromEntries(Object.entries(current).filter(([id]) => id !== teamId)) : current));
+          }, 1100);
+          positionPopTimers.current.push(timer);
         }
       }
       orderRef.current = nextOrder;

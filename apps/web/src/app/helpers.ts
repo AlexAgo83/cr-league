@@ -182,7 +182,7 @@ export function buildRaceVerdict(
 ): RaceVerdict {
   const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
   const variant = resultVariant(result);
-  const outcome = (playerResult?.positionChange ?? 0) < 0 ? "loss" : playerResult?.position && playerResult.position <= 3 ? "podium" : (playerResult?.positionChange ?? 0) > 0 ? "gain" : "hold";
+  const outcome = playerResult?.position && playerResult.position <= 3 ? "podium" : (playerResult?.positionChange ?? 0) < 0 ? "loss" : (playerResult?.positionChange ?? 0) > 0 ? "gain" : "hold";
   return {
     outcome,
     stance: {
@@ -325,6 +325,7 @@ function recapDirective(
   const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
   const ownEvents = result.events.filter((event) => event.teamId === playerTeamId);
   const hasRain = RACE_SEGMENTS.some((segment) => result.resolvedWeather[segment] !== "dry");
+  const resolvedWeather = strongestResolvedWeather(result);
   const variant = round % 3;
   const prepKey =
     decision.preparation === "weather" && hasRain
@@ -339,7 +340,7 @@ function recapDirective(
   return [
     tt(pickRecapKey(prepKey, variant), {
       preparation: tt(`preparation_${decision.preparation}` as TranslationKey),
-      weather: tt(`weather_${hasRain ? "light_rain" : "dry"}` as TranslationKey)
+      weather: tt(`weather_${resolvedWeather}` as TranslationKey)
     }),
     tt(pickRecapKey(cardKey, variant), {
       card: decision.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : "",
@@ -350,6 +351,14 @@ function recapDirective(
       delta: signedDelta(playerResult?.positionChange ?? 0)
     })
   ].join(" ");
+}
+
+function strongestResolvedWeather(result: RaceResult) {
+  return RACE_SEGMENTS.some((segment) => result.resolvedWeather[segment] === "heavy_rain")
+    ? "heavy_rain"
+    : RACE_SEGMENTS.some((segment) => result.resolvedWeather[segment] === "light_rain")
+      ? "light_rain"
+      : "dry";
 }
 
 function recapNextLesson(

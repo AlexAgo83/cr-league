@@ -17,6 +17,22 @@ describe("circuit identities", () => {
     expect(circuitIdentityForRound(1, circuitSeasonSeed("league_1", 1)).layoutKey).toBe(seasonOne[0]);
   });
 
+  it("does not pin catalog circuits to their original positions across seeded seasons", () => {
+    const movableIndexes = new Set(CITY_CIRCUIT_IDENTITIES.map((_, index) => index));
+    const firstRoundLayouts = new Set<string>();
+
+    for (let season = 1; season <= 120; season += 1) {
+      const order = seasonCircuitIdentities(circuitSeasonSeed(`league_${season}`, season));
+      firstRoundLayouts.add(order[0]!.layoutKey);
+      for (const [index, circuit] of order.entries()) {
+        if (circuit !== CITY_CIRCUIT_IDENTITIES[index]) movableIndexes.delete(index);
+      }
+    }
+
+    expect(movableIndexes.size).toBe(0);
+    expect(firstRoundLayouts.size).toBe(CITY_CIRCUIT_IDENTITIES.length);
+  });
+
   it("maps circuit identity to race input traits and forecast", () => {
     expect(raceInputFromCircuit(CITY_CIRCUIT_IDENTITIES[0])).toEqual({
       primaryTrait: "weather_sensitive",

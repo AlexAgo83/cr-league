@@ -41,9 +41,11 @@ function speedProfileForRoute(points, identity) {
   const candidates = [];
   for (let index = 0; index < segments.length - 1; index += 1) {
     cursor += segments[index].length;
-    const delta = angleDelta(segments[index].angle, segments[index + 1].angle) * 180 / Math.PI;
-    if (delta < 28 || segments[index].length < 10 || segments[index + 1].length < 10) continue;
-    const severity = Math.min(1, (delta - 28) / 72);
+    const from = segments[Math.max(0, index - 2)];
+    const to = segments[Math.min(segments.length - 1, index + 3)];
+    const delta = Math.max(angleDelta(segments[index].angle, segments[index + 1].angle), angleDelta(from.angle, to.angle)) * 180 / Math.PI;
+    if (delta < 20 || segments[index].length < 10 || segments[index + 1].length < 10) continue;
+    const severity = Math.min(1, (delta - 20) / 80);
     candidates.push({
       progress: roundProgress(cursor / Math.max(1, length) - identity.startProgress),
       severity,
@@ -65,10 +67,26 @@ function speedProfileForRoute(points, identity) {
 }
 
 function strongestTurns(candidates) {
-  return candidates
+  return mergeNearbyTurns(candidates)
     .sort((left, right) => right.score - left.score)
-    .slice(0, 7)
+    .slice(0, 10)
     .sort((left, right) => left.progress - right.progress);
+}
+
+function mergeNearbyTurns(candidates) {
+  return candidates
+    .sort((left, right) => left.progress - right.progress)
+    .reduce((turns, candidate) => {
+      const previous = turns.at(-1);
+      if (previous && candidate.progress - previous.progress < 0.035) {
+        if (candidate.score > previous.score) previous.progress = candidate.progress;
+        previous.severity = Math.max(previous.severity, candidate.severity);
+        previous.score = Math.max(previous.score, candidate.score);
+      } else {
+        turns.push({ ...candidate });
+      }
+      return turns;
+    }, []);
 }
 
 function cornerSpans(progress, severity) {

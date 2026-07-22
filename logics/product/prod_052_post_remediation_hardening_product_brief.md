@@ -1,14 +1,21 @@
 ## prod_052_post_remediation_hardening_product_brief - Post-Remediation Hardening Product Brief
 > Date: 2026-07-22
-> Status: Proposed
+> Status: Settled
 > Related request: `req_088_post_remediation_hardening_submit_sell_concurrency_client_security_and_privacy_accessibility_data_model_integrity_and_config_validation`
-> Related backlog: `item_197_close_the_submit_vs_sell_card_race`, `item_198_client_security_and_privacy_hardening`, `item_199_replay_and_dialog_accessibility_baseline`, `item_200_racedecision_data_model_integrity`, `item_201_required_env_validation_and_admin_config`
+> Related backlog: `item_197_close_the_submit_vs_sell_card_race`
 > Related task: `task_089_orchestrate_post_remediation_hardening`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
 After the three review-driven remediation passes (req_085/req_086/req_087) all shipped, a fourth audit of the not-yet-reviewed surfaces found a final concurrency axis plus client-security, accessibility, data-model, and config hardening. This request closes the submit-vs-sell card race, sanitizes and protects client-side secrets and rendering, meets an accessibility baseline for the replay, tightens the RaceDecision data model, and makes production config fail fast instead of silently misconfiguring.
+
+```mermaid
+flowchart TD
+  Req[req_088 hardening] --> Backlog[item_197 to item_201]
+  Backlog --> Task[task_089 delivery]
+  Task --> Proof[validation and closeout]
+```
 
 # Goals
 - No concurrent operation can attach or keep an invalid card on a plan.
@@ -37,5 +44,5 @@ After the three review-driven remediation passes (req_085/req_086/req_087) all s
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_088_post_remediation_hardening_submit_sell_concurrency_client_security_and_privacy_accessibility_data_model_integrity_and_config_validation`
+- Product back-reference: `item_197_close_the_submit_vs_sell_card_race`
 - Task back-reference: `task_089_orchestrate_post_remediation_hardening`

@@ -271,7 +271,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     playerTeam,
     playerDecision,
     form,
-    currentCircuit,
     run,
     tt,
     setLeagueState,

@@ -1,7 +1,7 @@
 ## req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map - Align pit-stop visual position: stop cars where the pit is drawn on the circuit map
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85
 > Complexity: Medium

@@ -430,15 +430,17 @@ export async function sellCard(db: Db, leagueId: string, input: { teamId?: strin
   if (!state) return null;
 
   const team = await requireTeamClaim(db, leagueId, input);
-  if (state.decisions.some((decision) => decision.teamId === team.id && decision.cardId === cardId)) {
-    throw new LeagueRuleError("This card is already used in your current plan.");
-  }
-  if (qualifyingCardForTeam(state.currentGrandPrix.qualifyingRuns, team.id) === cardId) {
-    throw new LeagueRuleError("This card is already locked by your qualifying run.");
-  }
 
   await runWrite(db, async (tx) => {
     await lockTeamRow(tx, team.id);
+    const freshGrandPrix = await getCurrentGrandPrix(tx, leagueId);
+    const freshDecisions = freshGrandPrix ? await tx.raceDecision.findMany({ where: { grandPrixId: freshGrandPrix.id, teamId: team.id } }) : [];
+    if (freshDecisions.some((decision) => decision.cardId === cardId)) {
+      throw new LeagueRuleError("This card is already used in your current plan.");
+    }
+    if (qualifyingCardForTeam(normalizeQualifyingRuns(freshGrandPrix?.qualifyingRuns), team.id) === cardId) {
+      throw new LeagueRuleError("This card is already locked by your qualifying run.");
+    }
     const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
     const cards = freshTeam && freshTeam.leagueId === leagueId ? normalizeCards(freshTeam.cards) : [];
     if (!freshTeam || !cards.includes(cardId)) {
@@ -530,20 +532,22 @@ export async function submitDecision(db: Db, leagueId: string, input: SubmitDeci
   if (!state) return null;
   validateDecisionValues(state, input);
   const team = await requireTeamClaim(db, leagueId, input);
-  const lockedCardId = qualifyingCardForTeam(state.currentGrandPrix.qualifyingRuns, team.id);
-  if (lockedCardId && input.cardId && input.cardId !== lockedCardId) {
-    throw new LeagueRuleError("This Grand Prix card is already locked by your qualifying run.");
-  }
-  const cardId = lockedCardId ?? input.cardId;
-  if (cardId && !team.cards.includes(cardId)) {
-    throw new LeagueRuleError("This card is not in your inventory.");
-  }
 
   await runWrite(db, async (tx) => {
+    await lockTeamRow(tx, team.id);
     await lockGrandPrixRow(tx, grandPrix.id);
     const freshGrandPrix = await getCurrentGrandPrix(tx, leagueId);
     if (!freshGrandPrix || freshGrandPrix.id !== grandPrix.id || freshGrandPrix.status === "resolved") {
       throw new LeagueRuleError("This Grand Prix is already resolved.");
+    }
+    const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
+    const lockedCardId = qualifyingCardForTeam(normalizeQualifyingRuns(freshGrandPrix.qualifyingRuns), team.id);
+    if (lockedCardId && input.cardId && input.cardId !== lockedCardId) {
+      throw new LeagueRuleError("This Grand Prix card is already locked by your qualifying run.");
+    }
+    const cardId = lockedCardId ?? input.cardId;
+    if (cardId && (!freshTeam || freshTeam.leagueId !== leagueId || !normalizeCards(freshTeam.cards).includes(cardId))) {
+      throw new LeagueRuleError("This card is not in your inventory.");
     }
     await tx.raceDecision.upsert({
       where: {
@@ -721,7 +725,7 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
       traits: circuit.traits,
       trackLengthMeters: circuit.trackLengthMeters,
       laps: circuit.laps,
-      pitLaneProgress: 0.5,
+      pitLaneProgress: circuit.pitLaneProgress,
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
       participants
     });

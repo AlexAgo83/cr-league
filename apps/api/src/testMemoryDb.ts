@@ -398,6 +398,11 @@ export function createMemoryDb(): PrismaClient {
         decisions.push(decision);
         return decision;
       },
+      findMany: async ({ where }: { where: { grandPrixId?: string; teamId?: string } }) =>
+        decisions.filter((decision) =>
+          (where.grandPrixId === undefined || decision.grandPrixId === where.grandPrixId) &&
+          (where.teamId === undefined || decision.teamId === where.teamId)
+        ),
       deleteMany: async ({ where }: { where: { grandPrix: { leagueId: string } } }) => {
         const grandPrixIds = new Set(grandPrixes.filter((grandPrix) => grandPrix.leagueId === where.grandPrix.leagueId).map((grandPrix) => grandPrix.id));
         for (let index = decisions.length - 1; index >= 0; index -= 1) {

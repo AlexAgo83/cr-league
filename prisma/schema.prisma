@@ -8,19 +8,19 @@ datasource db {
 }
 
 model League {
-  id                    String    @id @default(cuid())
-  name                  String
-  code                  String    @unique
-  status                String    @default("active")
-  cadence               String    @default("manual")
-  maxPlayers            Int       @default(8)
-  fillWithBots          Boolean   @default(true)
+  id                     String    @id @default(cuid())
+  name                   String
+  code                   String    @unique
+  status                 String    @default("active")
+  cadence                String    @default("manual")
+  maxPlayers             Int       @default(8)
+  fillWithBots           Boolean   @default(true)
   qualifyingAttemptLimit Int       @default(3)
-  maxGrandPrixPerSeason Int       @default(6)
-  ownerTeamId           String?
-  preparationDeadlineAt DateTime?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
+  maxGrandPrixPerSeason  Int       @default(6)
+  ownerTeamId            String?
+  preparationDeadlineAt  DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
 
   teams       Team[]
   grandPrixes GrandPrix[]
@@ -55,9 +55,10 @@ model Team {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  profile   Profile?       @relation(fields: [profileId], references: [id], onDelete: SetNull)
-  league    League         @relation(fields: [leagueId], references: [id], onDelete: Cascade)
-  decisions RaceDecision[]
+  profile        Profile?       @relation(fields: [profileId], references: [id], onDelete: SetNull)
+  league         League         @relation(fields: [leagueId], references: [id], onDelete: Cascade)
+  decisions      RaceDecision[]
+  rivalDecisions RaceDecision[] @relation("RaceDecisionRival")
 
   @@unique([leagueId, name])
   @@index([profileId])
@@ -88,19 +89,22 @@ model GrandPrix {
 }
 
 model RaceDecision {
-  id           String   @id @default(cuid())
-  grandPrixId  String
-  teamId       String
-  approach     String
-  preparation  String
-  pitStrategy  String   @default("standard")
-  cardId       String?
-  rivalTeamId  String?
-  submittedAt  DateTime @default(now())
+  id          String   @id @default(cuid())
+  grandPrixId String
+  teamId      String
+  approach    String
+  preparation String
+  pitStrategy String   @default("standard")
+  cardId      String?
+  rivalTeamId String?
+  submittedAt DateTime @default(now())
 
   grandPrix GrandPrix @relation(fields: [grandPrixId], references: [id], onDelete: Cascade)
   team      Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  rivalTeam Team?     @relation("RaceDecisionRival", fields: [rivalTeamId], references: [id], onDelete: SetNull)
 
   @@unique([grandPrixId, teamId])
+  @@index([teamId])
+  @@index([rivalTeamId])
   @@map("race_decisions")
 }

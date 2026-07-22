@@ -1,10 +1,10 @@
 ## item_206_delete_client_side_replay_beat_re_derivation_replayfacts_is_the_sole_source - Delete client-side replay beat re-derivation; replayFacts is the sole source
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Over-engineering cleanup
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,6 +31,7 @@
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: The client-side director/overtake/weather/pack/pit re-derivations are deleted.
 - request-AC5 -> This backlog slice. Proof: AC2: replayFacts is the sole source of race beats, guarded by a test that resolved races always carry them.
+- request-AC3 -> This backlog slice. Evidence needed: Replay pacing is scaled from canonical meters, not projected pixels; the authored trackLengthMeters is reconciled with the route geometry (generated or validated), and circuitLengthMeters is either the canonical basis or deleted.
 
 # Decision framing
 - Product framing: Not needed
@@ -51,3 +52,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_091_orchestrate_canonical_race_track_geometry`
+
+# Notes
+- Task `task_091_orchestrate_canonical_race_track_geometry` was finished via `logics-manager flow finish task` on 2026-07-22.

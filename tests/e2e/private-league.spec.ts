@@ -153,7 +153,8 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.getByRole("dialog", { name: "Profile code" })).toBeVisible();
   await expect(page.getByLabel("Copy profile code")).toHaveValue("ABCD1234");
   await page.getByLabel("Copy profile code").click();
-  await expect(page.getByText("Profile code copied: ABCD1234")).toBeVisible();
+  await expect(page.getByText("Profile code copied.")).toBeVisible();
+  await expect(page.getByText("Profile code copied: ABCD1234")).toHaveCount(0);
   await page.getByRole("dialog", { name: "Profile code" }).getByRole("button", { name: "Close", exact: true }).click();
   await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("championship-layout-desktop.png"), fullPage: true });
@@ -332,7 +333,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(speedButton).toBeVisible();
   await speedButton.click();
   await expect(mapPanel.locator(".replay-speed-options")).toBeVisible();
-  await mapPanel.locator(".replay-speed-options").getByRole("option", { name: "×1" }).click();
+  await mapPanel.locator(".replay-speed-options").getByRole("button", { name: "×1" }).click();
   await expect(page.locator(".replay-moments-panel")).toHaveCount(0);
   await expect
     .poll(async () => mapPanel.evaluate((element) => element.getBoundingClientRect().width))
@@ -486,7 +487,7 @@ async function createProfile(page: Page) {
   await page.getByRole("button", { name: /Create profile/ }).click();
   await page.getByLabel("Email").fill("pilot@example.test");
   await page.getByRole("button", { name: "Create profile" }).click();
-  await expect(page.getByText("Profile created. Save this recovery code: ABCD1234")).toBeVisible();
+  await expect(page.getByText("Profile created. Save your recovery code.")).toBeVisible();
   await dismissOnboarding(page);
   await expect(page.getByRole("button", { name: "Profile menu" })).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator(".profile-menu-panel")).toHaveCount(0);

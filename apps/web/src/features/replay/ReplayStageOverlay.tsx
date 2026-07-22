@@ -300,7 +300,6 @@ function ReplaySpeedMenu({ speed, setSpeed, tt }: { speed: ReplaySpeed; setSpeed
       <button
         type="button"
         className={open ? "replay-speed-trigger active" : "replay-speed-trigger"}
-        aria-haspopup="listbox"
         aria-expanded={open}
         aria-controls={listId}
         aria-label={`${tt("replay_speed")} ×${speed}`}
@@ -309,13 +308,12 @@ function ReplaySpeedMenu({ speed, setSpeed, tt }: { speed: ReplaySpeed; setSpeed
         ×{speed}
       </button>
       {open ? (
-        <div id={listId} className="replay-speed-options" role="listbox" aria-label={tt("replay_speed")}>
+        <div id={listId} className="replay-speed-options" aria-label={tt("replay_speed")}>
           {REPLAY_SPEEDS.map((option) => (
             <button
               key={option}
               type="button"
-              role="option"
-              aria-selected={option === speed}
+              aria-pressed={option === speed}
               className={option === speed ? "selected" : undefined}
               onClick={() => {
                 setSpeed(option);

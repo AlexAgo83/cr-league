@@ -42,7 +42,8 @@ describe("App profile and admin", () => {
 
     fireEvent.click(screen.getByLabelText("Copy profile code"));
     expect(writeText).toHaveBeenCalledWith("ABCD1234");
-    expect(await screen.findByText("Profile code copied: ABCD1234")).toBeTruthy();
+    expect(await screen.findByText("Profile code copied.")).toBeTruthy();
+    expect(screen.queryByText("Profile code copied: ABCD1234")).toBe(null);
   });
 
   it("hides profile code copy when the code is not stored locally", () => {
@@ -63,7 +64,7 @@ describe("App profile and admin", () => {
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
     fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
 
-    expect(await screen.findByText("Profile created. We also emailed this recovery code: ABCD1234")).toBeTruthy();
+    expect(await screen.findByText("Profile created. We also emailed your recovery code.")).toBeTruthy();
   });
 
   it("prefills the profile email field from the last local profile email", () => {

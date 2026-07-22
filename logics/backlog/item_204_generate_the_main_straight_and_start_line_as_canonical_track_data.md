@@ -1,10 +1,10 @@
 ## item_204_generate_the_main_straight_and_start_line_as_canonical_track_data - Generate the main straight and start line as canonical track data
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Race-track data model
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -34,6 +34,7 @@
 - request-AC1 -> This backlog slice. Proof: AC1: The main-straight span and start line are canonical shared circuit data, generated and audited.
 - request-AC2 -> This backlog slice. Proof: AC2: The map reads startProgress from canonical data and no longer scans geometry for it; longestStraight is gone.
 - request-AC5 -> This backlog slice. Proof: AC3: The web no longer computes pitLaneProgress client-side; resolve reads canonical start/pit.
+- request-AC4 -> This backlog slice. Evidence needed: The client-side re-derivation of director beats, overtakes, and weather/pack/pit positions is deleted; replayFacts is the sole source, guarded by a test that a resolved race always carries them.
 
 # Decision framing
 - Product framing: Not needed
@@ -54,3 +55,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_091_orchestrate_canonical_race_track_geometry`
+
+# Notes
+- Task `task_091_orchestrate_canonical_race_track_geometry` was finished via `logics-manager flow finish task` on 2026-07-22.

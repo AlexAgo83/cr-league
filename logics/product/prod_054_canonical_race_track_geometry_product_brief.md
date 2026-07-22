@@ -1,14 +1,22 @@
 ## prod_054_canonical_race_track_geometry_product_brief - Canonical Race-Track Geometry Product Brief
 > Date: 2026-07-22
-> Status: Proposed
+> Status: Settled
 > Related request: `req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map`
-> Related backlog: `item_204_generate_the_main_straight_and_start_line_as_canonical_track_data`, `item_205_base_replay_scale_on_canonical_meters_and_reconcile_track_length`, `item_206_delete_client_side_replay_beat_re_derivation_replayfacts_is_the_sole_source`
+> Related backlog: `item_204_generate_the_main_straight_and_start_line_as_canonical_track_data`
 > Related task: `task_091_orchestrate_canonical_race_track_geometry`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
 An architecture audit after the pit-stop alignment fix found the same smell across the whole map: the race track's semantic geometry (main straight, start/finish line, real length, race beats) is never stored as canonical data — the web improvises it from raw route points with magic numbers, and the simulation improvises separately. This request extends the single-canonical-origin principle from the pit to the whole track: generate the semantic markers once, store them as shared circuit data read by both sides, base replay pacing on real meters, and delete the client-side beat re-derivation that only exists to drift.
+
+```mermaid
+flowchart TD
+  Req[req_090 canonical geometry] --> Markers[item_204 semantic markers]
+  Markers --> Meters[item_205 canonical meters]
+  Meters --> Facts[item_206 replayFacts only]
+  Facts --> Task[task_091 validation]
+```
 
 # Goals
 - Every semantic track position (start line, pit, main straight) is generated once and read by both the simulation and the map.
@@ -35,5 +43,5 @@ An architecture audit after the pit-stop alignment fix found the same smell acro
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map`
+- Product back-reference: `item_204_generate_the_main_straight_and_start_line_as_canonical_track_data`
 - Task back-reference: `task_091_orchestrate_canonical_race_track_geometry`

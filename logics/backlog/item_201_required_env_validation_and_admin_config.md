@@ -1,10 +1,10 @@
 ## item_201_required_env_validation_and_admin_config - Required-env validation and admin config
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Config integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,6 +31,8 @@
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: The API fails fast with a clear error on missing WEB_ORIGIN or DATABASE_URL outside development.
 - request-AC6 -> This backlog slice. Proof: AC2: render.yaml declares ADMIN_TOKEN and ADMIN_EMAILS.
+- request-AC3 -> This backlog slice. Evidence needed: The replay honors prefers-reduced-motion (defaults to no auto-motion when reduce is set), the modal focus trap skips hidden elements and focuses the first visible control, and the speed menu either implements listbox keyboard navigation or drops the listbox roles.
+- request-AC4 -> This backlog slice. Evidence needed: RaceDecision.teamId is indexed, rivalTeamId is a FK/relation with onDelete handling and an index, the enum-like columns are DB-constrained, and the profileId index migration runs without write-locking teams.
 
 # Decision framing
 - Product framing: Not needed
@@ -51,3 +53,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_089_orchestrate_post_remediation_hardening`
+
+# Notes
+- Task `task_089_orchestrate_post_remediation_hardening` was finished via `logics-manager flow finish task` on 2026-07-22.

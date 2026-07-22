@@ -61,7 +61,7 @@ export function createProfileActions({
       setSavedClaims(claimsFromProfile(session));
       setSetupMode("choice");
       setProfileOpen(false);
-      showStatus(`${tt(session.recoveryEmailSent ? "status_profile_created_email_sent" : "status_profile_created")} ${session.recoveryCode ?? ""}`, "info", false);
+      showStatus(tt(session.recoveryEmailSent ? "status_profile_created_email_sent" : "status_profile_created"), "info", false);
       openProfileCodeHelp();
     }, undefined, true, (error) => profileApiErrorMessage(error, "create"));
   };

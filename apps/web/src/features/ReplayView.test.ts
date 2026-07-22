@@ -17,7 +17,6 @@ import {
   pitStopTraceProgress,
   positionDeltas,
   replayOrderAtProgress,
-  replayPlanDebugLines,
   replayDistanceScale,
   scaleFinishTimes,
   segmentAtProgress,
@@ -88,8 +87,8 @@ describe("ReplayView timing", () => {
   });
 
   it("scales visual replay time with race distance", () => {
-    const shortCircuit = testCircuit(1, [{ lat: 0, lng: 0 }, { lat: 0, lng: 0.001 }]);
-    const longCircuit = testCircuit(1, [{ lat: 0, lng: 0 }, { lat: 0, lng: 0.002 }]);
+    const shortCircuit = { ...testCircuit(1, [{ lat: 0, lng: 0 }, { lat: 0, lng: 0.001 }]), routeLengthMeters: 1_000 };
+    const longCircuit = { ...testCircuit(1, [{ lat: 0, lng: 0 }, { lat: 0, lng: 0.002 }]), routeLengthMeters: 2_000 };
     const times = { leader: 10, last: 12, times: { leader: 10, last: 12 } };
 
     expect(replayDistanceScale(longCircuit) / replayDistanceScale(shortCircuit)).toBeCloseTo(2);
@@ -195,31 +194,27 @@ describe("ReplayView timing", () => {
     expect(after.last ?? 0).toBeGreaterThan(after.leader ?? 0);
   });
 
-  it("builds an inspectable staged replay plan from trace order changes", () => {
-    const trace: ReplayTracePoint[] = [
-      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
-      { segment: "early", lap: 2, progress: 0.2, order: ["last", "leader"], times: { leader: 10, last: 10 }, gaps: { leader: 0, last: 0 } }
-    ];
-    const plan = buildReplayPlan(result, trace);
+  it("builds an inspectable staged replay plan from replay facts", () => {
+    const resultWithFacts: RaceResult = {
+      ...result,
+      replayFacts: {
+        version: 1,
+        directorBeats: [],
+        orderChanges: [
+          { type: "order_change", segment: "early", lap: 2, progress: 0.2, overtakingTeamId: "last", overtakenTeamId: "leader", fromPosition: 2, toPosition: 1, gapSeconds: 0 }
+        ]
+      }
+    };
+    const plan = buildReplayPlan(resultWithFacts, []);
 
-    expect(plan.source).toBe("trace");
+    expect(plan.source).toBe("facts");
     expect(plan.overtakes[0]?.phases.map((phase) => phase.phase)).toEqual(["setup", "close_gap", "overlap", "swap", "settle"]);
-    expect(replayPlanDebugLines(plan)[0]).toContain("last->leader");
   });
 
-  it("generates deterministic race-director beats from replay facts and quiet trace", () => {
-    const trace: ReplayTracePoint[] = [
-      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
-      { segment: "mid", lap: 3, progress: 0.5, order: ["last", "leader"], times: { leader: 50, last: 49 }, gaps: { leader: 1, last: 0 } },
-      { segment: "finish", lap: 5, progress: 1, order: ["leader", "last"], times: { leader: 100, last: 104 }, gaps: { leader: 0, last: 4 } }
-    ];
-    const plan = buildReplayPlan(result, trace);
-    const beats = buildRaceDirectorBeats(result, trace, plan, 5, "last");
+  it("falls back to only grid and final director beats when replay facts are missing", () => {
+    const beats = buildRaceDirectorBeats(result, [], buildReplayPlan(result, []), 5, "last");
 
-    expect(beats.map((beat) => beat.type)).toContain("grid_start");
-    expect(beats.map((beat) => beat.type)).toContain("player");
-    expect(beats.map((beat) => beat.type)).toContain("pack");
-    expect(beats.at(-1)?.type).toBe("final");
+    expect(beats.map((beat) => beat.type)).toEqual(["grid_start", "final"]);
   });
 
   it("uses generated race-director beats when replay facts provide them", () => {
@@ -254,12 +249,13 @@ describe("ReplayView timing", () => {
   });
 
   it("shows pit stops as race-director beats", () => {
-    const trace: ReplayTracePoint[] = [
-      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
-      { segment: "finish", lap: 10, progress: 1, order: ["leader", "last"], times: { leader: 100, last: 104 }, gaps: { leader: 0, last: 4 } }
-    ];
     const resultWithPit: RaceResult = {
       ...result,
+      replayFacts: {
+        version: 1,
+        orderChanges: [],
+        directorBeats: [{ id: "pit-leader-1", type: "pit_stop", progress: 0.45, lap: 5, teamId: "leader" }]
+      },
       events: [
         {
           id: "pit",
@@ -291,8 +287,8 @@ describe("ReplayView timing", () => {
     };
     const beats = buildRaceDirectorBeats(
       resultWithPit,
-      trace,
-      buildReplayPlan(result, trace),
+      [],
+      buildReplayPlan(resultWithPit, []),
       10,
       "leader"
     );
@@ -301,7 +297,7 @@ describe("ReplayView timing", () => {
     expect(pitStopRaceProgress(resultWithPit.events[0]!, 10, 5, 0.25)).toBeCloseTo(0.45);
   });
 
-  it("times pit stops when each car naturally reaches pit entry in the trace", () => {
+  it("uses event trace progress before the lap/pit fallback for pit stops", () => {
     const trace: ReplayTracePoint[] = [
       { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: { leader: 0, last: 0 }, gaps: { leader: 0, last: 0 } },
       { segment: "mid", lap: 5, progress: 0.45, order: ["leader", "last"], times: { leader: 45, last: 46 }, gaps: { leader: 0, last: 1 } },
@@ -312,7 +308,7 @@ describe("ReplayView timing", () => {
 
     expect(pitStopTraceProgress(result, trace, { ...leader, traceProgress: 0.37 }, 10, 5, 0.25)).toBe(0.37);
     expect(pitStopTraceProgress(result, trace, leader, 10, 5, 0.25)).toBeCloseTo(0.45);
-    expect(pitStopTraceProgress(result, trace, last, 10, 5, 0.25)).toBeGreaterThan(pitStopTraceProgress(result, trace, leader, 10, 5, 0.25));
+    expect(pitStopTraceProgress(result, trace, last, 10, 5, 0.25)).toBeCloseTo(0.45);
   });
 
   it("uses event trace progress before lap fallback", () => {
@@ -385,6 +381,11 @@ function testCircuit(laps: number, route: Array<{ lat: number; lng: number }>) {
     layoutKey: "city_circuit_map",
     laps,
     trackLengthMeters: 3200,
+    routeLengthMeters: Math.round((route.at(-1)?.lng ?? 0) * 111_320),
+    mainStraightStartProgress: 0,
+    mainStraightEndProgress: 1,
+    startProgress: 0,
+    pitLaneProgress: 0.5,
     traits: { grip: 1, overtaking: 1, energy: 1 },
     likelyWeather: "dry",
     route

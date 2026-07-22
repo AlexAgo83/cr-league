@@ -5,6 +5,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
 import { DEFAULT_CAR_ASSET, carAssetForId } from "./carAssets.js";
+import { safeHex } from "./LiveryPlate.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
 export type MapCar = {
@@ -49,7 +50,6 @@ const CLOSE_EXIT_DISTANCE = 6;
 const DRIFT_LOOKAHEAD = 0.012;
 const HEADING_LOOKAHEAD = 0.006;
 const MAX_DRIFT_ANGLE = 14;
-const STRAIGHT_TURN_TOLERANCE_DEG = 18;
 const ROUTE_FIT_PADDING = 58;
 const ROUTE_STROKES = {
   glow: 22,
@@ -72,9 +72,7 @@ type RouteSegment = {
 export type CircuitRouteAnalysis = {
   startLine: { x1: number; y1: number; x2: number; y2: number };
   startProgress: number;
-  pitProgress: number;
   pitStop: RoutePose;
-  longestStraight: { startProgress: number; endProgress: number; length: number };
 };
 
 const CAR_SPRITES: Record<CarSprite, string> = {
@@ -212,44 +210,13 @@ function routeLineAt(pose: RoutePose) {
   };
 }
 
-export function analyzeCircuitRoute(points: RoutePoint[]): CircuitRouteAnalysis {
-  const segments = routeSegments(points).filter((segment) => segment.length > 0.1);
-  const total = segments.reduce((sum, segment) => sum + segment.length, 0) || 1;
-  if (!segments.length) {
-    const pose = { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
-    return { startLine: routeLineAt(pose), startProgress: 0, pitProgress: 0, pitStop: pose, longestStraight: { startProgress: 0, endProgress: 0, length: 0 } };
-  }
-
-  let best = { start: segments[0]!, count: 1, length: segments[0]!.length };
-  for (let startIndex = 0; startIndex < segments.length; startIndex += 1) {
-    let length = segments[startIndex]!.length;
-    let count = 1;
-    for (; count < segments.length; count += 1) {
-      const previous = segments[(startIndex + count - 1) % segments.length]!;
-      const next = segments[(startIndex + count) % segments.length]!;
-      if (Math.abs(angleDelta(previous.angle * 180 / Math.PI, next.angle * 180 / Math.PI)) > STRAIGHT_TURN_TOLERANCE_DEG) break;
-      length += next.length;
-    }
-    if (length > best.length) best = { start: segments[startIndex]!, count, length };
-  }
-
-  const startDistance = best.start.startDistance;
-  const endDistance = segments[(segments.indexOf(best.start) + best.count - 1) % segments.length]!.endDistance;
-  const straightStart = startDistance / total;
-  const straightEnd = (startDistance + best.length) / total;
-  const pitProgress = (straightStart + (best.length / total) * 0.18) % 1;
-  const lineProgress = (straightStart + (best.length / total) * 0.88) % 1;
-
+export function analyzeCircuitRoute(points: RoutePoint[], circuit: Pick<CityCircuit, "startProgress" | "pitLaneProgress">): CircuitRouteAnalysis {
+  const lineProgress = circuit.startProgress;
+  const pitProgress = progressFromStart(circuit.pitLaneProgress, circuit.startProgress);
   return {
     startLine: routeLineAt(poseOnRoute(points, lineProgress)),
     startProgress: lineProgress,
-    pitProgress,
-    pitStop: poseOnRoute(points, pitProgress),
-    longestStraight: {
-      startProgress: straightStart,
-      endProgress: endDistance >= startDistance ? endDistance / total : straightEnd % 1,
-      length: best.length
-    }
+    pitStop: poseOnRoute(points, pitProgress)
   };
 }
 
@@ -258,7 +225,7 @@ export function circuitDisplayLength(circuit: CityCircuit) {
 }
 
 export function circuitRouteAnalysis(circuit: CityCircuit) {
-  return analyzeCircuitRoute(circuitScene(circuit).points);
+  return analyzeCircuitRoute(circuitScene(circuit).points, circuit);
 }
 
 export function angleDelta(from: number, to: number) {
@@ -309,7 +276,8 @@ export function CircuitMap({
   showHeading = true,
   framed = true,
   showTraits = true,
-  weather
+  weather,
+  reduceMotion = prefersReducedMotion()
 }: {
   circuit: CityCircuit;
   tt: Translator;
@@ -326,6 +294,7 @@ export function CircuitMap({
   framed?: boolean;
   showTraits?: boolean;
   weather?: Weather;
+  reduceMotion?: boolean;
 }) {
   const { zoom, tiles, points, d } = useMemo(() => circuitScene(circuit), [circuit]);
   const cameraRef = useRef<SVGGElement>(null);
@@ -338,7 +307,7 @@ export function CircuitMap({
   const focusEnabled = Boolean(camera?.enabled && camera.car);
   const markerScale = focusEnabled ? 1 / FOCUS_ZOOM : 0.62;
   const hasCars = cars.length > 0;
-  const routeAnalysis = useMemo(() => analyzeCircuitRoute(points), [points]);
+  const routeAnalysis = useMemo(() => analyzeCircuitRoute(points, circuit), [circuit, points]);
   const mapFit = useMemo(() => routeFitTransform(points), [points]);
   const activeMapFit = focusEnabled ? null : mapFit;
   const mapTransform = activeMapFit?.value;
@@ -453,7 +422,7 @@ export function CircuitMap({
                   const drift = car.progress === undefined ? 0 : driftAngle(renderPoints, stageProgress(car.progress));
                   const sprite = spriteForCar(car);
                   const carStyle = car.livery
-                    ? ({ "--car-primary": car.livery.primary, "--car-secondary": car.livery.secondary } as CSSProperties & Record<string, string>)
+                    ? ({ "--car-primary": safeHex(car.livery.primary, "#38bdf8"), "--car-secondary": safeHex(car.livery.secondary, "#16c784") } as CSSProperties & Record<string, string>)
                     : undefined;
                   return (
                     <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
@@ -481,7 +450,7 @@ export function CircuitMap({
                         ) : null}
                       </g>
                       {car.progress === undefined ? (
-                        <animateMotion path={renderD} dur={`${car.duration}s`} begin={`${car.delay}s`} keyPoints="0;1" keyTimes="0;1" calcMode="linear" repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
+                        reduceMotion ? null : <animateMotion path={renderD} dur={`${car.duration}s`} begin={`${car.delay}s`} keyPoints="0;1" keyTimes="0;1" calcMode="linear" repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
                       ) : null}
                     </g>
                   );
@@ -520,6 +489,10 @@ export function CircuitMap({
       </div>
     </section>
   );
+}
+
+function prefersReducedMotion() {
+  return typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 }
 
 export function MapCarSprite({ asset, maskId, sprite, transform }: { asset?: string; maskId: string; sprite: CarSprite; transform?: string }) {

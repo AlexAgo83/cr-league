@@ -861,7 +861,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Focus driver" }));
     expect(localStorage.getItem("cr-league-replay-focus")).toBe("0");
     fireEvent.click(screen.getByRole("button", { name: "Speed ×1" }));
-    fireEvent.click(screen.getByRole("option", { name: "×2" }));
+    fireEvent.click(screen.getByRole("button", { name: "×2" }));
     expect(screen.getByRole("button", { name: "Speed ×2" })).toBeTruthy();
     expect(screen.getByRole("button", { name: "Back to stand" }).className).toContain("replay-close-button");
     fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));

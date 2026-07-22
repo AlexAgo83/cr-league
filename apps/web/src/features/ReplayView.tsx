@@ -204,6 +204,7 @@ export function ReplayView({
     activeMomentId,
     positionPops,
     currentRaceProgress,
+    reduceMotion,
     seek,
     restart
   } = useReplayClock({
@@ -355,6 +356,7 @@ export function ReplayView({
             showHeading={false}
             framed={false}
             showTraits={false}
+            reduceMotion={reduceMotion}
             camera={{ enabled: driverFocus, car: playerCar, timeRef: clock }}
             overlay={
               <ReplayStageOverlay

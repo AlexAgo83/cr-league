@@ -58,7 +58,8 @@ export function useReplayClock({
   const snapshotRef = useRef(initialSnapshot);
   const orderRef = useRef(initialOrder);
   const positionPopTimers = useRef<number[]>([]);
-  const [playing, setPlaying] = useState(true);
+  const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+  const [playing, setPlaying] = useState(!reduceMotion);
   const [speed, setSpeed] = useState<ReplaySpeed>(1);
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const [snapshot, setSnapshot] = useState(initialSnapshot);
@@ -116,8 +117,8 @@ export function useReplayClock({
   const restart = useCallback(() => {
     setPositionPops({});
     seek(0);
-    setPlaying(true);
-  }, [seek]);
+    setPlaying(!reduceMotion);
+  }, [reduceMotion, seek]);
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -168,6 +169,7 @@ export function useReplayClock({
     activeMomentId,
     positionPops,
     currentRaceProgress,
+    reduceMotion,
     seek,
     restart
   };

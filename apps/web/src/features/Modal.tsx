@@ -60,7 +60,7 @@ export function Modal({
   useEffect(() => {
     const unlockBodyScroll = lockBodyScroll();
     triggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-    dialogRef.current?.focus();
+    firstVisibleFocusable(dialogRef.current)?.focus();
     return () => {
       unlockBodyScroll();
       if (triggerRef.current?.isConnected) triggerRef.current.focus();
@@ -74,8 +74,8 @@ export function Modal({
       return;
     }
     if (event.key !== "Tab") return;
-    const focusable = dialogRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
-    if (!focusable?.length) {
+    const focusable = visibleFocusable(dialogRef.current);
+    if (!focusable.length) {
       event.preventDefault();
       return;
     }
@@ -114,4 +114,12 @@ export function Modal({
     </div>,
     document.body
   );
+}
+
+function visibleFocusable(root: HTMLElement | null) {
+  return root ? Array.from(root.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR)).filter((element) => element.offsetParent || element.getClientRects().length > 0) : [];
+}
+
+function firstVisibleFocusable(root: HTMLElement | null) {
+  return visibleFocusable(root)[0] ?? root;
 }

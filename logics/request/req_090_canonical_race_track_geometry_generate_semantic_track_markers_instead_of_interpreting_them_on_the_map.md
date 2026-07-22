@@ -1,7 +1,7 @@
 ## req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map - Canonical race-track geometry: generate semantic track markers instead of interpreting them on the map
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

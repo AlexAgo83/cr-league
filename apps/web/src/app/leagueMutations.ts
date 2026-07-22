@@ -1,7 +1,5 @@
 import type { CardId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
-import { circuitRouteAnalysis } from "../features/CircuitMap.js";
-import type { CityCircuit } from "./circuits.js";
 import { api } from "./appStorage.js";
 import type { FormState, GameView, LeagueState } from "./types.js";
 
@@ -10,7 +8,6 @@ export function createLeagueMutations({
   playerTeam,
   playerDecision,
   form,
-  currentCircuit,
   run,
   tt,
   setLeagueState,
@@ -30,7 +27,6 @@ export function createLeagueMutations({
   playerTeam: LeagueState["teams"][number] | undefined;
   playerDecision: LeagueState["decisions"][number] | undefined;
   form: FormState;
-  currentCircuit: CityCircuit;
   run: (nextMessage: string, action: () => Promise<void>) => Promise<void>;
   tt: (key: TranslationKey) => string;
   setLeagueState: (state: LeagueState) => void;
@@ -78,17 +74,12 @@ export function createLeagueMutations({
     setResolveConfirmOpen(false);
 
     await run(tt("status_resolving_grand_prix"), async () => {
-      const analysis = circuitRouteAnalysis(currentCircuit);
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/resolve`, {
         method: "POST",
         body: JSON.stringify({
           teamId: leagueState.player?.teamId,
           claimCode: leagueState.player?.claimCode,
-          allowDefaults: !playerDecision,
-          traits: currentCircuit.traits,
-          trackLengthMeters: currentCircuit.trackLengthMeters,
-          laps: currentCircuit.laps,
-          pitLaneProgress: (((analysis.pitProgress - analysis.startProgress) % 1) + 1) % 1
+          allowDefaults: !playerDecision
         })
       });
       setLeagueState(withCurrentPlayer(state));

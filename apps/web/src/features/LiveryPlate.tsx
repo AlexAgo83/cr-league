@@ -3,7 +3,7 @@ import type { TeamLivery } from "@cr-league/shared";
 
 const HEX_COLOR = /^#[0-9a-f]{6}$/i;
 
-function safeHex(value: string, fallback: string) {
+export function safeHex(value: string, fallback: string) {
   return HEX_COLOR.test(value) ? value : fallback;
 }
 

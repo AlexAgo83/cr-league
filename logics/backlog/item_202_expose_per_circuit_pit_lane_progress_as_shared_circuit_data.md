@@ -1,10 +1,10 @@
 ## item_202_expose_per_circuit_pit_lane_progress_as_shared_circuit_data - Expose per-circuit pit-lane progress as shared circuit data
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay fidelity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,6 +31,7 @@
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: One canonical, generated from-start pit-lane progress per circuit, stored as shared circuit data.
 - request-AC4 -> This backlog slice. Proof: AC2: A single shared implementation of the heuristic generates the value; audit:circuits guards drift.
+- request-AC3 -> This backlog slice. Evidence needed: The map reads the same canonical value and draws the marker with the same projection it uses for cars, so a pitting car's rendered pose equals the drawn pit-garage marker for every circuit, verified by a test.
 
 # Decision framing
 - Product framing: Not needed
@@ -51,3 +52,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_090_orchestrate_pit_stop_visual_alignment`
+
+# Notes
+- Task `task_090_orchestrate_pit_stop_visual_alignment` was finished via `logics-manager flow finish task` on 2026-07-22.

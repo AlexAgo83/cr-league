@@ -1,10 +1,10 @@
 ## item_203_feed_the_circuit_pit_lane_progress_into_the_simulation_and_align_the_marker - Feed the circuit pit-lane progress into the simulation and align the marker
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Replay fidelity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -52,3 +52,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_090_orchestrate_pit_stop_visual_alignment`
+
+# Notes
+- Task `task_090_orchestrate_pit_stop_visual_alignment` was finished via `logics-manager flow finish task` on 2026-07-22.

@@ -140,6 +140,32 @@ run("api app postgres integration", () => {
     expect(team).toMatchObject({ credits: 60, cards: [] });
   });
 
+  it("serializes concurrent card sale and directive submission against the same inventory", async () => {
+    const app = await createTestApp(prisma);
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
+    });
+    const created = createResponse.json();
+    await prisma.team.update({ where: { id: created.player.teamId }, data: { credits: 0, cards: ["rain_grip"] } });
+    const proof = { teamId: created.player.teamId, claimCode: created.player.claimCode };
+
+    const responses = await Promise.all([
+      app.inject({ method: "POST", url: `/leagues/${created.league.id}/cards/sell`, payload: { ...proof, cardId: "rain_grip" } }),
+      app.inject({ method: "POST", url: `/leagues/${created.league.id}/decisions`, payload: { ...proof, approach: "balanced", preparation: "weather", cardId: "rain_grip" } })
+    ]);
+    const [team, decision] = await Promise.all([
+      prisma.team.findUnique({ where: { id: created.player.teamId } }),
+      prisma.raceDecision.findFirst({ where: { teamId: created.player.teamId } })
+    ]);
+
+    await app.close();
+
+    expect(responses.map((response) => response.statusCode).sort()).toEqual([200, 409]);
+    if (decision?.cardId) expect(team?.cards).toContain(decision.cardId);
+  });
+
   it("enforces max players under concurrent joins", async () => {
     const app = await createTestApp(prisma);
     const createResponse = await app.inject({

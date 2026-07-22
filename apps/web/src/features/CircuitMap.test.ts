@@ -19,7 +19,7 @@ describe("CircuitMap route posing", () => {
     expect(Math.abs(driftAngle(route, 0.25))).toBeLessThanOrEqual(14);
   });
 
-  it("places start near the end of the longest straight and pit near its beginning", () => {
+  it("projects canonical start and pit markers through the same route pose math", () => {
     const route = [
       { x: 0, y: 0 },
       { x: 300, y: 0 },
@@ -28,12 +28,13 @@ describe("CircuitMap route posing", () => {
       { x: 0, y: 0 }
     ];
 
-    const analysis = analyzeCircuitRoute(route);
+    const analysis = analyzeCircuitRoute(route, {
+      startProgress: 264 / 700,
+      pitLaneProgress: (((54 / 700 - 264 / 700) % 1) + 1) % 1
+    });
 
-    expect(analysis.longestStraight.length).toBe(300);
     expect(analysis.pitStop.x).toBeCloseTo(54);
     expect(analysis.pitStop.y).toBeCloseTo(0);
-    expect(analysis.pitProgress).toBeCloseTo(54 / 700);
     expect((analysis.startLine.x1 + analysis.startLine.x2) / 2).toBeCloseTo(264);
     expect((analysis.startLine.y1 + analysis.startLine.y2) / 2).toBeCloseTo(0);
     expect(poseOnRoute(route, analysis.startProgress).x).toBeCloseTo(264);
@@ -44,7 +45,7 @@ describe("CircuitMap route posing", () => {
       const analysis = circuitRouteAnalysis(circuit);
       const values = [analysis.startLine.x1, analysis.startLine.y1, analysis.startLine.x2, analysis.startLine.y2, analysis.pitStop.x, analysis.pitStop.y];
       expect(values.every(Number.isFinite), circuit.layoutKey).toBe(true);
-      expect(analysis.longestStraight.length, circuit.layoutKey).toBeGreaterThan(20);
+      expect(circuit.mainStraightEndProgress, circuit.layoutKey).not.toBe(circuit.mainStraightStartProgress);
     }
   });
 

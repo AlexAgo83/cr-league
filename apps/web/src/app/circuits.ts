@@ -9,6 +9,11 @@ export type CityCircuit = {
   layoutKey: TranslationKey;
   laps: number;
   trackLengthMeters: number;
+  routeLengthMeters: number;
+  mainStraightStartProgress: number;
+  mainStraightEndProgress: number;
+  startProgress: number;
+  pitLaneProgress: number;
   traits: {
     grip: number;
     overtaking: number;

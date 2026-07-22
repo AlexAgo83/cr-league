@@ -1,7 +1,7 @@
 ## req_088_post_remediation_hardening_submit_sell_concurrency_client_security_and_privacy_accessibility_data_model_integrity_and_config_validation - Post-remediation hardening: submit/sell concurrency, client security and privacy, accessibility, data-model integrity, and config validation
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

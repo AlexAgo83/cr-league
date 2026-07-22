@@ -1,10 +1,10 @@
 ## item_205_base_replay_scale_on_canonical_meters_and_reconcile_track_length - Base replay scale on canonical meters and reconcile track length
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Replay fidelity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,6 +31,7 @@
 # AC Traceability
 - request-AC3 -> This backlog slice. Proof: AC1: Replay pacing derives from canonical meters, with no dependency on projected pixel length.
 - request-AC5 -> This backlog slice. Proof: AC2: trackLengthMeters is reconciled with the route geometry (generated or validated), and circuitLengthMeters is either the basis or removed.
+- request-AC4 -> This backlog slice. Evidence needed: The client-side re-derivation of director beats, overtakes, and weather/pack/pit positions is deleted; replayFacts is the sole source, guarded by a test that a resolved race always carries them.
 
 # Decision framing
 - Product framing: Not needed
@@ -51,3 +52,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_091_orchestrate_canonical_race_track_geometry`
+
+# Notes
+- Task `task_091_orchestrate_canonical_race_track_geometry` was finished via `logics-manager flow finish task` on 2026-07-22.

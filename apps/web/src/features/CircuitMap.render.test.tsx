@@ -39,6 +39,13 @@ describe("CircuitMap rendering", () => {
     expect(motion?.getAttribute("keyTimes")).toBe("0;1");
   });
 
+  it("keeps ambient cars static when reduced motion is requested", () => {
+    const ambient: MapCar = { id: "ambient", label: "A", player: false, delay: 0, duration: 10 };
+    const { container } = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[ambient]} reduceMotion />);
+
+    expect(container.querySelector("animateMotion")).toBeNull();
+  });
+
   it("uses the car skin selected in the team livery", () => {
     const car: MapCar = { id: "player", label: "P", player: true, delay: 0, duration: 10, progress: 0, livery: { primary: "#111111", secondary: "#ff0000", carAssetId: "car-005" } };
     const { container } = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[car]} />);

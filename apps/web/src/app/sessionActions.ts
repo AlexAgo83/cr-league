@@ -123,7 +123,7 @@ export function createSessionActions({
     }
 
     await copyText(code);
-    showStatus(`${tt("status_profile_code_copied")} ${code}`, "info", Boolean(leagueState));
+    showStatus(tt("status_profile_code_copied"), "info", Boolean(leagueState));
   }
 
   async function copyTechnicalError() {

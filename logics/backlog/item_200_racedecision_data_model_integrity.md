@@ -1,10 +1,10 @@
 ## item_200_racedecision_data_model_integrity - RaceDecision data-model integrity
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Data model
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -34,6 +34,8 @@
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: RaceDecision.teamId is indexed and rivalTeamId is a FK/relation with onDelete handling and an index.
 - request-AC6 -> This backlog slice. Proof: AC2: The enum-like columns are DB-constrained so an invalid value cannot persist.
+- request-AC3 -> This backlog slice. Evidence needed: The replay honors prefers-reduced-motion (defaults to no auto-motion when reduce is set), the modal focus trap skips hidden elements and focuses the first visible control, and the speed menu either implements listbox keyboard navigation or drops the listbox roles.
+- request-AC5 -> This backlog slice. Evidence needed: The API fails fast on missing WEB_ORIGIN/DATABASE_URL outside development, and render.yaml declares ADMIN_TOKEN and ADMIN_EMAILS.
 
 # Decision framing
 - Product framing: Not needed
@@ -54,3 +56,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_089_orchestrate_post_remediation_hardening`
+
+# Notes
+- Task `task_089_orchestrate_post_remediation_hardening` was finished via `logics-manager flow finish task` on 2026-07-22.

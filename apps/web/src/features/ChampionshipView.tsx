@@ -293,7 +293,7 @@ function ChampionshipCarBackdrop({ livery }: { livery?: TeamLivery }) {
 
 function MiniCircuit({ circuit }: { circuit: CityCircuit }) {
   const points = miniRoutePoints(circuit.route);
-  const startLine = analyzeCircuitRoute(points).startLine;
+  const startLine = analyzeCircuitRoute(points, circuit).startLine;
   return (
     <svg className="mini-circuit-map" viewBox="0 0 100 64" aria-hidden="true" focusable="false">
       <path d={miniRoutePath(points)} />

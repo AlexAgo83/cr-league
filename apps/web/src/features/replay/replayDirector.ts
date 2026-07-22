@@ -1,7 +1,7 @@
 import { RACE_SEGMENTS, type RaceResult, type ReplayTracePoint, type Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../../i18n/index.js";
 import type { RaceEvent, Translator } from "../../app/helpers.js";
-import { displayLapAtProgress, pitStopTraceProgress, segmentAtProgress, type ReplayPlan } from "./replayMath.js";
+import { displayLapAtProgress, segmentAtProgress, type ReplayPlan } from "./replayMath.js";
 
 export type ReplayDirectorBeat = {
   id: string;
@@ -15,7 +15,7 @@ export type ReplayDirectorBeat = {
   weather?: Weather;
   gapSeconds?: number;
 };
-export function buildRaceDirectorBeats(result: RaceResult, trace: ReplayTracePoint[], plan: ReplayPlan, laps: number, playerTeamId?: string, mode: "race" | "qualifying" = "race", pitProgress = 0.5): ReplayDirectorBeat[] {
+export function buildRaceDirectorBeats(result: RaceResult, _trace: ReplayTracePoint[], _plan: ReplayPlan, laps: number, playerTeamId?: string, mode: "race" | "qualifying" = "race", _pitProgress = 0.5): ReplayDirectorBeat[] {
   if (mode === "qualifying") {
     const beats: ReplayDirectorBeat[] = [
       { id: "qualifying-start", type: "qualifying_start", progress: 0, lap: 1 },
@@ -30,47 +30,15 @@ export function buildRaceDirectorBeats(result: RaceResult, trace: ReplayTracePoi
     return beats.sort((left, right) => left.progress - right.progress);
   }
 
-  if (result.replayFacts?.directorBeats?.length) {
-    return result.replayFacts.directorBeats
-      .map((beat) => ({
-        ...beat,
-        lap: displayLapAtProgress(beat.progress, laps),
-        type: beat.type === "overtake" && (beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId) ? "player" as const : beat.type
-      }))
-      .sort((left, right) => left.progress - right.progress);
-  }
-
-  const beats: ReplayDirectorBeat[] = [
-    { id: "grid-start", type: "grid_start", progress: 0, lap: 1 }
-  ];
-  for (const change of plan.overtakes.slice(0, 8)) {
-    beats.push({
-      id: `overtake-${change.overtakingTeamId}-${change.overtakenTeamId}-${change.progress.toFixed(3)}`,
-      type: change.overtakingTeamId === playerTeamId || change.overtakenTeamId === playerTeamId ? "player" : "overtake",
-      progress: change.progress,
-      lap: displayLapAtProgress(change.progress, laps),
-      teamId: change.overtakingTeamId,
-      relatedTeamId: change.overtakenTeamId,
-      fromPosition: change.fromPosition,
-      toPosition: change.toPosition,
-      gapSeconds: change.gapSeconds
-    });
-  }
-  const weatherChange = RACE_SEGMENTS.find((segment, index) => index > 0 && result.resolvedWeather[segment] !== result.resolvedWeather[RACE_SEGMENTS[index - 1]!]);
-  if (weatherChange) {
-    const progress = Math.max(0.2, RACE_SEGMENTS.indexOf(weatherChange) / RACE_SEGMENTS.length);
-    beats.push({ id: `weather-${weatherChange}`, type: "weather", progress, lap: displayLapAtProgress(progress, laps), weather: result.resolvedWeather[weatherChange] });
-  }
-  const quietTrace = trace.find((point, index) => index > 0 && point.progress > 0.35 && point.progress < 0.75 && Math.abs((point.gaps[point.order[1] ?? ""] ?? 99) - (point.gaps[point.order[0] ?? ""] ?? 0)) <= 1.5);
-  if (quietTrace) beats.push({ id: `pack-${quietTrace.progress.toFixed(3)}`, type: "pack", progress: quietTrace.progress, lap: displayLapAtProgress(quietTrace.progress, laps), gapSeconds: quietTrace.gaps[quietTrace.order[1] ?? ""] });
-  const maxLap = Math.max(1, ...result.events.map((candidate) => candidate.lap));
-  for (const event of result.events.filter((event) => event.type === "pit_stop").slice(0, 8)) {
-    const progress = pitStopTraceProgress(result, trace, event, maxLap, laps, pitProgress, plan);
-    beats.push({ id: `pit-${event.teamId}-${event.order}`, type: "pit_stop", progress, lap: displayLapAtProgress(progress, laps), teamId: event.teamId });
-  }
-  beats.push({ id: "final-pressure", type: "final", progress: 1, lap: displayLapAtProgress(1, laps), teamId: result.classification[0]?.teamId });
-  return beats
-    .filter((beat, index, all) => all.findIndex((candidate) => candidate.id === beat.id) === index)
+  return (result.replayFacts?.directorBeats ?? [
+    { id: "grid-start", type: "grid_start" as const, progress: 0, lap: 1 },
+    { id: "final-pressure", type: "final" as const, progress: 1, lap: displayLapAtProgress(1, laps), teamId: result.classification[0]?.teamId }
+  ])
+    .map((beat) => ({
+      ...beat,
+      lap: displayLapAtProgress(beat.progress, laps),
+      type: beat.type === "overtake" && (beat.teamId === playerTeamId || beat.relatedTeamId === playerTeamId) ? "player" as const : beat.type
+    }))
     .sort((left, right) => left.progress - right.progress);
 }
 

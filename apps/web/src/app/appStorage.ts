@@ -1,6 +1,6 @@
 import type { LeagueState, ProfileSession } from "./types.js";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:4874";
+const API_BASE_URL = apiBaseUrl(import.meta.env.VITE_API_BASE_URL, import.meta.env.DEV);
 
 export const PLAYER_CLAIMS_KEY = "cr-league-player-claims";
 export const ACTIVE_PLAYER_CLAIM_KEY = "cr-league-active-player-claim";
@@ -37,6 +37,14 @@ export class ApiError extends Error {
   ) {
     super(message);
   }
+}
+
+function apiBaseUrl(value: string | undefined, dev: boolean) {
+  const base = value ?? (dev ? "http://localhost:4874" : "");
+  if (!base) throw new Error("VITE_API_BASE_URL is required outside development.");
+  const url = new URL(base);
+  if (!dev && url.protocol !== "https:") throw new Error("VITE_API_BASE_URL must use https outside development.");
+  return url.toString().replace(/\/$/, "");
 }
 
 export async function copyText(text: string) {

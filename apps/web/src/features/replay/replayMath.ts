@@ -2,7 +2,6 @@ import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayOrderChang
 import type { RaceEvent, Translator } from "../../app/helpers.js";
 import type { CityCircuit } from "../../app/circuits.js";
 export { displayLapAtProgress } from "../../app/lapDisplay.js";
-import { circuitDisplayLength, circuitRouteAnalysis } from "../CircuitMap.js";
 
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 export const START_HOLD_SECONDS = 1;
@@ -10,7 +9,7 @@ export const FINISH_HOLD_SECONDS = 1;
 export const REPLAY_SPEED_KEY = "cr-league-replay-speed";
 export const REPLAY_FOCUS_KEY = "cr-league-replay-focus";
 export const DISMISSED_REPLAY_HELP_KEY = "cr-league-dismissed-replay-help";
-const REFERENCE_REPLAY_DISTANCE_PIXELS = 9_000;
+const REFERENCE_REPLAY_DISTANCE_METERS = 9_000;
 const POSITION_CHANGE_MARGIN_LAPS = 0.015;
 const TRACE_ORDER_GAP_LAPS = 0.035;
 const MIN_RANK_TRANSITION_PROGRESS = 0.08;
@@ -83,12 +82,11 @@ function visualCarProgress(car: NonNullable<ReplayTracePoint["cars"]>[string] | 
   return car?.phase === "grid" && progress < 0 ? progress : progress * laps;
 }
 
-export function buildReplayPlan(result: RaceResult, trace: ReplayTracePoint[]): ReplayPlan {
+export function buildReplayPlan(result: RaceResult, _trace: ReplayTracePoint[]): ReplayPlan {
   const factChanges = result.replayFacts?.orderChanges ?? [];
-  const orderChanges = factChanges.length ? factChanges : orderChangesFromTrace(trace);
   return {
-    source: factChanges.length ? "facts" : orderChanges.length ? "trace" : "fallback",
-    overtakes: orderChanges.map((change) => ({
+    source: factChanges.length ? "facts" : "fallback",
+    overtakes: factChanges.map((change) => ({
       ...change,
       kind: "overtake",
       phases: replayBeatPhases(change.progress)
@@ -117,27 +115,6 @@ function replayBeatPhases(progress: number) {
   ];
 }
 
-function orderChangesFromTrace(trace: ReplayTracePoint[]): ReplayOrderChangeFact[] {
-  return trace.slice(1).flatMap((point, index) => {
-    const previous = trace[index]!;
-    return point.order.flatMap((teamId, toIndex) => {
-      const fromIndex = previous.order.indexOf(teamId);
-      if (fromIndex === -1 || fromIndex <= toIndex) return [];
-      return previous.order.slice(toIndex, fromIndex).map((overtakenTeamId) => ({
-        type: "order_change" as const,
-        segment: point.segment,
-        lap: point.lap,
-        progress: point.progress,
-        overtakingTeamId: teamId,
-        overtakenTeamId,
-        fromPosition: fromIndex + 1,
-        toPosition: toIndex + 1,
-        gapSeconds: point.gaps[teamId] ?? 0
-      }));
-    });
-  });
-}
-
 function traceRankTargetsAt(trace: ReplayTracePoint[], progress: number, plan?: ReplayPlan) {
   const transition = trace.slice(1).map((point, index) => ({ from: trace[index]!, to: point })).find(({ from, to }) => {
     const span = Math.max(to.progress - from.progress, MIN_RANK_TRANSITION_PROGRESS);
@@ -164,8 +141,7 @@ function sameOrder(left: string[], right: string[]) {
 }
 
 export function pitLapProgress(circuit: CityCircuit) {
-  const analysis = circuitRouteAnalysis(circuit);
-  return (((analysis.pitProgress - analysis.startProgress) % 1) + 1) % 1;
+  return circuit.pitLaneProgress;
 }
 
 export function pitStopRaceProgress(event: RaceEvent, maxLap: number, laps: number, lapProgress: number) {
@@ -198,7 +174,7 @@ export function finishTimes(result: RaceResult, trace: ReplayTracePoint[]) {
 }
 
 export function replayDistanceScale(circuit: CityCircuit) {
-  return (circuitDisplayLength(circuit) * circuit.laps) / REFERENCE_REPLAY_DISTANCE_PIXELS;
+  return (circuit.routeLengthMeters * circuit.laps) / REFERENCE_REPLAY_DISTANCE_METERS;
 }
 
 export function circuitLengthMeters(circuit: Pick<CityCircuit, "route">) {
@@ -267,24 +243,8 @@ export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[]
   );
 }
 
-export function pitStopTraceProgress(result: RaceResult, trace: ReplayTracePoint[], event: RaceEvent, maxLap: number, laps: number, lapProgress: number, plan?: ReplayPlan) {
-  if (typeof event.traceProgress === "number") return event.traceProgress;
-  const fallback = pitStopRaceProgress(event, maxLap, laps, lapProgress);
-  const target = fallback * laps;
-  let low = Math.max(0, fallback - 0.18);
-  let high = Math.min(1, fallback + 0.24);
-  const at = (progress: number) => carProgressAtTrace(result, trace, progress, laps, plan)[event.teamId] ?? 0;
-
-  while (low > 0 && at(low) > target) low = Math.max(0, low - 0.12);
-  while (high < 1 && at(high) < target) high = Math.min(1, high + 0.12);
-  if (at(low) > target || at(high) < target) return fallback;
-
-  for (let index = 0; index < 18; index += 1) {
-    const mid = (low + high) / 2;
-    if (at(mid) < target) low = mid;
-    else high = mid;
-  }
-  return (low + high) / 2;
+export function pitStopTraceProgress(_result: RaceResult, _trace: ReplayTracePoint[], event: RaceEvent, maxLap: number, laps: number, lapProgress: number, _plan?: ReplayPlan) {
+  return typeof event.traceProgress === "number" ? event.traceProgress : pitStopRaceProgress(event, maxLap, laps, lapProgress);
 }
 
 export function eventTraceProgress(event: RaceEvent, maxLap: number) {

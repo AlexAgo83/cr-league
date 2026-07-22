@@ -1,14 +1,21 @@
 ## prod_053_pit_stop_visual_alignment_product_brief - Pit-Stop Visual Alignment Product Brief
 > Date: 2026-07-22
-> Status: Proposed
+> Status: Settled
 > Related request: `req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map`
-> Related backlog: `item_202_expose_per_circuit_pit_lane_progress_as_shared_circuit_data`, `item_203_feed_the_circuit_pit_lane_progress_into_the_simulation_and_align_the_marker`
+> Related backlog: `item_202_expose_per_circuit_pit_lane_progress_as_shared_circuit_data`
 > Related task: `task_090_orchestrate_pit_stop_visual_alignment`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
 During-race pit stops render the car stopping at the wrong place because the simulation halts the car at a flat hardcoded half-lap position while the map draws the pit garage from circuit geometry — two unrelated values. This request derives each circuit's pit-lane progress from its geometry once, exposes it as shared circuit data, and feeds it into the simulation so cars stop exactly where the pit is drawn, on every circuit.
+
+```mermaid
+flowchart TD
+  Req[req_089 pit alignment] --> Shared[item_202 shared pit progress]
+  Shared --> Sim[item_203 simulation reader]
+  Sim --> Task[task_090 validation]
+```
 
 # Goals
 - A pitting car visibly halts at the drawn pit garage, not an arbitrary half-lap point.
@@ -34,5 +41,5 @@ During-race pit stops render the car stopping at the wrong place because the sim
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map`
+- Product back-reference: `item_202_expose_per_circuit_pit_lane_progress_as_shared_circuit_data`
 - Task back-reference: `task_090_orchestrate_pit_stop_visual_alignment`

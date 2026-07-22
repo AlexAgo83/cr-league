@@ -230,6 +230,25 @@ describe("simulateRace", () => {
     expect(validateReplayTrace(result)).toEqual([]);
   });
 
+  it("makes rainy replay traces visibly softer through speed profiles", () => {
+    const input: RaceInput = {
+      ...baseRace,
+      participants: baseRace.participants.slice(0, 2).map((participant) => ({
+        ...participant,
+        decision: { ...participant.decision, pitStrategy: "heavy_pack" }
+      })),
+      speedProfile: [{ kind: "corner", startProgress: 0.2, endProgress: 0.6, factor: 0.7 }]
+    };
+    const dry = simulateRace({ ...input, forecast: { dry: 100, light_rain: 0, heavy_rain: 0 } });
+    const wet = simulateRace({ ...input, forecast: { dry: 0, light_rain: 0, heavy_rain: 100 } });
+    const dryPoint = [...(dry.replayTrace ?? [])].sort((left, right) => Math.abs(left.progress - 0.44) - Math.abs(right.progress - 0.44))[0];
+    const wetPoint = [...(wet.replayTrace ?? [])].sort((left, right) => Math.abs(left.progress - 0.44) - Math.abs(right.progress - 0.44))[0];
+    const teamId = input.participants[0]!.teamId;
+
+    expect(wetPoint?.cars?.[teamId]?.speed).toBeLessThan(dryPoint?.cars?.[teamId]?.speed ?? 0);
+    expect(validateReplayTrace(wet)).toEqual([]);
+  });
+
   it("keeps replay trace movement realistic across generated races", () => {
     const pitStrategies = ["heavy_pack", "standard", "mini_pack"] as const;
 

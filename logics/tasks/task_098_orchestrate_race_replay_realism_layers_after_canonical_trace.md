@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 20%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -53,6 +53,8 @@
 - Wave 1: added a canonical `launch` car phase to generated replay traces for the early car-progress window. This keeps launch/first-corner behavior trace-level and does not change final race scoring.
 - Wave 1 validation: `npm test -- packages/shared/src/simulation/simulateRace.test.ts` and `npm run typecheck` passed.
 - Wave 2 support: `npm run replay:inspect` now provides the representative trace inspection artifact required before layering more realism effects.
+- Wave 3: made weather visible in generated traces by softening non-straight speed-profile spans for rainy segments and exposing lower racing `speed` values in trace output. This remains trace-level and does not retune scoring.
+- Wave 3 validation: `npm test -- packages/shared/src/simulation/simulateRace.test.ts`, `npm run typecheck`, `npm run lint`, and `npm run replay:inspect` passed.
 
 # AI Context
 - Summary: Orchestrate race replay realism layers after canonical trace

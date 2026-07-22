@@ -30,7 +30,8 @@ for (const city of targets) {
     .map((point) => {
       const leader = point.order[0] ?? "";
       const second = point.order[1] ?? "";
-      return `${point.progress.toFixed(2)} L${point.lap} ${leader}/${second} gap=${point.gaps[second] ?? 0}s ${point.cars?.[leader]?.phase ?? "n/a"}`;
+      const car = point.cars?.[leader];
+      return `${point.progress.toFixed(2)} L${point.lap} ${leader}/${second} gap=${point.gaps[second] ?? 0}s ${car?.phase ?? "n/a"} speed=${car?.speed ?? 0}`;
     });
 
   console.log(`${city}: ${trace.length} points, phases=${[...phases].sort().join(",")}`);

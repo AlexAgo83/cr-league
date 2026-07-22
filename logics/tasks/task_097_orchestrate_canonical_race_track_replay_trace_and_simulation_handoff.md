@@ -1,13 +1,14 @@
 ## task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff - Orchestrate canonical race-track replay trace and simulation handoff
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -49,7 +50,8 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- Wave 1: moved speed-profile motion into the generated replay trace handoff. `RaceInput` accepts `speedProfile`, league race resolution passes the circuit profile to `simulateRace`, generated car trace progress reflects the profile, and web replay no longer double-applies speed-profile easing to canonical `cars` traces.
+- Wave 1 validation: `npm test -- packages/shared/src/simulation/simulateRace.test.ts apps/web/src/features/ReplayView.test.ts`, `npm run lint`, and `npm run typecheck` passed.
 
 # AI Context
 - Summary: Orchestrate canonical race-track replay trace and simulation handoff

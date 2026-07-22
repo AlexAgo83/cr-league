@@ -1,10 +1,10 @@
 ## item_220_move_speed_profile_motion_into_the_shared_trace_handoff - Move speed-profile motion into the shared trace handoff
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: High
 > Theme: Simulation and replay fidelity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

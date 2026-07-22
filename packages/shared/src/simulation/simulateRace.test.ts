@@ -210,6 +210,25 @@ describe("simulateRace", () => {
     expect(result.events.filter((event) => event.type === "pit_stop")).toHaveLength(baseRace.participants.length - 1);
   });
 
+  it("applies speed profiles in generated replay car traces", () => {
+    const input: RaceInput = {
+      ...baseRace,
+      participants: baseRace.participants.slice(0, 2).map((participant) => ({
+        ...participant,
+        decision: { ...participant.decision, pitStrategy: "heavy_pack" }
+      })),
+      speedProfile: [{ kind: "corner", startProgress: 0.2, endProgress: 0.6, factor: 0.5 }]
+    };
+    const withoutProfile = simulateRace({ ...input, speedProfile: [] });
+    const result = simulateRace(input);
+    const point = result.replayTrace?.find((candidate) => candidate.progress === 0.04);
+    const baselinePoint = withoutProfile.replayTrace?.find((candidate) => candidate.progress === 0.04);
+    const leaderId = point?.order[0] ?? "";
+
+    expect(point?.cars?.[leaderId]?.trackProgress).toBeLessThan(baselinePoint?.cars?.[leaderId]?.trackProgress ?? 0);
+    expect(validateReplayTrace(result)).toEqual([]);
+  });
+
   it("keeps replay trace movement realistic across generated races", () => {
     const pitStrategies = ["heavy_pack", "standard", "mini_pack"] as const;
 

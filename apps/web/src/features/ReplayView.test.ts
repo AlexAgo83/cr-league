@@ -188,7 +188,7 @@ describe("ReplayView timing", () => {
     expect(applyTrackSpeedProfile(timelineProgress * 5, speedProfile) / 5).toBeCloseTo(0.08, 5);
   });
 
-  it("keeps pit trace positions unwarped by corner speed profiles", () => {
+  it("does not double-apply corner speed profiles to generated car traces", () => {
     const speedProfile = [{ kind: "corner" as const, startProgress: 0.3, endProgress: 0.5, factor: 0.6 }];
     const trace: ReplayTracePoint[] = [
       { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0, speed: 0, phase: "grid" }, last: { trackProgress: 0, speed: 0, phase: "grid" } } },
@@ -205,7 +205,7 @@ describe("ReplayView timing", () => {
 
     const progress = carProgressAtTrace(result, trace, 0.5, 5, undefined, speedProfile);
 
-    expect(progress.leader ?? 0).not.toBe(1.9);
+    expect(progress.leader).toBe(1.9);
     expect(progress.last).toBe(2);
   });
 

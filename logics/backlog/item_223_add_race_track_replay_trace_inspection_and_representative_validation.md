@@ -1,10 +1,10 @@
 ## item_223_add_race_track_replay_trace_inspection_and_representative_validation - Add race-track replay trace inspection and representative validation
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Low
 > Theme: Developer validation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

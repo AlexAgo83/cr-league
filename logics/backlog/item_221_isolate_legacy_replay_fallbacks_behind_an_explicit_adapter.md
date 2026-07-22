@@ -1,10 +1,10 @@
 ## item_221_isolate_legacy_replay_fallbacks_behind_an_explicit_adapter - Isolate legacy replay fallbacks behind an explicit adapter
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Replay architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

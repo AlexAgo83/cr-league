@@ -60,7 +60,7 @@ export function traceTimesAt(trace: ReplayTracePoint[], progress: number) {
   );
 }
 
-function traceCarProgressAt(trace: ReplayTracePoint[], progress: number, laps: number, speedProfile?: TrackSpeedProfile) {
+function traceCarProgressAt(trace: ReplayTracePoint[], progress: number, laps: number, _speedProfile?: TrackSpeedProfile) {
   const from = tracePointAt(trace, progress);
   const to = trace.find((point) => point.progress > progress) ?? from;
   if (!from.cars || !to.cars) return null;
@@ -70,17 +70,16 @@ function traceCarProgressAt(trace: ReplayTracePoint[], progress: number, laps: n
     Object.keys({ ...from.cars, ...to.cars }).map((teamId) => {
       const fromCar = from.cars?.[teamId];
       const toCar = to.cars?.[teamId];
-      const fromProgress = visualCarProgress(fromCar, toCar?.trackProgress ?? 0, laps, speedProfile);
-      const toProgress = visualCarProgress(toCar, fromCar?.trackProgress ?? 0, laps, speedProfile);
+      const fromProgress = visualCarProgress(fromCar, toCar?.trackProgress ?? 0, laps);
+      const toProgress = visualCarProgress(toCar, fromCar?.trackProgress ?? 0, laps);
       return [teamId, fromProgress + (toProgress - fromProgress) * ratio];
     })
   );
 }
 
-function visualCarProgress(car: NonNullable<ReplayTracePoint["cars"]>[string] | undefined, fallback: number, laps: number, speedProfile?: TrackSpeedProfile) {
+function visualCarProgress(car: NonNullable<ReplayTracePoint["cars"]>[string] | undefined, fallback: number, laps: number) {
   const progress = car?.trackProgress ?? fallback;
-  const raceProgress = car?.phase === "grid" && progress < 0 ? progress : progress * laps;
-  return car?.phase?.startsWith("pit") ? raceProgress : applyTrackSpeedProfile(raceProgress, speedProfile);
+  return car?.phase === "grid" && progress < 0 ? progress : progress * laps;
 }
 
 export function buildReplayPlan(result: RaceResult, _trace: ReplayTracePoint[]): ReplayPlan {

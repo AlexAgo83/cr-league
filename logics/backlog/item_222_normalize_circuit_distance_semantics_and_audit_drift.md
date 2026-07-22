@@ -1,10 +1,10 @@
 ## item_222_normalize_circuit_distance_semantics_and_audit_drift - Normalize circuit distance semantics and audit drift
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Race-track data model
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

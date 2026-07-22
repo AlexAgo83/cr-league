@@ -106,6 +106,7 @@ export type RaceInput = {
   laps?: number;
   pitLaneProgress?: number;
   trackZones?: RaceTrackZone[];
+  speedProfile?: RaceTrackSpeedProfile;
   forecast: WeatherForecast;
   participants: RaceParticipant[];
 };

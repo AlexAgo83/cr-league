@@ -7,6 +7,7 @@ import {
   circuitSeasonSeed,
   raceInputFromCircuit,
   simulateRace,
+  trackZonesForCircuit,
   type CardId,
   type CityCircuitIdentity,
   type PitStrategy,
@@ -167,6 +168,8 @@ function runRace(season: number, round: number, circuit: CityCircuitIdentity, gr
     traits: circuit.traits,
     trackLengthMeters: circuit.trackLengthMeters,
     laps: circuit.laps,
+    pitLaneProgress: circuit.pitLaneProgress,
+    trackZones: trackZonesForCircuit(circuit),
     forecast: raceInput.forecast,
     participants
   });

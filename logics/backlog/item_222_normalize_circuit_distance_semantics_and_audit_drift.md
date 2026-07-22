@@ -1,10 +1,10 @@
 ## item_222_normalize_circuit_distance_semantics_and_audit_drift - Normalize circuit distance semantics and audit drift
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Race-track data model
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -34,6 +34,10 @@
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: The distance contract is documented and reflected in the relevant helper names or tests.
 - request-AC8 -> This backlog slice. Proof: AC2: `audit:circuits` fails or warns on suspicious undocumented drift between simulation and route distances.
+- request-AC3 -> This backlog slice. Evidence needed: Circuit speed-profile effects are applied at the shared trace-generation or trace-preparation boundary, and web replay motion does not apply an additional independent speed remap for canonical traces.
+- request-AC4 -> This backlog slice. Evidence needed: Legacy fallback behavior is isolated behind an explicit adapter or guard with tests that prove older persisted results still replay, while generated traces use stricter validation and do not silently fall back to inferred facts.
+- request-AC6 -> This backlog slice. Evidence needed: Generated track zones and speed-profile spans are connected enough that replay facts/events can expose useful braking, corner, exit, straight, pit, overtake, and sector context without importing web projection logic into shared code.
+- request-AC7 -> This backlog slice. Evidence needed: A developer inspection artifact or command summarizes representative race-track replay traces, including progress, live order, zone, speed phase, pit moments, and distance basis for at least Prague, Monaco, Montreal, and one pit-stop race.
 
 # Decision framing
 - Product framing: Not needed
@@ -54,3 +58,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff`
+
+# Notes
+- Task `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff` was finished via `logics-manager flow finish task` on 2026-07-23.

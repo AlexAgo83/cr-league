@@ -1,7 +1,7 @@
 ## req_097_race_replay_realism_layers_after_canonical_trace - Race replay realism layers after canonical trace
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: High

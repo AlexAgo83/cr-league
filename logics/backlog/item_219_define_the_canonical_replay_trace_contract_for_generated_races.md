@@ -1,10 +1,10 @@
 ## item_219_define_the_canonical_replay_trace_contract_for_generated_races - Define the canonical replay trace contract for generated races
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay data model
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,9 @@
 - request-AC2 -> This backlog slice. Proof: AC2: Tests or validation prove newly resolved races include complete car progress, event progress, order changes, director beats, and zone metadata needed by current replay consumers.
 - request-AC4 -> This backlog slice. Proof: AC3: Generated-race consumers can distinguish canonical trace data from legacy fallback data.
 - request-AC8 -> This backlog slice. Proof: AC3: Generated-race consumers can distinguish canonical trace data from legacy fallback data.
+- request-AC5 -> This backlog slice. Evidence needed: A documented distance contract explains `trackLengthMeters` versus `routeLengthMeters`, identifies which one owns simulation scoring, replay pacing, and display labels, and circuit audit fails on undocumented or suspicious drift.
+- request-AC6 -> This backlog slice. Evidence needed: Generated track zones and speed-profile spans are connected enough that replay facts/events can expose useful braking, corner, exit, straight, pit, overtake, and sector context without importing web projection logic into shared code.
+- request-AC7 -> This backlog slice. Evidence needed: A developer inspection artifact or command summarizes representative race-track replay traces, including progress, live order, zone, speed phase, pit moments, and distance basis for at least Prague, Monaco, Montreal, and one pit-stop race.
 
 # Decision framing
 - Product framing: Not needed
@@ -56,3 +59,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff`
+
+# Notes
+- Task `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff` was finished via `logics-manager flow finish task` on 2026-07-23.

@@ -1,8 +1,8 @@
 ## prod_060_race_replay_realism_layers_product_brief - Race Replay Realism Layers Product Brief
 > Date: 2026-07-23
-> Status: Proposed
+> Status: Settled
 > Related request: `req_097_race_replay_realism_layers_after_canonical_trace`
-> Related backlog: `item_224_add_launch_and_first_corner_replay_phase`, `item_225_map_chrono_gaps_to_visual_replay_spacing`, `item_226_represent_pit_stops_as_entry_stop_and_exit_trace_phases`, `item_227_turn_order_changes_into_prepared_overtake_stories`, `item_228_add_bounded_traffic_and_defense_behavior`, `item_229_make_weather_visible_in_replay_handling`, `item_230_add_late_race_pace_fade_to_replay_traces`
+> Related backlog: `item_224_add_launch_and_first_corner_replay_phase`
 > Related task: `task_098_orchestrate_race_replay_realism_layers_after_canonical_trace`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -49,5 +49,5 @@ flowchart TD
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_097_race_replay_realism_layers_after_canonical_trace`
+- Product back-reference: `item_224_add_launch_and_first_corner_replay_phase`
 - Task back-reference: `task_098_orchestrate_race_replay_realism_layers_after_canonical_trace`

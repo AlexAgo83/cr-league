@@ -1,8 +1,8 @@
 ## prod_059_canonical_race_track_replay_trace_product_brief - Canonical Race-Track Replay Trace Product Brief
 > Date: 2026-07-23
-> Status: Proposed
+> Status: Settled
 > Related request: `req_096_canonical_race_track_replay_trace_and_simulation_handoff`
-> Related backlog: `item_219_define_the_canonical_replay_trace_contract_for_generated_races`, `item_220_move_speed_profile_motion_into_the_shared_trace_handoff`, `item_221_isolate_legacy_replay_fallbacks_behind_an_explicit_adapter`, `item_222_normalize_circuit_distance_semantics_and_audit_drift`, `item_223_add_race_track_replay_trace_inspection_and_representative_validation`
+> Related backlog: `item_219_define_the_canonical_replay_trace_contract_for_generated_races`
 > Related task: `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -47,5 +47,5 @@ flowchart TD
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_096_canonical_race_track_replay_trace_and_simulation_handoff`
+- Product back-reference: `item_219_define_the_canonical_replay_trace_contract_for_generated_races`
 - Task back-reference: `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff`

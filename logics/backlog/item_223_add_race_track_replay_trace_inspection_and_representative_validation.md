@@ -1,10 +1,10 @@
 ## item_223_add_race_track_replay_trace_inspection_and_representative_validation - Add race-track replay trace inspection and representative validation
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Low
 > Theme: Developer validation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -35,6 +35,8 @@
 - request-AC6 -> This backlog slice. Proof: AC1: A developer can inspect representative canonical replay traces without opening the app UI.
 - request-AC7 -> This backlog slice. Proof: AC2: The inspection output shows enough race-track state to diagnose tower/map/event disagreements.
 - request-AC8 -> This backlog slice. Proof: AC3: Closeout records the exact representative circuits and validation commands used.
+- request-AC4 -> This backlog slice. Evidence needed: Legacy fallback behavior is isolated behind an explicit adapter or guard with tests that prove older persisted results still replay, while generated traces use stricter validation and do not silently fall back to inferred facts.
+- request-AC5 -> This backlog slice. Evidence needed: A documented distance contract explains `trackLengthMeters` versus `routeLengthMeters`, identifies which one owns simulation scoring, replay pacing, and display labels, and circuit audit fails on undocumented or suspicious drift.
 
 # Decision framing
 - Product framing: Not needed
@@ -55,3 +57,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff`
+
+# Notes
+- Task `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff` was finished via `logics-manager flow finish task` on 2026-07-23.

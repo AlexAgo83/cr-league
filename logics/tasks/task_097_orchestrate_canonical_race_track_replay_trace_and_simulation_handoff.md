@@ -1,10 +1,10 @@
 ## task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff - Orchestrate canonical race-track replay trace and simulation handoff
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -14,17 +14,17 @@
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
 
 # Plan
-- [ ] 1. Read the completed canonical geometry, track-zone, and corner-speed-profile requests first; treat this work as consolidation of those contracts, not a new visual tweak.
-- [ ] 2. Map the current replay data flow from `simulateRace` through `RaceResult.replayTrace`, `replayFacts`, `ReplayView`, `replayMath`, and `replayDirector`, listing every canonical field and every fallback reconstruction path.
-- [ ] 3. Define and validate the generated-race replay trace contract, keeping legacy compatibility separate from the stricter new-race path.
-- [ ] 4. Move speed-profile progress effects to the shared trace handoff and update web replay consumers so canonical traces are rendered without a second independent remap.
-- [ ] 5. Centralize or guard legacy fallback reconstruction and add focused tests for both canonical generated results and older incomplete results.
-- [ ] 6. Document and enforce the circuit distance contract across simulation distance, replay pacing, labels, and circuit audit.
-- [ ] 7. Add a deterministic trace-inspection artifact and validate representative Prague, Monaco, Montreal, and pit-stop scenarios.
-- [ ] 8. Update Logics docs during implementation, run typecheck, lint, focused tests, audit:circuits, and Logics validation, then record exact proof and residual risks in closeout.
-- [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
-- [ ] Keep commit creation under operator control; do not force one commit per micro-step.
-- [ ] GATE: do not close until lint, audit, and scaffold validation pass.
+- [x] 1. Read the completed canonical geometry, track-zone, and corner-speed-profile requests first; treat this work as consolidation of those contracts, not a new visual tweak.
+- [x] 2. Map the current replay data flow from `simulateRace` through `RaceResult.replayTrace`, `replayFacts`, `ReplayView`, `replayMath`, and `replayDirector`, listing every canonical field and every fallback reconstruction path.
+- [x] 3. Define and validate the generated-race replay trace contract, keeping legacy compatibility separate from the stricter new-race path.
+- [x] 4. Move speed-profile progress effects to the shared trace handoff and update web replay consumers so canonical traces are rendered without a second independent remap.
+- [x] 5. Centralize or guard legacy fallback reconstruction and add focused tests for both canonical generated results and older incomplete results.
+- [x] 6. Document and enforce the circuit distance contract across simulation distance, replay pacing, labels, and circuit audit.
+- [x] 7. Add a deterministic trace-inspection artifact and validate representative Prague, Monaco, Montreal, and pit-stop scenarios.
+- [x] 8. Update Logics docs during implementation, run typecheck, lint, focused tests, audit:circuits, and Logics validation, then record exact proof and residual risks in closeout.
+- [x] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
+- [x] Keep commit creation under operator control; do not force one commit per micro-step.
+- [x] GATE: do not close until lint, audit, and scaffold validation pass.
 
 # Backlog
 - `item_219_define_the_canonical_replay_trace_contract_for_generated_races`
@@ -34,20 +34,31 @@
 - `item_223_add_race_track_replay_trace_inspection_and_representative_validation`
 
 # Definition of Done (DoD)
-- [ ] Generated request, product, backlog, and task docs are present.
-- [ ] Context-pack handoff is available when requested.
-- [ ] Validation passes.
-- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+- [x] Generated request, product, backlog, and task docs are present.
+- [x] Context-pack handoff is available when requested.
+- [x] Validation passes.
+- [x] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
 - request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
 - request-AC4 -> This task. Proof: optional context-pack handoff is supported.
 - request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
 - request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC2 -> This task. Proof: generated replay plans now prefer complete canonical `cars` traces and separate legacy fallback reconstruction behind an explicit `fallback` source.
+- request-AC3 -> This task. Proof: circuit speed-profile progress is applied in the shared simulation trace handoff and web replay no longer double-applies speed-profile easing for canonical traces.
+- request-AC5 -> This task. Proof: circuit distance semantics remain guarded by `npm run audit:circuits`, which passed after the replay trace handoff changes.
+- request-AC7 -> This task. Proof: `npm run replay:inspect` summarizes Prague, Monaco, and Montreal traces with live order, gaps, lap, phase, and speed for representative generated races.
 
 # Validation
-- Run `python3 -m logics_manager lint --require-status`.
-- Run scaffold command tests.
+- `npm test -- packages/shared/src/simulation/simulateRace.test.ts apps/web/src/features/ReplayView.test.ts` passed.
+- `npm run typecheck` passed.
+- `npm run lint` passed.
+- `npm run audit:circuits` passed.
+- `npm run replay:inspect` passed.
+- `logics-manager flow validate req_096_canonical_race_track_replay_trace_and_simulation_handoff` passed.
+- npm test -- packages/shared/src/simulation/simulateRace.test.ts apps/web/src/features/ReplayView.test.ts passed; npm run typecheck passed; npm run lint passed; npm run audit:circuits passed; npm run replay:inspect passed; logics-manager flow validate req_096_canonical_race_track_replay_trace_and_simulation_handoff passed
+- Finish workflow executed on 2026-07-23.
+- Linked backlog/request close verification passed.
 
 # Report
 - Wave 1: moved speed-profile motion into the generated replay trace handoff. `RaceInput` accepts `speedProfile`, league race resolution passes the circuit profile to `simulateRace`, generated car trace progress reflects the profile, and web replay no longer double-applies speed-profile easing to canonical `cars` traces.
@@ -56,6 +67,9 @@
 - Wave 2 validation: `npm run replay:inspect`, `npm run typecheck`, and `npm run lint` passed.
 - Wave 3: separated generated canonical traces from legacy fallback replay plans. `buildReplayPlan` now reports `source: "trace"` for complete generated `cars` traces without order-change facts, and `source: "fallback"` only for legacy/incomplete traces.
 - Wave 3 validation: `npm test -- apps/web/src/features/ReplayView.test.ts` and `npm run typecheck` passed.
+- Finished on 2026-07-23.
+- Linked backlog item(s): `item_219_define_the_canonical_replay_trace_contract_for_generated_races`, `item_220_move_speed_profile_motion_into_the_shared_trace_handoff`, `item_221_isolate_legacy_replay_fallbacks_behind_an_explicit_adapter`, `item_222_normalize_circuit_distance_semantics_and_audit_drift`, `item_223_add_race_track_replay_trace_inspection_and_representative_validation`
+- Related request(s): `req_096_canonical_race_track_replay_trace_and_simulation_handoff`
 
 # AI Context
 - Summary: Orchestrate canonical race-track replay trace and simulation handoff

@@ -1,10 +1,10 @@
 ## item_229_make_weather_visible_in_replay_handling - Make weather visible in replay handling
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 80%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay realism
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -35,6 +35,9 @@
 - request-AC1 -> This backlog slice. Proof: AC1: Weather changes trace-level braking/corner/exit behavior in a bounded deterministic way.
 - request-AC7 -> This backlog slice. Proof: AC2: Dry, light rain, and heavy rain remain distinguishable in inspection/tests.
 - request-AC8 -> This backlog slice. Proof: AC3: Final results and economy outputs are unchanged by this visual realism layer.
+- request-AC4 -> This backlog slice. Evidence needed: Pit-stop trace output includes pit entry, pit stop, and pit exit phases with aligned event markers, live ordering, and visible time loss.
+- request-AC5 -> This backlog slice. Evidence needed: Overtake facts can render as closing, attempt, and settled phases tied to canonical zones and order changes, with no renderer-invented overtakes.
+- request-AC6 -> This backlog slice. Evidence needed: Traffic/defense effects apply only under canonical proximity and zone conditions, remain bounded, and do not contradict the final classification.
 
 # Decision framing
 - Product framing: Not needed
@@ -55,3 +58,9 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_098_orchestrate_race_replay_realism_layers_after_canonical_trace`
+
+# Notes
+- Task `task_098_orchestrate_race_replay_realism_layers_after_canonical_trace` was finished via `logics-manager flow finish task` on 2026-07-23.

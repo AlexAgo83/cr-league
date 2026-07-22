@@ -1,7 +1,7 @@
 ## req_096_canonical_race_track_replay_trace_and_simulation_handoff - Canonical race-track replay trace and simulation handoff
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: High

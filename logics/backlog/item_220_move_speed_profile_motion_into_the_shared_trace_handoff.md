@@ -1,10 +1,10 @@
 ## item_220_move_speed_profile_motion_into_the_shared_trace_handoff - Move speed-profile motion into the shared trace handoff
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: High
 > Theme: Simulation and replay fidelity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -37,6 +37,9 @@
 - request-AC3 -> This backlog slice. Proof: AC3: Pit stops, event markers, live tower order, and final classification remain aligned after the handoff change.
 - request-AC6 -> This backlog slice. Proof: AC3: Pit stops, event markers, live tower order, and final classification remain aligned after the handoff change.
 - request-AC8 -> This backlog slice. Proof: AC3: Pit stops, event markers, live tower order, and final classification remain aligned after the handoff change.
+- request-AC4 -> This backlog slice. Evidence needed: Legacy fallback behavior is isolated behind an explicit adapter or guard with tests that prove older persisted results still replay, while generated traces use stricter validation and do not silently fall back to inferred facts.
+- request-AC5 -> This backlog slice. Evidence needed: A documented distance contract explains `trackLengthMeters` versus `routeLengthMeters`, identifies which one owns simulation scoring, replay pacing, and display labels, and circuit audit fails on undocumented or suspicious drift.
+- request-AC7 -> This backlog slice. Evidence needed: A developer inspection artifact or command summarizes representative race-track replay traces, including progress, live order, zone, speed phase, pit moments, and distance basis for at least Prague, Monaco, Montreal, and one pit-stop race.
 
 # Decision framing
 - Product framing: Not needed
@@ -57,3 +60,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff`
+
+# Notes
+- Task `task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff` was finished via `logics-manager flow finish task` on 2026-07-23.

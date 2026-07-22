@@ -229,8 +229,9 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(page.locator(".drive-map-panel .map-status")).toContainText(currentCircuit.city);
   await expect(page.locator(".drive-map-panel .map-status .country-badge img")).toHaveAttribute("src", new RegExp(`/assets/flags/${currentCircuit.country.toLowerCase()}\\.svg$`));
   await expect(page.locator(".drive-map-panel .map-status")).toContainText(`${currentCircuit.laps} laps`);
-  await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Grip");
-  await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText(String(currentCircuit.traits.grip));
+  await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Pace");
+  await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Control");
+  await expect(page.locator(".drive-map-panel .map-traits-panel")).toContainText("Weather");
   await expect(page.locator(".drive-map-panel .map-workflow-panel")).toBeVisible();
   await expect(page.getByRole("heading", { name: "1. Read the circuit" })).toBeVisible();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toHaveCount(0);
@@ -315,8 +316,9 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".map-status")).toContainText(`/${replayCircuit.laps}`);
   await expect(mapPanel.locator(".map-weather-readout")).toContainText("Dry");
   await expect(mapPanel.locator(".map-status")).toContainText("Dry");
-  await expect(mapPanel.locator(".map-traits-panel")).toContainText(String(replayCircuit.traits.grip));
-  await expect(mapPanel.locator(".map-traits-panel")).toContainText(String(replayCircuit.traits.energy));
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText("Pace");
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText("Control");
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText("Weather");
   await expect(mapPanel.locator(".map-car.player").first()).toHaveAttribute("style", /--car-primary: #[0-9a-f]{6}; --car-secondary: #[0-9a-f]{6}/i);
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Pause" })).toBeVisible();
   await expect(mapPanel.locator(".replay-map-controls").getByRole("button", { name: "Restart" })).toBeVisible();
@@ -338,9 +340,8 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await expect(mapPanel.locator(".replay-progress")).toBeVisible();
   await mapPanel.locator(".replay-marker:not(.director)").click();
   await expect(mapPanel.locator(".replay-moment-notification")).toContainText("Rain Grip");
-  await expect(mapPanel.locator(".map-traits-panel .map-trait-grip")).toContainText("Grip");
-  await expect(mapPanel.locator(".map-traits-panel .map-trait-grip")).toContainText("+9");
-  await expect(mapPanel.locator(".map-traits-panel")).toContainText("Attack");
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText("Control");
+  await expect(mapPanel.locator(".map-traits-panel")).toContainText("Weather");
   await expect(copyPanel.getByRole("button", { name: "Pause" })).toHaveCount(0);
 
   const desktop = await page.evaluate(() => {

@@ -799,7 +799,7 @@ describe("App", () => {
     expect(launchDialog.textContent).toContain(`Grip ${roundOneCircuit.traits.grip}`);
     fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
-    expect(window.location.pathname).toBe("/replay/gp_1");
+    await waitFor(() => expect(window.location.pathname).toBe("/replay/gp_1"));
     expect(screen.getByRole("button", { name: "Stand" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Report" })).toBe(null);

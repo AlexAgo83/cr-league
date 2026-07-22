@@ -4,8 +4,16 @@ source images, with automated light-point detection.
 
 The human assignment "which source image is which car" is read from each car's
 existing metadata.json `source` field. Everything mechanical — chroma-key cutout,
-crop, orientation, and headlight/taillight detection — is derived here so it is
+crop, orientation, and headlight/taillight placement — is derived here so it is
 reproducible instead of manual-review.
+
+Light placement is hybrid (corner geometry + color refinement): lamps are anchored to
+the silhouette corners — the only signal that holds across the fleet, since most cars
+are white/silver and plain brightness lands on bodywork, not the optic — then pulled
+onto a real red (rear) or bright (front) cluster when one sits at that corner. Points
+placed geometrically carry {"geometric": true}; the method tag gets +partial-geometry.
+The chroma key removes the drop shadow too, by keying green relative to each pixel's
+own brightness rather than an absolute floor.
 
 Usage:
     python3 scripts/generate-car-assets.py --check      # self-test on car-001
@@ -57,24 +65,39 @@ def vertical_bands(mask):
     return bands
 
 
-def light_pair(mask, xfront, xback, length, front, max_lights):
-    """Return the light point(s) on the requested end. Top view shows a left/right
-    pair (max_lights=2); the side profile shows a single light per end (max_lights=1)."""
-    ys, xs = np.where(mask)
-    if len(xs) == 0:
+def end_lights(m, color, end_x, length, n):
+    """Light point(s) at one end of the car: anchored to the silhouette corners, then
+    refined toward a nearby colored cluster when one is actually there.
+
+    Corners are the reliable signal across the whole fleet — most cars are white/silver,
+    so plain brightness lands on bodywork, not the lamp. We place lights at the extreme
+    corners (never mid-body) and only pull a point onto a real red/bright cluster if it
+    sits inside the corner window. Geometric (unrefined) points carry {"geometric": true}.
+
+    n=2 -> top view left/right pair; n=1 -> side profile single light.
+    """
+    H, W = m.shape
+    ex = min(max(end_x, 0), W - 1)
+    lo, hi = max(0, ex - int(LIGHT_BAND_FRAC * length)), min(W - 1, ex + int(LIGHT_BAND_FRAC * length))
+    ys = np.where(m[:, lo:hi + 1].any(axis=1))[0]
+    if len(ys) == 0:
         return []
-    sel = xs <= xfront + LIGHT_BAND_FRAC * length if front else xs >= xback - LIGHT_BAND_FRAC * length
-    ys, xs = ys[sel], xs[sel]
-    if len(xs) < 8:
-        return []
-    if max_lights == 1:
-        return [{"x": int(xs.mean()), "y": int(ys.mean())}]
-    ymid = np.median(ys)
+    y0, y1 = int(ys[0]), int(ys[-1])
+    span = max(1, y1 - y0)
+    if n == 2:
+        inset = int(0.15 * span)
+        anchors = [(ex, y0 + inset), (ex, y1 - inset)]
+    else:
+        anchors = [(ex, (y0 + y1) // 2)]
+    cy, cx = np.where(color)
     out = []
-    for side in (ys < ymid, ys >= ymid):
-        if side.sum() < 8:  # ignore stray pixels
-            continue
-        out.append({"x": int(xs[side].mean()), "y": int(ys[side].mean())})
+    for ax, ay in anchors:
+        if len(cx):
+            near = (np.abs(cx - ax) <= 0.10 * length) & (np.abs(cy - ay) <= 0.25 * span)
+            if near.sum() >= 8:  # a real colored lamp sits at this corner
+                out.append({"x": int(cx[near].mean()), "y": int(cy[near].mean())})
+                continue
+        out.append({"x": int(ax), "y": int(ay), "geometric": True})
     return out
 
 
@@ -104,30 +127,23 @@ def analyze_view(rgb, mask, box, max_lights):
         front_low = white_x.mean() < midx if len(white_x) else True
 
     xfront, xback = (xmin, xmax) if front_low else (xmax, xmin)
-    front_lights = light_pair(white, min(xfront, xback), max(xfront, xback), length, front=front_low, max_lights=max_lights)
-    rear_lights = light_pair(red, min(xfront, xback), max(xfront, xback), length, front=not front_low, max_lights=max_lights)
+    front_lights = end_lights(m, white, xfront, length, max_lights)
+    rear_lights = end_lights(m, red, xback, length, max_lights)
 
     # front/rear points at the vertical centre of the mask on each end (xfront/xback are local).
     def edge_point(xl):
-        col = np.where(m[:, xl])[0]
+        col = np.where(m[:, min(max(xl, 0), m.shape[1] - 1)])[0]
         y = int(col.mean()) if len(col) else m.shape[0] // 2
         return {"x": int(xl), "y": y}
 
     fp, rp = edge_point(xfront), edge_point(xback)
     heading = float(np.degrees(np.arctan2(-(fp["y"] - rp["y"]), fp["x"] - rp["x"])))
 
-    # Fallback: no red found (dark rear design or under threshold) -> place taillights at the
-    # rear geometry. Top view spreads a left/right pair across the rear mask width; side uses the point.
-    method = "auto-green-key-white-front-red-rear"
-    if not rear_lights:
-        rband = m[:, max(0, rp["x"] - int(0.06 * length)):rp["x"] + 1] if rp["x"] >= length / 2 else m[:, rp["x"]:rp["x"] + int(0.06 * length) + 1]
-        rys = np.where(rband.any(axis=1))[0]
-        if max_lights == 2 and len(rys) >= 4:
-            inset = int(0.15 * (rys[-1] - rys[0]))
-            rear_lights = [{"x": rp["x"], "y": int(rys[0] + inset)}, {"x": rp["x"], "y": int(rys[-1] - inset)}]
-        else:
-            rear_lights = [dict(rp)]
-        method += "+rear-point-fallback"
+    # Method tag: corner geometry with color refinement; +partial-geometry when any lamp
+    # was placed geometrically because no red/bright cluster confirmed it.
+    method = "auto-corner-geometry+color-refine"
+    if any(p.get("geometric") for p in front_lights + rear_lights):
+        method += "+partial-geometry"
 
     crop = Image.fromarray(np.dstack([sub.astype(np.uint8), (m * 255).astype(np.uint8)]), "RGBA")
     view = {
@@ -202,13 +218,12 @@ def overlay(crop, view):
     def dot(p, color, r=6):
         dr.ellipse([p["x"] - r, p["y"] - r, p["x"] + r, p["y"] + r], outline=color, width=3)
     lp = view["light_points_detected"]
-    rear_fallback = "fallback" in lp["method"]
     for p in lp["front_lights"]:
-        dot(p, (0, 220, 255, 255))          # cyan = headlights
+        dot(p, (255, 150, 0, 255) if p.get("geometric") else (0, 220, 255, 255))   # orange = geometric, cyan = detected
     for p in lp["rear_lights"]:
-        dot(p, (255, 150, 0, 255) if rear_fallback else (255, 40, 40, 255))  # orange = fallback, red = detected
+        dot(p, (255, 150, 0, 255) if p.get("geometric") else (255, 40, 40, 255))   # orange = geometric, red = detected
     dot(view["front_point"], (255, 220, 0, 255), r=9)   # yellow = nose
-    dot(view["rear_point"], (255, 140, 0, 255), r=9)    # orange = tail
+    dot(view["rear_point"], (180, 120, 255, 255), r=9)  # purple = tail
     return img
 
 
@@ -229,10 +244,11 @@ def preview(out_dir):
             overlay(crop, view).save(os.path.join(cdir, f"{name}.overlay.png"))
             meta["assets"][name] = {"file": f"{name}/{cid}-{name}.png", **view}
             lp = view["light_points_detected"]
-            tail = "rear (fallback)" if "fallback" in lp["method"] else "rear"
+            geo = sum(1 for p in lp["front_lights"] + lp["rear_lights"] if p.get("geometric"))
+            note = f' <span style="color:#f90">({geo} geo)</span>' if geo else ""
             cells.append(
                 f'<figure><img src="{cid}/{name}.overlay.png" alt=""><figcaption>{name}: '
-                f'{len(lp["front_lights"])} front / {len(lp["rear_lights"])} {tail}</figcaption></figure>')
+                f'{len(lp["front_lights"])} front / {len(lp["rear_lights"])} rear{note}</figcaption></figure>')
         json.dump(meta, open(os.path.join(cdir, "metadata.json"), "w"), indent=2)
         rows.append(f'<section><h2>{cid} <small>{cur["source"]}</small></h2><div class="pair">{"".join(cells)}</div></section>')
     html = (
@@ -245,7 +261,8 @@ def preview(out_dir):
         'figcaption{margin-top:6px;color:#aaa;font-size:12px}'
         '.legend{position:sticky;top:0;background:#111;padding:8px 0}'
         '.legend b{color:#0dc;} .legend i{color:#f44;font-style:normal} .legend u{color:#fc0;text-decoration:none}</style>'
-        '<div class="legend"><b>● front lights</b> &nbsp; <i>● rear lights</i> &nbsp; <u>● nose/tail</u></div>'
+        '<div class="legend"><b>● front (detected)</b> &nbsp; <i>● rear (detected)</i> &nbsp; '
+        '<span style="color:#f90">● geometric corner</span> &nbsp; <u>● nose</u></div>'
         + "".join(rows))
     with open(os.path.join(out_dir, "index.html"), "w") as f:
         f.write(html)

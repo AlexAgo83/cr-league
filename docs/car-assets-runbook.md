@@ -85,9 +85,44 @@ Then update `apps/web/src/features/carAssets.ts` so `CAR_ASSETS` exposes every i
   - all `x`, `center_x`, `y`, `center_y`, and `ground_y` coordinates are shifted by the crop offset.
 - Keep `top.png`, `side.png`, and `metadata.json` together under `apps/web/public/assets/cars/crl-v2/car-XXX/`.
 
-## Raw Green-Screen Imports
+## Raw Green-Screen Imports (automated)
 
-If new files are added only to `logics/external/CRL Cars V2`, split each raw PNG into its top half and bottom half, remove the green background with a chroma key, crop to the alpha bounds, and save the result as the next `car-XXX/top.png`, `car-XXX/side.png`, and `car-XXX/metadata.json`.
+Files added to `logics/external/CRL Cars V2` are processed by
+`scripts/generate-car-assets.py` — a reproducible pipeline that replaces the old
+manual split/chroma-key/point-marking. It needs Pillow and numpy (dev-only tools):
+
+```sh
+python3 scripts/generate-car-assets.py --check           # self-test on car-001
+python3 scripts/generate-car-assets.py                   # dry-run: report light-count changes
+python3 scripts/generate-car-assets.py --preview tmp/car-assets-preview   # visual QA sheet
+python3 scripts/generate-car-assets.py --write           # overwrite top.png/side.png/metadata.json
+```
+
+The source→car assignment is read from each car's existing `metadata.json` `source`
+field, so the pipeline preserves which image is which car and regenerates only the
+mechanical parts. Per source image it detects the two stacked views (top = upper band,
+side = lower band), keys out the green background, crops to the car, and writes metadata.
+
+What it derives:
+
+- **Cutout** — green keyed *relative to each pixel's brightness*, not an absolute floor,
+  so the darkened green of the drop shadow is removed instead of surviving as a dark blob.
+- **Orientation** — the red end is the rear; `front_point`/`rear_point` and
+  `heading_angle_degrees` follow from the silhouette.
+- **Light points** — hybrid corner geometry + color refinement. Lamps are anchored to the
+  silhouette corners (the only signal that holds when most cars are white/silver and plain
+  brightness lands on bodywork), then pulled onto a real red (rear) or bright (front)
+  cluster when one sits at that corner. Geometric points carry `"geometric": true` and the
+  method is tagged `+partial-geometry`.
+- **Carried over** — manual `wheel_contacts` / `wheel_contacts_projected` are preserved from
+  the existing metadata (out of scope for auto-detection; the crop is pixel-stable).
+
+Preview overlays colour detected front lamps cyan, detected rear lamps red, geometric
+corners orange, and the nose marker yellow — open `index.html` in the preview dir to scan
+all 16 at once before `--write`.
+
+Calibration knobs (green ratio, white/red thresholds, light band fraction) live as
+constants at the top of the script; re-tune them if a future batch uses a different backdrop.
 
 After adding more cars:
 

@@ -32,6 +32,7 @@ export {
   replayDistanceScale,
   replayOrderAtProgress,
   replayPlanDebugLines,
+  replayProgressForVisualTrackProgress,
   replayPlayerGapItems,
   scaleFinishTimes,
   segmentAtProgress,
@@ -63,6 +64,7 @@ import {
   replaySnapshot,
   replayDistanceScale,
   replayOrderAtProgress,
+  replayProgressForVisualTrackProgress,
   replayPlayerGapItems,
   scaleFinishTimes,
   segmentAtProgress,
@@ -141,12 +143,16 @@ export function ReplayView({
     [circuit.laps, pitProgress, playerTeamId, replayMode, replayPlan, replayTrace, result]
   );
   const initialSnapshot = useMemo(() => replaySnapshot(result, replayTrace, replayTimes, 0, 0, circuit.laps, replayPlan, [], circuit.speedProfile), [circuit.laps, circuit.speedProfile, replayPlan, replayTimes, replayTrace, result]);
-  const names = teamNamesFromResult(result);
+  const names = useMemo(() => teamNamesFromResult(result), [result]);
   const field = result.classification;
   const smoothTracePositions = shouldSmoothReplayTrace(replayTrace);
   const raceDuration = smoothTracePositions ? replayTimes.leader : replayTimes.last;
   const maxLap = Math.max(1, ...result.events.map((event) => event.lap));
   const raceTimeAtProgress = useCallback((progress: number) => START_HOLD_SECONDS + progress * raceDuration, [raceDuration]);
+  const raceTimeAtTrackProgress = useCallback(
+    (progress: number) => raceTimeAtProgress(replayProgressForVisualTrackProgress(progress, circuit.laps, circuit.speedProfile)),
+    [circuit.laps, circuit.speedProfile, raceTimeAtProgress]
+  );
   const circuitDistance = circuitDistanceLabel(circuit);
   const lastFinishTime = replayTimes.last;
   const replayEnd = START_HOLD_SECONDS + lastFinishTime + FINISH_HOLD_SECONDS;
@@ -179,8 +185,15 @@ export function ReplayView({
     .filter((event, index, events) => events.findIndex((candidate) => candidate.id === event.id) === index)
     .sort((left, right) => left.order - right.order), [overlayActions, playerTeamId, qualifyingMomentEvents, replayMode, result.events]);
 
-  const eventTime = useCallback((event: RaceEvent) => raceTimeAtProgress(eventTraceProgress(event, maxLap)), [maxLap, raceTimeAtProgress]);
-  const activeMomentIdAt = useCallback((time: number) => keyMoments.find((event) => Math.abs(eventTime(event) - time) <= MOMENT_NOTIFICATION_SECONDS)?.id ?? null, [eventTime, keyMoments]);
+  const eventTrackProgress = useCallback(
+    (event: RaceEvent) => event.type === "pit_stop" ? pitStopTraceProgress(result, replayTrace, event, maxLap, circuit.laps, pitProgress, replayPlan) : eventTraceProgress(event, maxLap),
+    [circuit.laps, maxLap, pitProgress, replayPlan, replayTrace, result]
+  );
+  const timedKeyMoments = useMemo(
+    () => keyMoments.map((event) => ({ event, time: raceTimeAtTrackProgress(eventTrackProgress(event)) })),
+    [eventTrackProgress, keyMoments, raceTimeAtTrackProgress]
+  );
+  const activeMomentIdAt = useCallback((time: number) => timedKeyMoments.find((moment) => Math.abs(moment.time - time) <= MOMENT_NOTIFICATION_SECONDS)?.event.id ?? null, [timedKeyMoments]);
   const createTargetSnapshot = useCallback(
     (raceTime: number, progress: number, currentOrder: string[]) => replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, currentOrder, circuit.speedProfile),
     [circuit.laps, circuit.speedProfile, replayPlan, replayTimes, replayTrace, result]
@@ -277,34 +290,44 @@ export function ReplayView({
     };
   });
 
-  // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.
-  const markerByLap = new Map<number, { texts: string[]; player: boolean; time: number }>();
-  for (const event of keyMoments.filter((event) => event.severity === "major" || event.type === "pit_stop" || event.teamId === playerTeamId)) {
-    const progress = event.type === "pit_stop" ? pitStopTraceProgress(result, replayTrace, event, maxLap, circuit.laps, pitProgress, replayPlan) : eventTraceProgress(event, maxLap);
-    const displayLap = displayLapAtProgress(progress, circuit.laps);
-    const marker = markerByLap.get(displayLap) ?? { texts: [], player: false, time: raceTimeAtProgress(progress) };
-    marker.texts.push(`${tt("unit_lap")} ${displayLap} · ${eventReplayText(event, names, tt)}`);
-    marker.player ||= event.teamId === playerTeamId;
-    marker.time = Math.min(marker.time, raceTimeAtProgress(progress));
-    markerByLap.set(displayLap, marker);
-  }
-  const markers = [...markerByLap.entries()].map(([lap, marker]) => ({
-    id: String(lap),
-    className: marker.player ? "replay-marker player" : "replay-marker",
-    left: `${Math.min(96, Math.max(3, (marker.time / replayEnd) * 100))}%`,
-    time: marker.time,
-    title: marker.texts.join("\n")
-  })) satisfies ReplayTimelineMarker[];
-  const directorMarkers = directorBeats.slice(1, -1).map((beat) => {
+  const markers = useMemo(() => {
+    // Timeline markers: one dot per lap that has a key/player moment, positioned by lap.
+    const markerByLap = new Map<number, { texts: string[]; player: boolean; time: number }>();
+    for (const event of keyMoments.filter((event) => event.severity === "major" || event.type === "pit_stop" || event.teamId === playerTeamId)) {
+      const progress = eventTrackProgress(event);
+      const displayLap = displayLapAtProgress(progress, circuit.laps);
+      const marker = markerByLap.get(displayLap) ?? { texts: [], player: false, time: raceTimeAtTrackProgress(progress) };
+      marker.texts.push(`${tt("unit_lap")} ${displayLap} · ${eventReplayText(event, names, tt)}`);
+      marker.player ||= event.teamId === playerTeamId;
+      marker.time = Math.min(marker.time, raceTimeAtTrackProgress(progress));
+      markerByLap.set(displayLap, marker);
+    }
+    return [...markerByLap.entries()].map(([lap, marker]) => ({
+      id: String(lap),
+      className: marker.player ? "replay-marker player" : "replay-marker",
+      left: `${Math.min(96, Math.max(3, (marker.time / replayEnd) * 100))}%`,
+      time: marker.time,
+      title: marker.texts.join("\n")
+    })) satisfies ReplayTimelineMarker[];
+  }, [circuit.laps, eventTrackProgress, keyMoments, names, playerTeamId, raceTimeAtTrackProgress, replayEnd, tt]);
+  const timedDirectorBeats = useMemo(
+    () => directorBeats.map((beat) => ({
+      beat,
+      visualProgress: replayProgressForVisualTrackProgress(beat.progress, circuit.laps, circuit.speedProfile),
+      time: raceTimeAtTrackProgress(beat.progress)
+    })),
+    [circuit.laps, circuit.speedProfile, directorBeats, raceTimeAtTrackProgress]
+  );
+  const directorMarkers = useMemo(() => timedDirectorBeats.slice(1, -1).map(({ beat, time }) => {
     const copy = directorBeatCopy(beat, names, tt);
     return {
       id: beat.id,
       className: `replay-marker director ${beat.type}`,
-      left: `${Math.min(96, Math.max(3, replayPercentAtRaceProgress(beat.progress)))}%`,
+      left: `${Math.min(96, Math.max(3, (time / replayEnd) * 100))}%`,
       title: copy.detail,
-      time: raceTimeAtProgress(beat.progress)
+      time
     };
-  }) satisfies ReplayTimelineMarker[];
+  }) satisfies ReplayTimelineMarker[], [names, replayEnd, timedDirectorBeats, tt]);
   const liveWeather = result.resolvedWeather[live.segment];
   const activeMoment = keyMoments.find((event) => event.id === activeMomentId);
   const activeMomentCard = activeMoment ? momentCard(activeMoment, names, tt) : null;
@@ -323,7 +346,7 @@ export function ReplayView({
         impact: activeMomentCard.impact
       }
     : undefined;
-  const activeDirectorBeat = [...directorBeats].reverse().find((beat) => beat.progress <= currentRaceProgress) ?? directorBeats[0];
+  const activeDirectorBeat = [...timedDirectorBeats].reverse().find((entry) => entry.visualProgress <= currentRaceProgress)?.beat ?? directorBeats[0];
   const activeDirectorCopy = activeDirectorBeat ? directorBeatCopy(activeDirectorBeat, names, tt) : null;
   const activeDirector = activeDirectorBeat && activeDirectorCopy
     ? {

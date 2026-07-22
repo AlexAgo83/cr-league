@@ -328,8 +328,8 @@ export function CircuitMap({
   useEffect(() => {
     const cameraGroup = cameraRef.current;
     const route = routeRef.current;
-    const car = camera?.car;
-    if (!cameraGroup || !route || !camera?.enabled || !car || !route.getTotalLength) {
+    const carId = camera?.car?.id;
+    if (!cameraGroup || !route || !camera?.enabled || !carId || !route.getTotalLength) {
       cameraGroup?.removeAttribute("transform");
       zoomRef.current = FOCUS_ZOOM;
       zoomModeRef.current = "normal";
@@ -342,6 +342,8 @@ export function CircuitMap({
     const startedAt = performance.now();
     let frame = 0;
     const tick = () => {
+      const car = carsRef.current.find((candidate) => candidate.id === carId);
+      if (!car) return;
       clockRef.current = camera.timeRef?.current ?? (performance.now() - startedAt) / 1000;
       const elapsed = Math.max(0, clockRef.current - car.delay);
       const progress = car.progress ?? (car.repeatCount !== "indefinite" && clockRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration);
@@ -376,7 +378,7 @@ export function CircuitMap({
       cancelAnimationFrame(frame);
       cameraGroup.removeAttribute("transform");
     };
-  }, [camera?.enabled, camera?.car, camera?.timeRef, circuit.laps, routeAnalysis.startProgress]);
+  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, circuit.laps, routeAnalysis.startProgress]);
 
   return (
     <section

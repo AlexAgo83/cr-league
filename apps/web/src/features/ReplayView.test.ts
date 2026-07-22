@@ -20,6 +20,7 @@ import {
   replayOrderAtProgress,
   replayDistanceScale,
   replayPlanDebugLines,
+  replayProgressForVisualTrackProgress,
   scaleFinishTimes,
   segmentAtProgress,
   shouldSmoothReplayTrace,
@@ -177,6 +178,14 @@ describe("ReplayView timing", () => {
     expect(applyTrackSpeedProfile(0.8, speedProfile)).toBeLessThan(0.8);
     expect(applyTrackSpeedProfile(1, speedProfile)).toBe(1);
     expect(applyTrackSpeedProfile(1.25, speedProfile)).toBeCloseTo(1 + applyTrackSpeedProfile(0.25, speedProfile));
+  });
+
+  it("maps timeline track progress through the inverse corner speed profile", () => {
+    const speedProfile = [{ kind: "corner" as const, startProgress: 0.2, endProgress: 0.6, factor: 0.5 }];
+    const timelineProgress = replayProgressForVisualTrackProgress(0.08, 5, speedProfile);
+
+    expect(timelineProgress).toBeGreaterThan(0.08);
+    expect(applyTrackSpeedProfile(timelineProgress * 5, speedProfile) / 5).toBeCloseTo(0.08, 5);
   });
 
   it("keeps pit trace positions unwarped by corner speed profiles", () => {

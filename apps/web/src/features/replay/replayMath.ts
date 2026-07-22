@@ -257,6 +257,12 @@ export function applyTrackSpeedProfile(progressLaps: number, speedProfile: Track
   return completedLaps + mappedLapProgress(lapProgress, speedProfile);
 }
 
+export function replayProgressForVisualTrackProgress(progress: number, laps: number, speedProfile: TrackSpeedProfile = []) {
+  if (!speedProfile.length) return progress;
+  const lapProgress = Math.max(0, Math.min(1, progress)) * Math.max(1, laps);
+  return inverseTrackSpeedProfile(lapProgress, speedProfile) / Math.max(1, laps);
+}
+
 export function pitStopTraceProgress(_result: RaceResult, _trace: ReplayTracePoint[], event: RaceEvent, maxLap: number, laps: number, lapProgress: number, _plan?: ReplayPlan) {
   return typeof event.traceProgress === "number" ? event.traceProgress : pitStopRaceProgress(event, maxLap, laps, lapProgress);
 }
@@ -340,6 +346,20 @@ function mappedLapProgress(progress: number, speedProfile: TrackSpeedProfile) {
   const total = integratedSpeed(1, speedProfile);
   if (total <= 0) return progress;
   return Math.min(1, Math.max(0, integratedSpeed(progress, speedProfile) / total));
+}
+
+function inverseTrackSpeedProfile(progressLaps: number, speedProfile: TrackSpeedProfile) {
+  const completedLaps = Math.floor(progressLaps);
+  const target = progressLaps - completedLaps;
+  if (target <= 0) return progressLaps;
+  let low = 0;
+  let high = 1;
+  for (let index = 0; index < 18; index += 1) {
+    const mid = (low + high) / 2;
+    if (mappedLapProgress(mid, speedProfile) < target) low = mid;
+    else high = mid;
+  }
+  return completedLaps + (low + high) / 2;
 }
 
 function integratedSpeed(to: number, speedProfile: TrackSpeedProfile) {

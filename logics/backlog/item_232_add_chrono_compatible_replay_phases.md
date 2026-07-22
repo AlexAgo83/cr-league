@@ -1,10 +1,10 @@
 ## item_232_add_chrono_compatible_replay_phases - Add chrono-compatible replay phases
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 85%
+> Progress: 100%
 > Complexity: Low
 > Theme: Replay parity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -35,6 +35,7 @@
 - request-AC2 -> This backlog slice. Proof: AC1: Chrono traces expose `grid`, `launch`, `racing`, and `finished` in the expected order.
 - request-AC5 -> This backlog slice. Proof: AC2: No race-only phases are emitted by solo chrono trace generation.
 - request-AC6 -> This backlog slice. Proof: AC3: Phase tests pass without changing final chrono result data.
+- request-AC4 -> This backlog slice. Evidence needed: `npm run replay:inspect` or an equivalent existing inspection command includes representative chrono traces for Prague, Monaco, and Montreal, with progress, phase, speed, and weather context.
 
 # Decision framing
 - Product framing: Not needed
@@ -55,3 +56,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_099_orchestrate_chrono_replay_race_track_parity`
+
+# Notes
+- Task `task_099_orchestrate_chrono_replay_race_track_parity` was finished via `logics-manager flow finish task` on 2026-07-23.

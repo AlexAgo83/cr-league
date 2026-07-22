@@ -1,10 +1,10 @@
 ## item_233_make_chrono_weather_handling_visible_in_trace_speed - Make chrono weather handling visible in trace speed
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 85%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay parity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -34,6 +34,8 @@
 # AC Traceability
 - request-AC3 -> This backlog slice. Proof: AC1: Heavy-rain chrono traces expose lower relevant `speed` metadata than dry traces on the same profile.
 - request-AC5 -> This backlog slice. Proof: AC2: Chrono final time and deterministic generated run behavior remain stable for equal inputs.
+- request-AC4 -> This backlog slice. Evidence needed: `npm run replay:inspect` or an equivalent existing inspection command includes representative chrono traces for Prague, Monaco, and Montreal, with progress, phase, speed, and weather context.
+- request-AC6 -> This backlog slice. Evidence needed: The corpus explicitly documents that pit stops, overtakes, defense, and multi-car gap spacing are not chrono parity requirements for this solo-run scope.
 
 # Decision framing
 - Product framing: Not needed
@@ -54,3 +56,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_099_orchestrate_chrono_replay_race_track_parity`
+
+# Notes
+- Task `task_099_orchestrate_chrono_replay_race_track_parity` was finished via `logics-manager flow finish task` on 2026-07-23.

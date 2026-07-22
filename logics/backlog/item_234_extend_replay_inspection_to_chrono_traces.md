@@ -1,10 +1,10 @@
 ## item_234_extend_replay_inspection_to_chrono_traces - Extend replay inspection to chrono traces
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 85%
+> Progress: 100%
 > Complexity: Low
 > Theme: Developer validation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -34,6 +34,8 @@
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: `npm run replay:inspect` includes a chrono section for Prague, Monaco, and Montreal.
 - request-AC5 -> This backlog slice. Proof: AC2: The output includes enough phase/speed/weather context to compare race and chrono trace behavior.
+- request-AC3 -> This backlog slice. Evidence needed: Weather-visible chrono handling is represented as deterministic trace-level `speed` metadata on relevant spans without changing qualifying lap-time calculation or grid outcomes.
+- request-AC6 -> This backlog slice. Evidence needed: The corpus explicitly documents that pit stops, overtakes, defense, and multi-car gap spacing are not chrono parity requirements for this solo-run scope.
 
 # Decision framing
 - Product framing: Not needed
@@ -54,3 +56,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_099_orchestrate_chrono_replay_race_track_parity`
+
+# Notes
+- Task `task_099_orchestrate_chrono_replay_race_track_parity` was finished via `logics-manager flow finish task` on 2026-07-23.

@@ -1,7 +1,7 @@
 ## req_098_chrono_replay_race_track_parity - Chrono replay race-track parity
 > From version: 0.3.28
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

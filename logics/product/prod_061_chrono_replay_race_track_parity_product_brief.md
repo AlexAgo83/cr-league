@@ -1,8 +1,8 @@
 ## prod_061_chrono_replay_race_track_parity_product_brief - Chrono Replay Race-Track Parity Product Brief
 > Date: 2026-07-23
-> Status: Proposed
+> Status: Settled
 > Related request: `req_098_chrono_replay_race_track_parity`
-> Related backlog: `item_231_apply_circuit_speed_profile_to_chrono_replay_traces`, `item_232_add_chrono_compatible_replay_phases`, `item_233_make_chrono_weather_handling_visible_in_trace_speed`, `item_234_extend_replay_inspection_to_chrono_traces`
+> Related backlog: `item_231_apply_circuit_speed_profile_to_chrono_replay_traces`
 > Related task: `task_099_orchestrate_chrono_replay_race_track_parity`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -46,5 +46,5 @@ flowchart TD
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_098_chrono_replay_race_track_parity`
+- Product back-reference: `item_231_apply_circuit_speed_profile_to_chrono_replay_traces`
 - Task back-reference: `task_099_orchestrate_chrono_replay_race_track_parity`

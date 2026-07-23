@@ -168,6 +168,17 @@ describe("ReplayView timing", () => {
     expect(carProgressAtTrace(result, trace, 0, 5)).toMatchObject({ leader: 0, last: 0 });
   });
 
+  it("uses generated queue positions during the start segment", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0, speed: 0, phase: "grid" }, last: { trackProgress: -0.02, speed: 0, phase: "grid" } } },
+      { segment: "start", lap: 1, progress: 0.05, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0.08, speed: 1, phase: "launch" }, last: { trackProgress: -0.01, speed: 0, phase: "grid" } } },
+      { segment: "early", lap: 2, progress: 0.2, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: { trackProgress: 0.2, speed: 1, phase: "racing" }, last: { trackProgress: 0.18, speed: 1, phase: "racing" } } }
+    ];
+
+    expect(carProgressAtTrace(result, trace, 0, 5)).toMatchObject({ leader: 0, last: -0.02 });
+    expect(carProgressAtTrace(result, trace, 0.05, 5)).toMatchObject({ leader: 0.4, last: -0.01 });
+  });
+
   it("applies corner speed profiles as visual-only lap progress", () => {
     const speedProfile = [
       { kind: "braking" as const, startProgress: 0.2, endProgress: 0.3, factor: 0.7 },

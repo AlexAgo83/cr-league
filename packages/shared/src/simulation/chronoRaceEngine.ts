@@ -67,6 +67,8 @@ const MIN_CHRONO_SPEED_FACTOR = 0.42;
 const PIT_ENTRY_SECONDS = 1.2;
 const PIT_EXIT_SECONDS = 1.2;
 const LAUNCH_PHASE_PROGRESS = 0.06;
+const MIN_GRID_QUEUE_SLOT_PROGRESS = 0.006;
+const MAX_GRID_QUEUE_SLOT_PROGRESS = 0.025;
 const MIN_VISIBLE_GAP_PROGRESS = 0.004;
 const MAX_VISIBLE_GAP_PROGRESS = 0.12;
 
@@ -202,10 +204,14 @@ export function createChronoReplayTrace(
   );
   const raceDuration = Math.max(...states.map((state) => state.elapsedTime));
   const motionStates = new Map<string, ChronoCarMotionState>();
-  const points: ReplayTracePoint[] = [createChronoGridTracePoint("start", 0, states, options.trackLengthMeters)];
+  const points: ReplayTracePoint[] = [createChronoGridTracePoint("start", 0, states, plans, options.trackLengthMeters)];
 
-  for (const delay of [...new Set([...plans.values()].map((plan) => plan.startDelay).filter((delay) => delay > 0))].sort((left, right) => left - right)) {
-    points.push(createChronoReplayTracePoint(states, plans, motionStates, delay, delay / raceDuration, "start", options, raceDuration, options.speedProfile, "dry", 1));
+  const gridQueueTimes = [...new Set([...plans.values()]
+    .flatMap((plan) => plan.startDelay > 0 ? [Math.max(0, plan.startDelay - options.gridGapSeconds / 2), plan.startDelay] : [])
+    .filter((time) => time > 0))]
+    .sort((left, right) => left - right);
+  for (const time of gridQueueTimes) {
+    points.push(createChronoReplayTracePoint(states, plans, motionStates, time, time / raceDuration, "start", options, raceDuration, options.speedProfile, "dry", 1));
   }
 
   for (const [segmentIndex, segment] of RACE_SEGMENTS.entries()) {
@@ -241,6 +247,8 @@ type TeamTracePlan = {
   teamId: string;
   finalTime: number;
   startDelay: number;
+  queueSlotProgress: number;
+  queueStartProgress: number;
   movingTime: number;
   pitStops: PitStopTracePlan[];
 };
@@ -272,7 +280,7 @@ function createChronoReplayTracePoint(
       const phase = progress >= 1 ? "finished" : car.phase;
       const profileProgress = replayTrackProgress(car.progress, options.laps, speedProfile);
       const pitFloor = lastPassedPitProgress(plan, car.progress);
-      const trackProgress = phase.startsWith("pit") ? car.progress : Math.max(profileProgress, pitFloor);
+      const trackProgress = phase.startsWith("pit") ? car.progress : pitFloor > 0 ? Math.max(profileProgress, pitFloor) : profileProgress;
       if (pitFloor > 0) pitFloors.set(state.participant.teamId, pitFloor);
       const sampled = sampleChronoCarMotion(
         motionStates.get(state.participant.teamId),
@@ -343,7 +351,7 @@ function sampleChronoCarMotion(
   return { raceTime, trackProgress, speed };
 }
 
-function createChronoGridTracePoint(segment: RaceSegment, progress: number, states: ChronoTimingParticipant[], trackLengthMeters: number): ReplayTracePoint {
+function createChronoGridTracePoint(segment: RaceSegment, progress: number, states: ChronoTimingParticipant[], plans: Map<string, TeamTracePlan>, trackLengthMeters: number): ReplayTracePoint {
   const sorted = [...states].sort((left, right) => left.participant.standingsRank - right.participant.standingsRank);
   return {
     segment,
@@ -353,7 +361,11 @@ function createChronoGridTracePoint(segment: RaceSegment, progress: number, stat
     order: sorted.map((state) => state.participant.teamId),
     times: Object.fromEntries(sorted.map((state) => [state.participant.teamId, 0])),
     gaps: Object.fromEntries(sorted.map((state) => [state.participant.teamId, 0])),
-    cars: Object.fromEntries(sorted.map((state) => [state.participant.teamId, { trackProgress: 0, distanceMeters: 0, speed: 0, phase: "grid" as const }]))
+    cars: Object.fromEntries(sorted.map((state) => {
+      const plan = plans.get(state.participant.teamId)!;
+      const trackProgress = gridQueueProgress(plan, 0);
+      return [state.participant.teamId, { trackProgress, distanceMeters: Number((trackProgress * trackLengthMeters).toFixed(1)), speed: 0, phase: "grid" as const }];
+    }))
   };
 }
 
@@ -373,9 +385,11 @@ function teamTracePlan(state: ChronoTimingParticipant, snapshots: ChronoSegmentS
       ? [{ cost, targetProgress: pitLaneTrackProgress(segmentIndex, snapshot.segment, laps, pitLaneProgress) }]
       : [];
   }).sort((left, right) => left.targetProgress - right.targetProgress);
-  const startDelay = Math.max(0, state.participant.standingsRank - 1) * gridGapSeconds;
+  const queueSlot = Math.max(0, state.participant.standingsRank - 1);
+  const startDelay = queueSlot * gridGapSeconds;
   const movingTime = Math.max(1, finalTime - startDelay - pitStops.reduce((sum, stop) => sum + stop.cost, 0));
-  return { teamId: state.participant.teamId, finalTime, startDelay, movingTime, pitStops };
+  const queueSlotProgress = Math.min(MAX_GRID_QUEUE_SLOT_PROGRESS, Math.max(MIN_GRID_QUEUE_SLOT_PROGRESS, gridGapSeconds / movingTime));
+  return { teamId: state.participant.teamId, finalTime, startDelay, queueSlotProgress, queueStartProgress: -queueSlot * queueSlotProgress, movingTime, pitStops };
 }
 
 function lastPassedPitProgress(plan: TeamTracePlan, progress: number) {
@@ -383,7 +397,7 @@ function lastPassedPitProgress(plan: TeamTracePlan, progress: number) {
 }
 
 function carAtRaceTime(plan: TeamTracePlan, raceTime: number): { progress: number; phase: NonNullable<ReplayTracePoint["cars"]>[string]["phase"] } {
-  if (raceTime <= plan.startDelay) return { progress: 0, phase: "grid" };
+  if (raceTime <= plan.startDelay) return { progress: gridQueueProgress(plan, raceTime), phase: "grid" };
   let time = plan.startDelay;
   let progress = 0;
   for (const stop of plan.pitStops) {
@@ -410,6 +424,11 @@ function carAtRaceTime(plan: TeamTracePlan, raceTime: number): { progress: numbe
   if (raceTime >= plan.finalTime) return { progress: 1, phase: "finished" };
   const nextProgress = Math.min(1, progress + Math.max(0, raceTime - time) / plan.movingTime);
   return { progress: nextProgress, phase: nextProgress <= LAUNCH_PHASE_PROGRESS ? "launch" : "racing" };
+}
+
+function gridQueueProgress(plan: TeamTracePlan, raceTime: number) {
+  if (plan.startDelay <= 0) return 0;
+  return plan.queueStartProgress * (1 - Math.min(1, Math.max(0, raceTime / plan.startDelay)));
 }
 
 function orderFromCars(cars: ReplayTracePoint["cars"], states: ChronoTimingParticipant[]) {
@@ -498,8 +517,8 @@ function applyPitProgressFloors(cars: NonNullable<ReplayTracePoint["cars"]>, pit
   if (!pitFloors.size) return cars;
   return Object.fromEntries(
     Object.entries(cars).map(([teamId, car]) => {
-      const floor = pitFloors.get(teamId) ?? 0;
-      if (car.trackProgress >= floor) return [teamId, car];
+      const floor = pitFloors.get(teamId);
+      if (floor === undefined || car.trackProgress >= floor) return [teamId, car];
       return [teamId, { ...car, trackProgress: Number(floor.toFixed(4)), distanceMeters: Number((floor * trackLengthMeters).toFixed(1)) }];
     })
   );

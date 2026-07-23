@@ -4,7 +4,7 @@ import type { CityCircuit } from "../../app/circuits.js";
 export { displayLapAtProgress } from "../../app/lapDisplay.js";
 
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
-export const START_HOLD_SECONDS = 1;
+export const START_HOLD_SECONDS = 0;
 export const FINISH_HOLD_SECONDS = 1;
 export const REPLAY_SPEED_KEY = "cr-league-replay-speed";
 export const REPLAY_FOCUS_KEY = "cr-league-replay-focus";

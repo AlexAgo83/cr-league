@@ -125,21 +125,25 @@ describe("simulateRace", () => {
 
     expect(result.classification).toHaveLength(6);
     expect(result.events.length).toBeGreaterThan(6);
-    expect(result.replayTrace).toHaveLength(106);
+    expect(result.replayTrace).toHaveLength(111);
     expect(result.replayTrace?.[0]?.progress).toBe(0);
     expect(result.replayTrace?.some((point) => point.progress === 0.01)).toBe(true);
     expect(result.replayTrace?.some((point) => point.progress === 0.2)).toBe(true);
     expect(new Set(Object.values(result.replayTrace?.[0]?.gaps ?? {}))).toEqual(new Set([0]));
     const firstDelayPoint = result.replayTrace?.find((point) => point.progress > 0);
+    const redpeakQueuePoint = result.replayTrace?.find((point) => (point.cars?.redpeak?.trackProgress ?? 0) < 0 && (point.cars?.redpeak?.trackProgress ?? -1) > (result.replayTrace?.[0]?.cars?.redpeak?.trackProgress ?? 0));
     expect(firstDelayPoint?.cars?.atlas?.trackProgress).toBeGreaterThan(result.replayTrace?.[0]?.cars?.atlas?.trackProgress ?? -1);
     expect(firstDelayPoint?.cars?.redpeak?.phase).toBe("grid");
-    expect(firstDelayPoint?.cars?.redpeak?.trackProgress).toBe(0);
+    expect(result.replayTrace?.[0]?.cars?.atlas?.trackProgress).toBe(0);
+    expect(result.replayTrace?.[0]?.cars?.redpeak?.trackProgress).toBeLessThan(0);
+    expect(redpeakQueuePoint?.cars?.redpeak?.phase).toBe("grid");
+    expect(redpeakQueuePoint?.cars?.redpeak?.trackProgress).toBeLessThan(0);
     expect(result.replayTrace?.at(-1)?.progress).toBe(1);
     expect(result.replayTrace?.at(-1)?.distanceMeters).toBe(3200);
     expect(result.replayTrace?.at(-1)?.order).toEqual(result.classification.map((entry) => entry.teamId));
     expect(result.replayTrace?.at(-1)?.times[result.classification[0]!.teamId]).toBeGreaterThan(0);
     expect(result.replayTrace?.at(-1)?.gaps[result.classification[0]!.teamId]).toBe(0);
-    expect(new Set(Object.values(result.replayTrace?.[0]?.cars ?? {}).map((car) => car.trackProgress))).toEqual(new Set([0]));
+    expect(Math.max(...Object.values(result.replayTrace?.[0]?.cars ?? {}).map((car) => car.trackProgress))).toBe(0);
     expect(validateReplayTrace(result)).toEqual([]);
     expect(result.replayFacts?.version).toBe(1);
     expect(result.replayFacts?.orderChanges.every((fact) => fact.type === "order_change" && fact.progress >= 0 && fact.progress <= 1)).toBe(true);

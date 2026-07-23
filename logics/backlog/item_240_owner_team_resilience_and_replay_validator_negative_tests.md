@@ -8,6 +8,8 @@
 > Complexity: Low
 > Theme: Integrity and coverage
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-23 corpus grooming note added; no status/progress change.
+> Semantic edit: 2026-07-23 clarified priority rationale during corpus-wide grooming.
 
 # Problem
 - ownerTeamId has no FK/onDelete and requireAdminClaim (store.ts:1052) requires a human team whose id equals ownerTeamId, so removing that owner team permanently 403s resolve/next-grand-prix/restart.
@@ -48,4 +50,4 @@
 
 # Priority
 - Priority: Medium
-- Rationale: Set by scaffold input or defaulted for grooming.
+- Rationale: Owner recovery and replay negative tests protect operations and regressions, but follow the core determinism/card-effect fixes.

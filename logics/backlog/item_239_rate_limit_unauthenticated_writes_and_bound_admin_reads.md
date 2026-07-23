@@ -8,6 +8,8 @@
 > Complexity: Medium
 > Theme: API scale and abuse
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-23 corpus grooming note added; no status/progress change.
+> Semantic edit: 2026-07-23 clarified priority rationale during corpus-wide grooming.
 
 # Problem
 - No rate limiting on unauthenticated write routes: POST /leagues creates a league + team + GP + N bots, plus joins/decisions; only recovery has a limiter, so a script can exhaust the DB.
@@ -49,4 +51,4 @@
 
 # Priority
 - Priority: Medium
-- Rationale: Set by scaffold input or defaulted for grooming.
+- Rationale: Abuse and scale guardrails are needed for invited beta use, but they are bounded infrastructure changes.

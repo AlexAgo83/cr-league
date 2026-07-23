@@ -8,6 +8,8 @@
 > Complexity: Low
 > Theme: Web robustness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-23 corpus grooming note added; no status/progress change.
+> Semantic edit: 2026-07-23 clarified priority rationale during corpus-wide grooming.
 
 # Problem
 - Every localStorage read/write in apps/web is unguarded; mount-time reads (appStorage.ts loadPlayerClaims:79, loadProfileSession:83, initial locale) throw a SecurityError when storage is disabled, white-screening the app at startup.
@@ -49,4 +51,4 @@
 
 # Priority
 - Priority: Medium
-- Rationale: Set by scaffold input or defaulted for grooming.
+- Rationale: A storage exception can white-screen affected browsers, but the fix is isolated and follows existing fallbacks.

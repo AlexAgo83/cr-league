@@ -8,9 +8,12 @@
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Non-semantic edit: 2026-07-23 corpus grooming note added; no status/progress change.
+> Semantic edit: 2026-07-23 replaced scaffold-generic DoD, AC traceability, validation, and report text with implementation-specific delivery guidance.
 
 # Context
-- Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
+- Orchestrate the 2026-07-23 repo-review remediation pass for release 0.4.1.
+- Prioritize correctness and security before cleanup: replay determinism and `positionDelta` honesty are the highest product-risk items, while the client/API hardening protects beta operations.
 
 # Plan
 - [ ] 1. Do the determinism fix first (prng.ts sort + regression test): it is the highest-severity finding because it silently breaks replay, and its test also guards later weather changes.
@@ -35,23 +38,33 @@
 - `item_241_over_engineering_cleanup_extract_replay_trace_delete_dead_exports_unify_modal_state`
 
 # Definition of Done (DoD)
-- [ ] Generated request, product, backlog, and task docs are present.
-- [ ] Context-pack handoff is available when requested.
-- [ ] Validation passes.
+- [ ] Weighted selection determinism is restored and covered by a regression test.
+- [ ] The `positionDelta` decision is recorded here, implemented consistently, and validated with `balance:sim` if it affects classification.
+- [ ] Web storage, unauthenticated profile/email handling, route rate limiting, admin pagination/filtering, owner-team resilience, and replay-trace negative tests are implemented.
+- [ ] Cosmetic replay-trace helpers are extracted, dead exports removed, and modal state simplified without unrelated UI changes.
+- [ ] Typecheck, tests, build, lint, and Logics validation pass.
 - [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
-- request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
-- request-AC4 -> This task. Proof: optional context-pack handoff is supported.
-- request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
-- request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC1 -> This task. Proof due at closeout: deterministic weighted weather regression test.
+- request-AC2 -> This task. Proof due at closeout: recorded `positionDelta` decision and implementation evidence.
+- request-AC3 -> This task. Proof due at closeout: throwing-storage test or equivalent regression coverage.
+- request-AC4 -> This task. Proof due at closeout: normalizeEmail and neutral profile-create behavior tests.
+- request-AC5 -> This task. Proof due at closeout: route rate-limit coverage/config and DB-level admin filtering/pagination.
+- request-AC6 -> This task. Proof due at closeout: owner-team resilience and replay-validator negative tests.
+- request-AC7 -> This task. Proof due at closeout: replayTrace extraction, deleted dead exports, and single modal state.
+- request-AC8 -> This task. Proof due at closeout: validation command output.
 
 # Validation
-- Run `python3 -m logics_manager lint --require-status`.
-- Run scaffold command tests.
+- Run `npm run typecheck`.
+- Run `npm test`.
+- Run `npm run build`.
+- Run `npm run lint`.
+- Run `npm run balance:sim` if `positionDelta` feeds classification.
+- Run `npm run logics:validate` or `logics-manager lint --require-status` plus `logics-manager audit --group-by-doc`.
 
 # Report
-- Implementation complete.
+- Not started. Record validation proof and the final `positionDelta` product decision at closeout.
 
 # AI Context
 - Summary: Orchestrate review-findings remediation

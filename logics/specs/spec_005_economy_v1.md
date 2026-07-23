@@ -8,6 +8,8 @@
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
 > Related product: `prod_001_cr_league_product_brief`
+> Non-semantic edit: 2026-07-23 corpus grooming note added; spec remains Draft.
+> Semantic edit: 2026-07-23 refreshed current status after `req_086` completion and active `positionDelta` follow-up in `req_099`.
 
 # Purpose
 Define the minimal economy for V1.
@@ -15,7 +17,7 @@ Define the minimal economy for V1.
 The economy should create useful choices between races without becoming the game.
 
 # Current Status
-Keep this spec in Draft. The prototype has credits, fixed-price card buying, bot card buying, 15 consumable cards, an AI playtest report, and a balance simulation kit. The 2026-07-21 baseline removed known dead-card pricing outliers, but payouts, comeback pressure, and shop shape are still active balancing topics until human playtest evidence exists.
+Keep this spec in Draft. The prototype has credits, fixed-price card buying, bot card buying, 15 consumable cards, an AI playtest report, and a balance simulation kit. The gameplay/economy integrity pass (`req_086`) has landed, so the monotonic payout and unchosen-card-consumption blockers are no longer open. Card economy tuning is still held until `req_099` resolves whether `positionDelta` position-gain cards affect classification or should be removed, then a fresh balance/playtest baseline confirms the honest card model.
 
 # Resources
 V1 has three resource concepts:
@@ -120,3 +122,4 @@ Recommended first pass:
 
 # Open Questions
 - Is max 5 inventory too restrictive?
+- After `req_099`, should position-gain cards remain as classification-affecting effects or be removed from the economy/card list?

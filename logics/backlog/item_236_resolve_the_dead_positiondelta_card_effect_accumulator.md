@@ -8,6 +8,8 @@
 > Complexity: Medium
 > Theme: Gameplay correctness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-23 corpus grooming note added; no status/progress change.
+> Semantic edit: 2026-07-23 clarified priority rationale during corpus-wide grooming.
 
 # Problem
 - TeamState.positionDelta (simulateRace.ts:51) is incremented by 12 card branches (:855-902) but never read.
@@ -49,4 +51,4 @@
 
 # Priority
 - Priority: High
-- Rationale: Set by scaffold input or defaulted for grooming.
+- Rationale: Advertised position-gain card effects are currently dishonest if the accumulator is written but never read.

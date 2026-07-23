@@ -8,12 +8,14 @@
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
 > Related product: `prod_001_cr_league_product_brief`
+> Non-semantic edit: 2026-07-23 corpus grooming note added; spec remains Draft.
+> Semantic edit: 2026-07-23 refreshed current status so `req_099` precedes the next playtest baseline.
 
 # Purpose
 Define how to test whether the CR League loop is fun before building too much.
 
 # Current Status
-Keep this spec in Draft. The repository has a private-league checklist, AI playtest report, and balance evidence workflow, but the current qualifying/replay/garage loop still needs a real 3-to-5 tester session before the playtest plan is settled.
+Keep this spec in Draft. The repository has a private-league checklist, AI playtest report, and balance evidence workflow, and the 0.4.11-0.4.13 hardening/replay-geometry chains are Done. Run the active `req_099` review-findings remediation before using automated evidence as the next human-session gate; the qualifying/replay/garage loop still needs a real 3-to-5 tester session before the playtest plan is settled.
 
 # Test Goal
 Validate the core product question:

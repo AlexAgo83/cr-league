@@ -1,12 +1,13 @@
 ## prod_050_gameplay_and_economy_integrity_product_brief - Gameplay and Economy Integrity Product Brief
 > Date: 2026-07-22
-> Status: Proposed
+> Status: Settled
 > Related request: `req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation`
 > Related backlog: `item_190_monotonic_payout_and_no_unplayed_card_consumption`, `item_191_deterministic_resolution_and_self_rival_rejection`, `item_192_limiter_pruning_profileid_index_and_bot_card_write_hygiene`
 > Related task: `task_087_orchestrate_gameplay_and_economy_integrity_fixes`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
+> Semantic edit: Settled on 2026-07-23 because the linked request/backlog/task chain is Done and the roadmap records the work as shipped.
 
 # Overview
 A follow-on audit after review pass 6 surfaced correctness issues in the game's economy and resolution rather than its structure: a non-monotonic credit payout that rewards finishing near-last, silent consumption of a card a non-submitting player never chose, race resolution that trusts client-supplied traits and thus loses seed-determinism, a decision validator that allows self-targeted rival cards, plus limiter and index hygiene. This request makes payouts monotonic, stops unplayed-card loss, restores deterministic resolution, and tightens decision validation.

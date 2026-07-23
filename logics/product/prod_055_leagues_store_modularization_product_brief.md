@@ -31,16 +31,17 @@ flowchart TD
 - Do not refactor the simulation engine, Prisma schema, or API routes.
 
 # Scope and guardrails
-- In: scaffolded request, product, backlog, orchestration task, validation, and handoff context.
-- Out: unrelated workflow docs and implementation of generated tasks.
+- In: module extraction inside `apps/api/src/features/leagues`, a `store.ts` barrel with unchanged named exports, shared transaction helpers in one place, and validation proving behavior stays identical.
+- Out: API route changes, admin consumer changes, Prisma schema changes, rule-message rewrites, simulation changes, or new dependencies.
 
 # Key product decisions
-- Use structured input as the source of truth for generated docs.
-- Keep generated write paths local and repo-bounded.
+- Treat this as maintainability work, not a behavior pass: preserve row-lock order, transaction boundaries, and public import paths exactly.
+- Use plain TypeScript modules and the existing barrel-export pattern; do not introduce a service/container abstraction for this split.
 
 # Success signals
-- Generated docs pass lint and audit without broad manual rewrites.
-- Context-pack output can be handed to an implementation agent directly.
+- `store.ts` is reduced to a thin re-export surface while lifecycle modules own their local helpers.
+- Existing API/admin/tests import from the same module path with no consumer churn.
+- `npm run typecheck`, `npm run lint`, the unit suite, and Logics validation pass after the move.
 
 # References
 - Product back-reference: `req_091_modularize_the_oversized_leagues_store`

@@ -8,6 +8,8 @@
 > Complexity: Low
 > Theme: Simulation determinism
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-23 corpus grooming note added; no status/progress change.
+> Semantic edit: 2026-07-23 clarified priority rationale during corpus-wide grooming.
 
 # Problem
 - pickWeightedWithNext (prng.ts:20-38) walks Object.entries(weights) in insertion order, so a semantically-equal weather forecast with keys in a different order consumes the draw differently and returns a different key for the same seed.
@@ -49,4 +51,4 @@
 
 # Priority
 - Priority: High
-- Rationale: Set by scaffold input or defaulted for grooming.
+- Rationale: Replay determinism is a core product invariant and must be fixed before further simulation/replay work.

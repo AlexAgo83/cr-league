@@ -8,6 +8,8 @@
 > Complexity: Medium
 > Theme: Complexity reduction
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-23 corpus grooming note added; no status/progress change.
+> Semantic edit: 2026-07-23 clarified priority rationale during corpus-wide grooming.
 
 # Problem
 - ~500 of 1207 lines in simulateRace.ts are cosmetic replay/trace/director-beat generation entangled with the core loop.
@@ -51,4 +53,4 @@
 
 # Priority
 - Priority: Low
-- Rationale: Set by scaffold input or defaulted for grooming.
+- Rationale: Cleanup reduces maintenance risk, but it should land after correctness/security fixes so it does not obscure behavior changes.

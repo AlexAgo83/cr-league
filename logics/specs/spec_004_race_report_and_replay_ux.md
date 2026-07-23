@@ -9,6 +9,8 @@
 > Related task: `task_003_define_cr_league_v1_planning_specs`
 > Related product: `prod_001_cr_league_product_brief`
 > Related spec: `spec_001_grand_prix_core_loop_and_simulation_v1`
+> Non-semantic edit: 2026-07-23 corpus grooming note added; spec remains Draft.
+> Semantic edit: 2026-07-23 refreshed current status after completed race-track work and active replay-determinism remediation.
 
 # Purpose
 Define how race outcomes are presented so players understand and remember them.
@@ -16,7 +18,7 @@ Define how race outcomes are presented so players understand and remember them.
 The replay and report are not decoration. They are the explanation layer for an automated simulation.
 
 # Current Status
-Keep this spec in Draft. The app now has animated road-routed GP replay, qualifying replay, report tabs, historical replay, and localized event summaries, but replay/report comprehension still needs current multi-person playtest evidence before this becomes settled.
+Keep this spec in Draft. The app now has animated road-routed GP replay, qualifying replay, canonical pit/start geometry from the completed race-track work, report tabs, historical replay, and localized event summaries. The active `req_099` remediation must still restore weighted-selection determinism and expand replay-validator negative coverage before the next playtest baseline; replay/report comprehension still needs current multi-person playtest evidence before this becomes settled.
 
 # UX Goal
 After a Grand Prix, the player should know:

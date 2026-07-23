@@ -1,12 +1,13 @@
 ## prod_049_repo_review_remediation_pass_6_product_brief - Repo Review Remediation Pass 6 Product Brief
 > Date: 2026-07-21
-> Status: Proposed
+> Status: Settled
 > Related request: `req_085_repo_review_remediation_pass_6_json_column_race_locks_simulation_finishing_order_fidelity_destructive_op_guards_and_over_engineering_cleanup`
 > Related backlog: `item_185_lock_the_json_column_read_modify_write_paths`, `item_186_restore_simulation_finishing_order_and_interval_fidelity`, `item_187_guard_destructive_delete_and_league_admin_authority`, `item_188_derive_plan_badges_from_a_single_shared_stat_delta_descriptor`, `item_189_over_engineering_cleanup_sweep`
 > Related task: `task_086_orchestrate_repo_review_remediation_pass_6`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
+> Semantic edit: Settled on 2026-07-23 because the linked request/backlog/task chain is Done and the roadmap records the work as shipped.
 
 # Overview
 A sixth remediation pass driven by the v0.3.26 full-repo review: close the JSON-column read-modify-write races on the card, decision, and join paths using the transaction/row-lock machinery established in passes 3-5; restore simulation finishing-order fidelity so results and displayed gaps reflect the score model; guard the two remaining destructive/authority operations; stop the card directive badges from drifting from balance; and delete the over-engineering the review catalogued.

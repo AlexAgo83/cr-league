@@ -8,12 +8,14 @@
 > Related backlog: `item_008_define_cr_league_v1_planning_specs`
 > Related task: `task_003_define_cr_league_v1_planning_specs`
 > Related product: `prod_001_cr_league_product_brief`
+> Non-semantic edit: 2026-07-23 corpus grooming note added; spec remains Draft.
+> Semantic edit: 2026-07-23 refreshed current status with active owner-team resilience follow-up in `req_099`.
 
 # Purpose
 Define how asynchronous leagues advance without stalling.
 
 # Current Status
-Keep this spec in Draft. Manual cadence, readiness, missing-player defaults, and league controls exist, but automatic deadline resolution, reminders, and real asynchronous absence behavior are not validated yet.
+Keep this spec in Draft. Manual cadence, readiness, missing-player defaults, and league controls exist, and the recent hardening/canonical-track chains are Done. The active `req_099` owner-team resilience item must still ensure admin controls recover if the owner team is removed; automatic deadline resolution, reminders, and real asynchronous absence behavior are not validated yet.
 
 # Cadence Model
 Solo:

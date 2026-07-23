@@ -8,9 +8,12 @@
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Non-semantic edit: 2026-07-23 corpus grooming note added; no status/progress change.
+> Semantic edit: 2026-07-23 replaced scaffold-generic DoD, AC traceability, validation, and report text with implementation-specific delivery guidance.
 
 # Context
-- Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
+- Orchestrate a behavior-neutral backend modularization of `apps/api/src/features/leagues/store.ts`.
+- This is a maintainability slice: keep route/admin/test import paths stable and preserve every transaction boundary, row lock, rule error, and validation behavior.
 
 # Plan
 - [ ] 1. Map every top-level function in store.ts to a lifecycle group and list its private helpers and shared dependencies.
@@ -26,23 +29,27 @@
 - `item_207_split_leagues_store_into_lifecycle_modules_behind_a_barrel`
 
 # Definition of Done (DoD)
-- [ ] Generated request, product, backlog, and task docs are present.
-- [ ] Context-pack handoff is available when requested.
-- [ ] Validation passes.
+- [ ] `store.ts` is a barrel that re-exports the same public symbols consumed today.
+- [ ] Lifecycle modules and the shared transaction-helper module own the moved code with no duplicated lock/helper logic.
+- [ ] No route, admin-store, or test import path changes are required.
+- [ ] Typecheck, lint, unit tests, and Logics validation pass.
 - [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
-- request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
-- request-AC4 -> This task. Proof: optional context-pack handoff is supported.
-- request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
-- request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC1 -> This task. Proof due at closeout: lifecycle modules exist and `store.ts` only re-exports.
+- request-AC2 -> This task. Proof due at closeout: shared transaction helpers live in one module with no duplication.
+- request-AC3 -> This task. Proof due at closeout: existing consumers keep importing from the same path.
+- request-AC4 -> This task. Proof due at closeout: behavior-critical locks/errors are preserved.
+- request-AC5 -> This task. Proof due at closeout: typecheck, lint, and unit tests pass.
 
 # Validation
-- Run `python3 -m logics_manager lint --require-status`.
-- Run scaffold command tests.
+- Run `npm run typecheck`.
+- Run `npm run lint`.
+- Run the full unit test suite.
+- Run `npm run logics:validate` or `logics-manager lint --require-status` plus `logics-manager audit --group-by-doc`.
 
 # Report
-- Implementation complete.
+- Not started. Record moved modules, unchanged import surface proof, test output, and any intentionally deferred helper cleanup at closeout.
 
 # AI Context
 - Summary: Orchestrate leagues store modularization

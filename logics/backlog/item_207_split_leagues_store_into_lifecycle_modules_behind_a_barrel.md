@@ -8,6 +8,8 @@
 > Complexity: Medium
 > Theme: Backend maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: 2026-07-23 corpus grooming note added; no status/progress change.
+> Semantic edit: 2026-07-23 clarified priority rationale during corpus-wide grooming.
 
 # Problem
 - store.ts concentrates ~10 unrelated lifecycles and their private helpers in one 1197-line file.
@@ -57,4 +59,4 @@
 
 # Priority
 - Priority: Medium
-- Rationale: Set by scaffold input or defaulted for grooming.
+- Rationale: Important maintainability work, but behavior-neutral and lower risk than active correctness/security remediation.

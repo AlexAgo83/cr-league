@@ -1,12 +1,13 @@
 ## prod_051_simulation_fidelity_and_replay_performance_product_brief - Simulation Fidelity and Replay Performance Product Brief
 > Date: 2026-07-22
-> Status: Proposed
+> Status: Settled
 > Related request: `req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness`
 > Related backlog: `item_193_qualifying_responds_to_circuit_traits`, `item_194_bound_replay_render_cost_and_timer_growth`, `item_195_recap_accuracy_and_replay_overlay_polish`, `item_196_simulation_input_robustness_and_unbiased_circuit_shuffle`
 > Related task: `task_088_orchestrate_simulation_fidelity_and_replay_performance_fixes`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
+> Semantic edit: Settled on 2026-07-23 because the linked request/backlog/task chain is Done and the roadmap records the work as shipped.
 
 # Overview
 A third audit after review pass 6 and the gameplay-integrity pass found issues in how faithfully the game reads the track and how cheaply the replay renders: qualifying times do not respond to circuit traits at all, the circuit map re-runs an O(n^2) scene analysis on every replay frame, the recap mislabels heavy rain, and a public simulation route can be made to return NaN. This request makes qualifying track-sensitive, bounds replay render cost, corrects recap and overlay accuracy, and hardens simulation inputs.

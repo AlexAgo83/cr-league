@@ -123,7 +123,7 @@ export function simulateRace(input: RaceInput): RaceResult {
 
   const classification = classify(states);
   addFinishEvents(events, classification);
-  const distanceReplayTrace = createDistanceReplayTrace(states, traceSegments, trackLengthMeters, laps, pitLaneProgress, speedProfile, weather, input.traits?.energy ?? 62);
+  const distanceReplayTrace = createDistanceReplayTrace(states, classification, traceSegments, trackLengthMeters, laps, pitLaneProgress, speedProfile, weather, input.traits?.energy ?? 62);
   const annotatedReplayTrace = annotateReplayOvertakes(stabilizeReplayTraceOrders(distanceReplayTrace));
   const replayEvents = withTraceEventProgress(events, annotatedReplayTrace, laps, trackZones);
 
@@ -283,8 +283,9 @@ function eventSegmentRatio(event: RaceEvent) {
   return ratios[event.type] ?? 0.5;
 }
 
-function createDistanceReplayTrace(states: TeamState[], snapshots: TraceSegmentSnapshot[], trackLengthMeters: number, laps: number, pitLaneProgress: number, speedProfile: NonNullable<RaceInput["speedProfile"]>, weather: Record<RaceSegment, Weather>, energy: number): ReplayTracePoint[] {
-  const plans = new Map(states.map((state) => [state.participant.teamId, teamTracePlan(state, snapshots, laps, pitLaneProgress)]));
+function createDistanceReplayTrace(states: TeamState[], classification: ClassificationEntry[], snapshots: TraceSegmentSnapshot[], trackLengthMeters: number, laps: number, pitLaneProgress: number, speedProfile: NonNullable<RaceInput["speedProfile"]>, weather: Record<RaceSegment, Weather>, energy: number): ReplayTracePoint[] {
+  const finalTimes = replayFinalTimes(states, classification);
+  const plans = new Map(states.map((state) => [state.participant.teamId, teamTracePlan(state, snapshots, laps, pitLaneProgress, finalTimes.get(state.participant.teamId) ?? state.elapsedTime)]));
   const raceDuration = Math.max(...states.map((state) => state.elapsedTime));
   const points: ReplayTracePoint[] = [createReplayTracePoint("start", 0, states, undefined, trackLengthMeters)];
 
@@ -305,11 +306,16 @@ function createDistanceReplayTrace(states: TeamState[], snapshots: TraceSegmentS
 }
 
 function createDistanceReplayTracePoint(states: TeamState[], plans: Map<string, TeamTracePlan>, raceTime: number, progress: number, segment: RaceSegment, trackLengthMeters: number, raceDuration: number, laps: number, speedProfile: NonNullable<RaceInput["speedProfile"]>, weather: Weather, paceFactor: number): ReplayTracePoint {
+  const pitFloors = new Map<string, number>();
   const rawCars = Object.fromEntries(
     states.map((state) => {
-      const car = carAtRaceTime(plans.get(state.participant.teamId)!, raceTime);
+      const plan = plans.get(state.participant.teamId)!;
+      const car = carAtRaceTime(plan, raceTime);
       const phase = progress >= 1 ? "finished" : car.phase;
-      const trackProgress = phase.startsWith("pit") ? car.progress : replayTrackProgress(car.progress, laps, speedProfile);
+      const profileProgress = replayTrackProgress(car.progress, laps, speedProfile);
+      const pitFloor = lastPassedPitProgress(plan, car.progress);
+      const trackProgress = phase.startsWith("pit") ? car.progress : Math.max(profileProgress, pitFloor);
+      if (pitFloor > 0) pitFloors.set(state.participant.teamId, pitFloor);
       return [
         state.participant.teamId,
         {
@@ -321,7 +327,7 @@ function createDistanceReplayTracePoint(states: TeamState[], plans: Map<string, 
       ];
     })
   );
-  const cars = annotateTrafficDefense(applyVisualChronoGaps(rawCars, trackLengthMeters, raceDuration), states);
+  const cars = annotateTrafficDefense(applyPitProgressFloors(applyVisualChronoGaps(rawCars, trackLengthMeters, raceDuration), pitFloors, trackLengthMeters), states);
   const order = progress >= 1
     ? states.slice().sort((left, right) => right.scores.score - left.scores.score || left.elapsedTime - right.elapsedTime).map((state) => state.participant.teamId)
     : orderFromCars(cars, states);
@@ -332,10 +338,21 @@ function createDistanceReplayTracePoint(states: TeamState[], plans: Map<string, 
     progress,
     distanceMeters: Number((progress * trackLengthMeters).toFixed(1)),
     order,
-    times: Object.fromEntries(states.map((state) => [state.participant.teamId, progress >= 1 ? Number(state.elapsedTime.toFixed(1)) : Number(raceTime.toFixed(1))])),
+    times: Object.fromEntries(states.map((state) => [state.participant.teamId, progress >= 1 ? Number((plans.get(state.participant.teamId)?.finalTime ?? state.elapsedTime).toFixed(1)) : Number(raceTime.toFixed(1))])),
     gaps: Object.fromEntries(states.map((state) => [state.participant.teamId, Number(Math.max(0, (leaderProgress - (cars[state.participant.teamId]?.trackProgress ?? 0)) * raceDuration).toFixed(1))])),
     cars
   };
+}
+
+function applyPitProgressFloors(cars: NonNullable<ReplayTracePoint["cars"]>, pitFloors: Map<string, number>, trackLengthMeters: number) {
+  if (!pitFloors.size) return cars;
+  return Object.fromEntries(
+    Object.entries(cars).map(([teamId, car]) => {
+      const floor = pitFloors.get(teamId) ?? 0;
+      if (car.trackProgress >= floor) return [teamId, car];
+      return [teamId, { ...car, trackProgress: Number(floor.toFixed(4)), distanceMeters: Number((floor * trackLengthMeters).toFixed(1)) }];
+    })
+  );
 }
 
 function applyVisualChronoGaps(cars: NonNullable<ReplayTracePoint["cars"]>, trackLengthMeters: number, raceDuration: number) {
@@ -368,7 +385,12 @@ function annotateTrafficDefense(cars: NonNullable<ReplayTracePoint["cars"]>, sta
   return updates.size ? { ...cars, ...Object.fromEntries(updates) } : cars;
 }
 
-function teamTracePlan(state: TeamState, snapshots: TraceSegmentSnapshot[], laps: number, pitLaneProgress: number): TeamTracePlan {
+function replayFinalTimes(states: TeamState[], classification: ClassificationEntry[]) {
+  const sortedTimes = states.map((state) => state.elapsedTime).sort((left, right) => left - right);
+  return new Map(classification.map((entry, index) => [entry.teamId, sortedTimes[index] ?? sortedTimes.at(-1) ?? 1]));
+}
+
+function teamTracePlan(state: TeamState, snapshots: TraceSegmentSnapshot[], laps: number, pitLaneProgress: number, finalTime = state.elapsedTime): TeamTracePlan {
   const pitStops = snapshots.flatMap((snapshot, segmentIndex) => {
     const cost = snapshot.pitCosts.get(state.participant.teamId);
     return cost
@@ -376,8 +398,12 @@ function teamTracePlan(state: TeamState, snapshots: TraceSegmentSnapshot[], laps
       : [];
   }).sort((left, right) => left.targetProgress - right.targetProgress);
   const startDelay = Math.max(0, state.participant.standingsRank - 1) * GRID_GAP_SECONDS;
-  const movingTime = Math.max(1, state.elapsedTime - startDelay - pitStops.reduce((sum, stop) => sum + stop.cost, 0));
-  return { teamId: state.participant.teamId, finalTime: state.elapsedTime, startDelay, movingTime, pitStops };
+  const movingTime = Math.max(1, finalTime - startDelay - pitStops.reduce((sum, stop) => sum + stop.cost, 0));
+  return { teamId: state.participant.teamId, finalTime, startDelay, movingTime, pitStops };
+}
+
+function lastPassedPitProgress(plan: TeamTracePlan, progress: number) {
+  return plan.pitStops.filter((stop) => stop.targetProgress <= progress + 0.002).at(-1)?.targetProgress ?? 0;
 }
 
 function carAtRaceTime(plan: TeamTracePlan, raceTime: number): { progress: number; phase: NonNullable<ReplayTracePoint["cars"]>[string]["phase"] } {

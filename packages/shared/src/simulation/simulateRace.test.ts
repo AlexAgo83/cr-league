@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { simulateRace } from "./simulateRace.js";
 import { validateReplayTrace } from "./validateReplayTrace.js";
 import type { RaceInput } from "../domain/race.js";
-import { CITY_CIRCUIT_IDENTITIES, raceInputFromCircuit, trackZonesForCircuit } from "../domain/circuits.js";
+import { CITY_CIRCUIT_IDENTITIES, raceInputFromCircuit, trackSpeedProfileForCircuit, trackZonesForCircuit } from "../domain/circuits.js";
 
 const baseRace: RaceInput = {
   seed: "silver-ridge-001",
@@ -228,6 +228,30 @@ describe("simulateRace", () => {
     const leaderId = point?.order[0] ?? "";
 
     expect(point?.cars?.[leaderId]?.trackProgress).toBeLessThan(baselinePoint?.cars?.[leaderId]?.trackProgress ?? 0);
+    expect(validateReplayTrace(result)).toEqual([]);
+  });
+
+  it("keeps pit exits monotonic on profiled city circuits", () => {
+    const circuit = CITY_CIRCUIT_IDENTITIES.find((candidate) => candidate.layoutKey === "circuit_left_bank_loop")!;
+    const result = simulateRace({
+      ...baseRace,
+      ...raceInputFromCircuit(circuit),
+      traits: circuit.traits,
+      laps: circuit.laps,
+      pitLaneProgress: circuit.pitLaneProgress,
+      speedProfile: trackSpeedProfileForCircuit(circuit),
+      trackZones: trackZonesForCircuit(circuit),
+      participants: baseRace.participants.slice(0, 4).map((participant, index) => ({
+        ...participant,
+        decision: { ...participant.decision, pitStrategy: index === 0 ? "standard" : "heavy_pack" }
+      }))
+    });
+
+    expect(result.replayTrace?.some((point) => Object.values(point.cars ?? {}).some((car) => car.phase === "pit_exit"))).toBe(true);
+    const pitStop = result.replayTrace?.find((point) => Object.values(point.cars ?? {}).some((car) => car.phase === "pit_stop"));
+    const pitCar = Object.values(pitStop?.cars ?? {}).find((car) => car.phase === "pit_stop");
+
+    expect(((pitCar?.trackProgress ?? 0) * circuit.laps) % 1).toBeCloseTo(circuit.pitLaneProgress);
     expect(validateReplayTrace(result)).toEqual([]);
   });
 
@@ -464,6 +488,33 @@ describe("simulateRace", () => {
       expect(entry.positionChange).toBe((gridRank ?? entry.position) - entry.position);
     }
     expect(result.classification.map((entry) => entry.position + entry.positionChange).sort((left, right) => left - right)).toEqual([1, 2, 3, 4, 5, 6]);
+  });
+
+  it("keeps replay finish crossings aligned with final classification", () => {
+    const result = simulateRace({
+      ...baseRace,
+      seed: "finish-order-debug",
+      primaryTrait: "high_wear",
+      secondaryTrait: "technical",
+      traits: { grip: 80, overtaking: 40, energy: 80 },
+      laps: 5,
+      participants: [
+        { teamId: "fast-low", teamName: "Fast Low", kind: "human", standingsRank: 1, decision: { approach: "aggressive", preparation: "speed", pitStrategy: "standard" } },
+        { teamId: "slow-high", teamName: "Slow High", kind: "human", standingsRank: 2, decision: { approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack" } },
+        { teamId: "mid", teamName: "Mid", kind: "human", standingsRank: 3, decision: { approach: "balanced", preparation: "weather", pitStrategy: "standard" } }
+      ]
+    });
+    const finalTimes = result.replayTrace?.at(-1)?.times ?? {};
+    const classified = result.classification.map((entry) => entry.teamId);
+
+    expect(classified).toHaveLength(3);
+    const classifiedTimes = classified.map((teamId) => finalTimes[teamId] ?? 0);
+    expect(classifiedTimes).toEqual([...classifiedTimes].sort((left, right) => left - right));
+    for (const point of result.replayTrace ?? []) {
+      const finished = classified.filter((teamId) => point.cars?.[teamId]?.phase === "finished");
+      expect(finished).toEqual(classified.slice(0, finished.length));
+    }
+    expect(validateReplayTrace(result)).toEqual([]);
   });
 
   it("covers forced risk scare and mechanic save branches", () => {

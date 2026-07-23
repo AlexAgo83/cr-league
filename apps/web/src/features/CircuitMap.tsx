@@ -19,6 +19,7 @@ export type MapCar = {
   positionDelta?: number;
   positionDeltaKey?: number;
   eventLabel?: string;
+  braking?: boolean;
   repeatCount?: number | "indefinite";
 };
 
@@ -49,7 +50,7 @@ const CLOSE_ENTER_DISTANCE = 2;
 const CLOSE_EXIT_DISTANCE = 6;
 const DRIFT_LOOKAHEAD = 0.012;
 const HEADING_LOOKAHEAD = 0.006;
-const MAX_DRIFT_ANGLE = 14;
+const MAX_DRIFT_ANGLE = 22;
 const TIRE_MARK_MIN_DRIFT = 3;
 const TIRE_MARK_LIFETIME = 1_100;
 const TIRE_MARK_SAMPLE_DISTANCE = 0.45;
@@ -250,7 +251,7 @@ function progressFromStart(progress: number, startProgress: number) {
 export function driftAngle(points: Array<{ x: number; y: number }>, progress: number) {
   const before = poseOnRoute(points, progress - DRIFT_LOOKAHEAD).angle;
   const after = poseOnRoute(points, progress + DRIFT_LOOKAHEAD).angle;
-  return Math.max(-MAX_DRIFT_ANGLE, Math.min(MAX_DRIFT_ANGLE, angleDelta(before, after) * 0.45));
+  return Math.max(-MAX_DRIFT_ANGLE, Math.min(MAX_DRIFT_ANGLE, angleDelta(before, after) * 0.7));
 }
 
 function boundsOf(points: Array<{ x: number; y: number }>) {
@@ -289,6 +290,7 @@ export function CircuitMap({
   framed = true,
   showTraits = true,
   weather,
+  onCarClick,
   reduceMotion = prefersReducedMotion()
 }: {
   circuit: CityCircuit;
@@ -307,6 +309,7 @@ export function CircuitMap({
   framed?: boolean;
   showTraits?: boolean;
   weather?: Weather;
+  onCarClick?: (car: MapCar) => void;
   reduceMotion?: boolean;
 }) {
   const { zoom, tiles, points, d } = useMemo(() => circuitScene(circuit), [circuit]);
@@ -518,9 +521,16 @@ export function CircuitMap({
                     ? ({ "--car-primary": safeHex(car.livery.primary, "#38bdf8"), "--car-secondary": safeHex(car.livery.secondary, "#16c784") } as CSSProperties & Record<string, string>)
                     : undefined;
                   return (
-                    <g key={car.id} data-car-id={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
+                    <g
+                      key={car.id}
+                      data-car-id={car.id}
+                      className={`${car.player ? "map-car player" : "map-car"}${onCarClick ? " focus-target" : ""}`}
+                      style={carStyle}
+                      transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}
+                      onClick={onCarClick ? () => onCarClick(car) : undefined}
+                    >
                       <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                        <MapCarSprite asset={asset} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
+                        <MapCarSprite asset={asset} braking={car.braking} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
                         <text textAnchor="middle" dominantBaseline="central">
                           {car.label}
                         </text>
@@ -588,7 +598,7 @@ function prefersReducedMotion() {
   return typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 }
 
-export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, maskId, transform }: { asset?: CarAsset; maskId: string; transform?: string }) {
+export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, braking = false, maskId, transform }: { asset?: CarAsset; braking?: boolean; maskId: string; transform?: string }) {
   const geometry = carRenderGeometryForId(asset.id);
   const { image, bounds } = geometry;
 
@@ -611,11 +621,23 @@ export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, maskId, transform }: {
             <stop offset="1" className="map-car-headlight-end" />
           </linearGradient>
         ))}
+        {geometry.rearLights.map(([x, y], index) => (
+          <linearGradient key={index} id={`${maskId}-rear-light-${index}`} x1={x} y1={y} x2={x - 7} y2={y} gradientUnits="userSpaceOnUse">
+            <stop offset="0" className="map-car-rear-light-start" />
+            <stop offset="1" className="map-car-rear-light-end" />
+          </linearGradient>
+        ))}
       </defs>
       {geometry.frontLights.map(([x, y], index) => (
         <g key={index} className="map-car-headlight">
-          <path d={`M${x} ${y} L${x + 28} ${y - 4} L${x + 28} ${y + 4} Z`} fill={`url(#${maskId}-headlight-${index})`} />
+          <path d={`M${x} ${y} L${x + 24} ${y - 5} L${x + 24} ${y + 5} Z`} fill={`url(#${maskId}-headlight-${index})`} />
           <circle cx={x} cy={y} r="1.2" />
+        </g>
+      ))}
+      {geometry.rearLights.map(([x, y], index) => (
+        <g key={index} className={braking ? "map-car-rear-light braking" : "map-car-rear-light"}>
+          <path d={`M${x} ${y} L${x - 7} ${y - 1.7} L${x - 7} ${y + 1.7} Z`} fill={`url(#${maskId}-rear-light-${index})`} />
+          <circle cx={x} cy={y} r="0.9" />
         </g>
       ))}
       <rect className="map-car-stroke" x={bounds.x} y={bounds.y} width={bounds.width} height={bounds.height} mask={`url(#${maskId})`} />

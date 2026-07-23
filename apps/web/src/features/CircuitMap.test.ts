@@ -17,7 +17,7 @@ describe("CircuitMap route posing", () => {
     const jumps = angles.slice(1).map((angle, index) => Math.abs(angleDelta(angles[index]!, angle)));
 
     expect(Math.max(...jumps)).toBeLessThan(70);
-    expect(Math.abs(driftAngle(route, 0.25))).toBeLessThanOrEqual(14);
+    expect(Math.abs(driftAngle(route, 0.25))).toBeLessThanOrEqual(22);
   });
 
   it("normalizes every car around its front axle without flattening model proportions", () => {

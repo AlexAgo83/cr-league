@@ -73,7 +73,7 @@ describe("chronoRaceEngine", () => {
       next: () => 0.5,
       baseReplaySeconds: 142,
       defaultTrackLengthMeters: 3200,
-      gridGapSeconds: 0.25
+      gridGapSeconds: 1.5
     };
 
     expect(createChronoFinalTimes(states, [], options)).toEqual(createChronoFinalTimes(states, [], options));
@@ -115,6 +115,8 @@ describe("chronoRaceEngine", () => {
     expect(trace.find((point) => point.cars?.bravo?.phase === "launch")?.cars?.bravo?.trackProgress).toBeGreaterThan(0);
     expect(trace.some((point) => point.cars?.atlas?.phase === "pit_stop")).toBe(true);
     expect(trace.some((point) => (point.cars?.atlas?.speed ?? 0) > 0 && (point.cars?.atlas?.speed ?? 0) < 1)).toBe(true);
+    const firstRaceSample = trace.findIndex((point) => point.progress === 0.01);
+    expect(trace[firstRaceSample + 1]!.cars!.atlas!.trackProgress).toBeGreaterThan(trace[firstRaceSample]!.cars!.atlas!.trackProgress);
     for (let index = 1; index < trace.length; index += 1) {
       expect(trace[index]!.cars!.atlas!.trackProgress).toBeGreaterThanOrEqual(trace[index - 1]!.cars!.atlas!.trackProgress);
     }

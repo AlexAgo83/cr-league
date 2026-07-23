@@ -133,6 +133,7 @@ export function ReplayView({
   tt: Translator;
 }) {
   const [driverFocus, setDriverFocus] = useState(() => safeStorage.get(REPLAY_FOCUS_KEY) !== "0");
+  const [focusedCarId, setFocusedCarId] = useState(playerTeamId);
   const [copyDismissed, setCopyDismissed] = useState(() => safeStorage.get(DISMISSED_REPLAY_HELP_KEY) === "1");
   const [resultUnlocked, setResultUnlocked] = useState(false);
   const replayTrace = useMemo(() => result.replayTrace ?? [], [result.replayTrace]);
@@ -172,7 +173,8 @@ export function ReplayView({
 
   useEffect(() => {
     setResultUnlocked(false);
-  }, [result.seed, titleKey]);
+    setFocusedCarId(playerTeamId);
+  }, [playerTeamId, result.seed, titleKey]);
 
   const qualifyingMomentEvents = useMemo(() => replayMode === "qualifying" ? buildQualifyingMomentEvents(directorBeats, result) : [], [directorBeats, replayMode, result]);
   // Majors and player moments first pick, race notes as filler — then strict race order.
@@ -257,11 +259,26 @@ export function ReplayView({
       delay: 0,
       duration: replayTimes.times[entry.teamId] ?? replayTimes.leader + index,
       progress: snapshot.carProgress[entry.teamId] ?? 0,
+      braking: circuit.speedProfile.some((span) => {
+        const lapProgress = (((snapshot.carProgress[entry.teamId] ?? 0) % 1) + 1) % 1;
+        return span.kind === "braking" && (span.startProgress <= span.endProgress
+          ? lapProgress >= span.startProgress && lapProgress <= span.endProgress
+          : lapProgress >= span.startProgress || lapProgress <= span.endProgress);
+      }),
       livery: teamLiveries[entry.teamId],
       positionDelta: positionPops[entry.teamId]?.delta,
       positionDeltaKey: positionPops[entry.teamId]?.key
-  })), [field, playerTeamId, positionPops, replayTimes.leader, replayTimes.times, snapshot.carProgress, snapshot.tower, teamLiveries]);
+  })), [circuit.speedProfile, field, playerTeamId, positionPops, replayTimes.leader, replayTimes.times, snapshot.carProgress, snapshot.tower, teamLiveries]);
   const playerCar = cars.find((car) => car.player) ?? cars[0];
+  const focusedCar = cars.find((car) => car.id === focusedCarId) ?? playerCar;
+  const setReplayDriverFocus = (focused: boolean) => {
+    setFocusedCarId(playerCar?.id);
+    setDriverFocus(focused);
+  };
+  const restartReplay = () => {
+    setFocusedCarId(playerCar?.id);
+    restart();
+  };
   const towerPlanByTeam = new Map(planDecisions?.map((decision) => [decision.teamId, decision]));
   const traceLiveTimes = traceTimesAt(replayTrace, currentRaceProgress);
   const traceLiveGaps = traceGapsAt(replayTrace, currentRaceProgress);
@@ -385,7 +402,8 @@ export function ReplayView({
             framed={false}
             showTraits={false}
             reduceMotion={reduceMotion}
-            camera={{ enabled: driverFocus, car: playerCar, timeRef: clock }}
+            camera={{ enabled: driverFocus, car: focusedCar, timeRef: clock }}
+            onCarClick={driverFocus ? (car) => setFocusedCarId(car.id) : undefined}
             overlay={
               <ReplayStageOverlay
                 circuit={circuit}
@@ -419,8 +437,8 @@ export function ReplayView({
                 tt={tt}
                 setPlaying={setPlaying}
                 setSpeed={setSpeed}
-                setDriverFocus={setDriverFocus}
-                restart={restart}
+                setDriverFocus={setReplayDriverFocus}
+                restart={restartReplay}
                 seek={seek}
                 onOpenTowerReport={onOpenPlanReport}
                 onOpenPlan={onOpenPlan}

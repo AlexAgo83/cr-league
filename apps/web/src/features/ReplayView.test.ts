@@ -179,6 +179,18 @@ describe("ReplayView timing", () => {
     expect(carProgressAtTrace(result, trace, 0.05, 5)).toMatchObject({ leader: 0.4, last: -0.01 });
   });
 
+  it("skips launch samples that copied a future position", () => {
+    const car = (trackProgress: number) => ({ trackProgress, speed: 0.7, phase: "launch" as const });
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0.009, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: car(0.01), last: car(0.005) } },
+      { segment: "start", lap: 1, progress: 0.01, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: car(0.02), last: car(0.01) } },
+      { segment: "start", lap: 1, progress: 0.011, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: car(0.02), last: car(0.015) } },
+      { segment: "start", lap: 1, progress: 0.012, order: ["leader", "last"], times: {}, gaps: {}, cars: { leader: car(0.03), last: car(0.02) } }
+    ];
+
+    expect(carProgressAtTrace(result, trace, 0.01, 5).leader).toBeCloseTo(0.0833, 3);
+  });
+
   it("applies corner speed profiles as visual-only lap progress", () => {
     const speedProfile = [
       { kind: "braking" as const, startProgress: 0.2, endProgress: 0.3, factor: 0.7 },

@@ -1,5 +1,5 @@
-import { render } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { fireEvent, render } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 import { CITY_CIRCUITS } from "../app/circuits.js";
 import { CircuitMap, type MapCar } from "./CircuitMap.js";
 
@@ -23,12 +23,23 @@ describe("CircuitMap rendering", () => {
     expect(container.querySelector(".circuit-map-content")?.getAttribute("transform")).toBeNull();
   });
 
+  it("reports a clicked car while focus selection is enabled", () => {
+    const car: MapCar = { id: "rival", label: "R", player: false, delay: 0, duration: 10, progress: 0 };
+    const onCarClick = vi.fn();
+    const { container } = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[car]} onCarClick={onCarClick} />);
+
+    fireEvent.click(container.querySelector(".map-car")!);
+
+    expect(onCarClick).toHaveBeenCalledWith(car);
+  });
+
   it("renders metadata-driven tire trails and headlights", () => {
-    const moving: MapCar = { id: "moving", label: "M", player: false, delay: 0, duration: 10, progress: 1 };
+    const moving: MapCar = { id: "moving", label: "M", player: false, delay: 0, duration: 10, progress: 1, braking: true };
 
     const movingMap = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[moving]} />);
     expect(movingMap.container.querySelectorAll(".map-car-trail")).toHaveLength(2);
     expect(movingMap.container.querySelectorAll(".map-car-headlight")).toHaveLength(2);
+    expect(movingMap.container.querySelectorAll(".map-car-rear-light.braking")).toHaveLength(2);
   });
 
   it("keeps ambient cars moving forward only", () => {

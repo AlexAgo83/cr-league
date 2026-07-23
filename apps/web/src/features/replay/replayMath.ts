@@ -61,20 +61,30 @@ export function traceTimesAt(trace: ReplayTracePoint[], progress: number) {
 }
 
 function traceCarProgressAt(trace: ReplayTracePoint[], progress: number, laps: number, _speedProfile?: TrackSpeedProfile) {
-  const from = tracePointAt(trace, progress);
-  const to = trace.find((point) => point.progress > progress) ?? from;
-  if (!from.cars || !to.cars) return null;
-  const span = to.progress - from.progress || 1;
-  const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
-  return Object.fromEntries(
-    Object.keys({ ...from.cars, ...to.cars }).map((teamId) => {
-      const fromCar = from.cars?.[teamId];
-      const toCar = to.cars?.[teamId];
+  const teamIds = [...new Set(trace.flatMap((point) => Object.keys(point.cars ?? {})))];
+  if (!teamIds.length) return null;
+  return Object.fromEntries(teamIds.map((teamId) => {
+    const carSamples = trace.filter((point) => point.cars?.[teamId]);
+    const samples = carSamples.filter((point, index) => {
+      const car = point.cars![teamId]!;
+      if (car.phase !== "launch") return true;
+      const previous = carSamples[index - 1]?.cars?.[teamId];
+      const next = carSamples[index + 1]?.cars?.[teamId];
+      if (previous?.trackProgress !== car.trackProgress && next?.trackProgress !== car.trackProgress) return true;
+      const previousMoving = carSamples.slice(0, index).reverse().find((sample) => sample.cars?.[teamId]?.trackProgress !== car.trackProgress)?.cars?.[teamId];
+      const nextMoving = carSamples.slice(index + 1).find((sample) => sample.cars?.[teamId]?.trackProgress !== car.trackProgress)?.cars?.[teamId];
+      return !(previousMoving && nextMoving && previousMoving.trackProgress < car.trackProgress && nextMoving.trackProgress > car.trackProgress);
+    });
+    const from = [...samples].reverse().find((point) => point.progress <= progress) ?? samples[0]!;
+    const to = samples.find((point) => point.progress > progress) ?? from;
+    const span = to.progress - from.progress || 1;
+    const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
+    const fromCar = from.cars?.[teamId];
+    const toCar = to.cars?.[teamId];
       const fromProgress = visualCarProgress(fromCar, toCar?.trackProgress ?? 0, laps);
       const toProgress = visualCarProgress(toCar, fromCar?.trackProgress ?? 0, laps);
       return [teamId, fromProgress + (toProgress - fromProgress) * ratio];
-    })
-  );
+  }));
 }
 
 function visualCarProgress(car: NonNullable<ReplayTracePoint["cars"]>[string] | undefined, fallback: number, laps: number) {

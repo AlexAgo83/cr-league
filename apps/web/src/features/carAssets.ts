@@ -23,6 +23,7 @@ export type CarRenderGeometry = {
   center: CarAssetPoint;
   rearWheels: [CarAssetPoint, CarAssetPoint];
   frontLights: [CarAssetPoint, CarAssetPoint];
+  rearLights: [CarAssetPoint, CarAssetPoint];
   wheelbase: number;
 };
 
@@ -43,6 +44,25 @@ const RAW_CAR_GEOMETRY: Record<CarAssetId, RawCarGeometry> = {
   "car-014": { size: [1104, 443], front: [[891, 31], [891, 413]], rear: [[223, 33], [223, 416]], lights: [[1103, 78], [1103, 372]] },
   "car-015": { size: [1178, 494], front: [[243, 32], [243, 463]], rear: [[942, 32], [942, 459]], lights: [[74, 121], [77, 378]] },
   "car-016": { size: [1214, 478], front: [[255, 35], [255, 439]], rear: [[979, 40], [979, 440]], lights: [[76, 134], [83, 334]] }
+};
+
+const RAW_REAR_LIGHTS: Record<CarAssetId, [CarAssetPoint, CarAssetPoint]> = {
+  "car-001": [[737, 101], [736, 285]],
+  "car-002": [[714, 89], [713, 297]],
+  "car-003": [[717, 78], [717, 318]],
+  "car-004": [[803, 96], [802, 369]],
+  "car-005": [[880, 93], [881, 375]],
+  "car-006": [[735, 94], [739, 308]],
+  "car-007": [[725, 85], [725, 319]],
+  "car-008": [[941, 111], [942, 412]],
+  "car-009": [[932, 83], [932, 385]],
+  "car-010": [[770, 86], [770, 334]],
+  "car-011": [[1213, 75], [1213, 413]],
+  "car-012": [[1036, 76], [1036, 424]],
+  "car-013": [[1154, 74], [1154, 403]],
+  "car-014": [[0, 73], [0, 376]],
+  "car-015": [[1061, 49], [1177, 410]],
+  "car-016": [[1124, 173], [1125, 298]]
 };
 
 export const CAR_ASSETS: CarAsset[] = Array.from({ length: 16 }, (_, index) => {
@@ -109,6 +129,7 @@ export function carRenderGeometryForId(id: string | undefined): CarRenderGeometr
     center: transformPoint([raw.size[0] / 2, raw.size[1] / 2]),
     rearWheels: raw.rear.map(transformPoint) as [CarAssetPoint, CarAssetPoint],
     frontLights: raw.lights.map(transformPoint) as [CarAssetPoint, CarAssetPoint],
+    rearLights: (RAW_REAR_LIGHTS[asset.id] ?? RAW_REAR_LIGHTS[DEFAULT_CAR_ASSET.id]!).map(transformPoint) as [CarAssetPoint, CarAssetPoint],
     wheelbase
   };
   CAR_RENDER_GEOMETRY.set(asset.id, geometry);

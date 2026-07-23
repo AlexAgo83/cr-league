@@ -4376,20 +4376,51 @@ label small {
 }
 
 .map-car-headlight {
-  filter: blur(0.35px) drop-shadow(0 0 2px rgb(219 244 255 / 0.8));
+  filter: blur(1.8px);
+  mix-blend-mode: soft-light;
+  opacity: 0.42;
   pointer-events: none;
 }
 
 .map-car-headlight circle {
   fill: #f4fbff;
+  opacity: 0.45;
 }
 
 .map-car-headlight-start {
-  stop-color: rgb(228 248 255 / 0.62);
+  stop-color: rgb(228 248 255 / 0.3);
 }
 
 .map-car-headlight-end {
   stop-color: rgb(178 225 255 / 0);
+}
+
+.map-car-rear-light {
+  filter: blur(0.65px);
+  opacity: 0.28;
+  pointer-events: none;
+  transition: filter 120ms ease, opacity 120ms ease;
+}
+
+.map-car-rear-light.braking {
+  filter: blur(1px) drop-shadow(0 0 2px rgb(255 38 32 / 0.85));
+  opacity: 0.82;
+}
+
+.map-car-rear-light circle {
+  fill: #ff342e;
+}
+
+.map-car-rear-light-start {
+  stop-color: rgb(255 48 40 / 0.72);
+}
+
+.map-car-rear-light-end {
+  stop-color: rgb(255 20 16 / 0);
+}
+
+.map-car.focus-target {
+  cursor: pointer;
 }
 
 .map-car-tint-mask {

@@ -79,7 +79,8 @@ Then update `apps/web/src/features/carAssets.ts` so `CAR_ASSETS` exposes every i
 ## Runtime Map Geometry
 
 `CircuitMap` uses a compact copy of each top-view canvas size, wheel contacts, and
-front-light points from `metadata.json`. Keep `RAW_CAR_GEOMETRY` in
+front/rear light points from `metadata.json`. Keep `RAW_CAR_GEOMETRY` and
+`RAW_REAR_LIGHTS` in
 `apps/web/src/features/carAssets.ts` synchronized when assets are regenerated.
 
 The runtime geometry follows these rules:
@@ -92,7 +93,9 @@ The runtime geometry follows these rules:
   18-22 map units because source pixels do not provide a certified physical scale;
 - rear-wheel contacts feed two ground-fixed SVG paths while the drift angle exceeds
   3 degrees; samples expire after 1.1 seconds;
-- front-light points feed subtle SVG light cones rendered below the body.
+- front-light points feed blurred SVG light cones rendered below the body;
+- rear-light points feed shorter red cones, with a stronger glow while the car is
+  inside a circuit `braking` speed-profile span.
 
 This stays in the existing SVG scene. A shader is not needed for short-lived tire
 marks and would require a second rendering stack without improving their ground

@@ -338,7 +338,7 @@ function sampleChronoCarMotion(
   weather: Weather,
   paceFactor: number
 ): ChronoCarMotionState {
-  if (!previous || phase === "grid") {
+  if (!previous || phase === "grid" || raceTime <= previous.raceTime) {
     return { raceTime, trackProgress: targetProgress, speed: replayCarSpeed(phase, weather) };
   }
   const elapsed = Math.max(0.1, raceTime - previous.raceTime);

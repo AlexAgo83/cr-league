@@ -40,7 +40,7 @@
     "logics:validate": "logics-manager lint --require-status && logics-manager audit --group-by-doc"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.4",
+    "@eslint/js": "^10.0.1",
     "@grifhinz/logics-manager": "^2.19.1",
     "@playwright/test": "^1.61.1",
     "@types/node": "^24.12.0",

@@ -81,7 +81,7 @@ export function ReportView({
           </div>
           {hasPrimaryReplayAction ? (
             <div className="chrono-report-prompt">
-              <button type="button" className="primary-command" onClick={onOpenReplay}>
+              <button type="button" className="primary-command highlight-command" onClick={onOpenReplay}>
                 {tt("action_review_race")}
               </button>
             </div>

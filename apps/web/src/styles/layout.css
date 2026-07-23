@@ -2773,11 +2773,14 @@ label small {
 .map-plan-performance > .map-traits-panel {
   background: transparent;
   border: 0;
-  border-top: 1px solid rgb(255 255 255 / 0.1);
   border-radius: 0;
   grid-column: 1 / -1;
-  margin-top: 4px;
+  margin-top: 0;
   padding: 8px 0 0;
+}
+
+.map-plan-performance.stats-collapsed {
+  padding-bottom: 8px;
 }
 
 .map-plan-panel > strong {
@@ -2814,6 +2817,38 @@ label small {
 .map-plan-edit-button:focus-visible {
   border-color: rgb(255 255 255 / 0.5);
   color: var(--color-accent-ink);
+}
+
+.map-plan-stats-toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid rgb(255 255 255 / 0.1);
+  clip-path: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  display: grid;
+  grid-column: 1 / -1;
+  height: 19px;
+  justify-items: center;
+  margin: 2px 0 -2px;
+  padding: 0;
+}
+
+.map-plan-stats-toggle:hover,
+.map-plan-stats-toggle:focus-visible {
+  color: var(--color-accent);
+}
+
+.map-plan-stats-toggle svg {
+  fill: none;
+  height: 15px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+  width: 15px;
 }
 
 .map-weather-info-button {
@@ -3180,6 +3215,10 @@ label small {
   margin-left: 0;
 }
 
+.map-workflow-panel .race-day-steps span {
+  padding-inline: 10px;
+}
+
 .map-traits-panel {
   background: rgb(16 14 18 / 0.76);
   border: 1px solid rgb(255 255 255 / 0.1);
@@ -3307,11 +3346,12 @@ label small {
 
 .map-race-actions {
   align-items: flex-end;
-  bottom: 12px;
+  bottom: 18px;
   flex-direction: column;
+  overflow: visible;
   position: absolute;
-  right: 12px;
-  z-index: 2;
+  right: 18px;
+  z-index: 6;
 }
 
 .map-race-actions button.map-action-button {

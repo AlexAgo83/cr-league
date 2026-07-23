@@ -462,6 +462,7 @@ describe("ReplayView timing", () => {
     expect(smoothCarProgress({ leader: 1 }, { leader: 1.5 }).leader).toBeCloseTo(1.006);
     expect(smoothCarProgress({ leader: 1 }, { leader: 1.5 }, 1).leader).toBeCloseTo(1.03);
     expect(smoothCarProgress({ leader: 1 }, { leader: 1.006 }).leader).toBeCloseTo(1.006);
+    expect(smoothCarProgress({ leader: 1 }, { leader: 0.99 }, 1).leader).toBeCloseTo(0.99);
   });
 });
 

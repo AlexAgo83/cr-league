@@ -328,7 +328,6 @@ export function smoothCarProgress(current: Record<string, number>, target: Recor
     Object.keys({ ...current, ...target }).map((teamId) => {
       const to = target[teamId] ?? 0;
       const from = current[teamId] ?? to;
-      if (to < from) return [teamId, from];
       const delta = to - from;
       if (Math.abs(delta) <= maxStep) return [teamId, to];
       return [teamId, from + Math.sign(delta) * maxStep];

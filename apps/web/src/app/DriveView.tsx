@@ -83,6 +83,7 @@ export function DriveView({
 }) {
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
   const [weatherInfoOpen, setWeatherInfoOpen] = useState(false);
+  const [mapStatsExpanded, setMapStatsExpanded] = useState(true);
   const forecastWeather = forecastPick as Weather;
   const weatherInfoTitle = tt(result ? "race_weather_info_title" : "race_forecast_info_title");
 
@@ -167,7 +168,7 @@ export function DriveView({
                       {tt("action_info")}
                     </button>
                   </div>
-                  <div className="map-plan-performance">
+                  <div className={mapStatsExpanded ? "map-plan-performance" : "map-plan-performance stats-collapsed"}>
                     <MapPlanPanel
                       decision={mapPlan}
                       editLabel={tt(deskState === "prepare" ? "action_edit_plan" : "action_view_plan")}
@@ -178,7 +179,19 @@ export function DriveView({
                       }}
                       tt={tt}
                     />
-                    <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} />
+                    <button
+                      className="map-plan-stats-toggle"
+                      type="button"
+                      aria-expanded={mapStatsExpanded}
+                      aria-label={tt(mapStatsExpanded ? "action_collapse_stats" : "action_expand_stats")}
+                      title={tt(mapStatsExpanded ? "action_collapse_stats" : "action_expand_stats")}
+                      onClick={() => setMapStatsExpanded((expanded) => !expanded)}
+                    >
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d={mapStatsExpanded ? "m6 15 6-6 6 6" : "m6 9 6 6 6-6"} />
+                      </svg>
+                    </button>
+                    {mapStatsExpanded ? <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} /> : null}
                   </div>
                 </div>
                 <div className="map-workflow-panel">

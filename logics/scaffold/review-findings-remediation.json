@@ -1,0 +1,272 @@
+{
+  "title": "Review-findings remediation: replay determinism, dead card effects, client storage safety, API security and scale, admin config integrity, and over-engineering cleanup",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "packages/shared/src/simulation/prng.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/simulation/validateReplayTrace.ts",
+    "apps/api/src/features/leagues/utils.ts",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/features/admin/store.ts",
+    "apps/api/src/app.ts",
+    "apps/web/src/app/appStorage.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/usePlanForm.ts",
+    "apps/web/src/app/useAppNavigation.ts",
+    "prisma/schema.prisma",
+    "Repo review sweep on 2026-07-23 (HEAD c7bc165, release 0.4.1) run by three parallel reviewers over the API backend, the shared simulation core, and the web frontend. Baseline is healthy: typecheck, eslint, and 272 vitest tests pass; .env is untracked; admin auth is fail-closed with a timing-safe token compare; money paths use FOR UPDATE locks. No Critical issues. Findings worth fixing: (1) DETERMINISM: pickWeightedWithNext (prng.ts:20-38) walks Object.entries(weights), so a semantically-equal weather forecast with keys in a different insertion order yields different weather for the same seed, breaking the deterministic replay the game is built on. (2) GAMEPLAY: TeamState.positionDelta (simulateRace.ts:51) is written by 12 card branches (:855-902 via += ) but never read; classification sorts by scores.score (:332,:442) so cards advertising position gains have zero effect on finishing order. Requires a gameplay decision: either feed positionDelta into the sort key (cards should move you up) or delete the dead field. (3) CLIENT: every localStorage read/write in apps/web is unguarded; reads run at mount (appStorage.ts loadPlayerClaims:79, loadProfileSession:83) so a browser with storage disabled (SecurityError) white-screens the app at startup, and writes in effects (usePlanForm.ts:27, useAppNavigation.ts:51) throw on QuotaExceededError mid-interaction. (4) SECURITY: normalizeEmail (utils.ts:78-87) only rejects literal spaces (email.includes(' ')), letting tabs/newlines through into nodemailer sendMail({to}) as a header-injection surface. (5) SECURITY: POST /profiles (routes.ts:35) returns a distinct 'email already has a profile' error while recovery endpoints are deliberately constant-response, leaking which emails are registered, unauthenticated and unratelimited. (6) SCALE/ABUSE: no rate limiting on unauthenticated write routes (POST /leagues creates a league + team + GP + N bots, plus joins/decisions); only recovery has a limiter, so a script can exhaust the DB. (7) SCALE: admin list endpoints (admin/store.ts:15 profiles, :106 leagues) findMany the whole table then filter/paginate in JS; q/page/limit do no DB-level narrowing. (8) DATA MODEL: ownerTeamId has no FK/onDelete (schema.prisma) and requireAdminClaim (store.ts:1052) requires a human team whose id equals ownerTeamId, so if that owner team is ever removed, resolve/next-grand-prix/restart 403 forever. (9) TESTS: validateReplayTrace has zero negative tests (every caller asserts toEqual([])), so its ~30 error branches never run and the replay safety-net can silently rot. Over-engineering cleanup: ~500 of 1207 lines in simulateRace.ts are cosmetic replay/trace/director-beat generation entangled with the core loop (extract to replayTrace.ts); normalizeRaceTraits and clampNumber in utils.ts are exported with no non-test callers (delete); App.tsx models ~10 mutually-exclusive dialogs as separate useState booleans (:115-132) that could collapse to one activeModal discriminated union. This corpus is written to be executed end-to-end by another AI agent."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Review-findings remediation",
+    "needs": [
+      "Restore deterministic replay by making weighted random selection independent of object key order, and pin it with a determinism regression test on resolved weather.",
+      "Resolve the dead positionDelta accumulator so card position-gain effects are either real (fed into classification) or removed, and validate the choice against balance simulation.",
+      "Make the web client survive a browser with storage disabled or full by routing every localStorage access through one safe wrapper.",
+      "Close two unauthenticated-surface security gaps: email header injection in normalizeEmail and account enumeration on POST /profiles.",
+      "Protect the write API from abuse and the admin list endpoints from unbounded reads: add IP rate limiting to unauthenticated writes and push filtering/pagination into the database.",
+      "Make ownerTeamId robust so removing an owner team cannot permanently lock the admin controls, and add the missing validateReplayTrace negative tests.",
+      "Reduce accidental complexity: extract cosmetic replay-trace code out of the simulation core, delete dead exports, and collapse App.tsx's modal booleans into one state."
+    ],
+    "context": [
+      "prng.ts: in pickWeightedWithNext (:20) sort entries by key before the total/cursor walk (e.g. entries.sort(([a],[b]) => (a<b?-1:a>b?1:0))) so a forecast with reordered-but-equal keys consumes the same next() draw and returns the same key; the total<=0 fallback (:26) then also indexes a stable order. Keep the LCG as-is (its arithmetic is exact and deterministic); a stronger generator is out of scope for this pass.",
+      "positionDelta: this needs an explicit gameplay decision recorded in the task, not a silent pick. Option A (cards should gain places): incorporate state.positionDelta into the classification sort key so the += writes at simulateRace.ts:855-902 actually change finishing order, then re-run npm run balance:sim and confirm the payout/standings curve stays sane. Option B (abandoned field): delete positionDelta from TeamState (:51), its two initializers (:668,:724), and the 12 += writes. Pick one, justify it in the task plan, and do not leave the field written-but-unread.",
+      "appStorage.ts: add a small safeStorage helper ({get,set,remove} each wrapping localStorage in try/catch — get returns null on failure, set/remove swallow) and route the mount-time reads (loadPlayerClaims, loadProfileSession, loadProfileEmail, initial locale) and the effect writes (usePlanForm.ts:27, useAppNavigation.ts:51/55/59, ReplayView focus, season recap) through it. On read failure the existing null/empty fallbacks already take over, so no new UI branch is needed. No new dependency.",
+      "utils.ts normalizeEmail (:78): replace the email.includes(' ') check with a control/whitespace rejection (/[\\s\\u0000-\\u001f]/.test(email)) so tabs and newlines can never reach the mail transport header. Keep the existing length and @/domain checks.",
+      "routes.ts POST /profiles (:35): return the same neutral response whether or not the email already has a profile, matching the constant-response pattern already used by the recovery endpoints; the real onboarding path does not depend on the distinct error, and this removes the enumeration oracle. Do not weaken the actual duplicate-guard in the DB write.",
+      "Rate limiting: register @fastify/rate-limit (single official plugin, in-memory store) and apply an IP-based limit to the unauthenticated write routes (POST /leagues and the join/decision writes). Ponytail note in scope: in-memory limiter is fine for single-instance; a shared store is a later concern if the API scales horizontally. Do not rate-limit read routes or the already-limited recovery endpoints twice.",
+      "admin/store.ts: push the q filter into a Prisma where (contains on email/name) and page/limit into skip/take on both findMany calls (:15 profiles, :106 leagues) instead of loading the full table and slicing in JS; keep the response shape identical.",
+      "ownerTeamId: on removal of the human team that is a league's ownerTeamId, reassign ownerTeamId to the oldest remaining human team in that league so admin controls stay reachable; if none remains, leave it null and let requireAdminClaim (store.ts:1052) fall back to the oldest human claim rather than hard-403. Add an FK/onDelete consideration in schema.prisma only if it does not require a destructive migration in this pass — otherwise handle it in application code on the delete path.",
+      "validateReplayTrace tests: add validateReplayTrace.test.ts feeding hand-corrupted traces (backwards progress, oversized single-frame jump, missing pit phase, wrong final order, out-of-range distance) and assert the specific error strings, so the replay safety-net has negative coverage instead of only toEqual([]).",
+      "Over-engineering: move the cosmetic replay/trace helpers (createDistanceReplayTrace, applyVisualChronoGaps, annotateTrafficDefense, stabilizeReplayTraceOrders, annotateReplayOvertakes, buildReplayDirectorBeats) from simulateRace.ts into a new packages/shared/src/simulation/replayTrace.ts as a pure move (no behavior change, existing tests stay green); delete the unused normalizeRaceTraits and clampNumber exports from utils.ts; and replace App.tsx's ~10 mutually-exclusive modal booleans (:115-132) with a single activeModal discriminated-union state plus open/close helpers.",
+      "Out of scope: swapping the PRNG algorithm; session auth/CSRF or changing the claim-code model; a distributed/Redis rate-limit store; migrating JSON columns to tables; a broad a11y pass; the single-source-of-truth refactor unifying score-based classification with time-based replay movement (track as a follow-up); adding any dependency other than @fastify/rate-limit."
+    ],
+    "acceptance_criteria": [
+      "AC1: Weighted selection is independent of weights object key order; two semantically-equal weather forecasts with keys inserted in different orders produce identical resolved weather for the same seed, proven by a determinism regression test.",
+      "AC2: positionDelta is no longer written-but-unread — either it feeds classification (with balance:sim confirming the standings/payout curve) or the field and its writes are deleted — and the chosen option and rationale are recorded in the orchestration task.",
+      "AC3: All localStorage access in apps/web goes through a safe wrapper; the app starts and operates without throwing when localStorage getItem/setItem throw (disabled or quota-exceeded), verified by a test that stubs a throwing storage.",
+      "AC4: normalizeEmail rejects any control/whitespace character so no tab/newline can reach the mail header, and POST /profiles returns a neutral response that no longer reveals whether an email is already registered.",
+      "AC5: Unauthenticated write routes are IP rate-limited, and the admin profile/league list endpoints filter and paginate at the database level (where/skip/take) rather than loading whole tables into memory.",
+      "AC6: Removing a league's owner human team no longer permanently 403s resolve/next-grand-prix/restart (ownerTeamId is reassigned or falls back to another human claim), and validateReplayTrace has negative tests asserting its specific error strings.",
+      "AC7: Cosmetic replay-trace generation lives in its own module out of the simulation core, the dead normalizeRaceTraits/clampNumber exports are gone, and App.tsx's mutually-exclusive dialogs use a single activeModal state.",
+      "AC8: npm run typecheck, npm test, npm run build, npm run lint, and npm run logics:validate all pass, and no existing test is deleted to make them pass."
+    ]
+  },
+  "product": {
+    "title": "Review-Findings Remediation Product Brief",
+    "overview": "A full repo review of cr-league (release 0.4.1) found no critical fires but a ranked set of real issues: a replay-breaking determinism bug in weighted random selection, a dead card-effect accumulator that silently voids position-gain cards, unguarded client storage that can white-screen the app, two unauthenticated-surface security gaps (email header injection and account enumeration), missing rate limiting and unbounded admin reads, an owner-team removal that can permanently lock admin controls, a gap in replay-validation test coverage, and several over-engineering cleanups. This request remediates them in one pass, prioritizing the determinism and gameplay correctness issues first, and is authored to be executed end-to-end by another AI agent.",
+    "goals": [
+      "Deterministic replay is restored and protected by a regression test.",
+      "Card position-gain effects are honest — either real in the standings or removed — with the decision recorded.",
+      "The web client tolerates disabled or full browser storage without crashing.",
+      "The unauthenticated API surface no longer leaks account existence, is not an email-header-injection vector, and cannot be trivially abused to exhaust the database.",
+      "Admin controls stay reachable after owner-team removal, and the replay validator has negative test coverage.",
+      "The simulation core, API utils, and App shell carry less accidental complexity."
+    ],
+    "non_goals": [
+      "Do not swap the PRNG algorithm or change the seeding model.",
+      "Do not add session auth, CSRF, or replace the claim-code model.",
+      "Do not introduce a distributed/Redis rate-limit store or any dependency beyond @fastify/rate-limit.",
+      "Do not migrate JSON columns to relational tables or run destructive schema migrations.",
+      "Do not unify the score-based classification with time-based replay movement in this pass (tracked as a follow-up)."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Restore deterministic weighted selection and pin it with a test",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Simulation determinism",
+      "request_acs": ["AC1", "AC8"],
+      "problem": [
+        "pickWeightedWithNext (prng.ts:20-38) walks Object.entries(weights) in insertion order, so a semantically-equal weather forecast with keys in a different order consumes the draw differently and returns a different key for the same seed.",
+        "This breaks the deterministic, replayable simulation the whole game is built around, and no test currently guards it (simulateRace.test.ts only checks a value equals itself)."
+      ],
+      "scope_in": [
+        "Sort entries by key before computing the total and walking the cursor in pickWeightedWithNext, and make the total<=0 fallback index the same stable order.",
+        "Add a determinism regression test: two forecasts with equal weights but different key insertion order yield identical resolved weather for a fixed seed."
+      ],
+      "scope_out": [
+        "Replacing the LCG with a different PRNG algorithm.",
+        "Changing weight values or the weather model.",
+        "Touching non-weighted next() consumers."
+      ],
+      "acceptance_criteria": [
+        "AC1: Weighted selection is key-order independent for equal weights.",
+        "AC2: A regression test proves reordered-but-equal forecasts produce identical resolved weather for the same seed.",
+        "AC3: Existing simulation tests stay green."
+      ]
+    },
+    {
+      "title": "Resolve the dead positionDelta card-effect accumulator",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Gameplay correctness",
+      "request_acs": ["AC2", "AC8"],
+      "problem": [
+        "TeamState.positionDelta (simulateRace.ts:51) is incremented by 12 card branches (:855-902) but never read.",
+        "Classification sorts by scores.score (:332,:442), so cards that advertise position gains currently have zero effect on finishing order — either a real gameplay bug or an abandoned field."
+      ],
+      "scope_in": [
+        "Make an explicit decision and record it in the task: Option A feed positionDelta into the classification sort key so the writes change finishing order; Option B delete the field, its initializers, and the 12 += writes.",
+        "If Option A: re-run npm run balance:sim and confirm the standings/payout curve stays sane before committing.",
+        "If Option B: remove all dead references so nothing is written-but-unread."
+      ],
+      "scope_out": [
+        "Rebalancing card values beyond making the chosen option coherent.",
+        "The broader score-vs-time classification unification (follow-up)."
+      ],
+      "acceptance_criteria": [
+        "AC1: positionDelta is either consumed by classification or fully removed; nothing remains written-but-unread.",
+        "AC2: If it now affects order, a balance simulation confirms the curve is still sane.",
+        "AC3: The chosen option and its rationale are recorded in the orchestration task."
+      ]
+    },
+    {
+      "title": "Make web client storage access crash-safe",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Web robustness",
+      "request_acs": ["AC3", "AC8"],
+      "problem": [
+        "Every localStorage read/write in apps/web is unguarded; mount-time reads (appStorage.ts loadPlayerClaims:79, loadProfileSession:83, initial locale) throw a SecurityError when storage is disabled, white-screening the app at startup.",
+        "Effect writes (usePlanForm.ts:27, useAppNavigation.ts:51/55/59) throw on QuotaExceededError mid-interaction."
+      ],
+      "scope_in": [
+        "Add a safeStorage helper in appStorage.ts wrapping localStorage in try/catch (get returns null on failure; set/remove swallow).",
+        "Route all mount-time reads and effect writes through it so failures degrade to the existing empty/null fallbacks.",
+        "Add a test that stubs a throwing storage and asserts the app initializes without throwing."
+      ],
+      "scope_out": [
+        "Moving secrets to sessionStorage or changing what is persisted.",
+        "A cross-tab storage-sync layer."
+      ],
+      "acceptance_criteria": [
+        "AC1: All apps/web localStorage access goes through the safe wrapper.",
+        "AC2: The app starts and runs when getItem/setItem throw.",
+        "AC3: A test covers the throwing-storage path."
+      ]
+    },
+    {
+      "title": "Close email header injection and account enumeration",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "API security",
+      "request_acs": ["AC4", "AC8"],
+      "problem": [
+        "normalizeEmail (utils.ts:78-87) only rejects literal spaces, so tabs/newlines pass through into nodemailer sendMail({to}) as a header-injection surface.",
+        "POST /profiles (routes.ts:35) returns a distinct 'email already has a profile' error while recovery endpoints are constant-response, leaking which emails are registered — unauthenticated and unratelimited."
+      ],
+      "scope_in": [
+        "Reject any control/whitespace character in normalizeEmail before it can reach the mail transport.",
+        "Return a neutral response from POST /profiles regardless of whether the email already exists, matching the recovery-endpoint pattern, without weakening the DB-level duplicate guard."
+      ],
+      "scope_out": [
+        "Rewriting the profile/claim-code model.",
+        "Adding email verification flows."
+      ],
+      "acceptance_criteria": [
+        "AC1: normalizeEmail rejects tabs/newlines/control chars so none reach the mail header.",
+        "AC2: POST /profiles no longer reveals whether an email is registered.",
+        "AC3: Legitimate onboarding still works and duplicate accounts are still prevented at the DB."
+      ]
+    },
+    {
+      "title": "Rate-limit unauthenticated writes and bound admin reads",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "API scale and abuse",
+      "request_acs": ["AC5", "AC8"],
+      "problem": [
+        "No rate limiting on unauthenticated write routes: POST /leagues creates a league + team + GP + N bots, plus joins/decisions; only recovery has a limiter, so a script can exhaust the DB.",
+        "Admin list endpoints (admin/store.ts:15 profiles, :106 leagues) findMany whole tables then filter/paginate in JS; q/page/limit do no DB-level narrowing."
+      ],
+      "scope_in": [
+        "Register @fastify/rate-limit (in-memory) and apply an IP-based limit to the unauthenticated write routes.",
+        "Push the q filter into a Prisma where and page/limit into skip/take on both admin findMany calls, keeping the response shape identical."
+      ],
+      "scope_out": [
+        "A distributed/Redis rate-limit store.",
+        "Rate-limiting read routes or double-limiting recovery.",
+        "Changing the admin response schema."
+      ],
+      "acceptance_criteria": [
+        "AC1: Unauthenticated write routes are IP rate-limited.",
+        "AC2: Admin profile/league lists filter and paginate at the database level.",
+        "AC3: Admin responses are unchanged in shape and existing admin tests pass."
+      ]
+    },
+    {
+      "title": "Owner-team resilience and replay-validator negative tests",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Integrity and coverage",
+      "request_acs": ["AC6", "AC8"],
+      "problem": [
+        "ownerTeamId has no FK/onDelete and requireAdminClaim (store.ts:1052) requires a human team whose id equals ownerTeamId, so removing that owner team permanently 403s resolve/next-grand-prix/restart.",
+        "validateReplayTrace has zero negative tests; every caller asserts toEqual([]) so its ~30 error branches never run and can silently rot."
+      ],
+      "scope_in": [
+        "On owner human-team removal, reassign ownerTeamId to the oldest remaining human team; if none remains, let requireAdminClaim fall back to the oldest human claim instead of hard-403.",
+        "Add validateReplayTrace.test.ts feeding hand-corrupted traces (backwards progress, oversized jump, missing pit phase, wrong final order, out-of-range distance) asserting the specific error strings."
+      ],
+      "scope_out": [
+        "A destructive schema migration to add the FK if it can be handled in application code this pass.",
+        "Rewriting the admin claim model."
+      ],
+      "acceptance_criteria": [
+        "AC1: Removing an owner human team no longer permanently locks admin controls.",
+        "AC2: validateReplayTrace has negative tests asserting its specific error strings.",
+        "AC3: Existing admin and replay tests stay green."
+      ]
+    },
+    {
+      "title": "Over-engineering cleanup: extract replay trace, delete dead exports, unify modal state",
+      "priority": "Low",
+      "complexity": "Medium",
+      "theme": "Complexity reduction",
+      "request_acs": ["AC7", "AC8"],
+      "problem": [
+        "~500 of 1207 lines in simulateRace.ts are cosmetic replay/trace/director-beat generation entangled with the core loop.",
+        "normalizeRaceTraits and clampNumber in utils.ts are exported with no non-test callers.",
+        "App.tsx models ~10 mutually-exclusive dialogs as separate useState booleans (:115-132)."
+      ],
+      "scope_in": [
+        "Move the cosmetic replay/trace helpers into a new packages/shared/src/simulation/replayTrace.ts as a pure, behavior-preserving move.",
+        "Delete the unused normalizeRaceTraits and clampNumber exports.",
+        "Replace App.tsx's modal booleans with a single activeModal discriminated-union state plus open/close helpers."
+      ],
+      "scope_out": [
+        "Changing replay output or trace format.",
+        "The score-vs-time classification unification (follow-up).",
+        "Restyling any modal."
+      ],
+      "acceptance_criteria": [
+        "AC1: Cosmetic replay-trace code lives in its own module and existing tests pass unchanged.",
+        "AC2: The dead utils exports are removed with no remaining references.",
+        "AC3: App.tsx dialogs use a single activeModal state with identical behavior."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate review-findings remediation",
+    "plan": [
+      "Do the determinism fix first (prng.ts sort + regression test): it is the highest-severity finding because it silently breaks replay, and its test also guards later weather changes.",
+      "Resolve positionDelta with an explicit, recorded gameplay decision (feed into classification + balance:sim, or delete the dead field); do not leave it written-but-unread.",
+      "Make client storage crash-safe with a single safeStorage wrapper and a throwing-storage test.",
+      "Close the two unauthenticated-surface security gaps: control-char rejection in normalizeEmail and a neutral POST /profiles response.",
+      "Add @fastify/rate-limit to unauthenticated writes and push where/skip/take into the admin list queries.",
+      "Make ownerTeamId removal-safe (reassign or fall back) and add validateReplayTrace negative tests.",
+      "Land the over-engineering cleanup last (extract replayTrace.ts, delete dead exports, unify App modal state) so it rebases cleanly on the fixes above.",
+      "Run typecheck, test, build, lint, and logics:validate; record proof and the positionDelta decision at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/review-findings-remediation.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

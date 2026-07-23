@@ -1,0 +1,51 @@
+## item_238_close_email_header_injection_and_account_enumeration - Close email header injection and account enumeration
+> From version: 0.4.1
+> Schema version: 1.0
+> Status: Ready
+> Understanding: 90%
+> Confidence: 85%
+> Progress: 0%
+> Complexity: Low
+> Theme: API security
+> Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+
+# Problem
+- normalizeEmail (utils.ts:78-87) only rejects literal spaces, so tabs/newlines pass through into nodemailer sendMail({to}) as a header-injection surface.
+- POST /profiles (routes.ts:35) returns a distinct 'email already has a profile' error while recovery endpoints are constant-response, leaking which emails are registered — unauthenticated and unratelimited.
+
+# Scope
+- In:
+  - Reject any control/whitespace character in normalizeEmail before it can reach the mail transport.
+  - Return a neutral response from POST /profiles regardless of whether the email already exists, matching the recovery-endpoint pattern, without weakening the DB-level duplicate guard.
+- Out:
+  - Rewriting the profile/claim-code model.
+  - Adding email verification flows.
+
+# Acceptance criteria
+- AC1: normalizeEmail rejects tabs/newlines/control chars so none reach the mail header.
+- AC2: POST /profiles no longer reveals whether an email is registered.
+- AC3: Legitimate onboarding still works and duplicate accounts are still prevented at the DB.
+
+# AC Traceability
+- request-AC4 -> This backlog slice. Proof: AC1: normalizeEmail rejects tabs/newlines/control chars so none reach the mail header.
+- request-AC8 -> This backlog slice. Proof: AC2: POST /profiles no longer reveals whether an email is registered.
+
+# Decision framing
+- Product framing: Not needed
+- Architecture framing: Not needed
+
+# Links
+- Product brief(s): `prod_062_review_findings_remediation_product_brief`
+- Architecture decision(s): (none yet)
+- Request: `req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup`
+- Primary task(s): `task_100_orchestrate_review_findings_remediation`
+
+# AI Context
+- Summary: Close email header injection and account enumeration
+- Keywords: scaffolded-backlog, close email header injection and account enumeration, implementation-ready
+- Use when: Implementing the scaffolded slice for Close email header injection and account enumeration.
+- Skip when: The change belongs to another backlog slice.
+
+# Priority
+- Priority: Medium
+- Rationale: Set by scaffold input or defaulted for grooming.

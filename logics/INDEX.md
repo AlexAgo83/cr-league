@@ -78,6 +78,7 @@
 | [prod_059_canonical_race_track_replay_trace_product_brief](product/prod_059_canonical_race_track_replay_trace_product_brief.md) | Canonical Race-Track Replay Trace Product Brief | Settled |  |  | product/prod_059_canonical_race_track_replay_trace_product_brief.md |
 | [prod_060_race_replay_realism_layers_product_brief](product/prod_060_race_replay_realism_layers_product_brief.md) | Race Replay Realism Layers Product Brief | Settled |  |  | product/prod_060_race_replay_realism_layers_product_brief.md |
 | [prod_061_chrono_replay_race_track_parity_product_brief](product/prod_061_chrono_replay_race_track_parity_product_brief.md) | Chrono Replay Race-Track Parity Product Brief | Settled |  |  | product/prod_061_chrono_replay_race_track_parity_product_brief.md |
+| [prod_062_review_findings_remediation_product_brief](product/prod_062_review_findings_remediation_product_brief.md) | Review-Findings Remediation Product Brief | Proposed |  |  | product/prod_062_review_findings_remediation_product_brief.md |
 
 ## Roadmaps
 
@@ -189,6 +190,7 @@
 | [req_096_canonical_race_track_replay_trace_and_simulation_handoff](request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md) | Canonical race-track replay trace and simulation handoff | Done |  |  | request/req_096_canonical_race_track_replay_trace_and_simulation_handoff.md |
 | [req_097_race_replay_realism_layers_after_canonical_trace](request/req_097_race_replay_realism_layers_after_canonical_trace.md) | Race replay realism layers after canonical trace | Done |  |  | request/req_097_race_replay_realism_layers_after_canonical_trace.md |
 | [req_098_chrono_replay_race_track_parity](request/req_098_chrono_replay_race_track_parity.md) | Chrono replay race-track parity | Done |  |  | request/req_098_chrono_replay_race_track_parity.md |
+| [req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup](request/req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup.md) | Review-findings remediation: replay determinism, dead card effects, client storage safety, API security and scale, admin config integrity, and over-engineering cleanup | Draft |  |  | request/req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup.md |
 
 ## Backlog
 
@@ -428,6 +430,13 @@
 | [item_232_add_chrono_compatible_replay_phases](backlog/item_232_add_chrono_compatible_replay_phases.md) | Add chrono-compatible replay phases | Done |  | 100% | backlog/item_232_add_chrono_compatible_replay_phases.md |
 | [item_233_make_chrono_weather_handling_visible_in_trace_speed](backlog/item_233_make_chrono_weather_handling_visible_in_trace_speed.md) | Make chrono weather handling visible in trace speed | Done |  | 100% | backlog/item_233_make_chrono_weather_handling_visible_in_trace_speed.md |
 | [item_234_extend_replay_inspection_to_chrono_traces](backlog/item_234_extend_replay_inspection_to_chrono_traces.md) | Extend replay inspection to chrono traces | Done |  | 100% | backlog/item_234_extend_replay_inspection_to_chrono_traces.md |
+| [item_235_restore_deterministic_weighted_selection_and_pin_it_with_a_test](backlog/item_235_restore_deterministic_weighted_selection_and_pin_it_with_a_test.md) | Restore deterministic weighted selection and pin it with a test | Ready |  | 0% | backlog/item_235_restore_deterministic_weighted_selection_and_pin_it_with_a_test.md |
+| [item_236_resolve_the_dead_positiondelta_card_effect_accumulator](backlog/item_236_resolve_the_dead_positiondelta_card_effect_accumulator.md) | Resolve the dead positionDelta card-effect accumulator | Ready |  | 0% | backlog/item_236_resolve_the_dead_positiondelta_card_effect_accumulator.md |
+| [item_237_make_web_client_storage_access_crash_safe](backlog/item_237_make_web_client_storage_access_crash_safe.md) | Make web client storage access crash-safe | Ready |  | 0% | backlog/item_237_make_web_client_storage_access_crash_safe.md |
+| [item_238_close_email_header_injection_and_account_enumeration](backlog/item_238_close_email_header_injection_and_account_enumeration.md) | Close email header injection and account enumeration | Ready |  | 0% | backlog/item_238_close_email_header_injection_and_account_enumeration.md |
+| [item_239_rate_limit_unauthenticated_writes_and_bound_admin_reads](backlog/item_239_rate_limit_unauthenticated_writes_and_bound_admin_reads.md) | Rate-limit unauthenticated writes and bound admin reads | Ready |  | 0% | backlog/item_239_rate_limit_unauthenticated_writes_and_bound_admin_reads.md |
+| [item_240_owner_team_resilience_and_replay_validator_negative_tests](backlog/item_240_owner_team_resilience_and_replay_validator_negative_tests.md) | Owner-team resilience and replay-validator negative tests | Ready |  | 0% | backlog/item_240_owner_team_resilience_and_replay_validator_negative_tests.md |
+| [item_241_over_engineering_cleanup_extract_replay_trace_delete_dead_exports_unify_modal_state](backlog/item_241_over_engineering_cleanup_extract_replay_trace_delete_dead_exports_unify_modal_state.md) | Over-engineering cleanup: extract replay trace, delete dead exports, unify modal state | Ready |  | 0% | backlog/item_241_over_engineering_cleanup_extract_replay_trace_delete_dead_exports_unify_modal_state.md |
 
 ## Tasks
 
@@ -532,3 +541,4 @@
 | [task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff](tasks/task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff.md) | Orchestrate canonical race-track replay trace and simulation handoff | Done | codex | 100% | tasks/task_097_orchestrate_canonical_race_track_replay_trace_and_simulation_handoff.md |
 | [task_098_orchestrate_race_replay_realism_layers_after_canonical_trace](tasks/task_098_orchestrate_race_replay_realism_layers_after_canonical_trace.md) | Orchestrate race replay realism layers after canonical trace | Done | codex | 100% | tasks/task_098_orchestrate_race_replay_realism_layers_after_canonical_trace.md |
 | [task_099_orchestrate_chrono_replay_race_track_parity](tasks/task_099_orchestrate_chrono_replay_race_track_parity.md) | Orchestrate chrono replay race-track parity | Done | codex | 100% | tasks/task_099_orchestrate_chrono_replay_race_track_parity.md |
+| [task_100_orchestrate_review_findings_remediation](tasks/task_100_orchestrate_review_findings_remediation.md) | Orchestrate review-findings remediation | Ready |  | 0% | tasks/task_100_orchestrate_review_findings_remediation.md |

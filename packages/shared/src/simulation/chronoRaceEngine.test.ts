@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { CARD_DEFINITIONS } from "../cards/definitions.js";
 import { RACE_APPROACHES, TECHNICAL_PREPARATIONS, PIT_STRATEGIES, type RaceInput } from "../domain/race.js";
-import { createChronoFinalTimes, createChronoScores, motionParametersForDecision } from "./chronoRaceEngine.js";
+import { createChronoFinalTimes, createChronoReplayTrace, createChronoScores, motionParametersForDecision } from "./chronoRaceEngine.js";
 
 const baseParticipant: RaceInput["participants"][number] = {
   teamId: "atlas",
@@ -80,6 +80,38 @@ describe("chronoRaceEngine", () => {
     for (const time of createChronoFinalTimes(states, [], options).values()) {
       expect(Number.isFinite(time)).toBe(true);
       expect(time).toBeGreaterThan(1);
+    }
+  });
+
+  it("captures replay cars from deterministic sampled time-distance motion state", () => {
+    const states = baseRace.participants.map((participant, index) => ({
+      participant,
+      scores: createChronoScores(participant),
+      elapsedTime: index === 0 ? 120 : 122,
+      positionDelta: 0,
+      resultTags: new Set<string>()
+    }));
+    const trace = createChronoReplayTrace(states, {
+      classification: [
+        { position: 1, teamId: "atlas", teamName: "Atlas Works", points: 25, credits: 40, score: 100, positionChange: 0, status: "finished", resultTags: [] },
+        { position: 2, teamId: "bravo", teamName: "Bravo", points: 18, credits: 30, score: 90, positionChange: 0, status: "finished", resultTags: [] }
+      ],
+      snapshots: [{ segment: "mid", pitCosts: new Map([["atlas", 6]]) }],
+      trackLengthMeters: 3200,
+      laps: 10,
+      pitLaneProgress: 0.5,
+      speedProfile: [{ startProgress: 0.2, endProgress: 0.35, factor: 0.76, kind: "corner" }],
+      weather: { start: "dry", early: "dry", mid: "light_rain", late: "dry", finish: "dry" },
+      energy: 62,
+      replayStepsPerSegment: 20,
+      gridGapSeconds: 0.25
+    });
+
+    expect(trace.at(-1)?.order).toEqual(["atlas", "bravo"]);
+    expect(trace.some((point) => point.cars?.atlas?.phase === "pit_stop")).toBe(true);
+    expect(trace.some((point) => (point.cars?.atlas?.speed ?? 0) > 0 && (point.cars?.atlas?.speed ?? 0) < 1)).toBe(true);
+    for (let index = 1; index < trace.length; index += 1) {
+      expect(trace[index]!.cars!.atlas!.trackProgress).toBeGreaterThanOrEqual(trace[index - 1]!.cars!.atlas!.trackProgress);
     }
   });
 });

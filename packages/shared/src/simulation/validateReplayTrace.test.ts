@@ -118,4 +118,36 @@ describe("validateReplayTrace", () => {
       )
     ).toContain("overtake phases missing near beta at 0.02");
   });
+
+  it("reports order change facts that do not match adjacent trace order", () => {
+    const mismatch = result({
+      replayFacts: {
+        version: 1,
+        orderChanges: [
+          {
+            type: "order_change",
+            segment: "mid",
+            lap: 1,
+            progress: 0.02,
+            overtakingTeamId: "alpha",
+            overtakenTeamId: "beta",
+            fromPosition: 2,
+            toPosition: 1,
+            gapSeconds: 0.1
+          }
+        ]
+      }
+    });
+
+    expect(validateReplayTrace(mismatch)).toContain("order change fact does not match trace order at 0.02");
+  });
+
+  it("reports defense markers without nearby traffic", () => {
+    const defended = point(0.02);
+    defended.cars!.alpha!.phase = "defending";
+    defended.cars!.alpha!.trackProgress = 0.05;
+    defended.cars!.beta!.trackProgress = 0;
+
+    expect(validateReplayTrace(result({ replayTrace: [point(0), defended, point(1)] }))).toContain("defense marker lacks nearby traffic for alpha at point 1");
+  });
 });

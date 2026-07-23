@@ -9,7 +9,7 @@ export function buildReplayFacts(trace: ReplayTracePoint[], events: RaceEvent[],
     return point.order.flatMap((teamId, toIndex) => {
       const fromIndex = previous.order.indexOf(teamId);
       if (fromIndex === -1 || fromIndex <= toIndex) return [];
-      return previous.order.slice(toIndex, fromIndex).flatMap((overtakenTeamId) => {
+      return previous.order.slice(toIndex, fromIndex).filter((overtakenTeamId) => point.order.indexOf(overtakenTeamId) > toIndex).flatMap((overtakenTeamId) => {
         if (pitRelatedOrderChange(previous, point, teamId, overtakenTeamId)) return [];
         const trackProgress = trackProgressAtRaceProgress(point.progress, laps);
         const zone = zoneSummary(trackZones, trackProgress, "overtake") ?? zoneSummary(trackZones, trackProgress, "sector");

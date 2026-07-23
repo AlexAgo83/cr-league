@@ -46,6 +46,14 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
       if (previousCar && !boundaryMove && car.trackProgress + 0.0001 < previousCar.trackProgress) errors.push(`car progress goes backwards for ${teamId} at point ${index}`);
       if (previousCar && !boundaryMove && car.trackProgress - previousCar.trackProgress > 0.035) errors.push(`car progress jumps too far for ${teamId} at point ${index}`);
       if (previousCar && previousCar.phase !== "grid" && car.phase !== "finished" && Math.abs(car.speed - previousCar.speed) > 0.8) errors.push(`car speed changes too abruptly for ${teamId} at point ${index}`);
+      if (car.phase === "defending") {
+        const orderIndex = point.order.indexOf(teamId);
+        const behind = orderIndex >= 0 ? point.cars?.[point.order[orderIndex + 1] ?? ""] : undefined;
+        if (!behind || behind.phase.startsWith("pit") || car.trackProgress < behind.trackProgress || car.trackProgress - behind.trackProgress > 0.02) {
+          errors.push(`defense marker lacks nearby traffic for ${teamId} at point ${index}`);
+        }
+        if (car.speed > 1) errors.push(`defense marker speed too high for ${teamId} at point ${index}`);
+      }
 
       carPhases.set(teamId, [...(carPhases.get(teamId) ?? []), { progress: point.progress, phase: car.phase }]);
       if (car.phase.startsWith("pit")) pitPhases.set(teamId, [...(pitPhases.get(teamId) ?? []), car.phase]);
@@ -71,6 +79,9 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
   }
 
   for (const change of result.replayFacts?.orderChanges ?? []) {
+    if (!hasNearbyOrderTransition(trace, change.progress, change.overtakingTeamId, change.overtakenTeamId)) {
+      errors.push(`order change fact does not match trace order at ${change.progress.toFixed(2)}`);
+    }
     const pitRelated = [change.overtakingTeamId, change.overtakenTeamId].some((teamId) =>
       (carPhases.get(teamId) ?? []).some((phase) => phase.phase.startsWith("pit") && Math.abs(phase.progress - change.progress) <= 0.06)
     );
@@ -81,4 +92,22 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
   }
 
   return errors;
+}
+
+function hasNearbyOrderTransition(trace: RaceResult["replayTrace"], progress: number, overtakingTeamId: string, overtakenTeamId: string) {
+  if (!trace?.length) return false;
+  const pointIndex = trace.findIndex((point) => Math.abs(point.progress - progress) <= 0.005);
+  const center = pointIndex >= 0 ? pointIndex : trace.findIndex((point) => point.progress >= progress);
+  if (center < 0) return false;
+  for (let before = Math.max(0, center - 4); before < center; before += 1) {
+    for (let after = center; after <= Math.min(trace.length - 1, center + 1); after += 1) {
+      const previousOrder = trace[before]!.order;
+      const order = trace[after]!.order;
+      if (
+        previousOrder.indexOf(overtakingTeamId) > previousOrder.indexOf(overtakenTeamId) &&
+        order.indexOf(overtakingTeamId) < order.indexOf(overtakenTeamId)
+      ) return true;
+    }
+  }
+  return false;
 }

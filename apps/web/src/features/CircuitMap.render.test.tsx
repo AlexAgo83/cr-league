@@ -23,11 +23,12 @@ describe("CircuitMap rendering", () => {
     expect(container.querySelector(".circuit-map-content")?.getAttribute("transform")).toBeNull();
   });
 
-  it("does not render tire trails behind cars", () => {
+  it("renders metadata-driven tire trails and headlights", () => {
     const moving: MapCar = { id: "moving", label: "M", player: false, delay: 0, duration: 10, progress: 1 };
 
     const movingMap = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[moving]} />);
-    expect(movingMap.container.querySelector(".map-car-trails")).toBeNull();
+    expect(movingMap.container.querySelectorAll(".map-car-trail")).toHaveLength(2);
+    expect(movingMap.container.querySelectorAll(".map-car-headlight")).toHaveLength(2);
   });
 
   it("keeps ambient cars moving forward only", () => {

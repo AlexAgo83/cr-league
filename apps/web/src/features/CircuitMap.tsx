@@ -4,7 +4,7 @@ import type { DecisionDeltaKey, TeamLivery, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
-import { DEFAULT_CAR_ASSET, carAssetForId } from "./carAssets.js";
+import { DEFAULT_CAR_ASSET, carAssetForId, carRenderGeometryForId, type CarAsset } from "./carAssets.js";
 import { safeHex } from "./LiveryPlate.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
@@ -50,6 +50,9 @@ const CLOSE_EXIT_DISTANCE = 6;
 const DRIFT_LOOKAHEAD = 0.012;
 const HEADING_LOOKAHEAD = 0.006;
 const MAX_DRIFT_ANGLE = 14;
+const TIRE_MARK_MIN_DRIFT = 3;
+const TIRE_MARK_LIFETIME = 1_100;
+const TIRE_MARK_SAMPLE_DISTANCE = 0.45;
 const ROUTE_FIT_PADDING = 58;
 const ROUTE_STROKES = {
   glow: 22,
@@ -58,7 +61,6 @@ const ROUTE_STROKES = {
   accent: 4
 };
 type CameraZoomMode = "normal" | "traffic" | "close";
-export type CarSprite = "idle" | "boost" | "brake";
 type RoutePoint = { x: number; y: number };
 type RoutePose = RoutePoint & { angle: number };
 type RouteSegment = {
@@ -70,6 +72,8 @@ type RouteSegment = {
   endDistance: number;
 };
 type RouteGeometry = { segments: RouteSegment[]; total: number };
+type TireMarkPoint = RoutePoint & { at: number };
+type TireMarks = { left: TireMarkPoint[]; right: TireMarkPoint[] };
 export type CircuitRouteAnalysis = {
   startLine: { x1: number; y1: number; x2: number; y2: number };
   startProgress: number;
@@ -78,24 +82,6 @@ export type CircuitRouteAnalysis = {
 
 const routeGeometryCache = new WeakMap<RoutePoint[], RouteGeometry>();
 let routeGeometryBuildCount = 0;
-
-const CAR_SPRITES: Record<CarSprite, string> = {
-  idle: DEFAULT_CAR_ASSET.top,
-  boost: DEFAULT_CAR_ASSET.top,
-  brake: DEFAULT_CAR_ASSET.top
-};
-const CAR_SPRITE_ANCHOR: Record<CarSprite, { x: number; y: number }> = {
-  idle: { x: 0, y: 0 },
-  boost: { x: 0, y: 0 },
-  brake: { x: 0, y: 0 }
-};
-const CAR_SPRITE_BOX = { x: -17, y: -8.8, width: 34, height: 17.65 };
-
-function spriteForCar(car: MapCar): CarSprite {
-  if ((car.positionDelta ?? 0) > 0) return "boost";
-  if ((car.positionDelta ?? 0) < 0) return "brake";
-  return "idle";
-}
 
 function projectLatLng(point: { lat: number; lng: number }, zoom: number) {
   const scale = TILE_SIZE * 2 ** zoom;
@@ -331,6 +317,7 @@ export function CircuitMap({
   const clockRef = useRef(0);
   const zoomRef = useRef(FOCUS_ZOOM);
   const zoomModeRef = useRef<CameraZoomMode>("normal");
+  const tireMarksRef = useRef(new Map<string, TireMarks>());
   const focusEnabled = Boolean(camera?.enabled && camera.car);
   const markerScale = focusEnabled ? 1 / FOCUS_ZOOM : 0.62;
   const hasCars = cars.length > 0;
@@ -389,8 +376,11 @@ export function CircuitMap({
     const cameraGroup = cameraRef.current;
     if (!cameraGroup || !carProgressRef || !hasCars) return;
     const lastTransforms = new Map<string, string>();
+    const trailPaths = Array.from(cameraGroup.querySelectorAll<SVGPathElement>(".map-car-trail"));
+    const tireMarks = tireMarksRef.current;
     let frame = 0;
     const tick = () => {
+      const now = performance.now();
       const groups = Array.from(cameraGroup.querySelectorAll<SVGGElement>(".map-car"));
       for (const car of carsRef.current) {
         const progress = carProgressRef.current[car.id] ?? car.progress;
@@ -404,13 +394,41 @@ export function CircuitMap({
           group.setAttribute("transform", transform);
           lastTransforms.set(car.id, transform);
         }
-        group?.querySelector<SVGGElement>(".map-car-sprite")?.setAttribute("transform", `rotate(${pose.angle + drift + 180})`);
+        const bodyAngle = pose.angle + drift;
+        group?.querySelector<SVGGElement>(".map-car-sprite")?.setAttribute("transform", `rotate(${bodyAngle})`);
+
+        const geometry = carRenderGeometryForId(car.livery?.carAssetId);
+        const scale = focusEnabled ? 1 / zoomRef.current : markerScale;
+        const radians = bodyAngle * Math.PI / 180;
+        const wheelPoints = geometry.rearWheels.map(([x, y]) => ({
+          x: pose.x + (x * Math.cos(radians) - y * Math.sin(radians)) * scale,
+          y: pose.y + (x * Math.sin(radians) + y * Math.cos(radians)) * scale
+        }));
+        const marks = tireMarks.get(car.id) ?? { left: [], right: [] };
+        tireMarks.set(car.id, marks);
+        for (const [index, side] of (["left", "right"] as const).entries()) {
+          marks[side] = marks[side].filter((point) => now - point.at <= TIRE_MARK_LIFETIME);
+          const wheel = wheelPoints[index]!;
+          const previous = marks[side].at(-1);
+          const distance = previous ? Math.hypot(wheel.x - previous.x, wheel.y - previous.y) : 0;
+          if (previous && distance > 8) marks[side] = [];
+          if (Math.abs(drift) >= TIRE_MARK_MIN_DRIFT && (!previous || distance >= TIRE_MARK_SAMPLE_DISTANCE)) {
+            marks[side].push({ ...wheel, at: now });
+          }
+          const path = trailPaths.find((candidate) => candidate.dataset.carId === car.id && candidate.dataset.wheel === side);
+          const latest = marks[side].at(-1);
+          path?.setAttribute("d", marks[side].length > 1 ? routePath(marks[side]) : "");
+          path?.setAttribute("opacity", latest ? String(Math.min(1, (TIRE_MARK_LIFETIME - (now - latest.at)) / 400)) : "0");
+        }
       }
       frame = requestAnimationFrame(tick);
     };
     frame = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(frame);
-  }, [carProgressRef, hasCars, routeAnalysis.startProgress]);
+    return () => {
+      cancelAnimationFrame(frame);
+      tireMarks.clear();
+    };
+  }, [carProgressRef, focusEnabled, hasCars, markerScale, routeAnalysis.startProgress]);
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
@@ -486,18 +504,23 @@ export function CircuitMap({
               {tileLayer}
               <g className="circuit-route-layer" style={routeDecorStyle}>
                 {routeLayer}
+                <g className="map-car-trails">
+                  {sortedCars.flatMap((car) => (["left", "right"] as const).map((wheel) => (
+                    <path key={`${car.id}-${wheel}`} className="map-car-trail" data-car-id={car.id} data-wheel={wheel} vectorEffect="non-scaling-stroke" />
+                  )))}
+                </g>
                 {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
                 {sortedCars.map((car) => {
                   const pose = car.progress === undefined ? null : poseOnRoute(renderPoints, stageProgress(car.progress));
                   const drift = car.progress === undefined ? 0 : driftAngle(renderPoints, stageProgress(car.progress));
-                  const sprite = spriteForCar(car);
+                  const asset = carAssetForId(car.livery?.carAssetId);
                   const carStyle = car.livery
                     ? ({ "--car-primary": safeHex(car.livery.primary, "#38bdf8"), "--car-secondary": safeHex(car.livery.secondary, "#16c784") } as CSSProperties & Record<string, string>)
                     : undefined;
                   return (
                     <g key={car.id} data-car-id={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
                       <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                        <MapCarSprite asset={carAssetForId(car.livery?.carAssetId).top} sprite={sprite} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift + 180})` : "rotate(180)"} />
+                        <MapCarSprite asset={asset} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
                         <text textAnchor="middle" dominantBaseline="central">
                           {car.label}
                         </text>
@@ -565,32 +588,41 @@ function prefersReducedMotion() {
   return typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 }
 
-export function MapCarSprite({ asset, maskId, sprite, transform }: { asset?: string; maskId: string; sprite: CarSprite; transform?: string }) {
-  const anchor = CAR_SPRITE_ANCHOR[sprite];
-  const carAsset = asset ?? CAR_SPRITES[sprite];
+export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, maskId, transform }: { asset?: CarAsset; maskId: string; transform?: string }) {
+  const geometry = carRenderGeometryForId(asset.id);
+  const { image, bounds } = geometry;
 
   return (
     <g className="map-car-sprite" transform={transform}>
       <defs>
         <mask id={maskId} className="map-car-tint-mask">
-          <image href={carAsset} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
+          <g transform={`rotate(${image.rotation})`}>
+            <image href={asset.top} x={image.x} y={image.y} width={image.width} height={image.height} />
+          </g>
         </mask>
-        <linearGradient id={`${maskId}-livery`} x1={CAR_SPRITE_BOX.x} y1="0" x2={CAR_SPRITE_BOX.x + CAR_SPRITE_BOX.width} y2="0" gradientUnits="userSpaceOnUse">
+        <linearGradient id={`${maskId}-livery`} x1={bounds.x} y1="0" x2={bounds.x + bounds.width} y2="0" gradientUnits="userSpaceOnUse">
           <stop offset="18%" className="map-car-livery-start" />
           <stop offset="62%" className="map-car-livery-mid" />
           <stop offset="100%" className="map-car-livery-end" />
         </linearGradient>
+        {geometry.frontLights.map(([x, y], index) => (
+          <linearGradient key={index} id={`${maskId}-headlight-${index}`} x1={x} y1={y} x2={x + 28} y2={y} gradientUnits="userSpaceOnUse">
+            <stop offset="0" className="map-car-headlight-start" />
+            <stop offset="1" className="map-car-headlight-end" />
+          </linearGradient>
+        ))}
       </defs>
-      {([
-        [-0.6, 0],
-        [0.6, 0],
-        [0, -0.6],
-        [0, 0.6]
-      ] as Array<[number, number]>).map(([x, y]) => (
-        <rect key={`${x}-${y}`} className="map-car-stroke" x={CAR_SPRITE_BOX.x + anchor.x + x} y={CAR_SPRITE_BOX.y + anchor.y + y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} />
+      {geometry.frontLights.map(([x, y], index) => (
+        <g key={index} className="map-car-headlight">
+          <path d={`M${x} ${y} L${x + 28} ${y - 4} L${x + 28} ${y + 4} Z`} fill={`url(#${maskId}-headlight-${index})`} />
+          <circle cx={x} cy={y} r="1.2" />
+        </g>
       ))}
-      <image className="map-car-detail" href={carAsset} x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} preserveAspectRatio="xMidYMid meet" />
-      <rect className="map-car-tint" x={CAR_SPRITE_BOX.x + anchor.x} y={CAR_SPRITE_BOX.y + anchor.y} width={CAR_SPRITE_BOX.width} height={CAR_SPRITE_BOX.height} mask={`url(#${maskId})`} fill={`url(#${maskId}-livery)`} />
+      <rect className="map-car-stroke" x={bounds.x} y={bounds.y} width={bounds.width} height={bounds.height} mask={`url(#${maskId})`} />
+      <g transform={`rotate(${image.rotation})`}>
+        <image className="map-car-detail" href={asset.top} x={image.x} y={image.y} width={image.width} height={image.height} />
+      </g>
+      <rect className="map-car-tint" x={bounds.x} y={bounds.y} width={bounds.width} height={bounds.height} mask={`url(#${maskId})`} fill={`url(#${maskId}-livery)`} />
     </g>
   );
 }

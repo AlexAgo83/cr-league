@@ -76,6 +76,28 @@ PY
 
 Then update `apps/web/src/features/carAssets.ts` so `CAR_ASSETS` exposes every imported `car-XXX`.
 
+## Runtime Map Geometry
+
+`CircuitMap` uses a compact copy of each top-view canvas size, wheel contacts, and
+front-light points from `metadata.json`. Keep `RAW_CAR_GEOMETRY` in
+`apps/web/src/features/carAssets.ts` synchronized when assets are regenerated.
+
+The runtime geometry follows these rules:
+
+- the midpoint of the front wheel contacts is the local origin and drift pivot;
+- the front-to-rear axle vector is normalized toward positive X, including source
+  assets such as `car-014` that face the opposite direction;
+- the original canvas ratio is preserved;
+- the rendered wheelbase is derived from the detected wheelbase and bounded to
+  18-22 map units because source pixels do not provide a certified physical scale;
+- rear-wheel contacts feed two ground-fixed SVG paths while the drift angle exceeds
+  3 degrees; samples expire after 1.1 seconds;
+- front-light points feed subtle SVG light cones rendered below the body.
+
+This stays in the existing SVG scene. A shader is not needed for short-lived tire
+marks and would require a second rendering stack without improving their ground
+contact.
+
 ## Final Corrections Applied
 
 - Crop the transparent canvas to the vehicle bounds using `placed_at` plus `source_box` size.
@@ -143,5 +165,6 @@ After adding more cars:
 ## Quick Check
 
 ```sh
-npm test -- apps/web/src/app/App.test.tsx
+npm test -- apps/web/src/features/CircuitMap.test.ts apps/web/src/features/CircuitMap.render.test.tsx
+npm run typecheck
 ```

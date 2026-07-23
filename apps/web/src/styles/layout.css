@@ -4363,6 +4363,35 @@ label small {
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.55));
 }
 
+.map-car-trails {
+  pointer-events: none;
+}
+
+.map-car-trail {
+  fill: none;
+  stroke: rgb(8 8 10 / 0.58);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.15;
+}
+
+.map-car-headlight {
+  filter: blur(0.35px) drop-shadow(0 0 2px rgb(219 244 255 / 0.8));
+  pointer-events: none;
+}
+
+.map-car-headlight circle {
+  fill: #f4fbff;
+}
+
+.map-car-headlight-start {
+  stop-color: rgb(228 248 255 / 0.62);
+}
+
+.map-car-headlight-end {
+  stop-color: rgb(178 225 255 / 0);
+}
+
 .map-car-tint-mask {
   mask-type: alpha;
 }

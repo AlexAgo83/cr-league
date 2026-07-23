@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CITY_CIRCUITS } from "../app/circuits.js";
+import { carRenderGeometryForId } from "./carAssets.js";
 import { __resetRouteGeometryStatsForTest, __routeGeometryBuildCountForTest, analyzeCircuitRoute, angleDelta, circuitRouteAnalysis, driftAngle, poseOnRoute, routeFitTransform } from "./CircuitMap.js";
 
 describe("CircuitMap route posing", () => {
@@ -17,6 +18,19 @@ describe("CircuitMap route posing", () => {
 
     expect(Math.max(...jumps)).toBeLessThan(70);
     expect(Math.abs(driftAngle(route, 0.25))).toBeLessThanOrEqual(14);
+  });
+
+  it("normalizes every car around its front axle without flattening model proportions", () => {
+    const regular = carRenderGeometryForId("car-001");
+    const reversedSource = carRenderGeometryForId("car-014");
+    const longCar = carRenderGeometryForId("car-011");
+
+    for (const geometry of [regular, reversedSource, longCar]) {
+      expect(geometry.rearWheels.every(([x]) => x < 0)).toBe(true);
+      expect(geometry.wheelbase).toBeGreaterThanOrEqual(18);
+      expect(geometry.wheelbase).toBeLessThanOrEqual(22);
+    }
+    expect(longCar.bounds.width).not.toBeCloseTo(regular.bounds.width);
   });
 
   it("reuses route geometry for repeated poses on the same points array", () => {

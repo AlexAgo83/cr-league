@@ -1,10 +1,10 @@
 ## item_258_extract_the_chrono_race_engine_module_and_contract - Extract the chrono race engine module and contract
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 30%
 > Complexity: Medium
 > Theme: Engine architecture
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

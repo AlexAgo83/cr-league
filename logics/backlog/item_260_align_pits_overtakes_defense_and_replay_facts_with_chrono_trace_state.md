@@ -1,10 +1,10 @@
 ## item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state - Align pits, overtakes, defense, and replay facts with chrono trace state
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 30%
 > Complexity: High
 > Theme: Race interactions
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

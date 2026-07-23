@@ -1,10 +1,10 @@
 ## item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2 - Harden validation, balance reporting, and rollout notes for chrono v2
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 30%
 > Complexity: Medium
 > Theme: Validation and rollout
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

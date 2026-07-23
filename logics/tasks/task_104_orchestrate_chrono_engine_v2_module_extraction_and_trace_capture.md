@@ -1,13 +1,14 @@
 ## task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture - Orchestrate chrono engine v2 module extraction and trace capture
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 30%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.

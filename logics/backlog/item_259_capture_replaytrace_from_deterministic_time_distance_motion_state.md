@@ -1,10 +1,10 @@
 ## item_259_capture_replaytrace_from_deterministic_time_distance_motion_state - Capture replayTrace from deterministic time-distance motion state
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 30%
 > Complexity: High
 > Theme: Simulation core
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

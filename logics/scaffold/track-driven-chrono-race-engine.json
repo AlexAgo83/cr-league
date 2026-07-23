@@ -1,0 +1,256 @@
+{
+  "title": "Track-driven chrono race engine: derive Grand Prix timing, gaps, classification, and replay from speed over the race track",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "docs/release-contract.md",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/simulation/simulateRace.test.ts",
+    "packages/shared/src/simulation/replayTrace.ts",
+    "packages/shared/src/simulation/validateReplayTrace.ts",
+    "packages/shared/src/simulation/validateReplayTrace.test.ts",
+    "packages/shared/src/domain/race.ts",
+    "packages/shared/src/domain/decisionDeltas.ts",
+    "packages/shared/src/domain/circuits.ts",
+    "scripts/balance-simulations.ts",
+    "apps/web/src/features/replay/replayMath.ts",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/CircuitMap.tsx",
+    "Design discussion on 2026-07-23: the current engine is score-first. Decisions, traits, cards, weather, and seeded variance accumulate abstract scores in simulateRace.ts; classification is derived from classificationScore(score + positionDelta), and createDistanceReplayTrace then fabricates a plausible trace/timing layer. A small safe patch now smooths replayTrace.cars[*].speed only, but chronos, gaps, and classification still come from the score-first model. The desired longer-term evolution is not a half-measure: move to an arcade track-driven chrono model where performance parameters produce speed over the circuit, the race advances through time/distance, finish times determine classification, and replayTrace is a capture of that simulation rather than a reconstruction. This is pre-live, so a core engine evolution is acceptable if it is carefully specified, deterministic, tested, and balance-calibrated."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Simulation engine evolution",
+    "needs": [
+      "Replace the score-first race decision path with a track-driven chrono model where speed, distance, elapsed time, and circuit zones determine Grand Prix classification.",
+      "Keep the game arcade and controllable: reuse the current decisions, cards, traits, weather, and seeded variance as performance parameters rather than introducing a full physics simulator.",
+      "Make replayTrace a direct capture of the race simulation, so car progress, speed, times, gaps, order, pit phases, overtakes, and final classification all share one source of truth.",
+      "Preserve determinism and player-facing output contracts while allowing expected behavioral changes in timings, gaps, overtakes, and finishing order from the new model.",
+      "Provide enough balance and invariant coverage that another AI can implement the engine without silently breaking card usefulness, weather readability, pit strategy, or replay validity."
+    ],
+    "context": [
+      "Current state: simulateRace.ts creates TeamState scores, applies segment deltas in applySegment, classifies by classificationScore, then createDistanceReplayTrace builds plans and trace points from final times. replayTrace.times/gaps are derived from raceDuration/progress and final times, not from an integrated speed model. The recent smoothReplayTraceSpeeds pass only changes replayTrace.cars[*].speed and deliberately leaves chronos untouched.",
+      "Target state: the race engine should simulate each participant over normalized race distance (laps * track length) in deterministic ticks or micro-segments. Each participant has a motion state: distanceMeters, speed, elapsedTime, phase, pit state, and optional local event modifiers. Circuit speed profile and track zones are the primary constraints; decisions/cards/traits/weather modulate target speed, acceleration, braking, cornering, wet grip, consistency, attack, and reliability.",
+      "This is not a full physics engine. Keep it arcade and data-light: no collision geometry, no continuous car-to-car physics, no new dependency, no stochastic non-determinism. The model only needs credible speed changes, finish times, gaps, overtakes, pit effects, and replay trace output.",
+      "The existing RaceInput/RaceResult shape should remain compatible unless a minimal additive field is truly needed. Consumers include API routes, web ReplayView/replayMath, validateReplayTrace, balance scripts, and tests. Prefer a new internal module (for example packages/shared/src/simulation/chronoRaceEngine.ts) called by simulateRace, so the migration is reviewable and the old scoring helpers can be kept only for calibration/tests during the transition.",
+      "Cards and decisions need a mapping into motion parameters. Examples: speed preparation improves topSpeed/acceleration, reliability improves consistency and incident resistance, weather preparation improves wetGrip, aggressive approach improves attack and overtaking but increases risk/variance, prudent improves consistency/braking but lowers attack, launch_boost improves launch acceleration, soft_tires improve cornering/acceleration with late fade risk, defensive_order improves defense/consistency, rain_grip/rain_mapping improve wetGrip, economy/fleet_sponsorship can trade pace for credits without becoming invisible.",
+      "Circuit data already exposes trackLengthMeters, routeLengthMeters, laps, pitLaneProgress, trackZones, and CIRCUIT_SPEED_PROFILES with straight/braking/corner/exit factors. The new engine should consume those rather than inventing generic segment-only motion. RACE_SEGMENTS may still be used for reporting/weather/event grouping, but the chrono truth should come from integrated track progress.",
+      "Events should become observations of the chrono simulation where possible: weather changes, pit imminent/stop/exit, overtakes, defense, minor errors, pace gains, and finish events should align with the simulated phase and trace point. Some flavor events can remain narrative, but they must not contradict the motion state.",
+      "Replay output requirements: replayTrace.cars[*].trackProgress and distanceMeters must be monotonic except documented grid/pit allowances, speed must be bounded and smooth, order should follow distance/progress with stable tie-breaking, gaps/times should derive from elapsed race time and finish crossings, and the final trace order must match classification. validateReplayTrace should be strengthened if needed.",
+      "Balance requirements: the new engine will change outcomes, so use balance simulations over fixed seeds to compare distribution, not exact winners. Track metrics such as average race duration, gap spread, podium volatility, card win-rate uplift, weather-prep value in rain, pit strategy value, comeback rate, and DNF/error frequency if introduced. Avoid tuning by one seed.",
+      "Migration constraint: because the app is not live yet, exact historical behavior does not need to be preserved. Still, do not combine this with unrelated UI refactors, API auth changes, schema migrations, release automation changes, or circuit catalogue rewrites. Keep the blast radius to shared simulation plus tests/docs."
+    ],
+    "acceptance_criteria": [
+      "AC1: simulateRace uses a deterministic track-driven chrono engine for Grand Prix results: classification is derived from finish times over simulated distance, not from classificationScore alone, and replayTrace is captured from the same motion state.",
+      "AC2: Decisions, cards, traits, weather, pit strategy, and circuit speed profiles all feed documented motion parameters; no existing card or preparation path becomes written-but-unread.",
+      "AC3: Times and gaps are internally coherent: final classification order, final trace order, finish events, replayTrace.times, replayTrace.gaps, and ReplayView finishTimes agree for fixed seeds.",
+      "AC4: Motion remains arcade-realistic and valid: no backwards progress, no impossible speed, bounded acceleration/deceleration, plausible pit entry/stop/exit, and overtake phases line up with actual order changes.",
+      "AC5: Determinism is proven across repeated runs for representative seeds/circuits/weather/pit/card combinations, and balance simulations show acceptable distributions for winner spread, gap spread, card impact, weather impact, and pit strategy impact.",
+      "AC6: The migration is contained: public RaceInput/RaceResult contracts remain compatible unless an additive field is justified, web replay still works without UI rewrites, and unrelated API/storage/release/circuit-catalog files are untouched.",
+      "AC7: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, npm run balance:sim (or a bounded documented subset), and npm run logics:validate pass, with validation evidence recorded at task closeout."
+    ]
+  },
+  "product": {
+    "title": "Track-Driven Chrono Race Engine Product Brief",
+    "overview": "CR League currently decides races through abstract segment scores and then reconstructs a plausible replay trace. That is fast and controllable, but it creates a split truth: chronos and replay movement are not the same system. This product change moves Grand Prix simulation to an arcade track-driven chrono engine where each car's speed over circuit zones produces distance, finish time, gaps, classification, events, and replay trace. The goal is more credible racing and less brutal speed/chrono behavior without building a full physics simulator.",
+    "goals": [
+      "Make the race and replay share one chrono/motion truth.",
+      "Give circuits real gameplay personality through their speed profiles and zones.",
+      "Make decisions and cards affect understandable driving parameters instead of only abstract scores.",
+      "Keep deterministic, arcade, testable simulation rather than full physics.",
+      "Ship the migration with balance evidence and strong invariants before live usage."
+    ],
+    "non_goals": [
+      "Do not build a full physics/collision engine.",
+      "Do not add dependencies, WebGL/canvas rendering, or UI redesign work.",
+      "Do not rewrite the circuit catalogue or generation scripts as part of this request.",
+      "Do not change API auth, storage, database schema, release automation, or admin tooling.",
+      "Do not preserve exact historical winners for every seed; preserve contracts, determinism, and acceptable balance distributions."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Define the chrono engine contract and motion parameter mapping",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Engine design",
+      "request_acs": ["AC1", "AC2", "AC6"],
+      "problem": [
+        "The current simulateRace flow has a split truth: abstract scores decide classification, while replayTrace reconstructs movement afterward.",
+        "A track-driven chrono engine needs explicit input/output contracts and a complete mapping from existing gameplay concepts into motion parameters before implementation starts, otherwise cards or decisions can silently become meaningless."
+      ],
+      "scope_in": [
+        "Document the internal engine contract: inputs, motion state, tick/micro-segment cadence, outputs, tie-breakers, and compatibility with RaceInput/RaceResult.",
+        "Define a deterministic mapping from current scores/decisions/cards/traits/weather/pit strategies into motion parameters such as topSpeed, acceleration, braking, cornering, wetGrip, consistency, attack, defense, reliability, and pit behavior.",
+        "Record which existing helpers remain for calibration only and which become runtime truth.",
+        "Add targeted unit tests for the pure parameter-mapping helper so every current decision/card path affects at least one runtime parameter."
+      ],
+      "scope_out": [
+        "Implementing the full tick simulation in this slice.",
+        "Retuning all numeric values through balance sim.",
+        "Changing public API/database contracts."
+      ],
+      "acceptance_criteria": [
+        "AC1: A new internal contract document or module-level comment explains the chrono engine source of truth and migration boundaries.",
+        "AC2: Every current approach, preparation, pit strategy, and race card maps to at least one motion parameter or explicitly documented non-motion reward.",
+        "AC3: Mapping tests fail if a card/decision becomes written-but-unread."
+      ]
+    },
+    {
+      "title": "Implement deterministic track-driven time-distance simulation",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Simulation core",
+      "request_acs": ["AC1", "AC3", "AC4", "AC6"],
+      "problem": [
+        "Chronos and classification currently come from accumulated abstract scores and replay plans, not from cars moving over a track.",
+        "To make GP timing credible, the engine must integrate speed over circuit distance and derive finish times from crossing the race distance."
+      ],
+      "scope_in": [
+        "Add a focused internal chrono engine module that advances each car through deterministic ticks or micro-segments over laps * trackLengthMeters.",
+        "Use circuit speed profiles and track zones to compute target speeds by progress, including straight/braking/corner/exit behavior and weather-adjusted grip.",
+        "Apply acceleration/deceleration bounds, consistency/risk variance, and deterministic seeded perturbations without non-deterministic APIs.",
+        "Record finish times when each car crosses total race distance and derive classification/gaps from those finish times.",
+        "Keep simulateRace as the public entry point and keep RaceResult compatible."
+      ],
+      "scope_out": [
+        "Full collision physics or lane-level geometry.",
+        "Changing the web replay renderer.",
+        "Adding new runtime dependencies."
+      ],
+      "acceptance_criteria": [
+        "AC1: Classification is derived from finish times generated by the chrono engine.",
+        "AC2: Repeated runs with the same seed/input produce byte-identical classification, events, and replayTrace.",
+        "AC3: All cars finish, final times are finite and monotonic by classification, and no car moves backwards."
+      ]
+    },
+    {
+      "title": "Integrate pit stops, overtakes, defense, and events into chrono motion",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Race interactions",
+      "request_acs": ["AC2", "AC3", "AC4"],
+      "problem": [
+        "Pit stops, overtakes, defense, and incidents are currently mostly score/events plus replay annotations. In the chrono model they must affect time/distance and not just narrative text.",
+        "Replay order changes need to be actual consequences of simulated distance/finish timing, not post-hoc decorations."
+      ],
+      "scope_in": [
+        "Represent pit entry, pit_stop, and pit_exit as motion phases with time loss and track progress behavior tied to pitLaneProgress.",
+        "Model overtakes and defense as deterministic local effects when cars are close in eligible zones, using attack/defense/control parameters and seeded risk.",
+        "Attach RaceEvent.traceProgress, trackProgress, zoneKind, and zoneLabel from the actual motion state.",
+        "Keep flavor/mini-info events if useful, but ensure they do not contradict speed, phase, gaps, or order.",
+        "Update replayFacts orderChanges/directorBeats generation to read the chrono trace and event facts."
+      ],
+      "scope_out": [
+        "Lane selection, collision avoidance, or full pack physics.",
+        "New event art/UI work.",
+        "Broad copy rewrites."
+      ],
+      "acceptance_criteria": [
+        "AC1: Pit phases are ordered and align with pit events and pitLaneProgress.",
+        "AC2: Overtake orderChanges correspond to actual order changes in the trace and include plausible nearby phases.",
+        "AC3: Defense/attack/incidents change elapsed time or motion state when emitted, instead of being purely narrative."
+      ]
+    },
+    {
+      "title": "Make replay trace and web replay consume chrono truth",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Replay coherence",
+      "request_acs": ["AC3", "AC4", "AC6"],
+      "problem": [
+        "ReplayView and replayMath currently tolerate generated traces but still interpolate times/gaps/progress from trace points built by the old score-first flow.",
+        "After the chrono engine lands, the web replay should need no reconstruction hacks for finishTimes, order, gaps, or car progress."
+      ],
+      "scope_in": [
+        "Ensure replayTrace captures chrono motion at a stable cadence with cars, order, times, gaps, distanceMeters, speed, and phase for each point.",
+        "Update shared replay helpers only where necessary so finishTimes, traceTimesAt, traceGapsAt, carProgressAtTrace, liveClassificationByCarProgress, and replay facts consume the chrono truth.",
+        "Keep CircuitMap rendering and useReplayClock behavior compatible with the existing RaceResult shape.",
+        "Strengthen validateReplayTrace where needed for acceleration/deceleration, final-time coherence, and event/phase alignment."
+      ],
+      "scope_out": [
+        "Visual redesign of ReplayView, CircuitMap, or overlays.",
+        "Changing replay speed controls or camera behavior.",
+        "Adding new required fields to the client unless justified as additive."
+      ],
+      "acceptance_criteria": [
+        "AC1: Replay final order, final trace times, finish events, and classification agree.",
+        "AC2: Existing replay UI tests pass without broad rewrites.",
+        "AC3: validateReplayTrace catches chrono-specific coherence failures."
+      ]
+    },
+    {
+      "title": "Calibrate balance and preserve gameplay value across the new engine",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Balance validation",
+      "request_acs": ["AC2", "AC5", "AC7"],
+      "problem": [
+        "A chrono engine can make the race more credible but can also break game balance: one parameter can dominate, cards can become too strong or invisible, and weather/pit strategy can become noisy.",
+        "The migration must be judged on distributions over many seeds, not on one expected result."
+      ],
+      "scope_in": [
+        "Extend or add balance simulation reporting for the chrono engine: average race duration, gap spread, podium volatility, favorite win rate, upset rate, card impact, weather-prep impact, pit strategy value, and circuit archetype differences.",
+        "Set explicit acceptance thresholds or review bands in the task report before closeout.",
+        "Compare a bounded fixed-seed corpus against the old score-first baseline where useful, while allowing intentional outcome changes.",
+        "Tune motion parameters only enough to keep the game arcade, readable, and fair."
+      ],
+      "scope_out": [
+        "Perfect parity with the old engine.",
+        "Long-term economy redesign.",
+        "Adding analytics infrastructure."
+      ],
+      "acceptance_criteria": [
+        "AC1: Balance sim output includes the required chrono metrics over a representative fixed-seed corpus.",
+        "AC2: No existing card/preparation/pit strategy is statistically invisible or overwhelmingly dominant within the documented review bands.",
+        "AC3: The task closeout records the balance evidence and any known follow-up tuning risks."
+      ]
+    },
+    {
+      "title": "Migration gates, tests, and rollout readiness for chrono engine",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Validation and rollout",
+      "request_acs": ["AC5", "AC6", "AC7"],
+      "problem": [
+        "This is a core engine migration before live release. It needs stronger gates than a normal feature patch.",
+        "The implementation must leave a clear rollback/review path and avoid unrelated churn."
+      ],
+      "scope_in": [
+        "Add deterministic regression tests over multiple seeds/circuits/weather/card/pit combinations.",
+        "Add invariant tests for finite times, monotonic progress, bounded speed/acceleration, valid pit phases, valid overtake phases, final-order coherence, and RaceResult compatibility.",
+        "Run local validation: typecheck, unit tests, build, lint, e2e, Logics validation, and bounded balance simulation.",
+        "Document changed behavior in the task report and changelog draft if the release is prepared in the same branch.",
+        "Confirm git diff is limited to shared simulation, tests, and directly necessary replay helpers/docs."
+      ],
+      "scope_out": [
+        "Creating the production release.",
+        "Database migrations or API auth changes.",
+        "Unrelated UI polish."
+      ],
+      "acceptance_criteria": [
+        "AC1: The migration has deterministic and invariant coverage broad enough to catch broken chrono outputs.",
+        "AC2: Full project validation passes, including e2e and Logics validation.",
+        "AC3: The closeout report lists changed behavior, validation evidence, and explicit follow-up risks."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate track-driven chrono race engine migration",
+    "plan": [
+      "Start with the engine contract and parameter mapping. Do not implement ticks until every current decision, preparation, pit strategy, and card has a documented runtime effect or explicit non-motion rationale.",
+      "Implement the chrono engine as a focused internal module behind simulateRace, keeping RaceInput/RaceResult compatible and avoiding unrelated API/web/schema changes.",
+      "Integrate pit stops, overtakes, defense, incidents, weather, and events into actual motion state so emitted race facts do not contradict trace speed/order/gaps.",
+      "Update replayTrace and replay helpers only as needed to consume chrono truth; keep web rendering behavior stable.",
+      "Run deterministic and invariant tests continuously, then broaden to balance simulations across fixed seeds/circuits/weather/cards/pit strategies.",
+      "Tune only within documented review bands, record distribution evidence, and explicitly list any gameplay follow-up risks.",
+      "Run typecheck, test, build, lint, e2e, bounded balance:sim, and logics:validate before closeout; confirm the diff stays contained."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/track-driven-chrono-race-engine.json",
+    "mode": "summary-only",
+    "profile": "deep"
+  }
+}

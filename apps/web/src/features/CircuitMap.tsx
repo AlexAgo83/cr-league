@@ -432,14 +432,21 @@ export function CircuitMap({
       const car = carsRef.current.find((candidate) => candidate.id === carId);
       if (!car) return;
       clockRef.current = camera.timeRef?.current ?? (performance.now() - startedAt) / 1000;
+      // Center on the same continuous progress the sprite is drawn from (carProgressRef, updated
+      // every frame) rather than the React-stepped car.progress; otherwise the camera pans in
+      // discrete jumps that the focus zoom magnifies into a micro-teleport while the sprite glides.
+      const liveProgress = carProgressRef?.current[carId];
       const elapsed = Math.max(0, clockRef.current - car.delay);
-      const progress = car.progress ?? (car.repeatCount !== "indefinite" && clockRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration);
+      const ambientProgress = car.repeatCount !== "indefinite" && clockRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration;
+      const usesTrace = liveProgress !== undefined || car.progress !== undefined;
+      const progress = liveProgress ?? car.progress ?? ambientProgress;
       const stagedProgress = progressFromStart(progress, routeAnalysis.startProgress);
-      const point = car.progress === undefined ? route.getPointAtLength(length * stagedProgress) : poseOnRoute(pointsRef.current, stagedProgress);
+      const point = usesTrace ? poseOnRoute(pointsRef.current, stagedProgress) : route.getPointAtLength(length * stagedProgress);
       const nearestCarDistance = Math.min(
         ...carsRef.current.map((other) => {
-          if (other.id === car.id || other.progress === undefined) return Number.POSITIVE_INFINITY;
-          const otherPoint = poseOnRoute(pointsRef.current, progressFromStart(other.progress, routeAnalysis.startProgress));
+          const otherProgress = carProgressRef?.current[other.id] ?? other.progress;
+          if (other.id === car.id || otherProgress === undefined) return Number.POSITIVE_INFINITY;
+          const otherPoint = poseOnRoute(pointsRef.current, progressFromStart(otherProgress, routeAnalysis.startProgress));
           return Math.hypot(otherPoint.x - point.x, otherPoint.y - point.y);
         })
       );
@@ -465,7 +472,7 @@ export function CircuitMap({
       cancelAnimationFrame(frame);
       cameraGroup.removeAttribute("transform");
     };
-  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, circuit.laps, routeAnalysis.startProgress]);
+  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, carProgressRef, circuit.laps, routeAnalysis.startProgress]);
 
   return (
     <section

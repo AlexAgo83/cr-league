@@ -2824,7 +2824,6 @@ label small {
   background: transparent;
   border: 0;
   border-radius: 0;
-  border-top: 1px solid rgb(255 255 255 / 0.1);
   clip-path: none;
   color: var(--color-muted);
   cursor: pointer;
@@ -3357,6 +3356,7 @@ label small {
 .map-race-actions button.map-action-button {
   align-items: center;
   border-radius: 999px;
+  clip-path: none;
   display: inline-flex;
   height: 52px;
   justify-content: center;

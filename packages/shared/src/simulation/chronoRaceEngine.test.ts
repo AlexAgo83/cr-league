@@ -84,7 +84,10 @@ describe("chronoRaceEngine", () => {
   });
 
   it("captures replay cars from deterministic sampled time-distance motion state", () => {
-    const states = baseRace.participants.map((participant, index) => ({
+    const states = [
+      ...baseRace.participants,
+      { ...baseRace.participants[1]!, teamId: "charlie", teamName: "Charlie", standingsRank: 3 }
+    ].map((participant, index) => ({
       participant,
       scores: createChronoScores(participant),
       elapsedTime: index === 0 ? 120 : 122,
@@ -94,7 +97,8 @@ describe("chronoRaceEngine", () => {
     const trace = createChronoReplayTrace(states, {
       classification: [
         { position: 1, teamId: "atlas", teamName: "Atlas Works", points: 25, credits: 40, score: 100, positionChange: 0, status: "finished", resultTags: [] },
-        { position: 2, teamId: "bravo", teamName: "Bravo", points: 18, credits: 30, score: 90, positionChange: 0, status: "finished", resultTags: [] }
+        { position: 2, teamId: "bravo", teamName: "Bravo", points: 18, credits: 30, score: 90, positionChange: 0, status: "finished", resultTags: [] },
+        { position: 3, teamId: "charlie", teamName: "Charlie", points: 15, credits: 25, score: 80, positionChange: 0, status: "finished", resultTags: [] }
       ],
       snapshots: [{ segment: "mid", pitCosts: new Map([["atlas", 6]]) }],
       trackLengthMeters: 3200,
@@ -107,7 +111,8 @@ describe("chronoRaceEngine", () => {
       gridGapSeconds: 0.25
     });
 
-    expect(trace.at(-1)?.order).toEqual(["atlas", "bravo"]);
+    expect(trace.at(-1)?.order).toEqual(["atlas", "bravo", "charlie"]);
+    expect(trace.find((point) => point.cars?.bravo?.phase === "launch")?.cars?.bravo?.trackProgress).toBeGreaterThan(0);
     expect(trace.some((point) => point.cars?.atlas?.phase === "pit_stop")).toBe(true);
     expect(trace.some((point) => (point.cars?.atlas?.speed ?? 0) > 0 && (point.cars?.atlas?.speed ?? 0) < 1)).toBe(true);
     for (let index = 1; index < trace.length; index += 1) {

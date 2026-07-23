@@ -525,7 +525,7 @@ function applyPitProgressFloors(cars: NonNullable<ReplayTracePoint["cars"]>, pit
 }
 
 function applyVisualChronoGaps(cars: NonNullable<ReplayTracePoint["cars"]>, trackLengthMeters: number, raceDuration: number) {
-  const racing = Object.entries(cars).filter(([, car]) => car.phase === "racing" || car.phase === "launch" || car.phase.startsWith("overtake"));
+  const racing = Object.entries(cars).filter(([, car]) => car.phase === "racing" || car.phase.startsWith("overtake"));
   if (racing.length < 2) return cars;
   const leaderProgress = Math.max(...racing.map(([, car]) => car.trackProgress));
   const leaderId = racing.find(([, car]) => car.trackProgress === leaderProgress)?.[0];

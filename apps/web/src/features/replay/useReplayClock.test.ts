@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, beforeEach } from "vitest";
 import { REPLAY_SPEED_KEY } from "./replayMath.js";
-import { REPLAY_STATE_UPDATE_SECONDS, shouldPublishReplayState, useReplayClock, type ReplayClockSnapshot } from "./useReplayClock.js";
+import { REPLAY_STATE_UPDATE_SECONDS, replayFrameCarProgress, shouldPublishReplayState, useReplayClock, type ReplayClockSnapshot } from "./useReplayClock.js";
 
 const initialSnapshot: ReplayClockSnapshot = {
   carProgress: { team: 0 },
@@ -15,7 +15,6 @@ function renderClock(preferencesResetSignal = 0, createTargetSnapshot = () => in
     replayEnd: 10,
     raceDuration: 8,
     laps: 1,
-    smoothTracePositions: false,
     resultSeed: "seed",
     titleKey: "result_replay_title",
     preferencesResetSignal,
@@ -66,5 +65,13 @@ describe("useReplayClock replay speed preferences", () => {
     act(() => result.current.seek(0.5));
 
     expect(result.current.snapshot.carProgress.team).toBe(0);
+  });
+
+  it("eases cars away from the grid after the replay start hold", () => {
+    const smooth = () => ({ team: 0.5 });
+
+    expect(replayFrameCarProgress(0.5, 1, { team: 0 }, { team: 0 }, { team: 3 }, true, 0.5, smooth).team).toBe(0);
+    expect(replayFrameCarProgress(1.5, 1, { team: 0 }, { team: 0 }, { team: 3 }, true, 0.5, smooth).team).toBe(0.5);
+    expect(replayFrameCarProgress(1.5, 1, { team: 0 }, { team: 0 }, { team: 3 }, false, 0.5, smooth).team).toBe(3);
   });
 });

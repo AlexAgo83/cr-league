@@ -230,7 +230,6 @@ export function ReplayView({
     replayEnd,
     raceDuration,
     laps: circuit.laps,
-    smoothTracePositions,
     resultSeed: result.seed,
     titleKey,
     initialLap,

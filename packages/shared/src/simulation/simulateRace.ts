@@ -43,6 +43,8 @@ const LAUNCH_PHASE_PROGRESS = 0.06;
 const MIN_VISIBLE_GAP_PROGRESS = 0.004;
 const MAX_VISIBLE_GAP_PROGRESS = 0.12;
 const DEFENSE_GAP_PROGRESS = 0.012;
+const REPLAY_SPEED_ACCELERATION_PER_POINT = 0.18;
+const REPLAY_SPEED_BRAKING_PER_POINT = 0.24;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -124,7 +126,7 @@ export function simulateRace(input: RaceInput): RaceResult {
   const classification = classify(states);
   addFinishEvents(events, classification);
   const distanceReplayTrace = createDistanceReplayTrace(states, classification, traceSegments, trackLengthMeters, laps, pitLaneProgress, speedProfile, weather, input.traits?.energy ?? 62);
-  const annotatedReplayTrace = annotateReplayOvertakes(stabilizeReplayTraceOrders(distanceReplayTrace));
+  const annotatedReplayTrace = smoothReplayTraceSpeeds(annotateReplayOvertakes(stabilizeReplayTraceOrders(distanceReplayTrace)));
   const replayEvents = withTraceEventProgress(events, annotatedReplayTrace, laps, trackZones);
 
   return {
@@ -480,6 +482,29 @@ function setReplayCarPhase(point: ReplayTracePoint | undefined, teamId: string, 
   const car = point?.cars?.[teamId];
   if (!car || car.phase.startsWith("pit") || car.phase === "grid" || car.phase === "finished") return;
   point!.cars![teamId] = { ...car, phase, speed: replayCarSpeed(phase) };
+}
+
+function smoothReplayTraceSpeeds(trace: ReplayTracePoint[]) {
+  const lastSpeeds = new Map<string, number>();
+  return trace.map((point) => {
+    if (!point.cars) return point;
+    const cars = Object.fromEntries(
+      Object.entries(point.cars).map(([teamId, car]) => {
+        if (car.phase === "grid" || car.phase === "finished") {
+          lastSpeeds.set(teamId, 0);
+          return [teamId, { ...car, speed: 0 }];
+        }
+
+        const previous = lastSpeeds.get(teamId) ?? car.speed;
+        const maxDelta = car.speed >= previous ? REPLAY_SPEED_ACCELERATION_PER_POINT : REPLAY_SPEED_BRAKING_PER_POINT;
+        const speed = previous + Math.max(-maxDelta, Math.min(maxDelta, car.speed - previous));
+        const roundedSpeed = Number(speed.toFixed(3));
+        lastSpeeds.set(teamId, roundedSpeed);
+        return [teamId, { ...car, speed: roundedSpeed }];
+      })
+    );
+    return { ...point, cars };
+  });
 }
 
 function createTeamState(participant: RaceParticipant): TeamState {

@@ -3,7 +3,7 @@
 import { describe, expect, it } from "vitest";
 import { classificationScore, simulateRace } from "./simulateRace.js";
 import { validateReplayTrace } from "./validateReplayTrace.js";
-import type { RaceInput } from "../domain/race.js";
+import type { RaceInput, ReplayTracePoint } from "../domain/race.js";
 import { CITY_CIRCUIT_IDENTITIES, raceInputFromCircuit, trackSpeedProfileForCircuit, trackZonesForCircuit } from "../domain/circuits.js";
 
 const baseRace: RaceInput = {
@@ -88,6 +88,7 @@ const baseRace: RaceInput = {
     }
   ]
 };
+type TraceCar = NonNullable<ReplayTracePoint["cars"]>[string];
 
 describe("simulateRace", () => {
   it("adds positionDelta to the classification score", () => {
@@ -295,6 +296,35 @@ describe("simulateRace", () => {
 
     expect(lowPoint?.cars?.[teamId]?.speed).toBeLessThan(highPoint?.cars?.[teamId]?.speed ?? 0);
     expect(validateReplayTrace(lowEnergy)).toEqual([]);
+  });
+
+  it("ramps replay car speed progressively without changing movement truth", () => {
+    const result = simulateRace({
+      ...baseRace,
+      forecast: { dry: 100, light_rain: 0, heavy_rain: 0 },
+      participants: baseRace.participants.slice(0, 2).map((participant) => ({
+        ...participant,
+        decision: { ...participant.decision, pitStrategy: "standard" }
+      }))
+    });
+    const teamId = result.classification[0]!.teamId;
+    const speeds = (result.replayTrace ?? [])
+      .map((point) => point.cars?.[teamId])
+      .filter((car): car is TraceCar => {
+        if (!car) return false;
+        return !["grid", "pit_stop", "finished"].includes(car.phase);
+      })
+      .map((car) => car.speed);
+    const adjacentDeltas = (result.replayTrace ?? []).slice(1).flatMap((point, index) => {
+      const previousCar = result.replayTrace?.[index]?.cars?.[teamId];
+      const car = point.cars?.[teamId];
+      return previousCar && car && previousCar.phase !== "grid" && car.phase !== "finished" ? [Math.abs(car.speed - previousCar.speed)] : [];
+    });
+
+    expect(speeds[0]).toBeLessThan(speeds.at(-1) ?? 0);
+    expect(Math.max(...speeds)).toBeGreaterThan(0.9);
+    expect(Math.max(...adjacentDeltas)).toBeLessThanOrEqual(0.24);
+    expect(validateReplayTrace(result)).toEqual([]);
   });
 
   it("keeps close chrono gaps visible but bounded in generated traces", () => {

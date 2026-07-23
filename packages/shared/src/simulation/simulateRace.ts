@@ -20,7 +20,7 @@ import type {
 } from "../domain/race.js";
 import { zoneForRaceSegment, type TrackZone } from "../domain/circuits.js";
 import { RACE_SEGMENTS, clampTrait } from "../domain/race.js";
-import { applyChronoDeltas as applyDeltas, createChronoFinalTimes, createChronoReplayTrace, createChronoScores, pitStrategy, replayCarSpeed, type ChronoMotionParameters, type ChronoScores } from "./chronoRaceEngine.js";
+import { createChronoFinalTimes, createChronoReplayTrace, createChronoScores, pitStrategy, replayCarSpeed, type ChronoScores } from "./chronoRaceEngine.js";
 import { createPrng } from "./prng.js";
 import { buildReplayFacts, withTraceEventProgress } from "./replayTrace.js";
 

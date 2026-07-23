@@ -1,10 +1,10 @@
 ## item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state - Align pits, overtakes, defense, and replay facts with chrono trace state
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 30%
+> Progress: 100%
 > Complexity: High
 > Theme: Race interactions
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -54,3 +54,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture` was finished via `logics-manager flow finish task` on 2026-07-23.

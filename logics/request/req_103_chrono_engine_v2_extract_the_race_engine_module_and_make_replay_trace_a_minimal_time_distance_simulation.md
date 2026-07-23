@@ -1,9 +1,9 @@
 ## req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation - Chrono engine v2: extract the race engine module and make replay trace a minimal time-distance simulation
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95%
+> Confidence: 90%
 > Complexity: High
 > Theme: Simulation engine evolution
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -35,6 +35,15 @@
 - AC5: RaceInput/RaceResult remain compatible unless a minimal additive field is justified; API, storage, release automation, circuit catalogue, and UI layout remain untouched except for directly necessary replay helper adjustments.
 - AC6: Dedicated tests cover the chrono module contract, parameter mapping, time-distance trace invariants, pit/overtake coherence, reward compatibility, replay helper compatibility, and deterministic multi-seed/circuit/weather/card/pit cases.
 - AC7: Validation evidence includes typecheck, unit tests, build, lint, e2e, bounded balance simulation with chrono metrics, Logics validation, and a closeout report listing changed behavior and follow-up tuning risks.
+
+# AC Traceability
+- AC1 -> `task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture`. Proof: commit `687bba5` adds `packages/shared/src/simulation/chronoRaceEngine.ts`, keeps `simulateRace` as public entry point, and adds `chronoRaceEngine.test.ts`.
+- AC2 -> `task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture`. Proof: commit `f063023` adds `createChronoReplayTrace` with sampled chrono car motion state for trace cars/order/times/gaps/phases/speeds.
+- AC3 -> `task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture`. Proof: commit `f063023` aligns pit phases, defense markers, overtake annotations, and filters replayFacts order changes to actual trace order transitions.
+- AC4 -> `task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture`. Proof: `validateReplayTrace` now checks final timing/gap coherence, monotonic progress, speed bounds, speed changes, pit phase ordering, defense proximity, and overtake proximity.
+- AC5 -> `task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture`. Proof: diff is limited to shared simulation/replay helpers/tests and Logics docs; no RaceInput/RaceResult breaking change, UI, API, storage, release, or circuit catalogue change.
+- AC6 -> `task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture`. Proof: targeted tests cover chrono module parameter mapping/final timing/sampled trace, simulateRace deterministic replay cases, and validateReplayTrace negative cases.
+- AC7 -> `task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture`. Proof: closeout validation records typecheck, unit tests, lint, build, e2e, bounded balance, Logics validation, changed behavior, and tuning risk notes.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

@@ -34,10 +34,10 @@ describe("useReplayClock replay speed preferences", () => {
   beforeEach(() => localStorage.clear());
 
   it("loads and saves the shared replay speed preference", () => {
-    localStorage.setItem(REPLAY_SPEED_KEY, "4");
+    localStorage.setItem(REPLAY_SPEED_KEY, "8");
     const { result } = renderClock();
 
-    expect(result.current.speed).toBe(4);
+    expect(result.current.speed).toBe(8);
 
     act(() => result.current.setSpeed(2));
 

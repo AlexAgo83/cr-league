@@ -3145,7 +3145,7 @@ label small {
   left: 12px;
   padding: 10px 12px;
   position: absolute;
-  right: 12px;
+  right: 76px;
   z-index: 2;
 }
 
@@ -3307,11 +3307,33 @@ label small {
 
 .map-race-actions {
   align-items: flex-end;
-  bottom: 86px;
+  bottom: 12px;
   flex-direction: column;
   position: absolute;
   right: 12px;
   z-index: 2;
+}
+
+.map-race-actions button.map-action-button {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  height: 52px;
+  justify-content: center;
+  min-height: 52px;
+  min-width: 52px;
+  padding: 0;
+  width: 52px;
+}
+
+.map-action-icon {
+  fill: none;
+  height: 25px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.2;
+  width: 25px;
 }
 
 .map-qualifying-times ol,

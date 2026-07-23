@@ -7,10 +7,10 @@ export type ReplayClockSnapshot = {
   carProgress: Record<string, number>;
   tower: RaceResult["classification"];
 };
-export type ReplaySpeed = 1 | 2 | 4;
+export type ReplaySpeed = 1 | 2 | 4 | 8;
 const REPLAY_SPEED_MULTIPLIER = 2;
 export const REPLAY_STATE_UPDATE_SECONDS = 0.1;
-const REPLAY_SPEEDS: ReplaySpeed[] = [1, 2, 4];
+const REPLAY_SPEEDS: ReplaySpeed[] = [1, 2, 4, 8];
 
 type ReplayClockOptions = {
   initialSnapshot: ReplayClockSnapshot;

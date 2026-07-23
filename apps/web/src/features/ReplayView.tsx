@@ -232,6 +232,7 @@ export function ReplayView({
     resultSeed: result.seed,
     titleKey,
     initialLap,
+    preferencesResetSignal,
     startHoldSeconds: START_HOLD_SECONDS,
     getActiveMomentId: activeMomentIdAt,
     getOrderAtProgress,

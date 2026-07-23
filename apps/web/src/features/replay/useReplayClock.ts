@@ -1,12 +1,14 @@
 import { RACE_SEGMENTS, type RaceResult, type RaceSegment } from "@cr-league/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { REPLAY_SPEED_KEY } from "./replayMath.js";
 
 export type ReplayClockSnapshot = {
   carProgress: Record<string, number>;
   tower: RaceResult["classification"];
 };
-export type ReplaySpeed = 0.5 | 1 | 2 | 4;
+export type ReplaySpeed = 1 | 2 | 4;
 const REPLAY_SPEED_MULTIPLIER = 2;
+const REPLAY_SPEEDS: ReplaySpeed[] = [1, 2, 4];
 
 type ReplayClockOptions = {
   initialSnapshot: ReplayClockSnapshot;
@@ -18,6 +20,7 @@ type ReplayClockOptions = {
   resultSeed: string;
   titleKey: string;
   initialLap?: number;
+  preferencesResetSignal?: number;
   startHoldSeconds: number;
   getActiveMomentId: (time: number) => string | null;
   getOrderAtProgress: (progress: number) => string[];
@@ -42,6 +45,7 @@ export function useReplayClock({
   resultSeed,
   titleKey,
   initialLap,
+  preferencesResetSignal,
   startHoldSeconds,
   getActiveMomentId,
   getOrderAtProgress,
@@ -61,7 +65,7 @@ export function useReplayClock({
   const positionPopTimers = useRef<number[]>([]);
   const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const [playing, setPlaying] = useState(!reduceMotion);
-  const [speed, setSpeed] = useState<ReplaySpeed>(1);
+  const [speed, setSpeed] = useState<ReplaySpeed>(() => savedReplaySpeed());
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [activeMomentId, setActiveMomentId] = useState<string | null>(null);
@@ -144,9 +148,14 @@ export function useReplayClock({
     return () => cancelAnimationFrame(frame);
   }, [playing, speed, replayEnd, updateLive]);
 
+  const setReplaySpeed = useCallback((nextSpeed: ReplaySpeed) => {
+    localStorage.setItem(REPLAY_SPEED_KEY, String(nextSpeed));
+    setSpeed(nextSpeed);
+  }, []);
+
   useEffect(() => {
-    setSpeed(1);
-  }, [resultSeed, titleKey]);
+    setSpeed(savedReplaySpeed());
+  }, [preferencesResetSignal, resultSeed, titleKey]);
 
   useEffect(() => () => positionPopTimers.current.forEach(window.clearTimeout), []);
 
@@ -164,7 +173,7 @@ export function useReplayClock({
     playing,
     setPlaying,
     speed,
-    setSpeed,
+    setSpeed: setReplaySpeed,
     live,
     snapshot,
     activeMomentId,
@@ -174,6 +183,11 @@ export function useReplayClock({
     seek,
     restart
   };
+}
+
+function savedReplaySpeed(): ReplaySpeed {
+  const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
+  return REPLAY_SPEEDS.includes(saved as ReplaySpeed) ? saved as ReplaySpeed : 1;
 }
 
 function positionDeltas(currentOrder: string[], nextOrder: string[]) {

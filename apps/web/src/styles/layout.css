@@ -3731,6 +3731,7 @@ label small {
 
 .replay-speed-menu {
   position: relative;
+  z-index: 1000;
 }
 
 .replay-map-controls .replay-speed-trigger {
@@ -3759,7 +3760,7 @@ label small {
   position: absolute;
   top: calc(100% + 8px);
   transform: translateX(-50%);
-  z-index: 30;
+  z-index: 1001;
 }
 
 .replay-speed-options::before {

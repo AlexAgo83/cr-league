@@ -1,10 +1,10 @@
 ## item_257_migration_gates_tests_and_rollout_readiness_for_chrono_engine - Migration gates, tests, and rollout readiness for chrono engine
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 35%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Validation and rollout
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -34,6 +34,7 @@
 - request-AC5 -> This backlog slice. Proof: AC1: The migration has deterministic and invariant coverage broad enough to catch broken chrono outputs.
 - request-AC6 -> This backlog slice. Proof: AC2: Full project validation passes, including e2e and Logics validation.
 - request-AC7 -> This backlog slice. Proof: AC3: The closeout report lists changed behavior, validation evidence, and explicit follow-up risks.
+- request-AC4 -> This backlog slice. Evidence needed: Motion remains arcade-realistic and valid: no backwards progress, no impossible speed, bounded acceleration/deceleration, plausible pit entry/stop/exit, and overtake phases line up with actual order changes.
 
 # Decision framing
 - Product framing: Not needed
@@ -54,3 +55,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_103_orchestrate_track_driven_chrono_race_engine_migration`
+
+# Notes
+- Task `task_103_orchestrate_track_driven_chrono_race_engine_migration` was finished via `logics-manager flow finish task` on 2026-07-23.

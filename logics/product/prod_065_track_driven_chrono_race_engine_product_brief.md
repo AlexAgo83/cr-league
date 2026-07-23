@@ -1,8 +1,8 @@
 ## prod_065_track_driven_chrono_race_engine_product_brief - Track-Driven Chrono Race Engine Product Brief
 > Date: 2026-07-23
-> Status: Proposed
+> Status: Settled
 > Related request: `req_102_track_driven_chrono_race_engine_derive_grand_prix_timing_gaps_classification_and_replay_from_speed_over_the_race_track`
-> Related backlog: `item_252_define_the_chrono_engine_contract_and_motion_parameter_mapping`, `item_253_implement_deterministic_track_driven_time_distance_simulation`, `item_254_integrate_pit_stops_overtakes_defense_and_events_into_chrono_motion`, `item_255_make_replay_trace_and_web_replay_consume_chrono_truth`, `item_256_calibrate_balance_and_preserve_gameplay_value_across_the_new_engine`, `item_257_migration_gates_tests_and_rollout_readiness_for_chrono_engine`
+> Related backlog: `item_252_define_the_chrono_engine_contract_and_motion_parameter_mapping`
 > Related task: `task_103_orchestrate_track_driven_chrono_race_engine_migration`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -50,5 +50,5 @@ CR League currently decides races through abstract segment scores and then recon
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_102_track_driven_chrono_race_engine_derive_grand_prix_timing_gaps_classification_and_replay_from_speed_over_the_race_track`
+- Product back-reference: `item_252_define_the_chrono_engine_contract_and_motion_parameter_mapping`
 - Task back-reference: `task_103_orchestrate_track_driven_chrono_race_engine_migration`

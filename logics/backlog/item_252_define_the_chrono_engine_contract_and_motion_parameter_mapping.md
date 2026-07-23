@@ -1,10 +1,10 @@
 ## item_252_define_the_chrono_engine_contract_and_motion_parameter_mapping - Define the chrono engine contract and motion parameter mapping
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 35%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Engine design
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,9 @@
 - request-AC1 -> This backlog slice. Proof: AC1: A new internal contract document or module-level comment explains the chrono engine source of truth and migration boundaries.
 - request-AC2 -> This backlog slice. Proof: AC2: Every current approach, preparation, pit strategy, and race card maps to at least one motion parameter or explicitly documented non-motion reward.
 - request-AC6 -> This backlog slice. Proof: AC3: Mapping tests fail if a card/decision becomes written-but-unread.
+- request-AC4 -> This backlog slice. Evidence needed: Motion remains arcade-realistic and valid: no backwards progress, no impossible speed, bounded acceleration/deceleration, plausible pit entry/stop/exit, and overtake phases line up with actual order changes.
+- request-AC5 -> This backlog slice. Evidence needed: Determinism is proven across repeated runs for representative seeds/circuits/weather/pit/card combinations, and balance simulations show acceptable distributions for winner spread, gap spread, card impact, weather impact, and pit strategy impact.
+- request-AC7 -> This backlog slice. Evidence needed: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, npm run balance:sim (or a bounded documented subset), and npm run logics:validate pass, with validation evidence recorded at task closeout.
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +56,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_103_orchestrate_track_driven_chrono_race_engine_migration`
+
+# Notes
+- Task `task_103_orchestrate_track_driven_chrono_race_engine_migration` was finished via `logics-manager flow finish task` on 2026-07-23.

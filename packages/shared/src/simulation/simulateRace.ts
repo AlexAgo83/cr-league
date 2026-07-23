@@ -241,12 +241,13 @@ function createChronoFinalTimes(
       const parameters = motionParametersForParticipant(state.participant, state.scores);
       const profileFactor = chronoProfileFactor(speedProfile, weather, parameters, input);
       const circuitFactor = chronoCircuitFactor(input, parameters);
+      const racecraftFactor = 1 + (parameters.attack - 1) * 0.08 + (parameters.defense - 1) * 0.06 + (parameters.consistency - 1) * 0.05;
       const scoreFactor = 1 + Math.max(-0.16, Math.min(0.22, classificationScore(state) / 520));
       const consistencyNoise = (next() - 0.5) * 2.6 * (2 - parameters.consistency);
       const pitLoss = chronoPitLoss(state, snapshots, parameters);
       const riskLoss = state.resultTags.has("mechanical_scare") ? 3.2 / parameters.reliability : 0;
       const startDelay = Math.max(0, state.participant.standingsRank - 1) * GRID_GAP_SECONDS;
-      const movingTime = (baseSeconds * profileFactor) / Math.max(0.55, scoreFactor * circuitFactor);
+      const movingTime = (baseSeconds * profileFactor) / Math.max(0.55, scoreFactor * circuitFactor * racecraftFactor);
       return [
         state.participant.teamId,
         Number(Math.max(1, startDelay + movingTime + pitLoss + riskLoss + consistencyNoise).toFixed(1))

@@ -9,6 +9,7 @@ import {
   type BotArchetype,
   type CardId,
   type CircuitTrait,
+  type PitStrategy,
   type RaceApproach,
   type RaceDecision,
   type RaceInput,
@@ -22,6 +23,7 @@ type Strategy = {
   id: string;
   approach: RaceApproach;
   preparation: TechnicalPreparation;
+  pitStrategy: PitStrategy;
   cardId?: CardId;
 };
 
@@ -51,6 +53,11 @@ type Row = {
   nextCardRate: number;
   avgGpsPerCard: number;
   cardEventRate: number;
+  avgDuration: number;
+  avgGapSpread: number;
+  favoriteWinRate: number;
+  upsetRate: number;
+  avgPitStops: number;
 };
 
 type Totals = {
@@ -66,25 +73,35 @@ type Totals = {
   creditMargin: number;
   nextCardBuys: number;
   cardEvents: number;
+  duration: number;
+  gapSpread: number;
+  favoriteRaces: number;
+  favoriteWins: number;
+  upsets: number;
+  pitStops: number;
 };
 
 const approaches: RaceApproach[] = ["prudent", "balanced", "aggressive"];
 const preparations: TechnicalPreparation[] = ["speed", "reliability", "weather"];
+const pitStrategies: PitStrategy[] = ["heavy_pack", "standard", "mini_pack"];
 const cards = Object.keys(CARD_DEFINITIONS) as CardId[];
 const minCardPrice = CARD_PRICE;
 const args = parseArgs();
 const selectedCircuits = CITY_CIRCUITS.slice(0, args.circuits);
 const circuitTotals = new Map(selectedCircuits.map((circuit) => [String(circuit.layoutKey), emptyTotals()]));
 const strategies = approaches.flatMap((approach) =>
-  preparations.flatMap((preparation) => [
-    strategy({ approach, preparation }),
-    ...cards.map((cardId) => strategy({ approach, preparation, cardId }))
-  ])
+  preparations.flatMap((preparation) =>
+    pitStrategies.flatMap((pitStrategy) => [
+      strategy({ approach, preparation, pitStrategy }),
+      ...cards.map((cardId) => strategy({ approach, preparation, pitStrategy, cardId }))
+    ])
+  )
 );
 
 const rows = strategies.map(runStrategy).sort((left, right) => right.avgPoints - left.avgPoints);
-const baseline = rows.find((row) => row.strategy === "balanced/speed/no_card");
+const baseline = rows.find((row) => row.strategy === "balanced/speed/standard/no_card");
 const circuitRows = summarizeCircuits();
+const pitRows = summarizePitStrategies(rows);
 
 console.log(`Balance simulation: ${args.runs} runs x ${selectedCircuits.length} circuits x ${strategies.length} strategies`);
 console.log("");
@@ -97,16 +114,18 @@ console.log("");
 printTable("Economy summary", summarizeCards(rows).sort((left, right) => right.avgCreditMargin - left.avgCreditMargin));
 console.log("");
 printTable("Circuit summary", circuitRows);
+console.log("");
+printTable("Pit strategy summary", pitRows);
 
 if (baseline) {
   const outliers = rows.filter((row) => Math.abs(row.avgPoints - baseline.avgPoints) >= args.outlier);
   console.log("");
-  printTable(`Outliers vs ${baseline.strategy} (+/- ${args.outlier} pts)`, outliers);
+  printTable(`Outliers vs ${baseline.strategy} (+/- ${args.outlier} pts, showing ${Math.min(outliers.length, args.limit * 2)} of ${outliers.length})`, outliers.slice(0, args.limit * 2));
 }
 
 if (args.json) {
   mkdirSync(dirname(args.json), { recursive: true });
-  writeFileSync(args.json, JSON.stringify({ args, rows, circuitRows }, null, 2));
+  writeFileSync(args.json, JSON.stringify({ args, rows, circuitRows, pitRows }, null, 2));
   console.log(`\nWrote ${args.json}`);
 }
 
@@ -139,7 +158,13 @@ function emptyTotals(): Totals {
     cardPrice: 0,
     creditMargin: 0,
     nextCardBuys: 0,
-    cardEvents: 0
+    cardEvents: 0,
+    duration: 0,
+    gapSpread: 0,
+    favoriteRaces: 0,
+    favoriteWins: 0,
+    upsets: 0,
+    pitStops: 0
   };
 }
 
@@ -161,13 +186,17 @@ function addRun(totals: Totals, candidate: Strategy, circuit: (typeof selectedCi
   const grid = participants.find((participant) => participant.teamId === "candidate")?.standingsRank ?? 0;
   const cardTriggered = Boolean(candidate.cardId && result.events.some((event) => event.teamId === "candidate" && event.cardId === candidate.cardId));
   const cardPrice = candidate.cardId ? CARD_PRICES[candidate.cardId] : 0;
+  const finalTrace = result.replayTrace?.at(-1);
+  const duration = Math.max(0, ...Object.values(finalTrace?.times ?? {}));
+  const gapSpread = Math.max(0, ...Object.values(finalTrace?.gaps ?? {}));
+  const pitStops = result.events.filter((event) => event.teamId === "candidate" && event.type === "pit_stop").length;
 
   const circuitTotal = circuitTotals.get(String(circuit.layoutKey));
-  addResult(totals, entry.position, entry.points, entry.score, entry.credits, cardPrice, grid, cardTriggered);
-  if (circuitTotal) addResult(circuitTotal, entry.position, entry.points, entry.score, entry.credits, cardPrice, grid, cardTriggered);
+  addResult(totals, entry.position, entry.points, entry.score, entry.credits, cardPrice, grid, cardTriggered, duration, gapSpread, pitStops);
+  if (circuitTotal) addResult(circuitTotal, entry.position, entry.points, entry.score, entry.credits, cardPrice, grid, cardTriggered, duration, gapSpread, pitStops);
 }
 
-function addResult(totals: Totals, position: number, points: number, score: number, credits: number, cardPrice: number, grid: number, cardTriggered: boolean) {
+function addResult(totals: Totals, position: number, points: number, score: number, credits: number, cardPrice: number, grid: number, cardTriggered: boolean, duration: number, gapSpread: number, pitStops: number) {
   totals.races += 1;
   totals.grid += grid;
   totals.position += position;
@@ -180,6 +209,12 @@ function addResult(totals: Totals, position: number, points: number, score: numb
   totals.creditMargin += credits - cardPrice;
   totals.nextCardBuys += credits >= minCardPrice ? 1 : 0;
   totals.cardEvents += cardTriggered ? 1 : 0;
+  totals.duration += duration;
+  totals.gapSpread += gapSpread;
+  totals.favoriteRaces += grid <= 2 ? 1 : 0;
+  totals.favoriteWins += grid <= 2 && position === 1 ? 1 : 0;
+  totals.upsets += grid >= 5 && position <= 3 ? 1 : 0;
+  totals.pitStops += pitStops;
 }
 
 function rowFromTotals(strategy: string, totals: Totals): Row {
@@ -197,7 +232,12 @@ function rowFromTotals(strategy: string, totals: Totals): Row {
     avgCreditMargin: round(totals.creditMargin / totals.races),
     nextCardRate: pct(totals.nextCardBuys / totals.races),
     avgGpsPerCard: round(minCardPrice / (totals.credits / totals.races)),
-    cardEventRate: pct(totals.cardEvents / totals.races)
+    cardEventRate: pct(totals.cardEvents / totals.races),
+    avgDuration: round(totals.duration / totals.races),
+    avgGapSpread: round(totals.gapSpread / totals.races),
+    favoriteWinRate: pct(totals.favoriteWins / Math.max(1, totals.favoriteRaces)),
+    upsetRate: pct(totals.upsets / totals.races),
+    avgPitStops: round(totals.pitStops / totals.races)
   };
 }
 
@@ -265,7 +305,7 @@ function qualifyingTime(decision: RaceDecision, traits: RaceInput["traits"], wea
 function strategy(input: Omit<Strategy, "id">): Strategy {
   return {
     ...input,
-    id: `${input.approach}/${input.preparation}/${input.cardId ?? "no_card"}`
+    id: `${input.approach}/${input.preparation}/${input.pitStrategy}/${input.cardId ?? "no_card"}`
   };
 }
 
@@ -273,6 +313,7 @@ function decisionFor(input: Strategy): RaceDecision {
   return {
     approach: input.approach,
     preparation: input.preparation,
+    pitStrategy: input.pitStrategy,
     cardId: input.cardId,
     rivalTeamId: input.cardId === "urban_draft" ? "bot_1" : undefined
   };
@@ -316,8 +357,19 @@ function averageRows(strategyName: string, rows: Row[]): Row {
     avgCreditMargin: weighted(rows, "avgCreditMargin", races),
     nextCardRate: weighted(rows, "nextCardRate", races),
     avgGpsPerCard: weighted(rows, "avgGpsPerCard", races),
-    cardEventRate: weighted(rows, "cardEventRate", races)
+    cardEventRate: weighted(rows, "cardEventRate", races),
+    avgDuration: weighted(rows, "avgDuration", races),
+    avgGapSpread: weighted(rows, "avgGapSpread", races),
+    favoriteWinRate: weighted(rows, "favoriteWinRate", races),
+    upsetRate: weighted(rows, "upsetRate", races),
+    avgPitStops: weighted(rows, "avgPitStops", races)
   };
+}
+
+function summarizePitStrategies(rows: Row[]): Row[] {
+  return pitStrategies
+    .map((pitStrategy) => averageRows(pitStrategy, rows.filter((row) => row.strategy.includes(`/${pitStrategy}/`))))
+    .sort((left, right) => right.avgPoints - left.avgPoints);
 }
 
 function weighted(rows: Row[], key: keyof Omit<Row, "strategy" | "races">, races: number) {
@@ -341,7 +393,12 @@ function printTable(title: string, data: Row[]) {
       margin: row.avgCreditMargin,
       "buy%": row.nextCardRate,
       "gp/card": row.avgGpsPerCard,
-      "card%": row.cardEventRate
+      "card%": row.cardEventRate,
+      dur: row.avgDuration,
+      gap: row.avgGapSpread,
+      "favWin%": row.favoriteWinRate,
+      "upset%": row.upsetRate,
+      pits: row.avgPitStops
     }))
   );
 }

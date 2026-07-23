@@ -1,10 +1,10 @@
 ## item_256_calibrate_balance_and_preserve_gameplay_value_across_the_new_engine - Calibrate balance and preserve gameplay value across the new engine
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 35%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Balance validation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,8 @@
 - request-AC2 -> This backlog slice. Proof: AC1: Balance sim output includes the required chrono metrics over a representative fixed-seed corpus.
 - request-AC5 -> This backlog slice. Proof: AC2: No existing card/preparation/pit strategy is statistically invisible or overwhelmingly dominant within the documented review bands.
 - request-AC7 -> This backlog slice. Proof: AC3: The task closeout records the balance evidence and any known follow-up tuning risks.
+- request-AC4 -> This backlog slice. Evidence needed: Motion remains arcade-realistic and valid: no backwards progress, no impossible speed, bounded acceleration/deceleration, plausible pit entry/stop/exit, and overtake phases line up with actual order changes.
+- request-AC6 -> This backlog slice. Evidence needed: The migration is contained: public RaceInput/RaceResult contracts remain compatible unless an additive field is justified, web replay still works without UI rewrites, and unrelated API/storage/release/circuit-catalog files are untouched.
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +55,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_103_orchestrate_track_driven_chrono_race_engine_migration`
+
+# Notes
+- Task `task_103_orchestrate_track_driven_chrono_race_engine_migration` was finished via `logics-manager flow finish task` on 2026-07-23.

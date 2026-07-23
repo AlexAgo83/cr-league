@@ -1,10 +1,10 @@
 ## item_255_make_replay_trace_and_web_replay_consume_chrono_truth - Make replay trace and web replay consume chrono truth
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 35%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay coherence
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,8 @@
 - request-AC3 -> This backlog slice. Proof: AC1: Replay final order, final trace times, finish events, and classification agree.
 - request-AC4 -> This backlog slice. Proof: AC2: Existing replay UI tests pass without broad rewrites.
 - request-AC6 -> This backlog slice. Proof: AC3: validateReplayTrace catches chrono-specific coherence failures.
+- request-AC5 -> This backlog slice. Evidence needed: Determinism is proven across repeated runs for representative seeds/circuits/weather/pit/card combinations, and balance simulations show acceptable distributions for winner spread, gap spread, card impact, weather impact, and pit strategy impact.
+- request-AC7 -> This backlog slice. Evidence needed: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, npm run balance:sim (or a bounded documented subset), and npm run logics:validate pass, with validation evidence recorded at task closeout.
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +55,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_103_orchestrate_track_driven_chrono_race_engine_migration`
+
+# Notes
+- Task `task_103_orchestrate_track_driven_chrono_race_engine_migration` was finished via `logics-manager flow finish task` on 2026-07-23.

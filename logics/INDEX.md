@@ -80,6 +80,7 @@
 | [prod_061_chrono_replay_race_track_parity_product_brief](product/prod_061_chrono_replay_race_track_parity_product_brief.md) | Chrono Replay Race-Track Parity Product Brief | Settled |  |  | product/prod_061_chrono_replay_race_track_parity_product_brief.md |
 | [prod_062_review_findings_remediation_product_brief](product/prod_062_review_findings_remediation_product_brief.md) | Review-Findings Remediation Product Brief | Settled |  |  | product/prod_062_review_findings_remediation_product_brief.md |
 | [prod_063_post_remediation_review_fixes_product_brief](product/prod_063_post_remediation_review_fixes_product_brief.md) | Post-Remediation Review Fixes Product Brief | Proposed |  |  | product/prod_063_post_remediation_review_fixes_product_brief.md |
+| [prod_064_replay_map_render_performance_product_brief](product/prod_064_replay_map_render_performance_product_brief.md) | Replay Map Render Performance Product Brief | Proposed |  |  | product/prod_064_replay_map_render_performance_product_brief.md |
 
 ## Roadmaps
 
@@ -193,6 +194,7 @@
 | [req_098_chrono_replay_race_track_parity](request/req_098_chrono_replay_race_track_parity.md) | Chrono replay race-track parity | Done |  |  | request/req_098_chrono_replay_race_track_parity.md |
 | [req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup](request/req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup.md) | Review-findings remediation: replay determinism, dead card effects, client storage safety, API security and scale, admin config integrity, and over-engineering cleanup | Done |  |  | request/req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup.md |
 | [req_100_post_remediation_review_fixes_replay_determinism_comparator_positiondelta_test_tiebreak_coherence_account_enumeration_neutrality_and_replay_validator_prng_test_depth](request/req_100_post_remediation_review_fixes_replay_determinism_comparator_positiondelta_test_tiebreak_coherence_account_enumeration_neutrality_and_replay_validator_prng_test_depth.md) | Post-remediation review fixes: replay determinism comparator, positionDelta test/tiebreak coherence, account-enumeration neutrality, and replay-validator/PRNG test depth | Draft |  |  | request/req_100_post_remediation_review_fixes_replay_determinism_comparator_positiondelta_test_tiebreak_coherence_account_enumeration_neutrality_and_replay_validator_prng_test_depth.md |
+| [req_101_replay_map_render_performance_memoize_route_geometry_hoist_static_svg_layers_imperative_car_transforms_and_throttle_non_positional_state](request/req_101_replay_map_render_performance_memoize_route_geometry_hoist_static_svg_layers_imperative_car_transforms_and_throttle_non_positional_state.md) | Replay map render performance: memoize route geometry, hoist static SVG layers, imperative car transforms, and throttle non-positional state | Draft |  |  | request/req_101_replay_map_render_performance_memoize_route_geometry_hoist_static_svg_layers_imperative_car_transforms_and_throttle_non_positional_state.md |
 
 ## Backlog
 
@@ -444,6 +446,11 @@
 | [item_244_close_the_account_enumeration_oracle_on_profile_creation](backlog/item_244_close_the_account_enumeration_oracle_on_profile_creation.md) | Close the account-enumeration oracle on profile creation | Ready |  | 0% | backlog/item_244_close_the_account_enumeration_oracle_on_profile_creation.md |
 | [item_245_deepen_replay_validator_and_prng_determinism_tests](backlog/item_245_deepen_replay_validator_and_prng_determinism_tests.md) | Deepen replay-validator and PRNG determinism tests | Ready |  | 0% | backlog/item_245_deepen_replay_validator_and_prng_determinism_tests.md |
 | [item_246_resolve_residual_invariant_and_units_assumptions](backlog/item_246_resolve_residual_invariant_and_units_assumptions.md) | Resolve residual invariant and units assumptions | Ready |  | 0% | backlog/item_246_resolve_residual_invariant_and_units_assumptions.md |
+| [item_247_memoize_immutable_route_geometry](backlog/item_247_memoize_immutable_route_geometry.md) | Memoize immutable route geometry | Ready |  | 0% | backlog/item_247_memoize_immutable_route_geometry.md |
+| [item_248_hoist_static_svg_layers_out_of_the_per_frame_render](backlog/item_248_hoist_static_svg_layers_out_of_the_per_frame_render.md) | Hoist static SVG layers out of the per-frame render | Ready |  | 0% | backlog/item_248_hoist_static_svg_layers_out_of_the_per_frame_render.md |
+| [item_249_drive_car_positions_imperatively_per_frame](backlog/item_249_drive_car_positions_imperatively_per_frame.md) | Drive car positions imperatively per frame | Ready |  | 0% | backlog/item_249_drive_car_positions_imperatively_per_frame.md |
+| [item_250_throttle_non_positional_replay_state](backlog/item_250_throttle_non_positional_replay_state.md) | Throttle non-positional replay state | Ready |  | 0% | backlog/item_250_throttle_non_positional_replay_state.md |
+| [item_251_prove_behavior_preservation_and_guard_against_regression](backlog/item_251_prove_behavior_preservation_and_guard_against_regression.md) | Prove behavior-preservation and guard against regression | Ready |  | 0% | backlog/item_251_prove_behavior_preservation_and_guard_against_regression.md |
 
 ## Tasks
 
@@ -550,3 +557,4 @@
 | [task_099_orchestrate_chrono_replay_race_track_parity](tasks/task_099_orchestrate_chrono_replay_race_track_parity.md) | Orchestrate chrono replay race-track parity | Done | codex | 100% | tasks/task_099_orchestrate_chrono_replay_race_track_parity.md |
 | [task_100_orchestrate_review_findings_remediation](tasks/task_100_orchestrate_review_findings_remediation.md) | Orchestrate review-findings remediation | Done | codex | 100% | tasks/task_100_orchestrate_review_findings_remediation.md |
 | [task_101_orchestrate_post_remediation_review_fixes](tasks/task_101_orchestrate_post_remediation_review_fixes.md) | Orchestrate post-remediation review fixes | Ready |  | 0% | tasks/task_101_orchestrate_post_remediation_review_fixes.md |
+| [task_102_orchestrate_replay_map_render_performance](tasks/task_102_orchestrate_replay_map_render_performance.md) | Orchestrate replay map render performance | Ready |  | 0% | tasks/task_102_orchestrate_replay_map_render_performance.md |

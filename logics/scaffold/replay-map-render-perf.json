@@ -1,0 +1,201 @@
+{
+  "title": "Replay map render performance: memoize route geometry, hoist static SVG layers, imperative car transforms, and throttle non-positional state",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/CircuitMap.test.ts",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/ReplayView.test.ts",
+    "apps/web/src/features/replay/useReplayClock.ts",
+    "apps/web/src/features/replay/useReplayClock.test.ts",
+    "apps/web/src/features/replay/replayMath.ts",
+    "Performance investigation on 2026-07-23 (HEAD c035120). Replay map rendering became laggy after the replay/race-track work. Root cause is entirely in the render path, NOT the simulation. Findings. (1) ROUTE GEOMETRY REBUILD: CircuitMap.tsx:158 pointOnRoute calls routeSegments(points) on EVERY invocation, and routeSegments walks the full points array (400-600 points per circuit) computing hypot+atan2 per segment. Per car per frame, poseOnRoute calls pointOnRoute 3x and driftAngle calls poseOnRoute 2x (=6x pointOnRoute), so ~9 routeSegments rebuilds per car per frame; with ~20 cars x ~600 points x 9 x 60fps that is millions of redundant trig operations per second, redundant because the points array is immutable for the life of the circuit. The camera loop (CircuitMap.tsx:349-355) also calls poseOnRoute each frame, compounding it. (2) FULL SVG RE-RENDER PER FRAME: the playback rAF loop (useReplayClock.ts:142) calls updateLive every frame, which calls setSnapshot (useReplayClock.ts:107) every frame; ReplayView.tsx:253 rebuilds the cars array on every render from snapshot.carProgress, so CircuitMap re-renders its entire SVG subtree (map tiles + the four heavy route <path>s at CircuitMap.tsx:405-409 + every car sprite) 60x/s even though only car positions changed. The camera already moves imperatively via setAttribute (CircuitMap.tsx:371-372) without re-render; the cars do not. (3) NON-POSITIONAL STATE AT 60FPS: updateLive also recomputes createTower and the active moment every frame; the standings tower, live lap/segment, and activeMoment do not need 60fps refresh (setLive is already change-guarded at useReplayClock.ts:84, the rest is not). HARD CONSTRAINT: car positions, replay trace, and finishing order must be byte-identical after the change; circuit generation (circuitScene/analyzeCircuitRoute) and simulateRace must not change; existing tests (CircuitMap.test.ts, ReplayView.test.ts, useReplayClock.test.ts) must stay green. This corpus is written to be executed end-to-end by another AI agent."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Replay render performance",
+    "needs": [
+      "Eliminate the dominant per-frame cost by memoizing immutable route geometry so route segments are computed once per points array instead of ~9 times per car per frame.",
+      "Stop re-rendering the static SVG layers (map tiles and route paths) 60 times a second when only car positions change.",
+      "Move per-frame car positioning off the React render path to imperative DOM transforms, mirroring the existing camera loop.",
+      "Throttle the non-positional replay state (standings tower, live lap/segment, active moment) so it does not recompute every frame.",
+      "Prove the optimization is behavior-preserving and add a lightweight non-regression guard on the redundant geometry work."
+    ],
+    "context": [
+      "Route geometry memo (CircuitMap.tsx): the points array from circuitScene is stable for the circuit's lifetime, so cache route segments on its reference. Introduce a module-level `const routeGeometryCache = new WeakMap<RoutePoint[], { segments: RouteSegment[]; total: number }>()` and a `getRouteGeometry(points)` that returns the cached value or builds it once (segments with from/to/length/angle/startDistance/endDistance, plus the total length). Have routeSegments delegate to it and pointOnRoute (CircuitMap.tsx:157) read `{ segments, total }` from it instead of rebuilding segments and re-reducing the total each call. Behavior must be identical (same coordinates/angles). Optional: since segments now carry startDistance/endDistance, replace the linear scan in pointOnRoute with a binary search over cumulative distance - only if it stays exactly equivalent numerically.",
+      "Hoist static layers (CircuitMap.tsx:392-420): wrap the tile-layer JSX in a useMemo keyed on [tiles, zoom] and the route-layer JSX (the four route <path>s plus start-line and pit-stop) in a useMemo keyed on [renderD, routeDecorStyle, routeAnalysis, hasCars] so they do not reconcile on every frame. Do not include cars or snapshot in those keys. Also memoize the cars array in ReplayView.tsx:253 (useMemo on [field, snapshot]) to avoid a fresh allocation each render.",
+      "Imperative car transforms (CircuitMap.tsx + useReplayClock.ts): keep carProgress in a ref and, in the playback rAF loop, write each `.map-car` group's transform directly (translate to the pose, matching what render currently computes via poseOnRoute + stageProgress), the same way the camera loop sets transforms at CircuitMap.tsx:371-372, instead of driving positions through setSnapshot. React then renders the car structure once; only transforms update per frame. The rendered structure (sprites, labels, deltas) must match the current output exactly at any given progress. This is the most invasive step - do it after A and B1 and keep it isolated so it can be reverted independently.",
+      "Throttle non-positional state (useReplayClock.ts:135-150): accumulate elapsed time in the rAF loop and only call the tower/live/active-moment updates about every 100ms (or on change), while positions update every frame (via the imperative path). setLive is already change-guarded (useReplayClock.ts:84); apply the same 'only when it actually changes / at reduced cadence' discipline to createTower and activeMomentId. Scrubbing (seek) must still update immediately.",
+      "Verification: assert byte-identical replay output before/after (a fixed seed's carProgress snapshots and final classification/trace unchanged). Add a small non-regression check that route geometry is built at most once per circuit points array over a simulated playback (e.g. a counter/spy on the build path asserting it is not called per-frame). Keep CircuitMap.test.ts, ReplayView.test.ts, useReplayClock.test.ts green.",
+      "Out of scope: any change to circuit generation (circuitScene, analyzeCircuitRoute, speed profiles) or to simulateRace/trace output; changing the visual design of the map or cars; swapping the SVG renderer for canvas/WebGL; reducing tile resolution or route point count; adding a new dependency."
+    ],
+    "acceptance_criteria": [
+      "AC1: Route segment geometry is computed at most once per circuit points array (memoized on its reference), and pointOnRoute/poseOnRoute/driftAngle read from the cache; coordinates and angles are numerically identical to before.",
+      "AC2: The map tile layer and route path layer no longer reconcile on every playback frame (memoized), and the cars array is memoized in ReplayView; only car positions change per frame.",
+      "AC3: Per-frame car positioning is applied imperatively (like the camera loop) rather than through setSnapshot, and the rendered car structure at any given progress matches the previous output exactly.",
+      "AC4: The standings tower, live lap/segment, and active moment update at a reduced cadence (~100ms or on change) rather than every frame, while scrubbing updates immediately.",
+      "AC5: Replay output is byte-identical (fixed-seed carProgress snapshots, final classification, and trace unchanged), and a non-regression check proves route geometry is not rebuilt per frame.",
+      "AC6: npm run typecheck, npm test, npm run lint, and npm run logics:validate pass, no existing test is deleted, and circuit generation and simulateRace are untouched."
+    ]
+  },
+  "product": {
+    "title": "Replay Map Render Performance Product Brief",
+    "overview": "After the replay and race-track work landed, the replay map rendering became laggy. Investigation traced the cost entirely to the render path, not the simulation: route segment geometry is rebuilt ~9 times per car per frame from an immutable points array, and the full SVG subtree (tiles + heavy route paths + car sprites) re-renders 60 times a second because playback drives car positions through React state. This request removes the redundant geometry work, keeps the static layers out of the per-frame render, moves car positioning to imperative transforms like the existing camera loop, and throttles non-positional state - all while keeping replay output byte-identical and leaving circuit generation and the simulation untouched.",
+    "goals": [
+      "Replay playback is smooth on large circuits without changing what is rendered.",
+      "Immutable route geometry is computed once, not thousands of times per second.",
+      "Only car positions update per frame; static map layers do not re-render.",
+      "Non-positional UI state refreshes at a sane cadence.",
+      "The change is provably behavior-preserving and guarded against regression."
+    ],
+    "non_goals": [
+      "Do not change circuit generation (circuitScene, analyzeCircuitRoute, speed profiles).",
+      "Do not change simulateRace or the replay trace output.",
+      "Do not redesign the map or car visuals, or reduce tile/point resolution.",
+      "Do not switch the renderer to canvas/WebGL.",
+      "Do not add a new dependency."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Memoize immutable route geometry",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Render performance",
+      "request_acs": ["AC1", "AC5", "AC6"],
+      "problem": [
+        "CircuitMap.tsx:158 pointOnRoute rebuilds routeSegments(points) on every call, walking the full 400-600 point array with hypot+atan2 per segment.",
+        "poseOnRoute (3x pointOnRoute) and driftAngle (6x pointOnRoute) mean ~9 rebuilds per car per frame; the points array is immutable, so this is entirely redundant."
+      ],
+      "scope_in": [
+        "Add a WeakMap<RoutePoint[], { segments, total }> cache and a getRouteGeometry(points) that builds geometry once per points reference.",
+        "Have routeSegments delegate to it and pointOnRoute read segments+total from it.",
+        "Optionally binary-search cumulative distance instead of the linear scan, only if numerically identical."
+      ],
+      "scope_out": [
+        "Changing coordinates, angles, or the points array itself.",
+        "Touching circuitScene/analyzeCircuitRoute."
+      ],
+      "acceptance_criteria": [
+        "AC1: Route geometry is built at most once per points array and reused by all callers.",
+        "AC2: Output coordinates and angles are numerically identical to before.",
+        "AC3: Existing CircuitMap tests stay green."
+      ]
+    },
+    {
+      "title": "Hoist static SVG layers out of the per-frame render",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Render performance",
+      "request_acs": ["AC2", "AC6"],
+      "problem": [
+        "The playback rAF loop calls setSnapshot every frame (useReplayClock.ts:107) and ReplayView.tsx:253 rebuilds cars each render, so CircuitMap re-renders its whole SVG (tiles + four route paths + sprites) 60x/s.",
+        "Only car positions change per frame; the tile and route layers are static during playback."
+      ],
+      "scope_in": [
+        "Wrap the tile-layer JSX in useMemo keyed on [tiles, zoom] and the route-layer JSX in useMemo keyed on [renderD, routeDecorStyle, routeAnalysis, hasCars].",
+        "Memoize the cars array in ReplayView.tsx:253 on [field, snapshot]."
+      ],
+      "scope_out": [
+        "Including cars/snapshot in the static-layer memo keys.",
+        "Changing the visual output of tiles or route."
+      ],
+      "acceptance_criteria": [
+        "AC1: Tile and route layers do not reconcile on every playback frame.",
+        "AC2: The cars array is memoized and not reallocated when inputs are unchanged.",
+        "AC3: The rendered map looks identical; tests stay green."
+      ]
+    },
+    {
+      "title": "Drive car positions imperatively per frame",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Render performance",
+      "request_acs": ["AC3", "AC5", "AC6"],
+      "problem": [
+        "Car positions update through setSnapshot -> React re-render each frame, while the camera already updates imperatively via setAttribute (CircuitMap.tsx:371-372).",
+        "Reconciling car groups every frame is unnecessary when only their transform changes."
+      ],
+      "scope_in": [
+        "Keep carProgress in a ref and write each .map-car group's transform directly in the playback rAF loop, matching the pose the render currently computes.",
+        "Render car structure (sprites, labels, deltas) once; update only transforms per frame.",
+        "Keep this step isolated so it can be reverted independently."
+      ],
+      "scope_out": [
+        "Changing the car sprite structure or the pose math.",
+        "Removing the snapshot entirely if the tower still needs it."
+      ],
+      "acceptance_criteria": [
+        "AC1: Per-frame car positioning is imperative, not via setSnapshot.",
+        "AC2: The car structure and position at any given progress match the previous output exactly.",
+        "AC3: Scrubbing and pause/resume still position cars correctly."
+      ]
+    },
+    {
+      "title": "Throttle non-positional replay state",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Render performance",
+      "request_acs": ["AC4", "AC6"],
+      "problem": [
+        "updateLive recomputes createTower and the active moment every frame (useReplayClock.ts:135-150), which the tower/lap/segment UI does not need at 60fps.",
+        "setLive is already change-guarded, but the tower and activeMoment updates are not."
+      ],
+      "scope_in": [
+        "Accumulate elapsed time in the rAF loop and refresh tower/live/active-moment ~every 100ms or on change, while positions update every frame.",
+        "Keep seek/scrubbing immediate."
+      ],
+      "scope_out": [
+        "Throttling car positions.",
+        "Changing tower/classification computation logic."
+      ],
+      "acceptance_criteria": [
+        "AC1: Tower, live lap/segment, and active moment refresh at reduced cadence or on change.",
+        "AC2: Scrubbing updates the tower and moment immediately.",
+        "AC3: No visible correctness change in the tower or moments."
+      ]
+    },
+    {
+      "title": "Prove behavior-preservation and guard against regression",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Verification",
+      "request_acs": ["AC5", "AC6"],
+      "problem": [
+        "The optimizations touch the hot replay path and must not alter positions, trace, or finishing order.",
+        "There is no guard preventing a future change from reintroducing per-frame geometry rebuilds."
+      ],
+      "scope_in": [
+        "Assert byte-identical replay output for a fixed seed (carProgress snapshots, final classification, trace) before/after.",
+        "Add a non-regression check that route geometry is built at most once per points array over a simulated playback."
+      ],
+      "scope_out": [
+        "A full performance benchmark harness.",
+        "Testing frame timing directly."
+      ],
+      "acceptance_criteria": [
+        "AC1: A test pins fixed-seed replay output as unchanged.",
+        "AC2: A test proves route geometry is not rebuilt per frame.",
+        "AC3: The full suite is green and circuit generation/simulateRace are untouched."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate replay map render performance",
+    "plan": [
+      "Do the route-geometry memo first (WeakMap getRouteGeometry): it removes ~80% of the redundant per-frame cost with zero behavior change and is the safest win.",
+      "Hoist the tile and route layers into useMemo and memoize the cars array so static layers stop reconciling per frame.",
+      "Move per-frame car positioning to imperative transforms mirroring the camera loop, kept as an isolated, independently revertible step.",
+      "Throttle the tower/live/active-moment updates to ~100ms while positions stay per-frame, keeping scrubbing immediate.",
+      "Add the byte-identical replay-output assertion and the geometry-not-rebuilt-per-frame non-regression check.",
+      "Run typecheck, test, lint, and logics:validate; confirm circuit generation and simulateRace are untouched; record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/replay-map-render-perf.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

@@ -86,7 +86,11 @@ export function useReplayClock({
     const progress = replayProgressAt(time, raceDuration, startHoldSeconds);
     const raceTime = Math.max(0, time - startHoldSeconds);
     const targetSnapshot = createTargetSnapshot(raceTime, progress, orderRef.current);
-    const carProgress = animatePositions && smoothTracePositions ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress, elapsedSeconds) : targetSnapshot.carProgress;
+    const carProgress = time <= startHoldSeconds
+      ? initialSnapshot.carProgress
+      : animatePositions && smoothTracePositions
+        ? smoothCarProgress(snapshotRef.current.carProgress, targetSnapshot.carProgress, elapsedSeconds)
+        : targetSnapshot.carProgress;
     carProgressRef.current = carProgress;
     const nextTower = publishState ? createTower(progress, carProgress, orderRef.current) : snapshotRef.current.tower;
     const nextSnapshot = { carProgress, tower: nextTower };
@@ -116,7 +120,7 @@ export function useReplayClock({
       setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
       setSnapshot(nextSnapshot);
     }
-  }, [createTargetSnapshot, createTower, displayLapAtProgress, getActiveMomentId, laps, raceDuration, segmentAtProgress, smoothCarProgress, smoothTracePositions, startHoldSeconds]);
+  }, [createTargetSnapshot, createTower, displayLapAtProgress, getActiveMomentId, initialSnapshot.carProgress, laps, raceDuration, segmentAtProgress, smoothCarProgress, smoothTracePositions, startHoldSeconds]);
 
   const seek = useCallback((time: number) => {
     clock.current = Math.max(0, Math.min(time, replayEnd));

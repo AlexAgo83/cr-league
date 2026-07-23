@@ -8,7 +8,7 @@ const initialSnapshot: ReplayClockSnapshot = {
   tower: [{ position: 1, teamId: "team", teamName: "Team", points: 0, credits: 0, score: 1, positionChange: 0, status: "finished", resultTags: [] }]
 };
 
-function renderClock(preferencesResetSignal = 0) {
+function renderClock(preferencesResetSignal = 0, createTargetSnapshot = () => initialSnapshot) {
   return renderHook(() => useReplayClock({
     initialSnapshot,
     initialOrder: ["team"],
@@ -22,7 +22,7 @@ function renderClock(preferencesResetSignal = 0) {
     startHoldSeconds: 1,
     getActiveMomentId: () => null,
     getOrderAtProgress: () => ["team"],
-    createTargetSnapshot: () => initialSnapshot,
+    createTargetSnapshot,
     createTower: () => initialSnapshot.tower,
     smoothCarProgress: () => initialSnapshot.carProgress,
     displayLapAtProgress: () => 1,
@@ -54,5 +54,17 @@ describe("useReplayClock replay speed preferences", () => {
   it("publishes non-positional replay state at a reduced cadence", () => {
     expect(shouldPublishReplayState(1, 1 + REPLAY_STATE_UPDATE_SECONDS / 2)).toBe(false);
     expect(shouldPublishReplayState(1, 1 + REPLAY_STATE_UPDATE_SECONDS)).toBe(true);
+  });
+
+  it("keeps cars on the grid during the replay start hold", () => {
+    const targetSnapshot: ReplayClockSnapshot = {
+      carProgress: { team: 3 },
+      tower: initialSnapshot.tower
+    };
+    const { result } = renderClock(0, () => targetSnapshot);
+
+    act(() => result.current.seek(0.5));
+
+    expect(result.current.snapshot.carProgress.team).toBe(0);
   });
 });

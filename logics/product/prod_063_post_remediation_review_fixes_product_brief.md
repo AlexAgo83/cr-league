@@ -1,14 +1,25 @@
 ## prod_063_post_remediation_review_fixes_product_brief - Post-Remediation Review Fixes Product Brief
 > Date: 2026-07-23
-> Status: Proposed
+> Status: Settled
 > Related request: `req_100_post_remediation_review_fixes_replay_determinism_comparator_positiondelta_test_tiebreak_coherence_account_enumeration_neutrality_and_replay_validator_prng_test_depth`
-> Related backlog: `item_242_restore_cross_environment_determinism_in_weighted_selection`, `item_243_pin_positiondelta_wiring_and_align_trace_tiebreak_with_classification`, `item_244_close_the_account_enumeration_oracle_on_profile_creation`, `item_245_deepen_replay_validator_and_prng_determinism_tests`, `item_246_resolve_residual_invariant_and_units_assumptions`
+> Related backlog: `item_242_restore_cross_environment_determinism_in_weighted_selection`
 > Related task: `task_101_orchestrate_post_remediation_review_fixes`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Semantic edit: 2026-07-23 added overview Mermaid diagram for closeout audit coverage.
 
 # Overview
 A second review after the req_099 remediation landed confirmed the remediation was real and verified, but found defects the implementation introduced or left open: a self-defeating replay-determinism comparator (localeCompare), a vacuous positionDelta test plus a mid-race trace tiebreak inconsistent with the final classification, an account-enumeration oracle still present on profile creation, and shallow replay-validator/PRNG determinism tests. This request closes those gaps, prioritizing the determinism comparator, and is authored to be executed end-to-end by another AI agent.
+
+```mermaid
+flowchart TD
+  Req[req_100 post-remediation review fixes] --> Determinism[item_242 byte-stable weighted selection]
+  Req --> Classification[item_243 classificationScore and trace tiebreak]
+  Req --> Profiles[item_244 neutral profile creation]
+  Req --> Tests[item_245 replay validator and PRNG tests]
+  Req --> Invariants[item_246 storage and modal assumptions]
+  Invariants --> Task[task_101 delivery]
+```
 
 # Goals
 - Replay determinism holds across environments, not just across key insertion order.
@@ -37,5 +48,5 @@ A second review after the req_099 remediation landed confirmed the remediation w
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_100_post_remediation_review_fixes_replay_determinism_comparator_positiondelta_test_tiebreak_coherence_account_enumeration_neutrality_and_replay_validator_prng_test_depth`
+- Product back-reference: `item_242_restore_cross_environment_determinism_in_weighted_selection`
 - Task back-reference: `task_101_orchestrate_post_remediation_review_fixes`

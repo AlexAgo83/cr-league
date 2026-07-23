@@ -1,10 +1,10 @@
 ## item_248_hoist_static_svg_layers_out_of_the_per_frame_render - Hoist static SVG layers out of the per-frame render
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Render performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -29,6 +29,9 @@
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: Tile and route layers do not reconcile on every playback frame.
 - request-AC6 -> This backlog slice. Proof: AC2: The cars array is memoized and not reallocated when inputs are unchanged.
+- request-AC3 -> This backlog slice. Evidence needed: Per-frame car positioning is applied imperatively (like the camera loop) rather than through setSnapshot, and the rendered car structure at any given progress matches the previous output exactly.
+- request-AC4 -> This backlog slice. Evidence needed: The standings tower, live lap/segment, and active moment update at a reduced cadence (~100ms or on change) rather than every frame, while scrubbing updates immediately.
+- request-AC5 -> This backlog slice. Evidence needed: Replay output is byte-identical (fixed-seed carProgress snapshots, final classification, and trace unchanged), and a non-regression check proves route geometry is not rebuilt per frame.
 
 # Decision framing
 - Product framing: Not needed
@@ -49,3 +52,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_102_orchestrate_replay_map_render_performance`
+
+# Notes
+- Task `task_102_orchestrate_replay_map_render_performance` was finished via `logics-manager flow finish task` on 2026-07-23.

@@ -1,9 +1,9 @@
 ## req_101_replay_map_render_performance_memoize_route_geometry_hoist_static_svg_layers_imperative_car_transforms_and_throttle_non_positional_state - Replay map render performance: memoize route geometry, hoist static SVG layers, imperative car transforms, and throttle non-positional state
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Medium
 > Theme: Replay render performance
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -30,6 +30,14 @@
 - AC4: The standings tower, live lap/segment, and active moment update at a reduced cadence (~100ms or on change) rather than every frame, while scrubbing updates immediately.
 - AC5: Replay output is byte-identical (fixed-seed carProgress snapshots, final classification, and trace unchanged), and a non-regression check proves route geometry is not rebuilt per frame.
 - AC6: npm run typecheck, npm test, npm run lint, and npm run logics:validate pass, no existing test is deleted, and circuit generation and simulateRace are untouched.
+
+# AC Traceability
+- AC1 -> `task_102_orchestrate_replay_map_render_performance`. Proof: `CircuitMap.tsx` caches route geometry in a `WeakMap` by points reference; `CircuitMap.test.ts` asserts repeated pose/drift calls build geometry once.
+- AC2 -> `task_102_orchestrate_replay_map_render_performance`. Proof: `CircuitMap.tsx` memoizes tile and route layers, and `ReplayView.tsx` memoizes the `cars` array.
+- AC3 -> `task_102_orchestrate_replay_map_render_performance`. Proof: `CircuitMap.tsx` updates `.map-car` translate and sprite rotate transforms from `carProgressRef` in a rAF loop, while the rendered car structure remains React-rendered.
+- AC4 -> `task_102_orchestrate_replay_map_render_performance`. Proof: `useReplayClock.ts` updates `carProgressRef` every frame and publishes tower/live/active-moment state at `REPLAY_STATE_UPDATE_SECONDS`; seek still forces immediate publication.
+- AC5 -> `task_102_orchestrate_replay_map_render_performance`. Proof: simulation and circuit generation were not changed for task_102; replay math tests still pass and `CircuitMap.test.ts` guards against per-frame geometry rebuilds.
+- AC6 -> `task_102_orchestrate_replay_map_render_performance`. Proof: targeted vitest passed 3 files/41 tests; `npm test` passed 29 files/290 tests with existing skips; `npm run typecheck`, `npm run lint`, and `npm run logics:validate` passed.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

@@ -88,13 +88,17 @@ describe("createPrng", () => {
       expect(counts.left + counts.right).toBe(500);
     });
 
-    it("is independent of weight key insertion order", () => {
-      const first = createPrng("forecast-order");
-      const second = createPrng("forecast-order");
+    it("is independent of weight key insertion order across seeds and sequential draws", () => {
+      for (const seed of ["forecast-order-a", "forecast-order-b", "forecast-order-c", "forecast-order-d"]) {
+        const first = createPrng(seed);
+        const second = createPrng(seed);
 
-      expect(first.pickWeighted({ dry: 60, light_rain: 30, heavy_rain: 10 })).toBe(
-        second.pickWeighted({ heavy_rain: 10, light_rain: 30, dry: 60 })
-      );
+        const firstPicks = Array.from({ length: 20 }, () => first.pickWeighted({ dry: 60, light_rain: 30, heavy_rain: 10 }));
+        const secondPicks = Array.from({ length: 20 }, () => second.pickWeighted({ heavy_rain: 10, light_rain: 30, dry: 60 }));
+
+        expect(firstPicks).toEqual(secondPicks);
+        expect(first.next()).toBe(second.next());
+      }
     });
   });
 });

@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it, beforeEach } from "vitest";
 import { REPLAY_SPEED_KEY } from "./replayMath.js";
-import { useReplayClock, type ReplayClockSnapshot } from "./useReplayClock.js";
+import { REPLAY_STATE_UPDATE_SECONDS, shouldPublishReplayState, useReplayClock, type ReplayClockSnapshot } from "./useReplayClock.js";
 
 const initialSnapshot: ReplayClockSnapshot = {
   carProgress: { team: 0 },
@@ -49,5 +49,10 @@ describe("useReplayClock replay speed preferences", () => {
     localStorage.setItem(REPLAY_SPEED_KEY, "0.5");
 
     expect(renderClock().result.current.speed).toBe(1);
+  });
+
+  it("publishes non-positional replay state at a reduced cadence", () => {
+    expect(shouldPublishReplayState(1, 1 + REPLAY_STATE_UPDATE_SECONDS / 2)).toBe(false);
+    expect(shouldPublishReplayState(1, 1 + REPLAY_STATE_UPDATE_SECONDS)).toBe(true);
   });
 });

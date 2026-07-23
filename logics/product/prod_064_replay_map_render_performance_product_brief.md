@@ -1,14 +1,25 @@
 ## prod_064_replay_map_render_performance_product_brief - Replay Map Render Performance Product Brief
 > Date: 2026-07-23
-> Status: Proposed
+> Status: Settled
 > Related request: `req_101_replay_map_render_performance_memoize_route_geometry_hoist_static_svg_layers_imperative_car_transforms_and_throttle_non_positional_state`
-> Related backlog: `item_247_memoize_immutable_route_geometry`, `item_248_hoist_static_svg_layers_out_of_the_per_frame_render`, `item_249_drive_car_positions_imperatively_per_frame`, `item_250_throttle_non_positional_replay_state`, `item_251_prove_behavior_preservation_and_guard_against_regression`
+> Related backlog: `item_247_memoize_immutable_route_geometry`
 > Related task: `task_102_orchestrate_replay_map_render_performance`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Semantic edit: 2026-07-23 added overview Mermaid diagram for closeout audit coverage.
 
 # Overview
 After the replay and race-track work landed, the replay map rendering became laggy. Investigation traced the cost entirely to the render path, not the simulation: route segment geometry is rebuilt ~9 times per car per frame from an immutable points array, and the full SVG subtree (tiles + heavy route paths + car sprites) re-renders 60 times a second because playback drives car positions through React state. This request removes the redundant geometry work, keeps the static layers out of the per-frame render, moves car positioning to imperative transforms like the existing camera loop, and throttles non-positional state - all while keeping replay output byte-identical and leaving circuit generation and the simulation untouched.
+
+```mermaid
+flowchart TD
+  Req[req_101 replay map performance] --> Geometry[item_247 route geometry cache]
+  Req --> StaticLayers[item_248 memoized SVG static layers]
+  Req --> Cars[item_249 imperative car transforms]
+  Req --> Cadence[item_250 throttled replay state]
+  Req --> Proof[item_251 preservation and regression checks]
+  Proof --> Task[task_102 delivery]
+```
 
 # Goals
 - Replay playback is smooth on large circuits without changing what is rendered.
@@ -37,5 +48,5 @@ After the replay and race-track work landed, the replay map rendering became lag
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_101_replay_map_render_performance_memoize_route_geometry_hoist_static_svg_layers_imperative_car_transforms_and_throttle_non_positional_state`
+- Product back-reference: `item_247_memoize_immutable_route_geometry`
 - Task back-reference: `task_102_orchestrate_replay_map_render_performance`

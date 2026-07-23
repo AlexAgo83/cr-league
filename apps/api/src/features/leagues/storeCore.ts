@@ -99,7 +99,10 @@ export async function createProfile(db: Db, input: CreateProfileInput = {}, mail
   if (!email) throw new LeagueRuleError("A valid email is required.");
 
   const existing = await db.profile.findUnique({ where: { email } });
-  if (existing) throw new LeagueRuleError("This email already has a profile. Recover it with your code.");
+  if (existing) {
+    await requestRecoveryCode(db, { email }, mailer);
+    return { profile: { id: existing.id, email: existing.email }, teams: [] };
+  }
 
   const recoveryCode = createRecoveryCode();
   const profile = await db.profile.create({

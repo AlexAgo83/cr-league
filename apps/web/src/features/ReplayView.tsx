@@ -207,6 +207,7 @@ export function ReplayView({
   const getOrderAtProgress = useCallback((progress: number) => replayOrderAtProgress(result, replayTrace, progress), [replayTrace, result]);
   const {
     svgRef,
+    carProgressRef,
     progressRef,
     rangeRef,
     clock,
@@ -250,7 +251,7 @@ export function ReplayView({
     setResultUnlocked(true);
   };
 
-  const cars: MapCar[] = field.map((entry, index) => ({
+  const cars: MapCar[] = useMemo(() => field.map((entry, index) => ({
       id: entry.teamId,
       label: String(Math.max(1, snapshot.tower.findIndex((team) => team.teamId === entry.teamId) + 1)),
       player: entry.teamId === playerTeamId,
@@ -260,7 +261,7 @@ export function ReplayView({
       livery: teamLiveries[entry.teamId],
       positionDelta: positionPops[entry.teamId]?.delta,
       positionDeltaKey: positionPops[entry.teamId]?.key
-  }));
+  })), [field, playerTeamId, positionPops, replayTimes.leader, replayTimes.times, snapshot.carProgress, snapshot.tower, teamLiveries]);
   const playerCar = cars.find((car) => car.player) ?? cars[0];
   const towerPlanByTeam = new Map(planDecisions?.map((decision) => [decision.teamId, decision]));
   const traceLiveTimes = traceTimesAt(replayTrace, currentRaceProgress);
@@ -378,6 +379,7 @@ export function ReplayView({
             circuit={circuit}
             tt={tt}
             cars={cars}
+            carProgressRef={carProgressRef}
             weather={liveWeather}
             svgRef={svgRef}
             showHeading={false}

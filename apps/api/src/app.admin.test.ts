@@ -161,6 +161,31 @@ describe("api app profile and admin", () => {
     expect(sent).toEqual([{ email: "pilot@example.test", code: expect.stringMatching(/^[0-9A-F]{12}$/) }]);
   });
 
+  it("re-issues recovery codes from profile creation for existing emails", async () => {
+    const db = createMemoryDb();
+    const setup = recordingMailer();
+    const setupApp = await createTestApp(db, undefined, [], "http://localhost:4873", setup.mailer);
+    const createResponse = await setupApp.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const oldCode = setup.sent[0]?.code;
+    const profile = await db.profile.findUnique({ where: { email: "pilot@example.test" } });
+    await db.profile.update({ where: { id: profile!.id }, data: { recoveryEmailSentAt: new Date(Date.now() - 20 * 60 * 1000) } });
+    await setupApp.close();
+
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(db, undefined, [], "http://localhost:4873", mailer);
+    const duplicateResponse = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const oldRecoverResponse = await app.inject({ method: "POST", url: "/profiles/recover", payload: { email: "pilot@example.test", recoveryCode: oldCode } });
+    const newRecoverResponse = await app.inject({ method: "POST", url: "/profiles/recover", payload: { email: "pilot@example.test", recoveryCode: sent[0]?.code } });
+    await app.close();
+
+    expect(createResponse.statusCode).toBe(200);
+    expect(duplicateResponse.statusCode).toBe(200);
+    expect(duplicateResponse.json()).toEqual(RECOVERY_REQUEST_OK);
+    expect(sent).toEqual([{ email: "pilot@example.test", code: expect.stringMatching(/^[0-9A-F]{12}$/) }]);
+    expect(oldRecoverResponse.statusCode).toBe(404);
+    expect(newRecoverResponse.statusCode).toBe(200);
+  });
+
   it("keeps profile creation working when recovery email is inactive or fails", async () => {
     const inactive = recordingMailer({ active: false });
     const inactiveApp = await createTestApp(createMemoryDb(), undefined, [], "http://localhost:4873", inactive.mailer);

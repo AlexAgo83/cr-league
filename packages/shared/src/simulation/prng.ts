@@ -18,7 +18,7 @@ export function createPrng(seed: string): Prng {
 }
 
 export function pickWeightedWithNext<T extends string>(weights: Record<T, number>, next: () => number): T {
-  const entries = (Object.entries(weights) as Array<[T, number]>).sort(([left], [right]) => left.localeCompare(right));
+  const entries = (Object.entries(weights) as Array<[T, number]>).sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0));
   const total = entries.reduce((sum, [, weight]) => sum + Math.max(0, weight), 0);
   let cursor = next() * total;
 

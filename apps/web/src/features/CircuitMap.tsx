@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type Ref } from "react";
+import { useEffect, useMemo, useRef, type Ref, type RefObject } from "react";
 import type { CSSProperties } from "react";
 import type { DecisionDeltaKey, TeamLivery, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
@@ -69,11 +69,15 @@ type RouteSegment = {
   startDistance: number;
   endDistance: number;
 };
+type RouteGeometry = { segments: RouteSegment[]; total: number };
 export type CircuitRouteAnalysis = {
   startLine: { x1: number; y1: number; x2: number; y2: number };
   startProgress: number;
   pitStop: RoutePose;
 };
+
+const routeGeometryCache = new WeakMap<RoutePoint[], RouteGeometry>();
+let routeGeometryBuildCount = 0;
 
 const CAR_SPRITES: Record<CarSprite, string> = {
   idle: DEFAULT_CAR_ASSET.top,
@@ -155,9 +159,8 @@ export function poseOnRoute(points: RoutePoint[], progress: number) {
 
 function pointOnRoute(points: RoutePoint[], progress: number): RoutePose {
   if (!points.length) return { x: VIEW_WIDTH / 2, y: VIEW_HEIGHT / 2, angle: 0 };
-  const segments = routeSegments(points);
-  const total = segments.reduce((sum, segment) => sum + segment.length, 0) || 1;
-  let distance = (((progress % 1) + 1) % 1) * total;
+  const { segments, total } = getRouteGeometry(points);
+  let distance = (((progress % 1) + 1) % 1) * (total || 1);
 
   for (const segment of segments) {
     if (distance <= segment.length) {
@@ -165,7 +168,7 @@ function pointOnRoute(points: RoutePoint[], progress: number): RoutePose {
       return {
         x: segment.from.x + (segment.to.x - segment.from.x) * ratio,
         y: segment.from.y + (segment.to.y - segment.from.y) * ratio,
-        angle: Math.atan2(segment.to.y - segment.from.y, segment.to.x - segment.from.x) * 180 / Math.PI
+        angle: segment.angle * 180 / Math.PI
       };
     }
     distance -= segment.length;
@@ -175,10 +178,24 @@ function pointOnRoute(points: RoutePoint[], progress: number): RoutePose {
 }
 
 function routeLength(points: RoutePoint[]) {
-  return points.slice(1).reduce((sum, point, index) => sum + Math.hypot(point.x - points[index]!.x, point.y - points[index]!.y), 0);
+  return getRouteGeometry(points).total;
 }
 
-function routeSegments(points: RoutePoint[]): RouteSegment[] {
+export function routeSegments(points: RoutePoint[]): RouteSegment[] {
+  return getRouteGeometry(points).segments;
+}
+
+function getRouteGeometry(points: RoutePoint[]): RouteGeometry {
+  const cached = routeGeometryCache.get(points);
+  if (cached) return cached;
+  routeGeometryBuildCount += 1;
+  const segments = buildRouteSegments(points);
+  const geometry = { segments, total: segments.at(-1)?.endDistance ?? 0 };
+  routeGeometryCache.set(points, geometry);
+  return geometry;
+}
+
+function buildRouteSegments(points: RoutePoint[]): RouteSegment[] {
   let startDistance = 0;
   return points.slice(1).map((point, index) => {
     const from = points[index]!;
@@ -194,6 +211,14 @@ function routeSegments(points: RoutePoint[]): RouteSegment[] {
     startDistance += length;
     return segment;
   });
+}
+
+export function __resetRouteGeometryStatsForTest() {
+  routeGeometryBuildCount = 0;
+}
+
+export function __routeGeometryBuildCountForTest() {
+  return routeGeometryBuildCount;
 }
 
 function routeLineAt(pose: RoutePose) {
@@ -272,6 +297,7 @@ export function CircuitMap({
   svgRef,
   overlay,
   camera,
+  carProgressRef,
   className,
   showHeading = true,
   framed = true,
@@ -289,6 +315,7 @@ export function CircuitMap({
     car: MapCar | undefined;
     timeRef?: React.RefObject<number>;
   };
+  carProgressRef?: RefObject<Record<string, number>>;
   className?: string;
   showHeading?: boolean;
   framed?: boolean;
@@ -312,18 +339,78 @@ export function CircuitMap({
   const activeMapFit = focusEnabled ? null : mapFit;
   const mapTransform = activeMapFit?.value;
   const routeDecorScale = Math.max(1, activeMapFit?.scale ?? 1);
-  const routeDecorStyle = {
+  const routeDecorStyle = useMemo(() => ({
     "--route-glow-width": `${ROUTE_STROKES.glow / routeDecorScale}`,
     "--route-asphalt-width": `${ROUTE_STROKES.asphalt / routeDecorScale}`,
     "--route-edge-width": `${ROUTE_STROKES.edge / routeDecorScale}`,
     "--route-accent-width": `${ROUTE_STROKES.accent / routeDecorScale}`
-  } as CSSProperties;
+  }) as CSSProperties, [routeDecorScale]);
   const renderPoints = points;
   const renderD = d;
   const stageProgress = (progress: number) => progressFromStart(progress, routeAnalysis.startProgress);
   const displayWeather = weather ?? circuit.likelyWeather;
+  const sortedCars = useMemo(() => [...cars].sort((a, b) => Number(a.player) - Number(b.player)), [cars]);
+  const tileLayer = useMemo(() => tiles.map((tile) => (
+    <g key={`${tile.x}-${tile.y}`} className="circuit-map-tile-layer">
+      <rect className="circuit-map-tile-placeholder" x={tile.left} y={tile.top} width={TILE_SIZE} height={TILE_SIZE} />
+      <image
+        className="circuit-map-tile"
+        href={`https://basemaps.cartocdn.com/dark_nolabels/${zoom}/${tile.x}/${tile.y}.png`}
+        x={tile.left}
+        y={tile.top}
+        width={TILE_SIZE}
+        height={TILE_SIZE}
+      />
+    </g>
+  )), [tiles, zoom]);
+  const routeLayer = useMemo(() => (
+    <>
+      <path ref={routeRef} className={hasCars ? "circuit-route-glow replay-muted-glow" : "circuit-route-glow"} d={renderD} />
+      <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={renderD} />
+      <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={renderD} />
+      <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={renderD} />
+      <g className="circuit-pit-stop" transform={`translate(${routeAnalysis.pitStop.x} ${routeAnalysis.pitStop.y})`}>
+        <circle r="9" />
+        <text textAnchor="middle" dominantBaseline="central">
+          P
+        </text>
+      </g>
+      {hasCars ? (
+        <line className="circuit-start-line" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
+      ) : (
+        <line className="circuit-start-line circuit-start-preview" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
+      )}
+    </>
+  ), [hasCars, renderD, routeAnalysis]);
   carsRef.current = cars;
   pointsRef.current = renderPoints;
+
+  useEffect(() => {
+    const cameraGroup = cameraRef.current;
+    if (!cameraGroup || !carProgressRef || !hasCars) return;
+    const lastTransforms = new Map<string, string>();
+    let frame = 0;
+    const tick = () => {
+      const groups = Array.from(cameraGroup.querySelectorAll<SVGGElement>(".map-car"));
+      for (const car of carsRef.current) {
+        const progress = carProgressRef.current[car.id] ?? car.progress;
+        if (progress === undefined) continue;
+        const stagedProgress = progressFromStart(progress, routeAnalysis.startProgress);
+        const pose = poseOnRoute(pointsRef.current, stagedProgress);
+        const drift = driftAngle(pointsRef.current, stagedProgress);
+        const transform = `translate(${pose.x} ${pose.y})`;
+        const group = groups.find((candidate) => candidate.dataset.carId === car.id);
+        if (group && lastTransforms.get(car.id) !== transform) {
+          group.setAttribute("transform", transform);
+          lastTransforms.set(car.id, transform);
+        }
+        group?.querySelector<SVGGElement>(".map-car-sprite")?.setAttribute("transform", `rotate(${pose.angle + drift + 180})`);
+      }
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [carProgressRef, hasCars, routeAnalysis.startProgress]);
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
@@ -389,37 +476,11 @@ export function CircuitMap({
         <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
           <g ref={cameraRef} className="circuit-camera">
             <g className="circuit-map-content" transform={mapTransform}>
-              {tiles.map((tile) => (
-                <g key={`${tile.x}-${tile.y}`} className="circuit-map-tile-layer">
-                  <rect className="circuit-map-tile-placeholder" x={tile.left} y={tile.top} width={TILE_SIZE} height={TILE_SIZE} />
-                  <image
-                    className="circuit-map-tile"
-                    href={`https://basemaps.cartocdn.com/dark_nolabels/${zoom}/${tile.x}/${tile.y}.png`}
-                    x={tile.left}
-                    y={tile.top}
-                    width={TILE_SIZE}
-                    height={TILE_SIZE}
-                  />
-                </g>
-              ))}
+              {tileLayer}
               <g className="circuit-route-layer" style={routeDecorStyle}>
-                <path ref={routeRef} className={hasCars ? "circuit-route-glow replay-muted-glow" : "circuit-route-glow"} d={renderD} />
-                <path className={hasCars ? "circuit-route-asphalt replay-muted-asphalt" : "circuit-route-asphalt"} d={renderD} />
-                <path className={hasCars ? "circuit-route-edge replay-muted-route" : "circuit-route-edge"} d={renderD} />
-                <path className={hasCars ? "circuit-route-accent replay-muted-route" : "circuit-route-accent"} d={renderD} />
-                <g className="circuit-pit-stop" transform={`translate(${routeAnalysis.pitStop.x} ${routeAnalysis.pitStop.y})`}>
-                  <circle r="9" />
-                  <text textAnchor="middle" dominantBaseline="central">
-                    P
-                  </text>
-                </g>
-                {hasCars ? (
-                  <line className="circuit-start-line" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
-                ) : (
-                  <line className="circuit-start-line circuit-start-preview" x1={routeAnalysis.startLine.x1} y1={routeAnalysis.startLine.y1} x2={routeAnalysis.startLine.x2} y2={routeAnalysis.startLine.y2} />
-                )}
+                {routeLayer}
                 {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
-                {[...cars].sort((a, b) => Number(a.player) - Number(b.player)).map((car) => {
+                {sortedCars.map((car) => {
                   const pose = car.progress === undefined ? null : poseOnRoute(renderPoints, stageProgress(car.progress));
                   const drift = car.progress === undefined ? 0 : driftAngle(renderPoints, stageProgress(car.progress));
                   const sprite = spriteForCar(car);
@@ -427,7 +488,7 @@ export function CircuitMap({
                     ? ({ "--car-primary": safeHex(car.livery.primary, "#38bdf8"), "--car-secondary": safeHex(car.livery.secondary, "#16c784") } as CSSProperties & Record<string, string>)
                     : undefined;
                   return (
-                    <g key={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
+                    <g key={car.id} data-car-id={car.id} className={car.player ? "map-car player" : "map-car"} style={carStyle} transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}>
                       <g className="map-car-marker" transform={`scale(${markerScale})`}>
                         <MapCarSprite asset={carAssetForId(car.livery?.carAssetId).top} sprite={sprite} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift + 180})` : "rotate(180)"} />
                         <text textAnchor="middle" dominantBaseline="central">

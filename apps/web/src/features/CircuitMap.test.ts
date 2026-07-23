@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { CITY_CIRCUITS } from "../app/circuits.js";
-import { analyzeCircuitRoute, angleDelta, circuitRouteAnalysis, driftAngle, poseOnRoute, routeFitTransform } from "./CircuitMap.js";
+import { __resetRouteGeometryStatsForTest, __routeGeometryBuildCountForTest, analyzeCircuitRoute, angleDelta, circuitRouteAnalysis, driftAngle, poseOnRoute, routeFitTransform } from "./CircuitMap.js";
 
 describe("CircuitMap route posing", () => {
   it("smooths heading through sharp route corners", () => {
@@ -17,6 +17,24 @@ describe("CircuitMap route posing", () => {
 
     expect(Math.max(...jumps)).toBeLessThan(70);
     expect(Math.abs(driftAngle(route, 0.25))).toBeLessThanOrEqual(14);
+  });
+
+  it("reuses route geometry for repeated poses on the same points array", () => {
+    const route = [
+      { x: 0, y: 0 },
+      { x: 100, y: 0 },
+      { x: 100, y: 100 },
+      { x: 0, y: 100 },
+      { x: 0, y: 0 }
+    ];
+
+    __resetRouteGeometryStatsForTest();
+    for (const progress of [0, 0.1, 0.25, 0.5, 0.75, 0.9]) {
+      poseOnRoute(route, progress);
+      driftAngle(route, progress);
+    }
+
+    expect(__routeGeometryBuildCountForTest()).toBe(1);
   });
 
   it("projects canonical start and pit markers through the same route pose math", () => {

@@ -1,10 +1,10 @@
 ## item_246_resolve_residual_invariant_and_units_assumptions - Resolve residual invariant and units assumptions
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Cleanup
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,6 +31,8 @@
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: App.testHelpers uses safeStorage so the storage invariant is total.
 - request-AC6 -> This backlog slice. Proof: AC2: The activeModal single-open assumption is verified and documented.
+- request-AC3 -> This backlog slice. Evidence needed: POST /profiles no longer distinguishes existing from new emails in its response (Option A) or the team has explicitly chosen to keep the distinct message (Option B), with the decision and rationale recorded in the orchestration task; new-email signup and the DB duplicate guard still work.
+- request-AC4 -> This backlog slice. Evidence needed: validateReplayTrace has negative tests for at least the speed-abruptness, backwards-progress, and overtake-phase branches, asserting their exact error strings.
 
 # Decision framing
 - Product framing: Not needed
@@ -51,3 +53,9 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_101_orchestrate_post_remediation_review_fixes`
+
+# Notes
+- Task `task_101_orchestrate_post_remediation_review_fixes` was finished via `logics-manager flow finish task` on 2026-07-23.

@@ -1,10 +1,10 @@
 ## item_243_pin_positiondelta_wiring_and_align_trace_tiebreak_with_classification - Pin positionDelta wiring and align trace tiebreak with classification
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Gameplay correctness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -29,6 +29,9 @@
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: classificationScore is exported and unit-tested such that removing the positionDelta term breaks a test.
 - request-AC6 -> This backlog slice. Proof: AC2: The mid-race trace tiebreak uses classificationScore.
+- request-AC3 -> This backlog slice. Evidence needed: POST /profiles no longer distinguishes existing from new emails in its response (Option A) or the team has explicitly chosen to keep the distinct message (Option B), with the decision and rationale recorded in the orchestration task; new-email signup and the DB duplicate guard still work.
+- request-AC4 -> This backlog slice. Evidence needed: validateReplayTrace has negative tests for at least the speed-abruptness, backwards-progress, and overtake-phase branches, asserting their exact error strings.
+- request-AC5 -> This backlog slice. Evidence needed: The minor invariant break is fixed (App.testHelpers uses safeStorage), the activeModal single-open assumption is verified/documented, and the positionDelta units question is resolved (normalized or documented as intended).
 
 # Decision framing
 - Product framing: Not needed
@@ -49,3 +52,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_101_orchestrate_post_remediation_review_fixes`
+
+# Notes
+- Task `task_101_orchestrate_post_remediation_review_fixes` was finished via `logics-manager flow finish task` on 2026-07-23.

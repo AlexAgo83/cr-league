@@ -1,10 +1,10 @@
 ## item_247_memoize_immutable_route_geometry - Memoize immutable route geometry
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Render performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,6 +31,7 @@
 - request-AC1 -> This backlog slice. Proof: AC1: Route geometry is built at most once per points array and reused by all callers.
 - request-AC5 -> This backlog slice. Proof: AC2: Output coordinates and angles are numerically identical to before.
 - request-AC6 -> This backlog slice. Proof: AC3: Existing CircuitMap tests stay green.
+- request-AC4 -> This backlog slice. Evidence needed: The standings tower, live lap/segment, and active moment update at a reduced cadence (~100ms or on change) rather than every frame, while scrubbing updates immediately.
 
 # Decision framing
 - Product framing: Not needed
@@ -51,3 +52,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_102_orchestrate_replay_map_render_performance`
+
+# Notes
+- Task `task_102_orchestrate_replay_map_render_performance` was finished via `logics-manager flow finish task` on 2026-07-23.

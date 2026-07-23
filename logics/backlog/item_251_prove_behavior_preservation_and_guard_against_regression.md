@@ -1,10 +1,10 @@
 ## item_251_prove_behavior_preservation_and_guard_against_regression - Prove behavior-preservation and guard against regression
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Verification
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -29,6 +29,8 @@
 # AC Traceability
 - request-AC5 -> This backlog slice. Proof: AC1: A test pins fixed-seed replay output as unchanged.
 - request-AC6 -> This backlog slice. Proof: AC2: A test proves route geometry is not rebuilt per frame.
+- request-AC3 -> This backlog slice. Evidence needed: Per-frame car positioning is applied imperatively (like the camera loop) rather than through setSnapshot, and the rendered car structure at any given progress matches the previous output exactly.
+- request-AC4 -> This backlog slice. Evidence needed: The standings tower, live lap/segment, and active moment update at a reduced cadence (~100ms or on change) rather than every frame, while scrubbing updates immediately.
 
 # Decision framing
 - Product framing: Not needed
@@ -49,3 +51,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_102_orchestrate_replay_map_render_performance`
+
+# Notes
+- Task `task_102_orchestrate_replay_map_render_performance` was finished via `logics-manager flow finish task` on 2026-07-23.

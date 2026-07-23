@@ -46,6 +46,24 @@ describe("validateReplayTrace", () => {
     expect(validateReplayTrace(result({ replayTrace: [point(0), point(0.06), point(1)] }))).toContain("car progress jumps too far for alpha at point 1");
   });
 
+  it("reports abrupt car speed changes", () => {
+    const previous = point(0.01);
+    previous.cars!.alpha!.speed = 0.1;
+    const abrupt = point(0.02);
+    abrupt.cars!.alpha!.speed = 1.2;
+
+    expect(validateReplayTrace(result({ replayTrace: [point(0), previous, abrupt, point(1)] }))).toContain("car speed changes too abruptly for alpha at point 2");
+  });
+
+  it("reports backwards car progress separately from trace progress", () => {
+    const previous = point(0.03);
+    const backwards = point(0.04);
+    backwards.cars!.alpha!.trackProgress = 0.02;
+    backwards.cars!.alpha!.distanceMeters = 100;
+
+    expect(validateReplayTrace(result({ replayTrace: [point(0), previous, backwards, point(1)] }))).toContain("car progress goes backwards for alpha at point 2");
+  });
+
   it("reports missing pit phases for pit events", () => {
     const pitEvent: RaceResult["events"][number] = {
       id: "pit-1",
@@ -74,5 +92,30 @@ describe("validateReplayTrace", () => {
     corrupted.cars!.alpha!.distanceMeters = -1;
 
     expect(validateReplayTrace(result({ replayTrace: [point(0), corrupted, point(1)] }))).toContain("car distance out of bounds for alpha at point 1");
+  });
+
+  it("reports missing overtake phases for non-pit order changes", () => {
+    expect(
+      validateReplayTrace(
+        result({
+          replayFacts: {
+            version: 1,
+            orderChanges: [
+              {
+                type: "order_change",
+                segment: "mid",
+                lap: 1,
+                progress: 0.02,
+                overtakingTeamId: "beta",
+                overtakenTeamId: "alpha",
+                fromPosition: 2,
+                toPosition: 1,
+                gapSeconds: 0.1
+              }
+            ]
+          }
+        })
+      )
+    ).toContain("overtake phases missing near beta at 0.02");
   });
 });

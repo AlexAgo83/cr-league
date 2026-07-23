@@ -1,9 +1,10 @@
 import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { expect } from "vitest";
+import { PROFILE_SESSION_KEY, safeStorage } from "./appStorage.js";
 
 export function saveProfile(overrides: Partial<{ admin: boolean; recoveryCode: string | undefined }> = {}) {
-  localStorage.setItem(
-    "cr-league-profile-session",
+  safeStorage.set(
+    PROFILE_SESSION_KEY,
     JSON.stringify({
       profile: { id: "profile_1", email: "pilot@example.test" },
       admin: false,

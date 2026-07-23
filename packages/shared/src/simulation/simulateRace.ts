@@ -404,7 +404,7 @@ function createReplayTracePoint(segment: RaceSegment, progress: number, states: 
   const sorted =
     isGrid
       ? [...states].sort((left, right) => left.participant.standingsRank - right.participant.standingsRank)
-      : [...states].sort((left, right) => (timesByTeam.get(left.participant.teamId) ?? left.elapsedTime) - (timesByTeam.get(right.participant.teamId) ?? right.elapsedTime) || right.scores.score - left.scores.score);
+      : [...states].sort((left, right) => (timesByTeam.get(left.participant.teamId) ?? left.elapsedTime) - (timesByTeam.get(right.participant.teamId) ?? right.elapsedTime) || classificationScore(right) - classificationScore(left));
   const leaderTime = sorted[0] ? (timesByTeam.get(sorted[0].participant.teamId) ?? sorted[0].elapsedTime) : 0;
 
   return {
@@ -906,7 +906,8 @@ function classify(states: TeamState[]): ClassificationEntry[] {
   });
 }
 
-function classificationScore(state: TeamState) {
+export function classificationScore(state: { scores: { score: number }; positionDelta: number }) {
+  // positionDelta is a deliberate card-effect perturbation on the final score scale.
   return state.scores.score + state.positionDelta;
 }
 

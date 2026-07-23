@@ -1,9 +1,9 @@
 ## req_100_post_remediation_review_fixes_replay_determinism_comparator_positiondelta_test_tiebreak_coherence_account_enumeration_neutrality_and_replay_validator_prng_test_depth - Post-remediation review fixes: replay determinism comparator, positionDelta test/tiebreak coherence, account-enumeration neutrality, and replay-validator/PRNG test depth
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Medium
 > Theme: Post-remediation review fixes
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -32,6 +32,14 @@
 - AC4: validateReplayTrace has negative tests for at least the speed-abruptness, backwards-progress, and overtake-phase branches, asserting their exact error strings.
 - AC5: The minor invariant break is fixed (App.testHelpers uses safeStorage), the activeModal single-open assumption is verified/documented, and the positionDelta units question is resolved (normalized or documented as intended).
 - AC6: npm run typecheck, npm test, npm run lint, and npm run logics:validate pass, and no existing test is deleted to make them pass.
+
+# AC Traceability
+- AC1 -> `task_101_orchestrate_post_remediation_review_fixes`. Proof: `prng.ts` uses a byte comparator and `prng.test.ts` checks reordered weights across multiple seeds and sequential draws.
+- AC2 -> `task_101_orchestrate_post_remediation_review_fixes`. Proof: `classificationScore` is exported and directly tested in `simulateRace.test.ts`; `createReplayTracePoint` uses `classificationScore` as the elapsed-time tiebreak.
+- AC3 -> `task_101_orchestrate_post_remediation_review_fixes`. Proof: Option A chosen; `createProfile` reissues a recovery code for existing emails through the recovery path and returns the neutral response, covered by `app.admin.test.ts`.
+- AC4 -> `task_101_orchestrate_post_remediation_review_fixes`. Proof: `validateReplayTrace.test.ts` asserts exact errors for abrupt speed changes, backwards car progress, and missing overtake phases.
+- AC5 -> `task_101_orchestrate_post_remediation_review_fixes`. Proof: `App.testHelpers.ts` now uses `safeStorage`; `App.tsx` activeModal opens are guarded by `openModal` with only the restart return path using `modalReturnRef`; `classificationScore` documents `positionDelta` as a deliberate final-score perturbation.
+- AC6 -> `task_101_orchestrate_post_remediation_review_fixes`. Proof: targeted vitest passed 7 files/115 tests; `npm test` passed 29 files/288 tests with existing skips; `npm run typecheck`, `npm run lint`, and `npm run logics:validate` passed.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

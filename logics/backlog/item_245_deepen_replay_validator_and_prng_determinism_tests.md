@@ -1,10 +1,10 @@
 ## item_245_deepen_replay_validator_and_prng_determinism_tests - Deepen replay-validator and PRNG determinism tests
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Test coverage
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -29,6 +29,8 @@
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: The three nontrivial validator branches have negative tests asserting their error strings.
 - request-AC6 -> This backlog slice. Proof: AC2: The PRNG determinism test covers multiple seeds and sequential draws.
+- request-AC3 -> This backlog slice. Evidence needed: POST /profiles no longer distinguishes existing from new emails in its response (Option A) or the team has explicitly chosen to keep the distinct message (Option B), with the decision and rationale recorded in the orchestration task; new-email signup and the DB duplicate guard still work.
+- request-AC5 -> This backlog slice. Evidence needed: The minor invariant break is fixed (App.testHelpers uses safeStorage), the activeModal single-open assumption is verified/documented, and the positionDelta units question is resolved (normalized or documented as intended).
 
 # Decision framing
 - Product framing: Not needed
@@ -49,3 +51,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_101_orchestrate_post_remediation_review_fixes`
+
+# Notes
+- Task `task_101_orchestrate_post_remediation_review_fixes` was finished via `logics-manager flow finish task` on 2026-07-23.

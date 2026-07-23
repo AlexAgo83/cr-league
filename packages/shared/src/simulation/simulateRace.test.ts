@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import { describe, expect, it } from "vitest";
-import { simulateRace } from "./simulateRace.js";
+import { classificationScore, simulateRace } from "./simulateRace.js";
 import { validateReplayTrace } from "./validateReplayTrace.js";
 import type { RaceInput } from "../domain/race.js";
 import { CITY_CIRCUIT_IDENTITIES, raceInputFromCircuit, trackSpeedProfileForCircuit, trackZonesForCircuit } from "../domain/circuits.js";
@@ -90,6 +90,10 @@ const baseRace: RaceInput = {
 };
 
 describe("simulateRace", () => {
+  it("adds positionDelta to the classification score", () => {
+    expect(classificationScore({ scores: { score: 10 }, positionDelta: 5 })).toBe(15);
+  });
+
   it("is deterministic for the same seed and inputs", () => {
     expect(simulateRace(baseRace)).toEqual(simulateRace(baseRace));
   });

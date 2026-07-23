@@ -1,10 +1,10 @@
 ## item_242_restore_cross_environment_determinism_in_weighted_selection - Restore cross-environment determinism in weighted selection
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Simulation determinism
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -29,6 +29,9 @@
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Weight keys are ordered by a locale-independent comparator.
 - request-AC6 -> This backlog slice. Proof: AC2: A test proves reordered-but-equal forecasts resolve identically for the same seed.
+- request-AC3 -> This backlog slice. Evidence needed: POST /profiles no longer distinguishes existing from new emails in its response (Option A) or the team has explicitly chosen to keep the distinct message (Option B), with the decision and rationale recorded in the orchestration task; new-email signup and the DB duplicate guard still work.
+- request-AC4 -> This backlog slice. Evidence needed: validateReplayTrace has negative tests for at least the speed-abruptness, backwards-progress, and overtake-phase branches, asserting their exact error strings.
+- request-AC5 -> This backlog slice. Evidence needed: The minor invariant break is fixed (App.testHelpers uses safeStorage), the activeModal single-open assumption is verified/documented, and the positionDelta units question is resolved (normalized or documented as intended).
 
 # Decision framing
 - Product framing: Not needed
@@ -49,3 +52,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_101_orchestrate_post_remediation_review_fixes`
+
+# Notes
+- Task `task_101_orchestrate_post_remediation_review_fixes` was finished via `logics-manager flow finish task` on 2026-07-23.

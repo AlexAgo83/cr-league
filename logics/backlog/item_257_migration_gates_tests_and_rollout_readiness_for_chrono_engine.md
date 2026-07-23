@@ -1,10 +1,10 @@
 ## item_257_migration_gates_tests_and_rollout_readiness_for_chrono_engine - Migration gates, tests, and rollout readiness for chrono engine
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Validation and rollout
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

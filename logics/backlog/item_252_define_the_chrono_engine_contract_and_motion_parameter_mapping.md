@@ -1,10 +1,10 @@
 ## item_252_define_the_chrono_engine_contract_and_motion_parameter_mapping - Define the chrono engine contract and motion parameter mapping
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Engine design
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

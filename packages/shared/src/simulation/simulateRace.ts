@@ -45,6 +45,8 @@ const MAX_VISIBLE_GAP_PROGRESS = 0.12;
 const DEFENSE_GAP_PROGRESS = 0.012;
 const REPLAY_SPEED_ACCELERATION_PER_POINT = 0.18;
 const REPLAY_SPEED_BRAKING_PER_POINT = 0.24;
+const CHRONO_PROFILE_SAMPLES = 120;
+const MIN_CHRONO_SPEED_FACTOR = 0.42;
 
 type TeamState = {
   participant: RaceParticipant;
@@ -87,6 +89,37 @@ type TeamTracePlan = {
   pitStops: PitStopTracePlan[];
 };
 
+export type ChronoMotionParameters = {
+  topSpeed: number;
+  acceleration: number;
+  braking: number;
+  cornering: number;
+  wetGrip: number;
+  consistency: number;
+  attack: number;
+  defense: number;
+  reliability: number;
+  pitEfficiency: number;
+};
+
+const CARD_MOTION_EFFECTS: Record<CardId, Partial<ChronoMotionParameters>> = {
+  rain_grip: { wetGrip: 0.09, cornering: 0.015 },
+  fleet_maintenance: { reliability: 0.08, consistency: 0.025 },
+  launch_boost: { acceleration: 0.12, attack: 0.025, reliability: -0.025 },
+  urban_draft: { attack: 0.08, topSpeed: 0.02 },
+  final_surge: { topSpeed: 0.05, attack: 0.045, reliability: -0.035 },
+  fleet_sponsorship: { topSpeed: -0.012, consistency: 0.012 },
+  soft_tires: { acceleration: 0.04, cornering: 0.07, reliability: -0.045 },
+  qualifying_focus: { acceleration: 0.035, consistency: 0.015 },
+  defensive_order: { defense: 0.09, consistency: 0.035, attack: -0.045 },
+  adjustable_wing: { topSpeed: 0.035, cornering: 0.03, braking: -0.015 },
+  rain_mapping: { wetGrip: 0.075, consistency: 0.025 },
+  economy_mode: { topSpeed: -0.018, reliability: 0.03, pitEfficiency: 0.015 },
+  pit_relay: { pitEfficiency: 0.09, reliability: 0.045, defense: 0.02 },
+  hard_tires: { reliability: 0.065, braking: 0.03, cornering: -0.018 },
+  calculated_attack: { attack: 0.08, braking: 0.02 }
+};
+
 export function simulateRace(input: RaceInput): RaceResult {
   if (input.participants.length < 2) {
     throw new Error("A race needs at least two participants.");
@@ -123,10 +156,13 @@ export function simulateRace(input: RaceInput): RaceResult {
     traceSegments.push({ segment, pitCosts });
   }
 
+  const chronoFinalTimes = createChronoFinalTimes(states, traceSegments, trackLengthMeters, laps, speedProfile, weather, input, prng.next);
+  for (const state of states) state.elapsedTime = chronoFinalTimes.get(state.participant.teamId) ?? state.elapsedTime;
+
   const classification = classify(states);
   addFinishEvents(events, classification);
   const distanceReplayTrace = createDistanceReplayTrace(states, classification, traceSegments, trackLengthMeters, laps, pitLaneProgress, speedProfile, weather, input.traits?.energy ?? 62);
-  const annotatedReplayTrace = smoothReplayTraceSpeeds(annotateReplayOvertakes(stabilizeReplayTraceOrders(distanceReplayTrace)));
+  const annotatedReplayTrace = smoothReplayTraceSpeeds(annotateReplayOvertakes(stabilizeReplayTraceOrders(stabilizeReplayCarProgress(distanceReplayTrace, trackLengthMeters))));
   const replayEvents = withTraceEventProgress(events, annotatedReplayTrace, laps, trackZones);
 
   return {
@@ -142,6 +178,146 @@ export function simulateRace(input: RaceInput): RaceResult {
       .map((state) => ({ teamId: state.participant.teamId, cardId: state.consumedCard })),
     report: buildReport(input.grandPrixName, classification, replayEvents)
   };
+}
+
+/**
+ * Chrono contract: RaceInput decisions/cards/traits/weather are converted into
+ * motion parameters, then each car's finish time is derived by integrating its
+ * effective speed over the circuit speed profile. Classification and replay
+ * both consume those finish times; the old score remains a displayed/tiebreak
+ * performance value, not the source of truth for race order.
+ */
+export function motionParametersForParticipant(participant: RaceParticipant, scores: InternalScores): ChronoMotionParameters {
+  const parameters: ChronoMotionParameters = {
+    topSpeed: 1 + (scores.pace - 50) / 260,
+    acceleration: 1 + (scores.pace + scores.aggression - 100) / 360,
+    braking: 1 + (scores.control + scores.reliability - 100) / 420,
+    cornering: 1 + (scores.control - 50) / 260,
+    wetGrip: 1 + (scores.weatherReadiness - 50) / 230,
+    consistency: 1 + (scores.control + scores.reliability - 100) / 360,
+    attack: 1 + (scores.aggression - 50) / 220,
+    defense: 1 + (scores.control + scores.reliability - 100) / 420,
+    reliability: 1 + (scores.reliability - 50) / 240,
+    pitEfficiency: 1 + (scores.control + scores.reliability - 100) / 520
+  };
+
+  const cardEffect = participant.decision.cardId ? CARD_MOTION_EFFECTS[participant.decision.cardId] : undefined;
+  if (cardEffect) {
+    for (const [key, value] of Object.entries(cardEffect) as Array<[keyof ChronoMotionParameters, number]>) {
+      parameters[key] += value;
+    }
+  }
+
+  return clampMotionParameters(parameters);
+}
+
+export function motionParametersForDecision(participant: RaceParticipant): ChronoMotionParameters {
+  const scores: InternalScores = {
+    pace: 50,
+    control: 50,
+    reliability: 50,
+    weatherReadiness: 50,
+    aggression: 50,
+    score: 0
+  };
+  applyDecision(scores, participant);
+  return motionParametersForParticipant(participant, scores);
+}
+
+function createChronoFinalTimes(
+  states: TeamState[],
+  snapshots: TraceSegmentSnapshot[],
+  trackLengthMeters: number,
+  laps: number,
+  speedProfile: NonNullable<RaceInput["speedProfile"]>,
+  weather: Record<RaceSegment, Weather>,
+  input: RaceInput,
+  next: () => number
+) {
+  const totalDistanceFactor = (trackLengthMeters * laps) / (DEFAULT_TRACK_LENGTH_METERS * 10);
+  const baseSeconds = RACE_REPLAY_BASE_SECONDS * Math.max(0.45, totalDistanceFactor);
+  return new Map(
+    states.map((state) => {
+      const parameters = motionParametersForParticipant(state.participant, state.scores);
+      const profileFactor = chronoProfileFactor(speedProfile, weather, parameters, input);
+      const circuitFactor = chronoCircuitFactor(input, parameters);
+      const scoreFactor = 1 + Math.max(-0.16, Math.min(0.22, classificationScore(state) / 520));
+      const consistencyNoise = (next() - 0.5) * 2.6 * (2 - parameters.consistency);
+      const pitLoss = chronoPitLoss(state, snapshots, parameters);
+      const riskLoss = state.resultTags.has("mechanical_scare") ? 3.2 / parameters.reliability : 0;
+      const startDelay = Math.max(0, state.participant.standingsRank - 1) * GRID_GAP_SECONDS;
+      const movingTime = (baseSeconds * profileFactor) / Math.max(0.55, scoreFactor * circuitFactor);
+      return [
+        state.participant.teamId,
+        Number(Math.max(1, startDelay + movingTime + pitLoss + riskLoss + consistencyNoise).toFixed(1))
+      ];
+    })
+  );
+}
+
+function chronoCircuitFactor(input: RaceInput, parameters: ChronoMotionParameters) {
+  const traits = input.traits ?? traitsFromTags(input);
+  const traitFactor = 1 + (traits.grip + traits.overtaking + traits.energy - 186) / 720;
+  const fit = [input.primaryTrait, input.secondaryTrait].reduce((sum, trait) => {
+    if (trait === "fast") return sum + (parameters.topSpeed + parameters.acceleration - 2) * 0.22;
+    if (trait === "technical") return sum + (parameters.cornering + parameters.braking - 2) * 0.28;
+    if (trait === "urban") return sum + (parameters.attack + parameters.acceleration - 2) * 0.26;
+    if (trait === "high_wear") return sum + (parameters.reliability + parameters.consistency - 2) * 0.38;
+    return sum + (parameters.wetGrip + parameters.cornering - 2) * 0.22;
+  }, 0);
+  return Math.max(0.82, Math.min(1.22, traitFactor + fit));
+}
+
+function chronoPitLoss(state: TeamState, snapshots: TraceSegmentSnapshot[], parameters: ChronoMotionParameters) {
+  const stopLoss = snapshots.reduce((sum, snapshot) => sum + (snapshot.pitCosts.get(state.participant.teamId) ?? 0), 0);
+  const heavyPackTimeTradeoff = pitStrategy(state.participant.decision) === "heavy_pack" ? 2.4 : 0;
+  return Math.max(0, (stopLoss + heavyPackTimeTradeoff) / parameters.pitEfficiency);
+}
+
+function chronoProfileFactor(
+  speedProfile: NonNullable<RaceInput["speedProfile"]>,
+  weather: Record<RaceSegment, Weather>,
+  parameters: ChronoMotionParameters,
+  input: RaceInput
+) {
+  let inverseSpeed = 0;
+  for (let sample = 0; sample < CHRONO_PROFILE_SAMPLES; sample += 1) {
+    const raceProgress = (sample + 0.5) / CHRONO_PROFILE_SAMPLES;
+    const segment = RACE_SEGMENTS[Math.min(RACE_SEGMENTS.length - 1, Math.floor(raceProgress * RACE_SEGMENTS.length))] ?? "start";
+    const lapProgress = (raceProgress * Math.max(1, normalizeLaps(input.laps))) % 1;
+    const speedKind = speedKindAtProgress(lapProgress, speedProfile);
+    const profileSpeed = localSpeedFactor(lapProgress, speedProfile);
+    const weatherGrip = weather[segment] === "heavy_rain" ? 0.86 : weather[segment] === "light_rain" ? 0.94 : 1;
+    inverseSpeed += 1 / Math.max(MIN_CHRONO_SPEED_FACTOR, profileSpeed * parameterSpeedFactor(speedKind, parameters) * wetGripFactor(weatherGrip, parameters));
+  }
+  return inverseSpeed / CHRONO_PROFILE_SAMPLES;
+}
+
+function speedKindAtProgress(progress: number, speedProfile: NonNullable<RaceInput["speedProfile"]>): NonNullable<RaceInput["speedProfile"]>[number]["kind"] {
+  return speedProfile.find((span) => progressInSpeedSpan(progress, span))?.kind ?? "straight";
+}
+
+function localSpeedFactor(progress: number, speedProfile: NonNullable<RaceInput["speedProfile"]>) {
+  const factors = speedProfile.filter((span) => progressInSpeedSpan(progress, span)).map((span) => span.factor);
+  return factors.length ? Math.min(...factors) : 1;
+}
+
+function parameterSpeedFactor(kind: NonNullable<RaceInput["speedProfile"]>[number]["kind"], parameters: ChronoMotionParameters) {
+  if (kind === "straight") return parameters.topSpeed;
+  if (kind === "braking") return parameters.braking;
+  if (kind === "corner") return parameters.cornering;
+  return parameters.acceleration;
+}
+
+function wetGripFactor(weatherGrip: number, parameters: ChronoMotionParameters) {
+  if (weatherGrip >= 1) return 1;
+  return weatherGrip + (1 - weatherGrip) * Math.max(0, Math.min(1, (parameters.wetGrip - 0.82) / 0.36));
+}
+
+function clampMotionParameters(parameters: ChronoMotionParameters): ChronoMotionParameters {
+  return Object.fromEntries(
+    Object.entries(parameters).map(([key, value]) => [key, Number(Math.max(0.72, Math.min(1.28, value)).toFixed(4))])
+  ) as ChronoMotionParameters;
 }
 
 function createDistanceReplayTrace(states: TeamState[], classification: ClassificationEntry[], snapshots: TraceSegmentSnapshot[], trackLengthMeters: number, laps: number, pitLaneProgress: number, speedProfile: NonNullable<RaceInput["speedProfile"]>, weather: Record<RaceSegment, Weather>, energy: number): ReplayTracePoint[] {
@@ -163,7 +339,11 @@ function createDistanceReplayTrace(states: TeamState[], classification: Classifi
     }
   }
 
-  return points.sort((left, right) => left.progress - right.progress);
+  return dedupeReplayTraceProgress(points.sort((left, right) => left.progress - right.progress));
+}
+
+function dedupeReplayTraceProgress(points: ReplayTracePoint[]) {
+  return points.filter((point, index) => index === 0 || point.progress - points[index - 1]!.progress > 0.0001);
 }
 
 function createDistanceReplayTracePoint(states: TeamState[], plans: Map<string, TeamTracePlan>, raceTime: number, progress: number, segment: RaceSegment, trackLengthMeters: number, raceDuration: number, laps: number, speedProfile: NonNullable<RaceInput["speedProfile"]>, weather: Weather, paceFactor: number): ReplayTracePoint {
@@ -190,17 +370,26 @@ function createDistanceReplayTracePoint(states: TeamState[], plans: Map<string, 
   );
   const cars = annotateTrafficDefense(applyPitProgressFloors(applyVisualChronoGaps(rawCars, trackLengthMeters, raceDuration), pitFloors, trackLengthMeters), states);
   const order = progress >= 1
-    ? states.slice().sort((left, right) => classificationScore(right) - classificationScore(left) || left.elapsedTime - right.elapsedTime).map((state) => state.participant.teamId)
+    ? states.slice().sort((left, right) => left.elapsedTime - right.elapsedTime || classificationScore(right) - classificationScore(left)).map((state) => state.participant.teamId)
     : orderFromCars(cars, states);
   const leaderProgress = Math.max(...Object.values(cars).map((car) => car.trackProgress));
+  const leaderTime = Math.min(...states.map((state) => progress >= 1 ? (plans.get(state.participant.teamId)?.finalTime ?? state.elapsedTime) : raceTime));
   return {
     segment,
     lap: lapForProgress(progress, laps),
     progress,
     distanceMeters: Number((progress * trackLengthMeters).toFixed(1)),
     order,
-    times: Object.fromEntries(states.map((state) => [state.participant.teamId, progress >= 1 ? Number((plans.get(state.participant.teamId)?.finalTime ?? state.elapsedTime).toFixed(1)) : Number(raceTime.toFixed(1))])),
-    gaps: Object.fromEntries(states.map((state) => [state.participant.teamId, Number(Math.max(0, (leaderProgress - (cars[state.participant.teamId]?.trackProgress ?? 0)) * raceDuration).toFixed(1))])),
+    times: Object.fromEntries(states.map((state) => [state.participant.teamId, progress >= 1 ? Number((plans.get(state.participant.teamId)?.finalTime ?? state.elapsedTime).toFixed(1)) : Number(Math.min(raceTime, plans.get(state.participant.teamId)?.finalTime ?? raceTime).toFixed(1))])),
+    gaps: Object.fromEntries(states.map((state) => {
+      const finalTime = plans.get(state.participant.teamId)?.finalTime ?? state.elapsedTime;
+      return [
+        state.participant.teamId,
+        progress >= 1
+          ? Number(Math.max(0, finalTime - leaderTime).toFixed(1))
+          : Number(Math.max(0, (leaderProgress - (cars[state.participant.teamId]?.trackProgress ?? 0)) * raceDuration).toFixed(1))
+      ];
+    })),
     cars
   };
 }
@@ -220,15 +409,32 @@ function applyVisualChronoGaps(cars: NonNullable<ReplayTracePoint["cars"]>, trac
   const racing = Object.entries(cars).filter(([, car]) => car.phase === "racing" || car.phase === "launch" || car.phase.startsWith("overtake"));
   if (racing.length < 2) return cars;
   const leaderProgress = Math.max(...racing.map(([, car]) => car.trackProgress));
+  const leaderId = racing.find(([, car]) => car.trackProgress === leaderProgress)?.[0];
   return Object.fromEntries(
     Object.entries(cars).map(([teamId, car]) => {
-      if (!racing.some(([id]) => id === teamId) || car.trackProgress >= leaderProgress) return [teamId, car];
+      if (!racing.some(([id]) => id === teamId) || teamId === leaderId) return [teamId, car];
       const rawGapSeconds = Math.max(0, (leaderProgress - car.trackProgress) * raceDuration);
       const visualGap = Math.min(MAX_VISIBLE_GAP_PROGRESS, Math.max(MIN_VISIBLE_GAP_PROGRESS, rawGapSeconds / Math.max(1, raceDuration)));
       const trackProgress = Math.max(0, Math.min(car.trackProgress, leaderProgress - visualGap));
       return [teamId, { ...car, trackProgress: Number(trackProgress.toFixed(4)), distanceMeters: Number((trackProgress * trackLengthMeters).toFixed(1)) }];
     })
   );
+}
+
+function stabilizeReplayCarProgress(trace: ReplayTracePoint[], trackLengthMeters: number) {
+  const previousProgress = new Map<string, number>();
+  return trace.map((point) => {
+    if (!point.cars) return point;
+    const cars = Object.fromEntries(
+      Object.entries(point.cars).map(([teamId, car]) => {
+        const previous = previousProgress.get(teamId) ?? car.trackProgress;
+        const trackProgress = car.phase === "grid" ? car.trackProgress : Math.max(previous, car.trackProgress);
+        previousProgress.set(teamId, trackProgress);
+        return [teamId, { ...car, trackProgress: Number(trackProgress.toFixed(4)), distanceMeters: Number((trackProgress * trackLengthMeters).toFixed(1)) }];
+      })
+    );
+    return { ...point, cars };
+  });
 }
 
 function annotateTrafficDefense(cars: NonNullable<ReplayTracePoint["cars"]>, states: TeamState[]) {
@@ -285,6 +491,9 @@ function carAtRaceTime(plan: TeamTracePlan, raceTime: number): { progress: numbe
     if (raceTime <= departure) {
       const phase = raceTime < arrival + PIT_ENTRY_SECONDS ? "pit_entry" : departure - raceTime <= PIT_EXIT_SECONDS ? "pit_exit" : "pit_stop";
       return { progress: stop.targetProgress, phase };
+    }
+    if (raceTime <= departure + PIT_EXIT_SECONDS) {
+      return { progress: stop.targetProgress, phase: "pit_exit" };
     }
     time = departure;
     progress = stop.targetProgress;
@@ -903,7 +1112,7 @@ function maybeAddFlavorEvent(
 }
 
 function classify(states: TeamState[]): ClassificationEntry[] {
-  const sorted = [...states].sort((left, right) => classificationScore(right) - classificationScore(left) || left.elapsedTime - right.elapsedTime);
+  const sorted = [...states].sort((left, right) => left.elapsedTime - right.elapsedTime || classificationScore(right) - classificationScore(left));
   const positionCredits: number[] = [];
   for (let index = 0; index < sorted.length; index += 1) {
     const baseCredits = RACE_CREDITS_BY_POSITION[index] ?? RACE_CREDITS_BY_POSITION.at(-1) ?? 0;

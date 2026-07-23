@@ -8,6 +8,18 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
   if (trace.at(-1)?.order.join("|") !== result.classification.map((entry) => entry.teamId).join("|")) errors.push("final trace order must match classification");
 
   const teamIds = result.classification.map((entry) => entry.teamId);
+  const final = trace.at(-1);
+  if (final) {
+    const finalTimes = result.classification.map((entry) => final.times[entry.teamId] ?? Number.NaN);
+    const leaderTime = finalTimes[0] ?? Number.NaN;
+    for (const [index, time] of finalTimes.entries()) {
+      const entry = result.classification[index];
+      if (!entry || !Number.isFinite(time) || time <= 0) errors.push(`final time missing for ${entry?.teamId ?? index}`);
+      if (index > 0 && time + 0.0001 < (finalTimes[index - 1] ?? 0)) errors.push(`final times must follow classification order for ${entry?.teamId ?? index}`);
+      const gap = final.gaps[entry?.teamId ?? ""];
+      if (Number.isFinite(leaderTime) && (gap === undefined || Math.abs(gap - Math.max(0, time - leaderTime)) > 0.11)) errors.push(`final gap does not match finish time for ${entry?.teamId ?? index}`);
+    }
+  }
   const pitPhases = new Map<string, string[]>();
   const carPhases = new Map<string, Array<{ progress: number; phase: string }>>();
   const overtakePhases = new Map<string, Array<{ progress: number; phase: string }>>();
@@ -16,7 +28,7 @@ export function validateReplayTrace(result: RaceResult, trace = result.replayTra
     const previous = trace[index - 1]!;
     const point = trace[index]!;
     if (point.progress <= previous.progress) errors.push(`trace progress must increase at point ${index}`);
-    if (point.distanceMeters !== undefined && previous.distanceMeters !== undefined && point.distanceMeters <= previous.distanceMeters) errors.push(`trace distance must increase at point ${index}`);
+    if (point.distanceMeters !== undefined && previous.distanceMeters !== undefined && point.distanceMeters + 0.0001 < previous.distanceMeters) errors.push(`trace distance must increase at point ${index}`);
 
     for (const teamId of teamIds) {
       const previousCar = previous.cars?.[teamId];

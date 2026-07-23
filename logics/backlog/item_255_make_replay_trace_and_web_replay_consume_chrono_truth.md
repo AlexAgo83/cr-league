@@ -1,10 +1,10 @@
 ## item_255_make_replay_trace_and_web_replay_consume_chrono_truth - Make replay trace and web replay consume chrono truth
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Replay coherence
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

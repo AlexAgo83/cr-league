@@ -1,10 +1,10 @@
 ## item_254_integrate_pit_stops_overtakes_defense_and_events_into_chrono_motion - Integrate pit stops, overtakes, defense, and events into chrono motion
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: High
 > Theme: Race interactions
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

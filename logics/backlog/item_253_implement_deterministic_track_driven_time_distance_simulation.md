@@ -1,10 +1,10 @@
 ## item_253_implement_deterministic_track_driven_time_distance_simulation - Implement deterministic track-driven time-distance simulation
 > From version: 0.4.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: High
 > Theme: Simulation core
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -1,0 +1,483 @@
+{
+  "budgets": {
+    "max_docs": 48,
+    "max_docs_per_ref": 8
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation item_258_extract_the_chrono_race_engine_module_and_contract item_259_capture_replaytrace_from_deterministic_time_distance_motion_state item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2 task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture --mode summary-only --profile deep --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_258_extract_the_chrono_race_engine_module_and_contract",
+          "item_259_capture_replaytrace_from_deterministic_time_distance_motion_state",
+          "item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state",
+          "item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2"
+        ],
+        "prod": [
+          "prod_066_chrono_engine_v2_product_brief"
+        ],
+        "req": [
+          "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation"
+        ],
+        "task": [
+          "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture"
+        ]
+      },
+      "path": "logics/product/prod_066_chrono_engine_v2_product_brief.md",
+      "ref": "prod_066_chrono_engine_v2_product_brief",
+      "status": "Proposed",
+      "title": "Chrono Engine V2 Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_252_define_the_chrono_engine_contract_and_motion_parameter_mapping"
+        ],
+        "prod": [
+          "prod_065_track_driven_chrono_race_engine_product_brief"
+        ],
+        "req": [
+          "req_102_track_driven_chrono_race_engine_derive_grand_prix_timing_gaps_classification_and_replay_from_speed_over_the_race_track"
+        ],
+        "task": [
+          "task_103_orchestrate_track_driven_chrono_race_engine_migration"
+        ]
+      },
+      "path": "logics/product/prod_065_track_driven_chrono_race_engine_product_brief.md",
+      "ref": "prod_065_track_driven_chrono_race_engine_product_brief",
+      "status": "Settled",
+      "title": "Track-Driven Chrono Race Engine Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, chrono engine v2: extract the race engine module and make replay trace a minimal time-distance simulation, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Chrono engine v2: extract the race engine module and make replay trace a minimal time-distance simulation",
+        "use when": "You need to implement or review the scaffolded workflow for Chrono engine v2: extract the race engine module and make replay trace a minimal time-distance simulation."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_258_extract_the_chrono_race_engine_module_and_contract",
+          "item_259_capture_replaytrace_from_deterministic_time_distance_motion_state",
+          "item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state",
+          "item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2"
+        ],
+        "prod": [
+          "prod_066_chrono_engine_v2_product_brief"
+        ],
+        "req": [
+          "req_102_track_driven_chrono_race_engine_derive_grand_prix_timing_gaps_classification_and_replay_from_speed_over_the_race_track",
+          "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation"
+        ],
+        "task": [
+          "task_103_orchestrate_track_driven_chrono_race_engine_migration"
+        ]
+      },
+      "path": "logics/request/req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation.md",
+      "ref": "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Chrono engine v2: extract the race engine module and make replay trace a minimal time-distance simulation"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, track-driven chrono race engine: derive grand prix timing, gaps, classification, and replay from speed over the race track, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Track-driven chrono race engine: derive Grand Prix timing, gaps, classification, and replay from speed over the race track",
+        "use when": "You need to implement or review the scaffolded workflow for Track-driven chrono race engine: derive Grand Prix timing, gaps, classification, and replay from speed over the race track."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_252_define_the_chrono_engine_contract_and_motion_parameter_mapping",
+          "item_253_implement_deterministic_track_driven_time_distance_simulation",
+          "item_254_integrate_pit_stops_overtakes_defense_and_events_into_chrono_motion",
+          "item_255_make_replay_trace_and_web_replay_consume_chrono_truth",
+          "item_256_calibrate_balance_and_preserve_gameplay_value_across_the_new_engine",
+          "item_257_migration_gates_tests_and_rollout_readiness_for_chrono_engine"
+        ],
+        "prod": [
+          "prod_065_track_driven_chrono_race_engine_product_brief"
+        ],
+        "req": [
+          "req_102_track_driven_chrono_race_engine_derive_grand_prix_timing_gaps_classification_and_replay_from_speed_over_the_race_track"
+        ]
+      },
+      "path": "logics/request/req_102_track_driven_chrono_race_engine_derive_grand_prix_timing_gaps_classification_and_replay_from_speed_over_the_race_track.md",
+      "ref": "req_102_track_driven_chrono_race_engine_derive_grand_prix_timing_gaps_classification_and_replay_from_speed_over_the_race_track",
+      "schema_version": "1.0",
+      "status": "Done",
+      "title": "Track-driven chrono race engine: derive Grand Prix timing, gaps, classification, and replay from speed over the race track"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, extract the chrono race engine module and contract, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Extract the chrono race engine module and contract",
+        "use when": "Implementing the scaffolded slice for Extract the chrono race engine module and contract."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_258_extract_the_chrono_race_engine_module_and_contract"
+        ],
+        "prod": [
+          "prod_066_chrono_engine_v2_product_brief"
+        ],
+        "req": [
+          "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation"
+        ],
+        "task": [
+          "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture"
+        ]
+      },
+      "path": "logics/backlog/item_258_extract_the_chrono_race_engine_module_and_contract.md",
+      "ref": "item_258_extract_the_chrono_race_engine_module_and_contract",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Extract the chrono race engine module and contract"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, capture replaytrace from deterministic time-distance motion state, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Capture replayTrace from deterministic time-distance motion state",
+        "use when": "Implementing the scaffolded slice for Capture replayTrace from deterministic time-distance motion state."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_259_capture_replaytrace_from_deterministic_time_distance_motion_state"
+        ],
+        "prod": [
+          "prod_066_chrono_engine_v2_product_brief"
+        ],
+        "req": [
+          "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation"
+        ],
+        "task": [
+          "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture"
+        ]
+      },
+      "path": "logics/backlog/item_259_capture_replaytrace_from_deterministic_time_distance_motion_state.md",
+      "ref": "item_259_capture_replaytrace_from_deterministic_time_distance_motion_state",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Capture replayTrace from deterministic time-distance motion state"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, align pits, overtakes, defense, and replay facts with chrono trace state, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Align pits, overtakes, defense, and replay facts with chrono trace state",
+        "use when": "Implementing the scaffolded slice for Align pits, overtakes, defense, and replay facts with chrono trace state."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state"
+        ],
+        "prod": [
+          "prod_066_chrono_engine_v2_product_brief"
+        ],
+        "req": [
+          "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation"
+        ],
+        "task": [
+          "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture"
+        ]
+      },
+      "path": "logics/backlog/item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state.md",
+      "ref": "item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Align pits, overtakes, defense, and replay facts with chrono trace state"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, harden validation, balance reporting, and rollout notes for chrono v2, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Harden validation, balance reporting, and rollout notes for chrono v2",
+        "use when": "Implementing the scaffolded slice for Harden validation, balance reporting, and rollout notes for chrono v2."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2"
+        ],
+        "prod": [
+          "prod_066_chrono_engine_v2_product_brief"
+        ],
+        "req": [
+          "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation"
+        ],
+        "task": [
+          "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture"
+        ]
+      },
+      "path": "logics/backlog/item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2.md",
+      "ref": "item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Harden validation, balance reporting, and rollout notes for chrono v2"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate track-driven chrono race engine migration",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_252_define_the_chrono_engine_contract_and_motion_parameter_mapping",
+          "item_253_implement_deterministic_track_driven_time_distance_simulation",
+          "item_254_integrate_pit_stops_overtakes_defense_and_events_into_chrono_motion",
+          "item_255_make_replay_trace_and_web_replay_consume_chrono_truth",
+          "item_256_calibrate_balance_and_preserve_gameplay_value_across_the_new_engine",
+          "item_257_migration_gates_tests_and_rollout_readiness_for_chrono_engine"
+        ],
+        "prod": [
+          "prod_065_track_driven_chrono_race_engine_product_brief"
+        ],
+        "req": [
+          "req_102_track_driven_chrono_race_engine_derive_grand_prix_timing_gaps_classification_and_replay_from_speed_over_the_race_track"
+        ],
+        "task": [
+          "task_103_orchestrate_track_driven_chrono_race_engine_migration"
+        ]
+      },
+      "path": "logics/tasks/task_103_orchestrate_track_driven_chrono_race_engine_migration.md",
+      "ref": "task_103_orchestrate_track_driven_chrono_race_engine_migration",
+      "schema_version": "1.0",
+      "status": "Done",
+      "title": "Orchestrate track-driven chrono race engine migration"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_258_extract_the_chrono_race_engine_module_and_contract",
+          "item_259_capture_replaytrace_from_deterministic_time_distance_motion_state",
+          "item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state",
+          "item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2"
+        ],
+        "prod": [
+          "prod_066_chrono_engine_v2_product_brief"
+        ],
+        "req": [
+          "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation"
+        ],
+        "task": [
+          "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture"
+        ]
+      },
+      "path": "logics/product/prod_066_chrono_engine_v2_product_brief.md",
+      "ref": "prod_066_chrono_engine_v2_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Chrono Engine V2 Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate chrono engine v2 module extraction and trace capture",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_258_extract_the_chrono_race_engine_module_and_contract",
+          "item_259_capture_replaytrace_from_deterministic_time_distance_motion_state",
+          "item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state",
+          "item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2"
+        ],
+        "prod": [
+          "prod_066_chrono_engine_v2_product_brief"
+        ],
+        "req": [
+          "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation"
+        ],
+        "task": [
+          "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture"
+        ]
+      },
+      "path": "logics/tasks/task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture.md",
+      "ref": "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate chrono engine v2 module extraction and trace capture"
+    }
+  ],
+  "estimates": {
+    "char_count": 12665,
+    "companion_doc_count": 2,
+    "doc_count": 9
+  },
+  "generated_at": "2026-07-23T20:22:44Z",
+  "handoff": {
+    "companion_doc_count": 2,
+    "enabled": true,
+    "source_refs": [
+      "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation",
+      "item_258_extract_the_chrono_race_engine_module_and_contract",
+      "item_259_capture_replaytrace_from_deterministic_time_distance_motion_state",
+      "item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state",
+      "item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2",
+      "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture"
+    ],
+    "validation_summary_count": 2
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 835,
+      "fr": 835
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "deep",
+  "ref": "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation,item_258_extract_the_chrono_race_engine_module_and_contract,item_259_capture_replaytrace_from_deterministic_time_distance_motion_state,item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state,item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2,task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture",
+  "refs": [
+    "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation",
+    "item_258_extract_the_chrono_race_engine_module_and_contract",
+    "item_259_capture_replaytrace_from_deterministic_time_distance_motion_state",
+    "item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state",
+    "item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2",
+    "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture"
+  ],
+  "release": {
+    "blocking_reasons": [
+      "git_push: evidence targets a different version",
+      "ci: evidence targets a different version",
+      "github_release: evidence targets a different version",
+      "production_deployment: evidence targets a different version"
+    ],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "git_push: evidence targets a different version",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": null,
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": "evidence targets a different version",
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different version",
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different version",
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "stale"
+      },
+      {
+        "blocking_reason": "evidence targets a different version",
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "stale"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "blocked",
+    "target_version": "0.4.2"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- `npm run typecheck` passed.",
+        "- `npm test` passed: 29 passed, 1 skipped; 292 passed, 7 skipped.",
+        "- `npm run lint` passed.",
+        "- `npm run build` passed.",
+        "- `npm run test:e2e` passed: 4 passed.",
+        "- `npm run balance:sim -- --runs 5 --circuits 4 --limit 5 --json /tmp/cr-league-chrono-balance.json` passed.",
+        "- `npm run logics:validate` passed.",
+        "- Implemented deterministic track-driven chrono finish times behind simulateRace; replay final order/times/gaps now share chrono truth; motion mapping covers every approach, preparation, pit strategy, and card. Validation: npm run typecheck passed; npm test passed (29 passed, 1 skipped; 292 passed, 7 skipped); npm run lint passed; npm run build passed; npm run test:e2e passed (4 passed); npm run balance:sim -- --runs 5 --circuits 4 --limit 5 --json /tmp/cr-league-chrono-balance.json passed; npm run logics:validate passed."
+      ],
+      "path": "logics/tasks/task_103_orchestrate_track_driven_chrono_race_engine_migration.md",
+      "ref": "task_103_orchestrate_track_driven_chrono_race_engine_migration"
+    },
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture.md",
+      "ref": "task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import { type QualifyingRun } from "@cr-league/shared";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView } from "../features/AdminConsoleView.js";
@@ -18,6 +18,7 @@ import {
   loadPlayerClaims,
   loadProfileEmail,
   loadProfileSession,
+  safeStorage,
   seasonRecapStorageKey,
 } from "./appStorage.js";
 import { AppShell } from "./AppShell.js";
@@ -49,8 +50,20 @@ const UI_PREFERENCE_KEYS = [
 ] as const;
 const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "race", "plan", "garage"]);
 
+type ActiveModal =
+  | "profile"
+  | "preferencesReset"
+  | "profileCode"
+  | "profileLogout"
+  | "directiveConfirm"
+  | "resolveConfirm"
+  | "qualifyingConfirm"
+  | "nextGrandPrixConfirm"
+  | "leagueControls"
+  | "restartConfirm";
+
 function initialLocale() {
-  const saved = localStorage.getItem(LANGUAGE_KEY);
+  const saved = safeStorage.get(LANGUAGE_KEY);
   if (isLocale(saved)) return saved;
   const browserLocale = navigator.language.split("-")[0] ?? "en";
   return isLocale(browserLocale) ? browserLocale : "en";
@@ -62,7 +75,7 @@ export function App() {
   const tt = useCallback((key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params), [locale]);
 
   const changeLocale = useCallback((nextLocale: Locale) => {
-    localStorage.setItem(LANGUAGE_KEY, nextLocale);
+    safeStorage.set(LANGUAGE_KEY, nextLocale);
     setLocaleState(nextLocale);
   }, []);
 
@@ -91,6 +104,39 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
   const [resultOpen, setResultOpen] = useState(false);
+  const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
+  const modalReturnRef = useRef<ActiveModal | null>(null);
+  const setModalOpen = useCallback((modal: ActiveModal, value: SetStateAction<boolean>) => {
+    setActiveModal((current) => {
+      const open = current === modal;
+      const next = typeof value === "function" ? value(open) : value;
+      if (next) return modal;
+      if (current !== modal) return current;
+      const returnModal = modalReturnRef.current;
+      modalReturnRef.current = null;
+      return returnModal;
+    });
+  }, []);
+  const setProfileOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("profile", value), [setModalOpen]);
+  const setPreferencesResetOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("preferencesReset", value), [setModalOpen]);
+  const setProfileCodeOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("profileCode", value), [setModalOpen]);
+  const setProfileLogoutOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("profileLogout", value), [setModalOpen]);
+  const setDirectiveConfirmOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("directiveConfirm", value), [setModalOpen]);
+  const setResolveConfirmOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("resolveConfirm", value), [setModalOpen]);
+  const setQualifyingConfirmOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("qualifyingConfirm", value), [setModalOpen]);
+  const setNextGrandPrixConfirmOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("nextGrandPrixConfirm", value), [setModalOpen]);
+  const setLeagueControlsOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("leagueControls", value), [setModalOpen]);
+  const setRestartConfirmOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("restartConfirm", value), [setModalOpen]);
+  const profileOpen = activeModal === "profile";
+  const preferencesResetOpen = activeModal === "preferencesReset";
+  const profileCodeOpen = activeModal === "profileCode";
+  const profileLogoutOpen = activeModal === "profileLogout";
+  const directiveConfirmOpen = activeModal === "directiveConfirm";
+  const resolveConfirmOpen = activeModal === "resolveConfirm";
+  const qualifyingConfirmOpen = activeModal === "qualifyingConfirm";
+  const nextGrandPrixConfirmOpen = activeModal === "nextGrandPrixConfirm";
+  const leagueControlsOpen = activeModal === "leagueControls";
+  const restartConfirmOpen = activeModal === "restartConfirm";
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const clearRouteReplay = useCallback(() => setHistoryReplay(null), []);
   const activeReplayGrandPrixId =
@@ -112,24 +158,14 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const tt = useCallback((key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params), [locale]);
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
-  const [qualifyingConfirmOpen, setQualifyingConfirmOpen] = useState(false);
   const { commandClicks, markCommandClicked, resetCommandClicks } = useCommandClicks();
   const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
   const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
   const [qualifyingReplayInitialLap, setQualifyingReplayInitialLap] = useState<number | undefined>();
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
   const previousSeasonRef = useRef<number | null>(null);
-  const [profileOpen, setProfileOpen] = useState(false);
   const [preferencesResetSignal, setPreferencesResetSignal] = useState(0);
-  const [preferencesResetOpen, setPreferencesResetOpen] = useState(false);
-  const [profileCodeOpen, setProfileCodeOpen] = useState(false);
-  const [profileLogoutOpen, setProfileLogoutOpen] = useState(false);
-  const [directiveConfirmOpen, setDirectiveConfirmOpen] = useState(false);
-  const [resolveConfirmOpen, setResolveConfirmOpen] = useState(false);
   const [startingGridExpanded, setStartingGridExpanded] = useState(false);
-  const [nextGrandPrixConfirmOpen, setNextGrandPrixConfirmOpen] = useState(false);
-  const [leagueControlsOpen, setLeagueControlsOpen] = useState(false);
-  const [restartConfirmOpen, setRestartConfirmOpen] = useState(false);
   const [form, setForm] = usePlanForm(locale);
   const [profileForm, setProfileForm] = useState(() => ({ email: loadProfileEmail(), recoveryCode: "" }));
   const [savedClaims, setSavedClaims] = useState(loadPlayerClaims);
@@ -157,7 +193,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const openOnboardingHelp = useCallback(
     (topic: OnboardingHelpTopic) => {
       const key = onboardingStorageKey(topic);
-      if (localStorage.getItem(key) || snoozedOnboardingHelp.current.has(key)) return;
+      if (safeStorage.get(key) || snoozedOnboardingHelp.current.has(key)) return;
       setOnboardingHelp(topic);
     },
     [onboardingStorageKey]
@@ -295,8 +331,9 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setSavedClaims,
     setSetupMode,
     setProfileOpen,
-    showStatus,
-    openProfileCodeHelp: () => openOnboardingHelp("profileCode")
+    setProfileMode,
+    openProfileCodeHelp: () => openOnboardingHelp("profileCode"),
+    showStatus
   });
   const { rejoinClaim, switchLeague, goHome, addLeague, forgetPlayer, copyProfileCode, copyTechnicalError, forgetProfile } = createSessionActions({
     profileSession,
@@ -414,7 +451,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   useEffect(() => {
     if (!leagueState || onboardingHelp) return;
     openOnboardingHelp("leagueIntro");
-    if (!localStorage.getItem(onboardingStorageKey("leagueIntro")) && !snoozedOnboardingHelp.current.has(onboardingStorageKey("leagueIntro"))) return;
+    if (!safeStorage.get(onboardingStorageKey("leagueIntro")) && !snoozedOnboardingHelp.current.has(onboardingStorageKey("leagueIntro"))) return;
     if (gameView === "drive" && raceDayPhase === "briefing") openOnboardingHelp("race");
     if (gameView === "plan") openOnboardingHelp("plan");
     if (gameView === "garage") openOnboardingHelp("garage");
@@ -436,8 +473,8 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     if (previousSeason === null || currentSeason <= previousSeason) return;
     if (endedSeason < 1 || !completedSeasons.some((season) => season.season === endedSeason)) return;
     const key = seasonRecapStorageKey(leagueState.league.id, endedSeason);
-    if (localStorage.getItem(key)) return;
-    localStorage.setItem(key, "seen");
+    if (safeStorage.get(key)) return;
+    safeStorage.set(key, "seen");
     setSeasonRecapSeason(endedSeason);
   }, [completedSeasons, leagueState]);
 
@@ -512,11 +549,11 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const languageSwitcher = <LanguageSwitcher locale={locale} tt={tt} onChangeLocale={changeLocale} />;
 
   function resetUiPreferences() {
-    for (const key of UI_PREFERENCE_KEYS) localStorage.removeItem(key);
-    const dynamicPreferenceKeys = Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index)).filter(
-      (key): key is string => key !== null && (key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.leagueIntro}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.race}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.plan}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.garage}:`))
+    for (const key of UI_PREFERENCE_KEYS) safeStorage.remove(key);
+    const dynamicPreferenceKeys = safeStorage.keys().filter(
+      (key) => key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.leagueIntro}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.race}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.plan}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.garage}:`)
     );
-    for (const key of dynamicPreferenceKeys) localStorage.removeItem(key);
+    for (const key of dynamicPreferenceKeys) safeStorage.remove(key);
     snoozedOnboardingHelp.current.clear();
     resetCommandClicks();
     setPreferencesResetSignal((signal) => signal + 1);
@@ -654,7 +691,10 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       onCloseNextGrandPrixConfirm={() => setNextGrandPrixConfirmOpen(false)}
       onCloseSeasonRecap={() => setSeasonRecapSeason(null)}
       onCloseLeagueControls={closeLeagueControls}
-      onOpenRestartConfirm={() => setRestartConfirmOpen(true)}
+      onOpenRestartConfirm={() => {
+        modalReturnRef.current = "leagueControls";
+        setRestartConfirmOpen(true);
+      }}
       onCloseRestartConfirm={() => setRestartConfirmOpen(false)}
     />
   );
@@ -788,12 +828,12 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
 
   function closeOnboardingHelp(topic: OnboardingHelpTopic, dismiss: boolean) {
     const key = onboardingStorageKey(topic);
-    if (dismiss || LEAGUE_SCOPED_HELP_TOPICS.has(topic)) localStorage.setItem(key, "1");
+    if (dismiss || LEAGUE_SCOPED_HELP_TOPICS.has(topic)) safeStorage.set(key, "1");
     else snoozedOnboardingHelp.current.add(key);
     setOnboardingHelp(null);
   }
 }
 
 function isStaleLeagueError(error: unknown) {
-  return error instanceof ApiError && error.statusCode === 404 && localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY);
+  return error instanceof ApiError && error.statusCode === 404 && safeStorage.get(ACTIVE_PLAYER_CLAIM_KEY);
 }

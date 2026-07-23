@@ -12,8 +12,14 @@ export type AdminListInput = {
 };
 
 export async function listAdminUsers(db: Db, input: AdminListInput = {}) {
+  const where = adminProfileWhere(input.q);
+  const total = await db.profile.count({ where });
+  const pageInput = pageParams(input, total);
   const profiles = await db.profile.findMany({
+    where,
     orderBy: { createdAt: "desc" },
+    skip: pageInput.skip,
+    take: pageInput.limit,
     include: {
       teams: {
         include: { league: true }
@@ -31,11 +37,10 @@ export async function listAdminUsers(db: Db, input: AdminListInput = {}) {
         teamCount: profile.teams.length,
         leagueCount: leagueIds.size
       };
-    })
-    .filter((profile) => matchesAdminQuery(input.q, profile.id, profile.email));
-  const page = paginate(users, input);
+    });
+  const page = pagination(total, pageInput.page, pageInput.limit);
 
-  return { users: page.items, pagination: page.pagination };
+  return { users, pagination: page };
 }
 
 export async function resetAdminUserRecoveryCode(db: Db, profileId: string) {
@@ -103,8 +108,14 @@ export async function cleanupAdminTestData(db: Db, input: { profileIds?: string[
 }
 
 export async function listAdminLeagues(db: Db, input: AdminListInput = {}) {
+  const where = adminLeagueWhere(input.q);
+  const total = await db.league.count({ where });
+  const pageInput = pageParams(input, total);
   const leagues = await db.league.findMany({
+    where,
     orderBy: { createdAt: "desc" },
+    skip: pageInput.skip,
+    take: pageInput.limit,
     include: {
       teams: true,
       grandPrixes: {
@@ -128,11 +139,10 @@ export async function listAdminLeagues(db: Db, input: AdminListInput = {}) {
         teamCount: league.teams.length,
         createdAt: league.createdAt.toISOString()
       };
-    })
-    .filter((league) => matchesAdminQuery(input.q, league.id, league.code, league.name, league.status));
-  const page = paginate(adminLeagues, input);
+    });
+  const page = pagination(total, pageInput.page, pageInput.limit);
 
-  return { leagues: page.items, pagination: page.pagination };
+  return { leagues: adminLeagues, pagination: page };
 }
 
 export async function inspectAdminLeague(db: Db, leagueId: string) {
@@ -154,28 +164,32 @@ function isTestLeague(name: string, code: string) {
   return /\b(test|demo|qa|staging)\b/i.test(name) || code.toUpperCase().startsWith("TEST");
 }
 
-function matchesAdminQuery(query: string | undefined, ...values: Array<string | null | undefined>) {
+function adminProfileWhere(query: string | undefined) {
   const needle = query?.trim().toLowerCase();
-  if (!needle) return true;
-  return values.some((value) => value?.toLowerCase().includes(needle));
+  return needle ? { OR: [{ id: { contains: needle } }, { email: { contains: needle } }] } : {};
 }
 
-function paginate<T>(items: T[], input: AdminListInput) {
+function adminLeagueWhere(query: string | undefined) {
+  const needle = query?.trim().toLowerCase();
+  return needle ? { OR: [{ id: { contains: needle } }, { code: { contains: needle } }, { name: { contains: needle } }, { status: { contains: needle } }] } : {};
+}
+
+function pageParams(input: AdminListInput, total: number) {
   const limit = Math.min(100, Math.max(1, input.limit ?? 100));
-  const total = items.length;
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const page = Math.min(totalPages, Math.max(1, input.page ?? 1));
-  const start = (page - 1) * limit;
+  return { limit, page, skip: (page - 1) * limit };
+}
 
+function pagination(total: number, requestedPage: number, limit: number) {
+  const totalPages = Math.max(1, Math.ceil(total / limit));
+  const page = Math.min(totalPages, requestedPage);
   return {
-    items: items.slice(start, start + limit),
-    pagination: {
-      page,
-      limit,
-      total,
-      totalPages,
-      hasPrevious: page > 1,
-      hasNext: page < totalPages
-    }
+    page,
+    limit,
+    total,
+    totalPages,
+    hasPrevious: page > 1,
+    hasNext: page < totalPages
   };
 }

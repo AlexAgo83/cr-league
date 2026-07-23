@@ -1,8 +1,8 @@
 ## prod_062_review_findings_remediation_product_brief - Review-Findings Remediation Product Brief
 > Date: 2026-07-23
-> Status: Proposed
+> Status: Settled
 > Related request: `req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup`
-> Related backlog: `item_235_restore_deterministic_weighted_selection_and_pin_it_with_a_test`, `item_236_resolve_the_dead_positiondelta_card_effect_accumulator`, `item_237_make_web_client_storage_access_crash_safe`, `item_238_close_email_header_injection_and_account_enumeration`, `item_239_rate_limit_unauthenticated_writes_and_bound_admin_reads`, `item_240_owner_team_resilience_and_replay_validator_negative_tests`, `item_241_over_engineering_cleanup_extract_replay_trace_delete_dead_exports_unify_modal_state`
+> Related backlog: `item_235_restore_deterministic_weighted_selection_and_pin_it_with_a_test`
 > Related task: `task_100_orchestrate_review_findings_remediation`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -54,5 +54,5 @@ flowchart TD
 - `npm run typecheck`, `npm test`, `npm run build`, `npm run lint`, and `npm run logics:validate` pass.
 
 # References
-- Product back-reference: `req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup`
+- Product back-reference: `item_235_restore_deterministic_weighted_selection_and_pin_it_with_a_test`
 - Task back-reference: `task_100_orchestrate_review_findings_remediation`

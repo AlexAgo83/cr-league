@@ -87,5 +87,14 @@ describe("createPrng", () => {
       expect(counts.right).toBeGreaterThan(0);
       expect(counts.left + counts.right).toBe(500);
     });
+
+    it("is independent of weight key insertion order", () => {
+      const first = createPrng("forecast-order");
+      const second = createPrng("forecast-order");
+
+      expect(first.pickWeighted({ dry: 60, light_rain: 30, heavy_rain: 10 })).toBe(
+        second.pickWeighted({ heavy_rain: 10, light_rain: 30, dry: 60 })
+      );
+    });
   });
 });

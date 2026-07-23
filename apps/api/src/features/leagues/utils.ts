@@ -1,4 +1,4 @@
-import { CARD_DEFINITIONS, clampTrait, type CardId, type QualifyingRun, type RaceInput, type RaceTraits, type TeamLivery, type Weather } from "@cr-league/shared";
+import { CARD_DEFINITIONS, type CardId, type QualifyingRun, type RaceInput, type TeamLivery, type Weather } from "@cr-league/shared";
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { Prisma } from "@prisma/client";
 import {
@@ -14,25 +14,8 @@ export function strongestForecast(forecast: RaceInput["forecast"]): Weather {
   return (Object.entries(forecast).sort((left, right) => right[1] - left[1])[0]?.[0] ?? "dry") as Weather;
 }
 
-export function normalizeRaceTraits(value: unknown): RaceTraits | undefined {
-  if (!value || typeof value !== "object") return undefined;
-  const traits = value as Partial<Record<keyof RaceTraits, unknown>>;
-  const { grip, overtaking, energy } = traits;
-  if (typeof grip !== "number" || typeof overtaking !== "number" || typeof energy !== "number") return undefined;
-  if (!Number.isFinite(grip) || !Number.isFinite(overtaking) || !Number.isFinite(energy)) return undefined;
-  return {
-    grip: clampTrait(grip),
-    overtaking: clampTrait(overtaking),
-    energy: clampTrait(energy)
-  };
-}
-
 export function clampInteger(value: unknown, fallback: number, min: number, max: number) {
   return typeof value === "number" && Number.isFinite(value) ? Math.max(min, Math.min(max, Math.round(value))) : fallback;
-}
-
-export function clampNumber(value: unknown, fallback: number, min: number, max: number) {
-  return typeof value === "number" && Number.isFinite(value) ? Math.max(min, Math.min(max, value)) : fallback;
 }
 
 export function createLeagueCode() {
@@ -78,12 +61,16 @@ function normalizeRecoveryCode(code: string) {
 export function normalizeEmail(value: unknown) {
   if (typeof value !== "string") return "";
   const email = value.trim().toLowerCase();
-  if (email.length > 254 || email.includes(" ")) return "";
+  if (email.length > 254 || hasWhitespaceOrControl(email)) return "";
   const at = email.indexOf("@");
   if (at <= 0 || at !== email.lastIndexOf("@")) return "";
   const domain = email.slice(at + 1);
   if (!domain.includes(".") || domain.startsWith(".") || domain.endsWith(".")) return "";
   return domain.split(".").some((part) => !part) ? "" : email;
+}
+
+function hasWhitespaceOrControl(value: string) {
+  return [...value].some((character) => character.charCodeAt(0) <= 32);
 }
 
 export function normalizeDisplayName(value: unknown, maxLength: number) {

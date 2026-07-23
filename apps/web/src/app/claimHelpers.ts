@@ -1,4 +1,4 @@
-import { ACTIVE_PLAYER_CLAIM_KEY, claimFromState, loadPlayerClaims, storePlayerClaims, upsertPlayerClaim } from "./appStorage.js";
+import { ACTIVE_PLAYER_CLAIM_KEY, claimFromState, loadPlayerClaims, safeStorage, storePlayerClaims, upsertPlayerClaim } from "./appStorage.js";
 import type { LeagueState } from "./types.js";
 
 export function rememberPlayerClaim(state: LeagueState) {
@@ -15,7 +15,7 @@ export function withCurrentPlayer(state: LeagueState, currentPlayer: LeagueState
 }
 
 export function withoutPlayerClaim(savedClaims: ReturnType<typeof loadPlayerClaims>, currentTeamId?: string) {
-  const activeTeamId = currentTeamId ?? localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY);
+  const activeTeamId = currentTeamId ?? safeStorage.get(ACTIVE_PLAYER_CLAIM_KEY);
   const claims = activeTeamId ? savedClaims.filter((claim) => claim.teamId !== activeTeamId) : savedClaims;
   storePlayerClaims(claims, claims[0]?.teamId);
   return claims;

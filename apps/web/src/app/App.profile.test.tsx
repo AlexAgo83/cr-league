@@ -55,8 +55,8 @@ describe("App profile and admin", () => {
     expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
   });
 
-  it("mentions email delivery when profile creation sends the recovery code", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ profile: { id: "profile_1", email: "pilot@example.test" }, admin: false, recoveryCode: "ABCD1234", recoveryEmailSent: true, teams: [] }));
+  it("requests a recovery code without exposing profile creation state", async () => {
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ ok: true, message: "If a profile exists for this email, a fresh recovery code will be sent." }));
 
     render(<App />);
 
@@ -64,7 +64,8 @@ describe("App profile and admin", () => {
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
     fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
 
-    expect(await screen.findByText("Profile created. We also emailed your recovery code.")).toBeTruthy();
+    expect(await screen.findByText("If a profile exists for this email, a fresh recovery code will be sent.")).toBeTruthy();
+    expect(screen.getByLabelText("Recovery code")).toBeTruthy();
   });
 
   it("prefills the profile email field from the last local profile email", () => {

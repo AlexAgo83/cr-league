@@ -1,6 +1,6 @@
 ## prod_055_leagues_store_modularization_product_brief - Leagues Store Modularization Product Brief
 > Date: 2026-07-22
-> Status: Proposed
+> Status: Settled
 > Related request: `req_091_modularize_the_oversized_leagues_store`
 > Related backlog: `item_207_split_leagues_store_into_lifecycle_modules_behind_a_barrel`
 > Related task: `task_092_orchestrate_leagues_store_modularization`
@@ -44,5 +44,5 @@ flowchart TD
 - `npm run typecheck`, `npm run lint`, the unit suite, and Logics validation pass after the move.
 
 # References
-- Product back-reference: `req_091_modularize_the_oversized_leagues_store`
+- Product back-reference: `item_207_split_leagues_store_into_lifecycle_modules_behind_a_barrel`
 - Task back-reference: `task_092_orchestrate_leagues_store_modularization`

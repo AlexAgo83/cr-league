@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { DIRECTIVE_STEP_KEY, savedDirectiveStep, type DirectiveStep } from "../features/DirectivePanel.js";
+import { safeStorage } from "./appStorage.js";
 import type { GameView, ProfileSession } from "./types.js";
 import { parseAppRoute, pathForAppRoute, type PlanSubscreen } from "./routes.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, GARAGE_PANEL_KEY, savedCardPanel, savedRecordTab, type CardPanel, type ChampionshipRecordTab } from "./viewPreferences.js";
@@ -48,15 +49,15 @@ export function useAppNavigation(profileSession: ProfileSession | null, onRouteC
   }, [activeReplayGrandPrixId, championshipRecordTab, directiveStep, gameView, garagePanel, planSubscreen, profileSession, routeReplayGrandPrixId]);
 
   useEffect(() => {
-    localStorage.setItem(CHAMPIONSHIP_RECORD_TAB_KEY, championshipRecordTab);
+    safeStorage.set(CHAMPIONSHIP_RECORD_TAB_KEY, championshipRecordTab);
   }, [championshipRecordTab]);
 
   useEffect(() => {
-    localStorage.setItem(DIRECTIVE_STEP_KEY, directiveStep);
+    safeStorage.set(DIRECTIVE_STEP_KEY, directiveStep);
   }, [directiveStep]);
 
   useEffect(() => {
-    localStorage.setItem(GARAGE_PANEL_KEY, garagePanel);
+    safeStorage.set(GARAGE_PANEL_KEY, garagePanel);
   }, [garagePanel]);
 
   return {

@@ -2,6 +2,7 @@ import type { CardId, RaceResult } from "@cr-league/shared";
 import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
+import { safeStorage } from "../app/appStorage.js";
 import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, sortCardIdsByName, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { GARAGE_PANEL_KEY, type CardPanel } from "../app/viewPreferences.js";
@@ -106,7 +107,7 @@ export function GarageView({
     onUpdateLivery({ ...livery, carAssetId: playerTeam.livery.carAssetId });
   };
   const selectCardPanel = (nextPanel: CardPanel) => {
-    localStorage.setItem(GARAGE_PANEL_KEY, nextPanel);
+    safeStorage.set(GARAGE_PANEL_KEY, nextPanel);
     onSelectCardPanel(nextPanel);
   };
   const selectedCarAsset = CAR_ASSETS[carAssetIndex] ?? DEFAULT_CAR_ASSET;

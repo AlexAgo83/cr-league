@@ -12,8 +12,9 @@ export function createProfileActions({
   setSavedClaims,
   setSetupMode,
   setProfileOpen,
-  showStatus,
-  openProfileCodeHelp
+  setProfileMode,
+  openProfileCodeHelp,
+  showStatus
 }: {
   profileForm: { email: string; recoveryCode: string };
   run: (nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify?: boolean, errorText?: (error: unknown) => string) => Promise<void>;
@@ -23,8 +24,9 @@ export function createProfileActions({
   setSavedClaims: (claims: ReturnType<typeof claimsFromProfile>) => void;
   setSetupMode: (mode: "choice") => void;
   setProfileOpen: (open: boolean) => void;
-  showStatus: (text: string, tone?: "info" | "error", notify?: boolean) => void;
+  setProfileMode: (mode: ProfileMode) => void;
   openProfileCodeHelp: () => void;
+  showStatus: (text: string, tone?: "info" | "error", notify?: boolean) => void;
 }) {
   const validateProfileForm = (email: string, recoveryCode?: string) => {
     if (!email) return tt("profile_error_email_required");
@@ -52,17 +54,13 @@ export function createProfileActions({
     setProfileFormError(null);
 
     await run(tt("status_creating_profile"), async () => {
-      const session = await api<ProfileSession>("/profiles", {
+      await api("/profiles", {
         method: "POST",
         body: JSON.stringify({ email })
       });
-      storeProfileSession(session);
-      setProfileSession(session);
-      setSavedClaims(claimsFromProfile(session));
-      setSetupMode("choice");
-      setProfileOpen(false);
-      showStatus(tt(session.recoveryEmailSent ? "status_profile_created_email_sent" : "status_profile_created"), "info", false);
-      openProfileCodeHelp();
+      storeProfileEmail(email);
+      setProfileMode("recover");
+      showStatus(tt("status_recovery_code_requested"), "info", false);
     }, undefined, true, (error) => profileApiErrorMessage(error, "create"));
   };
 
@@ -107,6 +105,7 @@ export function createProfileActions({
       setSavedClaims(claims);
       setSetupMode("choice");
       setProfileOpen(false);
+      openProfileCodeHelp();
       showStatus(tt("status_profile_recovered"), "info", false);
     }, undefined, true, (error) => profileApiErrorMessage(error, "recover"));
   };

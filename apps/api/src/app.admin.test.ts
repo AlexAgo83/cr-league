@@ -17,16 +17,21 @@ function recordingMailer(options: { active?: boolean; throwOnSend?: boolean } = 
   return { mailer, sent };
 }
 
+const RECOVERY_REQUEST_OK = { ok: true, message: "If a profile exists for this email, a fresh recovery code will be sent." };
+
 describe("api app profile and admin", () => {
   it("creates and recovers a profile with linked league teams", async () => {
-    const app = await createTestApp(createMemoryDb(), undefined, ["pilot@example.test"]);
+    const db = createMemoryDb();
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(db, undefined, ["pilot@example.test"], "http://localhost:4873", mailer);
 
     const profileResponse = await app.inject({
       method: "POST",
       url: "/profiles",
       payload: { email: "Pilot@Example.test " }
     });
-    const profile = profileResponse.json();
+    const profile = await db.profile.findUnique({ where: { email: "pilot@example.test" } });
+    const recoveryCode = sent[0]?.code;
     const duplicateResponse = await app.inject({
       method: "POST",
       url: "/profiles",
@@ -35,12 +40,12 @@ describe("api app profile and admin", () => {
     const createLeagueResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id, recoveryCode: profile.recoveryCode }
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile!.id, recoveryCode }
     });
     const recoverResponse = await app.inject({
       method: "POST",
       url: "/profiles/recover",
-      payload: { email: "pilot@example.test", recoveryCode: profile.recoveryCode }
+      payload: { email: "pilot@example.test", recoveryCode }
     });
     const badRecoverResponse = await app.inject({
       method: "POST",
@@ -51,17 +56,15 @@ describe("api app profile and admin", () => {
     await app.close();
 
     expect(profileResponse.statusCode).toBe(200);
-    expect(profile).toMatchObject({
-      profile: { email: "pilot@example.test" },
-      admin: true,
-      recoveryCode: expect.stringMatching(/^[0-9A-F]{12}$/),
-      teams: []
-    });
-    expect(duplicateResponse.statusCode).toBe(409);
+    expect(profileResponse.json()).toEqual(RECOVERY_REQUEST_OK);
+    expect(profile).toMatchObject({ email: "pilot@example.test" });
+    expect(recoveryCode).toMatch(/^[0-9A-F]{12}$/);
+    expect(duplicateResponse.statusCode).toBe(200);
+    expect(duplicateResponse.json()).toEqual(RECOVERY_REQUEST_OK);
     expect(createLeagueResponse.statusCode).toBe(200);
     expect(recoverResponse.statusCode).toBe(200);
     expect(recoverResponse.json()).toMatchObject({
-      profile: { id: profile.profile.id, email: "pilot@example.test" },
+      profile: { id: profile!.id, email: "pilot@example.test" },
       admin: true,
       teams: [expect.objectContaining({ leagueName: "Office League", teamName: "Volt Union" })]
     });
@@ -70,24 +73,26 @@ describe("api app profile and admin", () => {
 
   it("upgrades legacy recovery hashes on successful recovery", async () => {
     const db = createMemoryDb();
-    const app = await createTestApp(db);
-    const profileResponse = await app.inject({
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(db, undefined, [], "http://localhost:4873", mailer);
+    await app.inject({
       method: "POST",
       url: "/profiles",
       payload: { email: "legacy@example.test" }
     });
-    const profile = profileResponse.json();
+    const profile = await db.profile.findUnique({ where: { email: "legacy@example.test" } });
+    const recoveryCode = sent[0]?.code;
     await db.profile.update({
-      where: { id: profile.profile.id },
-      data: { recoveryCodeHash: hashLegacyRecoveryCode(profile.recoveryCode) }
+      where: { id: profile!.id },
+      data: { recoveryCodeHash: hashLegacyRecoveryCode(recoveryCode!) }
     });
 
     const recoverResponse = await app.inject({
       method: "POST",
       url: "/profiles/recover",
-      payload: { email: "legacy@example.test", recoveryCode: profile.recoveryCode }
+      payload: { email: "legacy@example.test", recoveryCode }
     });
-    const upgraded = await db.profile.findUnique({ where: { id: profile.profile.id } });
+    const upgraded = await db.profile.findUnique({ where: { id: profile!.id } });
 
     await app.close();
 
@@ -117,6 +122,28 @@ describe("api app profile and admin", () => {
     expect(limitedResponse.statusCode).toBe(429);
   });
 
+  it("rate-limits unauthenticated profile writes", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    for (let attempt = 0; attempt < 30; attempt += 1) {
+      const response = await app.inject({
+        method: "POST",
+        url: "/profiles",
+        payload: { email: "pilot@example.test" }
+      });
+      expect(response.statusCode).toBe(200);
+    }
+    const limitedResponse = await app.inject({
+      method: "POST",
+      url: "/profiles",
+      payload: { email: "pilot@example.test" }
+    });
+
+    await app.close();
+
+    expect(limitedResponse.statusCode).toBe(429);
+  });
+
   it("emails recovery codes on profile creation when mail is active", async () => {
     const { mailer, sent } = recordingMailer();
     const app = await createTestApp(createMemoryDb(), undefined, [], "http://localhost:4873", mailer);
@@ -130,8 +157,8 @@ describe("api app profile and admin", () => {
     await app.close();
 
     expect(response.statusCode).toBe(200);
-    expect(response.json().recoveryEmailSent).toBe(true);
-    expect(sent).toEqual([{ email: "pilot@example.test", code: response.json().recoveryCode }]);
+    expect(response.json()).toEqual(RECOVERY_REQUEST_OK);
+    expect(sent).toEqual([{ email: "pilot@example.test", code: expect.stringMatching(/^[0-9A-F]{12}$/) }]);
   });
 
   it("keeps profile creation working when recovery email is inactive or fails", async () => {
@@ -146,17 +173,20 @@ describe("api app profile and admin", () => {
     await failingApp.close();
 
     expect(inactiveResponse.statusCode).toBe(200);
-    expect(inactiveResponse.json().recoveryEmailSent).toBe(false);
+    expect(inactiveResponse.json()).toEqual(RECOVERY_REQUEST_OK);
     expect(inactive.sent).toHaveLength(1);
     expect(failingResponse.statusCode).toBe(200);
-    expect(failingResponse.json().recoveryEmailSent).toBe(false);
+    expect(failingResponse.json()).toEqual(RECOVERY_REQUEST_OK);
   });
 
   it("re-issues recovery codes by email without leaking profile existence", async () => {
     const db = createMemoryDb();
-    const setupApp = await createTestApp(db);
-    const profileResponse = await setupApp.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
-    const oldCode = profileResponse.json().recoveryCode;
+    const setup = recordingMailer();
+    const setupApp = await createTestApp(db, undefined, [], "http://localhost:4873", setup.mailer);
+    await setupApp.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const oldCode = setup.sent[0]?.code;
+    const profile = await db.profile.findUnique({ where: { email: "pilot@example.test" } });
+    await db.profile.update({ where: { id: profile!.id }, data: { recoveryEmailSentAt: new Date(Date.now() - 20 * 60 * 1000) } });
     await setupApp.close();
 
     const { mailer, sent } = recordingMailer();
@@ -178,8 +208,9 @@ describe("api app profile and admin", () => {
   it("rate-limits and cooldowns recovery-code re-issue without changing the neutral body", async () => {
     const db = createMemoryDb();
     const setupApp = await createTestApp(db);
-    const profileResponse = await setupApp.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
-    await db.profile.update({ where: { id: profileResponse.json().profile.id }, data: { recoveryEmailSentAt: new Date() } });
+    await setupApp.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const profile = await db.profile.findUnique({ where: { email: "pilot@example.test" } });
+    await db.profile.update({ where: { id: profile!.id }, data: { recoveryEmailSentAt: new Date() } });
     await setupApp.close();
 
     const { mailer, sent } = recordingMailer();
@@ -264,41 +295,45 @@ describe("api app profile and admin", () => {
 
 
   it("does not expose admin eligibility from a bare profile id", async () => {
-    const app = await createTestApp(createMemoryDb(), undefined, ["pilot@example.test"]);
+    const db = createMemoryDb();
+    const app = await createTestApp(db, undefined, ["pilot@example.test"]);
     const adminProfile = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const profile = await db.profile.findUnique({ where: { email: "pilot@example.test" } });
 
-    const adminStatus = await app.inject({ method: "GET", url: `/profiles/${adminProfile.json().profile.id}/admin-status` });
+    const adminStatus = await app.inject({ method: "GET", url: `/profiles/${profile!.id}/admin-status` });
 
     await app.close();
 
-    expect(adminProfile.json()).toMatchObject({ admin: true });
+    expect(adminProfile.json()).toEqual(RECOVERY_REQUEST_OK);
     expect(adminStatus.statusCode).toBe(404);
   });
 
   it("lists admin users, resets recovery codes, and deletes profiles without deleting teams", async () => {
     const db = createMemoryDb();
-    const app = await createTestApp(db, "secret-admin-token");
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(db, "secret-admin-token", [], "http://localhost:4873", mailer);
     const adminHeaders = { authorization: "Bearer secret-admin-token" };
 
-    const profileResponse = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
-    const profile = profileResponse.json();
+    await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const profile = await db.profile.findUnique({ where: { email: "pilot@example.test" } });
+    const recoveryCode = sent[0]?.code;
     const leagueResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id, recoveryCode: profile.recoveryCode }
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile!.id, recoveryCode }
     });
     const teamId = leagueResponse.json().player.teamId;
 
     const usersResponse = await app.inject({ method: "GET", url: "/admin/users", headers: adminHeaders });
     const resetResponse = await app.inject({
       method: "POST",
-      url: `/admin/users/${profile.profile.id}/recovery-code`,
+      url: `/admin/users/${profile!.id}/recovery-code`,
       headers: adminHeaders
     });
     const oldRecoveryResponse = await app.inject({
       method: "POST",
       url: "/profiles/recover",
-      payload: { email: "pilot@example.test", recoveryCode: profile.recoveryCode }
+      payload: { email: "pilot@example.test", recoveryCode }
     });
     const newRecoveryResponse = await app.inject({
       method: "POST",
@@ -307,7 +342,7 @@ describe("api app profile and admin", () => {
     });
     const deleteResponse = await app.inject({
       method: "DELETE",
-      url: `/admin/users/${profile.profile.id}`,
+      url: `/admin/users/${profile!.id}`,
       headers: adminHeaders
     });
     const orphanedTeam = await db.team.findUnique({ where: { id: teamId } });
@@ -317,7 +352,7 @@ describe("api app profile and admin", () => {
     expect(usersResponse.statusCode).toBe(200);
     expect(usersResponse.json().users).toEqual([
       expect.objectContaining({
-        id: profile.profile.id,
+        id: profile!.id,
         email: "pilot@example.test",
         createdAt: expect.any(String),
         teamCount: 1,
@@ -371,6 +406,30 @@ describe("api app profile and admin", () => {
     expect(inspectResponse.json().player).toBeUndefined();
   });
 
+  it("repairs a stale ownerTeamId from the oldest human claim", async () => {
+    const db = createMemoryDb();
+    const app = await createTestApp(db, "secret-admin-token");
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    await db.league.update({ where: { id: created.league.id }, data: { ownerTeamId: "team_missing" } });
+
+    const restartResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/restart`,
+      payload: { teamId: created.player.teamId, claimCode: created.player.claimCode }
+    });
+    const repaired = await db.league.findUnique({ where: { id: created.league.id } });
+
+    await app.close();
+
+    expect(restartResponse.statusCode).toBe(200);
+    expect(repaired?.ownerTeamId).toBe(created.player.teamId);
+  });
+
   it("filters and paginates admin users and leagues", async () => {
     const app = await createTestApp(createMemoryDb(), "secret-admin-token");
     const adminHeaders = { authorization: "Bearer secret-admin-token" };
@@ -397,14 +456,17 @@ describe("api app profile and admin", () => {
   });
 
   it("cleans up explicitly selected admin test data with confirmation and counts", async () => {
-    const app = await createTestApp(createMemoryDb(), "secret-admin-token");
+    const db = createMemoryDb();
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(db, "secret-admin-token", [], "http://localhost:4873", mailer);
     const adminHeaders = { authorization: "Bearer secret-admin-token" };
-    const profileResponse = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
-    const profile = profileResponse.json();
+    await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const profile = await db.profile.findUnique({ where: { email: "pilot@example.test" } });
+    const recoveryCode = sent[0]?.code;
     const leagueResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Test League", teamName: "Volt Union", profileId: profile.profile.id, recoveryCode: profile.recoveryCode }
+      payload: { name: "Test League", teamName: "Volt Union", profileId: profile!.id, recoveryCode }
     });
     const created = leagueResponse.json();
 
@@ -414,12 +476,12 @@ describe("api app profile and admin", () => {
       headers: adminHeaders,
       payload: {
         confirmation: "DELETE TEST DATA",
-        profileIds: [profile.profile.id],
+        profileIds: [profile!.id],
         leagueIds: [created.league.id]
       }
     });
     const inspectResponse = await app.inject({ method: "GET", url: `/admin/leagues/${created.league.id}`, headers: adminHeaders });
-    const recoverResponse = await app.inject({ method: "POST", url: "/profiles/recover", payload: { email: "pilot@example.test", recoveryCode: profile.recoveryCode } });
+    const recoverResponse = await app.inject({ method: "POST", url: "/profiles/recover", payload: { email: "pilot@example.test", recoveryCode } });
 
     await app.close();
 
@@ -439,27 +501,28 @@ describe("api app profile and admin", () => {
   });
 
   it("rejects admin cleanup without confirmation or clearly marked test data", async () => {
-    const app = await createTestApp(createMemoryDb(), "secret-admin-token");
+    const db = createMemoryDb();
+    const app = await createTestApp(db, "secret-admin-token");
     const adminHeaders = { authorization: "Bearer secret-admin-token" };
-    const profileResponse = await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.com" } });
-    const profile = profileResponse.json();
+    await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.com" } });
+    const profile = await db.profile.findUnique({ where: { email: "pilot@example.com" } });
 
     const missingConfirmation = await app.inject({
       method: "POST",
       url: "/admin/test-data-cleanup",
       headers: adminHeaders,
-      payload: { profileIds: [profile.profile.id] }
+      payload: { profileIds: [profile!.id] }
     });
     const unsafeProfile = await app.inject({
       method: "POST",
       url: "/admin/test-data-cleanup",
       headers: adminHeaders,
-      payload: { confirmation: "DELETE TEST DATA", profileIds: [profile.profile.id] }
+      payload: { confirmation: "DELETE TEST DATA", profileIds: [profile!.id] }
     });
     const forbidden = await app.inject({
       method: "POST",
       url: "/admin/test-data-cleanup",
-      payload: { confirmation: "DELETE TEST DATA", profileIds: [profile.profile.id] }
+      payload: { confirmation: "DELETE TEST DATA", profileIds: [profile!.id] }
     });
 
     await app.close();

@@ -1,5 +1,5 @@
 import type { TranslationKey } from "../i18n/index.js";
-import { PROFILE_SESSION_KEY, api, copyText, storePlayerClaims } from "./appStorage.js";
+import { PROFILE_SESSION_KEY, api, copyText, safeStorage, storePlayerClaims } from "./appStorage.js";
 import type { GameView, LeagueState, ProfileSession } from "./types.js";
 
 type NotificationTone = "info" | "error";
@@ -120,7 +120,7 @@ export function createSessionActions({
   }
 
   function forgetProfile() {
-    localStorage.removeItem(PROFILE_SESSION_KEY);
+    safeStorage.remove(PROFILE_SESSION_KEY);
     setProfileSession(null);
     setLeagueState(null);
     setAdminInspecting(false);

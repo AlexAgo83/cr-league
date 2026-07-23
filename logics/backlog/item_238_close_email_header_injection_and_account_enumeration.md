@@ -1,10 +1,10 @@
 ## item_238_close_email_header_injection_and_account_enumeration - Close email header injection and account enumeration
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: API security
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -31,6 +31,10 @@
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: normalizeEmail rejects tabs/newlines/control chars so none reach the mail header.
 - request-AC8 -> This backlog slice. Proof: AC2: POST /profiles no longer reveals whether an email is registered.
+- request-AC3 -> This backlog slice. Evidence needed: All localStorage access in apps/web goes through a safe wrapper; the app starts and operates without throwing when localStorage getItem/setItem throw (disabled or quota-exceeded), verified by a test that stubs a throwing storage.
+- request-AC5 -> This backlog slice. Evidence needed: Unauthenticated write routes are IP rate-limited, and the admin profile/league list endpoints filter and paginate at the database level (where/skip/take) rather than loading whole tables into memory.
+- request-AC6 -> This backlog slice. Evidence needed: Removing a league's owner human team no longer permanently 403s resolve/next-grand-prix/restart (ownerTeamId is reassigned or falls back to another human claim), and validateReplayTrace has negative tests asserting its specific error strings.
+- request-AC7 -> This backlog slice. Evidence needed: Cosmetic replay-trace generation lives in its own module out of the simulation core, the dead normalizeRaceTraits/clampNumber exports are gone, and App.tsx's mutually-exclusive dialogs use a single activeModal state.
 
 # Decision framing
 - Product framing: Not needed
@@ -51,3 +55,9 @@
 # Priority
 - Priority: Medium
 - Rationale: These are unauthenticated security gaps that should close before broader beta exposure.
+
+# Tasks
+- `task_100_orchestrate_review_findings_remediation`
+
+# Notes
+- Task `task_100_orchestrate_review_findings_remediation` was finished via `logics-manager flow finish task` on 2026-07-23.

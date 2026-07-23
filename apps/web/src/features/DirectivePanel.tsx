@@ -1,6 +1,7 @@
 import { type CSSProperties, useState } from "react";
 import { APPROACH_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type CardId, type DecisionDeltaKey, type DecisionDeltas } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
+import { safeStorage } from "../app/appStorage.js";
 import { sortCardIdsByName, type CardFit, type Translator } from "../app/helpers.js";
 import type { PlanRecommendation, PlanRiskRead } from "../app/raceFlow.js";
 import type { FormState } from "../app/types.js";
@@ -49,7 +50,7 @@ export const PIT_ART: Record<(typeof PIT_STRATEGIES)[number], string> = {
 };
 
 export function savedDirectiveStep(): DirectiveStep {
-  const saved = localStorage.getItem(DIRECTIVE_STEP_KEY);
+  const saved = safeStorage.get(DIRECTIVE_STEP_KEY);
   return saved === "preparation" || saved === "pit" || saved === "card" ? saved : "approach";
 }
 
@@ -205,13 +206,13 @@ export function DirectivePanel({
 
   function selectCard(cardId: "" | CardId) {
     setForm({ ...form, cardId });
-    if (!cardId || localStorage.getItem(CARD_CONSUMPTION_HELP_KEY)) return;
+    if (!cardId || safeStorage.get(CARD_CONSUMPTION_HELP_KEY)) return;
     setDismissCardHelp(false);
     setCardHelpOpen(true);
   }
 
   function closeCardHelp() {
-    if (dismissCardHelp) localStorage.setItem(CARD_CONSUMPTION_HELP_KEY, "1");
+    if (dismissCardHelp) safeStorage.set(CARD_CONSUMPTION_HELP_KEY, "1");
     setCardHelpOpen(false);
   }
 

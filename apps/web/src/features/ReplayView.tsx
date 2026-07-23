@@ -1,6 +1,7 @@
 import { type RaceDecision, type RaceResult, type TeamLivery } from "@cr-league/shared";
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
+import { safeStorage } from "../app/appStorage.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
 import type { RaceEvent } from "../app/helpers.js";
@@ -131,8 +132,8 @@ export function ReplayView({
   afterMapContent?: ReactNode;
   tt: Translator;
 }) {
-  const [driverFocus, setDriverFocus] = useState(() => localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
-  const [copyDismissed, setCopyDismissed] = useState(() => localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
+  const [driverFocus, setDriverFocus] = useState(() => safeStorage.get(REPLAY_FOCUS_KEY) !== "0");
+  const [copyDismissed, setCopyDismissed] = useState(() => safeStorage.get(DISMISSED_REPLAY_HELP_KEY) === "1");
   const [resultUnlocked, setResultUnlocked] = useState(false);
   const replayTrace = useMemo(() => result.replayTrace ?? [], [result.replayTrace]);
   const replayPlan = useMemo(() => buildReplayPlan(result, replayTrace), [replayTrace, result]);
@@ -160,13 +161,13 @@ export function ReplayView({
   const replayPercentAtRaceProgress = (progress: number) => (raceTimeAtProgress(progress) / replayEnd) * 100;
 
   useEffect(() => {
-    if (driverFocus) localStorage.removeItem(REPLAY_FOCUS_KEY);
-    else localStorage.setItem(REPLAY_FOCUS_KEY, "0");
+    if (driverFocus) safeStorage.remove(REPLAY_FOCUS_KEY);
+    else safeStorage.set(REPLAY_FOCUS_KEY, "0");
   }, [driverFocus]);
 
   useEffect(() => {
-    setDriverFocus(localStorage.getItem(REPLAY_FOCUS_KEY) !== "0");
-    setCopyDismissed(localStorage.getItem(DISMISSED_REPLAY_HELP_KEY) === "1");
+    setDriverFocus(safeStorage.get(REPLAY_FOCUS_KEY) !== "0");
+    setCopyDismissed(safeStorage.get(DISMISSED_REPLAY_HELP_KEY) === "1");
   }, [preferencesResetSignal]);
 
   useEffect(() => {
@@ -445,7 +446,7 @@ export function ReplayView({
                 className="context-panel-close"
                 aria-label={`${tt("action_close")} ${tt(titleKey)}`}
                 onClick={() => {
-                  localStorage.setItem(DISMISSED_REPLAY_HELP_KEY, "1");
+                  safeStorage.set(DISMISSED_REPLAY_HELP_KEY, "1");
                   setCopyDismissed(true);
                 }}
               >

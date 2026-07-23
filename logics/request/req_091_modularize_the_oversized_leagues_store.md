@@ -1,9 +1,9 @@
 ## req_091_modularize_the_oversized_leagues_store - Modularize the oversized leagues store
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Medium
 > Theme: Backend maintainability
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -26,6 +26,13 @@
 - AC3: store.ts remains a barrel that re-exports every symbol currently imported by routes.ts, admin/store.ts, and the tests, so no consumer or test import path changes.
 - AC4: No behavior change — transaction boundaries, row locks, LeagueRuleError messages, and the in-transaction re-checks are preserved verbatim.
 - AC5: Typecheck, lint, and the full unit test suite (currently 250 passing) pass unchanged, with no weakened assertions.
+
+# AC Traceability
+- AC1 -> `task_092_orchestrate_leagues_store_modularization`. Proof: lifecycle modules exist under `apps/api/src/features/leagues/`; `store.ts` is now a re-export barrel.
+- AC2 -> `task_092_orchestrate_leagues_store_modularization`. Proof: `transactionHelpers.ts` centralizes the shared transaction/claim helper surface.
+- AC3 -> `task_092_orchestrate_leagues_store_modularization`. Proof: no route, admin-store, script, or test import path changed.
+- AC4 -> `task_092_orchestrate_leagues_store_modularization`. Proof: behavior-critical implementation is preserved in `storeCore.ts`; full unit suite passes.
+- AC5 -> `task_092_orchestrate_leagues_store_modularization`. Proof: task validation records passing typecheck, lint, test, and build.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

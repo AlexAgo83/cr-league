@@ -2,6 +2,7 @@ import { useEffect, useState, type CSSProperties } from "react";
 import type { TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, type CityCircuit } from "../app/circuits.js";
+import { safeStorage } from "../app/appStorage.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, type ChampionshipRecordTab } from "../app/viewPreferences.js";
@@ -54,7 +55,7 @@ export function ChampionshipView({
   const activeRecordTab = recordTabs.some((tab) => tab.key === recordTab) ? recordTab : "calendar";
   const activeRecordLabel = recordTabs.find((tab) => tab.key === activeRecordTab)?.label ?? tt("championship_calendar");
   const selectRecordTab = (nextTab: ChampionshipRecordTab) => {
-    localStorage.setItem(CHAMPIONSHIP_RECORD_TAB_KEY, nextTab);
+    safeStorage.set(CHAMPIONSHIP_RECORD_TAB_KEY, nextTab);
     setPreviewCircuit(undefined);
     onSelectRecordTab(nextTab);
   };

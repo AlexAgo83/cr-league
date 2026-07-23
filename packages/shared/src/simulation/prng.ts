@@ -18,12 +18,12 @@ export function createPrng(seed: string): Prng {
 }
 
 export function pickWeightedWithNext<T extends string>(weights: Record<T, number>, next: () => number): T {
-  const entries = Object.entries(weights) as Array<[T, number]>;
+  const entries = (Object.entries(weights) as Array<[T, number]>).sort(([left], [right]) => left.localeCompare(right));
   const total = entries.reduce((sum, [, weight]) => sum + Math.max(0, weight), 0);
   let cursor = next() * total;
 
   if (total <= 0) {
-    return entries[Math.floor(next() * entries.length)]?.[0] ?? (Object.keys(weights)[0] as T);
+    return entries[Math.floor(next() * entries.length)]?.[0] ?? entries[0]?.[0] ?? (Object.keys(weights)[0] as T);
   }
 
   for (const [key, weight] of entries) {
@@ -35,7 +35,7 @@ export function pickWeightedWithNext<T extends string>(weights: Record<T, number
     }
   }
 
-  return entries.find(([, weight]) => weight > 0)?.[0] ?? (Object.keys(weights)[0] as T);
+  return entries.find(([, weight]) => weight > 0)?.[0] ?? entries[0]?.[0] ?? (Object.keys(weights)[0] as T);
 }
 
 function hashSeed(seed: string) {

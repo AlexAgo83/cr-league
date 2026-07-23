@@ -28,19 +28,22 @@ import type { RecoveryMailer } from "../../mailer.js";
 import type { LeagueState } from "./types.js";
 
 const RECOVERY_REQUEST_OK = { ok: true, message: "If a profile exists for this email, a fresh recovery code will be sent." };
+const WRITE_RATE_LIMIT = { config: { rateLimit: { max: 30, timeWindow: "1 minute" } } };
 
 export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClient, config?: Pick<ApiConfig, "adminEmails">, mailer?: RecoveryMailer) {
   const recoveryLimiter = createRecoveryLimiter();
 
-  app.post("/profiles", async (request, reply) => {
+  app.post("/profiles", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isCreateProfileBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a valid email." });
     }
 
     try {
-      return withAdminFlag(await createProfile(db, request.body, mailer), config);
+      await createProfile(db, request.body, mailer);
+      return RECOVERY_REQUEST_OK;
     } catch (error) {
       if (error instanceof LeagueRuleError) {
+        if (error.message.includes("already has a profile")) return RECOVERY_REQUEST_OK;
         return sendLeagueRuleError(reply, error);
       }
       throw error;
@@ -89,7 +92,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post("/leagues", async (request, reply) => {
+  app.post("/leagues", WRITE_RATE_LIMIT, async (request, reply) => {
     try {
       return await createDemoLeague(db, request.body ?? {});
     } catch (error) {
@@ -100,7 +103,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post("/leagues/join", async (request, reply) => {
+  app.post("/leagues/join", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isJoinBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a league code and team name." });
     }
@@ -117,7 +120,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post("/leagues/rejoin", async (request, reply) => {
+  app.post("/leagues/rejoin", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isTeamClaimBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and claim code." });
     }
@@ -140,7 +143,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     return publicLeagueState(state);
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/opponent-configs", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/opponent-configs", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isTeamClaimBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and claim code." });
     }
@@ -157,7 +160,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/settings", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/settings", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isSettingsBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected league settings body." });
     }
@@ -174,7 +177,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cards/buy", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cards/buy", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isBuyCardBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and card id." });
     }
@@ -191,7 +194,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cards/sell", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cards/sell", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isBuyCardBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and card id." });
     }
@@ -208,7 +211,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/teams/livery", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/teams/livery", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isLiveryBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected team livery body." });
     }
@@ -225,7 +228,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/teams/name", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/teams/name", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isTeamNameBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected team name body." });
     }
@@ -242,7 +245,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/decisions", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/decisions", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isDecisionBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a team decision body." });
     }
@@ -259,7 +262,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/qualifying", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/qualifying", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isQualifyingBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected a team qualifying body." });
     }
@@ -276,7 +279,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/resolve", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/resolve", WRITE_RATE_LIMIT, async (request, reply) => {
     try {
       if (!isAdminBody(request.body)) {
         return reply.code(400).send({ error: "Bad Request", message: "Expected an admin proof body." });
@@ -292,7 +295,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/next-grand-prix", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/next-grand-prix", WRITE_RATE_LIMIT, async (request, reply) => {
     try {
       if (!isAdminBody(request.body)) {
         return reply.code(400).send({ error: "Bad Request", message: "Expected an admin proof body." });
@@ -308,7 +311,7 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/restart", async (request, reply) => {
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/restart", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isAdminBody(request.body)) {
       return reply.code(400).send({ error: "Bad Request", message: "Expected an admin proof body." });
     }

@@ -9,6 +9,37 @@ export const PROFILE_EMAIL_KEY = "cr-league-profile-email";
 export const LANGUAGE_KEY = "cr-league-language";
 export const SEASON_RECAP_KEY_PREFIX = "cr-league-season-recap";
 
+export const safeStorage = {
+  get(key: string) {
+    try {
+      return localStorage.getItem(key);
+    } catch {
+      return null;
+    }
+  },
+  set(key: string, value: string) {
+    try {
+      localStorage.setItem(key, value);
+    } catch {
+      // Ignore disabled/full storage; in-memory React state remains authoritative.
+    }
+  },
+  remove(key: string) {
+    try {
+      localStorage.removeItem(key);
+    } catch {
+      // Ignore disabled storage.
+    }
+  },
+  keys() {
+    try {
+      return Array.from({ length: localStorage.length }, (_, index) => localStorage.key(index)).filter((key): key is string => Boolean(key));
+    } catch {
+      return [];
+    }
+  }
+};
+
 export type StoredPlayerClaim = NonNullable<LeagueState["player"]> & {
   leagueId: string;
   leagueName: string;
@@ -77,11 +108,11 @@ export function claimFromState(state: LeagueState): StoredPlayerClaim | null {
 }
 
 export function loadPlayerClaims(): StoredPlayerClaim[] {
-  return parsePlayerClaims(localStorage.getItem(PLAYER_CLAIMS_KEY));
+  return parsePlayerClaims(safeStorage.get(PLAYER_CLAIMS_KEY));
 }
 
 export function loadProfileSession(): ProfileSession | null {
-  const raw = localStorage.getItem(PROFILE_SESSION_KEY);
+  const raw = safeStorage.get(PROFILE_SESSION_KEY);
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw) as ProfileSession;
@@ -92,7 +123,7 @@ export function loadProfileSession(): ProfileSession | null {
 }
 
 export function loadProfileEmail() {
-  return localStorage.getItem(PROFILE_EMAIL_KEY) ?? "";
+  return safeStorage.get(PROFILE_EMAIL_KEY) ?? "";
 }
 
 export function seasonRecapStorageKey(leagueId: string, season: number) {
@@ -100,12 +131,12 @@ export function seasonRecapStorageKey(leagueId: string, season: number) {
 }
 
 export function storeProfileSession(session: ProfileSession) {
-  localStorage.setItem(PROFILE_SESSION_KEY, JSON.stringify(session));
-  localStorage.setItem(PROFILE_EMAIL_KEY, session.profile.email);
+  safeStorage.set(PROFILE_SESSION_KEY, JSON.stringify(session));
+  safeStorage.set(PROFILE_EMAIL_KEY, session.profile.email);
 }
 
 export function storeProfileEmail(email: string) {
-  localStorage.setItem(PROFILE_EMAIL_KEY, email);
+  safeStorage.set(PROFILE_EMAIL_KEY, email);
 }
 
 export function claimsFromProfile(session: ProfileSession): StoredPlayerClaim[] {
@@ -145,15 +176,15 @@ export function upsertPlayerClaim(claims: StoredPlayerClaim[], claim: StoredPlay
 }
 
 export function storePlayerClaims(claims: StoredPlayerClaim[], activeTeamId?: string) {
-  localStorage.setItem(PLAYER_CLAIMS_KEY, JSON.stringify(claims));
+  safeStorage.set(PLAYER_CLAIMS_KEY, JSON.stringify(claims));
   if (activeTeamId) {
-    localStorage.setItem(ACTIVE_PLAYER_CLAIM_KEY, activeTeamId);
+    safeStorage.set(ACTIVE_PLAYER_CLAIM_KEY, activeTeamId);
   } else {
-    localStorage.removeItem(ACTIVE_PLAYER_CLAIM_KEY);
+    safeStorage.remove(ACTIVE_PLAYER_CLAIM_KEY);
   }
 }
 
 export function getActiveClaim(claims: StoredPlayerClaim[]) {
-  const activeTeamId = localStorage.getItem(ACTIVE_PLAYER_CLAIM_KEY);
+  const activeTeamId = safeStorage.get(ACTIVE_PLAYER_CLAIM_KEY);
   return claims.find((claim) => claim.teamId === activeTeamId) ?? claims[0];
 }

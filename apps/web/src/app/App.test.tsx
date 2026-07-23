@@ -129,9 +129,10 @@ describe("App", () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Create profile/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
-    fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
+    fireEvent.change(screen.getByLabelText("Recovery code"), { target: { value: "ABCD1234" } });
+    fireEvent.submit(screen.getByLabelText("Recovery code").closest("form")!);
 
     const checkbox = await screen.findByLabelText("I saved this code");
     expect((checkbox as HTMLInputElement).checked).toBe(false);
@@ -145,9 +146,10 @@ describe("App", () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Create profile/ }));
+    fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
-    fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
+    fireEvent.change(screen.getByLabelText("Recovery code"), { target: { value: "ABCD1234" } });
+    fireEvent.submit(screen.getByLabelText("Recovery code").closest("form")!);
 
     fireEvent.click(await screen.findByLabelText("I saved this code"));
     fireEvent.click(screen.getByRole("button", { name: "Got it" }));

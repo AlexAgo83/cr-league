@@ -1,10 +1,10 @@
 ## item_207_split_leagues_store_into_lifecycle_modules_behind_a_barrel - Split leagues store into lifecycle modules behind a barrel
 > From version: 0.3.27
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Backend maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -60,3 +60,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Important maintainability work, but behavior-neutral and lower risk than active correctness/security remediation.
+
+# Tasks
+- `task_092_orchestrate_leagues_store_modularization`
+
+# Notes
+- Task `task_092_orchestrate_leagues_store_modularization` was finished via `logics-manager flow finish task` on 2026-07-23.

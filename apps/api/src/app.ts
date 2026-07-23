@@ -1,4 +1,5 @@
 import cors from "@fastify/cors";
+import rateLimit from "@fastify/rate-limit";
 import type { PrismaClient } from "@prisma/client";
 import Fastify from "fastify";
 import type { ApiConfig } from "./config.js";
@@ -32,6 +33,7 @@ export async function buildApp(config: ApiConfig, dependencies: AppDependencies 
       callback(null, !origin || webOrigins.has(origin));
     }
   });
+  await app.register(rateLimit, { global: false });
 
   await registerHealthRoutes(app);
   await registerSimulationRoutes(app);

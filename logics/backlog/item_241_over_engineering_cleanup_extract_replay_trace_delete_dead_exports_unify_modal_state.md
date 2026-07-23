@@ -1,10 +1,10 @@
 ## item_241_over_engineering_cleanup_extract_replay_trace_delete_dead_exports_unify_modal_state - Over-engineering cleanup: extract replay trace, delete dead exports, unify modal state
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Complexity reduction
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -34,6 +34,10 @@
 # AC Traceability
 - request-AC7 -> This backlog slice. Proof: AC1: Cosmetic replay-trace code lives in its own module and existing tests pass unchanged.
 - request-AC8 -> This backlog slice. Proof: AC2: The dead utils exports are removed with no remaining references.
+- request-AC3 -> This backlog slice. Evidence needed: All localStorage access in apps/web goes through a safe wrapper; the app starts and operates without throwing when localStorage getItem/setItem throw (disabled or quota-exceeded), verified by a test that stubs a throwing storage.
+- request-AC4 -> This backlog slice. Evidence needed: normalizeEmail rejects any control/whitespace character so no tab/newline can reach the mail header, and POST /profiles returns a neutral response that no longer reveals whether an email is already registered.
+- request-AC5 -> This backlog slice. Evidence needed: Unauthenticated write routes are IP rate-limited, and the admin profile/league list endpoints filter and paginate at the database level (where/skip/take) rather than loading whole tables into memory.
+- request-AC6 -> This backlog slice. Evidence needed: Removing a league's owner human team no longer permanently 403s resolve/next-grand-prix/restart (ownerTeamId is reassigned or falls back to another human claim), and validateReplayTrace has negative tests asserting its specific error strings.
 
 # Decision framing
 - Product framing: Not needed
@@ -54,3 +58,9 @@
 # Priority
 - Priority: Low
 - Rationale: Cleanup reduces maintenance risk, but it should land after correctness/security fixes so it does not obscure behavior changes.
+
+# Tasks
+- `task_100_orchestrate_review_findings_remediation`
+
+# Notes
+- Task `task_100_orchestrate_review_findings_remediation` was finished via `logics-manager flow finish task` on 2026-07-23.

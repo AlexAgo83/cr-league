@@ -1,9 +1,9 @@
 ## req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup - Review-findings remediation: replay determinism, dead card effects, client storage safety, API security and scale, admin config integrity, and over-engineering cleanup
 > From version: 0.4.1
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95
+> Confidence: 90
 > Complexity: Medium
 > Theme: Review-findings remediation
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -39,6 +39,16 @@
 - AC6: Removing a league's owner human team no longer permanently 403s resolve/next-grand-prix/restart (ownerTeamId is reassigned or falls back to another human claim), and validateReplayTrace has negative tests asserting its specific error strings.
 - AC7: Cosmetic replay-trace generation lives in its own module out of the simulation core, the dead normalizeRaceTraits/clampNumber exports are gone, and App.tsx's mutually-exclusive dialogs use a single activeModal state.
 - AC8: npm run typecheck, npm test, npm run build, npm run lint, and npm run logics:validate all pass, and no existing test is deleted to make them pass.
+
+# AC Traceability
+- AC1 -> `task_100_orchestrate_review_findings_remediation`. Proof: `packages/shared/src/simulation/prng.test.ts` verifies key-order-independent weighted selection.
+- AC2 -> `task_100_orchestrate_review_findings_remediation`. Proof: `simulateRace.ts` classification uses `score + positionDelta`; decision and balance validation are recorded in the task.
+- AC3 -> `task_100_orchestrate_review_findings_remediation`. Proof: `safeStorage` wrapper plus throwing-storage test in `appStorage.test.ts`.
+- AC4 -> `task_100_orchestrate_review_findings_remediation`. Proof: normalizeEmail control/whitespace tests plus neutral profile create/duplicate tests.
+- AC5 -> `task_100_orchestrate_review_findings_remediation`. Proof: write route rate limit config and test; admin store uses Prisma where/skip/take.
+- AC6 -> `task_100_orchestrate_review_findings_remediation`. Proof: stale owner repair test plus `validateReplayTrace.test.ts` negative cases.
+- AC7 -> `task_100_orchestrate_review_findings_remediation`. Proof: `replayTrace.ts`, removed dead API utils exports, and `App.tsx` `activeModal`.
+- AC8 -> `task_100_orchestrate_review_findings_remediation`. Proof: task validation records passing `typecheck`, `test`, `build`, `lint`, bounded `balance:sim`, and `logics:validate`.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

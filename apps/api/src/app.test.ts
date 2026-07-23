@@ -2,6 +2,19 @@ import { describe, expect, it } from "vitest";
 import { createMemoryDb } from "./testMemoryDb.js";
 import { CARD_PRICE, CARD_PRICES, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit } from "@cr-league/shared";
 import { createTestApp } from "./app.testHelpers.js";
+import type { RecoveryMailer } from "./mailer.js";
+
+function recordingMailer() {
+  const sent: Array<{ email: string; code: string }> = [];
+  const mailer: RecoveryMailer = {
+    active: true,
+    async sendRecoveryCode(email, code) {
+      sent.push({ email, code });
+      return true;
+    }
+  };
+  return { mailer, sent };
+}
 
 describe("api app", () => {
   it("gates opponent configuration reveal at the API boundary", async () => {
@@ -672,7 +685,7 @@ describe("api app", () => {
     }
   });
 
-  it("rejects admin actions when the league owner is missing", async () => {
+  it("repairs admin actions when the league owner is missing", async () => {
     const db = createMemoryDb();
     const app = await createTestApp(db);
 
@@ -693,11 +706,11 @@ describe("api app", () => {
 
     await app.close();
 
-    expect(settingsResponse.statusCode).toBe(403);
-    expect(league?.ownerTeamId).toBeNull();
+    expect(settingsResponse.statusCode).toBe(200);
+    expect(league?.ownerTeamId).toBe(created.player.teamId);
   });
 
-  it("rejects admin actions when the league owner is dangling", async () => {
+  it("repairs admin actions when the league owner is dangling", async () => {
     const db = createMemoryDb();
     const app = await createTestApp(db);
 
@@ -718,8 +731,8 @@ describe("api app", () => {
 
     await app.close();
 
-    expect(settingsResponse.statusCode).toBe(403);
-    expect(league?.ownerTeamId).toBe("missing-team");
+    expect(settingsResponse.statusCode).toBe(200);
+    expect(league?.ownerTeamId).toBe(created.player.teamId);
   });
 
   it("rejects resolving before the player submits a directive", async () => {
@@ -833,33 +846,36 @@ describe("api app", () => {
   });
 
   it("requires profile proof when creating or joining with a profile id", async () => {
-    const app = await createTestApp(createMemoryDb());
+    const db = createMemoryDb();
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(db, undefined, [], "http://localhost:4873", mailer);
 
-    const profileResponse = await app.inject({
+    await app.inject({
       method: "POST",
       url: "/profiles",
       payload: { email: "pilot@example.test" }
     });
-    const profile = profileResponse.json();
+    const profile = await db.profile.findUnique({ where: { email: "pilot@example.test" } });
+    const recoveryCode = sent[0]?.code;
     const bareCreateResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id }
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile!.id }
     });
     const createResponse = await app.inject({
       method: "POST",
       url: "/leagues",
-      payload: { name: "Office League", teamName: "Volt Union", profileId: profile.profile.id, recoveryCode: profile.recoveryCode }
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile!.id, recoveryCode }
     });
     const bareJoinResponse = await app.inject({
       method: "POST",
       url: "/leagues/join",
-      payload: { code: createResponse.json().league.code, teamName: "Late Apex", profileId: profile.profile.id }
+      payload: { code: createResponse.json().league.code, teamName: "Late Apex", profileId: profile!.id }
     });
     const wrongJoinResponse = await app.inject({
       method: "POST",
       url: "/leagues/join",
-      payload: { code: createResponse.json().league.code, teamName: "Late Apex", profileId: profile.profile.id, recoveryCode: "WRONG" }
+      payload: { code: createResponse.json().league.code, teamName: "Late Apex", profileId: profile!.id, recoveryCode: "WRONG" }
     });
 
     await app.close();

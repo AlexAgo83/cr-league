@@ -383,6 +383,32 @@ describe("simulateRace", () => {
     expect(result.events.some((event) => event.cardId === "defensive_order" && event.type === "held_position")).toBe(true);
   });
 
+  it("uses card positionDelta in final classification", () => {
+    const result = simulateRace({
+      ...baseRace,
+      seed: "pd-0",
+      participants: [
+        {
+          ...baseRace.participants[0]!,
+          teamId: "boost",
+          teamName: "Boost GP",
+          standingsRank: 2,
+          decision: { approach: "prudent", preparation: "reliability", cardId: "launch_boost" }
+        },
+        {
+          ...baseRace.participants[1]!,
+          teamId: "plain",
+          teamName: "Plain GP",
+          standingsRank: 1,
+          decision: { approach: "aggressive", preparation: "speed" }
+        }
+      ]
+    });
+
+    expect(result.events).toContainEqual(expect.objectContaining({ teamId: "boost", cardId: "launch_boost", positionDelta: 8 }));
+    expect(result.classification[0]?.teamId).toBe("boost");
+  });
+
   it("applies the extended race cards", () => {
     const participants = [
       { teamId: "wing", teamName: "Wing GP", cardId: "adjustable_wing" },

@@ -67,6 +67,16 @@ export function createMemoryDb(): PrismaClient {
   const decisions: DecisionRow[] = [];
   let nextId = 1;
   const id = (prefix: string) => `${prefix}_${nextId++}`;
+  type AdminMemoryWhere<T> = { OR?: Array<Partial<Record<keyof T, { contains: string }>>> };
+  const matchesAdminMemoryWhere = <T extends Record<string, unknown>>(row: T, where?: AdminMemoryWhere<T>) =>
+    !where?.OR?.length ||
+    where.OR.some((clause) =>
+      Object.entries(clause).some(([field, condition]) => {
+        const value = row[field];
+        const needle = typeof condition === "object" && condition && "contains" in condition ? String(condition.contains).toLowerCase() : "";
+        return typeof value === "string" && Boolean(needle) && value.toLowerCase().includes(needle);
+      })
+    );
 
   return {
     league: {
@@ -124,16 +134,24 @@ export function createMemoryDb(): PrismaClient {
         };
       },
       findMany: async ({
-        include
+        where,
+        include,
+        skip = 0,
+        take
       }: {
         orderBy?: { createdAt?: string };
+        where?: AdminMemoryWhere<LeagueRow>;
+        skip?: number;
+        take?: number;
         include?: {
           teams?: boolean;
           grandPrixes?: { orderBy?: Array<{ season?: string; round?: string }>; take?: number };
         };
       }) =>
         [...leagues]
+          .filter((league) => matchesAdminMemoryWhere(league, where))
           .sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime())
+          .slice(skip, take === undefined ? undefined : skip + take)
           .map((league) => ({
             ...league,
             teams: include?.teams ? teams.filter((team) => team.leagueId === league.id) : undefined,
@@ -144,6 +162,7 @@ export function createMemoryDb(): PrismaClient {
                   .slice(0, include.grandPrixes.take)
               : undefined
           })),
+      count: async ({ where }: { where?: AdminMemoryWhere<LeagueRow> } = {}) => leagues.filter((league) => matchesAdminMemoryWhere(league, where)).length,
       update: async ({
         where,
         data
@@ -208,13 +227,21 @@ export function createMemoryDb(): PrismaClient {
         };
       },
       findMany: async ({
-        include
+        where,
+        include,
+        skip = 0,
+        take
       }: {
         orderBy?: { createdAt?: string };
+        where?: AdminMemoryWhere<ProfileRow>;
+        skip?: number;
+        take?: number;
         include?: { teams?: { include?: { league?: boolean } } };
       }) =>
         [...profiles]
+          .filter((profile) => matchesAdminMemoryWhere(profile, where))
           .sort((left, right) => right.createdAt.getTime() - left.createdAt.getTime())
+          .slice(skip, take === undefined ? undefined : skip + take)
           .map((profile) => ({
             ...profile,
             teams: include?.teams
@@ -226,6 +253,7 @@ export function createMemoryDb(): PrismaClient {
                   }))
               : undefined
           })),
+      count: async ({ where }: { where?: AdminMemoryWhere<ProfileRow> } = {}) => profiles.filter((profile) => matchesAdminMemoryWhere(profile, where)).length,
       update: async ({ where, data }: { where: { id: string }; data: Partial<Pick<ProfileRow, "recoveryCodeHash" | "recoveryEmailSentAt">> }) => {
         const profile = profiles.find((candidate) => candidate.id === where.id);
         if (!profile) {

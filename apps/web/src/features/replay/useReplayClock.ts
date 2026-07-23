@@ -1,5 +1,6 @@
 import { RACE_SEGMENTS, type RaceResult, type RaceSegment } from "@cr-league/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { safeStorage } from "../../app/appStorage.js";
 import { REPLAY_SPEED_KEY } from "./replayMath.js";
 
 export type ReplayClockSnapshot = {
@@ -149,7 +150,7 @@ export function useReplayClock({
   }, [playing, speed, replayEnd, updateLive]);
 
   const setReplaySpeed = useCallback((nextSpeed: ReplaySpeed) => {
-    localStorage.setItem(REPLAY_SPEED_KEY, String(nextSpeed));
+    safeStorage.set(REPLAY_SPEED_KEY, String(nextSpeed));
     setSpeed(nextSpeed);
   }, []);
 
@@ -186,7 +187,7 @@ export function useReplayClock({
 }
 
 function savedReplaySpeed(): ReplaySpeed {
-  const saved = Number(localStorage.getItem(REPLAY_SPEED_KEY));
+  const saved = Number(safeStorage.get(REPLAY_SPEED_KEY));
   return REPLAY_SPEEDS.includes(saved as ReplaySpeed) ? saved as ReplaySpeed : 1;
 }
 

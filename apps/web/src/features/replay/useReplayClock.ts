@@ -10,7 +10,6 @@ export type ReplayClockSnapshot = {
 export type ReplaySpeed = 1 | 2 | 4 | 8;
 const REPLAY_SPEED_MULTIPLIER = 2;
 export const REPLAY_STATE_UPDATE_SECONDS = 0.1;
-const REPLAY_LAUNCH_LIVE_SECONDS = 2;
 const REPLAY_SPEEDS: ReplaySpeed[] = [1, 2, 4, 8];
 
 type ReplayClockOptions = {
@@ -167,7 +166,7 @@ export function useReplayClock({
       svg.setCurrentTime(clock.current);
       if (progressRef.current) progressRef.current.style.width = `${(clock.current / replayEnd) * 100}%`;
       if (rangeRef.current && !scrubbingRef.current) rangeRef.current.value = String(clock.current);
-      const publishState = clock.current <= startHoldSeconds + REPLAY_LAUNCH_LIVE_SECONDS || clock.current >= replayEnd || shouldPublishReplayState(lastPublishedTimeRef.current, clock.current);
+      const publishState = clock.current >= replayEnd || shouldPublishReplayState(lastPublishedTimeRef.current, clock.current);
       updateLive(clock.current, true, replayDeltaSeconds, publishState);
       if (clock.current >= replayEnd) {
         setPlaying(false);
@@ -176,7 +175,7 @@ export function useReplayClock({
       frame = requestAnimationFrame(tick);
     });
     return () => cancelAnimationFrame(frame);
-  }, [playing, speed, replayEnd, startHoldSeconds, updateLive]);
+  }, [playing, speed, replayEnd, updateLive]);
 
   const setReplaySpeed = useCallback((nextSpeed: ReplaySpeed) => {
     safeStorage.set(REPLAY_SPEED_KEY, String(nextSpeed));

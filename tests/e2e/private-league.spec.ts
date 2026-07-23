@@ -33,6 +33,14 @@ async function mockLeagueApi(page: Page) {
     if (path === "/profiles") {
       return route.fulfill({
         json: {
+          ok: true,
+          message: "If a profile exists for this email, a fresh recovery code will be sent."
+        }
+      });
+    }
+    if (path === "/profiles/recover") {
+      return route.fulfill({
+        json: {
           profile: { id: "profile_1", email: "pilot@example.test" },
           recoveryCode: "ABCD1234",
           teams: []
@@ -487,7 +495,10 @@ async function createProfile(page: Page) {
   await page.getByRole("button", { name: /Create profile/ }).click();
   await page.getByLabel("Email").fill("pilot@example.test");
   await page.getByRole("button", { name: "Create profile" }).click();
-  await expect(page.getByText("Profile created. Save your recovery code.")).toBeVisible();
+  await expect(page.getByText("If a profile exists for this email, a fresh recovery code will be sent.")).toBeVisible();
+  await page.getByLabel("Recovery code").fill("ABCD1234");
+  await page.getByRole("button", { name: "Recover profile" }).click();
+  await expect(page.getByText("Profile recovered.")).toBeVisible();
   await dismissOnboarding(page);
   await expect(page.getByRole("button", { name: "Profile menu" })).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator(".profile-menu-panel")).toHaveCount(0);

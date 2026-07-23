@@ -48,9 +48,9 @@ describe("buildPlanRecommendation", () => {
   it("returns signed trait impact values", () => {
     const impacts = traitImpacts({ ...baseForm, approach: "aggressive", preparation: "speed", pitStrategy: "heavy_pack", cardId: "rain_grip" }, "rain_grip", (key) => t(key, "en"));
 
-    expect(total(impacts.pace)).toBe(13);
-    expect(total(impacts.control)).toBe(-3);
-    expect(total(impacts.reliability)).toBe(-4);
+    expect(total(impacts.pace)).toBe(11);
+    expect(total(impacts.control)).toBe(-4);
+    expect(total(impacts.reliability)).toBe(-5);
     expect(total(impacts.weatherReadiness)).toBe(0);
     expect(total(impacts.aggression)).toBe(16);
   });

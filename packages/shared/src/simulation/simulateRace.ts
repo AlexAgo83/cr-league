@@ -313,7 +313,7 @@ function maybeAddPitStopEvent(state: TeamState, segment: RaceSegment, events: Ra
   const stopCost = strategy === "mini_pack" ? 4 : 6;
   events.push(createMiniInfoEvent(events.length, state, segment, "pit_imminent", `${state.participant.teamName} approaches the pit window`, ["pit_stop", strategy]));
   state.elapsedTime += stopCost;
-  state.scores.score += strategy === "mini_pack" ? 4 : 0;
+  state.scores.score += strategy === "mini_pack" ? 6 : 0;
   state.resultTags.add(strategy);
   events.push({
     id: "",

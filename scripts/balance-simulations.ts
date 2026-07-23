@@ -130,6 +130,8 @@ if (args.json) {
   console.log(`\nWrote ${args.json}`);
 }
 
+checkGates(circuitRows, pitRows);
+
 function runStrategy(candidate: Strategy): Row {
   const totals = emptyTotals();
 
@@ -176,12 +178,16 @@ function addRun(totals: Totals, candidate: Strategy, circuit: (typeof selectedCi
   const result = simulateRace({
     seed,
     grandPrixName: String(circuit.layoutKey),
-    primaryTrait: primaryTrait(circuit.traits),
-    secondaryTrait: secondaryTrait(circuit.traits),
-    traits: circuit.traits,
-    forecast: forecastFor(circuit.likelyWeather),
-    participants
-  });
+      primaryTrait: primaryTrait(circuit.traits),
+      secondaryTrait: secondaryTrait(circuit.traits),
+      traits: circuit.traits,
+      trackLengthMeters: circuit.trackLengthMeters,
+      laps: circuit.laps,
+      pitLaneProgress: circuit.pitLaneProgress,
+      speedProfile: circuit.speedProfile,
+      forecast: forecastFor(circuit.likelyWeather),
+      participants
+    });
   const entry = result.classification.find((item) => item.teamId === "candidate");
   if (!entry) throw new Error("Candidate missing from classification.");
   const grid = participants.find((participant) => participant.teamId === "candidate")?.standingsRank ?? 0;
@@ -420,8 +426,36 @@ function parseArgs() {
     circuits: Math.min(CITY_CIRCUITS.length, Number(values.get("circuits") ?? CITY_CIRCUITS.length)),
     limit: Number(values.get("limit") ?? 12),
     outlier: Number(values.get("outlier") ?? 2),
-    json: values.get("json")
+    json: values.get("json"),
+    maxGapPct: optionalNumber(values.get("max-gap-pct")),
+    maxPitPointsSpread: optionalNumber(values.get("max-pit-points-spread"))
   };
+}
+
+function checkGates(circuits: Row[], pits: Row[]) {
+  const violations: string[] = [];
+
+  if (args.maxGapPct !== undefined) {
+    violations.push(...circuits.filter((row) => row.avgGapPct > args.maxGapPct!).map((row) => `${row.strategy} gap% ${row.avgGapPct} > ${args.maxGapPct}`));
+  }
+
+  if (args.maxPitPointsSpread !== undefined && pits.length > 1) {
+    const pitPoints = pits.map((row) => row.avgPoints);
+    const spread = round(Math.max(...pitPoints) - Math.min(...pitPoints));
+    if (spread > args.maxPitPointsSpread) violations.push(`pit strategy points spread ${spread} > ${args.maxPitPointsSpread}`);
+  }
+
+  if (!violations.length) return;
+  console.error("\nBalance gate failed:");
+  for (const violation of violations) console.error(`- ${violation}`);
+  process.exitCode = 1;
+}
+
+function optionalNumber(value: string | undefined) {
+  if (value === undefined) return undefined;
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) throw new Error(`Expected numeric argument, got ${value}`);
+  return parsed;
 }
 
 function round(value: number) {

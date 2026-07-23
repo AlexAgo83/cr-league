@@ -540,7 +540,7 @@ function chronoCircuitFactor(input: RaceInput, parameters: ChronoMotionParameter
 
 function chronoPitLoss(state: ChronoTimingParticipant, snapshots: ChronoSegmentSnapshot[], parameters: ChronoMotionParameters) {
   const stopLoss = snapshots.reduce((sum, snapshot) => sum + (snapshot.pitCosts.get(state.participant.teamId) ?? 0), 0);
-  const heavyPackTimeTradeoff = pitStrategy(state.participant.decision) === "heavy_pack" ? 1.9 : 0;
+  const heavyPackTimeTradeoff = pitStrategy(state.participant.decision) === "heavy_pack" ? 4 : 0;
   return Math.max(0, (stopLoss + heavyPackTimeTradeoff) / parameters.pitEfficiency);
 }
 

@@ -16,9 +16,9 @@ export const PREPARATION_DELTAS: Record<TechnicalPreparation, DecisionDeltas> = 
 };
 
 export const PIT_STRATEGY_DELTAS: Record<PitStrategy, DecisionDeltas> = {
-  heavy_pack: { pace: -12, reliability: 5, control: 3 },
+  heavy_pack: { pace: -14, reliability: 4, control: 2 },
   standard: {},
-  mini_pack: { pace: 5, aggression: 2, reliability: -6 }
+  mini_pack: { pace: 6, aggression: 3, reliability: -6 }
 };
 
 export const CARD_DELTAS: Partial<Record<CardId, DecisionDeltas>> = {

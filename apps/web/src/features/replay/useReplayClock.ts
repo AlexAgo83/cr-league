@@ -95,8 +95,6 @@ export function useReplayClock({
   const [positionPops, setPositionPops] = useState<Record<string, { delta: number; key: number }>>({});
   const currentRaceProgress = replayProgressAt(clock.current, raceDuration, startHoldSeconds);
 
-  snapshotRef.current = snapshot;
-
   const updateLive = useCallback((time: number, animatePositions = true, elapsedSeconds = 1 / 60, publishState = true) => {
     const progress = replayProgressAt(time, raceDuration, startHoldSeconds);
     const raceTime = Math.max(0, time - startHoldSeconds);

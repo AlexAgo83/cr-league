@@ -55,6 +55,7 @@ type Row = {
   cardEventRate: number;
   avgDuration: number;
   avgGapSpread: number;
+  avgGapPct: number;
   favoriteWinRate: number;
   upsetRate: number;
   avgPitStops: number;
@@ -235,6 +236,7 @@ function rowFromTotals(strategy: string, totals: Totals): Row {
     cardEventRate: pct(totals.cardEvents / totals.races),
     avgDuration: round(totals.duration / totals.races),
     avgGapSpread: round(totals.gapSpread / totals.races),
+    avgGapPct: pct(totals.gapSpread / Math.max(1, totals.duration)),
     favoriteWinRate: pct(totals.favoriteWins / Math.max(1, totals.favoriteRaces)),
     upsetRate: pct(totals.upsets / totals.races),
     avgPitStops: round(totals.pitStops / totals.races)
@@ -360,6 +362,7 @@ function averageRows(strategyName: string, rows: Row[]): Row {
     cardEventRate: weighted(rows, "cardEventRate", races),
     avgDuration: weighted(rows, "avgDuration", races),
     avgGapSpread: weighted(rows, "avgGapSpread", races),
+    avgGapPct: weighted(rows, "avgGapPct", races),
     favoriteWinRate: weighted(rows, "favoriteWinRate", races),
     upsetRate: weighted(rows, "upsetRate", races),
     avgPitStops: weighted(rows, "avgPitStops", races)
@@ -396,6 +399,7 @@ function printTable(title: string, data: Row[]) {
       "card%": row.cardEventRate,
       dur: row.avgDuration,
       gap: row.avgGapSpread,
+      "gap%": row.avgGapPct,
       "favWin%": row.favoriteWinRate,
       "upset%": row.upsetRate,
       pits: row.avgPitStops

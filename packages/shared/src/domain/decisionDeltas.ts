@@ -16,17 +16,16 @@ export const PREPARATION_DELTAS: Record<TechnicalPreparation, DecisionDeltas> = 
 };
 
 export const PIT_STRATEGY_DELTAS: Record<PitStrategy, DecisionDeltas> = {
-  heavy_pack: { pace: -14, reliability: 4, control: 2 },
+  heavy_pack: { pace: -12, reliability: 5, control: 3 },
   standard: {},
-  mini_pack: { pace: 8, aggression: 4, reliability: -5 }
+  mini_pack: { pace: 5, aggression: 2, reliability: -6 }
 };
 
 export const CARD_DELTAS: Partial<Record<CardId, DecisionDeltas>> = {
   soft_tires: { pace: 8, aggression: 6, reliability: -10 },
-  defensive_order: { control: 6, reliability: 3, aggression: -11, pace: -8 },
-  adjustable_wing: { pace: 4, aggression: 5, reliability: -6 },
-  economy_mode: { pace: -4, control: 6, reliability: 2 },
+  defensive_order: { control: 8, reliability: 5, aggression: -6, pace: -3 },
+  adjustable_wing: { pace: 3, aggression: 3, reliability: -7 },
+  economy_mode: { pace: -2, control: 7, reliability: 4 },
   hard_tires: { pace: -6, reliability: 7, control: 3 },
   calculated_attack: { aggression: 7 }
 };
-

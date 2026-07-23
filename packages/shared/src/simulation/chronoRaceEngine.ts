@@ -74,15 +74,15 @@ const CARD_MOTION_EFFECTS: Record<CardId, Partial<ChronoMotionParameters>> = {
   rain_grip: { wetGrip: 0.09, cornering: 0.015 },
   fleet_maintenance: { reliability: 0.08, consistency: 0.025 },
   launch_boost: { acceleration: 0.12, attack: 0.025, reliability: -0.025 },
-  urban_draft: { attack: 0.08, topSpeed: 0.02 },
+  urban_draft: { attack: 0.055, topSpeed: 0.015 },
   final_surge: { topSpeed: 0.05, attack: 0.045, reliability: -0.035 },
   fleet_sponsorship: { topSpeed: -0.012, consistency: 0.012 },
   soft_tires: { acceleration: 0.04, cornering: 0.07, reliability: -0.045 },
   qualifying_focus: { acceleration: 0.035, consistency: 0.015 },
-  defensive_order: { defense: 0.09, consistency: 0.035, attack: -0.045 },
-  adjustable_wing: { topSpeed: 0.035, cornering: 0.03, braking: -0.015 },
+  defensive_order: { defense: 0.12, consistency: 0.05, attack: -0.02 },
+  adjustable_wing: { topSpeed: 0.025, cornering: 0.025, braking: -0.02 },
   rain_mapping: { wetGrip: 0.075, consistency: 0.025 },
-  economy_mode: { topSpeed: -0.018, reliability: 0.03, pitEfficiency: 0.015 },
+  economy_mode: { topSpeed: -0.01, reliability: 0.04, pitEfficiency: 0.025 },
   pit_relay: { pitEfficiency: 0.09, reliability: 0.045, defense: 0.02 },
   hard_tires: { reliability: 0.065, braking: 0.03, cornering: -0.018 },
   calculated_attack: { attack: 0.08, braking: 0.02 }
@@ -174,8 +174,8 @@ export function createChronoFinalTimes(
       const parameters = motionParametersForParticipant(state.participant, state.scores);
       const profileFactor = chronoProfileFactor(options.speedProfile, options.weather, parameters, options.input);
       const circuitFactor = chronoCircuitFactor(options.input, parameters);
-      const racecraftFactor = 1 + (parameters.attack - 1) * 0.08 + (parameters.defense - 1) * 0.06 + (parameters.consistency - 1) * 0.05;
-      const scoreFactor = 1 + Math.max(-0.16, Math.min(0.22, classificationScore(state) / 520));
+      const racecraftFactor = 1 + (parameters.attack - 1) * 0.06 + (parameters.defense - 1) * 0.08 + (parameters.consistency - 1) * 0.05;
+      const scoreFactor = 1 + Math.max(-0.11, Math.min(0.16, classificationScore(state) / 620));
       const consistencyNoise = (options.next() - 0.5) * 2.6 * (2 - parameters.consistency);
       const pitLoss = chronoPitLoss(state, snapshots, parameters);
       const riskLoss = state.resultTags.has("mechanical_scare") ? 3.2 / parameters.reliability : 0;
@@ -540,7 +540,7 @@ function chronoCircuitFactor(input: RaceInput, parameters: ChronoMotionParameter
 
 function chronoPitLoss(state: ChronoTimingParticipant, snapshots: ChronoSegmentSnapshot[], parameters: ChronoMotionParameters) {
   const stopLoss = snapshots.reduce((sum, snapshot) => sum + (snapshot.pitCosts.get(state.participant.teamId) ?? 0), 0);
-  const heavyPackTimeTradeoff = pitStrategy(state.participant.decision) === "heavy_pack" ? 2.4 : 0;
+  const heavyPackTimeTradeoff = pitStrategy(state.participant.decision) === "heavy_pack" ? 1.9 : 0;
   return Math.max(0, (stopLoss + heavyPackTimeTradeoff) / parameters.pitEfficiency);
 }
 

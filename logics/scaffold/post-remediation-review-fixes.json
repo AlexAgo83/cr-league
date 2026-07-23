@@ -1,0 +1,208 @@
+{
+  "title": "Post-remediation review fixes: replay determinism comparator, positionDelta test/tiebreak coherence, account-enumeration neutrality, and replay-validator/PRNG test depth",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup.md",
+    "packages/shared/src/simulation/prng.ts",
+    "packages/shared/src/simulation/prng.test.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/simulation/simulateRace.test.ts",
+    "packages/shared/src/simulation/validateReplayTrace.ts",
+    "packages/shared/src/simulation/validateReplayTrace.test.ts",
+    "apps/api/src/features/leagues/storeCore.ts",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/web/src/app/App.testHelpers.ts",
+    "apps/web/src/app/App.tsx",
+    "Second review sweep on 2026-07-23 after req_099 landed (HEAD 094889d, release 0.4.1). The req_099 remediation was genuinely implemented and verified: safeStorage wrapper (all localStorage routed through one choke point, degrades gracefully), email control-char rejection in normalizeEmail, @fastify/rate-limit on writes, admin pagination pushed to the DB (skip/take/count), ownerTeamId fallback+reassign (storeCore.ts:1053), replayTrace.ts extraction (byte-identical, behavior-preserving), dead exports removed, leagues store modularized, and positionDelta is now WIRED into finishing order via classificationScore. Baseline is green: typecheck, lint, 283 tests pass. This sweep targets defects the implementation introduced or left open. Findings. (1) DETERMINISM (self-defeating): prng.ts:21 pickWeightedWithNext sorts weight keys with left.localeCompare(right); localeCompare is ICU/locale-dependent in Node, so two environments can order keys differently and diverge for the same seed - reintroducing the exact cross-environment non-determinism the sort was added (in req_099 item 235) to eliminate. (2) VACUOUS TEST: simulateRace.test.ts:386 'uses card positionDelta in final classification' does not test positionDelta - the launch_boost card grants +26 to scores.score AND +8 to positionDelta, so the +26 score bonus alone makes 'boost' finish first; deleting the positionDelta wiring (classificationScore = scores.score + positionDelta at simulateRace.ts:909) would not fail this test. (3) TIEBREAK INCOHERENCE: simulateRace.ts:407 createReplayTracePoint breaks elapsed-time ties with right.scores.score - left.scores.score, while classification/final trace order (simulateRace.ts:191, 301, 881) use classificationScore; a tie can order a mid-race trace point inconsistently with the final classification. (4) ACCOUNT ENUMERATION (open half of req_099 item 238): createProfile (storeCore.ts) still throws 'This email already has a profile. Recover it with your code.' for an existing email, while requestRecoveryCode is deliberately constant-response ({ ok: true } regardless of existence), so POST /profiles remains an existence oracle even though it is rate-limited by WRITE_RATE_LIMIT. (5) VALIDATOR TEST DEPTH: validateReplayTrace.test.ts covers ~5 of ~13 error branches; untested nontrivial branches include 'car speed changes too abruptly', 'car progress goes backwards' (distinct from the jump check), and 'overtake phases missing'. (6) PRNG TEST DEPTH: prng.test.ts:91 asserts determinism with a single draw on a single seed, which can false-pass if that one seed's cursor lands on the same key under both key orderings; it does not loop seeds or sequential draws. (7) MINOR: App.testHelpers.ts:5 uses raw localStorage.setItem, bypassing safeStorage and breaking the total invariant (test-only); App.tsx:107 collapsed ~10 modal booleans into one activeModal state machine so opening modal B silently closes A, and only the restart-from-league-controls nesting is handled via modalReturnRef; positionDelta (a 'positions gained' unit) is summed directly into scores.score (a points unit) at simulateRace.ts:909, which should be confirmed as an intended perturbation rather than a units mismatch. This corpus is written to be executed end-to-end by another AI agent."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Post-remediation review fixes",
+    "needs": [
+      "Restore the cross-environment determinism guarantee by replacing the locale-dependent key comparator in weighted selection with a stable byte comparator.",
+      "Make the positionDelta wiring genuinely tested by exporting and unit-testing classificationScore, and make the mid-race trace tiebreak consistent with the final classification.",
+      "Decide and apply the account-enumeration posture for profile creation so POST /profiles is no longer an existence oracle, or consciously keep it - recording the decision.",
+      "Deepen the replay-validator and PRNG determinism tests so the nontrivial error branches and multi-seed stability are actually pinned.",
+      "Clean up the minor invariant break (test-helper raw storage) and confirm the activeModal and positionDelta-units assumptions."
+    ],
+    "context": [
+      "prng.ts:21: replace `.sort(([left], [right]) => left.localeCompare(right))` with a byte-stable comparator `.sort(([left], [right]) => (left < right ? -1 : left > right ? 1 : 0))`. localeCompare depends on the ICU/locale build of Node; the byte comparator is deterministic everywhere. Add/extend a test proving two forecasts with equal weights but reordered keys resolve identically for the same seed (see the PRNG test-depth item).",
+      "classificationScore (simulateRace.ts:909) is currently a private `state.scores.score + state.positionDelta`. Export it (typed on Pick<TeamState, 'scores' | 'positionDelta'> so it is callable from tests) and add a direct unit test (e.g. classificationScore({ scores: { score: 10, ... }, positionDelta: 5 }) === 15) so removing `+ state.positionDelta` breaks a test. Keep the existing integration test as a complement but do not rely on it to pin the wiring.",
+      "createReplayTracePoint (simulateRace.ts:407): change the elapsed-time tiebreak from `|| right.scores.score - left.scores.score` to `|| classificationScore(right) - classificationScore(left)` so mid-race trace ordering matches the final classification's ordering rule. Confirm no replay-trace snapshot test needs regenerating.",
+      "Account enumeration (createProfile, storeCore.ts): this needs an explicit A/B decision recorded in the task. Option A (recommended): on an existing email, mirror requestRecoveryCode - re-issue and email the recovery code to the real owner (subject to the same cooldown) and return the same neutral shape the client already treats as 'check your email', removing the oracle; this fits the web flow that already switched createProfile to storeProfileEmail + 'recover' mode. Verify the client no longer needs the plaintext recoveryCode in the response (it arrives by email). Option B: keep the distinct message, accepting the leak, since WRITE_RATE_LIMIT already throttles it. Whichever is chosen, keep new-email signup working and the DB-level duplicate guard intact.",
+      "validateReplayTrace tests: add hand-corrupted traces exercising at least the three nontrivial branches - speed changes too abruptly, progress goes backwards (distinct from the oversized-jump branch), and overtake phases missing - each asserting the exact error string, so the safety-net has real negative coverage beyond the ~5 branches already tested.",
+      "prng.test.ts:91: loop over several seeds and multiple sequential draws, comparing draw sequences for forecasts with identical weights but reordered keys, so the determinism assertion cannot false-pass on a single lucky cursor position.",
+      "Minor: route App.testHelpers.ts:5 through safeStorage.set to keep the storage invariant total (test-only, harmless). Audit App.tsx modal open sites to confirm no flow other than restart-from-league-controls opens a second modal while one is open (the activeModal state machine silently closes the first); document the finding. Confirm summing positionDelta (positions) into scores.score (points) at simulateRace.ts:909 is an intended perturbation; if it is a units mismatch, normalize the scale, otherwise leave a short code comment noting it is deliberate.",
+      "Out of scope: swapping the PRNG algorithm; changing the seeding model; reworking the claim-code/recovery model beyond the enumeration response; a full modal-manager refactor; re-tuning card balance; broadening the leagues-store modularization; any new dependency."
+    ],
+    "acceptance_criteria": [
+      "AC1: Weighted selection orders weight keys with a locale-independent comparator, and a determinism test proves reordered-but-equal forecasts resolve identically across several seeds and sequential draws.",
+      "AC2: classificationScore is exported and directly unit-tested such that removing the positionDelta term fails a test, and the mid-race trace tiebreak uses classificationScore so it is consistent with the final classification.",
+      "AC3: POST /profiles no longer distinguishes existing from new emails in its response (Option A) or the team has explicitly chosen to keep the distinct message (Option B), with the decision and rationale recorded in the orchestration task; new-email signup and the DB duplicate guard still work.",
+      "AC4: validateReplayTrace has negative tests for at least the speed-abruptness, backwards-progress, and overtake-phase branches, asserting their exact error strings.",
+      "AC5: The minor invariant break is fixed (App.testHelpers uses safeStorage), the activeModal single-open assumption is verified/documented, and the positionDelta units question is resolved (normalized or documented as intended).",
+      "AC6: npm run typecheck, npm test, npm run lint, and npm run logics:validate pass, and no existing test is deleted to make them pass."
+    ]
+  },
+  "product": {
+    "title": "Post-Remediation Review Fixes Product Brief",
+    "overview": "A second review after the req_099 remediation landed confirmed the remediation was real and verified, but found defects the implementation introduced or left open: a self-defeating replay-determinism comparator (localeCompare), a vacuous positionDelta test plus a mid-race trace tiebreak inconsistent with the final classification, an account-enumeration oracle still present on profile creation, and shallow replay-validator/PRNG determinism tests. This request closes those gaps, prioritizing the determinism comparator, and is authored to be executed end-to-end by another AI agent.",
+    "goals": [
+      "Replay determinism holds across environments, not just across key insertion order.",
+      "The positionDelta wiring is pinned by a test that fails if it is removed, and mid-race trace order matches the final classification.",
+      "Profile creation stops leaking which emails are registered, or the team owns that decision explicitly.",
+      "The replay validator and PRNG determinism have test coverage of their nontrivial branches and multi-seed stability.",
+      "Residual invariant and units assumptions are resolved or documented."
+    ],
+    "non_goals": [
+      "Do not swap the PRNG algorithm or change the seeding model.",
+      "Do not rework the claim-code/recovery model beyond the enumeration response.",
+      "Do not refactor the modal system beyond verifying the single-open assumption.",
+      "Do not re-tune card balance or broaden the store modularization.",
+      "Do not add any new dependency."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Restore cross-environment determinism in weighted selection",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Simulation determinism",
+      "request_acs": ["AC1", "AC6"],
+      "problem": [
+        "prng.ts:21 sorts weight keys with left.localeCompare(right); localeCompare depends on Node's ICU/locale build, so two environments can order keys differently and diverge for the same seed.",
+        "This reintroduces the cross-environment non-determinism that the sort (req_099 item 235) was added to eliminate, and the current single-seed test would not catch it."
+      ],
+      "scope_in": [
+        "Replace the localeCompare comparator with a byte-stable comparator (left < right ? -1 : left > right ? 1 : 0).",
+        "Add/extend a determinism test proving reordered-but-equal forecasts resolve identically for the same seed."
+      ],
+      "scope_out": [
+        "Replacing the PRNG algorithm.",
+        "Changing weight values or the weather model."
+      ],
+      "acceptance_criteria": [
+        "AC1: Weight keys are ordered by a locale-independent comparator.",
+        "AC2: A test proves reordered-but-equal forecasts resolve identically for the same seed.",
+        "AC3: Existing simulation tests stay green."
+      ]
+    },
+    {
+      "title": "Pin positionDelta wiring and align trace tiebreak with classification",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Gameplay correctness",
+      "request_acs": ["AC2", "AC6"],
+      "problem": [
+        "simulateRace.test.ts:386 does not actually test positionDelta: launch_boost's +26 score bonus alone flips the order, so deleting the positionDelta wiring would not fail the test.",
+        "createReplayTracePoint (simulateRace.ts:407) breaks elapsed-time ties with raw scores.score, while classification uses classificationScore (score + positionDelta), so a tie can order a mid-race trace point inconsistently with the final result."
+      ],
+      "scope_in": [
+        "Export classificationScore and add a direct unit test so removing the positionDelta term fails a test.",
+        "Change the createReplayTracePoint tiebreak to use classificationScore for consistency with the final classification."
+      ],
+      "scope_out": [
+        "Re-tuning card balance.",
+        "Changing how positionDelta is accumulated."
+      ],
+      "acceptance_criteria": [
+        "AC1: classificationScore is exported and unit-tested such that removing the positionDelta term breaks a test.",
+        "AC2: The mid-race trace tiebreak uses classificationScore.",
+        "AC3: Any affected trace snapshot test is regenerated intentionally and the suite is green."
+      ]
+    },
+    {
+      "title": "Close the account-enumeration oracle on profile creation",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "API security",
+      "request_acs": ["AC3", "AC6"],
+      "problem": [
+        "createProfile (storeCore.ts) throws a distinct 'This email already has a profile' for existing emails, while requestRecoveryCode returns a constant { ok: true } regardless of existence.",
+        "POST /profiles therefore remains an existence oracle even though it is rate-limited, and this is the open half of req_099 item 238."
+      ],
+      "scope_in": [
+        "Decide Option A (existing email -> behave like requestRecoveryCode, email the owner, return neutral) or Option B (keep the distinct message, accept the leak), and record the decision and rationale in the orchestration task.",
+        "Apply the chosen option, keeping new-email signup working and the DB duplicate guard intact.",
+        "If Option A, verify the client no longer depends on the plaintext recoveryCode in the response."
+      ],
+      "scope_out": [
+        "Reworking the claim-code/recovery model.",
+        "Adding email verification flows."
+      ],
+      "acceptance_criteria": [
+        "AC1: POST /profiles no longer distinguishes existing from new emails in its response (Option A), or the team has explicitly chosen Option B, recorded in the task.",
+        "AC2: New-email signup still works and duplicate accounts are still prevented at the DB.",
+        "AC3: The recovery cooldown/limiter is respected by any new send path."
+      ]
+    },
+    {
+      "title": "Deepen replay-validator and PRNG determinism tests",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Test coverage",
+      "request_acs": ["AC4", "AC6"],
+      "problem": [
+        "validateReplayTrace.test.ts covers ~5 of ~13 error branches; nontrivial branches (speed changes too abruptly, progress goes backwards, overtake phases missing) are untested.",
+        "prng.test.ts:91 asserts determinism with a single draw on a single seed, which can false-pass on a lucky cursor position."
+      ],
+      "scope_in": [
+        "Add validateReplayTrace negative tests for at least the speed-abruptness, backwards-progress, and overtake-phase branches, asserting exact error strings.",
+        "Loop the PRNG determinism test over several seeds and multiple sequential draws with reordered-but-equal forecasts."
+      ],
+      "scope_out": [
+        "Testing every trivial guard branch.",
+        "Changing the validator or PRNG behavior."
+      ],
+      "acceptance_criteria": [
+        "AC1: The three nontrivial validator branches have negative tests asserting their error strings.",
+        "AC2: The PRNG determinism test covers multiple seeds and sequential draws.",
+        "AC3: The suite is green."
+      ]
+    },
+    {
+      "title": "Resolve residual invariant and units assumptions",
+      "priority": "Low",
+      "complexity": "Low",
+      "theme": "Cleanup",
+      "request_acs": ["AC5", "AC6"],
+      "problem": [
+        "App.testHelpers.ts:5 uses raw localStorage.setItem, bypassing safeStorage and breaking the total invariant (test-only).",
+        "App.tsx:107 collapsed ~10 modal booleans into one activeModal state machine, so opening modal B silently closes A, with only restart-from-league-controls handled.",
+        "positionDelta (positions) is summed into scores.score (points) at simulateRace.ts:909, which should be confirmed as intended rather than a units mismatch."
+      ],
+      "scope_in": [
+        "Route App.testHelpers through safeStorage.set.",
+        "Audit modal open sites to confirm no other simultaneous-modal flow exists; document the finding.",
+        "Confirm the positionDelta/score scale mix is intended (leave a short comment) or normalize it."
+      ],
+      "scope_out": [
+        "A full modal-manager refactor.",
+        "Rebalancing card magnitudes beyond a units fix if one is needed."
+      ],
+      "acceptance_criteria": [
+        "AC1: App.testHelpers uses safeStorage so the storage invariant is total.",
+        "AC2: The activeModal single-open assumption is verified and documented.",
+        "AC3: The positionDelta units question is resolved (normalized or documented as intended)."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate post-remediation review fixes",
+    "plan": [
+      "Do the determinism comparator fix first (prng.ts byte comparator + strengthened test): it silently breaks cross-environment replay and is the highest-severity finding.",
+      "Pin the positionDelta wiring by exporting and unit-testing classificationScore, and align the createReplayTracePoint tiebreak with it.",
+      "Decide and record the account-enumeration posture (Option A recommended) and apply it, keeping signup and the DB guard intact.",
+      "Add the replay-validator negative tests and the multi-seed PRNG determinism test.",
+      "Clean up the test-helper storage invariant, verify the activeModal single-open assumption, and resolve the positionDelta units question.",
+      "Run typecheck, test, lint, and logics:validate; record proof and the enumeration decision at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/post-remediation-review-fixes.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

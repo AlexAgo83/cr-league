@@ -51,6 +51,19 @@ describe("CircuitMap rendering", () => {
     expect(container.querySelectorAll(".map-car-headlight")).toHaveLength(2);
   });
 
+  it("keeps car SVG definitions unique across map instances", () => {
+    const car: MapCar = { id: "player", label: "P", player: true, delay: 0, duration: 10, progress: 0 };
+    const { container } = render(
+      <>
+        <CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[car]} />
+        <CircuitMap circuit={CITY_CIRCUITS[1]!} tt={tt} cars={[car]} />
+      </>
+    );
+
+    const ids = [...container.querySelectorAll("linearGradient[id$='headlight-0']")].map((node) => node.id);
+    expect(new Set(ids).size).toBe(ids.length);
+  });
+
   it("keeps ambient cars static when reduced motion is requested", () => {
     const ambient: MapCar = { id: "ambient", label: "A", player: false, delay: 0, duration: 10 };
     const { container } = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[ambient]} reduceMotion />);

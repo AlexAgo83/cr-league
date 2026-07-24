@@ -63,6 +63,11 @@ export function ChampionshipView({
     setPreviewCircuit(undefined);
     onSelectRecordTab(nextTab);
   };
+  const previewCircuitIndex = previewCircuit ? catalogCircuits.findIndex((circuit) => circuit.layoutKey === previewCircuit.layoutKey && circuit.city === previewCircuit.city) : -1;
+  const selectAdjacentPreviewCircuit = (direction: -1 | 1) => {
+    if (previewCircuitIndex < 0) return;
+    setPreviewCircuit(catalogCircuits[(previewCircuitIndex + direction + catalogCircuits.length) % catalogCircuits.length]);
+  };
 
   useEffect(() => {
     setPreviewCircuit(undefined);
@@ -114,7 +119,7 @@ export function ChampionshipView({
       </section>
 
       <div className="championship-grid">
-        <section className={`panel championship-record-panel record-panel-${activeRecordTab}`}>
+        <section className={`panel championship-record-panel record-panel-${activeRecordTab}${activeRecordTab === "calendar" && previewCircuit ? " circuit-preview-open" : ""}`}>
           <header className={`championship-record-header record-hero-header record-hero-${activeRecordTab}`}>
             <h3>{activeRecordLabel}</h3>
             <div className="championship-record-switch" role="tablist" aria-label={tt("championship_kicker")}>
@@ -190,6 +195,16 @@ export function ChampionshipView({
                         ×
                       </button>
                     </div>
+                    <button type="button" className="secondary-button circuit-detail-nav circuit-detail-nav-prev" aria-label={tt("action_previous_circuit")} onClick={() => selectAdjacentPreviewCircuit(-1)}>
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="m15 18-6-6 6-6" />
+                      </svg>
+                    </button>
+                    <button type="button" className="secondary-button circuit-detail-nav circuit-detail-nav-next" aria-label={tt("action_next_circuit")} onClick={() => selectAdjacentPreviewCircuit(1)}>
+                      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path d="m9 6 6 6-6 6" />
+                      </svg>
+                    </button>
                   </>
                 }
               />

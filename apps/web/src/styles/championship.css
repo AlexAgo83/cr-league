@@ -426,6 +426,38 @@
   padding: 0;
 }
 
+.circuit-detail-nav {
+  align-items: center;
+  border-radius: 999px;
+  display: inline-flex;
+  height: 46px;
+  justify-content: center;
+  min-width: 46px;
+  padding: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 4;
+}
+
+.circuit-detail-nav svg {
+  fill: none;
+  height: 26px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+  width: 26px;
+}
+
+.circuit-detail-nav-prev {
+  left: 12px;
+}
+
+.circuit-detail-nav-next {
+  right: 12px;
+}
+
 .circuit-detail-focus.active {
   background: rgb(255 77 0 / 0.22);
   color: var(--color-accent);
@@ -852,6 +884,28 @@
 }
 
 @media (max-width: 720px) {
+  .championship-record-panel.circuit-preview-open {
+    grid-template-rows: auto minmax(0, 1fr);
+    height: calc(100dvh - 196px);
+    min-height: 420px;
+  }
+
+  .circuit-preview-open .circuit-detail-screen,
+  .circuit-preview-open .circuit-map,
+  .circuit-preview-open .circuit-map-stage,
+  .circuit-preview-open .circuit-map-stage > svg {
+    height: 100%;
+    min-height: 0;
+  }
+
+  .circuit-preview-open .circuit-detail-screen {
+    padding: 0;
+  }
+
+  .circuit-preview-open .circuit-map-stage > svg {
+    object-fit: cover;
+  }
+
   .circuit-calendar-list {
     grid-template-columns: 1fr;
   }

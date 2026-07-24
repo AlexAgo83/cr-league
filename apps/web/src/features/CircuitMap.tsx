@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, type Ref, type RefObject } from "react";
+import { useEffect, useId, useMemo, useRef, useState, type Ref, type RefObject } from "react";
 import type { CSSProperties } from "react";
 import type { DecisionDeltaKey, TeamLivery, TrackSpeedProfile, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
@@ -336,6 +336,7 @@ export function CircuitMap({
 }) {
   const { zoom, tiles, points, d } = useMemo(() => circuitScene(circuit), [circuit]);
   const cameraRef = useRef<SVGGElement>(null);
+  const mapId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
   const routeRef = useRef<SVGPathElement>(null);
   const carsRef = useRef(cars);
   const pointsRef = useRef(points);
@@ -343,6 +344,8 @@ export function CircuitMap({
   const zoomRef = useRef(FOCUS_ZOOM);
   const zoomModeRef = useRef<CameraZoomMode>("normal");
   const tireMarksRef = useRef(new Map<string, TireMarks>());
+  const fpsMeterRef = useRef({ frames: 0, last: 0 });
+  const [fps, setFps] = useState<number | undefined>();
   const focusEnabled = Boolean(camera?.enabled && camera.car);
   const markerScale = focusEnabled ? 1 / FOCUS_ZOOM : 0.62;
   const hasCars = cars.length > 0;
@@ -362,6 +365,7 @@ export function CircuitMap({
   const stageProgress = (progress: number) => progressFromStart(progress, routeAnalysis.startProgress);
   const displayWeather = weather ?? circuit.likelyWeather;
   const sortedCars = useMemo(() => [...cars].sort((a, b) => Number(a.player) - Number(b.player)), [cars]);
+  const carDomKey = sortedCars.map((car) => car.id).join("|");
   const tileLayer = useMemo(() => tiles.map((tile) => (
     <g key={`${tile.x}-${tile.y}`} className="circuit-map-tile-layer">
       <rect className="circuit-map-tile-placeholder" x={tile.left} y={tile.top} width={TILE_SIZE} height={TILE_SIZE} />
@@ -401,14 +405,25 @@ export function CircuitMap({
     const cameraGroup = cameraRef.current;
     if (!cameraGroup || !hasCars || (reduceMotion && !carProgressRef)) return;
     const lastTransforms = new Map<string, string>();
-    const trailPaths = Array.from(cameraGroup.querySelectorAll<SVGPathElement>(".map-car-trail"));
+    const carNodes = Array.from(cameraGroup.querySelectorAll<SVGGElement>(".map-car"));
+    const carGroups = new Map(carNodes.map((group) => [group.dataset.carId, group]));
+    const carSprites = new Map(carNodes.map((group) => [group.dataset.carId, group.querySelector<SVGGElement>(".map-car-sprite")]));
+    const rearLights = new Map(carNodes.map((group) => [group.dataset.carId, Array.from(group.querySelectorAll<SVGGElement>(".map-car-rear-light"))]));
+    const trailSegments = new Map(Array.from(cameraGroup.querySelectorAll<SVGPathElement>(".map-car-trail")).map((path) => [`${path.dataset.carId}:${path.dataset.wheel}:${path.dataset.segment}`, path]));
     const tireMarks = tireMarksRef.current;
     const startedAt = performance.now();
     let frame = 0;
     const tick = () => {
       const now = performance.now();
+      const fpsMeter = fpsMeterRef.current;
+      fpsMeter.frames += 1;
+      if (!fpsMeter.last) fpsMeter.last = now;
+      if (now - fpsMeter.last >= 500) {
+        setFps(Math.round((fpsMeter.frames * 1000) / (now - fpsMeter.last)));
+        fpsMeter.frames = 0;
+        fpsMeter.last = now;
+      }
       const clock = (now - startedAt) / 1000;
-      const groups = Array.from(cameraGroup.querySelectorAll<SVGGElement>(".map-car"));
       for (const car of carsRef.current) {
         const ambientProgress = ambientCarProgress(car, clock, circuit.laps, circuit.speedProfile);
         const progress = carProgressRef?.current[car.id] ?? car.progress ?? ambientProgress;
@@ -417,14 +432,14 @@ export function CircuitMap({
         const pose = poseOnRoute(pointsRef.current, stagedProgress);
         const drift = driftAngle(pointsRef.current, stagedProgress);
         const transform = `translate(${pose.x} ${pose.y})`;
-        const group = groups.find((candidate) => candidate.dataset.carId === car.id);
+        const group = carGroups.get(car.id);
         if (group && lastTransforms.get(car.id) !== transform) {
           group.setAttribute("transform", transform);
           lastTransforms.set(car.id, transform);
         }
         const bodyAngle = pose.angle + drift;
-        group?.querySelector<SVGGElement>(".map-car-sprite")?.setAttribute("transform", `rotate(${bodyAngle})`);
-        group?.querySelectorAll<SVGGElement>(".map-car-rear-light").forEach((light) => {
+        carSprites.get(car.id)?.setAttribute("transform", `rotate(${bodyAngle})`);
+        rearLights.get(car.id)?.forEach((light) => {
           light.setAttribute("class", (car.braking ?? brakingAtProgress(progress, circuit.speedProfile)) ? "map-car-rear-light braking" : "map-car-rear-light");
         });
 
@@ -446,15 +461,12 @@ export function CircuitMap({
           if (Math.abs(drift) >= TIRE_MARK_MIN_DRIFT && (!previous || distance >= TIRE_MARK_SAMPLE_DISTANCE)) {
             marks[side].push({ ...wheel, at: now });
           }
-          const path = trailPaths.find((candidate) => candidate.dataset.carId === car.id && candidate.dataset.wheel === side);
-          path?.setAttribute("d", "");
-          path?.setAttribute("opacity", "0");
           const points = marks[side];
           const start = Math.max(0, points.length - TIRE_MARK_SEGMENTS - 1);
           for (let segmentIndex = 0; segmentIndex < TIRE_MARK_SEGMENTS; segmentIndex += 1) {
             const from = points[start + segmentIndex];
             const to = points[start + segmentIndex + 1];
-            const segmentPath = trailPaths.find((candidate) => candidate.dataset.carId === car.id && candidate.dataset.wheel === side && candidate.dataset.segment === String(segmentIndex));
+            const segmentPath = trailSegments.get(`${car.id}:${side}:${segmentIndex}`);
             if (!from || !to) {
               segmentPath?.setAttribute("d", "");
               segmentPath?.setAttribute("opacity", "0");
@@ -472,9 +484,11 @@ export function CircuitMap({
     frame = requestAnimationFrame(tick);
     return () => {
       cancelAnimationFrame(frame);
+      setFps(undefined);
+      fpsMeterRef.current = { frames: 0, last: 0 };
       tireMarks.clear();
     };
-  }, [carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, reduceMotion, routeAnalysis.startProgress]);
+  }, [carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, reduceMotion, routeAnalysis.startProgress]);
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
@@ -551,12 +565,11 @@ export function CircuitMap({
               <g className="circuit-route-layer" style={routeDecorStyle}>
                 {routeLayer}
                 <g className="map-car-trails">
-                  {sortedCars.flatMap((car) => (["left", "right"] as const).flatMap((wheel) => [
-                    <path key={`${car.id}-${wheel}`} className="map-car-trail" data-car-id={car.id} data-wheel={wheel} vectorEffect="non-scaling-stroke" />,
-                    ...Array.from({ length: TIRE_MARK_SEGMENTS }, (_, segmentIndex) => (
+                  {sortedCars.flatMap((car) => (["left", "right"] as const).flatMap((wheel) => (
+                    Array.from({ length: TIRE_MARK_SEGMENTS }, (_, segmentIndex) => (
                       <path key={`${car.id}-${wheel}-${segmentIndex}`} className="map-car-trail" data-car-id={car.id} data-wheel={wheel} data-segment={segmentIndex} vectorEffect="non-scaling-stroke" />
                     ))
-                  ]))}
+                  )))}
                 </g>
                 {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
                 {sortedCars.map((car) => {
@@ -576,7 +589,7 @@ export function CircuitMap({
                       onClick={onCarClick ? () => onCarClick(car) : undefined}
                     >
                       <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                        <MapCarSprite asset={asset} braking={car.braking} maskId={`car-sprite-mask-${car.id}`} transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
+                        <MapCarSprite asset={asset} braking={car.braking} maskId={`car-sprite-mask-${mapId}-${car.id}`} transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
                         <text textAnchor="middle" dominantBaseline="central">
                           {car.label}
                         </text>
@@ -605,6 +618,7 @@ export function CircuitMap({
             </g>
           </g>
         </svg>
+        {fps !== undefined ? <small className="map-fps-readout">{fps} FPS</small> : null}
         <small className="map-attribution">© OSM · CARTO</small>
         {showHeading || showTraits ? (
           <div className="map-info-stack">

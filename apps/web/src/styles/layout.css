@@ -2633,6 +2633,21 @@ label small {
   right: 3px;
 }
 
+.map-fps-readout {
+  background: rgb(16 14 18 / 0.42);
+  border-radius: 4px;
+  bottom: 3px;
+  color: rgb(248 243 232 / 0.46);
+  font-size: 0.5rem;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  padding: 2px 5px;
+  pointer-events: none;
+  position: absolute;
+  left: 3px;
+  z-index: 3;
+}
+
 .replay-progress {
   background: rgb(16 14 18 / 0.6);
   cursor: pointer;
@@ -4396,8 +4411,8 @@ label small {
 
 .map-car-headlight {
   filter: blur(1.8px);
-  mix-blend-mode: soft-light;
-  opacity: 0.42;
+  mix-blend-mode: normal;
+  opacity: 0.58;
   pointer-events: none;
 }
 
@@ -4407,7 +4422,7 @@ label small {
 }
 
 .map-car-headlight-start {
-  stop-color: rgb(228 248 255 / 0.3);
+  stop-color: rgb(228 248 255 / 0.52);
 }
 
 .map-car-headlight-end {

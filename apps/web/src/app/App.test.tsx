@@ -765,11 +765,18 @@ describe("App", () => {
     const displayedCircuitNames = [...document.querySelectorAll(".circuit-calendar-button strong")].map((node) => node.textContent);
     expect(displayedCircuitNames).toEqual([...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" })));
     fireEvent.click(screen.getByRole("button", { name: /Brussels Grand Place Clash/ }));
+    const previewNames = [...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" }));
+    const previewIndex = previewNames.indexOf("Grand Place Clash");
+    expect(document.querySelector(".championship-record-panel")?.classList.contains("circuit-preview-open")).toBe(true);
     expect(screen.getByLabelText("City circuit map")).toBeTruthy();
     expect(document.querySelector(".circuit-detail-screen .circuit-start-line")).toBeTruthy();
     expect(document.querySelector(".circuit-detail-screen .map-car")).toBeTruthy();
     expect(document.querySelectorAll(".circuit-detail-screen .map-car-trail[data-segment]")).toHaveLength(36);
     expect(within(document.querySelector(".circuit-detail-actions") as HTMLElement).getByRole("button", { name: "Focus driver" }).getAttribute("aria-pressed")).toBe("true");
+    fireEvent.click(screen.getByRole("button", { name: "Next circuit" }));
+    expect(document.querySelector(".circuit-detail-header h4")?.textContent).toBe(previewNames[(previewIndex + 1) % previewNames.length]);
+    fireEvent.click(screen.getByRole("button", { name: "Previous circuit" }));
+    expect(document.querySelector(".circuit-detail-header h4")?.textContent).toBe("Grand Place Clash");
     expect(screen.queryByRole("dialog", { name: "Brussels Grand Place Clash" })).toBe(null);
     fireEvent.click(document.querySelector(".circuit-detail-close")!);
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));

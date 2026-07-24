@@ -427,6 +427,8 @@
   "action_pause": "Pause",
   "action_replay_restart": "Recommencer",
   "action_focus_driver": "Suivre le pilote",
+  "action_previous_circuit": "Circuit précédent",
+  "action_next_circuit": "Circuit suivant",
   "action_skip_to_result": "Passer au résultat",
   "replay_speed": "Vitesse",
   "replay_seek": "Position du replay",

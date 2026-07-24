@@ -436,3 +436,8 @@ export function statusLabel(status: string, tt: Translator) {
   if (status === "briefing" || status === "resolved") return tt(`gp_status_${status}` as TranslationKey);
   return status;
 }
+
+// ponytail: one place for the lap-time/gap "12.34s" formatting that was inlined across the plan/drive views.
+export function formatSeconds(value: number, decimals = 2) {
+  return `${value.toFixed(decimals)}s`;
+}

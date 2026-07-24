@@ -3,6 +3,7 @@ import { RACE_SEGMENTS, type CardId, type QualifyingRun, type RaceResult } from 
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import type { CardFit, Translator } from "../app/helpers.js";
+import { formatSeconds } from "../app/helpers.js";
 import { buildPlanRecommendationParts, type ChronoReport, type PlanRiskRead } from "../app/raceFlow.js";
 import type { PlanSubscreen } from "../app/routes.js";
 import type { FormState, GameView, LeagueState } from "../app/types.js";
@@ -181,7 +182,7 @@ export function PlanView({
               <div className="chrono-report-stats">
                 <div>
                   <span>{tt("qualifying_best")}</span>
-                  <strong>{chronoReport.best ? `${chronoReport.best.time.toFixed(2)}s` : "--"}</strong>
+                  <strong>{chronoReport.best ? formatSeconds(chronoReport.best.time) : "--"}</strong>
                 </div>
                 <div>
                   <span>{tt("qualifying_result_rank")}</span>
@@ -232,7 +233,7 @@ export function PlanView({
                           <b>{run.decision.cardId ? tt(`card_${run.decision.cardId}` as TranslationKey) : tt("card_none")}</b>
                         </span>
                       </div>
-                      <em>{run.time.toFixed(2)}s</em>
+                      <em>{formatSeconds(run.time)}</em>
                       <button
                         type="button"
                         className="secondary-button"

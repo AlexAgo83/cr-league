@@ -2,6 +2,7 @@ import { DEMO_RACE_INPUT, RACE_SEGMENTS, type RaceDecision, type RaceResult, typ
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "./circuits.js";
 import type { Translator } from "./helpers.js";
+import { formatSeconds } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { CircuitMap, MapStatsToggle, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { MapPlanPanel } from "../features/MapPlanPanel.js";
@@ -312,7 +313,7 @@ function QualifyingTimesPanel({
                   E<b>{run.attempts}</b>T<b>{run.lap ?? 1}</b>
                 </span>
               ) : null}
-              <em>{run.time.toFixed(2)}s</em>
+              <em>{formatSeconds(run.time)}</em>
             </li>
           ))}
         </ol>
@@ -378,7 +379,7 @@ function FinalClassification({
     return {
       teamId: entry.teamId,
       teamName: entry.teamName,
-      value: time === undefined ? "" : index === 0 ? `${time.toFixed(1)}s` : `+${Math.max(0, time - (previousTime ?? time)).toFixed(1)}s`,
+      value: time === undefined ? "" : index === 0 ? formatSeconds(time, 1) : `+${formatSeconds(Math.max(0, time - (previousTime ?? time)), 1)}`,
       decision: {
         approach: decision?.approach ?? fallback?.approach ?? "balanced",
         preparation: decision?.preparation ?? fallback?.preparation ?? "speed",

@@ -366,6 +366,9 @@ export function CircuitMap({
   const displayWeather = weather ?? circuit.likelyWeather;
   const sortedCars = useMemo(() => [...cars].sort((a, b) => Number(a.player) - Number(b.player)), [cars]);
   const carDomKey = sortedCars.map((car) => car.id).join("|");
+  const trailCars = useMemo(() => sortedCars.filter((car) => car.player || car.id === camera?.car?.id || sortedCars.length <= 2), [camera?.car?.id, sortedCars]);
+  const trailCarDomKey = trailCars.map((car) => car.id).join("|");
+  const trailCarIds = useMemo(() => new Set(trailCarDomKey.split("|").filter(Boolean)), [trailCarDomKey]);
   const tileLayer = useMemo(() => tiles.map((tile) => (
     <g key={`${tile.x}-${tile.y}`} className="circuit-map-tile-layer">
       <rect className="circuit-map-tile-placeholder" x={tile.left} y={tile.top} width={TILE_SIZE} height={TILE_SIZE} />
@@ -443,6 +446,7 @@ export function CircuitMap({
           light.setAttribute("class", (car.braking ?? brakingAtProgress(progress, circuit.speedProfile)) ? "map-car-rear-light braking" : "map-car-rear-light");
         });
 
+        if (!trailCarIds.has(car.id)) continue;
         const geometry = carRenderGeometryForId(car.livery?.carAssetId);
         const scale = focusEnabled ? 1 / zoomRef.current : markerScale;
         const radians = bodyAngle * Math.PI / 180;
@@ -488,7 +492,7 @@ export function CircuitMap({
       fpsMeterRef.current = { frames: 0, last: 0 };
       tireMarks.clear();
     };
-  }, [carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, reduceMotion, routeAnalysis.startProgress]);
+  }, [carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, reduceMotion, routeAnalysis.startProgress, trailCarDomKey, trailCarIds]);
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
@@ -565,7 +569,7 @@ export function CircuitMap({
               <g className="circuit-route-layer" style={routeDecorStyle}>
                 {routeLayer}
                 <g className="map-car-trails">
-                  {sortedCars.flatMap((car) => (["left", "right"] as const).flatMap((wheel) => (
+                  {trailCars.flatMap((car) => (["left", "right"] as const).flatMap((wheel) => (
                     Array.from({ length: TIRE_MARK_SEGMENTS }, (_, segmentIndex) => (
                       <path key={`${car.id}-${wheel}-${segmentIndex}`} className="map-car-trail" data-car-id={car.id} data-wheel={wheel} data-segment={segmentIndex} vectorEffect="non-scaling-stroke" />
                     ))
@@ -703,6 +707,11 @@ export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, braking = false, maskI
           </linearGradient>
         ))}
       </defs>
+      <rect className="map-car-stroke" x={bounds.x} y={bounds.y} width={bounds.width} height={bounds.height} mask={`url(#${maskId})`} />
+      <g transform={`rotate(${image.rotation})`}>
+        <image className="map-car-detail" href={asset.top} x={image.x} y={image.y} width={image.width} height={image.height} />
+      </g>
+      <rect className="map-car-tint" x={bounds.x} y={bounds.y} width={bounds.width} height={bounds.height} mask={`url(#${maskId})`} fill={`url(#${maskId}-livery)`} />
       {geometry.frontLights.map(([x, y], index) => (
         <g key={index} className="map-car-headlight">
           <path d={`M${x} ${y} L${x + 24} ${y - 5} L${x + 24} ${y + 5} Z`} fill={`url(#${maskId}-headlight-${index})`} />
@@ -715,11 +724,6 @@ export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, braking = false, maskI
           <circle cx={x} cy={y} r="0.9" />
         </g>
       ))}
-      <rect className="map-car-stroke" x={bounds.x} y={bounds.y} width={bounds.width} height={bounds.height} mask={`url(#${maskId})`} />
-      <g transform={`rotate(${image.rotation})`}>
-        <image className="map-car-detail" href={asset.top} x={image.x} y={image.y} width={image.width} height={image.height} />
-      </g>
-      <rect className="map-car-tint" x={bounds.x} y={bounds.y} width={bounds.width} height={bounds.height} mask={`url(#${maskId})`} fill={`url(#${maskId}-livery)`} />
     </g>
   );
 }

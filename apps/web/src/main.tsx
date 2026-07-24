@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "./app/App.js";
+import { registerServiceWorker } from "./app/pwa.js";
 import "@fontsource/barlow/400.css";
 import "@fontsource/barlow/600.css";
 import "@fontsource/barlow-condensed/500.css";
@@ -32,8 +33,6 @@ createRoot(root).render(
 );
 
 // ponytail: register the shell-offline service worker in prod only; dev keeps hot-reload clean.
-if (import.meta.env.PROD && "serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/sw.js").catch(() => {});
-  });
+if (import.meta.env.PROD) {
+  window.addEventListener("load", () => registerServiceWorker());
 }

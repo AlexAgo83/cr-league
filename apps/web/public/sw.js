@@ -1,23 +1,26 @@
 // Shell-offline service worker. No build-time precache: assets are cached on first
 // hit (stale-while-revalidate), navigations fall back to the cached app shell.
-// ponytail: bump CACHE_VERSION on any incompatible shell change to purge old caches.
-const CACHE_VERSION = "crl-shell-v1";
+// __BUILD__ is stamped with the app bundle hash at build time (scripts/stamp-sw.mjs) so
+// this file changes whenever the app changes, which is what triggers the update flow.
+const CACHE_VERSION = "crl-shell-__BUILD__";
 const SHELL_URL = "/";
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_VERSION).then((cache) => cache.add(SHELL_URL))
-  );
-  self.skipWaiting();
+  // No skipWaiting: a new SW stays "waiting" until the user opts in (Update app button).
+  event.waitUntil(caches.open(CACHE_VERSION).then((cache) => cache.add(SHELL_URL)));
 });
 
 self.addEventListener("activate", (event) => {
+  // No clients.claim: avoids reloading the very first visit; updates take over via SKIP_WAITING.
   event.waitUntil(
     caches.keys().then((keys) =>
       Promise.all(keys.filter((key) => key !== CACHE_VERSION).map((key) => caches.delete(key)))
     )
   );
-  self.clients.claim();
+});
+
+self.addEventListener("message", (event) => {
+  if (event.data && event.data.type === "SKIP_WAITING") self.skipWaiting();
 });
 
 self.addEventListener("fetch", (event) => {

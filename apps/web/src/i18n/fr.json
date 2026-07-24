@@ -402,6 +402,7 @@
   "action_next_saved_league": "Ligue sauvegardée suivante",
   "action_reset_ui_preferences": "Réinitialiser préférences UI",
   "action_install_app": "Installer l'app",
+  "action_update_app": "Mettre à jour l'app",
   "action_forget_profile": "Se déconnecter",
   "action_submit_directive": "Envoyer plan",
   "action_edit_plan": "Éditer plan",

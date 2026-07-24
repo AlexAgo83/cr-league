@@ -507,7 +507,7 @@
 | [item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch](backlog/item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch.md) | Cut getLeagueState rebuilds and historical over-fetch | Done |  | 100 | backlog/item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch.md |
 | [item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases](backlog/item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases.md) | Batch per-team write loops in resolve, rollover, and bot purchases | Done |  | 100 | backlog/item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases.md |
 | [item_286_compute_simulaterace_before_the_write_transaction](backlog/item_286_compute_simulaterace_before_the_write_transaction.md) | Compute simulateRace before the write transaction | Done |  | 100% | backlog/item_286_compute_simulaterace_before_the_write_transaction.md |
-| [item_287_lazy_load_circuit_route_data_per_selected_circuit](backlog/item_287_lazy_load_circuit_route_data_per_selected_circuit.md) | Lazy-load circuit route data per selected circuit | Ready |  | 0% | backlog/item_287_lazy_load_circuit_route_data_per_selected_circuit.md |
+| [item_287_lazy_load_circuit_route_data_per_selected_circuit](backlog/item_287_lazy_load_circuit_route_data_per_selected_circuit.md) | Lazy-load circuit route data per selected circuit | Done |  | 100 | backlog/item_287_lazy_load_circuit_route_data_per_selected_circuit.md |
 | [item_288_take_simulaterace_off_the_locked_write_transaction](backlog/item_288_take_simulaterace_off_the_locked_write_transaction.md) | Take simulateRace off the locked write transaction | Ready |  | 0% | backlog/item_288_take_simulaterace_off_the_locked_write_transaction.md |
 
 ## Tasks
@@ -631,4 +631,4 @@
 | [task_115_bot_car_progression](tasks/task_115_bot_car_progression.md) | Bot car progression | Done | codex | 100% | tasks/task_115_bot_car_progression.md |
 | [task_116_orchestrate_repo_review_maintainability_follow_up](tasks/task_116_orchestrate_repo_review_maintainability_follow_up.md) | Orchestrate repo review maintainability follow-up | Ready |  | 0% | tasks/task_116_orchestrate_repo_review_maintainability_follow_up.md |
 | [task_117_orchestrate_the_performance_pass](tasks/task_117_orchestrate_the_performance_pass.md) | Orchestrate the performance pass | Done |  | 100% | tasks/task_117_orchestrate_the_performance_pass.md |
-| [task_118_orchestrate_the_deferred_performance_follow_up](tasks/task_118_orchestrate_the_deferred_performance_follow_up.md) | Orchestrate the deferred performance follow-up | Ready |  | 0% | tasks/task_118_orchestrate_the_deferred_performance_follow_up.md |
+| [task_118_orchestrate_the_deferred_performance_follow_up](tasks/task_118_orchestrate_the_deferred_performance_follow_up.md) | Orchestrate the deferred performance follow-up | In progress |  | 50 | tasks/task_118_orchestrate_the_deferred_performance_follow_up.md |

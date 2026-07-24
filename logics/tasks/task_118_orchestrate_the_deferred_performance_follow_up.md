@@ -1,10 +1,10 @@
 ## task_118_orchestrate_the_deferred_performance_follow_up - Orchestrate the deferred performance follow-up
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 50
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.

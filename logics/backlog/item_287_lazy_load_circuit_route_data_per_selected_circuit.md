@@ -1,10 +1,10 @@
 ## item_287_lazy_load_circuit_route_data_per_selected_circuit - Lazy-load circuit route data per selected circuit
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100
 > Complexity: Medium
 > Theme: Frontend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -51,3 +51,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Delivered (commit fa80928): the 25-track route barrel moved to circuitRoutes/data.ts and loads via a single dynamic import; circuits.ts reads routes from a lazy cache (withRoute) so consumers get a fresh reference once loaded; a CircuitMap wrapper renders a placeholder until the route arrives (prevents the empty-route car-positioning crash the e2e caught); vite manualChunks keeps the lazy facade out of the data chunk. Verified: circuit-routes (47 KB gz) is off the first-paint critical path (gone from index.html), 315 unit + 174 web + 4 e2e + balance:gate all green.

@@ -493,6 +493,8 @@
 | [item_274_split_storecore_ts_below_the_size_ceiling](backlog/item_274_split_storecore_ts_below_the_size_ceiling.md) | Split storeCore.ts below the size ceiling | Ready |  | 0% | backlog/item_274_split_storecore_ts_below_the_size_ceiling.md |
 | [item_275_decompose_app_tsx_into_focused_screen_components](backlog/item_275_decompose_app_tsx_into_focused_screen_components.md) | Decompose App.tsx into focused screen components | Ready |  | 0% | backlog/item_275_decompose_app_tsx_into_focused_screen_components.md |
 | [item_276_close_the_branch_coverage_gap_on_error_and_rule_violation_paths](backlog/item_276_close_the_branch_coverage_gap_on_error_and_rule_violation_paths.md) | Close the branch-coverage gap on error and rule-violation paths | Ready |  | 0% | backlog/item_276_close_the_branch_coverage_gap_on_error_and_rule_violation_paths.md |
+| [item_277_extract_shared_body_guard_preamble_in_leagues_routes_into_asrecord](backlog/item_277_extract_shared_body_guard_preamble_in_leagues_routes_into_asrecord.md) | Extract shared body-guard preamble in leagues routes into asRecord | Ready |  | 0% | backlog/item_277_extract_shared_body_guard_preamble_in_leagues_routes_into_asrecord.md |
+| [item_278_centralize_web_lap_time_and_gap_second_formatting_in_one_helper](backlog/item_278_centralize_web_lap_time_and_gap_second_formatting_in_one_helper.md) | Centralize web lap-time and gap second formatting in one helper | Ready |  | 0% | backlog/item_278_centralize_web_lap_time_and_gap_second_formatting_in_one_helper.md |
 
 ## Tasks
 

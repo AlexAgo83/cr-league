@@ -2,8 +2,8 @@
 > From version: 0.4.5
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 90
+> Confidence: 85
 > Progress: 0%
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -17,7 +17,9 @@
 - [ ] 2. Split storeCore.ts by lifecycle behind the unchanged barrel, then run typecheck/lint/tests.
 - [ ] 3. Extract App.tsx screen concerns into focused children and verify with the web tests.
 - [ ] 4. Add targeted tests over the uncovered error/rule branches and re-check coverage.
-- [ ] 5. Run the full gate (typecheck, lint, unit suite, balance:gate, logics:validate) and record validation evidence in closeout.
+- [ ] 5. Extract the shared body-guard preamble in leagues/routes.ts into one asRecord helper (item_277) and confirm guard behavior via the app tests.
+- [ ] 6. Centralize web lap-time/gap second formatting in one helper (item_278) with byte-identical rendered text.
+- [ ] 7. Run the full gate (typecheck, lint, unit suite, balance:gate, logics:validate) and record validation evidence in closeout.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.
@@ -27,6 +29,8 @@
 - `item_274_split_storecore_ts_below_the_size_ceiling`
 - `item_275_decompose_app_tsx_into_focused_screen_components`
 - `item_276_close_the_branch_coverage_gap_on_error_and_rule_violation_paths`
+- `item_277_extract_shared_body_guard_preamble_in_leagues_routes_into_asrecord`
+- `item_278_centralize_web_lap_time_and_gap_second_formatting_in_one_helper`
 
 # Definition of Done (DoD)
 - [ ] Generated request, product, backlog, and task docs are present.

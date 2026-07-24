@@ -2,8 +2,8 @@
 > From version: 0.4.5
 > Schema version: 1.0
 > Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 90
+> Confidence: 85
 > Complexity: Medium
 > Theme: Maintainability
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -27,6 +27,8 @@
 - AC3: App.tsx delegates each screen concern to a focused child component with identical rendered output and behavior, and no single web component file remains an 800+ line grab-bag.
 - AC4: Overall branch coverage rises meaningfully toward line coverage by covering previously-uncovered error and rule-violation branches, with no assertions weakened or tests skipped to inflate the number.
 - AC5: Typecheck, lint, and the full unit test suite pass unchanged (315+ passing), and the CI gates (audit, balance:gate, logics:validate) stay green.
+- AC6: The duplicated object-shape preamble in the leagues/routes.ts body guards is extracted into one shared helper used by all 14 guards, with their field checks and accepted/rejected inputs unchanged.
+- AC7: The inlined per-view second-formatting (lap/best times and gaps) is centralized in one web helper, with rendered text byte-identical to today.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.
@@ -64,3 +66,5 @@
 - `item_274_split_storecore_ts_below_the_size_ceiling`
 - `item_275_decompose_app_tsx_into_focused_screen_components`
 - `item_276_close_the_branch_coverage_gap_on_error_and_rule_violation_paths`
+- `item_277_extract_shared_body_guard_preamble_in_leagues_routes_into_asrecord`
+- `item_278_centralize_web_lap_time_and_gap_second_formatting_in_one_helper`

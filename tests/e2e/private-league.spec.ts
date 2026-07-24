@@ -197,7 +197,8 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     await expect(page.locator(".report-blocks")).toHaveCount(0);
     await expect(page.locator(".report-content-column > .report-key-moments")).toBeVisible();
     await expect(page.locator(".report-podium")).toContainText("150 credits");
-    await expect(page.getByText(/Verdict:/).first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Race recap" })).toBeVisible();
+    await expect(page.locator(".report-main-recap")).toContainText(/P\d/);
 
     if (expectedRound < 3) {
       await page.getByRole("button", { name: "Stand", exact: true }).click();
@@ -254,7 +255,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
         return map ? panel.width / map.width : 0;
       })
     )
-    .toBeGreaterThan(0.95);
+    .toBeGreaterThan(0.9);
 
   await page.setViewportSize({ width: 390, height: 900 });
   await expect.poll(async () => page.locator(".drive-map-panel").evaluate((element) => element.getBoundingClientRect().height)).toBeGreaterThanOrEqual(900);

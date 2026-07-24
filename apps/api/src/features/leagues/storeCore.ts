@@ -815,15 +815,21 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
         }
       });
     }
+    // ponytail: group consumed cards per team and remove from the already-locked freshState snapshot,
+    // replacing the per-card findUnique+update (2 queries each) with one update per affected team.
+    const consumedByTeam = new Map<string, CardId[]>();
     for (const consumed of result.consumedCards) {
-      const team = await tx.team.findUnique({ where: { id: consumed.teamId } });
-      if (!team || team.leagueId !== leagueId) continue;
-      await tx.team.update({
-        where: { id: team.id },
-        data: {
-          cards: removeOneCard(normalizeCards(team.cards), consumed.cardId)
-        }
-      });
+      consumedByTeam.set(consumed.teamId, [...(consumedByTeam.get(consumed.teamId) ?? []), consumed.cardId]);
+    }
+    for (const [teamId, cardIds] of consumedByTeam) {
+      const team = freshState.teams.find((candidate) => candidate.id === teamId);
+      if (!team) continue;
+      const cards = [...team.cards];
+      for (const cardId of cardIds) {
+        const index = cards.indexOf(cardId);
+        if (index >= 0) cards.splice(index, 1);
+      }
+      await tx.team.update({ where: { id: teamId }, data: { cards } });
     }
   });
 

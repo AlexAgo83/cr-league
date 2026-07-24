@@ -1,10 +1,10 @@
 ## item_280_convert_crl_ui_pngs_to_webp - Convert crl UI PNGs to WebP
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100
 > Complexity: Low
 > Theme: Frontend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

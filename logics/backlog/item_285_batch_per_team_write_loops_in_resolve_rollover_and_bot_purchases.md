@@ -1,10 +1,10 @@
 ## item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases - Batch per-team write loops in resolve, rollover, and bot purchases
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 50
 > Complexity: Medium
 > Theme: Backend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -52,3 +52,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Partially delivered (commit 9159de1): the resolve consumed-cards loop no longer issues a findUnique per consumed card; it groups removals per team against the locked freshState snapshot (one update per team). The points/credits loop was left sequential (Promise.all on a Prisma interactive-transaction client shares one connection and is unsafe). startNextGrandPrix and the bot-purchase loops were not touched in this pass.

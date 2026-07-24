@@ -1,10 +1,10 @@
 ## item_281_move_the_auth_scrypt_kdf_off_the_event_loop - Move the auth scrypt KDF off the event loop
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100
 > Complexity: Low
 > Theme: Backend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

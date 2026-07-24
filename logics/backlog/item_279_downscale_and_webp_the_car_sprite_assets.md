@@ -1,10 +1,10 @@
 ## item_279_downscale_and_webp_the_car_sprite_assets - Downscale and WebP the car sprite assets
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100
 > Complexity: Medium
 > Theme: Frontend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

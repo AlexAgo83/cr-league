@@ -4,7 +4,7 @@
 > Status: Ready
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 0
 > Complexity: High
 > Theme: Backend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -52,3 +52,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Deferred (risk > benefit). simulateRace is computed on state re-read under the grand-prix row lock to guarantee consistency; moving it out risks changing simulation output (violates the verbatim AC) on the most integrity-sensitive function in the repo. resolve is an infrequent admin action with a fast sim. If event-loop blocking ever becomes material, move the sim to a worker thread instead.

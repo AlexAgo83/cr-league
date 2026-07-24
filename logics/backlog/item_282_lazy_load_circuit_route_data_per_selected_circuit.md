@@ -4,7 +4,7 @@
 > Status: Ready
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 0
 > Complexity: Medium
 > Theme: Frontend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -52,3 +52,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Deferred. Route data is core-loop data (the race desk shows the circuit map immediately on entering a league); lazy-loading ripples async through useRaceDerivations and every race/replay/championship view on a render path the audit found already well-optimized, to defer ~47KB gz that loads seconds later anyway. Revisit only as a dedicated, carefully-tested change.

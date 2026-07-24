@@ -79,6 +79,14 @@ describe("CircuitMap rendering", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it("sanitizes car ids before using them in SVG paint server urls", () => {
+    const car: MapCar = { id: "circuit-preview-Rio de Janeiro", label: "R", player: true, delay: 0, duration: 10, progress: 0 };
+    const { container } = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[car]} />);
+
+    expect(container.querySelector(".map-car-headlight path")?.getAttribute("fill")).not.toContain(" ");
+    expect(container.querySelector(".map-car-tint")?.getAttribute("mask")).not.toContain(" ");
+  });
+
   it("renders car lights above the body tint", () => {
     const car: MapCar = { id: "player", label: "P", player: true, delay: 0, duration: 10, progress: 0 };
     const { container } = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[car]} />);

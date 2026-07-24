@@ -593,7 +593,7 @@ export function CircuitMap({
                       onClick={onCarClick ? () => onCarClick(car) : undefined}
                     >
                       <g className="map-car-marker" transform={`scale(${markerScale})`}>
-                        <MapCarSprite asset={asset} braking={car.braking} maskId={`car-sprite-mask-${mapId}-${car.id}`} transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
+                        <MapCarSprite asset={asset} braking={car.braking} maskId={`car-sprite-mask-${mapId}-${svgIdPart(car.id)}`} transform={pose ? `rotate(${pose.angle + drift})` : undefined} />
                         <text textAnchor="middle" dominantBaseline="central">
                           {car.label}
                         </text>
@@ -675,6 +675,10 @@ function brakingAtProgress(progress: number, speedProfile: TrackSpeedProfile = [
 
 function prefersReducedMotion() {
   return typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+}
+
+function svgIdPart(value: string) {
+  return value.replace(/[^a-zA-Z0-9_-]/g, "_");
 }
 
 export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, braking = false, maskId, transform }: { asset?: CarAsset; braking?: boolean; maskId: string; transform?: string }) {

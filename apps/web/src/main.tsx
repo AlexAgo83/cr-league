@@ -30,3 +30,10 @@ createRoot(root).render(
     <App />
   </StrictMode>
 );
+
+// ponytail: register the shell-offline service worker in prod only; dev keeps hot-reload clean.
+if (import.meta.env.PROD && "serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/sw.js").catch(() => {});
+  });
+}

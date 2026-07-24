@@ -1,7 +1,7 @@
 ## req_117_performance_pass_deferred_follow_up - Performance pass deferred follow-up
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: High

@@ -1,10 +1,10 @@
 ## item_288_take_simulaterace_off_the_locked_write_transaction - Take simulateRace off the locked write transaction
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: High
 > Theme: Backend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -52,3 +52,7 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Won't do — measured, not worth the risk. simulateRace runs ~5ms per resolve (16 cars, benchmarked). A resolve is an infrequent admin action, so moving the sim out of the locked transaction saves ~5ms of event-loop block on a rare operation, against real complexity and risk on the most integrity-sensitive function in the repo (byte-identical output + double-resolve/lock guarantees). Revisit only if the participant field or lap count grows enough to push sim time into the tens of milliseconds; a worker thread would then be the cleaner lever than reordering the lock.
+- Task `task_118_orchestrate_the_deferred_performance_follow_up` was finished via `logics-manager flow finish task` on 2026-07-24.

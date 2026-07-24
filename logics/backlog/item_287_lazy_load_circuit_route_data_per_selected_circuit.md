@@ -54,3 +54,4 @@
 
 # Notes
 - Delivered (commit fa80928): the 25-track route barrel moved to circuitRoutes/data.ts and loads via a single dynamic import; circuits.ts reads routes from a lazy cache (withRoute) so consumers get a fresh reference once loaded; a CircuitMap wrapper renders a placeholder until the route arrives (prevents the empty-route car-positioning crash the e2e caught); vite manualChunks keeps the lazy facade out of the data chunk. Verified: circuit-routes (47 KB gz) is off the first-paint critical path (gone from index.html), 315 unit + 174 web + 4 e2e + balance:gate all green.
+- Task `task_118_orchestrate_the_deferred_performance_follow_up` was finished via `logics-manager flow finish task` on 2026-07-24.

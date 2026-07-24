@@ -315,12 +315,16 @@ export async function rejoinLeague(db: Db, input: RejoinLeagueInput = {}) {
 }
 
 export async function getLeagueState(db: Db, leagueId: string, options: { includeInviteCode?: boolean } = {}): Promise<LeagueState | null> {
+  // ponytail: fetch only the current GP with its decisions; past GPs pulled decisions + result/
+  // qualifying/forecast JSON blobs for nothing (history only needs id/name/season/round/status/result),
+  // a cost that grew unbounded with seasons.
   const league = await db.league.findUnique({
     where: { id: leagueId },
     include: {
       teams: { orderBy: [{ points: "desc" }, { name: "asc" }] },
       grandPrixes: {
         orderBy: [{ season: "desc" }, { round: "desc" }],
+        take: 1,
         include: {
           decisions: true
         }
@@ -331,6 +335,11 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
   if (!league || !league.grandPrixes[0]) return null;
 
   const grandPrix = league.grandPrixes[0];
+  const grandPrixHistory = await db.grandPrix.findMany({
+    where: { leagueId },
+    orderBy: [{ season: "desc" }, { round: "desc" }],
+    select: { id: true, name: true, season: true, round: true, status: true, result: true }
+  });
   const currentCircuit = circuitIdentityForRound(grandPrix.round, circuitSeasonSeed(league.id, grandPrix.season));
   return {
     league: {
@@ -358,7 +367,7 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
       qualifyingRuns: normalizeQualifyingRuns(grandPrix.qualifyingRuns),
       result: grandPrix.result
     },
-    grandPrixHistory: league.grandPrixes.map((entry) => ({
+    grandPrixHistory: grandPrixHistory.map((entry) => ({
       id: entry.id,
       name: entry.name,
       season: entry.season,

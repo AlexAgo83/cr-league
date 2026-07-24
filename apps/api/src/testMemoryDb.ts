@@ -371,6 +371,10 @@ export function createMemoryDb(): PrismaClient {
         grandPrixes
           .filter((grandPrix) => grandPrix.leagueId === where.leagueId)
           .sort((left, right) => right.season - left.season || right.round - left.round)[0] ?? null,
+      findMany: async ({ where }: { where: { leagueId: string } }) =>
+        grandPrixes
+          .filter((grandPrix) => grandPrix.leagueId === where.leagueId)
+          .sort((left, right) => right.season - left.season || right.round - left.round),
       update: async ({ where, data }: { where: { id: string }; data: Partial<Pick<GrandPrixRow, "qualifyingRuns" | "status" | "result">> }) => {
         const grandPrix = grandPrixes.find((candidate) => candidate.id === where.id);
         if (!grandPrix) throw new Error("Grand Prix not found");

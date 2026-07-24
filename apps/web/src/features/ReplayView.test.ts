@@ -360,7 +360,19 @@ describe("ReplayView timing", () => {
       (key, params) => t(key, "en", params)
     );
 
-    expect(copy.detail).toContain("pit lane");
+    expect(copy.zone).toContain("pit lane");
+  });
+
+  it("explains main straight overtakes as a separate race-director zone line", () => {
+    const copy = directorBeatCopy(
+      { id: "move", type: "overtake", progress: 0.4, lap: 3, teamId: "last", relatedTeamId: "leader", fromPosition: 2, toPosition: 1, zoneLabel: "main_straight" },
+      new Map([["last", "Last"], ["leader", "Leader"]]),
+      (key, params) => t(key, "en", params)
+    );
+
+    expect(copy.detail).toContain("Last attacks Leader");
+    expect(copy.zone).toContain("main straight");
+    expect(copy.zone).toContain("slipstream");
   });
 
   it("shows pit stops as race-director beats", () => {

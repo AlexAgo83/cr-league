@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, type CityCircuit } from "../app/circuits.js";
@@ -7,8 +7,9 @@ import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Transla
 import type { LeagueState } from "../app/types.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, type ChampionshipRecordTab } from "../app/viewPreferences.js";
 import { AssetImage } from "./AssetImage.js";
-import { CircuitMap, analyzeCircuitRoute } from "./CircuitMap.js";
+import { CircuitMap, analyzeCircuitRoute, type MapCar } from "./CircuitMap.js";
 import { carAssetForId } from "./carAssets.js";
+import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
@@ -39,7 +40,10 @@ export function ChampionshipView({
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
   const [previewCircuit, setPreviewCircuit] = useState<CityCircuit | undefined>();
+  const [previewFocus, setPreviewFocus] = useState(true);
   const seasonCircuits = circuitsForSeason(state.league.id, currentGrandPrix.season);
+  const previewCar = useMemo(() => previewCircuit ? circuitPreviewCar(previewCircuit, state, playerTeamId) : undefined, [playerTeamId, previewCircuit, state]);
+  const previewClock = useCircuitPreviewClock(previewCircuit, previewCar);
   const catalogCircuits = [...CITY_CIRCUITS].sort((left, right) => tt(left.layoutKey).localeCompare(tt(right.layoutKey), undefined, { sensitivity: "base" }));
   const seasonRoundsByLayout = new Map<string, number[]>();
   for (let round = 1; round <= state.league.maxGrandPrixPerSeason; round += 1) {
@@ -151,6 +155,9 @@ export function ChampionshipView({
             <div className="circuit-detail-screen">
               <CircuitMap
                 circuit={previewCircuit}
+                cars={previewCar ? [previewCar] : []}
+                carProgressRef={previewClock.carProgressRef}
+                camera={{ enabled: previewFocus && Boolean(previewCar), car: previewCar, timeRef: previewClock.timeRef, zoom: 3.4 }}
                 tt={tt}
                 showHeading={false}
                 showTraits={false}
@@ -162,9 +169,27 @@ export function ChampionshipView({
                       </span>
                       <h4>{tt(previewCircuit.layoutKey)}</h4>
                     </div>
-                    <button type="button" className="secondary-button circuit-detail-close" aria-label={tt("action_close")} onClick={() => setPreviewCircuit(undefined)}>
-                      ×
-                    </button>
+                    <div className="circuit-detail-actions">
+                      <button
+                        type="button"
+                        className={previewFocus ? "secondary-button circuit-detail-focus active" : "secondary-button circuit-detail-focus"}
+                        aria-label={tt("action_focus_driver")}
+                        aria-pressed={previewFocus}
+                        title={tt("action_focus_driver")}
+                        onClick={() => setPreviewFocus(!previewFocus)}
+                      >
+                        <svg className="replay-focus-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                          <path d="M8 4H6a2 2 0 0 0-2 2v2" />
+                          <path d="M16 4h2a2 2 0 0 1 2 2v2" />
+                          <path d="M20 16v2a2 2 0 0 1-2 2h-2" />
+                          <path d="M8 20H6a2 2 0 0 1-2-2v-2" />
+                          <circle cx="12" cy="12" r="3" />
+                        </svg>
+                      </button>
+                      <button type="button" className="secondary-button circuit-detail-close" aria-label={tt("action_close")} onClick={() => setPreviewCircuit(undefined)}>
+                        ×
+                      </button>
+                    </div>
                   </>
                 }
               />
@@ -290,6 +315,58 @@ function ChampionshipCarBackdrop({ livery }: { livery?: TeamLivery }) {
       <span className="championship-car-backdrop-gradient" />
     </span>
   );
+}
+
+function circuitPreviewCar(circuit: CityCircuit, state: LeagueState, playerTeamId: string | undefined): MapCar {
+  const team = state.teams.find((candidate) => candidate.id === playerTeamId) ?? state.teams[0];
+  const seed = hashText(`${state.league.id}:${state.currentGrandPrix.season}-${state.currentGrandPrix.round}:${circuit.city}:${circuit.layoutKey}`);
+  const traitPace = (circuit.traits.grip + circuit.traits.overtaking + circuit.traits.energy) / 300;
+  const jitter = seed / 0xffffffff;
+  return {
+    id: `circuit-preview-${circuit.city}-${circuit.layoutKey}`,
+    label: "C",
+    player: Boolean(team?.id && team.id === playerTeamId),
+    delay: -jitter * 8,
+    duration: 13.5 + (1 - traitPace) * 5 + jitter * 2.5,
+    livery: team?.livery,
+    repeatCount: "indefinite"
+  };
+}
+
+function useCircuitPreviewClock(circuit: CityCircuit | undefined, car: MapCar | undefined) {
+  const carProgressRef = useRef<Record<string, number>>({});
+  const timeRef = useRef(0);
+
+  useEffect(() => {
+    if (!circuit || !car) {
+      carProgressRef.current = {};
+      timeRef.current = 0;
+      return;
+    }
+    const startedAt = performance.now();
+    let frame = 0;
+    const tick = (now: number) => {
+      const clock = (now - startedAt) / 1000;
+      const elapsed = Math.max(0, clock - car.delay);
+      const lapProgress = (elapsed % Math.max(0.001, car.duration)) / Math.max(0.001, car.duration);
+      timeRef.current = clock;
+      carProgressRef.current = { [car.id]: applyTrackSpeedProfile(lapProgress, circuit.speedProfile) };
+      frame = requestAnimationFrame(tick);
+    };
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [car, circuit]);
+
+  return { carProgressRef, timeRef };
+}
+
+function hashText(value: string) {
+  let hash = 2166136261;
+  for (let index = 0; index < value.length; index += 1) {
+    hash ^= value.charCodeAt(index);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
 }
 
 function MiniCircuit({ circuit }: { circuit: CityCircuit }) {

@@ -93,7 +93,7 @@ export function ReplayStageOverlay({
   traitImpacts: MapTraitImpacts;
   resolvedWeather: RaceResult["resolvedWeather"];
   activeMoment?: { player: boolean; lap: number; icon: VisualIconName; context: string; detail: string; impact: string };
-  activeDirector?: { type: string; lap: number; title: string; detail: ReactNode };
+  activeDirector?: { type: string; lap: number; title: string; detail: ReactNode; zone?: string };
   playerGapItems: Array<{ label: string; value: string }>;
   replayMode: "race" | "qualifying";
   overlayActions?: ReactNode;
@@ -192,6 +192,7 @@ export function ReplayStageOverlay({
               ) : null}
               <strong>{activeDirector.title}</strong>
               <small>{activeDirector.detail}</small>
+              {activeDirector.zone ? <small className="replay-director-zone">{activeDirector.zone}</small> : null}
             </div>
           ) : null}
         </div>

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, type Ref, type RefObject } from "react";
 import type { CSSProperties } from "react";
-import type { DecisionDeltaKey, TeamLivery, Weather } from "@cr-league/shared";
+import type { DecisionDeltaKey, TeamLivery, TrackSpeedProfile, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
+import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { DEFAULT_CAR_ASSET, carAssetForId, carRenderGeometryForId, type CarAsset } from "./carAssets.js";
 import { safeHex } from "./LiveryPlate.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
@@ -67,10 +68,13 @@ const CLOSE_ENTER_DISTANCE = 2;
 const CLOSE_EXIT_DISTANCE = 6;
 const DRIFT_LOOKAHEAD = 0.012;
 const HEADING_LOOKAHEAD = 0.006;
-const MAX_DRIFT_ANGLE = 22;
-const TIRE_MARK_MIN_DRIFT = 3;
-const TIRE_MARK_LIFETIME = 1_100;
+const DRIFT_GAIN = 1.35;
+const MAX_DRIFT_ANGLE = 30;
+const TIRE_MARK_MIN_DRIFT = 1.4;
+const TIRE_MARK_LIFETIME = 1_450;
 const TIRE_MARK_SAMPLE_DISTANCE = 0.45;
+const TIRE_MARK_SEGMENTS = 18;
+const TIRE_MARK_RESET_DISTANCE = 80;
 const ROUTE_FIT_PADDING = 58;
 const ROUTE_STROKES = {
   glow: 22,
@@ -268,7 +272,7 @@ function progressFromStart(progress: number, startProgress: number) {
 export function driftAngle(points: Array<{ x: number; y: number }>, progress: number) {
   const before = poseOnRoute(points, progress - DRIFT_LOOKAHEAD).angle;
   const after = poseOnRoute(points, progress + DRIFT_LOOKAHEAD).angle;
-  return Math.max(-MAX_DRIFT_ANGLE, Math.min(MAX_DRIFT_ANGLE, angleDelta(before, after) * 0.7));
+  return Math.max(-MAX_DRIFT_ANGLE, Math.min(MAX_DRIFT_ANGLE, angleDelta(before, after) * DRIFT_GAIN));
 }
 
 function boundsOf(points: Array<{ x: number; y: number }>) {
@@ -319,6 +323,7 @@ export function CircuitMap({
     enabled: boolean;
     car: MapCar | undefined;
     timeRef?: React.RefObject<number>;
+    zoom?: number;
   };
   carProgressRef?: RefObject<Record<string, number>>;
   className?: string;
@@ -394,16 +399,19 @@ export function CircuitMap({
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
-    if (!cameraGroup || !carProgressRef || !hasCars) return;
+    if (!cameraGroup || !hasCars || (reduceMotion && !carProgressRef)) return;
     const lastTransforms = new Map<string, string>();
     const trailPaths = Array.from(cameraGroup.querySelectorAll<SVGPathElement>(".map-car-trail"));
     const tireMarks = tireMarksRef.current;
+    const startedAt = performance.now();
     let frame = 0;
     const tick = () => {
       const now = performance.now();
+      const clock = (now - startedAt) / 1000;
       const groups = Array.from(cameraGroup.querySelectorAll<SVGGElement>(".map-car"));
       for (const car of carsRef.current) {
-        const progress = carProgressRef.current[car.id] ?? car.progress;
+        const ambientProgress = ambientCarProgress(car, clock, circuit.laps, circuit.speedProfile);
+        const progress = carProgressRef?.current[car.id] ?? car.progress ?? ambientProgress;
         if (progress === undefined) continue;
         const stagedProgress = progressFromStart(progress, routeAnalysis.startProgress);
         const pose = poseOnRoute(pointsRef.current, stagedProgress);
@@ -416,6 +424,9 @@ export function CircuitMap({
         }
         const bodyAngle = pose.angle + drift;
         group?.querySelector<SVGGElement>(".map-car-sprite")?.setAttribute("transform", `rotate(${bodyAngle})`);
+        group?.querySelectorAll<SVGGElement>(".map-car-rear-light").forEach((light) => {
+          light.setAttribute("class", (car.braking ?? brakingAtProgress(progress, circuit.speedProfile)) ? "map-car-rear-light braking" : "map-car-rear-light");
+        });
 
         const geometry = carRenderGeometryForId(car.livery?.carAssetId);
         const scale = focusEnabled ? 1 / zoomRef.current : markerScale;
@@ -431,14 +442,29 @@ export function CircuitMap({
           const wheel = wheelPoints[index]!;
           const previous = marks[side].at(-1);
           const distance = previous ? Math.hypot(wheel.x - previous.x, wheel.y - previous.y) : 0;
-          if (previous && distance > 8) marks[side] = [];
+          if (previous && distance > TIRE_MARK_RESET_DISTANCE) marks[side] = [];
           if (Math.abs(drift) >= TIRE_MARK_MIN_DRIFT && (!previous || distance >= TIRE_MARK_SAMPLE_DISTANCE)) {
             marks[side].push({ ...wheel, at: now });
           }
           const path = trailPaths.find((candidate) => candidate.dataset.carId === car.id && candidate.dataset.wheel === side);
-          const latest = marks[side].at(-1);
-          path?.setAttribute("d", marks[side].length > 1 ? routePath(marks[side]) : "");
-          path?.setAttribute("opacity", latest ? String(Math.min(1, (TIRE_MARK_LIFETIME - (now - latest.at)) / 400)) : "0");
+          path?.setAttribute("d", "");
+          path?.setAttribute("opacity", "0");
+          const points = marks[side];
+          const start = Math.max(0, points.length - TIRE_MARK_SEGMENTS - 1);
+          for (let segmentIndex = 0; segmentIndex < TIRE_MARK_SEGMENTS; segmentIndex += 1) {
+            const from = points[start + segmentIndex];
+            const to = points[start + segmentIndex + 1];
+            const segmentPath = trailPaths.find((candidate) => candidate.dataset.carId === car.id && candidate.dataset.wheel === side && candidate.dataset.segment === String(segmentIndex));
+            if (!from || !to) {
+              segmentPath?.setAttribute("d", "");
+              segmentPath?.setAttribute("opacity", "0");
+              continue;
+            }
+            const age = now - (from.at + to.at) / 2;
+            const opacity = Math.max(0, Math.min(1, (TIRE_MARK_LIFETIME - age) / TIRE_MARK_LIFETIME));
+            segmentPath?.setAttribute("d", routePath([from, to]));
+            segmentPath?.setAttribute("opacity", String(opacity * opacity));
+          }
         }
       }
       frame = requestAnimationFrame(tick);
@@ -448,7 +474,7 @@ export function CircuitMap({
       cancelAnimationFrame(frame);
       tireMarks.clear();
     };
-  }, [carProgressRef, focusEnabled, hasCars, markerScale, routeAnalysis.startProgress]);
+  }, [carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, reduceMotion, routeAnalysis.startProgress]);
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
@@ -474,8 +500,7 @@ export function CircuitMap({
       // every frame) rather than the React-stepped car.progress; otherwise the camera pans in
       // discrete jumps that the focus zoom magnifies into a micro-teleport while the sprite glides.
       const liveProgress = carProgressRef?.current[carId];
-      const elapsed = Math.max(0, clockRef.current - car.delay);
-      const ambientProgress = car.repeatCount !== "indefinite" && clockRef.current >= car.delay + car.duration * circuit.laps ? 1 : (elapsed % car.duration) / car.duration;
+      const ambientProgress = ambientCarProgress(car, clockRef.current, circuit.laps, circuit.speedProfile);
       const usesTrace = liveProgress !== undefined || car.progress !== undefined;
       const progress = liveProgress ?? car.progress ?? ambientProgress;
       const stagedProgress = progressFromStart(progress, routeAnalysis.startProgress);
@@ -498,7 +523,8 @@ export function CircuitMap({
       } else if (nearestCarDistance < TRAFFIC_ENTER_DISTANCE) {
         zoomModeRef.current = "traffic";
       }
-      const targetZoom = zoomModeRef.current === "close" ? CLOSE_FOCUS_ZOOM : zoomModeRef.current === "traffic" ? TRAFFIC_FOCUS_ZOOM : FOCUS_ZOOM;
+      const baseZoom = camera.zoom ?? FOCUS_ZOOM;
+      const targetZoom = zoomModeRef.current === "close" ? Math.max(CLOSE_FOCUS_ZOOM, baseZoom) : zoomModeRef.current === "traffic" ? Math.max(TRAFFIC_FOCUS_ZOOM, baseZoom) : baseZoom;
       zoomRef.current += (targetZoom - zoomRef.current) * 0.08;
       cameraGroup.querySelectorAll<SVGGElement>(".map-car-marker").forEach((marker) => marker.setAttribute("transform", `scale(${1 / zoomRef.current})`));
       cameraGroup.setAttribute("transform", `translate(${focusX} ${focusY}) scale(${zoomRef.current}) translate(${-point.x} ${-point.y})`);
@@ -510,7 +536,7 @@ export function CircuitMap({
       cancelAnimationFrame(frame);
       cameraGroup.removeAttribute("transform");
     };
-  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, carProgressRef, circuit.laps, routeAnalysis.startProgress]);
+  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, camera?.zoom, carProgressRef, circuit.laps, circuit.speedProfile, routeAnalysis.startProgress]);
 
   return (
     <section
@@ -525,9 +551,12 @@ export function CircuitMap({
               <g className="circuit-route-layer" style={routeDecorStyle}>
                 {routeLayer}
                 <g className="map-car-trails">
-                  {sortedCars.flatMap((car) => (["left", "right"] as const).map((wheel) => (
-                    <path key={`${car.id}-${wheel}`} className="map-car-trail" data-car-id={car.id} data-wheel={wheel} vectorEffect="non-scaling-stroke" />
-                  )))}
+                  {sortedCars.flatMap((car) => (["left", "right"] as const).flatMap((wheel) => [
+                    <path key={`${car.id}-${wheel}`} className="map-car-trail" data-car-id={car.id} data-wheel={wheel} vectorEffect="non-scaling-stroke" />,
+                    ...Array.from({ length: TIRE_MARK_SEGMENTS }, (_, segmentIndex) => (
+                      <path key={`${car.id}-${wheel}-${segmentIndex}`} className="map-car-trail" data-car-id={car.id} data-wheel={wheel} data-segment={segmentIndex} vectorEffect="non-scaling-stroke" />
+                    ))
+                  ]))}
                 </g>
                 {/* SVG z-order is document order: render the player's car last so it always sits on top. */}
                 {sortedCars.map((car) => {
@@ -569,9 +598,6 @@ export function CircuitMap({
                           </text>
                         ) : null}
                       </g>
-                      {car.progress === undefined ? (
-                        reduceMotion ? null : <animateMotion path={renderD} dur={`${car.duration}s`} begin={`${car.delay}s`} keyPoints="0;1" keyTimes="0;1" calcMode="linear" repeatCount={car.repeatCount ?? circuit.laps} fill="freeze" rotate="auto" />
-                      ) : null}
                     </g>
                   );
                 })}
@@ -609,6 +635,24 @@ export function CircuitMap({
       </div>
     </section>
   );
+}
+
+export function __ambientCarProgressForTest(car: Pick<MapCar, "delay" | "duration" | "repeatCount">, clock: number, laps: number, speedProfile: TrackSpeedProfile = []) {
+  return ambientCarProgress(car, clock, laps, speedProfile);
+}
+
+function ambientCarProgress(car: Pick<MapCar, "delay" | "duration" | "repeatCount">, clock: number, laps: number, speedProfile: TrackSpeedProfile = []) {
+  const elapsed = Math.max(0, clock - car.delay);
+  const repeatLimit = typeof car.repeatCount === "number" ? car.repeatCount : laps;
+  const lapProgress = car.repeatCount !== "indefinite" && clock >= car.delay + car.duration * repeatLimit ? 1 : (elapsed % Math.max(0.001, car.duration)) / Math.max(0.001, car.duration);
+  return applyTrackSpeedProfile(lapProgress, speedProfile);
+}
+
+function brakingAtProgress(progress: number, speedProfile: TrackSpeedProfile = []) {
+  const lapProgress = (((progress % 1) + 1) % 1);
+  return speedProfile.some((span) => span.kind === "braking" && (span.startProgress <= span.endProgress
+    ? lapProgress >= span.startProgress && lapProgress <= span.endProgress
+    : lapProgress >= span.startProgress || lapProgress <= span.endProgress));
 }
 
 function prefersReducedMotion() {

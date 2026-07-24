@@ -373,7 +373,8 @@ export function ReplayView({
         type: activeDirectorBeat.type,
         lap: activeDirectorBeat.lap,
         title: activeDirectorCopy.title,
-        detail: renderPositionBadges(activeDirectorCopy.detail)
+        detail: renderPositionBadges(activeDirectorCopy.detail),
+        zone: activeDirectorCopy.zone
       }
     : undefined;
   const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId, snapshot.tower.map((entry) => entry.teamId));

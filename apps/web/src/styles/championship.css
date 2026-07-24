@@ -407,18 +407,28 @@
   margin: 3px 0 0;
 }
 
-.circuit-detail-close {
-  flex: 0 0 auto;
-  font-size: 1.3rem;
-  height: 42px;
-  justify-self: end;
-  line-height: 1;
-  min-width: 42px;
-  padding: 0;
+.circuit-detail-actions {
+  display: flex;
+  gap: 8px;
   position: absolute;
   right: 12px;
   top: 12px;
   z-index: 4;
+}
+
+.circuit-detail-focus,
+.circuit-detail-close {
+  flex: 0 0 auto;
+  font-size: 1.3rem;
+  height: 42px;
+  line-height: 1;
+  min-width: 42px;
+  padding: 0;
+}
+
+.circuit-detail-focus.active {
+  background: rgb(255 77 0 / 0.22);
+  color: var(--color-accent);
 }
 
 .circuit-detail-screen .circuit-map {
@@ -426,6 +436,20 @@
   border: 0;
   border-radius: 0;
   padding: 0;
+}
+
+.circuit-detail-screen .map-car-headlight {
+  filter: blur(1.9px) drop-shadow(0 0 3px rgb(200 235 255 / 0.28));
+  mix-blend-mode: normal;
+  opacity: 0.72;
+}
+
+.circuit-detail-screen .map-car-headlight circle {
+  opacity: 0.72;
+}
+
+.circuit-detail-screen .map-car-headlight-start {
+  stop-color: rgb(228 248 255 / 0.58);
 }
 
 @keyframes current-round-pulse {

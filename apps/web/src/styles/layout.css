@@ -1385,8 +1385,15 @@ button:disabled {
 }
 
 .secondary-button:not(:disabled):hover {
-  border-color: var(--color-muted);
-  color: var(--color-text);
+  background: rgb(255 255 255 / 0.1);
+  border-color: rgb(255 255 255 / 0.46);
+  color: #f8f3e8;
+}
+
+.secondary-button:not(:disabled):focus-visible {
+  background: rgb(255 77 0 / 0.18);
+  border-color: var(--color-accent);
+  color: #f8f3e8;
 }
 
 input,
@@ -4024,6 +4031,10 @@ label small {
   line-height: 1.2;
 }
 
+.replay-director-panel .replay-director-zone {
+  color: rgb(255 255 255 / 0.72);
+}
+
 .replay-player-gaps {
   display: flex;
   flex-wrap: wrap;
@@ -4375,10 +4386,12 @@ label small {
 
 .map-car-trail {
   fill: none;
-  stroke: rgb(8 8 10 / 0.58);
+  filter: blur(0.25px) drop-shadow(0 0 2px rgb(255 255 255 / 0.18));
+  mix-blend-mode: screen;
+  stroke: rgb(235 238 240 / 0.34);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 1.15;
+  stroke-width: 1.45;
 }
 
 .map-car-headlight {

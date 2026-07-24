@@ -767,7 +767,9 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: /Brussels Grand Place Clash/ }));
     expect(screen.getByLabelText("City circuit map")).toBeTruthy();
     expect(document.querySelector(".circuit-detail-screen .circuit-start-line")).toBeTruthy();
-    expect(screen.queryByRole("button", { name: "Focus driver" })).toBe(null);
+    expect(document.querySelector(".circuit-detail-screen .map-car")).toBeTruthy();
+    expect(document.querySelectorAll(".circuit-detail-screen .map-car-trail[data-segment]")).toHaveLength(36);
+    expect(within(document.querySelector(".circuit-detail-actions") as HTMLElement).getByRole("button", { name: "Focus driver" }).getAttribute("aria-pressed")).toBe("true");
     expect(screen.queryByRole("dialog", { name: "Brussels Grand Place Clash" })).toBe(null);
     fireEvent.click(document.querySelector(".circuit-detail-close")!);
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));

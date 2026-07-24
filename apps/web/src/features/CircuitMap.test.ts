@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { CITY_CIRCUITS } from "../app/circuits.js";
 import { carRenderGeometryForId } from "./carAssets.js";
-import { __resetRouteGeometryStatsForTest, __routeGeometryBuildCountForTest, analyzeCircuitRoute, angleDelta, circuitRouteAnalysis, driftAngle, poseOnRoute, routeFitTransform } from "./CircuitMap.js";
+import { __ambientCarProgressForTest, __resetRouteGeometryStatsForTest, __routeGeometryBuildCountForTest, analyzeCircuitRoute, angleDelta, circuitRouteAnalysis, driftAngle, poseOnRoute, routeFitTransform } from "./CircuitMap.js";
 
 describe("CircuitMap route posing", () => {
   it("smooths heading through sharp route corners", () => {
@@ -17,7 +17,7 @@ describe("CircuitMap route posing", () => {
     const jumps = angles.slice(1).map((angle, index) => Math.abs(angleDelta(angles[index]!, angle)));
 
     expect(Math.max(...jumps)).toBeLessThan(70);
-    expect(Math.abs(driftAngle(route, 0.25))).toBeLessThanOrEqual(22);
+    expect(Math.abs(driftAngle(route, 0.25))).toBeLessThanOrEqual(30);
   });
 
   it("normalizes every car around its front axle without flattening model proportions", () => {
@@ -49,6 +49,14 @@ describe("CircuitMap route posing", () => {
     }
 
     expect(__routeGeometryBuildCountForTest()).toBe(1);
+  });
+
+  it("applies circuit speed zones to ambient preview cars", () => {
+    const car = { delay: 0, duration: 10, repeatCount: "indefinite" as const };
+    const progress = __ambientCarProgressForTest(car, 4.5, 6, [{ startProgress: 0.4, endProgress: 0.6, factor: 0.5, kind: "braking" }]);
+
+    expect(progress).toBeGreaterThan(0.45);
+    expect(progress).toBeLessThan(0.5);
   });
 
   it("projects canonical start and pit markers through the same route pose math", () => {

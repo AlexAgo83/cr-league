@@ -37,18 +37,18 @@ describe("CircuitMap rendering", () => {
     const moving: MapCar = { id: "moving", label: "M", player: false, delay: 0, duration: 10, progress: 1, braking: true };
 
     const movingMap = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[moving]} />);
-    expect(movingMap.container.querySelectorAll(".map-car-trail")).toHaveLength(2);
+    expect(movingMap.container.querySelectorAll(".map-car-trail[data-segment]")).toHaveLength(36);
     expect(movingMap.container.querySelectorAll(".map-car-headlight")).toHaveLength(2);
     expect(movingMap.container.querySelectorAll(".map-car-rear-light.braking")).toHaveLength(2);
   });
 
-  it("keeps ambient cars moving forward only", () => {
+  it("renders ambient cars through the shared visual effects pipeline", () => {
     const ambient: MapCar = { id: "ambient", label: "A", player: false, delay: 0, duration: 10 };
     const { container } = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[ambient]} />);
 
-    const motion = container.querySelector("animateMotion");
-    expect(motion?.getAttribute("keyPoints")).toBe("0;1");
-    expect(motion?.getAttribute("keyTimes")).toBe("0;1");
+    expect(container.querySelector("animateMotion")).toBeNull();
+    expect(container.querySelectorAll(".map-car-trail[data-segment]")).toHaveLength(36);
+    expect(container.querySelectorAll(".map-car-headlight")).toHaveLength(2);
   });
 
   it("keeps ambient cars static when reduced motion is requested", () => {

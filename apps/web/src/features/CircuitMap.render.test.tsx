@@ -108,6 +108,6 @@ describe("CircuitMap rendering", () => {
     const car: MapCar = { id: "player", label: "P", player: true, delay: 0, duration: 10, progress: 0, livery: { primary: "#111111", secondary: "#ff0000", carAssetId: "car-005" } };
     const { container } = render(<CircuitMap circuit={CITY_CIRCUITS[0]!} tt={tt} cars={[car]} />);
 
-    expect(container.querySelector(".map-car-detail")?.getAttribute("href")).toContain("/assets/cars/crl-v2/car-005/top.png");
+    expect(container.querySelector(".map-car-detail")?.getAttribute("href")).toContain("/assets/cars/crl-v2/car-005/top.webp");
   });
 });

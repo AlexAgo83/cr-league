@@ -95,7 +95,7 @@
 .card-choice-grid .choice-card::after,
 .card-inventory-button::after,
 .card-shop button::after {
-  background: url("/assets/crl/card-frame.png") center / 260% 180% no-repeat;
+  background: url("/assets/crl/card-frame.webp") center / 260% 180% no-repeat;
   content: "";
   inset: 0 0 0 auto;
   mask-image: linear-gradient(90deg, transparent, #000 42%);

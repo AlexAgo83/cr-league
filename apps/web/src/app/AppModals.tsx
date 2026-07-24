@@ -27,7 +27,7 @@ export function ProfileCodeModal({
 }) {
   return (
     <Modal label={tt("profile_code_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <ModalHero image="/assets/crl/profile-arrival.png" kicker={tt("profile_kicker")} title={tt("profile_code_title")} />
+      <ModalHero image="/assets/crl/profile-arrival.webp" kicker={tt("profile_kicker")} title={tt("profile_code_title")} />
       {profileSession?.recoveryCode ? (
         <input
           className="profile-code-input"
@@ -128,7 +128,7 @@ export function NextGrandPrixConfirmModal({
 }) {
   return (
     <Modal label={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <ModalHero image="/assets/crl/next-gp-modal.png" kicker={nextGrandPrixActionLabel} title={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} />
+      <ModalHero image="/assets/crl/next-gp-modal.webp" kicker={nextGrandPrixActionLabel} title={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} />
       <p>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_body" : "next_gp_confirm_body")}</p>
       <div className="actions secondary-actions">
         <PendingFeedback message={pendingMessage} />
@@ -179,7 +179,7 @@ export function ResolveGrandPrixConfirmModal({
 
   return (
     <Modal label={tt("launch_gp_confirm_title")} className="panel modal launch-gp-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <ModalHero image="/assets/crl/launch-gp-modal.png" kicker={tt("action_launch_grand_prix")} title={tt("launch_gp_confirm_title")} />
+      <ModalHero image="/assets/crl/launch-gp-modal.webp" kicker={tt("action_launch_grand_prix")} title={tt("launch_gp_confirm_title")} />
       <div className="launch-gp-content">
         <p>{tt("launch_gp_confirm_body")}</p>
         <div className="starting-grid-confirmation">
@@ -235,7 +235,7 @@ export function AdminDeleteUserModal({
   const [confirmation, setConfirmation] = useState("");
   return (
     <Modal label={tt("admin_delete_user_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <ModalHero image="/assets/crl/league-arrival.png" kicker={tt("admin_kicker")} title={tt("admin_delete_user_title")} />
+      <ModalHero image="/assets/crl/league-arrival.webp" kicker={tt("admin_kicker")} title={tt("admin_delete_user_title")} />
       <p>{tt("admin_delete_user_confirm", { email: user.email })}</p>
       <label className="field">
         <span>{tt("admin_delete_user_confirmation_label")}</span>
@@ -265,7 +265,7 @@ export function SeasonRecapModal({
 }) {
   return (
     <Modal label={tt("season_recap_title")} className="panel modal season-recap-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <ModalHero image="/assets/crl/season-recap-modal.png" kicker={`${tt("league_season")} ${recap.season}`} title={tt("season_recap_title")} />
+      <ModalHero image="/assets/crl/season-recap-modal.webp" kicker={`${tt("league_season")} ${recap.season}`} title={tt("season_recap_title")} />
       <div className="season-champion-card">
         <span>{tt("season_champion")}</span>
         <strong>
@@ -333,7 +333,7 @@ export function LeagueControlsModal({
 }) {
   return (
     <Modal label={tt("settings_title")} className="panel modal league-controls-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <ModalHero image="/assets/crl/league-arrival.png" kicker={tt("championship_kicker")} title={tt("settings_title")} />
+      <ModalHero image="/assets/crl/league-arrival.webp" kicker={tt("championship_kicker")} title={tt("settings_title")} />
       <div className="field-grid settings-fields">
         <label>
           {tt("field_cadence")}
@@ -379,7 +379,7 @@ export function RestartConfirmModal({
 }) {
   return (
     <Modal label={tt("action_restart_league")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <ModalHero image="/assets/crl/league-arrival.png" kicker={tt("championship_kicker")} title={tt("action_restart_league")} />
+      <ModalHero image="/assets/crl/league-arrival.webp" kicker={tt("championship_kicker")} title={tt("action_restart_league")} />
       <p>{tt("restart_confirm")}</p>
       <div className="actions secondary-actions">
         <PendingFeedback message={pendingMessage} />

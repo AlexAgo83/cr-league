@@ -1061,7 +1061,7 @@
 .profile-hero-panel {
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.38)),
-    url("/assets/crl/profile-arrival.png") center / cover no-repeat,
+    url("/assets/crl/profile-arrival.webp") center / cover no-repeat,
     linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
 }
@@ -1069,7 +1069,7 @@
 .league-hero-panel {
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.88), rgb(16 14 18 / 0.38)),
-    url("/assets/crl/league-arrival.png") center / cover no-repeat,
+    url("/assets/crl/league-arrival.webp") center / cover no-repeat,
     linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
 }

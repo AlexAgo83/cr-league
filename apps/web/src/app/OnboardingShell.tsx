@@ -14,8 +14,8 @@ export const ONBOARDING_HELP_KEYS = {
 } as const;
 
 export const ONBOARDING_HELP_IMAGES = {
-  race: "/assets/crl/track-briefing.png",
-  plan: "/assets/crl/strategy-cards.png",
+  race: "/assets/crl/track-briefing.webp",
+  plan: "/assets/crl/strategy-cards.webp",
   garage: "/assets/crl/garage-empty.webp"
 } as const;
 
@@ -110,7 +110,7 @@ export function OnboardingHelpModal({
 }) {
   const [dismiss, setDismiss] = useState(false);
   const items = topic === "profileCode" ? [] : [1, 2, 3].map((index) => tt(`onboarding_${topic}_item_${index}` as TranslationKey));
-  const image = topic === "profileCode" ? "/assets/crl/profile-arrival.png" : ONBOARDING_HELP_IMAGES[topic];
+  const image = topic === "profileCode" ? "/assets/crl/profile-arrival.webp" : ONBOARDING_HELP_IMAGES[topic];
 
   return (
     <Modal label={tt(`onboarding_${topic}_title` as TranslationKey)} onClose={() => onClose(dismiss)}>

@@ -112,15 +112,15 @@
 }
 
 .garage-hero-team {
-  --garage-panel-image: url("/assets/crl/garage-team-hero.png");
+  --garage-panel-image: url("/assets/crl/garage-team-hero.webp");
 }
 
 .garage-hero-inventory {
-  --garage-panel-image: url("/assets/crl/garage-inventory-hero.png");
+  --garage-panel-image: url("/assets/crl/garage-inventory-hero.webp");
 }
 
 .garage-hero-shop {
-  --garage-panel-image: url("/assets/crl/garage-shop-hero.png");
+  --garage-panel-image: url("/assets/crl/garage-shop-hero.webp");
 }
 
 .garage-card-toggle button:not(.active):hover,

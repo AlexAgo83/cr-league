@@ -6,7 +6,7 @@
   --color-muted: rgb(248 243 232 / 0.78);
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.9), rgb(16 14 18 / 0.38)),
-    url("/assets/crl/championship-header.png") center / cover no-repeat,
+    url("/assets/crl/championship-header.webp") center / cover no-repeat,
     linear-gradient(90deg, transparent, rgb(197 58 0 / 0.1), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
   color: var(--color-text);
@@ -187,19 +187,19 @@
 }
 
 .record-hero-standings {
-  --record-hero-image: url("/assets/crl/standings-hero.png");
+  --record-hero-image: url("/assets/crl/standings-hero.webp");
 }
 
 .record-hero-palmares {
-  --record-hero-image: url("/assets/crl/hall-of-fame.png");
+  --record-hero-image: url("/assets/crl/hall-of-fame.webp");
 }
 
 .record-hero-history {
-  --record-hero-image: url("/assets/crl/gp-history-hero.png");
+  --record-hero-image: url("/assets/crl/gp-history-hero.webp");
 }
 
 .record-hero-calendar {
-  --record-hero-image: url("/assets/crl/track-briefing.png");
+  --record-hero-image: url("/assets/crl/track-briefing.webp");
 }
 
 .championship-record-switch,
@@ -285,7 +285,7 @@
 }
 
 .circuit-calendar-list li::before {
-  background: url("/assets/crl/championship-header.png") center / cover no-repeat;
+  background: url("/assets/crl/championship-header.webp") center / cover no-repeat;
   content: "";
   filter: blur(5px);
   inset: -8px;

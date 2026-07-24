@@ -174,10 +174,10 @@ export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = nu
     <header className="setup-topbar">
       <button type="button" className="brand brand-button" onClick={onHome}>
         <span className="brand-icon-slot">
-          <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.png" alt="" loading="eager" />
+          <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.webp" alt="" loading="eager" />
           <BrandLoadingIndicator pendingMessage={pendingMessage} />
         </span>
-        <AssetImage className="brand-wordmark" src="/assets/crl/home-title-league.png" alt={APP_NAME} loading="eager" />
+        <AssetImage className="brand-wordmark" src="/assets/crl/home-title-league.webp" alt={APP_NAME} loading="eager" />
       </button>
       <div className="setup-topbar-actions">{profileMenu ?? languageSwitcher}</div>
     </header>
@@ -205,7 +205,7 @@ export function GameTopbar({
     <header className="topbar">
       <button type="button" className="brand brand-button" onClick={onHome}>
         <span className="brand-icon-slot">
-          <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.png" alt="" loading="eager" />
+          <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.webp" alt="" loading="eager" />
           <BrandLoadingIndicator pendingMessage={pendingMessage} />
         </span>
         <strong>{leagueName}</strong>

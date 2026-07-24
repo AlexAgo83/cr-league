@@ -32,21 +32,21 @@ const CARD_CONSUMPTION_HELP_KEY = "cr-league-card-consumption-help-v2";
 type PrimaryCommand = { label: string; action: () => void | Promise<void>; disabled: boolean };
 
 export const APPROACH_ART: Record<(typeof APPROACHES)[number], string> = {
-  prudent: "/assets/crl/approach-prudent.png",
-  balanced: "/assets/crl/approach-balanced.png",
-  aggressive: "/assets/crl/approach-aggressive.png"
+  prudent: "/assets/crl/approach-prudent.webp",
+  balanced: "/assets/crl/approach-balanced.webp",
+  aggressive: "/assets/crl/approach-aggressive.webp"
 };
 
 export const PREPARATION_ART: Record<(typeof PREPARATIONS)[number], string> = {
-  speed: "/assets/crl/preparation-speed.png",
-  reliability: "/assets/crl/preparation-reliability.png",
-  weather: "/assets/crl/preparation-weather.png"
+  speed: "/assets/crl/preparation-speed.webp",
+  reliability: "/assets/crl/preparation-reliability.webp",
+  weather: "/assets/crl/preparation-weather.webp"
 };
 
 export const PIT_ART: Record<(typeof PIT_STRATEGIES)[number], string> = {
-  heavy_pack: "/assets/crl/pit-strategy-heavy-pack.png",
-  standard: "/assets/crl/pit-strategy-standard.png",
-  mini_pack: "/assets/crl/pit-strategy-mini-pack.png"
+  heavy_pack: "/assets/crl/pit-strategy-heavy-pack.webp",
+  standard: "/assets/crl/pit-strategy-standard.webp",
+  mini_pack: "/assets/crl/pit-strategy-mini-pack.webp"
 };
 
 export function savedDirectiveStep(): DirectiveStep {
@@ -227,7 +227,7 @@ export function DirectivePanel({
     <>
     {cardHelpOpen ? (
       <Modal label={tt("directive_card_consumption_help_title")} closeLabel={tt("action_close")} showCloseButton onClose={closeCardHelp}>
-        <ModalHero image="/assets/crl/send-plan-modal.png" kicker={tt("field_card")} title={tt("directive_card_consumption_help_title")} />
+        <ModalHero image="/assets/crl/send-plan-modal.webp" kicker={tt("field_card")} title={tt("directive_card_consumption_help_title")} />
         <p>{tt("directive_card_consumption_help_body")}</p>
         <label className="checkbox-field onboarding-dismiss">
           <input type="checkbox" checked={dismissCardHelp} onChange={(event) => setDismissCardHelp(event.currentTarget.checked)} />

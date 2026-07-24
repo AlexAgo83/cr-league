@@ -5,21 +5,21 @@ import { AssetImage } from "./AssetImage.js";
 import { VisualIcon } from "./VisualIcon.js";
 
 export const CARD_ART: Record<CardId, string> = {
-  rain_grip: "/assets/crl/card-rain-grip.png",
-  fleet_maintenance: "/assets/crl/card-fleet-maintenance.png",
-  launch_boost: "/assets/crl/card-launch-boost.png",
-  urban_draft: "/assets/crl/card-urban-draft.png",
-  final_surge: "/assets/crl/card-final-surge.png",
-  fleet_sponsorship: "/assets/crl/card-fleet-sponsorship.png",
-  soft_tires: "/assets/crl/card-soft-tires.png",
-  qualifying_focus: "/assets/crl/card-qualifying-focus.png",
-  defensive_order: "/assets/crl/card-defensive-order.png",
-  adjustable_wing: "/assets/crl/card-adjustable-wing.png",
-  rain_mapping: "/assets/crl/card-rain-mapping.png",
-  economy_mode: "/assets/crl/card-economy-mode.png",
-  pit_relay: "/assets/crl/card-pit-relay.png",
-  hard_tires: "/assets/crl/card-hard-tires.png",
-  calculated_attack: "/assets/crl/card-calculated-attack.png"
+  rain_grip: "/assets/crl/card-rain-grip.webp",
+  fleet_maintenance: "/assets/crl/card-fleet-maintenance.webp",
+  launch_boost: "/assets/crl/card-launch-boost.webp",
+  urban_draft: "/assets/crl/card-urban-draft.webp",
+  final_surge: "/assets/crl/card-final-surge.webp",
+  fleet_sponsorship: "/assets/crl/card-fleet-sponsorship.webp",
+  soft_tires: "/assets/crl/card-soft-tires.webp",
+  qualifying_focus: "/assets/crl/card-qualifying-focus.webp",
+  defensive_order: "/assets/crl/card-defensive-order.webp",
+  adjustable_wing: "/assets/crl/card-adjustable-wing.webp",
+  rain_mapping: "/assets/crl/card-rain-mapping.webp",
+  economy_mode: "/assets/crl/card-economy-mode.webp",
+  pit_relay: "/assets/crl/card-pit-relay.webp",
+  hard_tires: "/assets/crl/card-hard-tires.webp",
+  calculated_attack: "/assets/crl/card-calculated-attack.webp"
 };
 
 export function CardArtImage({ cardId }: { cardId: CardId }) {

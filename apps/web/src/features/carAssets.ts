@@ -70,9 +70,9 @@ export const CAR_ASSETS: CarAsset[] = CAR_ASSET_IDS.map((id, index) => {
   return {
     id,
     name: `CRL ${String(index + 1).padStart(3, "0")}`,
-    sprite: `/assets/cars/idle.png?v=crl-v2-${id}`,
-    top: `/assets/cars/crl-v2/${id}/top.png`,
-    side: `/assets/cars/crl-v2/${id}/side.png`,
+    sprite: `/assets/cars/idle.webp?v=crl-v2-${id}`,
+    top: `/assets/cars/crl-v2/${id}/top.webp`,
+    side: `/assets/cars/crl-v2/${id}/side.webp`,
     metadata: `/assets/cars/crl-v2/${id}/metadata.json`
   };
 });

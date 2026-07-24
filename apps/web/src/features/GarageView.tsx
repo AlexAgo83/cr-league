@@ -276,7 +276,7 @@ export function GarageView({
       </section>
       {pendingBuy ? (
         <Modal label={tt("garage_buy_confirm_title")} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setPendingBuyCardId(undefined)}>
-          <ModalHero image="/assets/crl/garage-buy-modal.png" kicker={tt("garage_shop")} title={tt(`card_${pendingBuy.cardId}` as TranslationKey)} />
+          <ModalHero image="/assets/crl/garage-buy-modal.webp" kicker={tt("garage_shop")} title={tt(`card_${pendingBuy.cardId}` as TranslationKey)} />
           <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
             <CardArtImage cardId={pendingBuy.cardId} />
@@ -318,7 +318,7 @@ export function GarageView({
       ) : null}
       {viewingCardId && viewingFit ? (
         <Modal label={tt(`card_${viewingCardId}` as TranslationKey)} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setViewingCardId(undefined)}>
-          <ModalHero image="/assets/crl/garage-sell-modal.png" kicker={tt("garage_inventory")} title={tt(`card_${viewingCardId}` as TranslationKey)} />
+          <ModalHero image="/assets/crl/garage-sell-modal.webp" kicker={tt("garage_inventory")} title={tt(`card_${viewingCardId}` as TranslationKey)} />
           <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
             <CardArtImage cardId={viewingCardId} />

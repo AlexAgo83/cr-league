@@ -699,7 +699,9 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       onCloseRestartConfirm={() => setRestartConfirmOpen(false)}
     />
   );
-  const adminView = (
+  // ponytail: only admins on the admin view ever render this tree (GameViews gates it), so don't
+  // build the whole AdminConsoleView on every render for the non-admin majority.
+  const adminView = profileSession?.admin ? (
     <AdminConsoleView
       adminLeagues={adminLeagues}
       adminRecoveryCode={adminRecoveryCode}
@@ -729,7 +731,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       onSetAdminUserQuery={setAdminUserQuery}
       tt={tt}
     />
-  );
+  ) : null;
 
   return (
     <AppShell

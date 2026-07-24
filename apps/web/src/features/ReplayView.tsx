@@ -376,7 +376,7 @@ export function ReplayView({
         detail: renderPositionBadges(activeDirectorCopy.detail)
       }
     : undefined;
-  const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId);
+  const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId, snapshot.tower.map((entry) => entry.teamId));
   const playerGapItems = replayPlayerGapItems(playerContext, tt);
 
   return (

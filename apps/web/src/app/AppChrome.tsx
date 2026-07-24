@@ -7,8 +7,7 @@ import { CountryBadge } from "../features/VisualIcon.js";
 import type { StoredPlayerClaim } from "./appStorage.js";
 import { GAME_VIEWS, type GameView } from "./types.js";
 import type { Translator } from "./helpers.js";
-
-type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
+import type { Notification } from "./useNotifications.js";
 
 export function NotificationStack({ notifications, tt, onDismiss }: { notifications: Notification[]; tt: Translator; onDismiss: (id: number) => void }) {
   return notifications.length ? (

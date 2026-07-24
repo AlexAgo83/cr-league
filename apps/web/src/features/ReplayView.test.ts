@@ -304,6 +304,18 @@ describe("ReplayView timing", () => {
     expect(buildReplayPlan(result, []).source).toBe("fallback");
   });
 
+  it("reconstructs overtakes for canonical traces without replay facts", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "start", lap: 1, progress: 0, order: ["leader", "last"], times: {}, gaps: { leader: 0, last: 0.8 }, cars: { leader: { trackProgress: 0.1, speed: 1, phase: "racing" }, last: { trackProgress: 0.09, speed: 1, phase: "racing" } } },
+      { segment: "early", lap: 2, progress: 0.3, order: ["last", "leader"], times: {}, gaps: { leader: 0.4, last: 0 }, cars: { leader: { trackProgress: 0.29, speed: 1, phase: "racing" }, last: { trackProgress: 0.3, speed: 1, phase: "racing" } } }
+    ];
+    const plan = buildReplayPlan(result, trace);
+    const beats = buildRaceDirectorBeats(result, trace, plan, 5, "last");
+
+    expect(plan.overtakes).toHaveLength(1);
+    expect(beats.map((beat) => beat.type)).toEqual(["grid_start", "player", "final"]);
+  });
+
   it("falls back to only grid and final director beats when replay facts are missing", () => {
     const beats = buildRaceDirectorBeats(result, [], buildReplayPlan(result, []), 5, "last");
 
@@ -446,6 +458,19 @@ describe("ReplayView timing", () => {
 
     expect(playerReplayContext(result, trace, 0.5, "last")).toMatchObject({ position: 1, delta: 1, gapBehind: 1 });
     expect(playerReplayContext(result, trace, 0.5, undefined)).toBe(null);
+  });
+
+  it("calculates adjacent gaps from the visible replay order", () => {
+    const trace: ReplayTracePoint[] = [
+      { segment: "mid", lap: 3, progress: 0.5, order: ["leader", "mid", "last"], times: {}, gaps: { leader: 0, mid: 2, last: 3 } }
+    ];
+
+    expect(playerReplayContext(result, trace, 0.5, "last", ["leader", "last", "mid"])).toMatchObject({
+      gapAhead: 3,
+      gapBehind: 1,
+      aheadId: "leader",
+      behindId: "mid"
+    });
   });
 
   it("formats only available player replay gaps", () => {

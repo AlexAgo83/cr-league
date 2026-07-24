@@ -17,7 +17,7 @@ export type ReplayDirectorBeat = {
   gapSeconds?: number;
   zoneLabel?: string;
 };
-export function buildRaceDirectorBeats(result: RaceResult, _trace: ReplayTracePoint[], _plan: ReplayPlan, laps: number, playerTeamId?: string, mode: "race" | "qualifying" = "race", _pitProgress = 0.5): ReplayDirectorBeat[] {
+export function buildRaceDirectorBeats(result: RaceResult, _trace: ReplayTracePoint[], plan: ReplayPlan, laps: number, playerTeamId?: string, mode: "race" | "qualifying" = "race", _pitProgress = 0.5): ReplayDirectorBeat[] {
   if (mode === "qualifying") {
     const beats: ReplayDirectorBeat[] = [
       { id: "qualifying-start", type: "qualifying_start", progress: 0, lap: 1 },
@@ -32,10 +32,30 @@ export function buildRaceDirectorBeats(result: RaceResult, _trace: ReplayTracePo
     return beats.sort((left, right) => left.progress - right.progress);
   }
 
-  return (result.replayFacts?.directorBeats ?? [
-    { id: "grid-start", type: "grid_start" as const, progress: 0, lap: 1 },
-    { id: "final-pressure", type: "final" as const, progress: 1, lap: displayLapAtProgress(1, laps), teamId: result.classification[0]?.teamId }
-  ])
+  const beats: ReplayDirectorBeat[] = [...(result.replayFacts?.directorBeats ?? [])];
+  if (!beats.some((beat) => beat.type === "grid_start")) beats.push({ id: "grid-start", type: "grid_start", progress: 0, lap: 1 });
+  for (const change of plan.overtakes) {
+    const id = `overtake-${change.overtakingTeamId}-${change.overtakenTeamId}-${change.progress.toFixed(3)}`;
+    if (!beats.some((beat) => beat.id === id)) {
+      beats.push({
+        id,
+        type: "overtake",
+        progress: change.progress,
+        lap: change.lap,
+        teamId: change.overtakingTeamId,
+        relatedTeamId: change.overtakenTeamId,
+        fromPosition: change.fromPosition,
+        toPosition: change.toPosition,
+        gapSeconds: change.gapSeconds,
+        zoneLabel: change.zoneLabel
+      });
+    }
+  }
+  if (!beats.some((beat) => beat.type === "final")) {
+    beats.push({ id: "final-pressure", type: "final", progress: 1, lap: displayLapAtProgress(1, laps), teamId: result.classification[0]?.teamId });
+  }
+
+  return beats
     .map((beat) => ({
       ...beat,
       lap: displayLapAtProgress(beat.progress, laps),

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 
-export type Notification = { id: number; text: string; tone: "info" | "error"; persistent?: boolean };
+export type Notification = { id: number; text: string; tone: "info" | "error" };
 
 export function useNotifications() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -12,27 +12,22 @@ export function useNotifications() {
     timers.current.clear();
   }, []);
 
-  function pushNotification(text: string, tone: Notification["tone"] = "info", persistent = tone === "error") {
+  function pushNotification(text: string, tone: Notification["tone"] = "info") {
     const id = notificationId.current + 1;
     notificationId.current = id;
-    setNotifications((items) => {
-      const kept = items.filter((item) => item.persistent);
-      return kept.at(-1)?.text === text ? kept : [...kept, { id, text, tone, persistent }].slice(-2);
-    });
-    if (!persistent) {
-      const timer = window.setTimeout(() => {
-        timers.current.delete(timer);
-        setNotifications((items) => items.filter((item) => item.id !== id));
-      }, 4_000);
-      timers.current.add(timer);
-    }
+    setNotifications((items) => items.at(-1)?.text === text ? items : [{ id, text, tone }]);
+    const timer = window.setTimeout(() => {
+      timers.current.delete(timer);
+      setNotifications((items) => items.filter((item) => item.id !== id));
+    }, 2_000);
+    timers.current.add(timer);
     return id;
   }
 
   return {
     notifications,
     pushNotification,
-    clearTransientNotifications: () => setNotifications((items) => items.filter((item) => item.persistent)),
+    clearTransientNotifications: () => setNotifications([]),
     dismissNotification: (id: number) => setNotifications((items) => items.filter((item) => item.id !== id))
   };
 }

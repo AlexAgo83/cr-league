@@ -94,9 +94,10 @@ function visualCarProgress(car: NonNullable<ReplayTracePoint["cars"]>[string] | 
 
 export function buildReplayPlan(result: RaceResult, trace: ReplayTracePoint[]): ReplayPlan {
   const factChanges = result.replayFacts?.orderChanges ?? [];
+  const orderChanges = factChanges.length ? factChanges : isCanonicalReplayTrace(trace) ? traceOrderChanges(trace) : [];
   return {
     source: factChanges.length ? "facts" : isCanonicalReplayTrace(trace) ? "trace" : "fallback",
-    overtakes: factChanges.map((change) => ({
+    overtakes: orderChanges.map((change) => ({
       ...change,
       kind: "overtake",
       phases: replayBeatPhases(change.progress)
@@ -106,6 +107,32 @@ export function buildReplayPlan(result: RaceResult, trace: ReplayTracePoint[]): 
 
 export function isCanonicalReplayTrace(trace: ReplayTracePoint[]) {
   return trace.length >= 2 && trace.every((point) => point.cars);
+}
+
+function traceOrderChanges(trace: ReplayTracePoint[]): ReplayOrderChangeFact[] {
+  return trace.slice(1).flatMap((point, index) => {
+    const previous = trace[index]!;
+    return point.order.flatMap((teamId, toIndex) => {
+      const fromIndex = previous.order.indexOf(teamId);
+      if (fromIndex <= toIndex) return [];
+      return previous.order.slice(toIndex, fromIndex)
+        .filter((overtakenTeamId) => point.order.indexOf(overtakenTeamId) > toIndex)
+        .filter((overtakenTeamId) => ![teamId, overtakenTeamId].some((id) =>
+          [previous.cars?.[id]?.phase, point.cars?.[id]?.phase].some((phase) => phase?.startsWith("pit"))
+        ))
+        .map((overtakenTeamId) => ({
+          type: "order_change" as const,
+          segment: point.segment,
+          lap: point.lap,
+          progress: point.progress,
+          overtakingTeamId: teamId,
+          overtakenTeamId,
+          fromPosition: fromIndex + 1,
+          toPosition: toIndex + 1,
+          gapSeconds: Number((point.gaps[teamId] ?? 0).toFixed(1))
+        }));
+    });
+  });
 }
 
 export function replayPlanDebugLines(plan: ReplayPlan) {
@@ -288,9 +315,10 @@ export function shouldSmoothReplayTrace(trace: ReplayTracePoint[]) {
   return !trace.length || !trace.every((point) => point.cars);
 }
 
-export function playerReplayContext(result: RaceResult, trace: ReplayTracePoint[], progress: number, playerTeamId?: string) {
+export function playerReplayContext(result: RaceResult, trace: ReplayTracePoint[], progress: number, playerTeamId?: string, visibleOrder?: string[]) {
   if (!playerTeamId) return null;
-  const order = tracePointAt(trace, progress).order.length ? tracePointAt(trace, progress).order : result.classification.map((entry) => entry.teamId);
+  const traceOrder = tracePointAt(trace, progress).order;
+  const order = visibleOrder?.length ? visibleOrder : traceOrder.length ? traceOrder : result.classification.map((entry) => entry.teamId);
   const startOrder = trace[0]?.order.length ? trace[0].order : order;
   const gaps = traceGapsAt(trace, progress);
   const index = order.indexOf(playerTeamId);
@@ -301,8 +329,8 @@ export function playerReplayContext(result: RaceResult, trace: ReplayTracePoint[
   return {
     position: index + 1,
     delta: startIndex - index,
-    gapAhead: aheadId ? Math.max(0, (gaps[playerTeamId] ?? 0) - (gaps[aheadId] ?? 0)) : undefined,
-    gapBehind: behindId ? Math.max(0, (gaps[behindId] ?? 0) - (gaps[playerTeamId] ?? 0)) : undefined,
+    gapAhead: aheadId ? Math.abs((gaps[playerTeamId] ?? 0) - (gaps[aheadId] ?? 0)) : undefined,
+    gapBehind: behindId ? Math.abs((gaps[behindId] ?? 0) - (gaps[playerTeamId] ?? 0)) : undefined,
     aheadId,
     behindId
   };

@@ -14,6 +14,7 @@ import {
   trackSpeedProfileForCircuit,
   trackZonesForCircuit,
   type CardId,
+  type CarAssetId,
   type QualifyingRun,
   type RaceDecision,
   type RaceInput,
@@ -854,9 +855,27 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
     }
     const freshState = await getLeagueState(tx, leagueId);
     if (!freshState) return;
+    await buyBotCars(tx, freshState, `${leagueId}-s${nextSeason}-r${nextRound}`);
     await buyBotCards(tx, freshState, `${leagueId}-s${nextSeason}-r${nextRound}`);
     if (nextSeason !== grandPrix.season) {
-      await Promise.all(freshState.teams.map((team) => tx.team.update({ where: { id: team.id }, data: { points: 0 } })));
+      for (const team of freshState.teams) {
+        await lockTeamRow(tx, team.id);
+        const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
+        if (!freshTeam || freshTeam.leagueId !== leagueId) continue;
+        const data: { points: number; livery?: { primary: string; secondary: string; carAssetId?: CarAssetId } } = { points: 0 };
+        if (freshTeam.kind === "bot") {
+          const livery = normalizeLivery(freshTeam.livery);
+          data.livery = {
+            ...livery,
+            carAssetId: randomCarAssetId(
+              `${leagueId}-s${nextSeason}-r${nextRound}-${freshTeam.id}-season-car`,
+              availableCarAssetIds(normalizeUnlockedCarAssetIds(freshTeam.unlockedCarAssetIds)),
+              livery.carAssetId && isCarAssetId(livery.carAssetId) ? livery.carAssetId : undefined
+            )
+          };
+        }
+        await tx.team.update({ where: { id: team.id }, data });
+      }
     }
   });
 
@@ -1146,6 +1165,26 @@ async function buyBotCards(db: Db, state: LeagueState, seed: string) {
   }
 }
 
+async function buyBotCars(db: Db, state: LeagueState, seed: string) {
+  for (const team of state.teams.filter((team) => team.kind === "bot")) {
+    await lockTeamRow(db, team.id);
+    const freshTeam = await db.team.findUnique({ where: { id: team.id } });
+    if (!freshTeam || freshTeam.leagueId !== state.league.id) continue;
+    const unlocked = normalizeUnlockedCarAssetIds(freshTeam.unlockedCarAssetIds);
+    const affordable = paidCarAssetIds(freshTeam.credits).filter((carAssetId) => !unlocked.includes(carAssetId));
+    if (!affordable.length) continue;
+    const carAssetId = randomCarAssetId(`${seed}-${team.id}-${freshTeam.credits}-${unlocked.length}`, affordable);
+    await db.team.updateMany({
+      where: { id: team.id, credits: { gte: CAR_ASSET_PRICES[carAssetId] } },
+      data: {
+        credits: { decrement: CAR_ASSET_PRICES[carAssetId] },
+        unlockedCarAssetIds: [...unlocked, carAssetId],
+        livery: { ...normalizeLivery(freshTeam.livery), carAssetId }
+      }
+    });
+  }
+}
+
 function defaultCardForTeam(team: LeagueState["teams"][number], preferred?: CardId) {
   return preferred && team.cards.includes(preferred) ? preferred : team.cards[0];
 }
@@ -1156,6 +1195,19 @@ function affordableCardIds(credits: number): CardId[] {
 
 function randomCardId(seed: string, cards: CardId[]): CardId {
   return cards[createHash("sha1").update(seed).digest()[0]! % cards.length]!;
+}
+
+function paidCarAssetIds(credits: number): CarAssetId[] {
+  return (Object.keys(CAR_ASSET_PRICES) as CarAssetId[]).filter((carAssetId) => CAR_ASSET_PRICES[carAssetId] > 0 && CAR_ASSET_PRICES[carAssetId] <= credits);
+}
+
+function availableCarAssetIds(unlocked: CarAssetId[]): CarAssetId[] {
+  return (Object.keys(CAR_ASSET_PRICES) as CarAssetId[]).filter((carAssetId) => CAR_ASSET_PRICES[carAssetId] === 0 || unlocked.includes(carAssetId));
+}
+
+function randomCarAssetId(seed: string, carAssetIds: CarAssetId[], current?: CarAssetId): CarAssetId {
+  const candidates = carAssetIds.length > 1 ? carAssetIds.filter((carAssetId) => carAssetId !== current) : carAssetIds;
+  return candidates[createHash("sha1").update(seed).digest()[0]! % candidates.length]!;
 }
 
 async function fillLeagueWithBots(db: Db, state: LeagueState) {

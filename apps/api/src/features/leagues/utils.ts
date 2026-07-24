@@ -1,4 +1,4 @@
-import { CARD_DEFINITIONS, isCarAssetId, type CardId, type CarAssetId, type QualifyingRun, type RaceInput, type TeamLivery, type Weather } from "@cr-league/shared";
+import { CARD_DEFINITIONS, CAR_ASSET_PRICES, isCarAssetId, type CardId, type CarAssetId, type QualifyingRun, type RaceInput, type TeamLivery, type Weather } from "@cr-league/shared";
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { Prisma } from "@prisma/client";
 import {
@@ -186,7 +186,8 @@ function isHexColor(value: string) {
 }
 
 function carAssetIdForIndex(index: number) {
-  return `car-${String((index % 16) + 1).padStart(3, "0")}`;
+  const freeCarAssetIds = (Object.keys(CAR_ASSET_PRICES) as CarAssetId[]).filter((carAssetId) => CAR_ASSET_PRICES[carAssetId] === 0);
+  return freeCarAssetIds[index % freeCarAssetIds.length];
 }
 
 export function appendCard(cards: CardId[], cardId: CardId): Prisma.InputJsonValue {

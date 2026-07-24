@@ -222,7 +222,7 @@ V1 should keep resources minimal:
 
 Avoid deep garage management in V1. No staff hiring, complex car parts, sponsor contracts, or permanent upgrade trees until the core loop is proven.
 
-The current garage may cover team identity, livery colors, persistent credit-priced cosmetic car unlocks, inventory/shop, and card purchase confirmation. That is still "light garage" as long as car ownership remains cosmetic and does not introduce permanent stat upgrades.
+The current garage may cover team identity, livery colors, per-league persistent credit-priced cosmetic car unlocks, inventory/shop, bot cosmetic car purchases, bot season-rollover skin rotation, and card purchase confirmation. That is still "light garage" as long as car ownership remains cosmetic and does not introduce permanent stat upgrades.
 
 Rewards should encourage return:
 

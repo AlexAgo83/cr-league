@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createMemoryDb } from "./testMemoryDb.js";
-import { CARD_PRICE, CARD_PRICES, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit } from "@cr-league/shared";
+import { CARD_PRICE, CARD_PRICES, CAR_ASSET_PRICES, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit } from "@cr-league/shared";
 import { createTestApp } from "./app.testHelpers.js";
 import type { RecoveryMailer } from "./mailer.js";
 
@@ -233,6 +233,7 @@ describe("api app", () => {
     expect(new Set(createdBots.map((team: { name: string }) => team.name.toLowerCase())).size).toBe(createdBots.length);
     expect(new Set(createdBots.map((team: { livery: { primary: string; secondary: string } }) => `${team.livery.primary}:${team.livery.secondary}`)).size).toBe(createdBots.length);
     expect(createdBots.every((team: { livery: { carAssetId?: string } }) => /^car-0(0[1-9]|1[0-6])$/.test(team.livery.carAssetId ?? ""))).toBe(true);
+    expect(createdBots.every((team: { livery: { carAssetId: keyof typeof CAR_ASSET_PRICES } }) => CAR_ASSET_PRICES[team.livery.carAssetId] === 0)).toBe(true);
     expect(new Set(createdBots.map((team: { livery: { carAssetId?: string } }) => team.livery.carAssetId)).size).toBe(createdBots.length);
     expect(created.cardShop).toContainEqual({ cardId: "rain_grip", price: CARD_PRICES.rain_grip });
     expect(created.cardShop).toContainEqual({ cardId: "soft_tires", price: CARD_PRICES.soft_tires });
@@ -420,6 +421,80 @@ describe("api app", () => {
     expect(team).toMatchObject({ credits: 500, unlockedCarAssetIds: ["car-011"], livery: { carAssetId: "car-011" } });
     expect(duplicate.statusCode).toBe(409);
     expect(persistedTeam?.credits).toBe(500);
+  });
+
+  it("keeps car unlocks per league and lets bots buy paid cars", async () => {
+    const db = createMemoryDb();
+    const app = await createTestApp(db);
+    const firstLeague = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "First Garage", teamName: "Volt Union" }
+    });
+    const secondLeague = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Second Garage", teamName: "Volt Union" }
+    });
+    const first = firstLeague.json();
+    const second = secondLeague.json();
+    await db.team.update({ where: { id: first.player.teamId }, data: { credits: 2_000 } });
+
+    const purchase = await app.inject({
+      method: "POST",
+      url: `/leagues/${first.league.id}/cars/buy`,
+      payload: { ...first.player, carAssetId: "car-011" }
+    });
+    await app.inject({ method: "POST", url: `/leagues/${first.league.id}/resolve`, payload: { ...first.player, allowDefaults: true } });
+    const resolved = await app.inject({ method: "GET", url: `/leagues/${first.league.id}` });
+    const bot = resolved.json().teams.find((team: { kind: string }) => team.kind === "bot");
+    await db.team.update({ where: { id: bot.id }, data: { credits: 1_000, cards: [], unlockedCarAssetIds: [] } });
+    const next = await app.inject({
+      method: "POST",
+      url: `/leagues/${first.league.id}/next-grand-prix`,
+      payload: first.player
+    });
+    const botAfterNext = next.json().teams.find((team: { id: string }) => team.id === bot.id);
+    const secondTeam = second.teams.find((team: { id: string }) => team.id === second.player.teamId);
+
+    await app.close();
+
+    expect(purchase.statusCode).toBe(200);
+    expect(secondTeam.unlockedCarAssetIds).toEqual([]);
+    expect(secondTeam.livery.carAssetId).toBeUndefined();
+    expect(botAfterNext.unlockedCarAssetIds).toHaveLength(1);
+    expect(CAR_ASSET_PRICES[botAfterNext.livery.carAssetId as keyof typeof CAR_ASSET_PRICES]).toBe(1_000);
+    expect(botAfterNext.credits).toBe(0);
+  });
+
+  it("rotates bot car skins at season rollover from cars available in that league", async () => {
+    const db = createMemoryDb();
+    const app = await createTestApp(db);
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Season Skin League", teamName: "Volt Union", maxGrandPrixPerSeason: 1 }
+    });
+    const created = createResponse.json();
+    const bot = created.teams.find((team: { kind: string }) => team.kind === "bot");
+    await db.team.update({
+      where: { id: bot.id },
+      data: { credits: 0, livery: { ...bot.livery, carAssetId: "car-001" }, unlockedCarAssetIds: ["car-008"] }
+    });
+    await app.inject({ method: "POST", url: `/leagues/${created.league.id}/resolve`, payload: { ...created.player, allowDefaults: true } });
+    await db.team.update({ where: { id: bot.id }, data: { credits: 0, cards: [] } });
+    const nextSeason = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/next-grand-prix`,
+      payload: created.player
+    });
+    const botAfterRollover = nextSeason.json().teams.find((team: { id: string }) => team.id === bot.id);
+
+    await app.close();
+
+    expect(nextSeason.json().currentGrandPrix).toMatchObject({ season: 2, round: 1 });
+    expect(botAfterRollover.livery.carAssetId).not.toBe("car-001");
+    expect(["car-002", "car-003", "car-004", "car-005", "car-006", "car-007", "car-008"]).toContain(botAfterRollover.livery.carAssetId);
   });
 
   it("renames a team with readable unique names only", async () => {

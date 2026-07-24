@@ -44,7 +44,7 @@ CR League compresses the fantasy of running a motorsport team into a short async
 
 - **One decision is enough to matter.** Each GP is readable without becoming a spreadsheet.
 - **The replay creates receipts.** Players see when their plan helped, failed, or got rescued by chaos.
-- **The garage adds memory.** Credits, cards, and persistent cosmetic car unlocks make the next race feel connected to the last one.
+- **The garage adds memory.** Credits, cards, per-league cosmetic car unlocks, and bot garage choices make the next race feel connected to the last one.
 - **The league becomes social.** Standings, palmares, GP history, and team identity give every group its own lore.
 - **It works for casual rooms.** No wheel, reflexes, or long session required.
 
@@ -112,7 +112,7 @@ CR League is already playable end to end:
 - seeded global city-circuit race simulation with weather, traits, events, reports, and trace-driven replays;
 - dynamic circuit staging markers for the start line and future pit-stop zone;
 - battery/pit strategy choices with pit-stop battery swaps anchored in the generated car trace;
-- garage inventory, card shop, credit-priced cosmetic car unlocks, livery editing, and team rename;
+- garage inventory, card shop, per-league credit-priced cosmetic car unlocks, bot car purchases, livery editing, and team rename;
 - season history, championship standings, replayable past Grand Prix, and rollover;
 - inline pending feedback for API-backed actions across setup, race flow, garage, admin, and settings;
 - English/French UI baseline and responsive cockpit layouts.

@@ -1,10 +1,10 @@
 ## item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch - Cut getLeagueState rebuilds and historical over-fetch
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 60
+> Progress: 100
 > Complexity: Medium
 > Theme: Backend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -55,3 +55,4 @@
 
 # Notes
 - Partially delivered (commit 746c5cf): the historical over-fetch is fixed (past GPs no longer load decisions/qualifying/forecast JSON; current GP fetched via take:1 + a lightweight history findMany). The 'build state once per mutation' call-dedup was descoped: the leading getLeagueState provides the 404 'League not found' semantics, so removing it changes error responses (violates the byte-identical AC). Each call is now cheap, so the marginal round-trip saving no longer justifies the risk.
+- Task `task_117_orchestrate_the_performance_pass` was finished via `logics-manager flow finish task` on 2026-07-24.

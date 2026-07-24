@@ -1,0 +1,119 @@
+{
+  "title": "Performance pass deferred follow-up",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/request/req_116_performance_pass_front_and_api.md",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/app/circuitRoutes/index.ts",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/api/src/features/leagues/storeCore.ts",
+    "Context: req_116 delivered the safe, high-value performance wins (assets to WebP 32MB->5MB, async scrypt, getLeagueState history over-fetch split, resolve consumed-card batching, adminView gating). This request carries the two items that were deliberately deferred there as high-risk / low-benefit changes to sensitive paths.",
+    "Deferred #282: apps/web/src/app/circuitRoutes/index.ts statically imports all 25 route files; circuits.ts builds route into CityCircuit at module-eval on the critical path (~47 KB gzip). circuit.route is read by CircuitMap.tsx:121/128, ChampionshipView.tsx:388, and replayMath.ts:226 — all core-loop screens shown immediately on entering a league.",
+    "Deferred #286: resolveCurrentGrandPrix (storeCore.ts ~767-828) runs the synchronous simulateRace inside runWrite while holding lockGrandPrixRow, computed from state re-read under the lock for consistency; it blocks the single-node event loop and holds the lock for the sim duration."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Performance",
+    "needs": [
+      "Lazy-load circuit route polylines per selected circuit so the eager 25-track chunk leaves the first-paint critical path, without breaking the race/replay/championship render path or its loading behavior.",
+      "Move the CPU-heavy simulateRace off the locked write transaction (or onto a worker thread) so a resolve stops blocking the single-node event loop and holding the grand-prix row lock, while preserving race-integrity guarantees and byte-identical simulation output."
+    ],
+    "context": [
+      "These are the two items deferred from req_116 because they touch a well-optimized render path (#282) and the most integrity-sensitive backend function (#286); each needs a dedicated, carefully-tested change rather than a sweep.",
+      "No new runtime dependencies unless a worker-thread approach for the simulation proves necessary.",
+      "The per-frame replay loop (imperative refs + WeakMap geometry cache) must not be touched.",
+      "Behavior must stay observably identical: same rendered circuit, same simulation results, same lock/double-resolve protection."
+    ],
+    "acceptance_criteria": [
+      "AC1: Circuit route data loads on demand for the selected circuit; the eager circuit-routes chunk is off the first-paint critical path; every round still renders its correct circuit with no layout flash, verified by the web + e2e suites.",
+      "AC2: simulateRace no longer runs while holding the grand-prix row lock (computed before the write transaction, or on a worker thread); the transaction performs only validation and writes.",
+      "AC3: Race-integrity guarantees (single resolve wins, lock semantics) and simulation outputs are preserved verbatim, proven by the resolution tests and balance:gate.",
+      "AC4: Typecheck, lint, the full unit suite, balance:gate, e2e, and logics:validate all stay green with no weakened assertions."
+    ]
+  },
+  "product": {
+    "title": "Performance Pass Deferred Follow-up Product Brief",
+    "overview": "Carry the two high-risk performance items deferred from req_116 as a dedicated, carefully-tested pass: lazy-load circuit route data off the critical path, and take the race simulation off the locked write transaction — both without changing visuals, results, or race-integrity guarantees.",
+    "goals": [
+      "Defer the 25-track route bundle off first paint via on-demand loading.",
+      "Stop simulateRace from blocking the event loop and holding the row lock during a resolve.",
+      "Prove both changes are behavior-neutral via the full gate."
+    ],
+    "non_goals": [
+      "No change to rendered visuals, simulation numerics, seed, transaction boundaries, or rule errors.",
+      "No rewrite of the per-frame replay loop.",
+      "No new dependencies unless a worker thread for the simulation is required.",
+      "No schema/index changes."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Lazy-load circuit route data per selected circuit",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Frontend performance",
+      "request_acs": ["AC1", "AC4"],
+      "problem": [
+        "circuitRoutes/index.ts statically imports all 25 route files; circuits.ts attaches route to CityCircuit at module-eval on the critical path (~47 KB gzip).",
+        "Only one circuit renders per round (circuitForRound, circuits.ts:46).",
+        "circuit.route is consumed by CircuitMap.tsx:121/128, ChampionshipView.tsx:388, and replayMath.ts:226."
+      ],
+      "scope_in": [
+        "Replace the eager CIRCUIT_ROUTES barrel with dynamic import()s keyed by layoutKey.",
+        "Hydrate the route asynchronously at a single upstream boundary (e.g. useRaceDerivations) and gate the race/replay/championship views on it with a clean loading state.",
+        "Keep replayMath and the map renderer receiving a fully-formed circuit; verify with web + e2e suites."
+      ],
+      "scope_out": [
+        "Changing circuit geometry, the map renderer, or the per-frame animation loop.",
+        "Preloading strategies beyond the selected circuit."
+      ],
+      "acceptance_criteria": [
+        "AC1: Route data loads on demand; the eager chunk is off the first-paint critical path.",
+        "AC2: Every round renders its correct circuit with no layout flash.",
+        "AC3: Web, e2e, typecheck, and lint stay green."
+      ]
+    },
+    {
+      "title": "Take simulateRace off the locked write transaction",
+      "priority": "Medium",
+      "complexity": "High",
+      "theme": "Backend performance",
+      "request_acs": ["AC2", "AC3", "AC4"],
+      "problem": [
+        "resolveCurrentGrandPrix runs the synchronous simulateRace inside runWrite while holding lockGrandPrixRow.",
+        "It blocks the single-node event loop for the simulation duration and holds the row lock plus a pooled connection.",
+        "The current design re-reads state under the lock for consistency, which is why moving the sim out needs care."
+      ],
+      "scope_in": [
+        "Compute participants/circuit and run simulateRace before opening runWrite (or on a worker thread), from a consistent snapshot.",
+        "Inside the transaction, keep only the optimistic status claim (updateMany where status:\"briefing\") and the result/point/credit/card writes.",
+        "Extend the resolution tests to prove a concurrent/duplicate resolve is still rejected and results are byte-identical."
+      ],
+      "scope_out": [
+        "Changing simulation numerics, seed, or classification.",
+        "Weakening the double-resolve protection or lock semantics."
+      ],
+      "acceptance_criteria": [
+        "AC1: simulateRace no longer runs while holding the grand-prix row lock.",
+        "AC2: Race-integrity guarantees and simulation outputs are preserved verbatim.",
+        "AC3: Resolution tests, balance:gate, typecheck, and lint stay green."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate the deferred performance follow-up",
+    "plan": [
+      "Do the two items as independent, dedicated changes — not a sweep.",
+      "For lazy circuits: introduce dynamic import + upstream async hydration, verify with web + e2e and a production bundle-size check.",
+      "For simulateRace: compute before the transaction from a consistent snapshot, keep only writes under the lock, and extend resolution tests for concurrency + output parity.",
+      "Run the full gate (typecheck, lint, unit, balance:gate, e2e, logics:validate) and record evidence in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/performance-pass-deferred-followup.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

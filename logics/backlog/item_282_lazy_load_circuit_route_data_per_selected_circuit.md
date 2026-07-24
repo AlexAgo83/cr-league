@@ -1,10 +1,10 @@
 ## item_282_lazy_load_circuit_route_data_per_selected_circuit - Lazy-load circuit route data per selected circuit
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0
+> Progress: 100%
 > Complexity: Medium
 > Theme: Frontend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -55,3 +55,4 @@
 
 # Notes
 - Deferred. Route data is core-loop data (the race desk shows the circuit map immediately on entering a league); lazy-loading ripples async through useRaceDerivations and every race/replay/championship view on a render path the audit found already well-optimized, to defer ~47KB gz that loads seconds later anyway. Revisit only as a dedicated, carefully-tested change.
+- Task `task_117_orchestrate_the_performance_pass` was finished via `logics-manager flow finish task` on 2026-07-24.

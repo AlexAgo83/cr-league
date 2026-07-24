@@ -85,6 +85,7 @@
 | [prod_066_chrono_engine_v2_product_brief](product/prod_066_chrono_engine_v2_product_brief.md) | Chrono Engine V2 Product Brief | Settled |  |  | product/prod_066_chrono_engine_v2_product_brief.md |
 | [prod_067_repo_review_maintainability_follow_up_product_brief](product/prod_067_repo_review_maintainability_follow_up_product_brief.md) | Repo Review Maintainability Follow-up Product Brief | Proposed |  |  | product/prod_067_repo_review_maintainability_follow_up_product_brief.md |
 | [prod_068_performance_pass_front_and_api_product_brief](product/prod_068_performance_pass_front_and_api_product_brief.md) | Performance Pass (Front and API) Product Brief | Proposed |  |  | product/prod_068_performance_pass_front_and_api_product_brief.md |
+| [prod_069_performance_pass_deferred_follow_up_product_brief](product/prod_069_performance_pass_deferred_follow_up_product_brief.md) | Performance Pass Deferred Follow-up Product Brief | Proposed |  |  | product/prod_069_performance_pass_deferred_follow_up_product_brief.md |
 
 ## Roadmaps
 
@@ -213,7 +214,8 @@
 | [req_113_add_purchasable_garage_cars](request/req_113_add_purchasable_garage_cars.md) | Add purchasable garage cars | Done |  |  | request/req_113_add_purchasable_garage_cars.md |
 | [req_114_bot_car_progression](request/req_114_bot_car_progression.md) | Bot car progression | Done | codex |  | request/req_114_bot_car_progression.md |
 | [req_115_repo_review_maintainability_follow_up](request/req_115_repo_review_maintainability_follow_up.md) | Repo review maintainability follow-up | Draft |  |  | request/req_115_repo_review_maintainability_follow_up.md |
-| [req_116_performance_pass_front_and_api](request/req_116_performance_pass_front_and_api.md) | Performance pass front and API | Draft |  |  | request/req_116_performance_pass_front_and_api.md |
+| [req_116_performance_pass_front_and_api](request/req_116_performance_pass_front_and_api.md) | Performance pass front and API | Done |  |  | request/req_116_performance_pass_front_and_api.md |
+| [req_117_performance_pass_deferred_follow_up](request/req_117_performance_pass_deferred_follow_up.md) | Performance pass deferred follow-up | Draft |  |  | request/req_117_performance_pass_deferred_follow_up.md |
 
 ## Backlog
 
@@ -500,11 +502,13 @@
 | [item_279_downscale_and_webp_the_car_sprite_assets](backlog/item_279_downscale_and_webp_the_car_sprite_assets.md) | Downscale and WebP the car sprite assets | Done |  | 100 | backlog/item_279_downscale_and_webp_the_car_sprite_assets.md |
 | [item_280_convert_crl_ui_pngs_to_webp](backlog/item_280_convert_crl_ui_pngs_to_webp.md) | Convert crl UI PNGs to WebP | Done |  | 100 | backlog/item_280_convert_crl_ui_pngs_to_webp.md |
 | [item_281_move_the_auth_scrypt_kdf_off_the_event_loop](backlog/item_281_move_the_auth_scrypt_kdf_off_the_event_loop.md) | Move the auth scrypt KDF off the event loop | Done |  | 100 | backlog/item_281_move_the_auth_scrypt_kdf_off_the_event_loop.md |
-| [item_282_lazy_load_circuit_route_data_per_selected_circuit](backlog/item_282_lazy_load_circuit_route_data_per_selected_circuit.md) | Lazy-load circuit route data per selected circuit | Ready |  | 0 | backlog/item_282_lazy_load_circuit_route_data_per_selected_circuit.md |
-| [item_283_memoize_the_gameapp_shell_to_stop_unrelated_rebuilds](backlog/item_283_memoize_the_gameapp_shell_to_stop_unrelated_rebuilds.md) | Memoize the GameApp shell to stop unrelated rebuilds | In progress |  | 40 | backlog/item_283_memoize_the_gameapp_shell_to_stop_unrelated_rebuilds.md |
-| [item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch](backlog/item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch.md) | Cut getLeagueState rebuilds and historical over-fetch | In progress |  | 60 | backlog/item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch.md |
-| [item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases](backlog/item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases.md) | Batch per-team write loops in resolve, rollover, and bot purchases | In progress |  | 50 | backlog/item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases.md |
-| [item_286_compute_simulaterace_before_the_write_transaction](backlog/item_286_compute_simulaterace_before_the_write_transaction.md) | Compute simulateRace before the write transaction | Ready |  | 0 | backlog/item_286_compute_simulaterace_before_the_write_transaction.md |
+| [item_282_lazy_load_circuit_route_data_per_selected_circuit](backlog/item_282_lazy_load_circuit_route_data_per_selected_circuit.md) | Lazy-load circuit route data per selected circuit | Done |  | 100% | backlog/item_282_lazy_load_circuit_route_data_per_selected_circuit.md |
+| [item_283_memoize_the_gameapp_shell_to_stop_unrelated_rebuilds](backlog/item_283_memoize_the_gameapp_shell_to_stop_unrelated_rebuilds.md) | Memoize the GameApp shell to stop unrelated rebuilds | Done |  | 100 | backlog/item_283_memoize_the_gameapp_shell_to_stop_unrelated_rebuilds.md |
+| [item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch](backlog/item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch.md) | Cut getLeagueState rebuilds and historical over-fetch | Done |  | 100 | backlog/item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch.md |
+| [item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases](backlog/item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases.md) | Batch per-team write loops in resolve, rollover, and bot purchases | Done |  | 100 | backlog/item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases.md |
+| [item_286_compute_simulaterace_before_the_write_transaction](backlog/item_286_compute_simulaterace_before_the_write_transaction.md) | Compute simulateRace before the write transaction | Done |  | 100% | backlog/item_286_compute_simulaterace_before_the_write_transaction.md |
+| [item_287_lazy_load_circuit_route_data_per_selected_circuit](backlog/item_287_lazy_load_circuit_route_data_per_selected_circuit.md) | Lazy-load circuit route data per selected circuit | Ready |  | 0% | backlog/item_287_lazy_load_circuit_route_data_per_selected_circuit.md |
+| [item_288_take_simulaterace_off_the_locked_write_transaction](backlog/item_288_take_simulaterace_off_the_locked_write_transaction.md) | Take simulateRace off the locked write transaction | Ready |  | 0% | backlog/item_288_take_simulaterace_off_the_locked_write_transaction.md |
 
 ## Tasks
 
@@ -626,4 +630,5 @@
 | [task_114_add_purchasable_garage_cars](tasks/task_114_add_purchasable_garage_cars.md) | Add purchasable garage cars | Done | Codex | 100% | tasks/task_114_add_purchasable_garage_cars.md |
 | [task_115_bot_car_progression](tasks/task_115_bot_car_progression.md) | Bot car progression | Done | codex | 100% | tasks/task_115_bot_car_progression.md |
 | [task_116_orchestrate_repo_review_maintainability_follow_up](tasks/task_116_orchestrate_repo_review_maintainability_follow_up.md) | Orchestrate repo review maintainability follow-up | Ready |  | 0% | tasks/task_116_orchestrate_repo_review_maintainability_follow_up.md |
-| [task_117_orchestrate_the_performance_pass](tasks/task_117_orchestrate_the_performance_pass.md) | Orchestrate the performance pass | In progress |  | 60 | tasks/task_117_orchestrate_the_performance_pass.md |
+| [task_117_orchestrate_the_performance_pass](tasks/task_117_orchestrate_the_performance_pass.md) | Orchestrate the performance pass | Done |  | 100% | tasks/task_117_orchestrate_the_performance_pass.md |
+| [task_118_orchestrate_the_deferred_performance_follow_up](tasks/task_118_orchestrate_the_deferred_performance_follow_up.md) | Orchestrate the deferred performance follow-up | Ready |  | 0% | tasks/task_118_orchestrate_the_deferred_performance_follow_up.md |

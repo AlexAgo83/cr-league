@@ -1,10 +1,10 @@
 ## item_283_memoize_the_gameapp_shell_to_stop_unrelated_rebuilds - Memoize the GameApp shell to stop unrelated rebuilds
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 40
+> Progress: 100
 > Complexity: Medium
 > Theme: Frontend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -55,3 +55,4 @@
 
 # Notes
 - Partially delivered (commit c14290c): adminView construction is gated behind the admin flag so the non-admin majority stops building the AdminConsoleView tree each render. Broader React.memo of leaf views + factory memoization was assessed and descoped: the action factories depend on leagueState/form/currentCircuit which change nearly every render, so memoization rarely hits and stabilizing the closures risks stale-closure bugs for ~no gain. Replay already runs on refs. No further work recommended without a profiled hotspot.
+- Task `task_117_orchestrate_the_performance_pass` was finished via `logics-manager flow finish task` on 2026-07-24.

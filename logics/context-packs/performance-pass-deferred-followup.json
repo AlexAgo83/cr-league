@@ -1,0 +1,369 @@
+{
+  "budgets": {
+    "max_docs": 16,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_117_performance_pass_deferred_follow_up item_287_lazy_load_circuit_route_data_per_selected_circuit item_288_take_simulaterace_off_the_locked_write_transaction task_118_orchestrate_the_deferred_performance_follow_up --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_287_lazy_load_circuit_route_data_per_selected_circuit",
+          "item_288_take_simulaterace_off_the_locked_write_transaction"
+        ],
+        "prod": [
+          "prod_069_performance_pass_deferred_follow_up_product_brief"
+        ],
+        "req": [
+          "req_117_performance_pass_deferred_follow_up"
+        ],
+        "task": [
+          "task_118_orchestrate_the_deferred_performance_follow_up"
+        ]
+      },
+      "path": "logics/product/prod_069_performance_pass_deferred_follow_up_product_brief.md",
+      "ref": "prod_069_performance_pass_deferred_follow_up_product_brief",
+      "status": "Proposed",
+      "title": "Performance Pass Deferred Follow-up Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_279_downscale_and_webp_the_car_sprite_assets",
+          "item_280_convert_crl_ui_pngs_to_webp",
+          "item_281_move_the_auth_scrypt_kdf_off_the_event_loop",
+          "item_282_lazy_load_circuit_route_data_per_selected_circuit",
+          "item_283_memoize_the_gameapp_shell_to_stop_unrelated_rebuilds",
+          "item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch",
+          "item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases",
+          "item_286_compute_simulaterace_before_the_write_transaction"
+        ],
+        "prod": [
+          "prod_068_performance_pass_front_and_api_product_brief"
+        ],
+        "req": [
+          "req_116_performance_pass_front_and_api"
+        ],
+        "task": [
+          "task_117_orchestrate_the_performance_pass"
+        ]
+      },
+      "path": "logics/product/prod_068_performance_pass_front_and_api_product_brief.md",
+      "ref": "prod_068_performance_pass_front_and_api_product_brief",
+      "status": "Proposed",
+      "title": "Performance Pass (Front and API) Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, performance pass deferred follow-up, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Performance pass deferred follow-up",
+        "use when": "You need to implement or review the scaffolded workflow for Performance pass deferred follow-up."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_287_lazy_load_circuit_route_data_per_selected_circuit",
+          "item_288_take_simulaterace_off_the_locked_write_transaction"
+        ],
+        "prod": [
+          "prod_069_performance_pass_deferred_follow_up_product_brief"
+        ],
+        "req": [
+          "req_116_performance_pass_front_and_api",
+          "req_117_performance_pass_deferred_follow_up"
+        ]
+      },
+      "path": "logics/request/req_117_performance_pass_deferred_follow_up.md",
+      "ref": "req_117_performance_pass_deferred_follow_up",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Performance pass deferred follow-up"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, performance pass front and api, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Performance pass front and API",
+        "use when": "You need to implement or review the scaffolded workflow for Performance pass front and API."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_279_downscale_and_webp_the_car_sprite_assets",
+          "item_280_convert_crl_ui_pngs_to_webp",
+          "item_281_move_the_auth_scrypt_kdf_off_the_event_loop",
+          "item_282_lazy_load_circuit_route_data_per_selected_circuit",
+          "item_283_memoize_the_gameapp_shell_to_stop_unrelated_rebuilds",
+          "item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch",
+          "item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases",
+          "item_286_compute_simulaterace_before_the_write_transaction"
+        ],
+        "prod": [
+          "prod_068_performance_pass_front_and_api_product_brief"
+        ],
+        "req": [
+          "req_116_performance_pass_front_and_api"
+        ]
+      },
+      "path": "logics/request/req_116_performance_pass_front_and_api.md",
+      "ref": "req_116_performance_pass_front_and_api",
+      "schema_version": "1.0",
+      "status": "Done",
+      "title": "Performance pass front and API"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, lazy-load circuit route data per selected circuit, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Lazy-load circuit route data per selected circuit",
+        "use when": "Implementing the scaffolded slice for Lazy-load circuit route data per selected circuit."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_287_lazy_load_circuit_route_data_per_selected_circuit"
+        ],
+        "prod": [
+          "prod_069_performance_pass_deferred_follow_up_product_brief"
+        ],
+        "req": [
+          "req_117_performance_pass_deferred_follow_up"
+        ],
+        "task": [
+          "task_118_orchestrate_the_deferred_performance_follow_up"
+        ]
+      },
+      "path": "logics/backlog/item_287_lazy_load_circuit_route_data_per_selected_circuit.md",
+      "ref": "item_287_lazy_load_circuit_route_data_per_selected_circuit",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Lazy-load circuit route data per selected circuit"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, take simulaterace off the locked write transaction, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Take simulateRace off the locked write transaction",
+        "use when": "Implementing the scaffolded slice for Take simulateRace off the locked write transaction."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_288_take_simulaterace_off_the_locked_write_transaction"
+        ],
+        "prod": [
+          "prod_069_performance_pass_deferred_follow_up_product_brief"
+        ],
+        "req": [
+          "req_117_performance_pass_deferred_follow_up"
+        ],
+        "task": [
+          "task_118_orchestrate_the_deferred_performance_follow_up"
+        ]
+      },
+      "path": "logics/backlog/item_288_take_simulaterace_off_the_locked_write_transaction.md",
+      "ref": "item_288_take_simulaterace_off_the_locked_write_transaction",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Take simulateRace off the locked write transaction"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate the deferred performance follow-up",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_287_lazy_load_circuit_route_data_per_selected_circuit",
+          "item_288_take_simulaterace_off_the_locked_write_transaction"
+        ],
+        "prod": [
+          "prod_069_performance_pass_deferred_follow_up_product_brief"
+        ],
+        "req": [
+          "req_117_performance_pass_deferred_follow_up"
+        ],
+        "task": [
+          "task_118_orchestrate_the_deferred_performance_follow_up"
+        ]
+      },
+      "path": "logics/tasks/task_118_orchestrate_the_deferred_performance_follow_up.md",
+      "ref": "task_118_orchestrate_the_deferred_performance_follow_up",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate the deferred performance follow-up"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_287_lazy_load_circuit_route_data_per_selected_circuit",
+          "item_288_take_simulaterace_off_the_locked_write_transaction"
+        ],
+        "prod": [
+          "prod_069_performance_pass_deferred_follow_up_product_brief"
+        ],
+        "req": [
+          "req_117_performance_pass_deferred_follow_up"
+        ],
+        "task": [
+          "task_118_orchestrate_the_deferred_performance_follow_up"
+        ]
+      },
+      "path": "logics/product/prod_069_performance_pass_deferred_follow_up_product_brief.md",
+      "ref": "prod_069_performance_pass_deferred_follow_up_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Performance Pass Deferred Follow-up Product Brief"
+    }
+  ],
+  "estimates": {
+    "char_count": 7014,
+    "companion_doc_count": 2,
+    "doc_count": 6
+  },
+  "generated_at": "2026-07-24T12:58:44Z",
+  "handoff": {
+    "companion_doc_count": 2,
+    "enabled": true,
+    "source_refs": [
+      "req_117_performance_pass_deferred_follow_up",
+      "item_287_lazy_load_circuit_route_data_per_selected_circuit",
+      "item_288_take_simulaterace_off_the_locked_write_transaction",
+      "task_118_orchestrate_the_deferred_performance_follow_up"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 830,
+      "fr": 830
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_117_performance_pass_deferred_follow_up,item_287_lazy_load_circuit_route_data_per_selected_circuit,item_288_take_simulaterace_off_the_locked_write_transaction,task_118_orchestrate_the_deferred_performance_follow_up",
+  "refs": [
+    "req_117_performance_pass_deferred_follow_up",
+    "item_287_lazy_load_circuit_route_data_per_selected_circuit",
+    "item_288_take_simulaterace_off_the_locked_write_transaction",
+    "task_118_orchestrate_the_deferred_performance_follow_up"
+  ],
+  "release": {
+    "blocking_reasons": [],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Release evidence is complete.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": null,
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "ready",
+    "target_version": "0.4.5"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_118_orchestrate_the_deferred_performance_follow_up.md",
+      "ref": "task_118_orchestrate_the_deferred_performance_follow_up"
+    }
+  ]
+}

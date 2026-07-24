@@ -1,10 +1,10 @@
 ## item_286_compute_simulaterace_before_the_write_transaction - Compute simulateRace before the write transaction
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0
+> Progress: 100%
 > Complexity: High
 > Theme: Backend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -55,3 +55,4 @@
 
 # Notes
 - Deferred (risk > benefit). simulateRace is computed on state re-read under the grand-prix row lock to guarantee consistency; moving it out risks changing simulation output (violates the verbatim AC) on the most integrity-sensitive function in the repo. resolve is an infrequent admin action with a fast sim. If event-loop blocking ever becomes material, move the sim to a worker thread instead.
+- Task `task_117_orchestrate_the_performance_pass` was finished via `logics-manager flow finish task` on 2026-07-24.

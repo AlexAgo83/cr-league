@@ -312,7 +312,8 @@ export function CircuitMap({
   showTraits = true,
   weather,
   onCarClick,
-  reduceMotion = prefersReducedMotion()
+  reduceMotion = prefersReducedMotion(),
+  tireTrails = true
 }: {
   circuit: CityCircuit;
   tt: Translator;
@@ -333,6 +334,7 @@ export function CircuitMap({
   weather?: Weather;
   onCarClick?: (car: MapCar) => void;
   reduceMotion?: boolean;
+  tireTrails?: boolean;
 }) {
   const { zoom, tiles, points, d } = useMemo(() => circuitScene(circuit), [circuit]);
   const cameraRef = useRef<SVGGElement>(null);
@@ -366,7 +368,7 @@ export function CircuitMap({
   const displayWeather = weather ?? circuit.likelyWeather;
   const sortedCars = useMemo(() => [...cars].sort((a, b) => Number(a.player) - Number(b.player)), [cars]);
   const carDomKey = sortedCars.map((car) => car.id).join("|");
-  const trailCars = useMemo(() => sortedCars.filter((car) => car.player || car.id === camera?.car?.id || sortedCars.length <= 2), [camera?.car?.id, sortedCars]);
+  const trailCars = useMemo(() => tireTrails ? sortedCars.filter((car) => car.player || car.id === camera?.car?.id || sortedCars.length <= 2) : [], [camera?.car?.id, sortedCars, tireTrails]);
   const trailCarDomKey = trailCars.map((car) => car.id).join("|");
   const trailCarIds = useMemo(() => new Set(trailCarDomKey.split("|").filter(Boolean)), [trailCarDomKey]);
   const tileLayer = useMemo(() => tiles.map((tile) => (
@@ -446,7 +448,7 @@ export function CircuitMap({
           light.setAttribute("class", (car.braking ?? brakingAtProgress(progress, circuit.speedProfile)) ? "map-car-rear-light braking" : "map-car-rear-light");
         });
 
-        if (!trailCarIds.has(car.id)) continue;
+        if (!tireTrails || !trailCarIds.has(car.id)) continue;
         const geometry = carRenderGeometryForId(car.livery?.carAssetId);
         const scale = focusEnabled ? 1 / zoomRef.current : markerScale;
         const radians = bodyAngle * Math.PI / 180;
@@ -492,7 +494,7 @@ export function CircuitMap({
       fpsMeterRef.current = { frames: 0, last: 0 };
       tireMarks.clear();
     };
-  }, [carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, reduceMotion, routeAnalysis.startProgress, trailCarDomKey, trailCarIds]);
+  }, [carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, focusEnabled, hasCars, markerScale, reduceMotion, routeAnalysis.startProgress, tireTrails, trailCarDomKey, trailCarIds]);
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;

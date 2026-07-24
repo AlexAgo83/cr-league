@@ -851,6 +851,7 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
+    expect(document.querySelectorAll(".replay-map-panel .map-car-trail[data-segment]")).toHaveLength(0);
     expect(document.querySelector(".replay-director-panel .replay-player-gaps")).toBeTruthy();
     expect(document.querySelector(".replay-director-panel .replay-player-gaps .position-badge")).toBe(null);
     expect(document.querySelector(".replay-player-focus-panel")).toBe(null);

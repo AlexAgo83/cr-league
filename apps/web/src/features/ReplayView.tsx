@@ -396,6 +396,7 @@ export function ReplayView({
             framed={false}
             showTraits={false}
             reduceMotion={reduceMotion}
+            tireTrails={replayMode !== "race"}
             camera={{ enabled: driverFocus, car: focusedCar, timeRef: clock }}
             onCarClick={driverFocus ? (car) => setFocusedCarId(car.id) : undefined}
             overlay={

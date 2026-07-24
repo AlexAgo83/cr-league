@@ -1,4 +1,4 @@
-import type { FastifyInstance, FastifyReply } from "fastify";
+import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
 import type { PrismaClient } from "@prisma/client";
 import type { ApiConfig } from "../../config.js";
 import {
@@ -104,39 +104,20 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post("/leagues/join", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isJoinBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected a league code and team name." });
-    }
+  app.post("/leagues/join", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isJoinBody,
+    badRequest: "Expected a league code and team name.",
+    run: (body) => joinLeagueByCode(db, body),
+    serialize: (state) => state
+  }));
 
-    try {
-      const state = await joinLeagueByCode(db, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return state;
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
-
-  app.post("/leagues/rejoin", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isTeamClaimBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and claim code." });
-    }
-
-    try {
-      const state = await rejoinLeague(db, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "Team claim not found." });
-      return state;
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
+  app.post("/leagues/rejoin", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isTeamClaimBody,
+    badRequest: "Expected a team id and claim code.",
+    run: (body) => rejoinLeague(db, body),
+    serialize: (state) => state,
+    notFound: "Team claim not found."
+  }));
 
   app.get<{ Params: { leagueId: string } }>("/leagues/:leagueId", async (request, reply) => {
     const state = await getLeagueState(db, request.params.leagueId);
@@ -144,139 +125,54 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     return publicLeagueState(state);
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/opponent-configs", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isTeamClaimBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and claim code." });
-    }
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/opponent-configs", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isTeamClaimBody,
+    badRequest: "Expected a team id and claim code.",
+    run: (body, leagueId) => getOpponentConfigComparison(db, leagueId, body),
+    serialize: (comparison) => comparison
+  }));
 
-    try {
-      const comparison = await getOpponentConfigComparison(db, request.params.leagueId, request.body);
-      if (!comparison) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return comparison;
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/settings", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isSettingsBody,
+    badRequest: "Expected league settings body.",
+    run: (body, leagueId) => updateLeagueSettings(db, leagueId, body)
+  }));
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/settings", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isSettingsBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected league settings body." });
-    }
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cards/buy", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isBuyCardBody,
+    badRequest: "Expected a team id and card id.",
+    run: (body, leagueId) => buyCard(db, leagueId, body)
+  }));
 
-    try {
-      const state = await updateLeagueSettings(db, request.params.leagueId, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return stateForBody(state, request.body);
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cars/buy", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isBuyCarBody,
+    badRequest: "Expected a team id and car asset id.",
+    run: (body, leagueId) => buyCarAsset(db, leagueId, body)
+  }));
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cards/buy", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isBuyCardBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and card id." });
-    }
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cards/sell", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isBuyCardBody,
+    badRequest: "Expected a team id and card id.",
+    run: (body, leagueId) => sellCard(db, leagueId, body)
+  }));
 
-    try {
-      const state = await buyCard(db, request.params.leagueId, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return stateForBody(state, request.body);
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/teams/livery", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isLiveryBody,
+    badRequest: "Expected team livery body.",
+    run: (body, leagueId) => updateTeamLivery(db, leagueId, body)
+  }));
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cars/buy", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isBuyCarBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and car asset id." });
-    }
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/teams/name", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isTeamNameBody,
+    badRequest: "Expected team name body.",
+    run: (body, leagueId) => updateTeamName(db, leagueId, body)
+  }));
 
-    try {
-      const state = await buyCarAsset(db, request.params.leagueId, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return stateForBody(state, request.body);
-    } catch (error) {
-      if (error instanceof LeagueRuleError) return sendLeagueRuleError(reply, error);
-      throw error;
-    }
-  });
-
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cards/sell", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isBuyCardBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and card id." });
-    }
-
-    try {
-      const state = await sellCard(db, request.params.leagueId, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return stateForBody(state, request.body);
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
-
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/teams/livery", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isLiveryBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected team livery body." });
-    }
-
-    try {
-      const state = await updateTeamLivery(db, request.params.leagueId, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return stateForBody(state, request.body);
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
-
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/teams/name", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isTeamNameBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected team name body." });
-    }
-
-    try {
-      const state = await updateTeamName(db, request.params.leagueId, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return stateForBody(state, request.body);
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
-
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/decisions", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isDecisionBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected a team decision body." });
-    }
-
-    try {
-      const state = await submitDecision(db, request.params.leagueId, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return stateForBody(state, request.body);
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/decisions", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isDecisionBody,
+    badRequest: "Expected a team decision body.",
+    run: (body, leagueId) => submitDecision(db, leagueId, body)
+  }));
 
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/qualifying", WRITE_RATE_LIMIT, async (request, reply) => {
     if (!isQualifyingBody(request.body)) {
@@ -295,53 +191,23 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     }
   });
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/resolve", WRITE_RATE_LIMIT, async (request, reply) => {
-    try {
-      if (!isAdminBody(request.body)) {
-        return reply.code(400).send({ error: "Bad Request", message: "Expected an admin proof body." });
-      }
-      const state = await resolveCurrentGrandPrix(db, request.params.leagueId, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return stateForBody(state, request.body);
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/resolve", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isAdminBody,
+    badRequest: "Expected an admin proof body.",
+    run: (body, leagueId) => resolveCurrentGrandPrix(db, leagueId, body)
+  }));
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/next-grand-prix", WRITE_RATE_LIMIT, async (request, reply) => {
-    try {
-      if (!isAdminBody(request.body)) {
-        return reply.code(400).send({ error: "Bad Request", message: "Expected an admin proof body." });
-      }
-      const state = await startNextGrandPrix(db, request.params.leagueId, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return stateForBody(state, request.body);
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/next-grand-prix", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isAdminBody,
+    badRequest: "Expected an admin proof body.",
+    run: (body, leagueId) => startNextGrandPrix(db, leagueId, body)
+  }));
 
-  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/restart", WRITE_RATE_LIMIT, async (request, reply) => {
-    if (!isAdminBody(request.body)) {
-      return reply.code(400).send({ error: "Bad Request", message: "Expected an admin proof body." });
-    }
-    try {
-      const state = await restartLeague(db, request.params.leagueId, request.body);
-      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
-      return stateForBody(state, request.body);
-    } catch (error) {
-      if (error instanceof LeagueRuleError) {
-        return sendLeagueRuleError(reply, error);
-      }
-      throw error;
-    }
-  });
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/restart", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isAdminBody,
+    badRequest: "Expected an admin proof body.",
+    run: (body, leagueId) => restartLeague(db, leagueId, body)
+  }));
 }
 
 function withAdminFlag<T extends { profile: { email: string } }>(session: T, config?: Pick<ApiConfig, "adminEmails">) {
@@ -388,6 +254,35 @@ function createRecoveryLimiter(limit = 5, windowMs = 15 * 60 * 1000) {
     take(email: string, ip: string) {
       // ponytail: in-process limiter is enough for single-node Render; use Redis if API scales horizontally.
       return takePair(`email:${email.trim().toLowerCase()}`, `ip:${ip}`);
+    }
+  };
+}
+
+// ponytail: collapses the guard -> 404-on-null -> LeagueRuleError-catch block that was copy-pasted
+// across ~14 handlers. Each route still supplies its own 400 message and (via `serialize`) whether to
+// return player-scoped or public state; behavior and response bodies are unchanged.
+function jsonRoute<B>(config: {
+  guard: (value: unknown) => value is B;
+  badRequest: string;
+  run: (body: B, leagueId: string) => Promise<unknown | null | undefined>;
+  serialize?: (result: unknown, body: B) => unknown;
+  notFound?: string;
+}) {
+  const serialize = config.serialize ?? ((result: unknown, body: B) => stateForBody(result as LeagueState, body));
+  return async (request: FastifyRequest, reply: FastifyReply) => {
+    if (!config.guard(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: config.badRequest });
+    }
+    const leagueId = (request.params as { leagueId?: string } | undefined)?.leagueId ?? "";
+    try {
+      const result = await config.run(request.body, leagueId);
+      if (result === null || result === undefined) {
+        return reply.code(404).send({ error: "Not Found", message: config.notFound ?? "League not found." });
+      }
+      return serialize(result, request.body);
+    } catch (error) {
+      if (error instanceof LeagueRuleError) return sendLeagueRuleError(reply, error);
+      throw error;
     }
   };
 }

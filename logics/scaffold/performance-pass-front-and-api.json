@@ -1,0 +1,309 @@
+{
+  "title": "Performance pass front and API",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/src/features/carAssets.ts",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/app/circuitRoutes/index.ts",
+    "apps/web/src/app/circuits.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/features/AssetImage.tsx",
+    "apps/web/vite.config.ts",
+    "apps/api/src/features/leagues/storeCore.ts",
+    "apps/api/src/features/leagues/utils.ts",
+    "apps/api/src/features/leagues/transactionHelpers.ts",
+    "prisma/schema.prisma",
+    "Audit finding (front): public/assets/cars totals ~18 MB; each car top.png is ~1200x480 (~0.6-1.1 MB) and is referenced twice per car (CircuitMap.tsx:695 and :718); a replay renders ~10-16 cars => ~10 MB of PNG fetched/decoded, rendered at ~1/10 size (markerScale, CircuitMap.tsx:352).",
+    "Audit finding (front): public/assets/crl totals ~14 MB of 250-500 KB PNGs served via AssetImage; the repo already ships .webp for some art (report-victory.webp, plan-header).",
+    "Audit finding (front): circuitRoutes/index.ts statically imports all 25 route files; circuits.ts imports that barrel at module-eval and is on the critical path, so dist/assets/circuit-routes-*.js (~217 KB raw, ~47 KB gzip, 7445 lines) loads on first paint though only one circuit renders per round (circuitForRound, circuits.ts:46).",
+    "Audit finding (front): no React.memo anywhere in src; GameApp (App.tsx:102) re-invokes action factories (App.tsx:305/326/339/380) and rebuilds commonOverlays (:620), adminView (:702), setupTopbar (:615), profileMenu (:769) on every state change; the per-frame replay loop is already imperative (refs + WeakMap geometry cache) and must NOT be changed.",
+    "Audit finding (api): getLeagueState (storeCore.ts:317) issues one 3-level nested query (teams + all grand prixes + all decisions) and is called 3-5x per mutation (e.g. submitDecision at 586/633/638/641; resolveCurrentGrandPrix at 745/758/761/769/821; buy/sell/livery/name call it twice).",
+    "Audit finding (api): the getLeagueState include (storeCore.ts:322-327) over-fetches decisions plus result/qualifyingRuns/forecast JSON for every historical grand prix, though only the current GP uses them; the history mapping (361-368) reads only id/name/season/round/status/result.",
+    "Audit finding (api): resolveCurrentGrandPrix runs simulateRace (synchronous, CPU-heavy) inside runWrite while holding lockGrandPrixRow (SELECT ... FOR UPDATE) at storeCore.ts:767-819, blocking the single-node event loop and extending lock hold time.",
+    "Audit finding (api): per-team write loops issue up to ~3N sequential queries inside transactions (resolveCurrentGrandPrix 800-818, startNextGrandPrix 861-878, buyBotCards/buyBotCars 1149-1186); an updateMany-with-guard pattern already exists at 493 and 1177.",
+    "Audit finding (api): scryptSync (utils.ts:35 and :49) runs synchronously on the auth request path (recoverProfile, ensureProfileOwnership, createProfile), blocking the event loop for the KDF duration.",
+    "Audit finding (api): database indexes were checked against every where/orderBy/join and are adequate; there is NO missing-index work in this pass.",
+    "Current baseline: 315 unit tests passing, lint clean, tsc strict; CI runs npm audit, lint, typecheck, balance:gate, logics:validate. The repo already downscales/optimizes some art to webp and uses a car-assets pipeline (scripts/generate-car-assets.py, docs/car-assets-runbook.md)."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Performance",
+    "needs": [
+      "Cut the replay/asset payload: downscale and convert the oversized car sprite PNGs and the crl UI PNGs to WebP, so the game loads and renders with a fraction of today's image bytes and no visual regression.",
+      "Defer non-critical front-end code: load circuit route data on demand per selected circuit instead of bundling all 25 tracks on the critical path, and memoize the GameApp shell so unrelated state changes stop rebuilding admin/overlay/menu trees.",
+      "Stop wasted backend work on the mutation path: build league state once per request, stop over-fetching historical grand-prix decisions/JSON, and batch per-team writes.",
+      "Get CPU-heavy and blocking work off the hot path: compute simulateRace before the write transaction (not while holding the row lock), and move the auth scrypt KDF off the event loop.",
+      "Preserve behavior exactly: identical rendered output, identical API responses, and the race-integrity guarantees (in-transaction re-checks, row locks, rule errors) intact."
+    ],
+    "context": [
+      "TypeScript monorepo: apps/api (Fastify 5 + Prisma 6 + Postgres), apps/web (React 19 + Vite), packages/shared (domain + seeded simulation).",
+      "This is a turn-based racing-league game; the replay/circuit-map layer is the heaviest front-end screen and is already well-optimized at the per-frame level (imperative refs, WeakMap geometry cache, throttled state) — that loop must not be touched.",
+      "No new runtime dependencies are wanted; asset work reuses the existing webp pipeline and car-assets tooling.",
+      "Database indexes were audited and found adequate — this pass adds no schema/index changes.",
+      "The single-node Render deploy makes event-loop blocking (simulateRace, scryptSync) a real cross-request stall, not a theoretical one."
+    ],
+    "acceptance_criteria": [
+      "AC1: Car sprite masters are downscaled and served as WebP, cutting the per-replay image bytes by roughly an order of magnitude, with the replay rendering visually unchanged.",
+      "AC2: The crl UI PNGs are converted to WebP with no visual regression in Garage/Plan/Championship screens.",
+      "AC3: The auth KDF no longer blocks the event loop — scryptSync is replaced by async crypto.scrypt on the request path — with auth behavior (hash format, verify results, legacy path) unchanged.",
+      "AC4: Circuit route data is loaded on demand for the selected circuit; the eager circuit-routes chunk is off the first-paint critical path; the correct circuit still renders for every round.",
+      "AC5: The GameApp shell is memoized so unrelated state changes no longer rebuild the admin view, overlays, and menus; adminView is not constructed for non-admins; rendered output and behavior are unchanged.",
+      "AC6: getLeagueState is built at most once per mutation and its history query no longer fetches decisions/qualifyingRuns/forecast for past grand prixes; API responses are byte-identical to today.",
+      "AC7: Per-team write loops in resolve, season rollover, and bot purchases are batched, reducing in-transaction round-trips, with identical resulting points/credits/state.",
+      "AC8: simulateRace is computed before the write transaction opens; the transaction performs only validation and writes; race-integrity guarantees and simulation outputs are preserved verbatim.",
+      "AC9: Typecheck, lint, the full unit suite (315+ passing), balance:gate, and logics:validate all stay green, with no weakened assertions."
+    ]
+  },
+  "product": {
+    "title": "Performance Pass (Front and API) Product Brief",
+    "overview": "Act on a measured performance audit of CR League's web and API. The wins are ranked and grounded: compress oversized image assets, defer non-critical front-end code, and remove wasted/blocking backend work on the mutation path — all without changing behavior, visuals, API responses, or race-integrity guarantees, and without new dependencies or schema changes.",
+    "goals": [
+      "Shrink image payload (cars + UI art) by roughly an order of magnitude via downscale + WebP.",
+      "Keep non-critical code (all 25 circuit routes, admin/overlay trees) off the first-paint and off unrelated re-renders.",
+      "Remove duplicated league-state reads, historical over-fetch, and per-team query loops from the backend mutation path.",
+      "Move CPU-heavy simulation and the auth KDF off the locked transaction / event loop."
+    ],
+    "non_goals": [
+      "No change to rendered visuals, API response shape/bytes, transaction boundaries, row locks, or rule-error messages.",
+      "No new runtime dependencies and no Prisma schema/index changes (indexes were audited as adequate).",
+      "No rewrite of the per-frame replay animation loop, the simulation numerics, or the seeded PRNG.",
+      "No change to the public import surface consumed by tests."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Downscale and WebP the car sprite assets",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Frontend performance",
+      "request_acs": ["AC1", "AC9"],
+      "problem": [
+        "public/assets/cars totals ~18 MB; each car top.png is ~1200x480 (~0.6-1.1 MB).",
+        "CircuitMap.tsx:695 and :718 reference each car's top.png twice, and a replay renders ~10-16 cars => ~10 MB fetched/decoded.",
+        "Sprites are drawn at ~1/10 of their pixel size (markerScale, CircuitMap.tsx:352), so the masters are ~10x oversized."
+      ],
+      "scope_in": [
+        "Downscale the car sprite masters to roughly their rendered footprint (~300 px wide) and encode as WebP via the existing asset pipeline (scripts/generate-car-assets.py / docs/car-assets-runbook.md).",
+        "Update carAssets.ts:74 (and any references) to point at the WebP variants.",
+        "Verify the replay renders visually unchanged across a representative set of cars."
+      ],
+      "scope_out": [
+        "Changing the replay rendering code or the CircuitMap animation loop.",
+        "Adding an image-processing runtime dependency.",
+        "Re-authoring the sprite artwork."
+      ],
+      "acceptance_criteria": [
+        "AC1: Per-replay car-image bytes drop by roughly an order of magnitude.",
+        "AC2: The replay renders visually unchanged for a representative set of cars.",
+        "AC3: Typecheck, lint, and the unit suite stay green."
+      ]
+    },
+    {
+      "title": "Convert crl UI PNGs to WebP",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Frontend performance",
+      "request_acs": ["AC2", "AC9"],
+      "problem": [
+        "public/assets/crl totals ~14 MB of 250-500 KB PNGs (card/hero art) served via AssetImage.",
+        "Individual Garage/Plan/Championship panels pull 300-500 KB PNGs where WebP would be ~50-80 KB.",
+        "The repo already ships webp for some art, so the encoding path is proven."
+      ],
+      "scope_in": [
+        "Convert the crl PNG set to WebP and update the AssetImage references/extensions.",
+        "Keep AssetImage's existing lazy/async decoding behavior.",
+        "Spot-check the Garage shop, plan header, and championship screens for visual parity."
+      ],
+      "scope_out": [
+        "Redesigning any art or layout.",
+        "Changing AssetImage's loading strategy beyond the file extension.",
+        "Touching the car sprite assets (separate slice)."
+      ],
+      "acceptance_criteria": [
+        "AC1: The crl art is served as WebP with no visual regression.",
+        "AC2: AssetImage lazy/async behavior is unchanged.",
+        "AC3: Typecheck, lint, and the unit suite stay green."
+      ]
+    },
+    {
+      "title": "Move the auth scrypt KDF off the event loop",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Backend performance",
+      "request_acs": ["AC3", "AC9"],
+      "problem": [
+        "hashRecoveryCode (utils.ts:35) and verifyRecoveryCode (utils.ts:49) call scryptSync synchronously on the request path.",
+        "scrypt at default cost is deliberately expensive and, being sync, blocks the single event-loop thread for its full duration.",
+        "Concurrent recover/join calls serialize their KDF time head-to-tail on the one thread."
+      ],
+      "scope_in": [
+        "Replace scryptSync with the async crypto.scrypt (promisified) in hashRecoveryCode and verifyRecoveryCode.",
+        "Thread the now-async calls through their callers (recoverProfile, ensureProfileOwnership, createProfile, requestRecoveryCode).",
+        "Preserve the exact hash format (scrypt$salt$key), the current/legacy verify outcomes, and timing-safe comparison."
+      ],
+      "scope_out": [
+        "Changing the KDF parameters, hash format, or the legacy sha256 path semantics.",
+        "Altering rate-limiting or auth flow behavior.",
+        "Moving other synchronous work off the loop in this slice."
+      ],
+      "acceptance_criteria": [
+        "AC1: scryptSync is gone from the request path; the KDF runs on the libuv threadpool.",
+        "AC2: Hash format and verify outcomes (current + legacy + timing-safe) are unchanged, proven by the existing auth tests.",
+        "AC3: Typecheck, lint, and the unit suite stay green."
+      ]
+    },
+    {
+      "title": "Lazy-load circuit route data per selected circuit",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Frontend performance",
+      "request_acs": ["AC4", "AC9"],
+      "problem": [
+        "circuitRoutes/index.ts statically imports all 25 route files and circuits.ts consumes that barrel at module-eval on the critical path.",
+        "dist/assets/circuit-routes-*.js is ~217 KB raw (~47 KB gzip, 7445 lines) loaded on first paint.",
+        "Only one circuit renders per round (circuitForRound, circuits.ts:46)."
+      ],
+      "scope_in": [
+        "Convert the CIRCUIT_ROUTES lookup to dynamic import()s keyed by layoutKey so a track loads only when selected/rendered.",
+        "Introduce the async boundary at the CircuitMap circuitScene useMemo (CircuitMap.tsx:339) or an equivalent load point.",
+        "Ensure the correct circuit renders for every round, including a loading state that does not flash or break layout."
+      ],
+      "scope_out": [
+        "Changing circuit geometry, the map renderer, or the animation loop.",
+        "Reworking vite manualChunks beyond what the dynamic import requires.",
+        "Preloading strategies beyond the selected circuit (optional follow-up)."
+      ],
+      "acceptance_criteria": [
+        "AC1: Circuit route data loads on demand; the eager circuit-routes chunk is off the first-paint critical path.",
+        "AC2: The correct circuit renders for every round with no layout flash or regression.",
+        "AC3: Typecheck, lint, and the unit suite stay green."
+      ]
+    },
+    {
+      "title": "Memoize the GameApp shell to stop unrelated rebuilds",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Frontend performance",
+      "request_acs": ["AC5", "AC9"],
+      "problem": [
+        "There is no React.memo anywhere in src; GameApp (App.tsx:102) rebuilds action factories (305/326/339/380) and commonOverlays (620), adminView (702), setupTopbar (615), profileMenu (769) on every state change.",
+        "adminView/AdminConsoleView and overlay modals are constructed even for non-admins and when no modal is open.",
+        "Any keystroke/click reconciles the whole shell because nothing downstream is memoized."
+      ],
+      "scope_in": [
+        "Wrap the leaf views (AdminConsoleView, AppOverlays, DriveView, ChampionshipView, ProfileMenu) in React.memo.",
+        "useMemo/useCallback the action-factory results and the commonOverlays/adminView/setupTopbar trees so unrelated state changes do not rebuild them.",
+        "Gate adminView construction behind the admin condition."
+      ],
+      "scope_out": [
+        "Changing the per-frame replay loop (already imperative — must not be touched).",
+        "Introducing a state-management library or restructuring GameApp's state.",
+        "Changing any rendered output or behavior."
+      ],
+      "acceptance_criteria": [
+        "AC1: Unrelated state changes no longer rebuild the admin view, overlays, or menus.",
+        "AC2: adminView is not constructed for non-admins; rendered output and behavior are unchanged, proven by the App tests.",
+        "AC3: Typecheck, lint, and the unit suite stay green."
+      ]
+    },
+    {
+      "title": "Cut getLeagueState rebuilds and historical over-fetch",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Backend performance",
+      "request_acs": ["AC6", "AC9"],
+      "problem": [
+        "getLeagueState (storeCore.ts:317) is called 3-5x per mutation (submitDecision 586/633/638/641; resolveCurrentGrandPrix 745/758/761/769/821; buy/sell/livery/name twice), each a full 3-level nested query and payload rebuild.",
+        "Its include (322-327) fetches decisions plus result/qualifyingRuns/forecast JSON for every historical grand prix, though only the current GP uses them and history mapping (361-368) reads only id/name/season/round/status/result.",
+        "Cost grows unbounded with seasons and multiplies with the repeated calls."
+      ],
+      "scope_in": [
+        "Build league state once per mutation and thread it through, collapsing the validate-then-return double reads in buy/sell/livery/name.",
+        "Split the query: current GP (with decisions/qualifyingRuns/forecast) plus a lightweight history findMany selecting only id/name/season/round/status/result.",
+        "Confirm API responses are byte-identical via the existing app tests."
+      ],
+      "scope_out": [
+        "Changing the LeagueState/response shape or the public serializers' output.",
+        "Altering transaction boundaries, locks, or rule errors.",
+        "Adding caching layers."
+      ],
+      "acceptance_criteria": [
+        "AC1: getLeagueState is built at most once per mutation.",
+        "AC2: The history query no longer fetches decisions/qualifyingRuns/forecast for past GPs.",
+        "AC3: API responses are byte-identical, proven by app.test.ts; typecheck/lint/tests stay green."
+      ]
+    },
+    {
+      "title": "Batch per-team write loops in resolve, rollover, and bot purchases",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Backend performance",
+      "request_acs": ["AC7", "AC9"],
+      "problem": [
+        "resolveCurrentGrandPrix (800-818) issues N team updates plus up to 2N consumed-card queries; startNextGrandPrix (861-878) does 3 queries per team; buyBotCards/buyBotCars (1149-1186) do 3 per bot — all sequential inside transactions.",
+        "With maxPlayers teams this is ~3N sequential round-trips per resolve, adding latency and lock hold time.",
+        "An updateMany-with-guard pattern already exists at 493 and 1177."
+      ],
+      "scope_in": [
+        "Batch the point/credit increments (updateMany by delta, or Promise.all over distinct rows) instead of sequential awaits.",
+        "Drop redundant lockTeamRow+findUnique in the bot loops where an updateMany ... where credits >= price already guards atomically.",
+        "Prove identical resulting points/credits/state via the existing resolution and admin tests."
+      ],
+      "scope_out": [
+        "Changing scoring, card, or economy logic.",
+        "Relaxing any race-integrity re-check that must stay inside the transaction.",
+        "Reordering writes in a way that changes observable results."
+      ],
+      "acceptance_criteria": [
+        "AC1: The per-team loops issue materially fewer in-transaction round-trips.",
+        "AC2: Resulting points/credits/state are identical, proven by the resolution/admin tests.",
+        "AC3: Typecheck, lint, and the unit suite stay green."
+      ]
+    },
+    {
+      "title": "Compute simulateRace before the write transaction",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Backend performance",
+      "request_acs": ["AC8", "AC9"],
+      "problem": [
+        "resolveCurrentGrandPrix (767-819) takes lockGrandPrixRow (SELECT ... FOR UPDATE), reads full state inside the tx (769), then runs the synchronous simulateRace (777).",
+        "This blocks the single-node event loop for the simulation duration and holds the row lock and a pooled connection for the entire compute.",
+        "It also serializes concurrent resolves on the locked row."
+      ],
+      "scope_in": [
+        "Load participants/circuit and run simulateRace before opening runWrite.",
+        "Inside the transaction, keep only the optimistic status claim (the updateMany where status:\"briefing\" at 791) and the result/point/credit writes.",
+        "Preserve the race-integrity re-checks and outputs verbatim; add/extend tests proving a concurrent/duplicate resolve is still rejected and results are identical."
+      ],
+      "scope_out": [
+        "Changing the simulation numerics, seed, or classification.",
+        "Removing the optimistic status guard or weakening double-resolve protection.",
+        "Moving simulateRace to a worker thread (separate follow-up if event-loop blocking remains material)."
+      ],
+      "acceptance_criteria": [
+        "AC1: simulateRace runs before runWrite; the transaction performs only validation and writes.",
+        "AC2: Race-integrity guarantees (single resolve wins, lock semantics) and simulation outputs are preserved verbatim, proven by the resolution tests.",
+        "AC3: Typecheck, lint, the unit suite, and balance:gate stay green."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate the performance pass",
+    "plan": [
+      "Wave 1 (safe, high-value): downscale+WebP car sprites, convert crl PNGs to WebP, switch auth scrypt to async; run typecheck/lint/tests after each.",
+      "Wave 2 (front): lazy-load circuit routes per selected circuit, then memoize the GameApp shell; verify with the web tests and a production build size check.",
+      "Wave 3 (API, with tests): cut getLeagueState rebuilds + history over-fetch, batch per-team write loops, then move simulateRace out of the write transaction last (riskiest).",
+      "Prove behavior parity at every step: identical visuals, byte-identical API responses, and intact race-integrity guarantees.",
+      "Run the full gate (typecheck, lint, unit suite, balance:gate, logics:validate) and record before/after evidence (bundle sizes, asset bytes) in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/performance-pass-front-and-api.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

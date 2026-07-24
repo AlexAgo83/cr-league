@@ -227,13 +227,14 @@
     border-radius: 6px;
     gap: 1px;
     left: 8px;
-    max-width: 118px;
+    max-width: none;
     padding: 5px 7px;
     top: 8px;
+    width: min(162px, calc(100vw - 16px));
   }
 
   .map-status:has(.map-weather-info-button) {
-    max-width: 118px;
+    max-width: none;
     min-width: 0;
     padding-right: 36px;
   }
@@ -247,12 +248,18 @@
     z-index: 4;
   }
 
-  .map-info-stack > .map-status,
   .map-info-stack > .map-plan-performance,
   .map-info-stack > .map-traits-panel {
     bottom: auto;
     left: auto;
     position: static;
+    top: auto;
+  }
+
+  .map-info-stack > .map-status {
+    bottom: auto;
+    left: auto;
+    position: relative;
     top: auto;
   }
 

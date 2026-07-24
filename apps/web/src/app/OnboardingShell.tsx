@@ -1,5 +1,6 @@
 import { type ReactNode, useMemo, useState } from "react";
-import { CITY_CIRCUITS } from "./circuits.js";
+import { CITY_CIRCUITS, withRoute } from "./circuits.js";
+import { useCircuitRoutesReady } from "./circuitRoutes/index.js";
 import { type TranslationKey } from "../i18n/index.js";
 import { CircuitMap } from "../features/CircuitMap.js";
 import { Modal } from "../features/Modal.js";
@@ -32,6 +33,7 @@ export type StandardOnboardingHelpTopic = Exclude<OnboardingHelpTopic, "leagueIn
 export const SCREEN_ONBOARDING_HELP_TOPICS = ["race", "plan", "garage"] as const satisfies readonly OnboardingHelpTopic[];
 
 function AmbientRaceBackground({ tt }: { tt: (key: TranslationKey) => string }) {
+  useCircuitRoutesReady(); // subscribe: re-render (and re-read the route below) once the cache loads
   const { circuit, cars } = useMemo(() => {
     const liveries: Array<[string, string]> = [
       ["#22c55e", "#052e16"],
@@ -56,10 +58,11 @@ function AmbientRaceBackground({ tt }: { tt: (key: TranslationKey) => string }) 
       }))
     };
   }, []);
+  const hydratedCircuit = withRoute(circuit); // fresh route snapshot each render; cheap, rarely re-renders
 
   return (
     <div className="ambient-race-background" aria-hidden="true">
-      <CircuitMap className="ambient-race-map" circuit={circuit} tt={tt} cars={cars} camera={{ enabled: true, car: cars[0] }} showHeading={false} framed={false} showTraits={false} />
+      <CircuitMap className="ambient-race-map" circuit={hydratedCircuit} tt={tt} cars={cars} camera={{ enabled: true, car: cars[0] }} showHeading={false} framed={false} showTraits={false} />
     </div>
   );
 }

@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import type { DecisionDeltaKey, TeamLivery, TrackSpeedProfile, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
+import { useCircuitRoutesReady } from "../app/circuitRoutes/index.js";
 import type { Translator } from "../app/helpers.js";
 import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { DEFAULT_CAR_ASSET, carAssetForId, carRenderGeometryForId, type CarAsset } from "./carAssets.js";
@@ -298,7 +299,18 @@ export function routeFitTransform(points: RoutePoint[]) {
   return { x, y, scale, value: `translate(${x} ${y}) scale(${scale})` };
 }
 
-export function CircuitMap({
+// Circuit route polylines load lazily. Until the cache fills, circuit.route is empty — rendering the
+// inner map (which positions cars on the route) would divide by an empty polyline, so gate on it.
+// ponytail: a placeholder holds the slot for the ~1 frame before the route arrives; no layout jump.
+export function CircuitMap(props: Parameters<typeof CircuitMapInner>[0]) {
+  useCircuitRoutesReady();
+  if (props.circuit.route.length === 0) {
+    return <div className={props.className} aria-hidden="true" />;
+  }
+  return <CircuitMapInner {...props} />;
+}
+
+function CircuitMapInner({
   circuit,
   tt,
   cars = [],

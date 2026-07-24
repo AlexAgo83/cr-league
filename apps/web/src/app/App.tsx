@@ -22,6 +22,7 @@ import {
   seasonRecapStorageKey,
 } from "./appStorage.js";
 import { AppShell } from "./AppShell.js";
+import { useCircuitRoutesReady } from "./circuitRoutes/index.js";
 import { rememberPlayerClaim, withCurrentPlayer as restoreCurrentPlayer, withoutPlayerClaim } from "./claimHelpers.js";
 import { createProfileActions } from "./profileActions.js";
 import { createRaceActions } from "./raceActions.js";
@@ -100,6 +101,9 @@ function HomeSplash({ locale, tt, onChangeLocale, onEnter }: { locale: Locale; t
 }
 
 function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (locale: Locale) => void }) {
+  // Kicks off the lazy circuit-route load and re-renders once ready so circuitForRound (below) hands
+  // the freshly-loaded polyline to the race/replay/championship views.
+  useCircuitRoutesReady();
   const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [resultTab, setResultTab] = useState<ResultTab>("replay");

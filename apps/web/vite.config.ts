@@ -8,7 +8,9 @@ export default defineConfig({
       output: {
         manualChunks(id) {
           if (id.includes("/node_modules/")) return "vendor";
-          if (id.includes("/src/app/circuitRoutes/")) return "circuit-routes";
+          // Keep the lazy facade (index.ts) out of the data chunk so only the dynamically-imported
+          // route data lands in circuit-routes — otherwise the static facade drags it onto first paint.
+          if (id.includes("/src/app/circuitRoutes/") && !id.includes("/circuitRoutes/index")) return "circuit-routes";
         }
       }
     }

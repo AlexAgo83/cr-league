@@ -1,55 +1,45 @@
-import { route as circuitBrusselsGrandPlaceLoop } from "./circuit_brussels_grand_place_loop.js";
-import { route as circuitCanalLoop } from "./circuit_canal_loop.js";
-import { route as circuitCannesHoussamLoop } from "./circuit_cannes_houssam_loop.js";
-import { route as circuitCapeTownWaterfrontLoop } from "./circuit_cape_town_waterfront_loop.js";
-import { route as circuitCopenhagenHarborLoop } from "./circuit_copenhagen_harbor_loop.js";
-import { route as circuitDocklandsSprint } from "./circuit_docklands_sprint.js";
-import { route as circuitHarborSprint } from "./circuit_harbor_sprint.js";
-import { route as circuitIstanbulBosphorusLoop } from "./circuit_istanbul_bosphorus_loop.js";
-import { route as circuitLeftBankLoop } from "./circuit_left_bank_loop.js";
-import { route as circuitLisbonBaixaLoop } from "./circuit_lisbon_baixa_loop.js";
-import { route as circuitLondonThamesLoop } from "./circuit_london_thames_loop.js";
-import { route as circuitMadridCentroLoop } from "./circuit_madrid_centro_loop.js";
-import { route as circuitMitteDash } from "./circuit_mitte_dash.js";
-import { route as circuitMonacoCasinoSprint } from "./circuit_monaco_casino_sprint.js";
-import { route as circuitMonacoHarborLoop } from "./circuit_monaco_harbor_loop.js";
-import { route as circuitMontrealIslandLoop } from "./circuit_montreal_island_loop.js";
-import { route as circuitPortoBoavistaLoop } from "./circuit_porto_boavista_loop.js";
-import { route as circuitPragueVltavaLoop } from "./circuit_prague_vltava_loop.js";
-import { route as circuitRingSector } from "./circuit_ring_sector.js";
-import { route as circuitRioFlamengoLoop } from "./circuit_rio_flamengo_loop.js";
-import { route as circuitRomeTiberLoop } from "./circuit_rome_tiber_loop.js";
-import { route as circuitSeoulYeouidoLoop } from "./circuit_seoul_yeouido_loop.js";
-import { route as circuitStockholmGamlaStanLoop } from "./circuit_stockholm_gamla_stan_loop.js";
-import { route as circuitTokyoBayLoop } from "./circuit_tokyo_bay_loop.js";
-import { route as circuitViennaRingLoop } from "./circuit_vienna_ring_loop.js";
+import { useSyncExternalStore } from "react";
 
-type CircuitRoute = Array<{ lat: number; lng: number }>;
+// Lazy circuit-route loading: the 25 lat/lng polylines (~47 KB gz) used to be a static import on
+// the first-paint critical path though only one circuit renders per round. They now load on demand
+// via a single dynamic import of ./data.js, and consumers read routes from this cache by layoutKey.
+// ponytail: one dynamic import for the whole barrel — simpler and enough; per-circuit splitting buys
+// little since a league cycles through several tracks anyway.
+export type CircuitRoute = Array<{ lat: number; lng: number }>;
 
-export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
-  circuit_brussels_grand_place_loop: circuitBrusselsGrandPlaceLoop,
-  circuit_canal_loop: circuitCanalLoop,
-  circuit_cannes_houssam_loop: circuitCannesHoussamLoop,
-  circuit_cape_town_waterfront_loop: circuitCapeTownWaterfrontLoop,
-  circuit_copenhagen_harbor_loop: circuitCopenhagenHarborLoop,
-  circuit_docklands_sprint: circuitDocklandsSprint,
-  circuit_harbor_sprint: circuitHarborSprint,
-  circuit_istanbul_bosphorus_loop: circuitIstanbulBosphorusLoop,
-  circuit_left_bank_loop: circuitLeftBankLoop,
-  circuit_lisbon_baixa_loop: circuitLisbonBaixaLoop,
-  circuit_london_thames_loop: circuitLondonThamesLoop,
-  circuit_madrid_centro_loop: circuitMadridCentroLoop,
-  circuit_mitte_dash: circuitMitteDash,
-  circuit_monaco_casino_sprint: circuitMonacoCasinoSprint,
-  circuit_monaco_harbor_loop: circuitMonacoHarborLoop,
-  circuit_montreal_island_loop: circuitMontrealIslandLoop,
-  circuit_porto_boavista_loop: circuitPortoBoavistaLoop,
-  circuit_prague_vltava_loop: circuitPragueVltavaLoop,
-  circuit_ring_sector: circuitRingSector,
-  circuit_rio_flamengo_loop: circuitRioFlamengoLoop,
-  circuit_rome_tiber_loop: circuitRomeTiberLoop,
-  circuit_seoul_yeouido_loop: circuitSeoulYeouidoLoop,
-  circuit_stockholm_gamla_stan_loop: circuitStockholmGamlaStanLoop,
-  circuit_tokyo_bay_loop: circuitTokyoBayLoop,
-  circuit_vienna_ring_loop: circuitViennaRingLoop
-};
+let routeCache: Record<string, CircuitRoute> = {};
+let loadPromise: Promise<void> | null = null;
+const listeners = new Set<() => void>();
+const emit = () => listeners.forEach((listener) => listener());
+
+export function loadCircuitRoutes(): Promise<void> {
+  if (!loadPromise) {
+    loadPromise = import("./data.js").then((module) => {
+      routeCache = module.CIRCUIT_ROUTES;
+      emit();
+    });
+  }
+  return loadPromise;
+}
+
+export function circuitRouteFor(layoutKey: string): CircuitRoute {
+  return routeCache[layoutKey] ?? [];
+}
+
+export function circuitRoutesReady(): boolean {
+  return Object.keys(routeCache).length > 0;
+}
+
+// React hook: kicks off the load and reports readiness so views that draw the route can gate on it.
+export function useCircuitRoutesReady(): boolean {
+  const ready = useSyncExternalStore(
+    (onChange) => {
+      listeners.add(onChange);
+      return () => listeners.delete(onChange);
+    },
+    circuitRoutesReady,
+    () => false
+  );
+  if (!ready) void loadCircuitRoutes();
+  return ready;
+}

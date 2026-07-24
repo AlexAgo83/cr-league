@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import type { TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
-import { CITY_CIRCUITS, circuitsForSeason, type CityCircuit } from "../app/circuits.js";
+import { CITY_CIRCUITS, circuitsForSeason, withRoute, type CityCircuit } from "../app/circuits.js";
 import { safeStorage } from "../app/appStorage.js";
 import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
@@ -44,7 +44,7 @@ export function ChampionshipView({
   const seasonCircuits = circuitsForSeason(state.league.id, currentGrandPrix.season);
   const previewCar = useMemo(() => previewCircuit ? circuitPreviewCar(previewCircuit, state, playerTeamId) : undefined, [playerTeamId, previewCircuit, state]);
   const previewClock = useCircuitPreviewClock(previewCircuit, previewCar);
-  const catalogCircuits = [...CITY_CIRCUITS].sort((left, right) => tt(left.layoutKey).localeCompare(tt(right.layoutKey), undefined, { sensitivity: "base" }));
+  const catalogCircuits = CITY_CIRCUITS.map(withRoute).sort((left, right) => tt(left.layoutKey).localeCompare(tt(right.layoutKey), undefined, { sensitivity: "base" }));
   const seasonRoundsByLayout = new Map<string, number[]>();
   for (let round = 1; round <= state.league.maxGrandPrixPerSeason; round += 1) {
     const circuit = seasonCircuits[(round - 1) % seasonCircuits.length]!;

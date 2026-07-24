@@ -1,7 +1,7 @@
 import { CITY_CIRCUIT_IDENTITIES, circuitSeasonSeed, seasonCircuitIdentities, trackSpeedProfileForCircuit, trackZonesForCircuit, type TrackSpeedProfile, type TrackZone } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 
-import { CIRCUIT_ROUTES } from "./circuitRoutes/index.js";
+import { circuitRouteFor } from "./circuitRoutes/index.js";
 
 export type CityCircuit = {
   city: string;
@@ -30,17 +30,25 @@ export const CITY_CIRCUITS = CITY_CIRCUIT_IDENTITIES.map((identity) => ({
   layoutKey: identity.layoutKey as TranslationKey,
   trackZones: trackZonesForCircuit(identity),
   speedProfile: trackSpeedProfileForCircuit(identity),
-  route: CIRCUIT_ROUTES[identity.layoutKey] ?? []
+  route: circuitRouteFor(identity.layoutKey)
 })) as [CityCircuit, ...CityCircuit[]];
 
 const CIRCUIT_BY_LAYOUT = new Map(CITY_CIRCUITS.map((circuit) => [circuit.layoutKey, circuit]));
+
+// ponytail: returns a fresh circuit with the current cached route snapshot. A new object reference on
+// each call is deliberate: consumers memoize on [circuit], so once the lazy route cache fills and the
+// tree re-renders, the new reference makes their circuitScene/route memos recompute with the polyline.
+export function withRoute(circuit: CityCircuit): CityCircuit {
+  return { ...circuit, route: circuitRouteFor(circuit.layoutKey) };
+}
 
 export function circuitsForSeason(leagueId = "default", season = 1): [CityCircuit, ...CityCircuit[]] {
   const seed = leagueId === "default" ? "default" : circuitSeasonSeed(leagueId, season);
   const circuits = seasonCircuitIdentities(seed)
     .map((identity) => CIRCUIT_BY_LAYOUT.get(identity.layoutKey as TranslationKey))
     .filter((circuit): circuit is CityCircuit => Boolean(circuit));
-  return circuits.length ? (circuits as [CityCircuit, ...CityCircuit[]]) : CITY_CIRCUITS;
+  const resolved = circuits.length ? circuits : CITY_CIRCUITS;
+  return resolved.map(withRoute) as [CityCircuit, ...CityCircuit[]];
 }
 
 export function circuitForRound(round: number, leagueId = "default", season = 1): CityCircuit {

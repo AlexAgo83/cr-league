@@ -1,6 +1,6 @@
 ## prod_066_chrono_engine_v2_product_brief - Chrono Engine V2 Product Brief
 > Date: 2026-07-23
-> Status: Proposed
+> Status: Settled
 > Related request: `req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation`
 > Related backlog: `item_258_extract_the_chrono_race_engine_module_and_contract`, `item_259_capture_replaytrace_from_deterministic_time_distance_motion_state`, `item_260_align_pits_overtakes_defense_and_replay_facts_with_chrono_trace_state`, `item_261_harden_validation_balance_reporting_and_rollout_notes_for_chrono_v2`
 > Related task: `task_104_orchestrate_chrono_engine_v2_module_extraction_and_trace_capture`

@@ -4,7 +4,6 @@ import type { TranslationKey } from "../i18n/index.js";
 import { displayLapForEvent, maxEventLap } from "../app/lapDisplay.js";
 import {
   buildRaceVerdict,
-  deriveNonWinningFeedback,
   eventReportText,
   raceRecapCards,
   teamNamesFromResult,
@@ -46,8 +45,6 @@ export function ReportView({
   const keyEvents = keyMomentEvents(result.events, rawMaxLap, circuit.laps);
   const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
   const verdict = buildRaceVerdict(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
-  const nonWinningFeedback = deriveNonWinningFeedback(result, playerTeamId, playerDecision);
-  const nonWinningRead = nonWinningFeedback ? `${translateLine(nonWinningFeedback.title, tt)}: ${translateLine(nonWinningFeedback.body, tt)}` : "";
   const recap = [
     {
       className: "difference",
@@ -62,7 +59,7 @@ export function ReportView({
     {
       className: "plan-read",
       title: tt("result_plan_read"),
-      body: [recapCards.planRead, nonWinningRead].filter(Boolean).join(" ")
+      body: recapCards.planRead
     },
     {
       className: "lesson",

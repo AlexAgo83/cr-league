@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRaceVerdict, clampNumber, completedSeasonSummaries, deriveNonWinningFeedback, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid, translateLine } from "./helpers.js";
+import { buildRaceVerdict, clampNumber, completedSeasonSummaries, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid, translateLine } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { circuitIdentityForRound, circuitSeasonSeed, type CardId, type RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
@@ -226,7 +226,7 @@ describe("raceRecapCards", () => {
     expect(recap.difference).toContain("Rain Grip");
     expect(recap.difference).toContain("+2");
     expect(recap.directive).toContain("Rain Grip");
-    expect(recap.planRead).toContain("You won because");
+    expect(recap.planRead).toContain("Winning plan:");
     expect(recap.planRead).toContain("Rain Grip");
     expect(recap.lesson).toContain(expectedNextCircuitName());
   });
@@ -242,7 +242,7 @@ describe("raceRecapCards", () => {
 
     expect(recap.difference).toContain("Test GP");
     expect(recap.directive).toContain("kept you level");
-    expect(recap.planRead).toContain("You won because");
+    expect(recap.planRead).toContain("Winning plan:");
     expect(recap.lesson).toContain(expectedNextCircuitName());
   });
 
@@ -284,8 +284,8 @@ describe("raceRecapCards", () => {
       t(key, "en", params)
     );
 
-    expect(recap.planRead).toContain("You finished P2");
-    expect(recap.planRead).toContain("team_2 won with");
+    expect(recap.planRead).toContain("Your plan:");
+    expect(recap.planRead).toContain("Winner team_2:");
     expect(recap.planRead).toContain("Launch Boost");
   });
 });
@@ -317,7 +317,7 @@ describe("buildRaceVerdict", () => {
     const verdict = buildRaceVerdict(race, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params));
 
     expect(verdict.outcome).toBe("podium");
-    expect(verdict.stance.key).toBe("recap_verdict_stance_podium_1");
+    expect(verdict.stance.key).toBe("recap_verdict_stance");
     expect(verdict.cause.key).toBe("recap_difference_event_1");
     expect(translateLine(verdict.cause, (key, params) => t(key, "en", params))).toContain("Rain Grip");
     expect(verdict.tryNext.key).toBe("recap_lesson_card_1");
@@ -390,7 +390,7 @@ describe("buildRaceVerdict", () => {
 
     expect(verdict.outcome).toBe("hold");
     expect(verdict.cause.key).toBe("recap_difference_headline_0");
-    expect(translateLine(verdict.stance, (key, params) => t(key, "en", params))).toContain("held position");
+    expect(translateLine(verdict.stance, (key, params) => t(key, "en", params))).toBe("P4, 18 points.");
   });
 
   it("uses approach as the cause when a quiet race gains positions", () => {
@@ -408,70 +408,33 @@ describe("buildRaceVerdict", () => {
     expect(translateLine(verdict.cause, (key, params) => t(key, "en", params))).toContain("Aggressive");
   });
 
-  it("rotates repeated winning verdict phrasing by seed", () => {
+  it("does not present the finish marker as the cause of a position gain", () => {
     const state = stateWithHistory([]);
-    const decision = { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null } satisfies LeagueState["decisions"][number];
-    const first = result("team_1");
-    const second = result("team_1");
-    first.seed = "a";
-    second.seed = "b";
-
-    expect(buildRaceVerdict(first, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params)).stance.key).not.toBe(
-      buildRaceVerdict(second, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params)).stance.key
-    );
-  });
-});
-
-describe("deriveNonWinningFeedback", () => {
-  it("names preserved position as a useful non-winning result", () => {
+    const decision = { teamId: "team_1", approach: "aggressive", preparation: "speed", cardId: null } satisfies LeagueState["decisions"][number];
     const race = result("team_2", "team_1");
-    race.classification[1]!.position = 4;
-    race.classification[1]!.points = 12;
-    race.classification[1]!.positionChange = 0;
+    race.classification[1]!.positionChange = 2;
+    race.events = [
+      {
+        id: "evt_finish",
+        order: 1,
+        segment: "finish",
+        lap: 6,
+        type: "finish",
+        teamId: "team_1",
+        severity: "major",
+        positionDelta: 2,
+        tags: [],
+        replayText: "",
+        reportText: ""
+      }
+    ];
 
-    const feedback = deriveNonWinningFeedback(race, "team_1", { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null });
+    const verdict = buildRaceVerdict(race, state, "team_1", decision, "Test GP", (key, params) => t(key, "en", params));
 
-    expect(feedback?.tone).toBe("success");
-    expect(feedback?.title.key).toBe("non_winning_success_title_hold");
+    expect(verdict.cause.key).toMatch(/^recap_verdict_cause_approach_gain_/);
+    expect(translateLine(verdict.cause, (key, params) => t(key, "en", params))).not.toContain("finishes the race");
   });
 
-  it("names weather mitigation when a weather plan limits loss in rain", () => {
-    const race = result("team_2", "team_1");
-    race.resolvedWeather.mid = "heavy_rain";
-    race.classification[1]!.position = 5;
-    race.classification[1]!.points = 10;
-    race.classification[1]!.positionChange = -1;
-
-    const feedback = deriveNonWinningFeedback(race, "team_1", { teamId: "team_1", approach: "balanced", preparation: "weather", cardId: "rain_grip" });
-
-    expect(feedback?.tone).toBe("success");
-    expect(feedback?.title.key).toBe("non_winning_success_title_weather");
-  });
-
-  it("names future value when points are scored without spending a card", () => {
-    const race = result("team_2", "team_1");
-    race.classification[1]!.position = 6;
-    race.classification[1]!.points = 8;
-    race.classification[1]!.credits = 55;
-    race.classification[1]!.positionChange = -1;
-
-    const feedback = deriveNonWinningFeedback(race, "team_1", { teamId: "team_1", approach: "prudent", preparation: "reliability", cardId: null });
-
-    expect(feedback?.tone).toBe("success");
-    expect(feedback?.title.key).toBe("non_winning_success_title_economy");
-  });
-
-  it("does not label a poor zero-point loss as success", () => {
-    const race = result("team_2", "team_1");
-    race.classification[1]!.position = 8;
-    race.classification[1]!.points = 0;
-    race.classification[1]!.positionChange = -3;
-
-    const feedback = deriveNonWinningFeedback(race, "team_1", { teamId: "team_1", approach: "aggressive", preparation: "speed", cardId: "launch_boost" });
-
-    expect(feedback?.tone).toBe("miss");
-    expect(feedback?.title.key).toBe("non_winning_miss_title");
-  });
 });
 
 describe("clampNumber", () => {

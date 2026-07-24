@@ -438,6 +438,8 @@ export function ReplayView({
                 setPlaying={setPlaying}
                 setSpeed={setSpeed}
                 setDriverFocus={setReplayDriverFocus}
+                focusedTeamId={focusedCar?.id}
+                onTeamFocus={driverFocus ? setFocusedCarId : undefined}
                 restart={restartReplay}
                 seek={seek}
                 onOpenTowerReport={onOpenPlanReport}

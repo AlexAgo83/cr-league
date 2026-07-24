@@ -606,7 +606,7 @@ describe("App", () => {
     expect(screen.getByText("Send your plan to unlock the GP and fill this report.")).toBeTruthy();
     expect(screen.getByRole("button", { name: "Send" }).className).toContain("primary-command");
     expect(screen.getByRole("heading", { name: "Race phases" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Rewards" })).toBeTruthy();
+    expect(screen.queryByRole("heading", { name: "Rewards" })).toBe(null);
     expect(screen.getAllByText("Coming after the GP").length).toBeGreaterThan(1);
     fireEvent.click(screen.getByRole("tab", { name: "Plan" }));
     // The switcher doubles as the plan summary: each tab shows the current pick.
@@ -896,7 +896,7 @@ describe("App", () => {
     expect(screen.getByLabelText("Race phases")).toBeTruthy();
     expect(screen.getByText("Phase 1")).toBeTruthy();
     expect(screen.getByRole("heading", { name: "Race recap" })).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "What made the difference" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Result" })).toBeTruthy();
     expect(screen.getByText(/Weather prep fit the race weather/)).toBeTruthy();
     expect(screen.getByText(/Rain Grip had a visible effect/)).toBeTruthy();
     const nextCircuit = testCircuit(2);

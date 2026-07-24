@@ -18,7 +18,10 @@ export function ReplayTower({
   title,
   onReport,
   reportLabel,
-  teamLiveries
+  teamLiveries,
+  focusedTeamId,
+  focusLabel,
+  onTeamFocus
 }: {
   entries: ReplayTowerEntry[];
   playerTeamId?: string;
@@ -27,6 +30,9 @@ export function ReplayTower({
   onReport?: () => void;
   reportLabel: string;
   teamLiveries: Record<string, TeamLivery>;
+  focusedTeamId?: string;
+  focusLabel?: string;
+  onTeamFocus?: (teamId: string) => void;
 }) {
   return (
     <section className="replay-tower" aria-label={title}>
@@ -42,27 +48,38 @@ export function ReplayTower({
         {entries.map((entry, index) => {
           const positionPop = positionPops[entry.teamId];
           const positionDelta = positionPop?.delta ?? 0;
+          const badgeClass = `replay-tower-livery position-badge${index < 3 ? ` top-${index + 1}` : ""}`;
+          const badgeStyle = {
+            "--livery-primary": safeHex(teamLiveries[entry.teamId]?.primary, "#38bdf8"),
+            "--livery-secondary": safeHex(teamLiveries[entry.teamId]?.secondary, "#16c784")
+          } as CSSProperties & Record<string, string>;
           return (
             <li
               key={entry.id ?? entry.teamId}
               className={[
                 entry.teamId === playerTeamId ? "player" : "",
+                entry.teamId === focusedTeamId ? "focused" : "",
                 positionDelta ? "position-change" : "",
                 positionDelta > 0 ? "gain" : positionDelta < 0 ? "loss" : ""
               ].filter(Boolean).join(" ") || undefined}
             >
-              <span
-                className={`replay-tower-livery position-badge${index < 3 ? ` top-${index + 1}` : ""}`}
-                aria-label={`P${index + 1}`}
-                style={
-                  {
-                    "--livery-primary": safeHex(teamLiveries[entry.teamId]?.primary, "#38bdf8"),
-                    "--livery-secondary": safeHex(teamLiveries[entry.teamId]?.secondary, "#16c784")
-                  } as CSSProperties & Record<string, string>
-                }
-              >
-                {index + 1}
-              </span>
+              {onTeamFocus ? (
+                <button
+                  type="button"
+                  className={`${badgeClass} replay-tower-focus`}
+                  data-team-id={entry.teamId}
+                  aria-label={`${focusLabel ?? title}: ${entry.teamName}`}
+                  aria-pressed={entry.teamId === focusedTeamId}
+                  style={badgeStyle}
+                  onClick={() => onTeamFocus(entry.teamId)}
+                >
+                  {index + 1}
+                </button>
+              ) : (
+                <span className={badgeClass} data-team-id={entry.teamId} aria-label={`P${index + 1}`} style={badgeStyle}>
+                  {index + 1}
+                </span>
+              )}
               {entry.decision ? <ReplayPlanAsset decision={entry.decision} /> : <span className="replay-tower-plan-placeholder" aria-hidden="true" />}
               <span className="replay-tower-team">{entry.teamName}</span>
               <span className={positionDelta ? "replay-tower-delta" : "replay-tower-delta empty"}>{positionDelta > 0 ? `+${positionDelta}` : positionDelta || "0"}</span>

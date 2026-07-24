@@ -29,11 +29,6 @@ export type RaceVerdict = {
   cause: RaceVerdictLine;
   tryNext: RaceVerdictLine;
 };
-export type NonWinningFeedback = {
-  tone: "success" | "miss";
-  title: RaceVerdictLine;
-  body: RaceVerdictLine;
-};
 
 export function strongestForecast(forecast: Record<string, number>) {
   return Object.entries(forecast).reduce((best, current) => (current[1] > best[1] ? current : best), ["dry", 0])[0];
@@ -181,12 +176,11 @@ export function buildRaceVerdict(
   circuitLaps = maxEventLap(result)
 ): RaceVerdict {
   const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
-  const variant = resultVariant(result);
   const outcome = playerResult?.position && playerResult.position <= 3 ? "podium" : (playerResult?.positionChange ?? 0) < 0 ? "loss" : (playerResult?.positionChange ?? 0) > 0 ? "gain" : "hold";
   return {
     outcome,
     stance: {
-      key: pickRecapKey(`recap_verdict_stance_${outcome}`, variant),
+      key: "recap_verdict_stance",
       params: {
         position: playerResult?.position ?? "-",
         delta: signedDelta(playerResult?.positionChange ?? 0),
@@ -195,50 +189,6 @@ export function buildRaceVerdict(
     },
     cause: raceDominantCause(result, playerTeamId, raceTitle, tt, true, circuitLaps, decision),
     tryNext: recapNextLessonLine(result, state, playerTeamId, decision, tt)
-  };
-}
-
-export function deriveNonWinningFeedback(
-  result: RaceResult,
-  playerTeamId: string | undefined,
-  decision: LeagueState["decisions"][number] | undefined
-): NonWinningFeedback | null {
-  const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
-  if (!playerResult || playerResult.position === 1) return null;
-
-  const delta = playerResult.positionChange;
-  const hasRain = RACE_SEGMENTS.some((segment) => result.resolvedWeather[segment] !== "dry");
-  const rainCard = decision?.cardId === "rain_grip" || decision?.cardId === "rain_mapping";
-  const ownCardGain = decision?.cardId ? result.events.some((event) => event.teamId === playerTeamId && event.cardId === decision.cardId && event.positionDelta > 0) : false;
-
-  if (delta >= 0) {
-    return {
-      tone: "success",
-      title: { key: "non_winning_success_title_hold" },
-      body: { key: "non_winning_success_body_hold", params: { position: playerResult.position, delta: signedDelta(delta), points: playerResult.points } }
-    };
-  }
-
-  if (delta >= -1 && hasRain && (decision?.preparation === "weather" || rainCard || ownCardGain)) {
-    return {
-      tone: "success",
-      title: { key: "non_winning_success_title_weather" },
-      body: { key: "non_winning_success_body_weather", params: { position: playerResult.position, points: playerResult.points } }
-    };
-  }
-
-  if (playerResult.points > 0 && !decision?.cardId) {
-    return {
-      tone: "success",
-      title: { key: "non_winning_success_title_economy" },
-      body: { key: "non_winning_success_body_economy", params: { position: playerResult.position, points: playerResult.points, credits: playerResult.credits } }
-    };
-  }
-
-  return {
-    tone: "miss",
-    title: { key: "non_winning_miss_title" },
-    body: { key: "non_winning_miss_body", params: { position: playerResult.position, delta: signedDelta(delta), points: playerResult.points } }
   };
 }
 
@@ -261,7 +211,9 @@ function raceDominantCause(
 ): RaceVerdictLine {
   const names = teamNamesFromResult(result);
   const ownEvents = result.events.filter((event) => event.teamId === playerTeamId);
-  const impactful = [...ownEvents].sort((left, right) => Math.abs(right.positionDelta) - Math.abs(left.positionDelta))[0];
+  const impactful = ownEvents
+    .filter((event) => event.type !== "finish" && event.type !== "race_note")
+    .sort((left, right) => Math.abs(right.positionDelta) - Math.abs(left.positionDelta))[0];
   const variant = resultVariant(result);
 
   if (impactful && impactful.positionDelta !== 0) {
@@ -426,16 +378,12 @@ function recapPlanRead(
     const winnerSetup = `${tt(`approach_${winnerDecision.approach}` as TranslationKey)} / ${tt(`preparation_${winnerDecision.preparation}` as TranslationKey)} / ${winnerDecision.cardId ? tt(`card_${winnerDecision.cardId}` as TranslationKey) : tt("card_none")}`;
     return tt("recap_plan_chase_winner", {
       winner: winner.teamName,
-      position: playerResult?.position ?? "-",
       setup: ownSetup,
       winnerSetup
     });
   }
 
-  return tt("recap_plan_no_reference", {
-    position: playerResult?.position ?? "-",
-    setup: ownSetup
-  });
+  return tt("recap_plan_no_reference", { setup: ownSetup });
 }
 
 export function teamNamesFromResult(result: RaceResult) {

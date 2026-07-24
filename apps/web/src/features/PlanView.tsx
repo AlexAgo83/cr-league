@@ -135,10 +135,6 @@ export function PlanView({
                     ))}
                   </ol>
                 </section>
-                <section className="panel report-rewards">
-                  <h3>{tt("report_rewards")}</h3>
-                  <p>{tt("plan_report_empty_placeholder")}</p>
-                </section>
                 <section className="panel report-key-moments">
                   <h3>{tt("report_key_moments")}</h3>
                   <p>{tt("plan_report_empty_placeholder")}</p>

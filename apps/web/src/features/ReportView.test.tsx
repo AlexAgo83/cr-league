@@ -56,7 +56,7 @@ describe("ReportView", () => {
     const recap = screen.getByRole("heading", { name: "Race recap" }).closest("section")!;
     const phases = screen.getByRole("heading", { name: "Race phases" });
     expect(container.querySelector(".report-verdict")).toBe(null);
-    expect(recap.textContent).toContain("Verdict:");
+    expect(recap.textContent).toContain("P1, 25 points.");
     expect(recap.textContent).toContain("Rain Grip");
     expect(recap.compareDocumentPosition(phases) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
@@ -188,7 +188,7 @@ describe("ReportView", () => {
     expect(keyMomentText).toContain("makes a key overtake");
   });
 
-  it("surfaces honest non-winning feedback", () => {
+  it("reports a non-winning result once without judging the plan", () => {
     const typedBaseState = baseState as unknown as LeagueState;
     const state = {
       ...typedBaseState,
@@ -210,7 +210,8 @@ describe("ReportView", () => {
     const { container } = render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
 
     const recap = container.querySelector(".report-side-recap") as HTMLElement;
-    expect(recap.textContent).toContain("Useful result");
-    expect(recap.textContent).toContain("protected track position");
+    expect(recap.textContent).toContain("P5, 10 points.");
+    expect(recap.textContent?.match(/P5/g)).toHaveLength(1);
+    expect(recap.textContent).toContain("Analyzed plan:");
   });
 });

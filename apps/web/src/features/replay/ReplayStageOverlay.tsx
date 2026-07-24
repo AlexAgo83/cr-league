@@ -1,5 +1,5 @@
 import { type RaceDecision, type RaceResult, type TeamLivery, type Weather } from "@cr-league/shared";
-import { type ReactNode, useId, useState } from "react";
+import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import type { CityCircuit } from "../../app/circuits.js";
 import type { Translator } from "../../app/helpers.js";
 import type { TranslationKey } from "../../i18n/index.js";
@@ -75,6 +75,8 @@ export function ReplayStageOverlay({
   setPlaying,
   setSpeed,
   setDriverFocus,
+  focusedTeamId,
+  onTeamFocus,
   restart,
   seek,
   onOpenReport,
@@ -115,6 +117,8 @@ export function ReplayStageOverlay({
   setPlaying: (playing: boolean) => void;
   setSpeed: (speed: ReplaySpeed) => void;
   setDriverFocus: (focused: boolean) => void;
+  focusedTeamId?: string;
+  onTeamFocus?: (teamId: string) => void;
   restart: () => void;
   seek: (time: number) => void;
   onOpenReport?: () => void;
@@ -253,6 +257,7 @@ export function ReplayStageOverlay({
         </div>
       ) : null}
       {overlayActions ? <div className="replay-overlay-stack"><div className="replay-overlay-actions">{overlayActions}</div></div> : null}
+      {!towerReplacement && replayMode === "race" ? <ReplayDriverConnectors entries={tower} teamLiveries={teamLiveries} /> : null}
       {towerReplacement ?? (
         <ReplayTower
           entries={tower}
@@ -262,6 +267,9 @@ export function ReplayStageOverlay({
           onReport={onOpenTowerReport}
           reportLabel={tt("action_view_plan").split(" ")[0] ?? tt("result_tab_report")}
           teamLiveries={teamLiveries}
+          focusedTeamId={focusedTeamId}
+          focusLabel={tt("action_focus_driver")}
+          onTeamFocus={onTeamFocus}
         />
       )}
       <ReplayProgress
@@ -279,6 +287,52 @@ export function ReplayStageOverlay({
         tt={tt}
       />
     </>
+  );
+}
+
+function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowerEntry[]; teamLiveries: Record<string, TeamLivery> }) {
+  const ref = useRef<SVGSVGElement>(null);
+
+  useEffect(() => {
+    let frame = 0;
+    const update = () => {
+      const svg = ref.current;
+      const stage = svg?.parentElement;
+      if (!svg || !stage) return;
+      const stageRect = stage.getBoundingClientRect();
+      const cars = Array.from(stage.querySelectorAll<SVGGElement>(".map-car[data-car-id]"));
+      for (const line of svg.querySelectorAll<SVGLineElement>("line[data-team-id]")) {
+        const teamId = line.dataset.teamId;
+        const badge = teamId ? Array.from(stage.querySelectorAll<HTMLElement>(".replay-tower-livery[data-team-id]")).find((element) => element.dataset.teamId === teamId) : undefined;
+        const car = teamId ? cars.find((element) => element.dataset.carId === teamId) : undefined;
+        if (!badge || !car) {
+          line.style.opacity = "0";
+          continue;
+        }
+        const badgeRect = badge.getBoundingClientRect();
+        const carRect = car.getBoundingClientRect();
+        line.setAttribute("x1", String(badgeRect.left - stageRect.left));
+        line.setAttribute("y1", String(badgeRect.top + badgeRect.height / 2 - stageRect.top));
+        line.setAttribute("x2", String(carRect.left + carRect.width / 2 - stageRect.left));
+        line.setAttribute("y2", String(carRect.top + carRect.height / 2 - stageRect.top));
+        line.style.opacity = "";
+      }
+      frame = requestAnimationFrame(update);
+    };
+    frame = requestAnimationFrame(update);
+    return () => cancelAnimationFrame(frame);
+  }, []);
+
+  return (
+    <svg ref={ref} className="replay-driver-connectors" aria-hidden="true">
+      {entries.map((entry) => (
+        <line
+          key={entry.teamId}
+          data-team-id={entry.teamId}
+          style={{ "--connector-color": teamLiveries[entry.teamId]?.secondary ?? "#f8f3e8" } as CSSProperties}
+        />
+      ))}
+    </svg>
   );
 }
 

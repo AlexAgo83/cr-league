@@ -113,7 +113,7 @@ export async function createProfile(db: Db, input: CreateProfileInput = {}, mail
   const profile = await db.profile.create({
     data: {
       email,
-      recoveryCodeHash: hashRecoveryCode(recoveryCode)
+      recoveryCodeHash: await hashRecoveryCode(recoveryCode)
     }
   });
 
@@ -151,7 +151,7 @@ export async function requestRecoveryCode(db: Db, input: { email?: string } = {}
   await db.profile.update({
     where: { id: profile.id },
     data: {
-      recoveryCodeHash: hashRecoveryCode(recoveryCode),
+      recoveryCodeHash: await hashRecoveryCode(recoveryCode),
       recoveryEmailSentAt: now
     }
   });
@@ -169,12 +169,12 @@ export async function recoverProfile(db: Db, input: RecoverProfileInput = {}): P
   if (!email || !recoveryCode) throw new LeagueRuleError("Email and recovery code are required.");
 
   const profile = await db.profile.findUnique({ where: { email } });
-  const verification = profile ? verifyRecoveryCode(recoveryCode, profile.recoveryCodeHash) : false;
+  const verification = profile ? await verifyRecoveryCode(recoveryCode, profile.recoveryCodeHash) : false;
   if (!profile || !verification) return null;
   if (verification === "legacy") {
     await db.profile.update({
       where: { id: profile.id },
-      data: { recoveryCodeHash: hashRecoveryCode(recoveryCode) }
+      data: { recoveryCodeHash: await hashRecoveryCode(recoveryCode) }
     });
   }
 

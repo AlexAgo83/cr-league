@@ -1,5 +1,6 @@
 import { CARD_DEFINITIONS, CAR_ASSET_PRICES, isCarAssetId, type CardId, type CarAssetId, type QualifyingRun, type RaceInput, type TeamLivery, type Weather } from "@cr-league/shared";
-import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
+import { createHash, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
+import { promisify } from "node:util";
 import type { Prisma } from "@prisma/client";
 import {
   DEFAULT_LIVERY,
@@ -30,9 +31,13 @@ export function createRecoveryCode() {
   return randomBytes(6).toString("hex").toUpperCase();
 }
 
-export function hashRecoveryCode(code: string) {
+// ponytail: async scrypt offloads the KDF to libuv's threadpool so the single event loop keeps
+// serving other requests during the deliberately-expensive hash — sync scryptSync blocked it.
+const scryptAsync = promisify(scrypt) as (password: string | Buffer, salt: string | Buffer, keylen: number) => Promise<Buffer>;
+
+export async function hashRecoveryCode(code: string) {
   const salt = randomBytes(16).toString("hex");
-  const key = scryptSync(normalizeRecoveryCode(code), salt, 32).toString("hex");
+  const key = (await scryptAsync(normalizeRecoveryCode(code), salt, 32)).toString("hex");
   return `scrypt$${salt}$${key}`;
 }
 
@@ -40,13 +45,13 @@ export function hashLegacyRecoveryCode(code: string) {
   return createHash("sha256").update(normalizeRecoveryCode(code)).digest("hex");
 }
 
-export function verifyRecoveryCode(code: string, hash: string): "current" | "legacy" | false {
+export async function verifyRecoveryCode(code: string, hash: string): Promise<"current" | "legacy" | false> {
   const normalizedCode = normalizeRecoveryCode(code);
   if (hash.startsWith("scrypt$")) {
     const [, salt, key] = hash.split("$");
     if (!salt || !key) return false;
     const expected = Buffer.from(key, "hex");
-    const actual = scryptSync(normalizedCode, salt, expected.length);
+    const actual = await scryptAsync(normalizedCode, salt, expected.length);
     return expected.length === actual.length && timingSafeEqual(expected, actual) ? "current" : false;
   }
   const expected = Buffer.from(hashLegacyRecoveryCode(normalizedCode), "hex");
@@ -84,7 +89,7 @@ export async function ensureProfileOwnership(db: Db, profileId: string | undefin
   if (!profileId) return;
   if (!recoveryCode) throw new LeagueRuleError("A valid profile proof is required.", 403);
   const profile = await db.profile.findUnique({ where: { id: profileId } });
-  if (!profile || !verifyRecoveryCode(recoveryCode, profile.recoveryCodeHash)) {
+  if (!profile || !(await verifyRecoveryCode(recoveryCode, profile.recoveryCodeHash))) {
     throw new LeagueRuleError("A valid profile proof is required.", 403);
   }
 }

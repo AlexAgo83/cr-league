@@ -47,7 +47,7 @@ export async function resetAdminUserRecoveryCode(db: Db, profileId: string) {
   const recoveryCode = createRecoveryCode();
   const profile = await db.profile.update({
     where: { id: profileId },
-    data: { recoveryCodeHash: hashRecoveryCode(recoveryCode) }
+    data: { recoveryCodeHash: await hashRecoveryCode(recoveryCode) }
   });
 
   return {

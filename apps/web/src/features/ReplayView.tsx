@@ -378,13 +378,6 @@ export function ReplayView({
     : undefined;
   const playerContext = playerReplayContext(result, replayTrace, currentRaceProgress, playerTeamId);
   const playerGapItems = replayPlayerGapItems(playerContext, tt);
-  const playerFocus = playerContext && replayMode !== "qualifying"
-    ? {
-        position: playerContext.position,
-        delta: playerContext.delta,
-        gapItems: playerGapItems
-      }
-    : undefined;
 
   return (
     <div className="view-stack">
@@ -415,7 +408,7 @@ export function ReplayView({
                 resolvedWeather={result.resolvedWeather}
                 activeMoment={activeMomentNotice}
                 activeDirector={activeDirector}
-                playerFocus={playerFocus}
+                playerGapItems={replayMode === "race" ? playerGapItems : []}
                 replayMode={replayMode}
                 overlayActions={overlayActions}
                 playing={playing}

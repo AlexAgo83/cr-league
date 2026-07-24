@@ -6,7 +6,6 @@ import type { TranslationKey } from "../../i18n/index.js";
 import { MapTraitsPanel, type MapTraitImpacts } from "../CircuitMap.js";
 import { MapPlanPanel } from "../MapPlanPanel.js";
 import { Modal } from "../Modal.js";
-import { PositionBadge } from "../PositionBadge.js";
 import { RaceInfoDetailsForResolvedWeather } from "../RaceInfoDetails.js";
 import { CountryBadge, VisualIcon, type VisualIconName } from "../VisualIcon.js";
 import { ReplayProgress, type ReplayTimelineMarker } from "./ReplayProgress.js";
@@ -52,7 +51,7 @@ export function ReplayStageOverlay({
   resolvedWeather,
   activeMoment,
   activeDirector,
-  playerFocus,
+  playerGapItems,
   replayMode,
   overlayActions,
   playing,
@@ -94,7 +93,7 @@ export function ReplayStageOverlay({
   resolvedWeather: RaceResult["resolvedWeather"];
   activeMoment?: { player: boolean; lap: number; icon: VisualIconName; context: string; detail: string; impact: string };
   activeDirector?: { type: string; lap: number; title: string; detail: ReactNode };
-  playerFocus?: { position: number; delta: number; gapItems: Array<{ label: string; value: string }> };
+  playerGapItems: Array<{ label: string; value: string }>;
   replayMode: "race" | "qualifying";
   overlayActions?: ReactNode;
   playing: boolean;
@@ -128,7 +127,6 @@ export function ReplayStageOverlay({
   closeLabel?: string;
 }) {
   const directorTitle = tt(activeDirector?.type === "qualifying_start" || activeDirector?.type === "qualifying_pace" || activeDirector?.type === "qualifying_final" ? "replay_director_chrono_title" : "replay_director_title");
-  const playerFocusTitle = replayMode === "qualifying" ? tt("replay_player_focus_chrono") : tt("replay_player_focus");
   const seekValueText = `${tt("unit_lap")} ${liveLap}/${circuit.laps}, ${Math.round(clockSeconds)}s`;
   const [weatherInfoOpen, setWeatherInfoOpen] = useState(false);
 
@@ -179,24 +177,18 @@ export function ReplayStageOverlay({
           {activeDirector ? (
             <div className={`replay-director-panel ${activeDirector.type}`}>
               <span>{directorTitle} · L{activeDirector.lap}</span>
+              {playerGapItems.length ? (
+                <small className="replay-player-gaps">
+                  {playerGapItems.map((item, index) => (
+                    <span key={item.label} className={index === 0 ? "ahead" : "behind"} aria-label={`${item.label} ${item.value}`} title={`${item.label} ${item.value}`}>
+                      <i aria-hidden="true" />
+                      <b><GapValue value={item.value} /></b>
+                    </span>
+                  ))}
+                </small>
+              ) : null}
               <strong>{activeDirector.title}</strong>
               <small>{activeDirector.detail}</small>
-            </div>
-          ) : null}
-          {playerFocus ? (
-            <div className="replay-player-focus-panel">
-              <span>{playerFocusTitle}</span>
-              <small className="replay-player-gaps">
-                <span className="position" aria-label={`P${playerFocus.position}`} title={`P${playerFocus.position}`}>
-                  <PositionBadge position={playerFocus.position} />
-                </span>
-                {playerFocus.gapItems.map((item, index) => (
-                  <span key={item.label} className={index === 0 ? "ahead" : "behind"} aria-label={`${item.label} ${item.value}`} title={`${item.label} ${item.value}`}>
-                    <i aria-hidden="true" />
-                    <b><GapValue value={item.value} /></b>
-                  </span>
-                ))}
-              </small>
             </div>
           ) : null}
         </div>

@@ -810,6 +810,9 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     expect(screen.queryByRole("heading", { name: "4. Grand Prix finished" })).toBe(null);
     expect(screen.getByText("Relive the GP lap by lap: weather, pace, and key moments move the standings.")).toBeTruthy();
+    expect(document.querySelector(".replay-director-panel .replay-player-gaps")).toBeTruthy();
+    expect(document.querySelector(".replay-director-panel .replay-player-gaps .position-badge")).toBe(null);
+    expect(document.querySelector(".replay-player-focus-panel")).toBe(null);
     expect(screen.getByRole("button", { name: "Actual race weather" })).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Volt Union");

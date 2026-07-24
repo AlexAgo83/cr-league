@@ -606,8 +606,7 @@
     width: min(168px, calc(100% - 16px));
   }
 
-  .replay-director-panel,
-  .replay-player-focus-panel {
+  .replay-director-panel {
     padding: 7px 8px;
   }
 
@@ -628,13 +627,7 @@
     max-width: 100%;
   }
 
-  .replay-player-focus-panel {
-    min-width: 0;
-    max-width: 100%;
-  }
-
-  .replay-info-stack .replay-director-panel,
-  .replay-info-stack .replay-player-focus-panel {
+  .replay-info-stack .replay-director-panel {
     bottom: auto;
     left: auto;
     pointer-events: auto;
@@ -644,13 +637,11 @@
     width: 100%;
   }
 
-  .replay-director-panel strong,
-  .replay-player-focus-panel strong {
+  .replay-director-panel strong {
     font-size: 0.76rem;
   }
 
-  .replay-director-panel small,
-  .replay-player-focus-panel small {
+  .replay-director-panel small {
     font-size: 0.62rem;
   }
 

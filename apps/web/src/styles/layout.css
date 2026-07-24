@@ -3985,13 +3985,13 @@ label small {
   white-space: nowrap;
 }
 
-.replay-director-panel,
-.replay-player-focus-panel {
+.replay-director-panel {
   background: rgb(16 14 18 / 0.82);
   border: 1px solid rgb(255 255 255 / 0.14);
   border-radius: 8px;
   display: grid;
   gap: 3px;
+  grid-template-columns: minmax(0, 1fr) auto;
   max-width: min(320px, calc(100% - 24px));
   padding: 9px 11px;
   position: absolute;
@@ -4008,32 +4008,23 @@ label small {
   transform: translateX(-50%);
 }
 
-.replay-player-focus-panel {
-  bottom: 74px;
-  align-items: start;
-  grid-template-columns: minmax(0, 1fr) auto;
-  min-width: 230px;
-  right: 12px;
-}
-
-.replay-director-panel span,
-.replay-player-focus-panel span {
+.replay-director-panel span {
   color: var(--color-accent);
   font-size: 0.66rem;
   font-weight: 900;
   text-transform: uppercase;
 }
 
-.replay-director-panel strong,
-.replay-player-focus-panel strong {
+.replay-director-panel strong {
   color: var(--color-text);
   font-size: 0.92rem;
+  grid-column: 1 / -1;
 }
 
-.replay-director-panel small,
-.replay-player-focus-panel small {
+.replay-director-panel > small:not(.replay-player-gaps) {
   color: var(--color-muted);
   font-size: 0.72rem;
+  grid-column: 1 / -1;
   line-height: 1.2;
 }
 
@@ -4055,12 +4046,6 @@ label small {
   display: inline-flex;
   gap: 3px;
   padding: 3px 6px;
-}
-
-.replay-player-gaps .position {
-  background: transparent;
-  border: 0;
-  padding: 0;
 }
 
 .replay-player-gaps i {
@@ -4090,10 +4075,6 @@ label small {
   color: var(--color-muted);
   font-size: 0.55em;
   margin-left: 1px;
-}
-
-.replay-player-focus-panel > small:not(.replay-player-gaps) {
-  margin-top: 10px;
 }
 
 .replay-tower {

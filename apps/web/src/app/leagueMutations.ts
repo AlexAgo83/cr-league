@@ -1,4 +1,4 @@
-import type { CardId } from "@cr-league/shared";
+import type { CardId, CarAssetId } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { api } from "./appStorage.js";
 import type { FormState, GameView, LeagueState } from "./types.js";
@@ -149,6 +149,21 @@ export function createLeagueMutations({
     );
   }
 
+  async function buyCarAsset(carAssetId: CarAssetId) {
+    if (!leagueState || !playerTeam) return;
+
+    await mutateLeague(
+      "status_buying_car",
+      `/leagues/${leagueState.league.id}/cars/buy`,
+      {
+        teamId: playerTeam.id,
+        claimCode: leagueState.player?.claimCode,
+        carAssetId
+      },
+      "status_car_bought"
+    );
+  }
+
   async function updateLivery(livery: LeagueState["teams"][number]["livery"], options: { silent?: boolean } = {}) {
     if (!leagueState || !playerTeam) return;
 
@@ -207,5 +222,5 @@ export function createLeagueMutations({
     );
   }
 
-  return { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, updateLivery, updateTeamName, restartLeague };
+  return { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, buyCarAsset, updateLivery, updateTeamName, restartLeague };
 }

@@ -1,4 +1,4 @@
-import { CARD_DEFINITIONS, type CardId, type QualifyingRun, type RaceInput, type TeamLivery, type Weather } from "@cr-league/shared";
+import { CARD_DEFINITIONS, isCarAssetId, type CardId, type CarAssetId, type QualifyingRun, type RaceInput, type TeamLivery, type Weather } from "@cr-league/shared";
 import { createHash, randomBytes, scryptSync, timingSafeEqual } from "node:crypto";
 import type { Prisma } from "@prisma/client";
 import {
@@ -149,8 +149,14 @@ export function normalizeLivery(value: unknown): TeamLivery {
   return {
     primary: typeof livery.primary === "string" && isHexColor(livery.primary) ? livery.primary : DEFAULT_LIVERY.primary,
     secondary: typeof livery.secondary === "string" && isHexColor(livery.secondary) ? livery.secondary : DEFAULT_LIVERY.secondary,
-    ...(typeof livery.carAssetId === "string" && /^car-\d{3}$/.test(livery.carAssetId) ? { carAssetId: livery.carAssetId } : {})
+    ...(typeof livery.carAssetId === "string" && isCarAssetId(livery.carAssetId) ? { carAssetId: livery.carAssetId } : {})
   };
+}
+
+export function normalizeUnlockedCarAssetIds(value: unknown): CarAssetId[] {
+  return Array.isArray(value)
+    ? [...new Set(value.filter((id): id is CarAssetId => typeof id === "string" && isCarAssetId(id)))]
+    : [];
 }
 
 export function randomLivery(): TeamLivery {

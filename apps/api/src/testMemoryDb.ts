@@ -32,7 +32,8 @@ export function createMemoryDb(): PrismaClient {
     points: number;
     credits: number;
     cards: string[];
-    livery: { primary: string; secondary: string };
+    livery: { primary: string; secondary: string; carAssetId?: string };
+    unlockedCarAssetIds: string[];
     createdAt: Date;
   };
   type GrandPrixRow = {
@@ -282,19 +283,19 @@ export function createMemoryDb(): PrismaClient {
       create: async ({
         data
       }: {
-        data: Omit<TeamRow, "id" | "livery" | "profileId" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "profileId">>;
+        data: Omit<TeamRow, "id" | "livery" | "unlockedCarAssetIds" | "profileId" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "unlockedCarAssetIds" | "profileId">>;
       }) => {
-        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, createdAt: new Date(), ...data, profileId: data.profileId ?? null };
+        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, unlockedCarAssetIds: [], createdAt: new Date(), ...data, profileId: data.profileId ?? null };
         teams.push(team);
         return team;
       },
       createMany: async ({
         data
       }: {
-        data: Array<Omit<TeamRow, "id" | "livery" | "profileId" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "profileId">>>;
+        data: Array<Omit<TeamRow, "id" | "livery" | "unlockedCarAssetIds" | "profileId" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "unlockedCarAssetIds" | "profileId">>>;
       }) => {
         for (const team of data) {
-          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, createdAt: new Date(), ...team, profileId: team.profileId ?? null });
+          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, unlockedCarAssetIds: [], createdAt: new Date(), ...team, profileId: team.profileId ?? null });
         }
         return { count: data.length };
       },
@@ -315,7 +316,8 @@ export function createMemoryDb(): PrismaClient {
           points?: number | { increment: number };
           credits?: number | { increment?: number; decrement?: number };
           cards?: string[];
-          livery?: { primary: string; secondary: string };
+          livery?: { primary: string; secondary: string; carAssetId?: string };
+          unlockedCarAssetIds?: string[];
           name?: string;
         };
       }) => {
@@ -334,6 +336,7 @@ export function createMemoryDb(): PrismaClient {
         }
         if (data.cards) team.cards = data.cards;
         if (data.livery) team.livery = data.livery;
+        if (data.unlockedCarAssetIds) team.unlockedCarAssetIds = data.unlockedCarAssetIds;
         if (data.name) team.name = data.name;
         return team;
       },
@@ -345,12 +348,16 @@ export function createMemoryDb(): PrismaClient {
         data: {
           credits?: { decrement: number };
           cards?: string[];
+          livery?: { primary: string; secondary: string; carAssetId?: string };
+          unlockedCarAssetIds?: string[];
         };
       }) => {
         const team = teams.find((candidate) => candidate.id === where.id && candidate.credits >= (where.credits?.gte ?? Number.NEGATIVE_INFINITY));
         if (!team) return { count: 0 };
         team.credits -= data.credits?.decrement ?? 0;
         if (data.cards) team.cards = data.cards;
+        if (data.livery) team.livery = data.livery;
+        if (data.unlockedCarAssetIds) team.unlockedCarAssetIds = data.unlockedCarAssetIds;
         return { count: 1 };
       }
     },

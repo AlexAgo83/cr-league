@@ -3,6 +3,7 @@ import type { PrismaClient } from "@prisma/client";
 import type { ApiConfig } from "../../config.js";
 import {
   LeagueRuleError,
+  buyCarAsset,
   buyCard,
   createDemoLeague,
   createProfile,
@@ -190,6 +191,21 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
       if (error instanceof LeagueRuleError) {
         return sendLeagueRuleError(reply, error);
       }
+      throw error;
+    }
+  });
+
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/cars/buy", WRITE_RATE_LIMIT, async (request, reply) => {
+    if (!isBuyCarBody(request.body)) {
+      return reply.code(400).send({ error: "Bad Request", message: "Expected a team id and car asset id." });
+    }
+
+    try {
+      const state = await buyCarAsset(db, request.params.leagueId, request.body);
+      if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
+      return stateForBody(state, request.body);
+    } catch (error) {
+      if (error instanceof LeagueRuleError) return sendLeagueRuleError(reply, error);
       throw error;
     }
   });
@@ -436,6 +452,13 @@ function isBuyCardBody(value: unknown): value is Parameters<typeof buyCard>[2] {
 
   const candidate = value as Record<string, unknown>;
   return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.cardId === "string" && (candidate.quantity === undefined || typeof candidate.quantity === "number");
+}
+
+function isBuyCarBody(value: unknown): value is Parameters<typeof buyCarAsset>[2] {
+  if (!value || typeof value !== "object") return false;
+
+  const candidate = value as Record<string, unknown>;
+  return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.carAssetId === "string";
 }
 
 function isLiveryBody(value: unknown): value is Parameters<typeof updateTeamLivery>[2] {

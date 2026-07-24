@@ -1,4 +1,4 @@
-import type { CardId, QualifyingRun, RaceDecision, RaceResult, TeamLivery } from "@cr-league/shared";
+import type { CardId, CarAssetId, QualifyingRun, RaceDecision, RaceResult, TeamLivery } from "@cr-league/shared";
 
 export type LeagueState = {
   league: {
@@ -42,6 +42,7 @@ export type LeagueState = {
     credits: number;
     cards: CardId[];
     livery: TeamLivery;
+    unlockedCarAssetIds: CarAssetId[];
     ready: boolean;
   }>;
   cardShop: Array<{

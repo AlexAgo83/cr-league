@@ -383,6 +383,45 @@ describe("api app", () => {
     expect(updatedTeam.livery).toEqual({ primary: "#ffffff", secondary: "#000000" });
   });
 
+  it("guards paid car selection and atomically unlocks the purchased car", async () => {
+    const db = createMemoryDb();
+    const app = await createTestApp(db);
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Car Shop League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const claim = created.player;
+    await db.team.update({ where: { id: claim.teamId }, data: { credits: 2_500 } });
+
+    const lockedSelection = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/teams/livery`,
+      payload: { teamId: claim.teamId, claimCode: claim.claimCode, livery: { primary: "#ffffff", secondary: "#000000", carAssetId: "car-011" } }
+    });
+    const purchase = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/cars/buy`,
+      payload: { teamId: claim.teamId, claimCode: claim.claimCode, carAssetId: "car-011" }
+    });
+    const team = purchase.json().teams.find((candidate: { id: string }) => candidate.id === claim.teamId);
+    const duplicate = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/cars/buy`,
+      payload: { teamId: claim.teamId, claimCode: claim.claimCode, carAssetId: "car-011" }
+    });
+    const persistedTeam = await db.team.findUnique({ where: { id: claim.teamId } });
+
+    await app.close();
+
+    expect(lockedSelection.statusCode).toBe(409);
+    expect(purchase.statusCode).toBe(200);
+    expect(team).toMatchObject({ credits: 500, unlockedCarAssetIds: ["car-011"], livery: { carAssetId: "car-011" } });
+    expect(duplicate.statusCode).toBe(409);
+    expect(persistedTeam?.credits).toBe(500);
+  });
+
   it("renames a team with readable unique names only", async () => {
     const app = await createTestApp(createMemoryDb());
 

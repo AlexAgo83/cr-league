@@ -26,6 +26,7 @@ export {
   RACE_CREDITS_BY_POSITION,
   RACE_POINTS_BY_POSITION
 } from "./economy/constants.js";
+export { CAR_ASSET_IDS, CAR_ASSET_PRICES, DEFAULT_CAR_ASSET_ID, carAssetPrice, isCarAssetId, type CarAssetId } from "./economy/carAssets.js";
 export { DEMO_RACE_INPUT } from "./simulation/demoRace.js";
 export { createPrng } from "./simulation/prng.js";
 export { RACE_REPLAY_BASE_SECONDS, lapForProgress, simulateRace } from "./simulation/simulateRace.js";

@@ -1,4 +1,5 @@
-export type CarAssetId = `car-${string}`;
+import { CAR_ASSET_IDS, DEFAULT_CAR_ASSET_ID, type CarAssetId } from "@cr-league/shared";
+export type { CarAssetId } from "@cr-league/shared";
 
 export type CarAsset = {
   id: CarAssetId;
@@ -65,8 +66,7 @@ const RAW_REAR_LIGHTS: Record<CarAssetId, [CarAssetPoint, CarAssetPoint]> = {
   "car-016": [[1124, 173], [1125, 298]]
 };
 
-export const CAR_ASSETS: CarAsset[] = Array.from({ length: 16 }, (_, index) => {
-  const id = `car-${String(index + 1).padStart(3, "0")}` as CarAssetId;
+export const CAR_ASSETS: CarAsset[] = CAR_ASSET_IDS.map((id, index) => {
   return {
     id,
     name: `CRL ${String(index + 1).padStart(3, "0")}`,
@@ -78,7 +78,7 @@ export const CAR_ASSETS: CarAsset[] = Array.from({ length: 16 }, (_, index) => {
 });
 
 export const CAR_ASSET_BY_ID = new Map(CAR_ASSETS.map((asset) => [asset.id, asset]));
-export const DEFAULT_CAR_ASSET = CAR_ASSET_BY_ID.get("car-008") ?? CAR_ASSETS[0]!;
+export const DEFAULT_CAR_ASSET = CAR_ASSET_BY_ID.get(DEFAULT_CAR_ASSET_ID) ?? CAR_ASSETS[0]!;
 export const DEFAULT_CAR_ASSET_INDEX = Math.max(0, CAR_ASSETS.findIndex((asset) => asset.id === DEFAULT_CAR_ASSET.id));
 
 export function carAssetForId(id: string | undefined) {

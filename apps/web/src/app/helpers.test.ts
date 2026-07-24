@@ -121,9 +121,9 @@ describe("startingGrid", () => {
   it("orders best qualifying times first and falls back to team order", () => {
     const state = stateWithHistory([]);
     state.teams = [
-      { id: "team_1", name: "One", kind: "human", points: 0, credits: 0, cards: [], livery: { primary: "#111111", secondary: "#eeeeee" }, ready: true },
-      { id: "team_2", name: "Two", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#222222", secondary: "#eeeeee" }, ready: true },
-      { id: "team_3", name: "Three", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#333333", secondary: "#eeeeee" }, ready: true }
+      { id: "team_1", name: "One", kind: "human", points: 0, credits: 0, cards: [], livery: { primary: "#111111", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true },
+      { id: "team_2", name: "Two", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#222222", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true },
+      { id: "team_3", name: "Three", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#333333", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true }
     ];
     state.currentGrandPrix.qualifyingRuns = [
       {
@@ -170,9 +170,9 @@ describe("seasonStandings", () => {
     ]);
     state.currentGrandPrix.season = 3;
     state.teams = [
-      { id: "team_1", name: "One", kind: "human", points: 0, credits: 0, cards: [], livery: { primary: "#111111", secondary: "#eeeeee" }, ready: true },
-      { id: "team_2", name: "Two", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#222222", secondary: "#eeeeee" }, ready: true },
-      { id: "team_3", name: "Three", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#333333", secondary: "#eeeeee" }, ready: true }
+      { id: "team_1", name: "One", kind: "human", points: 0, credits: 0, cards: [], livery: { primary: "#111111", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true },
+      { id: "team_2", name: "Two", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#222222", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true },
+      { id: "team_3", name: "Three", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#333333", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true }
     ];
 
     expect(seasonStandings(state, 1).map((entry) => [entry.position, entry.teamId, entry.points])).toEqual([

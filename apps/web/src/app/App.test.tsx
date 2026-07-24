@@ -238,8 +238,8 @@ describe("App", () => {
   it("previews garage car skins before saving the selected skin", async () => {
     saveProfile();
     saveActiveClaim();
-    const stateWithSavedSkin = { ...baseState, teams: [{ ...baseState.teams[0]!, livery: { ...baseState.teams[0]!.livery, carAssetId: "car-008" } }, baseState.teams[1]!] };
-    const updatedState = { ...baseState, teams: [{ ...baseState.teams[0]!, livery: { ...baseState.teams[0]!.livery, carAssetId: "car-009" } }, baseState.teams[1]!] };
+    const stateWithSavedSkin = { ...baseState, teams: [{ ...baseState.teams[0]!, unlockedCarAssetIds: ["car-008", "car-009"], livery: { ...baseState.teams[0]!.livery, carAssetId: "car-008" } }, baseState.teams[1]!] };
+    const updatedState = { ...baseState, teams: [{ ...baseState.teams[0]!, unlockedCarAssetIds: ["car-008", "car-009"], livery: { ...baseState.teams[0]!.livery, carAssetId: "car-009" } }, baseState.teams[1]!] };
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(stateWithSavedSkin)).mockResolvedValueOnce(response(updatedState)).mockResolvedValueOnce(response(updatedState));
 
     render(<App />);
@@ -262,6 +262,38 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Save colors" }));
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(3));
     expect(JSON.parse((fetch.mock.calls[2]?.[1] as RequestInit).body as string).livery.carAssetId).toBe("car-009");
+  });
+
+  it("unlocks and equips paid garage cars", async () => {
+    saveProfile();
+    saveActiveClaim();
+    const garageState = { ...baseState, teams: [{ ...baseState.teams[0]!, credits: 3_000, unlockedCarAssetIds: [] }, baseState.teams[1]!] };
+    const purchasedState = {
+      ...garageState,
+      teams: [{ ...garageState.teams[0]!, credits: 2_000, unlockedCarAssetIds: ["car-008"], livery: { ...garageState.teams[0]!.livery, carAssetId: "car-008" } }, garageState.teams[1]!]
+    };
+    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(garageState)).mockResolvedValueOnce(response(purchasedState));
+
+    render(<App />);
+    await screen.findByRole("button", { name: "Stand" });
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    await waitFor(() => expect(document.querySelector(".garage-grid")).toBeTruthy());
+
+    for (let index = 0; index < 7; index += 1) fireEvent.click(screen.getByRole("button", { name: "Next car skin" }));
+    expect(document.querySelectorAll(".garage-car-preview-frame.locked")).toHaveLength(2);
+    expect(document.querySelectorAll(".garage-car-lock")).toHaveLength(2);
+
+    fireEvent.click(screen.getByRole("button", { name: "Unlock · 1000" }));
+    const dialog = screen.getByRole("dialog", { name: "Unlock this car?" });
+    fireEvent.click(within(dialog).getByRole("button", { name: "Unlock for 1000" }));
+
+    await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
+    expect(fetch).toHaveBeenLastCalledWith(
+      "http://localhost:4874/leagues/league_1/cars/buy",
+      expect.objectContaining({ method: "POST", body: JSON.stringify({ teamId: "team_1", claimCode: "CLAIM123", carAssetId: "car-008" }) })
+    );
+    expect(await screen.findByRole("button", { name: "Selected" })).toBeTruthy();
+    expect(document.querySelector(".garage-car-lock")).toBe(null);
   });
 
   it("skips tab-return refresh while hidden, without a claim, or already loading", async () => {

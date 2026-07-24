@@ -1,4 +1,4 @@
-import type { CardId, QualifyingRun } from "@cr-league/shared";
+import type { CardId, CarAssetId, QualifyingRun } from "@cr-league/shared";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { GameTopbar } from "./AppChrome.js";
@@ -79,6 +79,7 @@ export function AppShell({
   openHistoryReplay,
   buyCard,
   sellCard,
+  buyCarAsset,
   updateLivery,
   updateTeamName,
   clearTransientNotifications,
@@ -151,6 +152,7 @@ export function AppShell({
   openHistoryReplay: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
   buyCard: (cardId: CardId, quantity?: number) => void;
   sellCard: (cardId: CardId) => void;
+  buyCarAsset: (carAssetId: CarAssetId) => void;
   updateLivery: (livery: LeagueState["teams"][number]["livery"], options?: { silent?: boolean }) => void;
   updateTeamName: (name: string) => void;
   clearTransientNotifications: () => void;
@@ -272,6 +274,7 @@ export function AppShell({
           setChampionshipRecordTab={setChampionshipRecordTab}
           buyCard={buyCard}
           sellCard={sellCard}
+          buyCarAsset={buyCarAsset}
           setGaragePanel={setGaragePanel}
           updateLivery={updateLivery}
           updateTeamName={updateTeamName}

@@ -1,4 +1,4 @@
-import type { CardId, QualifyingRun, RaceResult } from "@cr-league/shared";
+import type { CardId, CarAssetId, QualifyingRun, RaceResult } from "@cr-league/shared";
 import { APP_VERSION } from "@cr-league/shared";
 import { lazy, Suspense, type ReactNode } from "react";
 import type { CityCircuit } from "./circuits.js";
@@ -66,6 +66,7 @@ export function GameViews({
   setChampionshipRecordTab,
   buyCard,
   sellCard,
+  buyCarAsset,
   setGaragePanel,
   updateLivery,
   updateTeamName,
@@ -119,6 +120,7 @@ export function GameViews({
   setChampionshipRecordTab: (tab: ChampionshipRecordTab) => void;
   buyCard: (cardId: CardId, quantity?: number) => void;
   sellCard: (cardId: CardId) => void;
+  buyCarAsset: (carAssetId: CarAssetId) => void;
   setGaragePanel: (panel: CardPanel) => void;
   updateLivery: (livery: LeagueState["teams"][number]["livery"], options?: { silent?: boolean }) => void;
   updateTeamName: (name: string) => void;
@@ -215,6 +217,7 @@ export function GameViews({
             cardPanel={garagePanel}
             onBuyCard={buyCard}
             onSellCard={sellCard}
+            onBuyCarAsset={buyCarAsset}
             onSelectCardPanel={setGaragePanel}
             onUpdateLivery={updateLivery}
             onUpdateTeamName={updateTeamName}

@@ -1,6 +1,7 @@
 export { LeagueRuleError } from "./errors.js";
 export type {
   AdminProofInput,
+  BuyCarAssetInput,
   CreateLeagueInput,
   CreateProfileInput,
   LeagueState,
@@ -29,6 +30,7 @@ export {
   withPlayer
 } from "./lifecycle.js";
 export { buyCard, sellCard } from "./cards.js";
+export { buyCarAsset } from "./carAssets.js";
 export { submitDecision } from "./decisions.js";
 export { submitQualifyingRun } from "./qualifyingStore.js";
 export { resolveCurrentGrandPrix } from "./resolution.js";

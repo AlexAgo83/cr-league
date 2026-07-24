@@ -1,6 +1,7 @@
 import {
   CARD_DEFINITIONS,
   CARD_PRICES,
+  CAR_ASSET_PRICES,
   DEMO_RACE_INPUT,
   PIT_STRATEGIES,
   RACE_APPROACHES,
@@ -9,6 +10,7 @@ import {
   circuitSeasonSeed,
   raceInputFromCircuit,
   simulateRace,
+  isCarAssetId,
   trackSpeedProfileForCircuit,
   trackZonesForCircuit,
   type CardId,
@@ -37,6 +39,7 @@ import { getCurrentGrandPrix, isUniqueConstraintError, lockGrandPrixRow, lockLea
 import { bestQualifyingRuns, createQualifyingRuns, qualifyingCardForTeam } from "./qualifying.js";
 import type {
   AdminProofInput,
+  BuyCarAssetInput,
   CreateLeagueInput,
   CreateProfileInput,
   Db,
@@ -69,6 +72,7 @@ import {
   normalizeDisplayName,
   normalizeEmail,
   normalizeLivery,
+  normalizeUnlockedCarAssetIds,
   normalizeQualifyingRuns,
   profileSession,
   randomLivery,
@@ -369,6 +373,7 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
       credits: team.credits,
       cards: normalizeCards(team.cards),
       livery: normalizeLivery(team.livery),
+      unlockedCarAssetIds: normalizeUnlockedCarAssetIds(team.unlockedCarAssetIds),
       ready: grandPrix.decisions.some((decision) => decision.teamId === team.id)
     })),
     cardShop: CARD_SHOP,
@@ -463,6 +468,41 @@ export async function sellCard(db: Db, leagueId: string, input: { teamId?: strin
   return getLeagueState(db, leagueId);
 }
 
+export async function buyCarAsset(db: Db, leagueId: string, input: BuyCarAssetInput = {}) {
+  const carAssetId = input.carAssetId;
+  if (typeof carAssetId !== "string" || !isCarAssetId(carAssetId) || CAR_ASSET_PRICES[carAssetId] <= 0) {
+    throw new LeagueRuleError("Expected a valid paid car.");
+  }
+
+  const state = await getLeagueState(db, leagueId);
+  if (!state) return null;
+
+  const team = await requireTeamClaim(db, leagueId, input);
+  const price = CAR_ASSET_PRICES[carAssetId];
+  if (team.credits < price) throw new LeagueRuleError("Not enough credits to buy this car.");
+
+  await runWrite(db, async (tx) => {
+    await lockTeamRow(tx, team.id);
+    const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
+    const unlocked = normalizeUnlockedCarAssetIds(freshTeam?.unlockedCarAssetIds);
+    if (!freshTeam || freshTeam.leagueId !== leagueId) throw new LeagueRuleError("Team not found in this league.");
+    if (unlocked.includes(carAssetId)) throw new LeagueRuleError("This car is already unlocked.");
+    if (freshTeam.credits < price) throw new LeagueRuleError("Not enough credits to buy this car.");
+
+    const updated = await tx.team.updateMany({
+      where: { id: freshTeam.id, credits: { gte: price } },
+      data: {
+        credits: { decrement: price },
+        unlockedCarAssetIds: [...unlocked, carAssetId],
+        livery: { ...normalizeLivery(freshTeam.livery), carAssetId }
+      }
+    });
+    if (updated.count !== 1) throw new LeagueRuleError("Not enough credits to buy this car.");
+  });
+
+  return getLeagueState(db, leagueId);
+}
+
 export async function updateLeagueSettings(db: Db, leagueId: string, input: UpdateLeagueSettingsInput = {}) {
   await requireAdminClaim(db, leagueId, input);
   const data: { cadence?: string; preparationDeadlineAt?: Date | null } = {};
@@ -497,6 +537,15 @@ export async function updateTeamLivery(db: Db, leagueId: string, input: UpdateTe
   const state = await getLeagueState(db, leagueId);
   if (!state) return null;
   const team = await requireTeamClaim(db, leagueId, input);
+  const selectedCarAssetId = livery.carAssetId;
+  if (
+    selectedCarAssetId &&
+    isCarAssetId(selectedCarAssetId) &&
+    CAR_ASSET_PRICES[selectedCarAssetId] > 0 &&
+    !normalizeUnlockedCarAssetIds(team.unlockedCarAssetIds).includes(selectedCarAssetId)
+  ) {
+    throw new LeagueRuleError("This car is locked.");
+  }
 
   await db.team.update({
     where: { id: team.id },

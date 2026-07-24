@@ -1,5 +1,5 @@
 import type { PrismaClient } from "@prisma/client";
-import type { CardId, QualifyingRun, RaceDecision, RaceInput, TeamLivery } from "@cr-league/shared";
+import type { CardId, CarAssetId, QualifyingRun, RaceDecision, RaceInput, TeamLivery } from "@cr-league/shared";
 
 export type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecision" | "profile" | "$queryRaw"> & {
   $transaction?: <T>(fn: (tx: Db) => Promise<T>) => Promise<T>;
@@ -82,6 +82,7 @@ export type LeagueState = {
     credits: number;
     cards: CardId[];
     livery: TeamLivery;
+    unlockedCarAssetIds: CarAssetId[];
     ready: boolean;
   }>;
   cardShop: Array<{
@@ -146,6 +147,12 @@ export type UpdateTeamLiveryInput = {
   teamId?: string;
   claimCode?: string;
   livery?: unknown;
+};
+
+export type BuyCarAssetInput = {
+  teamId?: string;
+  claimCode?: string;
+  carAssetId?: string;
 };
 
 export type UpdateTeamNameInput = {

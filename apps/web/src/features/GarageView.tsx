@@ -1,4 +1,4 @@
-import type { CardId, RaceResult } from "@cr-league/shared";
+import { CAR_ASSET_PRICES, type CardId, type CarAssetId, type RaceResult } from "@cr-league/shared";
 import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
@@ -26,6 +26,7 @@ export function GarageView({
   cardPanel,
   onBuyCard,
   onSellCard,
+  onBuyCarAsset,
   onSelectCardPanel,
   onUpdateLivery,
   onUpdateTeamName,
@@ -42,6 +43,7 @@ export function GarageView({
   cardPanel: CardPanel;
   onBuyCard: (cardId: CardId, quantity?: number) => void;
   onSellCard: (cardId: CardId) => void;
+  onBuyCarAsset: (carAssetId: CarAssetId) => void;
   onSelectCardPanel: (panel: CardPanel) => void;
   onUpdateLivery: (livery: LeagueState["teams"][number]["livery"], options?: { silent?: boolean }) => void;
   onUpdateTeamName: (name: string) => void;
@@ -52,6 +54,7 @@ export function GarageView({
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
   const [buyQuantity, setBuyQuantity] = useState(1);
   const [viewingCardId, setViewingCardId] = useState<CardId | undefined>();
+  const [pendingCarAssetId, setPendingCarAssetId] = useState<CarAssetId | undefined>();
   const [carAssetIndex, setCarAssetIndex] = useState(DEFAULT_CAR_ASSET_INDEX);
 
   useEffect(() => {
@@ -103,6 +106,11 @@ export function GarageView({
     setLivery(nextLivery);
     onUpdateLivery(nextLivery, { silent: true });
   };
+  const confirmCarAssetPurchase = () => {
+    if (!pendingCarAssetId) return;
+    onBuyCarAsset(pendingCarAssetId);
+    setPendingCarAssetId(undefined);
+  };
   const saveLiveryColors = () => {
     onUpdateLivery({ ...livery, carAssetId: playerTeam.livery.carAssetId });
   };
@@ -111,6 +119,9 @@ export function GarageView({
     onSelectCardPanel(nextPanel);
   };
   const selectedCarAsset = CAR_ASSETS[carAssetIndex] ?? DEFAULT_CAR_ASSET;
+  const selectedCarPrice = CAR_ASSET_PRICES[selectedCarAsset.id];
+  const selectedCarUnlocked = selectedCarPrice === 0 || (playerTeam.unlockedCarAssetIds ?? []).includes(selectedCarAsset.id);
+  const selectedCarAffordable = playerTeam.credits >= selectedCarPrice;
   const carTintStyle = { "--garage-car-secondary": livery.secondary, "--garage-car-stroke": livery.primary } as CSSProperties & Record<string, string>;
   const topCarStyle = { ...carTintStyle, "--garage-car-mask": `url("${selectedCarAsset.top}")` } as CSSProperties & Record<string, string>;
   const sideCarStyle = { ...carTintStyle, "--garage-car-mask": `url("${selectedCarAsset.side}")` } as CSSProperties & Record<string, string>;
@@ -135,21 +146,28 @@ export function GarageView({
         </div>
         <div className="garage-car-showcase">
           <div className="garage-car-assets-row">
-            <span className="garage-car-preview-frame garage-car-preview-top" style={topCarStyle}>
+            <span className={`garage-car-preview-frame garage-car-preview-top${selectedCarUnlocked ? "" : " locked"}`} style={topCarStyle}>
               <AssetImage className="garage-car-preview" src={selectedCarAsset.top} alt="" />
               <span className="garage-car-gradient" aria-hidden="true" />
+              {!selectedCarUnlocked ? <CarLock /> : null}
             </span>
-            <span className="garage-car-preview-frame garage-car-preview-side" style={sideCarStyle}>
+            <span className={`garage-car-preview-frame garage-car-preview-side${selectedCarUnlocked ? "" : " locked"}`} style={sideCarStyle}>
               <AssetImage className="garage-car-preview" src={selectedCarAsset.side} alt="" />
               <span className="garage-car-gradient" aria-hidden="true" />
+              {!selectedCarUnlocked ? <CarLock /> : null}
             </span>
           </div>
           <div className="garage-car-controls-row">
             <button className="garage-car-skin-button" type="button" aria-label="Previous car skin" disabled={!canChangeCarAsset} onClick={() => previewCarAsset((carAssetIndex + CAR_ASSETS.length - 1) % CAR_ASSETS.length)}>
               ‹
             </button>
-            <button className="garage-car-select-button" type="button" disabled={loading || selectedSkinSaved} onClick={saveCarAsset}>
-              {tt(selectedSkinSaved ? "garage_car_skin_selected" : "garage_car_skin_select")}
+            <button
+              className="garage-car-select-button"
+              type="button"
+              disabled={loading || selectedSkinSaved || (!selectedCarUnlocked && !selectedCarAffordable)}
+              onClick={selectedCarUnlocked ? saveCarAsset : () => setPendingCarAssetId(selectedCarAsset.id)}
+            >
+              {tt(selectedSkinSaved ? "garage_car_skin_selected" : selectedCarUnlocked ? "garage_car_skin_select" : "garage_car_unlock", { price: selectedCarPrice })}
             </button>
             <button className="garage-car-skin-button" type="button" aria-label="Next car skin" disabled={!canChangeCarAsset} onClick={() => previewCarAsset((carAssetIndex + 1) % CAR_ASSETS.length)}>
               ›
@@ -285,6 +303,19 @@ export function GarageView({
           </div>
         </Modal>
       ) : null}
+      {pendingCarAssetId ? (
+        <Modal label={tt("garage_car_buy_title")} className="panel modal garage-buy-modal garage-car-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setPendingCarAssetId(undefined)}>
+          <div className="garage-car-buy-preview">
+            <AssetImage src={CAR_ASSETS.find((asset) => asset.id === pendingCarAssetId)?.top ?? DEFAULT_CAR_ASSET.top} alt="" />
+          </div>
+          <p>{tt("garage_car_buy_body", { price: CAR_ASSET_PRICES[pendingCarAssetId] })}</p>
+          <div className="modal-actions">
+            <button type="button" onClick={confirmCarAssetPurchase} disabled={loading}>
+              {tt("garage_car_buy_action", { price: CAR_ASSET_PRICES[pendingCarAssetId] })}
+            </button>
+          </div>
+        </Modal>
+      ) : null}
       {viewingCardId && viewingFit ? (
         <Modal label={tt(`card_${viewingCardId}` as TranslationKey)} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setViewingCardId(undefined)}>
           <ModalHero image="/assets/crl/garage-sell-modal.png" kicker={tt("garage_inventory")} title={tt(`card_${viewingCardId}` as TranslationKey)} />
@@ -309,5 +340,16 @@ export function GarageView({
         </Modal>
       ) : null}
     </div>
+  );
+}
+
+function CarLock() {
+  return (
+    <span className="garage-car-lock" aria-hidden="true">
+      <svg viewBox="0 0 24 24" focusable="false">
+        <rect x="5" y="10" width="14" height="10" rx="2" />
+        <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+      </svg>
+    </span>
   );
 }

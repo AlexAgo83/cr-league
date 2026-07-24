@@ -16,6 +16,7 @@ export function createLeagueMutations({
   setResultOpen,
   setResolveConfirmOpen,
   setNextGrandPrixConfirmOpen,
+  setForm,
   setRouteReplayGrandPrixId,
   setHistoryReplay,
   showStatus,
@@ -35,6 +36,7 @@ export function createLeagueMutations({
   setResultOpen: (open: boolean) => void;
   setResolveConfirmOpen: (open: boolean) => void;
   setNextGrandPrixConfirmOpen: (open: boolean) => void;
+  setForm: (update: (current: FormState) => FormState) => void;
   setRouteReplayGrandPrixId: (id: string | undefined) => void;
   setHistoryReplay: (grandPrix: LeagueState["grandPrixHistory"][number] | null) => void;
   showStatus: (text: string) => void;
@@ -108,6 +110,7 @@ export function createLeagueMutations({
         })
       });
       setLeagueState(withCurrentPlayer(state));
+      setForm((current) => (current.cardId ? { ...current, cardId: "" } : current));
       setGameView("drive");
       setResultOpen(false);
       showStatus(tt(finishingSeason ? "status_season_finished" : "status_next_grand_prix_started"));

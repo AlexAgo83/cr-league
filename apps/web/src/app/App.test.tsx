@@ -803,6 +803,7 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
     expect(await screen.findByRole("heading", { name: "Race replay" })).toBeTruthy();
     await waitFor(() => expect(window.location.pathname).toBe("/replay/gp_1"));
+    expect(JSON.parse(localStorage.getItem("cr-league-plan-form") ?? "{}").cardId).toBe("rain_grip");
     expect(screen.getByRole("button", { name: "Stand" }).className).toContain("active");
     expect(screen.queryByRole("button", { name: "Race info" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Report" })).toBe(null);
@@ -946,6 +947,8 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Next GP" }));
     fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
+    await waitFor(() => expect(JSON.parse(localStorage.getItem("cr-league-plan-form") ?? "{}").cardId).toBe(""));
+    expect(document.querySelector(".map-plan-panel")?.textContent).not.toContain("Rain Grip");
     fireEvent.click(await screen.findByRole("button", { name: "Championship" }));
     expect(await screen.findByText("Season 1 · Round 2/6")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));

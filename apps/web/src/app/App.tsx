@@ -315,6 +315,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setResultOpen,
     setResolveConfirmOpen,
     setNextGrandPrixConfirmOpen,
+    setForm,
     setRouteReplayGrandPrixId,
     setHistoryReplay,
     showStatus,

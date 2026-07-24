@@ -8,6 +8,7 @@
 > Complexity: Medium
 > Theme: Backend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: traceability repair only.
 
 # Problem
 - resolveCurrentGrandPrix (800-818) issues N team updates plus up to 2N consumed-card queries; startNextGrandPrix (861-878) does 3 queries per team; buyBotCards/buyBotCars (1149-1186) do 3 per bot — all sequential inside transactions.
@@ -32,6 +33,11 @@
 # AC Traceability
 - request-AC7 -> This backlog slice. Proof: AC1: The per-team loops issue materially fewer in-transaction round-trips.
 - request-AC9 -> This backlog slice. Proof: AC2: Resulting points/credits/state are identical, proven by the resolution/admin tests.
+- request-AC3 -> This backlog slice. Evidence needed: The auth KDF no longer blocks the event loop — scryptSync is replaced by async crypto.scrypt on the request path — with auth behavior (hash format, verify results, legacy path) unchanged.
+- request-AC4 -> This backlog slice. Evidence needed: Circuit route data is loaded on demand for the selected circuit; the eager circuit-routes chunk is off the first-paint critical path; the correct circuit still renders for every round.
+- request-AC5 -> This backlog slice. Evidence needed: The GameApp shell is memoized so unrelated state changes no longer rebuild the admin view, overlays, and menus; adminView is not constructed for non-admins; rendered output and behavior are unchanged.
+- request-AC6 -> This backlog slice. Evidence needed: getLeagueState is built at most once per mutation and its history query no longer fetches decisions/qualifyingRuns/forecast for past grand prixes; API responses are byte-identical to today.
+- request-AC8 -> This backlog slice. Evidence needed: simulateRace is computed before the write transaction opens; the transaction performs only validation and writes; race-integrity guarantees and simulation outputs are preserved verbatim.
 
 # Decision framing
 - Product framing: Not needed

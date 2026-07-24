@@ -1,12 +1,13 @@
 ## req_115_repo_review_maintainability_follow_up - Repo review maintainability follow-up
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90
 > Confidence: 85
 > Complexity: Medium
 > Theme: Maintainability
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
+> Non-semantic edit: closeout traceability proof.
 
 # Needs
 - Collapse the repeated per-handler error/guard/404 boilerplate in leagues/routes.ts into one shared route helper, preserving each route's specific 400 message and the exact status codes clients see today.
@@ -29,6 +30,15 @@
 - AC5: Typecheck, lint, and the full unit test suite pass unchanged (315+ passing), and the CI gates (audit, balance:gate, logics:validate) stay green.
 - AC6: The duplicated object-shape preamble in the leagues/routes.ts body guards is extracted into one shared helper used by all 14 guards, with their field checks and accepted/rejected inputs unchanged.
 - AC7: The inlined per-view second-formatting (lap/best times and gaps) is centralized in one web helper, with rendered text byte-identical to today.
+
+# AC Traceability
+- AC1 -> `task_116_orchestrate_repo_review_maintainability_follow_up`. Proof: item_273 delivered the shared leagues route helper; API tests passed.
+- AC2 -> `task_116_orchestrate_repo_review_maintainability_follow_up`. Proof: item_274 split storeCore.ts into focused modules; storeCore.ts is 27 lines and the largest league store file is 687 lines.
+- AC3 -> `task_116_orchestrate_repo_review_maintainability_follow_up`. Proof: item_275 extracted HomeSplash, modal state, and preference constants; App.tsx is 796 lines with focused App tests passing.
+- AC4 -> `task_116_orchestrate_repo_review_maintainability_follow_up`. Proof: item_276 added rule-violation tests; branch coverage moved 80.52% -> 80.62% overall.
+- AC5 -> `task_116_orchestrate_repo_review_maintainability_follow_up`. Proof: npm run typecheck, npm run lint, npm test, npm test -- --coverage, npm run balance:gate, logics lint, and logics audit passed.
+- AC6 -> `task_116_orchestrate_repo_review_maintainability_follow_up`. Proof: item_277 delivered asRecord(value) for leagues route body guards; API tests passed.
+- AC7 -> `task_116_orchestrate_repo_review_maintainability_follow_up`. Proof: item_278 delivered formatSeconds(value, decimals); web tests passed with byte-identical text.
 
 # Definition of Ready (DoR)
 - [x] Problem statement is explicit and user impact is clear.

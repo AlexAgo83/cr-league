@@ -1,10 +1,10 @@
 ## item_276_close_the_branch_coverage_gap_on_error_and_rule_violation_paths - Close the branch-coverage gap on error and rule-violation paths
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Test coverage
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,6 +32,9 @@
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: New tests cover previously-uncovered error and rule-violation branches with real assertions.
 - request-AC5 -> This backlog slice. Proof: AC2: Overall branch coverage rises meaningfully toward line coverage.
+- request-AC3 -> This backlog slice. Evidence needed: App.tsx delegates each screen concern to a focused child component with identical rendered output and behavior, and no single web component file remains an 800+ line grab-bag.
+- request-AC6 -> This backlog slice. Evidence needed: The duplicated object-shape preamble in the leagues/routes.ts body guards is extracted into one shared helper used by all 14 guards, with their field checks and accepted/rejected inputs unchanged.
+- request-AC7 -> This backlog slice. Evidence needed: The inlined per-view second-formatting (lap/best times and gaps) is centralized in one web helper, with rendered text byte-identical to today.
 
 # Decision framing
 - Product framing: Not needed
@@ -52,3 +55,10 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Delivered (uncommitted): added API assertions for invalid shop inputs and qualifying card mismatch after a locked qualifying card. Coverage branch summary moved 80.52% -> 80.62% overall and leagues store branches 80.70% -> 81.27%.
+- Task `task_116_orchestrate_repo_review_maintainability_follow_up` was finished via `logics-manager flow finish task` on 2026-07-24.
+
+# Tasks
+- `task_116_orchestrate_repo_review_maintainability_follow_up`

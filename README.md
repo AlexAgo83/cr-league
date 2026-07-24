@@ -110,6 +110,7 @@ CR League is already playable end to end:
 - manual cadence with settings, readiness states, and guarded race actions;
 - qualifying attempts, chrono reports, best-lap history, and replay support;
 - seeded global city-circuit race simulation with weather, traits, events, reports, and trace-driven replays;
+- on-demand circuit route loading and optimized WebP car/UI assets to keep the hosted build lighter;
 - dynamic circuit staging markers for the start line and future pit-stop zone;
 - battery/pit strategy choices with pit-stop battery swaps anchored in the generated car trace;
 - garage inventory, card shop, per-league credit-priced cosmetic car unlocks, bot car purchases, livery editing, and team rename;
@@ -142,6 +143,14 @@ flowchart LR
 - `logics`: product, architecture, roadmap, request, backlog, and task corpus.
 - `docs`: playtest scripts, balance notes, release contract, and UI notes.
 - `reports/balance`: generated balance simulation outputs.
+
+## Current Engineering State
+
+- 0.4 ship-rails work is closed in Logics: performance, replay, chrono, garage, bot progression, and maintainability follow-ups are all Done.
+- The largest backend store was split into focused league modules behind the unchanged `store.ts` public barrel; `storeCore.ts` is now a compatibility barrel.
+- The web app root is below the 800-line ceiling, with splash, modal state, and static preference data extracted.
+- Replay/map performance work keeps route geometry and static layers off the hot path, and circuit route data loads per selected circuit.
+- Latest local gate: `npm run typecheck`, `npm run lint`, `npm test`, `npm test -- --coverage`, `npm run balance:gate`, and Logics lint/audit all pass.
 
 ## Tech Stack
 

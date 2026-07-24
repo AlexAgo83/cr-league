@@ -8,6 +8,7 @@
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Non-semantic edit: traceability repair only.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -36,6 +37,8 @@
 - request-AC4 -> This task. Proof: optional context-pack handoff is supported.
 - request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
 - request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC2 -> This task. Evidence needed: simulateRace no longer runs while holding the grand-prix row lock (computed before the write transaction, or on a worker thread); the transaction performs only validation and writes.
+- request-AC3 -> This task. Evidence needed: Race-integrity guarantees (single resolve wins, lock semantics) and simulation outputs are preserved verbatim, proven by the resolution tests and balance:gate.
 
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.

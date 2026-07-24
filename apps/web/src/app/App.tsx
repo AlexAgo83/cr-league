@@ -1,14 +1,13 @@
 import { type QualifyingRun } from "@cr-league/shared";
-import { type SetStateAction, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView } from "../features/AdminConsoleView.js";
-import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
-import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY } from "../features/ReplayView.js";
 import type { ResultTab } from "../features/ResultView.js";
 import { LanguageSwitcher, NotificationStack, ProfileMenu, SetupTopbar } from "./AppChrome.js";
 import { AppOverlays } from "./AppOverlays.js";
 import { ONBOARDING_HELP_KEYS, SCREEN_ONBOARDING_HELP_TOPICS, type OnboardingHelpTopic } from "./OnboardingShell.js";
+import { LEAGUE_SCOPED_HELP_TOPICS, UI_PREFERENCE_KEYS } from "./appPreferences.js";
 import {
   ACTIVE_PLAYER_CLAIM_KEY,
   ApiError,
@@ -21,6 +20,7 @@ import {
   safeStorage,
   seasonRecapStorageKey,
 } from "./appStorage.js";
+import { HomeSplash } from "./HomeSplash.js";
 import { AppShell } from "./AppShell.js";
 import { useCircuitRoutesReady } from "./circuitRoutes/index.js";
 import { rememberPlayerClaim, withCurrentPlayer as restoreCurrentPlayer, withoutPlayerClaim } from "./claimHelpers.js";
@@ -33,35 +33,10 @@ import { createLeagueMutations } from "./leagueMutations.js";
 import { useAppNavigation } from "./useAppNavigation.js";
 import { useCommandClicks } from "./useCommandClicks.js";
 import { useAdminPanel } from "./useAdminPanel.js";
+import { useActiveModal } from "./useActiveModal.js";
 import { useNotifications, type Notification } from "./useNotifications.js";
 import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
-import { CHAMPIONSHIP_RECORD_TAB_KEY, GARAGE_PANEL_KEY } from "./viewPreferences.js";
-
-const UI_PREFERENCE_KEYS = [
-  DISMISSED_REPLAY_HELP_KEY,
-  REPLAY_SPEED_KEY,
-  REPLAY_FOCUS_KEY,
-  GARAGE_PANEL_KEY,
-  CHAMPIONSHIP_RECORD_TAB_KEY,
-  DIRECTIVE_STEP_KEY,
-  "cr-league-card-consumption-help",
-  "cr-league-card-consumption-help-v2",
-  ...Object.values(ONBOARDING_HELP_KEYS)
-] as const;
-const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "race", "plan", "garage"]);
-
-type ActiveModal =
-  | "profile"
-  | "preferencesReset"
-  | "profileCode"
-  | "profileLogout"
-  | "directiveConfirm"
-  | "resolveConfirm"
-  | "qualifyingConfirm"
-  | "nextGrandPrixConfirm"
-  | "leagueControls"
-  | "restartConfirm";
 
 function initialLocale() {
   const saved = safeStorage.get(LANGUAGE_KEY);
@@ -84,22 +59,6 @@ export function App() {
   return <GameApp locale={locale} onLocaleChange={changeLocale} />;
 }
 
-function HomeSplash({ locale, tt, onChangeLocale, onEnter }: { locale: Locale; tt: (key: TranslationKey) => string; onChangeLocale: (locale: Locale) => void; onEnter: () => void }) {
-  return (
-    <main className="home-splash" aria-label={tt("splash_label")}>
-      <img className="home-splash-background" src="/assets/crl/home-background.jpg" alt="" />
-      <SetupTopbar profileMenu={null} languageSwitcher={<LanguageSwitcher locale={locale} tt={tt} onChangeLocale={onChangeLocale} />} onHome={() => undefined} />
-      <div className="home-splash-title" aria-hidden="true">
-        <img className="home-splash-title-cr" src="/assets/crl/home-title-cr.webp" alt="" />
-        <img className="home-splash-title-league" src="/assets/crl/home-title-league.webp" alt="" />
-      </div>
-      <button type="button" className="home-press-start" onClick={onEnter}>
-        {tt("splash_press_start")}
-      </button>
-    </main>
-  );
-}
-
 function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (locale: Locale) => void }) {
   // Kicks off the lazy circuit-route load and re-renders once ready so circuitForRound (below) hands
   // the freshly-loaded polyline to the race/replay/championship views.
@@ -108,39 +67,29 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
   const [resultTab, setResultTab] = useState<ResultTab>("replay");
   const [resultOpen, setResultOpen] = useState(false);
-  const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
-  const modalReturnRef = useRef<ActiveModal | null>(null);
-  const setModalOpen = useCallback((modal: ActiveModal, value: SetStateAction<boolean>) => {
-    setActiveModal((current) => {
-      const open = current === modal;
-      const next = typeof value === "function" ? value(open) : value;
-      if (next) return modal;
-      if (current !== modal) return current;
-      const returnModal = modalReturnRef.current;
-      modalReturnRef.current = null;
-      return returnModal;
-    });
-  }, []);
-  const setProfileOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("profile", value), [setModalOpen]);
-  const setPreferencesResetOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("preferencesReset", value), [setModalOpen]);
-  const setProfileCodeOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("profileCode", value), [setModalOpen]);
-  const setProfileLogoutOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("profileLogout", value), [setModalOpen]);
-  const setDirectiveConfirmOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("directiveConfirm", value), [setModalOpen]);
-  const setResolveConfirmOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("resolveConfirm", value), [setModalOpen]);
-  const setQualifyingConfirmOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("qualifyingConfirm", value), [setModalOpen]);
-  const setNextGrandPrixConfirmOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("nextGrandPrixConfirm", value), [setModalOpen]);
-  const setLeagueControlsOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("leagueControls", value), [setModalOpen]);
-  const setRestartConfirmOpen = useCallback((value: SetStateAction<boolean>) => setModalOpen("restartConfirm", value), [setModalOpen]);
-  const profileOpen = activeModal === "profile";
-  const preferencesResetOpen = activeModal === "preferencesReset";
-  const profileCodeOpen = activeModal === "profileCode";
-  const profileLogoutOpen = activeModal === "profileLogout";
-  const directiveConfirmOpen = activeModal === "directiveConfirm";
-  const resolveConfirmOpen = activeModal === "resolveConfirm";
-  const qualifyingConfirmOpen = activeModal === "qualifyingConfirm";
-  const nextGrandPrixConfirmOpen = activeModal === "nextGrandPrixConfirm";
-  const leagueControlsOpen = activeModal === "leagueControls";
-  const restartConfirmOpen = activeModal === "restartConfirm";
+  const {
+    modalReturnRef,
+    setProfileOpen,
+    setPreferencesResetOpen,
+    setProfileCodeOpen,
+    setProfileLogoutOpen,
+    setDirectiveConfirmOpen,
+    setResolveConfirmOpen,
+    setQualifyingConfirmOpen,
+    setNextGrandPrixConfirmOpen,
+    setLeagueControlsOpen,
+    setRestartConfirmOpen,
+    profileOpen,
+    preferencesResetOpen,
+    profileCodeOpen,
+    profileLogoutOpen,
+    directiveConfirmOpen,
+    resolveConfirmOpen,
+    qualifyingConfirmOpen,
+    nextGrandPrixConfirmOpen,
+    leagueControlsOpen,
+    restartConfirmOpen
+  } = useActiveModal();
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const clearRouteReplay = useCallback(() => setHistoryReplay(null), []);
   const activeReplayGrandPrixId =

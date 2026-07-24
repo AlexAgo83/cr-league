@@ -1,14 +1,28 @@
 ## prod_068_performance_pass_front_and_api_product_brief - Performance Pass (Front and API) Product Brief
 > Date: 2026-07-24
-> Status: Proposed
+> Status: Settled
 > Related request: `req_116_performance_pass_front_and_api`
 > Related backlog: `item_279_downscale_and_webp_the_car_sprite_assets`, `item_280_convert_crl_ui_pngs_to_webp`, `item_281_move_the_auth_scrypt_kdf_off_the_event_loop`, `item_282_lazy_load_circuit_route_data_per_selected_circuit`, `item_283_memoize_the_gameapp_shell_to_stop_unrelated_rebuilds`, `item_284_cut_getleaguestate_rebuilds_and_historical_over_fetch`, `item_285_batch_per_team_write_loops_in_resolve_rollover_and_bot_purchases`, `item_286_compute_simulaterace_before_the_write_transaction`
 > Related task: `task_117_orchestrate_the_performance_pass`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
 
 # Overview
 Act on a measured performance audit of CR League's web and API. The wins are ranked and grounded: compress oversized image assets, defer non-critical front-end code, and remove wasted/blocking backend work on the mutation path — all without changing behavior, visuals, API responses, or race-integrity guarantees, and without new dependencies or schema changes.
+
+```mermaid
+flowchart TD
+  Req[req_116 performance pass] --> Assets[item_279 and item_280 assets]
+  Req --> Auth[item_281 async auth]
+  Req --> Front[item_282 and item_283 front path]
+  Req --> Api[item_284 to item_286 API path]
+  Assets --> Task[task_117 delivery]
+  Auth --> Task
+  Front --> Task
+  Api --> Task
+  Task --> Gate[behavior unchanged]
+```
 
 # Goals
 - Shrink image payload (cars + UI art) by roughly an order of magnitude via downscale + WebP.

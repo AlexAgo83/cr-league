@@ -8,6 +8,7 @@
 > Complexity: Medium
 > Theme: Backend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: traceability repair only.
 
 # Problem
 - getLeagueState (storeCore.ts:317) is called 3-5x per mutation (submitDecision 586/633/638/641; resolveCurrentGrandPrix 745/758/761/769/821; buy/sell/livery/name twice), each a full 3-level nested query and payload rebuild.
@@ -32,6 +33,11 @@
 # AC Traceability
 - request-AC6 -> This backlog slice. Proof: AC1: getLeagueState is built at most once per mutation.
 - request-AC9 -> This backlog slice. Proof: AC2: The history query no longer fetches decisions/qualifyingRuns/forecast for past GPs.
+- request-AC3 -> This backlog slice. Evidence needed: The auth KDF no longer blocks the event loop — scryptSync is replaced by async crypto.scrypt on the request path — with auth behavior (hash format, verify results, legacy path) unchanged.
+- request-AC4 -> This backlog slice. Evidence needed: Circuit route data is loaded on demand for the selected circuit; the eager circuit-routes chunk is off the first-paint critical path; the correct circuit still renders for every round.
+- request-AC5 -> This backlog slice. Evidence needed: The GameApp shell is memoized so unrelated state changes no longer rebuild the admin view, overlays, and menus; adminView is not constructed for non-admins; rendered output and behavior are unchanged.
+- request-AC7 -> This backlog slice. Evidence needed: Per-team write loops in resolve, season rollover, and bot purchases are batched, reducing in-transaction round-trips, with identical resulting points/credits/state.
+- request-AC8 -> This backlog slice. Evidence needed: simulateRace is computed before the write transaction opens; the transaction performs only validation and writes; race-integrity guarantees and simulation outputs are preserved verbatim.
 
 # Decision framing
 - Product framing: Not needed

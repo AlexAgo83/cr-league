@@ -8,6 +8,7 @@
 > Complexity: Low
 > Theme: Backend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: traceability repair only.
 
 # Problem
 - hashRecoveryCode (utils.ts:35) and verifyRecoveryCode (utils.ts:49) call scryptSync synchronously on the request path.
@@ -32,6 +33,11 @@
 # AC Traceability
 - request-AC3 -> This backlog slice. Proof: AC1: scryptSync is gone from the request path; the KDF runs on the libuv threadpool.
 - request-AC9 -> This backlog slice. Proof: AC2: Hash format and verify outcomes (current + legacy + timing-safe) are unchanged, proven by the existing auth tests.
+- request-AC4 -> This backlog slice. Evidence needed: Circuit route data is loaded on demand for the selected circuit; the eager circuit-routes chunk is off the first-paint critical path; the correct circuit still renders for every round.
+- request-AC5 -> This backlog slice. Evidence needed: The GameApp shell is memoized so unrelated state changes no longer rebuild the admin view, overlays, and menus; adminView is not constructed for non-admins; rendered output and behavior are unchanged.
+- request-AC6 -> This backlog slice. Evidence needed: getLeagueState is built at most once per mutation and its history query no longer fetches decisions/qualifyingRuns/forecast for past grand prixes; API responses are byte-identical to today.
+- request-AC7 -> This backlog slice. Evidence needed: Per-team write loops in resolve, season rollover, and bot purchases are batched, reducing in-transaction round-trips, with identical resulting points/credits/state.
+- request-AC8 -> This backlog slice. Evidence needed: simulateRace is computed before the write transaction opens; the transaction performs only validation and writes; race-integrity guarantees and simulation outputs are preserved verbatim.
 
 # Decision framing
 - Product framing: Not needed

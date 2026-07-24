@@ -1,10 +1,10 @@
 ## item_274_split_storecore_ts_below_the_size_ceiling - Split storeCore.ts below the size ceiling
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Backend maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -33,6 +33,10 @@
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: No resulting hand-written source file exceeds ~800 lines.
 - request-AC5 -> This backlog slice. Proof: AC2: The public import surface is unchanged and behavior is preserved verbatim.
+- request-AC3 -> This backlog slice. Evidence needed: App.tsx delegates each screen concern to a focused child component with identical rendered output and behavior, and no single web component file remains an 800+ line grab-bag.
+- request-AC4 -> This backlog slice. Evidence needed: Overall branch coverage rises meaningfully toward line coverage by covering previously-uncovered error and rule-violation branches, with no assertions weakened or tests skipped to inflate the number.
+- request-AC6 -> This backlog slice. Evidence needed: The duplicated object-shape preamble in the leagues/routes.ts body guards is extracted into one shared helper used by all 14 guards, with their field checks and accepted/rejected inputs unchanged.
+- request-AC7 -> This backlog slice. Evidence needed: The inlined per-view second-formatting (lap/best times and gaps) is centralized in one web helper, with rendered text byte-identical to today.
 
 # Decision framing
 - Product framing: Not needed
@@ -53,3 +57,10 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Delivered (uncommitted): storeCore.ts is now a 27-line compatibility barrel; focused league store modules hold the implementation, with the largest file at 687 lines. Verified with root typecheck, lint, and 315-test Vitest suite.
+- Task `task_116_orchestrate_repo_review_maintainability_follow_up` was finished via `logics-manager flow finish task` on 2026-07-24.
+
+# Tasks
+- `task_116_orchestrate_repo_review_maintainability_follow_up`

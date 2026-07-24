@@ -1,10 +1,10 @@
 ## item_277_extract_shared_body_guard_preamble_in_leagues_routes_into_asrecord - Extract shared body-guard preamble in leagues routes into asRecord
 > From version: 0.4.5
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100
 > Complexity: Low
 > Theme: Backend maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,6 +32,9 @@
 # AC Traceability
 - request-AC6 -> This backlog slice. Proof: AC1: A single shared helper replaces the duplicated object-preamble in all 14 leagues route guards.
 - request-AC5 -> This backlog slice. Proof: AC3: Typecheck, lint, and the full unit suite pass with no weakened assertions.
+- request-AC2 -> This backlog slice. Evidence needed: storeCore.ts is split so no resulting hand-written source file exceeds ~800 lines, the public import surface (symbols imported by routes.ts, admin/store.ts, and tests) is unchanged, and behavior is preserved verbatim.
+- request-AC4 -> This backlog slice. Evidence needed: Overall branch coverage rises meaningfully toward line coverage by covering previously-uncovered error and rule-violation branches, with no assertions weakened or tests skipped to inflate the number.
+- request-AC7 -> This backlog slice. Evidence needed: The inlined per-view second-formatting (lap/best times and gaps) is centralized in one web helper, with rendered text byte-identical to today.
 
 # Decision framing
 - Product framing: Not needed
@@ -52,3 +55,10 @@
 # Priority
 - Priority: Low
 - Rationale: Small, safe dedup; complements item_273.
+
+# Notes
+- Delivered (commit 4c1b7dd): asRecord(value) replaces the duplicated object-shape preamble in all 12 leagues route guards; behavior unchanged, 71 API tests green.
+- Task `task_116_orchestrate_repo_review_maintainability_follow_up` was finished via `logics-manager flow finish task` on 2026-07-24.
+
+# Tasks
+- `task_116_orchestrate_repo_review_maintainability_follow_up`

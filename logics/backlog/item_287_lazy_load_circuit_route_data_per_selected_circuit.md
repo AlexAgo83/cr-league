@@ -8,6 +8,7 @@
 > Complexity: Medium
 > Theme: Frontend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: traceability repair only.
 
 # Problem
 - circuitRoutes/index.ts statically imports all 25 route files; circuits.ts attaches route to CityCircuit at module-eval on the critical path (~47 KB gzip).
@@ -31,6 +32,7 @@
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: Route data loads on demand; the eager chunk is off the first-paint critical path.
 - request-AC4 -> This backlog slice. Proof: AC2: Every round renders its correct circuit with no layout flash.
+- request-AC3 -> This backlog slice. Evidence needed: Race-integrity guarantees (single resolve wins, lock semantics) and simulation outputs are preserved verbatim, proven by the resolution tests and balance:gate.
 
 # Decision framing
 - Product framing: Not needed

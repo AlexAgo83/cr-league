@@ -357,6 +357,29 @@ describe("api app", () => {
     expect(team.credits).toBe(300 - CARD_PRICES.rain_grip * 2);
   });
 
+  it("rejects invalid shop inputs before mutating inventory", async () => {
+    const app = await createTestApp(createMemoryDb());
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Invalid Shop League", teamName: "Volt Union" }
+    });
+    const created = createResponse.json();
+    const payload = { teamId: created.player.teamId, claimCode: created.player.claimCode };
+
+    const invalidBuy = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/cards/buy`, payload: { ...payload, cardId: "not_a_card" } });
+    const invalidSell = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/cards/sell`, payload: { ...payload, cardId: "not_a_card" } });
+    const invalidCar = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/cars/buy`, payload: { ...payload, carAssetId: "car-001" } });
+    const readBack = await app.inject({ method: "GET", url: `/leagues/${created.league.id}` });
+
+    await app.close();
+
+    expect(invalidBuy.statusCode).toBe(409);
+    expect(invalidSell.statusCode).toBe(409);
+    expect(invalidCar.statusCode).toBe(409);
+    expect(readBack.json().teams.find((team: { id: string }) => team.id === created.player.teamId)).toMatchObject({ cards: [], credits: 180 });
+  });
+
   it("keeps custom livery colors exact", async () => {
     const app = await createTestApp(createMemoryDb());
     const createResponse = await app.inject({
@@ -693,12 +716,18 @@ describe("api app", () => {
       url: `/leagues/${created.league.id}/qualifying`,
       payload: { ...basePayload, cardId: "qualifying_focus" }
     });
+    const mismatchedRun = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/qualifying`,
+      payload: { ...basePayload, cardId: "rain_grip" }
+    });
     const secondRun = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/qualifying`, payload: basePayload });
     const decisionResponse = await app.inject({ method: "POST", url: `/leagues/${created.league.id}/decisions`, payload: basePayload });
 
     await app.close();
 
     expect(firstRun.statusCode).toBe(200);
+    expect(mismatchedRun.statusCode).toBe(409);
     expect(secondRun.statusCode).toBe(200);
     expect(secondRun.json().run.decision.cardId).toBe("qualifying_focus");
     expect(decisionResponse.statusCode).toBe(200);

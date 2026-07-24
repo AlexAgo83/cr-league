@@ -8,6 +8,7 @@ import type { StoredPlayerClaim } from "./appStorage.js";
 import { GAME_VIEWS, type GameView } from "./types.js";
 import type { Translator } from "./helpers.js";
 import type { Notification } from "./useNotifications.js";
+import { usePwaInstall } from "./usePwaInstall.js";
 
 export function NotificationStack({ notifications, tt, onDismiss }: { notifications: Notification[]; tt: Translator; onDismiss: (id: number) => void }) {
   return notifications.length ? (
@@ -85,6 +86,7 @@ export function ProfileMenu({
   onOpenProfileLogout: () => void;
   onOpenChangelog: () => void;
 }) {
+  const { canInstall, promptInstall } = usePwaInstall();
   return (
     <div
       className="profile-menu"
@@ -134,6 +136,11 @@ export function ProfileMenu({
           <button type="button" className="profile-menu-action profile-menu-action-info" onClick={onOpenPreferencesReset}>
             {tt("action_reset_ui_preferences")}
           </button>
+          {canInstall ? (
+            <button type="button" className="profile-menu-action profile-menu-action-info" onClick={promptInstall}>
+              {tt("action_install_app")}
+            </button>
+          ) : null}
           <button type="button" className="profile-menu-action profile-menu-action-danger" onClick={onOpenProfileLogout}>
             {tt("action_forget_profile")}
           </button>

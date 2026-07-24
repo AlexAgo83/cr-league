@@ -401,6 +401,7 @@
   "action_previous_saved_league": "Previous saved league",
   "action_next_saved_league": "Next saved league",
   "action_reset_ui_preferences": "Reset UI preferences",
+  "action_install_app": "Install app",
   "action_forget_profile": "Sign out",
   "action_submit_directive": "Send plan",
   "action_edit_plan": "Edit plan",

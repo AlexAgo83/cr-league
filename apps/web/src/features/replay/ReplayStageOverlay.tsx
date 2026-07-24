@@ -2,8 +2,9 @@ import { type RaceDecision, type RaceResult, type TeamLivery, type Weather } fro
 import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import type { CityCircuit } from "../../app/circuits.js";
 import type { Translator } from "../../app/helpers.js";
+import { useMapStatsExpanded } from "../../app/viewPreferences.js";
 import type { TranslationKey } from "../../i18n/index.js";
-import { MapTraitsPanel, type MapTraitImpacts } from "../CircuitMap.js";
+import { MapStatsToggle, MapTraitsPanel, type MapTraitImpacts } from "../CircuitMap.js";
 import { MapPlanPanel } from "../MapPlanPanel.js";
 import { Modal } from "../Modal.js";
 import { RaceInfoDetailsForResolvedWeather } from "../RaceInfoDetails.js";
@@ -129,6 +130,7 @@ export function ReplayStageOverlay({
   const directorTitle = tt(activeDirector?.type === "qualifying_start" || activeDirector?.type === "qualifying_pace" || activeDirector?.type === "qualifying_final" ? "replay_director_chrono_title" : "replay_director_title");
   const seekValueText = `${tt("unit_lap")} ${liveLap}/${circuit.laps}, ${Math.round(clockSeconds)}s`;
   const [weatherInfoOpen, setWeatherInfoOpen] = useState(false);
+  const [mapStatsExpanded, setMapStatsExpanded] = useMapStatsExpanded();
 
   return (
     <>
@@ -155,9 +157,10 @@ export function ReplayStageOverlay({
             {tt("action_info")}
           </button>
         </div>
-        <div className="map-plan-performance">
+        <div className={mapStatsExpanded ? "map-plan-performance" : "map-plan-performance stats-collapsed"}>
           <MapPlanPanel decision={planDecision} editLabel={tt("action_view_plan")} onEdit={onOpenPlan} tt={tt} />
-          <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, liveLap)} impacts={traitImpacts} tt={tt} />
+          <MapStatsToggle expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} tt={tt} />
+          {mapStatsExpanded ? <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, liveLap)} impacts={traitImpacts} tt={tt} /> : null}
         </div>
       </div>
       {activeMoment ? (

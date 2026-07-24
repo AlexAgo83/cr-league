@@ -1,7 +1,7 @@
 ## req_111_polish_mobile_replay_overlays_and_shared_map_controls - Polish mobile replay overlays and shared map controls
 > From version: 0.4.3
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

@@ -23,6 +23,23 @@ export type MapCar = {
   repeatCount?: number | "indefinite";
 };
 
+export function MapStatsToggle({ expanded, onToggle, tt }: { expanded: boolean; onToggle: (expanded: boolean) => void; tt: Translator }) {
+  return (
+    <button
+      className="map-plan-stats-toggle"
+      type="button"
+      aria-expanded={expanded}
+      aria-label={tt(expanded ? "action_collapse_stats" : "action_expand_stats")}
+      title={tt(expanded ? "action_collapse_stats" : "action_expand_stats")}
+      onClick={() => onToggle(!expanded)}
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d={expanded ? "m6 15 6-6 6 6" : "m6 9 6 6 6-6"} />
+      </svg>
+    </button>
+  );
+}
+
 export type MapTraitStats = {
   grip: number;
   overtaking: number;

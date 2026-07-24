@@ -1,10 +1,10 @@
 ## item_269_polish_mobile_replay_overlays_and_shared_map_controls - Polish mobile replay overlays and shared map controls
 > From version: 0.4.3
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 66%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Replay mobile ergonomics
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -61,6 +61,7 @@
 - Hybrid rationale: Derived from request `req_111_polish_mobile_replay_overlays_and_shared_map_controls` and kept bounded to one coherent delivery slice.
 - Source file: `logics/request/req_111_polish_mobile_replay_overlays_and_shared_map_controls.md`.
 - Generated locally by logics-manager.
+- Task `task_112_polish_mobile_replay_overlays_and_shared_map_controls` was finished via `logics-manager flow finish task` on 2026-07-24.
 
 # Tasks
 - `task_112_polish_mobile_replay_overlays_and_shared_map_controls`

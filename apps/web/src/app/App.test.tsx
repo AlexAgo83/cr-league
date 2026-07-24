@@ -813,6 +813,9 @@ describe("App", () => {
     expect(document.querySelector(".replay-director-panel .replay-player-gaps")).toBeTruthy();
     expect(document.querySelector(".replay-director-panel .replay-player-gaps .position-badge")).toBe(null);
     expect(document.querySelector(".replay-player-focus-panel")).toBe(null);
+    fireEvent.click(within(document.querySelector(".replay-map-panel") as HTMLElement).getByRole("button", { name: "Hide stats" }));
+    expect(localStorage.getItem("cr-league-map-stats-expanded")).toBe("0");
+    expect(document.querySelector(".replay-map-panel .map-traits-panel")).toBe(null);
     expect(screen.getByRole("button", { name: "Actual race weather" })).toBeTruthy();
     expect(document.querySelector(".replay-moments-panel")).toBe(null);
     expect(document.querySelector(".replay-tower li")?.textContent).toContain("1Volt Union");
@@ -873,6 +876,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Back to stand" }));
     expect(screen.queryByRole("heading", { name: "Race replay" })).toBe(null);
     expect(window.location.pathname).toBe("/drive");
+    expect(within(document.querySelector(".drive-map-panel") as HTMLElement).getByRole("button", { name: "Show stats" })).toBeTruthy();
+    expect(document.querySelector(".drive-map-panel .map-traits-panel")).toBe(null);
     expect(screen.getByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     expect(document.querySelectorAll(".replay-tower li").length).toBe(resolvedState.currentGrandPrix.result.classification.length);
     expect(document.querySelector(".replay-tower")?.textContent).toContain("Volt Union");

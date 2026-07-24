@@ -74,7 +74,8 @@ function apiBaseUrl(value: string | undefined, dev: boolean) {
   const base = value ?? (dev ? "http://localhost:4874" : "");
   if (!base) throw new Error("VITE_API_BASE_URL is required outside development.");
   const url = new URL(base);
-  if (!dev && url.protocol !== "https:") throw new Error("VITE_API_BASE_URL must use https outside development.");
+  const localhost = url.hostname === "localhost" || url.hostname === "127.0.0.1";
+  if (!dev && url.protocol !== "https:" && !localhost) throw new Error("VITE_API_BASE_URL must use https outside development.");
   return url.toString().replace(/\/$/, "");
 }
 

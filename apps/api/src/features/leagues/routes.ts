@@ -296,42 +296,43 @@ function stateForBody(state: LeagueState, body: unknown) {
   return isTeamClaimBody(body) ? withPlayer(state, body.teamId, body.claimCode) : publicLeagueState(state);
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  return value && typeof value === "object" ? (value as Record<string, unknown>) : null;
+}
+
 function isCreateProfileBody(value: unknown): value is Parameters<typeof createProfile>[1] {
-  if (!value || typeof value !== "object") return false;
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return typeof candidate.email === "string";
 }
 
 function isRecoverProfileBody(value: unknown): value is Parameters<typeof recoverProfile>[1] {
-  if (!value || typeof value !== "object") return false;
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return typeof candidate.email === "string" && typeof candidate.recoveryCode === "string";
 }
 
 function isRequestRecoveryCodeBody(value: unknown): value is Parameters<typeof requestRecoveryCode>[1] {
-  if (!value || typeof value !== "object") return false;
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return typeof candidate.email === "string";
 }
 
 function isJoinBody(value: unknown): value is Parameters<typeof joinLeagueByCode>[1] {
-  if (!value || typeof value !== "object") return false;
-
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return typeof candidate.code === "string" && typeof candidate.teamName === "string";
 }
 
 function isTeamClaimBody(value: unknown): value is { teamId: string; claimCode: string } {
-  if (!value || typeof value !== "object") return false;
-
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string";
 }
 
 function isSettingsBody(value: unknown): value is Parameters<typeof updateLeagueSettings>[2] {
-  if (!value || typeof value !== "object") return false;
-
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return (
     typeof candidate.teamId === "string" &&
     typeof candidate.claimCode === "string" &&
@@ -343,37 +344,32 @@ function isSettingsBody(value: unknown): value is Parameters<typeof updateLeague
 }
 
 function isBuyCardBody(value: unknown): value is Parameters<typeof buyCard>[2] {
-  if (!value || typeof value !== "object") return false;
-
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.cardId === "string" && (candidate.quantity === undefined || typeof candidate.quantity === "number");
 }
 
 function isBuyCarBody(value: unknown): value is Parameters<typeof buyCarAsset>[2] {
-  if (!value || typeof value !== "object") return false;
-
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.carAssetId === "string";
 }
 
 function isLiveryBody(value: unknown): value is Parameters<typeof updateTeamLivery>[2] {
-  if (!value || typeof value !== "object") return false;
-
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.livery === "object" && candidate.livery !== null;
 }
 
 function isTeamNameBody(value: unknown): value is Parameters<typeof updateTeamName>[2] {
-  if (!value || typeof value !== "object") return false;
-
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return typeof candidate.teamId === "string" && typeof candidate.claimCode === "string" && typeof candidate.name === "string";
 }
 
 function isDecisionBody(value: unknown): value is Parameters<typeof submitDecision>[2] {
-  if (!value || typeof value !== "object") return false;
-
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return (
     typeof candidate.teamId === "string" &&
     typeof candidate.claimCode === "string" &&
@@ -383,8 +379,8 @@ function isDecisionBody(value: unknown): value is Parameters<typeof submitDecisi
 }
 
 function isAdminBody(value: unknown): value is { teamId: string; claimCode: string; allowDefaults?: boolean; traits?: unknown; laps?: unknown; pitLaneProgress?: unknown } {
-  if (!value || typeof value !== "object") return false;
-  const candidate = value as Record<string, unknown>;
+  const candidate = asRecord(value);
+  if (!candidate) return false;
   return (
     typeof candidate.teamId === "string" &&
     typeof candidate.claimCode === "string" &&

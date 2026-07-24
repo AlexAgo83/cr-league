@@ -1,0 +1,184 @@
+{
+  "title": "Repo review maintainability follow-up",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/api/src/features/leagues/routes.ts",
+    "apps/api/src/features/leagues/storeCore.ts",
+    "apps/api/src/features/admin/routes.ts",
+    "apps/web/src/app/App.tsx",
+    "coverage/coverage-summary.json",
+    "Current diagnostic: apps/api/src/features/leagues/routes.ts (509 lines) repeats the same try/catch (LeagueRuleError -> sendLeagueRuleError) / 400-guard / 404-on-null / re-throw block across ~15 handlers, each differing only by its body guard, its store call, and its bad-request message.",
+    "Current diagnostic: apps/api/src/features/leagues/storeCore.ts is 1312 lines, the largest hand-written source file in the repo, still mixing multiple lifecycles despite the earlier store->barrel split.",
+    "Current diagnostic: apps/web/src/app/App.tsx is 841 lines, the largest web component, concentrating view routing and multiple screen concerns.",
+    "Current diagnostic: coverage/coverage-summary.json reports 61.92% branch coverage overall while lines sit at 71.45%; the gap is concentrated in error and rule-violation branches of the leagues store and simulation.",
+    "Current baseline: 315 unit tests passing, lint clean, tsc strict with noUncheckedIndexedAccess; CI runs npm audit, lint, typecheck, balance:gate and logics:validate."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Maintainability",
+    "needs": [
+      "Collapse the repeated per-handler error/guard/404 boilerplate in leagues/routes.ts into one shared route helper, preserving each route's specific 400 message and the exact status codes clients see today.",
+      "Continue breaking down apps/api/src/features/leagues/storeCore.ts so no single hand-written file stays above ~800 lines, without changing behavior or the public import surface.",
+      "Split apps/web/src/app/App.tsx so the top-level component delegates each screen concern to a focused child, keeping rendered output and behavior identical.",
+      "Raise branch coverage toward the line-coverage level by adding targeted tests over the currently-uncovered error and rule-violation branches, with no weakened assertions."
+    ],
+    "context": [
+      "This is a TypeScript monorepo: apps/api (Fastify + Prisma), apps/web (React 19), packages/shared (domain + seeded simulation).",
+      "No new dependencies are wanted; every item is an internal reorganization or added test.",
+      "The repo convention exposes a module's public API as named exports and keeps store.ts/storeCore.ts as barrels so consumers and tests import from a stable path.",
+      "routes.ts today returns route-specific 400 messages (e.g. 'Expected a team id and card id'); those must survive the refactor.",
+      "Behavior-critical race-integrity logic (in-transaction re-checks, row locks, LeagueRuleError messages) must be preserved verbatim."
+    ],
+    "acceptance_criteria": [
+      "AC1: leagues/routes.ts routes go through one shared helper that centralizes the LeagueRuleError catch, the null->404, and the 400 guard, while each route still returns its own specific bad-request message; the file shrinks with no change to status codes or response bodies.",
+      "AC2: storeCore.ts is split so no resulting hand-written source file exceeds ~800 lines, the public import surface (symbols imported by routes.ts, admin/store.ts, and tests) is unchanged, and behavior is preserved verbatim.",
+      "AC3: App.tsx delegates each screen concern to a focused child component with identical rendered output and behavior, and no single web component file remains an 800+ line grab-bag.",
+      "AC4: Overall branch coverage rises meaningfully toward line coverage by covering previously-uncovered error and rule-violation branches, with no assertions weakened or tests skipped to inflate the number.",
+      "AC5: Typecheck, lint, and the full unit test suite pass unchanged (315+ passing), and the CI gates (audit, balance:gate, logics:validate) stay green."
+    ]
+  },
+  "product": {
+    "title": "Repo Review Maintainability Follow-up Product Brief",
+    "overview": "Act on the maintainability findings from the latest repo review: de-duplicate the leagues route error handling, keep splitting the oversized store and web root component, and close the branch-coverage gap, all without changing behavior or adding dependencies.",
+    "goals": [
+      "Remove the repeated error/guard/404 boilerplate in leagues/routes.ts behind one helper while keeping per-route messages.",
+      "Keep every hand-written source file under a reasonable size ceiling (~800 lines).",
+      "Make App.tsx a thin router over focused screen components.",
+      "Lift branch coverage by testing the currently-uncovered error paths."
+    ],
+    "non_goals": [
+      "Do not change any handler behavior, status code, response body, transaction boundary, lock, or rule-error message.",
+      "Do not alter the public import surface consumed by routes.ts, admin/store.ts, or tests.",
+      "Do not add dependencies or introduce new architectural patterns beyond plain module/component files.",
+      "Do not touch the Prisma schema, the simulation numerics, or the seeded PRNG."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Centralize leagues route error/guard/404 handling behind one helper",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Backend maintainability",
+      "request_acs": ["AC1", "AC5"],
+      "problem": [
+        "~15 handlers in leagues/routes.ts repeat the same try/catch (LeagueRuleError -> sendLeagueRuleError) / null->404 / 400-guard block.",
+        "The repetition makes the file long and any change to error semantics an error-prone 15-site edit.",
+        "The only per-route variation is the body guard, the store call, and the bad-request message."
+      ],
+      "scope_in": [
+        "Add one route helper that runs the body guard (returning the route's specific 400 message on failure), calls the store function, maps null to 404, catches LeagueRuleError via sendLeagueRuleError, and re-throws anything else.",
+        "Rewrite each affected handler to use the helper, threading its specific bad-request message and success serializer (publicLeagueState vs withPlayer via stateForBody).",
+        "Confirm status codes and response bodies are byte-identical to today via the existing app tests."
+      ],
+      "scope_out": [
+        "Changing any status code, response shape, or bad-request message text.",
+        "Touching admin routes, health, or simulation routes.",
+        "Adding validation libraries or new dependencies."
+      ],
+      "acceptance_criteria": [
+        "AC1: All league write/read handlers go through the shared helper with per-route 400 messages preserved.",
+        "AC2: No change to status codes or response bodies, proven by the existing app.test.ts suite.",
+        "AC3: routes.ts is meaningfully shorter with no duplicated try/catch blocks remaining."
+      ]
+    },
+    {
+      "title": "Split storeCore.ts below the size ceiling",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Backend maintainability",
+      "request_acs": ["AC2", "AC5"],
+      "problem": [
+        "storeCore.ts is 1312 lines and still bundles several lifecycles and their private helpers.",
+        "It is the largest hand-written file in the repo and the first to become painful to review or extend.",
+        "Shared transaction/claim helpers are interleaved with unrelated logic."
+      ],
+      "scope_in": [
+        "Group top-level functions by lifecycle and move each group into its own module under features/leagues/.",
+        "Keep the barrel (store.ts/storeCore.ts) re-exporting the existing public symbols so no consumer or test import path changes.",
+        "Move each function's private helpers alongside the lifecycle that uses them.",
+        "Run typecheck, lint, and unit tests after the move to prove behavior is unchanged."
+      ],
+      "scope_out": [
+        "Changing any function logic, signature, transaction boundary, lock, or error message.",
+        "Modifying consumer or test import paths.",
+        "Adding dependencies or new abstractions."
+      ],
+      "acceptance_criteria": [
+        "AC1: No resulting hand-written source file exceeds ~800 lines.",
+        "AC2: The public import surface is unchanged and behavior is preserved verbatim.",
+        "AC3: Typecheck, lint, and the full unit suite pass with no weakened assertions."
+      ]
+    },
+    {
+      "title": "Decompose App.tsx into focused screen components",
+      "priority": "Low",
+      "complexity": "Medium",
+      "theme": "Frontend maintainability",
+      "request_acs": ["AC3", "AC5"],
+      "problem": [
+        "App.tsx is 841 lines and concentrates view routing plus several screen concerns.",
+        "The size makes the top-level component hard to read and to change safely.",
+        "Screen concerns that could stand alone are inlined."
+      ],
+      "scope_in": [
+        "Extract each self-contained screen concern from App.tsx into its own focused child component.",
+        "Keep App.tsx as a thin router/composition layer over the extracted children.",
+        "Preserve rendered output, props flow, and behavior; verify with the existing App tests."
+      ],
+      "scope_out": [
+        "Changing rendered output, styling, or component behavior.",
+        "Introducing a state-management library or routing dependency.",
+        "Refactoring the replay or circuit-map subsystems."
+      ],
+      "acceptance_criteria": [
+        "AC1: App.tsx delegates each screen concern to a focused child with identical rendered output.",
+        "AC2: No single web component file remains an 800+ line grab-bag.",
+        "AC3: The existing App test suites pass unchanged."
+      ]
+    },
+    {
+      "title": "Close the branch-coverage gap on error and rule-violation paths",
+      "priority": "Low",
+      "complexity": "Low",
+      "theme": "Test coverage",
+      "request_acs": ["AC4", "AC5"],
+      "problem": [
+        "Overall branch coverage is 61.92% while line coverage is 71.45%.",
+        "The gap is concentrated in error and rule-violation branches of the leagues store and simulation that success-path tests never hit.",
+        "Uncovered failure branches are exactly where regressions hide."
+      ],
+      "scope_in": [
+        "Identify the highest-value uncovered branches from coverage-summary (leagues store rule violations, simulation edge branches).",
+        "Add targeted unit tests that exercise those failure and rule-violation branches with real assertions.",
+        "Re-run coverage to confirm the branch percentage rises meaningfully."
+      ],
+      "scope_out": [
+        "Weakening assertions or skipping tests to inflate the number.",
+        "Changing production code beyond what a genuine bug found while testing requires.",
+        "Adding a coverage-threshold CI gate (out of scope for this pass)."
+      ],
+      "acceptance_criteria": [
+        "AC1: New tests cover previously-uncovered error and rule-violation branches with real assertions.",
+        "AC2: Overall branch coverage rises meaningfully toward line coverage.",
+        "AC3: The full suite passes with no skipped or weakened tests."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate repo review maintainability follow-up",
+    "plan": [
+      "Implement the leagues/routes.ts helper first and prove response parity with the existing app tests.",
+      "Split storeCore.ts by lifecycle behind the unchanged barrel, then run typecheck/lint/tests.",
+      "Extract App.tsx screen concerns into focused children and verify with the web tests.",
+      "Add targeted tests over the uncovered error/rule branches and re-check coverage.",
+      "Run the full gate (typecheck, lint, unit suite, balance:gate, logics:validate) and record validation evidence in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/review-maintainability-followup.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

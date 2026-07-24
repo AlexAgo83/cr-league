@@ -516,7 +516,9 @@ describe("App profile and admin", () => {
       )
     );
     expect(screen.getByText("1 teams · 1 leagues")).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Reset recovery" }));
+    const resetRecoveryButton = screen.getByRole("button", { name: "Reset recovery" }) as HTMLButtonElement;
+    await waitFor(() => expect(resetRecoveryButton.disabled).toBe(false));
+    fireEvent.click(resetRecoveryButton);
     expect(await screen.findByDisplayValue("FACE1234")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Delete user" }));
     expect(screen.getByRole("dialog", { name: "Delete user?" })).toBeTruthy();

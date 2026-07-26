@@ -3,6 +3,7 @@ LOGICS.md
 node_modules/
 dist/
 .npm-cache/
+.cache/
 playwright-report/
 test-results/
 reports/*

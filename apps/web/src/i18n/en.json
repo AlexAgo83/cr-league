@@ -851,5 +851,8 @@
   "circuit_lakefront": "Lakefront Dash",
   "circuit_reforma": "Reforma Sprint",
   "circuit_dubai_marina": "Dubai Marina Loop",
-  "circuit_darling_harbour": "Darling Harbour Dash"
+  "circuit_darling_harbour": "Darling Harbour Dash",
+  "circuit_marina": "Marina Bay Switchback",
+  "circuit_victoria": "Victoria Harbour Charge",
+  "circuit_dotonbori": "Dotonbori Neon Loop"
 }

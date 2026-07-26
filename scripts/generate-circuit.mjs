@@ -1,10 +1,13 @@
 #!/usr/bin/env node
-import { readFileSync, writeFileSync } from "node:fs";
+import { createHash } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
 const args = parseArgs(process.argv.slice(2));
 const sourcePath = args.source ?? "apps/web/src/app/circuits.ts";
 const routesDir = args.routesDir ?? "apps/web/src/app/circuitRoutes";
 const identitiesPath = args.identities ?? "packages/shared/src/domain/circuits.ts";
+const cacheDir = args.cacheDir ?? ".cache/circuit-overpass";
 const candidates = Number(args.candidates ?? 160);
 const targetKm = Number(args.targetKm ?? 6.2);
 const minKm = Number(args.minKm ?? 2.6);
@@ -154,6 +157,8 @@ out skel qt;`;
 }
 
 async function fetchOverpassGraph(query, center) {
+  const cached = readCachedOverpass(query);
+  if (cached) return graphFromOverpass(cached, center);
   const errors = [];
   for (const endpoint of overpassEndpoints) {
     try {
@@ -163,12 +168,32 @@ async function fetchOverpassGraph(query, center) {
         body: `data=${encodeURIComponent(query)}`
       });
       if (!response.ok) throw new Error(`${response.status} ${response.statusText}`);
-      return graphFromOverpass(await response.json(), center);
+      const body = await response.json();
+      writeCachedOverpass(query, body);
+      return graphFromOverpass(body, center);
     } catch (error) {
       errors.push(`${endpoint}: ${error.message}`);
     }
   }
   throw new Error(`Overpass failed on every endpoint:\n${errors.join("\n")}`);
+}
+
+function readCachedOverpass(query) {
+  if (args.cache === "false") return null;
+  const path = overpassCachePath(query);
+  if (!existsSync(path)) return null;
+  return JSON.parse(readFileSync(path, "utf8"));
+}
+
+function writeCachedOverpass(query, body) {
+  if (args.cache === "false") return;
+  mkdirSync(cacheDir, { recursive: true });
+  writeFileSync(overpassCachePath(query), `${JSON.stringify(body)}\n`);
+}
+
+function overpassCachePath(query) {
+  const key = createHash("sha256").update(query).digest("hex").slice(0, 24);
+  return join(cacheDir, `${key}.json`);
 }
 
 async function fetchOsmWayGeometry(wayId) {

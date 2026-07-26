@@ -851,5 +851,8 @@
   "circuit_lakefront": "Sprint Lakefront",
   "circuit_reforma": "Sprint Reforma",
   "circuit_dubai_marina": "Boucle de Dubai Marina",
-  "circuit_darling_harbour": "Sprint de Darling Harbour"
+  "circuit_darling_harbour": "Sprint de Darling Harbour",
+  "circuit_marina": "Épingle de Marina Bay",
+  "circuit_victoria": "Charge de Victoria Harbour",
+  "circuit_dotonbori": "Boucle néon de Dotonbori"
 }

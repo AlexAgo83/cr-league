@@ -34,6 +34,7 @@ type RoundReport = {
   playerPosition: number;
   fun: number;
   frustration: number;
+  comprehension: number;
   bought?: CardId;
 };
 
@@ -54,11 +55,19 @@ type FrictionTask = {
   hesitations: string[];
 };
 
+type ComprehensionCheck = {
+  round?: number;
+  step: string;
+  passed: boolean;
+  note: string;
+};
+
 const servers: ManagedServer[] = [];
 const consoleErrors: string[] = [];
 const consoleWarnings: string[] = [];
 const uxCaptures: UxCapture[] = [];
 const frictionTasks = new Map<string, FrictionTask>();
+const comprehensionChecks: ComprehensionCheck[] = [];
 let browser: Browser | undefined;
 let page: Page | undefined;
 
@@ -126,15 +135,19 @@ try {
   page.on("pageerror", (error) => consoleErrors.push(error.message));
 
   let state = await recoverAndCreateLeague(page);
+  await observeComprehension(page, "league-created", "The Plan affordance is visible after league creation.", [() => page!.getByRole("button", { name: "Plan", exact: true })]);
   await captureUx(page, "league-created", `League ${state.league.name} is open on the race desk.`);
   const reports: RoundReport[] = [];
 
   for (let round = 1; round <= rounds; round += 1) {
     const decision = await choosePlan(page, state, profile, round);
+    await observeComprehension(page, `round-${round}-plan`, "The chosen plan can be sent from the Plan view.", [() => page!.getByRole("button", { name: "Send plan" })], round);
     await captureUx(page, `round-${round}-plan`, `Selected ${decision.approach}/${decision.preparation}/${decision.pitStrategy ?? "standard"} with ${decision.cardId ?? "no card"}.`);
-    state = await submitPlan(page, state);
+    state = await submitPlan(page, state, round);
+    await observeComprehension(page, `round-${round}-ready`, "The next action after sending a plan is visible.", [() => page!.getByRole("button", { name: "Launch GP" })], round);
     await captureUx(page, `round-${round}-ready`, "Plan submitted; launch affordance is visible.");
-    state = await launchGrandPrix(page, state);
+    state = await launchGrandPrix(page, state, round);
+    await observeComprehension(page, `round-${round}-replay`, "The replay result screen exposes race replay and return controls.", [() => page!.getByRole("heading", { name: "Race replay" }), () => page!.getByRole("button", { name: "Back to stand" })], round);
     await captureUx(page, `round-${round}-replay`, "Race replay is visible after launching the Grand Prix.");
     const result = state.currentGrandPrix.result as RaceResult;
     const playerTeamId = state.player?.teamId;
@@ -147,7 +160,8 @@ try {
       winner: result.classification[0]?.teamName ?? "Unknown",
       playerPosition: playerEntry.position,
       fun: funScore(playerEntry.position, result, playerTeamId),
-      frustration: frustrationScore(playerEntry.position, result, playerTeamId)
+      frustration: frustrationScore(playerEntry.position, result, playerTeamId),
+      comprehension: comprehensionScore(round)
     };
     reports.push(roundReport);
 
@@ -156,8 +170,10 @@ try {
       const bought = await buyAfterRace(page, state, profile, round);
       if (bought.state) state = bought.state;
       roundReport.bought = bought.cardId;
+      await observeComprehension(page, `round-${round}-garage`, "The Garage purchase flow reached a visible Garage or shop state.", [() => page!.getByText(/Card added to your garage|Shop|Garage/)]);
       await captureUx(page, `round-${round}-garage`, bought.cardId ? `Bought ${bought.cardId} from Garage.` : "Garage opened; no affordable recommended card bought.");
       state = await nextGrandPrix(page);
+      await observeComprehension(page, `round-${round}-next-gp`, "The championship moved to the next GP.", [() => page!.getByRole("button", { name: "Plan", exact: true })]);
       await captureUx(page, `round-${round}-next-gp`, `Advanced to GP ${state.currentGrandPrix.round}.`);
     }
   }
@@ -311,17 +327,17 @@ async function chooseDirective(page: Page, task: string, field: string, value: s
   await trackedClick(page, task, `choose ${field}: ${value}`, () => page.getByRole("button", { name: `${field}: ${value}` }).click());
 }
 
-async function submitPlan(page: Page, state: LeagueState) {
-  await trackedClick(page, "submit-plan", "send-plan", () => page.getByRole("button", { name: "Send plan" }).click());
-  await trackedClick(page, "submit-plan", "confirm-send", () => page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click());
+async function submitPlan(page: Page, state: LeagueState, round: number) {
+  await trackedClick(page, `round-${round}-submit-plan`, "send-plan", () => page.getByRole("button", { name: "Send plan" }).click());
+  await trackedClick(page, `round-${round}-submit-plan`, "confirm-send", () => page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click());
   await expect(page.getByRole("button", { name: "Launch GP" })).toBeVisible();
   return fetchLeagueState(state);
 }
 
-async function launchGrandPrix(page: Page, state: LeagueState) {
+async function launchGrandPrix(page: Page, state: LeagueState, round: number) {
   const next = await waitForLeagueResponse(page, "POST", `/leagues/${state.league.id}/resolve`, async () => {
-    await trackedClick(page, "launch-gp", "launch-gp", () => page.getByRole("button", { name: "Launch GP" }).click());
-    await trackedClick(page, "launch-gp", "confirm-launch", () => page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click());
+    await trackedClick(page, `round-${round}-launch-gp`, "launch-gp", () => page.getByRole("button", { name: "Launch GP" }).click());
+    await trackedClick(page, `round-${round}-launch-gp`, "confirm-launch", () => page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click());
   });
   await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
   return next;
@@ -351,6 +367,24 @@ async function nextGrandPrix(page: Page) {
     await trackedClick(page, "next-gp", "next-gp", () => page.getByRole("button", { name: "Next GP" }).click());
     await trackedClick(page, "next-gp", "confirm-next-gp", () => page.getByRole("dialog", { name: "Start the next race day?" }).getByRole("button", { name: "Next GP" }).click());
   });
+}
+
+async function observeComprehension(page: Page, step: string, note: string, locators: Array<() => ReturnType<Page["locator"]>>, round?: number) {
+  const checks = await Promise.all(locators.map(async (locator) => locator().isVisible().catch(() => false)));
+  comprehensionChecks.push({ round, step, passed: checks.every(Boolean), note });
+}
+
+function comprehensionScore(round: number) {
+  const checks = comprehensionChecks.filter((check) => check.round === round);
+  const misses = checks.filter((check) => !check.passed).length;
+  const roundFriction = [...frictionTasks.values()]
+    .filter((task) => task.name.includes(`round-${round}`))
+    .reduce((sum, task) => sum + task.hesitations.length, 0);
+  const roundActions = [...frictionTasks.values()]
+    .filter((task) => task.name.includes(`round-${round}`))
+    .reduce((sum, task) => sum + task.actions, 0);
+  const actionPenalty = Math.ceil(Math.max(0, roundActions - 10) / 2);
+  return Math.max(1, Math.min(10, 10 - misses * 2 - actionPenalty - roundFriction - consoleErrors.length));
 }
 
 async function captureUx(page: Page, label: string, note: string) {
@@ -509,7 +543,7 @@ async function writeReport(input: { reports: RoundReport[]; consoleErrors: strin
       "## Rounds",
       input.reports.length
         ? table(
-            ["GP", "Approach", "Preparation", "Pit", "Card", "Winner", "Player pos", "Fun", "Frustration", "Bought"],
+            ["GP", "Approach", "Preparation", "Pit", "Card", "Winner", "Player pos", "Fun", "Frustration", "Comprehension", "Bought"],
             input.reports.map((row) => [
               row.round,
               row.decision.approach,
@@ -520,6 +554,7 @@ async function writeReport(input: { reports: RoundReport[]; consoleErrors: strin
               `P${row.playerPosition}`,
               row.fun,
               row.frustration,
+              row.comprehension,
               row.bought ?? "-"
             ])
           )
@@ -527,6 +562,9 @@ async function writeReport(input: { reports: RoundReport[]; consoleErrors: strin
       "",
       "## UI Failures",
       input.consoleErrors.length ? input.consoleErrors.map((error) => `- ${error}`).join("\n") : "- none",
+      "",
+      "## Comprehension Checks",
+      comprehensionChecks.length ? table(["Step", "Round", "Passed", "Note"], comprehensionChecks.map((row) => [row.step, row.round ?? "-", row.passed ? "yes" : "no", row.note])) : "- none",
       "",
       "## Notes",
       "- Profile seeding uses the store to obtain a recovery code; recovery, league creation, plan submission, GP launch, replay opening, card buy, and next-GP actions are browser UI actions.",
@@ -580,8 +618,12 @@ async function writeUxReport(input: { reports: RoundReport[]; failed: boolean; e
       "",
       "## Outcomes",
       input.reports.length
-        ? table(["GP", "Position", "Fun", "Frustration"], input.reports.map((row) => [row.round, `P${row.playerPosition}`, row.fun, row.frustration]))
+        ? table(["GP", "Position", "Fun", "Frustration", "Comprehension"], input.reports.map((row) => [row.round, `P${row.playerPosition}`, row.fun, row.frustration, row.comprehension]))
         : "- No completed round."
+      ,
+      "",
+      "## Comprehension Checks",
+      comprehensionChecks.length ? table(["Step", "Round", "Passed", "Note"], comprehensionChecks.map((row) => [row.step, row.round ?? "-", row.passed ? "yes" : "no", row.note])) : "- none"
     ]
       .filter((line): line is string => line !== undefined)
       .join("\n") + "\n",

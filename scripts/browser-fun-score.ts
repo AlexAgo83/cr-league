@@ -7,6 +7,7 @@ type Round = {
   position: number;
   fun: number;
   frustration: number;
+  comprehension: number;
 };
 
 const rounds = numberArg("--rounds", 2);
@@ -38,10 +39,11 @@ function parseRounds(profile: string, markdown: string) {
         gp: Number(cells[0]),
         position: Number(cells[6]?.replace("P", "")),
         fun: Number(cells[7]),
-        frustration: Number(cells[8])
+        frustration: Number(cells[8]),
+        comprehension: Number(cells[9])
       };
     })
-    .filter((row) => Number.isFinite(row.gp) && Number.isFinite(row.position) && Number.isFinite(row.fun) && Number.isFinite(row.frustration));
+    .filter((row) => Number.isFinite(row.gp) && Number.isFinite(row.position) && Number.isFinite(row.fun) && Number.isFinite(row.frustration) && Number.isFinite(row.comprehension));
 }
 
 function renderReport(roundRows: Round[]) {
@@ -53,11 +55,13 @@ function renderReport(roundRows: Round[]) {
       avgPosition: avg(profileRows.map((row) => row.position)),
       avgFun: avg(profileRows.map((row) => row.fun)),
       avgFrustration: avg(profileRows.map((row) => row.frustration)),
-      lowFun: profileRows.filter((row) => row.fun <= 4).length
+      avgComprehension: avg(profileRows.map((row) => row.comprehension)),
+      lowFun: profileRows.filter((row) => row.fun <= 4).length,
+      lowComprehension: profileRows.filter((row) => row.comprehension <= 6).length
     };
   });
   return [
-    "# Browser Fun Score",
+    "# Browser Fun And Comprehension Score",
     "",
     `- Date: ${new Date().toISOString()}`,
     `- Profiles: ${profiles.join(", ")}`,
@@ -65,14 +69,14 @@ function renderReport(roundRows: Round[]) {
     "",
     "## Summary",
     table(
-      ["Profile", "Races", "Avg pos", "Avg fun", "Avg frustration", "Fun <= 4"],
-      byProfile.map((row) => [row.profile, row.races, row.avgPosition, row.avgFun, row.avgFrustration, row.lowFun])
+      ["Profile", "Races", "Avg pos", "Avg fun", "Avg frustration", "Avg comprehension", "Fun <= 4", "Comprehension <= 6"],
+      byProfile.map((row) => [row.profile, row.races, row.avgPosition, row.avgFun, row.avgFrustration, row.avgComprehension, row.lowFun, row.lowComprehension])
     ),
     "",
     "## Low Fun Rounds",
     table(
-      ["Profile", "GP", "Position", "Fun", "Frustration"],
-      roundRows.filter((row) => row.fun <= 4).map((row) => [row.profile, row.gp, `P${row.position}`, row.fun, row.frustration])
+      ["Profile", "GP", "Position", "Fun", "Frustration", "Comprehension"],
+      roundRows.filter((row) => row.fun <= 4 || row.comprehension <= 6).map((row) => [row.profile, row.gp, `P${row.position}`, row.fun, row.frustration, row.comprehension])
     )
   ].join("\n") + "\n";
 }

@@ -87,6 +87,7 @@
 | [prod_068_performance_pass_front_and_api_product_brief](product/prod_068_performance_pass_front_and_api_product_brief.md) | Performance Pass (Front and API) Product Brief | Settled |  |  | product/prod_068_performance_pass_front_and_api_product_brief.md |
 | [prod_069_performance_pass_deferred_follow_up_product_brief](product/prod_069_performance_pass_deferred_follow_up_product_brief.md) | Performance Pass Deferred Follow-up Product Brief | Settled |  |  | product/prod_069_performance_pass_deferred_follow_up_product_brief.md |
 | [prod_070_city_circuit_catalogue_expansion_product_brief](product/prod_070_city_circuit_catalogue_expansion_product_brief.md) | City Circuit Catalogue Expansion Product Brief | Proposed |  |  | product/prod_070_city_circuit_catalogue_expansion_product_brief.md |
+| [prod_071_ai_playtest_surfaces_product_brief](product/prod_071_ai_playtest_surfaces_product_brief.md) | AI Playtest Surfaces Product Brief | Proposed |  |  | product/prod_071_ai_playtest_surfaces_product_brief.md |
 
 ## Roadmaps
 
@@ -218,6 +219,7 @@
 | [req_116_performance_pass_front_and_api](request/req_116_performance_pass_front_and_api.md) | Performance pass front and API | Done |  |  | request/req_116_performance_pass_front_and_api.md |
 | [req_117_performance_pass_deferred_follow_up](request/req_117_performance_pass_deferred_follow_up.md) | Performance pass deferred follow-up | Done |  |  | request/req_117_performance_pass_deferred_follow_up.md |
 | [req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline](request/req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline.md) | Twenty new realistic city circuits generated through the established OSM pipeline | Draft |  |  | request/req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline.md |
+| [req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain](request/req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain.md) | Browser-driven AI playtest: an agent that plays the real UI like a human, decisions from the shared playtest brain | Draft |  |  | request/req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain.md |
 
 ## Backlog
 
@@ -514,6 +516,9 @@
 | [item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline](backlog/item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline.md) | Generate and audit the 20 real-street route files via the OSM pipeline | Ready |  | 0% | backlog/item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline.md |
 | [item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials](backlog/item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials.md) | Author identity rows with generated geometry, speed profiles, and balanced dials | Ready |  | 0% | backlog/item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials.md |
 | [item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates](backlog/item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates.md) | Localize the new circuits and pass the full catalogue gates | Ready |  | 0% | backlog/item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates.md |
+| [item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module](backlog/item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module.md) | Extract the shared playtest brain (decisions + fun/frustration) into one module | Ready |  | 0% | backlog/item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module.md |
+| [item_293_build_the_playwright_browser_agent_that_plays_the_real_ui_from_the_shared_brain](backlog/item_293_build_the_playwright_browser_agent_that_plays_the_real_ui_from_the_shared_brain.md) | Build the Playwright browser agent that plays the real UI from the shared brain | Ready |  | 0% | backlog/item_293_build_the_playwright_browser_agent_that_plays_the_real_ui_from_the_shared_brain.md |
+| [item_294_instrument_the_browser_run_fun_frustration_report_ui_failure_capture_npm_wiring](backlog/item_294_instrument_the_browser_run_fun_frustration_report_ui_failure_capture_npm_wiring.md) | Instrument the browser run: fun/frustration report, UI failure capture, npm wiring | Ready |  | 0% | backlog/item_294_instrument_the_browser_run_fun_frustration_report_ui_failure_capture_npm_wiring.md |
 
 ## Tasks
 
@@ -638,3 +643,4 @@
 | [task_117_orchestrate_the_performance_pass](tasks/task_117_orchestrate_the_performance_pass.md) | Orchestrate the performance pass | Done |  | 100% | tasks/task_117_orchestrate_the_performance_pass.md |
 | [task_118_orchestrate_the_deferred_performance_follow_up](tasks/task_118_orchestrate_the_deferred_performance_follow_up.md) | Orchestrate the deferred performance follow-up | Done |  | 100% | tasks/task_118_orchestrate_the_deferred_performance_follow_up.md |
 | [task_119_orchestrate_the_twenty_new_circuits_expansion](tasks/task_119_orchestrate_the_twenty_new_circuits_expansion.md) | Orchestrate the twenty-new-circuits expansion | Ready |  | 0% | tasks/task_119_orchestrate_the_twenty_new_circuits_expansion.md |
+| [task_120_orchestrate_the_browser_driven_ai_playtest](tasks/task_120_orchestrate_the_browser_driven_ai_playtest.md) | Orchestrate the browser-driven AI playtest | Ready |  | 0% | tasks/task_120_orchestrate_the_browser_driven_ai_playtest.md |

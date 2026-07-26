@@ -1,0 +1,59 @@
+## task_120_orchestrate_the_browser_driven_ai_playtest - Orchestrate the browser-driven AI playtest
+> From version: 0.4.6
+> Schema version: 1.0
+> Status: Ready
+> Understanding: 90%
+> Confidence: 85%
+> Progress: 0%
+> Complexity: Medium
+> Theme: Implementation delivery
+> Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+
+# Context
+- Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
+
+# Plan
+- [ ] 1. Read ai-playtest.ts and simulate-playtest.ts first; this reuses their personas and heuristics rather than inventing new ones.
+- [ ] 2. Extract the shared playtest brain (decisions + personas + fun/frustration) into one module and refactor both headless tools onto it with no behavior change.
+- [ ] 3. Build the Playwright agent that binds a persona to the brain and plays the real UI loop end-to-end against a real backend with a deterministic seeded league, reusing the e2e selector vocabulary.
+- [ ] 4. Instrument the run with the fun/frustration report under reports/playtest/ and UI failure capture (screenshot on failure); wire the npm script.
+- [ ] 5. Run typecheck, test, lint, the existing playtest:ai/playtest:simulate, and logics:validate; record proof at closeout.
+- [ ] 6. Prefer role/label selectors and reading on-screen state over poking the API; note any action that had to bypass the UI and why.
+- [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
+- [ ] Keep commit creation under operator control; do not force one commit per micro-step.
+- [ ] GATE: do not close until lint, audit, and scaffold validation pass.
+
+# Backlog
+- `item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module`
+- `item_293_build_the_playwright_browser_agent_that_plays_the_real_ui_from_the_shared_brain`
+- `item_294_instrument_the_browser_run_fun_frustration_report_ui_failure_capture_npm_wiring`
+
+# Definition of Done (DoD)
+- [ ] Generated request, product, backlog, and task docs are present.
+- [ ] Context-pack handoff is available when requested.
+- [ ] Validation passes.
+- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+
+# AC Traceability
+- request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
+- request-AC4 -> This task. Proof: optional context-pack handoff is supported.
+- request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
+- request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+
+# Validation
+- Run `python3 -m logics_manager lint --require-status`.
+- Run scaffold command tests.
+
+# Report
+- Implementation complete.
+
+# AI Context
+- Summary: Orchestrate the browser-driven AI playtest
+- Keywords: scaffolded-task, request-chain-scaffold, orchestration
+- Use when: Coordinating implementation of a scaffolded request chain.
+- Skip when: Working on one isolated sibling slice.
+
+# Links
+- Request: `req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain`
+- Product brief(s): `prod_071_ai_playtest_surfaces_product_brief`
+- Architecture decision(s): (none yet)

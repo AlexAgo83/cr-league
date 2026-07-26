@@ -1,0 +1,209 @@
+{
+  "title": "Trim the eager web bundle and document script and skip boundaries",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "CONTRIBUTING.md",
+    "package.json",
+    "apps/web/vite.config.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/HomeSplash.tsx",
+    "apps/web/src/app/GameViews.tsx",
+    "apps/web/src/app/DriveView.tsx",
+    "apps/web/src/app/useAdminPanel.ts",
+    "apps/web/src/features/AdminConsoleView.tsx",
+    "apps/web/src/app/circuitRoutes/index.ts",
+    "packages/shared/src/domain/circuits.ts",
+    "packages/shared/src/domain/circuitSpeedProfiles.data.ts",
+    "scripts/generate-circuit-speed-profiles.mjs",
+    "docs/release-contract.md",
+    "Current diagnostic: the production build emits dist/assets/index-*.js at 433.86 kB raw / 120.17 kB gzip, the largest JS chunk shipped after circuit-routes was already split out lazily.",
+    "Current diagnostic: apps/web/src/features/AdminConsoleView.tsx is 265 lines and is statically imported at apps/web/src/app/App.tsx line 5, so every non-admin visitor downloads it.",
+    "Current diagnostic: App() renders the 28-line HomeSplash first but statically imports GameApp, so the landing screen pulls the whole game import graph before the user enters.",
+    "Current diagnostic: React.lazy is already the established pattern in this codebase at GameViews.tsx lines 16 to 18 and DriveView.tsx line 17.",
+    "Current diagnostic: package.json declares 37 npm scripts, of which roughly 20 are diagnostic playtest, balance, generation, and audit tooling that never gates a merge.",
+    "Current diagnostic: npm run playtest:ux:cold-start already produces a cold-start funnel report used to judge first-paint cost.",
+    "Current diagnostic: App.tsx is 779 lines with 42 hook call sites but is already decomposed into 12 custom hooks and 3 action factories, so the remaining body is wiring.",
+    "Current diagnostic: circuits.ts line 144 already casts CIRCUIT_SPEED_PROFILES to Record<string, TrackSpeedProfile>, so a JSON conversion would trade a satisfies check for a d.ts nobody reads."
+  ],
+  "request": {
+    "complexity": "Low",
+    "theme": "Frontend performance and contributor documentation",
+    "needs": [
+      "Remove admin-only code from the bundle that every ordinary player downloads.",
+      "Decide the landing-screen split on measured cold-start evidence rather than assumption.",
+      "Let a new contributor tell release-gating scripts apart from diagnostic tooling without reading every script body.",
+      "Record the two deliberate non-changes with named re-entry triggers so a future agent does not re-litigate or silently reverse them."
+    ],
+    "context": [
+      "This corpus follows a repository review that found all quality gates green: typecheck, lint, 344 passing tests, 89.4 percent line coverage, zero npm audit vulnerabilities, and a clean build.",
+      "The circuit-route polylines were already moved off the first-paint path via a single dynamic import, so the remaining eager weight is application code, not data.",
+      "The project deliberately avoids a router library, so any further splitting must fit the existing state-driven view switch.",
+      "Two review findings were deliberately closed as skips rather than work: refactoring App.tsx further, and converting the generated speed-profile data to JSON."
+    ],
+    "acceptance_criteria": [
+      "AC1: AdminConsoleView is loaded through a dynamic import and no longer appears in the eager index chunk.",
+      "AC2: Non-admin users reach every existing screen with no visible regression, and admins still reach the console through the same entry point.",
+      "AC3: A cold-start funnel measurement is recorded as evidence, and the GameApp split is either implemented with a prefetch on splash mount or declined in writing with the measured numbers that justify declining.",
+      "AC4: CONTRIBUTING.md states which npm scripts gate a merge and which are diagnostic tooling, covering every script currently declared in package.json.",
+      "AC5: The App.tsx and speed-profile skips are recorded with the specific observable condition that would reopen each one.",
+      "AC6: Typecheck, lint, unit tests, and build pass, and the recorded index chunk size is smaller than the 433.86 kB raw baseline."
+    ]
+  },
+  "product": {
+    "title": "Review Follow-up Product Brief",
+    "overview": "Convert a clean repository review into the small amount of work it actually justified: one bundle cut that is free, one bundle cut gated on measurement, and the documentation that keeps both decisions and two deliberate skips legible to whoever reads the repo next.",
+    "goals": [
+      "Cut admin-only weight from the payload every player downloads.",
+      "Gate the second, larger split on the cold-start evidence the project already generates.",
+      "Make the script surface self-explanatory to a first-time contributor.",
+      "Turn two deliberate skips into recorded decisions with triggers instead of unwritten intent."
+    ],
+    "non_goals": [
+      "Do not refactor App.tsx or split it into further modules.",
+      "Do not convert the generated speed-profile data to JSON.",
+      "Do not add a router, a bundle analyzer, or any new dependency.",
+      "Do not change gameplay, API contracts, persistence, or visible copy.",
+      "Do not restructure or prune the logics corpus; that is a separate concern."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Lazy-load the admin console out of the eager chunk",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Frontend performance",
+      "request_acs": ["AC1", "AC2", "AC6"],
+      "problem": [
+        "AdminConsoleView is 265 lines and is statically imported at App.tsx line 5.",
+        "The console is reachable only by admins, so the overwhelming majority of downloads are pure waste.",
+        "The lazy pattern is already established elsewhere in the same file tree, so nothing new has to be invented."
+      ],
+      "scope_in": [
+        "Record the current dist/assets/index-*.js raw and gzip sizes as a baseline.",
+        "Replace the static AdminConsoleView import with React.lazy, matching the existing GameViews.tsx pattern.",
+        "Keep the useAdminPanel hook import static, since hooks cannot be lazily imported.",
+        "Ensure the render site sits under a Suspense boundary with the existing fallback style.",
+        "Verify the admin console still opens through its normal entry point."
+      ],
+      "scope_out": [
+        "Splitting any other view in the same pass.",
+        "Changing admin authentication, the admin token check, or any admin route.",
+        "Restructuring App.tsx beyond the import and render site."
+      ],
+      "acceptance_criteria": [
+        "AC1: The build emits a separate chunk containing AdminConsoleView.",
+        "AC2: The index chunk is smaller than the recorded baseline, and the delta is written down.",
+        "AC3: Opening the admin console still works and never leaves a blank panel.",
+        "AC4: Existing unit tests pass without weakening assertions."
+      ]
+    },
+    {
+      "title": "Measure cold start and decide the GameApp split on the numbers",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Frontend performance",
+      "request_acs": ["AC3", "AC6"],
+      "problem": [
+        "App() shows the 28-line HomeSplash but statically imports GameApp, so the landing screen pays for the entire game graph.",
+        "Splitting it would help first paint but adds a wait at the enter click unless the load is prefetched.",
+        "The project already generates a cold-start funnel report, so guessing at the impact would waste evidence that is one command away."
+      ],
+      "scope_in": [
+        "Run npm run playtest:ux:cold-start and record the first-paint numbers as evidence.",
+        "If the measurement shows first paint materially hurt, wrap GameApp in React.lazy and prefetch it on HomeSplash mount so the enter click stays instant.",
+        "If the measurement does not justify the change, decline it in writing and cite the measured numbers.",
+        "Re-run the cold-start report after any change and record the before and after."
+      ],
+      "scope_out": [
+        "Implementing the split without first taking the measurement.",
+        "Adding a loading screen, spinner redesign, or new splash visual.",
+        "Prefetching anything beyond the GameApp entry chunk."
+      ],
+      "acceptance_criteria": [
+        "AC1: A cold-start measurement is recorded before any decision is made.",
+        "AC2: The outcome is either an implemented split with before and after numbers, or a written decline citing the numbers.",
+        "AC3: If implemented, entering from the splash shows no added perceptible delay.",
+        "AC4: If implemented, typecheck, lint, tests, and build all pass."
+      ]
+    },
+    {
+      "title": "Document the release gate and diagnostic script split",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Contributor documentation",
+      "request_acs": ["AC4"],
+      "problem": [
+        "package.json declares 37 scripts and JSON cannot carry comments.",
+        "Roughly 20 of them are diagnostic playtest, balance, generation, and audit tooling that never blocks a merge.",
+        "A first-time contributor cannot tell which commands are mandatory without reading each script body."
+      ],
+      "scope_in": [
+        "Add a short Scripts section to CONTRIBUTING.md.",
+        "Name the merge-gating scripts explicitly.",
+        "Name the release-only gate separately from the per-merge gate.",
+        "State that the remaining prefixes are on-demand diagnostics.",
+        "Confirm every script currently in package.json is covered by one of the stated groups."
+      ],
+      "scope_out": [
+        "Renaming, removing, or reorganizing any npm script.",
+        "Documenting the internal behavior of each diagnostic tool.",
+        "Duplicating the release contract already documented in docs/release-contract.md."
+      ],
+      "acceptance_criteria": [
+        "AC1: CONTRIBUTING.md has a Scripts section naming the merge gate.",
+        "AC2: Release-only and diagnostic scripts are distinguished from the merge gate.",
+        "AC3: Every script declared in package.json falls under a stated group.",
+        "AC4: No script definition in package.json is modified."
+      ]
+    },
+    {
+      "title": "Record the App.tsx and speed-profile skips with reopen triggers",
+      "priority": "Low",
+      "complexity": "Low",
+      "theme": "Decision record",
+      "request_acs": ["AC5"],
+      "problem": [
+        "The review deliberately declined two plausible-looking changes, and unwritten intent decays into a future agent redoing or reversing them.",
+        "App.tsx is 779 lines but already decomposed into 12 hooks and 3 action factories, so further splitting buys indirection and risks 1307 lines of tests.",
+        "The speed-profile JSON conversion would trade the generator's satisfies check for a d.ts nobody reads, and typecheck is currently fast."
+      ],
+      "scope_in": [
+        "Record both skips where an implementing agent will encounter them, using a ponytail comment at the relevant code site, a docs note, or both.",
+        "For App.tsx, name the reopen trigger: a change to App.tsx breaks something it did not touch.",
+        "For the speed profiles, name the reopen trigger: a cold tsc -b becomes slow enough to hurt, and note that the generator is a small change away from emitting JSON.",
+        "Keep each note short enough that it stays true as the code moves."
+      ],
+      "scope_out": [
+        "Performing either declined change.",
+        "Writing a long architecture decision record for either skip.",
+        "Adding a lint rule, size budget, or automated guard for App.tsx."
+      ],
+      "acceptance_criteria": [
+        "AC1: Both skips are recorded where an implementing agent will see them.",
+        "AC2: Each skip names a specific observable condition that would reopen it.",
+        "AC3: No behavioral code change is introduced by this item.",
+        "AC4: Typecheck and lint still pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate the review follow-up",
+    "plan": [
+      "Run npm run build and record the baseline index chunk raw and gzip sizes.",
+      "Convert the AdminConsoleView import to React.lazy following the existing GameViews.tsx pattern, and confirm the render site is under a Suspense boundary.",
+      "Rebuild and record the index chunk delta against the baseline.",
+      "Run npm run playtest:ux:cold-start and record the first-paint evidence.",
+      "Decide the GameApp split from that evidence: implement with a splash-mount prefetch, or decline in writing citing the numbers.",
+      "Add the Scripts section to CONTRIBUTING.md and verify every package.json script is covered.",
+      "Record the App.tsx and speed-profile skips with their reopen triggers.",
+      "Run typecheck, lint, unit tests, and build, and record validation evidence in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/review-followup-bundle-and-docs.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

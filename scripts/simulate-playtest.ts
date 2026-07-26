@@ -1,15 +1,6 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import { PrismaClient } from "@prisma/client";
-import {
-  CARD_DEFINITIONS,
-  CARD_PRICES,
-  type CardId,
-  type PitStrategy,
-  type RaceApproach,
-  type RaceDecision,
-  type RaceResult,
-  type TechnicalPreparation
-} from "../packages/shared/src/index.js";
+import { type RaceDecision, type RaceResult } from "../packages/shared/src/index.js";
 import {
   buyCard,
   createDemoLeague,
@@ -22,23 +13,17 @@ import {
   updateLeagueSettings,
   type LeagueState
 } from "../apps/api/src/features/leagues/store.js";
+import { multiplayerDecisionFor, multiplayerNextBuyFor, multiplayerPlaytestProfiles, type PlaytestProfile } from "./playtestBrain.js";
 
 type Player = {
   index: number;
   name: string;
-  profile: AiProfile;
+  profile: PlaytestProfile;
+  profileId: string;
+  recoveryCode: string;
   teamId: string;
   claimCode: string;
   leagueId: string;
-};
-
-type AiProfile = {
-  name: string;
-  approach: RaceApproach;
-  preparation: TechnicalPreparation;
-  pitStrategy: PitStrategy;
-  buy: CardId[];
-  rival: "leader" | "nearest" | "none";
 };
 
 type LeagueRun = {
@@ -61,14 +46,7 @@ const prisma = new PrismaClient();
 const totalPlayers = numberArg("--players", 20);
 const rounds = numberArg("--rounds", 3);
 const maxPlayersPerLeague = 16;
-const aiProfiles: AiProfile[] = [
-  { name: "sprinter", approach: "aggressive", preparation: "speed", pitStrategy: "standard", buy: ["launch_boost", "soft_tires", "adjustable_wing"], rival: "leader" },
-  { name: "rain-reader", approach: "balanced", preparation: "weather", pitStrategy: "standard", buy: ["rain_grip", "rain_mapping", "fleet_maintenance"], rival: "nearest" },
-  { name: "banker", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["fleet_sponsorship", "economy_mode", "hard_tires"], rival: "none" },
-  { name: "closer", approach: "balanced", preparation: "speed", pitStrategy: "standard", buy: ["final_surge", "calculated_attack", "pit_relay"], rival: "leader" },
-  { name: "defender", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["defensive_order", "hard_tires", "pit_relay"], rival: "nearest" },
-  { name: "rival-hunter", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", buy: ["urban_draft", "calculated_attack", "qualifying_focus"], rival: "leader" }
-];
+const aiProfiles = multiplayerPlaytestProfiles;
 const teamNames = [
   "Volt Union",
   "Late Apex",
@@ -91,7 +69,6 @@ const teamNames = [
   "Hard Relay",
   "Plan Fix"
 ];
-const cardIds = Object.keys(CARD_DEFINITIONS) as CardId[];
 
 try {
   const leagueRuns: LeagueRun[] = [];
@@ -123,6 +100,7 @@ async function createLeagueRun(leagueNumber: number, playerCount: number, firstP
     name: `Auto Playtest ${Date.now()} ${leagueNumber}`,
     teamName: owner.name,
     profileId: owner.profileId,
+    recoveryCode: owner.recoveryCode,
     maxPlayers: playerCount,
     fillWithBots: false,
     maxGrandPrixPerSeason: rounds
@@ -133,6 +111,8 @@ async function createLeagueRun(leagueNumber: number, playerCount: number, firstP
     index: firstPlayerIndex,
     name: owner.name,
     profile: profileFor(firstPlayerIndex),
+    profileId: owner.profileId,
+    recoveryCode: owner.recoveryCode,
     teamId: created.player.teamId,
     claimCode: created.player.claimCode,
     leagueId: created.league.id
@@ -152,13 +132,16 @@ async function createLeagueRun(leagueNumber: number, playerCount: number, firstP
     const joined = await joinLeagueByCode(prisma, {
       code: created.league.code,
       teamName: candidate.name,
-      profileId: candidate.profileId
+      profileId: candidate.profileId,
+      recoveryCode: candidate.recoveryCode
     });
     if (!joined?.player) throw new Error(`Join failed for ${candidate.name}.`);
     players.push({
       index: firstPlayerIndex + offset,
       name: candidate.name,
       profile: profileFor(firstPlayerIndex + offset),
+      profileId: candidate.profileId,
+      recoveryCode: candidate.recoveryCode,
       teamId: joined.player.teamId,
       claimCode: joined.player.claimCode,
       leagueId: joined.league.id
@@ -172,7 +155,8 @@ async function createLeagueRun(leagueNumber: number, playerCount: number, firstP
 async function createPlayer(index: number) {
   const name = teamNames[index] ?? `Team ${index + 1}`;
   const profile = await createProfile(prisma, { email: `playtest-${Date.now()}-${index}@example.test` });
-  return { name, profileId: profile.profile.id };
+  if (!profile.recoveryCode) throw new Error(`Profile creation did not return a recovery code for ${name}.`);
+  return { name, profileId: profile.profile.id, recoveryCode: profile.recoveryCode };
 }
 
 async function playLeague(run: LeagueRun) {
@@ -223,7 +207,7 @@ async function buyCards(run: LeagueRun, round: number) {
   let bought = 0;
   for (const player of run.players) {
     const team = run.state.teams.find((candidate) => candidate.id === player.teamId);
-    const cardId = team ? nextBuyFor(team.cards, team.credits, player, round) : undefined;
+    const cardId = team ? multiplayerNextBuyFor({ profile: player.profile, index: player.index, round, ownedCards: team.cards, credits: team.credits }) : undefined;
     if (!team || !cardId) continue;
     const state = await buyCard(prisma, run.state.league.id, {
       teamId: player.teamId,
@@ -237,37 +221,7 @@ async function buyCards(run: LeagueRun, round: number) {
 }
 
 function decisionFor(state: LeagueState, player: Player, round: number): RaceDecision {
-  return {
-    approach: player.profile.approach,
-    preparation: player.profile.preparation,
-    pitStrategy: player.profile.pitStrategy,
-    cardId: cardFor(state, player, round),
-    rivalTeamId: rivalFor(state, player)
-  };
-}
-
-function cardFor(state: LeagueState, player: Player, round: number): CardId | undefined {
-  const team = state.teams.find((candidate) => candidate.id === player.teamId);
-  if (!team?.cards.length || (player.index + round) % 2 !== 0) return undefined;
-  return player.profile.buy.find((cardId) => team.cards.includes(cardId)) ?? team.cards[0];
-}
-
-function nextBuyFor(ownedCards: CardId[], credits: number, player: Player, round: number) {
-  const affordable = (cardId: CardId) => CARD_PRICES[cardId] <= credits;
-  const affordableCards = cardIds.filter(affordable);
-  return (
-    player.profile.buy.find((cardId) => !ownedCards.includes(cardId) && affordable(cardId)) ??
-    player.profile.buy.find(affordable) ??
-    affordableCards[(player.index + round) % affordableCards.length]
-  );
-}
-
-function rivalFor(state: LeagueState, player: Player) {
-  if (player.profile.rival === "none") return undefined;
-  const ordered = [...state.teams].sort((left, right) => right.points - left.points || left.name.localeCompare(right.name));
-  if (player.profile.rival === "leader") return ordered.find((team) => team.id !== player.teamId)?.id;
-  const selfIndex = ordered.findIndex((team) => team.id === player.teamId);
-  return ordered[selfIndex - 1]?.id ?? ordered[selfIndex + 1]?.id;
+  return multiplayerDecisionFor({ profile: player.profile, index: player.index, round, teamId: player.teamId, teams: state.teams });
 }
 
 function profileFor(index: number) {

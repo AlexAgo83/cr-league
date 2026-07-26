@@ -1,10 +1,10 @@
 ## item_293_build_the_playwright_browser_agent_that_plays_the_real_ui_from_the_shared_brain - Build the Playwright browser agent that plays the real UI from the shared brain
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 30%
 > Complexity: Medium
 > Theme: AI playtest tooling
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

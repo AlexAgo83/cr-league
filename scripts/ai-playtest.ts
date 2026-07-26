@@ -1,6 +1,5 @@
 import { mkdir, writeFile } from "node:fs/promises";
 import {
-  CARD_DEFINITIONS,
   CARD_PRICES,
   RACE_APPROACHES,
   circuitIdentityForRound,
@@ -11,26 +10,15 @@ import {
   type CardId,
   type CityCircuitIdentity,
   type PitStrategy,
-  type RaceApproach,
-  type RaceDecision,
   type RaceParticipant,
-  type RaceResult,
-  type TechnicalPreparation
+  type RaceResult
 } from "../packages/shared/src/index.js";
-
-type AgentProfile = {
-  name: string;
-  approach: RaceApproach;
-  preparation: TechnicalPreparation;
-  pitStrategy: PitStrategy;
-  buy: CardId[];
-  mode?: "all_in" | "hoarder" | "rain_gambler" | "no_card" | "rival_tunnel" | "mini_spam" | "endurance" | "random";
-};
+import { frustrationScore, funScore, nextPlaytestCardPurchase, playtestCardIds, playtestDecisionForAgent, playtestProfiles, type PlaytestProfile } from "./playtestBrain.js";
 
 type Agent = {
   id: string;
   name: string;
-  profile: AgentProfile;
+  profile: PlaytestProfile;
   nextBuyIndex: number;
   points: number;
   credits: number;
@@ -77,23 +65,8 @@ type ZoneRow = {
   major: number;
 };
 
-const cardIds = Object.keys(CARD_DEFINITIONS) as CardId[];
-const profiles: AgentProfile[] = [
-  { name: "sprinter", approach: "aggressive", preparation: "speed", pitStrategy: "standard", buy: ["launch_boost", "soft_tires", "adjustable_wing"] },
-  { name: "rain-reader", approach: "balanced", preparation: "weather", pitStrategy: "standard", buy: ["rain_grip", "rain_mapping", "fleet_maintenance"] },
-  { name: "banker", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["fleet_sponsorship", "economy_mode", "hard_tires"] },
-  { name: "closer", approach: "balanced", preparation: "speed", pitStrategy: "standard", buy: ["final_surge", "calculated_attack", "pit_relay"] },
-  { name: "defender", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["defensive_order", "hard_tires", "pit_relay"] },
-  { name: "rival-hunter", approach: "aggressive", preparation: "speed", pitStrategy: "standard", buy: ["urban_draft", "calculated_attack", "qualifying_focus"] },
-  { name: "all-in-attack", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", buy: ["launch_boost", "soft_tires", "calculated_attack"], mode: "all_in" },
-  { name: "economy-hoarder", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["economy_mode", "fleet_sponsorship"], mode: "hoarder" },
-  { name: "rain-gambler", approach: "aggressive", preparation: "weather", pitStrategy: "standard", buy: ["rain_grip", "rain_mapping"], mode: "rain_gambler" },
-  { name: "no-card-saver", approach: "balanced", preparation: "reliability", pitStrategy: "standard", buy: [], mode: "no_card" },
-  { name: "tunnel-rival", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", buy: ["urban_draft", "calculated_attack"], mode: "rival_tunnel" },
-  { name: "mini-spammer", approach: "aggressive", preparation: "speed", pitStrategy: "mini_pack", buy: ["soft_tires", "adjustable_wing", "pit_relay"], mode: "mini_spam" },
-  { name: "endurance-conservative", approach: "prudent", preparation: "reliability", pitStrategy: "heavy_pack", buy: ["hard_tires", "fleet_maintenance", "defensive_order"], mode: "endurance" },
-  { name: "random-baseline", approach: "balanced", preparation: "speed", pitStrategy: "standard", buy: cardIds, mode: "random" }
-];
+const cardIds = playtestCardIds;
+const profiles = playtestProfiles;
 
 const args = parseArgs();
 const agents = Array.from({ length: args.agents }, (_, index) => ({
@@ -188,7 +161,7 @@ function runRace(season: number, round: number, circuit: CityCircuitIdentity, gr
       teamName: agent.name,
       kind: "human",
       standingsRank: index + 1,
-      decision: decisionFor(agent, circuit, ranked)
+      decision: playtestDecisionForAgent(agent, circuit, ranked, (cardId) => cardStats.get(cardId)!.played)
     }));
   const result = simulateRace({
     seed: `ai-playtest-s${season}-r${round}-${group[0]?.id}`,
@@ -253,72 +226,11 @@ function runRace(season: number, round: number, circuit: CityCircuitIdentity, gr
   incidents.push(...traceErrors);
 }
 
-function decisionFor(agent: Agent, circuit: CityCircuitIdentity, ranked: Agent[]): RaceDecision {
-  const cardId = playableCard(agent, circuit);
-  const rival = agent.profile.mode === "rival_tunnel"
-    ? ranked.find((candidate) => candidate.id !== agent.id)?.id
-    : ranked.find((candidate) => candidate.id !== agent.id && candidate.points >= agent.points)?.id;
-  return {
-    approach: approachFor(agent, circuit),
-    preparation: preparationFor(agent, circuit),
-    pitStrategy: pitStrategyFor(agent, circuit),
-    cardId,
-    rivalTeamId: cardId === "urban_draft" || cardId === "calculated_attack" ? rival : undefined
-  };
-}
-
-function approachFor(agent: Agent, circuit: CityCircuitIdentity): RaceApproach {
-  if (agent.profile.mode !== "random") return agent.profile.approach;
-  return RACE_APPROACHES[(agent.starts + circuit.city.length) % RACE_APPROACHES.length]!;
-}
-
-function preparationFor(agent: Agent, circuit: CityCircuitIdentity): TechnicalPreparation {
-  if (agent.profile.mode === "rain_gambler") return "weather";
-  if (agent.profile.mode !== "random") return circuit.likelyWeather === "dry" ? agent.profile.preparation : "weather";
-  return ["speed", "reliability", "weather"][(agent.starts + circuit.country.length) % 3] as TechnicalPreparation;
-}
-
-function pitStrategyFor(agent: Agent, circuit: CityCircuitIdentity): PitStrategy {
-  const wantsAttack = circuit.traits.overtaking >= 72;
-  const wantsEndurance = circuit.traits.energy <= 58 || circuit.trackLengthMeters >= 5600;
-  if (agent.profile.mode === "mini_spam") return "mini_pack";
-  if (agent.profile.mode === "all_in" && circuit.likelyWeather !== "heavy_rain") return "mini_pack";
-  if (agent.profile.mode === "endurance" || agent.profile.mode === "hoarder") return "heavy_pack";
-  if (agent.profile.mode === "random") return ["heavy_pack", "standard", "mini_pack"][(agent.starts + circuit.layoutKey.length) % 3] as PitStrategy;
-  if (circuit.likelyWeather === "heavy_rain") return "standard";
-  if ((agent.profile.name === "sprinter" || agent.profile.name === "rival-hunter") && wantsAttack) return "mini_pack";
-  if ((agent.profile.name === "banker" || agent.profile.name === "defender") && wantsEndurance) return "heavy_pack";
-  if (agent.profile.name === "rain-reader" && circuit.likelyWeather !== "dry") return "standard";
-  return agent.profile.pitStrategy;
-}
-
-function playableCard(agent: Agent, circuit: CityCircuitIdentity) {
-  if (agent.profile.mode === "no_card") return undefined;
-  if (agent.profile.mode === "random") return agent.cards[(agent.starts + circuit.city.length) % Math.max(1, agent.cards.length)];
-  const useful = agent.cards.filter((card) => {
-    if (agent.profile.mode !== "rain_gambler" && (card === "rain_grip" || card === "rain_mapping") && circuit.likelyWeather === "dry") return false;
-    return agent.profile.buy.includes(card);
-  });
-  return useful.sort((left, right) => cardStats.get(left)!.played - cardStats.get(right)!.played)[0] ?? agent.cards[0];
-}
-
 function buyNextCard(agent: Agent) {
-  if (agent.profile.mode === "no_card") return;
-  for (let offset = 0; offset < agent.profile.buy.length; offset += 1) {
-    const index = (agent.nextBuyIndex + offset) % agent.profile.buy.length;
-    const candidate = agent.profile.buy[index]!;
-    if (CARD_PRICES[candidate] > agent.credits) continue;
-    if (agent.profile.mode === "hoarder" && agent.credits - CARD_PRICES[candidate] < 300) continue;
-    agent.nextBuyIndex = (index + 1) % agent.profile.buy.length;
-    spendCredits(agent, CARD_PRICES[candidate]);
-    agent.cards.push(candidate);
-    cardStats.get(candidate)!.bought += 1;
-    return;
-  }
-  const cardId = cardIds
-    .filter((candidate) => CARD_PRICES[candidate] <= agent.credits)
-    .sort((left, right) => cardStats.get(left)!.bought - cardStats.get(right)!.bought)[0];
-  if (!cardId) return;
+  const purchase = nextPlaytestCardPurchase(agent, (cardId) => cardStats.get(cardId)!.bought);
+  if (!purchase) return;
+  const cardId = purchase.cardId;
+  agent.nextBuyIndex = purchase.nextBuyIndex;
   spendCredits(agent, CARD_PRICES[cardId]);
   agent.cards.push(cardId);
   cardStats.get(cardId)!.bought += 1;
@@ -328,17 +240,6 @@ function spendCredits(agent: Agent, credits: number) {
   agent.credits -= credits;
   agent.creditsSpent += credits;
   profileStats.get(agent.profile.name)!.creditsSpent += credits;
-}
-
-function funScore(position: number, result: RaceResult, teamId: string) {
-  const eventBonus = result.events.filter((event) => event.teamId === teamId && event.positionDelta < 0).length;
-  return Math.max(1, Math.min(10, 4 + (position === 1 ? 4 : position <= 3 ? 2 : 0) + eventBonus));
-}
-
-function frustrationScore(position: number, result: RaceResult, teamId: string) {
-  const badEvents = new Set(["mechanical_scare", "wrong_weather_bet", "minor_error", "penalty_risk", "battery_critical"]);
-  const eventPenalty = result.events.filter((event) => event.teamId === teamId && badEvents.has(event.type)).length;
-  return Math.max(1, Math.min(10, 2 + (position > 6 ? 3 : position > 3 ? 1 : 0) + eventPenalty));
 }
 
 function alerts(profileRows: ReturnType<typeof rows>, cardRows: CardRow[]) {

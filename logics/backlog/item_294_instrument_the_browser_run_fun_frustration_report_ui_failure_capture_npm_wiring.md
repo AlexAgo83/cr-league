@@ -1,10 +1,10 @@
 ## item_294_instrument_the_browser_run_fun_frustration_report_ui_failure_capture_npm_wiring - Instrument the browser run: fun/frustration report, UI failure capture, npm wiring
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 30%
 > Complexity: Low
 > Theme: AI playtest tooling
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -1,13 +1,14 @@
 ## task_120_orchestrate_the_browser_driven_ai_playtest - Orchestrate the browser-driven AI playtest
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 30%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -45,7 +46,7 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- 2026-07-26: started the browser playtest corpus and completed the first shared-brain wave. Added `scripts/playtestBrain.ts` as the single source for the 14 playtest personas, headless decision heuristics, multiplayer-store decision helpers, card-buying choices, and fun/frustration scoring. Refactored `scripts/ai-playtest.ts` and `scripts/simulate-playtest.ts` to consume it, and restored `simulate-playtest` compatibility with current profile ownership by propagating recovery codes from `createProfile` into league creation/join. Proof so far: `npm run typecheck`, `npm run lint`, `npm run playtest:ai -- --agents 6 --seasons 1 --rounds 2 --league-size 3 --report reports/playtest/brain-refactor-ai-smoke.md`, and `npm run playtest:simulate -- --players 3 --rounds 1`.
 
 # AI Context
 - Summary: Orchestrate the browser-driven AI playtest

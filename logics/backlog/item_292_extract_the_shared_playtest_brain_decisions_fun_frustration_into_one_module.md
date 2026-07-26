@@ -1,10 +1,10 @@
 ## item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module - Extract the shared playtest brain (decisions + fun/frustration) into one module
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 30%
 > Complexity: Medium
 > Theme: AI playtest tooling
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

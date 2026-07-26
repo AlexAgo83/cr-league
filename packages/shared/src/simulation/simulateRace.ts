@@ -655,7 +655,7 @@ function classify(states: TeamState[]): ClassificationEntry[] {
   const positionCredits: number[] = [];
   for (let index = 0; index < sorted.length; index += 1) {
     const baseCredits = RACE_CREDITS_BY_POSITION[index] ?? RACE_CREDITS_BY_POSITION.at(-1) ?? 0;
-    const comebackBonus = Math.min(COMEBACK_CREDIT_BONUS_CAP, Math.max(0, index + 1 - RACE_POINTS_BY_POSITION.length) * COMEBACK_CREDIT_BONUS_PER_POSITION);
+    const comebackBonus = comebackCreditBonusForPosition(index + 1);
     const previous = index > 0 ? positionCredits[index - 1] : undefined;
     positionCredits.push(previous === undefined ? baseCredits + comebackBonus : Math.min(previous, baseCredits + comebackBonus));
   }
@@ -677,6 +677,10 @@ function classify(states: TeamState[]): ClassificationEntry[] {
       resultTags: [...state.resultTags]
     };
   });
+}
+
+export function comebackCreditBonusForPosition(position: number) {
+  return Math.min(COMEBACK_CREDIT_BONUS_CAP, Math.max(0, position - RACE_POINTS_BY_POSITION.length) * COMEBACK_CREDIT_BONUS_PER_POSITION);
 }
 
 function addFinishEvents(events: RaceEvent[], classification: ClassificationEntry[]) {

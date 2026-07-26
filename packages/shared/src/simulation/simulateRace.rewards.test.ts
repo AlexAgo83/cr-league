@@ -1,7 +1,7 @@
 // @vitest-environment node
 
 import { describe, expect, it } from "vitest";
-import { simulateRace } from "./simulateRace.js";
+import { comebackCreditBonusForPosition, simulateRace } from "./simulateRace.js";
 import {
   ECONOMY_MODE_CREDIT_BONUS,
   FLEET_SPONSORSHIP_CREDIT_BONUS,
@@ -145,5 +145,12 @@ describe("simulateRace rewards", () => {
     expect(result.classification.find((entry) => entry.position === 6)?.credits).toBe(100);
     expect(result.classification.find((entry) => entry.position === 7)?.credits).toBe(100);
     expect(result.classification.find((entry) => entry.position === 12)?.credits).toBe(100);
+  });
+
+  it("caps the comeback credit bonus after four non-points positions", () => {
+    expect(comebackCreditBonusForPosition(6)).toBe(0);
+    expect(comebackCreditBonusForPosition(7)).toBe(10);
+    expect(comebackCreditBonusForPosition(10)).toBe(40);
+    expect(comebackCreditBonusForPosition(12)).toBe(40);
   });
 });

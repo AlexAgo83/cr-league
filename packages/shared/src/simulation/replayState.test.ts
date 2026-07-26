@@ -1,4 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { DEMO_RACE_INPUT } from "./demoRace.js";
+import { simulateRace } from "./simulateRace.js";
 import type { RaceResult, ReplayTracePoint } from "../domain/race.js";
 import { positionDeltas, replayOrderAtProgress, traceGapsAt, traceTimesAt } from "./replayState.js";
 
@@ -34,5 +36,28 @@ describe("replayState", () => {
 
   it("reports position gains as positive deltas", () => {
     expect(positionDeltas(["leader", "last"], ["last", "leader"])).toEqual({ last: 1, leader: -1 });
+  });
+
+  it("pins a fixed-seed generated trace through the shared replay derivation", () => {
+    const generated = simulateRace(DEMO_RACE_INPUT);
+    const trace = generated.replayTrace ?? [];
+
+    expect(replayOrderAtProgress(generated, trace, 0.5)).toEqual(["redpeak", "mika", "volt", "hugo", "northline", "atlas"]);
+    expect(traceTimesAt(trace, 0.5)).toEqual({
+      atlas: 66.3,
+      hugo: 66.3,
+      mika: 66.3,
+      northline: 66.3,
+      redpeak: 66.3,
+      volt: 66.3
+    });
+    expect(traceGapsAt(trace, 0.5)).toEqual({
+      atlas: 12.6,
+      hugo: 7.6,
+      mika: 1,
+      northline: 8.5,
+      redpeak: 0,
+      volt: 2.6
+    });
   });
 });

@@ -4,6 +4,7 @@ import { setTimeout as delay } from "node:timers/promises";
 import { chromium, expect, type Browser, type Page } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
 import { config as loadEnv } from "dotenv";
+import axe from "axe-core";
 import { type CardId, type LeagueState, type RaceDecision, type RaceResult } from "../packages/shared/src/index.js";
 import { createProfile } from "../apps/api/src/features/leagues/store.js";
 import { frustrationScore, funScore, multiplayerDecisionFor, multiplayerNextBuyFor, playtestProfiles, type PlaytestProfile } from "./playtestBrain.js";
@@ -16,6 +17,8 @@ const rounds = numberArg("--rounds", 2);
 const profile = playtestProfiles.find((candidate) => candidate.name === stringArg("--profile", "sprinter")) ?? playtestProfiles[0]!;
 const reportPath = stringArg("--report", `reports/playtest/${new Date().toISOString().slice(0, 10)}-browser-playtest.md`);
 const screenshotDir = stringArg("--screenshots", "reports/playtest/browser-failures");
+const uxReportPath = stringArg("--ux-report", "");
+const uxAssetsDir = stringArg("--ux-assets", "reports/ux/browser-playthrough");
 
 type ManagedServer = {
   name: string;
@@ -33,8 +36,28 @@ type RoundReport = {
   bought?: CardId;
 };
 
+type UxCapture = {
+  step: number;
+  label: string;
+  note: string;
+  desktop: string;
+  mobile: string;
+  bodyOverflow: boolean;
+  smallTapTargets: number;
+  axeViolations: Array<{ id: string; impact?: string | null; nodes: number; help: string }>;
+};
+
+type FrictionTask = {
+  name: string;
+  actions: number;
+  hesitations: string[];
+};
+
 const servers: ManagedServer[] = [];
 const consoleErrors: string[] = [];
+const consoleWarnings: string[] = [];
+const uxCaptures: UxCapture[] = [];
+const frictionTasks = new Map<string, FrictionTask>();
 let browser: Browser | undefined;
 let page: Page | undefined;
 
@@ -88,19 +111,25 @@ try {
       sessionStorage.setItem("cr-league-browser-playtest-ready", "1");
     }
   }, seededProfile.session);
+  if (uxReportPath) await context.addInitScript({ content: axe.source });
   page = await context.newPage();
   page.on("console", (message) => {
     if (message.type() === "error") consoleErrors.push(message.text());
+    if (message.type() === "warning") consoleWarnings.push(message.text());
   });
   page.on("pageerror", (error) => consoleErrors.push(error.message));
 
   let state = await recoverAndCreateLeague(page);
+  await captureUx(page, "league-created", `League ${state.league.name} is open on the race desk.`);
   const reports: RoundReport[] = [];
 
   for (let round = 1; round <= rounds; round += 1) {
     const decision = await choosePlan(page, state, profile, round);
+    await captureUx(page, `round-${round}-plan`, `Selected ${decision.approach}/${decision.preparation}/${decision.pitStrategy ?? "standard"} with ${decision.cardId ?? "no card"}.`);
     state = await submitPlan(page, state);
+    await captureUx(page, `round-${round}-ready`, "Plan submitted; launch affordance is visible.");
     state = await launchGrandPrix(page, state);
+    await captureUx(page, `round-${round}-replay`, "Race replay is visible after launching the Grand Prix.");
     const result = state.currentGrandPrix.result as RaceResult;
     const playerTeamId = state.player?.teamId;
     const playerEntry = result.classification.find((entry) => entry.teamId === playerTeamId);
@@ -121,20 +150,25 @@ try {
       const bought = await buyAfterRace(page, state, profile, round);
       if (bought.state) state = bought.state;
       roundReport.bought = bought.cardId;
+      await captureUx(page, `round-${round}-garage`, bought.cardId ? `Bought ${bought.cardId} from Garage.` : "Garage opened; no affordable recommended card bought.");
       state = await nextGrandPrix(page);
+      await captureUx(page, `round-${round}-next-gp`, `Advanced to GP ${state.currentGrandPrix.round}.`);
     }
   }
 
   await page.getByRole("button", { name: "Championship", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Current GP" })).toBeVisible();
+  await captureUx(page, "championship-return", "Returned to Championship after the browser playthrough.");
   await browser.close();
   browser = undefined;
   await writeReport({ reports, consoleErrors, failed: false });
+  if (uxReportPath) await writeUxReport({ reports, failed: false });
   console.log(`Browser playtest: ${profile.name} x ${rounds} GP`);
   console.log(`Report: ${reportPath}`);
 } catch (error) {
   const screenshot = page ? await captureFailure(page) : undefined;
   await writeReport({ reports: [], consoleErrors, failed: true, error, screenshot });
+  if (uxReportPath) await writeUxReport({ reports: [], failed: true, error, screenshot });
   throw error;
 } finally {
   await browser?.close();
@@ -155,14 +189,15 @@ async function seedProfile() {
 
 async function recoverAndCreateLeague(page: Page) {
   await page.goto("/");
-  await page.getByRole("button", { name: "PRESS START" }).click();
+  await trackedClick(page, "setup", "press-start", () => page.getByRole("button", { name: "PRESS START" }).click());
   await expect(page.getByRole("button", { name: /Create league/ })).toBeVisible();
 
-  await page.getByRole("button", { name: /Create league/ }).click();
+  await trackedClick(page, "setup", "create-league-choice", () => page.getByRole("button", { name: /Create league/ }).click());
   await page.getByRole("textbox", { name: "League" }).fill(`Browser Playtest ${Date.now()}`);
   await page.getByRole("textbox", { name: "Team" }).fill("Browser Sprinter");
   await page.getByLabel("GP per season").fill(String(rounds));
-  const state = await waitForLeagueResponse(page, "POST", "/leagues", () => page.getByRole("button", { name: "Start league" }).click());
+  countAction("setup", "fill setup form");
+  const state = await waitForLeagueResponse(page, "POST", "/leagues", () => trackedClick(page, "setup", "start-league", () => page.getByRole("button", { name: "Start league" }).click()));
   await page.evaluate((leagueId) => {
     for (const key of ["cr-league-help-league-intro", "cr-league-help-race", "cr-league-help-plan", "cr-league-help-garage"]) {
       localStorage.setItem(`${key}:${leagueId}`, "1");
@@ -178,32 +213,32 @@ async function choosePlan(page: Page, state: LeagueState, profile: PlaytestProfi
   const teamId = state.player?.teamId;
   if (!teamId) throw new Error("League state did not include a browser player claim.");
   const decision = multiplayerDecisionFor({ profile, index: 0, round, teamId, teams: state.teams });
-  await page.getByRole("button", { name: "Plan", exact: true }).click();
+  await trackedClick(page, `round-${round}-plan`, "open-plan", () => page.getByRole("button", { name: "Plan", exact: true }).click());
   await dismissBlockingModals(page);
-  await chooseDirective(page, "Approach", approachLabels[decision.approach]);
-  await chooseDirective(page, "Tire prep", preparationLabels[decision.preparation]);
-  await chooseDirective(page, "Pit strategy", pitLabels[decision.pitStrategy ?? "standard"]);
-  await chooseDirective(page, "Card", decision.cardId ? cardLabels[decision.cardId] : "No card");
+  await chooseDirective(page, `round-${round}-plan`, "Approach", approachLabels[decision.approach]);
+  await chooseDirective(page, `round-${round}-plan`, "Tire prep", preparationLabels[decision.preparation]);
+  await chooseDirective(page, `round-${round}-plan`, "Pit strategy", pitLabels[decision.pitStrategy ?? "standard"]);
+  await chooseDirective(page, `round-${round}-plan`, "Card", decision.cardId ? cardLabels[decision.cardId] : "No card");
   await dismissBlockingModals(page);
   return decision;
 }
 
-async function chooseDirective(page: Page, field: string, value: string) {
-  await page.getByRole("tab", { name: new RegExp(field) }).click();
-  await page.getByRole("button", { name: `${field}: ${value}` }).click();
+async function chooseDirective(page: Page, task: string, field: string, value: string) {
+  await trackedClick(page, task, `open ${field}`, () => page.getByRole("tab", { name: new RegExp(field) }).click());
+  await trackedClick(page, task, `choose ${field}: ${value}`, () => page.getByRole("button", { name: `${field}: ${value}` }).click());
 }
 
 async function submitPlan(page: Page, state: LeagueState) {
-  await page.getByRole("button", { name: "Send plan" }).click();
-  await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click();
+  await trackedClick(page, "submit-plan", "send-plan", () => page.getByRole("button", { name: "Send plan" }).click());
+  await trackedClick(page, "submit-plan", "confirm-send", () => page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click());
   await expect(page.getByRole("button", { name: "Launch GP" })).toBeVisible();
   return fetchLeagueState(state);
 }
 
 async function launchGrandPrix(page: Page, state: LeagueState) {
   const next = await waitForLeagueResponse(page, "POST", `/leagues/${state.league.id}/resolve`, async () => {
-    await page.getByRole("button", { name: "Launch GP" }).click();
-    await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
+    await trackedClick(page, "launch-gp", "launch-gp", () => page.getByRole("button", { name: "Launch GP" }).click());
+    await trackedClick(page, "launch-gp", "confirm-launch", () => page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click());
   });
   await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
   return next;
@@ -213,13 +248,16 @@ async function buyAfterRace(page: Page, state: LeagueState, profile: PlaytestPro
   const team = state.teams.find((candidate) => candidate.id === state.player?.teamId);
   const cardId = team ? multiplayerNextBuyFor({ profile, index: 0, round, ownedCards: team.cards, credits: team.credits }) : undefined;
   if (!cardId) return {};
-  await page.getByRole("button", { name: "Garage", exact: true }).click();
-  await page.getByRole("tab", { name: "Shop" }).click();
+  await trackedClick(page, "garage-buy", "open-garage", () => page.getByRole("button", { name: "Garage", exact: true }).click());
+  await trackedClick(page, "garage-buy", "open-shop", () => page.getByRole("tab", { name: "Shop" }).click());
   const card = page.getByRole("button", { name: `Card: ${cardLabels[cardId]}` });
-  if (!(await card.isVisible()) || !(await card.isEnabled())) return {};
+  if (!(await card.isVisible()) || !(await card.isEnabled())) {
+    addHesitation("garage-buy", `${cardLabels[cardId]} was not visible or enabled.`);
+    return {};
+  }
   const next = await waitForLeagueResponse(page, "POST", `/leagues/${state.league.id}/cards/buy`, async () => {
-    await card.click();
-    await page.getByRole("dialog", { name: "Confirm card purchase" }).getByRole("button", { name: "Buy card" }).click();
+    await trackedClick(page, "garage-buy", `open ${cardLabels[cardId]}`, () => card.click());
+    await trackedClick(page, "garage-buy", "confirm-buy", () => page.getByRole("dialog", { name: "Confirm card purchase" }).getByRole("button", { name: "Buy card" }).click());
   });
   return { state: next, cardId };
 }
@@ -227,9 +265,64 @@ async function buyAfterRace(page: Page, state: LeagueState, profile: PlaytestPro
 async function nextGrandPrix(page: Page) {
   await page.getByRole("button", { name: "Stand", exact: true }).click();
   return waitForAnyLeagueResponse(page, "POST", "/next-grand-prix", async () => {
-    await page.getByRole("button", { name: "Next GP" }).click();
-    await page.getByRole("dialog", { name: "Start the next race day?" }).getByRole("button", { name: "Next GP" }).click();
+    await trackedClick(page, "next-gp", "next-gp", () => page.getByRole("button", { name: "Next GP" }).click());
+    await trackedClick(page, "next-gp", "confirm-next-gp", () => page.getByRole("dialog", { name: "Start the next race day?" }).getByRole("button", { name: "Next GP" }).click());
   });
+}
+
+async function captureUx(page: Page, label: string, note: string) {
+  if (!uxReportPath) return;
+  await mkdir(uxAssetsDir, { recursive: true });
+  const step = uxCaptures.length + 1;
+  const prefix = `${String(step).padStart(2, "0")}-${slug(label)}`;
+  const desktop = `${uxAssetsDir}/${prefix}-desktop.png`;
+  const mobile = `${uxAssetsDir}/${prefix}-mobile.png`;
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  await page.screenshot({ path: desktop, fullPage: true });
+  await page.setViewportSize({ width: 390, height: 900 });
+  await page.screenshot({ path: mobile, fullPage: true });
+  const mobileScan = await scanMobile(page);
+  const axeViolations = await runAxe(page);
+  await page.setViewportSize({ width: 1440, height: 1000 });
+  uxCaptures.push({ step, label, note, desktop, mobile, ...mobileScan, axeViolations });
+}
+
+async function scanMobile(page: Page) {
+  return page.evaluate(() => {
+    const bodyOverflow = document.documentElement.scrollWidth > window.innerWidth + 1;
+    const smallTapTargets = [...document.querySelectorAll("button, a, input, select, textarea")]
+      .filter((element) => {
+        const rect = element.getBoundingClientRect();
+        return rect.width > 0 && rect.height > 0 && (rect.width < 44 || rect.height < 44);
+      })
+      .length;
+    return { bodyOverflow, smallTapTargets };
+  });
+}
+
+async function runAxe(page: Page) {
+  return page.evaluate(async () => {
+    const result = await window.axe.run(document, { resultTypes: ["violations"] });
+    return result.violations.map((violation) => ({ id: violation.id, impact: violation.impact, nodes: violation.nodes.length, help: violation.help }));
+  });
+}
+
+async function trackedClick(page: Page, task: string, label: string, action: () => Promise<void>) {
+  countAction(task, label);
+  await action();
+}
+
+function countAction(task: string, label: string) {
+  const row = frictionTasks.get(task) ?? { name: task, actions: 0, hesitations: [] };
+  row.actions += 1;
+  frictionTasks.set(task, row);
+  void label;
+}
+
+function addHesitation(task: string, label: string) {
+  const row = frictionTasks.get(task) ?? { name: task, actions: 0, hesitations: [] };
+  row.hesitations.push(label);
+  frictionTasks.set(task, row);
 }
 
 async function waitForLeagueResponse(page: Page, method: string, path: string, action: () => Promise<void>) {
@@ -361,6 +454,57 @@ async function writeReport(input: { reports: RoundReport[]; consoleErrors: strin
   );
 }
 
+async function writeUxReport(input: { reports: RoundReport[]; failed: boolean; error?: unknown; screenshot?: string }) {
+  await mkdir(dirname(uxReportPath), { recursive: true });
+  const frictionRows = [...frictionTasks.values()];
+  const totalAxe = uxCaptures.reduce((sum, capture) => sum + capture.axeViolations.length, 0);
+  await writeFile(
+    uxReportPath,
+    [
+      "# UX Evaluation Harness",
+      "",
+      `- Date: ${new Date().toISOString()}`,
+      `- Profile: ${profile.name}`,
+      `- Rounds: ${rounds}`,
+      `- Result: ${input.failed ? "FAIL" : "PASS"}`,
+      input.screenshot ? `- Failure screenshot: ${input.screenshot}` : undefined,
+      input.error ? `- Error: ${input.error instanceof Error ? input.error.message : String(input.error)}` : undefined,
+      "",
+      "## Visual Playthrough",
+      ...uxCaptures.flatMap((capture) => [
+        "",
+        `### ${capture.step}. ${capture.label}`,
+        capture.note,
+        `- Desktop: ${capture.desktop}`,
+        `- Mobile: ${capture.mobile}`,
+        `- Mobile body overflow: ${capture.bodyOverflow ? "yes" : "no"}`,
+        `- Mobile small tap targets: ${capture.smallTapTargets}`,
+        `- Axe violations: ${capture.axeViolations.length}`
+      ]),
+      "",
+      "## Friction",
+      frictionRows.length ? table(["Task", "Actions", "Hesitations"], frictionRows.map((row) => [row.name, row.actions, row.hesitations.join("; ") || "-"])) : "- none",
+      "",
+      "## Console",
+      consoleErrors.length || consoleWarnings.length ? [...consoleErrors.map((entry) => `- ERROR: ${entry}`), ...consoleWarnings.map((entry) => `- WARN: ${entry}`)].join("\n") : "- none",
+      "",
+      "## Accessibility",
+      `- Total axe violation groups: ${totalAxe}`,
+      ...uxCaptures.flatMap((capture) =>
+        capture.axeViolations.map((violation) => `- ${capture.label}: ${violation.id} (${violation.impact ?? "unknown"}, ${violation.nodes} nodes) - ${violation.help}`)
+      ),
+      "",
+      "## Outcomes",
+      input.reports.length
+        ? table(["GP", "Position", "Fun", "Frustration"], input.reports.map((row) => [row.round, `P${row.playerPosition}`, row.fun, row.frustration]))
+        : "- No completed round."
+    ]
+      .filter((line): line is string => line !== undefined)
+      .join("\n") + "\n",
+    "utf8"
+  );
+}
+
 function numberArg(name: string, fallback: number) {
   const value = Number(stringArg(name, String(fallback)));
   return Number.isFinite(value) && value > 0 ? Math.floor(value) : fallback;
@@ -377,4 +521,14 @@ function dirname(path: string) {
 
 function table(headers: string[], rows: Array<Array<string | number>>) {
   return [`| ${headers.join(" | ")} |`, `| ${headers.map(() => "---").join(" | ")} |`, ...rows.map((items) => `| ${items.join(" | ")} |`)].join("\n");
+}
+
+function slug(value: string) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
+declare global {
+  interface Window {
+    axe: typeof axe;
+  }
 }

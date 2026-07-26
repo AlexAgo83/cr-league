@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90
 > Confidence: 85
-> Progress: 0
+> Progress: 65%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -47,6 +47,7 @@
 
 # Report
 - 2026-07-26: started the UX evaluation harness corpus after closing the browser AI playtest corpus. Read the request/task framing and confirmed this work should wrap `scripts/browser-playtest.ts` plus the shared playtest brain instead of forking a second UI driver.
+- 2026-07-26: extended `scripts/browser-playtest.ts` with optional `--ux-report` capture instead of adding a second UI driver. `npm run playtest:ux` now produces `reports/ux/browser-playthrough.md` with desktop/mobile screenshots for meaningful playthrough steps, annotations, actions-per-task, hesitation slots, console errors/warnings, mobile overflow/tap-target counts, and axe-core violation summaries. Proof: `npm run playtest:ux` passed and generated 10 annotated steps plus 19 screenshots.
 
 # AI Context
 - Summary: Orchestrate the UX evaluation harness

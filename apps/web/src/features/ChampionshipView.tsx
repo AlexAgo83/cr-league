@@ -18,13 +18,13 @@ import { BoardIcon, CountryBadge, VisualIcon, type BoardIconName } from "./Visua
 type CircuitRegion = "europe" | "americas" | "asia" | "africa" | "oceania";
 const CIRCUIT_PAGE_SIZE = 8;
 const REGION_ORDER: CircuitRegion[] = ["europe", "americas", "asia", "africa", "oceania"];
-// ponytail: flat ISO2 -> region map covers current + planned circuit countries; unknown codes fall back to africa-less "other" via the ?? below and simply won't match a region filter.
-const COUNTRY_REGION: Record<string, CircuitRegion> = {
-  FR: "europe", NL: "europe", DE: "europe", IT: "europe", PT: "europe", AT: "europe", MC: "europe", GB: "europe",
-  BE: "europe", CZ: "europe", DK: "europe", SE: "europe", TR: "europe", GR: "europe", HU: "europe", FI: "europe", MT: "europe",
+// ponytail: flat ISO2 -> region map covers current + planned circuit countries; unknown codes simply won't match a region filter.
+export const COUNTRY_REGION: Record<string, CircuitRegion> = {
+  FR: "europe", NL: "europe", DE: "europe", IT: "europe", PT: "europe", ES: "europe", AT: "europe", MC: "europe", GB: "europe",
+  BE: "europe", CZ: "europe", DK: "europe", SE: "europe", TR: "europe", GR: "europe", HU: "europe", FI: "europe", MT: "europe", IS: "europe",
   US: "americas", CA: "americas", BR: "americas", AR: "americas", MX: "americas",
   JP: "asia", KR: "asia", SG: "asia", HK: "asia", CN: "asia", AE: "asia",
-  ZA: "africa",
+  ZA: "africa", MA: "africa",
   AU: "oceania"
 };
 const RECORD_TAB_ICONS: Record<ChampionshipRecordTab, BoardIconName> = {

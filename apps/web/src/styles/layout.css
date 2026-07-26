@@ -1240,7 +1240,6 @@ button:disabled {
 .command-board-icon {
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.3));
   height: 24px;
-  margin-right: 8px;
   width: 24px;
 }
 

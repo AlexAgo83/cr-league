@@ -128,6 +128,19 @@
   color: #f8f3e8;
 }
 
+.garage-card-toggle button {
+  align-items: center;
+  display: inline-flex;
+  gap: 6px;
+  justify-content: center;
+}
+
+.garage-tab-icon {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.32));
+  height: 20px;
+  width: 20px;
+}
+
 .garage-summary {
   background: var(--color-cockpit);
   border: 1px solid var(--color-border);

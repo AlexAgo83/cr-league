@@ -562,16 +562,26 @@
 }
 
 .game-nav button {
+  align-items: center;
   background: transparent;
   border: 1px solid transparent;
   border-radius: 0;
   color: var(--color-muted);
+  display: inline-flex;
   font-size: 1.1em;
   font-style: normal;
   font-weight: 700;
+  gap: 6px;
+  justify-content: center;
   letter-spacing: 0.12em;
   min-height: 38px;
   padding: 8px 12px;
+}
+
+.nav-board-icon {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.32));
+  height: 22px;
+  width: 22px;
 }
 
 .nav-label-short {

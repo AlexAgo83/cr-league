@@ -16,21 +16,21 @@ import { RewardValue } from "./RewardValue.js";
 import { BoardIcon, type BoardIconName } from "./VisualIcon.js";
 
 const CARD_NAME_ICONS: Record<CardId, BoardIconName> = {
-  adjustable_wing: "overtaking",
+  adjustable_wing: "adjustable-wing",
   calculated_attack: "overtaking",
-  defensive_order: "damage-risk",
+  defensive_order: "defensive-order",
   economy_mode: "credits",
   final_surge: "finish-flag-icon",
-  fleet_maintenance: "reliability",
+  fleet_maintenance: "fleet-maintenance",
   fleet_sponsorship: "credits",
-  hard_tires: "grip",
+  hard_tires: "hard-tires",
   launch_boost: "boost",
-  pit_relay: "pit-stop",
+  pit_relay: "pit-relay",
   qualifying_focus: "chrono",
   rain_grip: "weather",
-  rain_mapping: "weather",
-  soft_tires: "grip",
-  urban_draft: "overtaking"
+  rain_mapping: "rain-mapping",
+  soft_tires: "soft-tires",
+  urban_draft: "urban-draft"
 };
 
 function CardName({ cardId, tt }: { cardId: CardId; tt: Translator }) {
@@ -210,12 +210,15 @@ export function GarageView({
           </div>
           <div className="garage-card-toggle" role="tablist" aria-label={tt("dashboard_garage")}>
             <button type="button" role="tab" className={cardPanel === "inventory" ? "active" : undefined} aria-selected={cardPanel === "inventory"} onClick={() => selectCardPanel("inventory")}>
+              <BoardIcon className="garage-tab-icon" name="inventory" />
               {tt("garage_inventory")}
             </button>
             <button type="button" role="tab" className={cardPanel === "shop" ? "active" : undefined} aria-selected={cardPanel === "shop"} onClick={() => selectCardPanel("shop")}>
+              <BoardIcon className="garage-tab-icon" name="shop" />
               {tt("garage_shop")}
             </button>
             <button type="button" role="tab" className={cardPanel === "team" ? "active" : undefined} aria-selected={cardPanel === "team"} onClick={() => selectCardPanel("team")}>
+              <BoardIcon className="garage-tab-icon" name="team-profile" />
               {tt("dashboard_my_team")}
             </button>
           </div>

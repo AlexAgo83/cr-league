@@ -151,8 +151,14 @@
 
   .game-nav button {
     font-size: 0.72rem;
+    gap: 2px;
     min-height: 32px;
     padding: 5px 1px;
+  }
+
+  .nav-board-icon {
+    height: 18px;
+    width: 18px;
   }
 
   .nav-label-full {

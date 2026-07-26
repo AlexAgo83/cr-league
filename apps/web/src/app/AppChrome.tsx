@@ -3,12 +3,21 @@ import type { ReactNode } from "react";
 import type { Locale, TranslationKey } from "../i18n/index.js";
 import { AssetImage } from "../features/AssetImage.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
-import { CountryBadge } from "../features/VisualIcon.js";
+import { BoardIcon, CountryBadge, type BoardIconName } from "../features/VisualIcon.js";
 import type { StoredPlayerClaim } from "./appStorage.js";
 import { GAME_VIEWS, type GameView } from "./types.js";
 import type { Translator } from "./helpers.js";
 import type { Notification } from "./useNotifications.js";
 import { usePwaInstall, usePwaUpdate } from "./pwa.js";
+
+const GAME_VIEW_ICONS: Record<GameView, BoardIconName> = {
+  admin: "strategy",
+  changelog: "report",
+  championship: "championship",
+  drive: "standings",
+  garage: "garage",
+  plan: "edit-plan"
+};
 
 export function NotificationStack({ notifications, tt, onDismiss }: { notifications: Notification[]; tt: Translator; onDismiss: (id: number) => void }) {
   return notifications.length ? (
@@ -215,6 +224,7 @@ export function GameTopbar({
       <nav className="game-nav" aria-label={tt("cockpit_sections")}>
         {GAME_VIEWS.map((view) => (
           <button key={view} type="button" className={gameView === view ? "active" : undefined} onClick={() => onSelectView(view)}>
+            <BoardIcon className="nav-board-icon" name={GAME_VIEW_ICONS[view]} />
             <span className="nav-label-full">{tt(`rail_${view}` as TranslationKey)}</span>
             <span className="nav-label-short" aria-hidden="true">
               {tt(`rail_short_${view}` as TranslationKey)}

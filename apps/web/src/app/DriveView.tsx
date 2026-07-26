@@ -449,13 +449,15 @@ function DriveActions({
 function MapActionIcon({ label, tt }: { label: string; tt: Translator }) {
   const icon: BoardIconName =
     label === tt("action_qualifying")
-      ? "chrono"
+      ? "new-chrono"
       : label === tt("action_submit_directive")
-        ? "finish-flag-icon"
+        ? "send-plan"
         : label === tt("action_launch_grand_prix")
-          ? "finish-flag-icon"
+          ? "launch-gp"
           : label === tt("action_finish_season")
-            ? "credits"
-            : "replay";
+            ? "championship"
+            : label === tt("action_next_grand_prix")
+              ? "next-gp"
+              : "open-replay";
   return <BoardIcon className="map-action-icon" name={icon} />;
 }

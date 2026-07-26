@@ -64,8 +64,8 @@ const PREPARATION_ICONS: Record<(typeof PREPARATIONS)[number], BoardIconName> = 
 
 const PIT_ICONS: Record<(typeof PIT_STRATEGIES)[number], BoardIconName> = {
   heavy_pack: "pit-stop",
-  standard: "strategy",
-  mini_pack: "chrono"
+  standard: "sector-pace",
+  mini_pack: "new-chrono"
 };
 
 export function savedDirectiveStep(): DirectiveStep {
@@ -423,12 +423,12 @@ export function DirectivePanel({
       <div className="directive-command-row">
         {canRunQualifying ? (
           <button type="button" className={`primary-command directive-secondary-command${hasQualifyingRun ? "" : " highlight-command"}`} onClick={onQualifying} disabled={disabled}>
-            <BoardIcon className="command-board-icon" name="chrono" />
+            <BoardIcon className="command-board-icon" name="new-chrono" />
             {tt("action_qualifying")}
           </button>
         ) : null}
         <button type="button" className={`primary-command directive-primary-command${!locked && hasQualifyingRun ? " highlight-command" : ""}`} onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-          <BoardIcon className="command-board-icon" name={locked ? "locked-plan" : "finish-flag-icon"} />
+          <BoardIcon className="command-board-icon" name={locked ? "locked-plan" : "launch-gp"} />
           {primaryCommand.label}
         </button>
       </div>

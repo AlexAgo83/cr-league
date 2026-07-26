@@ -117,7 +117,7 @@ export function PlanView({
                 <div className="chrono-report-prompt">
                   <p>{locked ? tt("plan_report_empty_body") : tt("plan_report_pending_plan_body")}</p>
                   <button type="button" className={`primary-command${!locked && chronoReport.best ? " highlight-command" : ""}`} onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-                    <BoardIcon className="command-board-icon" name={locked ? "locked-plan" : "finish-flag-icon"} />
+                    <BoardIcon className="command-board-icon" name={locked ? "locked-plan" : "send-plan"} />
                     {locked ? primaryCommand.label : tt("directive_confirm_action")}
                   </button>
                 </div>
@@ -177,7 +177,7 @@ export function PlanView({
                     }}
                     disabled={disabled || qualifyingAttemptsLeft <= 0}
                   >
-                    <BoardIcon className="command-board-icon" name="chrono" />
+                    <BoardIcon className="command-board-icon" name="new-chrono" />
                     {tt("action_qualifying")}
                   </button>
                 </div>
@@ -245,7 +245,7 @@ export function PlanView({
                           onSetGameView("drive");
                         }}
                       >
-                        <BoardIcon className="command-board-icon" name="replay" />
+                        <BoardIcon className="command-board-icon" name="review-chrono" />
                         {tt("action_qualifying_history")}
                       </button>
                     </li>

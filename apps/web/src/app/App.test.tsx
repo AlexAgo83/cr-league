@@ -679,14 +679,14 @@ describe("App", () => {
     const mapActions = document.querySelector(".race-phase-actions") as HTMLElement;
     expect(mapActions.textContent).not.toContain("Review chrono");
     expect([...mapActions.querySelectorAll("button")].map((button) => button.textContent)).toEqual(["New chrono", "Send plan"]);
-    expect([...mapActions.querySelectorAll(".map-action-icon")].map((icon) => icon.getAttribute("src"))).toEqual(["/assets/crl/icons/chrono.png", "/assets/crl/icons/finish-flag-icon.png"]);
+    expect([...mapActions.querySelectorAll(".map-action-icon")].map((icon) => icon.getAttribute("src"))).toEqual(["/assets/crl/icons/new-chrono.png", "/assets/crl/icons/send-plan.png"]);
 
     // First chrono is launched from the chrono plan screen.
     expect(screen.queryByText("Wait for directives")).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
     expect(screen.getByRole("button", { name: "New chrono" }).className).toContain("highlight-command");
-    expect(screen.getByRole("button", { name: "New chrono" }).querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/chrono.png");
+    expect(screen.getByRole("button", { name: "New chrono" }).querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/new-chrono.png");
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
@@ -740,7 +740,7 @@ describe("App", () => {
     expect(document.querySelector(".chrono-report-history .type-card")).toBeTruthy();
     expect(document.querySelector(".chrono-report-history .type-card.is-faded")).toBeTruthy();
     expect(document.querySelectorAll(".chrono-session-choice b").length).toBeGreaterThan(0);
-    expect(screen.getAllByRole("button", { name: "Review chrono" }).at(0)?.querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/replay.png");
+    expect(screen.getAllByRole("button", { name: "Review chrono" }).at(0)?.querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/review-chrono.png");
     fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(await screen.findByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/3");
@@ -805,7 +805,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "GP" }));
     expect(screen.getByRole("button", { name: "Send" }).className).toContain("primary-command");
     expect(screen.getByRole("button", { name: "Send" }).className).toContain("highlight-command");
-    expect(screen.getByRole("button", { name: "Send" }).querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/finish-flag-icon.png");
+    expect(screen.getByRole("button", { name: "Send" }).querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/send-plan.png");
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("button", { name: "Send plan" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
@@ -826,7 +826,7 @@ describe("App", () => {
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).not.toContain("75.18s");
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Launch GP");
-    expect(document.querySelector(".race-phase-actions .map-action-icon")?.getAttribute("src")).toBe("/assets/crl/icons/finish-flag-icon.png");
+    expect(document.querySelector(".race-phase-actions .map-action-icon")?.getAttribute("src")).toBe("/assets/crl/icons/launch-gp.png");
     fireEvent.click(within(document.querySelector(".map-plan-performance") as HTMLElement).getByRole("button", { name: "View" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(document.querySelector(".plan-risk-lock-badge")?.textContent).toBe("Locked");

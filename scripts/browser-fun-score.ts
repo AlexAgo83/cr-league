@@ -10,17 +10,26 @@ type Round = {
   comprehension: number;
 };
 
+type Scenario = {
+  profile: string;
+  question: string;
+  passed: boolean;
+};
+
 const rounds = numberArg("--rounds", 2);
 const profiles = stringArg("--profiles", "sprinter,rain-reader,banker,closer").split(",").map((profile) => profile.trim()).filter(Boolean);
 const reportPath = stringArg("--report", "reports/playtest/browser-fun-score.md");
 const runDir = stringArg("--runs-dir", "reports/playtest/browser-fun-score-runs");
 const rows: Round[] = [];
+const scenarios: Scenario[] = [];
 
 await mkdir(runDir, { recursive: true });
 for (const profile of profiles) {
   const profileReport = `${runDir}/${profile}.md`;
   await run("npx", ["tsx", "scripts/browser-playtest.ts", "--rounds", String(rounds), "--profile", profile, "--report", profileReport]);
-  rows.push(...parseRounds(profile, await readFile(profileReport, "utf8")));
+  const markdown = await readFile(profileReport, "utf8");
+  rows.push(...parseRounds(profile, markdown));
+  scenarios.push(...parseScenarios(profile, markdown));
 }
 
 await mkdir(dirname(reportPath), { recursive: true });
@@ -44,6 +53,18 @@ function parseRounds(profile: string, markdown: string) {
       };
     })
     .filter((row) => Number.isFinite(row.gp) && Number.isFinite(row.position) && Number.isFinite(row.fun) && Number.isFinite(row.frustration) && Number.isFinite(row.comprehension));
+}
+
+function parseScenarios(profile: string, markdown: string) {
+  const section = markdown.split("## Scenario Playtest")[1]?.split("\n## ")[0] ?? "";
+  return section
+    .split("\n")
+    .filter((line) => /^\| .+ \| (yes|no) \|/.test(line))
+    .map((line) => {
+      const cells = line.split("|").slice(1, -1).map((cell) => cell.trim());
+      return { profile, question: cells[0] ?? "", passed: cells[1] === "yes" };
+    })
+    .filter((row) => row.question);
 }
 
 function renderReport(roundRows: Round[]) {
@@ -77,6 +98,16 @@ function renderReport(roundRows: Round[]) {
     table(
       ["Profile", "GP", "Position", "Fun", "Frustration", "Comprehension"],
       roundRows.filter((row) => row.fun <= 4 || row.comprehension <= 6).map((row) => [row.profile, row.gp, `P${row.position}`, row.fun, row.frustration, row.comprehension])
+    ),
+    "",
+    "## Scenario Pass Rate",
+    table(
+      ["Question", "Passed profiles", "Failed profiles"],
+      [...new Set(scenarios.map((row) => row.question))].map((question) => [
+        question,
+        scenarios.filter((row) => row.question === question && row.passed).map((row) => row.profile).join(", ") || "-",
+        scenarios.filter((row) => row.question === question && !row.passed).map((row) => row.profile).join(", ") || "-"
+      ])
     )
   ].join("\n") + "\n";
 }

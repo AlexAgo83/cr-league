@@ -62,12 +62,20 @@ type ComprehensionCheck = {
   note: string;
 };
 
+type ScenarioCheck = {
+  id: string;
+  question: string;
+  passed: boolean;
+  evidence: string;
+};
+
 const servers: ManagedServer[] = [];
 const consoleErrors: string[] = [];
 const consoleWarnings: string[] = [];
 const uxCaptures: UxCapture[] = [];
 const frictionTasks = new Map<string, FrictionTask>();
 const comprehensionChecks: ComprehensionCheck[] = [];
+const scenarioChecks: ScenarioCheck[] = [];
 let browser: Browser | undefined;
 let page: Page | undefined;
 
@@ -136,18 +144,55 @@ try {
 
   let state = await recoverAndCreateLeague(page);
   await observeComprehension(page, "league-created", "The Plan affordance is visible after league creation.", [() => page!.getByRole("button", { name: "Plan", exact: true })]);
+  await observeScenario(page, {
+    id: "first-contact-next-action",
+    question: "I arrive in the game: how do I know what I should do?",
+    evidence: "Plan navigation and race-day steps are visible from the stand.",
+    locators: [
+      { label: "Plan navigation", find: () => page!.getByRole("button", { name: "Plan", exact: true }) },
+      { label: "Grand Prix day steps", find: () => page!.getByText("Grand Prix day steps") }
+    ]
+  });
   await captureUx(page, "league-created", `League ${state.league.name} is open on the race desk.`);
   const reports: RoundReport[] = [];
 
   for (let round = 1; round <= rounds; round += 1) {
     const decision = await choosePlan(page, state, profile, round);
     await observeComprehension(page, `round-${round}-plan`, "The chosen plan can be sent from the Plan view.", [() => page!.getByRole("button", { name: "Send plan" })], round);
+    if (round === 1) {
+      await observeScenario(page, {
+        id: "plan-config-read",
+        question: "How do I know which race-plan config I should choose?",
+        evidence: "Plan view exposes the GP read, risk read, and send action.",
+        locators: [
+          { label: "Grand Prix read", find: () => page!.getByText("Grand Prix read") },
+          { label: "Plan risk read", find: () => page!.getByText("Plan risk read") },
+          { label: "Send plan", find: () => page!.getByRole("button", { name: "Send plan" }) }
+        ]
+      });
+    }
     await captureUx(page, `round-${round}-plan`, `Selected ${decision.approach}/${decision.preparation}/${decision.pitStrategy ?? "standard"} with ${decision.cardId ?? "no card"}.`);
     state = await submitPlan(page, state, round);
     await observeComprehension(page, `round-${round}-ready`, "The next action after sending a plan is visible.", [() => page!.getByRole("button", { name: "Launch GP" })], round);
     await captureUx(page, `round-${round}-ready`, "Plan submitted; launch affordance is visible.");
     state = await launchGrandPrix(page, state, round);
-    await observeComprehension(page, `round-${round}-replay`, "The replay result screen exposes race replay and return controls.", [() => page!.getByRole("heading", { name: "Race replay" }), () => page!.getByRole("button", { name: "Back to stand" })], round);
+    await observeComprehension(page, `round-${round}-replay`, "The replay result screen exposes classification and return controls.", [() => page!.getByText("Final classification"), () => page!.getByRole("button", { name: "Back to stand" })], round);
+    if (round === 1) {
+      await openResultReport(page);
+      await observeScenario(page, {
+        id: "result-cause-read",
+        question: "Why did I succeed or fail?",
+        evidence: "Race report shows result difference, your plan, comparison with the winner, next takeaway, and key moments.",
+        locators: [
+          { label: "Result", find: () => page!.getByText("Result", { exact: true }) },
+          { label: "Your directive", find: () => page!.getByText("Your directive") },
+          { label: "Comparison with the winner", find: () => page!.getByText("Comparison with the winner") },
+          { label: "Next GP takeaway", find: () => page!.getByText("Next GP takeaway") },
+          { label: "Key moments", find: () => page!.getByText("Key moments") }
+        ]
+      });
+      await page.getByRole("button", { name: "Replay" }).click().catch(() => undefined);
+    }
     await captureUx(page, `round-${round}-replay`, "Race replay is visible after launching the Grand Prix.");
     const result = state.currentGrandPrix.result as RaceResult;
     const playerTeamId = state.player?.teamId;
@@ -165,7 +210,7 @@ try {
     };
     reports.push(roundReport);
 
-    await page.getByRole("button", { name: "Back to stand" }).click();
+    await returnToStand(page);
     if (round < rounds) {
       const bought = await buyAfterRace(page, state, profile, round);
       if (bought.state) state = bought.state;
@@ -339,7 +384,7 @@ async function launchGrandPrix(page: Page, state: LeagueState, round: number) {
     await trackedClick(page, `round-${round}-launch-gp`, "launch-gp", () => page.getByRole("button", { name: "Launch GP" }).click());
     await trackedClick(page, `round-${round}-launch-gp`, "confirm-launch", () => page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click());
   });
-  await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "Back to stand" })).toBeVisible();
   return next;
 }
 
@@ -366,6 +411,30 @@ async function nextGrandPrix(page: Page) {
   return waitForAnyLeagueResponse(page, "POST", "/next-grand-prix", async () => {
     await trackedClick(page, "next-gp", "next-gp", () => page.getByRole("button", { name: "Next GP" }).click());
     await trackedClick(page, "next-gp", "confirm-next-gp", () => page.getByRole("dialog", { name: "Start the next race day?" }).getByRole("button", { name: "Next GP" }).click());
+  });
+}
+
+async function openResultReport(page: Page) {
+  const reportButton = page.getByRole("button", { name: "Report" }).first();
+  if (await reportButton.isVisible().catch(() => false)) await reportButton.click();
+  else await page.locator(".replay-tower .map-plan-edit-button").first().click();
+}
+
+async function returnToStand(page: Page) {
+  const back = page.getByRole("button", { name: "Back to stand" });
+  if (await back.isVisible().catch(() => false)) await back.click();
+  else await page.getByRole("button", { name: "Stand", exact: true }).click();
+}
+
+async function observeScenario(page: Page, input: { id: string; question: string; evidence: string; locators: Array<{ label: string; find: () => ReturnType<Page["locator"]> }> }) {
+  const checks = await Promise.all(input.locators.map(async (locator) => ({ label: locator.label, passed: await locator.find().isVisible().catch(() => false) })));
+  const missing = checks.filter((check) => !check.passed).map((check) => check.label);
+  const found = checks.filter((check) => check.passed).map((check) => check.label);
+  scenarioChecks.push({
+    id: input.id,
+    question: input.question,
+    passed: missing.length === 0,
+    evidence: `${input.evidence} Found: ${found.join(", ") || "-"}. Missing: ${missing.join(", ") || "-"}.`
   });
 }
 
@@ -566,6 +635,9 @@ async function writeReport(input: { reports: RoundReport[]; consoleErrors: strin
       "## Comprehension Checks",
       comprehensionChecks.length ? table(["Step", "Round", "Passed", "Note"], comprehensionChecks.map((row) => [row.step, row.round ?? "-", row.passed ? "yes" : "no", row.note])) : "- none",
       "",
+      "## Scenario Playtest",
+      scenarioChecks.length ? table(["Question", "Passed", "Evidence"], scenarioChecks.map((row) => [row.question, row.passed ? "yes" : "no", row.evidence])) : "- none",
+      "",
       "## Notes",
       "- Profile seeding uses the store to obtain a recovery code; recovery, league creation, plan submission, GP launch, replay opening, card buy, and next-GP actions are browser UI actions.",
       "- The runner observes API responses triggered by UI actions only to build the report."
@@ -623,7 +695,10 @@ async function writeUxReport(input: { reports: RoundReport[]; failed: boolean; e
       ,
       "",
       "## Comprehension Checks",
-      comprehensionChecks.length ? table(["Step", "Round", "Passed", "Note"], comprehensionChecks.map((row) => [row.step, row.round ?? "-", row.passed ? "yes" : "no", row.note])) : "- none"
+      comprehensionChecks.length ? table(["Step", "Round", "Passed", "Note"], comprehensionChecks.map((row) => [row.step, row.round ?? "-", row.passed ? "yes" : "no", row.note])) : "- none",
+      "",
+      "## Scenario Playtest",
+      scenarioChecks.length ? table(["Question", "Passed", "Evidence"], scenarioChecks.map((row) => [row.question, row.passed ? "yes" : "no", row.evidence])) : "- none"
     ]
       .filter((line): line is string => line !== undefined)
       .join("\n") + "\n",

@@ -6,9 +6,18 @@
 > Related task: `task_122_orchestrate_replayability_and_fun_analytics`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Confidence: 90
+> Non-semantic edit: 2026-07-26 added overview Mermaid diagram.
 
 # Overview
 Our AI tournaments prove balance but not longevity: nothing measures whether outcomes stay varied, whether a single strategy dominates, how often comebacks and close finishes happen, or how much title suspense a season carries. This request adds post-hoc analytics over the simulation results the tools already produce — a replayability report (variety, dominance, comebacks, suspense) and a fun-arc report (lead changes, close finishes, boring-race rate) — with drill-down to the strategies, circuits, and rounds that drive them, so a designer or AI has measured evidence to judge replayability and fun.
+
+```mermaid
+flowchart TD
+  Req[req_121 replayability and fun analytics] --> Backlog[item_298 to item_299]
+  Backlog --> Task[task_122 delivery]
+  Task --> Proof[validation and closeout]
+```
 
 # Goals
 - Quantify replayability: outcome variety, strategy dominance, comebacks, title suspense.

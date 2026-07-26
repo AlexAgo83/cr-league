@@ -6,9 +6,18 @@
 > Related task: `task_123_orchestrate_the_source_of_truth_remediation`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Confidence: 90
+> Non-semantic edit: 2026-07-26 added overview Mermaid diagram.
 
 # Overview
 A four-lens review found cr-league's architecture and server-authoritative trust model to be strong, with every real weakness being cross-package duplication that has already drifted: a hand-copied client/server contract, same-named simulation helpers with divergent behavior, and a client that re-derives replay ordering and season standings the server already knows — the last two untested. This remediation gives each of those a single source of truth in shared, reconciles the divergences under test, decomposes the two god modules, and closes the highest-risk test gaps, without altering the intentional opponent-reveal meta-game or the (separately handled) secret rotation.
+
+```mermaid
+flowchart TD
+  Req[req_122 source-of-truth remediation] --> Backlog[item_300 to item_305]
+  Backlog --> Task[task_123 delivery]
+  Task --> Proof[validation and closeout]
+```
 
 # Goals
 - One source of truth for the client/server contract and for shared simulation helpers.

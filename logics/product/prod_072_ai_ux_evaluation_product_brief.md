@@ -6,9 +6,18 @@
 > Related task: `task_121_orchestrate_the_ux_evaluation_harness`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Confidence: 90
+> Non-semantic edit: 2026-07-26 added overview Mermaid diagram.
 
 # Overview
 An AI can only judge experience it can see or measure. This harness turns a browser AI play session into the evidence needed to opine on UI/UX, friction, and onboarding: a visual playthrough gallery (desktop + mobile), a measured friction and accessibility report (including the first automated axe-core pass), and a cold-start onboarding funnel from a knowledge-free agent. It is built on the browser-driven playtest agent so capture and measurement wrap real navigation rather than a synthetic script, and it outputs artifacts a reviewer consumes to give a grounded UX opinion.
+
+```mermaid
+flowchart TD
+  Req[req_120 UX evaluation harness] --> Backlog[item_295 to item_297]
+  Backlog --> Task[task_121 delivery]
+  Task --> Proof[validation and closeout]
+```
 
 # Goals
 - Make every AI play session a reviewable visual artifact on desktop and mobile.

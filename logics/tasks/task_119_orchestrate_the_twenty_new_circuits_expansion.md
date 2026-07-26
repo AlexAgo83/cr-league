@@ -58,6 +58,7 @@
 - 2026-07-26: increased board-icon display sizes across navigation, plan choices, command/modal/map buttons, garage card names, and championship/garage tabs; centered the Chrono history "Review chrono" secondary button with its asset.
 - 2026-07-26: tightened board-icon gaps around text/button pairings because the generated PNGs already include transparent padding; expanded circular map actions on desktop/mobile so their assets fill the control better.
 - 2026-07-26: fixed the mobile Plan choice title layout by forcing the board asset, traffic-light marker, and title into stable columns so the marker remains between the asset and label.
+- 2026-07-26: imported board 6 into 16 additional transparent assets and wired the remaining command fallbacks for prudent/weather/speed/reliability prep, standard pit pack, admin/changelog/copy-error/danger, Stand navigation, modal Modify secondary actions, and Garage vehicle selection states; adjusted Championship tabs to render as two mobile rows.
 
 # AI Context
 - Summary: Orchestrate the twenty-new-circuits expansion

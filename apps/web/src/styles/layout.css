@@ -2358,6 +2358,13 @@ label small {
   justify-content: center;
 }
 
+.modal-secondary-command {
+  align-items: center;
+  display: inline-flex;
+  gap: 2px;
+  justify-content: center;
+}
+
 .secondary-actions button.modal-action-command:not(:disabled),
 .modal-actions button.modal-action-command:not(:disabled) {
   background: var(--color-accent);

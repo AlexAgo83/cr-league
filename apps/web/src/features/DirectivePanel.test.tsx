@@ -106,10 +106,10 @@ describe("DirectivePanel", () => {
     expect(screen.getByRole("button", { name: "Approach: Balanced" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/balanced-approach.png");
 
     rerender(<DirectivePanel {...baseProps} step="preparation" setForm={vi.fn()} onSelectStep={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "Tire prep: Weather" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/weather.png");
+    expect(screen.getByRole("button", { name: "Tire prep: Weather" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/weather-prep.png");
 
     rerender(<DirectivePanel {...baseProps} step="pit" setForm={vi.fn()} onSelectStep={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "Pit strategy: Standard swap" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/sector-pace.png");
+    expect(screen.getByRole("button", { name: "Pit strategy: Standard swap" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/standard-pack.png");
   });
 
   it("shows card fit in the plan card cell and opens card info separately", () => {

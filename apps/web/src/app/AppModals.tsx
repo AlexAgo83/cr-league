@@ -88,12 +88,14 @@ export function ConfirmActionModal({
       <div className="actions secondary-actions">
         {pendingMessage !== undefined ? <PendingFeedback message={pendingMessage} /> : null}
         {secondaryActionLabel && onSecondaryAction ? (
-          <button type="button" className="secondary-button" onClick={onSecondaryAction} disabled={status === "loading"}>
+          <button type="button" className="secondary-button modal-secondary-command" onClick={onSecondaryAction} disabled={status === "loading"}>
+            <ModalActionIcon label={secondaryActionLabel} tt={tt} />
             {secondaryActionLabel}
           </button>
         ) : null}
         {extraActionLabel && onExtraAction ? (
-          <button type="button" className="secondary-button" onClick={onExtraAction} disabled={status === "loading"}>
+          <button type="button" className="secondary-button modal-secondary-command" onClick={onExtraAction} disabled={status === "loading"}>
+            <ModalActionIcon label={extraActionLabel} tt={tt} />
             {extraActionLabel}
           </button>
         ) : null}
@@ -226,30 +228,29 @@ export function ResolveGrandPrixConfirmModal({
 }
 
 function ModalActionIcon({ danger = false, label, tt }: { danger?: boolean; label: string; tt: Translator }) {
-  const icon: BoardIconName =
-    label === tt("directive_confirm_action")
-      ? "send-plan"
-      : label === tt("action_qualifying")
-        ? "new-chrono"
-        : label === tt("action_modify_plan")
-          ? "edit-plan"
-          : label === tt("plan_subscreen_chrono")
-            ? "review-chrono"
-            : label === tt("action_launch_grand_prix")
-              ? "launch-gp"
-              : label === tt("action_next_grand_prix")
-                ? "next-gp"
-                : label === tt("action_finish_season")
-                  ? "championship"
-                  : label === tt("action_review_race")
-                    ? "review-race"
-                    : label === tt("result_tab_report")
-                      ? "race-report"
-                  : label === tt("action_copy_error")
-                    ? "report"
-                    : danger
-                      ? "steward-warning"
-                      : "send-plan";
+  const icon: BoardIconName = label === tt("directive_confirm_action")
+    ? "send-plan"
+    : label === tt("action_qualifying")
+      ? "new-chrono"
+      : label === tt("action_modify_plan")
+        ? "edit-plan"
+        : label === tt("plan_subscreen_chrono")
+          ? "review-chrono"
+          : label === tt("action_launch_grand_prix")
+            ? "launch-gp"
+            : label === tt("action_next_grand_prix")
+              ? "next-gp"
+              : label === tt("action_finish_season")
+                ? "championship"
+                : label === tt("action_review_race")
+                  ? "review-race"
+                  : label === tt("result_tab_report")
+                    ? "race-report"
+                    : label === tt("action_copy_error")
+                      ? "copy-error"
+                      : danger
+                        ? "delete-danger"
+                        : "send-plan";
   return <BoardIcon className="modal-action-icon" name={icon} />;
 }
 

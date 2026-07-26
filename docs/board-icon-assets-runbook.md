@@ -12,6 +12,7 @@ Put raw generated sheets in `logics/external/` with a stable name such as:
 - `board_icones_3.png`
 - `board_icones_4.png`
 - `board_icones_5.png`
+- `board_icones_6.png`
 
 These source sheets are ignored by Git. Commit only the final app PNGs.
 

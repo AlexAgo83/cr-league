@@ -155,6 +155,7 @@ export function GarageView({
   const sideCarStyle = { ...carTintStyle, "--garage-car-mask": `url("${selectedCarAsset.side}")` } as CSSProperties & Record<string, string>;
   const canChangeCarAsset = CAR_ASSETS.length > 1;
   const selectedSkinSaved = selectedCarAsset.id === livery.carAssetId || (!livery.carAssetId && selectedCarAsset.id === DEFAULT_CAR_ASSET.id);
+  const selectedCarActionIcon: BoardIconName = selectedSkinSaved ? "reliability-prep" : selectedCarUnlocked ? "car-skin" : "setup-locked";
 
   return (
     <div className="garage-grid">
@@ -195,6 +196,7 @@ export function GarageView({
               disabled={loading || selectedSkinSaved || (!selectedCarUnlocked && !selectedCarAffordable)}
               onClick={selectedCarUnlocked ? saveCarAsset : () => setPendingCarAssetId(selectedCarAsset.id)}
             >
+              <BoardIcon className="garage-car-button-icon" name={selectedCarActionIcon} />
               {tt(selectedSkinSaved ? "garage_car_skin_selected" : selectedCarUnlocked ? "garage_car_skin_select" : "garage_car_unlock", { price: selectedCarPrice })}
             </button>
             <button className="garage-car-skin-button" type="button" aria-label="Next car skin" disabled={!canChangeCarAsset} onClick={() => previewCarAsset((carAssetIndex + 1) % CAR_ASSETS.length)}>

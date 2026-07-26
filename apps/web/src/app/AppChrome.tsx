@@ -11,10 +11,10 @@ import type { Notification } from "./useNotifications.js";
 import { usePwaInstall, usePwaUpdate } from "./pwa.js";
 
 const GAME_VIEW_ICONS: Record<GameView, BoardIconName> = {
-  admin: "strategy",
-  changelog: "report",
+  admin: "admin-tools",
+  changelog: "changelog",
   championship: "championship",
-  drive: "standings",
+  drive: "stand-drive",
   garage: "garage",
   plan: "edit-plan"
 };

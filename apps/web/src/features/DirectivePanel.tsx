@@ -51,20 +51,20 @@ export const PIT_ART: Record<(typeof PIT_STRATEGIES)[number], string> = {
 };
 
 const APPROACH_ICONS: Record<(typeof APPROACHES)[number], BoardIconName> = {
-  prudent: "reliability",
+  prudent: "prudent-approach",
   balanced: "balanced-approach",
   aggressive: "launch-boost"
 };
 
 const PREPARATION_ICONS: Record<(typeof PREPARATIONS)[number], BoardIconName> = {
-  speed: "speed",
-  reliability: "reliability",
-  weather: "weather"
+  speed: "speed-prep",
+  reliability: "reliability-prep",
+  weather: "weather-prep"
 };
 
 const PIT_ICONS: Record<(typeof PIT_STRATEGIES)[number], BoardIconName> = {
   heavy_pack: "heavy-pack",
-  standard: "sector-pace",
+  standard: "standard-pack",
   mini_pack: "mini-pack"
 };
 

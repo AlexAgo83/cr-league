@@ -1108,8 +1108,18 @@
   }
 
   .championship-record-switch {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    justify-self: stretch;
     max-width: 100%;
-    overflow-x: auto;
+    overflow-x: visible;
+    width: 100%;
+  }
+
+  .championship-record-switch button {
+    line-height: 1.08;
+    min-width: 0;
+    white-space: normal;
   }
 
   .garage-card-toggle {

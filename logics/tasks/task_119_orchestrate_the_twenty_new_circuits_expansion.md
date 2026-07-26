@@ -57,6 +57,7 @@
 - 2026-07-26: imported and manually recropped board 5 into 16 additional transparent command/card assets, then wired missing dedicated icons for championship tabs (Circuits, Classement, Palmares, Historique GP), Garage save-name/save-colors/sell-card actions, Report/review-race buttons, rain-grip/fleet-sponsorship/launch-boost cards, and heavy/mini pit-pack choices.
 - 2026-07-26: increased board-icon display sizes across navigation, plan choices, command/modal/map buttons, garage card names, and championship/garage tabs; centered the Chrono history "Review chrono" secondary button with its asset.
 - 2026-07-26: tightened board-icon gaps around text/button pairings because the generated PNGs already include transparent padding; expanded circular map actions on desktop/mobile so their assets fill the control better.
+- 2026-07-26: fixed the mobile Plan choice title layout by forcing the board asset, traffic-light marker, and title into stable columns so the marker remains between the asset and label.
 
 # AI Context
 - Summary: Orchestrate the twenty-new-circuits expansion

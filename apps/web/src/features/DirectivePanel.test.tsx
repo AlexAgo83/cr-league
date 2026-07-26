@@ -103,7 +103,7 @@ describe("DirectivePanel", () => {
   it("shows board icons on plan choices", () => {
     const { rerender } = render(<DirectivePanel {...baseProps} step="approach" setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "Approach: Balanced" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/strategy.png");
+    expect(screen.getByRole("button", { name: "Approach: Balanced" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/balanced-approach.png");
 
     rerender(<DirectivePanel {...baseProps} step="preparation" setForm={vi.fn()} onSelectStep={vi.fn()} />);
     expect(screen.getByRole("button", { name: "Tire prep: Weather" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/weather.png");

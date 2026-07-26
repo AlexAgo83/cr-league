@@ -1879,8 +1879,13 @@ label small {
 
 .plan-choice-title {
   align-items: center;
-  display: inline-flex;
-  gap: 8px;
+  column-gap: 6px;
+  display: inline-grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  min-width: 0;
+}
+
+.plan-choice-title strong {
   min-width: 0;
 }
 

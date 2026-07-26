@@ -7,10 +7,9 @@ import type { ResultTab } from "../features/ResultView.js";
 import { LanguageSwitcher, NotificationStack, ProfileMenu, SetupTopbar } from "./AppChrome.js";
 import { AppOverlays } from "./AppOverlays.js";
 import { ONBOARDING_HELP_KEYS, SCREEN_ONBOARDING_HELP_TOPICS, type OnboardingHelpTopic } from "./OnboardingShell.js";
-import { LEAGUE_SCOPED_HELP_TOPICS, UI_PREFERENCE_KEYS } from "./appPreferences.js";
+import { clearStoredUiPreferences, LEAGUE_SCOPED_HELP_TOPICS } from "./appPreferences.js";
 import {
   ApiError,
-  SEASON_RECAP_KEY_PREFIX,
   getActiveClaim,
   loadPlayerClaims,
   loadProfileEmail,
@@ -495,11 +494,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const languageSwitcher = <LanguageSwitcher locale={locale} tt={tt} onChangeLocale={changeLocale} />;
 
   function resetUiPreferences() {
-    for (const key of UI_PREFERENCE_KEYS) safeStorage.remove(key);
-    const dynamicPreferenceKeys = safeStorage.keys().filter(
-      (key) => key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.leagueIntro}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.race}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.plan}:`) || key.startsWith(`${ONBOARDING_HELP_KEYS.garage}:`)
-    );
-    for (const key of dynamicPreferenceKeys) safeStorage.remove(key);
+    clearStoredUiPreferences();
     snoozedOnboardingHelp.current.clear();
     resetCommandClicks();
     setPreferencesResetSignal((signal) => signal + 1);

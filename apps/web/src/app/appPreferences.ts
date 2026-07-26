@@ -1,6 +1,7 @@
 import { DIRECTIVE_STEP_KEY } from "../features/DirectivePanel.js";
 import { DISMISSED_REPLAY_HELP_KEY, REPLAY_FOCUS_KEY, REPLAY_SPEED_KEY } from "../features/ReplayView.js";
 import { ONBOARDING_HELP_KEYS, type OnboardingHelpTopic } from "./OnboardingShell.js";
+import { SEASON_RECAP_KEY_PREFIX, safeStorage } from "./appStorage.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, GARAGE_PANEL_KEY } from "./viewPreferences.js";
 
 export const UI_PREFERENCE_KEYS = [
@@ -16,3 +17,16 @@ export const UI_PREFERENCE_KEYS = [
 ] as const;
 
 export const LEAGUE_SCOPED_HELP_TOPICS = new Set<OnboardingHelpTopic>(["leagueIntro", "race", "plan", "garage"]);
+
+export function clearStoredUiPreferences(storage = safeStorage) {
+  for (const key of UI_PREFERENCE_KEYS) storage.remove(key);
+  const dynamicPreferenceKeys = storage.keys().filter(
+    (key) =>
+      key.startsWith(`${SEASON_RECAP_KEY_PREFIX}:`) ||
+      key.startsWith(`${ONBOARDING_HELP_KEYS.leagueIntro}:`) ||
+      key.startsWith(`${ONBOARDING_HELP_KEYS.race}:`) ||
+      key.startsWith(`${ONBOARDING_HELP_KEYS.plan}:`) ||
+      key.startsWith(`${ONBOARDING_HELP_KEYS.garage}:`)
+  );
+  for (const key of dynamicPreferenceKeys) storage.remove(key);
+}

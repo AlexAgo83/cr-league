@@ -625,6 +625,8 @@
   "circuit_seoul_yeouido_loop": "Seoul Street Circuit",
   "circuit_montreal_island_loop": "Circuit Gilles-Villeneuve",
   "circuit_istanbul_bosphorus_loop": "Istanbul Park",
+  "circuit_danube": "Danube Switchback",
+  "circuit_lungomare": "Lungomare Rush",
   "circuit_grip": "Grip",
   "circuit_grip_short": "Grip",
   "circuit_grip_hint": "Higher means rain and corners punish the car less.",

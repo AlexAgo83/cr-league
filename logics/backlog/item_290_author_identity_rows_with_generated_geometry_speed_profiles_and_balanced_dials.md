@@ -1,10 +1,10 @@
 ## item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials - Author identity rows with generated geometry, speed profiles, and balanced dials
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Circuit catalogue
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

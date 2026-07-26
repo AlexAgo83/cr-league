@@ -4,7 +4,9 @@ import { join } from "node:path";
 
 const routesDir = "apps/web/src/app/circuitRoutes";
 const identitiesPath = "packages/shared/src/domain/circuits.ts";
+const profilesPath = "packages/shared/src/domain/circuitSpeedProfiles.data.ts";
 const source = readFileSync(identitiesPath, "utf8");
+const profilesSource = readFileSync(profilesPath, "utf8");
 const identities = parseIdentities(source);
 const profiles = Object.fromEntries(
   identities.map((identity) => {
@@ -13,7 +15,7 @@ const profiles = Object.fromEntries(
   })
 );
 
-writeFileSync(identitiesPath, replaceProfileBlock(source, profiles));
+writeFileSync(profilesPath, replaceProfileBlock(profilesSource, profiles));
 console.log(`Generated ${Object.keys(profiles).length} circuit speed profiles`);
 
 function parseIdentities(text) {
@@ -104,8 +106,8 @@ function replaceProfileBlock(text, profiles) {
   const body = Object.entries(profiles)
     .map(([layoutKey, profile]) => `  ${JSON.stringify(layoutKey)}: ${formatProfile(profile)}`)
     .join(",\n");
-  const nextBlock = `export const CIRCUIT_SPEED_PROFILES = {\n${body}\n} as const satisfies Record<CityCircuitIdentity["layoutKey"], TrackSpeedProfile>;`;
-  return text.replace(/export const CIRCUIT_SPEED_PROFILES = \{[\s\S]*?\} as const satisfies Record<CityCircuitIdentity\["layoutKey"\], TrackSpeedProfile>;/, nextBlock);
+  const nextBlock = `export const CIRCUIT_SPEED_PROFILES = {\n${body}\n} as const satisfies Record<string, RaceTrackSpeedProfile>;`;
+  return text.replace(/export const CIRCUIT_SPEED_PROFILES = \{[\s\S]*?\} as const satisfies Record<string, RaceTrackSpeedProfile>;/, nextBlock);
 }
 
 function formatProfile(profile) {

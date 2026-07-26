@@ -66,11 +66,39 @@ describe("circuit identities", () => {
   });
 
   it("adds global city circuits outside the European catalog", () => {
-    expect(CITY_CIRCUIT_IDENTITIES.slice(-6).map((circuit) => circuit.city)).toEqual(["Tokyo", "Rio de Janeiro", "Cape Town", "Seoul", "Montreal", "Istanbul"]);
+    const globalCircuitKeys = [
+      "circuit_tokyo_bay_loop",
+      "circuit_rio_flamengo_loop",
+      "circuit_cape_town_waterfront_loop",
+      "circuit_seoul_yeouido_loop",
+      "circuit_montreal_island_loop",
+      "circuit_istanbul_bosphorus_loop"
+    ];
+
+    expect(globalCircuitKeys.map((layoutKey) => CITY_CIRCUIT_IDENTITIES.find((circuit) => circuit.layoutKey === layoutKey)?.city)).toEqual([
+      "Tokyo",
+      "Rio de Janeiro",
+      "Cape Town",
+      "Seoul",
+      "Montreal",
+      "Istanbul"
+    ]);
   });
 
   it("keeps generated global route lengths in circuit metadata", () => {
-    expect(Object.fromEntries(CITY_CIRCUIT_IDENTITIES.slice(-6).map((circuit) => [circuit.city, circuit.trackLengthMeters]))).toEqual({
+    const globalCircuitKeys = [
+      "circuit_tokyo_bay_loop",
+      "circuit_rio_flamengo_loop",
+      "circuit_cape_town_waterfront_loop",
+      "circuit_seoul_yeouido_loop",
+      "circuit_montreal_island_loop",
+      "circuit_istanbul_bosphorus_loop"
+    ];
+
+    expect(Object.fromEntries(globalCircuitKeys.map((layoutKey) => {
+      const circuit = CITY_CIRCUIT_IDENTITIES.find((candidate) => candidate.layoutKey === layoutKey);
+      return [circuit?.city, circuit?.trackLengthMeters];
+    }))).toEqual({
       "Cape Town": 5373,
       Istanbul: 6075,
       Montreal: 4185,
@@ -78,6 +106,18 @@ describe("circuit identities", () => {
       Seoul: 3976,
       Tokyo: 5720
     });
+  });
+
+  it("includes the first generated expansion circuits", () => {
+    expect(CITY_CIRCUIT_IDENTITIES.filter((circuit) => ["circuit_danube", "circuit_lungomare"].includes(circuit.layoutKey)).map((circuit) => ({
+      city: circuit.city,
+      layoutKey: circuit.layoutKey,
+      trackLengthMeters: circuit.trackLengthMeters,
+      laps: circuit.laps
+    }))).toEqual([
+      { city: "Budapest", layoutKey: "circuit_danube", trackLengthMeters: 6100, laps: 8 },
+      { city: "Naples", layoutKey: "circuit_lungomare", trackLengthMeters: 6116, laps: 8 }
+    ]);
   });
 
   it("derives required track zones for every circuit", () => {

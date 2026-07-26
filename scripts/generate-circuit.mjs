@@ -106,7 +106,7 @@ if (args.laps && args.layoutKey) {
 
 async function geocode(query) {
   const url = `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(query)}`;
-  const response = await fetch(url, { headers: { "User-Agent": "cr-league-circuit-generator/1.0" } });
+  const response = await fetchWithTimeout(url, { headers: { "User-Agent": "cr-league-circuit-generator/1.0" } });
   if (!response.ok) die(`Nominatim failed: ${response.status}`);
   const body = await response.json();
   if (!body.length) die(`Place not found: ${query}`);
@@ -125,7 +125,7 @@ async function routeOsrmLoops(attempt) {
   const coordinates = waypoints.map((point) => `${point.lng},${point.lat}`).join(";");
   const url = `https://router.project-osrm.org/route/v1/driving/${coordinates}?overview=full&geometries=geojson&continue_straight=false`;
   try {
-    const response = await fetch(url, { headers: { "User-Agent": "cr-league-circuit-generator/1.0" } });
+    const response = await fetchWithTimeout(url, { headers: { "User-Agent": "cr-league-circuit-generator/1.0" } });
     if (!response.ok) return [];
     const body = await response.json();
     const geometry = body.routes?.[0]?.geometry?.coordinates;
@@ -157,7 +157,7 @@ async function fetchOverpassGraph(query, center) {
   const errors = [];
   for (const endpoint of overpassEndpoints) {
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetchWithTimeout(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "User-Agent": "cr-league-circuit-generator/1.0" },
         body: `data=${encodeURIComponent(query)}`
@@ -176,7 +176,7 @@ async function fetchOsmWayGeometry(wayId) {
   const errors = [];
   for (const endpoint of overpassEndpoints) {
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetchWithTimeout(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8", "User-Agent": "cr-league-circuit-generator/1.0" },
         body: `data=${encodeURIComponent(query)}`
@@ -219,6 +219,11 @@ function selectedHighwayTypes() {
     "motorway_link",
     ...(args.walkways === "true" ? ["pedestrian", "cycleway", "path", "footway"] : [])
   ];
+}
+
+function fetchWithTimeout(url, options = {}) {
+  const timeoutMs = Number(args.fetchTimeoutMs ?? 30_000);
+  return fetch(url, { ...options, signal: AbortSignal.timeout(timeoutMs) });
 }
 
 function graphFromOverpass(body, center) {

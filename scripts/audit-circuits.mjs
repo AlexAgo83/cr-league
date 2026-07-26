@@ -4,6 +4,7 @@ import { join } from "node:path";
 
 const routesDir = "apps/web/src/app/circuitRoutes";
 const identitiesPath = "packages/shared/src/domain/circuits.ts";
+const speedProfilesPath = "packages/shared/src/domain/circuitSpeedProfiles.data.ts";
 const args = process.argv.slice(2);
 const geojsonPath = valueAfter("--geojson");
 const targetBandRatio = 0.25;
@@ -18,8 +19,9 @@ const thresholds = {
 };
 
 const identitiesSource = readFileSync(identitiesPath, "utf8");
+const speedProfilesSource = readFileSync(speedProfilesPath, "utf8");
 const identities = parseIdentities(identitiesSource);
-const speedProfiles = parseSpeedProfiles(identitiesSource);
+const speedProfiles = parseSpeedProfiles(speedProfilesSource);
 const circuits = parseCircuits(routesDir, identities, speedProfiles);
 
 if (circuits.length === 0) {

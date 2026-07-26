@@ -1,10 +1,10 @@
 ## item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline - Generate and audit the 20 real-street route files via the OSM pipeline
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Circuit catalogue
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

@@ -1,10 +1,10 @@
 ## item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates - Localize the new circuits and pass the full catalogue gates
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Low
 > Theme: Circuit catalogue
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

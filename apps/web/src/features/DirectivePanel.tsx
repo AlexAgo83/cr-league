@@ -10,6 +10,7 @@ import { CARD_BADGES, CardArtImage, CardStatBadges, StatBadges, type StatBadge }
 import { Modal } from "./Modal.js";
 import { ModalHero } from "./ModalHero.js";
 import { PlanRiskSummary } from "./PlanRiskSummary.js";
+import { BoardIcon, type BoardIconName } from "./VisualIcon.js";
 
 type TraitStats = {
   grip: number;
@@ -47,6 +48,24 @@ export const PIT_ART: Record<(typeof PIT_STRATEGIES)[number], string> = {
   heavy_pack: "/assets/crl/pit-strategy-heavy-pack.webp",
   standard: "/assets/crl/pit-strategy-standard.webp",
   mini_pack: "/assets/crl/pit-strategy-mini-pack.webp"
+};
+
+const APPROACH_ICONS: Record<(typeof APPROACHES)[number], BoardIconName> = {
+  prudent: "reliability",
+  balanced: "strategy",
+  aggressive: "boost"
+};
+
+const PREPARATION_ICONS: Record<(typeof PREPARATIONS)[number], BoardIconName> = {
+  speed: "speed",
+  reliability: "reliability",
+  weather: "weather"
+};
+
+const PIT_ICONS: Record<(typeof PIT_STRATEGIES)[number], BoardIconName> = {
+  heavy_pack: "pit-stop",
+  standard: "strategy",
+  mini_pack: "chrono"
 };
 
 export function savedDirectiveStep(): DirectiveStep {
@@ -301,8 +320,9 @@ export function DirectivePanel({
                 {approach === "balanced" ? <span className="approach-balance-badge" aria-hidden="true" /> : null}
                 {approach === "aggressive" ? <span className="approach-skull-badge" aria-hidden="true" /> : null}
                 <span className="plan-choice-title">
-                  <PlanChoiceMarker value={PLAN_MARKERS.approach[approach]} />
+                  <BoardIcon className="plan-choice-board-icon" name={APPROACH_ICONS[approach]} />
                   <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
+                  <PlanChoiceMarker value={PLAN_MARKERS.approach[approach]} />
                 </span>
                 <small>{tt(`approach_${approach}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={badgesFromDeltas(APPROACH_DELTAS[approach])} tt={tt} />
@@ -319,8 +339,9 @@ export function DirectivePanel({
             {PREPARATIONS.map((preparation) => (
               <button key={preparation} type="button" className={`${form.preparation === preparation ? "choice-card selected" : "choice-card"} preparation-${preparation}`} aria-label={`${tt("field_preparation")}: ${tt(`preparation_${preparation}` as TranslationKey)}`} aria-pressed={form.preparation === preparation} onClick={() => setForm({ ...form, preparation })} disabled={disabled}>
                 <span className="plan-choice-title">
-                  <PlanChoiceMarker value={PLAN_MARKERS.preparation[preparation]} />
+                  <BoardIcon className="plan-choice-board-icon" name={PREPARATION_ICONS[preparation]} />
                   <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
+                  <PlanChoiceMarker value={PLAN_MARKERS.preparation[preparation]} />
                 </span>
                 <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={badgesFromDeltas(PREPARATION_DELTAS[preparation])} tt={tt} />
@@ -337,8 +358,9 @@ export function DirectivePanel({
             {PIT_STRATEGIES.map((pitStrategy) => (
               <button key={pitStrategy} type="button" className={`${form.pitStrategy === pitStrategy ? "choice-card selected" : "choice-card"} pit-strategy-${pitStrategy}`} aria-label={`${tt("field_pit_strategy")}: ${tt(`pit_strategy_${pitStrategy}` as TranslationKey)}`} aria-pressed={form.pitStrategy === pitStrategy} onClick={() => setForm({ ...form, pitStrategy })} disabled={disabled}>
                 <span className="plan-choice-title">
-                  <PlanChoiceMarker value={PLAN_MARKERS.pitStrategy[pitStrategy]} />
+                  <BoardIcon className="plan-choice-board-icon" name={PIT_ICONS[pitStrategy]} />
                   <strong>{tt(`pit_strategy_${pitStrategy}` as TranslationKey)}</strong>
+                  <PlanChoiceMarker value={PLAN_MARKERS.pitStrategy[pitStrategy]} />
                 </span>
                 <small>{tt(`pit_strategy_${pitStrategy}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={badgesFromDeltas(PIT_STRATEGY_DELTAS[pitStrategy])} tt={tt} />
@@ -357,8 +379,9 @@ export function DirectivePanel({
               return (
                 <button key={cardId || "none"} type="button" className={`${selected ? "choice-card selected" : "choice-card"}${cardId ? " card-art-cell" : ""}`} aria-label={`${tt("field_card")}: ${cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}`} aria-pressed={selected} onClick={() => selectCard(cardId)} disabled={disabled || cardLocked}>
                   <span className="plan-choice-title">
-                    <PlanCardMarker active={Boolean(cardId)} />
+                    <BoardIcon className="plan-choice-board-icon" name={cardId ? "strategy" : "locked-plan"} />
                     <strong>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</strong>
+                    <PlanCardMarker active={Boolean(cardId)} />
                   </span>
                   <small>
                     {cardId && selectedCardFit && selected ? `${tt(`card_fit_${selectedCardFit.level}` as TranslationKey)} · ` : ""}
@@ -378,10 +401,12 @@ export function DirectivePanel({
       <div className="directive-command-row">
         {canRunQualifying ? (
           <button type="button" className={`primary-command directive-secondary-command${hasQualifyingRun ? "" : " highlight-command"}`} onClick={onQualifying} disabled={disabled}>
+            <BoardIcon className="command-board-icon" name="chrono" />
             {tt("action_qualifying")}
           </button>
         ) : null}
         <button type="button" className={`primary-command directive-primary-command${!locked && hasQualifyingRun ? " highlight-command" : ""}`} onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+          <BoardIcon className="command-board-icon" name={locked ? "locked-plan" : "finish-flag-icon"} />
           {primaryCommand.label}
         </button>
       </div>

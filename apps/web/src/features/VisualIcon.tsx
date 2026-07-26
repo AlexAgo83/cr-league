@@ -1,8 +1,56 @@
 import { AssetImage } from "./AssetImage.js";
 
-export type VisualIconName = "grip" | "overtaking" | "energy" | "dry" | "light_rain" | "heavy_rain" | "card" | "position" | "laps" | "distance" | "dot";
+export type BoardIconName =
+  | "boost"
+  | "chrono"
+  | "credits"
+  | "damage-risk"
+  | "energy"
+  | "finish-flag-icon"
+  | "grip"
+  | "locked-plan"
+  | "overtaking"
+  | "pit-stop"
+  | "reliability"
+  | "replay"
+  | "report"
+  | "speed"
+  | "strategy"
+  | "weather";
+
+export type VisualIconName =
+  | "grip"
+  | "overtaking"
+  | "energy"
+  | "dry"
+  | "light_rain"
+  | "heavy_rain"
+  | "card"
+  | "position"
+  | "laps"
+  | "distance"
+  | "dot";
+
+export const VISUAL_ICON_ASSETS: Partial<Record<VisualIconName, string>> = {
+  card: "/assets/crl/icons/strategy.png",
+  energy: "/assets/crl/icons/energy.png",
+  grip: "/assets/crl/icons/grip.png",
+  heavy_rain: "/assets/crl/icons/weather.png",
+  light_rain: "/assets/crl/icons/weather.png",
+  overtaking: "/assets/crl/icons/overtaking.png",
+  position: "/assets/crl/icons/overtaking.png",
+};
+
+export function BoardIcon({ className = "", name }: { className?: string; name: BoardIconName }) {
+  return <img className={`board-icon ${className}`} src={`/assets/crl/icons/${name}.png`} alt="" aria-hidden="true" />;
+}
 
 export function VisualIcon({ name }: { name: VisualIconName }) {
+  const assetSrc = VISUAL_ICON_ASSETS[name];
+  if (assetSrc) {
+    return <img className={`visual-icon visual-icon-asset visual-icon-${name}`} src={assetSrc} alt="" aria-hidden="true" />;
+  }
+
   return (
     <svg className={`visual-icon visual-icon-${name}`} viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       {name === "grip" ? <path d="M12 3l8 9-8 9-8-9 8-9Z" /> : null}

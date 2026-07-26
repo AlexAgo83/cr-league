@@ -9,6 +9,7 @@
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 > Owner: codex
+> Non-semantic edit: 2026-07-26 board icon asset polish journal note; task scope and progress unchanged.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -52,6 +53,7 @@
 - 2026-07-26: third import wave validated: Miami/Ocean Drive and Chicago/Lakefront. Buenos Aires/Madero was attempted twice but not imported because Overpass timed out on the requested Puerto Madero bounds.
 - 2026-07-26: fourth import wave validated: Mexico City/Reforma, Dubai/Marina, Sydney/Darling Harbour. Singapore/Marina, Hong Kong/Victoria, and Osaka/Dotonbori timed out on default dense OSM bounds; Dubai/Sydney succeeded with `--highways major`.
 - 2026-07-26: added cached/bounded wave generation tooling (`generate:circuit-wave`) and validated Singapore/Marina, Hong Kong/Victoria, Osaka/Dotonbori through major-road fallbacks. Buenos Aires/Madero remains rejected after bounded attempts; no unvalidated route is included.
+- 2026-07-26: adjacent UI polish while keeping the active wave commit-ready: sliced `logics/external/board_icones.png` into transparent CRL board assets, wired grip/overtaking/energy/weather/strategy through `VisualIcon`, and surfaced larger board icons in the directive choices plus chrono/launch commands.
 
 # AI Context
 - Summary: Orchestrate the twenty-new-circuits expansion

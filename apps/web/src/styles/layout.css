@@ -1209,12 +1209,39 @@ button:disabled {
   display: inline-block;
   fill: none;
   height: 1em;
+  object-fit: contain;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
   stroke-width: 2;
   vertical-align: -0.12em;
   width: 1em;
+}
+
+.visual-icon-asset {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.32));
+  stroke: none;
+}
+
+.board-icon {
+  aspect-ratio: 1;
+  display: inline-block;
+  flex: 0 0 auto;
+  object-fit: contain;
+  vertical-align: -0.2em;
+}
+
+.plan-choice-board-icon {
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.38));
+  height: 30px;
+  width: 30px;
+}
+
+.command-board-icon {
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.3));
+  height: 24px;
+  margin-right: 8px;
+  width: 24px;
 }
 
 .visual-icon-grip,
@@ -1840,7 +1867,7 @@ label small {
 .plan-choice-title {
   align-items: center;
   display: inline-flex;
-  gap: 5px;
+  gap: 8px;
   min-width: 0;
 }
 

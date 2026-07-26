@@ -840,5 +840,8 @@
   "status_admin_inspecting_league": "Loading league inspection...",
   "status_admin_league_loaded": "League loaded in admin inspection mode.",
   "language_en": "English",
-  "language_fr": "Français"
+  "language_fr": "Français",
+  "circuit_plaka": "Plaka Switchback",
+  "circuit_esplanadi": "Esplanadi Rush",
+  "circuit_royal_mile": "Royal Mile Climb"
 }

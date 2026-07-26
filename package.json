@@ -35,6 +35,7 @@
     "balance:sim": "tsx scripts/balance-simulations.ts",
     "balance:gate": "tsx scripts/balance-simulations.ts --runs 1 --circuits 4 --limit 8 --max-gap-pct 25 --max-pit-points-spread 4.5",
     "generate:circuit": "node scripts/generate-circuit.mjs",
+    "import:circuits": "node scripts/import-generated-circuits.mjs",
     "generate:speed-profiles": "node scripts/generate-circuit-speed-profiles.mjs",
     "audit:circuits": "node scripts/audit-circuits.mjs",
     "review:circuits:water": "node scripts/review-circuit-water.mjs",

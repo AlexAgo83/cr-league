@@ -108,15 +108,20 @@ describe("circuit identities", () => {
     });
   });
 
-  it("includes the first generated expansion circuits", () => {
-    expect(CITY_CIRCUIT_IDENTITIES.filter((circuit) => ["circuit_danube", "circuit_lungomare"].includes(circuit.layoutKey)).map((circuit) => ({
+  it("includes generated expansion circuits", () => {
+    const expansionCircuitKeys = ["circuit_danube", "circuit_lungomare", "circuit_plaka", "circuit_esplanadi", "circuit_royal_mile"];
+
+    expect(CITY_CIRCUIT_IDENTITIES.filter((circuit) => expansionCircuitKeys.includes(circuit.layoutKey)).map((circuit) => ({
       city: circuit.city,
       layoutKey: circuit.layoutKey,
       trackLengthMeters: circuit.trackLengthMeters,
       laps: circuit.laps
     }))).toEqual([
       { city: "Budapest", layoutKey: "circuit_danube", trackLengthMeters: 6100, laps: 8 },
-      { city: "Naples", layoutKey: "circuit_lungomare", trackLengthMeters: 6116, laps: 8 }
+      { city: "Naples", layoutKey: "circuit_lungomare", trackLengthMeters: 6116, laps: 8 },
+      { city: "Athens", layoutKey: "circuit_plaka", trackLengthMeters: 5969, laps: 8 },
+      { city: "Helsinki", layoutKey: "circuit_esplanadi", trackLengthMeters: 6061, laps: 8 },
+      { city: "Edinburgh", layoutKey: "circuit_royal_mile", trackLengthMeters: 6035, laps: 8 }
     ]);
   });
 

@@ -3,8 +3,8 @@
 > Schema version: 1.0
 > Status: In progress
 > Understanding: 90%
-> Confidence: 72
-> Progress: 15%
+> Confidence: 78
+> Progress: 35%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -46,7 +46,8 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- 2026-07-26: first five generated OSM expansion routes imported and validated: Budapest/Danube, Naples/Lungomare, Athens/Plaka, Helsinki/Esplanadi, Edinburgh/Royal Mile.
+- Added `scripts/import-generated-circuits.mjs` plus `npm run import:circuits` to automate route-index registration, circuit identity metrics, i18n labels, and speed-profile regeneration for the next waves.
 
 # AI Context
 - Summary: Orchestrate the twenty-new-circuits expansion

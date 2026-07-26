@@ -5,6 +5,7 @@ import { route as circuitCapeTownWaterfrontLoop } from "./circuit_cape_town_wate
 import { route as circuitCopenhagenHarborLoop } from "./circuit_copenhagen_harbor_loop.js";
 import { route as circuitDanube } from "./circuit_danube.js";
 import { route as circuitDocklandsSprint } from "./circuit_docklands_sprint.js";
+import { route as circuitEsplanadi } from "./circuit_esplanadi.js";
 import { route as circuitHarborSprint } from "./circuit_harbor_sprint.js";
 import { route as circuitIstanbulBosphorusLoop } from "./circuit_istanbul_bosphorus_loop.js";
 import { route as circuitLeftBankLoop } from "./circuit_left_bank_loop.js";
@@ -16,11 +17,13 @@ import { route as circuitMitteDash } from "./circuit_mitte_dash.js";
 import { route as circuitMonacoCasinoSprint } from "./circuit_monaco_casino_sprint.js";
 import { route as circuitMonacoHarborLoop } from "./circuit_monaco_harbor_loop.js";
 import { route as circuitMontrealIslandLoop } from "./circuit_montreal_island_loop.js";
+import { route as circuitPlaka } from "./circuit_plaka.js";
 import { route as circuitPortoBoavistaLoop } from "./circuit_porto_boavista_loop.js";
 import { route as circuitPragueVltavaLoop } from "./circuit_prague_vltava_loop.js";
 import { route as circuitRingSector } from "./circuit_ring_sector.js";
 import { route as circuitRioFlamengoLoop } from "./circuit_rio_flamengo_loop.js";
 import { route as circuitRomeTiberLoop } from "./circuit_rome_tiber_loop.js";
+import { route as circuitRoyalMile } from "./circuit_royal_mile.js";
 import { route as circuitSeoulYeouidoLoop } from "./circuit_seoul_yeouido_loop.js";
 import { route as circuitStockholmGamlaStanLoop } from "./circuit_stockholm_gamla_stan_loop.js";
 import { route as circuitTokyoBayLoop } from "./circuit_tokyo_bay_loop.js";
@@ -36,6 +39,7 @@ export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_copenhagen_harbor_loop: circuitCopenhagenHarborLoop,
   circuit_danube: circuitDanube,
   circuit_docklands_sprint: circuitDocklandsSprint,
+  circuit_esplanadi: circuitEsplanadi,
   circuit_harbor_sprint: circuitHarborSprint,
   circuit_istanbul_bosphorus_loop: circuitIstanbulBosphorusLoop,
   circuit_left_bank_loop: circuitLeftBankLoop,
@@ -47,11 +51,13 @@ export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_monaco_casino_sprint: circuitMonacoCasinoSprint,
   circuit_monaco_harbor_loop: circuitMonacoHarborLoop,
   circuit_montreal_island_loop: circuitMontrealIslandLoop,
+  circuit_plaka: circuitPlaka,
   circuit_porto_boavista_loop: circuitPortoBoavistaLoop,
   circuit_prague_vltava_loop: circuitPragueVltavaLoop,
   circuit_ring_sector: circuitRingSector,
   circuit_rio_flamengo_loop: circuitRioFlamengoLoop,
   circuit_rome_tiber_loop: circuitRomeTiberLoop,
+  circuit_royal_mile: circuitRoyalMile,
   circuit_seoul_yeouido_loop: circuitSeoulYeouidoLoop,
   circuit_stockholm_gamla_stan_loop: circuitStockholmGamlaStanLoop,
   circuit_tokyo_bay_loop: circuitTokyoBayLoop,

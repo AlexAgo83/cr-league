@@ -840,5 +840,8 @@
   "status_admin_inspecting_league": "Chargement de l'inspection ligue...",
   "status_admin_league_loaded": "Ligue chargée en mode inspection admin.",
   "language_en": "English",
-  "language_fr": "Français"
+  "language_fr": "Français",
+  "circuit_plaka": "Épingle de Pláka",
+  "circuit_esplanadi": "Ruée Esplanadi",
+  "circuit_royal_mile": "Montée du Royal Mile"
 }

@@ -3,8 +3,8 @@
 > Schema version: 1.0
 > Status: In progress
 > Understanding: 90%
-> Confidence: 80
-> Progress: 58%
+> Confidence: 79
+> Progress: 70%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -50,6 +50,7 @@
 - Added `scripts/import-generated-circuits.mjs` plus `npm run import:circuits` to automate route-index registration, circuit identity metrics, i18n labels, and speed-profile regeneration for the next waves.
 - 2026-07-26: second import wave validated: Valletta/Grand Harbour, Amsterdam/Jordaan, New York/Battery. Added missing MT/US flags and kept the flag-asset catalogue test active.
 - 2026-07-26: third import wave validated: Miami/Ocean Drive and Chicago/Lakefront. Buenos Aires/Madero was attempted twice but not imported because Overpass timed out on the requested Puerto Madero bounds.
+- 2026-07-26: fourth import wave validated: Mexico City/Reforma, Dubai/Marina, Sydney/Darling Harbour. Singapore/Marina, Hong Kong/Victoria, and Osaka/Dotonbori timed out on default dense OSM bounds; Dubai/Sydney succeeded with `--highways major`.
 
 # AI Context
 - Summary: Orchestrate the twenty-new-circuits expansion

@@ -848,5 +848,8 @@
   "circuit_jordaan": "Jordaan Canal Dash",
   "circuit_battery": "Battery Park Loop",
   "circuit_ocean_drive": "Ocean Drive Sprint",
-  "circuit_lakefront": "Lakefront Dash"
+  "circuit_lakefront": "Lakefront Dash",
+  "circuit_reforma": "Reforma Sprint",
+  "circuit_dubai_marina": "Dubai Marina Loop",
+  "circuit_darling_harbour": "Darling Harbour Dash"
 }

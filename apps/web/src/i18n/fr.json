@@ -848,5 +848,8 @@
   "circuit_jordaan": "Sprint des canaux du Jordaan",
   "circuit_battery": "Boucle de Battery Park",
   "circuit_ocean_drive": "Sprint d’Ocean Drive",
-  "circuit_lakefront": "Sprint Lakefront"
+  "circuit_lakefront": "Sprint Lakefront",
+  "circuit_reforma": "Sprint Reforma",
+  "circuit_dubai_marina": "Boucle de Dubai Marina",
+  "circuit_darling_harbour": "Sprint de Darling Harbour"
 }

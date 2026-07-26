@@ -5,7 +5,9 @@ import { route as circuitCannesHoussamLoop } from "./circuit_cannes_houssam_loop
 import { route as circuitCapeTownWaterfrontLoop } from "./circuit_cape_town_waterfront_loop.js";
 import { route as circuitCopenhagenHarborLoop } from "./circuit_copenhagen_harbor_loop.js";
 import { route as circuitDanube } from "./circuit_danube.js";
+import { route as circuitDarlingHarbour } from "./circuit_darling_harbour.js";
 import { route as circuitDocklandsSprint } from "./circuit_docklands_sprint.js";
+import { route as circuitDubaiMarina } from "./circuit_dubai_marina.js";
 import { route as circuitEsplanadi } from "./circuit_esplanadi.js";
 import { route as circuitGrandHarbour } from "./circuit_grand_harbour.js";
 import { route as circuitHarborSprint } from "./circuit_harbor_sprint.js";
@@ -25,6 +27,7 @@ import { route as circuitOceanDrive } from "./circuit_ocean_drive.js";
 import { route as circuitPlaka } from "./circuit_plaka.js";
 import { route as circuitPortoBoavistaLoop } from "./circuit_porto_boavista_loop.js";
 import { route as circuitPragueVltavaLoop } from "./circuit_prague_vltava_loop.js";
+import { route as circuitReforma } from "./circuit_reforma.js";
 import { route as circuitRingSector } from "./circuit_ring_sector.js";
 import { route as circuitRioFlamengoLoop } from "./circuit_rio_flamengo_loop.js";
 import { route as circuitRomeTiberLoop } from "./circuit_rome_tiber_loop.js";
@@ -44,7 +47,9 @@ export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_cape_town_waterfront_loop: circuitCapeTownWaterfrontLoop,
   circuit_copenhagen_harbor_loop: circuitCopenhagenHarborLoop,
   circuit_danube: circuitDanube,
+  circuit_darling_harbour: circuitDarlingHarbour,
   circuit_docklands_sprint: circuitDocklandsSprint,
+  circuit_dubai_marina: circuitDubaiMarina,
   circuit_esplanadi: circuitEsplanadi,
   circuit_grand_harbour: circuitGrandHarbour,
   circuit_harbor_sprint: circuitHarborSprint,
@@ -64,6 +69,7 @@ export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_plaka: circuitPlaka,
   circuit_porto_boavista_loop: circuitPortoBoavistaLoop,
   circuit_prague_vltava_loop: circuitPragueVltavaLoop,
+  circuit_reforma: circuitReforma,
   circuit_ring_sector: circuitRingSector,
   circuit_rio_flamengo_loop: circuitRioFlamengoLoop,
   circuit_rome_tiber_loop: circuitRomeTiberLoop,

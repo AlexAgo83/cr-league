@@ -13,6 +13,7 @@ Start the 0.5 gameplay-depth phase after closing the 0.4 ship-rails queue.
 
 - Bumped root, workspace, and lockfile versions to `0.5.0`.
 - Marked 0.4 ship rails as closed and documented 0.5 as the next evidence-gated phase.
+- Prepared the `v0.5.0` release tag after local release validation.
 
 ## Gameplay Evidence
 
@@ -40,6 +41,7 @@ Start the 0.5 gameplay-depth phase after closing the 0.4 ship-rails queue.
 
 - Fixed GitHub Actions workflow references by pinning checkout, setup-node, and upload-artifact to supported `v4` actions.
 - Kept the CI audit focused on runtime dependencies with `npm audit --omit=dev --audit-level=high`; the remaining advisory is in dev-only lint tooling and is not shipped.
+- Split CI unit tests from global coverage: workspace matrix jobs now run scoped tests, and one dedicated coverage job runs the repository-wide threshold gate.
 
 ## Validation
 

@@ -35,6 +35,7 @@
     "playtest:brain:selftest": "tsx scripts/playtestBrain.selftest.ts",
     "playtest:ux": "tsx scripts/browser-playtest.ts --rounds 2 --ux-report reports/ux/browser-playthrough.md --report reports/playtest/browser-playtest-smoke.md",
     "playtest:ux:cold-start": "tsx scripts/browser-playtest.ts --cold-start-report reports/ux/cold-start-funnel.md",
+    "copy:audit": "tsx scripts/copy-comprehension-audit.ts --report reports/ux/copy-comprehension.md",
     "playtest:replayability": "tsx scripts/replayability-analytics.ts --seasons 12 --rounds 6 --report reports/playtest/replayability-analytics.md --json reports/playtest/replayability-analytics.json",
     "replay:validate": "tsx scripts/validate-replay-trace.ts",
     "replay:inspect": "tsx scripts/inspect-replay-trace.ts",

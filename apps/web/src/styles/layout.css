@@ -1397,10 +1397,13 @@ button:disabled {
 }
 
 input,
-select {
+select,
+textarea {
   background: var(--color-cockpit);
   border: 1px solid var(--color-border);
   color: var(--color-text);
+  /* ponytail: 16px min stops iOS Safari auto-zooming on focus; UA default (~13px) triggers it. */
+  font-size: 16px;
   padding: 10px 12px;
   width: 100%;
 }

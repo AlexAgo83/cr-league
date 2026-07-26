@@ -14,6 +14,7 @@ export type LeagueState = {
     maxGrandPrixPerSeason: number;
     preparationDeadlineAt: string | null;
   };
+  seasonSummaries: SeasonSummary[];
   currentGrandPrix: {
     id: string;
     name: string;
@@ -69,6 +70,25 @@ export type LeagueState = {
     cardId: RaceDecision["cardId"] | null;
     rivalTeamId?: string | null;
   }>;
+};
+
+export type SeasonSummary = {
+  season: number;
+  gpCount: number;
+  standings: Array<{
+    position: number;
+    teamId: string;
+    teamName: string;
+    points: number;
+    livery?: TeamLivery;
+  }>;
+  champion: {
+    position: number;
+    teamId: string;
+    teamName: string;
+    points: number;
+    livery?: TeamLivery;
+  };
 };
 
 export type ProfileSession = {

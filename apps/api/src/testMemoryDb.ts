@@ -13,6 +13,7 @@ export function createMemoryDb(): PrismaClient {
     maxGrandPrixPerSeason: number;
     ownerTeamId: string | null;
     preparationDeadlineAt: Date | null;
+    seasonSummaries: unknown[];
     createdAt: Date;
   };
   type ProfileRow = {
@@ -99,6 +100,7 @@ export function createMemoryDb(): PrismaClient {
           maxGrandPrixPerSeason: 6,
           ownerTeamId: null,
           preparationDeadlineAt: null,
+          seasonSummaries: [],
           createdAt: new Date(),
           ...data
         };
@@ -169,7 +171,7 @@ export function createMemoryDb(): PrismaClient {
         data
       }: {
         where: { id: string };
-        data: { cadence?: string; ownerTeamId?: string | null; preparationDeadlineAt?: Date | null };
+        data: { cadence?: string; ownerTeamId?: string | null; preparationDeadlineAt?: Date | null; seasonSummaries?: unknown[] };
       }) => {
         const league = leagues.find((candidate) => candidate.id === where.id);
         if (!league) throw new Error("League not found");

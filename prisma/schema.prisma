@@ -19,6 +19,7 @@ model League {
   maxGrandPrixPerSeason  Int       @default(6)
   ownerTeamId            String?
   preparationDeadlineAt  DateTime?
+  seasonSummaries        Json      @default("[]")
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 

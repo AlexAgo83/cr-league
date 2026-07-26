@@ -1,4 +1,4 @@
-import { CARD_DEFINITIONS, CAR_ASSET_PRICES, isCarAssetId, type CardId, type CarAssetId, type QualifyingRun, type RaceInput, type TeamLivery, type Weather } from "@cr-league/shared";
+import { CARD_DEFINITIONS, CAR_ASSET_PRICES, isCarAssetId, type CardId, type CarAssetId, type QualifyingRun, type RaceInput, type SeasonSummary, type TeamLivery, type Weather } from "@cr-league/shared";
 import { createHash, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import type { Prisma } from "@prisma/client";
@@ -161,6 +161,20 @@ export function normalizeLivery(value: unknown): TeamLivery {
 export function normalizeUnlockedCarAssetIds(value: unknown): CarAssetId[] {
   return Array.isArray(value)
     ? [...new Set(value.filter((id): id is CarAssetId => typeof id === "string" && isCarAssetId(id)))]
+    : [];
+}
+
+export function normalizeSeasonSummaries(value: unknown): SeasonSummary[] {
+  return Array.isArray(value)
+    ? value.flatMap((summary) =>
+        summary &&
+        typeof summary === "object" &&
+        typeof (summary as SeasonSummary).season === "number" &&
+        Array.isArray((summary as SeasonSummary).standings) &&
+        (summary as SeasonSummary).champion
+          ? [summary as SeasonSummary]
+          : []
+      )
     : [];
 }
 

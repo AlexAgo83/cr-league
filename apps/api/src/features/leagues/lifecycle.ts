@@ -11,6 +11,7 @@ import {
   trackSpeedProfileForCircuit,
   type CardId,
   type CarAssetId,
+  type LeagueState as SharedLeagueState,
   type RaceDecision,
   type RaceInput,
   type RaceResult
@@ -35,7 +36,7 @@ import { getCurrentGrandPrix, isUniqueConstraintError, lockGrandPrixRow, lockLea
 import { createQualifyingRuns } from "./qualifying.js";
 import { requireAdminClaim, requireTeamClaim } from "./transactionHelpers.js";
 import type { AdminProofInput, CreateLeagueInput, Db, JoinLeagueInput, LeagueState, RejoinLeagueInput, UpdateLeagueSettingsInput, UpdateTeamLiveryInput, UpdateTeamNameInput } from "./types.js";
-import { appendCard, clampInteger, createClaimCode, createLeagueCode, ensureProfileOwnership, isLeagueCadence, liveryKey, normalizeCards, normalizeDisplayName, normalizeLivery, normalizeQualifyingRuns, normalizeUnlockedCarAssetIds, randomLivery, uniqueBotLivery } from "./utils.js";
+import { appendCard, clampInteger, createClaimCode, createLeagueCode, ensureProfileOwnership, isLeagueCadence, liveryKey, normalizeCards, normalizeDisplayName, normalizeLivery, normalizeQualifyingRuns, normalizeSeasonSummaries, normalizeUnlockedCarAssetIds, randomLivery, uniqueBotLivery } from "./utils.js";
 
 export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
   const leagueName = normalizeDisplayName(input.name, LEAGUE_NAME_LIMIT);
@@ -209,6 +210,7 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
       maxGrandPrixPerSeason: league.maxGrandPrixPerSeason,
       preparationDeadlineAt: league.preparationDeadlineAt?.toISOString() ?? null
     },
+    seasonSummaries: normalizeSeasonSummaries(league.seasonSummaries),
     currentGrandPrix: {
       id: grandPrix.id,
       name: grandPrix.name,
@@ -344,6 +346,7 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
   const nextSeason = grandPrix.round >= state.league.maxGrandPrixPerSeason ? grandPrix.season + 1 : grandPrix.season;
   const nextRound = grandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : grandPrix.round + 1;
   const nextRaceInput = raceInputFromCircuit(circuitIdentityForRound(nextRound, circuitSeasonSeed(leagueId, nextSeason)));
+  const closingSeasonSummary = nextSeason !== grandPrix.season ? seasonSummaryFromState(state, grandPrix.season) : null;
 
   await runWrite(db, async (tx) => {
     // The (leagueId, season, round) unique constraint claims the transition: a concurrent double call fails here before touching credits or points.
@@ -363,6 +366,14 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
     } catch (error) {
       if (isUniqueConstraintError(error)) throw new LeagueRuleError("The next Grand Prix has already started.");
       throw error;
+    }
+    if (closingSeasonSummary) {
+      await tx.league.update({
+        where: { id: leagueId },
+        data: {
+          seasonSummaries: upsertSeasonSummary(state.seasonSummaries, closingSeasonSummary)
+        }
+      });
     }
     const freshState = await getLeagueState(tx, leagueId);
     if (!freshState) return;
@@ -391,6 +402,25 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
   });
 
   return getLeagueState(db, leagueId);
+}
+
+function seasonSummaryFromState(state: LeagueState, season: number): SharedLeagueState["seasonSummaries"][number] | null {
+  const gpCount = state.grandPrixHistory.filter((grandPrix) => grandPrix.season === season && grandPrix.result).length;
+  const standings = [...state.teams]
+    .sort((left, right) => right.points - left.points || left.name.localeCompare(right.name))
+    .map((team, index) => ({
+      position: index + 1,
+      teamId: team.id,
+      teamName: team.name,
+      points: team.points,
+      livery: team.livery
+    }));
+  const champion = standings[0];
+  return champion ? { season, gpCount, standings, champion } : null;
+}
+
+function upsertSeasonSummary(existing: LeagueState["seasonSummaries"], summary: NonNullable<ReturnType<typeof seasonSummaryFromState>>) {
+  return [summary, ...existing.filter((candidate) => candidate.season !== summary.season)].sort((left, right) => right.season - left.season);
 }
 
 export async function restartLeague(db: Db, leagueId: string, input: AdminProofInput = {}) {

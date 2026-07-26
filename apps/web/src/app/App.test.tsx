@@ -763,10 +763,11 @@ describe("App", () => {
     expect(document.querySelector(".current-round-badge")?.textContent).toBe("1");
     expect(document.querySelector(".mini-circuit-start-line")).toBeTruthy();
     const displayedCircuitNames = [...document.querySelectorAll(".circuit-calendar-button strong")].map((node) => node.textContent);
-    expect(displayedCircuitNames).toEqual([...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" })));
-    fireEvent.click(screen.getByRole("button", { name: /Brussels Grand Place Clash/ }));
+    expect(displayedCircuitNames).toEqual([...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" })).slice(0, 8));
     const previewNames = [...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" }));
-    const previewIndex = previewNames.indexOf("Grand Place Clash");
+    const openedCircuitName = displayedCircuitNames[0]!;
+    fireEvent.click(screen.getByRole("button", { name: new RegExp(openedCircuitName) }));
+    const previewIndex = previewNames.indexOf(openedCircuitName);
     expect(document.querySelector(".championship-record-panel")?.classList.contains("circuit-preview-open")).toBe(true);
     expect(screen.getByLabelText("City circuit map")).toBeTruthy();
     expect(document.querySelector(".circuit-detail-screen .circuit-start-line")).toBeTruthy();
@@ -776,8 +777,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Next circuit" }));
     expect(document.querySelector(".circuit-detail-header h4")?.textContent).toBe(previewNames[(previewIndex + 1) % previewNames.length]);
     fireEvent.click(screen.getByRole("button", { name: "Previous circuit" }));
-    expect(document.querySelector(".circuit-detail-header h4")?.textContent).toBe("Grand Place Clash");
-    expect(screen.queryByRole("dialog", { name: "Brussels Grand Place Clash" })).toBe(null);
+    expect(document.querySelector(".circuit-detail-header h4")?.textContent).toBe(openedCircuitName);
+    expect(screen.queryByRole("dialog", { name: new RegExp(openedCircuitName) })).toBe(null);
     fireEvent.click(document.querySelector(".circuit-detail-close")!);
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));

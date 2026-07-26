@@ -10,7 +10,7 @@ export type SeasonStanding = {
   position: number;
   teamId: string;
   teamName: string;
-  livery: LeagueState["teams"][number]["livery"] | undefined;
+  livery?: LeagueState["teams"][number]["livery"];
   points: number;
 };
 export type CompletedSeasonSummary = {
@@ -126,6 +126,7 @@ export function seasonStandings(state: LeagueState, season: number): SeasonStand
 }
 
 export function completedSeasonSummaries(state: LeagueState): CompletedSeasonSummary[] {
+  if (state.seasonSummaries?.length) return state.seasonSummaries;
   const seasons = new Map<number, number>();
   for (const grandPrix of state.grandPrixHistory) {
     if (grandPrix.season >= state.currentGrandPrix.season || !grandPrix.result) continue;

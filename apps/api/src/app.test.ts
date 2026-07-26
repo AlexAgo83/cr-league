@@ -520,6 +520,30 @@ describe("api app", () => {
     expect(["car-002", "car-003", "car-004", "car-005", "car-006", "car-007", "car-008"]).toContain(botAfterRollover.livery.carAssetId);
   });
 
+  it("persists season summaries when a season rolls over", async () => {
+    const app = await createTestApp(createMemoryDb());
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Season Truth League", teamName: "Volt Union", maxGrandPrixPerSeason: 1 }
+    });
+    const created = createResponse.json();
+    await app.inject({ method: "POST", url: `/leagues/${created.league.id}/resolve`, payload: { ...created.player, allowDefaults: true } });
+    const nextSeason = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/next-grand-prix`,
+      payload: created.player
+    });
+    const summary = nextSeason.json().seasonSummaries[0];
+
+    await app.close();
+
+    expect(nextSeason.statusCode).toBe(200);
+    expect(summary).toMatchObject({ season: 1, gpCount: 1 });
+    expect(summary.champion.teamId).toBe(summary.standings[0].teamId);
+    expect(summary.standings.every((entry: { points: number }) => Number.isFinite(entry.points))).toBe(true);
+  });
+
   it("renames a team with readable unique names only", async () => {
     const app = await createTestApp(createMemoryDb());
 

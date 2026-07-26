@@ -75,6 +75,7 @@ function stateWithHistory(grandPrixHistory: LeagueState["grandPrixHistory"]): Le
       maxGrandPrixPerSeason: 2,
       preparationDeadlineAt: null
     },
+    seasonSummaries: [],
     currentGrandPrix: {
       id: "gp_current",
       name: "Current GP",

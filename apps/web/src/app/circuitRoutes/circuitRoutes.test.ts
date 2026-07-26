@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { CITY_CIRCUIT_IDENTITIES } from "@cr-league/shared";
+import { existsSync } from "node:fs";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { CIRCUIT_ROUTES } from "./data.js";
+
+const flagsDir = join(dirname(fileURLToPath(import.meta.url)), "../../../public/assets/flags");
 
 describe("circuit route catalogue", () => {
   it("has one loaded route for every shared circuit identity", () => {
@@ -9,5 +14,13 @@ describe("circuit route catalogue", () => {
 
     expect(missing).toEqual([]);
     expect(extra).toEqual([]);
+  });
+
+  it("has a flag asset for every circuit country", () => {
+    const missing = [...new Set(CITY_CIRCUIT_IDENTITIES.map((circuit) => circuit.country))]
+      .map((country) => country.toLowerCase())
+      .filter((country) => !existsSync(join(flagsDir, `${country}.svg`)));
+
+    expect(missing).toEqual([]);
   });
 });

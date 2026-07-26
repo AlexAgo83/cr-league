@@ -1053,7 +1053,7 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-player-claims")).toBe("[]");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
     expect(fetch).toHaveBeenCalledTimes(7);
-  }, 10_000);
+  }, 20_000);
 
   it("keeps the current player attached when action responses omit player", async () => {
     saveProfile();

@@ -74,11 +74,23 @@ import {
   smoothCarProgress,
   traceGapsAt,
   traceTimesAt,
-  REPLAY_FOCUS_KEY
+  REPLAY_FOCUS_KEY,
+  type ReplayStartSignal
 } from "./replay/replayMath.js";
 import { buildQualifyingMomentEvents, buildRaceDirectorBeats, directorBeatCopy } from "./replay/replayDirector.js";
 type ReplayPlanDecision = RaceDecision & { teamId: string };
 type ReplayTowerEntry = { id?: string; teamId: string; teamName: string; value: string; decision?: RaceDecision };
+
+function ReplayStartLights({ signal }: { signal: ReplayStartSignal | null }) {
+  if (!signal) return null;
+  return (
+    <div className={signal.go ? "replay-start-lights go" : "replay-start-lights"} aria-hidden="true">
+      {[0, 1, 2, 3, 4].map((index) => (
+        <span key={index} className={!signal.go && index < signal.lights ? "lit" : undefined} />
+      ))}
+    </div>
+  );
+}
 
 function renderPositionBadges(text: string): ReactNode {
   return text.split(/(P\d+)/g).map((part, index) => {
@@ -221,6 +233,7 @@ export function ReplayView({
     live,
     snapshot,
     activeMomentId,
+    startSignal,
     positionPops,
     currentRaceProgress,
     reduceMotion,
@@ -400,6 +413,8 @@ export function ReplayView({
             camera={{ enabled: driverFocus, car: focusedCar, timeRef: clock }}
             onCarClick={driverFocus ? (car) => setFocusedCarId(car.id) : undefined}
             overlay={
+              <>
+              <ReplayStartLights signal={startSignal} />
               <ReplayStageOverlay
                 circuit={circuit}
                 liveLap={live.lap}
@@ -442,6 +457,7 @@ export function ReplayView({
                 onClose={onClose}
                 closeLabel={closeLabel}
               />
+              </>
             }
           />
           {afterMapContent && !replayComplete ? (

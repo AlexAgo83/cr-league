@@ -3961,6 +3961,37 @@ label small {
   text-align: left;
 }
 
+.replay-start-lights {
+  display: flex;
+  gap: 10px;
+  left: 50%;
+  padding: 10px 14px;
+  position: absolute;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  background: rgb(16 14 18 / 0.82);
+  border-radius: 10px;
+  z-index: 6;
+}
+
+.replay-start-lights span {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.12);
+  transition: background 120ms ease, box-shadow 120ms ease;
+}
+
+.replay-start-lights span.lit {
+  background: #ff2a1a;
+  box-shadow: 0 0 12px rgb(255 42 26 / 0.85);
+}
+
+.replay-start-lights.go span {
+  background: #1fd65a;
+  box-shadow: 0 0 14px rgb(31 214 90 / 0.9);
+}
+
 .replay-moment-notification {
   align-items: center;
   background: rgb(16 14 18 / 0.86);

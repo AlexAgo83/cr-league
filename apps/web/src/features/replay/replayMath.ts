@@ -4,8 +4,19 @@ import type { CityCircuit } from "../../app/circuits.js";
 export { displayLapAtProgress } from "../../app/lapDisplay.js";
 
 const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
-export const START_HOLD_SECONDS = 0;
+export const START_HOLD_SECONDS = 3;
+export const START_GO_FLASH_SECONDS = 0.7;
 export const FINISH_HOLD_SECONDS = 1;
+
+export type ReplayStartSignal = { lights: number; go: boolean };
+
+// Grid hold: 5 red lights fill over the hold, then "lights out" = go flash. Cars stay put until time >= hold.
+export function startSignalAt(time: number, holdSeconds: number): ReplayStartSignal | null {
+  if (holdSeconds <= 0) return null;
+  if (time < holdSeconds) return { lights: Math.min(5, Math.floor((time / holdSeconds) * 5) + 1), go: false };
+  if (time < holdSeconds + START_GO_FLASH_SECONDS) return { lights: 0, go: true };
+  return null;
+}
 export const REPLAY_SPEED_KEY = "cr-league-replay-speed";
 export const REPLAY_FOCUS_KEY = "cr-league-replay-focus";
 export const DISMISSED_REPLAY_HELP_KEY = "cr-league-dismissed-replay-help";

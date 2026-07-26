@@ -1,7 +1,7 @@
 import { RACE_SEGMENTS, type RaceResult, type RaceSegment } from "@cr-league/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { safeStorage } from "../../app/appStorage.js";
-import { REPLAY_SPEED_KEY } from "./replayMath.js";
+import { REPLAY_SPEED_KEY, type ReplayStartSignal, startSignalAt } from "./replayMath.js";
 
 export type ReplayClockSnapshot = {
   carProgress: Record<string, number>;
@@ -92,6 +92,7 @@ export function useReplayClock({
   const [live, setLive] = useState<{ lap: number; segment: RaceSegment }>({ lap: 1, segment: RACE_SEGMENTS[0] });
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [activeMomentId, setActiveMomentId] = useState<string | null>(null);
+  const [startSignal, setStartSignal] = useState<ReplayStartSignal | null>(null);
   const [positionPops, setPositionPops] = useState<Record<string, { delta: number; key: number }>>({});
   const currentRaceProgress = replayProgressAt(clock.current, raceDuration, startHoldSeconds);
 
@@ -127,6 +128,8 @@ export function useReplayClock({
       const displayLap = displayLapAtProgress(progress, laps);
       const segment = segmentAtProgress(progress);
       setLive((current) => (current.lap === displayLap && current.segment === segment ? current : { lap: displayLap, segment }));
+      const nextSignal = startSignalAt(time, startHoldSeconds);
+      setStartSignal((current) => (current?.lights === nextSignal?.lights && current?.go === nextSignal?.go ? current : nextSignal));
       setSnapshot(nextSnapshot);
     }
   }, [createTargetSnapshot, createTower, displayLapAtProgress, getActiveMomentId, initialSnapshot.carProgress, laps, raceDuration, segmentAtProgress, smoothCarProgress, startHoldSeconds]);
@@ -205,6 +208,7 @@ export function useReplayClock({
     live,
     snapshot,
     activeMomentId,
+    startSignal,
     positionPops,
     currentRaceProgress,
     reduceMotion,

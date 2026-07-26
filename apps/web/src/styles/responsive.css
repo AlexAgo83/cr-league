@@ -5,6 +5,10 @@
     padding: 12px;
   }
 
+  .replay-start-lights {
+    top: 50%;
+  }
+
   .game-shell {
     padding-bottom: 92px;
   }

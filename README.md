@@ -146,7 +146,7 @@ flowchart LR
 
 ## Current Engineering State
 
-- 0.4 ship-rails work is closed in Logics: performance, replay, chrono, garage, bot progression, and maintainability follow-ups are all Done.
+- 0.5 phase is open: 0.4 ship rails are closed, and the next work is evidence-gated gameplay depth, economy/cards, balance, and fun scoring.
 - The largest backend store was split into focused league modules behind the unchanged `store.ts` public barrel; the obsolete `storeCore.ts` compatibility barrel has been removed.
 - The web app root is below the 800-line ceiling, with splash, modal state, and static preference data extracted.
 - Replay/map performance work keeps route geometry and static layers off the hot path, and circuit route data loads per selected circuit.
@@ -296,9 +296,9 @@ Current roadmap direction:
 - `0.1`: playable vertical slice implemented;
 - `0.2`: private league prototype foundation implemented;
 - `0.3`: playtest game loop polish has reached replay realism, pit strategy, loading feedback, and global circuit catalogue patch `0.3.10`;
-- `0.4`: ship rails are implemented; route/content tooling and board-style UI
-  asset coverage are active adjacent polish while economy depth waits for
-  playtest signal.
+- `0.4`: ship rails are implemented and closed in Logics.
+- `0.5`: gameplay depth is starting, focused on economy/card depth, balance evidence,
+  fun/comprehension playtests, and selective tuning only when reports justify it.
 
 ## Contributing
 

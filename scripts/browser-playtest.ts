@@ -147,10 +147,11 @@ try {
   await observeScenario(page, {
     id: "first-contact-next-action",
     question: "I arrive in the game: how do I know what I should do?",
-    evidence: "Plan navigation and race-day steps are visible from the stand.",
+    evidence: "The stand exposes Plan navigation plus the current race-day instruction.",
     locators: [
       { label: "Plan navigation", find: () => page!.getByRole("button", { name: "Plan", exact: true }) },
-      { label: "Grand Prix day steps", find: () => page!.getByText("Grand Prix day steps") }
+      { label: "Race-day instruction", find: () => page!.getByText("1. Read the circuit") },
+      { label: "Chrono guidance", find: () => page!.getByText("Check the track and forecast") }
     ]
   });
   await captureUx(page, "league-created", `League ${state.league.name} is open on the race desk.`);
@@ -163,10 +164,13 @@ try {
       await observeScenario(page, {
         id: "plan-config-read",
         question: "How do I know which race-plan config I should choose?",
-        evidence: "Plan view exposes the GP read, risk read, and send action.",
+        evidence: "Plan view exposes circuit/weather/plan/next reads, risk summary, and send action.",
         locators: [
-          { label: "Grand Prix read", find: () => page!.getByText("Grand Prix read") },
-          { label: "Plan risk read", find: () => page!.getByText("Plan risk read") },
+          { label: "Circuit read", find: () => page!.getByText("Circuit", { exact: true }) },
+          { label: "Weather read", find: () => page!.getByText(/Dry track expected|Light rain is possible|Heavy rain is likely/) },
+          { label: "Your plan read", find: () => page!.getByText("Your plan", { exact: true }) },
+          { label: "Next recommendation", find: () => page!.getByText("Next", { exact: true }) },
+          { label: "Plan risk", find: () => page!.getByText(/Safe plan|Risky plan|High-upside plan/) },
           { label: "Send plan", find: () => page!.getByRole("button", { name: "Send plan" }) }
         ]
       });
@@ -418,6 +422,7 @@ async function openResultReport(page: Page) {
   const reportButton = page.getByRole("button", { name: "Report" }).first();
   if (await reportButton.isVisible().catch(() => false)) await reportButton.click();
   else await page.locator(".replay-tower .map-plan-edit-button").first().click();
+  await expect(page.getByText("Race report")).toBeVisible();
 }
 
 async function returnToStand(page: Page) {

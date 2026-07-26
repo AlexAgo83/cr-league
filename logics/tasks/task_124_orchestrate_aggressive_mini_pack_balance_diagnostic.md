@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 75%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -49,6 +49,7 @@
 - Wave 2: added browser-agent comprehension scoring to the same report. It checks whether key visible affordances explain the current step, then penalizes overly long action paths. Latest 4-profile/2-GP sweep averages 8/10 comprehension for every profile; no round is `Comprehension <= 6`. The Garage post-purchase check still flags as unclear in the per-profile details.
 - Wave 3: added `npm run copy:audit` for static i18n copy comprehension checks and simplified high-friction French first-contact terms. Audit went from 220 total issues to 161; French medium findings dropped from 70 to 27.
 - Wave 4: extended the browser-agent playtest with explicit scenario checks for first contact, plan configuration choice, and result-cause understanding. Latest 4-profile/2-GP sweep still has no low fun or low comprehension rounds, but all 4 profiles fail all 3 scenario questions: the stand only exposes `Plan`, the plan view only exposes `Send plan` at the sampled moment, and the result report causal anchors are not visible to the agent.
+- Wave 5: corrected the scenario probes to target the visible player-facing cues already present in the UI and to wait for the lazy result report. Latest 4-profile/2-GP sweep passes all 3 scenario questions for all 4 profiles. One low-fun round remains: banker GP2, P8, fun 4, frustration 6, comprehension 8.
 - Next: continue grouped replayability diagnostics for aggressive/mini-pack concentration before any balance retune.
 
 # AI Context

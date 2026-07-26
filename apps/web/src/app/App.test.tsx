@@ -207,7 +207,7 @@ describe("App", () => {
     fireEvent.submit(screen.getByLabelText("League").closest("form")!);
 
     expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
-    expect(fetch).toHaveBeenCalledWith("http://localhost:4874/leagues", expect.objectContaining({ method: "POST" }));
+    expect(fetch).toHaveBeenCalledWith("http://127.0.0.1:4874/leagues", expect.objectContaining({ method: "POST" }));
   });
 
   it("refreshes the active league once when returning to a visible tab", async () => {
@@ -228,7 +228,7 @@ describe("App", () => {
     await screen.findByText("Office League Fresh");
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(fetch).toHaveBeenLastCalledWith(
-      "http://localhost:4874/leagues/rejoin",
+      "http://127.0.0.1:4874/leagues/rejoin",
       expect.objectContaining({ body: JSON.stringify({ teamId: "team_1", claimCode: "CLAIM123" }) })
     );
     expect(document.querySelector(".garage-grid")).toBeTruthy();
@@ -289,7 +289,7 @@ describe("App", () => {
 
     await waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
     expect(fetch).toHaveBeenLastCalledWith(
-      "http://localhost:4874/leagues/league_1/cars/buy",
+      "http://127.0.0.1:4874/leagues/league_1/cars/buy",
       expect.objectContaining({ method: "POST", body: JSON.stringify({ teamId: "team_1", claimCode: "CLAIM123", carAssetId: "car-008" }) })
     );
     expect(await screen.findByRole("button", { name: "Selected" })).toBeTruthy();
@@ -439,7 +439,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sell for 60 credits" }));
     await act(async () => {});
     expect(fetch).toHaveBeenLastCalledWith(
-      "http://localhost:4874/leagues/league_1/cards/sell",
+      "http://127.0.0.1:4874/leagues/league_1/cards/sell",
       expect.objectContaining({ method: "POST", body: JSON.stringify({ teamId: "team_1", claimCode: "CLAIM123", cardId: "rain_grip" }) })
     );
     expect(screen.getByText("Card sold.")).toBeTruthy();
@@ -502,7 +502,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Buy card" }));
     await act(async () => {});
     expect(fetch).toHaveBeenLastCalledWith(
-      "http://localhost:4874/leagues/league_1/cards/buy",
+      "http://127.0.0.1:4874/leagues/league_1/cards/buy",
       expect.objectContaining({ method: "POST", body: JSON.stringify({ teamId: "team_1", claimCode: "CLAIM123", cardId: "rain_grip", quantity: 2 }) })
     );
 

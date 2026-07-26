@@ -87,7 +87,7 @@ describe("App profile and admin", () => {
     fireEvent.click(screen.getByRole("button", { name: "Email me a fresh code" }));
 
     expect(await screen.findByText("If a profile exists for this email, a fresh recovery code will be sent.")).toBeTruthy();
-    expect(fetch).toHaveBeenCalledWith("http://localhost:4874/profiles/recovery-code", expect.objectContaining({ method: "POST", body: JSON.stringify({ email: "pilot@example.test" }) }));
+    expect(fetch).toHaveBeenCalledWith("http://127.0.0.1:4874/profiles/recovery-code", expect.objectContaining({ method: "POST", body: JSON.stringify({ email: "pilot@example.test" }) }));
   });
 
   it("shows profile recovery misses inline without opening the technical error modal", async () => {
@@ -231,7 +231,7 @@ describe("App profile and admin", () => {
 
     await expectGarageCode("ABC123");
     expect(fetch).toHaveBeenCalledWith(
-      "http://localhost:4874/leagues/join",
+      "http://127.0.0.1:4874/leagues/join",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({
@@ -282,7 +282,7 @@ describe("App profile and admin", () => {
     expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
     expect(document.querySelector(".notification-stack")).toBe(null);
     expect(fetch).toHaveBeenCalledWith(
-      "http://localhost:4874/leagues/rejoin",
+      "http://127.0.0.1:4874/leagues/rejoin",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify(baseState.player)
@@ -332,7 +332,7 @@ describe("App profile and admin", () => {
     await expectGarageCode("NIGHT1");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_3");
     expect(fetch).toHaveBeenLastCalledWith(
-      "http://localhost:4874/leagues/rejoin",
+      "http://127.0.0.1:4874/leagues/rejoin",
       expect.objectContaining({
         method: "POST",
         body: JSON.stringify({ teamId: "team_3", claimCode: "CLAIM456" })
@@ -488,7 +488,7 @@ describe("App profile and admin", () => {
     await screen.findByText("pilot@example.test");
     expect(fetch).toHaveBeenNthCalledWith(
       1,
-      "http://localhost:4874/admin/users?page=1&limit=100",
+      "http://127.0.0.1:4874/admin/users?page=1&limit=100",
       expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
     );
     expect(screen.getByText("Page 1/1 · 1 total")).toBeTruthy();
@@ -497,7 +497,7 @@ describe("App profile and admin", () => {
     await waitFor(() =>
       expect(fetch).toHaveBeenNthCalledWith(
         3,
-        "http://localhost:4874/admin/users?page=1&limit=100&q=pilot",
+        "http://127.0.0.1:4874/admin/users?page=1&limit=100&q=pilot",
         expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
       )
     );
@@ -508,7 +508,7 @@ describe("App profile and admin", () => {
     await waitFor(() =>
       expect(fetch).toHaveBeenNthCalledWith(
         4,
-        "http://localhost:4874/admin/test-data-cleanup",
+        "http://127.0.0.1:4874/admin/test-data-cleanup",
         expect.objectContaining({
           body: JSON.stringify({ profileIds: ["profile_1"], confirmation: "DELETE TEST DATA" }),
           headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" })
@@ -532,7 +532,7 @@ describe("App profile and admin", () => {
 
     expect(await screen.findByText("Admin inspection mode: read-only league context, no player claim loaded.")).toBeTruthy();
     expect(fetch).toHaveBeenLastCalledWith(
-      "http://localhost:4874/admin/leagues/league_1",
+      "http://127.0.0.1:4874/admin/leagues/league_1",
       expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
     );
     expect(screen.queryByRole("button", { name: "Submit directive" })).toBe(null);

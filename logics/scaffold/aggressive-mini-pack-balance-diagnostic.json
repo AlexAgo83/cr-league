@@ -1,0 +1,126 @@
+{
+  "title": "Aggressive mini-pack balance diagnostic: verify and correct win concentration without blind nerfs",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/scaffold/replayability-fun-analytics.json",
+    "scripts/replayability-analytics.ts",
+    "scripts/balance-simulations.ts",
+    "scripts/playtestBrain.ts",
+    "packages/shared/src/domain/decisionDeltas.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "reports/playtest/replayability-analytics.md",
+    "The latest replayability sample (12 seasons x 6 GP x 14 agents) shows no dominant cluster above the 25% threshold, but wins concentrate around aggressive/speed or aggressive/weather with mini_pack and pace cards. The top two clusters are aggressive/speed/mini_pack/soft_tires at 16.67% and aggressive/weather/mini_pack/soft_tires at 15.28%, with 0% boring races, 27.78% close finishes, and titles usually decided in round 6. Treat this as a diagnostic and tuning request, not an automatic nerf."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Balance diagnostics",
+    "needs": [
+      "Validate whether the apparent aggressive + mini_pack win concentration is a true balance issue or an artifact of the current replayability sample, circuit mix, starter cards, or AI persona composition.",
+      "Add enough grouped evidence to the offline reports to compare approach, preparation, pit strategy, card, and profile performance without reading raw JSON by hand.",
+      "If the evidence confirms a meaningful skew, make the smallest targeted tuning change that preserves comeback rate, close finishes, title suspense, and strategy variety.",
+      "Keep the workflow deterministic and offline: this is a simulation/balance pass, not a UI, production telemetry, or live analytics change."
+    ],
+    "context": [
+      "The replayability analytics script already computes cluster win rates and fun-arc metrics. It is enough to reveal concentration, but not enough to explain whether the source is approach, pit strategy, card effect, profile inventory, grid behavior, or circuit mix.",
+      "The balance runner already sweeps strategy combinations and has pit-strategy summaries, card summaries, gap checks, and JSON output. Prefer extending or reusing these existing tools over adding a third balance system.",
+      "The current report does not show a hard dominant strategy: every cluster is below the configured 25% dominance threshold. The risk is softer: aggressive + mini_pack may be overrepresented among wins while prudent/heavy or balanced/standard lanes still provide less championship pressure.",
+      "Any implementation change should be evidence-led. First add or run grouped diagnostics over approach, pit strategy, card, and profile. Only retune if the diagnostics show a stable skew across larger samples or the balance gate.",
+      "Out of scope: redesigning pit strategy rules, adding tire management, changing player UX copy, changing circuit data wholesale, or auto-tuning from report output."
+    ],
+    "acceptance_criteria": [
+      "AC1: A reproducible diagnostic report shows grouped performance by approach, preparation, pit strategy, card, and playtest profile, including win share, podium/share or points, and comparison to overall chance.",
+      "AC2: The report explains whether aggressive + mini_pack concentration is confirmed, inconclusive, or sample-driven, with references to larger deterministic runs.",
+      "AC3: If tuning is applied, it is the smallest scoped change to existing balance constants or decision effects and is covered by focused tests or balance gates.",
+      "AC4: Replayability/fun regressions are checked after the pass: champion variety, finishing-order variety, comeback rate, close-finish rate, boring-race rate, and title suspense remain acceptable.",
+      "AC5: No simulation engine architecture, persona strategy rewrite, live telemetry, or UI flow is introduced.",
+      "AC6: npm run typecheck, npm test, npm run lint, npm run build, npm run playtest:replayability, and npm run logics:validate pass before closeout."
+    ]
+  },
+  "product": {
+    "title": "Aggressive Mini-Pack Balance Diagnostic Product Brief",
+    "overview": "The replayability report shows healthy variety overall but a visible concentration of wins around aggressive mini-pack lanes. This request adds grouped evidence and, only if needed, a minimal tuning pass so race strategy remains varied without killing comebacks, close finishes, or title suspense.",
+    "goals": [
+      "Turn the replayability finding into actionable balance evidence.",
+      "Separate real strategy skew from sample size, circuit mix, and persona inventory effects.",
+      "Preserve the current fun signals while improving strategic variety.",
+      "Keep diagnostics deterministic, offline, and cheap to rerun."
+    ],
+    "non_goals": [
+      "Do not redesign the race engine or pit strategy system.",
+      "Do not add new player-facing screens or telemetry.",
+      "Do not nerf aggressive mini-pack blindly.",
+      "Do not introduce a new analytics framework."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Group replayability and balance diagnostics by strategy axes",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Balance diagnostics",
+      "request_acs": ["AC1", "AC2", "AC4", "AC5", "AC6"],
+      "problem": [
+        "The replayability report lists full strategy clusters, but the evidence is too granular to isolate whether approach, pit strategy, card, or profile is driving the win concentration.",
+        "The current sample shows aggressive mini-pack concentration without a formal dominance breach, so an immediate tuning change would be speculative.",
+        "Designers need grouped signals that can be compared across larger deterministic runs."
+      ],
+      "scope_in": [
+        "Add grouped output to the existing replayability or balance report for approach, preparation, pit strategy, card, and profile.",
+        "Include win share, podium or points proxy where available, and comparison to overall chance or sample share.",
+        "Run a larger deterministic sample and record whether the aggressive mini-pack concentration is confirmed or sample-driven."
+      ],
+      "scope_out": [
+        "Changing balance values in this slice.",
+        "Adding a new analytics tool when existing scripts can carry the grouped output."
+      ],
+      "acceptance_criteria": [
+        "AC1: Grouped strategy-axis tables are emitted in markdown and JSON.",
+        "AC2: The report identifies the strongest drivers of the aggressive mini-pack concentration.",
+        "AC3: Replayability/fun summary metrics are still visible next to the grouped diagnostics."
+      ]
+    },
+    {
+      "title": "Apply minimal balance tuning only if diagnostics confirm skew",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Balance tuning",
+      "request_acs": ["AC2", "AC3", "AC4", "AC5", "AC6"],
+      "problem": [
+        "Aggressive mini-pack may be too strong, but the current evidence does not justify a blind nerf.",
+        "Any tuning can easily reduce comeback rate or close finishes if it overcorrects the exciting strategy lane.",
+        "The repo already has balance gates and focused simulation tests that should be reused for proof."
+      ],
+      "scope_in": [
+        "If diagnostics confirm skew, adjust the smallest existing balance constant or decision delta needed.",
+        "Add or update focused tests or balance gate evidence that proves strategy variety improved without major fun regression.",
+        "Record before/after metrics in the closeout report."
+      ],
+      "scope_out": [
+        "Rewriting personas, adding new card mechanics, or changing circuit data wholesale.",
+        "Tuning if the grouped diagnostics show the finding is sample-driven or acceptable."
+      ],
+      "acceptance_criteria": [
+        "AC1: Any tuning has explicit before/after metrics from deterministic runs.",
+        "AC2: Existing balance and replayability gates pass after tuning.",
+        "AC3: If no tuning is applied, the task records the diagnostic reason and leaves no speculative balance change."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate aggressive mini-pack balance diagnostic",
+    "plan": [
+      "Run or extend existing diagnostics to group replayability output by approach, preparation, pit strategy, card, and profile.",
+      "Run a larger deterministic sample and compare grouped results against the latest baseline report.",
+      "Decide whether aggressive mini-pack concentration is confirmed, inconclusive, or acceptable.",
+      "If confirmed, make the smallest scoped balance change and cover it with focused tests or balance gate evidence.",
+      "Re-run typecheck, test, lint, build, playtest:replayability, and logics:validate; record before/after metrics in closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/aggressive-mini-pack-balance-diagnostic.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

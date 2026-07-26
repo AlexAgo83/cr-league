@@ -15,6 +15,19 @@ import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
 import { CountryBadge, VisualIcon } from "./VisualIcon.js";
 
+type CircuitRegion = "europe" | "americas" | "asia" | "africa" | "oceania";
+const CIRCUIT_PAGE_SIZE = 8;
+const REGION_ORDER: CircuitRegion[] = ["europe", "americas", "asia", "africa", "oceania"];
+// ponytail: flat ISO2 -> region map covers current + planned circuit countries; unknown codes fall back to africa-less "other" via the ?? below and simply won't match a region filter.
+const COUNTRY_REGION: Record<string, CircuitRegion> = {
+  FR: "europe", NL: "europe", DE: "europe", IT: "europe", PT: "europe", AT: "europe", MC: "europe", GB: "europe",
+  BE: "europe", CZ: "europe", DK: "europe", SE: "europe", TR: "europe", GR: "europe", HU: "europe", FI: "europe", MT: "europe",
+  US: "americas", CA: "americas", BR: "americas", AR: "americas", MX: "americas",
+  JP: "asia", KR: "asia", SG: "asia", HK: "asia", CN: "asia", AE: "asia",
+  ZA: "africa",
+  AU: "oceania"
+};
+
 export function ChampionshipView({
   state,
   playerTeamId,
@@ -45,6 +58,18 @@ export function ChampionshipView({
   const previewCar = useMemo(() => previewCircuit ? circuitPreviewCar(previewCircuit, state, playerTeamId) : undefined, [playerTeamId, previewCircuit, state]);
   const previewClock = useCircuitPreviewClock(previewCircuit, previewCar);
   const catalogCircuits = CITY_CIRCUITS.map(withRoute).sort((left, right) => tt(left.layoutKey).localeCompare(tt(right.layoutKey), undefined, { sensitivity: "base" }));
+  const [circuitQuery, setCircuitQuery] = useState("");
+  const [circuitRegion, setCircuitRegion] = useState<"all" | CircuitRegion>("all");
+  const [circuitPage, setCircuitPage] = useState(0);
+  const availableRegions = REGION_ORDER.filter((region) => catalogCircuits.some((circuit) => COUNTRY_REGION[circuit.country] === region));
+  const filteredCircuits = catalogCircuits.filter((circuit) => {
+    if (circuitRegion !== "all" && COUNTRY_REGION[circuit.country] !== circuitRegion) return false;
+    const query = circuitQuery.trim().toLowerCase();
+    return !query || circuit.city.toLowerCase().includes(query) || tt(circuit.layoutKey).toLowerCase().includes(query);
+  });
+  const circuitPageCount = Math.max(1, Math.ceil(filteredCircuits.length / CIRCUIT_PAGE_SIZE));
+  const circuitPageIndex = Math.min(circuitPage, circuitPageCount - 1);
+  const pageCircuits = filteredCircuits.slice(circuitPageIndex * CIRCUIT_PAGE_SIZE, circuitPageIndex * CIRCUIT_PAGE_SIZE + CIRCUIT_PAGE_SIZE);
   const seasonRoundsByLayout = new Map<string, number[]>();
   for (let round = 1; round <= state.league.maxGrandPrixPerSeason; round += 1) {
     const circuit = seasonCircuits[(round - 1) % seasonCircuits.length]!;
@@ -63,10 +88,11 @@ export function ChampionshipView({
     setPreviewCircuit(undefined);
     onSelectRecordTab(nextTab);
   };
-  const previewCircuitIndex = previewCircuit ? catalogCircuits.findIndex((circuit) => circuit.layoutKey === previewCircuit.layoutKey && circuit.city === previewCircuit.city) : -1;
+  // Nav within the filtered list so prev/next never jumps to a circuit hidden by the current filters.
+  const previewCircuitIndex = previewCircuit ? filteredCircuits.findIndex((circuit) => circuit.layoutKey === previewCircuit.layoutKey && circuit.city === previewCircuit.city) : -1;
   const selectAdjacentPreviewCircuit = (direction: -1 | 1) => {
-    if (previewCircuitIndex < 0) return;
-    setPreviewCircuit(catalogCircuits[(previewCircuitIndex + direction + catalogCircuits.length) % catalogCircuits.length]);
+    if (previewCircuitIndex < 0 || filteredCircuits.length === 0) return;
+    setPreviewCircuit(filteredCircuits[(previewCircuitIndex + direction + filteredCircuits.length) % filteredCircuits.length]);
   };
 
   useEffect(() => {
@@ -212,8 +238,40 @@ export function ChampionshipView({
           ) : null}
 
           {activeRecordTab === "calendar" && !previewCircuit ? (
+            <>
+            <div className="circuit-filter-bar">
+              <input
+                type="search"
+                className="circuit-filter-search"
+                value={circuitQuery}
+                placeholder={tt("circuit_filter_search")}
+                aria-label={tt("circuit_filter_search")}
+                onChange={(event) => {
+                  setCircuitQuery(event.target.value);
+                  setCircuitPage(0);
+                }}
+              />
+              <select
+                className="circuit-filter-region"
+                value={circuitRegion}
+                aria-label={tt("circuit_filter_region")}
+                onChange={(event) => {
+                  setCircuitRegion(event.target.value as "all" | CircuitRegion);
+                  setCircuitPage(0);
+                }}
+              >
+                <option value="all">{tt("circuit_region_all")}</option>
+                {availableRegions.map((region) => (
+                  <option key={region} value={region}>{tt(`circuit_region_${region}` as TranslationKey)}</option>
+                ))}
+              </select>
+              <span className="circuit-filter-count">{tt("circuit_filter_count", { count: filteredCircuits.length })}</span>
+            </div>
+            {filteredCircuits.length === 0 ? (
+              <p className="circuit-filter-empty">{tt("circuit_filter_empty")}</p>
+            ) : null}
             <ol className="circuit-calendar-list" aria-label={tt("championship_calendar")}>
-              {catalogCircuits.map((circuit) => {
+              {pageCircuits.map((circuit) => {
                 const rounds = seasonRoundsByLayout.get(circuit.layoutKey) ?? [];
                 return (
                   <li key={`${circuit.city}-${circuit.layoutKey}`} className={rounds.includes(currentGrandPrix.round) ? "current-circuit" : undefined}>
@@ -238,6 +296,30 @@ export function ChampionshipView({
                 );
               })}
             </ol>
+            {circuitPageCount > 1 ? (
+              <div className="circuit-pagination">
+                <button
+                  type="button"
+                  className="secondary-button"
+                  aria-label={tt("admin_action_previous_page")}
+                  disabled={circuitPageIndex === 0}
+                  onClick={() => setCircuitPage(circuitPageIndex - 1)}
+                >
+                  ‹
+                </button>
+                <span aria-live="polite">{circuitPageIndex + 1} / {circuitPageCount}</span>
+                <button
+                  type="button"
+                  className="secondary-button"
+                  aria-label={tt("action_next")}
+                  disabled={circuitPageIndex >= circuitPageCount - 1}
+                  onClick={() => setCircuitPage(circuitPageIndex + 1)}
+                >
+                  ›
+                </button>
+              </div>
+            ) : null}
+            </>
           ) : null}
 
           {activeRecordTab === "palmares" ? (

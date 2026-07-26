@@ -236,6 +236,85 @@
   padding: 0;
 }
 
+.circuit-filter-bar {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.circuit-filter-search,
+.circuit-filter-region {
+  background: var(--color-cockpit);
+  border: 1px solid var(--color-border);
+  clip-path: var(--chamfer-sm);
+  color: var(--color-text);
+  height: 40px;
+  padding: 0 12px;
+}
+
+.circuit-filter-search {
+  flex: 1 1 200px;
+  min-width: 0;
+}
+
+.circuit-filter-region {
+  flex: 0 1 auto;
+  min-width: 150px;
+  width: auto;
+}
+
+.circuit-filter-search:focus-visible,
+.circuit-filter-region:focus-visible {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+.circuit-filter-count {
+  color: var(--color-muted);
+  flex: 0 0 auto;
+  font-size: 0.8rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  margin-left: auto;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.circuit-filter-empty {
+  color: var(--color-muted);
+  margin: 16px 0;
+  text-align: center;
+}
+
+.circuit-pagination {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  margin-top: 16px;
+}
+
+.circuit-pagination span {
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+  min-width: 52px;
+  text-align: center;
+}
+
+.circuit-pagination .secondary-button {
+  align-items: center;
+  display: flex;
+  font-size: 1.2rem;
+  height: 40px;
+  justify-content: center;
+  line-height: 1;
+  padding: 0;
+  width: 40px;
+}
+
 .circuit-calendar-list {
   display: grid;
   gap: 10px;

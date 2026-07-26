@@ -9,6 +9,14 @@
     top: 50%;
   }
 
+  .circuit-filter-search {
+    flex-basis: 100%;
+  }
+
+  .circuit-filter-count {
+    margin-left: 0;
+  }
+
   .game-shell {
     padding-bottom: 92px;
   }

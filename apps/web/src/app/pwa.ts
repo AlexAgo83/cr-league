@@ -67,6 +67,19 @@ export function registerServiceWorker() {
     .catch(() => {});
 }
 
+export function unregisterDevServiceWorkers() {
+  if (typeof navigator === "undefined" || !("serviceWorker" in navigator)) return;
+
+  navigator.serviceWorker.getRegistrations().then((registrations) => {
+    registrations.forEach((registration) => registration.unregister());
+  });
+  if ("caches" in globalThis) {
+    caches.keys().then((keys) => {
+      keys.filter((key) => key.startsWith("crl-shell-")).forEach((key) => caches.delete(key));
+    });
+  }
+}
+
 export function usePwaInstall() {
   const canInstall = useSyncExternalStore(subscribe, () => deferredPrompt !== null, () => false);
   const promptInstall = async () => {

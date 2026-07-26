@@ -1,5 +1,6 @@
 import {
   createPrng,
+  integratedSpeedProfile,
   RACE_SEGMENTS,
   type QualifyingRun,
   RACE_REPLAY_BASE_SECONDS,
@@ -9,6 +10,7 @@ import {
   type RaceResult,
   type RaceSegment,
   type RaceTraits,
+  speedFactorAt,
   type TrackSpeedProfile,
   type Weather
 } from "@cr-league/shared";
@@ -191,33 +193,4 @@ function weatherAdjustedSpeedProfile(speedProfile: TrackSpeedProfile, weather: W
   return speedProfile.map((span) => (
     span.kind === "straight" ? span : { ...span, factor: Number(Math.max(0.35, span.factor * multiplier).toFixed(3)) }
   ));
-}
-
-function integratedSpeedProfile(to: number, speedProfile: TrackSpeedProfile) {
-  const end = Math.min(1, Math.max(0, to));
-  const cuts = [...new Set([0, end, ...speedProfile.flatMap((span) => expandedSpeedSpan(span).flatMap((range) => [Math.min(end, range.start), Math.min(end, range.end)]))])]
-    .filter((point) => point >= 0 && point <= end)
-    .sort((left, right) => left - right);
-  return cuts.slice(0, -1).reduce((sum, start, index) => {
-    const finish = cuts[index + 1]!;
-    return sum + (finish - start) * speedFactorAt((start + finish) / 2, speedProfile);
-  }, 0);
-}
-
-function speedFactorAt(progress: number, speedProfile: TrackSpeedProfile) {
-  const matches = speedProfile.filter((span) => progressInSpeedSpan(progress, span)).map((span) => span.factor);
-  return matches.length ? Math.min(...matches) : 1;
-}
-
-function expandedSpeedSpan(span: TrackSpeedProfile[number]) {
-  return span.startProgress <= span.endProgress
-    ? [{ start: span.startProgress, end: span.endProgress }]
-    : [
-        { start: span.startProgress, end: 1 },
-        { start: 0, end: span.endProgress }
-      ];
-}
-
-function progressInSpeedSpan(progress: number, span: TrackSpeedProfile[number]) {
-  return expandedSpeedSpan(span).some((range) => progress >= range.start && progress <= range.end);
 }

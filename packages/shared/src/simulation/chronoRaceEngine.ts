@@ -1,6 +1,7 @@
 import type { CardId, ClassificationEntry, PitStrategy, RaceInput, RaceParticipant, RaceSegment, ReplayTracePoint, Weather } from "../domain/race.js";
 import { RACE_SEGMENTS } from "../domain/race.js";
 import { APPROACH_DELTAS, CARD_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type DecisionDeltas } from "../domain/decisionDeltas.js";
+import { integratedSpeedProfile, progressInSpeedSpan, speedFactorAt } from "./speedProfile.js";
 
 export type ChronoScores = {
   pace: number;
@@ -476,27 +477,6 @@ function weatherAdjustedSpeedProfile(speedProfile: NonNullable<RaceInput["speedP
   ));
 }
 
-function integratedSpeedProfile(to: number, speedProfile: NonNullable<RaceInput["speedProfile"]>) {
-  const end = Math.min(1, Math.max(0, to));
-  const cuts = [...new Set([0, end, ...speedProfile.flatMap((span) => expandedSpeedSpan(span).flatMap((range) => [Math.min(end, range.start), Math.min(end, range.end)]))])]
-    .filter((point) => point >= 0 && point <= end)
-    .sort((left, right) => left - right);
-  return cuts.slice(0, -1).reduce((sum, start, index) => {
-    const finish = cuts[index + 1]!;
-    const factor = speedProfile.filter((span) => progressInSpeedSpan((start + finish) / 2, span)).map((span) => span.factor);
-    return sum + (finish - start) * (factor.length ? Math.min(...factor) : 1);
-  }, 0);
-}
-
-function expandedSpeedSpan(span: NonNullable<RaceInput["speedProfile"]>[number]) {
-  return span.startProgress <= span.endProgress
-    ? [{ start: span.startProgress, end: span.endProgress }]
-    : [
-        { start: 0, end: span.endProgress },
-        { start: span.startProgress, end: 1 }
-      ];
-}
-
 function pitLaneTrackProgress(segmentIndex: number, segment: RaceSegment, laps: number, pitLaneProgress: number) {
   const center: Partial<Record<RaceSegment, number>> = { early: 0.38, mid: 0.5, late: 0.62 };
   const raceProgress = (segmentIndex + (center[segment] ?? 0.5)) / RACE_SEGMENTS.length;
@@ -587,8 +567,7 @@ function speedKindAtProgress(progress: number, speedProfile: NonNullable<RaceInp
 }
 
 function localSpeedFactor(progress: number, speedProfile: NonNullable<RaceInput["speedProfile"]>) {
-  const factors = speedProfile.filter((span) => progressInSpeedSpan(progress, span)).map((span) => span.factor);
-  return factors.length ? Math.min(...factors) : 1;
+  return speedFactorAt(progress, speedProfile);
 }
 
 function parameterSpeedFactor(kind: NonNullable<RaceInput["speedProfile"]>[number]["kind"], parameters: ChronoMotionParameters) {
@@ -625,10 +604,4 @@ function traitsFromTags(input: RaceInput) {
 
 function normalizeLaps(value: number | undefined) {
   return typeof value === "number" && Number.isFinite(value) ? Math.max(1, Math.min(99, Math.round(value))) : 10;
-}
-
-function progressInSpeedSpan(progress: number, span: NonNullable<RaceInput["speedProfile"]>[number]) {
-  return span.startProgress <= span.endProgress
-    ? progress >= span.startProgress && progress <= span.endProgress
-    : progress >= span.startProgress || progress <= span.endProgress;
 }

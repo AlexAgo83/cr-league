@@ -1,4 +1,4 @@
-import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TrackSpeedProfile } from "@cr-league/shared";
+import { integratedSpeedProfile, RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TrackSpeedProfile } from "@cr-league/shared";
 import type { RaceEvent, Translator } from "../../app/helpers.js";
 import type { CityCircuit } from "../../app/circuits.js";
 export { displayLapAtProgress } from "../../app/lapDisplay.js";
@@ -394,9 +394,9 @@ export function carProgressAtRaceTime(result: RaceResult, times: Record<string, 
 }
 
 function mappedLapProgress(progress: number, speedProfile: TrackSpeedProfile) {
-  const total = integratedSpeed(1, speedProfile);
+  const total = integratedSpeedProfile(1, speedProfile, "visual");
   if (total <= 0) return progress;
-  return Math.min(1, Math.max(0, integratedSpeed(progress, speedProfile) / total));
+  return Math.min(1, Math.max(0, integratedSpeedProfile(progress, speedProfile, "visual") / total));
 }
 
 function inverseTrackSpeedProfile(progressLaps: number, speedProfile: TrackSpeedProfile) {
@@ -411,37 +411,4 @@ function inverseTrackSpeedProfile(progressLaps: number, speedProfile: TrackSpeed
     else high = mid;
   }
   return completedLaps + (low + high) / 2;
-}
-
-function integratedSpeed(to: number, speedProfile: TrackSpeedProfile) {
-  const end = Math.min(1, Math.max(0, to));
-  const cuts = [...new Set([0, end, ...speedProfile.flatMap((span) => expandedSpan(span).flatMap((range) => [Math.min(end, range.start), Math.min(end, range.end)]))])]
-    .filter((point) => point >= 0 && point <= end)
-    .sort((left, right) => left - right);
-  return cuts.slice(0, -1).reduce((sum, start, index) => {
-    const finish = cuts[index + 1]!;
-    const midpoint = (start + finish) / 2;
-    return sum + (finish - start) * speedFactorAt(midpoint, speedProfile);
-  }, 0);
-}
-
-function speedFactorAt(progress: number, speedProfile: TrackSpeedProfile) {
-  const matches = speedProfile.filter((span) => progressInSpan(progress, span));
-  if (!matches.length) return 1;
-  return matches.some((span) => span.factor < 1) ? Math.min(...matches.map((span) => span.factor)) : Math.max(...matches.map((span) => span.factor));
-}
-
-function progressInSpan(progress: number, span: TrackSpeedProfile[number]) {
-  return span.startProgress <= span.endProgress
-    ? progress >= span.startProgress && progress <= span.endProgress
-    : progress >= span.startProgress || progress <= span.endProgress;
-}
-
-function expandedSpan(span: TrackSpeedProfile[number]) {
-  return span.startProgress <= span.endProgress
-    ? [{ start: span.startProgress, end: span.endProgress }]
-    : [
-        { start: 0, end: span.endProgress },
-        { start: span.startProgress, end: 1 }
-      ];
 }

@@ -223,7 +223,7 @@ export function GameTopbar({
       </button>
       <nav className="game-nav" aria-label={tt("cockpit_sections")}>
         {GAME_VIEWS.map((view) => (
-          <button key={view} type="button" className={gameView === view ? "active" : undefined} onClick={() => onSelectView(view)}>
+          <button key={view} type="button" className={gameView === view ? "active" : undefined} aria-label={tt(`rail_${view}` as TranslationKey)} onClick={() => onSelectView(view)}>
             <BoardIcon className="nav-board-icon" name={GAME_VIEW_ICONS[view]} />
             <span className="nav-label-full">{tt(`rail_${view}` as TranslationKey)}</span>
             <span className="nav-label-short" aria-hidden="true">

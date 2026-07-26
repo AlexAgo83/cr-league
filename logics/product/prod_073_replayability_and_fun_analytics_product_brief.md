@@ -1,6 +1,6 @@
 ## prod_073_replayability_and_fun_analytics_product_brief - Replayability and Fun Analytics Product Brief
 > Date: 2026-07-26
-> Status: Proposed
+> Status: Settled
 > Related request: `req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons`
 > Related backlog: `item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense`, `item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season`
 > Related task: `task_122_orchestrate_replayability_and_fun_analytics`

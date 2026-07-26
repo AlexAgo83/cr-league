@@ -19,6 +19,7 @@ const reportPath = stringArg("--report", `reports/playtest/${new Date().toISOStr
 const screenshotDir = stringArg("--screenshots", "reports/playtest/browser-failures");
 const uxReportPath = stringArg("--ux-report", "");
 const uxAssetsDir = stringArg("--ux-assets", "reports/ux/browser-playthrough");
+const coldStartReportPath = stringArg("--cold-start-report", "");
 
 type ManagedServer = {
   name: string;
@@ -97,6 +98,11 @@ const cardLabels: Record<CardId, string> = {
   urban_draft: "Urban Draft"
 };
 
+if (coldStartReportPath) {
+  await runColdStart();
+  process.exit(0);
+}
+
 try {
   await startServers();
   const seededProfile = await seedProfile();
@@ -173,6 +179,83 @@ try {
 } finally {
   await browser?.close();
   for (const server of servers.reverse()) server.child.kill("SIGTERM");
+}
+
+async function runColdStart() {
+  const funnel: Array<{ goal: string; reached: boolean; note: string }> = [];
+  let coldBrowser: Browser | undefined;
+  let coldPage: Page | undefined;
+  let failure: unknown;
+  try {
+    await startServers();
+    const seededProfile = await seedProfile();
+    coldBrowser = await chromium.launch();
+    const context = await coldBrowser.newContext({ baseURL: webBaseUrl, viewport: { width: 390, height: 900 } });
+    await context.addInitScript((session) => {
+      localStorage.clear();
+      localStorage.setItem("cr-league-help-profile-code", "1");
+      localStorage.setItem("cr-league-profile-session", JSON.stringify(session));
+      localStorage.setItem("cr-league-profile-email", session.profile.email);
+    }, seededProfile.session);
+    coldPage = await context.newPage();
+
+    await coldStep(funnel, "enter app", "Visible PRESS START opened the setup flow.", async () => {
+      await coldPage!.goto("/");
+      await coldPage!.getByRole("button", { name: "PRESS START" }).click();
+      await expect(coldPage!.getByRole("button", { name: /Create league/ })).toBeVisible();
+    });
+    await coldStep(funnel, "create league", "Visible Create league/Start league controls created a league.", async () => {
+      await coldPage!.getByRole("button", { name: /Create league/ }).click();
+      await coldPage!.getByRole("textbox", { name: "League" }).fill(`Naive UX ${Date.now()}`);
+      await coldPage!.getByRole("textbox", { name: "Team" }).fill("Naive Team");
+      await coldPage!.getByLabel("GP per season").fill("2");
+      await coldPage!.getByRole("button", { name: "Start league" }).click();
+      await dismissBlockingModals(coldPage!);
+      await expect(coldPage!.getByRole("button", { name: "Plan", exact: true })).toBeVisible();
+    });
+    await coldStep(funnel, "reach first decision", "Visible Plan and Send plan controls were enough to lock the default plan.", async () => {
+      await coldPage!.getByRole("button", { name: "Plan", exact: true }).click();
+      await dismissBlockingModals(coldPage!);
+      await coldPage!.getByRole("button", { name: "Send plan" }).click();
+      await coldPage!.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click();
+      await expect(coldPage!.getByRole("button", { name: "Launch GP" })).toBeVisible();
+    });
+    await coldStep(funnel, "run first race", "Visible Launch GP flow opened the replay and returned to the stand.", async () => {
+      await coldPage!.getByRole("button", { name: "Launch GP" }).click();
+      await coldPage!.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
+      await expect(coldPage!.getByRole("button", { name: "Back to stand" })).toBeVisible();
+      await coldPage!.getByRole("button", { name: "Back to stand" }).click();
+    });
+    await coldStep(funnel, "make first purchase", "Visible Garage/Shop/card/Buy card controls completed a first purchase.", async () => {
+      await coldPage!.getByRole("button", { name: "Garage", exact: true }).click();
+      await dismissBlockingModals(coldPage!);
+      await coldPage!.getByRole("tab", { name: "Shop" }).click();
+      await coldPage!.getByRole("button", { name: /^Card:/ }).first().click();
+      await coldPage!.getByRole("dialog", { name: "Confirm card purchase" }).getByRole("button", { name: "Buy card" }).click();
+      await expect(coldPage!.getByText("Card added to your garage.")).toBeVisible();
+    });
+  } catch (error) {
+    failure = error;
+    if (!funnel.length || funnel[funnel.length - 1]?.reached) {
+      funnel.push({ goal: "stuck", reached: false, note: error instanceof Error ? error.message : String(error) });
+    }
+  } finally {
+    await coldBrowser?.close();
+    for (const server of servers.reverse()) server.child.kill("SIGTERM");
+  }
+  await writeColdStartReport(funnel, failure);
+  if (failure) throw failure;
+  console.log(`Cold-start UX funnel: ${coldStartReportPath}`);
+}
+
+async function coldStep(funnel: Array<{ goal: string; reached: boolean; note: string }>, goal: string, note: string, action: () => Promise<void>) {
+  try {
+    await action();
+    funnel.push({ goal, reached: true, note });
+  } catch (error) {
+    funnel.push({ goal, reached: false, note: error instanceof Error ? error.message : String(error) });
+    throw error;
+  }
 }
 
 async function seedProfile() {
@@ -344,6 +427,7 @@ async function fetchLeagueState(previous: LeagueState) {
 }
 
 async function dismissBlockingModals(page: Page) {
+  await page.getByRole("dialog").first().waitFor({ state: "visible", timeout: 2_000 }).catch(() => undefined);
   for (let attempt = 0; attempt < 6; attempt += 1) {
     const dialog = page.getByRole("dialog").first();
     if (!(await dialog.isVisible().catch(() => false))) return;
@@ -501,6 +585,34 @@ async function writeUxReport(input: { reports: RoundReport[]; failed: boolean; e
     ]
       .filter((line): line is string => line !== undefined)
       .join("\n") + "\n",
+    "utf8"
+  );
+}
+
+async function writeColdStartReport(funnel: Array<{ goal: string; reached: boolean; note: string }>, failure: unknown) {
+  await mkdir(dirname(coldStartReportPath), { recursive: true });
+  const reached = funnel.filter((step) => step.reached).at(-1)?.goal ?? "none";
+  const stuck = funnel.find((step) => !step.reached);
+  await writeFile(
+    coldStartReportPath,
+    [
+      "# Cold-Start UX Funnel",
+      "",
+      `- Date: ${new Date().toISOString()}`,
+      `- Viewport: mobile 390x900`,
+      `- Result: ${failure ? "FAIL" : "PASS"}`,
+      `- Furthest step reached: ${reached}`,
+      stuck ? `- Stuck at: ${stuck.goal}` : "- Stuck at: none",
+      "",
+      "## Funnel",
+      table(["Goal", "Reached", "Visible-affordance note"], funnel.map((step) => [step.goal, step.reached ? "yes" : "no", step.note.replace(/\n/g, " ")])),
+      "",
+      "## Missing Or Ambiguous Copy",
+      stuck ? `- ${stuck.goal}: ${stuck.note.replace(/\n/g, " ")}` : "- none observed in this run",
+      "",
+      "## Scope Note",
+      "- The profile session is seeded because local recovery-code delivery is not visible in-browser. The funnel uses only visible controls after app entry."
+    ].join("\n") + "\n",
     "utf8"
   );
 }

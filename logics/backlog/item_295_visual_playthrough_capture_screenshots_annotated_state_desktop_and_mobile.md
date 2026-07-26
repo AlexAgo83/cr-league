@@ -1,10 +1,10 @@
 ## item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile - Visual playthrough capture: screenshots + annotated state, desktop and mobile
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 65%
+> Progress: 100%
 > Complexity: Medium
 > Theme: UX evaluation tooling
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -51,3 +51,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_121_orchestrate_the_ux_evaluation_harness` was finished via `logics-manager flow finish task` on 2026-07-26.

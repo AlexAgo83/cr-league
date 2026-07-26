@@ -1,7 +1,7 @@
 ## req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure - UX evaluation harness: let an AI judge UI/UX, friction and onboarding by capturing what it can see and measure
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

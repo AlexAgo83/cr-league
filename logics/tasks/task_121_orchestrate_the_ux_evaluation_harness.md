@@ -1,10 +1,10 @@
 ## task_121_orchestrate_the_ux_evaluation_harness - Orchestrate the UX evaluation harness
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90
 > Confidence: 85
-> Progress: 65%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -30,24 +30,32 @@
 - `item_297_cold_start_naive_agent_and_onboarding_funnel`
 
 # Definition of Done (DoD)
-- [ ] Generated request, product, backlog, and task docs are present.
-- [ ] Context-pack handoff is available when requested.
-- [ ] Validation passes.
-- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+- [x] Generated request, product, backlog, and task docs are present.
+- [x] Context-pack handoff is available when requested.
+- [x] Validation passes.
+- [x] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
-- request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
-- request-AC4 -> This task. Proof: optional context-pack handoff is supported.
-- request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
-- request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC1 -> This task. Proof: `npm run playtest:ux` reuses `scripts/browser-playtest.ts` and generated `reports/ux/browser-playthrough.md` with desktop/mobile screenshots plus annotations for 10 meaningful playthrough steps.
+- request-AC2 -> This task. Proof: `reports/ux/browser-playthrough.md` includes actions-per-task, hesitation slots, console errors/warnings, mobile body overflow, and mobile small tap-target counts.
+- request-AC3 -> This task. Proof: `axe-core` is installed and the UX report includes axe violation summaries per captured step.
+- request-AC4 -> This task. Proof: `npm run playtest:ux:cold-start` generated `reports/ux/cold-start-funnel.md`, showing a visible-affordance-only funnel through app entry, league creation, first decision, first race, and first purchase.
+- request-AC5 -> This task. Proof: `npm run typecheck`, `npm test`, `npm run build`, `npm run lint`, `npm run logics:validate`, `npm run playtest:ux`, and `npm run playtest:ux:cold-start` passed.
 
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- 2026-07-26: `npm run typecheck`, `npm run lint`, `npm run playtest:ux`, and `npm run playtest:ux:cold-start` passed during implementation waves.
+- Finish workflow executed on 2026-07-26.
+- Linked backlog/request close verification passed.
 
 # Report
 - 2026-07-26: started the UX evaluation harness corpus after closing the browser AI playtest corpus. Read the request/task framing and confirmed this work should wrap `scripts/browser-playtest.ts` plus the shared playtest brain instead of forking a second UI driver.
 - 2026-07-26: extended `scripts/browser-playtest.ts` with optional `--ux-report` capture instead of adding a second UI driver. `npm run playtest:ux` now produces `reports/ux/browser-playthrough.md` with desktop/mobile screenshots for meaningful playthrough steps, annotations, actions-per-task, hesitation slots, console errors/warnings, mobile overflow/tap-target counts, and axe-core violation summaries. Proof: `npm run playtest:ux` passed and generated 10 annotated steps plus 19 screenshots.
+- 2026-07-26: added `npm run playtest:ux:cold-start`, a visible-affordance cold-start funnel mode in the same browser runner. It seeds only the local profile session because recovery-code email delivery is not browser-visible, then uses visible controls to enter the app, create a league, lock the first plan, launch the first GP, and buy the first card. Proof: `reports/ux/cold-start-funnel.md` reached `make first purchase` with no stuck point.
+- Finished on 2026-07-26.
+- Linked backlog item(s): `item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile`, `item_296_friction_accessibility_instrumentation_with_axe_core`, `item_297_cold_start_naive_agent_and_onboarding_funnel`
+- Related request(s): `req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure`
 
 # AI Context
 - Summary: Orchestrate the UX evaluation harness

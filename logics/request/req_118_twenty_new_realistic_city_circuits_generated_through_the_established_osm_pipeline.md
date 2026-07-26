@@ -1,7 +1,7 @@
 ## req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline - Twenty new realistic city circuits generated through the established OSM pipeline
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

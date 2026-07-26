@@ -272,7 +272,7 @@ export function GarageView({
               {inventoryCards.length ? (
                 inventoryCards.map((cardId) => (
                   <li key={cardId}>
-                    <button className="card-inventory-button card-art-cell" type="button" onClick={() => setViewingCardId(cardId)}>
+                    <button className="card-inventory-button card-art-cell" type="button" aria-label={`${tt("field_card")}: ${tt(`card_${cardId}` as TranslationKey)}`} onClick={() => setViewingCardId(cardId)}>
                       <span>
                         <CardName cardId={cardId} tt={tt} />
                         <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
@@ -294,7 +294,7 @@ export function GarageView({
         {cardPanel === "shop" ? (
           <div className="card-shop">
             {shopOffers.map((item) => (
-              <button key={item.cardId} className="card-art-cell" type="button" onClick={() => { setPendingBuyCardId(item.cardId); setBuyQuantity(1); }} disabled={loading}>
+              <button key={item.cardId} className="card-art-cell" type="button" aria-label={`${tt("field_card")}: ${tt(`card_${item.cardId}` as TranslationKey)}`} onClick={() => { setPendingBuyCardId(item.cardId); setBuyQuantity(1); }} disabled={loading}>
                 <CardName cardId={item.cardId} tt={tt} />
                 <strong className="card-price-badge">
                   <span aria-hidden="true" className="reward-icon">●</span>

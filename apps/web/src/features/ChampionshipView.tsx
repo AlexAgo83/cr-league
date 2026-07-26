@@ -75,12 +75,12 @@ export function ChampionshipView({
   });
   const circuitPageCount = Math.max(1, Math.ceil(filteredCircuits.length / CIRCUIT_PAGE_SIZE));
   const circuitPageIndex = Math.min(circuitPage, circuitPageCount - 1);
-  const pageCircuits = filteredCircuits.slice(circuitPageIndex * CIRCUIT_PAGE_SIZE, circuitPageIndex * CIRCUIT_PAGE_SIZE + CIRCUIT_PAGE_SIZE);
   const seasonRoundsByLayout = new Map<string, number[]>();
   for (let round = 1; round <= state.league.maxGrandPrixPerSeason; round += 1) {
     const circuit = seasonCircuits[(round - 1) % seasonCircuits.length]!;
     seasonRoundsByLayout.set(circuit.layoutKey, [...(seasonRoundsByLayout.get(circuit.layoutKey) ?? []), round]);
   }
+  const pageCircuits = visiblePageCircuits(filteredCircuits, circuitPageIndex, seasonCircuits[(currentGrandPrix.round - 1) % seasonCircuits.length]);
   const recordTabs = [
     { key: "calendar" as const, label: tt("championship_calendar") },
     { key: "standings" as const, label: tt("dashboard_standings") },
@@ -156,7 +156,7 @@ export function ChampionshipView({
             <h3>{activeRecordLabel}</h3>
             <div className="championship-record-switch" role="tablist" aria-label={tt("championship_kicker")}>
               {recordTabs.map((tab) => (
-                <button key={tab.key} type="button" role="tab" aria-selected={activeRecordTab === tab.key} className={activeRecordTab === tab.key ? "active" : undefined} onClick={() => selectRecordTab(tab.key)}>
+                <button key={tab.key} type="button" role="tab" data-record-tab={tab.key} aria-selected={activeRecordTab === tab.key} className={activeRecordTab === tab.key ? "active" : undefined} onClick={() => selectRecordTab(tab.key)}>
                   <BoardIcon className="record-tab-icon" name={RECORD_TAB_ICONS[tab.key]} />
                   {tab.label}
                 </button>
@@ -508,6 +508,13 @@ function miniRoutePath(points: Array<{ x: number; y: number }>) {
 
 function historyPosition(grandPrix: LeagueState["grandPrixHistory"][number], playerTeamId: string | undefined) {
   return playerTeamId ? grandPrix.result?.classification.find((entry) => entry.teamId === playerTeamId)?.position : undefined;
+}
+
+function visiblePageCircuits(filteredCircuits: CityCircuit[], pageIndex: number, currentCircuit: CityCircuit | undefined) {
+  const page = filteredCircuits.slice(pageIndex * CIRCUIT_PAGE_SIZE, pageIndex * CIRCUIT_PAGE_SIZE + CIRCUIT_PAGE_SIZE);
+  if (!currentCircuit || page.some((circuit) => circuit.layoutKey === currentCircuit.layoutKey)) return page;
+  const current = filteredCircuits.find((circuit) => circuit.layoutKey === currentCircuit.layoutKey);
+  return current && pageIndex === 0 ? [...page.slice(0, CIRCUIT_PAGE_SIZE - 1), current] : page;
 }
 
 function groupHistoryBySeason(history: LeagueState["grandPrixHistory"]) {

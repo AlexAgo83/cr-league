@@ -1108,18 +1108,29 @@
   }
 
   .championship-record-switch {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
     justify-self: stretch;
     max-width: 100%;
-    overflow-x: visible;
+    overflow-x: hidden;
     width: 100%;
   }
 
+  .championship-record-switch button[data-record-tab="history"] {
+    display: none;
+  }
+
   .championship-record-switch button {
+    flex: 1 1 0;
+    font-size: 0.66rem;
     line-height: 1.08;
     min-width: 0;
-    white-space: normal;
+    padding-inline: 4px;
+    white-space: nowrap;
+  }
+
+  .championship-record-switch .record-tab-icon {
+    height: 24px;
+    width: 24px;
   }
 
   .garage-card-toggle {

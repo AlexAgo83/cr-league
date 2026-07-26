@@ -854,5 +854,9 @@
   "circuit_darling_harbour": "Darling Harbour Dash",
   "circuit_marina": "Marina Bay Switchback",
   "circuit_victoria": "Victoria Harbour Charge",
-  "circuit_dotonbori": "Dotonbori Neon Loop"
+  "circuit_dotonbori": "Dotonbori Neon Loop",
+  "circuit_vieux_port": "Vieux Port Sprint",
+  "circuit_embarcadero": "Embarcadero Charge",
+  "circuit_madero": "Madero Waterfront Sprint",
+  "circuit_bund": "Bund Skyline Loop"
 }

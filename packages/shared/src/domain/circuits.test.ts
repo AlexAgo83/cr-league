@@ -125,7 +125,11 @@ describe("circuit identities", () => {
       "circuit_darling_harbour",
       "circuit_marina",
       "circuit_victoria",
-      "circuit_dotonbori"
+      "circuit_dotonbori",
+      "circuit_vieux_port",
+      "circuit_embarcadero",
+      "circuit_madero",
+      "circuit_bund"
     ];
 
     expect(CITY_CIRCUIT_IDENTITIES.filter((circuit) => expansionCircuitKeys.includes(circuit.layoutKey)).map((circuit) => ({
@@ -149,7 +153,11 @@ describe("circuit identities", () => {
       { city: "Sydney", layoutKey: "circuit_darling_harbour", trackLengthMeters: 5694, laps: 9 },
       { city: "Singapore", layoutKey: "circuit_marina", trackLengthMeters: 5148, laps: 10 },
       { city: "Hong Kong", layoutKey: "circuit_victoria", trackLengthMeters: 5459, laps: 9 },
-      { city: "Osaka", layoutKey: "circuit_dotonbori", trackLengthMeters: 5188, laps: 10 }
+      { city: "Osaka", layoutKey: "circuit_dotonbori", trackLengthMeters: 5188, laps: 10 },
+      { city: "Marseille", layoutKey: "circuit_vieux_port", trackLengthMeters: 6385, laps: 8 },
+      { city: "San Francisco", layoutKey: "circuit_embarcadero", trackLengthMeters: 4448, laps: 11 },
+      { city: "Buenos Aires", layoutKey: "circuit_madero", trackLengthMeters: 4754, laps: 11 },
+      { city: "Shanghai", layoutKey: "circuit_bund", trackLengthMeters: 5195, laps: 10 }
     ]);
   });
 

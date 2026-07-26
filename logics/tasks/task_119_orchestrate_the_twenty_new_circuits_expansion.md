@@ -1,10 +1,10 @@
 ## task_119_orchestrate_the_twenty_new_circuits_expansion - Orchestrate the twenty-new-circuits expansion
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 82
-> Progress: 82%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -31,20 +31,23 @@
 - `item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates`
 
 # Definition of Done (DoD)
-- [ ] Generated request, product, backlog, and task docs are present.
-- [ ] Context-pack handoff is available when requested.
-- [ ] Validation passes.
-- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+- [x] Generated request, product, backlog, and task docs are present.
+- [x] Context-pack handoff is available when requested.
+- [x] Validation passes.
+- [x] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
-- request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
-- request-AC4 -> This task. Proof: optional context-pack handoff is supported.
-- request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
-- request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC1 -> This task. Proof: the 20 named target cities now have generated route files under `apps/web/src/app/circuitRoutes/`, and `npm run audit:circuits` passed with zero geometry failures.
+- request-AC2 -> This task. Proof: each new circuit has a `CITY_CIRCUIT_IDENTITIES` row plus regenerated `CIRCUIT_SPEED_PROFILES`; `npm run audit:circuits` passed route-length, lap, and pacing checks.
+- request-AC3 -> This task. Proof: every new `circuit_<key>` has names in `apps/web/src/i18n/en.json` and `apps/web/src/i18n/fr.json`.
+- request-AC4 -> This task. Proof: `npm run audit:circuits` and `npm run balance:gate` passed for the full current catalogue; the source request's 46-circuit count was stale, and the delivered 20-city scope brings the repo from 25 to 45 circuits.
+- request-AC5 -> This task. Proof: `npm run typecheck`, `npm test`, `npm run build`, `npm run lint`, and `npm run logics:validate` passed.
 
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- Finish workflow executed on 2026-07-26.
+- Linked backlog/request close verification passed.
 
 # Report
 - 2026-07-26: first five generated OSM expansion routes imported and validated: Budapest/Danube, Naples/Lungomare, Athens/Plaka, Helsinki/Esplanadi, Edinburgh/Royal Mile.
@@ -59,6 +62,10 @@
 - 2026-07-26: tightened board-icon gaps around text/button pairings because the generated PNGs already include transparent padding; expanded circular map actions on desktop/mobile so their assets fill the control better.
 - 2026-07-26: fixed the mobile Plan choice title layout by forcing the board asset, traffic-light marker, and title into stable columns so the marker remains between the asset and label.
 - 2026-07-26: imported board 6 into 16 additional transparent assets and wired the remaining command fallbacks for prudent/weather/speed/reliability prep, standard pit pack, admin/changelog/copy-error/danger, Stand navigation, modal Modify secondary actions, and Garage vehicle selection states; adjusted Championship tabs to render as two mobile rows.
+- 2026-07-26: completed the remaining target circuits with the existing OSM pipeline: Marseille/Vieux Port, San Francisco/Embarcadero, Buenos Aires/Madero, and Shanghai/Bund. Added route files, route-index entries, identity rows, generated speed profiles, en/fr names, AR/CN flags, and catalogue tests; the request's "26 -> 46" count was stale against the repo's 25-circuit baseline, so the delivered scope is the exact 20 named target cities and brings the catalogue to 45 circuits. Proof: `npm run audit:circuits`, `npm run balance:gate`, `npm run typecheck`, `npm test`, `npm run build`, `npm run lint`, and `npm run logics:validate`.
+- Finished on 2026-07-26.
+- Linked backlog item(s): `item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline`, `item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials`, `item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates`
+- Related request(s): `req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline`
 
 # AI Context
 - Summary: Orchestrate the twenty-new-circuits expansion

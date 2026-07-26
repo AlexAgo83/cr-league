@@ -1,5 +1,6 @@
 import { route as circuitBattery } from "./circuit_battery.js";
 import { route as circuitBrusselsGrandPlaceLoop } from "./circuit_brussels_grand_place_loop.js";
+import { route as circuitBund } from "./circuit_bund.js";
 import { route as circuitCanalLoop } from "./circuit_canal_loop.js";
 import { route as circuitCannesHoussamLoop } from "./circuit_cannes_houssam_loop.js";
 import { route as circuitCapeTownWaterfrontLoop } from "./circuit_cape_town_waterfront_loop.js";
@@ -9,6 +10,7 @@ import { route as circuitDarlingHarbour } from "./circuit_darling_harbour.js";
 import { route as circuitDocklandsSprint } from "./circuit_docklands_sprint.js";
 import { route as circuitDotonbori } from "./circuit_dotonbori.js";
 import { route as circuitDubaiMarina } from "./circuit_dubai_marina.js";
+import { route as circuitEmbarcadero } from "./circuit_embarcadero.js";
 import { route as circuitEsplanadi } from "./circuit_esplanadi.js";
 import { route as circuitGrandHarbour } from "./circuit_grand_harbour.js";
 import { route as circuitHarborSprint } from "./circuit_harbor_sprint.js";
@@ -19,6 +21,7 @@ import { route as circuitLeftBankLoop } from "./circuit_left_bank_loop.js";
 import { route as circuitLisbonBaixaLoop } from "./circuit_lisbon_baixa_loop.js";
 import { route as circuitLondonThamesLoop } from "./circuit_london_thames_loop.js";
 import { route as circuitLungomare } from "./circuit_lungomare.js";
+import { route as circuitMadero } from "./circuit_madero.js";
 import { route as circuitMadridCentroLoop } from "./circuit_madrid_centro_loop.js";
 import { route as circuitMarina } from "./circuit_marina.js";
 import { route as circuitMitteDash } from "./circuit_mitte_dash.js";
@@ -39,12 +42,14 @@ import { route as circuitStockholmGamlaStanLoop } from "./circuit_stockholm_gaml
 import { route as circuitTokyoBayLoop } from "./circuit_tokyo_bay_loop.js";
 import { route as circuitVictoria } from "./circuit_victoria.js";
 import { route as circuitViennaRingLoop } from "./circuit_vienna_ring_loop.js";
+import { route as circuitVieuxPort } from "./circuit_vieux_port.js";
 
 type CircuitRoute = Array<{ lat: number; lng: number }>;
 
 export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_battery: circuitBattery,
   circuit_brussels_grand_place_loop: circuitBrusselsGrandPlaceLoop,
+  circuit_bund: circuitBund,
   circuit_canal_loop: circuitCanalLoop,
   circuit_cannes_houssam_loop: circuitCannesHoussamLoop,
   circuit_cape_town_waterfront_loop: circuitCapeTownWaterfrontLoop,
@@ -54,6 +59,7 @@ export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_docklands_sprint: circuitDocklandsSprint,
   circuit_dotonbori: circuitDotonbori,
   circuit_dubai_marina: circuitDubaiMarina,
+  circuit_embarcadero: circuitEmbarcadero,
   circuit_esplanadi: circuitEsplanadi,
   circuit_grand_harbour: circuitGrandHarbour,
   circuit_harbor_sprint: circuitHarborSprint,
@@ -64,6 +70,7 @@ export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_lisbon_baixa_loop: circuitLisbonBaixaLoop,
   circuit_london_thames_loop: circuitLondonThamesLoop,
   circuit_lungomare: circuitLungomare,
+  circuit_madero: circuitMadero,
   circuit_madrid_centro_loop: circuitMadridCentroLoop,
   circuit_marina: circuitMarina,
   circuit_mitte_dash: circuitMitteDash,
@@ -83,5 +90,6 @@ export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_stockholm_gamla_stan_loop: circuitStockholmGamlaStanLoop,
   circuit_tokyo_bay_loop: circuitTokyoBayLoop,
   circuit_victoria: circuitVictoria,
-  circuit_vienna_ring_loop: circuitViennaRingLoop
+  circuit_vienna_ring_loop: circuitViennaRingLoop,
+  circuit_vieux_port: circuitVieuxPort
 };

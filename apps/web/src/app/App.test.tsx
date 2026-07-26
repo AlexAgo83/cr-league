@@ -770,8 +770,12 @@ describe("App", () => {
     expect(document.querySelector(".current-round-badge")?.textContent).toBe("1");
     expect(document.querySelector(".mini-circuit-start-line")).toBeTruthy();
     const displayedCircuitNames = [...document.querySelectorAll(".circuit-calendar-button strong")].map((node) => node.textContent);
-    expect(displayedCircuitNames).toEqual([...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" })).slice(0, 8));
-    const previewNames = [...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" }));
+    const sortedCircuitNames = [...CITY_CIRCUITS].map((circuit) => t(circuit.layoutKey, "en")).sort((left, right) => left.localeCompare(right, undefined, { sensitivity: "base" }));
+    const currentCircuitName = t(roundOneCircuit.layoutKey, "en");
+    const expectedCircuitNames = sortedCircuitNames.slice(0, 8);
+    if (!expectedCircuitNames.includes(currentCircuitName)) expectedCircuitNames[7] = currentCircuitName;
+    expect(displayedCircuitNames).toEqual(expectedCircuitNames);
+    const previewNames = sortedCircuitNames;
     const openedCircuitName = displayedCircuitNames[0]!;
     fireEvent.click(screen.getByRole("button", { name: new RegExp(openedCircuitName) }));
     const previewIndex = previewNames.indexOf(openedCircuitName);

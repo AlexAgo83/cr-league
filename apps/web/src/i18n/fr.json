@@ -854,5 +854,9 @@
   "circuit_darling_harbour": "Sprint de Darling Harbour",
   "circuit_marina": "Épingle de Marina Bay",
   "circuit_victoria": "Charge de Victoria Harbour",
-  "circuit_dotonbori": "Boucle néon de Dotonbori"
+  "circuit_dotonbori": "Boucle néon de Dotonbori",
+  "circuit_vieux_port": "Sprint du Vieux-Port",
+  "circuit_embarcadero": "Charge de l'Embarcadero",
+  "circuit_madero": "Sprint des quais de Madero",
+  "circuit_bund": "Boucle skyline du Bund"
 }

@@ -1,10 +1,10 @@
 ## item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates - Localize the new circuits and pass the full catalogue gates
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 82%
+> Progress: 100%
 > Complexity: Low
 > Theme: Circuit catalogue
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -51,3 +51,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_119_orchestrate_the_twenty_new_circuits_expansion` was finished via `logics-manager flow finish task` on 2026-07-26.

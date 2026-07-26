@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 30%
+> Progress: 70%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -47,6 +47,7 @@
 
 # Report
 - 2026-07-26: started the browser playtest corpus and completed the first shared-brain wave. Added `scripts/playtestBrain.ts` as the single source for the 14 playtest personas, headless decision heuristics, multiplayer-store decision helpers, card-buying choices, and fun/frustration scoring. Refactored `scripts/ai-playtest.ts` and `scripts/simulate-playtest.ts` to consume it, and restored `simulate-playtest` compatibility with current profile ownership by propagating recovery codes from `createProfile` into league creation/join. Proof so far: `npm run typecheck`, `npm run lint`, `npm run playtest:ai -- --agents 6 --seasons 1 --rounds 2 --league-size 3 --report reports/playtest/brain-refactor-ai-smoke.md`, and `npm run playtest:simulate -- --players 3 --rounds 1`.
+- 2026-07-26: added `scripts/browser-playtest.ts` and `npm run playtest:browser`. The runner starts/reuses real API + web servers, seeds only the profile session because local email recovery has no browser-visible delivery channel, then uses browser UI actions for league creation, plan choice from the shared brain, plan submission, GP launch/replay, Garage card buy, next GP, and Championship return. It emits `reports/playtest/browser-playtest-smoke.md` with fun/frustration metrics plus UI failure capture. Smoke proof: `npm run playtest:browser -- --rounds 2 --report reports/playtest/browser-playtest-smoke.md` passed with no UI failures.
 
 # AI Context
 - Summary: Orchestrate the browser-driven AI playtest

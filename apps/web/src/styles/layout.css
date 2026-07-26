@@ -1692,6 +1692,12 @@ label small {
   clip-path: var(--chamfer-sm);
 }
 
+.chrono-report-history .secondary-button:not(:disabled):hover {
+  background: rgb(255 77 0 / 0.16);
+  border-color: var(--color-accent);
+  color: #f8f3e8;
+}
+
 .chrono-report-history p {
   color: var(--color-muted);
   margin: 0;

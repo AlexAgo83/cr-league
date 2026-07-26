@@ -1,0 +1,243 @@
+{
+  "title": "Review remediation: one source of truth for cross-package contracts and helpers, decompose god modules, close test gaps",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/scaffold/repo-review-remediation-pass-6.json",
+    "packages/shared/src/domain/circuits.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "packages/shared/src/simulation/chronoRaceEngine.ts",
+    "packages/shared/src/simulation/replayTrace.ts",
+    "apps/api/src/features/leagues/types.ts",
+    "apps/api/src/features/leagues/lifecycle.ts",
+    "apps/api/src/features/leagues/store.ts",
+    "apps/api/src/features/leagues/storeCore.ts",
+    "apps/api/src/features/leagues/resolution.ts",
+    "apps/api/src/features/leagues/qualifying.ts",
+    "apps/web/src/app/types.ts",
+    "apps/web/src/app/App.tsx",
+    "apps/web/src/app/helpers.ts",
+    "apps/web/src/features/replay/replayMath.ts",
+    "vitest.config.ts",
+    ".github/workflows/ci.yml",
+    "A four-lens architecture/quality/test/security review of cr-league (Fastify API + Prisma, React/Vite web, framework-free shared sim) found the trust model and layering are strong (server-authoritative simulation, framework-free shared, thin HTTP, deterministic sim tests, lean deps, full CI) but that every real weakness is CROSS-PACKAGE DUPLICATION THAT HAS DRIFTED. Concrete findings, three lenses corroborating: (1) The LeagueState wire contract is hand-duplicated in apps/web/src/app/types.ts and apps/api/src/features/leagues/types.ts, absent from shared, and has ALREADY drifted: the authoritative api types currentGrandPrix.result / history result as `unknown` (types.ts:67,75) while web types them RaceResult|null; api decisions carry rivalTeamId:string|null which web omits; api approach/preparation are string vs web's RaceDecision unions. The producer types its own result more weakly than the consumer. (2) Simulation helpers are duplicated AND behaviorally divergent: lapForSegment has 3 different implementations (simulateRace.ts:794 hardcoded map, chronoRaceEngine.ts:507 indexOf+1, replayTrace.ts:173 indexOf with guard); lapForProgress has 2 different roundings (Math.round vs Math.floor -> off-by-one between engines); the speed-profile factor math (speedFactorAt/progressInSpan/expandedSpan) exists in web replayMath.ts:428, api qualifying.ts:207, and chronoRaceEngine.ts with web taking min-or-max and api taking min-only. Same-named helpers, diverged behavior = latent bugs. Trivial dup+divergence also in strongestForecast (helpers.ts:33 vs utils.ts:14), classificationScore (simulateRace.ts:680 vs chronoRaceEngine.ts:543), bestQualifyingRuns (raceFlow.ts:128 vs qualifying.ts:22), safeHex (LiveryPlate.tsx:6 vs ReplayTower.tsx:95), and a sprawl of 5 near-identical clamps. (3) The client re-derives what the sim already knows: apps/web/src/features/replay/replayMath.ts (447 lines, 40+ exports) reconstructs order/live-classification/gaps from the sparse replayTrace and is coupled to the emitter's internal trace format, with ZERO test coverage — the single highest-value test gap; and season standings/champion/tie-breaks are computed only client-side (helpers.ts:103) with no server source of truth. (4) God modules: apps/api/src/features/leagues/lifecycle.ts (689 lines) mixes league CRUD, GP lifecycle, bot generation, input normalization and opponent-reveal visibility; apps/web/src/app/App.tsx (796 lines, ~42 hooks) is the UI orchestration bottleneck. (5) Rot: storeCore.ts is an orphaned near-duplicate barrel (zero importers); several exports/types are dead (applyChronoDeltas, motionParametersForParticipant, BotArchetype, WeatherForecast, ReportBlock, ReplayDirectorBeatFact); CIRCUIT_SPEED_PROFILES is ~776 lines of data literal inside a logic file; circuitRouteFor returns [] for an unknown layoutKey (silent blank-track fallback) with no parity guard. (6) Tests: coverage is measured but has NO enforced threshold in vitest.config.ts; lifecycle season-rollover/concurrency, resolution credit/standings application, and the comeback credit bonus are covered only via HTTP round-trips, not unit-asserted. EXPLICITLY OUT OF SCOPE and NOT to be 'fixed': the opponent-decision reveal (a team sees rivals' submitted directives once it has submitted, and can resubmit) is INTENTIONAL game design — a meta-game of reading opponents' setups to tune your own — it must stay; and rotating the exposed SMTP credential is handled separately by the owner."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Architecture remediation",
+    "needs": [
+      "Give the client/server contract a single source of truth: hoist the LeagueState response DTO and the RaceResult typing into packages/shared, consumed by both web and api, so the two hand-copied definitions stop drifting and the authoritative side stops typing its own result as unknown.",
+      "Consolidate the duplicated-and-diverged simulation/util helpers into shared with one agreed behavior each (lap mapping, speed-profile factor, classification score, forecast, best qualifying runs, clamps, hex), removing the latent off-by-one/min-vs-max bugs the divergence hides.",
+      "Give replay order/classification/gap derivation one shared definition (or a sim-emitted stream) beside replayTrace and pin it with a golden test, so the client stops re-deriving the trace format untested.",
+      "Decompose the two god modules (lifecycle.ts by responsibility, App.tsx orchestration into per-domain hooks) with no behavior change.",
+      "Harden tests/CI: enforce a coverage threshold and add unit tests for the currently HTTP-only critical paths (season rollover/concurrency, standings/credit application, comeback bonus).",
+      "Clean up the source-of-truth gaps and rot: persist season standings/champion server-side, add a circuit identity↔route parity guard, delete the orphaned storeCore barrel and dead exports/types, and move the speed-profile data literal out of the logic file."
+    ],
+    "context": [
+      "This is a remediation of a review, not a redesign: the layering and server-authoritative trust model are the strong parts and must be preserved. Every change reduces duplication or moves a re-derivation to a single source of truth; none should alter simulation outcomes except where two diverged copies are deliberately reconciled to ONE agreed rule (and that reconciliation must be covered by a test so the chosen behavior is pinned).",
+      "Contract SoT (need 1): create the response DTO in shared (LeagueState and the nested currentGrandPrix/history result as RaceResult|null, decisions with the RaceDecision unions and rivalTeamId), have apps/api/src/features/leagues/types.ts and apps/web/src/app/types.ts import it, and reconcile the drift (api stops using unknown; web gains rivalTeamId if the server sends it). Watch the opponent-reveal shaping (revealedDecisions) so the DTO models 'possibly-hidden' fields honestly rather than forcing a lie.",
+      "Helper SoT (need 2): pick ONE implementation per helper and export from shared. For the genuinely divergent ones (lapForSegment x3, lapForProgress rounding, speed-profile min vs min-or-max) DECIDE the correct behavior deliberately, document why, and add a test; do not just delete two of three copies silently. Update simulateRace/chronoRaceEngine/replayTrace/qualifying/replayMath to consume the shared version.",
+      "Replay SoT (need 3): the preferred direction is to move the interpolation/order/gap helpers (replayOrderAtProgress, liveClassificationByCarProgress, carProgressAtTrace, isCanonicalReplayTrace, shouldSmoothReplayTrace) into shared beside replayTrace.ts so both the emitter and the consumer share one definition of 'who is where'; a golden test snapshots a fixed-seed trace through them and asserts stable interpolated positions. If a full sim-emitted per-frame stream is cheaper, that is acceptable as long as one definition remains.",
+      "Decomposition (need 4): split lifecycle.ts into leagueAdmin / grandPrixLifecycle / bots / visibility modules keeping the store barrel's public surface intact; extract App.tsx state groups into per-domain hooks (continue the useRaceDerivations/leagueMutations pattern). Pure refactor — outputs and API responses unchanged, tests green throughout.",
+      "Tests/CI (need 5): add coverage.thresholds to vitest.config.ts and gate it in the CI unit lane so the gains cannot silently regress; add unit tests for lifecycle season-rollover + the (leagueId,season,round) concurrency guard (no double-credit), resolution standings/credit increments, and the comeback credit bonus math + cap.",
+      "SoT & hygiene (need 6): compute and persist final season standings/champion server-side on season close so there is a server truth (the client keeps rendering, but the winner is authoritative); assert circuit identity↔route parity at module load or in a test so a shared circuit without a web route fails loudly instead of rendering a blank track; delete storeCore.ts (zero importers), drop the dead exports/types, and move CIRCUIT_SPEED_PROFILES into a .data.ts/JSON module keeping the functions.",
+      "OUT OF SCOPE — do not touch: (a) the opponent-decision reveal is INTENTIONAL — teams reading rivals' submitted directives (and resubmitting) is a deliberate meta-game for tuning one's own setup; do NOT lock decisions or gate the reveal. (b) rotating the exposed SMTP credential is handled by the owner separately. (c) no new gameplay, no engine retuning beyond reconciling a diverged helper, no UI redesign, and the +20-circuits work (req_118) stays its own request."
+    ],
+    "acceptance_criteria": [
+      "AC1: The LeagueState response DTO and RaceResult typing have a single definition in packages/shared consumed by both apps/api and apps/web; the api no longer types currentGrandPrix.result/history result as unknown and the previously drifted fields (rivalTeamId, approach/preparation unions) are reconciled.",
+      "AC2: The duplicated-and-diverged helpers (lapForSegment, lapForProgress, speed-profile factor, classificationScore, strongestForecast, bestQualifyingRuns, clamps, safeHex) exist once in shared and are consumed everywhere; each formerly-divergent one is reconciled to one documented behavior covered by a test.",
+      "AC3: Replay order/classification/gap derivation has one shared definition (moved beside replayTrace or emitted by the sim), and a golden/determinism test pins a fixed-seed trace's interpolated positions; replayMath is no longer an untested client re-derivation of the trace format.",
+      "AC4: lifecycle.ts is decomposed by responsibility and App.tsx orchestration is extracted into per-domain hooks, with the store's public surface and all API responses unchanged (pure refactor, tests green).",
+      "AC5: vitest enforces a coverage threshold gated in CI, and unit tests exist for season rollover + the (leagueId,season,round) concurrency guard, resolution standings/credit application, and the comeback bonus math + cap.",
+      "AC6: Final season standings/champion are computed and persisted server-side; a circuit identity↔route parity check fails loudly on a missing route; storeCore.ts, the dead exports/types, and the in-logic speed-profile data literal are removed/relocated; and npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate all pass with the opponent-reveal behavior unchanged."
+    ]
+  },
+  "product": {
+    "title": "Cross-Package Source-of-Truth Remediation Product Brief",
+    "overview": "A four-lens review found cr-league's architecture and server-authoritative trust model to be strong, with every real weakness being cross-package duplication that has already drifted: a hand-copied client/server contract, same-named simulation helpers with divergent behavior, and a client that re-derives replay ordering and season standings the server already knows — the last two untested. This remediation gives each of those a single source of truth in shared, reconciles the divergences under test, decomposes the two god modules, and closes the highest-risk test gaps, without altering the intentional opponent-reveal meta-game or the (separately handled) secret rotation.",
+    "goals": [
+      "One source of truth for the client/server contract and for shared simulation helpers.",
+      "Move replay and standings derivation to a shared/server truth instead of untested client re-derivation.",
+      "Decompose the god modules and close the highest-risk test gaps with an enforced coverage floor.",
+      "Preserve the strong layering, the server-authoritative model, and the intentional opponent-reveal meta-game."
+    ],
+    "non_goals": [
+      "Do not change the opponent-decision reveal — it is intentional game design (reading rivals to tune your setup).",
+      "Do not rotate secrets here (owner handles the SMTP credential separately).",
+      "Do not add gameplay, retune the engine beyond reconciling a diverged helper, or redesign the UI.",
+      "Do not fold in the +20-circuits work (req_118)."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Single source of truth for the LeagueState/RaceResult response contract",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Architecture remediation",
+      "request_acs": ["AC1", "AC6"],
+      "problem": [
+        "LeagueState is hand-duplicated in apps/web/src/app/types.ts and apps/api/src/features/leagues/types.ts, absent from shared, and has drifted.",
+        "The authoritative api types currentGrandPrix.result/history result as unknown (types.ts:67,75) while web types them RaceResult|null — the producer types its own result more weakly than the consumer.",
+        "api decisions carry rivalTeamId and string approach/preparation; web omits rivalTeamId and uses the RaceDecision unions."
+      ],
+      "scope_in": [
+        "Define the response DTO (LeagueState + nested result as RaceResult|null + decisions with RaceDecision unions and rivalTeamId) once in packages/shared.",
+        "Have both api and web import it and reconcile the drifted fields; model opponent-reveal 'possibly hidden' fields honestly in the DTO.",
+        "Remove the two local copies."
+      ],
+      "scope_out": [
+        "Changing what the reveal shaping decides (visibility rules stay).",
+        "Simulation helper consolidation (next item)."
+      ],
+      "acceptance_criteria": [
+        "AC1: One shared DTO consumed by api and web; local copies gone.",
+        "AC2: api no longer uses unknown for result; drifted fields reconciled.",
+        "AC3: typecheck passes and API responses are unchanged."
+      ]
+    },
+    {
+      "title": "Consolidate diverged simulation/util helpers into shared, reconciled under test",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Architecture remediation",
+      "request_acs": ["AC2", "AC6"],
+      "problem": [
+        "lapForSegment has 3 different implementations (simulateRace.ts:794, chronoRaceEngine.ts:507, replayTrace.ts:173) and lapForProgress has 2 different roundings — off-by-one between engines.",
+        "Speed-profile factor math (speedFactorAt/progressInSpan/expandedSpan) exists in replayMath.ts:428, qualifying.ts:207 and chronoRaceEngine.ts with min-or-max vs min-only divergence.",
+        "strongestForecast, classificationScore, bestQualifyingRuns, safeHex and a sprawl of 5 clamps are duplicated, some divergent."
+      ],
+      "scope_in": [
+        "Pick one implementation per helper, export from shared, and update all consumers.",
+        "For each genuinely divergent helper decide the correct behavior deliberately, document why, and add a test pinning it.",
+        "Collapse the clamp sprawl into one shared clamp(value,min,max,{round?})."
+      ],
+      "scope_out": [
+        "Retuning the engine beyond choosing the single agreed behavior.",
+        "The replay-order derivation (next item)."
+      ],
+      "acceptance_criteria": [
+        "AC1: Each listed helper exists once in shared and is consumed everywhere.",
+        "AC2: Each formerly-divergent helper is reconciled to one documented behavior with a test.",
+        "AC3: Simulation determinism tests still pass."
+      ]
+    },
+    {
+      "title": "One shared definition of replay order/classification/gaps with a golden test",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replay fidelity",
+      "request_acs": ["AC3", "AC6"],
+      "problem": [
+        "replayMath.ts (447 lines, 40+ exports) re-derives order/live-classification/gaps from the sparse replayTrace and is coupled to the emitter's internal trace format.",
+        "It has zero test coverage — the single highest-value test gap; a bug silently corrupts every replay.",
+        "The animated order can diverge from the authoritative classification with no guard."
+      ],
+      "scope_in": [
+        "Move the interpolation/order/gap helpers (replayOrderAtProgress, liveClassificationByCarProgress, carProgressAtTrace, isCanonicalReplayTrace, shouldSmoothReplayTrace) into shared beside replayTrace.ts as the single definition (or have the sim emit a per-frame stream).",
+        "Add a golden test snapshotting a fixed-seed trace through them and asserting stable interpolated positions.",
+        "Update ReplayView/CircuitMap/useReplayClock to consume the shared version."
+      ],
+      "scope_out": [
+        "Changing replay visuals or choreography.",
+        "The DTO/helper items above."
+      ],
+      "acceptance_criteria": [
+        "AC1: Replay order/classification/gap derivation has one shared definition.",
+        "AC2: A golden/determinism test pins a fixed-seed trace's interpolated positions.",
+        "AC3: Replays render identically to before."
+      ]
+    },
+    {
+      "title": "Decompose the god modules (lifecycle.ts and App.tsx)",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Maintainability",
+      "request_acs": ["AC4", "AC6"],
+      "problem": [
+        "lifecycle.ts (689 lines) mixes league CRUD, GP lifecycle, bot generation, input normalization and opponent-reveal visibility.",
+        "App.tsx (796 lines, ~42 hooks) is the UI orchestration bottleneck every feature threads through."
+      ],
+      "scope_in": [
+        "Split lifecycle.ts into leagueAdmin / grandPrixLifecycle / bots / visibility keeping the store barrel's public surface intact.",
+        "Extract App.tsx state groups into per-domain hooks, continuing the useRaceDerivations/leagueMutations pattern.",
+        "Pure refactor: API responses and behavior unchanged, tests green throughout."
+      ],
+      "scope_out": [
+        "Behavior/response changes.",
+        "Touching the reveal visibility logic beyond relocating it."
+      ],
+      "acceptance_criteria": [
+        "AC1: lifecycle.ts is split by responsibility with the store surface intact.",
+        "AC2: App.tsx orchestration is extracted into per-domain hooks.",
+        "AC3: No behavior/response change; tests pass."
+      ]
+    },
+    {
+      "title": "Test and CI hardening: coverage floor plus critical-path unit tests",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Test coverage",
+      "request_acs": ["AC5", "AC6"],
+      "problem": [
+        "vitest.config.ts measures coverage but enforces no threshold, so coverage can silently regress.",
+        "lifecycle season-rollover + the (leagueId,season,round) concurrency guard, resolution standings/credit increments, and the comeback credit bonus are covered only via HTTP round-trips."
+      ],
+      "scope_in": [
+        "Add coverage.thresholds to vitest.config.ts and gate it in the CI unit lane.",
+        "Add unit tests for season rollover + the concurrency guard (no double-credit on concurrent resolve), resolution standings/credit application, and the comeback bonus math + cap."
+      ],
+      "scope_out": [
+        "Broad UI component test suites.",
+        "Changing the CI structure beyond the coverage gate."
+      ],
+      "acceptance_criteria": [
+        "AC1: A coverage threshold is enforced in CI.",
+        "AC2: Unit tests cover season rollover/concurrency, resolution standings/credits, and the comeback bonus.",
+        "AC3: The suite passes deterministically."
+      ]
+    },
+    {
+      "title": "Server-authoritative standings, circuit parity guard, and dead-code/data hygiene",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Maintainability",
+      "request_acs": ["AC6"],
+      "problem": [
+        "Season standings/champion and tie-breaks are computed only client-side (helpers.ts:103) with no server source of truth.",
+        "circuitRouteFor returns [] for an unknown layoutKey (silent blank-track fallback) with no parity guard.",
+        "storeCore.ts is an orphaned near-duplicate barrel; several exports/types are dead; CIRCUIT_SPEED_PROFILES is ~776 lines of data in a logic file."
+      ],
+      "scope_in": [
+        "Compute and persist final season standings/champion server-side on season close (client keeps rendering, winner is authoritative).",
+        "Assert circuit identity↔route parity at module load or in a test so a missing route fails loudly.",
+        "Delete storeCore.ts and the dead exports/types (applyChronoDeltas, motionParametersForParticipant, BotArchetype, WeatherForecast, ReportBlock, ReplayDirectorBeatFact), and move CIRCUIT_SPEED_PROFILES into a .data.ts/JSON module keeping the functions."
+      ],
+      "scope_out": [
+        "Changing standings math (only relocate it to an authoritative source).",
+        "Removing live game data (route/identity tables stay)."
+      ],
+      "acceptance_criteria": [
+        "AC1: Final season standings/champion are persisted server-side.",
+        "AC2: Circuit identity↔route parity fails loudly on a missing route.",
+        "AC3: storeCore.ts, dead exports/types, and the in-logic speed-profile literal are removed/relocated; gates pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate the source-of-truth remediation",
+    "plan": [
+      "Treat this as remediation, not redesign: preserve the layering and server-authoritative model; every change removes duplication or moves a re-derivation to one source of truth.",
+      "Hoist the LeagueState/RaceResult response DTO into shared and reconcile the drift; stop the api typing its own result as unknown.",
+      "Consolidate the diverged sim/util helpers into shared, deciding each divergent behavior deliberately and pinning it with a test.",
+      "Move replay order/classification/gap derivation to one shared definition beside replayTrace and add a golden test; then decompose lifecycle.ts and App.tsx as a pure refactor.",
+      "Add the coverage floor and critical-path unit tests; persist server-side standings, add the circuit parity guard, and remove storeCore/dead exports and the in-logic speed-profile data.",
+      "DO NOT change the opponent-decision reveal (intentional meta-game) or rotate secrets (owner-handled). Run typecheck/test/build/lint/e2e/logics:validate and record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/review-remediation-shared-truth-and-decomposition.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

@@ -247,6 +247,7 @@ See [docs/balance-simulations.md](docs/balance-simulations.md) for the metrics.
 Agent-oriented validation docs:
 
 - [AI app test runbook](docs/ai-app-test-runbook.md)
+- [Board icon assets runbook](docs/board-icon-assets-runbook.md)
 - [Circuit generation](docs/circuit-generation.md)
 
 ## Render Configuration

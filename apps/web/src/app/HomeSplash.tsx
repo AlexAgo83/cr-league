@@ -15,7 +15,7 @@ export function HomeSplash({
   return (
     <main className="home-splash" aria-label={tt("splash_label")}>
       <img className="home-splash-background" src="/assets/crl/home-background.jpg" alt="" />
-      <SetupTopbar profileMenu={null} languageSwitcher={<LanguageSwitcher locale={locale} tt={tt} onChangeLocale={onChangeLocale} />} onHome={() => undefined} />
+      <SetupTopbar hideBrand profileMenu={null} languageSwitcher={<LanguageSwitcher locale={locale} tt={tt} onChangeLocale={onChangeLocale} />} onHome={() => undefined} />
       <div className="home-splash-title" aria-hidden="true">
         <img className="home-splash-title-cr" src="/assets/crl/home-title-cr.webp" alt="" />
         <img className="home-splash-title-league" src="/assets/crl/home-title-league.webp" alt="" />

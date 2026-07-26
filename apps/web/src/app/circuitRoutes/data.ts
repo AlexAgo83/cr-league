@@ -1,3 +1,4 @@
+import { route as circuitBattery } from "./circuit_battery.js";
 import { route as circuitBrusselsGrandPlaceLoop } from "./circuit_brussels_grand_place_loop.js";
 import { route as circuitCanalLoop } from "./circuit_canal_loop.js";
 import { route as circuitCannesHoussamLoop } from "./circuit_cannes_houssam_loop.js";
@@ -6,8 +7,10 @@ import { route as circuitCopenhagenHarborLoop } from "./circuit_copenhagen_harbo
 import { route as circuitDanube } from "./circuit_danube.js";
 import { route as circuitDocklandsSprint } from "./circuit_docklands_sprint.js";
 import { route as circuitEsplanadi } from "./circuit_esplanadi.js";
+import { route as circuitGrandHarbour } from "./circuit_grand_harbour.js";
 import { route as circuitHarborSprint } from "./circuit_harbor_sprint.js";
 import { route as circuitIstanbulBosphorusLoop } from "./circuit_istanbul_bosphorus_loop.js";
+import { route as circuitJordaan } from "./circuit_jordaan.js";
 import { route as circuitLeftBankLoop } from "./circuit_left_bank_loop.js";
 import { route as circuitLisbonBaixaLoop } from "./circuit_lisbon_baixa_loop.js";
 import { route as circuitLondonThamesLoop } from "./circuit_london_thames_loop.js";
@@ -32,6 +35,7 @@ import { route as circuitViennaRingLoop } from "./circuit_vienna_ring_loop.js";
 type CircuitRoute = Array<{ lat: number; lng: number }>;
 
 export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
+  circuit_battery: circuitBattery,
   circuit_brussels_grand_place_loop: circuitBrusselsGrandPlaceLoop,
   circuit_canal_loop: circuitCanalLoop,
   circuit_cannes_houssam_loop: circuitCannesHoussamLoop,
@@ -40,8 +44,10 @@ export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_danube: circuitDanube,
   circuit_docklands_sprint: circuitDocklandsSprint,
   circuit_esplanadi: circuitEsplanadi,
+  circuit_grand_harbour: circuitGrandHarbour,
   circuit_harbor_sprint: circuitHarborSprint,
   circuit_istanbul_bosphorus_loop: circuitIstanbulBosphorusLoop,
+  circuit_jordaan: circuitJordaan,
   circuit_left_bank_loop: circuitLeftBankLoop,
   circuit_lisbon_baixa_loop: circuitLisbonBaixaLoop,
   circuit_london_thames_loop: circuitLondonThamesLoop,

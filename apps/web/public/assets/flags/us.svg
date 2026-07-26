@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 19 10">
+  <path fill="#b22234" d="M0 0h19v10H0z"/>
+  <path stroke="#fff" stroke-width=".77" d="M0 1.15h19M0 2.69h19M0 4.23h19M0 5.77h19M0 7.31h19M0 8.85h19"/>
+  <path fill="#3c3b6e" d="M0 0h7.6v5.38H0z"/>
+  <path fill="#fff" d="M.6.45h.45v.45H.6zm1.3 0h.45v.45H1.9zm1.3 0h.45v.45H3.2zm1.3 0h.45v.45H4.5zm1.3 0h.45v.45H5.8zM1.25 1.35h.45v.45h-.45zm1.3 0H3v.45h-.45zm1.3 0h.45v.45h-.45zm1.3 0h.45v.45h-.45zM.6 2.25h.45v.45H.6zm1.3 0h.45v.45H1.9zm1.3 0h.45v.45H3.2zm1.3 0h.45v.45H4.5zm1.3 0h.45v.45H5.8zM1.25 3.15h.45v.45h-.45zm1.3 0H3v.45h-.45zm1.3 0h.45v.45h-.45zm1.3 0h.45v.45h-.45zM.6 4.05h.45v.45H.6zm1.3 0h.45v.45H1.9zm1.3 0h.45v.45H3.2zm1.3 0h.45v.45H4.5zm1.3 0h.45v.45H5.8z"/>
+</svg>

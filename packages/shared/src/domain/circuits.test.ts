@@ -22,7 +22,7 @@ describe("circuit identities", () => {
     const movableIndexes = new Set(CITY_CIRCUIT_IDENTITIES.map((_, index) => index));
     const firstRoundLayouts = new Set<string>();
 
-    for (let season = 1; season <= 120; season += 1) {
+    for (let season = 1; season <= 300; season += 1) {
       const order = seasonCircuitIdentities(circuitSeasonSeed(`league_${season}`, season));
       firstRoundLayouts.add(order[0]!.layoutKey);
       for (const [index, circuit] of order.entries()) {
@@ -109,7 +109,16 @@ describe("circuit identities", () => {
   });
 
   it("includes generated expansion circuits", () => {
-    const expansionCircuitKeys = ["circuit_danube", "circuit_lungomare", "circuit_plaka", "circuit_esplanadi", "circuit_royal_mile"];
+    const expansionCircuitKeys = [
+      "circuit_danube",
+      "circuit_lungomare",
+      "circuit_plaka",
+      "circuit_esplanadi",
+      "circuit_royal_mile",
+      "circuit_grand_harbour",
+      "circuit_jordaan",
+      "circuit_battery"
+    ];
 
     expect(CITY_CIRCUIT_IDENTITIES.filter((circuit) => expansionCircuitKeys.includes(circuit.layoutKey)).map((circuit) => ({
       city: circuit.city,
@@ -121,7 +130,10 @@ describe("circuit identities", () => {
       { city: "Naples", layoutKey: "circuit_lungomare", trackLengthMeters: 6116, laps: 8 },
       { city: "Athens", layoutKey: "circuit_plaka", trackLengthMeters: 5969, laps: 8 },
       { city: "Helsinki", layoutKey: "circuit_esplanadi", trackLengthMeters: 6061, laps: 8 },
-      { city: "Edinburgh", layoutKey: "circuit_royal_mile", trackLengthMeters: 6035, laps: 8 }
+      { city: "Edinburgh", layoutKey: "circuit_royal_mile", trackLengthMeters: 6035, laps: 8 },
+      { city: "Valletta", layoutKey: "circuit_grand_harbour", trackLengthMeters: 4521, laps: 11 },
+      { city: "Amsterdam", layoutKey: "circuit_jordaan", trackLengthMeters: 5897, laps: 9 },
+      { city: "New York", layoutKey: "circuit_battery", trackLengthMeters: 4380, laps: 11 }
     ]);
   });
 

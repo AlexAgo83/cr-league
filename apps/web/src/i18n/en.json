@@ -843,5 +843,8 @@
   "language_fr": "Français",
   "circuit_plaka": "Plaka Switchback",
   "circuit_esplanadi": "Esplanadi Rush",
-  "circuit_royal_mile": "Royal Mile Climb"
+  "circuit_royal_mile": "Royal Mile Climb",
+  "circuit_grand_harbour": "Grand Harbour Charge",
+  "circuit_jordaan": "Jordaan Canal Dash",
+  "circuit_battery": "Battery Park Loop"
 }

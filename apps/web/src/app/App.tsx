@@ -1,6 +1,6 @@
 import { type QualifyingRun } from "@cr-league/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { isLocale, t, type Locale, type TranslationKey } from "../i18n/index.js";
+import { t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView } from "../features/AdminConsoleView.js";
 import type { ResultTab } from "../features/ResultView.js";
@@ -9,9 +9,7 @@ import { AppOverlays } from "./AppOverlays.js";
 import { ONBOARDING_HELP_KEYS, SCREEN_ONBOARDING_HELP_TOPICS, type OnboardingHelpTopic } from "./OnboardingShell.js";
 import { LEAGUE_SCOPED_HELP_TOPICS, UI_PREFERENCE_KEYS } from "./appPreferences.js";
 import {
-  ACTIVE_PLAYER_CLAIM_KEY,
   ApiError,
-  LANGUAGE_KEY,
   SEASON_RECAP_KEY_PREFIX,
   getActiveClaim,
   loadPlayerClaims,
@@ -20,6 +18,7 @@ import {
   safeStorage,
   seasonRecapStorageKey,
 } from "./appStorage.js";
+import { initialLocale, isStaleLeagueError, persistLocale } from "./appSession.js";
 import { HomeSplash } from "./HomeSplash.js";
 import { AppShell } from "./AppShell.js";
 import { useCircuitRoutesReady } from "./circuitRoutes/index.js";
@@ -38,20 +37,13 @@ import { useNotifications, type Notification } from "./useNotifications.js";
 import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
 
-function initialLocale() {
-  const saved = safeStorage.get(LANGUAGE_KEY);
-  if (isLocale(saved)) return saved;
-  const browserLocale = navigator.language.split("-")[0] ?? "en";
-  return isLocale(browserLocale) ? browserLocale : "en";
-}
-
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
   const [entered, setEntered] = useState(() => !isStartPath(window.location.pathname));
   const tt = useCallback((key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params), [locale]);
 
   const changeLocale = useCallback((nextLocale: Locale) => {
-    safeStorage.set(LANGUAGE_KEY, nextLocale);
+    persistLocale(nextLocale);
     setLocaleState(nextLocale);
   }, []);
 
@@ -789,8 +781,4 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     else snoozedOnboardingHelp.current.add(key);
     setOnboardingHelp(null);
   }
-}
-
-function isStaleLeagueError(error: unknown) {
-  return error instanceof ApiError && error.statusCode === 404 && safeStorage.get(ACTIVE_PLAYER_CLAIM_KEY);
 }

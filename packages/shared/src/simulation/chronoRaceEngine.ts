@@ -127,7 +127,7 @@ export function applyDecisionToScores(scores: ChronoScores, participant: RacePar
   if (participant.decision.cardId) applyChronoDeltas(scores, CARD_DELTAS[participant.decision.cardId]);
 }
 
-export function applyChronoDeltas(scores: ChronoScores, deltas: DecisionDeltas = {}) {
+function applyChronoDeltas(scores: ChronoScores, deltas: DecisionDeltas = {}) {
   for (const [key, value] of Object.entries(deltas) as Array<[keyof ChronoScores, number]>) {
     scores[key] += value;
   }
@@ -137,7 +137,7 @@ export function pitStrategy(decision: RaceParticipant["decision"]): PitStrategy 
   return decision.pitStrategy ?? "standard";
 }
 
-export function motionParametersForParticipant(participant: RaceParticipant, scores: ChronoScores): ChronoMotionParameters {
+function motionParametersForParticipant(participant: RaceParticipant, scores: ChronoScores): ChronoMotionParameters {
   const parameters: ChronoMotionParameters = {
     topSpeed: 1 + (scores.pace - 50) / 260,
     acceleration: 1 + (scores.pace + scores.aggression - 100) / 360,

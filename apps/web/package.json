@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "vite --port 4873",
+    "dev": "vite --host 127.0.0.1 --port 4873 --strictPort",
     "build": "tsc -b && node scripts/validate-api-base-url.mjs && vite build && node scripts/stamp-sw.mjs",
     "preview": "vite preview",
     "preview:pwa": "VITE_API_BASE_URL=https://example.com npm run build && vite preview --port 4873",

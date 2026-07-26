@@ -19,6 +19,7 @@
     "build": "npm run build -w @cr-league/shared && npm run build -w @cr-league/api && npm run build -w @cr-league/web",
     "typecheck": "tsc -b && tsc -p scripts",
     "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "test:e2e": "playwright test",
     "lint": "eslint .",
     "db:generate": "prisma generate",

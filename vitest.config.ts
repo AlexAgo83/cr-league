@@ -9,7 +9,13 @@ export default defineConfig({
   test: {
     coverage: {
       provider: "v8",
-      reporter: ["text", "json-summary"]
+      reporter: ["text", "json-summary"],
+      thresholds: {
+        branches: 80,
+        functions: 90,
+        lines: 91,
+        statements: 88
+      }
     },
     environment: "jsdom",
     include: ["apps/**/*.test.ts", "apps/**/*.test.tsx", "packages/**/*.test.ts"],

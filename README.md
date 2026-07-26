@@ -147,7 +147,7 @@ flowchart LR
 ## Current Engineering State
 
 - 0.4 ship-rails work is closed in Logics: performance, replay, chrono, garage, bot progression, and maintainability follow-ups are all Done.
-- The largest backend store was split into focused league modules behind the unchanged `store.ts` public barrel; `storeCore.ts` is now a compatibility barrel.
+- The largest backend store was split into focused league modules behind the unchanged `store.ts` public barrel; the obsolete `storeCore.ts` compatibility barrel has been removed.
 - The web app root is below the 800-line ceiling, with splash, modal state, and static preference data extracted.
 - Replay/map performance work keeps route geometry and static layers off the hot path, and circuit route data loads per selected circuit.
 - Latest local gate: `npm run typecheck`, `npm run lint`, `npm test`, `npm test -- --coverage`, `npm run balance:gate`, and Logics lint/audit all pass.

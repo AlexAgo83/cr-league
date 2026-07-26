@@ -11,6 +11,7 @@ import { route as circuitGrandHarbour } from "./circuit_grand_harbour.js";
 import { route as circuitHarborSprint } from "./circuit_harbor_sprint.js";
 import { route as circuitIstanbulBosphorusLoop } from "./circuit_istanbul_bosphorus_loop.js";
 import { route as circuitJordaan } from "./circuit_jordaan.js";
+import { route as circuitLakefront } from "./circuit_lakefront.js";
 import { route as circuitLeftBankLoop } from "./circuit_left_bank_loop.js";
 import { route as circuitLisbonBaixaLoop } from "./circuit_lisbon_baixa_loop.js";
 import { route as circuitLondonThamesLoop } from "./circuit_london_thames_loop.js";
@@ -20,6 +21,7 @@ import { route as circuitMitteDash } from "./circuit_mitte_dash.js";
 import { route as circuitMonacoCasinoSprint } from "./circuit_monaco_casino_sprint.js";
 import { route as circuitMonacoHarborLoop } from "./circuit_monaco_harbor_loop.js";
 import { route as circuitMontrealIslandLoop } from "./circuit_montreal_island_loop.js";
+import { route as circuitOceanDrive } from "./circuit_ocean_drive.js";
 import { route as circuitPlaka } from "./circuit_plaka.js";
 import { route as circuitPortoBoavistaLoop } from "./circuit_porto_boavista_loop.js";
 import { route as circuitPragueVltavaLoop } from "./circuit_prague_vltava_loop.js";
@@ -48,6 +50,7 @@ export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_harbor_sprint: circuitHarborSprint,
   circuit_istanbul_bosphorus_loop: circuitIstanbulBosphorusLoop,
   circuit_jordaan: circuitJordaan,
+  circuit_lakefront: circuitLakefront,
   circuit_left_bank_loop: circuitLeftBankLoop,
   circuit_lisbon_baixa_loop: circuitLisbonBaixaLoop,
   circuit_london_thames_loop: circuitLondonThamesLoop,
@@ -57,6 +60,7 @@ export const CIRCUIT_ROUTES: Record<string, CircuitRoute> = {
   circuit_monaco_casino_sprint: circuitMonacoCasinoSprint,
   circuit_monaco_harbor_loop: circuitMonacoHarborLoop,
   circuit_montreal_island_loop: circuitMontrealIslandLoop,
+  circuit_ocean_drive: circuitOceanDrive,
   circuit_plaka: circuitPlaka,
   circuit_porto_boavista_loop: circuitPortoBoavistaLoop,
   circuit_prague_vltava_loop: circuitPragueVltavaLoop,

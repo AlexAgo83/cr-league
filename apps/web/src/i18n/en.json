@@ -846,5 +846,7 @@
   "circuit_royal_mile": "Royal Mile Climb",
   "circuit_grand_harbour": "Grand Harbour Charge",
   "circuit_jordaan": "Jordaan Canal Dash",
-  "circuit_battery": "Battery Park Loop"
+  "circuit_battery": "Battery Park Loop",
+  "circuit_ocean_drive": "Ocean Drive Sprint",
+  "circuit_lakefront": "Lakefront Dash"
 }

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 80
-> Progress: 48%
+> Progress: 58%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -49,6 +49,7 @@
 - 2026-07-26: first five generated OSM expansion routes imported and validated: Budapest/Danube, Naples/Lungomare, Athens/Plaka, Helsinki/Esplanadi, Edinburgh/Royal Mile.
 - Added `scripts/import-generated-circuits.mjs` plus `npm run import:circuits` to automate route-index registration, circuit identity metrics, i18n labels, and speed-profile regeneration for the next waves.
 - 2026-07-26: second import wave validated: Valletta/Grand Harbour, Amsterdam/Jordaan, New York/Battery. Added missing MT/US flags and kept the flag-asset catalogue test active.
+- 2026-07-26: third import wave validated: Miami/Ocean Drive and Chicago/Lakefront. Buenos Aires/Madero was attempted twice but not imported because Overpass timed out on the requested Puerto Madero bounds.
 
 # AI Context
 - Summary: Orchestrate the twenty-new-circuits expansion

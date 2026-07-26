@@ -846,5 +846,7 @@
   "circuit_royal_mile": "Montée du Royal Mile",
   "circuit_grand_harbour": "Charge du Grand Harbour",
   "circuit_jordaan": "Sprint des canaux du Jordaan",
-  "circuit_battery": "Boucle de Battery Park"
+  "circuit_battery": "Boucle de Battery Park",
+  "circuit_ocean_drive": "Sprint d’Ocean Drive",
+  "circuit_lakefront": "Sprint Lakefront"
 }

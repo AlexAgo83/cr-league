@@ -117,7 +117,9 @@ describe("circuit identities", () => {
       "circuit_royal_mile",
       "circuit_grand_harbour",
       "circuit_jordaan",
-      "circuit_battery"
+      "circuit_battery",
+      "circuit_ocean_drive",
+      "circuit_lakefront"
     ];
 
     expect(CITY_CIRCUIT_IDENTITIES.filter((circuit) => expansionCircuitKeys.includes(circuit.layoutKey)).map((circuit) => ({
@@ -133,7 +135,9 @@ describe("circuit identities", () => {
       { city: "Edinburgh", layoutKey: "circuit_royal_mile", trackLengthMeters: 6035, laps: 8 },
       { city: "Valletta", layoutKey: "circuit_grand_harbour", trackLengthMeters: 4521, laps: 11 },
       { city: "Amsterdam", layoutKey: "circuit_jordaan", trackLengthMeters: 5897, laps: 9 },
-      { city: "New York", layoutKey: "circuit_battery", trackLengthMeters: 4380, laps: 11 }
+      { city: "New York", layoutKey: "circuit_battery", trackLengthMeters: 4380, laps: 11 },
+      { city: "Miami", layoutKey: "circuit_ocean_drive", trackLengthMeters: 5725, laps: 9 },
+      { city: "Chicago", layoutKey: "circuit_lakefront", trackLengthMeters: 5781, laps: 9 }
     ]);
   });
 

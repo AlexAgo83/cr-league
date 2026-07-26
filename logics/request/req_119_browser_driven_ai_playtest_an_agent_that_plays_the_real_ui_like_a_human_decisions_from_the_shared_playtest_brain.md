@@ -1,7 +1,7 @@
 ## req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain - Browser-driven AI playtest: an agent that plays the real UI like a human, decisions from the shared playtest brain
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

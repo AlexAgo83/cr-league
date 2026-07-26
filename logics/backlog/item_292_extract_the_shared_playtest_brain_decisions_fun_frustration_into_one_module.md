@@ -1,10 +1,10 @@
 ## item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module - Extract the shared playtest brain (decisions + fun/frustration) into one module
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 70%
+> Progress: 100%
 > Complexity: Medium
 > Theme: AI playtest tooling
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -51,3 +51,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_120_orchestrate_the_browser_driven_ai_playtest` was finished via `logics-manager flow finish task` on 2026-07-26.

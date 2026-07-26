@@ -92,6 +92,11 @@ function ReplayStartLights({ signal }: { signal: ReplayStartSignal | null }) {
   );
 }
 
+function ReplayFinishFlag({ show, pole }: { show: boolean; pole: boolean }) {
+  if (!show) return null;
+  return <div className={pole ? "replay-pole-flash" : "replay-finish-flag"} aria-hidden="true" />;
+}
+
 function renderPositionBadges(text: string): ReactNode {
   return text.split(/(P\d+)/g).map((part, index) => {
     const match = /^P(\d+)$/.exec(part);
@@ -415,6 +420,7 @@ export function ReplayView({
             overlay={
               <>
               <ReplayStartLights signal={startSignal} />
+              <ReplayFinishFlag show={currentRaceProgress >= 1} pole={replayMode === "qualifying"} />
               <ReplayStageOverlay
                 circuit={circuit}
                 liveLap={live.lap}

@@ -3992,6 +3992,56 @@ label small {
   box-shadow: 0 0 14px rgb(31 214 90 / 0.9);
 }
 
+.replay-finish-flag {
+  position: absolute;
+  left: 50%;
+  top: 38%;
+  width: 120px;
+  height: 80px;
+  transform: translate(-50%, -50%);
+  border-radius: 6px;
+  background-image:
+    conic-gradient(#141414 90deg, #f5f5f5 0 180deg, #141414 0 270deg, #f5f5f5 0);
+  background-size: 24px 24px;
+  border: 2px solid rgb(255 255 255 / 0.55);
+  box-shadow: 0 8px 22px rgb(0 0 0 / 0.55);
+  animation: replay-flag-pop 260ms ease-out both, replay-flag-wave 0.9s ease-in-out 260ms infinite;
+  z-index: 6;
+}
+
+.replay-pole-flash {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: radial-gradient(circle at 50% 42%, rgb(158 74 240 / 0.6), rgb(158 74 240 / 0) 46%);
+  animation: replay-pole-pulse 850ms ease-out 3 both;
+}
+
+@keyframes replay-pole-pulse {
+  0% { opacity: 0; transform: scale(1.12); }
+  35% { opacity: 1; }
+  100% { opacity: 0; transform: scale(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .replay-pole-flash { animation: none; opacity: 0.5; }
+}
+
+@keyframes replay-flag-pop {
+  from { transform: translate(-50%, -50%) scale(0.4); opacity: 0; }
+  to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+}
+
+@keyframes replay-flag-wave {
+  0%, 100% { transform: translate(-50%, -50%) rotate(-3deg) skewY(-3deg); }
+  50% { transform: translate(-50%, -50%) rotate(3deg) skewY(3deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .replay-finish-flag { animation: none; }
+}
+
 .replay-moment-notification {
   align-items: center;
   background: rgb(16 14 18 / 0.86);

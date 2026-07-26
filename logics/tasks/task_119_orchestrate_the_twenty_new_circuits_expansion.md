@@ -1,0 +1,59 @@
+## task_119_orchestrate_the_twenty_new_circuits_expansion - Orchestrate the twenty-new-circuits expansion
+> From version: 0.4.6
+> Schema version: 1.0
+> Status: Ready
+> Understanding: 90%
+> Confidence: 85%
+> Progress: 0%
+> Complexity: Medium
+> Theme: Implementation delivery
+> Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+
+# Context
+- Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
+
+# Plan
+- [ ] 1. Read the canonical-race-track-geometry and speed-profile scaffolds first; this request consumes that pipeline and must not reinvent generation, auditing, or the geometry heuristic.
+- [ ] 2. For each of the 20 cities, run scripts/generate-circuit.mjs against OSM, iterating per-city flags until the loop passes auditPoints with zero failures and stays on real roads; write circuitRoutes/circuit_<key>.ts.
+- [ ] 3. Add each identity row to CITY_CIRCUIT_IDENTITIES and regenerate canonical geometry and CIRCUIT_SPEED_PROFILES from the routes via generate-circuit-speed-profiles.mjs; choose laps/traits/likelyWeather with intent.
+- [ ] 4. Add circuit_<key> display names to en.json and fr.json for all 20 keys.
+- [ ] 5. Run audit:circuits, balance:gate, typecheck, test, build, lint, and logics:validate; record proof at closeout.
+- [ ] 6. Reject any circuit that cannot be generated cleanly from OSM rather than hand-drawing it; note substitutions if a city yields no valid loop.
+- [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
+- [ ] Keep commit creation under operator control; do not force one commit per micro-step.
+- [ ] GATE: do not close until lint, audit, and scaffold validation pass.
+
+# Backlog
+- `item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline`
+- `item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials`
+- `item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates`
+
+# Definition of Done (DoD)
+- [ ] Generated request, product, backlog, and task docs are present.
+- [ ] Context-pack handoff is available when requested.
+- [ ] Validation passes.
+- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+
+# AC Traceability
+- request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
+- request-AC4 -> This task. Proof: optional context-pack handoff is supported.
+- request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
+- request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+
+# Validation
+- Run `python3 -m logics_manager lint --require-status`.
+- Run scaffold command tests.
+
+# Report
+- Implementation complete.
+
+# AI Context
+- Summary: Orchestrate the twenty-new-circuits expansion
+- Keywords: scaffolded-task, request-chain-scaffold, orchestration
+- Use when: Coordinating implementation of a scaffolded request chain.
+- Skip when: Working on one isolated sibling slice.
+
+# Links
+- Request: `req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline`
+- Product brief(s): `prod_070_city_circuit_catalogue_expansion_product_brief`
+- Architecture decision(s): (none yet)

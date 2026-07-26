@@ -1,0 +1,342 @@
+{
+  "budgets": {
+    "max_docs": 20,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates task_119_orchestrate_the_twenty_new_circuits_expansion --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline",
+          "item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials",
+          "item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates"
+        ],
+        "prod": [
+          "prod_070_city_circuit_catalogue_expansion_product_brief"
+        ],
+        "req": [
+          "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline"
+        ],
+        "task": [
+          "task_119_orchestrate_the_twenty_new_circuits_expansion"
+        ]
+      },
+      "path": "logics/product/prod_070_city_circuit_catalogue_expansion_product_brief.md",
+      "ref": "prod_070_city_circuit_catalogue_expansion_product_brief",
+      "status": "Proposed",
+      "title": "City Circuit Catalogue Expansion Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, twenty new realistic city circuits generated through the established osm pipeline, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Twenty new realistic city circuits generated through the established OSM pipeline",
+        "use when": "You need to implement or review the scaffolded workflow for Twenty new realistic city circuits generated through the established OSM pipeline."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline",
+          "item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials",
+          "item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates"
+        ],
+        "prod": [
+          "prod_070_city_circuit_catalogue_expansion_product_brief"
+        ],
+        "req": [
+          "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline"
+        ]
+      },
+      "path": "logics/request/req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline.md",
+      "ref": "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Twenty new realistic city circuits generated through the established OSM pipeline"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, generate and audit the 20 real-street route files via the osm pipeline, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Generate and audit the 20 real-street route files via the OSM pipeline",
+        "use when": "Implementing the scaffolded slice for Generate and audit the 20 real-street route files via the OSM pipeline."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline"
+        ],
+        "prod": [
+          "prod_070_city_circuit_catalogue_expansion_product_brief"
+        ],
+        "req": [
+          "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline"
+        ],
+        "task": [
+          "task_119_orchestrate_the_twenty_new_circuits_expansion"
+        ]
+      },
+      "path": "logics/backlog/item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline.md",
+      "ref": "item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Generate and audit the 20 real-street route files via the OSM pipeline"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, author identity rows with generated geometry, speed profiles, and balanced dials, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Author identity rows with generated geometry, speed profiles, and balanced dials",
+        "use when": "Implementing the scaffolded slice for Author identity rows with generated geometry, speed profiles, and balanced dials."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials"
+        ],
+        "prod": [
+          "prod_070_city_circuit_catalogue_expansion_product_brief"
+        ],
+        "req": [
+          "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline"
+        ],
+        "task": [
+          "task_119_orchestrate_the_twenty_new_circuits_expansion"
+        ]
+      },
+      "path": "logics/backlog/item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials.md",
+      "ref": "item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Author identity rows with generated geometry, speed profiles, and balanced dials"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, localize the new circuits and pass the full catalogue gates, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Localize the new circuits and pass the full catalogue gates",
+        "use when": "Implementing the scaffolded slice for Localize the new circuits and pass the full catalogue gates."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates"
+        ],
+        "prod": [
+          "prod_070_city_circuit_catalogue_expansion_product_brief"
+        ],
+        "req": [
+          "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline"
+        ],
+        "task": [
+          "task_119_orchestrate_the_twenty_new_circuits_expansion"
+        ]
+      },
+      "path": "logics/backlog/item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates.md",
+      "ref": "item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Localize the new circuits and pass the full catalogue gates"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate the twenty-new-circuits expansion",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline",
+          "item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials",
+          "item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates"
+        ],
+        "prod": [
+          "prod_070_city_circuit_catalogue_expansion_product_brief"
+        ],
+        "req": [
+          "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline"
+        ],
+        "task": [
+          "task_119_orchestrate_the_twenty_new_circuits_expansion"
+        ]
+      },
+      "path": "logics/tasks/task_119_orchestrate_the_twenty_new_circuits_expansion.md",
+      "ref": "task_119_orchestrate_the_twenty_new_circuits_expansion",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate the twenty-new-circuits expansion"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline",
+          "item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials",
+          "item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates"
+        ],
+        "prod": [
+          "prod_070_city_circuit_catalogue_expansion_product_brief"
+        ],
+        "req": [
+          "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline"
+        ],
+        "task": [
+          "task_119_orchestrate_the_twenty_new_circuits_expansion"
+        ]
+      },
+      "path": "logics/product/prod_070_city_circuit_catalogue_expansion_product_brief.md",
+      "ref": "prod_070_city_circuit_catalogue_expansion_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "City Circuit Catalogue Expansion Product Brief"
+    }
+  ],
+  "estimates": {
+    "char_count": 7239,
+    "companion_doc_count": 1,
+    "doc_count": 6
+  },
+  "generated_at": "2026-07-26T14:10:45Z",
+  "handoff": {
+    "companion_doc_count": 1,
+    "enabled": true,
+    "source_refs": [
+      "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline",
+      "item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline",
+      "item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials",
+      "item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates",
+      "task_119_orchestrate_the_twenty_new_circuits_expansion"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 830,
+      "fr": 830
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline,item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline,item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials,item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates,task_119_orchestrate_the_twenty_new_circuits_expansion",
+  "refs": [
+    "req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline",
+    "item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline",
+    "item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials",
+    "item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates",
+    "task_119_orchestrate_the_twenty_new_circuits_expansion"
+  ],
+  "release": {
+    "blocking_reasons": [],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Release evidence is complete.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": null,
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "ready",
+    "target_version": "0.4.6"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_119_orchestrate_the_twenty_new_circuits_expansion.md",
+      "ref": "task_119_orchestrate_the_twenty_new_circuits_expansion"
+    }
+  ]
+}

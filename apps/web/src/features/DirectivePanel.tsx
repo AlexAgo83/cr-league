@@ -336,8 +336,8 @@ export function DirectivePanel({
                 {approach === "aggressive" ? <span className="approach-skull-badge" aria-hidden="true" /> : null}
                 <span className="plan-choice-title">
                   <BoardIcon className="plan-choice-board-icon" name={APPROACH_ICONS[approach]} />
-                  <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
                   <PlanChoiceMarker value={PLAN_MARKERS.approach[approach]} />
+                  <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
                 </span>
                 <small>{tt(`approach_${approach}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={badgesFromDeltas(APPROACH_DELTAS[approach])} tt={tt} />
@@ -355,8 +355,8 @@ export function DirectivePanel({
               <button key={preparation} type="button" className={`${form.preparation === preparation ? "choice-card selected" : "choice-card"} preparation-${preparation}`} aria-label={`${tt("field_preparation")}: ${tt(`preparation_${preparation}` as TranslationKey)}`} aria-pressed={form.preparation === preparation} onClick={() => setForm({ ...form, preparation })} disabled={disabled}>
                 <span className="plan-choice-title">
                   <BoardIcon className="plan-choice-board-icon" name={PREPARATION_ICONS[preparation]} />
-                  <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
                   <PlanChoiceMarker value={PLAN_MARKERS.preparation[preparation]} />
+                  <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
                 </span>
                 <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={badgesFromDeltas(PREPARATION_DELTAS[preparation])} tt={tt} />
@@ -374,8 +374,8 @@ export function DirectivePanel({
               <button key={pitStrategy} type="button" className={`${form.pitStrategy === pitStrategy ? "choice-card selected" : "choice-card"} pit-strategy-${pitStrategy}`} aria-label={`${tt("field_pit_strategy")}: ${tt(`pit_strategy_${pitStrategy}` as TranslationKey)}`} aria-pressed={form.pitStrategy === pitStrategy} onClick={() => setForm({ ...form, pitStrategy })} disabled={disabled}>
                 <span className="plan-choice-title">
                   <BoardIcon className="plan-choice-board-icon" name={PIT_ICONS[pitStrategy]} />
-                  <strong>{tt(`pit_strategy_${pitStrategy}` as TranslationKey)}</strong>
                   <PlanChoiceMarker value={PLAN_MARKERS.pitStrategy[pitStrategy]} />
+                  <strong>{tt(`pit_strategy_${pitStrategy}` as TranslationKey)}</strong>
                 </span>
                 <small>{tt(`pit_strategy_${pitStrategy}_hint` as TranslationKey)}</small>
                 <ImpactBadges badges={badgesFromDeltas(PIT_STRATEGY_DELTAS[pitStrategy])} tt={tt} />

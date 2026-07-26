@@ -247,7 +247,8 @@ See [docs/balance-simulations.md](docs/balance-simulations.md) for the metrics.
 Agent-oriented validation docs:
 
 - [AI app test runbook](docs/ai-app-test-runbook.md)
-- [Board icon assets runbook](docs/board-icon-assets-runbook.md)
+- [Board icon assets runbook](docs/board-icon-assets-runbook.md) — generation,
+  crop, audit, and UI mapping workflow for the CRL board-style PNG icon sheets.
 - [Circuit generation](docs/circuit-generation.md)
 
 ## Render Configuration
@@ -295,7 +296,9 @@ Current roadmap direction:
 - `0.1`: playable vertical slice implemented;
 - `0.2`: private league prototype foundation implemented;
 - `0.3`: playtest game loop polish has reached replay realism, pit strategy, loading feedback, and global circuit catalogue patch `0.3.10`;
-- `0.4`: ship rails are implemented; economy depth waits for playtest signal.
+- `0.4`: ship rails are implemented; route/content tooling and board-style UI
+  asset coverage are active adjacent polish while economy depth waits for
+  playtest signal.
 
 ## Contributing
 

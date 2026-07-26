@@ -63,6 +63,32 @@ names = [
 ]
 ```
 
+## Current App Coverage
+
+The app currently imports six 4x4 board sheets. The committed PNGs cover:
+
+- core actions: `new-chrono`, `review-chrono`, `send-plan`, `launch-gp`,
+  `next-gp`, `open-replay`, `edit-plan`, `race-report`, `review-race`;
+- Plan choices: approach, preparation, pit pack, card info, lock/empty-card states,
+  and Plan risk markers;
+- Garage: inventory/shop/team tabs, card names, buy/sell, car skin selection,
+  save name/colors, unlock/selected states;
+- Championship: Circuits, Standings, Palmares, Grand Prix history, mobile 2x2 tab
+  layout;
+- shell/support actions: Stand navigation, admin, changelog, copy-error, danger,
+  settings/profile/logout/reset/back/next candidates.
+
+Before requesting another generated sheet, inspect existing mappings in:
+
+- `apps/web/src/features/VisualIcon.tsx`;
+- `apps/web/src/features/DirectivePanel.tsx`;
+- `apps/web/src/features/GarageView.tsx`;
+- `apps/web/src/app/AppChrome.tsx`;
+- `apps/web/src/app/AppModals.tsx`.
+
+Only generate more assets when a UI command still falls back to an unrelated icon
+or a current asset is unreadable at `24px`.
+
 ## Tools
 
 Install local image tooling when needed:

@@ -23,7 +23,10 @@ export function loadCircuitRoutes(): Promise<void> {
 }
 
 export function circuitRouteFor(layoutKey: string): CircuitRoute {
-  return routeCache[layoutKey] ?? [];
+  const route = routeCache[layoutKey];
+  if (route) return route;
+  if (circuitRoutesReady()) throw new Error(`Missing circuit route for ${layoutKey}.`);
+  return [];
 }
 
 export function circuitRoutesReady(): boolean {

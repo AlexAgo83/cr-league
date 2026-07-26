@@ -1,12 +1,13 @@
 ## prod_070_city_circuit_catalogue_expansion_product_brief - City Circuit Catalogue Expansion Product Brief
 > Date: 2026-07-26
-> Status: Proposed
+> Status: Settled
 > Related request: `req_118_twenty_new_realistic_city_circuits_generated_through_the_established_osm_pipeline`
 > Related backlog: `item_289_generate_and_audit_the_20_real_street_route_files_via_the_osm_pipeline`, `item_290_author_identity_rows_with_generated_geometry_speed_profiles_and_balanced_dials`, `item_291_localize_the_new_circuits_and_pass_the_full_catalogue_gates`
 > Related task: `task_119_orchestrate_the_twenty_new_circuits_expansion`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Confidence: 90
+> Semantic edit: 2026-07-27 settled after linked request/backlog/task closeout.
 > Non-semantic edit: 2026-07-26 added overview Mermaid diagram.
 
 # Overview

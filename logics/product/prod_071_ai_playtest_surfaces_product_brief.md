@@ -1,12 +1,13 @@
 ## prod_071_ai_playtest_surfaces_product_brief - AI Playtest Surfaces Product Brief
 > Date: 2026-07-26
-> Status: Proposed
+> Status: Settled
 > Related request: `req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain`
 > Related backlog: `item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module`, `item_293_build_the_playwright_browser_agent_that_plays_the_real_ui_from_the_shared_brain`, `item_294_instrument_the_browser_run_fun_frustration_report_ui_failure_capture_npm_wiring`
 > Related task: `task_120_orchestrate_the_browser_driven_ai_playtest`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Confidence: 90
+> Semantic edit: 2026-07-27 settled after linked request/backlog/task closeout.
 > Non-semantic edit: 2026-07-26 added overview Mermaid diagram.
 
 # Overview

@@ -1,12 +1,13 @@
 ## prod_072_ai_ux_evaluation_product_brief - AI UX Evaluation Product Brief
 > Date: 2026-07-26
-> Status: Proposed
+> Status: Settled
 > Related request: `req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure`
 > Related backlog: `item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile`, `item_296_friction_accessibility_instrumentation_with_axe_core`, `item_297_cold_start_naive_agent_and_onboarding_funnel`
 > Related task: `task_121_orchestrate_the_ux_evaluation_harness`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Confidence: 90
+> Semantic edit: 2026-07-27 settled after linked request/backlog/task closeout.
 > Non-semantic edit: 2026-07-26 added overview Mermaid diagram.
 
 # Overview

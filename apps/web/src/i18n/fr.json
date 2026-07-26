@@ -858,5 +858,16 @@
   "circuit_vieux_port": "Sprint du Vieux-Port",
   "circuit_embarcadero": "Charge de l'Embarcadero",
   "circuit_madero": "Sprint des quais de Madero",
-  "circuit_bund": "Boucle skyline du Bund"
+  "circuit_bund": "Boucle skyline du Bund",
+  "circuit_kyoto_neon_loop": "Boucle néon de Kyoto",
+  "circuit_reykjavik_harbor_sprint": "Sprint du port de Reykjavik",
+  "circuit_marrakech_heat_ring": "Anneau chaleur de Marrakech",
+  "circuit_vancouver_rainway": "Voie pluie de Vancouver",
+  "circuit_lisbon_tramline": "Circuit tramway de Lisbonne",
+  "circuit_singapore_dock_nights": "Nuits des docks de Singapour",
+  "circuit_cape_town_coast_run": "Course côtière du Cap",
+  "circuit_seoul_overpass_gp": "GP des échangeurs de Séoul",
+  "circuit_buenos_aires_park": "Circuit parc de Buenos Aires",
+  "circuit_helsinki_icebreak": "Circuit brise-glace d'Helsinki",
+  "circuit_bastia_citadel_loop": "Boucle citadelle de Bastia"
 }

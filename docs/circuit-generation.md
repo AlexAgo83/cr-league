@@ -200,6 +200,26 @@ Visual acceptance for Cape Town:
 - do not use Beach Road, the promenade, or Waterfront piers as the main loop;
 - coastal sections are allowed only if they are short connectors on visible mapped roads.
 
+## 0.5 Extra Circuit Wave
+
+Accepted 2026-07-27 batch:
+
+| Layout | City | Length | Laps |
+| --- | --- | ---: | ---: |
+| `circuit_kyoto_neon_loop` | Kyoto | 5587m | 9 |
+| `circuit_reykjavik_harbor_sprint` | Reykjavik | 4673m | 11 |
+| `circuit_marrakech_heat_ring` | Marrakech | 5714m | 9 |
+| `circuit_vancouver_rainway` | Vancouver | 5486m | 9 |
+| `circuit_lisbon_tramline` | Lisbon | 4951m | 10 |
+| `circuit_singapore_dock_nights` | Singapore | 5798m | 9 |
+| `circuit_cape_town_coast_run` | Cape Town | 5388m | 9 |
+| `circuit_seoul_overpass_gp` | Seoul | 5412m | 9 |
+| `circuit_buenos_aires_park` | Buenos Aires | 5508m | 9 |
+| `circuit_helsinki_icebreak` | Helsinki | 5093m | 10 |
+| `circuit_bastia_citadel_loop` | Bastia | 4773m | 11 |
+
+Bastia needed the major-road graph around south Bastia/Furiani; the old-city center candidates did not produce a valid closed route.
+
 ## Manual Review
 
 After generation, visually inspect the route in the Circuits screen.

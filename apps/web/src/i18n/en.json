@@ -858,5 +858,16 @@
   "circuit_vieux_port": "Vieux Port Sprint",
   "circuit_embarcadero": "Embarcadero Charge",
   "circuit_madero": "Madero Waterfront Sprint",
-  "circuit_bund": "Bund Skyline Loop"
+  "circuit_bund": "Bund Skyline Loop",
+  "circuit_kyoto_neon_loop": "Kyoto Neon Loop",
+  "circuit_reykjavik_harbor_sprint": "Reykjavik Harbor Sprint",
+  "circuit_marrakech_heat_ring": "Marrakech Heat Ring",
+  "circuit_vancouver_rainway": "Vancouver Rainway",
+  "circuit_lisbon_tramline": "Lisbon Tramline Circuit",
+  "circuit_singapore_dock_nights": "Singapore Dock Nights",
+  "circuit_cape_town_coast_run": "Cape Town Coast Run",
+  "circuit_seoul_overpass_gp": "Seoul Overpass GP",
+  "circuit_buenos_aires_park": "Buenos Aires Park Circuit",
+  "circuit_helsinki_icebreak": "Helsinki Icebreak Circuit",
+  "circuit_bastia_citadel_loop": "Bastia Citadel Loop"
 }

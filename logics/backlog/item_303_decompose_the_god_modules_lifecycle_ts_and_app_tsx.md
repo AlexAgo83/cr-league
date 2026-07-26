@@ -1,10 +1,10 @@
 ## item_303_decompose_the_god_modules_lifecycle_ts_and_app_tsx - Decompose the god modules (lifecycle.ts and App.tsx)
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 96%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -30,6 +30,8 @@
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: lifecycle.ts is split by responsibility with the store surface intact.
 - request-AC6 -> This backlog slice. Proof: AC2: App.tsx orchestration is extracted into per-domain hooks.
+- request-AC3 -> This backlog slice. Evidence needed: Replay order/classification/gap derivation has one shared definition (moved beside replayTrace or emitted by the sim), and a golden/determinism test pins a fixed-seed trace's interpolated positions; replayMath is no longer an untested client re-derivation of the trace format.
+- request-AC5 -> This backlog slice. Evidence needed: vitest enforces a coverage threshold gated in CI, and unit tests exist for season rollover + the (leagueId,season,round) concurrency guard, resolution standings/credit application, and the comeback bonus math + cap.
 
 # Decision framing
 - Product framing: Not needed
@@ -50,3 +52,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_123_orchestrate_the_source_of_truth_remediation`
+
+# Notes
+- Task `task_123_orchestrate_the_source_of_truth_remediation` was finished via `logics-manager flow finish task` on 2026-07-26.

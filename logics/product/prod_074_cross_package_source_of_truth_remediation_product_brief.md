@@ -1,8 +1,8 @@
 ## prod_074_cross_package_source_of_truth_remediation_product_brief - Cross-Package Source-of-Truth Remediation Product Brief
 > Date: 2026-07-26
-> Status: Proposed
+> Status: Settled
 > Related request: `req_122_review_remediation_one_source_of_truth_for_cross_package_contracts_and_helpers_decompose_god_modules_close_test_gaps`
-> Related backlog: `item_300_single_source_of_truth_for_the_leaguestate_raceresult_response_contract`, `item_301_consolidate_diverged_simulation_util_helpers_into_shared_reconciled_under_test`, `item_302_one_shared_definition_of_replay_order_classification_gaps_with_a_golden_test`, `item_303_decompose_the_god_modules_lifecycle_ts_and_app_tsx`, `item_304_test_and_ci_hardening_coverage_floor_plus_critical_path_unit_tests`, `item_305_server_authoritative_standings_circuit_parity_guard_and_dead_code_data_hygiene`
+> Related backlog: `item_300_single_source_of_truth_for_the_leaguestate_raceresult_response_contract`
 > Related task: `task_123_orchestrate_the_source_of_truth_remediation`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
@@ -44,5 +44,5 @@ flowchart TD
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_122_review_remediation_one_source_of_truth_for_cross_package_contracts_and_helpers_decompose_god_modules_close_test_gaps`
+- Product back-reference: `item_300_single_source_of_truth_for_the_leaguestate_raceresult_response_contract`
 - Task back-reference: `task_123_orchestrate_the_source_of_truth_remediation`

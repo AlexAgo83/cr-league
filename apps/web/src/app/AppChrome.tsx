@@ -169,7 +169,7 @@ function BrandLoadingIndicator({ pendingMessage }: { pendingMessage: string | nu
   ) : null;
 }
 
-export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = null, onHome, hideBrand = false }: { profileMenu: ReactNode; languageSwitcher: ReactNode; pendingMessage?: string | null; onHome: () => void; hideBrand?: boolean }) {
+export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = null, onHome, hideBrand = false, hideWordmark = false }: { profileMenu: ReactNode; languageSwitcher: ReactNode; pendingMessage?: string | null; onHome: () => void; hideBrand?: boolean; hideWordmark?: boolean }) {
   return (
     <header className="setup-topbar">
       {hideBrand ? null : (
@@ -178,7 +178,7 @@ export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = nu
             <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.webp" alt="" loading="eager" />
             <BrandLoadingIndicator pendingMessage={pendingMessage} />
           </span>
-          <AssetImage className="brand-wordmark" src="/assets/crl/home-title-league.webp" alt={APP_NAME} loading="eager" />
+          {hideWordmark ? null : <AssetImage className="brand-wordmark" src="/assets/crl/home-title-league.webp" alt={APP_NAME} loading="eager" />}
         </button>
       )}
       <div className="setup-topbar-actions">{profileMenu ?? languageSwitcher}</div>

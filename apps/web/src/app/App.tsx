@@ -566,7 +566,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   );
 
   const setupTopbar = (
-    <SetupTopbar profileMenu={profileSession ? profileMenu(false, false) : null} languageSwitcher={languageSwitcher} pendingMessage={pendingMessage} onHome={goHome} />
+    <SetupTopbar hideWordmark profileMenu={profileSession ? profileMenu(false, false) : null} languageSwitcher={languageSwitcher} pendingMessage={pendingMessage} onHome={goHome} />
   );
 
   const notificationStack = <NotificationStack notifications={notifications} tt={tt} onDismiss={dismissNotification} />;

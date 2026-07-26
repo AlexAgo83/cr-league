@@ -23,13 +23,13 @@ const CARD_NAME_ICONS: Record<CardId, BoardIconName> = {
   final_surge: "finish-flag-icon",
   fleet_maintenance: "fleet-maintenance",
   fleet_sponsorship: "credits",
-  hard_tires: "grip",
+  hard_tires: "hard-tires",
   launch_boost: "boost",
-  pit_relay: "pit-stop",
+  pit_relay: "pit-relay",
   qualifying_focus: "chrono",
   rain_grip: "weather",
   rain_mapping: "rain-mapping",
-  soft_tires: "grip",
+  soft_tires: "soft-tires",
   urban_draft: "urban-draft"
 };
 

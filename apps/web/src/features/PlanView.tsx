@@ -11,6 +11,7 @@ import { APPROACH_ART, DirectivePanel, PIT_ART, PREPARATION_ART, type DirectiveS
 import { CARD_ART } from "./CardStatBadges.js";
 import { OpponentConfigComparison } from "./OpponentConfigComparison.js";
 import { PositionBadge } from "./PositionBadge.js";
+import { BoardIcon } from "./VisualIcon.js";
 import { lazy, Suspense } from "react";
 
 const ReportView = lazy(() => import("./ReportView.js").then((module) => ({ default: module.ReportView })));
@@ -116,6 +117,7 @@ export function PlanView({
                 <div className="chrono-report-prompt">
                   <p>{locked ? tt("plan_report_empty_body") : tt("plan_report_pending_plan_body")}</p>
                   <button type="button" className={`primary-command${!locked && chronoReport.best ? " highlight-command" : ""}`} onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
+                    <BoardIcon className="command-board-icon" name={locked ? "locked-plan" : "finish-flag-icon"} />
                     {locked ? primaryCommand.label : tt("directive_confirm_action")}
                   </button>
                 </div>
@@ -175,6 +177,7 @@ export function PlanView({
                     }}
                     disabled={disabled || qualifyingAttemptsLeft <= 0}
                   >
+                    <BoardIcon className="command-board-icon" name="chrono" />
                     {tt("action_qualifying")}
                   </button>
                 </div>
@@ -242,6 +245,7 @@ export function PlanView({
                           onSetGameView("drive");
                         }}
                       >
+                        <BoardIcon className="command-board-icon" name="replay" />
                         {tt("action_qualifying_history")}
                       </button>
                     </li>

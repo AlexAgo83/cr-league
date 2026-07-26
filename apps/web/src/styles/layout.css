@@ -4726,6 +4726,19 @@ label small {
   gap: 3px;
 }
 
+.garage-card-name {
+  align-items: center;
+  display: inline-flex;
+  gap: 7px;
+  min-width: 0;
+}
+
+.garage-card-name-icon {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.34));
+  height: 22px;
+  width: 22px;
+}
+
 .card-inventory-button:hover,
 .card-inventory-button:focus-visible {
   color: var(--color-text);

@@ -13,6 +13,34 @@ import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
 import { ModalHero } from "./ModalHero.js";
 import { RewardValue } from "./RewardValue.js";
+import { BoardIcon, type BoardIconName } from "./VisualIcon.js";
+
+const CARD_NAME_ICONS: Record<CardId, BoardIconName> = {
+  adjustable_wing: "overtaking",
+  calculated_attack: "overtaking",
+  defensive_order: "damage-risk",
+  economy_mode: "credits",
+  final_surge: "finish-flag-icon",
+  fleet_maintenance: "reliability",
+  fleet_sponsorship: "credits",
+  hard_tires: "grip",
+  launch_boost: "boost",
+  pit_relay: "pit-stop",
+  qualifying_focus: "chrono",
+  rain_grip: "weather",
+  rain_mapping: "weather",
+  soft_tires: "grip",
+  urban_draft: "overtaking"
+};
+
+function CardName({ cardId, tt }: { cardId: CardId; tt: Translator }) {
+  return (
+    <span className="garage-card-name">
+      <BoardIcon className="garage-card-name-icon" name={CARD_NAME_ICONS[cardId]} />
+      <span>{tt(`card_${cardId}` as TranslationKey)}</span>
+    </span>
+  );
+}
 
 export function GarageView({
   state,
@@ -239,7 +267,7 @@ export function GarageView({
                   <li key={cardId}>
                     <button className="card-inventory-button card-art-cell" type="button" onClick={() => setViewingCardId(cardId)}>
                       <span>
-                        {tt(`card_${cardId}` as TranslationKey)}
+                        <CardName cardId={cardId} tt={tt} />
                         <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
                         <CardStatBadges cardId={cardId} tt={tt} />
                       </span>
@@ -260,7 +288,7 @@ export function GarageView({
           <div className="card-shop">
             {shopOffers.map((item) => (
               <button key={item.cardId} className="card-art-cell" type="button" onClick={() => { setPendingBuyCardId(item.cardId); setBuyQuantity(1); }} disabled={loading}>
-                <span>{tt(`card_${item.cardId}` as TranslationKey)}</span>
+                <CardName cardId={item.cardId} tt={tt} />
                 <strong className="card-price-badge">
                   <span aria-hidden="true" className="reward-icon">●</span>
                   <span>{item.price}</span>
@@ -277,6 +305,7 @@ export function GarageView({
       {pendingBuy ? (
         <Modal label={tt("garage_buy_confirm_title")} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setPendingBuyCardId(undefined)}>
           <ModalHero image="/assets/crl/garage-buy-modal.webp" kicker={tt("garage_shop")} title={tt(`card_${pendingBuy.cardId}` as TranslationKey)} />
+          <CardName cardId={pendingBuy.cardId} tt={tt} />
           <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
             <CardArtImage cardId={pendingBuy.cardId} />
@@ -319,6 +348,7 @@ export function GarageView({
       {viewingCardId && viewingFit ? (
         <Modal label={tt(`card_${viewingCardId}` as TranslationKey)} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setViewingCardId(undefined)}>
           <ModalHero image="/assets/crl/garage-sell-modal.webp" kicker={tt("garage_inventory")} title={tt(`card_${viewingCardId}` as TranslationKey)} />
+          <CardName cardId={viewingCardId} tt={tt} />
           <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
             <CardArtImage cardId={viewingCardId} />

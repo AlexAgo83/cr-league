@@ -423,8 +423,10 @@ describe("App", () => {
     await screen.findByRole("button", { name: "Garage" });
 
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    await closeLeagueIntro();
     expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
     fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
+    expect(document.querySelector(".card-inventory-button .garage-card-name-icon")?.getAttribute("src")).toBe("/assets/crl/icons/weather.png");
     const sellDialog = screen.getByRole("dialog", { name: "Rain Grip" });
     expect(sellDialog).toBeTruthy();
     expect(within(sellDialog).queryByRole("heading", { name: "Stats" })).toBe(null);
@@ -444,6 +446,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
     fireEvent.click(screen.getByRole("button", { name: /Soft Tires/ }));
+    expect(document.querySelector(".card-shop .garage-card-name-icon")?.getAttribute("src")).toBeTruthy();
     const buyDialog = screen.getByRole("dialog", { name: "Confirm card purchase" });
     expect(buyDialog).toBeTruthy();
     expect(within(buyDialog).queryByRole("heading", { name: "Stats" })).toBe(null);
@@ -681,6 +684,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
     expect(screen.getByRole("button", { name: "New chrono" }).className).toContain("highlight-command");
+    expect(screen.getByRole("button", { name: "New chrono" }).querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/chrono.png");
     fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
     expect(screen.getByRole("dialog", { name: "Run chrono?" })).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
@@ -734,6 +738,7 @@ describe("App", () => {
     expect(document.querySelector(".chrono-report-history .type-card")).toBeTruthy();
     expect(document.querySelector(".chrono-report-history .type-card.is-faded")).toBeTruthy();
     expect(document.querySelectorAll(".chrono-session-choice b").length).toBeGreaterThan(0);
+    expect(screen.getAllByRole("button", { name: "Review chrono" }).at(0)?.querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/replay.png");
     fireEvent.click(screen.getAllByRole("button", { name: "Review chrono" }).at(0)!);
     expect(await screen.findByRole("heading", { name: "Chrono replay" })).toBeTruthy();
     expect(screen.getByLabelText("Replay position").getAttribute("aria-valuetext")).toContain("Lap 2/3");
@@ -798,6 +803,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "GP" }));
     expect(screen.getByRole("button", { name: "Send" }).className).toContain("primary-command");
     expect(screen.getByRole("button", { name: "Send" }).className).toContain("highlight-command");
+    expect(screen.getByRole("button", { name: "Send" }).querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/finish-flag-icon.png");
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("button", { name: "Send plan" }).className).toContain("highlight-command");
     fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
@@ -832,6 +838,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     fireEvent.click(screen.getByRole("tab", { name: "GP" }));
     expect(screen.getByRole("button", { name: "Launch GP" }).className).toContain("primary-command");
+    expect(screen.getByRole("button", { name: "Launch GP" }).querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/locked-plan.png");
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
 
     // Launch: Course becomes the race replay.

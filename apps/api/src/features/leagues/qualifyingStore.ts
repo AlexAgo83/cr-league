@@ -65,7 +65,8 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
       trackLengthMeters: circuit.trackLengthMeters,
       speedProfile: trackSpeedProfileForCircuit(circuit),
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
-      laps: clampInteger(input.laps, 3, 1, 3)
+      laps: clampInteger(input.laps, 3, 1, 3),
+      weatherSeed: freshGrandPrix.seed
     });
     const nextRunsForAttempt = attemptRuns.map((run) => ({ ...run, attempts }));
     const nextRun = nextRunsForAttempt.reduce((best, run) => (run.time < best.time ? run : best), nextRunsForAttempt[0]!);
@@ -86,7 +87,8 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
           trackLengthMeters: circuit.trackLengthMeters,
           speedProfile: trackSpeedProfileForCircuit(circuit),
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
-          laps: 1
+          laps: 1,
+          weatherSeed: freshGrandPrix.seed
         })[0]!
       );
       nextRuns[nextRuns.length - 1]!.attempts = botAttempt;

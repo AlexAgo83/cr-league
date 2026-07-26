@@ -144,6 +144,10 @@ export function simulateRace(input: RaceInput): RaceResult {
   };
 }
 
+export function resolveRaceWeather(forecast: RaceInput["forecast"], seed: string): Record<RaceSegment, Weather> {
+  return resolveWeather(forecast, createPrng(seed).pickWeighted);
+}
+
 function stabilizeReplayCarProgress(trace: ReplayTracePoint[], trackLengthMeters: number) {
   const previousProgress = new Map<string, number>();
   return trace.map((point) => {

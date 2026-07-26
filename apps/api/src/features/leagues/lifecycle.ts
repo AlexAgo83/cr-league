@@ -511,7 +511,8 @@ export async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnT
           trackLengthMeters: circuit.trackLengthMeters,
           speedProfile: trackSpeedProfileForCircuit(circuit),
           forecast: freshGrandPrix.forecast as RaceInput["forecast"],
-          laps: 1
+          laps: 1,
+          weatherSeed: freshGrandPrix.seed
         })[0]!
       );
     }

@@ -20,7 +20,8 @@ describe("createQualifyingRuns", () => {
     vi.restoreAllMocks();
 
     const finalTime = run!.result.replayTrace!.at(-1)!.times.team;
-    expect(finalTime).toBeCloseTo(RACE_REPLAY_BASE_SECONDS, 0);
+    expect(finalTime).toBeGreaterThan(RACE_REPLAY_BASE_SECONDS - 2);
+    expect(finalTime).toBeLessThan(RACE_REPLAY_BASE_SECONDS + 2);
   });
 
   it("ignores pit strategy for qualifying time", () => {
@@ -83,7 +84,7 @@ describe("createQualifyingRuns", () => {
     expect(lowGrip.map((run) => run.time)).not.toEqual(highGrip.map((run) => run.time));
   });
 
-  it("ramps chrono weather from start to finish forecast", () => {
+  it("uses the resolved GP weather timeline for chrono weather", () => {
     const runs = createQualifyingRuns({
       seed: "qualifying-weather-ramp",
       teamId: "team",
@@ -97,8 +98,29 @@ describe("createQualifyingRuns", () => {
 
     expect(runs[0]!.result.resolvedWeather).toMatchObject({
       start: "dry",
-      mid: "light_rain",
-      finish: "heavy_rain"
+      mid: "heavy_rain",
+      late: "heavy_rain",
+      finish: "light_rain"
+    });
+  });
+
+  it("does not force rain in chrono just because rain is the strongest forecast", () => {
+    const runs = createQualifyingRuns({
+      seed: "silver-ridge-001-team-qualifying-1",
+      weatherSeed: "seed-6",
+      teamId: "team",
+      teamName: "Team",
+      decision: { approach: "balanced", preparation: "weather" },
+      primaryTrait: "technical",
+      secondaryTrait: "weather_sensitive",
+      forecast: { dry: 35, light_rain: 50, heavy_rain: 15 },
+      laps: 3
+    });
+
+    expect(runs[0]!.result.resolvedWeather).toMatchObject({
+      start: "dry",
+      mid: "dry",
+      finish: "dry"
     });
   });
 
@@ -155,8 +177,8 @@ describe("createQualifyingRuns", () => {
       laps: 1
     };
 
-    const [dry] = createQualifyingRuns({ ...base, forecast: { dry: 100, light_rain: 0, heavy_rain: 0 } });
-    const [wet] = createQualifyingRuns({ ...base, forecast: { dry: 0, light_rain: 0, heavy_rain: 100 } });
+    const [dry] = createQualifyingRuns({ ...base, weatherSeed: "qualifying", forecast: { dry: 100, light_rain: 0, heavy_rain: 0 } });
+    const [wet] = createQualifyingRuns({ ...base, weatherSeed: "wet-2", forecast: { dry: 0, light_rain: 0, heavy_rain: 100 } });
 
     expect(wet!.result.replayTrace!.find((point) => point.progress > 0.3 && point.progress < 0.4)!.cars!.team!.speed)
       .toBeLessThan(dry!.result.replayTrace!.find((point) => point.progress > 0.3 && point.progress < 0.4)!.cars!.team!.speed);

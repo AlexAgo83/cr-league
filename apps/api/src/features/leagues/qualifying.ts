@@ -10,15 +10,14 @@ import {
   type RaceResult,
   type RaceSegment,
   type RaceTraits,
+  resolveRaceWeather,
   speedFactorAt,
   type TrackSpeedProfile,
   type Weather
 } from "@cr-league/shared";
 import { bestQualifyingRuns } from "@cr-league/shared";
-import { strongestForecast } from "./utils.js";
 
 const QUALIFYING_REFERENCE_LAP_SECONDS = 90;
-const WEATHER_STEPS: Weather[] = ["dry", "light_rain", "heavy_rain"];
 // Fixed reference epoch (2024-01-01T00:00:00Z) keeps generated chronos reproducible without using the wall clock.
 const QUALIFYING_CREATED_AT_EPOCH_MS = 1704067200000;
 
@@ -40,20 +39,21 @@ export function createQualifyingRuns(input: {
   speedProfile?: TrackSpeedProfile;
   forecast: RaceInput["forecast"];
   laps: number;
+  weatherSeed?: string;
 }): QualifyingRun[] {
-  const finishWeather = strongestForecast(input.forecast);
+  const weather = resolveRaceWeather(input.forecast, input.weatherSeed ?? input.seed);
   const traits = input.traits ?? { grip: 62, overtaking: 62, energy: 62 };
   const traitBonus = (traits.grip + traits.overtaking + traits.energy - 180) / 18;
   const approachDelta = input.decision.approach === "aggressive" ? -1.1 : input.decision.approach === "prudent" ? 0.7 : 0;
   // Seed the per-lap variance so the same setup and seed always produce the same chrono (reproducible learning loop; ADR-004).
   const prng = createPrng(`${input.seed}:qualifying:${input.teamId}`);
   const lapTimes = Array.from({ length: input.laps }, (_, index) => {
-    const weather = qualifyingWeatherAt(index, input.laps, finishWeather);
-    const weatherPenalty = weather === "heavy_rain" ? 2.8 : weather === "light_rain" ? 1.2 : 0;
+    const lapWeather = qualifyingWeatherAt(index, input.laps, weather);
+    const weatherPenalty = lapWeather === "heavy_rain" ? 2.8 : lapWeather === "light_rain" ? 1.2 : 0;
     const prepDelta =
       input.decision.preparation === "speed"
         ? -1.2
-        : input.decision.preparation === "weather" && weather !== "dry"
+        : input.decision.preparation === "weather" && lapWeather !== "dry"
           ? -1.4
           : input.decision.preparation === "reliability"
             ? 0.4
@@ -63,7 +63,7 @@ export function createQualifyingRuns(input: {
         ? -0.3
         : input.decision.cardId === "launch_boost"
           ? -0.6
-          : input.decision.cardId === "rain_grip" && weather !== "dry"
+          : input.decision.cardId === "rain_grip" && lapWeather !== "dry"
             ? -0.7
             : 0;
     const warmupPenalty = index === 0 && input.laps > 1 ? 1.1 : 0;
@@ -71,7 +71,7 @@ export function createQualifyingRuns(input: {
     const variance = (prng.next() - 0.5) * 2.4;
     return Number(Math.max(72, 91 - traitBonus + weatherPenalty + approachDelta + prepDelta + cardDelta + warmupPenalty + tyreDelta + variance).toFixed(2));
   });
-  const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, finishWeather, input.trackLengthMeters ?? 3200, input.speedProfile ?? []);
+  const result = createQualifyingResult(input.teamId, input.teamName, input.seed, input.decision, lapTimes, weather, input.trackLengthMeters ?? 3200, input.speedProfile ?? []);
 
   return lapTimes.map((time, index) => ({
     teamId: input.teamId,
@@ -84,13 +84,13 @@ export function createQualifyingRuns(input: {
   }));
 }
 
-function qualifyingWeatherAt(index: number, count: number, finishWeather: Weather) {
+function qualifyingWeatherAt(index: number, count: number, weather: Record<RaceSegment, Weather>) {
   const progress = count <= 1 ? 1 : index / (count - 1);
-  const finishIndex = WEATHER_STEPS.indexOf(finishWeather);
-  return WEATHER_STEPS[Math.round(finishIndex * progress)] ?? "dry";
+  const segment = RACE_SEGMENTS[Math.round((RACE_SEGMENTS.length - 1) * progress)] ?? "finish";
+  return weather[segment] ?? "dry";
 }
 
-function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, lapTimes: number[], finishWeather: Weather, trackLengthMeters: number, speedProfile: TrackSpeedProfile): RaceResult {
+function createQualifyingResult(teamId: string, teamName: string, seed: string, decision: RaceDecision, lapTimes: number[], weather: Record<RaceSegment, Weather>, trackLengthMeters: number, speedProfile: TrackSpeedProfile): RaceResult {
   const bestTime = Math.min(...lapTimes);
   const averageLapTime = lapTimes.reduce((sum, time) => sum + time, 0) / Math.max(1, lapTimes.length);
   const visualTime = RACE_REPLAY_BASE_SECONDS * (averageLapTime / QUALIFYING_REFERENCE_LAP_SECONDS);
@@ -112,7 +112,7 @@ function createQualifyingResult(teamId: string, teamName: string, seed: string, 
   return {
     grandPrixName: "Chrono",
     seed,
-    resolvedWeather: Object.fromEntries(RACE_SEGMENTS.map((segment, index) => [segment, qualifyingWeatherAt(index, RACE_SEGMENTS.length, finishWeather)])) as Record<RaceSegment, Weather>,
+    resolvedWeather: weather,
     classification: [
       {
         position: 1,
@@ -127,7 +127,7 @@ function createQualifyingResult(teamId: string, teamName: string, seed: string, 
       }
     ],
     events,
-    replayTrace: createQualifyingReplayTrace(teamId, lapTimes.length, visualTime, trackLengthMeters, speedProfile, finishWeather),
+    replayTrace: createQualifyingReplayTrace(teamId, lapTimes.length, visualTime, trackLengthMeters, speedProfile, weather),
     consumedCards: [],
     report: {
       headline: `${teamName} ${bestTime.toFixed(2)}s`,
@@ -136,14 +136,14 @@ function createQualifyingResult(teamId: string, teamName: string, seed: string, 
   };
 }
 
-function createQualifyingReplayTrace(teamId: string, laps: number, visualTime: number, trackLengthMeters: number, speedProfile: TrackSpeedProfile, finishWeather: Weather) {
+function createQualifyingReplayTrace(teamId: string, laps: number, visualTime: number, trackLengthMeters: number, speedProfile: TrackSpeedProfile, weatherTimeline: Record<RaceSegment, Weather>) {
   const stepsPerLap = 12;
   return Array.from({ length: laps * stepsPerLap + 1 }, (_, index) => {
     const progress = index / (laps * stepsPerLap);
     const phase = progress >= 1 ? "finished" as const : index === 0 ? "grid" as const : progress <= 0.1 ? "launch" as const : "racing" as const;
     const segmentIndex = Math.min(RACE_SEGMENTS.length - 1, Math.floor(progress * RACE_SEGMENTS.length));
     const segment = RACE_SEGMENTS[segmentIndex] ?? "start";
-    const weather = qualifyingWeatherAt(segmentIndex, RACE_SEGMENTS.length, finishWeather);
+    const weather = weatherTimeline[segment] ?? "dry";
     const adjustedProfile = weatherAdjustedSpeedProfile(speedProfile, weather);
     const trackProgress = replayTrackProgress(progress, laps, adjustedProfile);
     const distanceMeters = Number((trackProgress * trackLengthMeters).toFixed(1));

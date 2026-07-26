@@ -1,10 +1,10 @@
 ## item_307_apply_minimal_balance_tuning_only_if_diagnostics_confirm_skew - Apply minimal balance tuning only if diagnostics confirm skew
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Balance tuning
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -54,3 +54,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_124_orchestrate_aggressive_mini_pack_balance_diagnostic`
+
+# Notes
+- Task `task_124_orchestrate_aggressive_mini_pack_balance_diagnostic` was finished via `logics-manager flow finish task` on 2026-07-27.

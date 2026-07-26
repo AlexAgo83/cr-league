@@ -1,7 +1,7 @@
 ## req_123_aggressive_mini_pack_balance_diagnostic_verify_and_correct_win_concentration_without_blind_nerfs - Aggressive mini-pack balance diagnostic: verify and correct win concentration without blind nerfs
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

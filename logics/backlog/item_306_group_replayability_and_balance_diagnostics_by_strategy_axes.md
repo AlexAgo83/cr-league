@@ -1,10 +1,10 @@
 ## item_306_group_replayability_and_balance_diagnostics_by_strategy_axes - Group replayability and balance diagnostics by strategy axes
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 75%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Balance diagnostics
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -54,3 +54,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_124_orchestrate_aggressive_mini_pack_balance_diagnostic`
+
+# Notes
+- Task `task_124_orchestrate_aggressive_mini_pack_balance_diagnostic` was finished via `logics-manager flow finish task` on 2026-07-27.

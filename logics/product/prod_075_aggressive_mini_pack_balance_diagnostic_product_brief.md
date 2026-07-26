@@ -1,14 +1,24 @@
 ## prod_075_aggressive_mini_pack_balance_diagnostic_product_brief - Aggressive Mini-Pack Balance Diagnostic Product Brief
 > Date: 2026-07-27
-> Status: Proposed
+> Status: Settled
 > Related request: `req_123_aggressive_mini_pack_balance_diagnostic_verify_and_correct_win_concentration_without_blind_nerfs`
-> Related backlog: `item_306_group_replayability_and_balance_diagnostics_by_strategy_axes`, `item_307_apply_minimal_balance_tuning_only_if_diagnostics_confirm_skew`
+> Related backlog: `item_306_group_replayability_and_balance_diagnostics_by_strategy_axes`
 > Related task: `task_124_orchestrate_aggressive_mini_pack_balance_diagnostic`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: 2026-07-27 added overview Mermaid diagram.
 
 # Overview
 The replayability report shows healthy variety overall but a visible concentration of wins around aggressive mini-pack lanes. This request adds grouped evidence and, only if needed, a minimal tuning pass so race strategy remains varied without killing comebacks, close finishes, or title suspense.
+
+```mermaid
+flowchart TD
+  Req[req_123 aggressive mini-pack diagnostic] --> Backlog[item_306 grouped diagnostics]
+  Req --> Tuning[item_307 minimal tuning if confirmed]
+  Backlog --> Task[task_124 orchestration]
+  Tuning --> Task
+  Task --> Proof[validation and closeout]
+```
 
 # Goals
 - Turn the replayability finding into actionable balance evidence.
@@ -35,5 +45,5 @@ The replayability report shows healthy variety overall but a visible concentrati
 - Context-pack output can be handed to an implementation agent directly.
 
 # References
-- Product back-reference: `req_123_aggressive_mini_pack_balance_diagnostic_verify_and_correct_win_concentration_without_blind_nerfs`
+- Product back-reference: `item_306_group_replayability_and_balance_diagnostics_by_strategy_axes`
 - Task back-reference: `task_124_orchestrate_aggressive_mini_pack_balance_diagnostic`

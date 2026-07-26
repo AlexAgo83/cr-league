@@ -425,7 +425,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     await closeLeagueIntro();
     expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
-    expect(document.querySelector(".card-inventory-button .garage-card-name-icon")?.getAttribute("src")).toBe("/assets/crl/icons/weather.png");
+    expect(document.querySelector(".card-inventory-button .garage-card-name-icon")?.getAttribute("src")).toBe("/assets/crl/icons/rain-grip.png");
     fireEvent.click(document.querySelector(".card-inventory-button") as HTMLButtonElement);
     const sellDialog = screen.getByRole("dialog", { name: "Rain Grip" });
     expect(sellDialog).toBeTruthy();

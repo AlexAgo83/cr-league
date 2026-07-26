@@ -1,5 +1,6 @@
 import type { CSSProperties } from "react";
 import { safeHex, type RaceDecision, type TeamLivery } from "@cr-league/shared";
+import { BoardIcon } from "../VisualIcon.js";
 
 const CHRONO_PLAN_MARKERS = {
   approach: { prudent: 1, balanced: 2, aggressive: 3 },
@@ -38,6 +39,7 @@ export function ReplayTower({
         <strong>{title}</strong>
         {onReport ? (
           <button className="map-plan-edit-button" type="button" aria-label={reportLabel} title={title} onClick={onReport}>
+            <BoardIcon className="map-plan-edit-icon" name="race-report" />
             {reportLabel}
           </button>
         ) : null}

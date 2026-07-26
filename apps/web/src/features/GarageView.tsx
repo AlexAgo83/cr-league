@@ -22,12 +22,12 @@ const CARD_NAME_ICONS: Record<CardId, BoardIconName> = {
   economy_mode: "battery-harvest",
   final_surge: "comeback-run",
   fleet_maintenance: "fleet-maintenance",
-  fleet_sponsorship: "credits",
+  fleet_sponsorship: "fleet-sponsorship",
   hard_tires: "hard-tires",
-  launch_boost: "boost",
+  launch_boost: "launch-boost",
   pit_relay: "pit-relay",
   qualifying_focus: "qualifying-setup",
-  rain_grip: "weather",
+  rain_grip: "rain-grip",
   rain_mapping: "rain-mapping",
   soft_tires: "soft-tires",
   urban_draft: "urban-draft"
@@ -231,6 +231,7 @@ export function GarageView({
                 <input maxLength={32} value={teamName} onChange={(event) => setTeamName(event.target.value)} />
               </label>
               <button type="button" onClick={() => onUpdateTeamName(teamName.trim())} disabled={loading || teamName.trim() === playerTeam.name}>
+                <BoardIcon className="command-board-icon" name="save-name" />
                 {tt("garage_team_name_save")}
               </button>
             </div>
@@ -244,6 +245,7 @@ export function GarageView({
                 <input type="color" value={livery.secondary} aria-label={tt("garage_livery_secondary")} onChange={(event) => setLivery({ ...livery, secondary: event.target.value })} />
               </label>
               <button type="button" onClick={saveLiveryColors} disabled={loading}>
+                <BoardIcon className="command-board-icon" name="save-colors" />
                 {tt("garage_livery_save")}
               </button>
             </div>
@@ -370,7 +372,7 @@ export function GarageView({
               }}
               disabled={loading || viewingSellPrice <= 0 || viewingCardLocked}
             >
-              <BoardIcon className="modal-action-icon" name="credits" />
+              <BoardIcon className="modal-action-icon" name="sell-card" />
               {tt("garage_sell_card_action", { price: viewingSellPrice })}
             </button>
           </div>

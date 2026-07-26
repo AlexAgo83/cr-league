@@ -52,8 +52,8 @@ export const PIT_ART: Record<(typeof PIT_STRATEGIES)[number], string> = {
 
 const APPROACH_ICONS: Record<(typeof APPROACHES)[number], BoardIconName> = {
   prudent: "reliability",
-  balanced: "strategy",
-  aggressive: "boost"
+  balanced: "balanced-approach",
+  aggressive: "launch-boost"
 };
 
 const PREPARATION_ICONS: Record<(typeof PREPARATIONS)[number], BoardIconName> = {
@@ -63,9 +63,9 @@ const PREPARATION_ICONS: Record<(typeof PREPARATIONS)[number], BoardIconName> = 
 };
 
 const PIT_ICONS: Record<(typeof PIT_STRATEGIES)[number], BoardIconName> = {
-  heavy_pack: "pit-stop",
+  heavy_pack: "heavy-pack",
   standard: "sector-pace",
-  mini_pack: "new-chrono"
+  mini_pack: "mini-pack"
 };
 
 export function savedDirectiveStep(): DirectiveStep {

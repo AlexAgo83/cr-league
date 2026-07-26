@@ -374,10 +374,9 @@ button.command-icon-button {
   color: #fff;
 }
 
-.report-play-icon {
-  fill: currentColor;
-  height: 17px;
-  width: 17px;
+.report-action-icon {
+  height: 24px;
+  width: 24px;
 }
 
 .report-hero h2 {

@@ -297,6 +297,7 @@ function QualifyingTimesPanel({
         </strong>
         {onReport ? (
           <button className="map-plan-edit-button" type="button" aria-label={reportLabel} title={tt("result_tab_report")} onClick={onReport}>
+            <BoardIcon className="map-plan-edit-icon" name="race-report" />
             {reportLabel}
           </button>
         ) : null}

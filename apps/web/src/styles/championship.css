@@ -214,12 +214,22 @@
 
 .championship-record-switch button,
 .garage-card-toggle button {
+  align-items: center;
   background: transparent;
   border: 0;
   color: rgb(248 243 232 / 0.72);
+  display: inline-flex;
   font-size: 0.72rem;
+  gap: 6px;
+  justify-content: center;
   min-height: 30px;
   padding: 5px 9px;
+}
+
+.record-tab-icon {
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.28));
+  height: 22px;
+  width: 22px;
 }
 
 .championship-record-switch button.active,

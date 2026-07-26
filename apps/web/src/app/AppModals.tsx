@@ -133,7 +133,8 @@ export function NextGrandPrixConfirmModal({
       <p>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_body" : "next_gp_confirm_body")}</p>
       <div className="actions secondary-actions">
         <PendingFeedback message={pendingMessage} />
-        <button type="button" onClick={onOpenReport} disabled={!hasResult}>
+        <button type="button" className="modal-action-command" onClick={onOpenReport} disabled={!hasResult}>
+          <BoardIcon className="modal-action-icon" name="race-report" />
           {tt("result_tab_report")}
         </button>
         <button type="button" className="modal-action-command" onClick={onStartNextGrandPrix} disabled={status === "loading"}>
@@ -240,6 +241,10 @@ function ModalActionIcon({ danger = false, label, tt }: { danger?: boolean; labe
                 ? "next-gp"
                 : label === tt("action_finish_season")
                   ? "championship"
+                  : label === tt("action_review_race")
+                    ? "review-race"
+                    : label === tt("result_tab_report")
+                      ? "race-report"
                   : label === tt("action_copy_error")
                     ? "report"
                     : danger

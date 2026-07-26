@@ -14,7 +14,7 @@ import type { LeagueState } from "../app/types.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { OpponentConfigComparison } from "./OpponentConfigComparison.js";
 import { RewardValue } from "./RewardValue.js";
-import { VisualIcon } from "./VisualIcon.js";
+import { BoardIcon, VisualIcon } from "./VisualIcon.js";
 
 export function ReportView({
   state,
@@ -79,6 +79,7 @@ export function ReportView({
           {hasPrimaryReplayAction ? (
             <div className="chrono-report-prompt">
               <button type="button" className="primary-command highlight-command" onClick={onOpenReplay}>
+                <BoardIcon className="command-board-icon" name="review-race" />
                 {tt("action_review_race")}
               </button>
             </div>
@@ -88,9 +89,7 @@ export function ReportView({
           <div className="report-actions">
             {onOpenReplay && replayActionVariant === "icon" ? (
               <button type="button" className="report-replay-button" aria-label={tt("result_tab_replay")} title={tt("result_tab_replay")} onClick={onOpenReplay}>
-                <svg className="report-play-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-                  <path d="M8 5v14l11-7z" />
-                </svg>
+                <BoardIcon className="report-action-icon" name="review-race" />
               </button>
             ) : null}
             {onClose ? (

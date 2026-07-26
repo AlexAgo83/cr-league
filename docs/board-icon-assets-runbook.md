@@ -10,6 +10,8 @@ Put raw generated sheets in `logics/external/` with a stable name such as:
 - `board_icones_1.png`
 - `board_icones_2.png`
 - `board_icones_3.png`
+- `board_icones_4.png`
+- `board_icones_5.png`
 
 These source sheets are ignored by Git. Commit only the final app PNGs.
 
@@ -139,6 +141,9 @@ manual = {
     "rain-mapping": ("logics/external/board_icones_2.png", (768, 500, 1024, 700)),
     "soft-tires": ("logics/external/board_icones_2.png", (0, 680, 256, 960)),
     "pit-relay": ("logics/external/board_icones_2.png", (768, 680, 1024, 960)),
+    "race-report": ("logics/external/board_icones_5.png", (515, 248, 735, 445)),
+    "rain-grip": ("logics/external/board_icones_5.png", (15, 460, 242, 662)),
+    "mini-pack": ("logics/external/board_icones_5.png", (0, 690, 250, 928)),
 }
 ```
 
@@ -223,4 +228,3 @@ rtk logics-manager lint --require-status
 
 If a full UI scenario fails on an unrelated known issue, record that explicitly in
 the final note and keep the asset validation focused.
-

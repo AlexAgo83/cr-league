@@ -2934,15 +2934,19 @@ label small {
 }
 
 .map-plan-edit-button {
+  align-items: center;
   background: var(--color-accent);
   border: 1px solid rgb(255 255 255 / 0.2);
   border-radius: 999px;
   clip-path: none;
   color: var(--color-accent-ink);
+  display: inline-flex;
   font-family: var(--font-display);
   font-size: 0.58rem;
   font-style: normal;
   font-weight: 800;
+  gap: 3px;
+  justify-content: center;
   letter-spacing: 0.08em;
   line-height: 1;
   min-height: 0;
@@ -2951,6 +2955,11 @@ label small {
   right: 3px;
   text-transform: uppercase;
   top: 3px;
+}
+
+.map-plan-edit-icon {
+  height: 16px;
+  width: 16px;
 }
 
 .map-plan-edit-button:hover,
@@ -3883,13 +3892,8 @@ label small {
 }
 
 .replay-report-icon {
-  fill: none;
-  height: 17px;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2;
-  width: 17px;
+  height: 21px;
+  width: 21px;
 }
 
 .replay-map-controls .replay-close-button {

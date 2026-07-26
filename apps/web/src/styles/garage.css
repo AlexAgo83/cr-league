@@ -364,6 +364,14 @@
   grid-template-columns: minmax(0, 1fr) auto;
 }
 
+.garage-name-fields button,
+.garage-livery-fields button {
+  align-items: center;
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+}
+
 .garage-livery-fields {
   align-items: end;
   grid-template-columns: repeat(2, auto) minmax(0, 1fr);

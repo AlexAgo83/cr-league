@@ -8,7 +8,7 @@ import { MapStatsToggle, MapTraitsPanel, type MapTraitImpacts } from "../Circuit
 import { MapPlanPanel } from "../MapPlanPanel.js";
 import { Modal } from "../Modal.js";
 import { RaceInfoDetailsForResolvedWeather } from "../RaceInfoDetails.js";
-import { CountryBadge, VisualIcon, type VisualIconName } from "../VisualIcon.js";
+import { BoardIcon, CountryBadge, VisualIcon, type VisualIconName } from "../VisualIcon.js";
 import { ReplayProgress, type ReplayTimelineMarker } from "./ReplayProgress.js";
 import { ReplayTower } from "./ReplayTower.js";
 import type { ReplaySpeed } from "./useReplayClock.js";
@@ -228,12 +228,7 @@ export function ReplayStageOverlay({
         <ReplaySpeedMenu speed={speed} setSpeed={setSpeed} tt={tt} />
         {onOpenReport ? (
           <button type="button" className="replay-report-button" aria-label={tt("result_tab_report")} title={tt("result_tab_report")} onClick={onOpenReport}>
-            <svg className="replay-report-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <path d="M6 3h9l3 3v15H6z" />
-              <path d="M14 3v4h4" />
-              <path d="M9 12h6" />
-              <path d="M9 16h4" />
-            </svg>
+            <BoardIcon className="replay-report-icon" name="race-report" />
           </button>
         ) : null}
         {onClose ? (

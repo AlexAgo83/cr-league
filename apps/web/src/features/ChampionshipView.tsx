@@ -13,7 +13,7 @@ import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
-import { CountryBadge, VisualIcon } from "./VisualIcon.js";
+import { BoardIcon, CountryBadge, VisualIcon, type BoardIconName } from "./VisualIcon.js";
 
 type CircuitRegion = "europe" | "americas" | "asia" | "africa" | "oceania";
 const CIRCUIT_PAGE_SIZE = 8;
@@ -26,6 +26,12 @@ const COUNTRY_REGION: Record<string, CircuitRegion> = {
   JP: "asia", KR: "asia", SG: "asia", HK: "asia", CN: "asia", AE: "asia",
   ZA: "africa",
   AU: "oceania"
+};
+const RECORD_TAB_ICONS: Record<ChampionshipRecordTab, BoardIconName> = {
+  calendar: "circuits",
+  standings: "standings-board",
+  palmares: "honors",
+  history: "gp-history"
 };
 
 export function ChampionshipView({
@@ -151,6 +157,7 @@ export function ChampionshipView({
             <div className="championship-record-switch" role="tablist" aria-label={tt("championship_kicker")}>
               {recordTabs.map((tab) => (
                 <button key={tab.key} type="button" role="tab" aria-selected={activeRecordTab === tab.key} className={activeRecordTab === tab.key ? "active" : undefined} onClick={() => selectRecordTab(tab.key)}>
+                  <BoardIcon className="record-tab-icon" name={RECORD_TAB_ICONS[tab.key]} />
                   {tab.label}
                 </button>
               ))}

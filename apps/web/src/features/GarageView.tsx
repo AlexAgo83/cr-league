@@ -329,7 +329,8 @@ export function GarageView({
                 </select>
               </div>
             ) : null}
-            <button type="button" onClick={confirmBuy} disabled={loading || !pendingBuyAffordable}>
+            <button type="button" className="modal-action-command" onClick={confirmBuy} disabled={loading || !pendingBuyAffordable}>
+              <BoardIcon className="modal-action-icon" name="shop" />
               {tt("garage_buy_confirm_action")}
             </button>
           </div>
@@ -342,7 +343,8 @@ export function GarageView({
           </div>
           <p>{tt("garage_car_buy_body", { price: CAR_ASSET_PRICES[pendingCarAssetId] })}</p>
           <div className="modal-actions">
-            <button type="button" onClick={confirmCarAssetPurchase} disabled={loading}>
+            <button type="button" className="modal-action-command" onClick={confirmCarAssetPurchase} disabled={loading}>
+              <BoardIcon className="modal-action-icon" name="car-skin" />
               {tt("garage_car_buy_action", { price: CAR_ASSET_PRICES[pendingCarAssetId] })}
             </button>
           </div>
@@ -361,12 +363,14 @@ export function GarageView({
           <div className="modal-actions">
             <button
               type="button"
+              className="modal-action-command"
               onClick={() => {
                 onSellCard(viewingCardId);
                 setViewingCardId(undefined);
               }}
               disabled={loading || viewingSellPrice <= 0 || viewingCardLocked}
             >
+              <BoardIcon className="modal-action-icon" name="credits" />
               {tt("garage_sell_card_action", { price: viewingSellPrice })}
             </button>
           </div>

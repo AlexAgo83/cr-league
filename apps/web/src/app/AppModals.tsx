@@ -12,7 +12,7 @@ import { ModalHero } from "../features/ModalHero.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { PositionBadge } from "../features/PositionBadge.js";
 import { RewardValue } from "../features/RewardValue.js";
-import { CountryBadge } from "../features/VisualIcon.js";
+import { BoardIcon, CountryBadge, type BoardIconName } from "../features/VisualIcon.js";
 
 export function ProfileCodeModal({
   profileSession,
@@ -97,7 +97,8 @@ export function ConfirmActionModal({
             {extraActionLabel}
           </button>
         ) : null}
-        <button type="button" className={danger ? "danger-button" : undefined} onClick={onConfirm} disabled={status === "loading"}>
+        <button type="button" className={danger ? "danger-button modal-action-command" : "modal-action-command"} onClick={onConfirm} disabled={status === "loading"}>
+          <ModalActionIcon danger={danger} label={actionLabel} tt={tt} />
           {actionLabel}
         </button>
       </div>
@@ -135,7 +136,8 @@ export function NextGrandPrixConfirmModal({
         <button type="button" onClick={onOpenReport} disabled={!hasResult}>
           {tt("result_tab_report")}
         </button>
-        <button type="button" onClick={onStartNextGrandPrix} disabled={status === "loading"}>
+        <button type="button" className="modal-action-command" onClick={onStartNextGrandPrix} disabled={status === "loading"}>
+          <BoardIcon className="modal-action-icon" name={isSeasonFinalGrandPrix ? "championship" : "next-gp"} />
           {nextGrandPrixActionLabel}
         </button>
       </div>
@@ -213,12 +215,37 @@ export function ResolveGrandPrixConfirmModal({
       </div>
       <div className="actions secondary-actions">
         <PendingFeedback message={pendingMessage} />
-        <button type="button" onClick={onResolve} disabled={status === "loading"}>
+        <button type="button" className="modal-action-command" onClick={onResolve} disabled={status === "loading"}>
+          <BoardIcon className="modal-action-icon" name="launch-gp" />
           {tt("action_launch_grand_prix")}
         </button>
       </div>
     </Modal>
   );
+}
+
+function ModalActionIcon({ danger = false, label, tt }: { danger?: boolean; label: string; tt: Translator }) {
+  const icon: BoardIconName =
+    label === tt("directive_confirm_action")
+      ? "send-plan"
+      : label === tt("action_qualifying")
+        ? "new-chrono"
+        : label === tt("action_modify_plan")
+          ? "edit-plan"
+          : label === tt("plan_subscreen_chrono")
+            ? "review-chrono"
+            : label === tt("action_launch_grand_prix")
+              ? "launch-gp"
+              : label === tt("action_next_grand_prix")
+                ? "next-gp"
+                : label === tt("action_finish_season")
+                  ? "championship"
+                  : label === tt("action_copy_error")
+                    ? "report"
+                    : danger
+                      ? "steward-warning"
+                      : "send-plan";
+  return <BoardIcon className="modal-action-icon" name={icon} />;
 }
 
 export function AdminDeleteUserModal({

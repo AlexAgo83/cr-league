@@ -580,8 +580,8 @@
 
 .nav-board-icon {
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.32));
-  height: 22px;
-  width: 22px;
+  height: 24px;
+  width: 24px;
 }
 
 .nav-label-short {
@@ -1243,14 +1243,14 @@ button:disabled {
 
 .plan-choice-board-icon {
   filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.38));
-  height: 30px;
-  width: 30px;
+  height: 34px;
+  width: 34px;
 }
 
 .command-board-icon {
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.3));
-  height: 24px;
-  width: 24px;
+  height: 28px;
+  width: 28px;
 }
 
 .visual-icon-grip,
@@ -2337,6 +2337,37 @@ label small {
 .secondary-actions button:not(:disabled):hover {
   border-color: var(--color-muted);
   color: var(--color-text);
+}
+
+.modal-action-command {
+  align-items: center;
+  background: var(--color-accent);
+  border: 0;
+  color: var(--color-accent-ink);
+  display: inline-flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.secondary-actions button.modal-action-command:not(:disabled),
+.modal-actions button.modal-action-command:not(:disabled) {
+  background: var(--color-accent);
+  border: 0;
+  color: var(--color-accent-ink);
+}
+
+.secondary-actions button.modal-action-command:not(:disabled):hover,
+.secondary-actions button.modal-action-command:not(:disabled):focus-visible,
+.modal-actions button.modal-action-command:not(:disabled):hover,
+.modal-actions button.modal-action-command:not(:disabled):focus-visible {
+  background: #fbbf24;
+  color: #1d1205;
+}
+
+.modal-action-icon {
+  filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.3));
+  height: 28px;
+  width: 28px;
 }
 
 /* ---------- Briefing modal ---------- */
@@ -3476,8 +3507,8 @@ label small {
 }
 
 .map-action-icon {
-  height: 34px;
-  width: 34px;
+  height: 38px;
+  width: 38px;
 }
 
 .map-qualifying-times ol,
@@ -4785,8 +4816,8 @@ label small {
 
 .garage-card-name-icon {
   filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.34));
-  height: 22px;
-  width: 22px;
+  height: 26px;
+  width: 26px;
 }
 
 .card-inventory-button:hover,

@@ -657,14 +657,14 @@ button.primary-command {
   display: inline-flex;
   flex-shrink: 0;
   font-size: 1rem;
-  gap: 8px;
+  gap: 2px;
   justify-content: center;
   min-height: 48px;
   min-width: 180px;
 }
 
 .map-race-actions button.map-action-button {
-  min-width: 52px;
+  min-width: 58px;
 }
 
 button.highlight-command:not(:disabled) {

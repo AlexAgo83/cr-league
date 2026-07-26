@@ -571,7 +571,7 @@
   font-size: 1.1em;
   font-style: normal;
   font-weight: 700;
-  gap: 6px;
+  gap: 2px;
   justify-content: center;
   letter-spacing: 0.12em;
   min-height: 38px;
@@ -1731,7 +1731,7 @@ label small {
   align-items: center;
   clip-path: var(--chamfer-sm);
   display: inline-flex;
-  gap: 8px;
+  gap: 2px;
   justify-content: center;
 }
 
@@ -2349,7 +2349,7 @@ label small {
   border: 0;
   color: var(--color-accent-ink);
   display: inline-flex;
-  gap: 8px;
+  gap: 2px;
   justify-content: center;
 }
 
@@ -2949,7 +2949,7 @@ label small {
   font-size: 0.58rem;
   font-style: normal;
   font-weight: 800;
-  gap: 3px;
+  gap: 0;
   justify-content: center;
   letter-spacing: 0.08em;
   line-height: 1;
@@ -3520,8 +3520,8 @@ label small {
 }
 
 .map-action-icon {
-  height: 46px;
-  width: 46px;
+  height: 56px;
+  width: 56px;
 }
 
 .map-qualifying-times ol,

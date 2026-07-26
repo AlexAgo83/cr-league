@@ -1,10 +1,10 @@
 ## item_307_apply_minimal_balance_tuning_only_if_diagnostics_confirm_skew - Apply minimal balance tuning only if diagnostics confirm skew
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 45%
 > Complexity: Medium
 > Theme: Balance tuning
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

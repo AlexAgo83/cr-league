@@ -112,8 +112,10 @@ export function multiplayerNextBuyFor(input: { profile: PlaytestProfile; index: 
 }
 
 export function funScore(position: number, result: RaceResult, teamId: string) {
-  const eventBonus = result.events.filter((event) => event.teamId === teamId && event.positionDelta < 0).length;
-  return Math.max(1, Math.min(10, 4 + (position === 1 ? 4 : position <= 3 ? 2 : 0) + eventBonus));
+  const entry = result.classification.find((candidate) => candidate.teamId === teamId);
+  const eventBonus = Math.min(2, result.events.filter((event) => event.teamId === teamId && event.positionDelta > 0).length);
+  const comebackBonus = Math.min(2, Math.max(0, Math.ceil((entry?.positionChange ?? 0) / 3)));
+  return Math.max(1, Math.min(10, 4 + (position === 1 ? 4 : position <= 3 ? 2 : 0) + eventBonus + comebackBonus));
 }
 
 export function frustrationScore(position: number, result: RaceResult, teamId: string) {

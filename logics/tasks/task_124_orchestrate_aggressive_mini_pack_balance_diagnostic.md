@@ -1,13 +1,14 @@
 ## task_124_orchestrate_aggressive_mini_pack_balance_diagnostic - Orchestrate aggressive mini-pack balance diagnostic
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 45%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -43,7 +44,9 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- Wave 1: added `npm run playtest:browser:fun` to aggregate real browser-agent fun/frustration across multiple profiles.
+- Wave 1 finding: the fun score rewarded negative `positionDelta` events; corrected it to reward positive events plus grid-to-finish comebacks. Same 4-profile/2-GP browser sweep now has no `Fun <= 4` rounds: sprinter 5.5, rain-reader 9.5, banker 5.0, closer 7.5 average fun.
+- Next: continue grouped replayability diagnostics for aggressive/mini-pack concentration before any balance retune.
 
 # AI Context
 - Summary: Orchestrate aggressive mini-pack balance diagnostic

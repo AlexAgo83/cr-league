@@ -1,0 +1,393 @@
+{
+  "budgets": {
+    "max_docs": 20,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile item_296_friction_accessibility_instrumentation_with_axe_core item_297_cold_start_naive_agent_and_onboarding_funnel task_121_orchestrate_the_ux_evaluation_harness --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile",
+          "item_296_friction_accessibility_instrumentation_with_axe_core",
+          "item_297_cold_start_naive_agent_and_onboarding_funnel"
+        ],
+        "prod": [
+          "prod_072_ai_ux_evaluation_product_brief"
+        ],
+        "req": [
+          "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure"
+        ],
+        "task": [
+          "task_121_orchestrate_the_ux_evaluation_harness"
+        ]
+      },
+      "path": "logics/product/prod_072_ai_ux_evaluation_product_brief.md",
+      "ref": "prod_072_ai_ux_evaluation_product_brief",
+      "status": "Proposed",
+      "title": "AI UX Evaluation Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module",
+          "item_293_build_the_playwright_browser_agent_that_plays_the_real_ui_from_the_shared_brain",
+          "item_294_instrument_the_browser_run_fun_frustration_report_ui_failure_capture_npm_wiring"
+        ],
+        "prod": [
+          "prod_071_ai_playtest_surfaces_product_brief"
+        ],
+        "req": [
+          "req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain"
+        ],
+        "task": [
+          "task_120_orchestrate_the_browser_driven_ai_playtest"
+        ]
+      },
+      "path": "logics/product/prod_071_ai_playtest_surfaces_product_brief.md",
+      "ref": "prod_071_ai_playtest_surfaces_product_brief",
+      "status": "Proposed",
+      "title": "AI Playtest Surfaces Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, ux evaluation harness: let an ai judge ui/ux, friction and onboarding by capturing what it can see and measure, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "UX evaluation harness: let an AI judge UI/UX, friction and onboarding by capturing what it can see and measure",
+        "use when": "You need to implement or review the scaffolded workflow for UX evaluation harness: let an AI judge UI/UX, friction and onboarding by capturing what it can see and measure."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile",
+          "item_296_friction_accessibility_instrumentation_with_axe_core",
+          "item_297_cold_start_naive_agent_and_onboarding_funnel"
+        ],
+        "prod": [
+          "prod_072_ai_ux_evaluation_product_brief"
+        ],
+        "req": [
+          "req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain",
+          "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure"
+        ]
+      },
+      "path": "logics/request/req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure.md",
+      "ref": "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "UX evaluation harness: let an AI judge UI/UX, friction and onboarding by capturing what it can see and measure"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, browser-driven ai playtest: an agent that plays the real ui like a human, decisions from the shared playtest brain, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Browser-driven AI playtest: an agent that plays the real UI like a human, decisions from the shared playtest brain",
+        "use when": "You need to implement or review the scaffolded workflow for Browser-driven AI playtest: an agent that plays the real UI like a human, decisions from the shared playtest brain."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module",
+          "item_293_build_the_playwright_browser_agent_that_plays_the_real_ui_from_the_shared_brain",
+          "item_294_instrument_the_browser_run_fun_frustration_report_ui_failure_capture_npm_wiring"
+        ],
+        "prod": [
+          "prod_071_ai_playtest_surfaces_product_brief"
+        ],
+        "req": [
+          "req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain"
+        ]
+      },
+      "path": "logics/request/req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain.md",
+      "ref": "req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Browser-driven AI playtest: an agent that plays the real UI like a human, decisions from the shared playtest brain"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, visual playthrough capture: screenshots + annotated state, desktop and mobile, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Visual playthrough capture: screenshots + annotated state, desktop and mobile",
+        "use when": "Implementing the scaffolded slice for Visual playthrough capture: screenshots + annotated state, desktop and mobile."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile"
+        ],
+        "prod": [
+          "prod_072_ai_ux_evaluation_product_brief"
+        ],
+        "req": [
+          "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure"
+        ],
+        "task": [
+          "task_121_orchestrate_the_ux_evaluation_harness"
+        ]
+      },
+      "path": "logics/backlog/item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile.md",
+      "ref": "item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Visual playthrough capture: screenshots + annotated state, desktop and mobile"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, friction + accessibility instrumentation with axe-core, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Friction + accessibility instrumentation with axe-core",
+        "use when": "Implementing the scaffolded slice for Friction + accessibility instrumentation with axe-core."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_296_friction_accessibility_instrumentation_with_axe_core"
+        ],
+        "prod": [
+          "prod_072_ai_ux_evaluation_product_brief"
+        ],
+        "req": [
+          "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure"
+        ],
+        "task": [
+          "task_121_orchestrate_the_ux_evaluation_harness"
+        ]
+      },
+      "path": "logics/backlog/item_296_friction_accessibility_instrumentation_with_axe_core.md",
+      "ref": "item_296_friction_accessibility_instrumentation_with_axe_core",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Friction + accessibility instrumentation with axe-core"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate the UX evaluation harness",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile",
+          "item_296_friction_accessibility_instrumentation_with_axe_core",
+          "item_297_cold_start_naive_agent_and_onboarding_funnel"
+        ],
+        "prod": [
+          "prod_072_ai_ux_evaluation_product_brief"
+        ],
+        "req": [
+          "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure"
+        ],
+        "task": [
+          "task_121_orchestrate_the_ux_evaluation_harness"
+        ]
+      },
+      "path": "logics/tasks/task_121_orchestrate_the_ux_evaluation_harness.md",
+      "ref": "task_121_orchestrate_the_ux_evaluation_harness",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate the UX evaluation harness"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile",
+          "item_296_friction_accessibility_instrumentation_with_axe_core",
+          "item_297_cold_start_naive_agent_and_onboarding_funnel"
+        ],
+        "prod": [
+          "prod_072_ai_ux_evaluation_product_brief"
+        ],
+        "req": [
+          "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure"
+        ],
+        "task": [
+          "task_121_orchestrate_the_ux_evaluation_harness"
+        ]
+      },
+      "path": "logics/product/prod_072_ai_ux_evaluation_product_brief.md",
+      "ref": "prod_072_ai_ux_evaluation_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "AI UX Evaluation Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, cold-start naive agent and onboarding funnel, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Cold-start naive agent and onboarding funnel",
+        "use when": "Implementing the scaffolded slice for Cold-start naive agent and onboarding funnel."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_297_cold_start_naive_agent_and_onboarding_funnel"
+        ],
+        "prod": [
+          "prod_072_ai_ux_evaluation_product_brief"
+        ],
+        "req": [
+          "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure"
+        ],
+        "task": [
+          "task_121_orchestrate_the_ux_evaluation_harness"
+        ]
+      },
+      "path": "logics/backlog/item_297_cold_start_naive_agent_and_onboarding_funnel.md",
+      "ref": "item_297_cold_start_naive_agent_and_onboarding_funnel",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Cold-start naive agent and onboarding funnel"
+    }
+  ],
+  "estimates": {
+    "char_count": 9344,
+    "companion_doc_count": 2,
+    "doc_count": 7
+  },
+  "generated_at": "2026-07-26T14:45:09Z",
+  "handoff": {
+    "companion_doc_count": 2,
+    "enabled": true,
+    "source_refs": [
+      "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure",
+      "item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile",
+      "item_296_friction_accessibility_instrumentation_with_axe_core",
+      "item_297_cold_start_naive_agent_and_onboarding_funnel",
+      "task_121_orchestrate_the_ux_evaluation_harness"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 840,
+      "fr": 840
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure,item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile,item_296_friction_accessibility_instrumentation_with_axe_core,item_297_cold_start_naive_agent_and_onboarding_funnel,task_121_orchestrate_the_ux_evaluation_harness",
+  "refs": [
+    "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure",
+    "item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile",
+    "item_296_friction_accessibility_instrumentation_with_axe_core",
+    "item_297_cold_start_naive_agent_and_onboarding_funnel",
+    "task_121_orchestrate_the_ux_evaluation_harness"
+  ],
+  "release": {
+    "blocking_reasons": [],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Release evidence is complete.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": null,
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "ready",
+    "target_version": "0.4.6"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_121_orchestrate_the_ux_evaluation_harness.md",
+      "ref": "task_121_orchestrate_the_ux_evaluation_harness"
+    }
+  ]
+}

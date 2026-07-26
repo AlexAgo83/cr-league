@@ -1,0 +1,124 @@
+{
+  "title": "Replayability and fun analytics: measure outcome variety, strategy dominance and emotional arc across many AI seasons",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/scaffold/browser-driven-ai-playtest.json",
+    "scripts/ai-playtest.ts",
+    "scripts/balance-simulations.ts",
+    "scripts/simulate-playtest.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "We can already run huge headless AI tournaments (scripts/ai-playtest.ts: 14 personas x seasons x rounds) and a balance gate (scripts/balance-simulations.ts), but neither answers 'is the game replayable and fun over time?' — they answer 'is it balanced right now?'. balance-simulations only reports gap % and pit-strategy points spread (scripts/balance-simulations.ts:444-445); ai-playtest reports a per-race scalar funScore/frustrationScore and aggregate wins/podiums, with no view of VARIETY or NARRATIVE. Missing signals: (D, replayability) whether outcomes actually vary run to run or converge; whether a DOMINANT STRATEGY exists (does the same approach/preparation/pit/card set always win, collapsing meaningful choice); how often COMEBACKS happen; and how much TITLE SUSPENSE a season has (at which round the champion is mathematically or effectively decided). (E, fun/emotional arc) beyond the scalar fun score: per-race LEAD CHANGES, CLOSE FINISHES, and the rate of BORING races (zero overtakes / no order change), plus a per-season narrative of how those accumulate. These are pure post-hoc analytics over simulation results the tools already produce; they need aggregation and reporting, not engine changes. The point is to give an AI/designer measured evidence to judge replayability and fun, complementing the visual/friction UX harness which is browser-side."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Replayability analytics",
+    "needs": [
+      "Measure REPLAYABILITY over many AI seasons: outcome variety/divergence run to run, detection of a dominant strategy that always wins, comeback frequency, and per-season title suspense (at which round the champion is effectively decided).",
+      "Measure FUN as a narrative arc, not just a scalar: per-race lead changes, close finishes, and the rate of boring races (no overtakes / no order change), aggregated per season.",
+      "Emit these as analytics reports over existing simulation output (ai-playtest / balance sims), reusing the personas and results rather than changing the engine.",
+      "Make the signals actionable: surface the specific strategies/circuits/rounds that drive dominance or boredom so a designer can target them."
+    ],
+    "context": [
+      "This is post-hoc analytics, not an engine or persona change: consume the results already produced by ai-playtest (per-race events, positions, order changes, champions) and the balance sims. Do not alter simulateRace, persona strategies, or the fun/frustration formulas; add aggregation and reporting on top. If the shared playtest brain from req_119 lands, read personas/decisions from there.",
+      "Replayability (D): over N seasons, compute outcome variety (how much finishing orders and champions differ across runs vs converge to the same result), DOMINANT-STRATEGY detection (win rate of each approach/preparation/pit/card cluster — a cluster winning far above chance signals collapsed choice), COMEBACK frequency (large positive position deltas within a race/season), and TITLE SUSPENSE (the earliest round after which the eventual champion is guaranteed or effectively locked). balance-simulations already computes gap % and pit-points spread (scripts/balance-simulations.ts:444) — extend that family, do not duplicate it.",
+      "Fun arc (E): per race, count LEAD CHANGES (changes of P1 across the trace/order changes), CLOSE FINISHES (winning gap under a small threshold), and mark BORING races (no overtakes / no order change among the field); aggregate to a per-season narrative (e.g. share of exciting vs flat races, biggest comeback, closest title). Reuse the race result's events/order-change facts rather than re-deriving from geometry.",
+      "Reporting: write reports under reports/ (same family as reports/playtest) with the aggregate metrics AND drill-down to the drivers — which strategy cluster is dominant, which circuits produce the most boring races, which rounds kill title suspense — so findings are actionable, not just scores. A JSON payload option like the existing tools (ai-playtest --json) is welcome for downstream tooling.",
+      "Determinism and scale: reuse the existing seeded run harness so metrics are reproducible across runs; keep it a fast, non-blocking analytics script (not a CI gate) that can scale seasons/rounds via args like ai-playtest.",
+      "Out of scope: changing the simulation engine, persona strategies, circuit data, or the existing fun/frustration formulas; the browser/visual UX harness (separate request); auto-tuning balance in response to findings (a designer acts on the report); and any live/production analytics — this is offline over simulations."
+    ],
+    "acceptance_criteria": [
+      "AC1: A replayability report over N AI seasons reports outcome variety/divergence, dominant-strategy detection (win rate per approach/preparation/pit/card cluster vs chance), comeback frequency, and per-season title suspense (round the champion is effectively decided).",
+      "AC2: A fun-arc report reports per-race lead changes, close finishes, and boring-race rate (no overtakes/order change), aggregated into a per-season narrative.",
+      "AC3: Both are computed post-hoc over existing simulation results, with no change to simulateRace, persona strategies, or the fun/frustration formulas.",
+      "AC4: Reports drill down to the drivers (dominant strategy cluster, boring-race circuits, suspense-killing rounds) and offer a JSON output, written under reports/.",
+      "AC5: Wired as npm script(s) reusing the seeded harness, non-blocking in CI, and npm run typecheck, npm test, npm run lint, and npm run logics:validate pass."
+    ]
+  },
+  "product": {
+    "title": "Replayability and Fun Analytics Product Brief",
+    "overview": "Our AI tournaments prove balance but not longevity: nothing measures whether outcomes stay varied, whether a single strategy dominates, how often comebacks and close finishes happen, or how much title suspense a season carries. This request adds post-hoc analytics over the simulation results the tools already produce — a replayability report (variety, dominance, comebacks, suspense) and a fun-arc report (lead changes, close finishes, boring-race rate) — with drill-down to the strategies, circuits, and rounds that drive them, so a designer or AI has measured evidence to judge replayability and fun.",
+    "goals": [
+      "Quantify replayability: outcome variety, strategy dominance, comebacks, title suspense.",
+      "Quantify fun as a narrative arc, not a single score.",
+      "Make findings actionable with drill-down to drivers.",
+      "Reuse existing seeded simulations and results; no engine change."
+    ],
+    "non_goals": [
+      "Do not change the simulation engine, personas, circuit data, or fun/frustration formulas.",
+      "Do not build the browser/visual UX harness here.",
+      "Do not auto-tune balance from the findings.",
+      "Do not add live/production analytics; this is offline over simulations."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Replayability metrics: variety, dominant-strategy detection, comebacks, title suspense",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Replayability analytics",
+      "request_acs": ["AC1", "AC3", "AC4", "AC5"],
+      "problem": [
+        "balance-simulations only reports gap % and pit-points spread; nothing measures whether outcomes vary run to run or converge.",
+        "There is no detection of a dominant strategy (an approach/preparation/pit/card cluster winning far above chance), which would signal collapsed choice.",
+        "Comeback frequency and title suspense (when the champion is effectively decided) are unmeasured."
+      ],
+      "scope_in": [
+        "Over N seasons, compute outcome variety/divergence, win rate per strategy cluster vs chance (dominant-strategy detection), comeback frequency (large positive position deltas), and per-season title suspense (earliest round the champion is locked).",
+        "Extend the balance-simulations metric family rather than duplicating it; reuse the seeded run harness.",
+        "Write a replayability report under reports/ with drill-down to the dominant cluster and suspense-killing rounds, plus a JSON option."
+      ],
+      "scope_out": [
+        "Changing the engine, personas, or balance thresholds.",
+        "Auto-tuning balance from the findings."
+      ],
+      "acceptance_criteria": [
+        "AC1: The report includes variety, dominant-strategy win rates, comeback frequency, and title suspense.",
+        "AC2: It drills down to the dominant strategy cluster and suspense-killing rounds.",
+        "AC3: It reuses the seeded harness and writes to reports/ with a JSON option."
+      ]
+    },
+    {
+      "title": "Fun-arc metrics: lead changes, close finishes, boring-race rate per season",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Replayability analytics",
+      "request_acs": ["AC2", "AC3", "AC4", "AC5"],
+      "problem": [
+        "Fun is only a per-race scalar today; there is no view of the narrative arc.",
+        "Nothing counts lead changes or close finishes, or flags boring races (no overtakes/order change).",
+        "There is no per-season aggregation of exciting vs flat races or of the closest title / biggest comeback."
+      ],
+      "scope_in": [
+        "Per race, count lead changes and close finishes (winning gap under a threshold) and mark boring races (no overtakes/order change), reusing the result's events/order-change facts.",
+        "Aggregate to a per-season narrative (share of exciting vs flat races, biggest comeback, closest title) with drill-down to the circuits producing the most boring races.",
+        "Write a fun-arc report under reports/ with a JSON option."
+      ],
+      "scope_out": [
+        "Changing the fun/frustration formulas or the engine.",
+        "Re-deriving order changes from geometry instead of the emitted facts."
+      ],
+      "acceptance_criteria": [
+        "AC1: Per-race lead changes, close finishes, and boring-race flags are computed from existing results.",
+        "AC2: A per-season narrative aggregates them and names the most boring circuits.",
+        "AC3: A fun-arc report is written under reports/ with a JSON option."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate replayability and fun analytics",
+    "plan": [
+      "Confirm the metrics are post-hoc over existing ai-playtest/balance results; do not touch simulateRace, personas, or the fun/frustration formulas.",
+      "Build the replayability report (variety, dominant-strategy detection, comebacks, title suspense) extending the balance-simulations metric family and reusing the seeded harness.",
+      "Build the fun-arc report (lead changes, close finishes, boring-race rate) aggregated per season from the emitted events/order-change facts.",
+      "Add drill-down to drivers (dominant strategy cluster, boring circuits, suspense-killing rounds) and a JSON output, writing under reports/.",
+      "Wire npm script(s), keep non-blocking in CI; run typecheck/test/lint/logics:validate and record proof at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/replayability-fun-analytics.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

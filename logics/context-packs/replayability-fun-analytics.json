@@ -1,0 +1,308 @@
+{
+  "budgets": {
+    "max_docs": 16,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season task_122_orchestrate_replayability_and_fun_analytics --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense",
+          "item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season"
+        ],
+        "prod": [
+          "prod_073_replayability_and_fun_analytics_product_brief"
+        ],
+        "req": [
+          "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons"
+        ],
+        "task": [
+          "task_122_orchestrate_replayability_and_fun_analytics"
+        ]
+      },
+      "path": "logics/product/prod_073_replayability_and_fun_analytics_product_brief.md",
+      "ref": "prod_073_replayability_and_fun_analytics_product_brief",
+      "status": "Proposed",
+      "title": "Replayability and Fun Analytics Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, replayability and fun analytics: measure outcome variety, strategy dominance and emotional arc across many ai seasons, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Replayability and fun analytics: measure outcome variety, strategy dominance and emotional arc across many AI seasons",
+        "use when": "You need to implement or review the scaffolded workflow for Replayability and fun analytics: measure outcome variety, strategy dominance and emotional arc across many AI seasons."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense",
+          "item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season"
+        ],
+        "prod": [
+          "prod_073_replayability_and_fun_analytics_product_brief"
+        ],
+        "req": [
+          "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons"
+        ]
+      },
+      "path": "logics/request/req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons.md",
+      "ref": "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "Replayability and fun analytics: measure outcome variety, strategy dominance and emotional arc across many AI seasons"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, replayability metrics: variety, dominant-strategy detection, comebacks, title suspense, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Replayability metrics: variety, dominant-strategy detection, comebacks, title suspense",
+        "use when": "Implementing the scaffolded slice for Replayability metrics: variety, dominant-strategy detection, comebacks, title suspense."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense"
+        ],
+        "prod": [
+          "prod_073_replayability_and_fun_analytics_product_brief"
+        ],
+        "req": [
+          "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons"
+        ],
+        "task": [
+          "task_122_orchestrate_replayability_and_fun_analytics"
+        ]
+      },
+      "path": "logics/backlog/item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense.md",
+      "ref": "item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Replayability metrics: variety, dominant-strategy detection, comebacks, title suspense"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, fun-arc metrics: lead changes, close finishes, boring-race rate per season, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Fun-arc metrics: lead changes, close finishes, boring-race rate per season",
+        "use when": "Implementing the scaffolded slice for Fun-arc metrics: lead changes, close finishes, boring-race rate per season."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season"
+        ],
+        "prod": [
+          "prod_073_replayability_and_fun_analytics_product_brief"
+        ],
+        "req": [
+          "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons"
+        ],
+        "task": [
+          "task_122_orchestrate_replayability_and_fun_analytics"
+        ]
+      },
+      "path": "logics/backlog/item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season.md",
+      "ref": "item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Fun-arc metrics: lead changes, close finishes, boring-race rate per season"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense",
+          "item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season"
+        ],
+        "prod": [
+          "prod_073_replayability_and_fun_analytics_product_brief"
+        ],
+        "req": [
+          "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons"
+        ],
+        "task": [
+          "task_122_orchestrate_replayability_and_fun_analytics"
+        ]
+      },
+      "path": "logics/product/prod_073_replayability_and_fun_analytics_product_brief.md",
+      "ref": "prod_073_replayability_and_fun_analytics_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Replayability and Fun Analytics Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate replayability and fun analytics",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense",
+          "item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season"
+        ],
+        "prod": [
+          "prod_073_replayability_and_fun_analytics_product_brief"
+        ],
+        "req": [
+          "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons"
+        ],
+        "task": [
+          "task_122_orchestrate_replayability_and_fun_analytics"
+        ]
+      },
+      "path": "logics/tasks/task_122_orchestrate_replayability_and_fun_analytics.md",
+      "ref": "task_122_orchestrate_replayability_and_fun_analytics",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate replayability and fun analytics"
+    }
+  ],
+  "estimates": {
+    "char_count": 6380,
+    "companion_doc_count": 1,
+    "doc_count": 5
+  },
+  "generated_at": "2026-07-26T14:45:14Z",
+  "handoff": {
+    "companion_doc_count": 1,
+    "enabled": true,
+    "source_refs": [
+      "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons",
+      "item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense",
+      "item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season",
+      "task_122_orchestrate_replayability_and_fun_analytics"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 840,
+      "fr": 840
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons,item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense,item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season,task_122_orchestrate_replayability_and_fun_analytics",
+  "refs": [
+    "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons",
+    "item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense",
+    "item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season",
+    "task_122_orchestrate_replayability_and_fun_analytics"
+  ],
+  "release": {
+    "blocking_reasons": [],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Release evidence is complete.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": null,
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "ready",
+    "target_version": "0.4.6"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_122_orchestrate_replayability_and_fun_analytics.md",
+      "ref": "task_122_orchestrate_replayability_and_fun_analytics"
+    }
+  ]
+}

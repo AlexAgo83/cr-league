@@ -1,6 +1,7 @@
 import type { ClassificationEntry, RaceEvent, RaceReplayFacts, RaceSegment, ReplayTracePoint, Weather } from "../domain/race.js";
 import { RACE_SEGMENTS } from "../domain/race.js";
 import { zoneForRaceSegment, zonesAtProgress, type TrackZone } from "../domain/circuits.js";
+import { segmentOrderLap as lapForSegment } from "./raceProgress.js";
 
 export function buildReplayFacts(trace: ReplayTracePoint[], events: RaceEvent[], classification: ClassificationEntry[], weather: Record<RaceSegment, Weather>, laps: number, trackZones: readonly TrackZone[]): RaceReplayFacts {
   const orderChanges = trace.slice(1).flatMap((point, index) => {
@@ -168,11 +169,6 @@ function zoneSummary(zones: readonly TrackZone[], trackProgress: number, kind?: 
 
 function segmentAtTrackProgress(trackProgress: number): RaceSegment {
   return RACE_SEGMENTS[Math.min(RACE_SEGMENTS.length - 1, Math.floor(Math.max(0, Math.min(0.999999, trackProgress)) * RACE_SEGMENTS.length))] ?? "start";
-}
-
-function lapForSegment(segment: RaceSegment) {
-  const index = RACE_SEGMENTS.indexOf(segment);
-  return index < 0 ? 1 : index + 1;
 }
 
 function pitRelatedOrderChange(previous: ReplayTracePoint, point: ReplayTracePoint, teamId: string, overtakenTeamId: string) {

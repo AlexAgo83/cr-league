@@ -14,9 +14,11 @@ export type HealthStatus = {
 
 export { CARD_DEFINITIONS, CARD_DESCRIPTORS, type CardDefinition, type CardDescriptor, type CardStrengthBand } from "./cards/definitions.js";
 export { CITY_CIRCUIT_IDENTITIES, circuitIdentityForRound, circuitSeasonSeed, pitWindowForCircuit, progressRangeForRaceSegment, raceInputFromCircuit, seasonCircuitIdentities, trackSpeedProfileForCircuit, trackZonesForCircuit, zoneForRaceSegment, zonesAtProgress, type CityCircuitIdentity, type TrackSpeedProfile, type TrackZone } from "./domain/circuits.js";
+export { safeHex } from "./domain/colors.js";
 export { APPROACH_DELTAS, CARD_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type DecisionDeltaKey, type DecisionDeltas } from "./domain/decisionDeltas.js";
 export type { LeagueState, ProfileSession, SeasonSummary } from "./domain/league.js";
 export * from "./domain/race.js";
+export { strongestForecast } from "./domain/weather.js";
 export {
   CARD_PRICES,
   CARD_PRICE,
@@ -30,7 +32,9 @@ export {
 export { CAR_ASSET_IDS, CAR_ASSET_PRICES, DEFAULT_CAR_ASSET_ID, carAssetPrice, isCarAssetId, type CarAssetId } from "./economy/carAssets.js";
 export { DEMO_RACE_INPUT } from "./simulation/demoRace.js";
 export { createPrng } from "./simulation/prng.js";
-export { RACE_REPLAY_BASE_SECONDS, lapForProgress, simulateRace } from "./simulation/simulateRace.js";
+export { bestQualifyingRuns } from "./simulation/qualifyingRuns.js";
+export { RACE_REPLAY_BASE_SECONDS, simulateRace } from "./simulation/simulateRace.js";
+export { classificationScore, lapForProgress, lapForSegment, segmentOrderLap } from "./simulation/raceProgress.js";
 export { positionDeltas, replayOrderAtProgress, traceGapsAt, tracePointAt, traceTimesAt } from "./simulation/replayState.js";
 export { expandedSpeedSpan, integratedSpeedProfile, progressInSpeedSpan, speedFactorAt, type SpeedProfile, type SpeedProfileFactorMode } from "./simulation/speedProfile.js";
 export { validateReplayTrace } from "./simulation/validateReplayTrace.js";

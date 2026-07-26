@@ -1,4 +1,4 @@
-import { RACE_SEGMENTS, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, type CardId, type RaceResult } from "@cr-league/shared";
+import { RACE_SEGMENTS, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, strongestForecast, type CardId, type RaceResult } from "@cr-league/shared";
 import type { TranslationKey, TranslationParams } from "../i18n/index.js";
 import type { LeagueState } from "./types.js";
 import { displayLapForEvent, maxEventLap } from "./lapDisplay.js";
@@ -30,9 +30,7 @@ export type RaceVerdict = {
   tryNext: RaceVerdictLine;
 };
 
-export function strongestForecast(forecast: Record<string, number>) {
-  return Object.entries(forecast).reduce((best, current) => (current[1] > best[1] ? current : best), ["dry", 0])[0];
-}
+export { strongestForecast };
 
 export function clampNumber(value: number, min: number, max: number) {
   return Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : min;

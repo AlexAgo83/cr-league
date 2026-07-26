@@ -1,7 +1,5 @@
 import type { CSSProperties } from "react";
-import type { RaceDecision, TeamLivery } from "@cr-league/shared";
-
-const HEX_COLOR = /^#[0-9a-f]{6}$/i;
+import { safeHex, type RaceDecision, type TeamLivery } from "@cr-league/shared";
 
 const CHRONO_PLAN_MARKERS = {
   approach: { prudent: 1, balanced: 2, aggressive: 3 },
@@ -90,10 +88,6 @@ export function ReplayTower({
       </ol>
     </section>
   );
-}
-
-function safeHex(value: string | undefined, fallback: string) {
-  return value && HEX_COLOR.test(value) ? value : fallback;
 }
 
 function ReplayPlanAsset({ decision }: { decision: RaceDecision }) {

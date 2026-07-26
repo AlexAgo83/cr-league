@@ -14,6 +14,7 @@ import {
   type TrackSpeedProfile,
   type Weather
 } from "@cr-league/shared";
+import { bestQualifyingRuns } from "@cr-league/shared";
 import { strongestForecast } from "./utils.js";
 
 const QUALIFYING_REFERENCE_LAP_SECONDS = 90;
@@ -21,11 +22,7 @@ const WEATHER_STEPS: Weather[] = ["dry", "light_rain", "heavy_rain"];
 // Fixed reference epoch (2024-01-01T00:00:00Z) keeps generated chronos reproducible without using the wall clock.
 const QUALIFYING_CREATED_AT_EPOCH_MS = 1704067200000;
 
-export function bestQualifyingRuns(runs: QualifyingRun[]) {
-  return [...runs]
-    .sort((left, right) => left.time - right.time)
-    .filter((run, index, sorted) => sorted.findIndex((candidate) => candidate.teamId === run.teamId) === index);
-}
+export { bestQualifyingRuns };
 
 export function qualifyingCardForTeam(runs: QualifyingRun[], teamId: string) {
   return runs.find((run) => run.teamId === teamId && run.decision?.cardId === "qualifying_focus")?.decision?.cardId;

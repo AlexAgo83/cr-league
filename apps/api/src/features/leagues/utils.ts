@@ -1,4 +1,4 @@
-import { CARD_DEFINITIONS, CAR_ASSET_PRICES, isCarAssetId, type CardId, type CarAssetId, type QualifyingRun, type RaceInput, type SeasonSummary, type TeamLivery, type Weather } from "@cr-league/shared";
+import { CARD_DEFINITIONS, CAR_ASSET_PRICES, isCarAssetId, strongestForecast, type CardId, type CarAssetId, type QualifyingRun, type SeasonSummary, type TeamLivery } from "@cr-league/shared";
 import { createHash, randomBytes, scrypt, timingSafeEqual } from "node:crypto";
 import { promisify } from "node:util";
 import type { Prisma } from "@prisma/client";
@@ -11,9 +11,7 @@ import {
 import { LeagueRuleError } from "./errors.js";
 import type { Db, ProfileSession } from "./types.js";
 
-export function strongestForecast(forecast: RaceInput["forecast"]): Weather {
-  return (Object.entries(forecast).sort((left, right) => right[1] - left[1])[0]?.[0] ?? "dry") as Weather;
-}
+export { strongestForecast };
 
 export function clampInteger(value: unknown, fallback: number, min: number, max: number) {
   return typeof value === "number" && Number.isFinite(value) ? Math.max(min, Math.min(max, Math.round(value))) : fallback;

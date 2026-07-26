@@ -3,6 +3,7 @@ import {
   CARD_DELTAS,
   PIT_STRATEGY_DELTAS,
   PREPARATION_DELTAS,
+  bestQualifyingRuns,
   type CardId,
   type DecisionDeltaKey,
   type DecisionDeltas,
@@ -125,14 +126,7 @@ export function latestQualifyingRun(runs: QualifyingRun[]) {
   );
 }
 
-export function bestQualifyingRuns(runs: QualifyingRun[]) {
-  const best = new Map<string, QualifyingRun>();
-  for (const run of runs) {
-    const current = best.get(run.teamId);
-    if (!current || run.time < current.time) best.set(run.teamId, run);
-  }
-  return [...best.values()];
-}
+export { bestQualifyingRuns };
 
 export function buildChronoReport(input: {
   runs: QualifyingRun[];

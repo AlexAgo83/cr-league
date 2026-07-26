@@ -22,9 +22,11 @@ import { zoneForRaceSegment, type TrackZone } from "../domain/circuits.js";
 import { RACE_SEGMENTS, clampTrait } from "../domain/race.js";
 import { createChronoFinalTimes, createChronoReplayTrace, createChronoScores, pitStrategy, replayCarSpeed, type ChronoScores } from "./chronoRaceEngine.js";
 import { createPrng } from "./prng.js";
+import { classificationScore, lapForSegment } from "./raceProgress.js";
 import { buildReplayFacts, withTraceEventProgress } from "./replayTrace.js";
 
 export { motionParametersForDecision } from "./chronoRaceEngine.js";
+export { classificationScore, lapForProgress } from "./raceProgress.js";
 
 const SEGMENT_BASE_TIME: Record<RaceSegment, number> = {
   start: 18,
@@ -677,11 +679,6 @@ function classify(states: TeamState[]): ClassificationEntry[] {
   });
 }
 
-export function classificationScore(state: { scores: { score: number }; positionDelta: number }) {
-  // positionDelta is a deliberate card-effect perturbation on the final score scale.
-  return state.scores.score + state.positionDelta;
-}
-
 function addFinishEvents(events: RaceEvent[], classification: ClassificationEntry[]) {
   for (const entry of classification.slice(0, 3)) {
     events.push({
@@ -789,22 +786,6 @@ function createMiniInfoEvent(order: number, state: TeamState, segment: RaceSegme
 function previousSegment(segment: RaceSegment): RaceSegment {
   const index = RACE_SEGMENTS.indexOf(segment);
   return RACE_SEGMENTS[Math.max(0, index - 1)] ?? "start";
-}
-
-function lapForSegment(segment: RaceSegment) {
-  const laps: Record<RaceSegment, number> = {
-    start: 1,
-    early: 2,
-    mid: 5,
-    late: 8,
-    finish: 10
-  };
-
-  return laps[segment];
-}
-
-export function lapForProgress(progress: number, laps: number) {
-  return Math.max(1, Math.min(laps, Math.round(1 + Math.max(0, Math.min(1, progress)) * (laps - 1))));
 }
 
 function weatherLabel(weather: Weather) {

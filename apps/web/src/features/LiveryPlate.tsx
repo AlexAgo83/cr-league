@@ -1,11 +1,7 @@
 import type { CSSProperties } from "react";
-import type { TeamLivery } from "@cr-league/shared";
+import { safeHex, type TeamLivery } from "@cr-league/shared";
 
-const HEX_COLOR = /^#[0-9a-f]{6}$/i;
-
-export function safeHex(value: string, fallback: string) {
-  return HEX_COLOR.test(value) ? value : fallback;
-}
+export { safeHex };
 
 export function LiveryPlate({ className = "", livery, name, wins = 0 }: { className?: string; livery: TeamLivery; name: string; wins?: number }) {
   const marks = Array.from({ length: Math.min(wins, 5) });

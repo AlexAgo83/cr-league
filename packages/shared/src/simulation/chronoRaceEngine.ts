@@ -1,6 +1,7 @@
 import type { CardId, ClassificationEntry, PitStrategy, RaceInput, RaceParticipant, RaceSegment, ReplayTracePoint, Weather } from "../domain/race.js";
 import { RACE_SEGMENTS } from "../domain/race.js";
 import { APPROACH_DELTAS, CARD_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type DecisionDeltas } from "../domain/decisionDeltas.js";
+import { classificationScore, lapForProgress, segmentOrderLap as lapForSegment } from "./raceProgress.js";
 import { integratedSpeedProfile, progressInSpeedSpan, speedFactorAt } from "./speedProfile.js";
 
 export type ChronoScores = {
@@ -484,15 +485,6 @@ function pitLaneTrackProgress(segmentIndex: number, segment: RaceSegment, laps: 
   return (lapIndex + pitLaneProgress) / laps;
 }
 
-function lapForSegment(segment: RaceSegment) {
-  return RACE_SEGMENTS.indexOf(segment) + 1;
-}
-
-function lapForProgress(progress: number, laps: number) {
-  if (progress >= 1) return laps;
-  return Math.min(laps, Math.max(1, Math.floor(progress * laps) + 1));
-}
-
 function applyPitProgressFloors(cars: NonNullable<ReplayTracePoint["cars"]>, pitFloors: Map<string, number>, trackLengthMeters: number) {
   if (!pitFloors.size) return cars;
   return Object.fromEntries(
@@ -518,10 +510,6 @@ function applyVisualChronoGaps(cars: NonNullable<ReplayTracePoint["cars"]>, trac
       return [teamId, { ...car, trackProgress: Number(trackProgress.toFixed(4)), distanceMeters: Number((trackProgress * trackLengthMeters).toFixed(1)) }];
     })
   );
-}
-
-function classificationScore(state: { scores: { score: number }; positionDelta: number }) {
-  return state.scores.score + state.positionDelta;
 }
 
 function chronoCircuitFactor(input: RaceInput, parameters: ChronoMotionParameters) {

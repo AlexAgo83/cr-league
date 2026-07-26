@@ -4002,19 +4002,14 @@ label small {
 }
 
 .replay-finish-flag {
-  position: absolute;
-  left: 50%;
-  top: 38%;
-  width: 120px;
-  height: 80px;
-  transform: translate(-50%, -50%);
-  border-radius: 6px;
-  background-image:
-    conic-gradient(#141414 90deg, #f5f5f5 0 180deg, #141414 0 270deg, #f5f5f5 0);
-  background-size: 24px 24px;
-  border: 2px solid rgb(255 255 255 / 0.55);
-  box-shadow: 0 8px 22px rgb(0 0 0 / 0.55);
   animation: replay-flag-pop 260ms ease-out both, replay-flag-wave 0.9s ease-in-out 260ms infinite;
+  background: url("/assets/crl/finish-flag.png") center / contain no-repeat;
+  height: 120px;
+  left: 50%;
+  position: absolute;
+  top: 38%;
+  transform: translate(-50%, -50%);
+  width: 150px;
   z-index: 6;
 }
 

@@ -1,9 +1,10 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 
 const stylesDir = dirname(fileURLToPath(import.meta.url));
+const publicDir = join(stylesDir, "../../public");
 
 describe("replay controls stacking", () => {
   it("keeps speed options above mobile chrono overlays", () => {
@@ -17,6 +18,13 @@ describe("replay controls stacking", () => {
     expect(controlsZ).toBeGreaterThan(mobileChronosZ);
     expect(speedMenuZ).toBeGreaterThan(controlsZ);
     expect(speedOptionsZ).toBeGreaterThan(speedMenuZ);
+  });
+
+  it("uses the generated transparent finish flag asset", () => {
+    const layout = readFileSync(join(stylesDir, "layout.css"), "utf8");
+
+    expect(layout).toContain('url("/assets/crl/finish-flag.png")');
+    expect(existsSync(join(publicDir, "assets/crl/finish-flag.png"))).toBe(true);
   });
 });
 

@@ -12,7 +12,8 @@ import {
   type CardId,
   type CarAssetId,
   type RaceDecision,
-  type RaceInput
+  type RaceInput,
+  type RaceResult
 } from "@cr-league/shared";
 import { createHash } from "node:crypto";
 import {
@@ -219,7 +220,7 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
       trackLengthMeters: currentCircuit.trackLengthMeters,
       forecast: grandPrix.forecast as RaceInput["forecast"],
       qualifyingRuns: normalizeQualifyingRuns(grandPrix.qualifyingRuns),
-      result: grandPrix.result
+      result: grandPrix.result as RaceResult | null
     },
     grandPrixHistory: grandPrixHistory.map((entry) => ({
       id: entry.id,
@@ -227,7 +228,7 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
       season: entry.season,
       round: entry.round,
       status: entry.status,
-      result: entry.result
+      result: entry.result as RaceResult | null
     })),
     teams: league.teams.map((team) => ({
       id: team.id,
@@ -249,10 +250,10 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
     ),
     decisions: grandPrix.decisions.map((decision) => ({
       teamId: decision.teamId,
-      approach: decision.approach,
-      preparation: decision.preparation,
+      approach: decision.approach as RaceDecision["approach"],
+      preparation: decision.preparation as RaceDecision["preparation"],
       pitStrategy: normalizePitStrategy(decision.pitStrategy),
-      cardId: decision.cardId,
+      cardId: decision.cardId as RaceDecision["cardId"] | null,
       rivalTeamId: decision.rivalTeamId
     }))
   };

@@ -1,10 +1,10 @@
 ## item_301_consolidate_diverged_simulation_util_helpers_into_shared_reconciled_under_test - Consolidate diverged simulation/util helpers into shared, reconciled under test
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Architecture remediation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

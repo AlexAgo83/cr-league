@@ -111,7 +111,15 @@ export function ResultView({
               teamLiveries={teamLiveries}
               traitImpacts={traitImpacts}
               planDecisions={planDecisions}
-              planDecision={playerDecision ? { ...playerDecision, cardId: playerDecision.cardId ?? undefined } : undefined}
+              planDecision={
+                playerDecision
+                  ? {
+                      ...playerDecision,
+                      cardId: playerDecision.cardId ?? undefined,
+                      rivalTeamId: playerDecision.rivalTeamId ?? undefined
+                    }
+                  : undefined
+              }
               preferencesResetSignal={preferencesResetSignal}
               showIntro={showReplayIntro}
               onClose={onClose}

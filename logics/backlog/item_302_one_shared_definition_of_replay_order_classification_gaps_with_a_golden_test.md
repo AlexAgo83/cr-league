@@ -1,10 +1,10 @@
 ## item_302_one_shared_definition_of_replay_order_classification_gaps_with_a_golden_test - One shared definition of replay order/classification/gaps with a golden test
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Replay fidelity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

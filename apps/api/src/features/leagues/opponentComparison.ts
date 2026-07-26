@@ -28,7 +28,7 @@ export async function getOpponentConfigComparison(db: Db, leagueId: string, inpu
           approach: decision.approach,
           preparation: decision.preparation,
           pitStrategy: normalizePitStrategy(decision.pitStrategy),
-          cardId: decision.cardId,
+          cardId: decision.cardId ?? null,
           result: result ? { position: result.position, points: result.points, credits: result.credits } : null
         };
       })

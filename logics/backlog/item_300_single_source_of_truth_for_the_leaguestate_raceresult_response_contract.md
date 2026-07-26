@@ -1,10 +1,10 @@
 ## item_300_single_source_of_truth_for_the_leaguestate_raceresult_response_contract - Single source of truth for the LeagueState/RaceResult response contract
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 15%
 > Complexity: Medium
 > Theme: Architecture remediation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

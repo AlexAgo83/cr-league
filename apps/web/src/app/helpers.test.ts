@@ -84,7 +84,7 @@ function stateWithHistory(grandPrixHistory: LeagueState["grandPrixHistory"]): Le
       primaryTrait: "fast",
       secondaryTrait: "urban",
       trackLengthMeters: 3200,
-      forecast: { dry: 100 },
+      forecast: { dry: 100, light_rain: 0, heavy_rain: 0 },
       qualifyingRuns: [],
       result: null
     },

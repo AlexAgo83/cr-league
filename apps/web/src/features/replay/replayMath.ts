@@ -1,4 +1,4 @@
-import { integratedSpeedProfile, positionDeltas, replayOrderAtProgress, RACE_SEGMENTS, traceGapsAt, tracePointAt, traceTimesAt, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TrackSpeedProfile } from "@cr-league/shared";
+import { integratedSpeedProfile, RACE_SEGMENTS, traceGapsAt, tracePointAt, traceTimesAt, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TrackSpeedProfile } from "@cr-league/shared";
 import type { RaceEvent, Translator } from "../../app/helpers.js";
 import type { CityCircuit } from "../../app/circuits.js";
 export { displayLapAtProgress } from "../../app/lapDisplay.js";

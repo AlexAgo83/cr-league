@@ -35,6 +35,7 @@ const baseProps = {
     bandKey: "plan_risk_band_safe" as const
   },
   primaryCommand: { label: "Launch GP", action: vi.fn(), disabled: false },
+  cardFitForCard: () => ({ level: "recommended" as const, score: 90 }),
   cardLocked: false,
   disabled: false,
   locked: false,
@@ -109,6 +110,19 @@ describe("DirectivePanel", () => {
 
     rerender(<DirectivePanel {...baseProps} step="pit" setForm={vi.fn()} onSelectStep={vi.fn()} />);
     expect(screen.getByRole("button", { name: "Pit strategy: Standard swap" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/strategy.png");
+  });
+
+  it("shows card fit in the plan card cell and opens card info separately", () => {
+    render(<DirectivePanel {...baseProps} selectedCardId="" setForm={vi.fn()} onSelectStep={vi.fn()} />);
+
+    const cardButton = screen.getByRole("button", { name: "Card: Rain Grip" });
+    expect(cardButton.textContent).toContain("High fit");
+    expect(cardButton.textContent).not.toContain("Pays off if rain appears around mid-race.");
+
+    fireEvent.click(screen.getByRole("button", { name: "Rain Grip Info" }));
+    const dialog = screen.getByRole("dialog", { name: "Rain Grip" });
+    expect(dialog.textContent).toContain("Pays off if rain appears around mid-race.");
+    expect(dialog.querySelector(".garage-buy-card .card-stat-badges")).toBeTruthy();
   });
 
   it("shows a chrono command beside the primary command when attempts remain", () => {

@@ -9,7 +9,7 @@ import { MapPlanPanel } from "../features/MapPlanPanel.js";
 import { Modal } from "../features/Modal.js";
 import { RaceInfoDetails } from "../features/RaceInfoDetails.js";
 import { ReplayTower } from "../features/replay/ReplayTower.js";
-import { CountryBadge, VisualIcon } from "../features/VisualIcon.js";
+import { BoardIcon, CountryBadge, VisualIcon, type BoardIconName } from "../features/VisualIcon.js";
 import type { PlanSubscreen } from "./routes.js";
 import { useMapStatsExpanded } from "./viewPreferences.js";
 import { lazy, Suspense, useState } from "react";
@@ -447,19 +447,15 @@ function DriveActions({
 }
 
 function MapActionIcon({ label, tt }: { label: string; tt: Translator }) {
-  const paths =
+  const icon: BoardIconName =
     label === tt("action_qualifying")
-      ? [<circle key="a" cx="12" cy="13" r="7" />, <path key="b" d="M9 2h6" />, <path key="c" d="M12 6v7l4 2" />]
+      ? "chrono"
       : label === tt("action_submit_directive")
-        ? [<path key="a" d="M4 12 20 4l-6 16-3-7z" />, <path key="b" d="m11 13 9-9" />]
+        ? "finish-flag-icon"
         : label === tt("action_launch_grand_prix")
-          ? [<path key="a" d="M6 21V4" />, <path key="b" d="M6 5h11l-2 4 2 4H6" />]
+          ? "finish-flag-icon"
           : label === tt("action_finish_season")
-            ? [<path key="a" d="M8 4h8v4a4 4 0 0 1-8 0z" />, <path key="b" d="M8 6H5a3 3 0 0 0 3 3" />, <path key="c" d="M16 6h3a3 3 0 0 1-3 3" />, <path key="d" d="M12 12v5" />, <path key="e" d="M9 20h6" />]
-            : [<path key="a" d="M8 5l7 7-7 7" />, <path key="b" d="M15 5l7 7-7 7" />];
-  return (
-    <svg className="map-action-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      {paths}
-    </svg>
-  );
+            ? "credits"
+            : "replay";
+  return <BoardIcon className="map-action-icon" name={icon} />;
 }

@@ -425,8 +425,8 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     await closeLeagueIntro();
     expect(screen.getByRole("tab", { name: "Inventory" }).getAttribute("aria-selected")).toBe("true");
-    fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
     expect(document.querySelector(".card-inventory-button .garage-card-name-icon")?.getAttribute("src")).toBe("/assets/crl/icons/weather.png");
+    fireEvent.click(document.querySelector(".card-inventory-button") as HTMLButtonElement);
     const sellDialog = screen.getByRole("dialog", { name: "Rain Grip" });
     expect(sellDialog).toBeTruthy();
     expect(within(sellDialog).queryByRole("heading", { name: "Stats" })).toBe(null);
@@ -494,7 +494,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
-    fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Card: Rain Grip" }));
     const quantitySelect = screen.getByRole("combobox", { name: "Quantity" });
     expect(within(screen.getByRole("dialog", { name: "Confirm card purchase" })).queryByText("Quantity")).toBe(null);
     expect(within(quantitySelect).getAllByRole("option")).toHaveLength(10);
@@ -602,6 +602,7 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "Stand" })).toBeTruthy();
 
     createLeagueFromSetup();
+    await closeLeagueIntro();
 
     // Drive view: map first, plan tuning lives in its own cockpit section.
     await expectGarageCode("ABC123");
@@ -664,7 +665,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("tab", { name: "Card: No card" }));
     expect(window.location.pathname).toBe("/plan/card");
     expect(localStorage.getItem("cr-league-directive-step")).toBe("card");
-    fireEvent.click(screen.getByRole("button", { name: /Rain Grip/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Card: Rain Grip" }));
     expect(screen.getByRole("tab", { name: "Card: Rain Grip" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Stand" }));
     expect(screen.getByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
@@ -678,6 +679,7 @@ describe("App", () => {
     const mapActions = document.querySelector(".race-phase-actions") as HTMLElement;
     expect(mapActions.textContent).not.toContain("Review chrono");
     expect([...mapActions.querySelectorAll("button")].map((button) => button.textContent)).toEqual(["New chrono", "Send plan"]);
+    expect([...mapActions.querySelectorAll(".map-action-icon")].map((icon) => icon.getAttribute("src"))).toEqual(["/assets/crl/icons/chrono.png", "/assets/crl/icons/finish-flag-icon.png"]);
 
     // First chrono is launched from the chrono plan screen.
     expect(screen.queryByText("Wait for directives")).toBe(null);
@@ -824,6 +826,7 @@ describe("App", () => {
     expect(document.querySelector(".map-qualifying-times")?.textContent).toContain("72.42s");
     expect(document.querySelector(".map-qualifying-times")?.textContent).not.toContain("75.18s");
     expect(document.querySelector(".race-phase-actions")?.textContent).toContain("Launch GP");
+    expect(document.querySelector(".race-phase-actions .map-action-icon")?.getAttribute("src")).toBe("/assets/crl/icons/finish-flag-icon.png");
     fireEvent.click(within(document.querySelector(".map-plan-performance") as HTMLElement).getByRole("button", { name: "View" }));
     expect(screen.getByRole("heading", { name: "Tune the race plan" })).toBeTruthy();
     expect(document.querySelector(".plan-risk-lock-badge")?.textContent).toBe("Locked");

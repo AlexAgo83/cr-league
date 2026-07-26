@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { RACE_SEGMENTS, type CardId, type QualifyingRun, type RaceResult } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
-import type { CardFit, Translator } from "../app/helpers.js";
+import { cardFit, type CardFit, type Translator } from "../app/helpers.js";
 import { formatSeconds } from "../app/helpers.js";
 import { buildPlanRecommendationParts, type ChronoReport, type PlanRiskRead } from "../app/raceFlow.js";
 import type { PlanSubscreen } from "../app/routes.js";
@@ -271,6 +271,7 @@ export function PlanView({
           primaryCommand={primaryCommand}
           qualifyingRunCount={playerQualifyingRuns.length}
           qualifyingAttemptsLeft={qualifyingAttemptsLeft}
+          cardFitForCard={(cardId) => cardFit(cardId, state, forecastPick)}
           cardLocked={cardLocked}
           disabled={disabled}
           locked={locked}

@@ -1926,6 +1926,52 @@ label small {
   --map-plan-accent: #b45309;
 }
 
+.card-choice-info-wrap {
+  display: block;
+  min-width: 0;
+  position: relative;
+}
+
+.card-choice-info-wrap > .choice-card {
+  height: 100%;
+  width: 100%;
+}
+
+.card-choice-info-wrap .map-plan-card-marker {
+  position: static;
+}
+
+.card-choice-info-button {
+  align-items: center;
+  background: rgb(18 16 20 / 0.82);
+  border: 1px solid rgb(255 255 255 / 0.18);
+  border-radius: 999px;
+  clip-path: none;
+  color: #f8f3e8;
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: 0.78rem;
+  font-style: normal;
+  font-weight: 900;
+  height: 28px;
+  justify-content: center;
+  letter-spacing: 0;
+  padding: 0;
+  position: absolute;
+  bottom: 9px;
+  right: 9px;
+  text-transform: none;
+  width: 28px;
+  z-index: 3;
+}
+
+.card-choice-info-button:hover,
+.card-choice-info-button:focus-visible {
+  background: rgb(255 77 0 / 0.22);
+  border-color: var(--color-accent);
+  color: #fff7ed;
+}
+
 .directive-summary {
   border-color: var(--color-border);
   color: var(--color-text);
@@ -3421,13 +3467,8 @@ label small {
 }
 
 .map-action-icon {
-  fill: none;
-  height: 25px;
-  stroke: currentColor;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-width: 2.2;
-  width: 25px;
+  height: 34px;
+  width: 34px;
 }
 
 .map-qualifying-times ol,

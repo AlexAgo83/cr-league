@@ -189,6 +189,7 @@ export function DirectivePanel({
   primaryCommand,
   qualifyingRunCount = 0,
   qualifyingAttemptsLeft = 0,
+  cardFitForCard,
   cardLocked,
   disabled,
   locked,
@@ -208,6 +209,7 @@ export function DirectivePanel({
   primaryCommand: PrimaryCommand;
   qualifyingRunCount?: number;
   qualifyingAttemptsLeft?: number;
+  cardFitForCard?: (cardId: CardId) => CardFit;
   cardLocked?: boolean;
   disabled?: boolean;
   locked?: boolean;
@@ -222,6 +224,8 @@ export function DirectivePanel({
   const modifiers = directiveModifiers(form, selectedCardId);
   const [cardHelpOpen, setCardHelpOpen] = useState(false);
   const [dismissCardHelp, setDismissCardHelp] = useState(false);
+  const [viewingCardId, setViewingCardId] = useState<CardId | undefined>();
+  const viewingFit = viewingCardId ? (cardFitForCard?.(viewingCardId) ?? (viewingCardId === selectedCardId ? selectedCardFit : null)) : null;
 
   function selectCard(cardId: "" | CardId) {
     setForm({ ...form, cardId });
@@ -256,6 +260,17 @@ export function DirectivePanel({
           <button type="button" onClick={closeCardHelp}>
             {tt("action_got_it")}
           </button>
+        </div>
+      </Modal>
+    ) : null}
+    {viewingCardId ? (
+      <Modal label={tt(`card_${viewingCardId}` as TranslationKey)} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setViewingCardId(undefined)}>
+        <ModalHero image="/assets/crl/garage-sell-modal.webp" kicker={tt("field_card")} title={tt(`card_${viewingCardId}` as TranslationKey)} />
+        <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
+        <div className="garage-buy-card">
+          <CardArtImage cardId={viewingCardId} />
+          {viewingFit ? <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small> : null}
+          <CardStatBadges cardId={viewingCardId} tt={tt} />
         </div>
       </Modal>
     ) : null}
@@ -376,20 +391,27 @@ export function DirectivePanel({
           <div className="choice-grid card-choice-grid">
             {cardChoices.map((cardId) => {
               const selected = selectedCardId === cardId;
-              return (
+              const fit = cardId ? (cardFitForCard?.(cardId) ?? (selected && selectedCardFit ? selectedCardFit : null)) : null;
+              const cardButton = (
                 <button key={cardId || "none"} type="button" className={`${selected ? "choice-card selected" : "choice-card"}${cardId ? " card-art-cell" : ""}`} aria-label={`${tt("field_card")}: ${cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}`} aria-pressed={selected} onClick={() => selectCard(cardId)} disabled={disabled || cardLocked}>
                   <span className="plan-choice-title">
                     <BoardIcon className="plan-choice-board-icon" name={cardId ? "strategy" : "locked-plan"} />
                     <strong>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</strong>
                     <PlanCardMarker active={Boolean(cardId)} />
                   </span>
-                  <small>
-                    {cardId && selectedCardFit && selected ? `${tt(`card_fit_${selectedCardFit.level}` as TranslationKey)} · ` : ""}
-                    {cardId ? tt(`card_${cardId}_hint` as TranslationKey) : tt("card_none_hint")}
-                  </small>
+                  <small>{cardId ? (fit ? tt(`card_fit_${fit.level}` as TranslationKey) : "") : tt("card_none_hint")}</small>
                   {cardId ? <CardStatBadges cardId={cardId} tt={tt} /> : null}
                   {cardId ? <CardArtImage cardId={cardId} /> : null}
                 </button>
+              );
+              if (!cardId) return cardButton;
+              return (
+                <span key={cardId} className="card-choice-info-wrap">
+                  {cardButton}
+                  <button type="button" className="card-choice-info-button" aria-label={`${tt(`card_${cardId}` as TranslationKey)} ${tt("action_info")}`} title={tt("action_info")} onClick={() => setViewingCardId(cardId)}>
+                    i
+                  </button>
+                </span>
               );
             })}
           </div>

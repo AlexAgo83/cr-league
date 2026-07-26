@@ -1,10 +1,10 @@
 ## item_297_cold_start_naive_agent_and_onboarding_funnel - Cold-start naive agent and onboarding funnel
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 10%
 > Complexity: Medium
 > Theme: UX evaluation tooling
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

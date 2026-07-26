@@ -1,10 +1,10 @@
 ## item_296_friction_accessibility_instrumentation_with_axe_core - Friction + accessibility instrumentation with axe-core
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 10%
 > Complexity: Medium
 > Theme: UX evaluation tooling
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

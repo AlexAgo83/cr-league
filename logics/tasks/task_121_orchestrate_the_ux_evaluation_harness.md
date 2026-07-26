@@ -1,13 +1,14 @@
 ## task_121_orchestrate_the_ux_evaluation_harness - Orchestrate the UX evaluation harness
 > From version: 0.4.6
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: In progress
+> Understanding: 90
+> Confidence: 85
+> Progress: 0
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -45,7 +46,7 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- 2026-07-26: started the UX evaluation harness corpus after closing the browser AI playtest corpus. Read the request/task framing and confirmed this work should wrap `scripts/browser-playtest.ts` plus the shared playtest brain instead of forking a second UI driver.
 
 # AI Context
 - Summary: Orchestrate the UX evaluation harness

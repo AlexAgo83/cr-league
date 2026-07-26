@@ -31,5 +31,6 @@ export { CAR_ASSET_IDS, CAR_ASSET_PRICES, DEFAULT_CAR_ASSET_ID, carAssetPrice, i
 export { DEMO_RACE_INPUT } from "./simulation/demoRace.js";
 export { createPrng } from "./simulation/prng.js";
 export { RACE_REPLAY_BASE_SECONDS, lapForProgress, simulateRace } from "./simulation/simulateRace.js";
+export { positionDeltas, replayOrderAtProgress, traceGapsAt, tracePointAt, traceTimesAt } from "./simulation/replayState.js";
 export { expandedSpeedSpan, integratedSpeedProfile, progressInSpeedSpan, speedFactorAt, type SpeedProfile, type SpeedProfileFactorMode } from "./simulation/speedProfile.js";
 export { validateReplayTrace } from "./simulation/validateReplayTrace.js";

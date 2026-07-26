@@ -1,9 +1,9 @@
-import { integratedSpeedProfile, RACE_SEGMENTS, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TrackSpeedProfile } from "@cr-league/shared";
+import { integratedSpeedProfile, positionDeltas, replayOrderAtProgress, RACE_SEGMENTS, traceGapsAt, tracePointAt, traceTimesAt, type RaceResult, type RaceSegment, type ReplayOrderChangeFact, type ReplayTracePoint, type TrackSpeedProfile } from "@cr-league/shared";
 import type { RaceEvent, Translator } from "../../app/helpers.js";
 import type { CityCircuit } from "../../app/circuits.js";
 export { displayLapAtProgress } from "../../app/lapDisplay.js";
+export { positionDeltas, replayOrderAtProgress, traceGapsAt, traceTimesAt } from "@cr-league/shared";
 
-const EMPTY_TRACE_POINT: ReplayTracePoint = { segment: "start", lap: 1, progress: 0, order: [], times: {}, gaps: {} };
 export const START_HOLD_SECONDS = 3;
 export const START_GO_FLASH_SECONDS = 0.7;
 export const FINISH_HOLD_SECONDS = 1;
@@ -35,41 +35,6 @@ export type ReplayPlan = {
   source: "facts" | "trace" | "fallback";
   overtakes: ReplayOvertakeBeat[];
 };
-
-function tracePointAt(trace: ReplayTracePoint[], progress: number) {
-  return [...trace].reverse().find((point) => point.progress <= progress) ?? trace[0] ?? EMPTY_TRACE_POINT;
-}
-
-export function replayOrderAtProgress(result: RaceResult, trace: ReplayTracePoint[], progress: number) {
-  const order = tracePointAt(trace, progress).order;
-  return order.length ? order : result.classification.map((entry) => entry.teamId);
-}
-
-export function traceGapsAt(trace: ReplayTracePoint[], progress: number) {
-  const from = tracePointAt(trace, progress);
-  const to = trace.find((point) => point.progress > progress) ?? from;
-  const span = to.progress - from.progress || 1;
-  const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
-  return Object.fromEntries(
-    Object.keys({ ...from.gaps, ...to.gaps }).map((teamId) => [
-      teamId,
-      (from.gaps[teamId] ?? 0) + ((to.gaps[teamId] ?? 0) - (from.gaps[teamId] ?? 0)) * ratio
-    ])
-  );
-}
-
-export function traceTimesAt(trace: ReplayTracePoint[], progress: number) {
-  const from = tracePointAt(trace, progress);
-  const to = trace.find((point) => point.progress > progress) ?? from;
-  const span = to.progress - from.progress || 1;
-  const ratio = Math.min(1, Math.max(0, (progress - from.progress) / span));
-  return Object.fromEntries(
-    Object.keys({ ...from.times, ...to.times }).map((teamId) => [
-      teamId,
-      (from.times[teamId] ?? 0) + ((to.times[teamId] ?? 0) - (from.times[teamId] ?? 0)) * ratio
-    ])
-  );
-}
 
 function traceCarProgressAt(trace: ReplayTracePoint[], progress: number, laps: number, _speedProfile?: TrackSpeedProfile) {
   const teamIds = [...new Set(trace.flatMap((point) => Object.keys(point.cars ?? {})))];
@@ -266,16 +231,6 @@ export function liveClassificationByCarProgress(
       ? progressDiff
       : (stableOrder.get(left.teamId) ?? 999) - (stableOrder.get(right.teamId) ?? 999) || left.position - right.position;
   });
-}
-
-export function positionDeltas(currentOrder: string[], nextOrder: string[]) {
-  return Object.fromEntries(
-    nextOrder.flatMap((teamId, nextIndex) => {
-      const currentIndex = currentOrder.indexOf(teamId);
-      const delta = currentIndex - nextIndex;
-      return currentIndex >= 0 && delta ? [[teamId, delta]] : [];
-    })
-  );
 }
 
 export function carProgressAtTrace(result: RaceResult, trace: ReplayTracePoint[], progress: number, laps: number, plan?: ReplayPlan, speedProfile?: TrackSpeedProfile) {

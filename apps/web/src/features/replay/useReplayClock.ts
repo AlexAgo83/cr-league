@@ -1,4 +1,4 @@
-import { RACE_SEGMENTS, type RaceResult, type RaceSegment } from "@cr-league/shared";
+import { positionDeltas, RACE_SEGMENTS, type RaceResult, type RaceSegment } from "@cr-league/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { safeStorage } from "../../app/appStorage.js";
 import { REPLAY_SPEED_KEY, type ReplayStartSignal, startSignalAt } from "./replayMath.js";
@@ -220,14 +220,4 @@ export function useReplayClock({
 function savedReplaySpeed(): ReplaySpeed {
   const saved = Number(safeStorage.get(REPLAY_SPEED_KEY));
   return REPLAY_SPEEDS.includes(saved as ReplaySpeed) ? saved as ReplaySpeed : 1;
-}
-
-function positionDeltas(currentOrder: string[], nextOrder: string[]) {
-  return Object.fromEntries(
-    nextOrder.flatMap((teamId, nextIndex) => {
-      const currentIndex = currentOrder.indexOf(teamId);
-      const delta = currentIndex - nextIndex;
-      return currentIndex >= 0 && delta ? [[teamId, delta]] : [];
-    })
-  );
 }

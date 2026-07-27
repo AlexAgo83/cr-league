@@ -32,7 +32,7 @@ import { getCurrentGrandPrix, isUniqueConstraintError, lockGrandPrixRow, lockLea
 import { createQualifyingRuns } from "./qualifying.js";
 import { requireAdminClaim, requireTeamClaim } from "./transactionHelpers.js";
 import type { AdminProofInput, CreateLeagueInput, Db, JoinLeagueInput, LeagueState, RejoinLeagueInput, UpdateLeagueSettingsInput, UpdateTeamLiveryInput, UpdateTeamNameInput } from "./types.js";
-import { clampInteger, createClaimCode, createLeagueCode, ensureProfileOwnership, isLeagueCadence, liveryKey, normalizeCards, normalizeDisplayName, normalizeLivery, normalizeQualifyingRuns, normalizeSeasonSummaries, normalizeUnlockedCarAssetIds, randomLivery, uniqueBotLivery } from "./utils.js";
+import { clampInteger, createClaimCode, createLeagueCode, createSessionCredential, ensureProfileOwnership, hashRecoveryCode, isLeagueCadence, liveryKey, normalizeCards, normalizeDisplayName, normalizeLivery, normalizeQualifyingRuns, normalizeSeasonSummaries, normalizeUnlockedCarAssetIds, randomLivery, uniqueBotLivery, verifyRecoveryCode } from "./utils.js";
 
 export { defaultBotDecision, fillLeagueWithBots, normalizePitStrategy };
 
@@ -52,6 +52,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
 
   const { league, playerClaimCode } = await retryUnique(async () => {
     const playerClaimCode = createClaimCode();
+    const sessionClaimCode = createSessionCredential();
     const league = await runWrite(db, async (tx) => {
       const league = await tx.league.create({
         data: {
@@ -72,6 +73,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
           name: playerTeamName || DEMO_RACE_INPUT.participants[0]?.teamName || "Player Team",
           kind: "human",
           claimCode: playerClaimCode,
+          sessionClaimCodeHash: await hashRecoveryCode(sessionClaimCode),
           points: 0,
           credits: STARTING_CREDITS,
           cards: STARTER_CARDS,
@@ -100,7 +102,7 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
       return league;
     });
 
-    return { league, playerClaimCode };
+    return { league, playerClaimCode: sessionClaimCode };
   });
 
   const createdState = await getLeagueState(db, league.id, { includeInviteCode: true });
@@ -143,6 +145,7 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
           name: teamName,
           kind: "human",
           claimCode: createClaimCode(),
+          sessionClaimCodeHash: await hashRecoveryCode(createSessionCredential()),
           points: 0,
           credits: STARTING_CREDITS,
           cards: STARTER_CARDS,
@@ -153,7 +156,9 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
   );
 
   const nextState = await getLeagueState(db, league.id, { includeInviteCode: true });
-  return nextState ? withPlayer(nextState, team.id, team.claimCode ?? "") : nextState;
+  const sessionClaimCode = createSessionCredential();
+  await db.team.update({ where: { id: team.id }, data: { sessionClaimCodeHash: await hashRecoveryCode(sessionClaimCode) } });
+  return nextState ? withPlayer(nextState, team.id, sessionClaimCode) : nextState;
 }
 
 export async function rejoinLeague(db: Db, input: RejoinLeagueInput = {}) {
@@ -162,10 +167,11 @@ export async function rejoinLeague(db: Db, input: RejoinLeagueInput = {}) {
     include: { league: true }
   });
   // ponytail: plain !== is fine — claim codes are 40-bit random, network timing attack is impractical; use timingSafeEqual only if codes ever get shorter/predictable.
-  if (!team || team.claimCode !== input.claimCode) return null;
+  const sessionValid = team?.sessionClaimCodeHash && input.claimCode ? await verifyRecoveryCode(input.claimCode, team.sessionClaimCodeHash) : false;
+  if (!team || (team.claimCode !== input.claimCode && !sessionValid)) return null;
 
   const state = await getLeagueState(db, team.leagueId, { includeInviteCode: true });
-  return state ? withPlayer(state, team.id, team.claimCode) : null;
+  return state ? withPlayer(state, team.id, input.claimCode ?? "") : null;
 }
 
 export async function getLeagueState(db: Db, leagueId: string, options: { includeInviteCode?: boolean } = {}): Promise<LeagueState | null> {

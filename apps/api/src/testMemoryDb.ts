@@ -20,6 +20,7 @@ export function createMemoryDb(): PrismaClient {
     id: string;
     email: string;
     recoveryCodeHash: string;
+    sessionCredentialHash: string | null;
     recoveryEmailSentAt: Date | null;
     createdAt: Date;
   };
@@ -30,6 +31,7 @@ export function createMemoryDb(): PrismaClient {
     name: string;
     kind: string;
     claimCode: string | null;
+    sessionClaimCodeHash: string | null;
     points: number;
     credits: number;
     cards: string[];
@@ -257,7 +259,7 @@ export function createMemoryDb(): PrismaClient {
               : undefined
           })),
       count: async ({ where }: { where?: AdminMemoryWhere<ProfileRow> } = {}) => profiles.filter((profile) => matchesAdminMemoryWhere(profile, where)).length,
-      update: async ({ where, data }: { where: { id: string }; data: Partial<Pick<ProfileRow, "recoveryCodeHash" | "recoveryEmailSentAt">> }) => {
+      update: async ({ where, data }: { where: { id: string }; data: Partial<Pick<ProfileRow, "recoveryCodeHash" | "sessionCredentialHash" | "recoveryEmailSentAt">> }) => {
         const profile = profiles.find((candidate) => candidate.id === where.id);
         if (!profile) {
           const error = new Error("Profile not found") as Error & { code?: string };
@@ -287,7 +289,7 @@ export function createMemoryDb(): PrismaClient {
       }: {
         data: Omit<TeamRow, "id" | "livery" | "unlockedCarAssetIds" | "profileId" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "unlockedCarAssetIds" | "profileId">>;
       }) => {
-        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, unlockedCarAssetIds: [], createdAt: new Date(), ...data, profileId: data.profileId ?? null };
+        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, unlockedCarAssetIds: [], createdAt: new Date(), ...data, profileId: data.profileId ?? null, sessionClaimCodeHash: data.sessionClaimCodeHash ?? null };
         teams.push(team);
         return team;
       },
@@ -297,7 +299,7 @@ export function createMemoryDb(): PrismaClient {
         data: Array<Omit<TeamRow, "id" | "livery" | "unlockedCarAssetIds" | "profileId" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "unlockedCarAssetIds" | "profileId">>>;
       }) => {
         for (const team of data) {
-          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, unlockedCarAssetIds: [], createdAt: new Date(), ...team, profileId: team.profileId ?? null });
+          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, unlockedCarAssetIds: [], createdAt: new Date(), ...team, profileId: team.profileId ?? null, sessionClaimCodeHash: team.sessionClaimCodeHash ?? null });
         }
         return { count: data.length };
       },
@@ -321,6 +323,7 @@ export function createMemoryDb(): PrismaClient {
           livery?: { primary: string; secondary: string; carAssetId?: string };
           unlockedCarAssetIds?: string[];
           name?: string;
+          sessionClaimCodeHash?: string | null;
         };
       }) => {
         const team = teams.find((candidate) => candidate.id === where.id);
@@ -340,27 +343,34 @@ export function createMemoryDb(): PrismaClient {
         if (data.livery) team.livery = data.livery;
         if (data.unlockedCarAssetIds) team.unlockedCarAssetIds = data.unlockedCarAssetIds;
         if (data.name) team.name = data.name;
+        if (data.sessionClaimCodeHash !== undefined) team.sessionClaimCodeHash = data.sessionClaimCodeHash;
         return team;
       },
       updateMany: async ({
         where,
         data
       }: {
-        where: { id: string; credits?: { gte: number } };
+        where: { id?: string; profileId?: string; credits?: { gte: number } };
         data: {
           credits?: { decrement: number };
           cards?: string[];
           livery?: { primary: string; secondary: string; carAssetId?: string };
           unlockedCarAssetIds?: string[];
+          sessionClaimCodeHash?: string | null;
         };
       }) => {
-        const team = teams.find((candidate) => candidate.id === where.id && candidate.credits >= (where.credits?.gte ?? Number.NEGATIVE_INFINITY));
-        if (!team) return { count: 0 };
-        team.credits -= data.credits?.decrement ?? 0;
-        if (data.cards) team.cards = data.cards;
-        if (data.livery) team.livery = data.livery;
-        if (data.unlockedCarAssetIds) team.unlockedCarAssetIds = data.unlockedCarAssetIds;
-        return { count: 1 };
+        let count = 0;
+        for (const team of teams) {
+          if ((where.id === undefined || team.id === where.id) && (where.profileId === undefined || team.profileId === where.profileId) && team.credits >= (where.credits?.gte ?? Number.NEGATIVE_INFINITY)) {
+            team.credits -= data.credits?.decrement ?? 0;
+            if (data.cards) team.cards = data.cards;
+            if (data.livery) team.livery = data.livery;
+            if (data.unlockedCarAssetIds) team.unlockedCarAssetIds = data.unlockedCarAssetIds;
+            if (data.sessionClaimCodeHash !== undefined) team.sessionClaimCodeHash = data.sessionClaimCodeHash;
+            count += 1;
+          }
+        }
+        return { count };
       }
     },
     grandPrix: {

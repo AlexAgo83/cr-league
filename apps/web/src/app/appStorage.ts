@@ -117,7 +117,14 @@ export function loadProfileSession(): ProfileSession | null {
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw) as ProfileSession;
-    return parsed?.profile?.id && parsed.profile.email ? parsed : null;
+    if (!parsed?.profile?.id || !parsed.profile.email) return null;
+    if (parsed.recoveryCode) {
+      const storedSession = { ...parsed };
+      delete storedSession.recoveryCode;
+      safeStorage.set(PROFILE_SESSION_KEY, JSON.stringify(storedSession));
+      return storedSession;
+    }
+    return parsed;
   } catch {
     return null;
   }
@@ -132,7 +139,9 @@ export function seasonRecapStorageKey(leagueId: string, season: number) {
 }
 
 export function storeProfileSession(session: ProfileSession) {
-  safeStorage.set(PROFILE_SESSION_KEY, JSON.stringify(session));
+  const storedSession = { ...session };
+  delete storedSession.recoveryCode;
+  safeStorage.set(PROFILE_SESSION_KEY, JSON.stringify(storedSession));
   safeStorage.set(PROFILE_EMAIL_KEY, session.profile.email);
 }
 

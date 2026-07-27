@@ -1,10 +1,10 @@
 ## item_317_raise_dependency_majors_in_reviewable_steps_under_green_ci - Raise dependency majors in reviewable steps under green CI
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

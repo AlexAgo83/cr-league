@@ -30,12 +30,13 @@ model League {
 }
 
 model Profile {
-  id                  String    @id @default(cuid())
-  email               String    @unique
-  recoveryCodeHash    String
-  recoveryEmailSentAt DateTime?
-  createdAt           DateTime  @default(now())
-  updatedAt           DateTime  @updatedAt
+  id                    String    @id @default(cuid())
+  email                 String    @unique
+  recoveryCodeHash      String
+  sessionCredentialHash String?
+  recoveryEmailSentAt   DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
 
   teams Team[]
 
@@ -43,19 +44,20 @@ model Profile {
 }
 
 model Team {
-  id                  String   @id @default(cuid())
-  leagueId            String
-  profileId           String?
-  name                String
-  kind                String   @default("human")
-  claimCode           String?  @unique
-  credits             Int      @default(0)
-  points              Int      @default(0)
-  cards               Json     @default("[]")
-  livery              Json     @default("{\"primary\":\"#16c784\",\"secondary\":\"#38bdf8\"}")
-  unlockedCarAssetIds Json     @default("[]")
-  createdAt           DateTime @default(now())
-  updatedAt           DateTime @updatedAt
+  id                   String   @id @default(cuid())
+  leagueId             String
+  profileId            String?
+  name                 String
+  kind                 String   @default("human")
+  claimCode            String?  @unique
+  sessionClaimCodeHash String?
+  credits              Int      @default(0)
+  points               Int      @default(0)
+  cards                Json     @default("[]")
+  livery               Json     @default("{\"primary\":\"#16c784\",\"secondary\":\"#38bdf8\"}")
+  unlockedCarAssetIds  Json     @default("[]")
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
 
   profile        Profile?       @relation(fields: [profileId], references: [id], onDelete: SetNull)
   league         League         @relation(fields: [leagueId], references: [id], onDelete: Cascade)

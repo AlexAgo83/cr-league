@@ -1,10 +1,10 @@
 ## task_127_orchestrate_credential_storage_and_dependency_currency_remediation - Orchestrate credential storage and dependency currency remediation
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -54,7 +54,12 @@
 - Run `npm run logics:validate`.
 
 # Report
-- Not started.
+- 2026-07-27 wave 1 complete: replaced persisted profile recovery proof with a revocable `sessionCredential` stored hashed server-side, and replaced locally stored team claim codes with hashed session claim tokens accepted through the existing `claimCode` request field for compatibility.
+- Recovery-code reissue and admin reset now null profile and team session credential hashes, so old browser-held session proofs stop working after rotation.
+- Legacy compatibility kept: existing clients may still present the recovery code or original team claim code, but new web storage strips `recoveryCode` and stores only session credentials.
+- Prisma migration added: `20260727110000_add_profile_and_team_session_credentials`.
+- Validation evidence: `npm run typecheck` OK; `npm run lint` OK; `npm test` OK with 350 passing / 7 skipped before the final storage test and targeted 62-test rerun OK after; `npm run test:coverage` OK at 89.4% statements against the 89.37% baseline; `npm run build` OK; `npm run test:e2e -- --project=chromium` OK, 4 passed; `npm audit --omit=dev --audit-level=high` OK, 0 vulnerabilities; `npm run logics:validate` OK with existing non-blocking warnings.
+- Remaining in this task: dependency major upgrades and residual `App.tsx` state consolidation.
 
 # AI Context
 - Summary: Orchestrate credential storage and dependency currency remediation

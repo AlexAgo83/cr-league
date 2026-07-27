@@ -69,7 +69,7 @@ export function createRaceActions({
           name: form.leagueName,
           teamName: form.teamName.trim(),
           profileId: profileSession?.profile.id,
-          recoveryCode: profileSession?.recoveryCode,
+          recoveryCode: profileSession?.sessionCredential,
           maxPlayers: clampNumber(Number(form.maxPlayers), 2, 16),
           fillWithBots: form.fillWithBots,
           qualifyingAttemptLimit: clampNumber(Number(form.qualifyingAttemptLimit), 1, 5),
@@ -97,7 +97,7 @@ export function createRaceActions({
           code: form.joinCode,
           teamName: form.teamName.trim(),
           profileId: profileSession?.profile.id,
-          recoveryCode: profileSession?.recoveryCode
+          recoveryCode: profileSession?.sessionCredential
         })
       });
       rememberPlayer(state);

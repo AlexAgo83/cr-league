@@ -1,10 +1,10 @@
 ## item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential - Replace the persisted master recovery code with a revocable session credential
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Security
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -35,6 +35,14 @@
 - AC4: Team claim codes are given the same treatment or their retained sensitivity is documented with a rationale.
 - AC5: Any Prisma schema change ships with a migration, and the client-compatibility decision is recorded.
 - AC6: typecheck, lint, unit tests, coverage, build, and the Chromium e2e private-league flow all pass.
+
+# Report
+- 2026-07-27 implementation wave complete.
+- Decision: issue opaque profile `sessionCredential` and per-team session claim tokens; store only hashes at rest using the existing scrypt helper; keep legacy recovery-code and original claim-code proof paths for compatibility.
+- Revocation: recovery-code reissue and admin reset clear the profile session hash and all linked team session hashes.
+- Browser storage: `storeProfileSession` and `loadProfileSession` strip `recoveryCode`; recovered teams now carry session claim tokens instead of permanent team claim codes.
+- Proof: API regression covers session credential issue/use/revocation and team token use; web storage regression covers recovery-code stripping and legacy cleanup.
+- Validation: `typecheck`, `lint`, full unit suite, coverage at 89.4% statements, build, Chromium e2e, prod audit, and Logics validation passed.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: After profile recovery and a page reload, no browser storage key contains the plaintext recovery code, proven by an automated test.

@@ -1,10 +1,10 @@
 ## item_318_finish_the_residual_app_tsx_state_consolidation_left_by_item_303 - Finish the residual App.tsx state consolidation left by item_303
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Low
 > Theme: Maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

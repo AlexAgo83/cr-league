@@ -1,6 +1,6 @@
 import { LeagueRuleError } from "./errors.js";
 import type { CreateProfileInput, Db, ProfileSession, RecoveryMailer, RecoverProfileInput } from "./types.js";
-import { createRecoveryCode, hashRecoveryCode, normalizeEmail, profileSession, verifyRecoveryCode } from "./utils.js";
+import { createRecoveryCode, createSessionCredential, hashRecoveryCode, normalizeEmail, profileSession, verifyRecoveryCode } from "./utils.js";
 
 export async function createProfile(db: Db, input: CreateProfileInput = {}, mailer?: RecoveryMailer): Promise<ProfileSession & { recoveryEmailSent?: boolean }> {
   const email = normalizeEmail(input.email);
@@ -13,10 +13,12 @@ export async function createProfile(db: Db, input: CreateProfileInput = {}, mail
   }
 
   const recoveryCode = createRecoveryCode();
+  const sessionCredential = createSessionCredential();
   const profile = await db.profile.create({
     data: {
       email,
-      recoveryCodeHash: await hashRecoveryCode(recoveryCode)
+      recoveryCodeHash: await hashRecoveryCode(recoveryCode),
+      sessionCredentialHash: await hashRecoveryCode(sessionCredential)
     }
   });
 
@@ -32,7 +34,7 @@ export async function createProfile(db: Db, input: CreateProfileInput = {}, mail
     }
   }
 
-  return { profile: { id: profile.id, email: profile.email }, recoveryCode, recoveryEmailSent, teams: [] };
+  return { profile: { id: profile.id, email: profile.email }, recoveryCode, sessionCredential, recoveryEmailSent, teams: [] };
 }
 
 export async function requestRecoveryCode(db: Db, input: { email?: string } = {}, mailer?: RecoveryMailer, now = new Date()) {
@@ -55,9 +57,11 @@ export async function requestRecoveryCode(db: Db, input: { email?: string } = {}
     where: { id: profile.id },
     data: {
       recoveryCodeHash: await hashRecoveryCode(recoveryCode),
+      sessionCredentialHash: null,
       recoveryEmailSentAt: now
     }
   });
+  await db.team.updateMany({ where: { profileId: profile.id }, data: { sessionClaimCodeHash: null } });
 
   return { ok: true };
 }
@@ -74,13 +78,15 @@ export async function recoverProfile(db: Db, input: RecoverProfileInput = {}): P
   const profile = await db.profile.findUnique({ where: { email } });
   const verification = profile ? await verifyRecoveryCode(recoveryCode, profile.recoveryCodeHash) : false;
   if (!profile || !verification) return null;
-  if (verification === "legacy") {
-    await db.profile.update({
-      where: { id: profile.id },
-      data: { recoveryCodeHash: await hashRecoveryCode(recoveryCode) }
-    });
-  }
+  const sessionCredential = createSessionCredential();
+  await db.profile.update({
+    where: { id: profile.id },
+    data: {
+      ...(verification === "legacy" ? { recoveryCodeHash: await hashRecoveryCode(recoveryCode) } : {}),
+      sessionCredentialHash: await hashRecoveryCode(sessionCredential)
+    }
+  });
 
   const session = await profileSession(db, profile.id);
-  return session ? { ...session, recoveryCode } : null;
+  return session ? { ...session, recoveryCode, sessionCredential } : null;
 }

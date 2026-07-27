@@ -2,13 +2,13 @@ import { fireEvent, screen, waitFor } from "@testing-library/react";
 import { expect } from "vitest";
 import { PROFILE_SESSION_KEY, safeStorage } from "./appStorage.js";
 
-export function saveProfile(overrides: Partial<{ admin: boolean; recoveryCode: string | undefined }> = {}) {
+export function saveProfile(overrides: Partial<{ admin: boolean; recoveryCode: string | undefined; sessionCredential: string | undefined }> = {}) {
   safeStorage.set(
     PROFILE_SESSION_KEY,
     JSON.stringify({
       profile: { id: "profile_1", email: "pilot@example.test" },
       admin: false,
-      recoveryCode: "ABCD1234",
+      sessionCredential: "SESSION123",
       ...overrides,
       teams: []
     })

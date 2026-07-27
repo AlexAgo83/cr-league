@@ -1053,6 +1053,50 @@ describe("api app", () => {
     expect(wrongJoinResponse.statusCode).toBe(403);
   });
 
+  it("uses revocable session credentials instead of persisted recovery and claim codes", async () => {
+    const db = createMemoryDb();
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(db, undefined, [], "http://localhost:4873", mailer);
+
+    await app.inject({ method: "POST", url: "/profiles", payload: { email: "pilot@example.test" } });
+    const profile = await db.profile.findUnique({ where: { email: "pilot@example.test" } });
+    const recoverResponse = await app.inject({ method: "POST", url: "/profiles/recover", payload: { email: "pilot@example.test", recoveryCode: sent[0]?.code } });
+    const session = recoverResponse.json();
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", profileId: profile!.id, recoveryCode: session.sessionCredential }
+    });
+    const team = await db.team.findUnique({ where: { id: createResponse.json().player.teamId } });
+    const buyResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${createResponse.json().league.id}/cards/buy`,
+      payload: { teamId: createResponse.json().player.teamId, claimCode: createResponse.json().player.claimCode, cardId: "rain_grip" }
+    });
+    await db.profile.update({ where: { id: profile!.id }, data: { recoveryEmailSentAt: new Date(Date.now() - 20 * 60 * 1000) } });
+    await app.inject({ method: "POST", url: "/profiles/recovery-code", payload: { email: "pilot@example.test" } });
+    const staleCreateResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Stale League", teamName: "Old Token", profileId: profile!.id, recoveryCode: session.sessionCredential }
+    });
+    const staleBuyResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${createResponse.json().league.id}/cards/buy`,
+      payload: { teamId: createResponse.json().player.teamId, claimCode: createResponse.json().player.claimCode, cardId: "rain_grip" }
+    });
+    await app.close();
+
+    expect(recoverResponse.statusCode).toBe(200);
+    expect(session.recoveryCode).toBe(sent[0]?.code);
+    expect(session.sessionCredential).toMatch(/^[0-9a-f]{48}$/);
+    expect(createResponse.statusCode).toBe(200);
+    expect(createResponse.json().player.claimCode).not.toBe(team?.claimCode);
+    expect(buyResponse.statusCode).toBe(200);
+    expect(staleCreateResponse.statusCode).toBe(403);
+    expect(staleBuyResponse.statusCode).toBe(409);
+  });
+
   it("hides the invite code from public league reads", async () => {
     const app = await createTestApp(createMemoryDb());
 

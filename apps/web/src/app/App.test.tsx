@@ -125,7 +125,7 @@ describe("App", () => {
   });
 
   it("keeps one-shot help reusable unless the player opts out", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ profile: { id: "profile_1", email: "pilot@example.test" }, recoveryCode: "ABCD1234", teams: [] }));
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ profile: { id: "profile_1", email: "pilot@example.test" }, recoveryCode: "ABCD1234", sessionCredential: "SESSION123", teams: [] }));
 
     render(<App />);
 
@@ -142,7 +142,7 @@ describe("App", () => {
   });
 
   it("dismisses one-shot help only when the player checks the opt-out", async () => {
-    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ profile: { id: "profile_1", email: "pilot@example.test" }, recoveryCode: "ABCD1234", teams: [] }));
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({ profile: { id: "profile_1", email: "pilot@example.test" }, recoveryCode: "ABCD1234", sessionCredential: "SESSION123", teams: [] }));
 
     render(<App />);
 

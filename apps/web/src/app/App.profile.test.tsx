@@ -27,23 +27,16 @@ afterEach(() => {
 });
 
 describe("App profile and admin", () => {
-  it("shows and copies the saved profile code from the profile menu", async () => {
-    saveProfile();
+  it("removes legacy saved profile codes from local storage", () => {
+    saveProfile({ recoveryCode: "ABCD1234" });
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.assign(navigator, { clipboard: { writeText } });
 
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
-    fireEvent.click(screen.getByRole("button", { name: "Copy profile code" }));
-
-    expect(screen.getByRole("dialog", { name: "Profile code" })).toBeTruthy();
-    expect(screen.getByDisplayValue("ABCD1234")).toBeTruthy();
-
-    fireEvent.click(screen.getByLabelText("Copy profile code"));
-    expect(writeText).toHaveBeenCalledWith("ABCD1234");
-    expect(await screen.findByText("Profile code copied.")).toBeTruthy();
-    expect(screen.queryByText("Profile code copied: ABCD1234")).toBe(null);
+    expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
+    expect(localStorage.getItem("cr-league-profile-session")).not.toContain("ABCD1234");
   });
 
   it("hides profile code copy when the code is not stored locally", () => {
@@ -128,7 +121,7 @@ describe("App profile and admin", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
-    expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
 
     fireEvent.blur(document.querySelector(".profile-menu")!, { relatedTarget: null });
     expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
@@ -238,7 +231,7 @@ describe("App profile and admin", () => {
           code: "ABC123",
           teamName: "Volt Union",
           profileId: "profile_1",
-          recoveryCode: "ABCD1234"
+          recoveryCode: "SESSION123"
         })
       })
     );
@@ -367,7 +360,7 @@ describe("App profile and admin", () => {
     expect(screen.getByRole("button", { name: /Create league/ })).toBeTruthy();
     expect(screen.getByText("Saved leagues")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
-    expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
     fireEvent.click(screen.getByRole("button", { name: /Office League/ }));
 
     await expectGarageCode("ABC123");
@@ -415,7 +408,7 @@ describe("App profile and admin", () => {
     expect(screen.getByLabelText("Language")).toBeTruthy();
     expect(screen.queryByRole("button", { name: "Manage league" })).toBe(null);
     expect(screen.queryByRole("button", { name: "Admin" })).toBe(null);
-    expect(screen.getByRole("button", { name: "Copy profile code" })).toBeTruthy();
+    expect(screen.queryByRole("button", { name: "Copy profile code" })).toBe(null);
   });
 
   it("keeps stored admin eligibility without a public admin-status refresh", () => {

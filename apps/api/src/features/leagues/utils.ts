@@ -29,6 +29,10 @@ export function createRecoveryCode() {
   return randomBytes(6).toString("hex").toUpperCase();
 }
 
+export function createSessionCredential() {
+  return randomBytes(24).toString("hex");
+}
+
 // ponytail: async scrypt offloads the KDF to libuv's threadpool so the single event loop keeps
 // serving other requests during the deliberately-expensive hash — sync scryptSync blocked it.
 const scryptAsync = promisify(scrypt) as (password: string | Buffer, salt: string | Buffer, keylen: number) => Promise<Buffer>;
@@ -83,11 +87,13 @@ export function normalizeDisplayName(value: unknown, maxLength: number) {
   return /^[\p{L}\p{N}' -]+$/u.test(name) ? name : "";
 }
 
-export async function ensureProfileOwnership(db: Db, profileId: string | undefined, recoveryCode: string | undefined) {
+export async function ensureProfileOwnership(db: Db, profileId: string | undefined, proof: string | undefined) {
   if (!profileId) return;
-  if (!recoveryCode) throw new LeagueRuleError("A valid profile proof is required.", 403);
+  if (!proof) throw new LeagueRuleError("A valid profile proof is required.", 403);
   const profile = await db.profile.findUnique({ where: { id: profileId } });
-  if (!profile || !(await verifyRecoveryCode(recoveryCode, profile.recoveryCodeHash))) {
+  const recoveryValid = profile ? await verifyRecoveryCode(proof, profile.recoveryCodeHash) : false;
+  const sessionValid = profile?.sessionCredentialHash ? await verifyRecoveryCode(proof, profile.sessionCredentialHash) : false;
+  if (!profile || (!recoveryValid && !sessionValid)) {
     throw new LeagueRuleError("A valid profile proof is required.", 403);
   }
 }
@@ -104,19 +110,25 @@ export async function profileSession(db: Db, profileId: string): Promise<Profile
   });
   if (!profile) return null;
 
-  return {
-    profile: {
-      id: profile.id,
-      email: profile.email
-    },
-    teams: profile.teams.map((team) => ({
+  const teams = await Promise.all(profile.teams.map(async (team) => {
+    const sessionClaimCode = createSessionCredential();
+    await db.team.update({ where: { id: team.id }, data: { sessionClaimCodeHash: await hashRecoveryCode(sessionClaimCode) } });
+    return {
       leagueId: team.leagueId,
       leagueName: team.league.name,
       leagueCode: team.league.code,
       teamId: team.id,
       teamName: team.name,
-      claimCode: team.claimCode ?? ""
-    }))
+      claimCode: sessionClaimCode
+    };
+  }));
+
+  return {
+    profile: {
+      id: profile.id,
+      email: profile.email
+    },
+    teams
   };
 }
 

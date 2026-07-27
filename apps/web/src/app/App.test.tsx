@@ -512,6 +512,25 @@ describe("App", () => {
     expect(screen.getByRole("tab", { name: "Card: No card" })).toBeTruthy();
   });
 
+  it("opens the shop from the empty inventory prompt", async () => {
+    saveProfile();
+    const emptyGarageState = {
+      ...baseState,
+      teams: [{ ...baseState.teams[0], cards: [] }, baseState.teams[1]]
+    };
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(emptyGarageState));
+
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Garage" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    fireEvent.click(screen.getByRole("button", { name: "Shop" }));
+
+    expect(screen.getByRole("tab", { name: "Shop" }).getAttribute("aria-selected")).toBe("true");
+    expect(localStorage.getItem("cr-league-garage-panel")).toBe("shop");
+  });
+
   it("keeps the selected garage tab in local preferences", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));

@@ -541,6 +541,7 @@
   "dashboard_garage": "Garage",
   "garage_between_gp_hint": "Achète une carte dès que tu as assez de crédits, puis joue-la dans ton prochain plan.",
   "garage_empty_inventory": "Aucune carte en inventaire.",
+  "garage_empty_inventory_shop": "Magasin",
   "garage_last_gp": "Dernier GP",
   "garage_consumed": "Consommée",
   "garage_no_card_consumed": "Aucune carte consommée.",

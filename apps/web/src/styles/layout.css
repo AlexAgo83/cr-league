@@ -4914,10 +4914,16 @@ label small {
 }
 
 .card-inventory .garage-empty-inventory {
-  align-items: stretch;
-  display: grid;
-  gap: 10px;
-  justify-content: stretch;
+  align-items: center;
+  display: flex;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.garage-empty-shop-button {
+  font-size: 0.78rem;
+  min-height: 0;
+  padding: 4px 8px;
 }
 
 .garage-empty-inventory img {

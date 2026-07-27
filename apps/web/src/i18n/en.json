@@ -541,6 +541,7 @@
   "dashboard_garage": "Garage",
   "garage_between_gp_hint": "Buy a card as soon as you have enough credits, then use it in your next directive.",
   "garage_empty_inventory": "No cards in inventory.",
+  "garage_empty_inventory_shop": "Shop",
   "garage_last_gp": "Last GP",
   "garage_consumed": "Consumed",
   "garage_no_card_consumed": "No card consumed.",

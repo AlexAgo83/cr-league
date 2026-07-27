@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 94
+> Confidence: 95
 > Progress: 0%
 > Complexity: Medium
 > Theme: Card readability
@@ -14,11 +14,13 @@
 - The guidance should reduce opacity without replacing player judgment.
 - Card advice must stay aligned with existing card effects and circuit/weather data.
 - Owner decision: use exactly three guidance labels first, `Useful here`, `Situational`, and `Low impact`; do not use "best card" language, full rankings, or hidden scoring explanations.
+- Existing UI already has a card affinity concept (`card_fit_recommended`, shown in French as "Affinité haute"), so 0.6 guidance must reuse or replace it deliberately.
 
 # Scope
 - In:
   - Classify owned and purchasable cards against the next GP as `Useful here`, `Situational`, or `Low impact`.
   - Explain the classification with one short reason tied to circuit, weather, setup, position, or economy.
+  - Reconcile the new labels with the existing affinity UI: either map "Affinité haute" to `Useful here` or replace the old badge in the same UI pass.
   - Prefer simple per-card deterministic rules over an opaque global scoring model.
   - Show guidance in the Garage and where the player chooses a plan/card.
   - Keep the model deterministic and covered by tests.
@@ -29,7 +31,7 @@
 
 # Acceptance criteria
 - AC1: Each card visible to the player can display a contextual guidance label for the next GP.
-- AC2: Guidance never recommends a card that cannot legally be used.
+- AC2: Guidance reuses or replaces the existing affinity badge so the player never sees two competing recommendation systems for the same card.
 - AC3: Guidance avoids "best card" wording and never auto-picks or auto-submits a card.
 - AC4: Guidance exposes labels and short reasons without presenting a full ordered ranking.
 - AC5: Tests cover weather cards, position/delta cards, economy cards, and no-card/low-impact cases.

@@ -9,6 +9,7 @@
 > Non-semantic edit: Added overview Mermaid diagram to make the 0.6 corpus slices easier to scan.
 > Semantic edit: Owner clarified that manual reminder emails are capped to one send per season for the first implementation.
 > Semantic edit: Recorded owner decisions for first-pass presets, GP resolution, absent-player defaults, season rollover, rival/card/team/shop rules, and race-engineer deferral.
+> Semantic edit: Recorded owner UX guardrails for polished commissioner screens and compatibility with the existing card affinity signal.
 
 # Overview
 Deliver the first real private beta season layer for CR League: a season can run across several Grands Prix, the league creator can manage readiness and manual reminders from one place, players get clearer race/rival/card guidance, and optional identity/economy variants are introduced only where they improve repeated private-league play.
@@ -33,6 +34,7 @@ flowchart TD
 - Keep beta readiness grounded in the current loop instead of adding a new mode.
 - Improve comprehension and decision quality through deterministic explanations.
 - Preserve the current visual direction while closing accessibility blockers.
+- Make commissioner tools feel native to CR League rather than like a generic admin dashboard.
 - Separate required beta lifecycle work from optional flavor and later-mode ideas.
 
 # Non-goals
@@ -58,9 +60,10 @@ flowchart TD
 - Season economy continuity: avoid leader snowball. For the first pass, preserve players, palmares, archived season stats, and cosmetic/team identity while resetting cards and credits. If later evidence asks for carry-over, cap credits around 25-35% and require balance evidence.
 - Manual reminder emails: keep the admin in control and cap the first implementation to one send per season. Add one commissioner action that targets only players with pending plans and usable profile email data, reports sent/skipped recipients, refuses repeat sends for the same season with a clear explanation, and never schedules automatic reminders. Store minimal audit fields: `reminderSentAt`, `reminderSentBy`, `reminderSeasonNumber`, `sentCount`, and `skippedCount`.
 - Commissioner permissions: enforce owner-only mutations in the API. The web screen is not the security boundary; tests must prove non-creators cannot resolve, remind, or change league-management settings. For 0.6, commissioner means the league creator only; no transfer or co-admin role.
+- Commissioner UX: design the creator screen as a CR League control room with clear race-state hierarchy, readiness lanes, compact action groups, and existing visual components. Avoid a generic SaaS table-first admin page.
 - Accessibility without redesign: fix labels, ARIA, heading structure, contrast, and tap targets locally. Preserve layout, art direction, component shapes, and copy hierarchy unless contrast or target size requires a minimal adjustment.
 - Rival thread: derive a rival only when standings data makes it meaningful. Prefer the nearest standings neighbor, human or bot. If the first race has no points or the nearest-neighbor signal is ambiguous, show no rival rather than forcing a fake story. Tie-break equal candidates by standings proximity, then points gap, then stable team id.
-- Card guidance: use exactly three labels first: `Useful here`, `Situational`, and `Low impact`, each with one short deterministic reason. Avoid “best card” language, full rankings, hidden scoring explanations, and auto-pick.
+- Card guidance: use exactly three labels first: `Useful here`, `Situational`, and `Low impact`, each with one short deterministic reason. Reconcile this with the existing `card_fit_recommended` / "Affinité haute" signal by either mapping that signal into the new label system or replacing the old surface in the same UI pass. Avoid duplicate recommendation badges, “best card” language, full rankings, hidden scoring explanations, and auto-pick.
 - Variable shop: make it an explicit league-creation option, disabled by default. When enabled, rotate a deterministic 6-card shop every GP using league/season/round data and freeze the GP selection so catalog changes do not rewrite historical shops. Fixed-shop leagues remain the balance baseline.
 - Team profile: start from existing data and keep the profile visible only inside the league. Show name, car/livery, championship position, season stats, palmares, current rival, and derived style before adding deeper cosmetics, uploads, bios, or public internet pages. First editable fields should be limited to existing safe team name and livery/color support.
 - Race-engineer assistant: do not ship in the first lot if card guidance makes the Plan screen clear enough. If later pulled in, keep it deterministic and optional with `Safe points`, `Attack`, and `Weather read` profiles; allow applying a profile but never submit automatically and never require generative AI.

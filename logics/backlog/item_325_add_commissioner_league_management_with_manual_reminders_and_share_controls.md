@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 94
+> Confidence: 95
 > Progress: 0%
 > Complexity: Medium
 > Theme: League management
@@ -15,10 +15,12 @@
 - Invite sharing belongs with league management rather than hidden in support docs.
 - To avoid spam and keep the beta behavior predictable, the first reminder implementation should allow at most one reminder send per season.
 - Commissioner authority is owner-only for the first pass: the commissioner is the league creator; no transfer, co-admin role, or UI-only authorization.
+- Owner UX guardrail: this screen must be polished and game-native, not a generic SaaS admin table.
 
 # Scope
 - In:
   - Add or extend the creator-only league management screen.
+  - Present the screen as a CR League control room: current GP state first, readiness lanes or grouped player states next, and compact commissioner actions close to the blocked state they affect.
   - Show player readiness, plan submitted/pending state, current GP status, invite code/link, and share-copy affordance.
   - Show whether resolve is available because all plans are ready, or whether resolve-with-defaults would use visible default plans for absent players.
   - Add a manual admin-triggered reminder action for players who have not submitted their plan.
@@ -32,19 +34,20 @@
 
 # Acceptance criteria
 - AC1: Only the league creator can access the commissioner controls.
-- AC2: The screen names every pending player and submitted player for the current GP.
+- AC2: The screen names every pending player and submitted player for the current GP in a polished, game-native management layout rather than a generic table-first admin view.
 - AC3: The management screen separates normal resolve, resolve-with-defaults, and unavailable resolve states.
 - AC4: The reminder action sends only to pending human players with usable profile email data and reports skipped recipients.
 - AC5: A reminder send that delivers at least one email consumes the season cap; a reminder attempt with zero sent emails does not consume it.
 - AC6: A second reminder attempt after the cap is consumed sends no email and returns a clear already-sent response.
 - AC7: Reminder sends persist the minimal audit fields needed to explain who sent the reminder, for which season, and how many recipients were sent or skipped.
 - AC8: Invite/share copy works without requiring email delivery.
-- AC9: API authorization and web tests cover creator-only access, pending-player targeting, skipped-recipient behavior, audit fields, and the one-send-per-season reminder cap.
+- AC9: Browser evidence covers the commissioner screen at desktop and mobile widths and confirms the layout remains polished, readable, and consistent with CR League visual language.
+- AC10: API authorization and web tests cover creator-only access, pending-player targeting, skipped-recipient behavior, audit fields, and the one-send-per-season reminder cap.
 
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: Only the league creator can access the commissioner controls.
 - request-AC3 -> This backlog slice. Proof: AC2: The screen names every pending player and submitted player for the current GP.
-- request-AC13 -> This backlog slice. Proof: AC9: API authorization and web tests cover creator-only access, pending-player targeting, skipped-recipient behavior, audit fields, and the one-send-per-season reminder cap.
+- request-AC13 -> This backlog slice. Proof: AC9 and AC10 cover browser UX evidence plus API authorization, pending-player targeting, skipped-recipient behavior, audit fields, and the one-send-per-season reminder cap.
 
 # Decision framing
 - Product framing: Not needed

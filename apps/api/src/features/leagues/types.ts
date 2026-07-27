@@ -37,6 +37,7 @@ export type RejoinLeagueInput = {
 export type UpdateLeagueSettingsInput = {
   teamId?: string;
   claimCode?: string;
+  name?: string;
   cadence?: string;
   preparationDeadlineAt?: string | null;
 };

@@ -348,6 +348,7 @@ function isSettingsBody(value: unknown): value is Parameters<typeof updateLeague
   return (
     typeof candidate.teamId === "string" &&
     typeof candidate.claimCode === "string" &&
+    (candidate.name === undefined || typeof candidate.name === "string") &&
     (candidate.cadence === undefined || typeof candidate.cadence === "string") &&
     (candidate.preparationDeadlineAt === undefined ||
       candidate.preparationDeadlineAt === null ||

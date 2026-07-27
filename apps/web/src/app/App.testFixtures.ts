@@ -306,6 +306,7 @@ export const settingsState = {
   ...baseState,
   league: {
     ...baseState.league,
+    name: "Renamed League",
     cadence: "weekly",
     preparationDeadlineAt: "2026-07-15T10:00:00.000Z"
   }

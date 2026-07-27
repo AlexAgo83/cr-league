@@ -21,6 +21,20 @@ function recordingMailer() {
 }
 
 describe("api app", () => {
+  it("rejects invalid league names on creation", async () => {
+    const app = await createTestApp(createMemoryDb());
+
+    const response = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "x!", teamName: "Volt Union" }
+    });
+
+    await app.close();
+
+    expect(response.statusCode).toBe(409);
+  });
+
   it("gates opponent configuration reveal at the API boundary", async () => {
     const app = await createTestApp(createMemoryDb());
     const createdResponse = await app.inject({
@@ -1319,7 +1333,7 @@ describe("api app", () => {
     const settingsResponse = await app.inject({
       method: "POST",
       url: `/leagues/${leagueId}/settings`,
-      payload: { ...created.player, cadence: "weekly", preparationDeadlineAt: deadline }
+      payload: { ...created.player, name: "Renamed League", cadence: "weekly", preparationDeadlineAt: deadline }
     });
     const wrongClaimResponse = await app.inject({
       method: "POST",
@@ -1331,16 +1345,23 @@ describe("api app", () => {
       url: `/leagues/${leagueId}/settings`,
       payload: { ...created.player, cadence: "always_on" }
     });
+    const invalidNameResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${leagueId}/settings`,
+      payload: { ...created.player, name: "x!" }
+    });
 
     await app.close();
 
     expect(settingsResponse.statusCode).toBe(200);
     expect(wrongClaimResponse.statusCode).toBe(409);
     expect(settingsResponse.json().league).toMatchObject({
+      name: "Renamed League",
       cadence: "weekly",
       preparationDeadlineAt: deadline
     });
     expect(invalidSettingsResponse.statusCode).toBe(409);
+    expect(invalidNameResponse.statusCode).toBe(409);
   });
 
   it("runs a three Grand Prix private league scenario", async () => {

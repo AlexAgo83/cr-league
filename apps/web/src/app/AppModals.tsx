@@ -413,6 +413,10 @@ export function LeagueControlsModal({
       {pendingTeams.length ? <p className="race-direction-defaults">{tt("race_direction_defaults")}</p> : null}
       <div className="field-grid settings-fields">
         <label>
+          {tt("field_league")}
+          <input value={form.leagueName} maxLength={40} onChange={(event) => setForm({ ...form, leagueName: event.target.value })} />
+        </label>
+        <label>
           {tt("field_cadence")}
           <select value={form.cadence} onChange={(event) => setForm({ ...form, cadence: event.target.value })}>
             <option value="manual">{tt("cadence_manual")}</option>

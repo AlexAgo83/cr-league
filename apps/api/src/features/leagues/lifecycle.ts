@@ -271,7 +271,15 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
 
 export async function updateLeagueSettings(db: Db, leagueId: string, input: UpdateLeagueSettingsInput = {}) {
   await requireAdminClaim(db, leagueId, input);
-  const data: { cadence?: string; preparationDeadlineAt?: Date | null } = {};
+  const data: { name?: string; cadence?: string; preparationDeadlineAt?: Date | null } = {};
+
+  if (input.name !== undefined) {
+    const name = normalizeDisplayName(input.name, LEAGUE_NAME_LIMIT);
+    if (!name) {
+      throw new LeagueRuleError("League name must be 3 to 40 readable characters.");
+    }
+    data.name = name;
+  }
 
   if (input.cadence !== undefined) {
     if (!isLeagueCadence(input.cadence)) {

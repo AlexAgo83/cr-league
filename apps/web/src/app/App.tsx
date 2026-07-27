@@ -37,6 +37,14 @@ import { useReplayUiState } from "./useReplayUiState.js";
 
 const AdminConsoleView = lazy(() => import("../features/AdminConsoleView.js").then((module) => ({ default: module.AdminConsoleView })));
 
+function toDatetimeLocal(value?: string | null) {
+  if (!value) return "";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60_000);
+  return local.toISOString().slice(0, 16);
+}
+
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
   const [entered, setEntered] = useState(() => !isStartPath(window.location.pathname));
@@ -530,6 +538,14 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       onSwitchLeague={(teamId) => void switchLeague(teamId)}
       onAddLeague={addLeague}
       onOpenLeagueControls={() => {
+        if (leagueState) {
+          setForm((current) => ({
+            ...current,
+            leagueName: leagueState.league.name,
+            cadence: leagueState.league.cadence,
+            preparationDeadlineAt: toDatetimeLocal(leagueState.league.preparationDeadlineAt)
+          }));
+        }
         setLeagueControlsOpen(true);
         setProfileOpen(false);
       }}

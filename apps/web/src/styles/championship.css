@@ -515,14 +515,14 @@
   padding: 0;
 }
 
-.circuit-detail-screen .secondary-button:not(:disabled) {
+.championship-view .circuit-detail-screen .circuit-map-stage button.secondary-button:not(:disabled) {
   background: rgb(248 243 232 / 0.9);
   border-color: rgb(255 255 255 / 0.46);
   color: #17151a;
 }
 
-.circuit-detail-screen .secondary-button:not(:disabled):is(:hover, :focus-visible),
-.circuit-detail-screen .secondary-button.active:not(:disabled) {
+.championship-view .circuit-detail-screen .circuit-map-stage button.secondary-button:not(:disabled):is(:hover, :focus-visible),
+.championship-view .circuit-detail-screen .circuit-map-stage button.secondary-button.active:not(:disabled) {
   background: #ff4d00;
   border-color: #ff8a3d;
   color: #1d1205;

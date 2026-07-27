@@ -56,17 +56,22 @@ export function createLeagueMutations({
   async function updateSettings() {
     if (!leagueState) return;
 
-    await mutateLeague(
-      "status_updating_settings",
-      `/leagues/${leagueState.league.id}/settings`,
-      {
-        teamId: leagueState.player?.teamId,
-        claimCode: leagueState.player?.claimCode,
-        cadence: form.cadence,
-        preparationDeadlineAt: form.preparationDeadlineAt ? new Date(form.preparationDeadlineAt).toISOString() : null
-      },
-      "status_settings_updated"
-    );
+    await run(tt("status_updating_settings"), async () => {
+      const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/settings`, {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.leagueName.trim(),
+          teamId: leagueState.player?.teamId,
+          claimCode: leagueState.player?.claimCode,
+          cadence: form.cadence,
+          preparationDeadlineAt: form.preparationDeadlineAt ? new Date(form.preparationDeadlineAt).toISOString() : null
+        })
+      });
+      const nextState = withCurrentPlayer(state);
+      setLeagueState(nextState);
+      rememberPlayer(nextState);
+      showStatus(tt("status_settings_updated"));
+    });
   }
 
   async function resolveGrandPrix() {

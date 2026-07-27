@@ -1082,9 +1082,12 @@ describe("App", () => {
     expect(document.querySelector(".championship-overview")?.textContent).not.toContain("Race direction");
     fireEvent.click(screen.getByRole("button", { name: "Race direction" }));
     expect(screen.getByRole("dialog", { name: "Race direction" })).toBeTruthy();
+    fireEvent.change(screen.getByLabelText("League"), { target: { value: "Renamed League" } });
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
     fireEvent.click(screen.getByRole("button", { name: "Update settings" }));
     expect(await screen.findByText("League settings updated.")).toBeTruthy();
+    expect(JSON.parse((fetch.mock.calls[5]?.[1] as RequestInit).body as string)).toMatchObject({ name: "Renamed League", cadence: "weekly" });
+    expect(localStorage.getItem("cr-league-player-claims")).toContain("Renamed League");
 
     fireEvent.click(screen.getByRole("button", { name: "Restart session" }));
     fireEvent.click(within(screen.getByRole("dialog", { name: "Restart session" })).getByRole("button", { name: "Restart session" }));

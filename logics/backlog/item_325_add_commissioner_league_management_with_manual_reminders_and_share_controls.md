@@ -4,7 +4,7 @@
 > Status: In Progress
 > Understanding: 90%
 > Confidence: 96
-> Progress: 60%
+> Progress: 75%
 > Complexity: Medium
 > Theme: League management
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -61,6 +61,7 @@
 - Add browser evidence at desktop and mobile widths for the `Direction de course` layout.
 - Consider a post-send detail line in the modal showing exact sent/skipped counts after the reminder response.
 - Extend web tests around the reminder button locked label once fetch fixtures cover the reminder endpoint.
+- Handoff: see `docs/agent-handoff-2026-07-27.md`.
 
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: Only the league creator can access the commissioner controls.

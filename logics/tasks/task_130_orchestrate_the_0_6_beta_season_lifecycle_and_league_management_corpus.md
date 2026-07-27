@@ -1,10 +1,10 @@
 ## task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus - Orchestrate the 0.6 beta season lifecycle and league management corpus
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In Progress
 > Understanding: 90%
 > Confidence: 92%
-> Progress: 0%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -14,10 +14,10 @@
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
 
 # Plan
-- [ ] 1. Confirm the final 0.6 scope from the product brief and keep deferred ideas out of implementation unless explicitly pulled in.
+- [x] 1. Confirm the final 0.6 scope from the product brief and keep deferred ideas out of implementation unless explicitly pulled in.
 - [ ] 2. Implement the beta season lifecycle core before optional flavor items: `Quick beta` 3 GP, `Standard season` 6 GP default, no auto-resolve, neutral absent-player defaults, explicit next-season action, card/credit reset on season rollover.
 - [ ] 3. Add commissioner management, share controls, and one-reminder-per-season manual email reminders with minimal audit fields while preserving creator-only API access.
-- [ ] 4. Close the accessibility gate without redesigning the app.
+- [x] 4. Close the accessibility gate without redesigning the app.
 - [ ] 5. Improve race feedback, rival context, and contextual card guidance using deterministic data.
 - [ ] 6. Add lightweight team profiles and evaluate whether season economy continuity and variable shop mode should ship in this corpus or be deferred after design proof.
 - [ ] 7. Prototype the deterministic race-engineer assistant only if the core beta flow plus card guidance remain insufficient after observation.
@@ -80,7 +80,9 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- 2026-07-27 handoff: first wave is partially delivered and committed. Season presets, no-auto-resolve/default-plan backend guard, next-season rollover reset, `Direction de course`, manual one-successful-reminder-per-season API/mail path, accessibility gate, and several UX papercuts are in code.
+- Still open before closing the wave: visible default-plan confirmation/report labeling for absent players, desktop/mobile browser evidence for `Direction de course`, and focused UI coverage for the reminder locked state.
+- Handoff doc: `docs/agent-handoff-2026-07-27.md`.
 
 # AI Context
 - Summary: Orchestrate the 0.6 beta season lifecycle and league management corpus

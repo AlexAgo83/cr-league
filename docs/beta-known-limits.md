@@ -19,6 +19,10 @@ Share these limits with testers before a hosted beta session.
 - Race outcomes are deterministic from the stored league state and submitted plans.
 - Plan risk summaries are advisory only. They do not change simulation, card consumption, or API payloads.
 - A player should run chronos before locking a plan if they want the grid context to be meaningful.
+- Grands Prix do not auto-resolve. The league creator resolves them from `Direction de course`.
+- Pending players can receive one manual plan reminder per season when SMTP is configured; there is no scheduled reminder loop.
+- Absent-player defaults are neutral and commissioner-controlled. The next pass still needs to make default-plan use more visible in the confirmation/report UI.
+- Starting the next season is explicit and creator-controlled after the season-end state.
 
 ## Operational limits
 
@@ -26,4 +30,3 @@ Share these limits with testers before a hosted beta session.
 - Database backups are manual before broad beta maintenance.
 - There is no self-service account deletion flow for public users.
 - There is no undo button for admin cleanup; restore requires a database backup.
-

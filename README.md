@@ -296,10 +296,12 @@ Current roadmap direction:
 
 - `0.1`: playable vertical slice implemented;
 - `0.2`: private league prototype foundation implemented;
-- `0.3`: playtest game loop polish has reached replay realism, pit strategy, loading feedback, and global circuit catalogue patch `0.3.10`;
-- `0.4`: ship rails are implemented and closed in Logics.
-- `0.5`: gameplay depth is starting, focused on economy/card depth, balance evidence,
-  fun/comprehension playtests, and selective tuning only when reports justify it.
+- `0.3`: playtest game loop polish is closed for the current release line;
+- `0.4`: ship rails, maintainability, performance, and review remediation are closed in Logics;
+- `0.5`: economy/card depth has moved to evidence-backed narrow follow-ups only;
+- `0.6`: beta season lifecycle is active via `req_129` / `task_130`; next work is finishing season defaults/report visibility and `Direction de course` browser evidence before action feedback, rivals, and card guidance.
+
+Latest implementation handoff: [docs/agent-handoff-2026-07-27.md](docs/agent-handoff-2026-07-27.md).
 
 ## Contributing
 

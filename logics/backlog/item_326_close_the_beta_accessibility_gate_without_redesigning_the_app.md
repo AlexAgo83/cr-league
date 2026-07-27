@@ -1,10 +1,10 @@
 ## item_326_close_the_beta_accessibility_gate_without_redesigning_the_app - Close the beta accessibility gate without redesigning the app
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: In Progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 85%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Accessibility
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -40,8 +40,14 @@
 - Evidence: `rtk npm run playtest:ux:cold-start` -> PASS; `reports/ux/cold-start-funnel.md` reaches `make first purchase`.
 
 # Remaining Work
-- Review mobile small tap-target counts after the next UI pass; current harness reports no body overflow and no critical axe issues, but some compact replay controls remain under 44px.
+- Reopen only if a later UI pass reintroduces axe failures, contrast regressions, body overflow, or beta-blocking mobile tap targets.
 - Keep the regenerated browser screenshots under `reports/ux/browser-playthrough/` as the visual evidence for this pass.
+
+# Report
+- Completed on 2026-07-27.
+- Closed the beta accessibility gate without visual redesign beyond local contrast/readability fixes.
+- Evidence: `rtk npm run playtest:ux` -> PASS with `Total axe violation groups: 0`.
+- Evidence: `rtk npm run playtest:ux:cold-start` -> PASS and reaches `make first purchase`.
 
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: UX harness no longer reports critical button-name issues on the beta-critical flow.

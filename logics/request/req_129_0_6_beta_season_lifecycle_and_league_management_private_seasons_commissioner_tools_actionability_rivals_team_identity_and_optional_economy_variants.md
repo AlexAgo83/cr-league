@@ -1,8 +1,8 @@
 ## req_129_0_6_beta_season_lifecycle_and_league_management_private_seasons_commissioner_tools_actionability_rivals_team_identity_and_optional_economy_variants - 0.6 beta season lifecycle and league management: private seasons, commissioner tools, actionability, rivals, team identity, and optional economy variants
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
+> Status: In progress
+> Understanding: 95
 > Confidence: 95
 > Complexity: High
 > Theme: 0.6 beta season lifecycle
@@ -47,6 +47,11 @@
 - [x] Scope boundaries (in/out) are explicit.
 - [x] Acceptance criteria are testable.
 - [x] Dependencies and known risks are listed.
+
+# Implementation Handoff
+- 2026-07-27: First implementation wave started. `item_324` and `item_325` are partially delivered; `item_326` accessibility is Done.
+- Continue with visible absent-player default confirmation/report labels and `Direction de course` desktop/mobile browser evidence before starting `item_327` / `item_328` / `item_329`.
+- Handoff doc: `docs/agent-handoff-2026-07-27.md`.
 
 # Companion docs
 - Product brief(s): `prod_081_0_6_beta_season_lifecycle_and_league_management_product_brief`

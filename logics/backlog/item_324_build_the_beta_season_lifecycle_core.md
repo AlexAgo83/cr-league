@@ -4,7 +4,7 @@
 > Status: In Progress
 > Understanding: 90%
 > Confidence: 95
-> Progress: 45%
+> Progress: 65%
 > Complexity: High
 > Theme: Season lifecycle
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -53,6 +53,7 @@
 - Surface the neutral default plan before commissioner confirmation instead of only encoding it in the API result.
 - Render defaulted teams clearly in the post-race report/classification.
 - Add/adjust focused tests for the 3 GP preset path and visible default-plan UI once the commissioner screen lands.
+- Handoff: see `docs/agent-handoff-2026-07-27.md`.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: A creator can create or configure a league with a short and default season preset.

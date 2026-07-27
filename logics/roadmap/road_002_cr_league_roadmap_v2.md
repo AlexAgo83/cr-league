@@ -40,6 +40,7 @@
 > Semantic edit: 2026-07-27 closed `req_128` / `task_129`; the AI alpha seasons decision package recommends opening 0.6 beta-season lifecycle next, with accessibility cleanup and profile-dominance monitoring as 0.6 gates rather than pre-0.6 detours.
 > Semantic edit: 2026-07-27 scaffolded `req_129` / `task_130` as the 0.6 beta season lifecycle and league-management corpus, covering private seasons, commissioner tools, manual reminders, accessibility, action feedback, rivals, card guidance, team profiles, optional shop variety, lightweight season economy framing, and deferred-mode discipline.
 > Semantic edit: 2026-07-27 synchronized 0.6 roadmap scope with the ready-to-dev corpus guardrails: `Direction de course`, manual one-per-season reminder, no auto/deadline resolution, neutral absent-player defaults, explicit next-season action, coherent card guidance labels, and deferred realtime/automation.
+> Semantic edit: 2026-07-27 handoff sync after first 0.6 implementation wave: lifecycle/reminder/accessibility work is partially delivered, accessibility is Done, and the next agent should finish visible default-plan/report handling plus `Direction de course` browser evidence before starting wave 2.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -63,7 +64,8 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - The latest validation gate is green: `npm run typecheck`, `npm run lint`, `npm test` (352 passed, 7 skipped), `npm run test:coverage` (91.89% statements), `npm run build`, `npm run test:e2e -- --project=chromium`, production audit, and `npm run logics:validate`.
 - The 2026-07-26/27 execution queue is now closed: `req_118`-`req_126` are Done, Logics lint/audit are clean, and `logics-manager status` reports zero open workflow docs. Delivered since the previous sync: twenty new circuits, browser-driven AI playtest, UX evaluation harness, replayability/fun analytics, source-of-truth remediation, aggressive mini-pack diagnostic, eager bundle/script-boundary follow-up, runtime performance remediation, and credential/dependency/App.tsx review remediation.
 - The first post-closeout 0.5 economy follow-up is `req_127`: fresh replayability did not justify a broad aggressive/mini-pack nerf, but card-role evidence justified moving `pit_relay` and `hard_tires` from 180 to 120 credits. No new card mechanics, shop model, or UI surface were opened.
-- The AI alpha seasons evidence run `req_128` / `task_129` is Done. Decision package: `docs/audits/ai-alpha-seasons-decision-2026-07-27.md`. It recommended opening 0.6 beta-season lifecycle next; that corpus is now scaffolded as `req_129` / `task_130`.
+- The AI alpha seasons evidence run `req_128` / `task_129` is Done. Decision package: `docs/audits/ai-alpha-seasons-decision-2026-07-27.md`. It recommended opening 0.6 beta-season lifecycle next; that corpus is now active as `req_129` / `task_130`.
+- First 0.6 implementation wave status: `item_324` season lifecycle core is in progress, `item_325` `Direction de course` / manual reminders is in progress, and `item_326` accessibility is Done. Latest handoff: `docs/agent-handoff-2026-07-27.md`.
 - Still not real: automatic scheduler, full auth, dynamic objectives, broad beta operations evidence, multi-person playtest evidence for the current balance, and any further card-economy expansion beyond the narrow `req_127` price fix.
 
 # Milestones
@@ -183,9 +185,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 ## 0.6 - Live beta season
 - Goal: Run a real beta season long enough to validate cadence, replay comprehension, economy pressure, and return behavior.
-- Status: Planned; active ready-to-dev corpus is `req_129` / `task_130`.
+- Status: In progress; active corpus is `req_129` / `task_130`.
 - Scope to slice into patches when requests exist: beta season lifecycle, `Quick beta` 3-GP and `Standard season` 6-GP presets, creator-only `Direction de course`, manual GP resolution, visible neutral absent-player defaults, explicit `Saison terminée` -> `Lancer la saison suivante` rollover, manual one-reminder-per-season email action, feedback capture across GP cycles, rival context, card guidance labels, in-league team profiles, optional variable shop, and lightweight season continuity rules.
-- First wave: `item_324` season lifecycle core, `item_325` `Direction de course` / manual reminders, and `item_326` accessibility without visual redesign.
+- First wave status: `item_324` season lifecycle core and `item_325` `Direction de course` / manual reminders are partially delivered; `item_326` accessibility is Done. Finish visible default-plan confirmation/report labeling and desktop/mobile `Direction de course` browser evidence before opening wave 2.
 - Second wave: `item_327` action feedback, `item_328` rival thread, and `item_329` coherent card guidance using `Utile ici`, `Situationnel`, and `Impact faible` while replacing or mapping the existing `Affinité haute` surface.
 - Third wave only if still small: `item_330` in-league team profiles, `item_331` optional `Boutique variable à chaque GP`, and `item_332` season rollover persistence/reset rules. `item_333` race engineer stays deferred unless card guidance still leaves the Plan screen hard to read.
 - Corpus policy: `req_129` is the first 0.6 corpus. Include alpha-evidence gates for accessibility cleanup and profile-dominance monitoring; keep reminders manual/admin-triggered only, capped to one successful send per season, and do not pre-scaffold polling/SSE, automatic reminders, deadline auto-resolution, bot replacement, public matchmaking, compact replay, tutorial rewrite, arcade/quick-play modes, or more card tuning without beta evidence.
@@ -201,8 +203,8 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Linked docs: `adr_001_cr_league_v1_static_pwa_api_architecture`, `adr_004_data_security`, `adr_006_accessibility`, `adr_007_i18n`, `adr_008_testing_quality`, `spec_016_implementation_roadmap`.
 
 # Sequencing
-- The 0.4 ship/maintainability/review queue through `task_127` is Done, and no workflow docs are open.
-- Implement `req_129` / `task_130` next, starting with the first-wave slices `item_324`, `item_325`, and `item_326`. `req_128` cleared the pre-0.6 evidence gate; no separate economy, UX, or stability blocker is required first.
+- The 0.4 ship/maintainability/review queue through `task_127` is Done.
+- Continue `req_129` / `task_130`: finish `item_324` and `item_325` first, keep `item_326` closed unless regressions appear, then start `item_327` / `item_328` / `item_329`.
 - Keep release validation explicit: use `logics-manager release status|plan|validate` and record evidence before claiming any 0.4.x release readiness.
 - Do not start 1.0 hardening until the 0.6 beta has produced real usage.
 

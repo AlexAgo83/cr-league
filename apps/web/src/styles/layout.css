@@ -39,13 +39,16 @@
 .ambient-race-background {
   background: var(--color-page);
   bottom: 0;
+  contain: paint;
   left: 0;
+  max-width: 100vw;
   opacity: 0.54;
-  overflow: hidden;
+  overflow: clip;
   pointer-events: none;
   position: fixed;
   right: 0;
   top: 0;
+  width: 100vw;
   z-index: 0;
 }
 
@@ -81,7 +84,11 @@
 .ambient-race-map {
   display: none;
   height: 100%;
+  max-width: 100%;
+  overflow: hidden;
   transform: scale(1.18);
+  transform-origin: center;
+  width: 100%;
 }
 
 .home-splash {
@@ -988,6 +995,7 @@
 .changelog-view {
   display: grid;
   gap: 16px;
+  min-width: 0;
 }
 
 .changelog-hero p {
@@ -998,6 +1006,7 @@
 .changelog-list {
   display: grid;
   gap: 12px;
+  min-width: 0;
 }
 
 .changelog-entry header {
@@ -1008,6 +1017,7 @@
 .changelog-entry.panel {
   background: var(--color-surface);
   color: var(--color-text);
+  min-width: 0;
 }
 
 .changelog-entry header span {
@@ -1022,6 +1032,7 @@
 .changelog-body {
   color: var(--color-muted);
   margin: 10px 0 0;
+  min-width: 0;
 }
 
 .changelog-body h4 {
@@ -1032,6 +1043,7 @@
 
 .changelog-body p {
   margin: 6px 0;
+  overflow-wrap: anywhere;
 }
 
 .changelog-body .changelog-bullet {

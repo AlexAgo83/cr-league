@@ -93,6 +93,7 @@
 | [prod_074_cross_package_source_of_truth_remediation_product_brief](product/prod_074_cross_package_source_of_truth_remediation_product_brief.md) | Cross-Package Source-of-Truth Remediation Product Brief | Settled |  |  | product/prod_074_cross_package_source_of_truth_remediation_product_brief.md |
 | [prod_075_aggressive_mini_pack_balance_diagnostic_product_brief](product/prod_075_aggressive_mini_pack_balance_diagnostic_product_brief.md) | Aggressive Mini-Pack Balance Diagnostic Product Brief | Settled |  |  | product/prod_075_aggressive_mini_pack_balance_diagnostic_product_brief.md |
 | [prod_076_review_follow_up_product_brief](product/prod_076_review_follow_up_product_brief.md) | Review Follow-up Product Brief | Proposed |  |  | product/prod_076_review_follow_up_product_brief.md |
+| [prod_077_runtime_performance_remediation_product_brief](product/prod_077_runtime_performance_remediation_product_brief.md) | Runtime Performance Remediation Product Brief | Proposed |  |  | product/prod_077_runtime_performance_remediation_product_brief.md |
 
 ## Roadmaps
 
@@ -230,6 +231,7 @@
 | [req_122_review_remediation_one_source_of_truth_for_cross_package_contracts_and_helpers_decompose_god_modules_close_test_gaps](request/req_122_review_remediation_one_source_of_truth_for_cross_package_contracts_and_helpers_decompose_god_modules_close_test_gaps.md) | Review remediation: one source of truth for cross-package contracts and helpers, decompose god modules, close test gaps | Done |  |  | request/req_122_review_remediation_one_source_of_truth_for_cross_package_contracts_and_helpers_decompose_god_modules_close_test_gaps.md |
 | [req_123_aggressive_mini_pack_balance_diagnostic_verify_and_correct_win_concentration_without_blind_nerfs](request/req_123_aggressive_mini_pack_balance_diagnostic_verify_and_correct_win_concentration_without_blind_nerfs.md) | Aggressive mini-pack balance diagnostic: verify and correct win concentration without blind nerfs | Done |  |  | request/req_123_aggressive_mini_pack_balance_diagnostic_verify_and_correct_win_concentration_without_blind_nerfs.md |
 | [req_124_trim_the_eager_web_bundle_and_document_script_and_skip_boundaries](request/req_124_trim_the_eager_web_bundle_and_document_script_and_skip_boundaries.md) | Trim the eager web bundle and document script and skip boundaries | Draft |  |  | request/req_124_trim_the_eager_web_bundle_and_document_script_and_skip_boundaries.md |
+| [req_125_runtime_performance_remediation_from_manual_perf_smoke_evidence](request/req_125_runtime_performance_remediation_from_manual_perf_smoke_evidence.md) | Runtime performance remediation from manual perf smoke evidence | Draft |  |  | request/req_125_runtime_performance_remediation_from_manual_perf_smoke_evidence.md |
 
 ## Backlog
 
@@ -546,6 +548,10 @@
 | [item_309_measure_cold_start_and_decide_the_gameapp_split_on_the_numbers](backlog/item_309_measure_cold_start_and_decide_the_gameapp_split_on_the_numbers.md) | Measure cold start and decide the GameApp split on the numbers | Ready |  | 0% | backlog/item_309_measure_cold_start_and_decide_the_gameapp_split_on_the_numbers.md |
 | [item_310_document_the_release_gate_and_diagnostic_script_split](backlog/item_310_document_the_release_gate_and_diagnostic_script_split.md) | Document the release gate and diagnostic script split | Ready |  | 0% | backlog/item_310_document_the_release_gate_and_diagnostic_script_split.md |
 | [item_311_record_the_app_tsx_and_speed_profile_skips_with_reopen_triggers](backlog/item_311_record_the_app_tsx_and_speed_profile_skips_with_reopen_triggers.md) | Record the App.tsx and speed-profile skips with reopen triggers | Ready |  | 0% | backlog/item_311_record_the_app_tsx_and_speed_profile_skips_with_reopen_triggers.md |
+| [item_312_reduce_replay_runtime_retention_in_timers_listeners_and_svg_state](backlog/item_312_reduce_replay_runtime_retention_in_timers_listeners_and_svg_state.md) | Reduce replay runtime retention in timers, listeners, and SVG state | Ready |  | 0% | backlog/item_312_reduce_replay_runtime_retention_in_timers_listeners_and_svg_state.md |
+| [item_313_verify_production_dist_hygiene_and_remove_accidental_shipped_artifacts](backlog/item_313_verify_production_dist_hygiene_and_remove_accidental_shipped_artifacts.md) | Verify production dist hygiene and remove accidental shipped artifacts | Ready |  | 0% | backlog/item_313_verify_production_dist_hygiene_and_remove_accidental_shipped_artifacts.md |
+| [item_314_review_largest_image_payloads_for_cheap_measured_reductions](backlog/item_314_review_largest_image_payloads_for_cheap_measured_reductions.md) | Review largest image payloads for cheap measured reductions | Ready |  | 0% | backlog/item_314_review_largest_image_payloads_for_cheap_measured_reductions.md |
+| [item_315_keep_api_simulation_performance_as_a_measured_watchpoint](backlog/item_315_keep_api_simulation_performance_as_a_measured_watchpoint.md) | Keep API simulation performance as a measured watchpoint | Ready |  | 0% | backlog/item_315_keep_api_simulation_performance_as_a_measured_watchpoint.md |
 
 ## Tasks
 
@@ -676,3 +682,4 @@
 | [task_123_orchestrate_the_source_of_truth_remediation](tasks/task_123_orchestrate_the_source_of_truth_remediation.md) | Orchestrate the source-of-truth remediation | Done | codex | 100% | tasks/task_123_orchestrate_the_source_of_truth_remediation.md |
 | [task_124_orchestrate_aggressive_mini_pack_balance_diagnostic](tasks/task_124_orchestrate_aggressive_mini_pack_balance_diagnostic.md) | Orchestrate aggressive mini-pack balance diagnostic | Done | codex | 100% | tasks/task_124_orchestrate_aggressive_mini_pack_balance_diagnostic.md |
 | [task_125_orchestrate_the_review_follow_up](tasks/task_125_orchestrate_the_review_follow_up.md) | Orchestrate the review follow-up | Ready |  | 0% | tasks/task_125_orchestrate_the_review_follow_up.md |
+| [task_126_orchestrate_runtime_performance_remediation](tasks/task_126_orchestrate_runtime_performance_remediation.md) | Orchestrate runtime performance remediation | Ready |  | 0% | tasks/task_126_orchestrate_runtime_performance_remediation.md |

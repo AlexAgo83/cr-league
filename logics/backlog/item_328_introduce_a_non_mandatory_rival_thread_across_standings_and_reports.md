@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 90%
+> Confidence: 94
 > Progress: 0%
 > Complexity: Medium
 > Theme: Rivalry
@@ -13,11 +13,12 @@
 - Rivalry is already present in the specs and simulation language but is not yet a stable player-facing thread.
 - A rival gives players a local goal without adding mandatory secondary objectives.
 - The system needs to avoid false precision when the standings do not have a meaningful rival.
-- Owner decision: derive rivals automatically from nearest standings proximity; do not ask players to choose a rival in the first pass.
+- Owner decision: derive rivals automatically from nearest standings proximity; do not ask players to choose a rival in the first pass; equal candidates use stable tie-breaks.
 
 # Scope
 - In:
   - Derive a nearest standings rival when useful.
+  - Tie-break equal candidates by standings proximity, then points gap, then stable team id.
   - Show the rival in standings/pre-race context and summarize the result delta after the GP.
   - Keep rival visibility optional/non-blocking and avoid adding a new heavy configuration step.
   - Allow human or bot rivals when standings proximity makes the story clear.
@@ -30,7 +31,8 @@
 - AC1: A player with a meaningful nearest standings neighbor sees a rival marker before and after a race.
 - AC2: Reports say whether the player gained or lost ground to the rival.
 - AC3: No rival is shown for the first race before meaningful points exist, or when the data is ambiguous or misleading.
-- AC4: Unit tests cover derived rival selection and no-rival fallback.
+- AC4: Equal rival candidates resolve deterministically with standings proximity, points gap, then stable team id.
+- AC5: Unit tests cover derived rival selection, tie-breaks, and no-rival fallback.
 
 # AC Traceability
 - request-AC6 -> This backlog slice. Proof: AC1: A player with a meaningful standings neighbor sees a rival marker before and after a race.

@@ -15,8 +15,8 @@
 
 # Plan
 - [ ] 1. Confirm the final 0.6 scope from the product brief and keep deferred ideas out of implementation unless explicitly pulled in.
-- [ ] 2. Implement the beta season lifecycle core before optional flavor items: `Quick beta` 3 GP, `Standard season` 6 GP default, no auto-resolve, visible absent-player defaults, card/credit reset on season rollover.
-- [ ] 3. Add commissioner management, share controls, and one-reminder-per-season manual email reminders while preserving creator-only API access.
+- [ ] 2. Implement the beta season lifecycle core before optional flavor items: `Quick beta` 3 GP, `Standard season` 6 GP default, no auto-resolve, neutral absent-player defaults, explicit next-season action, card/credit reset on season rollover.
+- [ ] 3. Add commissioner management, share controls, and one-reminder-per-season manual email reminders with minimal audit fields while preserving creator-only API access.
 - [ ] 4. Close the accessibility gate without redesigning the app.
 - [ ] 5. Improve race feedback, rival context, and contextual card guidance using deterministic data.
 - [ ] 6. Add lightweight team profiles and evaluate whether season economy continuity and variable shop mode should ship in this corpus or be deferred after design proof.
@@ -31,20 +31,21 @@
 - Should ship next if the core remains stable: `item_327` action feedback, `item_328` rival thread, and `item_329` contextual card guidance.
 - Ship only after design proof or explicit pull-in: `item_330` team profiles, `item_331` optional variable shop, `item_332` season economy continuity, and `item_333` deterministic race-engineer recommendations.
 - Guardrail: `item_334` should stay visible throughout the task so deferred ideas do not leak into the implementation wave.
+- Suggested wave commits: wave 1 closes lifecycle, commissioner, reminders, and accessibility; wave 2 closes feedback, rival, and card guidance; wave 3 closes profile, variable shop, and rollover rules only if still small.
 
 # Open Questions and Proposed Approaches
 - Scope size: this corpus is intentionally broad. Keep commits wave-sized and close each item with proof before taking optional slices.
 - Presets: ship only `Quick beta` (3 GP) and `Standard season` (6 GP, default); no custom length yet.
 - GP resolution: do not auto-resolve; expose normal commissioner resolve when all plans are ready and resolve-with-defaults when absent players remain.
-- Absents: show default plans before resolution and mark default-plan use in the report.
+- Absents: show one neutral default plan before resolution and mark default-plan use in the report. Use balanced setup, no card, and medium strategy.
 - Season economy: preserve players, palmares, archived stats, and cosmetic/team identity; reset cards and credits in the first pass; defer capped credit carry-over unless beta says reset is too dry.
-- Manual reminders: route through one owner-only API mutation, target pending human players only, return sent/skipped counts, and enforce a one-send-per-season cap in the API only after at least one email is sent.
-- Commissioner authority: authorize in API transactions, not only in UI visibility.
+- Manual reminders: route through one owner-only API mutation, target pending human players only, return sent/skipped counts, store `reminderSentAt`, `reminderSentBy`, `reminderSeasonNumber`, `sentCount`, and `skippedCount`, and enforce a one-send-per-season cap in the API only after at least one email is sent.
+- Commissioner authority: authorize in API transactions, not only in UI visibility. Commissioner means league creator only for 0.6.
 - Accessibility: make local, testable repairs; do not redesign except contrast.
-- Rival: derive from nearest meaningful standings proximity, human or bot; use no-rival fallback for first race or ambiguous data.
-- Card guidance: use `Useful here`, `Situational`, and `Low impact`; avoid "best card" language and never auto-pick.
-- Variable shop: default off, creation-time option, deterministic 6-card GP rotation, fixed shop remains baseline.
-- Team profile: build an in-league profile from existing team/profile/stat data first; defer uploads, public internet pages, and large cosmetic systems.
+- Rival: derive from nearest meaningful standings proximity, human or bot; use no-rival fallback for first race or ambiguous data; tie-break equal candidates by standings proximity, points gap, then stable team id.
+- Card guidance: use `Useful here`, `Situational`, and `Low impact`; avoid "best card" language, full rankings, hidden scoring explanations, and auto-pick.
+- Variable shop: default off, creation-time option, deterministic frozen 6-card GP rotation, fixed shop remains baseline.
+- Team profile: build an in-league profile from existing team/profile/stat data first; only expose safe existing name and livery/color edits; defer uploads, public internet pages, bios, and large cosmetic systems.
 - Race engineer: defer until card guidance is observed; if pulled in, use deterministic `Safe points`, `Attack`, and `Weather read` profiles, no auto-submit, no generative dependency.
 - Deferred modes: keep objectives, arcade solo, quick play, onboarding rewrite, compact replay, automatic reminders, polling/SSE, and 1.0 hardening out unless scope changes.
 

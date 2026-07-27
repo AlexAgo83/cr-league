@@ -231,7 +231,7 @@ describe("raceRecapCards", () => {
     );
 
     expect(recap.difference).toContain("Rain Grip");
-    expect(recap.difference).toContain("+2");
+    expect(recap.difference).toContain("Gained 2 positions");
     expect(recap.directive).toContain("Rain Grip");
     expect(recap.planRead).toContain("Winning plan:");
     expect(recap.planRead).toContain("Rain Grip");

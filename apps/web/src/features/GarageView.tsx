@@ -293,19 +293,22 @@ export function GarageView({
         ) : null}
         {cardPanel === "shop" ? (
           <div className="card-shop">
-            {shopOffers.map((item) => (
-              <button key={item.cardId} className="card-art-cell" type="button" aria-label={`${tt("field_card")}: ${tt(`card_${item.cardId}` as TranslationKey)}`} onClick={() => { setPendingBuyCardId(item.cardId); setBuyQuantity(1); }} disabled={loading}>
-                <CardName cardId={item.cardId} tt={tt} />
-                <strong className="card-price-badge">
-                  <span aria-hidden="true" className="reward-icon">●</span>
-                  <span>{item.price}</span>
-                </strong>
-                <strong className="card-owned-count">x{countCards(playerTeam.cards, item.cardId)}</strong>
-                <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>
-                <CardStatBadges cardId={item.cardId} tt={tt} />
-                <CardArtImage cardId={item.cardId} />
-              </button>
-            ))}
+            {shopOffers.map((item) => {
+              const affordable = playerTeam.credits >= item.price;
+              return (
+                <button key={item.cardId} className={`card-art-cell${affordable ? "" : " unaffordable"}`} type="button" aria-label={`${tt("field_card")}: ${tt(`card_${item.cardId}` as TranslationKey)}`} onClick={() => { setPendingBuyCardId(item.cardId); setBuyQuantity(1); }} disabled={loading}>
+                  <CardName cardId={item.cardId} tt={tt} />
+                  <strong className="card-price-badge">
+                    <span aria-hidden="true" className="reward-icon">●</span>
+                    <span>{item.price}</span>
+                  </strong>
+                  <strong className="card-owned-count">x{countCards(playerTeam.cards, item.cardId)}</strong>
+                  <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>
+                  <CardStatBadges cardId={item.cardId} tt={tt} />
+                  <CardArtImage cardId={item.cardId} />
+                </button>
+              );
+            })}
           </div>
         ) : null}
       </section>

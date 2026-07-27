@@ -445,7 +445,9 @@ describe("App", () => {
     expect(screen.getByText("Card sold.")).toBeTruthy();
 
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
-    fireEvent.click(screen.getByRole("button", { name: /Soft Tires/ }));
+    const unaffordableCard = screen.getByRole("button", { name: /Soft Tires/ });
+    expect(unaffordableCard.className).toContain("unaffordable");
+    fireEvent.click(unaffordableCard);
     expect(document.querySelector(".card-shop .garage-card-name-icon")?.getAttribute("src")).toBeTruthy();
     const buyDialog = screen.getByRole("dialog", { name: "Confirm card purchase" });
     expect(buyDialog).toBeTruthy();

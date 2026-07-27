@@ -182,7 +182,7 @@ export function buildRaceVerdict(
       key: "recap_verdict_stance",
       params: {
         position: playerResult?.position ?? "-",
-        delta: signedDelta(playerResult?.positionChange ?? 0),
+        delta: positionDeltaText(playerResult?.positionChange ?? 0, tt),
         points: playerResult?.points ?? 0
       }
     },
@@ -222,7 +222,7 @@ function raceDominantCause(
         event: impactful.cardId ? tt(`card_${impactful.cardId}` as TranslationKey) : eventReplayText(impactful, names, tt),
         lap: displayLapForEvent(impactful, maxEventLap(result), circuitLaps),
         segment: tt(`segment_${impactful.segment}` as TranslationKey),
-        delta: signedDelta(impactful.positionDelta)
+        delta: positionDeltaText(impactful.positionDelta, tt)
       }
     };
   }
@@ -257,7 +257,7 @@ function raceDominantCause(
       key: pickRecapKey(`recap_verdict_cause_approach_${playerResult!.positionChange > 0 ? "gain" : "loss"}`, variant),
       params: {
         approach: tt(`approach_${decision.approach}` as TranslationKey),
-        delta: signedDelta(playerResult!.positionChange)
+        delta: positionDeltaText(playerResult!.positionChange, tt)
       }
     };
   }
@@ -295,11 +295,11 @@ function recapDirective(
     }),
     tt(pickRecapKey(cardKey, variant), {
       card: decision.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : "",
-      delta: signedDelta(cardEvents.reduce((total, event) => total + event.positionDelta, 0))
+      delta: positionDeltaText(cardEvents.reduce((total, event) => total + event.positionDelta, 0), tt)
     }),
     tt(pickRecapKey(approachKey, variant), {
       approach: tt(`approach_${decision.approach}` as TranslationKey),
-      delta: signedDelta(playerResult?.positionChange ?? 0)
+      delta: positionDeltaText(playerResult?.positionChange ?? 0, tt)
     })
   ].join(" ");
 }
@@ -418,9 +418,10 @@ export function resultHeadline(result: RaceResult, tt: Translator, title = resul
   return winner ? `${title ? `${title}: ` : ""}${winner.teamName} ${tt("report_wins")}.` : title;
 }
 
-function signedDelta(delta: number) {
-  if (delta > 0) return `+${delta}`;
-  return String(delta);
+function positionDeltaText(delta: number, tt: Translator) {
+  if (delta > 0) return tt("recap_position_delta_gain", { delta });
+  if (delta < 0) return tt("recap_position_delta_loss", { delta: Math.abs(delta) });
+  return tt("recap_position_delta_hold");
 }
 
 function resultVariant(result: RaceResult) {

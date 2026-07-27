@@ -456,6 +456,11 @@
   border-color: var(--color-accent);
 }
 
+.card-shop button.unaffordable {
+  filter: grayscale(0.75);
+  opacity: 0.48;
+}
+
 @media (max-width: 520px) {
   .card-inventory,
   .card-shop {

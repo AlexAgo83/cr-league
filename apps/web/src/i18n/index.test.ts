@@ -5,7 +5,7 @@ describe("i18n interpolation", () => {
   it("substitutes placeholders without changing legacy lookups", () => {
     expect(t("action_close")).toBe("Close");
     expect(t("recap_position_delta_gain", "en", { delta: 2 })).toBe("Gained 2 positions");
-    expect(t("recap_position_delta_gain", "fr", { delta: 2 })).toBe("Gagne 2 positions");
+    expect(t("recap_position_delta_gain", "fr", { delta: 2 })).toBe("Gagne 2 places");
   });
 
   it("leaves missing placeholders readable", () => {

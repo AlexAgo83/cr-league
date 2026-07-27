@@ -1,11 +1,12 @@
 ## prod_076_review_follow_up_product_brief - Review Follow-up Product Brief
 > Date: 2026-07-27
-> Status: Proposed
+> Status: Settled
 > Related request: `req_124_trim_the_eager_web_bundle_and_document_script_and_skip_boundaries`
 > Related backlog: `item_308_lazy_load_the_admin_console_out_of_the_eager_chunk`, `item_309_measure_cold_start_and_decide_the_gameapp_split_on_the_numbers`, `item_310_document_the_release_gate_and_diagnostic_script_split`, `item_311_record_the_app_tsx_and_speed_profile_skips_with_reopen_triggers`
 > Related task: `task_125_orchestrate_the_review_follow_up`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Semantic edit: Settled on 2026-07-27 because the linked request/backlog/task chain is Done and the roadmap records the work as shipped.
 
 # Overview
 Convert a clean repository review into the small amount of work it actually justified: one bundle cut that is free, one bundle cut gated on measurement, and the documentation that keeps both decisions and two deliberate skips legible to whoever reads the repo next.

@@ -1,12 +1,13 @@
 ## prod_078_credential_storage_and_dependency_currency_product_brief - Credential Storage and Dependency Currency Product Brief
 > Date: 2026-07-27
-> Status: Proposed
+> Status: Settled
 > Related request: `req_126_review_remediation_stop_persisting_the_master_recovery_credential_restore_dependency_currency_finish_app_tsx_state_consolidation`
 > Related backlog: `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`, `item_317_raise_dependency_majors_in_reviewable_steps_under_green_ci`, `item_318_finish_the_residual_app_tsx_state_consolidation_left_by_item_303`
 > Related task: `task_127_orchestrate_credential_storage_and_dependency_currency_remediation`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
+> Semantic edit: Settled on 2026-07-27 because the linked request/backlog/task chain is Done and the roadmap records the work as shipped.
 
 # Overview
 A whole-repo review found CR League healthy on tests, types, lint, and production dependency audit, with one finding that carries real risk: the master profile recovery code and every team claim code are persisted in plaintext browser storage and replayed as bearer proof on writes, so any script execution in the page yields permanent account takeover. This brief covers replacing that persisted credential with a revocable session credential, restoring dependency currency before the gap compounds, and closing the residual App.tsx state consolidation left by item_303. It deliberately excludes findings that verification cleared and work already owned by req_124 and req_125.

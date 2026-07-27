@@ -1,12 +1,13 @@
 ## prod_079_card_price_and_role_baseline_follow_up_product_brief - Card Price and Role Baseline Follow-up Product Brief
 > Date: 2026-07-27
-> Status: Proposed
+> Status: Settled
 > Related request: `req_127_card_price_and_role_baseline_follow_up_validate_weak_card_affordability_before_0_5_economy_expansion`
 > Related backlog: `item_319_classify_suspect_card_price_and_role_gaps_from_the_latest_balance_evidence`, `item_320_apply_the_smallest_card_price_or_role_fix_only_for_confirmed_weak_cards`
 > Related task: `task_128_orchestrate_card_price_and_role_baseline_follow_up`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
+> Semantic edit: Settled on 2026-07-27 because the linked request/backlog/task chain is Done and the roadmap records the work as shipped.
 
 # Overview
 The 0.5 economy gate is no longer blocked by tooling or card-effect honesty. Fresh replayability evidence says the game is varied enough to avoid a broad nerf, but balance evidence still shows several cards with weak role or affordability. This follow-up keeps the next economy move narrow: validate the suspect cards and adjust only the smallest existing price or effect if the evidence holds.

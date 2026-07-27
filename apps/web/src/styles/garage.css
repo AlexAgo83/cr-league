@@ -480,12 +480,16 @@
   line-height: 1.5;
 }
 
+.garage-buy-confirm-note {
+  opacity: 0.68;
+}
+
 .garage-buy-card {
   background:
-    linear-gradient(135deg, rgb(255 77 0 / 0.18), transparent 46%),
-    var(--color-cockpit);
-  border: 1px solid rgb(255 77 0 / 0.28);
+    linear-gradient(90deg, rgb(236 231 218 / 0.94), rgb(236 231 218 / 0.78));
+  border: 1px solid rgb(23 21 26 / 0.16);
   border-radius: 8px;
+  color: var(--color-ink);
   display: grid;
   gap: 8px;
   grid-template-columns: auto auto minmax(0, 1fr);
@@ -517,7 +521,7 @@
 .garage-buy-card > span,
 .garage-buy-card > small {
   align-self: center;
-  color: var(--color-muted);
+  color: rgb(23 21 26 / 0.78);
 }
 
 .garage-buy-card > small {
@@ -526,6 +530,21 @@
 
 .garage-buy-card .card-stat-badges {
   grid-column: 1 / -1;
+}
+
+.garage-buy-card .card-stat-badge {
+  background: rgb(23 21 26 / 0.06);
+  border-color: rgb(23 21 26 / 0.22);
+  color: var(--color-ink);
+}
+
+.garage-buy-card .card-stat-badge.bonus {
+  border-color: color-mix(in srgb, var(--trait-tone) 55%, transparent);
+}
+
+.garage-buy-card .card-stat-badge.weakness i {
+  background: rgb(23 21 26 / 0.1);
+  color: var(--color-ink-muted);
 }
 
 .modal-actions {

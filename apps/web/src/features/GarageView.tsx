@@ -323,7 +323,7 @@ export function GarageView({
             <small>{tt(`card_fit_${pendingBuy.fit.level}` as TranslationKey)}</small>
             <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
           </div>
-          <p>{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
+          <p className="garage-buy-confirm-note">{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
           <div className="modal-actions">
             {pendingBuyAffordable ? (
               <div className="garage-buy-quantity">

@@ -38,6 +38,8 @@
     "copy:audit": "tsx scripts/copy-comprehension-audit.ts --report reports/ux/copy-comprehension.md",
     "perf:browser": "tsx scripts/perf-browser-runtime.ts",
     "perf:browser:attached": "tsx scripts/perf-browser-runtime.ts --no-server",
+    "perf:replay": "tsx scripts/perf-browser-runtime.ts --mode replay --report reports/perf/replay-runtime.md --json reports/perf/replay-runtime.json",
+    "perf:compare": "tsx scripts/perf-compare.ts",
     "playtest:replayability": "tsx scripts/replayability-analytics.ts --seasons 12 --rounds 6 --report reports/playtest/replayability-analytics.md --json reports/playtest/replayability-analytics.json",
     "replay:validate": "tsx scripts/validate-replay-trace.ts",
     "replay:inspect": "tsx scripts/inspect-replay-trace.ts",

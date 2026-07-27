@@ -6,6 +6,7 @@ import { chromium, type Page } from "@playwright/test";
 
 const webBaseUrl = stringArg("--url", process.env.WEB_BASE_URL ?? "http://127.0.0.1:4873");
 const cycles = numberArg("--cycles", 5);
+const mode = stringArg("--mode", "grand-prix");
 const reportPath = stringArg("--report", "reports/perf/browser-runtime.md");
 const jsonPath = stringArg("--json", reportPath.replace(/\.md$/, ".json"));
 const noServer = process.argv.includes("--no-server");
@@ -90,9 +91,18 @@ try {
   await createLeague(page);
   await sample("league-created");
 
-  for (let cycle = 1; cycle <= cycles; cycle += 1) {
-    await runGrandPrixCycle(page, cycle < cycles);
-    await sample(`cycle-${cycle}`);
+  if (mode === "replay") {
+    await launchReplay(page);
+    await sample("replay-open");
+    for (let cycle = 1; cycle <= cycles; cycle += 1) {
+      await stressReplay(page);
+      await sample(`replay-${cycle}`);
+    }
+  } else {
+    for (let cycle = 1; cycle <= cycles; cycle += 1) {
+      await runGrandPrixCycle(page, cycle < cycles);
+      await sample(`cycle-${cycle}`);
+    }
   }
 
   const resources = await topResources(page);
@@ -185,6 +195,14 @@ async function createLeague(page: Page) {
 }
 
 async function runGrandPrixCycle(page: Page, startNext: boolean) {
+  await launchReplay(page);
+  await page.getByRole("button", { name: "Back to stand" }).click();
+  await page.getByRole("button", { name: "Next GP" }).waitFor();
+  if (!startNext) return;
+  await startNextGrandPrix(page);
+}
+
+async function launchReplay(page: Page) {
   await page.getByRole("button", { name: "Stand", exact: true }).click();
   await dismissOnboarding(page);
   await page.getByRole("button", { name: "Send plan" }).click();
@@ -193,13 +211,32 @@ async function runGrandPrixCycle(page: Page, startNext: boolean) {
   await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
   await page.getByRole("heading", { name: "Race replay" }).waitFor();
   await delay(600);
-  await page.getByRole("button", { name: "Back to stand" }).click();
-  await page.getByRole("button", { name: "Next GP" }).waitFor();
-  if (!startNext) return;
+}
+
+async function startNextGrandPrix(page: Page) {
   await page.getByRole("button", { name: "Next GP" }).click();
   await page.getByRole("dialog", { name: "Start the next race day?" }).getByRole("button", { name: "Next GP" }).click();
   await page.getByRole("heading", { name: "1. Read the circuit" }).waitFor();
   await dismissOnboarding(page);
+}
+
+async function stressReplay(page: Page) {
+  const controls = page.locator(".replay-map-controls");
+  const focus = controls.getByRole("button", { name: "Focus driver" });
+  if (await focus.isVisible({ timeout: 500 }).catch(() => false)) await focus.click();
+
+  const speed = controls.getByRole("button", { name: /Speed/ });
+  if (await speed.isVisible({ timeout: 500 }).catch(() => false)) {
+    await speed.click();
+    const option = page.locator(".replay-speed-options").getByRole("button").last();
+    if (await option.isVisible({ timeout: 500 }).catch(() => false)) await option.click();
+  }
+
+  const pause = controls.getByRole("button", { name: /Pause|Play/ });
+  if (await pause.isVisible({ timeout: 500 }).catch(() => false)) await pause.click();
+  const restart = controls.getByRole("button", { name: "Restart" });
+  if (await restart.isVisible({ timeout: 500 }).catch(() => false)) await restart.click();
+  await delay(400);
 }
 
 async function dismissOnboarding(page: Page) {
@@ -292,13 +329,14 @@ async function writeReport(samples: Sample[], resources: Awaited<ReturnType<type
     listeners: last.listeners - first.listeners,
     transferMb: roundNumber(last.transferMb - first.transferMb)
   };
-  await writeFile(jsonPath, `${JSON.stringify({ webBaseUrl, cycles, growth, samples, resources }, null, 2)}\n`);
+  await writeFile(jsonPath, `${JSON.stringify({ webBaseUrl, mode, cycles, growth, samples, resources }, null, 2)}\n`);
   await writeFile(
     reportPath,
     [
       "# Browser Runtime Perf",
       "",
       `- URL: ${webBaseUrl}`,
+      `- Mode: ${mode}`,
       `- Cycles: ${cycles}`,
       `- Heap growth: ${growth.heapMb} MB`,
       `- DOM node growth: ${growth.nodes}`,
@@ -325,13 +363,13 @@ function table(headers: string[], rows: Array<Array<string | number>>) {
 }
 
 function numberArg(name: string, fallback: number) {
-  const index = process.argv.indexOf(name);
+  const index = process.argv.lastIndexOf(name);
   const value = index >= 0 ? Number(process.argv[index + 1]) : fallback;
   return Number.isFinite(value) ? value : fallback;
 }
 
 function stringArg(name: string, fallback: string) {
-  const index = process.argv.indexOf(name);
+  const index = process.argv.lastIndexOf(name);
   return index >= 0 && process.argv[index + 1] ? process.argv[index + 1]! : fallback;
 }
 

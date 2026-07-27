@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Draft
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 88%
 > Complexity: High
 > Theme: 0.6 beta season lifecycle
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -18,6 +18,7 @@
 # Context
 - The user explicitly approved the 0.6 lifecycle direction, commissioner-style league management, manual reminders, actionable race feedback, a clear rival concept, contextual card guidance, team profile personalization, optional variable shop mode, and an immersive race-engineer assistant concept.
 - The user explicitly rejected automatic mail reminders, replay compact/highlight changes for now, public matchmaking for now, and mandatory secondary objectives for the first 0.6 pass.
+- The user clarified that manual email reminders should be limited to one send per season for the first implementation.
 - The alpha decision package found no stability blocker but identified accessibility debt and profile dominance monitoring as 0.6 gates.
 - Existing product specs already mention rivals, league cadence, reports, profiles, and responsive UX; this corpus should reuse those concepts rather than inventing a new game layer.
 - This request is intentionally broad, but each backlog item must stay independently shippable and should not require delivering every exploratory idea before the beta-season lifecycle is useful.
@@ -25,7 +26,7 @@
 # Acceptance criteria
 - AC1: Private beta season lifecycle supports clear season presets, a full multi-GP loop, season completion, and a restart/next-season path without manual database work.
 - AC2: The league creator has a commissioner management screen that shows player readiness, pending plans, invite/share affordances, and controlled resolve/reminder actions.
-- AC3: Reminder email behavior is manual and admin-triggered only; there are no automatic scheduled reminders, notification daemons, or polling/SSE scope in this corpus.
+- AC3: Reminder email behavior is manual, commissioner-triggered, and initially capped to one reminder send per season; there are no automatic scheduled reminders, notification daemons, or polling/SSE scope in this corpus.
 - AC4: Accessibility fixes address the alpha-reported issues without a visual redesign, except for contrast changes needed to pass the gate.
 - AC5: Race reports and next-GP surfaces produce more actionable advice using deterministic race/circuit/card data.
 - AC6: Rival selection or derivation creates a visible, non-mandatory rivalry thread in standings, pre-race context, and race reports.

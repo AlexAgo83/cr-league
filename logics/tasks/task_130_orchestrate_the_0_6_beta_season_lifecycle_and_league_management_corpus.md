@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 88%
 > Progress: 0%
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -35,7 +35,7 @@
 # Open Questions and Proposed Approaches
 - Scope size: this corpus is intentionally broad. Keep commits wave-sized and close each item with proof before taking optional slices.
 - Season economy: preserve palmares/stats/cosmetic identity by default; reset cards; cap any credit carry-over and run balance evidence before claiming it shippable.
-- Manual reminders: route through one owner-only API mutation, target pending players only, and return sent/skipped counts.
+- Manual reminders: route through one owner-only API mutation, target pending players only, return sent/skipped counts, and enforce a one-send-per-season cap in the API.
 - Commissioner authority: authorize in API transactions, not only in UI visibility.
 - Accessibility: make local, testable repairs; do not redesign except contrast.
 - Rival: derive only from meaningful standings proximity; use no-rival fallback when ambiguous.

@@ -231,7 +231,7 @@ describe("raceRecapCards", () => {
     );
 
     expect(recap.difference).toContain("Rain Grip");
-    expect(recap.difference).toContain("Gained 2 positions");
+    expect(recap.difference).toContain("Impact +2");
     expect(recap.directive).toContain("Rain Grip");
     expect(recap.planRead).toContain("Winning plan:");
     expect(recap.planRead).toContain("Rain Grip");
@@ -327,6 +327,7 @@ describe("buildRaceVerdict", () => {
     expect(verdict.stance.key).toBe("recap_verdict_stance");
     expect(verdict.cause.key).toBe("recap_difference_event_1");
     expect(translateLine(verdict.cause, (key, params) => t(key, "en", params))).toContain("Rain Grip");
+    expect(translateLine(verdict.cause, (key, params) => t(key, "en", params))).toContain("Impact +2");
     expect(verdict.tryNext.key).toBe("recap_lesson_card_1");
   });
 

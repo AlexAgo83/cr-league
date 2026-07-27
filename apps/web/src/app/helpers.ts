@@ -222,7 +222,7 @@ function raceDominantCause(
         event: impactful.cardId ? tt(`card_${impactful.cardId}` as TranslationKey) : eventReplayText(impactful, names, tt),
         lap: displayLapForEvent(impactful, maxEventLap(result), circuitLaps),
         segment: tt(`segment_${impactful.segment}` as TranslationKey),
-        delta: positionDeltaText(impactful.positionDelta, tt)
+        delta: eventImpactText(impactful.positionDelta, tt)
       }
     };
   }
@@ -295,7 +295,7 @@ function recapDirective(
     }),
     tt(pickRecapKey(cardKey, variant), {
       card: decision.cardId ? tt(`card_${decision.cardId}` as TranslationKey) : "",
-      delta: positionDeltaText(cardEvents.reduce((total, event) => total + event.positionDelta, 0), tt)
+      delta: eventImpactText(cardEvents.reduce((total, event) => total + event.positionDelta, 0), tt)
     }),
     tt(pickRecapKey(approachKey, variant), {
       approach: tt(`approach_${decision.approach}` as TranslationKey),
@@ -422,6 +422,12 @@ function positionDeltaText(delta: number, tt: Translator) {
   if (delta > 0) return tt("recap_position_delta_gain", { delta });
   if (delta < 0) return tt("recap_position_delta_loss", { delta: Math.abs(delta) });
   return tt("recap_position_delta_hold");
+}
+
+function eventImpactText(delta: number, tt: Translator) {
+  if (delta > 0) return tt("recap_event_delta_gain", { delta });
+  if (delta < 0) return tt("recap_event_delta_loss", { delta: Math.abs(delta) });
+  return tt("recap_event_delta_hold");
 }
 
 function resultVariant(result: RaceResult) {

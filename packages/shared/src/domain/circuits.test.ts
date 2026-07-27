@@ -161,6 +161,24 @@ describe("circuit identities", () => {
     ]);
   });
 
+  it("keeps late extra circuit gameplay categories aligned with their themes", () => {
+    expect(Object.fromEntries([
+      "circuit_marrakech_heat_ring",
+      "circuit_lisbon_tramline",
+      "circuit_helsinki_icebreak",
+      "circuit_bastia_citadel_loop"
+    ].map((layoutKey) => {
+      const circuit = CITY_CIRCUIT_IDENTITIES.find((candidate) => candidate.layoutKey === layoutKey)!;
+      const input = raceInputFromCircuit(circuit);
+      return [layoutKey, [input.primaryTrait, input.secondaryTrait]];
+    }))).toEqual({
+      circuit_marrakech_heat_ring: ["high_wear", "technical"],
+      circuit_lisbon_tramline: ["technical", "urban"],
+      circuit_helsinki_icebreak: ["weather_sensitive", "technical"],
+      circuit_bastia_citadel_loop: ["technical", "urban"]
+    });
+  });
+
   it("derives required track zones for every circuit", () => {
     for (const circuit of CITY_CIRCUIT_IDENTITIES) {
       const zones = trackZonesForCircuit(circuit);

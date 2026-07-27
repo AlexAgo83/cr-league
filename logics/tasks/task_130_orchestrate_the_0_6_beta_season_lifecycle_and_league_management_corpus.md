@@ -41,12 +41,12 @@
 - Season economy: preserve players, palmares, archived stats, and cosmetic/team identity; reset cards and credits in the first pass; defer capped credit carry-over unless beta says reset is too dry.
 - Manual reminders: route through one owner-only API mutation, target pending human players only, return sent/skipped counts, store `reminderSentAt`, `reminderSentBy`, `reminderSeasonNumber`, `sentCount`, and `skippedCount`, and enforce a one-send-per-season cap in the API only after at least one email is sent.
 - Commissioner authority: authorize in API transactions, not only in UI visibility. Commissioner means league creator only for 0.6.
-- Commissioner UX: build a polished game-native management surface, not a generic SaaS table. Current GP state, readiness groups, invite/share, reminders, and resolve actions should be visually organized around race operations.
+- Commissioner UX: expose a creator-only `Direction de course` entry inside the existing league context. Build a polished game-native management surface, not a generic SaaS table. Current GP state, readiness groups, invite/share, `Relancer les retardataires`, and resolve actions should be visually organized around race operations. On mobile, use stacked sections unless an existing sticky action pattern is already available.
 - Accessibility: make local, testable repairs; do not redesign except contrast.
 - Rival: derive from nearest meaningful standings proximity, human or bot; use no-rival fallback for first race or ambiguous data; tie-break equal candidates by standings proximity, points gap, then stable team id.
-- Card guidance: use `Useful here`, `Situational`, and `Low impact`; reconcile with the existing `card_fit_recommended` / "Affinité haute" signal so the UI has one coherent advice system; avoid "best card" language, full rankings, hidden scoring explanations, and auto-pick.
-- Variable shop: default off, creation-time option, deterministic frozen 6-card GP rotation, fixed shop remains baseline.
-- Team profile: build an in-league profile from existing team/profile/stat data first; only expose safe existing name and livery/color edits; defer uploads, public internet pages, bios, and large cosmetic systems.
+- Card guidance: use `Utile ici`, `Situationnel`, and `Impact faible`; replace or map the existing `card_fit_recommended` / "Affinité haute" signal so the UI has one coherent advice system; avoid "best card" language, full rankings, hidden scoring explanations, numeric scores, and auto-pick.
+- Variable shop: default off, advanced creation-time option labeled `Boutique variable à chaque GP`, deterministic frozen 6-card GP rotation, fixed shop remains baseline.
+- Team profile: build an in-league profile from existing team/profile/stat data first, opened from standings and player/team cards; only expose safe existing name and livery/color edits; defer uploads, public internet pages, bios, and large cosmetic systems.
 - Race engineer: defer until card guidance is observed; if pulled in, use deterministic `Safe points`, `Attack`, and `Weather read` profiles, no auto-submit, no generative dependency.
 - Deferred modes: keep objectives, arcade solo, quick play, onboarding rewrite, compact replay, automatic reminders, polling/SSE, and 1.0 hardening out unless scope changes.
 

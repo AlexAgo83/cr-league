@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 94
+> Confidence: 95
 > Progress: 0%
 > Complexity: Medium
 > Theme: Team identity
@@ -18,6 +18,7 @@
 # Scope
 - In:
   - Add an in-league public team profile view or panel.
+  - Open the team profile from standings rows and player/team cards.
   - Show team name, livery/car identity, championship position, current season stats, palmares, recent form, current rival, and preferred/derived style when derivable.
   - Allow only lightweight customization that fits existing data boundaries: team name and livery/color if already supported cleanly.
   - Keep unsafe user content sanitized.
@@ -34,11 +35,12 @@
 - AC3: The profile page exposes season stats and palmares without extra manual entry.
 - AC4: The first profile version is visible only inside the league and does not create public internet profile URLs.
 - AC5: The first editable profile fields are limited to existing safe team name and livery/color support.
-- AC6: Tests cover profile rendering and unsafe customization input.
+- AC6: The profile is reachable from standings and player/team cards without creating public internet profile URLs.
+- AC7: Tests cover profile rendering and unsafe customization input.
 
 # AC Traceability
 - request-AC8 -> This backlog slice. Proof: AC1: Every team in a league has an inspectable profile using existing or minimally extended team data.
-- request-AC13 -> This backlog slice. Proof: AC6: Tests cover profile rendering and unsafe customization input.
+- request-AC13 -> This backlog slice. Proof: AC7: Tests cover profile rendering and unsafe customization input.
 
 # Decision framing
 - Product framing: Not needed

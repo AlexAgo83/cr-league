@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 94
+> Confidence: 95
 > Progress: 0%
 > Complexity: High
 > Theme: Season lifecycle
@@ -21,7 +21,7 @@
   - Make season completion and next-season/restart behavior explicit in API state and UI state.
   - Keep commissioner-controlled resolution as the default cadence; when all plans are ready the resolve action becomes available, but the app does not auto-resolve.
   - For absent players, expose the neutral default plan before resolution and record default-plan use in the race report. The 0.6 default is balanced setup, no card, and medium strategy.
-  - Require an explicit commissioner action to start the next season after champion/podium/palmares state is visible.
+  - Require an explicit commissioner action to start the next season after champion/podium/palmares state is visible in a `Saison terminée` state.
   - On next-season/restart, preserve league players, palmares, archived season stats, and cosmetic/team identity while resetting cards and credits.
   - Update playtest/checklist docs so another operator can run a full beta season from a clean league.
 - Out:
@@ -35,7 +35,7 @@
 - AC2: A league can complete a full season and expose champion/podium/season-end state without database edits.
 - AC3: The app never auto-resolves a GP; commissioner-controlled resolve is available when all plans are ready.
 - AC4: Commissioner-controlled resolve-with-defaults shows the neutral absent-player default before resolution and marks default-plan teams in the report.
-- AC5: The next season starts only after an explicit commissioner action, preserving champion/podium/palmares review before rollover.
+- AC5: The next season starts only after a creator-only `Lancer la saison suivante` action from a `Saison terminée` state, preserving champion/podium/palmares review before rollover.
 - AC6: Starting the next season or restarting the season preserves players, palmares, archived season stats, and cosmetic/team identity while resetting cards and credits.
 - AC7: API and web tests cover season presets, season completion, manual resolution, absent-player defaults, and restart/next-season behavior.
 

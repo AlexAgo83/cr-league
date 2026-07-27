@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 94
+> Confidence: 95
 > Progress: 0%
 > Complexity: Medium
 > Theme: Shop variety
@@ -17,7 +17,7 @@
 
 # Scope
 - In:
-  - Add a league-creation option for variable shop mode, default off.
+  - Add an advanced league-creation option labeled `Boutique variable à chaque GP`, default off.
   - When enabled, expose a deterministic 6-card shop selection per GP and freeze that GP selection for history/reports.
   - Show the mode clearly to players and keep reports/tests aware of the shop model.
   - Keep the fixed shop unchanged for existing/default leagues.
@@ -31,7 +31,7 @@
 - AC1: Existing/default leagues keep the fixed shop behavior.
 - AC2: New leagues can opt into variable shop mode at creation.
 - AC3: Variable shop contents are deterministic from league/season/round data, change every GP, show exactly 6 cards, are frozen for historical GP state, and are testable.
-- AC4: UI copy makes the mode understandable before league creation is confirmed.
+- AC4: UI copy labels the option `Boutique variable à chaque GP` and explains that it changes available cards between races before league creation is confirmed.
 
 # AC Traceability
 - request-AC9 -> This backlog slice. Proof: AC1: Existing/default leagues keep the fixed shop behavior.

@@ -706,6 +706,17 @@
   outline-offset: 2px;
 }
 
+:is(.championship-view, .garage-grid, .report-view, .plan-view, .setup-form-panel) :is(.secondary-button, .secondary-actions button:not(.modal-action-command)):not(:disabled) {
+  background: rgb(23 21 26 / 0.04);
+  border-color: rgb(23 21 26 / 0.24);
+  color: var(--color-ink);
+}
+
+:is(.championship-view, .garage-grid, .report-view, .plan-view, .setup-form-panel) :is(.secondary-button, .secondary-actions button:not(.modal-action-command)):not(:disabled):is(:hover, :focus-visible) {
+  background: rgb(197 58 0 / 0.1);
+  border-color: rgb(197 58 0 / 0.48);
+  color: var(--color-ink);
+}
 
 .championship-view .card-info-badge,
 .garage-grid .card-info-badge,

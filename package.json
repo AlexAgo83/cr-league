@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": ">=20"
+    "node": "^20.19.0 || >=22.12.0"
   },
   "workspaces": [
     "apps/*",
@@ -60,7 +60,7 @@
     "@grifhinz/logics-manager": "^2.19.1",
     "@playwright/test": "^1.61.1",
     "@types/node": "^24.12.0",
-    "@vitejs/plugin-react": "^5.1.0",
+    "@vitejs/plugin-react": "^6.0.4",
     "@vitest/coverage-v8": "^4.1.10",
     "axe-core": "^4.12.1",
     "eslint": "^9.39.4",
@@ -72,7 +72,7 @@
     "tsx": "^4.20.6",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.0",
-    "vite": "^7.2.0",
+    "vite": "^8.1.5",
     "vitest": "^4.0.8"
   }
 }

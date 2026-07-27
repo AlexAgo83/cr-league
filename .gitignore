@@ -9,7 +9,6 @@ test-results/
 reports/*
 !reports/playtest/
 reports/playtest/*
-!reports/playtest/2026-07-19-20-player-simulation.md
 coverage/
 .env
 *.tsbuildinfo

@@ -24,8 +24,8 @@ export const COUNTRY_REGION: Record<string, CircuitRegion> = {
   BE: "europe", CZ: "europe", DK: "europe", SE: "europe", TR: "europe", GR: "europe", HU: "europe", FI: "europe", MT: "europe", IS: "europe",
   US: "americas", CA: "americas", BR: "americas", AR: "americas", MX: "americas",
   JP: "asia", KR: "asia", SG: "asia", HK: "asia", CN: "asia", AE: "asia",
-  ZA: "africa", MA: "africa",
-  AU: "oceania"
+  ZA: "africa", MA: "africa", EG: "africa", KE: "africa", RW: "africa", SN: "africa", TN: "africa", GH: "africa", ET: "africa", NG: "africa", MZ: "africa",
+  AU: "oceania", NZ: "oceania"
 };
 const RECORD_TAB_ICONS: Record<ChampionshipRecordTab, BoardIconName> = {
   calendar: "circuits",

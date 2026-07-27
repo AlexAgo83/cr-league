@@ -220,6 +220,30 @@ Accepted 2026-07-27 batch:
 
 Bastia needed the major-road graph around south Bastia/Furiani; the old-city center candidates did not produce a valid closed route.
 
+## Africa and Oceania Circuit Wave
+
+Accepted 2026-07-27 batch:
+
+| Layout | City | Region | Length | Laps |
+| --- | --- | --- | ---: | ---: |
+| `circuit_auckland_viaduct_loop` | Auckland | Oceania | 5700m | 9 |
+| `circuit_wellington_waterfront_wind` | Wellington | Oceania | 4437m | 11 |
+| `circuit_melbourne_docklands_gp` | Melbourne | Oceania | 5104m | 10 |
+| `circuit_brisbane_river_city` | Brisbane | Oceania | 4853m | 10 |
+| `circuit_perth_swan_river_loop` | Perth | Oceania | 5731m | 9 |
+| `circuit_cairo_nile_corniche` | Cairo | Africa | 5513m | 9 |
+| `circuit_nairobi_uhuru_ring` | Nairobi | Africa | 7910m | 6 |
+| `circuit_kigali_hillside_technical` | Kigali | Africa | 4916m | 10 |
+| `circuit_dakar_corniche_ouest` | Dakar | Africa | 7811m | 6 |
+| `circuit_tunis_carthage_coast` | Tunis | Africa | 5177m | 10 |
+| `circuit_casablanca_atlantic_boulevard` | Casablanca | Africa | 5282m | 10 |
+| `circuit_accra_independence_avenue` | Accra | Africa | 5457m | 9 |
+| `circuit_addis_ababa_meskel_square` | Addis Ababa | Africa | 4987m | 10 |
+| `circuit_lagos_victoria_island` | Lagos | Africa | 5142m | 10 |
+| `circuit_maputo_baixa_waterfront` | Maputo | Africa | 5042m | 10 |
+
+Melbourne, Perth, Kigali, Addis Ababa, and Lagos needed smaller or complete street graphs after broad Overpass attempts timed out. Tunis accepted a city-center route, so the visible name is `Tunis Avenue Sprint` rather than a Carthage coast label.
+
 ## Manual Review
 
 After generation, visually inspect the route in the Circuits screen.

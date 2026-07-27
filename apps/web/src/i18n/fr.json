@@ -869,5 +869,20 @@
   "circuit_seoul_overpass_gp": "GP des échangeurs de Séoul",
   "circuit_buenos_aires_park": "Circuit parc de Buenos Aires",
   "circuit_helsinki_icebreak": "Circuit brise-glace d'Helsinki",
-  "circuit_bastia_citadel_loop": "Boucle citadelle de Bastia"
+  "circuit_bastia_citadel_loop": "Boucle citadelle de Bastia",
+  "circuit_auckland_viaduct_loop": "Boucle Viaduct Harbour d'Auckland",
+  "circuit_wellington_waterfront_wind": "Sprint vent du front de mer de Wellington",
+  "circuit_melbourne_docklands_gp": "GP urbain des Docklands de Melbourne",
+  "circuit_brisbane_river_city": "Circuit River City de Brisbane",
+  "circuit_perth_swan_river_loop": "Boucle Swan River de Perth",
+  "circuit_cairo_nile_corniche": "GP de la corniche du Nil au Caire",
+  "circuit_nairobi_uhuru_ring": "Anneau Uhuru Park de Nairobi",
+  "circuit_kigali_hillside_technical": "Boucle technique des collines de Kigali",
+  "circuit_dakar_corniche_ouest": "Sprint Corniche Ouest de Dakar",
+  "circuit_tunis_carthage_coast": "Sprint avenue de Tunis",
+  "circuit_casablanca_atlantic_boulevard": "Boucle boulevard Atlantique de Casablanca",
+  "circuit_accra_independence_avenue": "GP Independence Avenue d'Accra",
+  "circuit_addis_ababa_meskel_square": "Circuit Meskel Square d'Addis-Abeba",
+  "circuit_lagos_victoria_island": "Sprint Victoria Island de Lagos",
+  "circuit_maputo_baixa_waterfront": "Boucle waterfront Baixa de Maputo"
 }

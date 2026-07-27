@@ -179,6 +179,28 @@ describe("circuit identities", () => {
     });
   });
 
+  it("keeps Africa and Oceania expansion categories aligned with their themes", () => {
+    expect(Object.fromEntries([
+      "circuit_cairo_nile_corniche",
+      "circuit_nairobi_uhuru_ring",
+      "circuit_kigali_hillside_technical",
+      "circuit_addis_ababa_meskel_square",
+      "circuit_lagos_victoria_island",
+      "circuit_wellington_waterfront_wind"
+    ].map((layoutKey) => {
+      const circuit = CITY_CIRCUIT_IDENTITIES.find((candidate) => candidate.layoutKey === layoutKey)!;
+      const input = raceInputFromCircuit(circuit);
+      return [layoutKey, [input.primaryTrait, input.secondaryTrait]];
+    }))).toEqual({
+      circuit_cairo_nile_corniche: ["high_wear", "fast"],
+      circuit_nairobi_uhuru_ring: ["high_wear", "technical"],
+      circuit_kigali_hillside_technical: ["weather_sensitive", "technical"],
+      circuit_addis_ababa_meskel_square: ["high_wear", "technical"],
+      circuit_lagos_victoria_island: ["weather_sensitive", "fast"],
+      circuit_wellington_waterfront_wind: ["weather_sensitive", "fast"]
+    });
+  });
+
   it("derives required track zones for every circuit", () => {
     for (const circuit of CITY_CIRCUIT_IDENTITIES) {
       const zones = trackZonesForCircuit(circuit);

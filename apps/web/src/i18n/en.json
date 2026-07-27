@@ -869,5 +869,20 @@
   "circuit_seoul_overpass_gp": "Seoul Overpass GP",
   "circuit_buenos_aires_park": "Buenos Aires Park Circuit",
   "circuit_helsinki_icebreak": "Helsinki Icebreak Circuit",
-  "circuit_bastia_citadel_loop": "Bastia Citadel Loop"
+  "circuit_bastia_citadel_loop": "Bastia Citadel Loop",
+  "circuit_auckland_viaduct_loop": "Auckland Viaduct Harbour Loop",
+  "circuit_wellington_waterfront_wind": "Wellington Waterfront Wind Sprint",
+  "circuit_melbourne_docklands_gp": "Melbourne Docklands Street GP",
+  "circuit_brisbane_river_city": "Brisbane River City Circuit",
+  "circuit_perth_swan_river_loop": "Perth Swan River Loop",
+  "circuit_cairo_nile_corniche": "Cairo Nile Corniche GP",
+  "circuit_nairobi_uhuru_ring": "Nairobi Uhuru Park Ring",
+  "circuit_kigali_hillside_technical": "Kigali Hillside Technical Loop",
+  "circuit_dakar_corniche_ouest": "Dakar Corniche Ouest Sprint",
+  "circuit_tunis_carthage_coast": "Tunis Avenue Sprint",
+  "circuit_casablanca_atlantic_boulevard": "Casablanca Atlantic Boulevard Loop",
+  "circuit_accra_independence_avenue": "Accra Independence Avenue GP",
+  "circuit_addis_ababa_meskel_square": "Addis Ababa Meskel Square Circuit",
+  "circuit_lagos_victoria_island": "Lagos Victoria Island Sprint",
+  "circuit_maputo_baixa_waterfront": "Maputo Baixa Waterfront Loop"
 }

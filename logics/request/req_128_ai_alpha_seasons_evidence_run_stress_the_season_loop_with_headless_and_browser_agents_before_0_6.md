@@ -1,9 +1,9 @@
 ## req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6 - AI alpha seasons evidence run: stress the season loop with headless and browser agents before 0.6
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 95%
+> Confidence: 90%
 > Complexity: Medium
 > Theme: Alpha evidence
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -69,3 +69,19 @@
 - `item_321_run_the_headless_ai_alpha_season_campaign`
 - `item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start`
 - `item_323_write_the_alpha_seasons_decision_package`
+
+# Report
+- Completed on 2026-07-27 through `task_129_orchestrate_the_ai_alpha_seasons_evidence_run`.
+- Decision package: `docs/audits/ai-alpha-seasons-decision-2026-07-27.md`.
+- Outcome: proceed to the 0.6 beta-season lifecycle corpus.
+- Evidence paths:
+  - `reports/playtest/alpha-seasons/headless-ai-playtest.md`
+  - `reports/playtest/alpha-seasons/headless-ai-playtest.json`
+  - `reports/playtest/alpha-seasons/replayability.md`
+  - `reports/playtest/alpha-seasons/replayability.json`
+  - `reports/playtest/alpha-seasons/balance-gate.txt`
+  - `reports/playtest/alpha-seasons/browser-fun-score.md`
+  - `reports/playtest/alpha-seasons/browser-ux-smoke.md`
+  - `reports/playtest/alpha-seasons/browser-playthrough.md`
+  - `reports/playtest/alpha-seasons/cold-start-funnel.md`
+- No gameplay, economy, simulation, UI, or infrastructure code was changed for this evidence run.

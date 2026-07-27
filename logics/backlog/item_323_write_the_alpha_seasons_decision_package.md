@@ -1,10 +1,10 @@
 ## item_323_write_the_alpha_seasons_decision_package - Write the alpha seasons decision package
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: Done
+> Understanding: 95%
+> Confidence: 90%
+> Progress: 100%
 > Complexity: Low
 > Theme: Alpha decision
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -52,3 +52,12 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Report
+- Completed on 2026-07-27.
+- Decision package: `docs/audits/ai-alpha-seasons-decision-2026-07-27.md`.
+- Recommended next move: proceed to the 0.6 beta-season lifecycle corpus.
+- Rejected alternatives:
+  - Narrow 0.5 economy/card follow-up: rejected as the immediate next corpus because replayability dominance stayed under threshold and balance gate passed.
+  - UX/friction follow-up: rejected as the immediate next corpus because browser traversal, scenarios, and cold-start passed; carry accessibility debt as a 0.6 gate.
+  - Stability bugfix: rejected because all evidence commands exited 0 and produced reports.

@@ -1,10 +1,10 @@
 ## item_321_run_the_headless_ai_alpha_season_campaign - Run the headless AI alpha season campaign
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: Done
+> Understanding: 95%
+> Confidence: 90%
+> Progress: 100%
 > Complexity: Low
 > Theme: Headless alpha evidence
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -53,3 +53,18 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Report
+- Completed on 2026-07-27.
+- Commands:
+  - `npx tsx scripts/ai-playtest.ts --agents 84 --seasons 6 --rounds 6 --league-size 6 --report reports/playtest/alpha-seasons/headless-ai-playtest.md --json reports/playtest/alpha-seasons/headless-ai-playtest.json`
+  - `npx tsx scripts/replayability-analytics.ts --seasons 24 --rounds 6 --agents 14 --report reports/playtest/alpha-seasons/replayability.md --json reports/playtest/alpha-seasons/replayability.json`
+  - `npm run balance:gate`
+- Evidence:
+  - `reports/playtest/alpha-seasons/headless-ai-playtest.md`
+  - `reports/playtest/alpha-seasons/headless-ai-playtest.json`
+  - `reports/playtest/alpha-seasons/replayability.md`
+  - `reports/playtest/alpha-seasons/replayability.json`
+  - `reports/playtest/alpha-seasons/balance-gate.txt`
+- Headline result: no stability or balance-gate blocker for 0.6. Replayability shows 99.31% unique finishing orders, 96.53% comeback race rate, 0% boring races, and title lock average round 5.75.
+- Watchpoint: profile-level dominance remains visible in the headless campaign (`sprinter` 63.43% win rate, `all-in-attack` 41.67%), but replayability clusters stay under the 25% dominance threshold.

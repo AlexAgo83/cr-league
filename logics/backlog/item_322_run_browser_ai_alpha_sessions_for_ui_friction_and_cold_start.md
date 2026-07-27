@@ -1,10 +1,10 @@
 ## item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start - Run browser AI alpha sessions for UI friction and cold start
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: Done
+> Understanding: 95%
+> Confidence: 90%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Browser alpha evidence
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -53,3 +53,19 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Report
+- Completed on 2026-07-27 with Playwright Chromium.
+- Commands:
+  - `npx tsx scripts/browser-fun-score.ts --rounds 2 --profiles sprinter,rain-reader,banker,closer --report reports/playtest/alpha-seasons/browser-fun-score.md --runs-dir reports/playtest/alpha-seasons/browser-fun-score-runs`
+  - `npx tsx scripts/browser-playtest.ts --rounds 2 --profile sprinter --report reports/playtest/alpha-seasons/browser-ux-smoke.md --ux-report reports/playtest/alpha-seasons/browser-playthrough.md --ux-assets reports/playtest/alpha-seasons/browser-playthrough-assets`
+  - `npx tsx scripts/browser-playtest.ts --rounds 1 --profile sprinter --report reports/playtest/alpha-seasons/browser-cold-start-smoke.md --cold-start-report reports/playtest/alpha-seasons/cold-start-funnel.md`
+- Evidence:
+  - `reports/playtest/alpha-seasons/browser-fun-score.md`
+  - `reports/playtest/alpha-seasons/browser-fun-score-runs/`
+  - `reports/playtest/alpha-seasons/browser-ux-smoke.md`
+  - `reports/playtest/alpha-seasons/browser-playthrough.md`
+  - `reports/playtest/alpha-seasons/browser-playthrough-assets/`
+  - `reports/playtest/alpha-seasons/cold-start-funnel.md`
+- Classification: acceptable for alpha and 0.6 entry, with UX follow-up gates inside 0.6 rather than a blocking detour.
+- Findings: all core scenario checks pass, cold-start reaches first purchase, no console/UI failures were reported. Watchpoints are low banker fun in browser score and accessibility issues in the UX report: critical unnamed button, contrast, page heading, prohibited ARIA, and small mobile tap targets.

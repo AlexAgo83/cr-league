@@ -202,6 +202,26 @@
   --record-hero-image: url("/assets/crl/track-briefing.webp");
 }
 
+.championship-view .record-panel-standings,
+.championship-view .record-panel-palmares,
+.championship-view .record-panel-history {
+  --color-text: #f8f3e8;
+  --color-muted: rgb(248 243 232 / 0.72);
+  --color-border: rgb(248 243 232 / 0.14);
+  --color-cockpit: #16121a;
+  background: linear-gradient(180deg, #17151a, #070609);
+  color: #f8f3e8;
+}
+
+.championship-view .record-panel-standings .championship-record-header,
+.championship-view .record-panel-palmares .championship-record-header,
+.championship-view .record-panel-history .championship-record-header {
+  background:
+    linear-gradient(to bottom, rgb(7 6 9 / 0.2), rgb(7 6 9 / 0.92)),
+    linear-gradient(90deg, rgb(16 14 18 / 0.86), rgb(16 14 18 / 0.42)),
+    var(--record-hero-image) center / cover no-repeat;
+}
+
 .championship-record-switch,
 .garage-card-toggle {
   background: transparent;
@@ -220,6 +240,54 @@
   list-style: none;
   margin: 0;
   padding: 0;
+}
+
+.championship-view .record-panel-standings .standings-table li,
+.championship-view .record-panel-palmares .palmares-button,
+.championship-view .record-panel-history .season-history-group {
+  background:
+    linear-gradient(90deg, rgb(255 77 0 / 0.18), transparent 46%),
+    rgb(248 243 232 / 0.055);
+  border-color: rgb(248 243 232 / 0.16);
+  box-shadow:
+    inset 0 1px 0 rgb(248 243 232 / 0.08),
+    0 1px 0 rgb(0 0 0 / 0.35);
+  color: #f8f3e8;
+}
+
+.championship-view .record-panel-standings .standings-table li.current-team,
+.championship-view .record-panel-palmares .palmares-button:hover,
+.championship-view .record-panel-palmares .palmares-button:focus-visible,
+.championship-view .record-panel-history .season-history-group[open] {
+  background:
+    linear-gradient(90deg, rgb(255 77 0 / 0.32), transparent 54%),
+    rgb(255 77 0 / 0.08);
+  border-color: rgb(255 138 61 / 0.42);
+}
+
+.championship-view .record-panel-standings .standings-team small,
+.championship-view .record-panel-standings .standings-score small,
+.championship-view .record-panel-palmares .standings-team small,
+.championship-view .record-panel-palmares .palmares-gp-count,
+.championship-view .record-panel-history .round-timeline small {
+  color: rgb(248 243 232 / 0.7);
+}
+
+.championship-view .record-panel-history .round-chip {
+  background: rgb(248 243 232 / 0.06);
+  border-color: rgb(248 243 232 / 0.18);
+  color: #f8f3e8;
+}
+
+.championship-view .record-panel-history .round-chip.status-resolved {
+  border-color: rgb(255 138 61 / 0.42);
+  color: #ff8a3d;
+}
+
+.championship-view .record-panel-history .round-chip.status-current {
+  background: rgb(255 77 0 / 0.2);
+  border-color: rgb(255 138 61 / 0.52);
+  color: #ffd166;
 }
 
 .circuit-filter-bar {
@@ -695,18 +763,36 @@
   color: #7c5200;
 }
 
+.championship-view .record-panel-standings .standings-score .reward-points {
+  color: #ffd166;
+}
+
 .championship-view .standings-score .reward-points .reward-icon {
   background: rgb(124 82 0 / 0.12);
   border-color: rgb(124 82 0 / 0.28);
+}
+
+.championship-view .record-panel-standings .standings-score .reward-points .reward-icon {
+  background: rgb(255 209 102 / 0.14);
+  border-color: rgb(255 209 102 / 0.34);
 }
 
 .championship-view .standings-score .reward-credits {
   color: #075985;
 }
 
+.championship-view .record-panel-standings .standings-score .reward-credits {
+  color: #7dd3fc;
+}
+
 .championship-view .standings-score .reward-credits .reward-icon {
   background: rgb(7 89 133 / 0.1);
   border-color: rgb(7 89 133 / 0.26);
+}
+
+.championship-view .record-panel-standings .standings-score .reward-credits .reward-icon {
+  background: rgb(125 211 252 / 0.12);
+  border-color: rgb(125 211 252 / 0.3);
 }
 
 .palmares-list,

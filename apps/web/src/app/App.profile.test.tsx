@@ -2,7 +2,7 @@ import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/re
 import { APP_VERSION } from "@cr-league/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
-import { baseState, otherLeagueState, resolvedState } from "./App.testFixtures.js";
+import { baseState, resolvedState } from "./App.testFixtures.js";
 import { createLeagueFromSetup, expectGarageCode, response, saveProfile, withoutPlayer } from "./App.testHelpers.js";
 
 beforeEach(() => {
@@ -113,7 +113,7 @@ describe("App profile and admin", () => {
 
     expect(screen.getByRole("heading", { name: "What's new" })).toBeTruthy();
     expect(screen.getByText(`Current local version: v${APP_VERSION}.`)).toBeTruthy();
-    expect(screen.getByRole("heading", { name: "Navigation, admin operations, and circuit polish for CR League." })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: `CR League ${APP_VERSION}` })).toBeTruthy();
   });
 
   it("closes the profile menu when focus leaves it", async () => {
@@ -284,7 +284,7 @@ describe("App profile and admin", () => {
     expect(localStorage.getItem("cr-league-player-claims")).toContain("Office League");
   });
 
-  it("switches between saved league claims", async () => {
+  it("does not show the active league switcher in the profile menu", async () => {
     saveProfile();
     localStorage.setItem(
       "cr-league-player-claims",
@@ -308,29 +308,13 @@ describe("App profile and admin", () => {
       ])
     );
     localStorage.setItem("cr-league-active-player-claim", "team_1");
-    let resolveSwitch!: (value: Response) => void;
-    const pendingSwitch = new Promise<Response>((resolve) => {
-      resolveSwitch = resolve;
-    });
-    const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockReturnValueOnce(pendingSwitch);
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
 
     render(<App />);
 
     expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
-    fireEvent.change(screen.getByLabelText("Active league"), { target: { value: "team_3" } });
-    expect(document.querySelector(".profile-menu-panel .pending-feedback")?.textContent).toContain("Rejoining league...");
-    resolveSwitch(response(otherLeagueState));
-
-    await expectGarageCode("NIGHT1");
-    expect(localStorage.getItem("cr-league-active-player-claim")).toBe("team_3");
-    expect(fetch).toHaveBeenLastCalledWith(
-      "http://127.0.0.1:4874/leagues/rejoin",
-      expect.objectContaining({
-        method: "POST",
-        body: JSON.stringify({ teamId: "team_3", claimCode: "CLAIM456" })
-      })
-    );
+    expect(screen.queryByLabelText("Active league")).toBe(null);
   });
 
   it("opens league adding without dropping saved claims", async () => {
@@ -387,7 +371,7 @@ describe("App profile and admin", () => {
     render(<App />);
 
     expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
-    fireEvent.click(screen.getByRole("button", { name: "Office League" }));
+    fireEvent.click(screen.getByRole("button", { name: "CR League Office League" }));
 
     expect(screen.getByRole("heading", { name: "Stand" })).toBeTruthy();
     expect(screen.getByText("Saved leagues")).toBeTruthy();

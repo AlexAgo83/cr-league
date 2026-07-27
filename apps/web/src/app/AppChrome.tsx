@@ -4,7 +4,6 @@ import type { Locale, TranslationKey } from "../i18n/index.js";
 import { AssetImage } from "../features/AssetImage.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { BoardIcon, CountryBadge, type BoardIconName } from "../features/VisualIcon.js";
-import type { StoredPlayerClaim } from "./appStorage.js";
 import { GAME_VIEWS, type GameView } from "./types.js";
 import type { Translator } from "./helpers.js";
 import type { Notification } from "./useNotifications.js";
@@ -51,10 +50,7 @@ export function ProfileMenu({
   profileOpen,
   playerTeamName,
   pendingMessage,
-  savedClaims,
-  activeTeamId,
   showManageLeague = true,
-  showLeagueSwitch = true,
   hasLeague,
   isAdmin,
   hasRecoveryCode,
@@ -62,7 +58,6 @@ export function ProfileMenu({
   onChangeLocale,
   onToggleOpen,
   onClose,
-  onSwitchLeague,
   onAddLeague,
   onOpenLeagueControls,
   onOpenAdminConsole,
@@ -75,10 +70,7 @@ export function ProfileMenu({
   profileOpen: boolean;
   playerTeamName?: string;
   pendingMessage: string | null;
-  savedClaims: StoredPlayerClaim[];
-  activeTeamId: string;
   showManageLeague?: boolean;
-  showLeagueSwitch?: boolean;
   hasLeague: boolean;
   isAdmin: boolean;
   hasRecoveryCode: boolean;
@@ -86,7 +78,6 @@ export function ProfileMenu({
   onChangeLocale: (locale: Locale) => void;
   onToggleOpen: () => void;
   onClose: () => void;
-  onSwitchLeague: (teamId: string) => void;
   onAddLeague: () => void;
   onOpenLeagueControls: () => void;
   onOpenAdminConsole: () => void;
@@ -110,18 +101,6 @@ export function ProfileMenu({
       {profileOpen ? (
         <div className="profile-menu-panel">
           <PendingFeedback message={pendingMessage} />
-          {showLeagueSwitch && savedClaims.length > 1 ? (
-            <label>
-              {tt("profile_league_switch")}
-              <select value={activeTeamId} onChange={(event) => onSwitchLeague(event.target.value)}>
-                {savedClaims.map((claim) => (
-                  <option key={claim.teamId} value={claim.teamId}>
-                    {claim.leagueName} · {claim.teamName}
-                  </option>
-                ))}
-              </select>
-            </label>
-          ) : null}
           {showManageLeague ? (
             <button type="button" className="profile-menu-action" onClick={onAddLeague}>
               {tt("action_add_league")}

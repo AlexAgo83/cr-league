@@ -518,16 +518,13 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setProfileOpen(false);
   }
 
-  const profileMenu = (showManageLeague = true, showLeagueSwitch = true) => (
+  const profileMenu = (showManageLeague = true) => (
     <ProfileMenu
       locale={locale}
       profileOpen={profileOpen}
       playerTeamName={playerTeam?.name}
       pendingMessage={pendingMessage}
-      savedClaims={savedClaims}
-      activeTeamId={leagueState?.player?.teamId ?? ""}
       showManageLeague={showManageLeague}
-      showLeagueSwitch={showLeagueSwitch}
       hasLeague={Boolean(leagueState)}
       isAdmin={Boolean(profileSession?.admin)}
       hasRecoveryCode={Boolean(profileSession?.recoveryCode)}
@@ -535,7 +532,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       onChangeLocale={changeLocale}
       onToggleOpen={() => setProfileOpen((open) => !open)}
       onClose={() => setProfileOpen(false)}
-      onSwitchLeague={(teamId) => void switchLeague(teamId)}
       onAddLeague={addLeague}
       onOpenLeagueControls={() => {
         if (leagueState) {
@@ -571,7 +567,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   );
 
   const setupTopbar = (
-    <SetupTopbar hideWordmark profileMenu={profileSession ? profileMenu(false, false) : null} languageSwitcher={languageSwitcher} pendingMessage={pendingMessage} onHome={goHome} />
+    <SetupTopbar hideWordmark profileMenu={profileSession ? profileMenu(false) : null} languageSwitcher={languageSwitcher} pendingMessage={pendingMessage} onHome={goHome} />
   );
 
   const notificationStack = <NotificationStack notifications={notifications} tt={tt} onDismiss={dismissNotification} />;

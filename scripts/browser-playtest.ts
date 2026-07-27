@@ -1,4 +1,5 @@
 import { spawn, type ChildProcess } from "node:child_process";
+import { randomUUID } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
 import { setTimeout as delay } from "node:timers/promises";
 import { chromium, expect, type Browser, type Page } from "@playwright/test";
@@ -273,7 +274,7 @@ async function runColdStart() {
       await coldPage!.getByRole("button", { name: /Create league/ }).click();
       await coldPage!.getByRole("textbox", { name: "League" }).fill(`Naive UX ${Date.now()}`);
       await coldPage!.getByRole("textbox", { name: "Team" }).fill("Naive Team");
-      await coldPage!.getByLabel("GP per season").fill("2");
+      await coldPage!.getByLabel("GP per season").selectOption("3");
       await coldPage!.getByRole("button", { name: "Start league" }).click();
       await dismissBlockingModals(coldPage!);
       await expect(coldPage!.getByRole("button", { name: "Plan", exact: true })).toBeVisible();
@@ -329,7 +330,7 @@ async function coldStep(funnel: ColdStartStep[], goal: string, note: string, act
 async function seedProfile() {
   const prisma = new PrismaClient();
   try {
-    const email = `browser-playtest-${Date.now()}@example.test`;
+    const email = `browser-playtest-${Date.now()}-${randomUUID()}@example.test`;
     const created = await createProfile(prisma, { email });
     if (!created.sessionCredential) throw new Error("Profile seed did not return a session credential.");
     return { session: { profile: created.profile, sessionCredential: created.sessionCredential, teams: [] } };
@@ -346,7 +347,7 @@ async function recoverAndCreateLeague(page: Page) {
   await trackedClick(page, "setup", "create-league-choice", () => page.getByRole("button", { name: /Create league/ }).click());
   await page.getByRole("textbox", { name: "League" }).fill(`Browser Playtest ${Date.now()}`);
   await page.getByRole("textbox", { name: "Team" }).fill("Browser Sprinter");
-  await page.getByLabel("GP per season").fill(String(rounds));
+  await page.getByLabel("GP per season").selectOption(rounds <= 3 ? "3" : "6");
   countAction("setup", "fill setup form");
   const state = await waitForLeagueResponse(page, "POST", "/leagues", () => trackedClick(page, "setup", "start-league", () => page.getByRole("button", { name: "Start league" }).click()));
   await page.evaluate((leagueId) => {
@@ -497,7 +498,13 @@ async function scanMobile(page: Page) {
 async function runAxe(page: Page) {
   return page.evaluate(async () => {
     const result = await window.axe.run(document, { resultTypes: ["violations"] });
-    return result.violations.map((violation) => ({ id: violation.id, impact: violation.impact, nodes: violation.nodes.length, help: violation.help }));
+    return result.violations.map((violation) => ({
+      id: violation.id,
+      impact: violation.impact,
+      nodes: violation.nodes.length,
+      help: violation.help,
+      targets: violation.nodes.slice(0, 3).map((node) => node.target.join(" "))
+    }));
   });
 }
 
@@ -693,7 +700,10 @@ async function writeUxReport(input: { reports: RoundReport[]; failed: boolean; e
       "## Accessibility",
       `- Total axe violation groups: ${totalAxe}`,
       ...uxCaptures.flatMap((capture) =>
-        capture.axeViolations.map((violation) => `- ${capture.label}: ${violation.id} (${violation.impact ?? "unknown"}, ${violation.nodes} nodes) - ${violation.help}`)
+        capture.axeViolations.map((violation) => {
+          const targets = (violation as { targets?: string[] }).targets;
+          return `- ${capture.label}: ${violation.id} (${violation.impact ?? "unknown"}, ${violation.nodes} nodes) - ${violation.help}${targets?.length ? ` [${targets.join("; ")}]` : ""}`;
+        })
       ),
       "",
       "## Outcomes",

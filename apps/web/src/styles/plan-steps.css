@@ -69,6 +69,7 @@
 }
 
 .plan-step-label {
+  color: rgb(248 243 232 / 0.96);
   font-family: var(--font-display);
   font-size: 0.82rem;
   font-weight: 700;
@@ -101,11 +102,27 @@
 }
 
 .plan-step.active .plan-step-label {
-  color: var(--plan-step-accent);
+  color: rgb(248 243 232 / 0.96);
 }
 
 .plan-step.active .plan-step-value {
   color: var(--plan-step-accent);
+}
+
+.plan-view .plan-subscreen-tabs .plan-step-label,
+.plan-view .plan-subscreen-tabs .plan-step.active .plan-step-label {
+  color: rgb(248 243 232 / 0.96);
+}
+
+.plan-view .directive-plan-steps .plan-step-label,
+.plan-view .directive-plan-steps .plan-step.active .plan-step-label {
+  color: var(--color-ink);
+}
+
+.plan-view .primary-command,
+.plan-view .directive-primary-command {
+  background: #7c2400;
+  color: #fff8f0;
 }
 
 @media (max-width: 820px) {

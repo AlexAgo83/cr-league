@@ -182,7 +182,7 @@ export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = nu
   return (
     <header className="setup-topbar">
       {hideBrand ? null : (
-        <button type="button" className="brand brand-button" onClick={onHome}>
+        <button type="button" className="brand brand-button" aria-label={APP_NAME} onClick={onHome}>
           <span className="brand-icon-slot">
             <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.webp" alt="" loading="eager" />
             <BrandLoadingIndicator pendingMessage={pendingMessage} />
@@ -214,7 +214,7 @@ export function GameTopbar({
 }) {
   return (
     <header className="topbar">
-      <button type="button" className="brand brand-button" onClick={onHome}>
+      <button type="button" className="brand brand-button" aria-label={`${APP_NAME} ${leagueName}`} onClick={onHome}>
         <span className="brand-icon-slot">
           <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.webp" alt="" loading="eager" />
           <BrandLoadingIndicator pendingMessage={pendingMessage} />

@@ -2056,7 +2056,7 @@ label small {
 
 .plan-risk-summary strong,
 .plan-risk-summary em {
-  color: var(--plan-risk-accent, var(--color-accent));
+  color: var(--color-ink);
   font-family: var(--font-display);
   font-style: normal;
   font-weight: 800;
@@ -4267,14 +4267,14 @@ label small {
 }
 
 .replay-moment-notification small {
-  color: var(--color-muted);
+  color: rgb(248 243 232 / 0.92);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .replay-moment-notification .moment-impact {
-  color: var(--color-accent);
+  color: rgb(255 184 77);
   font-weight: 900;
   white-space: nowrap;
 }

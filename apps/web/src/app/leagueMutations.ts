@@ -6,7 +6,6 @@ import type { FormState, GameView, LeagueState } from "./types.js";
 export function createLeagueMutations({
   leagueState,
   playerTeam,
-  playerDecision,
   form,
   run,
   tt,
@@ -26,7 +25,6 @@ export function createLeagueMutations({
 }: {
   leagueState: LeagueState | null;
   playerTeam: LeagueState["teams"][number] | undefined;
-  playerDecision: LeagueState["decisions"][number] | undefined;
   form: FormState;
   run: (nextMessage: string, action: () => Promise<void>) => Promise<void>;
   tt: (key: TranslationKey) => string;

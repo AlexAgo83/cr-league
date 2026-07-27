@@ -215,6 +215,7 @@ export function AppShell({
   return (
     <main className={isMapScreen ? "app-shell game-shell map-screen" : "app-shell game-shell"}>
       <GameTopbar leagueName={leagueState.league.name} gameView={gameView} pendingMessage={pendingMessage} profileMenu={gameProfileMenu} tt={tt} onHome={goHome} onSelectView={selectGameView} />
+      <h1 className="visually-hidden">{leagueState.league.name}</h1>
 
       <section className="view-container">
         {adminInspecting ? (

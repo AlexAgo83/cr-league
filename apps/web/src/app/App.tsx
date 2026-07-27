@@ -237,7 +237,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const race = useRaceDerivations({ leagueState, adminInspecting, form, qualifyingResult, historyReplay, resultOpen, status, tt });
   const {
     playerTeam,
-    playerDecision,
     lastQualifyingRun,
     qualifyingAttemptsUsed,
     qualifyingAttemptLimit,
@@ -260,7 +259,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, buyCarAsset, updateLivery, updateTeamName, restartLeague: restartLeagueState, sendPlanReminders } = createLeagueMutations({
     leagueState,
     playerTeam,
-    playerDecision,
     form,
     run,
     tt,

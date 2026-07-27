@@ -1,10 +1,10 @@
 ## item_326_close_the_beta_accessibility_gate_without_redesigning_the_app - Close the beta accessibility gate without redesigning the app
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In Progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 85%
 > Complexity: Medium
 > Theme: Accessibility
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -29,6 +29,19 @@
 - AC2: Contrast fixes pass the automated gate without changing the visual identity broadly.
 - AC3: Tap target fixes do not create mobile overflow.
 - AC4: Browser UX and cold-start reports are regenerated and linked from the task closeout.
+
+# Implementation Notes
+- 2026-07-27: Fixed the browser playtest harness for the new 3/6 GP preset select and made seeded profile emails collision-proof for rapid reruns.
+- 2026-07-27: Added axe target details to the UX report so accessibility failures are actionable.
+- 2026-07-27: Added accessible names to brand/home buttons and removed prohibited ARIA from decorative country badges.
+- 2026-07-27: Added a hidden app-level H1 in the connected game shell.
+- 2026-07-27: Fixed contrast issues on plan directive tabs, primary plan actions, race-risk summary, championship pagination/count labels, and report/replay moment text.
+- Evidence: `rtk npm run playtest:ux` -> PASS; `reports/ux/browser-playthrough.md` reports `Total axe violation groups: 0`.
+- Evidence: `rtk npm run playtest:ux:cold-start` -> PASS; `reports/ux/cold-start-funnel.md` reaches `make first purchase`.
+
+# Remaining Work
+- Review mobile small tap-target counts after the next UI pass; current harness reports no body overflow and no critical axe issues, but some compact replay controls remain under 44px.
+- Keep the regenerated browser screenshots under `reports/ux/browser-playthrough/` as the visual evidence for this pass.
 
 # AC Traceability
 - request-AC4 -> This backlog slice. Proof: AC1: UX harness no longer reports critical button-name issues on the beta-critical flow.

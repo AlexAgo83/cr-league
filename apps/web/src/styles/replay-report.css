@@ -288,11 +288,20 @@ button.command-icon-button {
   background: rgb(255 77 0 / 0.1);
   border: 1px solid rgb(255 77 0 / 0.18);
   border-radius: 5px;
-  color: var(--color-telemetry);
+  color: rgb(255 184 77);
   font-size: 0.62rem;
   font-weight: 900;
   padding: 1px 4px;
   white-space: nowrap;
+}
+
+.report-view .report-key-moments .lap-marker {
+  color: #7c2400;
+}
+
+.report-view .report-key-moments p,
+.report-view .report-key-moments small {
+  color: var(--color-ink);
 }
 
 .report-hero {

@@ -190,7 +190,7 @@ export function VisualIcon({ name }: { name: VisualIconName }) {
 export function CountryBadge({ country }: { country: string }) {
   const code = country.slice(0, 2).toLowerCase();
   return (
-    <span className="country-badge" aria-label={country.toUpperCase()}>
+    <span className="country-badge" aria-hidden="true">
       <AssetImage className="country-flag" src={`/assets/flags/${code}.svg`} alt="" />
     </span>
   );

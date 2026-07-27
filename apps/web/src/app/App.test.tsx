@@ -225,7 +225,7 @@ describe("App", () => {
     setDocumentVisibility("visible");
     document.dispatchEvent(new Event("visibilitychange"));
 
-    await screen.findByText("Office League Fresh");
+    expect((await screen.findAllByText("Office League Fresh")).length).toBeGreaterThan(0);
     expect(fetch).toHaveBeenCalledTimes(2);
     expect(fetch).toHaveBeenLastCalledWith(
       "http://127.0.0.1:4874/leagues/rejoin",

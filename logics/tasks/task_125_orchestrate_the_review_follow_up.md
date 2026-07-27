@@ -1,10 +1,10 @@
 ## task_125_orchestrate_the_review_follow_up - Orchestrate the review follow-up
 > From version: 0.5.0
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: In progress
+> Understanding: 95
+> Confidence: 90
+> Progress: 25%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -46,9 +46,11 @@
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- 2026-07-27 wave 1 validation: package.json script coverage check reported 43 scripts and all scripts covered; package.json unchanged; npm run logics:validate OK with existing warnings.
 
 # Report
 - Implementation complete.
+- 2026-07-27 wave 1 complete: added CONTRIBUTING.md Scripts section to distinguish merge gate, release/pre-release checks, local maintenance commands, and on-demand diagnostics/generators without modifying package.json scripts.
 
 # AI Context
 - Summary: Orchestrate the review follow-up

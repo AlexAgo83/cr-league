@@ -1,10 +1,10 @@
 ## item_310_document_the_release_gate_and_diagnostic_script_split - Document the release gate and diagnostic script split
 > From version: 0.5.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Contributor documentation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -54,3 +54,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-27 validation: CONTRIBUTING.md now has a Scripts section naming the merge gate, release/pre-release checks, local maintenance commands, and on-demand diagnostic/generator prefixes. A package.json script coverage check reported scripts=43 and all scripts covered. package.json was not modified. npm run logics:validate OK with existing non-blocking warnings.

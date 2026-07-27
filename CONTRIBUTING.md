@@ -63,6 +63,30 @@ For docs-only changes, at minimum run:
 npm run logics:validate
 ```
 
+## Scripts
+
+Merge gate for ordinary code changes:
+
+```bash
+npm run typecheck
+npm run lint
+npm test
+npm run build
+npm run logics:validate
+```
+
+Release-only or pre-release checks are heavier and run when preparing a release
+or validating a risky UI/runtime change: `npm run test:coverage`,
+`npm run test:e2e`, plus the immutable release workflow described in
+`docs/release-contract.md`.
+
+Local development and maintenance scripts are not merge gates: `npm run dev`,
+`dev:stop`, `dev:api`, `dev:web`, `clean`, and `db:*`.
+
+The remaining scripts are on-demand diagnostics or generators. This covers
+`smoke:*`, `playtest:*`, `copy:audit`, `perf:*`, `replay:*`, `balance:*`,
+`generate:*`, `import:*`, `audit:*`, and `review:*`.
+
 ## Documentation Expectations
 
 Update documentation when a change affects:

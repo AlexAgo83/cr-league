@@ -193,11 +193,11 @@
 
 .garage-panel-inventory .card-inventory-button,
 .garage-panel-shop .card-shop button {
-  background: linear-gradient(90deg, #17151a, #1d1a20);
-  border-color: rgb(248 243 232 / 0.14);
+  background: linear-gradient(90deg, rgb(236 231 218 / 0.94), rgb(236 231 218 / 0.78));
+  border-color: rgb(23 21 26 / 0.16);
   border-left: 6px solid var(--garage-card-accent);
   clip-path: polygon(0 0, calc(100% - 16px) 0, 100% 16px, 100% 100%, 16px 100%, 0 calc(100% - 16px));
-  color: var(--color-text);
+  color: var(--color-ink);
   overflow: hidden;
   position: relative;
 }
@@ -246,7 +246,7 @@
 
 .garage-panel-inventory .card-inventory-button.card-art-cell,
 .garage-panel-shop .card-shop button.card-art-cell {
-  --card-art-bg: rgb(248 243 232 / 0.08);
+  --card-art-bg: rgb(236 231 218 / 0.98);
   padding-right: min(46%, 190px);
 }
 
@@ -269,9 +269,6 @@
 .plan-view .directive-choice-group .choice-card .card-stat-badge,
 .garage-panel-inventory .card-inventory-button .card-stat-badge,
 .garage-panel-shop .card-shop button .card-stat-badge {
-  background: rgb(248 243 232 / 0.06);
-  border-color: rgb(248 243 232 / 0.16);
-  color: rgb(248 243 232 / 0.78);
   font-size: 0.54rem;
   gap: 2px;
   padding: 2px 4px 2px 2px;
@@ -283,12 +280,6 @@
 .garage-panel-shop .card-shop button .card-stat-badge i {
   height: 12px;
   width: 12px;
-}
-
-.garage-panel-inventory .card-inventory-button .card-stat-badge.weakness i,
-.garage-panel-shop .card-shop button .card-stat-badge.weakness i {
-  background: rgb(248 243 232 / 0.08);
-  color: rgb(248 243 232 / 0.7);
 }
 
 .plan-view .directive-choice-group .choice-card .card-stat-badge {
@@ -303,7 +294,7 @@
 }
 
 .garage-panel-inventory .card-inventory-button {
-  background: linear-gradient(90deg, #17151a, #1d1a20);
+  background: linear-gradient(90deg, rgb(236 231 218 / 0.94), rgb(236 231 218 / 0.78));
 }
 
 .garage-panel-inventory .card-inventory-button.card-art-cell {
@@ -311,15 +302,15 @@
 }
 
 .garage-panel-shop .card-shop button {
-  background: linear-gradient(90deg, #17151a, #1d1a20);
+  background: linear-gradient(90deg, rgb(236 231 218 / 0.94), rgb(236 231 218 / 0.78));
 }
 
 .garage-panel-inventory .card-inventory-button.card-art-cell {
-  background: linear-gradient(90deg, #17151a, #1d1a20);
+  background: linear-gradient(90deg, rgb(236 231 218 / 0.94), rgb(236 231 218 / 0.78));
 }
 
 .garage-panel-shop .card-shop button.card-art-cell {
-  background: linear-gradient(90deg, #17151a, #1d1a20);
+  background: linear-gradient(90deg, rgb(236 231 218 / 0.94), rgb(236 231 218 / 0.78));
 }
 
 .garage-panel-inventory .card-inventory-button::after,
@@ -380,7 +371,7 @@
 
 .garage-panel-inventory .card-inventory-button small,
 .garage-panel-shop .card-shop button small {
-  color: rgb(248 243 232 / 0.68);
+  color: rgb(23 21 26 / 0.78);
 }
 
 .plan-view .directive-choice-group .choice-card {
@@ -733,6 +724,18 @@
   background: rgb(197 58 0 / 0.1);
   border-color: rgb(197 58 0 / 0.48);
   color: var(--color-ink);
+}
+
+.garage-grid .garage-panel-inventory .garage-empty-shop-button.secondary-button:not(:disabled) {
+  background: rgb(248 243 232 / 0.9);
+  border-color: rgb(255 255 255 / 0.46);
+  color: #17151a;
+}
+
+.garage-grid .garage-panel-inventory .garage-empty-shop-button.secondary-button:not(:disabled):is(:hover, :focus-visible) {
+  background: #ff4d00;
+  border-color: #ff8a3d;
+  color: #1d1205;
 }
 
 .championship-view .card-info-badge,

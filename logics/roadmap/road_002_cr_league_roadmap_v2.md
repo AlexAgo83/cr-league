@@ -39,6 +39,7 @@
 > Semantic edit: 2026-07-27 scaffolded `req_128` as an AI alpha seasons evidence run to decide the next corpus before opening 0.6 lifecycle work.
 > Semantic edit: 2026-07-27 closed `req_128` / `task_129`; the AI alpha seasons decision package recommends opening 0.6 beta-season lifecycle next, with accessibility cleanup and profile-dominance monitoring as 0.6 gates rather than pre-0.6 detours.
 > Semantic edit: 2026-07-27 scaffolded `req_129` / `task_130` as the 0.6 beta season lifecycle and league-management corpus, covering private seasons, commissioner tools, manual reminders, accessibility, action feedback, rivals, card guidance, team profiles, optional shop variety, lightweight season economy framing, and deferred-mode discipline.
+> Semantic edit: 2026-07-27 synchronized 0.6 roadmap scope with the ready-to-dev corpus guardrails: `Direction de course`, manual one-per-season reminder, no auto/deadline resolution, neutral absent-player defaults, explicit next-season action, coherent card guidance labels, and deferred realtime/automation.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -183,10 +184,13 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 ## 0.6 - Live beta season
 - Goal: Run a real beta season long enough to validate cadence, replay comprehension, economy pressure, and return behavior.
 - Status: Planned; active ready-to-dev corpus is `req_129` / `task_130`.
-- Scope to slice into patches when requests exist: beta season lifecycle, playtest and season presets (3 GP for quick tests, 6 GP for default leagues), async cadence V1 (all-ready resolution by default, deadline resolution, lightly visible absent-player defaults, force-resolve or pause only if playtest ops needs them, bot replacement after repeated absences only if leagues stall), feedback capture across GP cycles, balance tweaks from observed behavior, notifications/reminders only if usage proves the need.
-- Corpus policy: `req_129` is the first 0.6 corpus. Include alpha-evidence gates for accessibility cleanup and profile-dominance monitoring; keep reminders manual/admin-triggered only, and do not pre-scaffold polling/SSE, automatic reminders, bot replacement, public matchmaking, compact replay, tutorial rewrite, or more card tuning without beta evidence.
+- Scope to slice into patches when requests exist: beta season lifecycle, `Quick beta` 3-GP and `Standard season` 6-GP presets, creator-only `Direction de course`, manual GP resolution, visible neutral absent-player defaults, explicit `Saison terminée` -> `Lancer la saison suivante` rollover, manual one-reminder-per-season email action, feedback capture across GP cycles, rival context, card guidance labels, in-league team profiles, optional variable shop, and lightweight season continuity rules.
+- First wave: `item_324` season lifecycle core, `item_325` `Direction de course` / manual reminders, and `item_326` accessibility without visual redesign.
+- Second wave: `item_327` action feedback, `item_328` rival thread, and `item_329` coherent card guidance using `Utile ici`, `Situationnel`, and `Impact faible` while replacing or mapping the existing `Affinité haute` surface.
+- Third wave only if still small: `item_330` in-league team profiles, `item_331` optional `Boutique variable à chaque GP`, and `item_332` season rollover persistence/reset rules. `item_333` race engineer stays deferred unless card guidance still leaves the Plan screen hard to read.
+- Corpus policy: `req_129` is the first 0.6 corpus. Include alpha-evidence gates for accessibility cleanup and profile-dominance monitoring; keep reminders manual/admin-triggered only, capped to one successful send per season, and do not pre-scaffold polling/SSE, automatic reminders, deadline auto-resolution, bot replacement, public matchmaking, compact replay, tutorial rewrite, arcade/quick-play modes, or more card tuning without beta evidence.
 - Exit signal: beta players complete a short season with enough feedback to decide what belongs in 1.0; remaining 1.0 work is known, not guessed.
-- Linked docs: `prod_001_cr_league_product_brief`, `spec_016_implementation_roadmap`.
+- Linked docs: `prod_001_cr_league_product_brief`, `prod_081_0_6_beta_season_lifecycle_and_league_management_product_brief`, `req_129_0_6_beta_season_lifecycle_and_league_management_private_seasons_commissioner_tools_actionability_rivals_team_identity_and_optional_economy_variants`, `task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus`, `spec_016_implementation_roadmap`.
 
 ## 1.0 - Private league V1
 - Goal: Ship a stable private-league experience that can run cheaply and be shared with non-gamer colleagues.
@@ -198,14 +202,14 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 # Sequencing
 - The 0.4 ship/maintainability/review queue through `task_127` is Done, and no workflow docs are open.
-- Implement `req_129` / `task_130` next. `req_128` cleared the pre-0.6 evidence gate; no separate economy, UX, or stability blocker is required first.
+- Implement `req_129` / `task_130` next, starting with the first-wave slices `item_324`, `item_325`, and `item_326`. `req_128` cleared the pre-0.6 evidence gate; no separate economy, UX, or stability blocker is required first.
 - Keep release validation explicit: use `logics-manager release status|plan|validate` and record evidence before claiming any 0.4.x release readiness.
 - Do not start 1.0 hardening until the 0.6 beta has produced real usage.
 
 # Watchlist
 - Car wear or team condition persistence stays out of the roadmap until playtesters say Grand Prix lack continuity between races; season rollover economy is the lighter continuity bet first.
 - Full auth stays out of scope while private beta can operate with email-backed recovery codes and claim-protected teams.
-- Notifications and reminders stay conditional in 0.6; add them only if beta players forget to return for scheduled preparation.
+- Automatic notifications, polling/SSE, and scheduled reminders stay out of 0.6 until beta evidence proves realtime return friction. The only 0.6 reminder scope is the creator-triggered `Relancer les retardataires` action, capped to one successful send per season.
 - Random, draft, or hybrid card acquisition belongs in 0.5 only after real playtest evidence shows the fixed shop is too flat or too predictable.
 - First-win affordability (0.5): the 2026-07-20 playtest ended a winning first GP with 330 credits while the most visible Recommended card cost 500; when tuning the 0.5 economy, check that at least one Recommended card is reachable after a first win.
 - Bot rivalry: the 2026-07-20 playtest won both GPs playing naively and the GP1 pole-sitter finished P7 in GP2 — bots do not sustain a rival narrative. Do nothing yet; if the human 3-GP exit playtest shows a naive player winning the championship without losing a single GP, open a bot-rivalry chain (circuit-fit card play — already observed once — and a steadier bot hierarchy for nameable rivals). Measure with playtest:ai and balance:sim first.

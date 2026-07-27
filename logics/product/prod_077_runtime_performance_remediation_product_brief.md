@@ -6,9 +6,23 @@
 > Related task: `task_126_orchestrate_runtime_performance_remediation`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
 
 # Overview
 Manual performance smoke tests show CR League's replay screen retains more heap, DOM nodes, and browser listeners than the normal GP loop, while network and API CPU are not currently the main bottlenecks. This brief prioritizes replay runtime cleanup, then lightweight build-output and asset hygiene, using the new manual perf tools for before/after proof without introducing CI perf gates.
+
+```mermaid
+flowchart TD
+  Req[req_125 runtime performance remediation] --> Replay[item_312 replay runtime retention]
+  Req --> Dist[item_313 production dist hygiene]
+  Req --> Assets[item_314 image payload review]
+  Req --> Api[item_315 API performance watchpoint]
+  Replay --> Task[task_126 orchestration]
+  Dist --> Task
+  Assets --> Task
+  Api --> Task
+  Task --> Proof[manual perf and validation closeout]
+```
 
 # Goals
 - Reduce replay runtime growth without changing player-facing replay behavior.

@@ -6,9 +6,21 @@
 > Related task: `task_127_orchestrate_credential_storage_and_dependency_currency_remediation`
 > Related architecture: (none yet)
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
+> Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
 
 # Overview
 A whole-repo review found CR League healthy on tests, types, lint, and production dependency audit, with one finding that carries real risk: the master profile recovery code and every team claim code are persisted in plaintext browser storage and replayed as bearer proof on writes, so any script execution in the page yields permanent account takeover. This brief covers replacing that persisted credential with a revocable session credential, restoring dependency currency before the gap compounds, and closing the residual App.tsx state consolidation left by item_303. It deliberately excludes findings that verification cleared and work already owned by req_124 and req_125.
+
+```mermaid
+flowchart TD
+  Req[req_126 credential and dependency remediation] --> Creds[item_316 revocable session credential]
+  Req --> Deps[item_317 dependency major review]
+  Req --> App[item_318 App.tsx state consolidation]
+  Creds --> Task[task_127 orchestration]
+  Deps --> Task
+  App --> Task
+  Task --> Gate[security, CI, and Logics validation]
+```
 
 # Goals
 - Remove the long-lived plaintext credential from browser storage without regressing any player flow.

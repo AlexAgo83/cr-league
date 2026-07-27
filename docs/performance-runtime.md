@@ -47,6 +47,32 @@ npm run perf:compare -- reports/perf/before.json reports/perf/after.json --repor
 
 The compare command only reads existing JSON reports. It gives a coarse `better`, `stable`, or `worse` verdict from heap, DOM node, and listener growth.
 
+## Bundle Snapshot
+
+```bash
+npm run perf:bundle
+```
+
+This reads `apps/web/dist`, builds first if needed, and writes:
+
+- `reports/perf/bundle.md`
+- `reports/perf/bundle.json`
+
+Use it to see the total shipped weight, largest files, and JS/CSS/image/font split.
+
+## API Simulation Smoke
+
+```bash
+npm run perf:api -- --cycles 100
+```
+
+This runs the shared race simulation directly, serializes each result, forces GC before and after, and writes:
+
+- `reports/perf/api-runtime.md`
+- `reports/perf/api-runtime.json`
+
+Use it to track simulation duration, result JSON size, and retained Node memory without involving the database.
+
 ## Current Baseline
 
 Local smoke on 2026-07-27 with 3 GP cycles:
@@ -66,3 +92,18 @@ Replay smoke on 2026-07-27 with 3 replay-control cycles:
 - No extra network transfer after initial load.
 
 That points first at replay UI retention: timers, SVG nodes, camera/animation state, or event handlers.
+
+Bundle smoke on 2026-07-27:
+
+- Total `apps/web/dist`: 14.29 MB across 819 files.
+- Images: 10.66 MB.
+- JS: 2.4 MB.
+- Largest files: `finish-flag.png` 1393 KB, app chunk 489 KB, `stand.png` 469 KB, circuit routes 455 KB.
+
+API simulation smoke on 2026-07-27 with 20 cycles:
+
+- Average resolve: 3.1 ms.
+- P95 resolve: 8.11 ms.
+- Average result JSON: 111.85 KB.
+- Heap delta after GC: 0.82 MB.
+- RSS delta after GC: 14.44 MB.

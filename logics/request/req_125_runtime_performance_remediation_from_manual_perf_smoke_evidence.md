@@ -1,7 +1,7 @@
 ## req_125_runtime_performance_remediation_from_manual_perf_smoke_evidence - Runtime performance remediation from manual perf smoke evidence
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

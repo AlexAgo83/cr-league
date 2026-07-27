@@ -2,8 +2,8 @@
 > From version: 0.5.1
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 100%
 > Complexity: Low
 > Theme: Backend performance
@@ -56,3 +56,6 @@
 
 # Validation
 - 2026-07-27 validation: npm run perf:api -- --cycles 100 OK. Results: avg resolve 2.26 ms, p95 3.88 ms, max 8.23 ms, avg result JSON 112.1 KB, heap delta after GC 0.96 MB, RSS delta after GC 32.72 MB.
+
+# Notes
+- Task `task_126_orchestrate_runtime_performance_remediation` was finished via `logics-manager flow finish task` on 2026-07-27.

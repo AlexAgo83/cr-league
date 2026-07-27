@@ -1,10 +1,10 @@
 ## item_312_reduce_replay_runtime_retention_in_timers_listeners_and_svg_state - Reduce replay runtime retention in timers, listeners, and SVG state
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Runtime performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -41,6 +41,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-27 implementation: replaced per-car SVG click handlers in CircuitMap with one delegated SVG click handler for focus-driver replay clicks. No replay UX feature was removed; pause/play, restart, speed, focus, report, and close/back controls stay intact.
 
 # Links
 - Product brief(s): `prod_077_runtime_performance_remediation_product_brief`
@@ -57,3 +58,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-27 validation: before perf:replay -- --cycles 10 was heap growth 3.16 MB, DOM node growth 209, listener growth 189, final heap 17.1 MB. After run was heap growth 2.32 MB, DOM node growth 205, listener growth 187, final heap 16.0 MB. perf:compare verdict stable. npm run typecheck OK; npm run lint OK; targeted CircuitMap/replayControls tests OK; npm test OK with 352 passing / 7 skipped; npm run build OK; npm run test:e2e -- --project=chromium OK, 4 passed.
+
+# Notes
+- Task `task_126_orchestrate_runtime_performance_remediation` was finished via `logics-manager flow finish task` on 2026-07-27.

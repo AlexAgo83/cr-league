@@ -2,8 +2,8 @@
 > From version: 0.5.1
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 100%
 > Complexity: Low
 > Theme: Build performance
@@ -57,3 +57,6 @@
 
 # Validation
 - 2026-07-27 validation: removed ignored local .DS_Store files from apps/web/public, ran npm run clean && npm run build OK, then npm run perf:bundle OK. Clean dist report: 12.5 MB, 317 files, image 10.66 MB, JS 1.16 MB. Artifact scan found no .DS_Store, TS/TSX source, source maps, tsbuildinfo, or test files in apps/web/dist.
+
+# Notes
+- Task `task_126_orchestrate_runtime_performance_remediation` was finished via `logics-manager flow finish task` on 2026-07-27.

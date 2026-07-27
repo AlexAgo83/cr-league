@@ -2,8 +2,8 @@
 > From version: 0.5.1
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 100%
 > Complexity: Low
 > Theme: Asset delivery performance
@@ -56,3 +56,6 @@
 
 # Validation
 - 2026-07-27 validation: finish-flag asset reduced from 1393 KB in perf:bundle to 390 KB lossless WebP; dist total reduced from 12.5 MB / image 10.66 MB to 11.52 MB / image 9.68 MB. npm test -- apps/web/src/styles/replayControls.test.ts OK; npm run clean && npm run build OK; npm run perf:bundle OK; npm run test:e2e -- --project=chromium OK, 4 passed; npm run typecheck OK; npm run lint OK.
+
+# Notes
+- Task `task_126_orchestrate_runtime_performance_remediation` was finished via `logics-manager flow finish task` on 2026-07-27.

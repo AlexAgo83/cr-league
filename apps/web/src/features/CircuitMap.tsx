@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState, type Ref, type RefObject } from "react";
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type MouseEvent, type Ref, type RefObject } from "react";
 import type { CSSProperties } from "react";
 import type { DecisionDeltaKey, TeamLivery, TrackSpeedProfile, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
@@ -417,6 +417,12 @@ function CircuitMapInner({
   ), [hasCars, renderD, routeAnalysis]);
   carsRef.current = cars;
   pointsRef.current = renderPoints;
+  const handleCarClick = useCallback((event: MouseEvent<SVGSVGElement>) => {
+    if (!onCarClick) return;
+    const group = (event.target as Element).closest<SVGGElement>(".map-car[data-car-id]");
+    const car = group?.dataset.carId ? carsRef.current.find((candidate) => candidate.id === group.dataset.carId) : undefined;
+    if (car) onCarClick(car);
+  }, [onCarClick]);
 
   useEffect(() => {
     const cameraGroup = cameraRef.current;
@@ -576,7 +582,7 @@ function CircuitMapInner({
       aria-label={tt("city_circuit_map")}
     >
       <div className="circuit-map-stage">
-        <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <svg ref={svgRef} viewBox={`0 0 ${VIEW_WIDTH} ${VIEW_HEIGHT}`} preserveAspectRatio="xMidYMid meet" aria-hidden="true" onClick={onCarClick ? handleCarClick : undefined}>
           <g ref={cameraRef} className="circuit-camera">
             <g className="circuit-map-content" transform={mapTransform}>
               {tileLayer}
@@ -604,7 +610,6 @@ function CircuitMapInner({
                       className={`${car.player ? "map-car player" : "map-car"}${onCarClick ? " focus-target" : ""}`}
                       style={carStyle}
                       transform={pose ? `translate(${pose.x} ${pose.y})` : undefined}
-                      onClick={onCarClick ? () => onCarClick(car) : undefined}
                     >
                       <g className="map-car-marker" transform={`scale(${markerScale})`}>
                         <MapCarSprite asset={asset} braking={car.braking} maskId={`car-sprite-mask-${mapId}-${svgIdPart(car.id)}`} transform={pose ? `rotate(${pose.angle + drift})` : undefined} />

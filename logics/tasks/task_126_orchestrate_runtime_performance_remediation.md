@@ -1,10 +1,10 @@
 ## task_126_orchestrate_runtime_performance_remediation - Orchestrate runtime performance remediation
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: In progress
+> Understanding: 95
+> Confidence: 90
+> Progress: 25%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -46,9 +46,11 @@
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- 2026-07-27 wave 1 validation: npm run clean && npm run build OK; npm run perf:bundle OK with dist 12.5 MB / 317 files; artifact scan found no accidental production files.
 
 # Report
 - Implementation complete.
+- 2026-07-27 wave 1 complete: verified production dist hygiene. Clean build after removing ignored local .DS_Store files from public/ produces no .DS_Store, TS/TSX source, source maps, tsbuildinfo, or test files in apps/web/dist. No build config change was needed.
 
 # AI Context
 - Summary: Orchestrate runtime performance remediation

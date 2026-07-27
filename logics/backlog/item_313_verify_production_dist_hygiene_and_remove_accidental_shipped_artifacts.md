@@ -1,10 +1,10 @@
 ## item_313_verify_production_dist_hygiene_and_remove_accidental_shipped_artifacts - Verify production dist hygiene and remove accidental shipped artifacts
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Build performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -37,6 +37,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-27 decision: no build config change needed. The reproduced production artifacts were ignored local .DS_Store files under public/ copied by Vite; after deleting those local files and rebuilding from a clean dist, the artifact scan is clean.
 
 # Links
 - Product brief(s): `prod_077_runtime_performance_remediation_product_brief`
@@ -53,3 +54,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-27 validation: removed ignored local .DS_Store files from apps/web/public, ran npm run clean && npm run build OK, then npm run perf:bundle OK. Clean dist report: 12.5 MB, 317 files, image 10.66 MB, JS 1.16 MB. Artifact scan found no .DS_Store, TS/TSX source, source maps, tsbuildinfo, or test files in apps/web/dist.

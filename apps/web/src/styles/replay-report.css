@@ -475,19 +475,21 @@ button.command-icon-button {
 .report-podium {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 130px), 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
 .report-podium li {
+  align-items: center;
   background: rgb(16 14 18 / 0.45);
   border: 1px solid var(--color-border);
   border-radius: 8px;
   display: grid;
-  gap: 4px;
-  padding: 12px;
+  gap: 4px 10px;
+  grid-template-columns: auto minmax(0, 1fr);
+  padding: 10px;
 }
 
 .report-podium li.current-team {
@@ -495,11 +497,10 @@ button.command-icon-button {
   border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
-.report-podium span:not(.position-badge) {
-  display: grid;
-  gap: 4px;
+.report-podium li > span:not(.position-badge) {
   font-size: 1.05rem;
   font-weight: 800;
+  min-width: 0;
 }
 
 .report-default-plan-badge {
@@ -512,6 +513,13 @@ button.command-icon-button {
 .report-podium small,
 .report-key-moments p {
   color: var(--color-muted);
+}
+
+.report-podium li > small {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  grid-column: 2;
 }
 
 .report-main-grid {
@@ -567,6 +575,10 @@ button.command-icon-button {
 
 .recap-card.lesson {
   border-color: rgb(245 158 11 / 0.42);
+}
+
+.recap-card.action {
+  border-color: rgb(22 199 132 / 0.42);
 }
 
 .recap-grid h3 {

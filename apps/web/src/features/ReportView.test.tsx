@@ -58,6 +58,7 @@ describe("ReportView", () => {
     expect(container.querySelector(".report-verdict")).toBe(null);
     expect(recap.textContent).toContain("P1, 25 points.");
     expect(recap.textContent).toContain("Rain Grip");
+    expect(container.querySelector(".recap-card.action")?.textContent).toContain("Rain Grip was your clearest lever");
     expect(recap.compareDocumentPosition(phases) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
     const tokyo = render(
@@ -232,8 +233,89 @@ describe("ReportView", () => {
     const { container } = render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
 
     const recap = container.querySelector(".report-side-recap") as HTMLElement;
+    const resultCard = container.querySelector(".recap-card.difference") as HTMLElement;
     expect(recap.textContent).toContain("P5, 10 points.");
-    expect(recap.textContent?.match(/P5/g)).toHaveLength(1);
+    expect(resultCard.textContent?.match(/P5/g)).toHaveLength(1);
     expect(recap.textContent).toContain("Analyzed plan:");
+    expect(container.querySelector(".recap-card.action")?.textContent).toContain("change only one plan piece");
+  });
+
+  it("turns a missed card into a next-action warning", () => {
+    const typedBaseState = baseState as unknown as LeagueState;
+    const state = {
+      ...typedBaseState,
+      decisions: [{ teamId: "team_1", approach: "aggressive", preparation: "speed", cardId: "launch_boost" }]
+    } satisfies LeagueState;
+    const result: RaceResult = {
+      grandPrixName: "Miss GP",
+      seed: "miss",
+      resolvedWeather: { start: "dry", early: "dry", mid: "dry", late: "dry", finish: "dry" },
+      classification: [
+        { teamId: "team_2", teamName: "Mika Blitz", position: 1, points: 25, credits: 100, score: 90, positionChange: 1, status: "finished", resultTags: [] },
+        { teamId: "team_1", teamName: "Volt Union", position: 4, points: 12, credits: 65, score: 72, positionChange: -2, status: "finished", resultTags: [] }
+      ],
+      events: [],
+      consumedCards: [{ teamId: "team_1", cardId: "launch_boost" }],
+      report: { headline: "Test", blocks: [] }
+    };
+
+    const { container } = render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+
+    const action = container.querySelector(".recap-card.action")!;
+    expect(action.textContent).toContain("Launch Boost did not trigger");
+    expect(action.textContent).toContain("Review Launch Boost");
+  });
+
+  it("uses an existing rival decision when explaining the next action", () => {
+    const typedBaseState = baseState as unknown as LeagueState;
+    const state = {
+      ...typedBaseState,
+      decisions: [{ teamId: "team_1", approach: "balanced", preparation: "weather", cardId: null, rivalTeamId: "team_2" }]
+    } satisfies LeagueState;
+    const baseResult = {
+      grandPrixName: "Rival GP",
+      seed: "rival",
+      resolvedWeather: { start: "dry", early: "dry", mid: "dry", late: "dry", finish: "dry" },
+      events: [],
+      consumedCards: [],
+      report: { headline: "Test", blocks: [] }
+    } satisfies Omit<RaceResult, "classification">;
+
+    const won = render(
+      <ReportView
+        state={state}
+        result={{
+          ...baseResult,
+          classification: [
+            { teamId: "team_1", teamName: "Volt Union", position: 2, points: 18, credits: 80, score: 84, positionChange: 1, status: "finished", resultTags: [] },
+            { teamId: "team_2", teamName: "Mika Blitz", position: 5, points: 10, credits: 60, score: 70, positionChange: -1, status: "finished", resultTags: [] }
+          ]
+        }}
+        circuit={circuitForRound(1)}
+        playerTeamId="team_1"
+        playerDecision={state.decisions[0]}
+        tt={(key, params) => t(key, "en", params)}
+      />
+    );
+    expect(won.container.querySelector(".recap-card.action")?.textContent).toContain("You beat Mika Blitz");
+    won.unmount();
+
+    const lost = render(
+      <ReportView
+        state={state}
+        result={{
+          ...baseResult,
+          classification: [
+            { teamId: "team_2", teamName: "Mika Blitz", position: 1, points: 25, credits: 100, score: 91, positionChange: 1, status: "finished", resultTags: [] },
+            { teamId: "team_1", teamName: "Volt Union", position: 4, points: 12, credits: 65, score: 72, positionChange: -1, status: "finished", resultTags: [] }
+          ]
+        }}
+        circuit={circuitForRound(1)}
+        playerTeamId="team_1"
+        playerDecision={state.decisions[0]}
+        tt={(key, params) => t(key, "en", params)}
+      />
+    );
+    expect(lost.container.querySelector(".recap-card.action")?.textContent).toContain("Mika Blitz finished ahead");
   });
 });

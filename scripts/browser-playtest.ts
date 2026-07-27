@@ -187,15 +187,18 @@ try {
       await observeScenario(page, {
         id: "result-cause-read",
         question: "Why did I succeed or fail?",
-        evidence: "Race report shows result difference, your plan, comparison with the winner, next takeaway, and key moments.",
+        evidence: "Race report shows result difference, your plan, comparison with the winner, next takeaway, next action, and key moments.",
         locators: [
           { label: "Result", find: () => page!.getByText("Result", { exact: true }) },
           { label: "Your directive", find: () => page!.getByText("Your directive") },
           { label: "Comparison with the winner", find: () => page!.getByText("Comparison with the winner") },
           { label: "Next GP takeaway", find: () => page!.getByText("Next GP takeaway") },
+          { label: "Next action", find: () => page!.getByText("Next action", { exact: true }) },
           { label: "Key moments", find: () => page!.getByText("Key moments") }
         ]
       });
+      await delay(2_100);
+      await captureUx(page, `round-${round}-report`, "Race report exposes the deterministic next action card.");
       await page.getByRole("button", { name: "Replay" }).click().catch(() => undefined);
     }
     await captureUx(page, `round-${round}-replay`, "Race replay is visible after launching the Grand Prix.");

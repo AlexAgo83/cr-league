@@ -29,6 +29,11 @@ export type RaceVerdict = {
   cause: RaceVerdictLine;
   tryNext: RaceVerdictLine;
 };
+export type RaceActionRecommendation = {
+  reason: string;
+  nextAttempt: string;
+  cardHint: string;
+};
 
 export { strongestForecast };
 
@@ -189,6 +194,46 @@ export function buildRaceVerdict(
     cause: raceDominantCause(result, playerTeamId, raceTitle, tt, true, circuitLaps, decision),
     tryNext: recapNextLessonLine(result, state, playerTeamId, decision, tt)
   };
+}
+
+export function buildRaceActionRecommendation(
+  result: RaceResult,
+  state: LeagueState,
+  playerTeamId: string | undefined,
+  decision: LeagueState["decisions"][number] | undefined,
+  tt: Translator
+): RaceActionRecommendation {
+  const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
+  const rivalResult = decision?.rivalTeamId ? result.classification.find((entry) => entry.teamId === decision.rivalTeamId) : undefined;
+  const ownCardEvent = decision?.cardId ? result.events.find((event) => event.teamId === playerTeamId && event.cardId === decision.cardId) : undefined;
+  const nextSeason = state.currentGrandPrix.round >= state.league.maxGrandPrixPerSeason ? state.currentGrandPrix.season + 1 : state.currentGrandPrix.season;
+  const nextRound = state.currentGrandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : state.currentGrandPrix.round + 1;
+  const nextCircuit = circuitIdentityForRound(nextRound, circuitSeasonSeed(state.league.id, nextSeason));
+  const nextInput = raceInputFromCircuit(nextCircuit);
+  const nextCircuitName = `${nextCircuit.city} ${tt(nextCircuit.layoutKey as TranslationKey)}`;
+  const nextFocus = nextCircuit.likelyWeather !== "dry" ? tt(`weather_${nextCircuit.likelyWeather}` as TranslationKey) : tt(`trait_${nextInput.primaryTrait}` as TranslationKey);
+
+  const reason =
+    rivalResult && playerResult
+      ? tt(playerResult.position < rivalResult.position ? "report_action_reason_rival_beat" : "report_action_reason_rival_lost", { rival: rivalResult.teamName })
+      : ownCardEvent?.cardId
+        ? tt("report_action_reason_card_hit", { card: tt(`card_${ownCardEvent.cardId}` as TranslationKey), delta: eventImpactText(ownCardEvent.positionDelta, tt) })
+        : decision?.cardId
+          ? tt("report_action_reason_card_miss", { card: tt(`card_${decision.cardId}` as TranslationKey) })
+          : playerResult?.position === 1
+            ? tt("report_action_reason_win")
+            : tt("report_action_reason_result", { position: playerResult?.position ?? "-", delta: positionDeltaText(playerResult?.positionChange ?? 0, tt) });
+
+  const nextAttempt = tt((playerResult?.position ?? 99) <= 3 ? "report_action_next_podium" : "report_action_next_chase", {
+    circuit: nextCircuitName,
+    focus: nextFocus
+  });
+
+  const cardHint = decision?.cardId
+    ? tt(ownCardEvent ? "report_action_card_keep" : "report_action_card_review", { card: tt(`card_${decision.cardId}` as TranslationKey), focus: nextFocus })
+    : tt(nextCircuit.likelyWeather !== "dry" ? "report_action_card_weather" : "report_action_card_setup", { focus: nextFocus });
+
+  return { reason, nextAttempt, cardHint };
 }
 
 export function translateLine(line: RaceVerdictLine, tt: Translator) {

@@ -1,10 +1,10 @@
 ## item_327_make_post_race_feedback_more_actionable_and_connect_it_to_the_next_grand_prix - Make post-race feedback more actionable and connect it to the next Grand Prix
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Race feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

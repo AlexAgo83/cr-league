@@ -4,6 +4,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import { displayLapForEvent, maxEventLap } from "../app/lapDisplay.js";
 import {
   buildRaceVerdict,
+  buildRaceActionRecommendation,
   eventReportText,
   raceRecapCards,
   teamNamesFromResult,
@@ -45,6 +46,7 @@ export function ReportView({
   const keyEvents = keyMomentEvents(result.events, rawMaxLap, circuit.laps);
   const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
   const verdict = buildRaceVerdict(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
+  const actionRecommendation = buildRaceActionRecommendation(result, state, playerTeamId, playerDecision, tt);
   const defaultedTeamIds = new Set(result.defaultedTeamIds ?? []);
   const recap = [
     {
@@ -66,6 +68,11 @@ export function ReportView({
       className: "lesson",
       title: tt("result_next_lesson"),
       body: recapCards.lesson
+    },
+    {
+      className: "action",
+      title: tt("report_action_title"),
+      body: `${actionRecommendation.reason} ${actionRecommendation.nextAttempt} ${actionRecommendation.cardHint}`
     }
   ];
 

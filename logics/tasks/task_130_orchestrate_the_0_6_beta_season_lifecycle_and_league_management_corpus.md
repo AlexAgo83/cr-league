@@ -2,9 +2,9 @@
 > From version: 0.5.2
 > Schema version: 1.0
 > Status: In Progress
-> Understanding: 90%
-> Confidence: 92%
-> Progress: 45%
+> Understanding: 92
+> Confidence: 94
+> Progress: 55
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -79,6 +79,7 @@
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
 - 2026-07-28 validation: npm run logics:validate passed. logics-manager lint --require-status passed. logics-manager audit --group-by-doc passed with expected request AC traceability warnings because item_327 through item_333 remain open and the linked orchestration task is not Done.
+- 2026-07-28 item_327 visual follow-up: report header classification wrapping was fixed by scoping report-podium text styles to direct children and keeping reward values inline. Browser UX evidence regenerated at reports/ux/report-next-action-browser/04-round-1-report-desktop.png and reports/ux/report-next-action-browser/04-round-1-report-mobile.png; both show the Next action card and compact header classification.
 
 # Report
 - 2026-07-27 handoff: first wave was partially delivered and committed. Season presets, no-auto-resolve/default-plan backend guard, next-season rollover reset, `Direction de course`, manual one-successful-reminder-per-season API/mail path, accessibility gate, and several UX papercuts were already in code.
@@ -86,6 +87,7 @@
 - Evidence: `rtk npm run typecheck`; `rtk npm test -- --run apps/web/src/app/App.test.tsx apps/web/src/features/ReportView.test.tsx`; screenshots at `reports/ux/manual-review/race-direction-desktop.png` and `reports/ux/manual-review/race-direction-mobile.png`.
 - Next wave: start `item_327`, `item_328`, and `item_329`; keep optional slices deferred unless pulled in explicitly.
 - 2026-07-28 corpus closeout: intentionally kept item_327, item_328, item_329, item_330, item_331, item_332, and item_333 open as implementation-ready follow-up slices rather than marking unshipped work Done. Deferred-mode guardrail item_334 records reopen triggers for optional secondary objectives, arcade solo, quick play matchmaking, onboarding/tutorial rewrite, compact replay/highlights, automatic reminders, polling/SSE, bot replacement, and 1.0 hardening.
+- 2026-07-28 item_327 delivered: race reports now expose a deterministic Next action card with a primary race reason, next-GP attempt guidance, and a card/setup hint. The recommendation uses race result, played-card trigger/miss, existing rival decision when present, and next circuit/weather context without adding auto-pick or generative advice.
 
 # AI Context
 - Summary: Orchestrate the 0.6 beta season lifecycle and league management corpus

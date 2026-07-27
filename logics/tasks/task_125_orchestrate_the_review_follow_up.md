@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 50%
+> Progress: 75%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -47,11 +47,13 @@
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
 - 2026-07-27 wave 1 validation: package.json script coverage check reported 43 scripts and all scripts covered; package.json unchanged; npm run logics:validate OK with existing warnings.
+- 2026-07-27 wave 3 validation: index chunk 243.86 kB raw / 70.92 kB gzip -> 237.97 kB raw / 69.91 kB gzip; AdminConsoleView chunk emitted at 6.19 kB raw / 1.56 kB gzip. typecheck, lint, targeted admin test, full unit tests, and build OK.
 
 # Report
 - Implementation complete.
 - 2026-07-27 wave 1 complete: added CONTRIBUTING.md Scripts section to distinguish merge gate, release/pre-release checks, local maintenance commands, and on-demand diagnostics/generators without modifying package.json scripts.
 - 2026-07-27 wave 2 complete: recorded the App.tsx and speed-profile data skips directly at the implementing code sites with explicit reopen triggers.
+- 2026-07-27 wave 3 complete: lazy-loaded AdminConsoleView behind React.lazy/Suspense, leaving useAdminPanel static. The admin profile-menu test now awaits the lazy-loaded heading and still exercises the normal admin entry.
 
 # AI Context
 - Summary: Orchestrate the review follow-up

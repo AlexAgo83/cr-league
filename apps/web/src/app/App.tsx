@@ -1,8 +1,7 @@
 import { type QualifyingRun } from "@cr-league/shared";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { type LeagueState, type ProfileSession } from "./types.js";
-import { AdminConsoleView } from "../features/AdminConsoleView.js";
 import { LanguageSwitcher, NotificationStack, ProfileMenu, SetupTopbar } from "./AppChrome.js";
 import { AppOverlays } from "./AppOverlays.js";
 import { ONBOARDING_HELP_KEYS, SCREEN_ONBOARDING_HELP_TOPICS, type OnboardingHelpTopic } from "./OnboardingShell.js";
@@ -35,6 +34,8 @@ import { useNotifications, type Notification } from "./useNotifications.js";
 import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
 import { useReplayUiState } from "./useReplayUiState.js";
+
+const AdminConsoleView = lazy(() => import("../features/AdminConsoleView.js").then((module) => ({ default: module.AdminConsoleView })));
 
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
@@ -645,35 +646,37 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   // ponytail: only admins on the admin view ever render this tree (GameViews gates it), so don't
   // build the whole AdminConsoleView on every render for the non-admin majority.
   const adminView = profileSession?.admin ? (
-    <AdminConsoleView
-      adminLeagues={adminLeagues}
-      adminRecoveryCode={adminRecoveryCode}
-      adminTab={adminTab}
-      adminToken={adminToken}
-      adminUsers={adminUsers}
-      adminUserPagination={adminUserPagination}
-      adminUserQuery={adminUserQuery}
-      adminLeaguePagination={adminLeaguePagination}
-      adminLeagueQuery={adminLeagueQuery}
-      locale={locale}
-      loading={status === "loading"}
-      pendingMessage={pendingMessage}
-      onCleanupLeague={(league) => void cleanupAdminTestData({ leagueIds: [league.id] })}
-      onCleanupUser={(user) => void cleanupAdminTestData({ profileIds: [user.id] })}
-      onDeleteUser={setAdminDeleteUser}
-      onInspectLeague={(league) => void inspectAdminLeague(league)}
-      onPageLeagues={(page) => void pageAdminLeagues(page)}
-      onPageUsers={(page) => void pageAdminUsers(page)}
-      onRefresh={() => void refreshAdminData()}
-      onResetRecoveryCode={(user) => void resetAdminRecoveryCode(user)}
-      onSearchLeagues={() => void searchAdminLeagues()}
-      onSearchUsers={() => void searchAdminUsers()}
-      onSetAdminLeagueQuery={setAdminLeagueQuery}
-      onSetAdminTab={setAdminTab}
-      onSetAdminToken={setAdminToken}
-      onSetAdminUserQuery={setAdminUserQuery}
-      tt={tt}
-    />
+    <Suspense fallback={null}>
+      <AdminConsoleView
+        adminLeagues={adminLeagues}
+        adminRecoveryCode={adminRecoveryCode}
+        adminTab={adminTab}
+        adminToken={adminToken}
+        adminUsers={adminUsers}
+        adminUserPagination={adminUserPagination}
+        adminUserQuery={adminUserQuery}
+        adminLeaguePagination={adminLeaguePagination}
+        adminLeagueQuery={adminLeagueQuery}
+        locale={locale}
+        loading={status === "loading"}
+        pendingMessage={pendingMessage}
+        onCleanupLeague={(league) => void cleanupAdminTestData({ leagueIds: [league.id] })}
+        onCleanupUser={(user) => void cleanupAdminTestData({ profileIds: [user.id] })}
+        onDeleteUser={setAdminDeleteUser}
+        onInspectLeague={(league) => void inspectAdminLeague(league)}
+        onPageLeagues={(page) => void pageAdminLeagues(page)}
+        onPageUsers={(page) => void pageAdminUsers(page)}
+        onRefresh={() => void refreshAdminData()}
+        onResetRecoveryCode={(user) => void resetAdminRecoveryCode(user)}
+        onSearchLeagues={() => void searchAdminLeagues()}
+        onSearchUsers={() => void searchAdminUsers()}
+        onSetAdminLeagueQuery={setAdminLeagueQuery}
+        onSetAdminTab={setAdminTab}
+        onSetAdminToken={setAdminToken}
+        onSetAdminUserQuery={setAdminUserQuery}
+        tt={tt}
+      />
+    </Suspense>
   ) : null;
 
   return (

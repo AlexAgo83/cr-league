@@ -474,7 +474,7 @@ describe("App profile and admin", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.click(screen.getByRole("button", { name: "Admin" }));
-    expect(screen.getByRole("heading", { name: "Admin console" })).toBeTruthy();
+    expect(await screen.findByRole("heading", { name: "Admin console" })).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Admin token"), { target: { value: "secret-admin-token" } });
     fireEvent.click(screen.getByRole("button", { name: "Connect" }));
 

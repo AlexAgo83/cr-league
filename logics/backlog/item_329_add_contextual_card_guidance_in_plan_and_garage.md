@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 92%
 > Progress: 0%
 > Complexity: Medium
 > Theme: Card readability
@@ -13,10 +13,11 @@
 - Players need to understand why a card is useful, neutral, or risky for the next race.
 - The guidance should reduce opacity without replacing player judgment.
 - Card advice must stay aligned with existing card effects and circuit/weather data.
+- Owner decision: use exactly three guidance labels first, `Useful here`, `Situational`, and `Low impact`; do not use "best card" language.
 
 # Scope
 - In:
-  - Classify owned and purchasable cards against the next GP as useful, neutral, or risky.
+  - Classify owned and purchasable cards against the next GP as `Useful here`, `Situational`, or `Low impact`.
   - Explain the classification with one short reason tied to circuit, weather, setup, position, or economy.
   - Show guidance in the Garage and where the player chooses a plan/card.
   - Keep the model deterministic and covered by tests.
@@ -28,12 +29,13 @@
 # Acceptance criteria
 - AC1: Each card visible to the player can display a contextual guidance label for the next GP.
 - AC2: Guidance never recommends a card that cannot legally be used.
-- AC3: Tests cover weather cards, position/delta cards, economy cards, and no-card/neutral cases.
-- AC4: Browser playtest confirms card guidance is visible without layout overflow.
+- AC3: Guidance avoids "best card" wording and never auto-picks or auto-submits a card.
+- AC4: Tests cover weather cards, position/delta cards, economy cards, and no-card/low-impact cases.
+- AC5: Browser playtest confirms card guidance is visible without layout overflow.
 
 # AC Traceability
 - request-AC7 -> This backlog slice. Proof: AC1: Each card visible to the player can display a contextual guidance label for the next GP.
-- request-AC13 -> This backlog slice. Proof: AC2: Guidance never recommends a card that cannot legally be used.
+- request-AC13 -> This backlog slice. Proof: AC5: Browser playtest confirms card guidance is visible without layout overflow.
 
 # Decision framing
 - Product framing: Not needed

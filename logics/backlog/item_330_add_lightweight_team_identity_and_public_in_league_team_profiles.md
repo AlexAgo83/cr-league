@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 90%
 > Progress: 0%
 > Complexity: Medium
 > Theme: Team identity
@@ -13,11 +13,12 @@
 - Team attachment can improve beta retention without changing the race engine.
 - The league needs a public team profile surface that makes each stable recognizable.
 - Cosmetic depth should start from existing profile/team data before adding a large customization system.
+- Owner decision: this is an in-league team profile, not a public internet profile page.
 
 # Scope
 - In:
   - Add an in-league public team profile view or panel.
-  - Show team name, livery/car identity, current season stats, palmares, recent form, rival, and preferred style when derivable.
+  - Show team name, livery/car identity, championship position, current season stats, palmares, recent form, current rival, and preferred/derived style when derivable.
   - Allow only lightweight customization that fits existing data boundaries.
   - Keep unsafe user content sanitized.
 - Out:
@@ -30,11 +31,12 @@
 - AC1: Every team in a league has an inspectable profile using existing or minimally extended team data.
 - AC2: Human-owned team customization remains sanitized and scoped to the league.
 - AC3: The profile page exposes season stats and palmares without extra manual entry.
-- AC4: Tests cover profile rendering and unsafe customization input.
+- AC4: The first profile version is visible only inside the league and does not create public internet profile URLs.
+- AC5: Tests cover profile rendering and unsafe customization input.
 
 # AC Traceability
 - request-AC8 -> This backlog slice. Proof: AC1: Every team in a league has an inspectable profile using existing or minimally extended team data.
-- request-AC13 -> This backlog slice. Proof: AC2: Human-owned team customization remains sanitized and scoped to the league.
+- request-AC13 -> This backlog slice. Proof: AC5: Tests cover profile rendering and unsafe customization input.
 
 # Decision framing
 - Product framing: Not needed

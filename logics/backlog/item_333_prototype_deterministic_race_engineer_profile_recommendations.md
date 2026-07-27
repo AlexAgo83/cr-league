@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 90%
 > Progress: 0%
 > Complexity: Medium
 > Theme: Race engineer assistant
@@ -13,12 +13,14 @@
 - An immersive assistant could help if the game remains hard to read.
 - The assistant must explain race profiles rather than play automatically.
 - A deterministic first pass avoids model dependencies and keeps advice auditable.
+- Owner decision: do not implement this in the first lot if contextual card guidance makes the Plan screen readable enough.
 
 # Scope
 - In:
-  - Frame the assistant as a race engineer that presents two or three race profiles such as prudent, attack, rain, or economy.
+  - Frame the assistant as a race engineer that presents three race profiles: `Safe points`, `Attack`, and `Weather read`.
   - Tie each profile to circuit/weather/risk/card context with a short explanation.
   - Keep it optional and make manual plan choices remain available.
+  - Allow applying a profile if implemented, but never submit automatically.
   - Use deterministic rules already present in the app where possible.
 - Out:
   - Generative AI calls.
@@ -29,12 +31,13 @@
 # Acceptance criteria
 - AC1: The assistant presents bounded profile options with clear risk/reward text.
 - AC2: The player can ignore the assistant and choose manually.
-- AC3: Recommendations are deterministic and test-covered.
-- AC4: Browser playtest confirms the assistant does not add a blocking step.
+- AC3: If profile apply is implemented, it fills plan choices only and never submits the plan.
+- AC4: Recommendations are deterministic and test-covered.
+- AC5: Browser playtest confirms the assistant does not add a blocking step.
 
 # AC Traceability
 - request-AC11 -> This backlog slice. Proof: AC1: The assistant presents bounded profile options with clear risk/reward text.
-- request-AC13 -> This backlog slice. Proof: AC2: The player can ignore the assistant and choose manually.
+- request-AC13 -> This backlog slice. Proof: AC5: Browser playtest confirms the assistant does not add a blocking step.
 
 # Decision framing
 - Product framing: Not needed

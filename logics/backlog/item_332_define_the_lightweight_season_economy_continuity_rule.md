@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 92%
 > Progress: 0%
 > Complexity: Medium
 > Theme: Season economy
@@ -13,11 +13,12 @@
 - Repeated seasons need some continuity, but too much carry-over can snowball leaders.
 - The user asked to develop the idea before it becomes broad card-economy work.
 - The right first pass should be small, capped, and easy to remove or tune.
+- Owner decision: first pass resets credits and cards; capped credit carry-over is a later evidence-gated follow-up if reset feels too dry in beta.
 
 # Scope
 - In:
-  - Decide and document what persists across season rollover: credits, cards, cosmetics, palmares, and stats.
-  - If implemented in this corpus, use capped partial credit carry-over and reset cards by default.
+  - Document and implement first-pass season rollover: preserve players, palmares, archived season stats, and cosmetic/team identity; reset credits and cards.
+  - Record capped partial credit carry-over as a later option, not the first implementation.
   - Prefer palmares/cosmetic recognition over large mechanical champion bonuses.
   - Run balance/replayability evidence if mechanical carry-over ships.
 - Out:
@@ -27,14 +28,15 @@
   - Paid cosmetics or external progression.
 
 # Acceptance criteria
-- AC1: A documented season rollover rule names each persisted and reset resource.
-- AC2: Any implemented credit carry-over has an explicit cap and anti-snowball rationale.
-- AC3: Season rollover tests cover top, middle, and bottom teams.
-- AC4: Balance evidence is recorded if mechanical carry-over changes gameplay.
+- AC1: The documented season rollover rule preserves players, palmares, archived season stats, and cosmetic/team identity.
+- AC2: The first implementation resets credits and cards for every team.
+- AC3: Any later credit carry-over proposal is documented as a separate evidence-gated follow-up with a 25-35% cap candidate and anti-snowball rationale.
+- AC4: Season rollover tests cover top, middle, and bottom teams.
+- AC5: Balance evidence is recorded if mechanical carry-over changes gameplay in a later slice.
 
 # AC Traceability
-- request-AC10 -> This backlog slice. Proof: AC1: A documented season rollover rule names each persisted and reset resource.
-- request-AC13 -> This backlog slice. Proof: AC2: Any implemented credit carry-over has an explicit cap and anti-snowball rationale.
+- request-AC10 -> This backlog slice. Proof: AC1 and AC2 document the first-pass season rollover rule, including preserved and reset resources.
+- request-AC13 -> This backlog slice. Proof: AC4: Season rollover tests cover top, middle, and bottom teams.
 
 # Decision framing
 - Product framing: Not needed

@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 85%
+> Confidence: 92%
 > Progress: 0%
 > Complexity: Medium
 > Theme: Shop variety
@@ -13,11 +13,12 @@
 - A fixed shop is readable but can become repetitive across repeated private seasons.
 - The user wants variable shop behavior only as an explicit league option and disabled by default.
 - Shop variation must not obscure balance evidence for standard leagues.
+- Owner decision: when enabled, the shop changes every GP and shows a fixed 6-card selection.
 
 # Scope
 - In:
   - Add a league-creation option for variable shop mode, default off.
-  - When enabled, expose a deterministic limited shop selection per GP or season.
+  - When enabled, expose a deterministic 6-card shop selection per GP.
   - Show the mode clearly to players and keep reports/tests aware of the shop model.
   - Keep the fixed shop unchanged for existing/default leagues.
 - Out:
@@ -29,13 +30,13 @@
 # Acceptance criteria
 - AC1: Existing/default leagues keep the fixed shop behavior.
 - AC2: New leagues can opt into variable shop mode at creation.
-- AC3: Variable shop contents are deterministic from league/season/round data and testable.
+- AC3: Variable shop contents are deterministic from league/season/round data, change every GP, show exactly 6 cards, and are testable.
 - AC4: UI copy makes the mode understandable before league creation is confirmed.
 
 # AC Traceability
 - request-AC9 -> This backlog slice. Proof: AC1: Existing/default leagues keep the fixed shop behavior.
 - request-AC10 -> This backlog slice. Proof: AC2: New leagues can opt into variable shop mode at creation.
-- request-AC13 -> This backlog slice. Proof: AC3: Variable shop contents are deterministic from league/season/round data and testable.
+- request-AC13 -> This backlog slice. Proof: AC3: Variable shop contents are deterministic from league/season/round data, change every GP, show exactly 6 cards, and are testable.
 
 # Decision framing
 - Product framing: Not needed

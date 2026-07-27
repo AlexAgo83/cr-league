@@ -3,7 +3,7 @@
 > Schema version: 1.0
 > Status: Ready
 > Understanding: 90%
-> Confidence: 88%
+> Confidence: 92%
 > Progress: 0%
 > Complexity: Medium
 > Theme: Implementation delivery
@@ -15,12 +15,12 @@
 
 # Plan
 - [ ] 1. Confirm the final 0.6 scope from the product brief and keep deferred ideas out of implementation unless explicitly pulled in.
-- [ ] 2. Implement the beta season lifecycle core before optional flavor items.
-- [ ] 3. Add commissioner management, share controls, and manual reminders while preserving creator-only access.
+- [ ] 2. Implement the beta season lifecycle core before optional flavor items: `Quick beta` 3 GP, `Standard season` 6 GP default, no auto-resolve, visible absent-player defaults, card/credit reset on season rollover.
+- [ ] 3. Add commissioner management, share controls, and one-reminder-per-season manual email reminders while preserving creator-only API access.
 - [ ] 4. Close the accessibility gate without redesigning the app.
 - [ ] 5. Improve race feedback, rival context, and contextual card guidance using deterministic data.
 - [ ] 6. Add lightweight team profiles and evaluate whether season economy continuity and variable shop mode should ship in this corpus or be deferred after design proof.
-- [ ] 7. Prototype the deterministic race-engineer assistant only after the core beta flow remains understandable and validated.
+- [ ] 7. Prototype the deterministic race-engineer assistant only if the core beta flow plus card guidance remain insufficient after observation.
 - [ ] 8. Update roadmap/deferred decisions, run relevant tests and browser evidence, run npm run logics:validate, and commit.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
@@ -34,14 +34,18 @@
 
 # Open Questions and Proposed Approaches
 - Scope size: this corpus is intentionally broad. Keep commits wave-sized and close each item with proof before taking optional slices.
-- Season economy: preserve palmares/stats/cosmetic identity by default; reset cards; cap any credit carry-over and run balance evidence before claiming it shippable.
-- Manual reminders: route through one owner-only API mutation, target pending players only, return sent/skipped counts, and enforce a one-send-per-season cap in the API.
+- Presets: ship only `Quick beta` (3 GP) and `Standard season` (6 GP, default); no custom length yet.
+- GP resolution: do not auto-resolve; expose normal commissioner resolve when all plans are ready and resolve-with-defaults when absent players remain.
+- Absents: show default plans before resolution and mark default-plan use in the report.
+- Season economy: preserve players, palmares, archived stats, and cosmetic/team identity; reset cards and credits in the first pass; defer capped credit carry-over unless beta says reset is too dry.
+- Manual reminders: route through one owner-only API mutation, target pending human players only, return sent/skipped counts, and enforce a one-send-per-season cap in the API only after at least one email is sent.
 - Commissioner authority: authorize in API transactions, not only in UI visibility.
 - Accessibility: make local, testable repairs; do not redesign except contrast.
-- Rival: derive only from meaningful standings proximity; use no-rival fallback when ambiguous.
-- Variable shop: default off, creation-time option, deterministic seeded contents, fixed shop remains baseline.
-- Team profile: build from existing team/profile/stat data first; defer uploads and large cosmetic systems.
-- Race engineer: deterministic optional advice, no autopilot, no generative dependency.
+- Rival: derive from nearest meaningful standings proximity, human or bot; use no-rival fallback for first race or ambiguous data.
+- Card guidance: use `Useful here`, `Situational`, and `Low impact`; avoid "best card" language and never auto-pick.
+- Variable shop: default off, creation-time option, deterministic 6-card GP rotation, fixed shop remains baseline.
+- Team profile: build an in-league profile from existing team/profile/stat data first; defer uploads, public internet pages, and large cosmetic systems.
+- Race engineer: defer until card guidance is observed; if pulled in, use deterministic `Safe points`, `Attack`, and `Weather read` profiles, no auto-submit, no generative dependency.
 - Deferred modes: keep objectives, arcade solo, quick play, onboarding rewrite, compact replay, automatic reminders, polling/SSE, and 1.0 hardening out unless scope changes.
 
 # Backlog

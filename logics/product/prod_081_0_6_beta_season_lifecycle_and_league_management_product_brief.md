@@ -8,6 +8,7 @@
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 > Non-semantic edit: Added overview Mermaid diagram to make the 0.6 corpus slices easier to scan.
 > Semantic edit: Owner clarified that manual reminder emails are capped to one send per season for the first implementation.
+> Semantic edit: Recorded owner decisions for first-pass presets, GP resolution, absent-player defaults, season rollover, rival/card/team/shop rules, and race-engineer deferral.
 
 # Overview
 Deliver the first real private beta season layer for CR League: a season can run across several Grands Prix, the league creator can manage readiness and manual reminders from one place, players get clearer race/rival/card guidance, and optional identity/economy variants are introduced only where they improve repeated private-league play.
@@ -51,14 +52,17 @@ flowchart TD
 
 # Open Questions and Proposed Approaches
 - Broad corpus risk: implement in strict order. Ship season lifecycle, commissioner management, and accessibility first; then add action feedback, rival context, and card guidance. Team profiles, variable shop, season economy, and race-engineer recommendations must prove they still fit after the core beta loop works.
-- Season economy continuity: avoid leader snowball. Default to preserving palmares, stats, and cosmetic/team identity while resetting cards. If credits carry over, cap them around 25-35% and require balance evidence.
+- Season lifecycle: ship exactly two presets first, `Quick beta` at 3 GP and `Standard season` at 6 GP, with `Standard season` as the default. Do not add custom season length until beta operators ask for it.
+- GP resolution and absences: do not auto-resolve. The commissioner gets a resolve action when all plans are ready and a separate resolve-with-defaults path when players are absent. Defaults must be visible before resolution and named in the report after resolution.
+- Season economy continuity: avoid leader snowball. For the first pass, preserve players, palmares, archived season stats, and cosmetic/team identity while resetting cards and credits. If later evidence asks for carry-over, cap credits around 25-35% and require balance evidence.
 - Manual reminder emails: keep the admin in control and cap the first implementation to one send per season. Add one commissioner action that targets only players with pending plans and usable profile email data, reports sent/skipped recipients, refuses repeat sends for the same season with a clear explanation, and never schedules automatic reminders.
 - Commissioner permissions: enforce owner-only mutations in the API. The web screen is not the security boundary; tests must prove non-creators cannot resolve, remind, or change league-management settings.
 - Accessibility without redesign: fix labels, ARIA, heading structure, contrast, and tap targets locally. Preserve layout, art direction, component shapes, and copy hierarchy unless contrast or target size requires a minimal adjustment.
-- Rival thread: derive a rival only when standings data makes it meaningful. If the nearest-neighbor signal is ambiguous, show no rival rather than forcing a fake story.
-- Variable shop: make it an explicit league-creation option, disabled by default, deterministic from league/season/round data, and clearly visible to players. Fixed-shop leagues remain the balance baseline.
-- Team profile: start from existing data. Show name, car/livery, current stats, palmares, recent form, rival, and derived style before adding deeper cosmetics, uploads, or public internet pages.
-- Race-engineer assistant: keep it deterministic and optional. Present bounded profiles with explanations; never auto-submit a plan and never require generative AI.
+- Rival thread: derive a rival only when standings data makes it meaningful. Prefer the nearest standings neighbor, human or bot. If the first race has no points or the nearest-neighbor signal is ambiguous, show no rival rather than forcing a fake story.
+- Card guidance: use exactly three labels first: `Useful here`, `Situational`, and `Low impact`, each with one short deterministic reason. Avoid “best card” language and never auto-pick.
+- Variable shop: make it an explicit league-creation option, disabled by default. When enabled, rotate a deterministic 6-card shop every GP using league/season/round data. Fixed-shop leagues remain the balance baseline.
+- Team profile: start from existing data and keep the profile visible only inside the league. Show name, car/livery, championship position, season stats, palmares, current rival, and derived style before adding deeper cosmetics, uploads, or public internet pages.
+- Race-engineer assistant: do not ship in the first lot if card guidance makes the Plan screen clear enough. If later pulled in, keep it deterministic and optional with `Safe points`, `Attack`, and `Weather read` profiles; allow applying a profile but never submit automatically and never require generative AI.
 - Deferred ideas: keep optional secondary objectives, arcade solo, quick play matchmaking, onboarding/tutorial rewrite, compact replay/highlights, automatic reminders, polling/SSE, and 1.0 hardening out of this corpus unless the user explicitly changes scope.
 
 # Success signals

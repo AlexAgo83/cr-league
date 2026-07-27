@@ -557,6 +557,7 @@
   "garage_buy_confirm_action": "Acheter la carte",
   "garage_buy_quantity": "Quantité",
   "garage_sell_card_action": "Revendre pour {price} crédits",
+  "garage_sell_card_locked": "Cette carte est déjà engagée dans le plan ou le chrono du GP en cours.",
   "garage_livery": "Couleurs voiture",
   "garage_identity": "Identité",
   "garage_team_name": "Nom d'écurie",

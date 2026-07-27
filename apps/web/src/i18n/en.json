@@ -557,6 +557,7 @@
   "garage_buy_confirm_action": "Buy card",
   "garage_buy_quantity": "Quantity",
   "garage_sell_card_action": "Sell for {price} credits",
+  "garage_sell_card_locked": "This card is already committed to the current GP plan or chrono.",
   "garage_livery": "Car colors",
   "garage_identity": "Identity",
   "garage_team_name": "Team name",

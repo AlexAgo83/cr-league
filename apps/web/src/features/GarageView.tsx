@@ -365,6 +365,7 @@ export function GarageView({
             <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>
             <CardStatBadges cardId={viewingCardId} tt={tt} />
           </div>
+          {viewingCardLocked ? <p className="garage-buy-confirm-note">{tt("garage_sell_card_locked")}</p> : null}
           <div className="modal-actions">
             <button
               type="button"

@@ -481,7 +481,8 @@
 }
 
 .garage-buy-confirm-note {
-  opacity: 0.68;
+  color: rgb(248 243 232 / 0.72);
+  opacity: 0.9;
 }
 
 .garage-buy-card {

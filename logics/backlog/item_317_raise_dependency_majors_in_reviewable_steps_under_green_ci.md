@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 50%
+> Progress: 60%
 > Complexity: Medium
 > Theme: Maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -62,4 +62,8 @@
 - 2026-07-27 wave 2: upgraded the build-tooling group only: `vite` 8.1.5 and `@vitejs/plugin-react` 6.0.4.
 - Updated `engines.node` to `^20.19.0 || >=22.12.0`, matching Vite 8's package engine requirement.
 - Validation: `typecheck`, `lint`, full unit suite, production build, Chromium e2e, and production audit passed.
-- Deferred within this item: Prisma 7, ESLint 10, jsdom 29, `@types/node` 26, and TypeScript major decision remain separate reviewable waves.
+- Deferred within this item after wave 2: Prisma 7, ESLint 10, jsdom/Node types, and TypeScript major decision remained separate reviewable waves.
+- 2026-07-27 wave 3: upgraded `jsdom` to 29.1.1 and `@types/node` to 26.1.1.
+- Declined `jsdom@30` in this wave because its package engine is higher than the current local runtime and the Vite 8 engine floor.
+- Validation: `typecheck`, `lint`, full unit suite, production build, and production audit passed.
+- Deferred within this item: Prisma 7, ESLint 10, and TypeScript major decision remain separate reviewable waves.

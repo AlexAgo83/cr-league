@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 50%
+> Progress: 60%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -61,6 +61,8 @@
 - Validation evidence: `npm run typecheck` OK; `npm run lint` OK; `npm test` OK with 350 passing / 7 skipped before the final storage test and targeted 62-test rerun OK after; `npm run test:coverage` OK at 89.4% statements against the 89.37% baseline; `npm run build` OK; `npm run test:e2e -- --project=chromium` OK, 4 passed; `npm audit --omit=dev --audit-level=high` OK, 0 vulnerabilities; `npm run logics:validate` OK with existing non-blocking warnings.
 - 2026-07-27 wave 2 complete: upgraded `vite` to 8.1.5 and `@vitejs/plugin-react` to 6.0.4, and tightened `engines.node` to `^20.19.0 || >=22.12.0` to match Vite 8's runtime floor.
 - Wave 2 validation evidence: `npm run typecheck` OK; `npm run lint` OK; `npm test` OK with 352 passing / 7 skipped; `npm run build` OK; `npm run test:e2e -- --project=chromium` OK, 4 passed; `npm audit --omit=dev --audit-level=high` OK, 0 vulnerabilities. Full dev audit still reports the ESLint/minimatch advisory, owned by the ESLint 10 group.
+- 2026-07-27 wave 3 complete: upgraded `jsdom` to 29.1.1 and `@types/node` to 26.1.1. Declined `jsdom@30` because it requires Node `^22.22.2 || ^24.15.0 || >=26.0.0`, above the local Node 22.16.0 and the Vite 8 engine floor already recorded.
+- Wave 3 validation evidence: `npm run typecheck` OK; `npm run lint` OK; `npm test` OK with 352 passing / 7 skipped; `npm run build` OK; `npm audit --omit=dev --audit-level=high` OK, 0 vulnerabilities.
 - Remaining in this task: dependency major upgrades and residual `App.tsx` state consolidation.
 
 # AI Context

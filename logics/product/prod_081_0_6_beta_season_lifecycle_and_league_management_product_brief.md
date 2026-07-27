@@ -48,6 +48,18 @@ flowchart TD
 - Use structured input as the source of truth for generated docs.
 - Keep generated write paths local and repo-bounded.
 
+# Open Questions and Proposed Approaches
+- Broad corpus risk: implement in strict order. Ship season lifecycle, commissioner management, and accessibility first; then add action feedback, rival context, and card guidance. Team profiles, variable shop, season economy, and race-engineer recommendations must prove they still fit after the core beta loop works.
+- Season economy continuity: avoid leader snowball. Default to preserving palmares, stats, and cosmetic/team identity while resetting cards. If credits carry over, cap them around 25-35% and require balance evidence.
+- Manual reminder emails: keep the admin in control. Add one commissioner action that targets only players with pending plans and usable profile email data, reports sent/skipped recipients, and never schedules automatic reminders.
+- Commissioner permissions: enforce owner-only mutations in the API. The web screen is not the security boundary; tests must prove non-creators cannot resolve, remind, or change league-management settings.
+- Accessibility without redesign: fix labels, ARIA, heading structure, contrast, and tap targets locally. Preserve layout, art direction, component shapes, and copy hierarchy unless contrast or target size requires a minimal adjustment.
+- Rival thread: derive a rival only when standings data makes it meaningful. If the nearest-neighbor signal is ambiguous, show no rival rather than forcing a fake story.
+- Variable shop: make it an explicit league-creation option, disabled by default, deterministic from league/season/round data, and clearly visible to players. Fixed-shop leagues remain the balance baseline.
+- Team profile: start from existing data. Show name, car/livery, current stats, palmares, recent form, rival, and derived style before adding deeper cosmetics, uploads, or public internet pages.
+- Race-engineer assistant: keep it deterministic and optional. Present bounded profiles with explanations; never auto-submit a plan and never require generative AI.
+- Deferred ideas: keep optional secondary objectives, arcade solo, quick play matchmaking, onboarding/tutorial rewrite, compact replay/highlights, automatic reminders, polling/SSE, and 1.0 hardening out of this corpus unless the user explicitly changes scope.
+
 # Success signals
 - Generated docs pass lint and audit without broad manual rewrites.
 - Context-pack output can be handed to an implementation agent directly.

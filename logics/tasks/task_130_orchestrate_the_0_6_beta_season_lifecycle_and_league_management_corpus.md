@@ -8,6 +8,7 @@
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Non-semantic edit: Added execution-risk order and open-question approaches from owner follow-up; no status or implementation scope change.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
@@ -24,6 +25,24 @@
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.
+
+# Execution Risk Order
+- Must ship first: `item_324` season lifecycle core, `item_325` commissioner management/manual reminders, and `item_326` accessibility gate.
+- Should ship next if the core remains stable: `item_327` action feedback, `item_328` rival thread, and `item_329` contextual card guidance.
+- Ship only after design proof or explicit pull-in: `item_330` team profiles, `item_331` optional variable shop, `item_332` season economy continuity, and `item_333` deterministic race-engineer recommendations.
+- Guardrail: `item_334` should stay visible throughout the task so deferred ideas do not leak into the implementation wave.
+
+# Open Questions and Proposed Approaches
+- Scope size: this corpus is intentionally broad. Keep commits wave-sized and close each item with proof before taking optional slices.
+- Season economy: preserve palmares/stats/cosmetic identity by default; reset cards; cap any credit carry-over and run balance evidence before claiming it shippable.
+- Manual reminders: route through one owner-only API mutation, target pending players only, and return sent/skipped counts.
+- Commissioner authority: authorize in API transactions, not only in UI visibility.
+- Accessibility: make local, testable repairs; do not redesign except contrast.
+- Rival: derive only from meaningful standings proximity; use no-rival fallback when ambiguous.
+- Variable shop: default off, creation-time option, deterministic seeded contents, fixed shop remains baseline.
+- Team profile: build from existing team/profile/stat data first; defer uploads and large cosmetic systems.
+- Race engineer: deterministic optional advice, no autopilot, no generative dependency.
+- Deferred modes: keep objectives, arcade solo, quick play, onboarding rewrite, compact replay, automatic reminders, polling/SSE, and 1.0 hardening out unless scope changes.
 
 # Backlog
 - `item_324_build_the_beta_season_lifecycle_core`

@@ -65,6 +65,7 @@ export function AppOverlays({
   onStartNextGrandPrix,
   onOpenResultReport,
   onUpdateSettings,
+  onSendPlanReminders,
   onForgetPlayer,
   onRestartLeague,
   onCloseOnboardingHelp,
@@ -128,6 +129,7 @@ export function AppOverlays({
   onStartNextGrandPrix: () => void;
   onOpenResultReport: () => void;
   onUpdateSettings: () => void;
+  onSendPlanReminders: () => void;
   onForgetPlayer: () => void;
   onRestartLeague: () => void;
   onCloseOnboardingHelp: (topic: OnboardingHelpTopic, dismiss: boolean) => void;
@@ -186,7 +188,7 @@ export function AppOverlays({
       {nextGrandPrixConfirmOpen ? <NextGrandPrixConfirmModal isSeasonFinalGrandPrix={isSeasonFinalGrandPrix} nextGrandPrixActionLabel={nextGrandPrixActionLabel} status={status} pendingMessage={pendingMessage} hasResult={hasResult} tt={tt} onClose={onCloseNextGrandPrixConfirm} onStartNextGrandPrix={onStartNextGrandPrix} onOpenReport={onOpenResultReport} /> : null}
       {seasonRecap ? <SeasonRecapModal recap={seasonRecap} playerTeamId={playerTeamId} tt={tt} onClose={onCloseSeasonRecap} /> : null}
       {leagueControlsOpen && leagueState ? (
-        <LeagueControlsModal form={form} status={status} pendingMessage={pendingMessage} hasPlayer={Boolean(leagueState.player)} tt={tt} setForm={setForm} onClose={onCloseLeagueControls} onUpdateSettings={onUpdateSettings} onForgetPlayer={onForgetPlayer} onOpenRestartConfirm={onOpenRestartConfirm} />
+        <LeagueControlsModal form={form} leagueState={leagueState} status={status} pendingMessage={pendingMessage} hasPlayer={Boolean(leagueState.player)} tt={tt} setForm={setForm} onClose={onCloseLeagueControls} onUpdateSettings={onUpdateSettings} onSendPlanReminders={onSendPlanReminders} onForgetPlayer={onForgetPlayer} onOpenRestartConfirm={onOpenRestartConfirm} />
       ) : null}
       {restartConfirmOpen ? <RestartConfirmModal status={status} pendingMessage={pendingMessage} tt={tt} onClose={onCloseRestartConfirm} onRestart={onRestartLeague} /> : null}
     </>

@@ -20,7 +20,12 @@ export const baseState = {
     fillWithBots: true,
     qualifyingAttemptLimit: 3,
     maxGrandPrixPerSeason: 6,
-    preparationDeadlineAt: null
+    preparationDeadlineAt: null,
+    reminderSentAt: null,
+    reminderSentBy: null,
+    reminderSeasonNumber: null,
+    reminderSentCount: 0,
+    reminderSkippedCount: 0
   },
   currentGrandPrix: {
     id: "gp_1",

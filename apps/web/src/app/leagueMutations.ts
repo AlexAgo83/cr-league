@@ -222,5 +222,22 @@ export function createLeagueMutations({
     );
   }
 
-  return { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, buyCarAsset, updateLivery, updateTeamName, restartLeague };
+  async function sendPlanReminders() {
+    if (!leagueState) return;
+
+    await run(tt("status_sending_plan_reminders"), async () => {
+      const state = await api<LeagueState & { reminder?: { alreadySent: boolean; sentCount: number; skippedCount: number } }>(`/leagues/${leagueState.league.id}/reminders/plan`, {
+        method: "POST",
+        body: JSON.stringify({
+          teamId: leagueState.player?.teamId,
+          claimCode: leagueState.player?.claimCode
+        })
+      });
+      setLeagueState(withCurrentPlayer(state));
+      const reminder = state.reminder;
+      showStatus(reminder?.alreadySent ? tt("status_plan_reminder_already_sent") : tt("status_plan_reminders_sent"));
+    });
+  }
+
+  return { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, buyCarAsset, updateLivery, updateTeamName, restartLeague, sendPlanReminders };
 }

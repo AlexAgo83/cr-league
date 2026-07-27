@@ -17,6 +17,7 @@ import {
   restartLeague,
   resolveCurrentGrandPrix,
   sellCard,
+  sendPlanReminders,
   startNextGrandPrix,
   submitDecision,
   submitQualifyingRun,
@@ -195,6 +196,17 @@ export async function registerLeagueRoutes(app: FastifyInstance, db: PrismaClien
     guard: isAdminBody,
     badRequest: "Expected an admin proof body.",
     run: (body, leagueId) => resolveCurrentGrandPrix(db, leagueId, body)
+  }));
+
+  app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/reminders/plan", WRITE_RATE_LIMIT, jsonRoute({
+    guard: isAdminBody,
+    badRequest: "Expected an admin proof body.",
+    run: (body, leagueId) => sendPlanReminders(db, leagueId, body, mailer),
+    serialize: (result, body) => {
+      const payload = result as Awaited<ReturnType<typeof sendPlanReminders>>;
+      if (!payload?.state) return payload;
+      return { ...stateForBody(payload.state, body), reminder: payload.reminder };
+    }
   }));
 
   app.post<{ Params: { leagueId: string } }>("/leagues/:leagueId/next-grand-prix", WRITE_RATE_LIMIT, jsonRoute({

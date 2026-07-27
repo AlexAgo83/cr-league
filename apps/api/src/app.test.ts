@@ -5,11 +5,15 @@ import { createTestApp } from "./app.testHelpers.js";
 import type { RecoveryMailer } from "./mailer.js";
 
 function recordingMailer() {
-  const sent: Array<{ email: string; code: string }> = [];
+  const sent: Array<{ email: string; code?: string; reminder?: { leagueName: string; teamName: string; grandPrixName: string; season: number; round: number } }> = [];
   const mailer: RecoveryMailer = {
     active: true,
     async sendRecoveryCode(email, code) {
       sent.push({ email, code });
+      return true;
+    },
+    async sendPlanReminder(email, reminder) {
+      sent.push({ email, reminder });
       return true;
     }
   };
@@ -1051,6 +1055,65 @@ describe("api app", () => {
     expect(createResponse.statusCode).toBe(200);
     expect(bareJoinResponse.statusCode).toBe(403);
     expect(wrongJoinResponse.statusCode).toBe(403);
+  });
+
+  it("sends one manual plan reminder per season to pending human profile emails", async () => {
+    const db = createMemoryDb();
+    const { mailer, sent } = recordingMailer();
+    const app = await createTestApp(db, undefined, [], "http://localhost:4873", mailer);
+
+    await app.inject({ method: "POST", url: "/profiles", payload: { email: "owner@example.test" } });
+    await app.inject({ method: "POST", url: "/profiles", payload: { email: "late@example.test" } });
+    const ownerProfile = await db.profile.findUnique({ where: { email: "owner@example.test" } });
+    const lateProfile = await db.profile.findUnique({ where: { email: "late@example.test" } });
+    const ownerCode = sent.find((entry) => entry.email === "owner@example.test")?.code;
+    const lateCode = sent.find((entry) => entry.email === "late@example.test")?.code;
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false, profileId: ownerProfile!.id, recoveryCode: ownerCode }
+    });
+    const created = createResponse.json();
+    await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code: created.league.code, teamName: "Late Apex", profileId: lateProfile!.id, recoveryCode: lateCode }
+    });
+    await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/decisions`,
+      payload: { ...created.player, approach: "balanced", preparation: "speed" }
+    });
+
+    const reminderResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/reminders/plan`,
+      payload: created.player
+    });
+    const secondReminderResponse = await app.inject({
+      method: "POST",
+      url: `/leagues/${created.league.id}/reminders/plan`,
+      payload: created.player
+    });
+
+    await app.close();
+
+    const reminders = sent.filter((entry) => entry.reminder);
+    expect(reminderResponse.statusCode).toBe(200);
+    expect(reminderResponse.json().reminder).toMatchObject({ alreadySent: false, sentCount: 1, skippedCount: 0 });
+    expect(reminderResponse.json().league).toMatchObject({
+      reminderSentBy: created.player.teamId,
+      reminderSeasonNumber: 1,
+      reminderSentCount: 1,
+      reminderSkippedCount: 0
+    });
+    expect(reminders).toEqual([
+      expect.objectContaining({
+        email: "late@example.test",
+        reminder: expect.objectContaining({ leagueName: "Office League", teamName: "Late Apex", season: 1, round: 1 })
+      })
+    ]);
+    expect(secondReminderResponse.json().reminder).toMatchObject({ alreadySent: true, sentCount: 0, skippedCount: 0 });
   });
 
   it("uses revocable session credentials instead of persisted recovery and claim codes", async () => {

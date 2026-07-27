@@ -8,6 +8,7 @@ export type Db = Pick<PrismaClient, "league" | "grandPrix" | "team" | "raceDecis
 export type RecoveryMailer = {
   active: boolean;
   sendRecoveryCode(email: string, code: string): Promise<boolean>;
+  sendPlanReminder?(email: string, input: { leagueName: string; teamName: string; grandPrixName: string; season: number; round: number }): Promise<boolean>;
 };
 
 export type CreateLeagueInput = {

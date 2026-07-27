@@ -73,7 +73,12 @@ function stateWithHistory(grandPrixHistory: LeagueState["grandPrixHistory"]): Le
       fillWithBots: true,
       qualifyingAttemptLimit: 3,
       maxGrandPrixPerSeason: 2,
-      preparationDeadlineAt: null
+      preparationDeadlineAt: null,
+      reminderSentAt: null,
+      reminderSentBy: null,
+      reminderSeasonNumber: null,
+      reminderSentCount: 0,
+      reminderSkippedCount: 0
     },
     seasonSummaries: [],
     currentGrandPrix: {

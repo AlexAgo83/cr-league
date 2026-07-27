@@ -25,6 +25,7 @@ export {
   updateLeagueSettings,
   updateTeamLivery,
   updateTeamName,
+  sendPlanReminders,
   startNextGrandPrix,
   restartLeague,
   withPlayer

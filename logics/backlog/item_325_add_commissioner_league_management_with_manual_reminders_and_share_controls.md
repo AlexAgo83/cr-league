@@ -1,10 +1,10 @@
 ## item_325_add_commissioner_league_management_with_manual_reminders_and_share_controls - Add commissioner league management with manual reminders and share controls
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In Progress
 > Understanding: 90%
 > Confidence: 96
-> Progress: 0%
+> Progress: 60%
 > Complexity: Medium
 > Theme: League management
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -45,6 +45,22 @@
 - AC9: Invite/share copy works without requiring email delivery.
 - AC10: Browser evidence covers the commissioner screen at desktop and mobile widths and confirms the layout remains polished, readable, stacked appropriately on mobile, and consistent with CR League visual language.
 - AC11: API authorization and web tests cover creator-only access, pending-player targeting, skipped-recipient behavior, audit fields, and the one-send-per-season reminder cap.
+
+# Implementation Notes
+- 2026-07-27: Renamed the existing creator control modal to `Direction de course` / `Race direction`.
+- 2026-07-27: Added current GP status, invite copy, pending-plan lane, submitted-plan lane, and visible neutral default-plan copy to the commissioner surface.
+- 2026-07-27: Added `Relancer les retardataires` / `Remind pending drivers` action from the commissioner modal.
+- 2026-07-27: Added `POST /leagues/:leagueId/reminders/plan`, guarded by owner proof through the existing admin claim path.
+- 2026-07-27: Added persistent reminder audit on `League`: `reminderSentAt`, `reminderSentBy`, `reminderSeasonNumber`, `reminderSentCount`, `reminderSkippedCount`.
+- 2026-07-27: Enforced the first-pass one-successful-reminder-per-season cap server-side; zero-delivery attempts do not consume the cap.
+- 2026-07-27: Reused the existing mailer boundary with a plan-reminder method; players without profile email or without active SMTP are skipped.
+- Evidence: `rtk npm run typecheck` -> passed.
+- Evidence: `rtk npm test -- --run apps/api/src/app.test.ts apps/web/src/app/App.test.tsx apps/web/src/app/helpers.test.ts` -> 90 tests passed.
+
+# Remaining Work
+- Add browser evidence at desktop and mobile widths for the `Direction de course` layout.
+- Consider a post-send detail line in the modal showing exact sent/skipped counts after the reminder response.
+- Extend web tests around the reminder button locked label once fetch fixtures cover the reminder endpoint.
 
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: Only the league creator can access the commissioner controls.

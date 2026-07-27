@@ -343,6 +343,7 @@ export function SeasonRecapModal({
 
 export function LeagueControlsModal({
   form,
+  leagueState,
   status,
   pendingMessage,
   hasPlayer,
@@ -350,10 +351,12 @@ export function LeagueControlsModal({
   setForm,
   onClose,
   onUpdateSettings,
+  onSendPlanReminders,
   onForgetPlayer,
   onOpenRestartConfirm
 }: {
   form: FormState;
+  leagueState: LeagueState;
   status: string;
   pendingMessage: string | null;
   hasPlayer: boolean;
@@ -361,12 +364,48 @@ export function LeagueControlsModal({
   setForm: (form: FormState) => void;
   onClose: () => void;
   onUpdateSettings: () => void;
+  onSendPlanReminders: () => void;
   onForgetPlayer: () => void;
   onOpenRestartConfirm: () => void;
 }) {
+  const submitted = new Set(leagueState.actionState.submittedTeamIds);
+  const humanTeams = leagueState.teams.filter((team) => team.kind === "human");
+  const pendingTeams = humanTeams.filter((team) => !submitted.has(team.id));
+  const readyTeams = humanTeams.filter((team) => submitted.has(team.id));
+  const reminderLocked = leagueState.league.reminderSeasonNumber === leagueState.currentGrandPrix.season && Boolean(leagueState.league.reminderSentAt);
+  const inviteLink = leagueState.league.code ? `${globalThis.location?.origin ?? ""}/?code=${leagueState.league.code}` : "";
   return (
     <Modal label={tt("settings_title")} className="panel modal league-controls-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/league-arrival.webp" kicker={tt("championship_kicker")} title={tt("settings_title")} />
+      <div className="race-direction-grid">
+        <section className="race-direction-panel">
+          <span className="section-kicker">{tt("race_direction_current_gp")}</span>
+          <strong>{tt("league_season")} {leagueState.currentGrandPrix.season} · {tt("league_round")} {leagueState.currentGrandPrix.round}/{leagueState.league.maxGrandPrixPerSeason}</strong>
+          <small>{tt(`next_action_${leagueState.actionState.nextAction}` as TranslationKey)}</small>
+        </section>
+        <section className="race-direction-panel">
+          <span className="section-kicker">{tt("race_direction_share")}</span>
+          <strong>{leagueState.league.code ?? tt("race_direction_no_invite")}</strong>
+          <button type="button" className="secondary-button" onClick={() => void navigator.clipboard?.writeText(inviteLink || leagueState.league.code || "")} disabled={!leagueState.league.code}>
+            {tt("action_copy_invite")}
+          </button>
+        </section>
+      </div>
+      <div className="race-direction-lanes">
+        <section>
+          <h3>{tt("race_direction_pending")} ({pendingTeams.length})</h3>
+          <ul>
+            {pendingTeams.length ? pendingTeams.map((team) => <li key={team.id}>{team.name}</li>) : <li>{tt("race_direction_none")}</li>}
+          </ul>
+        </section>
+        <section>
+          <h3>{tt("race_direction_ready")} ({readyTeams.length})</h3>
+          <ul>
+            {readyTeams.length ? readyTeams.map((team) => <li key={team.id}>{team.name}</li>) : <li>{tt("race_direction_none")}</li>}
+          </ul>
+        </section>
+      </div>
+      {pendingTeams.length ? <p className="race-direction-defaults">{tt("race_direction_defaults")}</p> : null}
       <div className="field-grid settings-fields">
         <label>
           {tt("field_cadence")}
@@ -385,6 +424,9 @@ export function LeagueControlsModal({
         <PendingFeedback message={pendingMessage} />
         <button type="button" onClick={onUpdateSettings} disabled={status === "loading"}>
           {tt("action_update_settings")}
+        </button>
+        <button type="button" onClick={onSendPlanReminders} disabled={status === "loading" || !pendingTeams.length || reminderLocked}>
+          {reminderLocked ? tt("plan_reminder_already_sent") : tt("action_send_plan_reminders")}
         </button>
         <button type="button" onClick={onForgetPlayer} disabled={status === "loading" || !hasPlayer}>
           {tt("action_forget_team")}

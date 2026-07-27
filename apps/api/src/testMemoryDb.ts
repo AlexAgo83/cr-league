@@ -13,6 +13,11 @@ export function createMemoryDb(): PrismaClient {
     maxGrandPrixPerSeason: number;
     ownerTeamId: string | null;
     preparationDeadlineAt: Date | null;
+    reminderSentAt: Date | null;
+    reminderSentBy: string | null;
+    reminderSeasonNumber: number | null;
+    reminderSentCount: number;
+    reminderSkippedCount: number;
     seasonSummaries: unknown[];
     createdAt: Date;
   };
@@ -102,6 +107,11 @@ export function createMemoryDb(): PrismaClient {
           maxGrandPrixPerSeason: 6,
           ownerTeamId: null,
           preparationDeadlineAt: null,
+          reminderSentAt: null,
+          reminderSentBy: null,
+          reminderSeasonNumber: null,
+          reminderSentCount: 0,
+          reminderSkippedCount: 0,
           seasonSummaries: [],
           createdAt: new Date(),
           ...data
@@ -114,7 +124,7 @@ export function createMemoryDb(): PrismaClient {
         include
       }: {
         where: { id?: string; code?: string };
-        include?: { teams?: { orderBy?: { createdAt?: string } | Array<{ points?: string; name?: string }> } };
+        include?: { teams?: { orderBy?: { createdAt?: string } | Array<{ points?: string; name?: string }>; include?: { profile?: boolean } } };
       }) => {
         const league = leagues.find((candidate) => candidate.id === where.id || candidate.code === where.code);
         if (!league) return null;
@@ -134,7 +144,10 @@ export function createMemoryDb(): PrismaClient {
 
         return {
           ...league,
-          teams: leagueTeams,
+          teams: leagueTeams.map((team) => ({
+            ...team,
+            profile: include?.teams && "include" in include.teams && include.teams.include?.profile ? profiles.find((profile) => profile.id === team.profileId) ?? null : undefined
+          })),
           grandPrixes: leagueGrandPrixes
         };
       },
@@ -173,7 +186,7 @@ export function createMemoryDb(): PrismaClient {
         data
       }: {
         where: { id: string };
-        data: { cadence?: string; ownerTeamId?: string | null; preparationDeadlineAt?: Date | null; seasonSummaries?: unknown[] };
+        data: Partial<Pick<LeagueRow, "cadence" | "ownerTeamId" | "preparationDeadlineAt" | "reminderSentAt" | "reminderSentBy" | "reminderSeasonNumber" | "reminderSentCount" | "reminderSkippedCount" | "seasonSummaries">>;
       }) => {
         const league = leagues.find((candidate) => candidate.id === where.id);
         if (!league) throw new Error("League not found");

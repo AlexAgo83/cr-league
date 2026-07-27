@@ -2632,7 +2632,58 @@ label small {
 }
 
 .league-controls-modal {
-  max-width: 560px;
+  max-width: 760px;
+}
+
+.race-direction-grid,
+.race-direction-lanes {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.race-direction-panel,
+.race-direction-lanes section,
+.race-direction-defaults {
+  background: rgb(15 23 42 / 0.52);
+  border: 1px solid rgb(164 158 147 / 0.2);
+  border-radius: 8px;
+  padding: 12px;
+}
+
+.race-direction-panel {
+  display: grid;
+  gap: 6px;
+}
+
+.race-direction-panel strong,
+.race-direction-lanes h3 {
+  margin: 0;
+}
+
+.race-direction-lanes ul {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 10px 0 0;
+  padding: 0;
+}
+
+.race-direction-lanes li {
+  border-left: 3px solid rgb(125 211 252 / 0.7);
+  padding-left: 8px;
+}
+
+.race-direction-defaults {
+  color: var(--muted);
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .race-direction-grid,
+  .race-direction-lanes {
+    grid-template-columns: 1fr;
+  }
 }
 
 .modal-close-button {

@@ -759,7 +759,7 @@ describe("App", () => {
 
     // Championship view
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
-    expect(screen.getByText("Season 1 · Round 1/6")).toBeTruthy();
+    expect(screen.getAllByText("Season 1 · Round 1/6").length).toBeGreaterThan(0);
     expect(screen.getAllByText("Current GP").length).toBe(1);
     expect(document.querySelector(".current-gp-panel")).toBe(null);
     expect(screen.getByText("0/2")).toBeTruthy();
@@ -1032,13 +1032,13 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     expect(document.querySelector(".championship-settings-panel")).toBe(null);
 
-    // League controls live in the profile menu.
+    // Race direction lives in the profile menu.
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     expect(screen.getByLabelText("Language")).toBeTruthy();
-    expect(document.querySelector(".profile-menu-panel")?.textContent).toContain("League controls");
-    expect(document.querySelector(".championship-overview")?.textContent).not.toContain("League controls");
-    fireEvent.click(screen.getByRole("button", { name: "League controls" }));
-    expect(screen.getByRole("dialog", { name: "League controls" })).toBeTruthy();
+    expect(document.querySelector(".profile-menu-panel")?.textContent).toContain("Race direction");
+    expect(document.querySelector(".championship-overview")?.textContent).not.toContain("Race direction");
+    fireEvent.click(screen.getByRole("button", { name: "Race direction" }));
+    expect(screen.getByRole("dialog", { name: "Race direction" })).toBeTruthy();
     fireEvent.change(screen.getByLabelText("Cadence"), { target: { value: "weekly" } });
     fireEvent.click(screen.getByRole("button", { name: "Update settings" }));
     expect(await screen.findByText("League settings updated.")).toBeTruthy();
@@ -1046,7 +1046,7 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "Restart session" }));
     fireEvent.click(within(screen.getByRole("dialog", { name: "Restart session" })).getByRole("button", { name: "Restart session" }));
     expect(await screen.findByText("Playtest session restarted.")).toBeTruthy();
-    expect(screen.getByText("Season 1 · Round 1/6")).toBeTruthy();
+    expect(screen.getAllByText("Season 1 · Round 1/6").length).toBeGreaterThan(0);
 
     fireEvent.click(screen.getByRole("button", { name: "Forget team" }));
     expect(screen.getAllByText("Team claim forgotten.").length).toBeGreaterThan(0);

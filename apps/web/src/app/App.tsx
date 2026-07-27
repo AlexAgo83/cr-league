@@ -257,7 +257,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   } = race;
   const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
   const nextGrandPrixActionLabel = tt(isSeasonFinalGrandPrix ? "action_start_next_season" : "action_next_grand_prix");
-  const { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, buyCarAsset, updateLivery, updateTeamName, restartLeague: restartLeagueState } = createLeagueMutations({
+  const { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, buyCarAsset, updateLivery, updateTeamName, restartLeague: restartLeagueState, sendPlanReminders } = createLeagueMutations({
     leagueState,
     playerTeam,
     playerDecision,
@@ -620,6 +620,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         setGameView("plan");
       }}
       onUpdateSettings={updateSettings}
+      onSendPlanReminders={() => void sendPlanReminders()}
       onForgetPlayer={forgetPlayer}
       onRestartLeague={() => void restartLeague()}
       onCloseOnboardingHelp={closeOnboardingHelp}

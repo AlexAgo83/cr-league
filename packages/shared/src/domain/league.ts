@@ -13,6 +13,11 @@ export type LeagueState = {
     qualifyingAttemptLimit: number;
     maxGrandPrixPerSeason: number;
     preparationDeadlineAt: string | null;
+    reminderSentAt: string | null;
+    reminderSentBy: string | null;
+    reminderSeasonNumber: number | null;
+    reminderSentCount: number;
+    reminderSkippedCount: number;
   };
   seasonSummaries: SeasonSummary[];
   currentGrandPrix: {

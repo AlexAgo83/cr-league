@@ -285,10 +285,12 @@ export function GarageView({
                 ))
               ) : (
                 <li className="garage-empty-inventory">
-                  <span>{tt("garage_empty_inventory")}</span>
-                  <button type="button" className="secondary-button garage-empty-shop-button" onClick={() => selectCardPanel("shop")}>
-                    {tt("garage_empty_inventory_shop")}
-                  </button>
+                  <span className="empty-inventory-shop-link">
+                    <span>{tt("garage_empty_inventory")}</span>
+                    <button type="button" className="secondary-button garage-empty-shop-button" onClick={() => selectCardPanel("shop")}>
+                      {tt("garage_empty_inventory_shop")}
+                    </button>
+                  </span>
                 </li>
               )}
             </ul>

@@ -45,6 +45,7 @@ export function PlanView({
   onSetForm,
   onSetGameView,
   onSetPlanSubscreen,
+  onOpenGarageShop,
   onOpenRaceReplay,
   onOpenQualifyingRun,
   onOpenQualifyingHistory,
@@ -76,6 +77,7 @@ export function PlanView({
   onSetForm: (form: FormState) => void;
   onSetGameView: (view: GameView) => void;
   onSetPlanSubscreen: (subscreen: PlanSubscreen) => void;
+  onOpenGarageShop: () => void;
   onOpenRaceReplay: () => void;
   onOpenQualifyingRun: () => void;
   onOpenQualifyingHistory: (run: QualifyingRun) => void;
@@ -279,6 +281,7 @@ export function PlanView({
             onSetGameView("drive");
             onOpenQualifyingRun();
           }}
+          onOpenGarageShop={onOpenGarageShop}
           onSelectStep={onSetDirectiveStep}
           tt={tt}
         />

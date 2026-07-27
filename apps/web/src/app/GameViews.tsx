@@ -188,6 +188,10 @@ export function GameViews({
           onSetForm={setForm}
           onSetGameView={setGameView}
           onSetPlanSubscreen={setPlanSubscreen}
+          onOpenGarageShop={() => {
+            setGaragePanel("shop");
+            setGameView("garage");
+          }}
           onOpenRaceReplay={() => {
             setResultTab("replay");
             setResultOpen(true);

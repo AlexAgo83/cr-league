@@ -194,6 +194,7 @@ export function DirectivePanel({
   disabled,
   locked,
   onQualifying,
+  onOpenGarageShop,
   onSelectStep,
   tt
 }: {
@@ -214,6 +215,7 @@ export function DirectivePanel({
   disabled?: boolean;
   locked?: boolean;
   onQualifying?: () => void;
+  onOpenGarageShop?: () => void;
   onSelectStep: (step: DirectiveStep) => void;
   tt: Translator;
 }) {
@@ -416,7 +418,16 @@ export function DirectivePanel({
             })}
           </div>
           {cardLocked ? <p className="directive-lock-note">{tt("directive_card_locked")}</p> : null}
-          {ownedCardIds.length ? null : <p className="directive-lock-note">{tt("garage_empty_inventory")}</p>}
+          {ownedCardIds.length ? null : (
+            <p className="directive-lock-note empty-inventory-shop-link">
+              <span>{tt("garage_empty_inventory")}</span>
+              {onOpenGarageShop ? (
+                <button type="button" className="secondary-button garage-empty-shop-button" onClick={onOpenGarageShop}>
+                  {tt("garage_empty_inventory_shop")}
+                </button>
+              ) : null}
+            </p>
+          )}
         </fieldset>
       ) : null}
 

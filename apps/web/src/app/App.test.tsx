@@ -525,10 +525,32 @@ describe("App", () => {
     await screen.findByRole("button", { name: "Garage" });
 
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    expect(document.querySelector(".garage-empty-inventory .empty-inventory-shop-link")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Shop" }));
 
     expect(screen.getByRole("tab", { name: "Shop" }).getAttribute("aria-selected")).toBe("true");
     expect(localStorage.getItem("cr-league-garage-panel")).toBe("shop");
+  });
+
+  it("opens the garage shop from the empty card plan prompt", async () => {
+    saveProfile();
+    const emptyGarageState = {
+      ...baseState,
+      teams: [{ ...baseState.teams[0], cards: [] }, baseState.teams[1]]
+    };
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(emptyGarageState));
+
+    render(<App />);
+    createLeagueFromSetup();
+    await screen.findByRole("button", { name: "Plan" });
+
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Card: No card" }));
+    expect(document.querySelector(".directive-lock-note.empty-inventory-shop-link")).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Shop" }));
+
+    expect(screen.getByRole("heading", { name: "Shop" })).toBeTruthy();
+    expect(screen.getByRole("tab", { name: "Shop" }).getAttribute("aria-selected")).toBe("true");
   });
 
   it("keeps the selected garage tab in local preferences", async () => {

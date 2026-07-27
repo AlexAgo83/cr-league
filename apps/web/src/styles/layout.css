@@ -4913,9 +4913,17 @@ label small {
   color: var(--color-text);
 }
 
-.card-inventory .garage-empty-inventory {
+.garage-panel-inventory .card-inventory li.garage-empty-inventory {
   align-items: center;
   display: flex;
+  gap: 6px;
+  justify-content: flex-start;
+}
+
+.card-inventory li > .empty-inventory-shop-link,
+.directive-lock-note.empty-inventory-shop-link {
+  align-items: baseline;
+  display: inline-flex;
   gap: 6px;
   white-space: nowrap;
 }

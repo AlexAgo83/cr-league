@@ -78,12 +78,14 @@
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
+- 2026-07-28 validation: npm run logics:validate passed. logics-manager lint --require-status passed. logics-manager audit --group-by-doc passed with expected request AC traceability warnings because item_327 through item_333 remain open and the linked orchestration task is not Done.
 
 # Report
 - 2026-07-27 handoff: first wave was partially delivered and committed. Season presets, no-auto-resolve/default-plan backend guard, next-season rollover reset, `Direction de course`, manual one-successful-reminder-per-season API/mail path, accessibility gate, and several UX papercuts were already in code.
 - 2026-07-27 continuation: closed `item_324` and `item_325` by adding visible absent-human default-plan confirmation, default-plan report badges, reminder sent/skipped feedback, reminder locked-state coverage, and regenerated `Direction de course` desktop/mobile evidence.
 - Evidence: `rtk npm run typecheck`; `rtk npm test -- --run apps/web/src/app/App.test.tsx apps/web/src/features/ReportView.test.tsx`; screenshots at `reports/ux/manual-review/race-direction-desktop.png` and `reports/ux/manual-review/race-direction-mobile.png`.
 - Next wave: start `item_327`, `item_328`, and `item_329`; keep optional slices deferred unless pulled in explicitly.
+- 2026-07-28 corpus closeout: intentionally kept item_327, item_328, item_329, item_330, item_331, item_332, and item_333 open as implementation-ready follow-up slices rather than marking unshipped work Done. Deferred-mode guardrail item_334 records reopen triggers for optional secondary objectives, arcade solo, quick play matchmaking, onboarding/tutorial rewrite, compact replay/highlights, automatic reminders, polling/SSE, bot replacement, and 1.0 hardening.
 
 # AI Context
 - Summary: Orchestrate the 0.6 beta season lifecycle and league management corpus

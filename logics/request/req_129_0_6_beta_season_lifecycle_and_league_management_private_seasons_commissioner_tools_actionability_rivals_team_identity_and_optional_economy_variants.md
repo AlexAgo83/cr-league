@@ -2,8 +2,8 @@
 > From version: 0.5.2
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 95
-> Confidence: 95
+> Understanding: 96
+> Confidence: 96
 > Complexity: High
 > Theme: 0.6 beta season lifecycle
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
@@ -98,3 +98,6 @@
 - `item_332_define_the_lightweight_season_economy_continuity_rule`
 - `item_333_prototype_deterministic_race_engineer_profile_recommendations`
 - `item_334_record_deferred_modes_and_non_goals_so_0_6_stays_focused`
+
+# Notes
+- 2026-07-28 corpus decision: AC5, AC6, AC7, AC8, AC9, AC10, and AC11 remain open through backlog slices item_327 through item_333. AC12 is satisfied by the deferred-mode guardrail slice and task closeout notes; no deferred mode was implemented in this wave.

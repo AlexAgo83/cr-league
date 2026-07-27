@@ -1,10 +1,10 @@
 ## item_334_record_deferred_modes_and_non_goals_so_0_6_stays_focused - Record deferred modes and non-goals so 0.6 stays focused
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Roadmap discipline
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

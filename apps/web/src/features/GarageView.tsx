@@ -14,6 +14,7 @@ import { Modal } from "./Modal.js";
 import { ModalHero } from "./ModalHero.js";
 import { RewardValue } from "./RewardValue.js";
 import { BoardIcon, type BoardIconName } from "./VisualIcon.js";
+import { SectionSwitch, type SectionSwitchItem } from "./SectionSwitch.js";
 
 const CARD_NAME_ICONS: Record<CardId, BoardIconName> = {
   adjustable_wing: "adjustable-wing",
@@ -118,6 +119,11 @@ export function GarageView({
   const buyQuantityOptions = Array.from({ length: maxBuyQuantity }, (_, index) => index + 1);
   const pendingBuyAffordable = Boolean(pendingBuy && maxBuyQuantity > 0);
   const panelTitle = cardPanel === "team" ? tt("dashboard_my_team") : cardPanel === "inventory" ? tt("garage_inventory") : tt("garage_shop");
+  const garageTabs: Array<SectionSwitchItem<CardPanel>> = [
+    { key: "inventory", label: tt("garage_inventory"), icon: "inventory" },
+    { key: "shop", label: tt("garage_shop"), icon: "shop" },
+    { key: "team", label: tt("dashboard_my_team"), icon: "team-profile" }
+  ];
   const seasonWins = seasonWinsByTeamId(state).get(playerTeam.id) ?? 0;
   const confirmBuy = () => {
     if (!pendingBuy || !pendingBuyAffordable) return;
@@ -159,6 +165,7 @@ export function GarageView({
 
   return (
     <div className="garage-grid">
+      <SectionSwitch label={tt("dashboard_garage")} items={garageTabs} activeKey={cardPanel} className="garage-card-toggle" onSelect={selectCardPanel} />
       <section className="panel garage-overview">
         <div className="garage-overview-header">
           <div>
@@ -209,20 +216,6 @@ export function GarageView({
         <header className={`garage-card-heading garage-hero-${cardPanel}`}>
           <div>
             <h3>{panelTitle}</h3>
-          </div>
-          <div className="garage-card-toggle" role="tablist" aria-label={tt("dashboard_garage")}>
-            <button type="button" role="tab" className={cardPanel === "inventory" ? "active" : undefined} aria-selected={cardPanel === "inventory"} onClick={() => selectCardPanel("inventory")}>
-              <BoardIcon className="garage-tab-icon" name="inventory" />
-              {tt("garage_inventory")}
-            </button>
-            <button type="button" role="tab" className={cardPanel === "shop" ? "active" : undefined} aria-selected={cardPanel === "shop"} onClick={() => selectCardPanel("shop")}>
-              <BoardIcon className="garage-tab-icon" name="shop" />
-              {tt("garage_shop")}
-            </button>
-            <button type="button" role="tab" className={cardPanel === "team" ? "active" : undefined} aria-selected={cardPanel === "team"} onClick={() => selectCardPanel("team")}>
-              <BoardIcon className="garage-tab-icon" name="team-profile" />
-              {tt("dashboard_my_team")}
-            </button>
           </div>
         </header>
         {cardPanel === "team" ? (

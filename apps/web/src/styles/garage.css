@@ -123,22 +123,9 @@
   --garage-panel-image: url("/assets/crl/garage-shop-hero.webp");
 }
 
-.garage-card-toggle button:not(.active):hover,
-.garage-card-toggle button:not(.active):focus-visible {
+.garage-card-toggle .plan-step:not(.active):hover,
+.garage-card-toggle .plan-step:not(.active):focus-visible {
   color: #f8f3e8;
-}
-
-.garage-card-toggle button {
-  align-items: center;
-  display: inline-flex;
-  gap: 2px;
-  justify-content: center;
-}
-
-.garage-tab-icon {
-  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.32));
-  height: 30px;
-  width: 30px;
 }
 
 .garage-summary {

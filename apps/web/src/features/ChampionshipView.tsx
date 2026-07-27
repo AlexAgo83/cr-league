@@ -13,7 +13,8 @@ import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
-import { BoardIcon, CountryBadge, VisualIcon, type BoardIconName } from "./VisualIcon.js";
+import { CountryBadge, VisualIcon, type BoardIconName } from "./VisualIcon.js";
+import { SectionSwitch, type SectionSwitchItem } from "./SectionSwitch.js";
 
 type CircuitRegion = "europe" | "americas" | "asia" | "africa" | "oceania";
 const CIRCUIT_PAGE_SIZE = 8;
@@ -81,12 +82,12 @@ export function ChampionshipView({
     seasonRoundsByLayout.set(circuit.layoutKey, [...(seasonRoundsByLayout.get(circuit.layoutKey) ?? []), round]);
   }
   const pageCircuits = visiblePageCircuits(filteredCircuits, circuitPageIndex, seasonCircuits[(currentGrandPrix.round - 1) % seasonCircuits.length]);
-  const recordTabs = [
+  const recordTabs: Array<SectionSwitchItem<ChampionshipRecordTab>> = [
     { key: "calendar" as const, label: tt("championship_calendar") },
     { key: "standings" as const, label: tt("dashboard_standings") },
     ...(completedSeasons.length ? [{ key: "palmares" as const, label: tt("season_palmares") }] : []),
     { key: "history" as const, label: tt("league_history") }
-  ];
+  ].map((tab) => ({ ...tab, displayLabel: tab.key === "history" ? compactHistoryLabel(tab.label) : undefined, icon: RECORD_TAB_ICONS[tab.key] }));
   const activeRecordTab = recordTabs.some((tab) => tab.key === recordTab) ? recordTab : "calendar";
   const activeRecordLabel = recordTabs.find((tab) => tab.key === activeRecordTab)?.label ?? tt("championship_calendar");
   const selectRecordTab = (nextTab: ChampionshipRecordTab) => {
@@ -107,6 +108,7 @@ export function ChampionshipView({
 
   return (
     <div className="view-stack championship-view">
+      <SectionSwitch label={tt("championship_kicker")} items={recordTabs} activeKey={activeRecordTab} className="championship-record-switch" itemDataAttribute="data-record-tab" onSelect={selectRecordTab} />
       <section className="panel championship-overview">
         <div>
           <span className="section-kicker">{tt("championship_kicker")}</span>
@@ -154,14 +156,6 @@ export function ChampionshipView({
         <section className={`panel championship-record-panel record-panel-${activeRecordTab}${activeRecordTab === "calendar" && previewCircuit ? " circuit-preview-open" : ""}`}>
           <header className={`championship-record-header record-hero-header record-hero-${activeRecordTab}`}>
             <h3>{activeRecordLabel}</h3>
-            <div className="championship-record-switch" role="tablist" aria-label={tt("championship_kicker")}>
-              {recordTabs.map((tab) => (
-                <button key={tab.key} type="button" role="tab" data-record-tab={tab.key} aria-selected={activeRecordTab === tab.key} className={activeRecordTab === tab.key ? "active" : undefined} onClick={() => selectRecordTab(tab.key)}>
-                  <BoardIcon className="record-tab-icon" name={RECORD_TAB_ICONS[tab.key]} />
-                  {tab.label}
-                </button>
-              ))}
-            </div>
           </header>
 
           {activeRecordTab === "standings" ? (
@@ -404,6 +398,10 @@ export function ChampionshipView({
       </div>
     </div>
   );
+}
+
+function compactHistoryLabel(label: string) {
+  return label.replace("Grand Prix ", "GP ").replace(" des GP", "");
 }
 
 function ChampionshipCarBackdrop({ livery }: { livery?: TeamLivery }) {

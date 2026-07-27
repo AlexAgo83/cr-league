@@ -13,6 +13,7 @@ import { OpponentConfigComparison } from "./OpponentConfigComparison.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { BoardIcon } from "./VisualIcon.js";
 import { lazy, Suspense } from "react";
+import { SectionSwitch } from "./SectionSwitch.js";
 
 const ReportView = lazy(() => import("./ReportView.js").then((module) => ({ default: module.ReportView })));
 
@@ -87,20 +88,15 @@ export function PlanView({
   const activeSubscreen = planSubscreen;
   const reportTitle = `${reportCircuit.city} ${tt(reportCircuit.layoutKey)}`;
   const chronoCardClass = (cardId?: CardId) => `chrono-session-choice type-card${isChronoCardRelevant(cardId, forecastPick) ? "" : " is-faded"}`;
+  const planTabs = [
+    { key: "plan" as const, label: tt("plan_subscreen_plan"), icon: "edit-plan" as const },
+    { key: "chrono" as const, label: tt("plan_subscreen_chrono"), icon: "chrono" as const },
+    { key: "report" as const, label: tt("plan_subscreen_gp"), icon: "race-report" as const }
+  ];
 
   return (
     <div className="plan-view">
-      <div className="plan-steps plan-subscreen-tabs" role="tablist" aria-label={tt("plan_subscreen_label")}>
-        <button type="button" role="tab" aria-selected={activeSubscreen === "plan"} className={activeSubscreen === "plan" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("plan")}>
-          <span className="plan-step-label">{tt("plan_subscreen_plan")}</span>
-        </button>
-        <button type="button" role="tab" aria-selected={activeSubscreen === "chrono"} className={activeSubscreen === "chrono" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("chrono")}>
-          <span className="plan-step-label">{tt("plan_subscreen_chrono")}</span>
-        </button>
-        <button type="button" role="tab" aria-selected={activeSubscreen === "report"} className={activeSubscreen === "report" ? "plan-step active" : "plan-step"} onClick={() => onSetPlanSubscreen("report")}>
-          <span className="plan-step-label">{tt("plan_subscreen_gp")}</span>
-        </button>
-      </div>
+      <SectionSwitch label={tt("plan_subscreen_label")} items={planTabs} activeKey={activeSubscreen} className="plan-subscreen-tabs" onSelect={onSetPlanSubscreen} />
       {activeSubscreen === "report" ? (
         reportResult ? (
           <div className="plan-gp-report-shell">

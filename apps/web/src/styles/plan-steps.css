@@ -109,6 +109,40 @@
   color: var(--plan-step-accent);
 }
 
+.section-switch {
+  grid-template-columns: repeat(auto-fit, minmax(112px, 1fr));
+}
+
+.section-switch .plan-step {
+  align-items: center;
+  gap: 0;
+  justify-items: center;
+  min-height: 86px;
+  overflow: hidden;
+  padding: 9px 8px 7px;
+  position: relative;
+  text-align: center;
+}
+
+.section-switch-icon {
+  filter: drop-shadow(0 3px 3px rgb(0 0 0 / 0.35));
+  height: 46px;
+  transform: translateY(3px);
+  width: 46px;
+}
+
+.section-switch .plan-step.active .section-switch-icon {
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--plan-step-accent) 52%, transparent));
+}
+
+.section-switch-label {
+  background: linear-gradient(90deg, rgb(16 14 18 / 0), rgb(16 14 18 / 0.42) 18%, rgb(16 14 18 / 0.42) 82%, rgb(16 14 18 / 0));
+  margin-top: -11px;
+  padding: 3px 8px 1px;
+  position: relative;
+  z-index: 1;
+}
+
 .plan-view .plan-subscreen-tabs .plan-step-label,
 .plan-view .plan-subscreen-tabs .plan-step.active .plan-step-label {
   color: rgb(248 243 232 / 0.96);

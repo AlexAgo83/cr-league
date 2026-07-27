@@ -1,0 +1,132 @@
+{
+  "title": "Card price and role baseline follow-up: validate weak card affordability before 0.5 economy expansion",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/specs/spec_005_economy_v1.md",
+    "logics/product/prod_045_card_economy_rebalance_product_brief.md",
+    "logics/request/req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons.md",
+    "logics/request/req_123_aggressive_mini_pack_balance_diagnostic_verify_and_correct_win_concentration_without_blind_nerfs.md",
+    "scripts/replayability-analytics.ts",
+    "scripts/balance-simulations.ts",
+    "packages/shared/src/economy/constants.ts",
+    "packages/shared/src/cards/definitions.ts",
+    "packages/shared/src/simulation/simulateRace.ts",
+    "reports/playtest/replayability-analytics.md",
+    "docs/audits/balance-latest.json",
+    "Fresh replayability baseline on 2026-07-27: 12 seasons x 6 GP x 14 agents, 4 unique champions, 72 unique finishing orders, 97.22% comeback race rate, 30.56% close finishes, 0% boring races, and no dominant cluster above the 25% threshold. Top clusters remain aggressive/speed/mini_pack/soft_tires at 19.44% and aggressive/weather/mini_pack/soft_tires at 18.06%.",
+    "Latest long balance audit grouped by card shows no hard dominant card, but several expensive or low-role cards lag: pit_relay 5.07% win / 8.09 avg points / -67.28 avg credit margin, hard_tires 6.17% / 8.16 / -66.66, fleet_sponsorship 3.46% / 6.66 / +42.56, final_surge 6.99% / 8.86 / -6.42, and defensive_order 6.39% / 8.43 / -66.21.",
+    "Short balance gate on 2026-07-27 passed, but its 1 run x 4 circuits sample is noisy: use it as a safety gate, not as the sole tuning basis."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Economy evidence",
+    "needs": [
+      "Decide the next 0.5 economy step from measured card evidence, not from the stale card-economy hold language.",
+      "Validate whether underperforming cards are truly dead/overpriced, merely situational, or artifacts of the current balance sample.",
+      "If evidence confirms weak card role or affordability, make the smallest price/effect/copy adjustment that gives the card a real reason to exist.",
+      "Keep broad economy expansion, draft shops, season rollover, and new card families out until this smaller card-role baseline is settled."
+    ],
+    "context": [
+      "The replayability baseline does not justify nerfing aggressive mini-pack: no cluster crosses the configured 25% dominance threshold, finishing-order variety is 100%, comeback race rate is 97.22%, close finishes are 30.56%, and boring races are 0%.",
+      "The stronger evidence is card role and affordability: the long balance audit shows a set of cards with weak sporting output and poor or awkward credit margin, especially 180-credit cards and fleet_sponsorship as an economy card that buys often but underperforms heavily.",
+      "The current Economy V1 spec still says card tuning was waiting on the positionDelta honesty question. That blocker is now settled; the remaining question is whether the post-remediation evidence shows specific card price/role problems.",
+      "Prefer changing an existing constant or card effect over adding mechanics. If diagnostics do not confirm a stable problem, close the corpus with a no-tuning decision and move to 0.6 beta-season lifecycle."
+    ],
+    "acceptance_criteria": [
+      "AC1: A fresh card-role baseline records replayability metrics, balance-gate result, and grouped long-audit card metrics for win rate, average points, buy/next-card rate, and credit margin.",
+      "AC2: The corpus classifies each suspect card as confirmed weak, acceptable situational, or inconclusive, with evidence from reports rather than intuition.",
+      "AC3: If tuning is applied, it is the smallest scoped change to CARD_PRICES, card effect magnitude, or card role copy needed to fix a confirmed weak card.",
+      "AC4: If no tuning is applied, the task records the reason and leaves gameplay code unchanged.",
+      "AC5: Replayability/fun signals remain acceptable after any tuning: no dominant cluster above 25%, no boring-race regression, close-finish rate remains visible, and champion/finishing-order variety remains healthy.",
+      "AC6: npm run typecheck, npm test, npm run lint, npm run build, npm run playtest:replayability, npm run balance:gate, and npm run logics:validate pass before closeout."
+    ]
+  },
+  "product": {
+    "title": "Card Price and Role Baseline Follow-up Product Brief",
+    "overview": "The 0.5 economy gate is no longer blocked by tooling or card-effect honesty. Fresh replayability evidence says the game is varied enough to avoid a broad nerf, but balance evidence still shows several cards with weak role or affordability. This follow-up keeps the next economy move narrow: validate the suspect cards and adjust only the smallest existing price or effect if the evidence holds.",
+    "goals": [
+      "Turn the latest replayability and balance reports into a concrete 0.5 economy decision.",
+      "Protect the healthy variety signals already measured.",
+      "Give weak cards a real role only where the evidence confirms they need help.",
+      "Avoid broad economy expansion until the current 15-card shop baseline is clean."
+    ],
+    "non_goals": [
+      "Do not add new cards, card families, draft shops, rarity, crafting, sponsors, or season rollover.",
+      "Do not nerf aggressive mini-pack globally when replayability does not show a hard dominant cluster.",
+      "Do not redesign pit strategy, qualifying, circuit traits, or simulation architecture.",
+      "Do not add production telemetry or UI surfaces."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Classify suspect card price and role gaps from the latest balance evidence",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Economy evidence",
+      "request_acs": ["AC1", "AC2", "AC4", "AC6"],
+      "problem": [
+        "The roadmap can now move past the old hold, but opening a broad card rebalance would be speculative because replayability variety is healthy.",
+        "The long balance audit shows specific suspect cards, but the evidence needs to be turned into a decision table before any code change.",
+        "Without classification, the next 0.5 move risks tuning cards that are merely situational or sample-driven."
+      ],
+      "scope_in": [
+        "Record the fresh replayability baseline and balance-gate result.",
+        "Group the long balance audit by card and classify suspect cards: confirmed weak, acceptable situational, or inconclusive.",
+        "Decide whether a tuning slice is justified or whether gameplay code should remain unchanged."
+      ],
+      "scope_out": [
+        "Changing card prices or effects in this item.",
+        "Running an unbounded full simulation if the existing long audit and fresh gate already give enough signal."
+      ],
+      "acceptance_criteria": [
+        "AC1: The report lists suspect cards with win rate, average points, buy/next-card rate, and credit margin.",
+        "AC2: The report states whether tuning is justified now or deferred.",
+        "AC3: If tuning is deferred, no gameplay code changes are made."
+      ]
+    },
+    {
+      "title": "Apply the smallest card price or role fix only for confirmed weak cards",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Economy tuning",
+      "request_acs": ["AC3", "AC5", "AC6"],
+      "problem": [
+        "Some cards may be weak because price and role do not match their measured impact.",
+        "Fixing too much at once would erase the healthy replayability signals and make cause/effect unreadable.",
+        "The code already centralizes prices and card definitions, so any confirmed fix should be small."
+      ],
+      "scope_in": [
+        "Adjust only existing CARD_PRICES, effect magnitudes, or card role copy for cards confirmed weak by the first item.",
+        "Add or update focused tests only where a changed effect or price needs a guard.",
+        "Re-run replayability and balance gates and record before/after evidence."
+      ],
+      "scope_out": [
+        "Adding card mechanics, new cards, shop-system changes, or UI screens.",
+        "Changing anything if the first item does not confirm a stable weak-card problem."
+      ],
+      "acceptance_criteria": [
+        "AC1: Any code change is limited to confirmed weak cards and the smallest existing constant/effect/copy surface.",
+        "AC2: Replayability and balance evidence remain green after the change.",
+        "AC3: If no cards are confirmed weak, this item closes as no-op with the diagnostic evidence recorded."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate card price and role baseline follow-up",
+    "plan": [
+      "Record the fresh replayability baseline and balance-gate result from the post-closeout build.",
+      "Group the long balance audit by card and classify suspect cards before touching code.",
+      "Decide whether a tiny tuning change is justified. If not, close with a no-op decision and move roadmap attention to 0.6.",
+      "If tuning is justified, adjust only the smallest existing price/effect/copy surface for confirmed weak cards.",
+      "Run typecheck, lint, test, build, playtest:replayability, balance:gate, and Logics validation; record before/after metrics at closeout."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/card-price-role-baseline-follow-up.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

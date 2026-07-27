@@ -20,7 +20,7 @@ export const CARD_PRICES: Record<CardId, number> = {
   adjustable_wing: 180,
   rain_mapping: 180,
   economy_mode: 120,
-  pit_relay: 180,
-  hard_tires: 180,
+  pit_relay: 120,
+  hard_tires: 120,
   calculated_attack: 180
 };

@@ -306,7 +306,7 @@ export function SeasonRecapModal({
     <Modal label={tt("season_recap_title")} className="panel modal season-recap-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/season-recap-modal.webp" kicker={`${tt("league_season")} ${recap.season}`} title={`${recap.champion.teamName} ${tt("season_champion")}`} />
       <div className="season-champion-card">
-        {recap.champion.livery ? <LiveryPlate className="standings-livery-plate season-champion-livery" livery={recap.champion.livery} name={recap.champion.teamName} /> : null}
+        {recap.champion.livery ? <LiveryPlate className="standings-livery-plate season-champion-livery" livery={recap.champion.livery} name={recap.champion.teamName} wins={1} /> : null}
         <div>
           <span>{tt("season_champion")}</span>
           <strong>{recap.champion.teamName}</strong>
@@ -322,7 +322,7 @@ export function SeasonRecapModal({
             {recap.standings.slice(0, 3).map((entry) => (
               <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>
                 <PositionBadge position={entry.position} />
-                {entry.livery ? <LiveryPlate className="standings-livery-plate" livery={entry.livery} name={entry.teamName} /> : null}
+                {entry.livery ? <LiveryPlate className="standings-livery-plate" livery={entry.livery} name={entry.teamName} wins={entry.teamId === recap.champion.teamId ? 1 : 0} /> : null}
                 <span>
                   {entry.teamName}
                   <small><RewardValue type="points" value={entry.points} tt={tt} /></small>

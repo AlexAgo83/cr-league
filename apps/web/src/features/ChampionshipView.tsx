@@ -335,7 +335,7 @@ export function ChampionshipView({
                   >
                     <ChampionshipCarBackdrop livery={season.champion.livery} />
                     <span className="palmares-season-badge">S{season.season}</span>
-                    {season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} /> : <span />}
+                    {season.champion.livery ? <LiveryPlate className="standings-livery-plate" livery={season.champion.livery} name={season.champion.teamName} wins={seasonWins.get(season.champion.teamId) ?? 1} /> : <span />}
                     <span className="standings-team">
                       {season.champion.teamName}
                       <small>{tt("season_champion")}</small>

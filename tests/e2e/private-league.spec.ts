@@ -25,7 +25,7 @@ test.beforeEach(() => {
 });
 
 async function mockLeagueApi(page: Page) {
-  await page.route("http://localhost:4874/**", async (route) => {
+  await page.route(/http:\/\/(?:localhost|127\.0\.0\.1):4874\/.*/, async (route) => {
     const request = route.request();
     const url = new URL(request.url());
     const path = url.pathname;

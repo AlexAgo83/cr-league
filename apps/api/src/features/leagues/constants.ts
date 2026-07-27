@@ -1,4 +1,4 @@
-import { CARD_DEFINITIONS, CARD_PRICES, type CardId, type TeamLivery } from "@cr-league/shared";
+import { CARD_DEFINITIONS, CARD_PRICES, TEAM_NAME_SUGGESTIONS, type CardId, type TeamLivery } from "@cr-league/shared";
 
 export const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
 export const STARTING_CREDITS = 180;
@@ -7,58 +7,7 @@ export const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId
 export const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 export const PRIMARY_LIVERY_COLORS = ["#020617", "#050816", "#09090b", "#0b1020", "#111827", "#0f172a", "#120712", "#07120f"] as const;
 export const SECONDARY_LIVERY_COLORS = ["#00f5ff", "#39ff14", "#ff2bd6", "#ffea00", "#ff6b00", "#7c3cff", "#00ff9d", "#ff1744"] as const;
-export const BOT_TEAM_NAMES = [
-  "Apex Foundry",
-  "Blackline GP",
-  "Blue Harpoon",
-  "Brake Point",
-  "Carbon Yard",
-  "Circuit Nord",
-  "Coastal Apex",
-  "Copperline",
-  "Corsa Nova",
-  "Delta Forge",
-  "Drift Union",
-  "Eagle Run",
-  "Eastbound",
-  "Falcon Works",
-  "Fastlane",
-  "Ferro Racing",
-  "Grid Seven",
-  "Harbor Sprint",
-  "Helio Corse",
-  "Iron Pulse",
-  "Jetstream",
-  "Kerbside",
-  "Lane Eight",
-  "Lunar Apex",
-  "Metro Veloce",
-  "Midnight GP",
-  "Monarch Racing",
-  "Neon Sector",
-  "Northstar",
-  "Nova Lane",
-  "Omega Works",
-  "Orbit Corse",
-  "Pacific Line",
-  "Piston Club",
-  "Polecraft",
-  "Quantum GP",
-  "Rapid Vale",
-  "Redshift",
-  "Ridge Motors",
-  "Silverline",
-  "Skyline Works",
-  "Slipstream",
-  "South Gate",
-  "Steel Apex",
-  "Stormline",
-  "Summit Corse",
-  "Torque House",
-  "Union Brake",
-  "Vector Lane",
-  "Westline"
-] as const;
+export const BOT_TEAM_NAMES = TEAM_NAME_SUGGESTIONS;
 export const DEFAULT_MAX_PLAYERS = 8;
 export const MAX_PLAYERS_LIMIT = 16;
 export const DEFAULT_QUALIFYING_ATTEMPTS = 3;

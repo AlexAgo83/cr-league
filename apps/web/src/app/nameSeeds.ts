@@ -1,3 +1,5 @@
+import { TEAM_NAME_SUGGESTIONS } from "@cr-league/shared";
+
 const LEAGUE_NAMES = [
   "Neon Apex League",
   "Turbo Canal Cup",
@@ -51,67 +53,14 @@ const LEAGUE_NAMES = [
   "Metro Apex Club"
 ];
 
-const TEAM_NAMES = [
-  "Volt Union",
-  "Late Apex",
-  "Mika Blitz",
-  "Atlas Works",
-  "Red Peak",
-  "Northline",
-  "Neon Torque",
-  "Rain Pulse",
-  "Grid Saints",
-  "Turbo Pals",
-  "Battery Bandits",
-  "Pit Wall Kids",
-  "Curb Riders",
-  "Signal Chasers",
-  "Dock Dash",
-  "Apex Snacks",
-  "Blue Boost",
-  "Rapid Sparks",
-  "Storm Mode",
-  "Pixel Pistons",
-  "Tarmac Toast",
-  "Metro Sparks",
-  "Corner Kings",
-  "Charge Pirates",
-  "Brake Works",
-  "Slipstream Crew",
-  "Tiny Rockets",
-  "Wetline Works",
-  "Turbo Turns",
-  "Dash Mechanics",
-  "Skyline Sprinters",
-  "Pocket Bolts",
-  "Final Lap Labs",
-  "Urban Comets",
-  "Relay Rebels",
-  "Boost Bureau",
-  "Night Pistons",
-  "Harbor Hype",
-  "Greenlight Gang",
-  "Switchback Stars",
-  "Rainy Racers",
-  "Torque Tacos",
-  "Fast Lane Flash",
-  "Micro Mavericks",
-  "Apex Arcade",
-  "Grid Gliders",
-  "Voltage Vibes",
-  "Canal Crew",
-  "Sector Sparks",
-  "Drift Donuts"
-];
-
 export function randomLeagueName() {
   return pick(LEAGUE_NAMES);
 }
 
 export function randomTeamName() {
-  return pick(TEAM_NAMES);
+  return pick(TEAM_NAME_SUGGESTIONS);
 }
 
-function pick(values: string[]) {
+function pick(values: readonly string[]) {
   return values[Math.floor(Math.random() * values.length)] ?? values[0] ?? "";
 }

@@ -1,0 +1,626 @@
+{
+  "budgets": {
+    "max_docs": 20,
+    "max_docs_per_ref": 4
+  },
+  "changed_paths": [],
+  "command": "logics-manager sync context-pack req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6 item_321_run_the_headless_ai_alpha_season_campaign item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start item_323_write_the_alpha_seasons_decision_package task_129_orchestrate_the_ai_alpha_seasons_evidence_run --mode summary-only --profile normal --handoff",
+  "companion_docs": [
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_321_run_the_headless_ai_alpha_season_campaign",
+          "item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start",
+          "item_323_write_the_alpha_seasons_decision_package"
+        ],
+        "prod": [
+          "prod_080_ai_alpha_seasons_evidence_run_product_brief"
+        ],
+        "req": [
+          "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6"
+        ],
+        "task": [
+          "task_129_orchestrate_the_ai_alpha_seasons_evidence_run"
+        ]
+      },
+      "path": "logics/product/prod_080_ai_alpha_seasons_evidence_run_product_brief.md",
+      "ref": "prod_080_ai_alpha_seasons_evidence_run_product_brief",
+      "status": "Proposed",
+      "title": "AI Alpha Seasons Evidence Run Product Brief"
+    },
+    {
+      "kind": "roadmap",
+      "linked_refs": {
+        "adr": [
+          "adr_001_cr_league_v1_static_pwa_api_architecture",
+          "adr_004_data_security",
+          "adr_006_accessibility",
+          "adr_007_i18n",
+          "adr_008_testing_quality"
+        ],
+        "item": [
+          "item_004_design_and_implement_the_v1_card_and_inventory_system",
+          "item_005_define_balancing_and_retention_mechanics_for_social_leagues"
+        ],
+        "prod": [
+          "prod_001_cr_league_product_brief"
+        ],
+        "req": [
+          "req_032_redesign_the_cr_league_race_cockpit_v0",
+          "req_033_over_engineering_cleanup_pass_1",
+          "req_034_personalized_race_recap",
+          "req_035_make_garage_inventory_cards_open_the_card_detail_modal",
+          "req_036_github_ci_render_blueprint_and_release_contract",
+          "req_037_starting_grid_modal_and_season_narrative",
+          "req_058_repo_review_remediation_pass_5_account_security_api_trust_boundaries_web_decomposition_and_ci_hardening",
+          "req_059_first_gp_action_clarity_one_recommended_cta_plan_recommendation_and_vocabulary_harmonization",
+          "req_060_result_verdict_pass_why_it_worked_why_it_failed_what_to_try_next",
+          "req_061_email_backed_profile_recovery_send_codes_on_creation_and_self_service_re_issue",
+          "req_062_replay_suspense_and_first_contact_polish_from_the_2026_07_20_ai_playtest",
+          "req_063_lap_scale_coherence_displayed_lap_numbers_must_match_the_circuit_s_lap_count",
+          "req_064_mobile_modal_hygiene_and_real_playback_icons",
+          "req_065_home_splash_landing_screen_with_floating_title_and_press_start",
+          "req_066_post_splash_playtest_polish_mobile_header_and_root_shell_cleanup",
+          "req_067_plan_risk_readability_layer",
+          "req_068_non_winning_success_feedback",
+          "req_069_beta_support_hardening",
+          "req_070_split_large_web_views_from_the_initial_bundle",
+          "req_071_modularize_the_large_web_layout_stylesheet",
+          "req_072_serve_large_web_artwork_as_webp",
+          "req_073_lazy_load_non_critical_web_artwork",
+          "req_074_audit_circuit_data_impact_before_optimizing_route_loading",
+          "req_075_extract_the_admin_panel_state_cluster_from_gameapp_into_a_hook",
+          "req_076_refresh_league_state_when_the_player_returns_to_the_tab",
+          "req_081_rebalance_card_economy_to_remove_dead_cards_and_redundant_duplicates",
+          "req_082_show_opponents_configurations_for_comparison_after_lock_and_after_the_race",
+          "req_083_move_real_weather_detail_into_a_circuit_info_modal_and_improve_card_stat_badge_readability",
+          "req_084_differentiate_circuit_stats_and_make_bot_configurations_react_to_circuit_identity",
+          "req_085_repo_review_remediation_pass_6_json_column_race_locks_simulation_finishing_order_fidelity_destructive_op_guards_and_over_engineering_cleanup",
+          "req_086_gameplay_and_economy_integrity_comeback_payout_curve_unplayed_card_consumption_resolve_determinism_and_decision_validation",
+          "req_087_simulation_fidelity_and_replay_performance_qualifying_track_response_replay_render_cost_recap_accuracy_and_input_robustness",
+          "req_088_post_remediation_hardening_submit_sell_concurrency_client_security_and_privacy_accessibility_data_model_integrity_and_config_validation",
+          "req_089_align_pit_stop_visual_position_stop_cars_where_the_pit_is_drawn_on_the_circuit_map",
+          "req_090_canonical_race_track_geometry_generate_semantic_track_markers_instead_of_interpreting_them_on_the_map",
+          "req_091_modularize_the_oversized_leagues_store",
+          "req_099_review_findings_remediation_replay_determinism_dead_card_effects_client_storage_safety_api_security_and_scale_admin_config_integrity_and_over_engineering_cleanup",
+          "req_100_post_remediation_review_fixes_replay_determinism_comparator_positiondelta_test_tiebreak_coherence_account_enumeration_neutrality_and_replay_validator_prng_test_depth",
+          "req_101_replay_map_render_performance_memoize_route_geometry_hoist_static_svg_layers_imperative_car_transforms_and_throttle_non_positional_state",
+          "req_102_track_driven_chrono_race_engine_derive_grand_prix_timing_gaps_classification_and_replay_from_speed_over_the_race_track",
+          "req_103_chrono_engine_v2_extract_the_race_engine_module_and_make_replay_trace_a_minimal_time_distance_simulation",
+          "req_104_chrono_v2_post_closeout_balance_and_replay_hardening",
+          "req_105_release_balance_gate_and_canal_loop_follow_up",
+          "req_106_render_metadata_driven_car_drift_tire_marks_and_lights",
+          "req_107_polish_replay_focus_launch_continuity_drift_and_headlights",
+          "req_108_clean_up_race_recap_narrative",
+          "req_109_polish_gp_report_placeholders_and_replay_classification_focus",
+          "req_110_clear_consumed_plan_card_for_the_next_grand_prix",
+          "req_111_polish_mobile_replay_overlays_and_shared_map_controls",
+          "req_112_fix_replay_notifications_overtakes_and_gaps",
+          "req_113_add_purchasable_garage_cars",
+          "req_114_bot_car_progression",
+          "req_115_repo_review_maintainability_follow_up",
+          "req_116_performance_pass_front_and_api",
+          "req_117_performance_pass_deferred_follow_up"
+        ],
+        "road": [
+          "road_001_cr_league_roadmap",
+          "road_002_cr_league_roadmap_v2"
+        ],
+        "spec": [
+          "spec_001_grand_prix_core_loop_and_simulation_v1",
+          "spec_016_implementation_roadmap"
+        ],
+        "task": [
+          "task_034_orchestrate_over_engineering_cleanup_pass_1",
+          "task_035_orchestrate_personalized_race_recap",
+          "task_036_orchestrate_garage_inventory_card_consultation",
+          "task_037_orchestrate_ci_render_blueprint_and_release_contract",
+          "task_038_orchestrate_starting_grid_and_season_narrative",
+          "task_059_orchestrate_repo_review_remediation_pass_5",
+          "task_060_orchestrate_first_gp_action_clarity",
+          "task_061_orchestrate_result_verdict_pass",
+          "task_062_orchestrate_email_backed_profile_recovery",
+          "task_063_orchestrate_replay_suspense_and_first_contact_polish",
+          "task_064_orchestrate_lap_scale_coherence_fix",
+          "task_065_orchestrate_mobile_modal_hygiene_and_playback_icons",
+          "task_066_orchestrate_the_home_splash_landing_screen",
+          "task_067_orchestrate_post_splash_playtest_polish",
+          "task_068_orchestrate_plan_risk_readability_layer",
+          "task_069_orchestrate_non_winning_success_feedback",
+          "task_070_orchestrate_beta_support_hardening",
+          "task_071_orchestrate_web_view_code_splitting",
+          "task_072_orchestrate_web_stylesheet_modularization",
+          "task_073_orchestrate_webp_artwork_conversion",
+          "task_074_orchestrate_lazy_artwork_loading",
+          "task_075_orchestrate_circuit_route_loading_audit",
+          "task_076_orchestrate_gameapp_admin_panel_hook_extraction",
+          "task_077_orchestrate_league_state_freshness_on_return",
+          "task_086_orchestrate_repo_review_remediation_pass_6",
+          "task_087_orchestrate_gameplay_and_economy_integrity_fixes",
+          "task_088_orchestrate_simulation_fidelity_and_replay_performance_fixes",
+          "task_089_orchestrate_post_remediation_hardening",
+          "task_090_orchestrate_pit_stop_visual_alignment",
+          "task_091_orchestrate_canonical_race_track_geometry",
+          "task_092_orchestrate_leagues_store_modularization",
+          "task_100_orchestrate_review_findings_remediation",
+          "task_101_orchestrate_post_remediation_review_fixes",
+          "task_102_orchestrate_replay_map_render_performance"
+        ]
+      },
+      "path": "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+      "ref": "road_002_cr_league_roadmap_v2",
+      "status": "Accepted",
+      "title": "CR League Roadmap v2"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module",
+          "item_293_build_the_playwright_browser_agent_that_plays_the_real_ui_from_the_shared_brain",
+          "item_294_instrument_the_browser_run_fun_frustration_report_ui_failure_capture_npm_wiring"
+        ],
+        "prod": [
+          "prod_071_ai_playtest_surfaces_product_brief"
+        ],
+        "req": [
+          "req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain"
+        ],
+        "task": [
+          "task_120_orchestrate_the_browser_driven_ai_playtest"
+        ]
+      },
+      "path": "logics/product/prod_071_ai_playtest_surfaces_product_brief.md",
+      "ref": "prod_071_ai_playtest_surfaces_product_brief",
+      "status": "Settled",
+      "title": "AI Playtest Surfaces Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile",
+          "item_296_friction_accessibility_instrumentation_with_axe_core",
+          "item_297_cold_start_naive_agent_and_onboarding_funnel"
+        ],
+        "prod": [
+          "prod_072_ai_ux_evaluation_product_brief"
+        ],
+        "req": [
+          "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure"
+        ],
+        "task": [
+          "task_121_orchestrate_the_ux_evaluation_harness"
+        ]
+      },
+      "path": "logics/product/prod_072_ai_ux_evaluation_product_brief.md",
+      "ref": "prod_072_ai_ux_evaluation_product_brief",
+      "status": "Settled",
+      "title": "AI UX Evaluation Product Brief"
+    },
+    {
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense",
+          "item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season"
+        ],
+        "prod": [
+          "prod_073_replayability_and_fun_analytics_product_brief"
+        ],
+        "req": [
+          "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons"
+        ],
+        "task": [
+          "task_122_orchestrate_replayability_and_fun_analytics"
+        ]
+      },
+      "path": "logics/product/prod_073_replayability_and_fun_analytics_product_brief.md",
+      "ref": "prod_073_replayability_and_fun_analytics_product_brief",
+      "status": "Settled",
+      "title": "Replayability and Fun Analytics Product Brief"
+    }
+  ],
+  "docs": [
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, ai alpha seasons evidence run: stress the season loop with headless and browser agents before 0.6, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "AI alpha seasons evidence run: stress the season loop with headless and browser agents before 0.6",
+        "use when": "You need to implement or review the scaffolded workflow for AI alpha seasons evidence run: stress the season loop with headless and browser agents before 0.6."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_321_run_the_headless_ai_alpha_season_campaign",
+          "item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start",
+          "item_323_write_the_alpha_seasons_decision_package"
+        ],
+        "prod": [
+          "prod_080_ai_alpha_seasons_evidence_run_product_brief"
+        ],
+        "req": [
+          "req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain",
+          "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure",
+          "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons",
+          "req_127_card_price_and_role_baseline_follow_up_validate_weak_card_affordability_before_0_5_economy_expansion",
+          "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6"
+        ],
+        "road": [
+          "road_002_cr_league_roadmap_v2"
+        ],
+        "spec": [
+          "spec_005_economy_v1",
+          "spec_016_implementation_roadmap"
+        ]
+      },
+      "path": "logics/request/req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6.md",
+      "ref": "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6",
+      "schema_version": "1.0",
+      "status": "Draft",
+      "title": "AI alpha seasons evidence run: stress the season loop with headless and browser agents before 0.6"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, browser-driven ai playtest: an agent that plays the real ui like a human, decisions from the shared playtest brain, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Browser-driven AI playtest: an agent that plays the real UI like a human, decisions from the shared playtest brain",
+        "use when": "You need to implement or review the scaffolded workflow for Browser-driven AI playtest: an agent that plays the real UI like a human, decisions from the shared playtest brain."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_292_extract_the_shared_playtest_brain_decisions_fun_frustration_into_one_module",
+          "item_293_build_the_playwright_browser_agent_that_plays_the_real_ui_from_the_shared_brain",
+          "item_294_instrument_the_browser_run_fun_frustration_report_ui_failure_capture_npm_wiring"
+        ],
+        "prod": [
+          "prod_071_ai_playtest_surfaces_product_brief"
+        ],
+        "req": [
+          "req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain"
+        ]
+      },
+      "path": "logics/request/req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain.md",
+      "ref": "req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain",
+      "schema_version": "1.0",
+      "status": "Done",
+      "title": "Browser-driven AI playtest: an agent that plays the real UI like a human, decisions from the shared playtest brain"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, ux evaluation harness: let an ai judge ui/ux, friction and onboarding by capturing what it can see and measure, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "UX evaluation harness: let an AI judge UI/UX, friction and onboarding by capturing what it can see and measure",
+        "use when": "You need to implement or review the scaffolded workflow for UX evaluation harness: let an AI judge UI/UX, friction and onboarding by capturing what it can see and measure."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_295_visual_playthrough_capture_screenshots_annotated_state_desktop_and_mobile",
+          "item_296_friction_accessibility_instrumentation_with_axe_core",
+          "item_297_cold_start_naive_agent_and_onboarding_funnel"
+        ],
+        "prod": [
+          "prod_072_ai_ux_evaluation_product_brief"
+        ],
+        "req": [
+          "req_119_browser_driven_ai_playtest_an_agent_that_plays_the_real_ui_like_a_human_decisions_from_the_shared_playtest_brain",
+          "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure"
+        ]
+      },
+      "path": "logics/request/req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure.md",
+      "ref": "req_120_ux_evaluation_harness_let_an_ai_judge_ui_ux_friction_and_onboarding_by_capturing_what_it_can_see_and_measure",
+      "schema_version": "1.0",
+      "status": "Done",
+      "title": "UX evaluation harness: let an AI judge UI/UX, friction and onboarding by capturing what it can see and measure"
+    },
+    {
+      "ai_context": {
+        "keywords": "request-chain-scaffold, replayability and fun analytics: measure outcome variety, strategy dominance and emotional arc across many ai seasons, development-ready",
+        "skip when": "The change is unrelated to this scaffolded request chain.",
+        "summary": "Replayability and fun analytics: measure outcome variety, strategy dominance and emotional arc across many AI seasons",
+        "use when": "You need to implement or review the scaffolded workflow for Replayability and fun analytics: measure outcome variety, strategy dominance and emotional arc across many AI seasons."
+      },
+      "kind": "request",
+      "linked_refs": {
+        "item": [
+          "item_298_replayability_metrics_variety_dominant_strategy_detection_comebacks_title_suspense",
+          "item_299_fun_arc_metrics_lead_changes_close_finishes_boring_race_rate_per_season"
+        ],
+        "prod": [
+          "prod_073_replayability_and_fun_analytics_product_brief"
+        ],
+        "req": [
+          "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons"
+        ]
+      },
+      "path": "logics/request/req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons.md",
+      "ref": "req_121_replayability_and_fun_analytics_measure_outcome_variety_strategy_dominance_and_emotional_arc_across_many_ai_seasons",
+      "schema_version": "1.0",
+      "status": "Done",
+      "title": "Replayability and fun analytics: measure outcome variety, strategy dominance and emotional arc across many AI seasons"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, run the headless ai alpha season campaign, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Run the headless AI alpha season campaign",
+        "use when": "Implementing the scaffolded slice for Run the headless AI alpha season campaign."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_321_run_the_headless_ai_alpha_season_campaign"
+        ],
+        "prod": [
+          "prod_080_ai_alpha_seasons_evidence_run_product_brief"
+        ],
+        "req": [
+          "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6"
+        ],
+        "task": [
+          "task_129_orchestrate_the_ai_alpha_seasons_evidence_run"
+        ]
+      },
+      "path": "logics/backlog/item_321_run_the_headless_ai_alpha_season_campaign.md",
+      "ref": "item_321_run_the_headless_ai_alpha_season_campaign",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Run the headless AI alpha season campaign"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-task, request-chain-scaffold, orchestration",
+        "skip when": "Working on one isolated sibling slice.",
+        "summary": "Orchestrate the AI alpha seasons evidence run",
+        "use when": "Coordinating implementation of a scaffolded request chain."
+      },
+      "kind": "task",
+      "linked_refs": {
+        "item": [
+          "item_321_run_the_headless_ai_alpha_season_campaign",
+          "item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start",
+          "item_323_write_the_alpha_seasons_decision_package"
+        ],
+        "prod": [
+          "prod_080_ai_alpha_seasons_evidence_run_product_brief"
+        ],
+        "req": [
+          "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6"
+        ],
+        "task": [
+          "task_129_orchestrate_the_ai_alpha_seasons_evidence_run"
+        ]
+      },
+      "path": "logics/tasks/task_129_orchestrate_the_ai_alpha_seasons_evidence_run.md",
+      "ref": "task_129_orchestrate_the_ai_alpha_seasons_evidence_run",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Orchestrate the AI alpha seasons evidence run"
+    },
+    {
+      "ai_context": {},
+      "kind": "product",
+      "linked_refs": {
+        "item": [
+          "item_321_run_the_headless_ai_alpha_season_campaign",
+          "item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start",
+          "item_323_write_the_alpha_seasons_decision_package"
+        ],
+        "prod": [
+          "prod_080_ai_alpha_seasons_evidence_run_product_brief"
+        ],
+        "req": [
+          "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6"
+        ],
+        "task": [
+          "task_129_orchestrate_the_ai_alpha_seasons_evidence_run"
+        ]
+      },
+      "path": "logics/product/prod_080_ai_alpha_seasons_evidence_run_product_brief.md",
+      "ref": "prod_080_ai_alpha_seasons_evidence_run_product_brief",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "AI Alpha Seasons Evidence Run Product Brief"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, run browser ai alpha sessions for ui friction and cold start, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Run browser AI alpha sessions for UI friction and cold start",
+        "use when": "Implementing the scaffolded slice for Run browser AI alpha sessions for UI friction and cold start."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start"
+        ],
+        "prod": [
+          "prod_080_ai_alpha_seasons_evidence_run_product_brief"
+        ],
+        "req": [
+          "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6"
+        ],
+        "task": [
+          "task_129_orchestrate_the_ai_alpha_seasons_evidence_run"
+        ]
+      },
+      "path": "logics/backlog/item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start.md",
+      "ref": "item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Run browser AI alpha sessions for UI friction and cold start"
+    },
+    {
+      "ai_context": {
+        "keywords": "scaffolded-backlog, write the alpha seasons decision package, implementation-ready",
+        "skip when": "The change belongs to another backlog slice.",
+        "summary": "Write the alpha seasons decision package",
+        "use when": "Implementing the scaffolded slice for Write the alpha seasons decision package."
+      },
+      "kind": "backlog",
+      "linked_refs": {
+        "item": [
+          "item_323_write_the_alpha_seasons_decision_package"
+        ],
+        "prod": [
+          "prod_080_ai_alpha_seasons_evidence_run_product_brief"
+        ],
+        "req": [
+          "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6"
+        ],
+        "task": [
+          "task_129_orchestrate_the_ai_alpha_seasons_evidence_run"
+        ]
+      },
+      "path": "logics/backlog/item_323_write_the_alpha_seasons_decision_package.md",
+      "ref": "item_323_write_the_alpha_seasons_decision_package",
+      "schema_version": "1.0",
+      "status": "Ready",
+      "title": "Write the alpha seasons decision package"
+    }
+  ],
+  "estimates": {
+    "char_count": 20873,
+    "companion_doc_count": 5,
+    "doc_count": 9
+  },
+  "generated_at": "2026-07-27T15:35:28Z",
+  "handoff": {
+    "companion_doc_count": 5,
+    "enabled": true,
+    "source_refs": [
+      "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6",
+      "item_321_run_the_headless_ai_alpha_season_campaign",
+      "item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start",
+      "item_323_write_the_alpha_seasons_decision_package",
+      "task_129_orchestrate_the_ai_alpha_seasons_evidence_run"
+    ],
+    "validation_summary_count": 1
+  },
+  "i18n": {
+    "actions": [
+      "Keep catalogs valid with logics-manager i18n validate in the project quality gate."
+    ],
+    "applicable": true,
+    "catalogs": {
+      "en": 886,
+      "fr": 886
+    },
+    "configured": true,
+    "contract": {
+      "applicability": "applicable",
+      "catalog": {
+        "path": "apps/web/src/i18n/{locale}.json"
+      },
+      "default_locale": "en",
+      "fallback_locale": "en",
+      "locales": [
+        "en",
+        "fr"
+      ],
+      "schema_version": "1.0",
+      "source_locale": "en"
+    },
+    "contract_path": "logics/i18n/contract.json",
+    "findings": [],
+    "next_action": "The i18n contract is valid.",
+    "ok": true,
+    "state": "valid"
+  },
+  "mode": "summary-only",
+  "profile": "normal",
+  "ref": "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6,item_321_run_the_headless_ai_alpha_season_campaign,item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start,item_323_write_the_alpha_seasons_decision_package,task_129_orchestrate_the_ai_alpha_seasons_evidence_run",
+  "refs": [
+    "req_128_ai_alpha_seasons_evidence_run_stress_the_season_loop_with_headless_and_browser_agents_before_0_6",
+    "item_321_run_the_headless_ai_alpha_season_campaign",
+    "item_322_run_browser_ai_alpha_sessions_for_ui_friction_and_cold_start",
+    "item_323_write_the_alpha_seasons_decision_package",
+    "task_129_orchestrate_the_ai_alpha_seasons_evidence_run"
+  ],
+  "release": {
+    "blocking_reasons": [],
+    "configured": true,
+    "contract_path": "logics/release/contract.json",
+    "guidance": [
+      "Release readiness must come from project-owned evidence, not conversational memory.",
+      "Use release status or validate before preparing or claiming release readiness.",
+      "Publication-oriented actions are explicit operator actions and are separate from safe read/validate actions."
+    ],
+    "next_action": "Release evidence is complete.",
+    "publication_actions": [
+      "GitHub release publication",
+      "external publication"
+    ],
+    "required_gates": [
+      {
+        "blocking_reason": null,
+        "id": "version_metadata",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "changelog",
+        "required": true,
+        "state": "preparing",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "local_validation",
+        "required": true,
+        "state": "local_validation",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "git_push",
+        "required": true,
+        "state": "pushed",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "ci",
+        "required": true,
+        "state": "ci_verification",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "github_release",
+        "required": true,
+        "state": "github_release",
+        "status": "passed"
+      },
+      {
+        "blocking_reason": null,
+        "id": "production_deployment",
+        "required": true,
+        "state": "external_publication",
+        "status": "passed"
+      }
+    ],
+    "safe_actions": [
+      "logics-manager release status",
+      "logics-manager release plan <version>",
+      "logics-manager release validate <version>"
+    ],
+    "state": "ready",
+    "target_version": "0.5.1"
+  },
+  "validation_summary": [
+    {
+      "items": [
+        "- Run `python3 -m logics_manager lint --require-status`.",
+        "- Run scaffold command tests."
+      ],
+      "path": "logics/tasks/task_129_orchestrate_the_ai_alpha_seasons_evidence_run.md",
+      "ref": "task_129_orchestrate_the_ai_alpha_seasons_evidence_run"
+    }
+  ]
+}

@@ -36,6 +36,7 @@
 > Semantic edit: 2026-07-26 board-style UI asset coverage documented as adjacent playtest-loop polish under `task_119`; six 4x4 icon sheets are now cropped, audited, wired, and runbooked, with future asset work gated on verified missing states or unreadable 24px icons.
 > Semantic edit: 2026-07-27 synchronized roadmap after `req_118`-`req_126` closeout; the active workflow queue is empty and the next 0.5 decision is gated on a fresh replayability/balance baseline.
 > Semantic edit: 2026-07-27 opened the first post-closeout 0.5 economy follow-up (`req_127`) from fresh replayability/balance evidence and kept it to a price-only fix for confirmed weak cards.
+> Semantic edit: 2026-07-27 scaffolded `req_128` as an AI alpha seasons evidence run to decide the next corpus before opening 0.6 lifecycle work.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -59,6 +60,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - The latest validation gate is green: `npm run typecheck`, `npm run lint`, `npm test` (352 passed, 7 skipped), `npm run test:coverage` (91.89% statements), `npm run build`, `npm run test:e2e -- --project=chromium`, production audit, and `npm run logics:validate`.
 - The 2026-07-26/27 execution queue is now closed: `req_118`-`req_126` are Done, Logics lint/audit are clean, and `logics-manager status` reports zero open workflow docs. Delivered since the previous sync: twenty new circuits, browser-driven AI playtest, UX evaluation harness, replayability/fun analytics, source-of-truth remediation, aggressive mini-pack diagnostic, eager bundle/script-boundary follow-up, runtime performance remediation, and credential/dependency/App.tsx review remediation.
 - The first post-closeout 0.5 economy follow-up is `req_127`: fresh replayability did not justify a broad aggressive/mini-pack nerf, but card-role evidence justified moving `pit_relay` and `hard_tires` from 180 to 120 credits. No new card mechanics, shop model, or UI surface were opened.
+- Active evidence queue: `req_128` / `task_129` is ready to run. It uses headless AI seasons plus browser/UX/cold-start agents to decide whether the next corpus is 0.6 lifecycle, a narrow 0.5 economy/card follow-up, a UX/friction follow-up, or a stability fix.
 - Still not real: automatic scheduler, full auth, dynamic objectives, broad beta operations evidence, multi-person playtest evidence for the current balance, and any further card-economy expansion beyond the narrow `req_127` price fix.
 
 # Milestones
@@ -194,7 +196,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 # Sequencing
 - The 0.4 ship/maintainability/review queue through `task_127` is Done, and no workflow docs are open.
-- After `req_127`, do not keep tuning cards without new evidence. Next product planning should move to 0.6 beta-season lifecycle unless a fresh replayability/balance or human playtest report exposes a new 0.5 economy defect.
+- Run `req_128` first. Its decision package should either clear the way for 0.6 beta-season lifecycle or open one targeted follow-up for a concrete economy, UX, or stability blocker.
 - Keep release validation explicit: use `logics-manager release status|plan|validate` and record evidence before claiming any 0.4.x release readiness.
 - Do not start 1.0 hardening until the 0.6 beta has produced real usage.
 
@@ -218,7 +220,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Keep `submitDecision`'s repeated full-state reloads as-is until the existing Postgres integration lane measures a real cost; the fix (thread loaded state through) is mechanical when justified.
 - Dependabot major migrations parked after 0.3.22 release triage: ESLint 10 needs jsx-a11y peer support or replacement, `@vitejs/plugin-react` 6 should move with Vite 8, and Prisma 7 needs datasource/client configuration migration. Do not force these into a patch release without a focused migration chain.
 
-- Scaffold the 0.6 beta-season lifecycle next unless a new replayability/balance or human playtest report exposes a concrete 0.5 economy defect.
+- Run `req_128` / `task_129` and use its decision package to choose the next corpus.
 - Keep dynamic race objectives, polling/SSE, reminders, and 1.0 hardening unscaffolded until their evidence gates are met.
 
 # Risks

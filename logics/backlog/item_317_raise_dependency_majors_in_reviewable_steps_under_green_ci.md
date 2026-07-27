@@ -1,10 +1,10 @@
 ## item_317_raise_dependency_majors_in_reviewable_steps_under_green_ci - Raise dependency majors in reviewable steps under green CI
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 85%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -41,6 +41,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-27 closeout decision: defer Prisma 7 until its adapter/client migration can be completed as a dedicated wave; defer ESLint 10 until jsx-a11y has a supported path or an accessibility-safe replacement is chosen; leave TypeScript 7 out of scope unless dependency constraints require it.
 
 # Links
 - Product brief(s): `prod_078_credential_storage_and_dependency_currency_product_brief`
@@ -69,3 +70,9 @@
 - Deferred within this item: Prisma 7, ESLint 10, and TypeScript major decision remain separate reviewable waves.
 - ESLint 10 deferral reason: latest `eslint-plugin-jsx-a11y` still peers only through ESLint 9; `--force` or removing the plugin would reduce accessibility coverage.
 - Prisma 7 deferral reason: attempted upgrade proved it needs a dedicated adapter/client migration: remove schema datasource URL, configure `prisma.config.ts`, add `@prisma/adapter-pg` and `pg`, rewrite all `new PrismaClient()` call sites, and resolve Prisma 7 transaction/delegate type changes before green CI.
+
+# Validation
+- 2026-07-27 closeout validation: npm run typecheck OK; npm run lint OK; npm test OK with 352 passing / 7 skipped; npm run test:coverage OK with 352 passing / 7 skipped and 91.89% statements; npm run build OK; npm run test:e2e -- --project=chromium OK, 4 passed; npm audit --omit=dev --audit-level=high OK, 0 vulnerabilities.
+
+# Notes
+- Task `task_127_orchestrate_credential_storage_and_dependency_currency_remediation` was finished via `logics-manager flow finish task` on 2026-07-27.

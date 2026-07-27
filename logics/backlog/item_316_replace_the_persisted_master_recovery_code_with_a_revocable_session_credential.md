@@ -2,9 +2,9 @@
 > From version: 0.5.1
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 100%
+> Understanding: 90
+> Confidence: 85
+> Progress: 100
 > Complexity: Medium
 > Theme: Security
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -74,3 +74,6 @@
 
 # Validation
 - 2026-07-27 closeout: credential/session-token implementation already validated in wave 1 with typecheck, lint, unit tests, coverage, build, Chromium e2e, production audit, and logics validation; closing item now to reflect shipped commit 105daaa.
+
+# Notes
+- Task `task_127_orchestrate_credential_storage_and_dependency_currency_remediation` was finished via `logics-manager flow finish task` on 2026-07-27.

@@ -1,7 +1,7 @@
 ## req_126_review_remediation_stop_persisting_the_master_recovery_credential_restore_dependency_currency_finish_app_tsx_state_consolidation - Review remediation: stop persisting the master recovery credential, restore dependency currency, finish App.tsx state consolidation
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Medium

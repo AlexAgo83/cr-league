@@ -2,9 +2,9 @@
 > From version: 0.5.1
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 100%
+> Understanding: 90
+> Confidence: 85
+> Progress: 100
 > Complexity: Low
 > Theme: Maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -59,3 +59,6 @@
 
 # Validation
 - 2026-07-27 validation: npm run typecheck OK; npm run lint OK; npm test OK with 352 passing / 7 skipped; npm run test:coverage OK at 91.85% statements against the 89.37% baseline; npm run build OK; npm run test:e2e -- --project=chromium OK, 4 passed.
+
+# Notes
+- Task `task_127_orchestrate_credential_storage_and_dependency_currency_remediation` was finished via `logics-manager flow finish task` on 2026-07-27.

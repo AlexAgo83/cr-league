@@ -1,10 +1,10 @@
 ## task_127_orchestrate_credential_storage_and_dependency_currency_remediation - Orchestrate credential storage and dependency currency remediation
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 85%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -32,20 +32,20 @@
 - `item_318_finish_the_residual_app_tsx_state_consolidation_left_by_item_303`
 
 # Definition of Done (DoD)
-- [ ] Generated request, product, backlog, and task docs are present.
-- [ ] Context-pack handoff is available when requested.
-- [ ] Validation passes.
-- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+- [x] Generated request, product, backlog, and task docs are present.
+- [x] Context-pack handoff is available when requested.
+- [x] Validation passes.
+- [x] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
-- request-AC1 -> `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`. Proof: deferred to closeout — automated test asserting no browser storage key holds the plaintext recovery code after a recover-and-reload cycle.
-- request-AC2 -> `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`. Proof: deferred to closeout — Chromium e2e private-league run plus manual create/join/rejoin/switch checks across a reload.
-- request-AC3 -> `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`. Proof: deferred to closeout — API tests covering issue, revoke, and rotation-invalidation of the replacement credential.
-- request-AC4 -> `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`. Proof: deferred to closeout — claim-code storage decision recorded in the task report with its rationale.
-- request-AC5 -> `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`. Proof: deferred to closeout — Prisma migration committed if the schema changes, and the client-compatibility decision recorded.
-- request-AC6 -> `item_317_raise_dependency_majors_in_reviewable_steps_under_green_ci`. Proof: deferred to closeout — one commit per major with CI green, and deferred majors listed with reasons.
-- request-AC7 -> `item_318_finish_the_residual_app_tsx_state_consolidation_left_by_item_303`. Proof: deferred to closeout — diff shows state consolidation only, with existing tests passing without semantic modification.
-- request-AC8 -> This task. Proof: deferred to closeout — typecheck, lint, test, test:coverage, build, e2e chromium, and logics:validate results recorded against the 89.37% statement baseline.
+- request-AC1 -> `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`. Proof: automated storage regression covers recover-and-reload without the plaintext recovery code in browser storage.
+- request-AC2 -> `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`. Proof: Chromium private-league e2e plus create/join/rejoin/switch reload checks stayed green with the replacement credential.
+- request-AC3 -> `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`. Proof: API coverage verifies issue, revoke, and recovery-rotation invalidation of hashed session credentials.
+- request-AC4 -> `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`. Proof: team claim browser storage now keeps session claim credentials, with legacy claim-code compatibility retained server-side.
+- request-AC5 -> `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`. Proof: migration `20260727110000_add_profile_and_team_session_credentials` is committed and legacy recovery/claim proof paths remain compatible.
+- request-AC6 -> `item_317_raise_dependency_majors_in_reviewable_steps_under_green_ci`. Proof: Vite/plugin-react and jsdom/@types-node landed in separate green commits; Prisma 7 and ESLint 10 are deferred with blockers recorded.
+- request-AC7 -> `item_318_finish_the_residual_app_tsx_state_consolidation_left_by_item_303`. Proof: replay/result/qualifying panel state moved into `useReplayUiState` as a pure refactor with existing tests passing.
+- request-AC8 -> This task. Proof: typecheck, lint, test, coverage, build, Chromium e2e, production audit, and Logics validation are recorded; coverage is 91.89% statements against the 89.37% baseline.
 
 # Validation
 - Run `npm run typecheck`, `npm run lint`, `npm test`, `npm run test:coverage`, `npm run build`.
@@ -53,6 +53,9 @@
 - Run `npm audit --omit=dev --audit-level=high` after the dependency upgrades.
 - Run `npm run logics:validate`.
 - 2026-07-27 wave 4 validation: npm run typecheck OK; npm run lint OK; npm test OK with 352 passing / 7 skipped; npm run test:coverage OK at 91.85% statements, above 89.37% baseline; npm run build OK; npm run test:e2e -- --project=chromium OK, 4 passed.
+- 2026-07-27 closeout validation: npm run typecheck OK; npm run lint OK; npm test OK with 352 passing / 7 skipped; npm run test:coverage OK with 352 passing / 7 skipped and 91.89% statements against the 89.37% baseline; npm run build OK; npm run test:e2e -- --project=chromium OK, 4 passed; npm audit --omit=dev --audit-level=high OK, 0 vulnerabilities.
+- Finish workflow executed on 2026-07-27.
+- Linked backlog/request close verification passed.
 
 # Report
 - 2026-07-27 wave 1 complete: replaced persisted profile recovery proof with a revocable `sessionCredential` stored hashed server-side, and replaced locally stored team claim codes with hashed session claim tokens accepted through the existing `claimCode` request field for compatibility.
@@ -67,6 +70,10 @@
 - 2026-07-27 dependency deferrals: ESLint 10 is deferred because `eslint-plugin-jsx-a11y@6.10.2` latest declares peer support only through ESLint 9; forcing ESLint 10 would weaken or remove the a11y lint path. Prisma 7 is deferred because it requires moving datasource URL to `prisma.config.ts`, adding a PG adapter, updating every `PrismaClient` construction, and resolving Prisma 7 transaction/delegate typing changes across API and scripts; `prisma generate` reached that migration boundary, then the attempt was reverted before commit.
 - Remaining in this task: Prisma 7 as a dedicated migration wave when adapter/type changes can be handled end to end, ESLint 10 when jsx-a11y supports it or an a11y-safe replacement is chosen, and residual `App.tsx` state consolidation.
 - 2026-07-27 wave 4 complete: finished residual App.tsx state consolidation by moving replay/result/qualifying panel state into useReplayUiState, reusing existing useAppNavigation and useActiveModal for navigation and modal state. Dependency deferrals remain unchanged: Prisma 7 needs adapter/client migration, ESLint 10 waits on an a11y-safe plugin path.
+- 2026-07-27 closeout: all implementation slices are complete. Credential storage now uses hashed, revocable session credentials; team claim storage follows the same treatment; Vite/plugin-react and jsdom/@types-node majors landed in reviewable commits; Prisma 7 and ESLint 10 are deferred with explicit blockers; App.tsx residual replay UI state is consolidated in useReplayUiState without behavior changes.
+- Finished on 2026-07-27.
+- Linked backlog item(s): `item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential`, `item_317_raise_dependency_majors_in_reviewable_steps_under_green_ci`, `item_318_finish_the_residual_app_tsx_state_consolidation_left_by_item_303`
+- Related request(s): `req_126_review_remediation_stop_persisting_the_master_recovery_credential_restore_dependency_currency_finish_app_tsx_state_consolidation`
 
 # AI Context
 - Summary: Orchestrate credential storage and dependency currency remediation

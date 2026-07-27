@@ -1,10 +1,10 @@
 ## item_318_finish_the_residual_app_tsx_state_consolidation_left_by_item_303 - Finish the residual App.tsx state consolidation left by item_303
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 60%
+> Progress: 100%
 > Complexity: Low
 > Theme: Maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -39,6 +39,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-27 implementation: extracted App.tsx replay/result/qualifying panel state into useReplayUiState, while keeping useAppNavigation and useActiveModal as the existing navigation/modal consolidation points. No new dependency; behavior-preserving refactor only.
 
 # Links
 - Product brief(s): `prod_078_credential_storage_and_dependency_currency_product_brief`
@@ -55,3 +56,6 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-27 validation: npm run typecheck OK; npm run lint OK; npm test OK with 352 passing / 7 skipped; npm run test:coverage OK at 91.85% statements against the 89.37% baseline; npm run build OK; npm run test:e2e -- --project=chromium OK, 4 passed.

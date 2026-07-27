@@ -1,10 +1,10 @@
 ## item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential - Replace the persisted master recovery code with a revocable session credential
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 60%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Security
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -71,3 +71,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-27 closeout: credential/session-token implementation already validated in wave 1 with typecheck, lint, unit tests, coverage, build, Chromium e2e, production audit, and logics validation; closing item now to reflect shipped commit 105daaa.

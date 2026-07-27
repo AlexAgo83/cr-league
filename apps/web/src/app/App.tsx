@@ -3,7 +3,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { type LeagueState, type ProfileSession } from "./types.js";
 import { AdminConsoleView } from "../features/AdminConsoleView.js";
-import type { ResultTab } from "../features/ResultView.js";
 import { LanguageSwitcher, NotificationStack, ProfileMenu, SetupTopbar } from "./AppChrome.js";
 import { AppOverlays } from "./AppOverlays.js";
 import { ONBOARDING_HELP_KEYS, SCREEN_ONBOARDING_HELP_TOPICS, type OnboardingHelpTopic } from "./OnboardingShell.js";
@@ -35,6 +34,7 @@ import { useActiveModal } from "./useActiveModal.js";
 import { useNotifications, type Notification } from "./useNotifications.js";
 import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
+import { useReplayUiState } from "./useReplayUiState.js";
 
 export function App() {
   const [locale, setLocaleState] = useState<Locale>(initialLocale);
@@ -55,9 +55,20 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   // the freshly-loaded polyline to the race/replay/championship views.
   useCircuitRoutesReady();
   const [profileSession, setProfileSession] = useState<ProfileSession | null>(loadProfileSession);
-  const [historyReplay, setHistoryReplay] = useState<LeagueState["grandPrixHistory"][number] | null>(null);
-  const [resultTab, setResultTab] = useState<ResultTab>("replay");
-  const [resultOpen, setResultOpen] = useState(false);
+  const {
+    historyReplay,
+    setHistoryReplay,
+    resultTab,
+    setResultTab,
+    resultOpen,
+    setResultOpen,
+    qualifyingPanelOpen,
+    setQualifyingPanelOpen,
+    qualifyingResult,
+    setQualifyingResult,
+    qualifyingReplayInitialLap,
+    openQualifyingReplay
+  } = useReplayUiState();
   const {
     modalReturnRef,
     setProfileOpen,
@@ -82,7 +93,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     restartConfirmOpen
   } = useActiveModal();
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
-  const clearRouteReplay = useCallback(() => setHistoryReplay(null), []);
+  const clearRouteReplay = useCallback(() => setHistoryReplay(null), [setHistoryReplay]);
   const activeReplayGrandPrixId =
     historyReplay ? shortGrandPrixId(historyReplay.id) : leagueState?.currentGrandPrix.result && resultOpen && resultTab === "replay" ? shortGrandPrixId(leagueState.currentGrandPrix.id) : undefined;
   const {
@@ -103,9 +114,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const { commandClicks, markCommandClicked, resetCommandClicks } = useCommandClicks();
-  const [qualifyingPanelOpen, setQualifyingPanelOpen] = useState(true);
-  const [qualifyingResult, setQualifyingResult] = useState<QualifyingRun | null>(null);
-  const [qualifyingReplayInitialLap, setQualifyingReplayInitialLap] = useState<number | undefined>();
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
   const previousSeasonRef = useRef<number | null>(null);
   const [preferencesResetSignal, setPreferencesResetSignal] = useState(0);
@@ -338,10 +346,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setLeagueFormError,
     setGameView,
     setDirectiveConfirmOpen,
-    setQualifyingResult: (result) => {
-      setQualifyingReplayInitialLap(undefined);
-      setQualifyingResult(result);
-    },
+    setQualifyingResult,
     setQualifyingConfirmOpen,
     setResolveConfirmOpen,
     setStartingGridExpanded,
@@ -391,7 +396,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setResultTab("replay");
     setResultOpen(true);
     setGameView("drive");
-  }, [historyReplay, leagueState, routeReplayGrandPrixId, setGameView, setRouteReplayGrandPrixId]);
+  }, [historyReplay, leagueState, routeReplayGrandPrixId, setGameView, setHistoryReplay, setResultOpen, setResultTab, setRouteReplayGrandPrixId]);
 
   useEffect(() => {
     if (!leagueState || onboardingHelp) return;
@@ -472,16 +477,12 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
 
   function closeOpenReplays() {
     if (historyReplay) closeHistoryReplay();
-    if (qualifyingResult) {
-      setQualifyingReplayInitialLap(undefined);
-      setQualifyingResult(null);
-    }
+    if (qualifyingResult) setQualifyingResult(null);
     if (resultOpen && result) setResultOpen(false);
   }
 
   function openQualifyingHistory(run: QualifyingRun) {
-    setQualifyingReplayInitialLap(run.lap ?? 1);
-    setQualifyingResult(run);
+    openQualifyingReplay(run);
   }
 
   function changeLocale(nextLocale: Locale) {
@@ -721,10 +722,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       setDirectiveStep={setDirectiveStep}
       setGameView={setGameView}
       setPlanSubscreen={setPlanSubscreen}
-      setQualifyingResult={(result) => {
-        if (!result) setQualifyingReplayInitialLap(undefined);
-        setQualifyingResult(result);
-      }}
+      setQualifyingResult={setQualifyingResult}
       openQualifyingHistory={openQualifyingHistory}
       setSeasonRecapSeason={setSeasonRecapSeason}
       setChampionshipRecordTab={setChampionshipRecordTab}

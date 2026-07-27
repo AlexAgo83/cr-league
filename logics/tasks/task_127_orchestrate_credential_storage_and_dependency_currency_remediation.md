@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 60
+> Progress: 85%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -52,6 +52,7 @@
 - Run `npm run test:e2e -- --project=chromium` for the private-league flow.
 - Run `npm audit --omit=dev --audit-level=high` after the dependency upgrades.
 - Run `npm run logics:validate`.
+- 2026-07-27 wave 4 validation: npm run typecheck OK; npm run lint OK; npm test OK with 352 passing / 7 skipped; npm run test:coverage OK at 91.85% statements, above 89.37% baseline; npm run build OK; npm run test:e2e -- --project=chromium OK, 4 passed.
 
 # Report
 - 2026-07-27 wave 1 complete: replaced persisted profile recovery proof with a revocable `sessionCredential` stored hashed server-side, and replaced locally stored team claim codes with hashed session claim tokens accepted through the existing `claimCode` request field for compatibility.
@@ -65,6 +66,7 @@
 - Wave 3 validation evidence: `npm run typecheck` OK; `npm run lint` OK; `npm test` OK with 352 passing / 7 skipped; `npm run build` OK; `npm audit --omit=dev --audit-level=high` OK, 0 vulnerabilities.
 - 2026-07-27 dependency deferrals: ESLint 10 is deferred because `eslint-plugin-jsx-a11y@6.10.2` latest declares peer support only through ESLint 9; forcing ESLint 10 would weaken or remove the a11y lint path. Prisma 7 is deferred because it requires moving datasource URL to `prisma.config.ts`, adding a PG adapter, updating every `PrismaClient` construction, and resolving Prisma 7 transaction/delegate typing changes across API and scripts; `prisma generate` reached that migration boundary, then the attempt was reverted before commit.
 - Remaining in this task: Prisma 7 as a dedicated migration wave when adapter/type changes can be handled end to end, ESLint 10 when jsx-a11y supports it or an a11y-safe replacement is chosen, and residual `App.tsx` state consolidation.
+- 2026-07-27 wave 4 complete: finished residual App.tsx state consolidation by moving replay/result/qualifying panel state into useReplayUiState, reusing existing useAppNavigation and useActiveModal for navigation and modal state. Dependency deferrals remain unchanged: Prisma 7 needs adapter/client migration, ESLint 10 waits on an a11y-safe plugin path.
 
 # AI Context
 - Summary: Orchestrate credential storage and dependency currency remediation

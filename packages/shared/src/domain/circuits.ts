@@ -167,6 +167,7 @@ export function trackZonesForCircuit(circuit: Pick<CityCircuitIdentitySource, "m
 }
 
 export function trackSpeedProfileForCircuit(circuit: Pick<CityCircuitIdentitySource, "layoutKey">): TrackSpeedProfile {
+  // ponytail: generated TS keeps the profile shape checked; emit JSON from the generator if cold tsc -b becomes a measured bottleneck.
   const profiles = CIRCUIT_SPEED_PROFILES as Record<string, TrackSpeedProfile>;
   return profiles[circuit.layoutKey] ?? [];
 }

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 25%
+> Progress: 50%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -51,6 +51,7 @@
 # Report
 - Implementation complete.
 - 2026-07-27 wave 1 complete: added CONTRIBUTING.md Scripts section to distinguish merge gate, release/pre-release checks, local maintenance commands, and on-demand diagnostics/generators without modifying package.json scripts.
+- 2026-07-27 wave 2 complete: recorded the App.tsx and speed-profile data skips directly at the implementing code sites with explicit reopen triggers.
 
 # AI Context
 - Summary: Orchestrate the review follow-up

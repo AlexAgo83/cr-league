@@ -50,6 +50,8 @@ export function App() {
   return <GameApp locale={locale} onLocaleChange={changeLocale} />;
 }
 
+// ponytail: keep App.tsx as orchestration wiring; reopen a broader split only when an App.tsx change
+// breaks a flow it did not touch.
 function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (locale: Locale) => void }) {
   // Kicks off the lazy circuit-route load and re-renders once ready so circuitForRound (below) hands
   // the freshly-loaded polyline to the race/replay/championship views.

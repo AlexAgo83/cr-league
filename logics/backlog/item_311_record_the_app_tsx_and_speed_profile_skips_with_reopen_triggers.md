@@ -1,10 +1,10 @@
 ## item_311_record_the_app_tsx_and_speed_profile_skips_with_reopen_triggers - Record the App.tsx and speed-profile skips with reopen triggers
 > From version: 0.5.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Decision record
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -53,3 +53,6 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-27 validation: recorded both skips at code sites with ponytail comments. App.tsx reopen trigger: a broad App.tsx change breaks an unrelated flow. Speed-profile JSON reopen trigger: cold tsc -b becomes a measured bottleneck; generator can emit JSON then. npm run typecheck OK; npm run lint OK.

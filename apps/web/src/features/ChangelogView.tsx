@@ -46,7 +46,7 @@ function ChangelogBody({ lines }: { lines: string[] }) {
 }
 
 function titleOf(text: string, version: string) {
-  return bodyLines(text).find((line) => !line.startsWith("## ") && !line.startsWith("- "))?.replace(/\s+release for CR League\.$/i, "") ?? `CR League ${version}`;
+  return text.match(/^#\s+(.+)$/m)?.[1] ?? `CR League ${version}`;
 }
 
 function bodyLines(text: string) {

@@ -2703,21 +2703,33 @@ label small {
 
 .modal-close-button {
   align-items: center;
-  background: rgb(15 23 42 / 0.82);
-  border: 1px solid rgb(164 158 147 / 0.26);
+  background: rgb(248 243 232 / 0.94);
+  border: 1px solid rgb(255 255 255 / 0.52);
   border-radius: 999px;
-  color: var(--text);
+  box-shadow: 0 8px 18px rgb(0 0 0 / 0.28);
+  color: #17151a;
   cursor: pointer;
   display: inline-flex;
-  font-size: 1.25rem;
-  height: 34px;
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 900;
+  height: 38px;
   justify-content: center;
   line-height: 1;
   position: absolute;
   right: 14px;
   top: 14px;
-  width: 34px;
+  width: 38px;
   z-index: 3;
+}
+
+.modal-close-button:hover,
+.modal-close-button:focus-visible {
+  background: #ff4d00;
+  border-color: #ff8a3d;
+  color: #1d1205;
+  outline: 2px solid rgb(248 243 232 / 0.72);
+  outline-offset: 2px;
 }
 
 .qualifying-modal {

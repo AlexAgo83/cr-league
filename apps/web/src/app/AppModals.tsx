@@ -301,18 +301,19 @@ export function SeasonRecapModal({
   tt: Translator;
   onClose: () => void;
 }) {
+  const leaderPoints = recap.standings[0]?.points ?? recap.champion.points;
   return (
     <Modal label={tt("season_recap_title")} className="panel modal season-recap-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <ModalHero image="/assets/crl/season-recap-modal.webp" kicker={`${tt("league_season")} ${recap.season}`} title={tt("season_recap_title")} />
+      <ModalHero image="/assets/crl/season-recap-modal.webp" kicker={`${tt("league_season")} ${recap.season}`} title={`${recap.champion.teamName} ${tt("season_champion")}`} />
       <div className="season-champion-card">
-        <span>{tt("season_champion")}</span>
-        <strong>
-          {recap.champion.livery ? <LiveryPlate className="standings-livery-plate leader-livery-plate" livery={recap.champion.livery} name={recap.champion.teamName} /> : null}
-          {recap.champion.teamName}
-        </strong>
-        <small>
-          <RewardValue type="points" value={recap.champion.points} tt={tt} /> · {recap.gpCount} {tt("season_gp_count")}
-        </small>
+        {recap.champion.livery ? <LiveryPlate className="standings-livery-plate season-champion-livery" livery={recap.champion.livery} name={recap.champion.teamName} /> : null}
+        <div>
+          <span>{tt("season_champion")}</span>
+          <strong>{recap.champion.teamName}</strong>
+          <small>
+            <RewardValue type="points" value={recap.champion.points} tt={tt} /> · {recap.gpCount} {tt("season_gp_count")}
+          </small>
+        </div>
       </div>
       <div className="season-recap-grid">
         <section>
@@ -322,7 +323,10 @@ export function SeasonRecapModal({
               <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>
                 <PositionBadge position={entry.position} />
                 {entry.livery ? <LiveryPlate className="standings-livery-plate" livery={entry.livery} name={entry.teamName} /> : null}
-                <span>{entry.teamName}</span>
+                <span>
+                  {entry.teamName}
+                  <small><RewardValue type="points" value={entry.points} tt={tt} /></small>
+                </span>
               </li>
             ))}
           </ol>
@@ -336,6 +340,7 @@ export function SeasonRecapModal({
                 <span>{entry.teamName}</span>
                 <small>
                   <RewardValue type="points" value={entry.points} tt={tt} />
+                  <em>{entry.position === 1 ? "-" : `+${leaderPoints - entry.points}`}</em>
                 </small>
               </li>
             ))}

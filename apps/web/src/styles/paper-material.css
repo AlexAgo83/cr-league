@@ -737,6 +737,8 @@
 /* Round icon buttons: no CTA chamfer clip (it would crop circles and the play spinner ring). */
 .replay-map-controls button,
 .replay-speed-options button,
+.modal-close-button,
+.circuit-pagination button.secondary-button,
 .profile-menu-button,
 .context-panel-close,
 .report-close-button,
@@ -744,4 +746,17 @@
 .map-qualifying-toggle,
 .round-history-button {
   clip-path: none;
+}
+
+.championship-view .circuit-pagination button.secondary-button,
+.championship-view .circuit-pagination button.secondary-button:not(:disabled) {
+  background: rgb(248 243 232 / 0.9);
+  border-color: rgb(255 255 255 / 0.46);
+  color: #17151a;
+}
+
+.championship-view .circuit-pagination button.secondary-button:not(:disabled):is(:hover, :focus-visible) {
+  background: #ff4d00;
+  border-color: #ff8a3d;
+  color: #1d1205;
 }

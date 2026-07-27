@@ -979,13 +979,17 @@
 }
 
 .season-champion-card {
-  background: var(--color-cockpit);
-  border: 1px solid var(--color-border);
+  align-items: center;
+  background:
+    linear-gradient(90deg, rgb(255 77 0 / 0.22), transparent 58%),
+    rgb(16 14 18 / 0.46);
+  border: 1px solid rgb(255 138 61 / 0.32);
   border-radius: 8px;
   display: grid;
-  gap: 6px;
+  gap: 14px;
+  grid-template-columns: auto minmax(0, 1fr);
   margin: 14px 0;
-  padding: 14px;
+  padding: 16px;
 }
 
 .season-champion-card > span,
@@ -993,16 +997,33 @@
   color: var(--color-muted);
 }
 
+.season-champion-card > div {
+  display: grid;
+  gap: 3px;
+}
+
 .season-champion-card strong {
-  align-items: center;
-  display: flex;
-  gap: 10px;
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-size: 1.7rem;
+  font-style: italic;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.season-champion-livery {
+  height: 42px;
+  width: 62px;
 }
 
 .season-recap-grid {
   display: grid;
   gap: 16px;
-  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+  grid-template-columns: 1fr;
+}
+
+.season-podium-list {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .season-podium-list li,
@@ -1017,11 +1038,15 @@
 }
 
 .season-podium-list li {
-  grid-template-columns: 34px 48px minmax(0, 1fr);
+  align-content: center;
+  min-height: 88px;
+  text-align: center;
+  grid-template-columns: 1fr;
+  justify-items: center;
 }
 
 .season-standings-list li {
-  grid-template-columns: 34px minmax(0, 1fr) auto;
+  grid-template-columns: 34px minmax(0, 1fr) minmax(84px, auto);
 }
 
 .season-podium-list li.current-team,
@@ -1031,7 +1056,18 @@
 }
 
 .season-standings-list small {
+  align-items: center;
   color: var(--color-muted);
+  display: inline-flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.season-standings-list em {
+  color: var(--color-muted);
+  font-style: normal;
+  min-width: 28px;
+  text-align: right;
 }
 
 @media (max-width: 1040px) {
@@ -1125,6 +1161,10 @@
 
   .season-recap-grid {
     gap: 14px;
+    grid-template-columns: 1fr;
+  }
+
+  .season-podium-list {
     grid-template-columns: 1fr;
   }
 

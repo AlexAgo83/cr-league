@@ -923,7 +923,7 @@ describe("api app", () => {
 
     expect(resolveResponse.statusCode).toBe(409);
     expect(resolveResponse.json()).toMatchObject({
-      message: "Submit your race directive before launching the Grand Prix."
+      message: "Some drivers still need to submit their race directive."
     });
   });
 
@@ -979,7 +979,7 @@ describe("api app", () => {
     const resolveResponse = await app.inject({
       method: "POST",
       url: `/leagues/${created.league.id}/resolve`,
-      payload: created.player
+      payload: { ...created.player, allowDefaults: true }
     });
     const teamAfterRace = resolveResponse.json().teams.find((team: { id: string }) => team.id === joinedTeam.id);
 
@@ -1226,8 +1226,9 @@ describe("api app", () => {
       submittedTeamIds: [],
       missingTeamIds: expect.arrayContaining([teamId]),
       canResolve: false,
+      canResolveWithDefaults: true,
       canStartNextGrandPrix: false,
-      nextAction: "wait_for_directives"
+      nextAction: "resolve_with_defaults"
     });
     expect(earlyNextResponse.statusCode).toBe(409);
     expect(restartResponse.statusCode).toBe(200);

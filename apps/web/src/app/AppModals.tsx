@@ -240,7 +240,7 @@ function ModalActionIcon({ danger = false, label, tt }: { danger?: boolean; labe
             ? "launch-gp"
             : label === tt("action_next_grand_prix")
               ? "next-gp"
-              : label === tt("action_finish_season")
+              : label === tt("action_start_next_season")
                 ? "championship"
                 : label === tt("action_review_race")
                   ? "review-race"

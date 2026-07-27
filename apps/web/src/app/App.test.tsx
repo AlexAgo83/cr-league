@@ -1144,10 +1144,10 @@ describe("App", () => {
     createLeagueFromSetup();
     expect(await screen.findByRole("heading", { name: "4. Grand Prix finished" })).toBeTruthy();
     expect(screen.queryByRole("dialog", { name: "Season recap" })).toBe(null);
-    fireEvent.click(screen.getByRole("button", { name: "Finish season" }));
-    expect(screen.getByRole("dialog", { name: "Finish the season?" })).toBeTruthy();
-    expect(screen.getByText("This closes the current season, prepares the next one, and shows the season recap.")).toBeTruthy();
-    fireEvent.click(screen.getAllByRole("button", { name: "Finish season" }).at(-1)!);
+    fireEvent.click(screen.getByRole("button", { name: "Start next season" }));
+    expect(screen.getByRole("dialog", { name: "Start next season?" })).toBeTruthy();
+    expect(screen.getByText("This archives the current season, resets garages, and opens the next one.")).toBeTruthy();
+    fireEvent.click(screen.getAllByRole("button", { name: "Start next season" }).at(-1)!);
     const recap = await screen.findByRole("dialog", { name: "Season recap" });
     expect(recap.textContent).toContain("Season 1");
     expect(recap.textContent).toContain("Champion");

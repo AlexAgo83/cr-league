@@ -256,7 +256,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     isSeasonFinalGrandPrix
   } = race;
   const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
-  const nextGrandPrixActionLabel = tt(isSeasonFinalGrandPrix ? "action_finish_season" : "action_next_grand_prix");
+  const nextGrandPrixActionLabel = tt(isSeasonFinalGrandPrix ? "action_start_next_season" : "action_next_grand_prix");
   const { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, buyCarAsset, updateLivery, updateTeamName, restartLeague: restartLeagueState } = createLeagueMutations({
     leagueState,
     playerTeam,

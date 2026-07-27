@@ -6,6 +6,12 @@ import { defaultBotDecision, ensureBotQualifyingRuns, fillLeagueWithBots, getLea
 import { requireAdminClaim } from "./transactionHelpers.js";
 import type { Db, LeagueState, ResolveGrandPrixInput } from "./types.js";
 
+const DEFAULT_ABSENT_DECISION: RaceDecision = {
+  approach: "balanced",
+  preparation: "reliability",
+  pitStrategy: "standard"
+};
+
 export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: ResolveGrandPrixInput = {}) {
   await requireAdminClaim(db, leagueId, input);
   const state = await getLeagueState(db, leagueId);
@@ -14,8 +20,8 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
   if (grandPrix.status === "resolved") {
     throw new LeagueRuleError("This Grand Prix is already resolved.");
   }
-  if (!hasHumanDecision(state) && !input.allowDefaults) {
-    throw new LeagueRuleError("Submit your race directive before launching the Grand Prix.");
+  if (missingHumanTeamIds(state).length && !input.allowDefaults) {
+    throw new LeagueRuleError("Some drivers still need to submit their race directive.");
   }
 
   if (state.league.fillWithBots) {
@@ -38,6 +44,7 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
     if (freshState.teams.length < 2) {
       throw new LeagueRuleError("At least two teams are required to launch the Grand Prix.");
     }
+    const defaultedTeamIds = missingHumanTeamIds(freshState);
     const participants = buildParticipants(freshState);
     const circuit = circuitIdentityForRound(freshGrandPrix.round, circuitSeasonSeed(leagueId, freshGrandPrix.season));
     const result = simulateRace({
@@ -54,6 +61,7 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
       forecast: freshGrandPrix.forecast as RaceInput["forecast"],
       participants
     });
+    result.defaultedTeamIds = defaultedTeamIds;
     const claimed = await tx.grandPrix.updateMany({
       where: { id: grandPrix.id, status: "briefing" },
       data: {
@@ -93,9 +101,10 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
   return getLeagueState(db, leagueId);
 }
 
-function hasHumanDecision(state: LeagueState) {
+function missingHumanTeamIds(state: LeagueState) {
   const humanTeamIds = new Set(state.teams.filter((team) => team.kind === "human").map((team) => team.id));
-  return state.decisions.some((decision) => humanTeamIds.has(decision.teamId));
+  const submittedTeamIds = new Set(state.decisions.map((decision) => decision.teamId));
+  return [...humanTeamIds].filter((teamId) => !submittedTeamIds.has(teamId));
 }
 
 function buildParticipants(state: LeagueState): RaceParticipant[] {
@@ -132,7 +141,7 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
             cardId: (decision.cardId ?? undefined) as RaceDecision["cardId"],
             rivalTeamId: decision.rivalTeamId ?? undefined
           }
-        : { ...demo.decision, cardId: undefined }
+        : DEFAULT_ABSENT_DECISION
     };
   });
 }

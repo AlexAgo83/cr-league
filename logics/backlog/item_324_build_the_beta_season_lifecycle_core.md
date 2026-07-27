@@ -1,10 +1,10 @@
 ## item_324_build_the_beta_season_lifecycle_core - Build the beta season lifecycle core
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: In Progress
 > Understanding: 90%
 > Confidence: 95
-> Progress: 0%
+> Progress: 45%
 > Complexity: High
 > Theme: Season lifecycle
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,21 @@
 - AC5: The next season starts only after a creator-only `Lancer la saison suivante` action from a `Saison terminée` state, preserving champion/podium/palmares review before rollover.
 - AC6: Starting the next season or restarting the season preserves players, palmares, archived season stats, and cosmetic/team identity while resetting cards and credits.
 - AC7: API and web tests cover season presets, season completion, manual resolution, absent-player defaults, and restart/next-season behavior.
+
+# Implementation Notes
+- 2026-07-27: Added league-creation season presets in the setup UI: `Standard season` (6 GP, default) and `Quick beta` (3 GP).
+- 2026-07-27: Updated action state so only human teams count as pending; bots are auto-ready and no preparation deadline auto-resolves a GP.
+- 2026-07-27: Added explicit resolve-with-defaults state and backend guard: missing human plans require `allowDefaults`.
+- 2026-07-27: Added the neutral absent-player plan used at resolution: balanced approach, reliability preparation, standard pit strategy, no card.
+- 2026-07-27: Recorded defaulted human team ids on the race result for report/UI follow-up.
+- 2026-07-27: Changed final-round action copy to `Lancer la saison suivante` / `Start next season`.
+- 2026-07-27: Fixed next-season rollover to reset team points, credits, and cards while preserving players and livery identity.
+- Evidence: `rtk npm test -- --run apps/api/src/app.test.ts apps/web/src/app/App.test.tsx` -> 70 tests passed.
+
+# Remaining Work
+- Surface the neutral default plan before commissioner confirmation instead of only encoding it in the API result.
+- Render defaulted teams clearly in the post-race report/classification.
+- Add/adjust focused tests for the 3 GP preset path and visible default-plan UI once the commissioner screen lands.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: A creator can create or configure a league with a short and default season preset.

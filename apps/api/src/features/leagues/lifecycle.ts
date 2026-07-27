@@ -249,10 +249,9 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
     })),
     cardShop: CARD_SHOP,
     actionState: buildActionState(
-      league.teams.map((team) => team.id),
+      league.teams.map((team) => ({ id: team.id, kind: team.kind })),
       grandPrix.status,
-      grandPrix.decisions.map((decision) => decision.teamId),
-      league.preparationDeadlineAt
+      grandPrix.decisions.map((decision) => decision.teamId)
     ),
     decisions: grandPrix.decisions.map((decision) => ({
       teamId: decision.teamId,
@@ -379,16 +378,18 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
         }
       });
     }
-    const freshState = await getLeagueState(tx, leagueId);
+    let freshState = await getLeagueState(tx, leagueId);
     if (!freshState) return;
-    await buyBotCars(tx, freshState, `${leagueId}-s${nextSeason}-r${nextRound}`);
-    await buyBotCards(tx, freshState, `${leagueId}-s${nextSeason}-r${nextRound}`);
     if (nextSeason !== grandPrix.season) {
       for (const team of freshState.teams) {
         await lockTeamRow(tx, team.id);
         const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
         if (!freshTeam || freshTeam.leagueId !== leagueId) continue;
-        const data: { points: number; livery?: { primary: string; secondary: string; carAssetId?: CarAssetId } } = { points: 0 };
+        const data: { points: number; credits: number; cards: string[]; livery?: { primary: string; secondary: string; carAssetId?: CarAssetId } } = {
+          points: 0,
+          credits: freshTeam.kind === "human" ? STARTING_CREDITS : 0,
+          cards: freshTeam.kind === "human" ? STARTER_CARDS : []
+        };
         if (freshTeam.kind === "bot") {
           const livery = normalizeLivery(freshTeam.livery);
           data.livery = {
@@ -402,7 +403,11 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
         }
         await tx.team.update({ where: { id: team.id }, data });
       }
+      freshState = await getLeagueState(tx, leagueId);
+      if (!freshState) return;
     }
+    await buyBotCars(tx, freshState, `${leagueId}-s${nextSeason}-r${nextRound}`);
+    await buyBotCards(tx, freshState, `${leagueId}-s${nextSeason}-r${nextRound}`);
   });
 
   return getLeagueState(db, leagueId);
@@ -527,19 +532,21 @@ export async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnT
   });
 }
 
-function buildActionState(teamIds: string[], grandPrixStatus: string, submittedTeamIds: string[], deadline: Date | null) {
+function buildActionState(teams: Array<{ id: string; kind: string }>, grandPrixStatus: string, submittedTeamIds: string[]) {
   const submitted = new Set(submittedTeamIds);
-  const missingTeamIds = grandPrixStatus === "resolved" ? [] : teamIds.filter((teamId) => !submitted.has(teamId));
-  const deadlinePassed = deadline ? Date.now() >= deadline.getTime() : false;
+  const humanTeamIds = teams.filter((team) => team.kind === "human").map((team) => team.id);
+  const missingTeamIds = grandPrixStatus === "resolved" ? [] : humanTeamIds.filter((teamId) => !submitted.has(teamId));
   const canStartNextGrandPrix = grandPrixStatus === "resolved";
-  const canResolve = grandPrixStatus !== "resolved" && (submittedTeamIds.length > 0 || deadlinePassed);
+  const canResolve = grandPrixStatus !== "resolved" && humanTeamIds.length > 0 && missingTeamIds.length === 0;
+  const canResolveWithDefaults = grandPrixStatus !== "resolved" && missingTeamIds.length > 0;
 
   return {
     submittedTeamIds,
     missingTeamIds,
     canResolve,
+    canResolveWithDefaults,
     canStartNextGrandPrix,
-    nextAction: canStartNextGrandPrix ? "start_next_grand_prix" : canResolve ? "resolve_grand_prix" : "wait_for_directives"
+    nextAction: canStartNextGrandPrix ? "start_next_grand_prix" : canResolve ? "resolve_grand_prix" : canResolveWithDefaults ? "resolve_with_defaults" : "wait_for_directives"
   };
 }
 

@@ -81,7 +81,7 @@ export function createLeagueMutations({
         body: JSON.stringify({
           teamId: leagueState.player?.teamId,
           claimCode: leagueState.player?.claimCode,
-          allowDefaults: !playerDecision
+          allowDefaults: leagueState.actionState.missingTeamIds.length > 0
         })
       });
       setLeagueState(withCurrentPlayer(state));
@@ -101,7 +101,7 @@ export function createLeagueMutations({
     setResultOpen(false);
     setGameView("drive");
 
-    await run(tt(finishingSeason ? "status_finishing_season" : "status_starting_next_grand_prix"), async () => {
+    await run(tt(finishingSeason ? "status_starting_next_season" : "status_starting_next_grand_prix"), async () => {
       const state = await api<LeagueState>(`/leagues/${leagueState.league.id}/next-grand-prix`, {
         method: "POST",
         body: JSON.stringify({
@@ -113,7 +113,7 @@ export function createLeagueMutations({
       setForm((current) => (current.cardId ? { ...current, cardId: "" } : current));
       setGameView("drive");
       setResultOpen(false);
-      showStatus(tt(finishingSeason ? "status_season_finished" : "status_next_grand_prix_started"));
+      showStatus(tt(finishingSeason ? "status_next_season_started" : "status_next_grand_prix_started"));
       pushCommandHint("prepare");
     });
   }

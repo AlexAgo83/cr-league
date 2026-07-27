@@ -96,6 +96,7 @@ function stateWithHistory(grandPrixHistory: LeagueState["grandPrixHistory"]): Le
       submittedTeamIds: [],
       missingTeamIds: [],
       canResolve: false,
+      canResolveWithDefaults: false,
       canStartNextGrandPrix: false,
       nextAction: "wait_for_directives"
     },

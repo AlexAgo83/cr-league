@@ -455,7 +455,7 @@ function MapActionIcon({ label, tt }: { label: string; tt: Translator }) {
         ? "send-plan"
         : label === tt("action_launch_grand_prix")
           ? "launch-gp"
-          : label === tt("action_finish_season")
+          : label === tt("action_start_next_season")
             ? "championship"
             : label === tt("action_next_grand_prix")
               ? "next-gp"

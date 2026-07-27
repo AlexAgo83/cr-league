@@ -81,8 +81,9 @@ export const baseState = {
     submittedTeamIds: [],
     missingTeamIds: ["team_1", "team_2"],
     canResolve: false,
+    canResolveWithDefaults: true,
     canStartNextGrandPrix: false,
-    nextAction: "wait_for_directives"
+    nextAction: "resolve_with_defaults"
   },
   player: {
     teamId: "team_1",
@@ -100,9 +101,10 @@ export const decidedState = {
   actionState: {
     submittedTeamIds: ["team_1"],
     missingTeamIds: ["team_2"],
-    canResolve: true,
+    canResolve: false,
+    canResolveWithDefaults: true,
     canStartNextGrandPrix: false,
-    nextAction: "resolve_grand_prix"
+    nextAction: "resolve_with_defaults"
   },
   decisions: [
     {
@@ -122,6 +124,7 @@ export const resolvedState = {
     submittedTeamIds: ["team_1"],
     missingTeamIds: [],
     canResolve: false,
+    canResolveWithDefaults: false,
     canStartNextGrandPrix: true,
     nextAction: "start_next_grand_prix"
   },

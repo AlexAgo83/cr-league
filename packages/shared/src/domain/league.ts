@@ -55,6 +55,7 @@ export type LeagueState = {
     submittedTeamIds: string[];
     missingTeamIds: string[];
     canResolve: boolean;
+    canResolveWithDefaults: boolean;
     canStartNextGrandPrix: boolean;
     nextAction: string;
   };

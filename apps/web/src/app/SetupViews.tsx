@@ -266,7 +266,10 @@ export function LeagueSetupView({
                   </label>
                   <label>
                     {tt("field_gp_per_season")}
-                    <input type="number" min="1" max="18" value={form.maxGrandPrixPerSeason} onChange={(event) => onSetForm({ ...form, maxGrandPrixPerSeason: event.target.value === "" ? "" : Number(event.target.value) })} />
+                    <select value={form.maxGrandPrixPerSeason} onChange={(event) => onSetForm({ ...form, maxGrandPrixPerSeason: Number(event.target.value) })}>
+                      <option value={6}>{tt("season_preset_standard")}</option>
+                      <option value={3}>{tt("season_preset_quick")}</option>
+                    </select>
                   </label>
                   <label className="checkbox-field">
                     <input type="checkbox" checked={form.fillWithBots} onChange={(event) => onSetForm({ ...form, fillWithBots: event.target.checked })} />

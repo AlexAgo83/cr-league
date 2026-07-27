@@ -237,6 +237,7 @@ export type RaceResult = {
   seed: string;
   resolvedWeather: Record<RaceSegment, Weather>;
   classification: ClassificationEntry[];
+  defaultedTeamIds?: string[];
   events: RaceEvent[];
   replayTrace?: ReplayTracePoint[];
   replayFacts?: RaceReplayFacts;

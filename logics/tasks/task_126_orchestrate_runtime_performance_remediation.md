@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 25%
+> Progress: 50%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -47,10 +47,12 @@
 - Run `python3 -m logics_manager lint --require-status`.
 - Run scaffold command tests.
 - 2026-07-27 wave 1 validation: npm run clean && npm run build OK; npm run perf:bundle OK with dist 12.5 MB / 317 files; artifact scan found no accidental production files.
+- 2026-07-27 wave 2 validation: npm run perf:api -- --cycles 100 OK; avg resolve 2.26 ms, p95 3.88 ms, max 8.23 ms, avg result JSON 112.1 KB, heap delta after GC 0.96 MB, RSS delta after GC 32.72 MB.
 
 # Report
 - Implementation complete.
 - 2026-07-27 wave 1 complete: verified production dist hygiene. Clean build after removing ignored local .DS_Store files from public/ produces no .DS_Store, TS/TSX source, source maps, tsbuildinfo, or test files in apps/web/dist. No build config change was needed.
+- 2026-07-27 wave 2 complete: reran the API performance watchpoint with 100 cycles and made no API contract or simulation changes because measured resolve time stayed low-millisecond.
 
 # AI Context
 - Summary: Orchestrate runtime performance remediation

@@ -1,10 +1,10 @@
 ## item_315_keep_api_simulation_performance_as_a_measured_watchpoint - Keep API simulation performance as a measured watchpoint
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Backend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-27 decision: keep API/simulation as a watchpoint only. The 100-cycle run stays low-millisecond and does not justify API contract, replayTrace/result payload, database, or simulation behavior changes in this pass.
 
 # Links
 - Product brief(s): `prod_077_runtime_performance_remediation_product_brief`
@@ -52,3 +53,6 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-27 validation: npm run perf:api -- --cycles 100 OK. Results: avg resolve 2.26 ms, p95 3.88 ms, max 8.23 ms, avg result JSON 112.1 KB, heap delta after GC 0.96 MB, RSS delta after GC 32.72 MB.

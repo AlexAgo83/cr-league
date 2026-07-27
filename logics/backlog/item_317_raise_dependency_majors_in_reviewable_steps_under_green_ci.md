@@ -2,9 +2,9 @@
 > From version: 0.5.1
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 60%
+> Understanding: 95
+> Confidence: 90
+> Progress: 60
 > Complexity: Medium
 > Theme: Maintainability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -67,3 +67,5 @@
 - Declined `jsdom@30` in this wave because its package engine is higher than the current local runtime and the Vite 8 engine floor.
 - Validation: `typecheck`, `lint`, full unit suite, production build, and production audit passed.
 - Deferred within this item: Prisma 7, ESLint 10, and TypeScript major decision remain separate reviewable waves.
+- ESLint 10 deferral reason: latest `eslint-plugin-jsx-a11y` still peers only through ESLint 9; `--force` or removing the plugin would reduce accessibility coverage.
+- Prisma 7 deferral reason: attempted upgrade proved it needs a dedicated adapter/client migration: remove schema datasource URL, configure `prisma.config.ts`, add `@prisma/adapter-pg` and `pg`, rewrite all `new PrismaClient()` call sites, and resolve Prisma 7 transaction/delegate type changes before green CI.

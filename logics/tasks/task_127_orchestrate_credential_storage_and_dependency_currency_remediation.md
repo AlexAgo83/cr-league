@@ -2,9 +2,9 @@
 > From version: 0.5.1
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 60%
+> Understanding: 95
+> Confidence: 90
+> Progress: 60
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -63,7 +63,8 @@
 - Wave 2 validation evidence: `npm run typecheck` OK; `npm run lint` OK; `npm test` OK with 352 passing / 7 skipped; `npm run build` OK; `npm run test:e2e -- --project=chromium` OK, 4 passed; `npm audit --omit=dev --audit-level=high` OK, 0 vulnerabilities. Full dev audit still reports the ESLint/minimatch advisory, owned by the ESLint 10 group.
 - 2026-07-27 wave 3 complete: upgraded `jsdom` to 29.1.1 and `@types/node` to 26.1.1. Declined `jsdom@30` because it requires Node `^22.22.2 || ^24.15.0 || >=26.0.0`, above the local Node 22.16.0 and the Vite 8 engine floor already recorded.
 - Wave 3 validation evidence: `npm run typecheck` OK; `npm run lint` OK; `npm test` OK with 352 passing / 7 skipped; `npm run build` OK; `npm audit --omit=dev --audit-level=high` OK, 0 vulnerabilities.
-- Remaining in this task: dependency major upgrades and residual `App.tsx` state consolidation.
+- 2026-07-27 dependency deferrals: ESLint 10 is deferred because `eslint-plugin-jsx-a11y@6.10.2` latest declares peer support only through ESLint 9; forcing ESLint 10 would weaken or remove the a11y lint path. Prisma 7 is deferred because it requires moving datasource URL to `prisma.config.ts`, adding a PG adapter, updating every `PrismaClient` construction, and resolving Prisma 7 transaction/delegate typing changes across API and scripts; `prisma generate` reached that migration boundary, then the attempt was reverted before commit.
+- Remaining in this task: Prisma 7 as a dedicated migration wave when adapter/type changes can be handled end to end, ESLint 10 when jsx-a11y supports it or an a11y-safe replacement is chosen, and residual `App.tsx` state consolidation.
 
 # AI Context
 - Summary: Orchestrate credential storage and dependency currency remediation

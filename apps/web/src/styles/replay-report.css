@@ -496,8 +496,17 @@ button.command-icon-button {
 }
 
 .report-podium span:not(.position-badge) {
+  display: grid;
+  gap: 4px;
   font-size: 1.05rem;
   font-weight: 800;
+}
+
+.report-default-plan-badge {
+  color: var(--color-muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
 }
 
 .report-podium small,

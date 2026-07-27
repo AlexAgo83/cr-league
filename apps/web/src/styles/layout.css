@@ -2649,7 +2649,8 @@ label small {
 
 .race-direction-panel,
 .race-direction-lanes section,
-.race-direction-defaults {
+.race-direction-defaults,
+.race-direction-reminder-result {
   background: rgb(15 23 42 / 0.52);
   border: 1px solid rgb(164 158 147 / 0.2);
   border-radius: 8px;
@@ -2659,6 +2660,14 @@ label small {
 .race-direction-panel {
   display: grid;
   gap: 6px;
+}
+
+.race-direction-grid + .race-direction-lanes,
+.race-direction-lanes + .race-direction-defaults,
+.race-direction-defaults + .settings-fields,
+.settings-fields + .race-direction-reminder-result,
+.race-direction-reminder-result + .secondary-actions {
+  margin-top: 12px;
 }
 
 .race-direction-panel strong,
@@ -2679,7 +2688,8 @@ label small {
   padding-left: 8px;
 }
 
-.race-direction-defaults {
+.race-direction-defaults,
+.race-direction-reminder-result {
   color: var(--muted);
   margin: 0;
 }

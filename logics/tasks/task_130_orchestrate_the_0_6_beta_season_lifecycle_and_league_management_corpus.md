@@ -4,7 +4,7 @@
 > Status: In Progress
 > Understanding: 90%
 > Confidence: 92%
-> Progress: 35%
+> Progress: 45%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -15,8 +15,8 @@
 
 # Plan
 - [x] 1. Confirm the final 0.6 scope from the product brief and keep deferred ideas out of implementation unless explicitly pulled in.
-- [ ] 2. Implement the beta season lifecycle core before optional flavor items: `Quick beta` 3 GP, `Standard season` 6 GP default, no auto-resolve, neutral absent-player defaults, explicit next-season action, card/credit reset on season rollover.
-- [ ] 3. Add commissioner management, share controls, and one-reminder-per-season manual email reminders with minimal audit fields while preserving creator-only API access.
+- [x] 2. Implement the beta season lifecycle core before optional flavor items: `Quick beta` 3 GP, `Standard season` 6 GP default, no auto-resolve, neutral absent-player defaults, explicit next-season action, card/credit reset on season rollover.
+- [x] 3. Add commissioner management, share controls, and one-reminder-per-season manual email reminders with minimal audit fields while preserving creator-only API access.
 - [x] 4. Close the accessibility gate without redesigning the app.
 - [ ] 5. Improve race feedback, rival context, and contextual card guidance using deterministic data.
 - [ ] 6. Add lightweight team profiles and evaluate whether season economy continuity and variable shop mode should ship in this corpus or be deferred after design proof.
@@ -80,9 +80,10 @@
 - Run scaffold command tests.
 
 # Report
-- 2026-07-27 handoff: first wave is partially delivered and committed. Season presets, no-auto-resolve/default-plan backend guard, next-season rollover reset, `Direction de course`, manual one-successful-reminder-per-season API/mail path, accessibility gate, and several UX papercuts are in code.
-- Still open before closing the wave: visible default-plan confirmation/report labeling for absent players, desktop/mobile browser evidence for `Direction de course`, and focused UI coverage for the reminder locked state.
-- Handoff doc: `docs/agent-handoff-2026-07-27.md`.
+- 2026-07-27 handoff: first wave was partially delivered and committed. Season presets, no-auto-resolve/default-plan backend guard, next-season rollover reset, `Direction de course`, manual one-successful-reminder-per-season API/mail path, accessibility gate, and several UX papercuts were already in code.
+- 2026-07-27 continuation: closed `item_324` and `item_325` by adding visible absent-human default-plan confirmation, default-plan report badges, reminder sent/skipped feedback, reminder locked-state coverage, and regenerated `Direction de course` desktop/mobile evidence.
+- Evidence: `rtk npm run typecheck`; `rtk npm test -- --run apps/web/src/app/App.test.tsx apps/web/src/features/ReportView.test.tsx`; screenshots at `reports/ux/manual-review/race-direction-desktop.png` and `reports/ux/manual-review/race-direction-mobile.png`.
+- Next wave: start `item_327`, `item_328`, and `item_329`; keep optional slices deferred unless pulled in explicitly.
 
 # AI Context
 - Summary: Orchestrate the 0.6 beta season lifecycle and league management corpus

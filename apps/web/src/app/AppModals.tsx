@@ -158,6 +158,7 @@ export function ResolveGrandPrixConfirmModal({
   currentCircuit,
   forecastPick,
   playerTeamId,
+  defaultPlanTeamNames,
   startingGridEntries,
   status,
   pendingMessage,
@@ -170,6 +171,7 @@ export function ResolveGrandPrixConfirmModal({
   currentCircuit: CityCircuit;
   forecastPick: string;
   playerTeamId: string | undefined;
+  defaultPlanTeamNames: string[];
   startingGridEntries: StartingGridEntry[];
   status: string;
   pendingMessage: string | null;
@@ -187,6 +189,9 @@ export function ResolveGrandPrixConfirmModal({
       <ModalHero image="/assets/crl/launch-gp-modal.webp" kicker={tt("action_launch_grand_prix")} title={tt("launch_gp_confirm_title")} />
       <div className="launch-gp-content">
         <p>{tt("launch_gp_confirm_body")}</p>
+        {defaultPlanTeamNames.length ? (
+          <p className="race-direction-defaults">{tt("launch_gp_confirm_defaults", { teams: defaultPlanTeamNames.join(", ") })}</p>
+        ) : null}
         <div className="starting-grid-confirmation">
           <div>
             <span className="section-kicker">{tt("starting_grid_title")}</span>
@@ -420,6 +425,9 @@ export function LeagueControlsModal({
           <input type="datetime-local" value={form.preparationDeadlineAt} onChange={(event) => setForm({ ...form, preparationDeadlineAt: event.target.value })} />
         </label>
       </div>
+      {leagueState.league.reminderSentAt ? (
+        <p className="race-direction-reminder-result">{tt("plan_reminder_last_result", { sentCount: leagueState.league.reminderSentCount, skippedCount: leagueState.league.reminderSkippedCount })}</p>
+      ) : null}
       <div className="actions secondary-actions">
         <PendingFeedback message={pendingMessage} />
         <button type="button" onClick={onUpdateSettings} disabled={status === "loading"}>

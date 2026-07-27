@@ -1,5 +1,5 @@
 import type { CardId, CarAssetId } from "@cr-league/shared";
-import type { TranslationKey } from "../i18n/index.js";
+import type { TranslationKey, TranslationParams } from "../i18n/index.js";
 import { api } from "./appStorage.js";
 import type { FormState, GameView, LeagueState } from "./types.js";
 
@@ -27,7 +27,7 @@ export function createLeagueMutations({
   playerTeam: LeagueState["teams"][number] | undefined;
   form: FormState;
   run: (nextMessage: string, action: () => Promise<void>) => Promise<void>;
-  tt: (key: TranslationKey) => string;
+  tt: (key: TranslationKey, params?: TranslationParams) => string;
   setLeagueState: (state: LeagueState) => void;
   setGameView: (view: GameView) => void;
   setResultTab: (tab: "replay" | "report") => void;
@@ -233,7 +233,7 @@ export function createLeagueMutations({
       });
       setLeagueState(withCurrentPlayer(state));
       const reminder = state.reminder;
-      showStatus(reminder?.alreadySent ? tt("status_plan_reminder_already_sent") : tt("status_plan_reminders_sent"));
+      showStatus(reminder?.alreadySent ? tt("status_plan_reminder_already_sent") : tt("status_plan_reminders_sent", { sentCount: reminder?.sentCount ?? 0, skippedCount: reminder?.skippedCount ?? 0 }));
     });
   }
 

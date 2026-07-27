@@ -1169,6 +1169,77 @@ describe("App", () => {
     expect(launchDialog.textContent).toContain("P6");
   });
 
+  it("shows the neutral default plan before resolving with an absent human player", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({
+      ...decidedState,
+      teams: [
+        decidedState.teams[0],
+        {
+          ...decidedState.teams[0],
+          id: "team_3",
+          name: "Late Apex",
+          cards: []
+        }
+      ],
+      actionState: {
+        submittedTeamIds: ["team_1"],
+        missingTeamIds: ["team_3"],
+        canResolve: false,
+        canResolveWithDefaults: true,
+        canStartNextGrandPrix: false,
+        nextAction: "resolve_with_defaults"
+      }
+    }));
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    fireEvent.click(await screen.findByRole("button", { name: "Launch GP" }));
+    const launchDialog = screen.getByRole("dialog", { name: "Launch Grand Prix?" });
+    expect(launchDialog.textContent).toContain("Late Apex will race with the neutral default plan");
+    expect(launchDialog.textContent).toContain("balanced approach, reliability prep, standard strategy, no card");
+  });
+
+  it("shows locked reminder detail in race direction after the season reminder cap is consumed", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response({
+      ...baseState,
+      league: {
+        ...baseState.league,
+        reminderSentAt: "2026-07-27T10:00:00.000Z",
+        reminderSentBy: "team_1",
+        reminderSeasonNumber: 1,
+        reminderSentCount: 1,
+        reminderSkippedCount: 2
+      },
+      teams: [
+        baseState.teams[0],
+        {
+          ...baseState.teams[0],
+          id: "team_3",
+          name: "Late Apex",
+          cards: []
+        }
+      ],
+      actionState: {
+        ...baseState.actionState,
+        missingTeamIds: ["team_1", "team_3"]
+      }
+    }));
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    await screen.findByRole("button", { name: "Send plan" });
+    fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
+    await waitFor(() => expect(document.querySelector(".profile-menu-panel")?.textContent).toContain("Race direction"));
+    fireEvent.click(screen.getByRole("button", { name: "Race direction" }));
+    const dialog = screen.getByRole("dialog", { name: "Race direction" });
+    expect(within(dialog).getByRole("button", { name: "Reminder already sent this season" }).hasAttribute("disabled")).toBe(true);
+    expect(dialog.querySelector(".race-direction-reminder-result")?.textContent).toBe("Last reminder: 1 sent, 2 skipped.");
+  });
+
   it("celebrates a season rollover once and reopens the recap from palmares", async () => {
     saveProfile();
     const finalRoundResolvedState = {

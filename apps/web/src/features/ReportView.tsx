@@ -45,6 +45,7 @@ export function ReportView({
   const keyEvents = keyMomentEvents(result.events, rawMaxLap, circuit.laps);
   const recapCards = raceRecapCards(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
   const verdict = buildRaceVerdict(result, state, playerTeamId, playerDecision, raceTitle, tt, circuit.laps);
+  const defaultedTeamIds = new Set(result.defaultedTeamIds ?? []);
   const recap = [
     {
       className: "difference",
@@ -103,7 +104,10 @@ export function ReportView({
           {result.classification.map((entry) => (
             <li key={entry.teamId} className={entry.teamId === playerTeamId ? "current-team" : undefined}>
               <PositionBadge position={entry.position} />
-              <span>{entry.teamName}</span>
+              <span>
+                {entry.teamName}
+                {defaultedTeamIds.has(entry.teamId) ? <small className="report-default-plan-badge">{tt("result_default_plan_badge")}</small> : null}
+              </span>
               <small>
                 <RewardValue type="points" value={entry.points} tt={tt} /> <RewardValue type="credits" value={entry.credits} tt={tt} />
               </small>

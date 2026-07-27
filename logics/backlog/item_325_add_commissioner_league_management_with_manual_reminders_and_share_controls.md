@@ -1,10 +1,10 @@
 ## item_325_add_commissioner_league_management_with_manual_reminders_and_share_controls - Add commissioner league management with manual reminders and share controls
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: In Progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 96
-> Progress: 75%
+> Progress: 100%
 > Complexity: Medium
 > Theme: League management
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -54,14 +54,14 @@
 - 2026-07-27: Added persistent reminder audit on `League`: `reminderSentAt`, `reminderSentBy`, `reminderSeasonNumber`, `reminderSentCount`, `reminderSkippedCount`.
 - 2026-07-27: Enforced the first-pass one-successful-reminder-per-season cap server-side; zero-delivery attempts do not consume the cap.
 - 2026-07-27: Reused the existing mailer boundary with a plan-reminder method; players without profile email or without active SMTP are skipped.
+- 2026-07-27: Added reminder result feedback for exact sent/skipped counts and a locked-state detail line after the season cap is consumed.
+- 2026-07-27: Regenerated `Direction de course` desktop/mobile browser evidence at `reports/ux/manual-review/race-direction-desktop.png` and `reports/ux/manual-review/race-direction-mobile.png`.
 - Evidence: `rtk npm run typecheck` -> passed.
 - Evidence: `rtk npm test -- --run apps/api/src/app.test.ts apps/web/src/app/App.test.tsx apps/web/src/app/helpers.test.ts` -> 90 tests passed.
+- Evidence: `rtk npm test -- --run apps/web/src/app/App.test.tsx apps/web/src/features/ReportView.test.tsx` -> 43 tests passed.
 
 # Remaining Work
-- Add browser evidence at desktop and mobile widths for the `Direction de course` layout.
-- Consider a post-send detail line in the modal showing exact sent/skipped counts after the reminder response.
-- Extend web tests around the reminder button locked label once fetch fixtures cover the reminder endpoint.
-- Handoff: see `docs/agent-handoff-2026-07-27.md`.
+- None for this slice.
 
 # AC Traceability
 - request-AC2 -> This backlog slice. Proof: AC1: Only the league creator can access the commissioner controls.

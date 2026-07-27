@@ -1,10 +1,10 @@
 ## item_324_build_the_beta_season_lifecycle_core - Build the beta season lifecycle core
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: In Progress
+> Status: Done
 > Understanding: 90%
 > Confidence: 95
-> Progress: 65%
+> Progress: 100%
 > Complexity: High
 > Theme: Season lifecycle
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -47,13 +47,14 @@
 - 2026-07-27: Recorded defaulted human team ids on the race result for report/UI follow-up.
 - 2026-07-27: Changed final-round action copy to `Lancer la saison suivante` / `Start next season`.
 - 2026-07-27: Fixed next-season rollover to reset team points, credits, and cards while preserving players and livery identity.
+- 2026-07-27: Added resolve confirmation copy naming absent human teams and their neutral default plan before commissioner launch.
+- 2026-07-27: Added `Default plan` / `Plan par défaut` labeling for defaulted teams in the post-race report podium/classification.
 - Evidence: `rtk npm test -- --run apps/api/src/app.test.ts apps/web/src/app/App.test.tsx` -> 70 tests passed.
+- Evidence: `rtk npm test -- --run apps/web/src/app/App.test.tsx apps/web/src/features/ReportView.test.tsx` -> 43 tests passed.
+- Evidence: `rtk npm run typecheck` -> passed.
 
 # Remaining Work
-- Surface the neutral default plan before commissioner confirmation instead of only encoding it in the API result.
-- Render defaulted teams clearly in the post-race report/classification.
-- Add/adjust focused tests for the 3 GP preset path and visible default-plan UI once the commissioner screen lands.
-- Handoff: see `docs/agent-handoff-2026-07-27.md`.
+- None for this slice.
 
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: A creator can create or configure a league with a short and default season preset.

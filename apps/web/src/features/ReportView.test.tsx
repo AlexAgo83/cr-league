@@ -102,6 +102,28 @@ describe("ReportView", () => {
     expect(comparison.textContent).not.toContain("Descriptive comparison only");
   });
 
+  it("marks teams that raced with the default plan", () => {
+    const typedBaseState = baseState as unknown as LeagueState;
+    const result: RaceResult = {
+      grandPrixName: "Default GP",
+      seed: "defaults",
+      resolvedWeather: { start: "dry", early: "dry", mid: "dry", late: "dry", finish: "dry" },
+      defaultedTeamIds: ["team_2"],
+      classification: [
+        { teamId: "team_1", teamName: "Volt Union", position: 1, points: 25, credits: 100, score: 90, positionChange: 1, status: "finished", resultTags: [] },
+        { teamId: "team_2", teamName: "Late Apex", position: 2, points: 18, credits: 80, score: 80, positionChange: -1, status: "finished", resultTags: [] }
+      ],
+      events: [],
+      consumedCards: [],
+      report: { headline: "Test", blocks: [] }
+    };
+
+    const { container } = render(<ReportView state={typedBaseState} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={undefined} tt={(key, params) => t(key, "en", params)} />);
+
+    expect(container.querySelector(".report-podium")?.textContent).toContain("Late ApexDefault plan");
+    expect(container.querySelectorAll(".report-default-plan-badge")).toHaveLength(1);
+  });
+
   it("maps GP event laps to the circuit lap count without using the chrono scale", () => {
     const typedBaseState = baseState as unknown as LeagueState;
     const state = {

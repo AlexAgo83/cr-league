@@ -1,0 +1,421 @@
+{
+  "title": "0.6 beta season lifecycle and league management: private seasons, commissioner tools, actionability, rivals, team identity, and optional economy variants",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "docs/audits/ai-alpha-seasons-decision-2026-07-27.md",
+    "logics/specs/spec_001_grand_prix_core_loop_and_simulation_v1.md",
+    "logics/specs/spec_004_race_report_and_replay_ux.md",
+    "logics/specs/spec_006_league_cadence_and_absence_rules.md",
+    "logics/specs/spec_010_data_model_and_api_contract_v0.md",
+    "logics/specs/spec_013_product_critique_and_gameplay_refinements.md",
+    "logics/specs/spec_015_device_targets_and_responsive_ux.md",
+    "logics/specs/spec_016_implementation_roadmap.md",
+    "docs/beta-known-limits.md",
+    "docs/beta-support-runbook.md",
+    "docs/runtime-configuration.md",
+    "docs/playtest/private-league-3gp-checklist.md",
+    "scripts/browser-playtest.ts",
+    "scripts/browser-fun-score.ts",
+    "scripts/replayability-analytics.ts",
+    "scripts/balance-simulations.ts",
+    "reports/playtest/alpha-seasons/ artifacts are generated locally and summarized in docs/audits/ai-alpha-seasons-decision-2026-07-27.md."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "0.6 beta season lifecycle",
+    "needs": [
+      "Open the first 0.6 corpus now that the AI alpha seasons evidence cleared the pre-0.6 gate.",
+      "Make private beta seasons playable and administrable without relying on operator intervention outside the app.",
+      "Keep the next wave focused on the current visual identity: only accessibility and contrast fixes may affect visuals.",
+      "Turn race outcomes, rival pressure, and card choices into clearer next actions without adding mandatory objectives or an automatic AI player.",
+      "Explore team identity, optional shop variety, and light season-economy continuity in bounded slices that can be shipped or deferred independently."
+    ],
+    "context": [
+      "The user explicitly approved the 0.6 lifecycle direction, commissioner-style league management, manual reminders, actionable race feedback, a clear rival concept, contextual card guidance, team profile personalization, optional variable shop mode, and an immersive race-engineer assistant concept.",
+      "The user explicitly rejected automatic mail reminders, replay compact/highlight changes for now, public matchmaking for now, and mandatory secondary objectives for the first 0.6 pass.",
+      "The alpha decision package found no stability blocker but identified accessibility debt and profile dominance monitoring as 0.6 gates.",
+      "Existing product specs already mention rivals, league cadence, reports, profiles, and responsive UX; this corpus should reuse those concepts rather than inventing a new game layer.",
+      "This request is intentionally broad, but each backlog item must stay independently shippable and should not require delivering every exploratory idea before the beta-season lifecycle is useful."
+    ],
+    "acceptance_criteria": [
+      "AC1: Private beta season lifecycle supports clear season presets, a full multi-GP loop, season completion, and a restart/next-season path without manual database work.",
+      "AC2: The league creator has a commissioner management screen that shows player readiness, pending plans, invite/share affordances, and controlled resolve/reminder actions.",
+      "AC3: Reminder email behavior is manual and admin-triggered only; there are no automatic scheduled reminders, notification daemons, or polling/SSE scope in this corpus.",
+      "AC4: Accessibility fixes address the alpha-reported issues without a visual redesign, except for contrast changes needed to pass the gate.",
+      "AC5: Race reports and next-GP surfaces produce more actionable advice using deterministic race/circuit/card data.",
+      "AC6: Rival selection or derivation creates a visible, non-mandatory rivalry thread in standings, pre-race context, and race reports.",
+      "AC7: Card guidance explains which owned or purchasable cards are useful, neutral, or risky for the next race without choosing automatically for the player.",
+      "AC8: Team identity work adds a lightweight in-league public team profile and basic customization using existing profile/team data before deeper cosmetics.",
+      "AC9: Variable shop mode is available only as a league-creation option, defaults off, is visible to players, and remains deterministic/testable.",
+      "AC10: Light season-economy continuity is either implemented with explicit caps and anti-snowball rules or deferred with a documented decision; broad card-economy expansion remains out of scope.",
+      "AC11: The race-engineer assistant concept is framed as deterministic profile recommendations and explanation, not generative autopilot; any implementation remains optional and reversible.",
+      "AC12: Deferred ideas are explicitly recorded: optional secondary objectives, onboarding/tutorial rewrite, compact replay/highlights, arcade solo, quick play matchmaking, automatic reminders, polling/SSE, and 1.0 hardening.",
+      "AC13: Validation includes npm run logics:validate plus the relevant local gates for touched surfaces; browser UX evidence must be regenerated if UI flow or accessibility changes are made."
+    ]
+  },
+  "product": {
+    "title": "0.6 Beta Season Lifecycle and League Management Product Brief",
+    "overview": "Deliver the first real private beta season layer for CR League: a season can run across several Grands Prix, the league creator can manage readiness and manual reminders from one place, players get clearer race/rival/card guidance, and optional identity/economy variants are introduced only where they improve repeated private-league play.",
+    "goals": [
+      "Make one private league season operable by its creator without manual support.",
+      "Keep beta readiness grounded in the current loop instead of adding a new mode.",
+      "Improve comprehension and decision quality through deterministic explanations.",
+      "Preserve the current visual direction while closing accessibility blockers.",
+      "Separate required beta lifecycle work from optional flavor and later-mode ideas."
+    ],
+    "non_goals": [
+      "Do not redesign the app visually beyond accessibility and contrast corrections.",
+      "Do not add automatic scheduled reminders, polling/SSE, or bot replacement unless a later beta evidence gate proves it.",
+      "Do not implement arcade solo, quick play matchmaking, public leagues, compact replay, or a tutorial rewrite in this corpus.",
+      "Do not make secondary objectives mandatory.",
+      "Do not add generative AI calls, a production telemetry platform, or broad card-economy expansion."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Build the beta season lifecycle core",
+      "priority": "High",
+      "complexity": "High",
+      "theme": "Season lifecycle",
+      "request_acs": ["AC1", "AC3", "AC10", "AC13"],
+      "problem": [
+        "The current private-league loop can play Grands Prix, but the beta needs an explicit season lifecycle that does not depend on manual operator cleanup.",
+        "The first 0.6 value is a full season that can start, progress, complete, and restart cleanly.",
+        "Season presets must keep tests short while preserving a default season shape for real beta play."
+      ],
+      "scope_in": [
+        "Support a short-test season preset and a default season preset at league creation or league setup.",
+        "Make season completion and next-season/restart behavior explicit in API state and UI state.",
+        "Keep all-ready resolution as the default cadence; absent-player handling should use a visible default plan before any automation.",
+        "Update playtest/checklist docs so another operator can run a full beta season from a clean league."
+      ],
+      "scope_out": [
+        "Automatic calendar scheduling.",
+        "Polling/SSE realtime infrastructure.",
+        "Bot replacement after absences.",
+        "Broad economy redesign."
+      ],
+      "acceptance_criteria": [
+        "AC1: A creator can create or configure a league with a short and default season preset.",
+        "AC2: A league can complete a full season and expose champion/podium/season-end state without database edits.",
+        "AC3: Starting the next season or restarting the season preserves the documented data that should persist and clears only the documented data that should reset.",
+        "AC4: API and web tests cover season completion and restart/next-season behavior."
+      ]
+    },
+    {
+      "title": "Add commissioner league management with manual reminders and share controls",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "League management",
+      "request_acs": ["AC2", "AC3", "AC13"],
+      "problem": [
+        "A private beta league needs one clear owner surface for running the league.",
+        "The league creator needs to see who is blocking the next Grand Prix and manually remind only those players.",
+        "Invite sharing belongs with league management rather than hidden in support docs."
+      ],
+      "scope_in": [
+        "Add or extend the creator-only league management screen.",
+        "Show player readiness, plan submitted/pending state, current GP status, invite code/link, and share-copy affordance.",
+        "Add a manual admin-triggered reminder action for players who have not submitted their plan.",
+        "Keep reminder sending auditable and neutral: no automatic scheduler, no repeated background sends, and clear result feedback to the commissioner."
+      ],
+      "scope_out": [
+        "Automatic reminder schedules.",
+        "Bulk marketing emails.",
+        "Changing the profile recovery email flow beyond reuse of the existing mailer boundary.",
+        "Full auth or role-management redesign."
+      ],
+      "acceptance_criteria": [
+        "AC1: Only the league creator can access the commissioner controls.",
+        "AC2: The screen names every pending player and submitted player for the current GP.",
+        "AC3: The reminder action sends only to pending players with usable profile email data and reports skipped recipients.",
+        "AC4: Invite/share copy works without requiring email delivery.",
+        "AC5: API authorization and web tests cover creator-only access and manual reminder behavior."
+      ]
+    },
+    {
+      "title": "Close the beta accessibility gate without redesigning the app",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Accessibility",
+      "request_acs": ["AC4", "AC13"],
+      "problem": [
+        "The alpha UX playthrough passed core flows but still found serious accessibility issues.",
+        "The user wants accessibility fixes without changing the visual language, except contrast where necessary.",
+        "The beta should not ship known unnamed buttons or avoidable mobile tap-target traps."
+      ],
+      "scope_in": [
+        "Fix unnamed icon buttons, invalid/prohibited ARIA, missing page heading structure, contrast failures, and small mobile tap targets reported by the UX harness.",
+        "Preserve layout, art direction, component shapes, and copy hierarchy except where contrast or tap target size requires a local adjustment.",
+        "Regenerate browser UX evidence after fixes."
+      ],
+      "scope_out": [
+        "Visual redesign.",
+        "New theme system.",
+        "Reworking replay controls or compact replay ideas that the user rejected for now."
+      ],
+      "acceptance_criteria": [
+        "AC1: UX harness no longer reports critical button-name issues on the beta-critical flow.",
+        "AC2: Contrast fixes pass the automated gate without changing the visual identity broadly.",
+        "AC3: Tap target fixes do not create mobile overflow.",
+        "AC4: Browser UX and cold-start reports are regenerated and linked from the task closeout."
+      ]
+    },
+    {
+      "title": "Make post-race feedback more actionable and connect it to the next Grand Prix",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race feedback",
+      "request_acs": ["AC5", "AC6", "AC7", "AC13"],
+      "problem": [
+        "The report explains more than before, but beta players need a clearer next action after each GP.",
+        "Advice should come from deterministic race, circuit, weather, rival, and card data.",
+        "This should not become an assistant that plays for the user."
+      ],
+      "scope_in": [
+        "Strengthen the race report and next-GP context with one primary reason, one next attempt, and one relevant card/setup hint.",
+        "Connect the advice to the next circuit and weather when known.",
+        "Include rival outcome when a rival exists or can be derived.",
+        "Keep copy localized and testable."
+      ],
+      "scope_out": [
+        "Generative copy.",
+        "Full tutorial rewrite.",
+        "Mandatory objectives.",
+        "Replay highlight changes."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every completed GP report exposes a concise deterministic next-action recommendation.",
+        "AC2: The recommendation references concrete race evidence or next-GP context.",
+        "AC3: Report tests cover at least win, loss, card-hit/card-miss, and rival beat/lost cases.",
+        "AC4: Browser playtest confirms the recommendation is visible without blocking the existing loop."
+      ]
+    },
+    {
+      "title": "Introduce a non-mandatory rival thread across standings and reports",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Rivalry",
+      "request_acs": ["AC6", "AC13"],
+      "problem": [
+        "Rivalry is already present in the specs and simulation language but is not yet a stable player-facing thread.",
+        "A rival gives players a local goal without adding mandatory secondary objectives.",
+        "The system needs to avoid false precision when the standings do not have a meaningful rival."
+      ],
+      "scope_in": [
+        "Derive or suggest a nearest standings rival when useful.",
+        "Show the rival in standings/pre-race context and summarize the result delta after the GP.",
+        "Keep rival visibility optional/non-blocking and avoid adding a new heavy configuration step."
+      ],
+      "scope_out": [
+        "Player-selected rival targeting as a required decision.",
+        "New rival-only card mechanics.",
+        "Bot hierarchy tuning unless evidence proves it is needed."
+      ],
+      "acceptance_criteria": [
+        "AC1: A player with a meaningful standings neighbor sees a rival marker before and after a race.",
+        "AC2: Reports say whether the player gained or lost ground to the rival.",
+        "AC3: No rival is shown when the data is ambiguous or misleading.",
+        "AC4: Unit tests cover derived rival selection and no-rival fallback."
+      ]
+    },
+    {
+      "title": "Add contextual card guidance in Plan and Garage",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Card readability",
+      "request_acs": ["AC7", "AC13"],
+      "problem": [
+        "Players need to understand why a card is useful, neutral, or risky for the next race.",
+        "The guidance should reduce opacity without replacing player judgment.",
+        "Card advice must stay aligned with existing card effects and circuit/weather data."
+      ],
+      "scope_in": [
+        "Classify owned and purchasable cards against the next GP as useful, neutral, or risky.",
+        "Explain the classification with one short reason tied to circuit, weather, setup, position, or economy.",
+        "Show guidance in the Garage and where the player chooses a plan/card.",
+        "Keep the model deterministic and covered by tests."
+      ],
+      "scope_out": [
+        "Auto-selecting cards.",
+        "Changing card effects as part of the guidance work.",
+        "Adding a new recommendation service or telemetry system."
+      ],
+      "acceptance_criteria": [
+        "AC1: Each card visible to the player can display a contextual guidance label for the next GP.",
+        "AC2: Guidance never recommends a card that cannot legally be used.",
+        "AC3: Tests cover weather cards, position/delta cards, economy cards, and no-card/neutral cases.",
+        "AC4: Browser playtest confirms card guidance is visible without layout overflow."
+      ]
+    },
+    {
+      "title": "Add lightweight team identity and public in-league team profiles",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Team identity",
+      "request_acs": ["AC8", "AC13"],
+      "problem": [
+        "Team attachment can improve beta retention without changing the race engine.",
+        "The league needs a public team profile surface that makes each stable recognizable.",
+        "Cosmetic depth should start from existing profile/team data before adding a large customization system."
+      ],
+      "scope_in": [
+        "Add an in-league public team profile view or panel.",
+        "Show team name, livery/car identity, current season stats, palmares, recent form, rival, and preferred style when derivable.",
+        "Allow only lightweight customization that fits existing data boundaries.",
+        "Keep unsafe user content sanitized."
+      ],
+      "scope_out": [
+        "Large cosmetic inventory.",
+        "Public internet profile pages outside a league.",
+        "Image uploads.",
+        "Paid cosmetics."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every team in a league has an inspectable profile using existing or minimally extended team data.",
+        "AC2: Human-owned team customization remains sanitized and scoped to the league.",
+        "AC3: The profile page exposes season stats and palmares without extra manual entry.",
+        "AC4: Tests cover profile rendering and unsafe customization input."
+      ]
+    },
+    {
+      "title": "Add an optional variable shop mode at league creation",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Shop variety",
+      "request_acs": ["AC9", "AC10", "AC13"],
+      "problem": [
+        "A fixed shop is readable but can become repetitive across repeated private seasons.",
+        "The user wants variable shop behavior only as an explicit league option and disabled by default.",
+        "Shop variation must not obscure balance evidence for standard leagues."
+      ],
+      "scope_in": [
+        "Add a league-creation option for variable shop mode, default off.",
+        "When enabled, expose a deterministic limited shop selection per GP or season.",
+        "Show the mode clearly to players and keep reports/tests aware of the shop model.",
+        "Keep the fixed shop unchanged for existing/default leagues."
+      ],
+      "scope_out": [
+        "Draft mode.",
+        "Random paid gacha mechanics.",
+        "Changing card effects.",
+        "Making variable shop the default."
+      ],
+      "acceptance_criteria": [
+        "AC1: Existing/default leagues keep the fixed shop behavior.",
+        "AC2: New leagues can opt into variable shop mode at creation.",
+        "AC3: Variable shop contents are deterministic from league/season/round data and testable.",
+        "AC4: UI copy makes the mode understandable before league creation is confirmed."
+      ]
+    },
+    {
+      "title": "Define the lightweight season economy continuity rule",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Season economy",
+      "request_acs": ["AC10", "AC13"],
+      "problem": [
+        "Repeated seasons need some continuity, but too much carry-over can snowball leaders.",
+        "The user asked to develop the idea before it becomes broad card-economy work.",
+        "The right first pass should be small, capped, and easy to remove or tune."
+      ],
+      "scope_in": [
+        "Decide and document what persists across season rollover: credits, cards, cosmetics, palmares, and stats.",
+        "If implemented in this corpus, use capped partial credit carry-over and reset cards by default.",
+        "Prefer palmares/cosmetic recognition over large mechanical champion bonuses.",
+        "Run balance/replayability evidence if mechanical carry-over ships."
+      ],
+      "scope_out": [
+        "Broad card-economy expansion.",
+        "Large winner bonuses.",
+        "Persistent card inventories across seasons unless specifically justified.",
+        "Paid cosmetics or external progression."
+      ],
+      "acceptance_criteria": [
+        "AC1: A documented season rollover rule names each persisted and reset resource.",
+        "AC2: Any implemented credit carry-over has an explicit cap and anti-snowball rationale.",
+        "AC3: Season rollover tests cover top, middle, and bottom teams.",
+        "AC4: Balance evidence is recorded if mechanical carry-over changes gameplay."
+      ]
+    },
+    {
+      "title": "Prototype deterministic race-engineer profile recommendations",
+      "priority": "Low",
+      "complexity": "Medium",
+      "theme": "Race engineer assistant",
+      "request_acs": ["AC11", "AC13"],
+      "problem": [
+        "An immersive assistant could help if the game remains hard to read.",
+        "The assistant must explain race profiles rather than play automatically.",
+        "A deterministic first pass avoids model dependencies and keeps advice auditable."
+      ],
+      "scope_in": [
+        "Frame the assistant as a race engineer that presents two or three race profiles such as prudent, attack, rain, or economy.",
+        "Tie each profile to circuit/weather/risk/card context with a short explanation.",
+        "Keep it optional and make manual plan choices remain available.",
+        "Use deterministic rules already present in the app where possible."
+      ],
+      "scope_out": [
+        "Generative AI calls.",
+        "Autopilot that submits plans.",
+        "New onboarding mode.",
+        "Replacing card guidance or race report advice."
+      ],
+      "acceptance_criteria": [
+        "AC1: The assistant presents bounded profile options with clear risk/reward text.",
+        "AC2: The player can ignore the assistant and choose manually.",
+        "AC3: Recommendations are deterministic and test-covered.",
+        "AC4: Browser playtest confirms the assistant does not add a blocking step."
+      ]
+    },
+    {
+      "title": "Record deferred modes and non-goals so 0.6 stays focused",
+      "priority": "Low",
+      "complexity": "Low",
+      "theme": "Roadmap discipline",
+      "request_acs": ["AC12", "AC13"],
+      "problem": [
+        "Several ideas are valuable but explicitly not for the first 0.6 pass.",
+        "Without a written defer list, future implementation agents may accidentally scope-creep the beta lifecycle corpus.",
+        "The roadmap should preserve the user's direction for later arcade, quick play, objectives, onboarding, replay, and automation ideas."
+      ],
+      "scope_in": [
+        "Update the roadmap and task closeout with explicit deferred concepts and reopen triggers.",
+        "Keep optional secondary objectives as a later non-mandatory idea.",
+        "Keep arcade solo and quick play matchmaking as later mode ideas, not public league work.",
+        "Keep automatic reminders, polling/SSE, compact replay/highlights, and tutorial rewrite out of this corpus unless the user changes direction."
+      ],
+      "scope_out": [
+        "Implementing any deferred mode.",
+        "Opening 1.0 hardening.",
+        "Changing release automation."
+      ],
+      "acceptance_criteria": [
+        "AC1: Roadmap text names the deferred ideas and their reopen triggers.",
+        "AC2: The 0.6 task report states which ideas were intentionally not implemented.",
+        "AC3: Logics validation passes after the roadmap/doc update."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate the 0.6 beta season lifecycle and league management corpus",
+    "plan": [
+      "Confirm the final 0.6 scope from the product brief and keep deferred ideas out of implementation unless explicitly pulled in.",
+      "Implement the beta season lifecycle core before optional flavor items.",
+      "Add commissioner management, share controls, and manual reminders while preserving creator-only access.",
+      "Close the accessibility gate without redesigning the app.",
+      "Improve race feedback, rival context, and contextual card guidance using deterministic data.",
+      "Add lightweight team profiles and evaluate whether season economy continuity and variable shop mode should ship in this corpus or be deferred after design proof.",
+      "Prototype the deterministic race-engineer assistant only after the core beta flow remains understandable and validated.",
+      "Update roadmap/deferred decisions, run relevant tests and browser evidence, run npm run logics:validate, and commit."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/beta-season-lifecycle-and-league-management.json",
+    "mode": "summary-only",
+    "profile": "deep"
+  }
+}

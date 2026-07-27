@@ -38,6 +38,7 @@
 > Semantic edit: 2026-07-27 opened the first post-closeout 0.5 economy follow-up (`req_127`) from fresh replayability/balance evidence and kept it to a price-only fix for confirmed weak cards.
 > Semantic edit: 2026-07-27 scaffolded `req_128` as an AI alpha seasons evidence run to decide the next corpus before opening 0.6 lifecycle work.
 > Semantic edit: 2026-07-27 closed `req_128` / `task_129`; the AI alpha seasons decision package recommends opening 0.6 beta-season lifecycle next, with accessibility cleanup and profile-dominance monitoring as 0.6 gates rather than pre-0.6 detours.
+> Semantic edit: 2026-07-27 scaffolded `req_129` / `task_130` as the 0.6 beta season lifecycle and league-management corpus, covering private seasons, commissioner tools, manual reminders, accessibility, action feedback, rivals, card guidance, team profiles, optional shop variety, lightweight season economy framing, and deferred-mode discipline.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -61,7 +62,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - The latest validation gate is green: `npm run typecheck`, `npm run lint`, `npm test` (352 passed, 7 skipped), `npm run test:coverage` (91.89% statements), `npm run build`, `npm run test:e2e -- --project=chromium`, production audit, and `npm run logics:validate`.
 - The 2026-07-26/27 execution queue is now closed: `req_118`-`req_126` are Done, Logics lint/audit are clean, and `logics-manager status` reports zero open workflow docs. Delivered since the previous sync: twenty new circuits, browser-driven AI playtest, UX evaluation harness, replayability/fun analytics, source-of-truth remediation, aggressive mini-pack diagnostic, eager bundle/script-boundary follow-up, runtime performance remediation, and credential/dependency/App.tsx review remediation.
 - The first post-closeout 0.5 economy follow-up is `req_127`: fresh replayability did not justify a broad aggressive/mini-pack nerf, but card-role evidence justified moving `pit_relay` and `hard_tires` from 180 to 120 credits. No new card mechanics, shop model, or UI surface were opened.
-- The AI alpha seasons evidence run `req_128` / `task_129` is Done. Decision package: `docs/audits/ai-alpha-seasons-decision-2026-07-27.md`. It recommends opening 0.6 beta-season lifecycle next; carry accessibility cleanup and profile-dominance monitoring as 0.6 gates, not separate pre-0.6 detours.
+- The AI alpha seasons evidence run `req_128` / `task_129` is Done. Decision package: `docs/audits/ai-alpha-seasons-decision-2026-07-27.md`. It recommended opening 0.6 beta-season lifecycle next; that corpus is now scaffolded as `req_129` / `task_130`.
 - Still not real: automatic scheduler, full auth, dynamic objectives, broad beta operations evidence, multi-person playtest evidence for the current balance, and any further card-economy expansion beyond the narrow `req_127` price fix.
 
 # Milestones
@@ -181,9 +182,9 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 ## 0.6 - Live beta season
 - Goal: Run a real beta season long enough to validate cadence, replay comprehension, economy pressure, and return behavior.
-- Status: Planned; next recommended corpus after the 2026-07-27 alpha seasons evidence run.
+- Status: Planned; active ready-to-dev corpus is `req_129` / `task_130`.
 - Scope to slice into patches when requests exist: beta season lifecycle, playtest and season presets (3 GP for quick tests, 6 GP for default leagues), async cadence V1 (all-ready resolution by default, deadline resolution, lightly visible absent-player defaults, force-resolve or pause only if playtest ops needs them, bot replacement after repeated absences only if leagues stall), feedback capture across GP cycles, balance tweaks from observed behavior, notifications/reminders only if usage proves the need.
-- Corpus policy: the first 0.6 corpus should be beta season lifecycle. Include alpha-evidence gates for accessibility cleanup and profile-dominance monitoring; do not pre-scaffold polling/SSE, reminders, bot replacement, or more card tuning without beta evidence.
+- Corpus policy: `req_129` is the first 0.6 corpus. Include alpha-evidence gates for accessibility cleanup and profile-dominance monitoring; keep reminders manual/admin-triggered only, and do not pre-scaffold polling/SSE, automatic reminders, bot replacement, public matchmaking, compact replay, tutorial rewrite, or more card tuning without beta evidence.
 - Exit signal: beta players complete a short season with enough feedback to decide what belongs in 1.0; remaining 1.0 work is known, not guessed.
 - Linked docs: `prod_001_cr_league_product_brief`, `spec_016_implementation_roadmap`.
 
@@ -197,7 +198,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 # Sequencing
 - The 0.4 ship/maintainability/review queue through `task_127` is Done, and no workflow docs are open.
-- Open the 0.6 beta-season lifecycle corpus next. `req_128` cleared the pre-0.6 evidence gate; no separate economy, UX, or stability blocker is required first.
+- Implement `req_129` / `task_130` next. `req_128` cleared the pre-0.6 evidence gate; no separate economy, UX, or stability blocker is required first.
 - Keep release validation explicit: use `logics-manager release status|plan|validate` and record evidence before claiming any 0.4.x release readiness.
 - Do not start 1.0 hardening until the 0.6 beta has produced real usage.
 
@@ -221,7 +222,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Keep `submitDecision`'s repeated full-state reloads as-is until the existing Postgres integration lane measures a real cost; the fix (thread loaded state through) is mechanical when justified.
 - Dependabot major migrations parked after 0.3.22 release triage: ESLint 10 needs jsx-a11y peer support or replacement, `@vitejs/plugin-react` 6 should move with Vite 8, and Prisma 7 needs datasource/client configuration migration. Do not force these into a patch release without a focused migration chain.
 
-- `req_128` / `task_129` is Done. Use `docs/audits/ai-alpha-seasons-decision-2026-07-27.md` as the handoff for the next 0.6 beta-season lifecycle corpus.
+- `req_128` / `task_129` is Done. Use `docs/audits/ai-alpha-seasons-decision-2026-07-27.md` and `req_129` / `task_130` as the handoff for 0.6 beta-season lifecycle work.
 - Keep dynamic race objectives, polling/SSE, reminders, and 1.0 hardening unscaffolded until their evidence gates are met.
 
 # Risks

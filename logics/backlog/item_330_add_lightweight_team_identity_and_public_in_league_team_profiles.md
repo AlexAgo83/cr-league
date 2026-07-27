@@ -1,0 +1,57 @@
+## item_330_add_lightweight_team_identity_and_public_in_league_team_profiles - Add lightweight team identity and public in-league team profiles
+> From version: 0.5.2
+> Schema version: 1.0
+> Status: Ready
+> Understanding: 90%
+> Confidence: 85%
+> Progress: 0%
+> Complexity: Medium
+> Theme: Team identity
+> Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+
+# Problem
+- Team attachment can improve beta retention without changing the race engine.
+- The league needs a public team profile surface that makes each stable recognizable.
+- Cosmetic depth should start from existing profile/team data before adding a large customization system.
+
+# Scope
+- In:
+  - Add an in-league public team profile view or panel.
+  - Show team name, livery/car identity, current season stats, palmares, recent form, rival, and preferred style when derivable.
+  - Allow only lightweight customization that fits existing data boundaries.
+  - Keep unsafe user content sanitized.
+- Out:
+  - Large cosmetic inventory.
+  - Public internet profile pages outside a league.
+  - Image uploads.
+  - Paid cosmetics.
+
+# Acceptance criteria
+- AC1: Every team in a league has an inspectable profile using existing or minimally extended team data.
+- AC2: Human-owned team customization remains sanitized and scoped to the league.
+- AC3: The profile page exposes season stats and palmares without extra manual entry.
+- AC4: Tests cover profile rendering and unsafe customization input.
+
+# AC Traceability
+- request-AC8 -> This backlog slice. Proof: AC1: Every team in a league has an inspectable profile using existing or minimally extended team data.
+- request-AC13 -> This backlog slice. Proof: AC2: Human-owned team customization remains sanitized and scoped to the league.
+
+# Decision framing
+- Product framing: Not needed
+- Architecture framing: Not needed
+
+# Links
+- Product brief(s): `prod_081_0_6_beta_season_lifecycle_and_league_management_product_brief`
+- Architecture decision(s): (none yet)
+- Request: `req_129_0_6_beta_season_lifecycle_and_league_management_private_seasons_commissioner_tools_actionability_rivals_team_identity_and_optional_economy_variants`
+- Primary task(s): `task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus`
+
+# AI Context
+- Summary: Add lightweight team identity and public in-league team profiles
+- Keywords: scaffolded-backlog, add lightweight team identity and public in-league team profiles, implementation-ready
+- Use when: Implementing the scaffolded slice for Add lightweight team identity and public in-league team profiles.
+- Skip when: The change belongs to another backlog slice.
+
+# Priority
+- Priority: Medium
+- Rationale: Set by scaffold input or defaulted for grooming.

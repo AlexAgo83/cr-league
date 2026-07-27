@@ -94,6 +94,7 @@
 | [prod_075_aggressive_mini_pack_balance_diagnostic_product_brief](product/prod_075_aggressive_mini_pack_balance_diagnostic_product_brief.md) | Aggressive Mini-Pack Balance Diagnostic Product Brief | Settled |  |  | product/prod_075_aggressive_mini_pack_balance_diagnostic_product_brief.md |
 | [prod_076_review_follow_up_product_brief](product/prod_076_review_follow_up_product_brief.md) | Review Follow-up Product Brief | Proposed |  |  | product/prod_076_review_follow_up_product_brief.md |
 | [prod_077_runtime_performance_remediation_product_brief](product/prod_077_runtime_performance_remediation_product_brief.md) | Runtime Performance Remediation Product Brief | Proposed |  |  | product/prod_077_runtime_performance_remediation_product_brief.md |
+| [prod_078_credential_storage_and_dependency_currency_product_brief](product/prod_078_credential_storage_and_dependency_currency_product_brief.md) | Credential Storage and Dependency Currency Product Brief | Proposed |  |  | product/prod_078_credential_storage_and_dependency_currency_product_brief.md |
 
 ## Roadmaps
 
@@ -232,6 +233,7 @@
 | [req_123_aggressive_mini_pack_balance_diagnostic_verify_and_correct_win_concentration_without_blind_nerfs](request/req_123_aggressive_mini_pack_balance_diagnostic_verify_and_correct_win_concentration_without_blind_nerfs.md) | Aggressive mini-pack balance diagnostic: verify and correct win concentration without blind nerfs | Done |  |  | request/req_123_aggressive_mini_pack_balance_diagnostic_verify_and_correct_win_concentration_without_blind_nerfs.md |
 | [req_124_trim_the_eager_web_bundle_and_document_script_and_skip_boundaries](request/req_124_trim_the_eager_web_bundle_and_document_script_and_skip_boundaries.md) | Trim the eager web bundle and document script and skip boundaries | Draft |  |  | request/req_124_trim_the_eager_web_bundle_and_document_script_and_skip_boundaries.md |
 | [req_125_runtime_performance_remediation_from_manual_perf_smoke_evidence](request/req_125_runtime_performance_remediation_from_manual_perf_smoke_evidence.md) | Runtime performance remediation from manual perf smoke evidence | Draft |  |  | request/req_125_runtime_performance_remediation_from_manual_perf_smoke_evidence.md |
+| [req_126_review_remediation_stop_persisting_the_master_recovery_credential_restore_dependency_currency_finish_app_tsx_state_consolidation](request/req_126_review_remediation_stop_persisting_the_master_recovery_credential_restore_dependency_currency_finish_app_tsx_state_consolidation.md) | Review remediation: stop persisting the master recovery credential, restore dependency currency, finish App.tsx state consolidation | Draft |  |  | request/req_126_review_remediation_stop_persisting_the_master_recovery_credential_restore_dependency_currency_finish_app_tsx_state_consolidation.md |
 
 ## Backlog
 
@@ -552,6 +554,9 @@
 | [item_313_verify_production_dist_hygiene_and_remove_accidental_shipped_artifacts](backlog/item_313_verify_production_dist_hygiene_and_remove_accidental_shipped_artifacts.md) | Verify production dist hygiene and remove accidental shipped artifacts | Ready |  | 0% | backlog/item_313_verify_production_dist_hygiene_and_remove_accidental_shipped_artifacts.md |
 | [item_314_review_largest_image_payloads_for_cheap_measured_reductions](backlog/item_314_review_largest_image_payloads_for_cheap_measured_reductions.md) | Review largest image payloads for cheap measured reductions | Ready |  | 0% | backlog/item_314_review_largest_image_payloads_for_cheap_measured_reductions.md |
 | [item_315_keep_api_simulation_performance_as_a_measured_watchpoint](backlog/item_315_keep_api_simulation_performance_as_a_measured_watchpoint.md) | Keep API simulation performance as a measured watchpoint | Ready |  | 0% | backlog/item_315_keep_api_simulation_performance_as_a_measured_watchpoint.md |
+| [item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential](backlog/item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential.md) | Replace the persisted master recovery code with a revocable session credential | Ready |  | 0% | backlog/item_316_replace_the_persisted_master_recovery_code_with_a_revocable_session_credential.md |
+| [item_317_raise_dependency_majors_in_reviewable_steps_under_green_ci](backlog/item_317_raise_dependency_majors_in_reviewable_steps_under_green_ci.md) | Raise dependency majors in reviewable steps under green CI | Ready |  | 0% | backlog/item_317_raise_dependency_majors_in_reviewable_steps_under_green_ci.md |
+| [item_318_finish_the_residual_app_tsx_state_consolidation_left_by_item_303](backlog/item_318_finish_the_residual_app_tsx_state_consolidation_left_by_item_303.md) | Finish the residual App.tsx state consolidation left by item_303 | Ready |  | 0% | backlog/item_318_finish_the_residual_app_tsx_state_consolidation_left_by_item_303.md |
 
 ## Tasks
 
@@ -683,3 +688,4 @@
 | [task_124_orchestrate_aggressive_mini_pack_balance_diagnostic](tasks/task_124_orchestrate_aggressive_mini_pack_balance_diagnostic.md) | Orchestrate aggressive mini-pack balance diagnostic | Done | codex | 100% | tasks/task_124_orchestrate_aggressive_mini_pack_balance_diagnostic.md |
 | [task_125_orchestrate_the_review_follow_up](tasks/task_125_orchestrate_the_review_follow_up.md) | Orchestrate the review follow-up | Ready |  | 0% | tasks/task_125_orchestrate_the_review_follow_up.md |
 | [task_126_orchestrate_runtime_performance_remediation](tasks/task_126_orchestrate_runtime_performance_remediation.md) | Orchestrate runtime performance remediation | Ready |  | 0% | tasks/task_126_orchestrate_runtime_performance_remediation.md |
+| [task_127_orchestrate_credential_storage_and_dependency_currency_remediation](tasks/task_127_orchestrate_credential_storage_and_dependency_currency_remediation.md) | Orchestrate credential storage and dependency currency remediation | Ready |  | 0% | tasks/task_127_orchestrate_credential_storage_and_dependency_currency_remediation.md |

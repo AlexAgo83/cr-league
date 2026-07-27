@@ -1,10 +1,10 @@
 ## item_309_measure_cold_start_and_decide_the_gameapp_split_on_the_numbers - Measure cold start and decide the GameApp split on the numbers
 > From version: 0.5.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Frontend performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-27 decision: declined the GameApp split. The existing cold-start funnel now reports durations and passed on mobile 390x900: enter app 292 ms, create league 515 ms, reach first decision 292 ms, run first race 979 ms, make first purchase 304 ms, total measured step time 2382 ms. That does not justify adding a GameApp entry chunk plus prefetch path.
 
 # Links
 - Product brief(s): `prod_076_review_follow_up_product_brief`
@@ -54,3 +55,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_125_orchestrate_the_review_follow_up` was finished via `logics-manager flow finish task` on 2026-07-27.

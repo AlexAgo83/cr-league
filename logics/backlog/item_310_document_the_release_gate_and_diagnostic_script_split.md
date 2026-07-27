@@ -2,8 +2,8 @@
 > From version: 0.5.0
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 100%
 > Complexity: Low
 > Theme: Contributor documentation
@@ -57,3 +57,6 @@
 
 # Validation
 - 2026-07-27 validation: CONTRIBUTING.md now has a Scripts section naming the merge gate, release/pre-release checks, local maintenance commands, and on-demand diagnostic/generator prefixes. A package.json script coverage check reported scripts=43 and all scripts covered. package.json was not modified. npm run logics:validate OK with existing non-blocking warnings.
+
+# Notes
+- Task `task_125_orchestrate_the_review_follow_up` was finished via `logics-manager flow finish task` on 2026-07-27.

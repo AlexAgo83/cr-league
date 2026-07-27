@@ -2,8 +2,8 @@
 > From version: 0.5.0
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 100%
 > Complexity: Low
 > Theme: Decision record
@@ -56,3 +56,6 @@
 
 # Validation
 - 2026-07-27 validation: recorded both skips at code sites with ponytail comments. App.tsx reopen trigger: a broad App.tsx change breaks an unrelated flow. Speed-profile JSON reopen trigger: cold tsc -b becomes a measured bottleneck; generator can emit JSON then. npm run typecheck OK; npm run lint OK.
+
+# Notes
+- Task `task_125_orchestrate_the_review_follow_up` was finished via `logics-manager flow finish task` on 2026-07-27.

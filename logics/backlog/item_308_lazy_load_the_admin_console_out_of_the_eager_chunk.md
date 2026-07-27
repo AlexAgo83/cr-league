@@ -2,8 +2,8 @@
 > From version: 0.5.0
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
-> Confidence: 85%
+> Understanding: 95
+> Confidence: 90
 > Progress: 100%
 > Complexity: Low
 > Theme: Frontend performance
@@ -59,3 +59,6 @@
 
 # Validation
 - 2026-07-27 validation: baseline build index-BKtGgQsY.js was 243.86 kB raw / 70.92 kB gzip. After React.lazy, build emits AdminConsoleView-BVLfYFkL.js at 6.19 kB raw / 1.56 kB gzip and index-VhC2J-Xv.js at 237.97 kB raw / 69.91 kB gzip, a -5.89 kB raw / -1.01 kB gzip index delta. npm run typecheck OK; npm run lint OK; npm test -- apps/web/src/app/App.profile.test.tsx OK; npm test OK with 352 passing / 7 skipped; npm run build OK.
+
+# Notes
+- Task `task_125_orchestrate_the_review_follow_up` was finished via `logics-manager flow finish task` on 2026-07-27.

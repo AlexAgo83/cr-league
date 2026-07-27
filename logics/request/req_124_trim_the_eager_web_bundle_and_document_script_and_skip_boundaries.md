@@ -1,7 +1,7 @@
 ## req_124_trim_the_eager_web_bundle_and_document_script_and_skip_boundaries - Trim the eager web bundle and document script and skip boundaries
 > From version: 0.5.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
 > Complexity: Low

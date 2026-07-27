@@ -247,7 +247,7 @@ try {
 }
 
 async function runColdStart() {
-  const funnel: Array<{ goal: string; reached: boolean; note: string }> = [];
+  const funnel: ColdStartStep[] = [];
   let coldBrowser: Browser | undefined;
   let coldPage: Page | undefined;
   let failure: unknown;
@@ -302,7 +302,7 @@ async function runColdStart() {
   } catch (error) {
     failure = error;
     if (!funnel.length || funnel[funnel.length - 1]?.reached) {
-      funnel.push({ goal: "stuck", reached: false, note: error instanceof Error ? error.message : String(error) });
+      funnel.push({ goal: "stuck", reached: false, note: error instanceof Error ? error.message : String(error), durationMs: 0 });
     }
   } finally {
     await coldBrowser?.close();
@@ -313,12 +313,15 @@ async function runColdStart() {
   console.log(`Cold-start UX funnel: ${coldStartReportPath}`);
 }
 
-async function coldStep(funnel: Array<{ goal: string; reached: boolean; note: string }>, goal: string, note: string, action: () => Promise<void>) {
+type ColdStartStep = { goal: string; reached: boolean; note: string; durationMs: number };
+
+async function coldStep(funnel: ColdStartStep[], goal: string, note: string, action: () => Promise<void>) {
+  const startedAt = performance.now();
   try {
     await action();
-    funnel.push({ goal, reached: true, note });
+    funnel.push({ goal, reached: true, note, durationMs: Math.round(performance.now() - startedAt) });
   } catch (error) {
-    funnel.push({ goal, reached: false, note: error instanceof Error ? error.message : String(error) });
+    funnel.push({ goal, reached: false, note: error instanceof Error ? error.message : String(error), durationMs: Math.round(performance.now() - startedAt) });
     throw error;
   }
 }
@@ -328,8 +331,8 @@ async function seedProfile() {
   try {
     const email = `browser-playtest-${Date.now()}@example.test`;
     const created = await createProfile(prisma, { email });
-    if (!created.recoveryCode) throw new Error("Profile seed did not return a recovery code.");
-    return { session: { profile: created.profile, recoveryCode: created.recoveryCode, teams: [] } };
+    if (!created.sessionCredential) throw new Error("Profile seed did not return a session credential.");
+    return { session: { profile: created.profile, sessionCredential: created.sessionCredential, teams: [] } };
   } finally {
     await prisma.$disconnect();
   }
@@ -711,7 +714,7 @@ async function writeUxReport(input: { reports: RoundReport[]; failed: boolean; e
   );
 }
 
-async function writeColdStartReport(funnel: Array<{ goal: string; reached: boolean; note: string }>, failure: unknown) {
+async function writeColdStartReport(funnel: ColdStartStep[], failure: unknown) {
   await mkdir(dirname(coldStartReportPath), { recursive: true });
   const reached = funnel.filter((step) => step.reached).at(-1)?.goal ?? "none";
   const stuck = funnel.find((step) => !step.reached);
@@ -725,9 +728,10 @@ async function writeColdStartReport(funnel: Array<{ goal: string; reached: boole
       `- Result: ${failure ? "FAIL" : "PASS"}`,
       `- Furthest step reached: ${reached}`,
       stuck ? `- Stuck at: ${stuck.goal}` : "- Stuck at: none",
+      `- Total measured step time: ${funnel.reduce((sum, step) => sum + step.durationMs, 0)} ms`,
       "",
       "## Funnel",
-      table(["Goal", "Reached", "Visible-affordance note"], funnel.map((step) => [step.goal, step.reached ? "yes" : "no", step.note.replace(/\n/g, " ")])),
+      table(["Goal", "Reached", "Duration ms", "Visible-affordance note"], funnel.map((step) => [step.goal, step.reached ? "yes" : "no", step.durationMs, step.note.replace(/\n/g, " ")])),
       "",
       "## Missing Or Ambiguous Copy",
       stuck ? `- ${stuck.goal}: ${stuck.note.replace(/\n/g, " ")}` : "- none observed in this run",

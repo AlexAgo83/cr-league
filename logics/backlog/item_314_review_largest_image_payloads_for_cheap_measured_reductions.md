@@ -1,10 +1,10 @@
 ## item_314_review_largest_image_payloads_for_cheap_measured_reductions - Review largest image payloads for cheap measured reductions
 > From version: 0.5.1
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 0%
+> Progress: 100%
 > Complexity: Low
 > Theme: Asset delivery performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-27 decision: changed only the largest payload. Converted assets/crl/finish-flag.png from 1024x1024 PNG with alpha to lossless WebP and updated the CSS/test reference; kept the other top assets because they were already WebP/JPG or require visual/design review beyond this cheap measured pass.
 
 # Links
 - Product brief(s): `prod_077_runtime_performance_remediation_product_brief`
@@ -52,3 +53,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-27 validation: finish-flag asset reduced from 1393 KB in perf:bundle to 390 KB lossless WebP; dist total reduced from 12.5 MB / image 10.66 MB to 11.52 MB / image 9.68 MB. npm test -- apps/web/src/styles/replayControls.test.ts OK; npm run clean && npm run build OK; npm run perf:bundle OK; npm run test:e2e -- --project=chromium OK, 4 passed; npm run typecheck OK; npm run lint OK.

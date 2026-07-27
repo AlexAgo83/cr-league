@@ -23,8 +23,8 @@ describe("replay controls stacking", () => {
   it("uses the generated transparent finish flag asset", () => {
     const layout = readFileSync(join(stylesDir, "layout.css"), "utf8");
 
-    expect(layout).toContain('url("/assets/crl/finish-flag.png")');
-    expect(existsSync(join(publicDir, "assets/crl/finish-flag.png"))).toBe(true);
+    expect(layout).toContain('url("/assets/crl/finish-flag.webp")');
+    expect(existsSync(join(publicDir, "assets/crl/finish-flag.webp"))).toBe(true);
   });
 });
 

@@ -4131,7 +4131,7 @@ label small {
 
 .replay-finish-flag {
   animation: replay-flag-pop 260ms ease-out both, replay-flag-wave 0.9s ease-in-out 260ms infinite;
-  background: url("/assets/crl/finish-flag.png") center / contain no-repeat;
+  background: url("/assets/crl/finish-flag.webp") center / contain no-repeat;
   height: 120px;
   left: 50%;
   position: absolute;

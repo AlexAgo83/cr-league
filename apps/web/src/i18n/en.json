@@ -67,6 +67,7 @@
   "setup_create_title": "New league",
   "setup_join_title": "Join league",
   "setup_error_join_required": "Enter a league code and team name.",
+  "setup_error_profile_expired": "Your local profile is no longer valid on this test server. Sign out, then recover or create a profile.",
   "setup_create_hint": "Start a fresh championship.",
   "setup_join_hint": "Enter an invite code.",
   "drive_context_title": "Race prep",

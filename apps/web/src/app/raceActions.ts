@@ -1,6 +1,6 @@
 import { type QualifyingRun } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
-import { api } from "./appStorage.js";
+import { ApiError, api } from "./appStorage.js";
 import type { CityCircuit } from "./circuits.js";
 import { clampNumber } from "./helpers.js";
 import type { FormState, GameView, LeagueState, ProfileSession } from "./types.js";
@@ -43,7 +43,7 @@ export function createRaceActions({
   qualifyingAttemptsLeft: number;
   qualifyingDisabled: boolean;
   lastQualifyingRun: QualifyingRun | null;
-  run: (nextMessage: string, action: () => Promise<void>) => Promise<void>;
+  run: (nextMessage: string, action: () => Promise<void>, staleClaimTeamId?: string, notify?: boolean, errorText?: (error: unknown) => string) => Promise<void>;
   tt: (key: TranslationKey) => string;
   setAdminInspecting: (inspecting: boolean) => void;
   setLeagueState: (state: LeagueState) => void;
@@ -62,27 +62,39 @@ export function createRaceActions({
   pushCommandHint: (nextDeskState: "prepare" | "ready" | "resolved") => void;
 }) {
   async function createLeague() {
-    await run(tt("status_creating_league"), async () => {
-      const state = await api<LeagueState>("/leagues", {
-        method: "POST",
-        body: JSON.stringify({
-          name: form.leagueName,
-          teamName: form.teamName.trim(),
-          profileId: profileSession?.profile.id,
-          recoveryCode: profileSession?.sessionCredential,
-          maxPlayers: clampNumber(Number(form.maxPlayers), 2, 16),
-          fillWithBots: form.fillWithBots,
-          qualifyingAttemptLimit: clampNumber(Number(form.qualifyingAttemptLimit), 1, 5),
-          maxGrandPrixPerSeason: clampNumber(Number(form.maxGrandPrixPerSeason), 1, 18)
-        })
-      });
-      rememberPlayer(state);
-      setAdminInspecting(false);
-      setLeagueState(state);
-      setGameView("drive");
-      showStatus(tt("status_league_created"));
-      pushCommandHint("prepare");
-    });
+    await run(
+      tt("status_creating_league"),
+      async () => {
+        const state = await api<LeagueState>("/leagues", {
+          method: "POST",
+          body: JSON.stringify({
+            name: form.leagueName,
+            teamName: form.teamName.trim(),
+            profileId: profileSession?.profile.id,
+            recoveryCode: profileSession?.sessionCredential,
+            maxPlayers: clampNumber(Number(form.maxPlayers), 2, 16),
+            fillWithBots: form.fillWithBots,
+            qualifyingAttemptLimit: clampNumber(Number(form.qualifyingAttemptLimit), 1, 5),
+            maxGrandPrixPerSeason: clampNumber(Number(form.maxGrandPrixPerSeason), 1, 18)
+          })
+        });
+        rememberPlayer(state);
+        setAdminInspecting(false);
+        setLeagueState(state);
+        setGameView("drive");
+        showStatus(tt("status_league_created"));
+        pushCommandHint("prepare");
+      },
+      undefined,
+      true,
+      (error) => {
+        if (error instanceof ApiError && error.statusCode === 403 && profileSession) {
+          setLeagueFormError(tt("setup_error_profile_expired"));
+          return tt("setup_error_profile_expired");
+        }
+        return "";
+      }
+    );
   }
 
   async function joinLeague() {

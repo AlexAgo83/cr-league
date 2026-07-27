@@ -150,6 +150,7 @@ flowchart LR
 - The largest backend store was split into focused league modules behind the unchanged `store.ts` public barrel; the obsolete `storeCore.ts` compatibility barrel has been removed.
 - The web app root is below the 800-line ceiling, with splash, modal state, and static preference data extracted.
 - Replay/map performance work keeps route geometry and static layers off the hot path, and circuit route data loads per selected circuit.
+- Manual runtime profiling is available through `npm run perf:browser`; see [docs/performance-runtime.md](docs/performance-runtime.md).
 - Latest local gate: `npm run typecheck`, `npm run lint`, `npm test`, `npm test -- --coverage`, `npm run balance:gate`, and Logics lint/audit all pass.
 
 ## Tech Stack

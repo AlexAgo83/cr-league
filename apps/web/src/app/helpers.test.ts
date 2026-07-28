@@ -309,8 +309,6 @@ describe("raceRecapCards", () => {
     expect(recap.difference).toContain("Rain Grip");
     expect(recap.difference).toContain("Impact +2");
     expect(recap.directive).toContain("Rain Grip");
-    expect(recap.planRead).toContain("Winning plan:");
-    expect(recap.planRead).toContain("Rain Grip");
     expect(recap.lesson).toContain(expectedNextCircuitName());
   });
 
@@ -325,7 +323,6 @@ describe("raceRecapCards", () => {
 
     expect(recap.difference).toContain("Test GP");
     expect(recap.directive).toContain("kept you level");
-    expect(recap.planRead).toContain("Winning plan:");
     expect(recap.lesson).toContain(expectedNextCircuitName());
   });
 
@@ -357,20 +354,6 @@ describe("raceRecapCards", () => {
     expect(recap.lesson).not.toContain("Rain Grip");
   });
 
-  it("compares a losing directive with the winner's plan", () => {
-    const state = stateWithHistory([]);
-    state.decisions = [
-      { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null },
-      { teamId: "team_2", approach: "aggressive", preparation: "speed", cardId: "launch_boost" }
-    ];
-    const recap = raceRecapCards(result("team_2", "team_1"), state, "team_1", state.decisions[0], "Test GP", (key, params) =>
-      t(key, "en", params)
-    );
-
-    expect(recap.planRead).toContain("Your plan:");
-    expect(recap.planRead).toContain("Winner team_2:");
-    expect(recap.planRead).toContain("Launch Boost");
-  });
 });
 
 describe("buildRaceActionRecommendation", () => {

@@ -145,7 +145,7 @@ export function PlanView({
               <section className="panel report-side-recap">
                 <h2>{tt("result_recap_title")}</h2>
                 <div className="recap-grid">
-                  {(["result_difference", "result_your_directive", "result_plan_read", "result_next_lesson"] as const).map((key) => (
+                  {(["result_difference", "result_your_directive", "result_next_lesson"] as const).map((key) => (
                     <section key={key}>
                       <h3>{tt(key)}</h3>
                       <p>{tt("plan_report_empty_placeholder")}</p>

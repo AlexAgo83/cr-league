@@ -236,7 +236,6 @@ describe("ReportView", () => {
     const resultCard = container.querySelector(".recap-card.difference") as HTMLElement;
     expect(recap.textContent).toContain("P5, 10 points.");
     expect(resultCard.textContent?.match(/P5/g)).toHaveLength(1);
-    expect(recap.textContent).toContain("Analyzed plan:");
     expect(container.querySelector(".recap-card.action")?.textContent).toContain("change only one plan piece");
   });
 

@@ -22,8 +22,7 @@ const RECAP_ICONS: Record<string, BoardIconName> = {
   action: "next-lesson",
   difference: "podium-result",
   directive: "plan-worked",
-  lesson: "next-lesson",
-  "plan-read": "plan-worked"
+  lesson: "next-lesson"
 };
 
 export function ReportView({
@@ -66,11 +65,6 @@ export function ReportView({
       className: "directive",
       title: tt("result_your_directive"),
       body: recapCards.directive
-    },
-    {
-      className: "plan-read",
-      title: tt("result_plan_read"),
-      body: recapCards.planRead
     },
     {
       className: "lesson",

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 25%
+> Progress: 35%
 > Complexity: Medium
 > Theme: Mode clarity and data safety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

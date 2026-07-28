@@ -2,9 +2,9 @@
 > From version: 0.6.1
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 95
+> Understanding: 96
 > Confidence: 88
-> Progress: 25%
+> Progress: 35
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -16,10 +16,10 @@
 - Confirmed architecture decision: use `adr_009_shared_local_and_network_league_engine`; extract shared league rules into `packages/shared` and keep API/localStorage as persistence adapters.
 
 # Plan
-- [ ] 1. Wave 1: extract shared league rules under `packages/shared/src/domain/leagueFactory.ts` and `packages/shared/src/domain/leagueEngine.ts` without changing multiplayer behavior.
+- [x] 1. Wave 1: extract shared league rules under `packages/shared/src/domain/leagueFactory.ts` and `packages/shared/src/domain/leagueEngine.ts` without changing multiplayer behavior.
 - [ ] 2. Refactor API-backed multiplayer actions to use the shared engine around DB load/persist, with regression tests proving create/join/rejoin, qualifying, resolve, next GP, garage, livery, and team rename still behave as before.
-- [ ] 3. Wave 2: add the Solo / Multiplayer setup screen before profile setup. Solo bypasses profile; Multiplayer keeps the existing profile gate and LeagueSetupView create/join/saved-claims sublevel.
-- [ ] 4. Add one versioned local solo save, recommended `cr-league-solo-save-v1`, storing LeagueState plus schemaVersion, createdAt, and updatedAt metadata. Keep it separate from profile and multiplayer claim keys.
+- [x] 3. Wave 2: add the Solo / Multiplayer setup screen before profile setup. Solo bypasses profile; Multiplayer keeps the existing profile gate and LeagueSetupView create/join/saved-claims sublevel.
+- [x] 4. Add one versioned local solo save, recommended `cr-league-solo-save-v1`, storing LeagueState plus schemaVersion, createdAt, and updatedAt metadata. Keep it separate from profile and multiplayer claim keys.
 - [ ] 5. Wave 3: wire solo actions to localStorage load -> shared engine transition -> React state update -> localStorage persist.
 - [ ] 6. Cover solo briefing, plan editing, chrono/qualifying, directive lock, GP resolution, replay/report, next Grand Prix, garage buy/sell, livery update, and team rename.
 - [ ] 7. Add clear en/fr copy, a `Solo local` indicator, and a confirmed reset solo command that only clears the solo save.
@@ -31,7 +31,8 @@
 
 # Progress notes
 - 2026-07-28: Implementation started; current progress is around 5-10%. Three workstreams are now active: shared engine extraction, Solo / Multiplayer setup UI, and solo local storage/action adapter.
-- No item is done yet. Keep this task open and continue updating docs at each meaningful ADR 009 checkpoint.
+- 2026-07-28: Wave checkpoints committed: `58eb7b3` local solo save storage, `7145fda` shared league engine helpers, `443a56c` Solo / Multiplayer setup choice, and `a811ba9` corrected the setup gate so Solo / Multiplayer remains before profile setup even when a profile is already saved. Web App/App.profile suites and web/shared typechecks passed at this checkpoint.
+- Remaining implementation risk is Wave 3: replace the Solo stub with real localStorage -> shared engine -> React state persistence, then add `Solo local` badge/reset and no-fetch proof.
 
 # Backlog
 - `item_347_introduce_the_solo_multiplayer_setup_hierarchy`

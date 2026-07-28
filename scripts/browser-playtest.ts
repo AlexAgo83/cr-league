@@ -293,6 +293,10 @@ async function runColdStart() {
     await coldStep(funnel, "enter app", "Visible PRESS START opened the setup flow.", async () => {
       await coldPage!.goto("/");
       await coldPage!.getByRole("button", { name: "PRESS START" }).click();
+      await expect(coldPage!.getByRole("button", { name: /Multiplayer/ })).toBeVisible();
+    });
+    await coldStep(funnel, "pick multiplayer", "Visible Solo/Multiplayer choice led to the league setup.", async () => {
+      await coldPage!.getByRole("button", { name: /Multiplayer/ }).click();
       await expect(coldPage!.getByRole("button", { name: /Create league/ })).toBeVisible();
     });
     await coldStep(funnel, "create league", "Visible Create league/Start league controls created a league.", async () => {
@@ -367,6 +371,8 @@ async function seedProfile() {
 async function recoverAndCreateLeague(page: Page) {
   await page.goto("/");
   await trackedClick(page, "setup", "press-start", () => page.getByRole("button", { name: "PRESS START" }).click());
+  // The Solo/Multiplayer entry choice sits between PRESS START and the league setup.
+  await trackedClick(page, "setup", "pick-multiplayer", () => page.getByRole("button", { name: /Multiplayer/ }).click());
   await expect(page.getByRole("button", { name: /Create league/ })).toBeVisible();
 
   await trackedClick(page, "setup", "create-league-choice", () => page.getByRole("button", { name: /Create league/ }).click());
@@ -505,7 +511,9 @@ async function observeScenario(page: Page, input: { id: string; question: string
 }
 
 async function observeComprehension(page: Page, step: string, note: string, locators: Array<() => ReturnType<Page["locator"]>>, round?: number) {
-  const checks = await Promise.all(locators.map(async (locator) => locator().isVisible().catch(() => false)));
+  // .first() matters: a locator matching several nodes throws in strict mode, and the catch
+  // below would silently report the check as failed.
+  const checks = await Promise.all(locators.map(async (locator) => locator().first().isVisible().catch(() => false)));
   comprehensionChecks.push({ round, step, passed: checks.every(Boolean), note });
 }
 

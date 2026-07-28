@@ -1,13 +1,14 @@
 ## task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode - Orchestrate Solo / Multiplayer entry and local solo mode
 > From version: 0.6.1
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 95
 > Confidence: 88
-> Progress: 0
+> Progress: 5%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Owner: codex
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.

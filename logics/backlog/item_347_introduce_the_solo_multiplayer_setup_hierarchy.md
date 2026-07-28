@@ -1,10 +1,10 @@
 ## item_347_introduce_the_solo_multiplayer_setup_hierarchy - Introduce the Solo / Multiplayer setup hierarchy
 > From version: 0.6.1
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 0
+> Progress: 5%
 > Complexity: Medium
 > Theme: Setup flow and navigation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

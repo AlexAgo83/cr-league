@@ -1,10 +1,10 @@
 ## item_349_polish_solo_multiplayer_affordances_and_reset_safety - Polish solo/multiplayer affordances and reset safety
 > From version: 0.6.1
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 0
+> Progress: 5%
 > Complexity: Medium
 > Theme: Mode clarity and data safety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

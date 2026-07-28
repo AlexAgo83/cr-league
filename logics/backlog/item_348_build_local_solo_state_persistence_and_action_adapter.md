@@ -1,10 +1,10 @@
 ## item_348_build_local_solo_state_persistence_and_action_adapter - Build local solo state, persistence, and action adapter
 > From version: 0.6.1
 > Schema version: 1.0
-> Status: Ready
+> Status: In progress
 > Understanding: 95
 > Confidence: 88
-> Progress: 0
+> Progress: 5%
 > Complexity: High
 > Theme: Local solo game loop
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

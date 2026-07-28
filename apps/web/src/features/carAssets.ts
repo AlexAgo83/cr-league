@@ -4,7 +4,6 @@ export type { CarAssetId } from "@cr-league/shared";
 export type CarAsset = {
   id: CarAssetId;
   name: string;
-  sprite: string;
   top: string;
   side: string;
   metadata: string;
@@ -70,7 +69,6 @@ export const CAR_ASSETS: CarAsset[] = CAR_ASSET_IDS.map((id, index) => {
   return {
     id,
     name: `CRL ${String(index + 1).padStart(3, "0")}`,
-    sprite: `/assets/cars/idle.webp?v=crl-v2-${id}`,
     top: `/assets/cars/crl-v2/${id}/top.webp`,
     side: `/assets/cars/crl-v2/${id}/side.webp`,
     metadata: `/assets/cars/crl-v2/${id}/metadata.json`

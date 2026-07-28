@@ -71,6 +71,7 @@ model Team {
   rivalDecisions RaceDecision[] @relation("RaceDecisionRival")
 
   @@unique([leagueId, name])
+  @@index([leagueId])
   @@index([profileId])
   @@map("teams")
 }
@@ -96,6 +97,7 @@ model GrandPrix {
   decisions RaceDecision[]
 
   @@unique([leagueId, season, round])
+  @@index([leagueId])
   @@map("grand_prixes")
 }
 

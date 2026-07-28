@@ -1,10 +1,10 @@
 ## item_335_add_missing_leagueid_indexes_on_team_and_grandprix - Add missing leagueId indexes on Team and GrandPrix
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: Low
 > Theme: Database performance
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -50,3 +50,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Done: added `@@index([leagueId])` to `Team` and `GrandPrix` in `prisma/schema.prisma` plus migration `20260728160000_add_league_id_indexes`. `npm run db:generate`, `npm run typecheck`, and `npm test` (373 passed, 7 skipped) all green; no behavior change.

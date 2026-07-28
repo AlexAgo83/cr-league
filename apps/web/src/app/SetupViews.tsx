@@ -4,6 +4,7 @@ import type { FormState } from "./types.js";
 
 export type ProfileMode = "choice" | "create" | "recover";
 export type SetupMode = "choice" | "create" | "join";
+export type SetupEntryMode = "choice" | "multiplayer";
 
 type SavedClaim = {
   teamId: string;
@@ -11,6 +12,42 @@ type SavedClaim = {
   leagueCode: string;
   teamName: string;
 };
+
+export function SetupEntryView({
+  message,
+  status,
+  onStartSolo,
+  onStartMultiplayer,
+  tt
+}: {
+  message: string;
+  status: "idle" | "loading" | "error";
+  onStartSolo: () => void;
+  onStartMultiplayer: () => void;
+  tt: (key: TranslationKey) => string;
+}) {
+  return (
+    <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="setup-entry-title">
+      <div className="panel setup-main-panel setup-hero-panel setup-entry-hero-panel">
+        <span className="section-kicker">{tt("setup_entry_kicker")}</span>
+        <h1 id="setup-entry-title">{tt("setup_entry_title")}</h1>
+        <p className={status === "error" ? "status error" : "status"}>{message === tt("status_initial") ? tt("setup_entry_intro") : message}</p>
+      </div>
+      <div className="panel setup-main-panel setup-form-panel">
+        <div className="setup-choice-grid">
+          <button type="button" className="setup-choice" aria-label={tt("action_start_solo")} onClick={onStartSolo}>
+            <strong>{tt("action_start_solo")}</strong>
+            <small>{tt("setup_solo_hint")}</small>
+          </button>
+          <button type="button" className="setup-choice" aria-label={tt("action_start_multiplayer")} onClick={onStartMultiplayer}>
+            <strong>{tt("action_start_multiplayer")}</strong>
+            <small>{tt("setup_multiplayer_hint")}</small>
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export function ProfileSetupView({
   message,

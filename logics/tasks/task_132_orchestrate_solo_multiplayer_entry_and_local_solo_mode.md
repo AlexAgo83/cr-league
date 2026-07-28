@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 88
-> Progress: 8%
+> Progress: 25%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.

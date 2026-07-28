@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 88
-> Progress: 8%
+> Progress: 25%
 > Complexity: High
 > Theme: Local solo game loop
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

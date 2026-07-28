@@ -6,7 +6,7 @@ import type { DirectiveStep } from "../features/DirectivePanel.js";
 import { DriveView } from "./DriveView.js";
 import { GameViews } from "./GameViews.js";
 import { SetupGate } from "./SetupGate.js";
-import type { ProfileMode, SetupMode } from "./SetupViews.js";
+import type { ProfileMode, SetupEntryMode, SetupMode } from "./SetupViews.js";
 import type { PlanSubscreen } from "./routes.js";
 import type { FormState, GameView, LeagueState, ProfileSession } from "./types.js";
 import type { CommandClick } from "./useCommandClicks.js";
@@ -31,6 +31,7 @@ export function AppShell({
   profileForm,
   profileFormError,
   leagueFormError,
+  setupEntryMode,
   setupMode,
   savedClaims,
   savedLeagueIndex,
@@ -56,6 +57,7 @@ export function AppShell({
   setProfileForm,
   setProfileFormError,
   setLeagueFormError,
+  setSetupEntryMode,
   setSetupMode,
   setSavedLeagueIndex,
   setResultTab,
@@ -72,6 +74,7 @@ export function AppShell({
   createProfileSession,
   recoverProfileSession,
   requestRecoveryCode,
+  startSolo,
   createLeague,
   joinLeague,
   switchLeague,
@@ -104,6 +107,7 @@ export function AppShell({
   profileForm: { email: string; recoveryCode: string };
   profileFormError: string | null;
   leagueFormError: string | null;
+  setupEntryMode: SetupEntryMode;
   setupMode: SetupMode;
   savedClaims: ProfileSession["teams"];
   savedLeagueIndex: number;
@@ -129,6 +133,7 @@ export function AppShell({
   setProfileForm: Dispatch<SetStateAction<{ email: string; recoveryCode: string }>>;
   setProfileFormError: Dispatch<SetStateAction<string | null>>;
   setLeagueFormError: Dispatch<SetStateAction<string | null>>;
+  setSetupEntryMode: Dispatch<SetStateAction<SetupEntryMode>>;
   setSetupMode: Dispatch<SetStateAction<SetupMode>>;
   setSavedLeagueIndex: Dispatch<SetStateAction<number>>;
   setResultTab: (tab: ResultTab) => void;
@@ -145,6 +150,7 @@ export function AppShell({
   createProfileSession: () => void;
   recoverProfileSession: () => void;
   requestRecoveryCode: () => void;
+  startSolo: () => void;
   createLeague: () => void;
   joinLeague: () => void;
   switchLeague: (teamId: string) => void;
@@ -179,6 +185,7 @@ export function AppShell({
         profileForm={profileForm}
         profileFormError={profileFormError}
         leagueFormError={leagueFormError}
+        setupEntryMode={setupEntryMode}
         setupMode={setupMode}
         savedClaims={savedClaims}
         savedLeagueIndex={savedLeagueIndex}
@@ -189,11 +196,13 @@ export function AppShell({
         setProfileForm={setProfileForm}
         setProfileFormError={setProfileFormError}
         setLeagueFormError={setLeagueFormError}
+        setSetupEntryMode={setSetupEntryMode}
         setSetupMode={setSetupMode}
         setSavedLeagueIndex={setSavedLeagueIndex}
         createProfileSession={createProfileSession}
         recoverProfileSession={recoverProfileSession}
         requestRecoveryCode={requestRecoveryCode}
+        startSolo={startSolo}
         createLeague={createLeague}
         joinLeague={joinLeague}
         switchLeague={switchLeague}

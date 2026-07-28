@@ -24,7 +24,7 @@ import { createProfileActions } from "./profileActions.js";
 import { createRaceActions } from "./raceActions.js";
 import { isGrandPrixRouteId, isStartPath, shortGrandPrixId } from "./routes.js";
 import { createSessionActions } from "./sessionActions.js";
-import { type ProfileMode, type SetupMode } from "./SetupViews.js";
+import { type ProfileMode, type SetupEntryMode, type SetupMode } from "./SetupViews.js";
 import { createLeagueMutations } from "./leagueMutations.js";
 import { useAppNavigation } from "./useAppNavigation.js";
 import { useCommandClicks } from "./useCommandClicks.js";
@@ -123,6 +123,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   } = useAppNavigation(profileSession, clearRouteReplay, activeReplayGrandPrixId);
   const tt = useCallback((key: TranslationKey, params?: Parameters<typeof t>[2]) => t(key, locale, params), [locale]);
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
+  const [setupEntryMode, setSetupEntryMode] = useState<SetupEntryMode>("choice");
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const { commandClicks, markCommandClicked, resetCommandClicks } = useCommandClicks();
   const [seasonRecapSeason, setSeasonRecapSeason] = useState<number | null>(null);
@@ -606,7 +607,10 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       tt={tt}
       setForm={setForm}
       onCopyProfileCode={() => void copyProfileCode()}
-      onForgetProfile={forgetProfile}
+      onForgetProfile={() => {
+        forgetProfile();
+        setSetupEntryMode("choice");
+      }}
       onResetUiPreferences={resetUiPreferences}
       onCopyTechnicalError={() => void copyTechnicalError()}
       onSubmitDirectiveConfirmed={submitDirectiveConfirmed}
@@ -706,6 +710,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       profileForm={profileForm}
       profileFormError={profileFormError}
       leagueFormError={leagueFormError}
+      setupEntryMode={setupEntryMode}
       setupMode={setupMode}
       savedClaims={savedClaims}
       savedLeagueIndex={savedLeagueIndex}
@@ -731,6 +736,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       setProfileForm={setProfileForm}
       setProfileFormError={setProfileFormError}
       setLeagueFormError={setLeagueFormError}
+      setSetupEntryMode={setSetupEntryMode}
       setSetupMode={setSetupMode}
       setSavedLeagueIndex={setSavedLeagueIndex}
       setResultTab={setResultTab}
@@ -747,6 +753,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       createProfileSession={() => void createProfileSession()}
       recoverProfileSession={() => void recoverProfileSession()}
       requestRecoveryCode={() => void requestRecoveryCode()}
+      startSolo={() => showStatus(tt("status_solo_not_ready"), "info", false)}
       createLeague={() => void createLeague()}
       joinLeague={() => void joinLeague()}
       switchLeague={(teamId) => void switchLeague(teamId)}
@@ -761,7 +768,10 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       clearScreenOnboardingSnoozes={clearScreenOnboardingSnoozes}
       markCommandClicked={markCommandClicked}
       openQualifyingRun={openQualifyingRun}
-      goHome={goHome}
+      goHome={() => {
+        setSetupEntryMode("choice");
+        goHome();
+      }}
       backToAdminConsole={() => {
         setGameView("admin");
         setLeagueState(null);

@@ -5,7 +5,7 @@ import type { GameView, FormState, LeagueState, ProfileSession } from "./types.j
 import type { Translator } from "./helpers.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import { SetupShell } from "./OnboardingShell.js";
-import { LeagueSetupView, ProfileSetupView, type ProfileMode, type SetupMode } from "./SetupViews.js";
+import { LeagueSetupView, ProfileSetupView, SetupEntryView, type ProfileMode, type SetupEntryMode, type SetupMode } from "./SetupViews.js";
 
 export function SetupGate({
   profileSession,
@@ -21,6 +21,7 @@ export function SetupGate({
   profileForm,
   profileFormError,
   leagueFormError,
+  setupEntryMode,
   setupMode,
   savedClaims,
   savedLeagueIndex,
@@ -31,11 +32,13 @@ export function SetupGate({
   setProfileForm,
   setProfileFormError,
   setLeagueFormError,
+  setSetupEntryMode,
   setSetupMode,
   setSavedLeagueIndex,
   createProfileSession,
   recoverProfileSession,
   requestRecoveryCode,
+  startSolo,
   createLeague,
   joinLeague,
   switchLeague,
@@ -54,6 +57,7 @@ export function SetupGate({
   profileForm: { email: string; recoveryCode: string };
   profileFormError: string | null;
   leagueFormError: string | null;
+  setupEntryMode: SetupEntryMode;
   setupMode: SetupMode;
   savedClaims: StoredPlayerClaim[];
   savedLeagueIndex: number;
@@ -64,16 +68,26 @@ export function SetupGate({
   setProfileForm: (form: { email: string; recoveryCode: string }) => void;
   setProfileFormError: (error: string | null) => void;
   setLeagueFormError: (error: string | null) => void;
+  setSetupEntryMode: (mode: SetupEntryMode) => void;
   setSetupMode: (mode: SetupMode) => void;
   setSavedLeagueIndex: (updater: (index: number) => number) => void;
   createProfileSession: () => void;
   recoverProfileSession: () => void;
   requestRecoveryCode: () => void;
+  startSolo: () => void;
   createLeague: () => void;
   joinLeague: () => void;
   switchLeague: (teamId: string) => void;
   tt: Translator;
 }) {
+  if (!profileSession && setupEntryMode === "choice") {
+    return (
+      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+        <SetupEntryView message={message} status={status} onStartSolo={startSolo} onStartMultiplayer={() => setSetupEntryMode("multiplayer")} tt={tt} />
+      </SetupShell>
+    );
+  }
+
   if (!profileSession) {
     return (
       <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>

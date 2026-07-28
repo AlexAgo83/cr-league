@@ -1120,6 +1120,14 @@
     linear-gradient(135deg, rgb(197 58 0 / 0.28), rgb(22 18 18 / 0.9));
 }
 
+.setup-entry-hero-panel {
+  background:
+    linear-gradient(90deg, rgb(16 14 18 / 0.9), rgb(16 14 18 / 0.32)),
+    url("/assets/crl/league-arrival.webp") center / cover no-repeat,
+    linear-gradient(90deg, transparent, rgb(36 130 118 / 0.14), transparent) -120% 0 / 220% 100% no-repeat,
+    linear-gradient(135deg, rgb(36 130 118 / 0.26), rgb(22 18 18 / 0.9));
+}
+
 .panel h2,
 .panel h3,
 .panel h4 {
@@ -1391,6 +1399,7 @@ button:disabled {
 
 .profile-hero-panel,
 .league-hero-panel,
+.setup-entry-hero-panel,
 .chrono-report-hero,
 .directive-briefing-panel,
 .championship-overview,
@@ -1438,6 +1447,7 @@ button:disabled {
   .asset-image-shell.loading .asset-image-placeholder,
   .profile-hero-panel,
   .league-hero-panel,
+  .setup-entry-hero-panel,
   .chrono-report-hero,
   .directive-briefing-panel,
   .championship-overview,

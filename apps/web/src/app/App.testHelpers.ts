@@ -16,8 +16,14 @@ export function saveProfile(overrides: Partial<{ admin: boolean; recoveryCode: s
 }
 
 export function createLeagueFromSetup() {
+  startMultiplayerSetup();
   fireEvent.click(screen.getByRole("button", { name: /Create league/ }));
   fireEvent.click(screen.getByRole("button", { name: "Start league" }));
+}
+
+export function startMultiplayerSetup() {
+  const multiplayer = screen.queryByRole("button", { name: /Multiplayer/ });
+  if (multiplayer) fireEvent.click(multiplayer);
 }
 
 export async function closeLeagueIntro() {

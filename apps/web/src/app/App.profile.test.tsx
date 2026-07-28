@@ -3,7 +3,7 @@ import { APP_VERSION } from "@cr-league/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
 import { baseState, resolvedState } from "./App.testFixtures.js";
-import { createLeagueFromSetup, expectGarageCode, response, saveProfile, withoutPlayer } from "./App.testHelpers.js";
+import { createLeagueFromSetup, expectGarageCode, response, saveProfile, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
 
 beforeEach(() => {
   window.history.replaceState(null, "", "/drive");
@@ -53,6 +53,7 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     fireEvent.click(screen.getByRole("button", { name: /Create profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
     fireEvent.submit(screen.getByLabelText("Email").closest("form")!);
@@ -66,6 +67,7 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     fireEvent.click(screen.getByRole("button", { name: /Create profile/ }));
     expect((screen.getByLabelText("Email") as HTMLInputElement).value).toBe("pilot@example.test");
   });
@@ -75,6 +77,7 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
     fireEvent.click(screen.getByRole("button", { name: "Email me a fresh code" }));
@@ -92,6 +95,7 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "missing@example.test" } });
     fireEvent.change(screen.getByLabelText("Recovery code"), { target: { value: "BADCODE" } });
@@ -526,7 +530,7 @@ describe("App profile and admin", () => {
     expect(screen.getByRole("button", { name: "Sign out" })).toBeTruthy();
     fireEvent.click(screen.getAllByRole("button", { name: "Sign out" }).at(-1)!);
     expect(screen.queryByRole("dialog", { name: "Sign out" })).toBe(null);
-    expect(screen.getByRole("heading", { name: "Start your championship" })).toBeTruthy();
+    expect(screen.getByRole("heading", { name: "Choose your grid" })).toBeTruthy();
   });
 
   it("clears a stale saved player claim", async () => {
@@ -578,6 +582,7 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
     fireEvent.change(screen.getByLabelText("Recovery code"), { target: { value: "ABCD1234" } });

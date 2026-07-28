@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
 import { CITY_CIRCUITS } from "./circuits.js";
 import { testCircuit, baseState, decidedState, resolvedState, nextGrandPrixState, seasonTwoState, qualifyingRun, qualifiedState, decidedStateWithQualifying, settingsState } from "./App.testFixtures.js";
-import { closeLeagueIntro, createLeagueFromSetup, expectGarageCode, response, saveProfile, withoutPlayer } from "./App.testHelpers.js";
+import { closeLeagueIntro, createLeagueFromSetup, expectGarageCode, response, saveProfile, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
 import { t } from "../i18n/index.js";
 
 beforeEach(() => {
@@ -72,6 +72,10 @@ describe("App", () => {
     fireEvent.click(screen.getByRole("button", { name: "PRESS START" }));
 
     expect(screen.queryByRole("main", { name: "CR League home" })).toBe(null);
+    expect(screen.getByRole("button", { name: /Solo/ })).toBeTruthy();
+    expect(screen.getByRole("button", { name: /Multiplayer/ })).toBeTruthy();
+    expect(screen.getByText("Local to this device. No profile or network league required.")).toBeTruthy();
+    startMultiplayerSetup();
     expect(screen.getByRole("button", { name: /Create profile/ })).toBeTruthy();
   });
 
@@ -80,6 +84,7 @@ describe("App", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     expect(screen.queryByRole("main", { name: "CR League home" })).toBe(null);
     expect(screen.getByRole("button", { name: /Create profile/ })).toBeTruthy();
   });
@@ -95,6 +100,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "APPUYER START" }));
 
+    fireEvent.click(screen.getByRole("button", { name: /Multijoueur/ }));
     expect(screen.getByRole("button", { name: /Créer profil/ })).toBeTruthy();
     expect(localStorage.getItem("cr-league-language")).toBe("fr");
   });
@@ -104,6 +110,7 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: /Français/ }));
 
+    fireEvent.click(screen.getByRole("button", { name: /Multijoueur/ }));
     expect(screen.getByRole("button", { name: /Créer profil/ })).toBeTruthy();
     expect(screen.getByText("Lancer ton championnat")).toBeTruthy();
     expect(localStorage.getItem("cr-league-language")).toBe("fr");
@@ -129,6 +136,7 @@ describe("App", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
     fireEvent.change(screen.getByLabelText("Recovery code"), { target: { value: "ABCD1234" } });
@@ -146,6 +154,7 @@ describe("App", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     fireEvent.click(screen.getByRole("button", { name: /Recover profile/ }));
     fireEvent.change(screen.getByLabelText("Email"), { target: { value: "pilot@example.test" } });
     fireEvent.change(screen.getByLabelText("Recovery code"), { target: { value: "ABCD1234" } });
@@ -1029,7 +1038,7 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Inventory" }));
     expect(screen.getByText("No cards in inventory.")).toBeTruthy();
-    expect(document.querySelector(".garage-empty-inventory img")).toBe(null);
+    expect(document.querySelector(".garage-empty-inventory img")).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
     expect(screen.getByRole("button", { name: /Soft Tires/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Qualifying Lap/ })).toBeTruthy();

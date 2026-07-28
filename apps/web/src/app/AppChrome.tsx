@@ -52,6 +52,7 @@ export function ProfileMenu({
   pendingMessage,
   showManageLeague = true,
   hasLeague,
+  isSoloLeague = false,
   isAdmin,
   hasRecoveryCode,
   tt,
@@ -63,6 +64,7 @@ export function ProfileMenu({
   onOpenAdminConsole,
   onOpenProfileCode,
   onOpenPreferencesReset,
+  onOpenSoloReset,
   onOpenProfileLogout,
   onOpenChangelog
 }: {
@@ -72,6 +74,7 @@ export function ProfileMenu({
   pendingMessage: string | null;
   showManageLeague?: boolean;
   hasLeague: boolean;
+  isSoloLeague?: boolean;
   isAdmin: boolean;
   hasRecoveryCode: boolean;
   tt: Translator;
@@ -83,6 +86,7 @@ export function ProfileMenu({
   onOpenAdminConsole: () => void;
   onOpenProfileCode: () => void;
   onOpenPreferencesReset: () => void;
+  onOpenSoloReset: () => void;
   onOpenProfileLogout: () => void;
   onOpenChangelog: () => void;
 }) {
@@ -125,6 +129,11 @@ export function ProfileMenu({
           <button type="button" data-testid="profile-action-reset-preferences" className="profile-menu-action profile-menu-action-info" onClick={onOpenPreferencesReset}>
             {tt("action_reset_ui_preferences")}
           </button>
+          {isSoloLeague ? (
+            <button type="button" data-testid="profile-action-reset-solo" className="profile-menu-action profile-menu-action-danger" onClick={onOpenSoloReset}>
+              {tt("action_reset_solo")}
+            </button>
+          ) : null}
           {updateReady ? (
             <button type="button" className="profile-menu-action profile-menu-action-info" onClick={applyUpdate}>
               {tt("action_update_app")}
@@ -176,6 +185,7 @@ export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = nu
 
 export function GameTopbar({
   leagueName,
+  modeBadge,
   gameView,
   pendingMessage = null,
   profileMenu,
@@ -184,6 +194,7 @@ export function GameTopbar({
   onSelectView
 }: {
   leagueName: string;
+  modeBadge?: string;
   gameView: GameView;
   pendingMessage?: string | null;
   profileMenu: ReactNode;
@@ -199,6 +210,7 @@ export function GameTopbar({
           <BrandLoadingIndicator pendingMessage={pendingMessage} />
         </span>
         <strong>{leagueName}</strong>
+        {modeBadge ? <span className="topbar-mode-badge">{modeBadge}</span> : null}
       </button>
       <nav className="game-nav" aria-label={tt("cockpit_sections")}>
         {GAME_VIEWS.map((view) => (

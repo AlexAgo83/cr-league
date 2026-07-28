@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 45%
+> Progress: 50%
 > Complexity: Medium
 > Theme: Mode clarity and data safety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -26,6 +26,7 @@
 
 # Progress notes
 - 2026-07-28: Workstream launched. Initial implementation focus is copy, `Solo local` affordance, reset confirmation, and proving multiplayer logout/forget flows do not touch solo storage.
+- 2026-07-28: `Solo local` is now visible in the game topbar for local solo state, and the menu exposes a confirmed reset that only clears the solo save. The focused App test proves reset returns to Solo / Multiplayer setup without fetch.
 
 # Acceptance criteria
 - AC5: Multiplayer logout and forget flows do not corrupt solo progress.

@@ -43,7 +43,7 @@ import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
 import { useReplayUiState } from "./useReplayUiState.js";
 import { createInitialSoloLeagueState, isSoloLeagueState } from "./soloLeague.js";
-import { loadSoloSave, saveSoloState } from "./soloStorage.js";
+import { clearSoloSave, loadSoloSave, saveSoloState } from "./soloStorage.js";
 
 const AdminConsoleView = lazy(() => import("../features/AdminConsoleView.js").then((module) => ({ default: module.AdminConsoleView })));
 
@@ -102,6 +102,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setNextGrandPrixConfirmOpen,
     setLeagueControlsOpen,
     setRestartConfirmOpen,
+    setSoloResetOpen,
     profileOpen,
     preferencesResetOpen,
     profileCodeOpen,
@@ -111,7 +112,8 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     qualifyingConfirmOpen,
     nextGrandPrixConfirmOpen,
     leagueControlsOpen,
-    restartConfirmOpen
+    restartConfirmOpen,
+    soloResetOpen
   } = useActiveModal();
   const [leagueState, setLeagueState] = useState<LeagueState | null>(null);
   const clearRouteReplay = useCallback(() => setHistoryReplay(null), [setHistoryReplay]);
@@ -594,6 +596,19 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     showStatus(tt("status_ui_preferences_reset"), "info", Boolean(leagueState));
   }
 
+  function resetSoloLeague() {
+    clearSoloSave();
+    setSoloResetOpen(false);
+    setProfileOpen(false);
+    setLeagueState(null);
+    setResultOpen(false);
+    setHistoryReplay(null);
+    setQualifyingResult(null);
+    setSetupEntryMode("choice");
+    setGameView("drive");
+    showStatus(tt("status_solo_reset"), "info", false);
+  }
+
   function closeLeagueControls() {
     setLeagueControlsOpen(false);
     setProfileOpen(false);
@@ -607,6 +622,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       pendingMessage={pendingMessage}
       showManageLeague={showManageLeague}
       hasLeague={Boolean(leagueState)}
+      isSoloLeague={soloMode}
       isAdmin={Boolean(profileSession?.admin)}
       hasRecoveryCode={Boolean(profileSession?.recoveryCode)}
       tt={tt}
@@ -635,6 +651,10 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         setPreferencesResetOpen(true);
         setProfileOpen(false);
       }}
+      onOpenSoloReset={() => {
+        setSoloResetOpen(true);
+        setProfileOpen(false);
+      }}
       onOpenProfileLogout={() => {
         setProfileLogoutOpen(true);
         setProfileOpen(false);
@@ -657,6 +677,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       profileSession={profileSession}
       profileCodeOpen={profileCodeOpen}
       profileLogoutOpen={profileLogoutOpen}
+      soloResetOpen={soloResetOpen}
       preferencesResetOpen={preferencesResetOpen}
       technicalError={technicalError}
       directiveConfirmOpen={directiveConfirmOpen}
@@ -692,6 +713,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         setSetupEntryMode("choice");
       }}
       onResetUiPreferences={resetUiPreferences}
+      onResetSolo={resetSoloLeague}
       onCopyTechnicalError={() => void copyTechnicalError()}
       onSubmitDirectiveConfirmed={soloMode ? submitSoloDirectiveConfirmed : submitDirectiveConfirmed}
       onEditPlan={() => {
@@ -722,6 +744,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       onDeleteAdminUser={(confirmation) => void deleteAdminUserConfirmed(confirmation)}
       onCloseProfileCode={() => setProfileCodeOpen(false)}
       onCloseProfileLogout={() => setProfileLogoutOpen(false)}
+      onCloseSoloReset={() => setSoloResetOpen(false)}
       onClosePreferencesReset={() => setPreferencesResetOpen(false)}
       onCloseTechnicalError={() => setTechnicalError(null)}
       onCloseDirectiveConfirm={() => setDirectiveConfirmOpen(false)}

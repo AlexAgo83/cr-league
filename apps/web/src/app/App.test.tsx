@@ -232,6 +232,24 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-solo-save-v1")).toContain("solo-local");
   });
 
+  it("resets only the local solo save from the solo menu", async () => {
+    localStorage.setItem("cr-league-help-league-intro:solo-local", "1");
+    const fetch = vi.spyOn(globalThis, "fetch");
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    expect(await screen.findByText("Solo local")).toBeTruthy();
+    fireEvent.click(screen.getByTestId("profile-menu"));
+    fireEvent.click(screen.getByTestId("profile-action-reset-solo"));
+    expect(screen.getByRole("dialog", { name: "Reset local solo season?" })).toBeTruthy();
+    fireEvent.click(screen.getByTestId("modal-confirm"));
+
+    expect(localStorage.getItem("cr-league-solo-save-v1")).toBe(null);
+    expect(screen.getByRole("button", { name: /Solo/ })).toBeTruthy();
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it("refreshes the active league once when returning to a visible tab", async () => {
     saveProfile();
     saveActiveClaim();

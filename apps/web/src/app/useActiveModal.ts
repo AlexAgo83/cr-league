@@ -10,7 +10,8 @@ export type ActiveModal =
   | "qualifyingConfirm"
   | "nextGrandPrixConfirm"
   | "leagueControls"
-  | "restartConfirm";
+  | "restartConfirm"
+  | "soloReset";
 
 export function useActiveModal() {
   const [activeModal, setActiveModal] = useState<ActiveModal | null>(null);
@@ -39,6 +40,7 @@ export function useActiveModal() {
     setNextGrandPrixConfirmOpen: useCallback((value: SetStateAction<boolean>) => setModalOpen("nextGrandPrixConfirm", value), [setModalOpen]),
     setLeagueControlsOpen: useCallback((value: SetStateAction<boolean>) => setModalOpen("leagueControls", value), [setModalOpen]),
     setRestartConfirmOpen: useCallback((value: SetStateAction<boolean>) => setModalOpen("restartConfirm", value), [setModalOpen]),
+    setSoloResetOpen: useCallback((value: SetStateAction<boolean>) => setModalOpen("soloReset", value), [setModalOpen]),
     profileOpen: activeModal === "profile",
     preferencesResetOpen: activeModal === "preferencesReset",
     profileCodeOpen: activeModal === "profileCode",
@@ -48,6 +50,7 @@ export function useActiveModal() {
     qualifyingConfirmOpen: activeModal === "qualifyingConfirm",
     nextGrandPrixConfirmOpen: activeModal === "nextGrandPrixConfirm",
     leagueControlsOpen: activeModal === "leagueControls",
-    restartConfirmOpen: activeModal === "restartConfirm"
+    restartConfirmOpen: activeModal === "restartConfirm",
+    soloResetOpen: activeModal === "soloReset"
   };
 }

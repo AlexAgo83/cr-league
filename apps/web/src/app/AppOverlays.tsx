@@ -24,6 +24,7 @@ export function AppOverlays({
   profileSession,
   profileCodeOpen,
   profileLogoutOpen,
+  soloResetOpen,
   preferencesResetOpen,
   technicalError,
   directiveConfirmOpen,
@@ -56,6 +57,7 @@ export function AppOverlays({
   onCopyProfileCode,
   onForgetProfile,
   onResetUiPreferences,
+  onResetSolo,
   onCopyTechnicalError,
   onSubmitDirectiveConfirmed,
   onEditPlan,
@@ -73,6 +75,7 @@ export function AppOverlays({
   onDeleteAdminUser,
   onCloseProfileCode,
   onCloseProfileLogout,
+  onCloseSoloReset,
   onClosePreferencesReset,
   onCloseTechnicalError,
   onCloseDirectiveConfirm,
@@ -88,6 +91,7 @@ export function AppOverlays({
   profileSession: ProfileSession | null;
   profileCodeOpen: boolean;
   profileLogoutOpen: boolean;
+  soloResetOpen: boolean;
   preferencesResetOpen: boolean;
   technicalError: string | null;
   directiveConfirmOpen: boolean;
@@ -120,6 +124,7 @@ export function AppOverlays({
   onCopyProfileCode: () => void;
   onForgetProfile: () => void;
   onResetUiPreferences: () => void;
+  onResetSolo: () => void;
   onCopyTechnicalError: () => void;
   onSubmitDirectiveConfirmed: () => void;
   onEditPlan: () => void;
@@ -137,6 +142,7 @@ export function AppOverlays({
   onDeleteAdminUser: (confirmation: string) => void;
   onCloseProfileCode: () => void;
   onCloseProfileLogout: () => void;
+  onCloseSoloReset: () => void;
   onClosePreferencesReset: () => void;
   onCloseTechnicalError: () => void;
   onCloseDirectiveConfirm: () => void;
@@ -184,6 +190,7 @@ export function AppOverlays({
       ) : null}
       {profileCodeOpen ? <ProfileCodeModal profileSession={profileSession} tt={tt} onClose={onCloseProfileCode} onCopy={onCopyProfileCode} /> : null}
       {profileLogoutOpen ? <ConfirmActionModal label={tt("profile_logout_title")} image="/assets/crl/profile-arrival.webp" kicker={tt("profile_kicker")} title={tt("profile_logout_title")} body={tt("profile_logout_confirm")} actionLabel={tt("action_forget_profile")} status={status} danger tt={tt} onClose={onCloseProfileLogout} onConfirm={onForgetProfile} /> : null}
+      {soloResetOpen ? <ConfirmActionModal label={tt("solo_reset_title")} image="/assets/crl/profile-arrival.webp" kicker={tt("mode_badge_solo_local")} title={tt("solo_reset_title")} body={tt("solo_reset_confirm")} actionLabel={tt("action_reset_solo")} status={status} danger tt={tt} onClose={onCloseSoloReset} onConfirm={onResetSolo} /> : null}
       {preferencesResetOpen ? <ConfirmActionModal label={tt("preferences_reset_title")} image="/assets/crl/profile-arrival.webp" kicker={tt("profile_kicker")} title={tt("preferences_reset_title")} body={tt("preferences_reset_confirm")} actionLabel={tt("action_reset_ui_preferences")} status={status} danger tt={tt} onClose={onClosePreferencesReset} onConfirm={onResetUiPreferences} /> : null}
       {technicalError ? <ConfirmActionModal label={tt("error_modal_title")} image="/assets/crl/pit-wall-mobile.webp" kicker={tt("error_modal_kicker")} title={tt("error_modal_title")} body={tt("error_modal_body")} actionLabel={tt("action_copy_error")} status={status} tt={tt} onClose={onCloseTechnicalError} onConfirm={onCopyTechnicalError} /> : null}
       {adminDeleteUser ? <AdminDeleteUserModal user={adminDeleteUser} tt={tt} onClose={onCloseAdminDelete} onDelete={onDeleteAdminUser} /> : null}

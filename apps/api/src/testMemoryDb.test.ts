@@ -53,3 +53,53 @@ describe("createMemoryDb select handling", () => {
     expect(teamRow).toEqual({ id: team.id, name: "Alpha" });
   });
 });
+
+describe("createMemoryDb include handling", () => {
+  it("only attaches relations the caller asked for", async () => {
+    const db = createMemoryDb();
+    const league = await seedGrandPrix(db);
+    const team = await db.team.create({ data: { leagueId: league.id, name: "Alpha", kind: "human", claimCode: "CLAIM2", points: 0, credits: 0, cards: [] } });
+
+    const bare = await db.team.findUnique({ where: { id: team.id } });
+    const withLeague = await db.team.findUnique({ where: { id: team.id }, include: { league: true } });
+    const bareLeague = await db.league.findUnique({ where: { id: league.id } });
+
+    expect(bare).not.toHaveProperty("league");
+    expect(withLeague?.league?.id).toBe(league.id);
+    expect((bareLeague as Record<string, unknown> | null)?.teams).toBeUndefined();
+    expect((bareLeague as Record<string, unknown> | null)?.grandPrixes).toBeUndefined();
+  });
+
+  it("honours take on an included grandPrixes relation", async () => {
+    const db = createMemoryDb();
+    const league = await seedGrandPrix(db);
+    await db.grandPrix.create({
+      data: { leagueId: league.id, name: "Round 2", season: 1, round: 2, seed: "seed-2", primaryTrait: "grip", secondaryTrait: "attack", forecast: { phases: [] } }
+    });
+
+    const withOne = await db.league.findUnique({ where: { id: league.id }, include: { grandPrixes: { orderBy: [{ season: "desc" }, { round: "desc" }], take: 1 } } });
+
+    expect(withOne?.grandPrixes).toHaveLength(1);
+    expect(withOne?.grandPrixes?.[0]?.round).toBe(2);
+  });
+});
+
+describe("createMemoryDb mutation counts", () => {
+  it("reports the real number of affected rows", async () => {
+    const db = createMemoryDb();
+    const league = await seedGrandPrix(db);
+    const team = await db.team.create({ data: { leagueId: league.id, name: "Alpha", kind: "human", claimCode: "CLAIM3", points: 0, credits: 0, cards: [] } });
+    const grandPrix = await db.grandPrix.findFirst({ where: { leagueId: league.id } });
+    await db.raceDecision.upsert({
+      where: { grandPrixId_teamId: { grandPrixId: grandPrix!.id, teamId: team.id } },
+      update: { approach: "balanced", preparation: "standard", cardId: null, rivalTeamId: null },
+      create: { grandPrixId: grandPrix!.id, teamId: team.id, approach: "balanced", preparation: "standard", cardId: null, rivalTeamId: null }
+    });
+
+    const deletedDecisions = await db.raceDecision.deleteMany({ where: { grandPrix: { leagueId: league.id } } });
+    const deletedGrandPrixes = await db.grandPrix.deleteMany({ where: { leagueId: league.id } });
+
+    expect(deletedDecisions).toEqual({ count: 1 });
+    expect(deletedGrandPrixes).toEqual({ count: 1 });
+  });
+});

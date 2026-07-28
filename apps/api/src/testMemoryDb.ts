@@ -138,11 +138,15 @@ export function createMemoryDb(): PrismaClient {
         include
       }: {
         where: { id?: string; code?: string };
-        include?: { teams?: boolean | { orderBy?: { createdAt?: string } | Array<{ points?: string; name?: string }>; include?: { profile?: boolean } } };
+        include?: {
+          teams?: boolean | { orderBy?: { createdAt?: string } | Array<{ points?: string; name?: string }>; include?: { profile?: boolean } };
+          grandPrixes?: boolean | { orderBy?: Array<{ season?: string; round?: string }>; take?: number; include?: { decisions?: boolean } };
+        };
       }) => {
         const league = leagues.find((candidate) => candidate.id === where.id || candidate.code === where.code);
         if (!league) return null;
         const teamsInclude = typeof include?.teams === "object" ? include.teams : undefined;
+        const grandPrixesInclude = typeof include?.grandPrixes === "object" ? include.grandPrixes : undefined;
         const leagueTeams = teams.filter((team) => team.leagueId === league.id);
         if (Array.isArray(teamsInclude?.orderBy)) {
           leagueTeams.sort((left, right) => right.points - left.points || left.name.localeCompare(right.name));
@@ -152,18 +156,21 @@ export function createMemoryDb(): PrismaClient {
         const leagueGrandPrixes = grandPrixes
           .filter((grandPrix) => grandPrix.leagueId === league.id)
           .sort((left, right) => right.season - left.season || right.round - left.round)
+          .slice(0, grandPrixesInclude?.take)
           .map((grandPrix) => ({
             ...grandPrix,
-            decisions: decisions.filter((decision) => decision.grandPrixId === grandPrix.id)
+            decisions: grandPrixesInclude?.include?.decisions === false ? undefined : decisions.filter((decision) => decision.grandPrixId === grandPrix.id)
           }));
 
         return {
           ...league,
-          teams: leagueTeams.map((team) => ({
-            ...team,
-            profile: teamsInclude?.include?.profile ? profiles.find((profile) => profile.id === team.profileId) ?? null : undefined
-          })),
-          grandPrixes: leagueGrandPrixes
+          teams: include?.teams
+            ? leagueTeams.map((team) => ({
+                ...team,
+                profile: teamsInclude?.include?.profile ? profiles.find((profile) => profile.id === team.profileId) ?? null : undefined
+              }))
+            : undefined,
+          grandPrixes: include?.grandPrixes ? leagueGrandPrixes : undefined
         };
       },
       findMany: async ({
@@ -255,7 +262,7 @@ export function createMemoryDb(): PrismaClient {
             .filter((team) => team.profileId === profile.id)
             .map((team) => ({
               ...team,
-              league: leagues.find((league) => league.id === team.leagueId) ?? null
+              league: include.teams?.include?.league ? (leagues.find((league) => league.id === team.leagueId) ?? null) : undefined
             }))
         };
       },
@@ -331,10 +338,11 @@ export function createMemoryDb(): PrismaClient {
         }
         return { count: data.length };
       },
-      findUnique: async ({ where, select }: { where: { id: string }; select?: SelectShape<TeamRow> }) => {
+      findUnique: async ({ where, select, include }: { where: { id: string }; select?: SelectShape<TeamRow>; include?: { league?: boolean } }) => {
         const team = teams.find((candidate) => candidate.id === where.id);
         if (!team) return null;
         if (select) return applySelect(team, select);
+        if (!include?.league) return team;
         return {
           ...team,
           league: leagues.find((league) => league.id === team.leagueId) ?? null
@@ -439,6 +447,7 @@ export function createMemoryDb(): PrismaClient {
         return { count: 1 };
       },
       deleteMany: async ({ where }: { where: { leagueId: string } }) => {
+        let count = 0;
         for (let index = grandPrixes.length - 1; index >= 0; index -= 1) {
           const grandPrix = grandPrixes[index];
           if (grandPrix?.leagueId === where.leagueId) {
@@ -447,9 +456,10 @@ export function createMemoryDb(): PrismaClient {
               if (decisions[decisionIndex]?.grandPrixId === grandPrixId) decisions.splice(decisionIndex, 1);
             }
             grandPrixes.splice(index, 1);
+            count += 1;
           }
         }
-        return { count: 0 };
+        return { count };
       }
     },
     raceDecision: {
@@ -491,10 +501,14 @@ export function createMemoryDb(): PrismaClient {
           .map((decision) => applySelect(decision, select)),
       deleteMany: async ({ where }: { where: { grandPrix: { leagueId: string } } }) => {
         const grandPrixIds = new Set(grandPrixes.filter((grandPrix) => grandPrix.leagueId === where.grandPrix.leagueId).map((grandPrix) => grandPrix.id));
+        let count = 0;
         for (let index = decisions.length - 1; index >= 0; index -= 1) {
-          if (grandPrixIds.has(decisions[index]?.grandPrixId ?? "")) decisions.splice(index, 1);
+          if (grandPrixIds.has(decisions[index]?.grandPrixId ?? "")) {
+            decisions.splice(index, 1);
+            count += 1;
+          }
         }
-        return { count: 0 };
+        return { count };
       }
     },
     $queryRaw: async () => []

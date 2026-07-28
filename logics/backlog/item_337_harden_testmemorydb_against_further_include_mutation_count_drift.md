@@ -1,10 +1,10 @@
 ## item_337_harden_testmemorydb_against_further_include_mutation_count_drift - Harden testMemoryDb against further include/mutation-count drift
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Test infrastructure integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -53,3 +53,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Done: `team.findUnique` now attaches `league` only when `include: { league: true }` is passed; `league.findUnique` gates both `teams` and `grandPrixes` on `include` and honours `take` on the included `grandPrixes` relation (previously it always returned every Grand Prix, so `take: 1` at `lifecycle.ts:191` was only accidentally correct); `profile.findUnique` gates the nested `league` on `include.teams.include.league`, matching the already-correct `profile.findMany`.
+- `grandPrix.deleteMany` and `raceDecision.deleteMany` return the real affected-row count instead of a hardcoded `{ count: 0 }`. `team.updateMany` and `grandPrix.updateMany` already counted correctly and were left alone.
+- Call-site pass done over `apps/api/src/features/**`: every `where`/`include`/`select` shape reaching the fake is now handled or intentionally unsupported.
+- Tests added in `apps/api/src/testMemoryDb.test.ts` for include gating, relation `take`, and mutation counts. Full suite green (379 passed, 7 skipped); typecheck and lint clean.

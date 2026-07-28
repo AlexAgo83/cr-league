@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buyCard,
+  buyCarAsset,
   resolveGrandPrix,
   runQualifying,
   sellCard,
@@ -89,6 +90,16 @@ describe("leagueEngine", () => {
 
     expect(next.teams[0]?.credits).toBe(60);
     expect(next.teams[0]?.cards).toEqual(["rain_grip"]);
+  });
+
+  it("unlocks and equips paid car assets", () => {
+    const next = buyCarAsset(state({ teams: [team("a", "Alpha", [], 3_000)] }), { teamId: "a", carAssetId: "car-008" });
+
+    expect(next.teams[0]?.credits).toBe(2_000);
+    expect(next.teams[0]?.unlockedCarAssetIds).toEqual(["car-008"]);
+    expect(next.teams[0]?.livery.carAssetId).toBe("car-008");
+    expect(() => buyCarAsset(next, { teamId: "a", carAssetId: "car-008" })).toThrow("This car is already unlocked.");
+    expect(() => buyCarAsset(state(), { teamId: "a", carAssetId: "car-001" })).toThrow("Expected a valid paid car.");
   });
 
   it("does not sell cards used by the current plan or qualifying focus lock", () => {

@@ -110,7 +110,7 @@ export function ProfileMenu({
               {tt("action_add_league")}
             </button>
           ) : null}
-          {hasLeague ? (
+          {hasLeague && !isSoloLeague ? (
             <button type="button" data-testid="profile-action-race-direction" className="profile-menu-action" onClick={onOpenLeagueControls}>
               {tt("settings_title")}
             </button>

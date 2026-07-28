@@ -5,6 +5,8 @@ import { App } from "./App.js";
 import { CITY_CIRCUITS } from "./circuits.js";
 import { testCircuit, baseState, decidedState, resolvedState, nextGrandPrixState, seasonTwoState, qualifyingRun, qualifiedState, decidedStateWithQualifying, settingsState } from "./App.testFixtures.js";
 import { closeLeagueIntro, createLeagueFromSetup, expectGarageCode, response, saveProfile, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
+import { createInitialSoloLeagueState } from "./soloLeague.js";
+import { SOLO_SAVE_KEY, SOLO_SAVE_SCHEMA_VERSION } from "./soloStorage.js";
 import { t } from "../i18n/index.js";
 
 beforeEach(() => {
@@ -230,6 +232,8 @@ describe("App", () => {
     expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(fetch).not.toHaveBeenCalled();
     expect(localStorage.getItem("cr-league-solo-save-v1")).toContain("solo-local");
+    fireEvent.click(screen.getByTestId("profile-menu"));
+    expect(screen.queryByTestId("profile-action-race-direction")).toBe(null);
   });
 
   it("runs local solo qualifying without calling the API", async () => {
@@ -246,6 +250,41 @@ describe("App", () => {
     fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
 
     await waitFor(() => expect(localStorage.getItem("cr-league-solo-save-v1")).toContain("\"time\""));
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
+  it("unlocks and equips paid garage cars in local solo without calling the API", async () => {
+    localStorage.setItem("cr-league-help-league-intro:solo-local", "1");
+    localStorage.setItem("cr-league-help-garage:solo-local", "1");
+    const soloState = createInitialSoloLeagueState();
+    localStorage.setItem(
+      SOLO_SAVE_KEY,
+      JSON.stringify({
+        schemaVersion: SOLO_SAVE_SCHEMA_VERSION,
+        createdAt: "2026-01-01T00:00:00.000Z",
+        updatedAt: "2026-01-01T00:00:00.000Z",
+        state: { ...soloState, teams: [{ ...soloState.teams[0]!, credits: 3_000 }, ...soloState.teams.slice(1)] }
+      })
+    );
+    const fetch = vi.spyOn(globalThis, "fetch");
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    await screen.findByRole("heading", { name: "1. Read the circuit" });
+    fireEvent.click(screen.getByRole("button", { name: "Garage" }));
+    await waitFor(() => expect(document.querySelector(".garage-grid")).toBeTruthy());
+
+    for (let index = 0; index < 7; index += 1) fireEvent.click(screen.getByRole("button", { name: "Next car skin" }));
+    fireEvent.click(screen.getByRole("button", { name: "Unlock · 1000" }));
+    fireEvent.click(within(screen.getByRole("dialog", { name: "Unlock this car?" })).getByRole("button", { name: "Unlock for 1000" }));
+
+    await waitFor(() => {
+      const save = JSON.parse(localStorage.getItem(SOLO_SAVE_KEY)!);
+      expect(save.state.teams[0].credits).toBe(2_000);
+      expect(save.state.teams[0].unlockedCarAssetIds).toContain("car-008");
+      expect(save.state.teams[0].livery.carAssetId).toBe("car-008");
+    });
     expect(fetch).not.toHaveBeenCalled();
   });
 

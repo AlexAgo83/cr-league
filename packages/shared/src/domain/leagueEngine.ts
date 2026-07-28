@@ -27,6 +27,10 @@ export type BuyCardInput = TeamScopedInput & {
   quantity?: number;
 };
 
+export type BuyCarAssetInput = TeamScopedInput & {
+  carAssetId?: string;
+};
+
 export type SellCardInput = TeamScopedInput & {
   cardId?: string;
 };
@@ -89,6 +93,28 @@ export function sellCard(state: LeagueState, input: SellCardInput = {}) {
   return updateTeam(state, team.id, {
     credits: team.credits + CARD_PRICES[cardId] / 2,
     cards
+  });
+}
+
+export function buyCarAsset(state: LeagueState, input: BuyCarAssetInput = {}) {
+  const team = teamForInput(state, input);
+  const carAssetId = input.carAssetId;
+  if (typeof carAssetId !== "string" || !isCarAssetId(carAssetId) || CAR_ASSET_PRICES[carAssetId] <= 0) {
+    throw new SharedLeagueRuleError("Expected a valid paid car.");
+  }
+  if (team.unlockedCarAssetIds.includes(carAssetId)) {
+    throw new SharedLeagueRuleError("This car is already unlocked.");
+  }
+
+  const price = CAR_ASSET_PRICES[carAssetId];
+  if (team.credits < price) {
+    throw new SharedLeagueRuleError("Not enough credits to buy this car.");
+  }
+
+  return updateTeam(state, team.id, {
+    credits: team.credits - price,
+    unlockedCarAssetIds: [...team.unlockedCarAssetIds, carAssetId],
+    livery: { ...team.livery, carAssetId }
   });
 }
 

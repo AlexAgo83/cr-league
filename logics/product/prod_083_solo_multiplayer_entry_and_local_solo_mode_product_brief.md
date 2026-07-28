@@ -59,7 +59,9 @@ flowchart TD
 - 2026-07-28: The active local game now carries a `Solo local` badge and a confirmed reset path that deletes only the solo save.
 - 2026-07-28: Solo chrono is no-fetch and backed by shared qualification generation.
 - 2026-07-28: Solo can now resolve the GP and start the next round locally with persisted replay/report output.
-- Still required for the success signals: handle any remaining exposed solo-only action gap, extend no-fetch coverage if needed, and run final build/Logics validation.
+- 2026-07-28: Solo garage can now unlock and equip paid car assets locally through the shared engine without API calls.
+- 2026-07-28: Solo hides the API-only league controls surface, keeping settings/reminders/restart in the multiplayer path.
+- Still required for the success signals: final no-fetch sweep, web build, and Logics closeout.
 
 # References
 - Product back-reference: `req_131_solo_and_multiplayer_entry_split_with_local_solo_mode`

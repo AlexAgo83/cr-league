@@ -1,6 +1,7 @@
 import {
   SharedLeagueRuleError,
   buyCard as buySoloCard,
+  buyCarAsset as buySoloCarAsset,
   resolveGrandPrix as resolveSoloGrandPrixState,
   runQualifying as runSoloQualifying,
   sellCard as sellSoloCard,
@@ -945,7 +946,11 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
           ? runSoloMutation("status_selling_card", () => sellSoloCard(leagueState!, { teamId: playerTeam?.id, cardId }), "status_card_sold")
           : sellCard(cardId))
       }
-      buyCarAsset={buyCarAsset}
+      buyCarAsset={(carAssetId) =>
+        void (soloMode
+          ? runSoloMutation("status_buying_car", () => buySoloCarAsset(leagueState!, { teamId: playerTeam?.id, carAssetId }), "status_car_bought")
+          : buyCarAsset(carAssetId))
+      }
       updateLivery={(livery, options) =>
         void (soloMode
           ? runSoloMutation("status_livery_updating", () => updateSoloTeamLivery(leagueState!, { teamId: playerTeam?.id, livery }), "status_livery_updated")

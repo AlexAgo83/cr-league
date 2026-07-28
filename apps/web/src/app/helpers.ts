@@ -58,6 +58,7 @@ export function sortCardIdsByName(cardIds: CardId[], tt: Translator) {
 
 export type CardFit = {
   level: "recommended" | "risky" | "low";
+  reasonKey: TranslationKey;
   score: number;
 };
 
@@ -65,21 +66,22 @@ export function cardFit(cardId: CardId, state: LeagueState, forecastPick: string
   const traits = [state.currentGrandPrix.primaryTrait, state.currentGrandPrix.secondaryTrait];
   const hasRain = forecastPick !== "dry";
 
-  if (cardId === "rain_grip") return hasRain || traits.includes("weather_sensitive") ? { level: "recommended", score: 90 } : { level: "risky", score: 45 };
-  if (cardId === "fleet_maintenance") return traits.includes("high_wear") ? { level: "recommended", score: 85 } : { level: "low", score: 35 };
-  if (cardId === "launch_boost") return traits.includes("fast") ? { level: "recommended", score: 80 } : { level: "risky", score: 50 };
-  if (cardId === "urban_draft") return traits.includes("urban") ? { level: "recommended", score: 78 } : { level: "low", score: 30 };
-  if (cardId === "final_surge") return { level: "risky", score: 55 };
-  if (cardId === "soft_tires") return traits.includes("fast") ? { level: "recommended", score: 82 } : { level: "risky", score: 58 };
-  if (cardId === "qualifying_focus") return { level: "recommended", score: 76 };
-  if (cardId === "defensive_order") return traits.includes("high_wear") || traits.includes("technical") ? { level: "recommended", score: 84 } : { level: "low", score: 42 };
-  if (cardId === "adjustable_wing") return traits.includes("fast") || traits.includes("urban") ? { level: "recommended", score: 83 } : { level: "risky", score: 54 };
-  if (cardId === "rain_mapping") return hasRain || traits.includes("weather_sensitive") ? { level: "recommended", score: 81 } : { level: "risky", score: 48 };
-  if (cardId === "economy_mode") return { level: "risky", score: 57 };
-  if (cardId === "pit_relay") return traits.includes("technical") || traits.includes("high_wear") ? { level: "recommended", score: 79 } : { level: "low", score: 44 };
-  if (cardId === "hard_tires") return traits.includes("high_wear") ? { level: "recommended", score: 86 } : { level: "risky", score: 56 };
-  if (cardId === "calculated_attack") return traits.includes("urban") ? { level: "recommended", score: 80 } : { level: "risky", score: 52 };
-  return { level: "risky", score: 52 };
+  if (cardId === "rain_grip") return hasRain || traits.includes("weather_sensitive") ? { level: "recommended", reasonKey: "card_guidance_rain_match", score: 90 } : { level: "risky", reasonKey: "card_guidance_dry_risk", score: 45 };
+  if (cardId === "fleet_maintenance") return traits.includes("high_wear") ? { level: "recommended", reasonKey: "card_guidance_wear_match", score: 85 } : { level: "low", reasonKey: "card_guidance_low_race_value", score: 35 };
+  if (cardId === "launch_boost") return traits.includes("fast") ? { level: "recommended", reasonKey: "card_guidance_fast_match", score: 80 } : { level: "risky", reasonKey: "card_guidance_start_pressure", score: 50 };
+  if (cardId === "urban_draft") return traits.includes("urban") ? { level: "recommended", reasonKey: "card_guidance_urban_match", score: 78 } : { level: "low", reasonKey: "card_guidance_needs_urban", score: 30 };
+  if (cardId === "final_surge") return { level: "risky", reasonKey: "card_guidance_position_swing", score: 55 };
+  if (cardId === "fleet_sponsorship") return { level: "risky", reasonKey: "card_guidance_economy_tradeoff", score: 57 };
+  if (cardId === "soft_tires") return traits.includes("fast") ? { level: "recommended", reasonKey: "card_guidance_fast_match", score: 82 } : { level: "risky", reasonKey: "card_guidance_start_pressure", score: 58 };
+  if (cardId === "qualifying_focus") return { level: "recommended", reasonKey: "card_guidance_chrono_value", score: 76 };
+  if (cardId === "defensive_order") return traits.includes("high_wear") || traits.includes("technical") ? { level: "recommended", reasonKey: "card_guidance_control_match", score: 84 } : { level: "low", reasonKey: "card_guidance_low_race_value", score: 42 };
+  if (cardId === "adjustable_wing") return traits.includes("fast") || traits.includes("urban") ? { level: "recommended", reasonKey: "card_guidance_fast_urban_match", score: 83 } : { level: "risky", reasonKey: "card_guidance_stability_cost", score: 54 };
+  if (cardId === "rain_mapping") return hasRain || traits.includes("weather_sensitive") ? { level: "recommended", reasonKey: "card_guidance_rain_match", score: 81 } : { level: "risky", reasonKey: "card_guidance_dry_risk", score: 48 };
+  if (cardId === "economy_mode") return { level: "risky", reasonKey: "card_guidance_economy_tradeoff", score: 57 };
+  if (cardId === "pit_relay") return traits.includes("technical") || traits.includes("high_wear") ? { level: "recommended", reasonKey: "card_guidance_control_match", score: 79 } : { level: "low", reasonKey: "card_guidance_low_race_value", score: 44 };
+  if (cardId === "hard_tires") return traits.includes("high_wear") ? { level: "recommended", reasonKey: "card_guidance_wear_match", score: 86 } : { level: "risky", reasonKey: "card_guidance_late_tradeoff", score: 56 };
+  if (cardId === "calculated_attack") return traits.includes("urban") ? { level: "recommended", reasonKey: "card_guidance_position_swing", score: 80 } : { level: "risky", reasonKey: "card_guidance_needs_gap", score: 52 };
+  return { level: "risky", reasonKey: "card_guidance_low_race_value", score: 52 };
 }
 
 export function recommendedShopOffers(state: LeagueState, forecastPick: string) {

@@ -7,6 +7,7 @@ import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, sortCar
 import type { LeagueState } from "../app/types.js";
 import { GARAGE_PANEL_KEY, type CardPanel } from "../app/viewPreferences.js";
 import { AssetImage } from "./AssetImage.js";
+import { CardGuidance } from "./CardGuidance.js";
 import { CardArtImage, CardStatBadges } from "./CardStatBadges.js";
 import { CAR_ASSETS, DEFAULT_CAR_ASSET, DEFAULT_CAR_ASSET_INDEX } from "./carAssets.js";
 import { LiveryPlate } from "./LiveryPlate.js";
@@ -266,9 +267,9 @@ export function GarageView({
                 inventoryCards.map((cardId) => (
                   <li key={cardId}>
                     <button className="card-inventory-button card-art-cell" type="button" aria-label={`${tt("field_card")}: ${tt(`card_${cardId}` as TranslationKey)}`} onClick={() => setViewingCardId(cardId)}>
-                      <span>
+                      <span className="card-copy">
                         <CardName cardId={cardId} tt={tt} />
-                        <small>{tt(`card_fit_${cardFit(cardId, state, forecastPick).level}` as TranslationKey)}</small>
+                        <CardGuidance fit={cardFit(cardId, state, forecastPick)} tt={tt} />
                         <CardStatBadges cardId={cardId} tt={tt} />
                       </span>
                       <strong className="card-owned-count">x{countCards(playerTeam.cards, cardId)}</strong>
@@ -295,14 +296,16 @@ export function GarageView({
               const affordable = playerTeam.credits >= item.price;
               return (
                 <button key={item.cardId} className={`card-art-cell${affordable ? "" : " unaffordable"}`} type="button" aria-label={`${tt("field_card")}: ${tt(`card_${item.cardId}` as TranslationKey)}`} onClick={() => { setPendingBuyCardId(item.cardId); setBuyQuantity(1); }} disabled={loading}>
-                  <CardName cardId={item.cardId} tt={tt} />
+                  <span className="card-copy">
+                    <CardName cardId={item.cardId} tt={tt} />
+                    <CardGuidance fit={item.fit} tt={tt} />
+                    <CardStatBadges cardId={item.cardId} tt={tt} />
+                  </span>
                   <strong className="card-price-badge">
                     <span aria-hidden="true" className="reward-icon">●</span>
                     <span>{item.price}</span>
                   </strong>
                   <strong className="card-owned-count">x{countCards(playerTeam.cards, item.cardId)}</strong>
-                  <small>{tt(`card_fit_${item.fit.level}` as TranslationKey)}</small>
-                  <CardStatBadges cardId={item.cardId} tt={tt} />
                   <CardArtImage cardId={item.cardId} />
                 </button>
               );
@@ -320,7 +323,7 @@ export function GarageView({
             <strong>
               <RewardValue type="credits" value={pendingBuy.price * buyQuantity} tt={tt} />
             </strong>
-            <small>{tt(`card_fit_${pendingBuy.fit.level}` as TranslationKey)}</small>
+            <CardGuidance fit={pendingBuy.fit} tt={tt} />
             <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
           </div>
           <p className="garage-buy-confirm-note">{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
@@ -362,7 +365,7 @@ export function GarageView({
           <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
             <CardArtImage cardId={viewingCardId} />
-            <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small>
+            <CardGuidance fit={viewingFit} tt={tt} />
             <CardStatBadges cardId={viewingCardId} tt={tt} />
           </div>
           {viewingCardLocked ? <p className="garage-buy-confirm-note">{tt("garage_sell_card_locked")}</p> : null}

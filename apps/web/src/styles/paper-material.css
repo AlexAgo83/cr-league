@@ -244,17 +244,37 @@
   gap: 2px;
 }
 
+.garage-panel-inventory .card-inventory-button .card-copy,
+.garage-panel-shop .card-shop button .card-copy {
+  display: grid;
+  gap: 5px;
+  grid-column: 1;
+  min-width: 0;
+  padding-right: 6px;
+}
+
+.garage-panel-inventory .card-inventory-button .garage-card-name,
+.garage-panel-shop .card-shop button .garage-card-name {
+  align-items: flex-start;
+  line-height: 1.05;
+}
+
+.garage-panel-inventory .card-inventory-button .garage-card-name-icon,
+.garage-panel-shop .card-shop button .garage-card-name-icon {
+  flex: 0 0 auto;
+}
+
 .garage-panel-inventory .card-inventory-button.card-art-cell,
 .garage-panel-shop .card-shop button.card-art-cell {
   --card-art-bg: rgb(236 231 218 / 0.98);
-  padding-right: min(46%, 190px);
+  padding-right: min(34%, 145px);
 }
 
 .garage-panel-inventory .card-inventory-button .card-cell-art,
 .garage-panel-shop .card-shop button .card-cell-art {
-  height: 136%;
-  inset: 50% -38px auto auto;
-  width: min(58%, 230px);
+  height: 124%;
+  inset: 50% -24px auto auto;
+  width: min(43%, 170px);
 }
 
 .plan-view .choice-card.card-art-cell .card-stat-badges,
@@ -653,10 +673,16 @@
   z-index: 0;
 }
 
-.plan-view .directive-choice-card .choice-card.card-art-cell small {
+.plan-view .directive-choice-card .choice-card.card-art-cell > small {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.plan-view .directive-choice-card .choice-card.card-art-cell .card-guidance small {
+  overflow: visible;
+  text-overflow: clip;
+  white-space: normal;
 }
 
 .plan-view .directive-choice-card .choice-card.card-art-cell.selected {

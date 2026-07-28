@@ -35,7 +35,7 @@ const baseProps = {
     bandKey: "plan_risk_band_safe" as const
   },
   primaryCommand: { label: "Launch GP", action: vi.fn(), disabled: false },
-  cardFitForCard: () => ({ level: "recommended" as const, score: 90 }),
+  cardFitForCard: () => ({ level: "recommended" as const, reasonKey: "card_guidance_rain_match" as const, score: 90 }),
   cardLocked: false,
   disabled: false,
   locked: false,
@@ -116,7 +116,8 @@ describe("DirectivePanel", () => {
     render(<DirectivePanel {...baseProps} selectedCardId="" setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
     const cardButton = screen.getByRole("button", { name: "Card: Rain Grip" });
-    expect(cardButton.textContent).toContain("High fit");
+    expect(cardButton.textContent).toContain("Useful here");
+    expect(cardButton.textContent).toContain("Rain or weather sensitivity can pay off this GP.");
     expect(cardButton.textContent).not.toContain("Pays off if rain appears around mid-race.");
 
     fireEvent.click(screen.getByRole("button", { name: "Rain Grip Info" }));

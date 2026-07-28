@@ -1,13 +1,14 @@
 ## item_329_add_contextual_card_guidance_in_plan_and_garage - Add contextual card guidance in Plan and Garage
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 96
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Card readability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Owner: codex
 
 # Problem
 - Players need to understand why a card is useful, neutral, or risky for the next race.
@@ -44,6 +45,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-28 delivery: replaced visible card affinity copy with the three contextual labels Useful here, Situational, and Low impact / Utile ici, Situationnel, Impact faible. Guidance reuses cardFit, adds one short deterministic reason, and is shown in Plan card choice, Garage inventory/shop, and card modals without auto-pick or ranking copy.
 
 # Links
 - Product brief(s): `prod_081_0_6_beta_season_lifecycle_and_league_management_product_brief`
@@ -60,3 +62,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-28 validation: targeted vitest helpers and DirectivePanel passed (33 tests); npm run typecheck passed; browser playtest rounds 2 passed with contextual card guidance scenario and UX PASS, 0 axe violations, no mobile body overflow, evidence in reports/playtest/card-guidance-browser.md and reports/ux/card-guidance-browser.md.

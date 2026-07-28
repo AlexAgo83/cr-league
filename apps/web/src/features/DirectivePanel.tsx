@@ -6,6 +6,7 @@ import { sortCardIdsByName, type CardFit, type DerivedRival, type Translator } f
 import type { PlanRecommendation, PlanRiskRead } from "../app/raceFlow.js";
 import type { FormState } from "../app/types.js";
 import { AssetImage } from "./AssetImage.js";
+import { CardGuidance } from "./CardGuidance.js";
 import { CARD_BADGES, CardArtImage, CardStatBadges, StatBadges, type StatBadge } from "./CardStatBadges.js";
 import { Modal } from "./Modal.js";
 import { ModalHero } from "./ModalHero.js";
@@ -273,7 +274,7 @@ export function DirectivePanel({
         <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
         <div className="garage-buy-card">
           <CardArtImage cardId={viewingCardId} />
-          {viewingFit ? <small>{tt(`card_fit_${viewingFit.level}` as TranslationKey)}</small> : null}
+          {viewingFit ? <CardGuidance fit={viewingFit} tt={tt} /> : null}
           <CardStatBadges cardId={viewingCardId} tt={tt} />
         </div>
       </Modal>
@@ -409,7 +410,7 @@ export function DirectivePanel({
                     <strong>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</strong>
                     <PlanCardMarker active={Boolean(cardId)} />
                   </span>
-                  <small>{cardId ? (fit ? tt(`card_fit_${fit.level}` as TranslationKey) : "") : tt("card_none_hint")}</small>
+                  {cardId && fit ? <CardGuidance fit={fit} tt={tt} /> : <small>{tt("card_none_hint")}</small>}
                   {cardId ? <CardStatBadges cardId={cardId} tt={tt} /> : null}
                   {cardId ? <CardArtImage cardId={cardId} /> : null}
                 </button>

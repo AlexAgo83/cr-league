@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRaceActionRecommendation, buildRaceVerdict, clampNumber, completedSeasonSummaries, derivedRivalForTeam, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid, translateLine } from "./helpers.js";
+import { buildRaceActionRecommendation, buildRaceVerdict, cardFit, clampNumber, completedSeasonSummaries, derivedRivalForTeam, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid, translateLine } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { circuitIdentityForRound, circuitSeasonSeed, type CardId, type RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
@@ -36,6 +36,23 @@ describe("sortCardIdsByName", () => {
     const cards: CardId[] = ["rain_grip", "adjustable_wing", "defensive_order"];
 
     expect(sortCardIdsByName(cards, (key) => t(key, "en"))).toEqual(["adjustable_wing", "defensive_order", "rain_grip"]);
+  });
+});
+
+describe("cardFit", () => {
+  it("classifies weather, position, economy, and low-impact cards with contextual reasons", () => {
+    const state = stateWithHistory([]);
+    state.currentGrandPrix.primaryTrait = "weather_sensitive";
+    expect(cardFit("rain_grip", state, "light_rain")).toMatchObject({ level: "recommended", reasonKey: "card_guidance_rain_match" });
+
+    state.currentGrandPrix.primaryTrait = "urban";
+    state.currentGrandPrix.secondaryTrait = "technical";
+    expect(cardFit("calculated_attack", state, "dry")).toMatchObject({ level: "recommended", reasonKey: "card_guidance_position_swing" });
+    expect(cardFit("economy_mode", state, "dry")).toMatchObject({ level: "risky", reasonKey: "card_guidance_economy_tradeoff" });
+
+    state.currentGrandPrix.primaryTrait = "fast";
+    state.currentGrandPrix.secondaryTrait = "urban";
+    expect(cardFit("fleet_maintenance", state, "dry")).toMatchObject({ level: "low", reasonKey: "card_guidance_low_race_value" });
   });
 });
 

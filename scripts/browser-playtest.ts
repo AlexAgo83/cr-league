@@ -235,6 +235,15 @@ try {
       if (bought.state) state = bought.state;
       roundReport.bought = bought.cardId;
       await observeComprehension(page, `round-${round}-garage`, "The Garage purchase flow reached a visible Garage or shop state.", [() => page!.getByText(/Card added to your garage|Shop|Garage/)]);
+      await observeScenario(page, {
+        id: `round-${round}-card-guidance`,
+        question: "Can I see contextual card guidance before buying?",
+        evidence: "Garage card cells expose the new guidance label and a short context reason.",
+        locators: [
+          { label: "Guidance label", find: () => page!.getByText(/Useful here|Situational|Low impact/).first() },
+          { label: "Guidance reason", find: () => page!.getByText(/GP|circuit|Credits|chrono|track|sections|pace/).first() }
+        ]
+      });
       await captureUx(page, `round-${round}-garage`, bought.cardId ? `Bought ${bought.cardId} from Garage.` : "Garage opened; no affordable recommended card bought.");
       state = await nextGrandPrix(page);
       await observeComprehension(page, `round-${round}-next-gp`, "The championship moved to the next GP.", [() => page!.getByRole("button", { name: "Plan", exact: true })]);

@@ -23,9 +23,9 @@
 - Auto-suggested team names are now a shared 100-name source of truth.
 
 ## Remaining 0.6 Work
-- `item_324`, `item_325`, `item_326`, `item_327`, and `item_328` are closed.
-- Next focused slice: `item_329` coherent contextual card guidance in Plan and Garage.
-- Optional later only: `item_330` team profiles, `item_331` variable shop, `item_332` season economy continuity, `item_333` race engineer.
+- `item_324`, `item_325`, `item_326`, `item_327`, `item_328`, and `item_329` are closed.
+- Next focused slice: `item_330` lightweight team identity and in-league profiles.
+- Optional later only after team profiles: `item_331` variable shop, `item_332` season economy continuity, `item_333` race engineer.
 
 ## Commands To Re-run
 - `rtk logics-manager status`

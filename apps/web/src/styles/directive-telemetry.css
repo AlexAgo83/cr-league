@@ -107,6 +107,24 @@
   color: var(--color-ink-muted);
 }
 
+.card-guidance {
+  display: grid;
+  gap: 0.15rem;
+  color: #312e20;
+  line-height: 1.12;
+}
+
+.card-guidance strong {
+  font-size: 0.78rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.card-guidance small {
+  color: #5f543c;
+  line-height: 1.12;
+}
+
 .plan-view .directive-choice-approach .card-stat-badges,
 .plan-view .directive-choice-preparation .card-stat-badges,
 .plan-view .directive-choice-pit .card-stat-badges {

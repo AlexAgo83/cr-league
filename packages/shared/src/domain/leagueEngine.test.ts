@@ -9,8 +9,7 @@ import {
   submitDecision,
   updateTeamLivery,
   updateTeamName,
-  validateDecisionValues,
-  type SharedLeagueRuleError
+  validateDecisionValues
 } from "./leagueEngine.js";
 import type { LeagueState } from "./league.js";
 

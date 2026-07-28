@@ -7,7 +7,6 @@ import { DriveView } from "./DriveView.js";
 import { GameViews } from "./GameViews.js";
 import { SetupGate } from "./SetupGate.js";
 import { isSoloLeagueState } from "./soloLeague.js";
-import type { ProfileMode, SetupEntryMode, SetupMode } from "./SetupViews.js";
 import type { PlanSubscreen } from "./routes.js";
 import type { FormState, GameView, LeagueState, ProfileSession } from "./types.js";
 import type { CommandClick } from "./useCommandClicks.js";
@@ -27,15 +26,6 @@ export function AppShell({
   notificationStack,
   overlays,
   form,
-  message,
-  profileMode,
-  profileForm,
-  profileFormError,
-  leagueFormError,
-  setupEntryMode,
-  setupMode,
-  savedClaims,
-  savedLeagueIndex,
   status,
   pendingMessage,
   resultTab,
@@ -54,13 +44,6 @@ export function AppShell({
   garagePanel,
   gameProfileMenu,
   setForm,
-  setProfileMode,
-  setProfileForm,
-  setProfileFormError,
-  setLeagueFormError,
-  setSetupEntryMode,
-  setSetupMode,
-  setSavedLeagueIndex,
   setResultTab,
   setResultOpen,
   setDirectiveStep,
@@ -72,13 +55,6 @@ export function AppShell({
   setChampionshipRecordTab,
   setGaragePanel,
   setQualifyingPanelOpen,
-  createProfileSession,
-  recoverProfileSession,
-  requestRecoveryCode,
-  startSolo,
-  createLeague,
-  joinLeague,
-  switchLeague,
   closeHistoryReplay,
   openHistoryReplay,
   buyCard,
@@ -102,15 +78,6 @@ export function AppShell({
   notificationStack: ReactNode;
   overlays: ReactNode;
   form: FormState;
-  message: string;
-  profileMode: ProfileMode;
-  profileForm: { email: string; recoveryCode: string };
-  profileFormError: string | null;
-  leagueFormError: string | null;
-  setupEntryMode: SetupEntryMode;
-  setupMode: SetupMode;
-  savedClaims: ProfileSession["teams"];
-  savedLeagueIndex: number;
   status: "idle" | "loading" | "error";
   pendingMessage: string | null;
   resultTab: ResultTab;
@@ -129,13 +96,6 @@ export function AppShell({
   garagePanel: CardPanel;
   gameProfileMenu: ReactNode;
   setForm: Dispatch<SetStateAction<FormState>>;
-  setProfileMode: Dispatch<SetStateAction<ProfileMode>>;
-  setProfileForm: Dispatch<SetStateAction<{ email: string; recoveryCode: string }>>;
-  setProfileFormError: Dispatch<SetStateAction<string | null>>;
-  setLeagueFormError: Dispatch<SetStateAction<string | null>>;
-  setSetupEntryMode: Dispatch<SetStateAction<SetupEntryMode>>;
-  setSetupMode: Dispatch<SetStateAction<SetupMode>>;
-  setSavedLeagueIndex: Dispatch<SetStateAction<number>>;
   setResultTab: (tab: ResultTab) => void;
   setResultOpen: (open: boolean) => void;
   setDirectiveStep: (step: DirectiveStep) => void;
@@ -147,13 +107,6 @@ export function AppShell({
   setChampionshipRecordTab: (tab: ChampionshipRecordTab) => void;
   setGaragePanel: (panel: CardPanel) => void;
   setQualifyingPanelOpen: (open: boolean) => void;
-  createProfileSession: () => void;
-  recoverProfileSession: () => void;
-  requestRecoveryCode: () => void;
-  startSolo: () => void;
-  createLeague: () => void;
-  joinLeague: () => void;
-  switchLeague: (teamId: string) => void;
   closeHistoryReplay: () => void;
   openHistoryReplay: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
   buyCard: (cardId: CardId, quantity?: number) => void;
@@ -180,32 +133,9 @@ export function AppShell({
         notificationStack={notificationStack}
         overlays={overlays}
         form={form}
-        message={message}
-        profileMode={profileMode}
-        profileForm={profileForm}
-        profileFormError={profileFormError}
-        leagueFormError={leagueFormError}
-        setupEntryMode={setupEntryMode}
-        setupMode={setupMode}
-        savedClaims={savedClaims}
-        savedLeagueIndex={savedLeagueIndex}
         status={status}
         pendingMessage={pendingMessage}
         setForm={setForm}
-        setProfileMode={setProfileMode}
-        setProfileForm={setProfileForm}
-        setProfileFormError={setProfileFormError}
-        setLeagueFormError={setLeagueFormError}
-        setSetupEntryMode={setSetupEntryMode}
-        setSetupMode={setSetupMode}
-        setSavedLeagueIndex={setSavedLeagueIndex}
-        createProfileSession={createProfileSession}
-        recoverProfileSession={recoverProfileSession}
-        requestRecoveryCode={requestRecoveryCode}
-        startSolo={startSolo}
-        createLeague={createLeague}
-        joinLeague={joinLeague}
-        switchLeague={switchLeague}
       />
     );
   }

@@ -33,6 +33,7 @@ import { AppShell } from "./AppShell.js";
 import { useCircuitRoutesReady } from "./circuitRoutes/index.js";
 import { rememberPlayerClaim, withCurrentPlayer as restoreCurrentPlayer, withoutPlayerClaim } from "./claimHelpers.js";
 import { createProfileActions } from "./profileActions.js";
+import { SetupProvider, type SetupContextValue } from "./setupContext.js";
 import { createRaceActions } from "./raceActions.js";
 import { isGrandPrixRouteId, isStartPath, shortGrandPrixId } from "./routes.js";
 import { createSessionActions } from "./sessionActions.js";
@@ -875,110 +876,115 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     </Suspense>
   ) : null;
 
+  const setup: SetupContextValue = {
+    message,
+    profileMode,
+    profileForm,
+    profileFormError,
+    leagueFormError,
+    setupEntryMode,
+    setupMode,
+    savedClaims,
+    savedLeagueIndex,
+    setProfileMode,
+    setProfileForm,
+    setProfileFormError,
+    setLeagueFormError,
+    setSetupEntryMode,
+    setSetupMode,
+    setSavedLeagueIndex,
+    createProfileSession: () => void createProfileSession(),
+    recoverProfileSession: () => void recoverProfileSession(),
+    requestRecoveryCode: () => void requestRecoveryCode(),
+    startSolo: () => void startSolo(),
+    createLeague: () => void createLeague(),
+    joinLeague: () => void joinLeague(),
+    switchLeague: (teamId) => void switchLeague(teamId)
+  };
+
   return (
-    <AppShell
-      profileSession={profileSession}
-      leagueState={leagueState}
-      gameView={gameView}
-      adminInspecting={adminInspecting}
-      adminView={adminView}
-      setupTopbar={setupTopbar}
-      notificationStack={notificationStack}
-      overlays={commonOverlays}
-      form={form}
-      message={message}
-      profileMode={profileMode}
-      profileForm={profileForm}
-      profileFormError={profileFormError}
-      leagueFormError={leagueFormError}
-      setupEntryMode={setupEntryMode}
-      setupMode={setupMode}
-      savedClaims={savedClaims}
-      savedLeagueIndex={savedLeagueIndex}
-      status={status}
-      pendingMessage={pendingMessage}
-      resultTab={resultTab}
-      resultOpen={resultOpen}
-      historyReplay={historyReplay}
-      profileIsAdmin={Boolean(profileSession?.admin)}
-      preferencesResetSignal={preferencesResetSignal}
-      qualifyingReplayInitialLap={qualifyingReplayInitialLap}
-      qualifyingPanelOpen={qualifyingPanelOpen}
-      primaryCommandClass={primaryCommandClass}
-      primaryCommand={primaryCommand}
-      race={race}
-      planSubscreen={planSubscreen}
-      directiveStep={directiveStep}
-      championshipRecordTab={championshipRecordTab}
-      garagePanel={garagePanel}
-      gameProfileMenu={profileMenu()}
-      setForm={setForm}
-      setProfileMode={setProfileMode}
-      setProfileForm={setProfileForm}
-      setProfileFormError={setProfileFormError}
-      setLeagueFormError={setLeagueFormError}
-      setSetupEntryMode={setSetupEntryMode}
-      setSetupMode={setSetupMode}
-      setSavedLeagueIndex={setSavedLeagueIndex}
-      setResultTab={setResultTab}
-      setResultOpen={setResultOpen}
-      setDirectiveStep={setDirectiveStep}
-      setGameView={setGameView}
-      setPlanSubscreen={setPlanSubscreen}
-      setQualifyingResult={setQualifyingResult}
-      openQualifyingHistory={openQualifyingHistory}
-      setSeasonRecapSeason={setSeasonRecapSeason}
-      setChampionshipRecordTab={setChampionshipRecordTab}
-      setGaragePanel={setGaragePanel}
-      setQualifyingPanelOpen={setQualifyingPanelOpen}
-      createProfileSession={() => void createProfileSession()}
-      recoverProfileSession={() => void recoverProfileSession()}
-      requestRecoveryCode={() => void requestRecoveryCode()}
-      startSolo={() => void startSolo()}
-      createLeague={() => void createLeague()}
-      joinLeague={() => void joinLeague()}
-      switchLeague={(teamId) => void switchLeague(teamId)}
-      closeHistoryReplay={closeHistoryReplay}
-      openHistoryReplay={openHistoryReplay}
-      buyCard={(cardId, quantity) =>
-        void (soloMode
-          ? runSoloMutation("status_buying_card", () => buySoloCard(leagueState!, { teamId: playerTeam?.id, cardId, quantity }), "status_card_bought")
-          : buyCard(cardId, quantity))
-      }
-      sellCard={(cardId) =>
-        void (soloMode
-          ? runSoloMutation("status_selling_card", () => sellSoloCard(leagueState!, { teamId: playerTeam?.id, cardId }), "status_card_sold")
-          : sellCard(cardId))
-      }
-      buyCarAsset={(carAssetId) =>
-        void (soloMode
-          ? runSoloMutation("status_buying_car", () => buySoloCarAsset(leagueState!, { teamId: playerTeam?.id, carAssetId }), "status_car_bought")
-          : buyCarAsset(carAssetId))
-      }
-      updateLivery={(livery, options) =>
-        void (soloMode
-          ? runSoloMutation("status_livery_updating", () => updateSoloTeamLivery(leagueState!, { teamId: playerTeam?.id, livery }), "status_livery_updated")
-          : updateLivery(livery, options))
-      }
-      updateTeamName={(name) =>
-        void (soloMode
-          ? runSoloMutation("status_team_name_updating", () => updateSoloTeamName(leagueState!, { teamId: playerTeam?.id, name }), "status_team_name_updated")
-          : updateTeamName(name))
-      }
-      clearTransientNotifications={clearTransientNotifications}
-      clearScreenOnboardingSnoozes={clearScreenOnboardingSnoozes}
-      markCommandClicked={markCommandClicked}
-      openQualifyingRun={soloMode ? openSoloQualifyingRun : openQualifyingRun}
-      goHome={() => {
-        setSetupEntryMode("choice");
-        goHome();
-      }}
-      backToAdminConsole={() => {
-        setGameView("admin");
-        setLeagueState(null);
-        setAdminInspecting(false);
-      }}
-    />
+    <SetupProvider value={setup}>
+      <AppShell
+        profileSession={profileSession}
+        leagueState={leagueState}
+        gameView={gameView}
+        adminInspecting={adminInspecting}
+        adminView={adminView}
+        setupTopbar={setupTopbar}
+        notificationStack={notificationStack}
+        overlays={commonOverlays}
+        form={form}
+        status={status}
+        pendingMessage={pendingMessage}
+        resultTab={resultTab}
+        resultOpen={resultOpen}
+        historyReplay={historyReplay}
+        profileIsAdmin={Boolean(profileSession?.admin)}
+        preferencesResetSignal={preferencesResetSignal}
+        qualifyingReplayInitialLap={qualifyingReplayInitialLap}
+        qualifyingPanelOpen={qualifyingPanelOpen}
+        primaryCommandClass={primaryCommandClass}
+        primaryCommand={primaryCommand}
+        race={race}
+        planSubscreen={planSubscreen}
+        directiveStep={directiveStep}
+        championshipRecordTab={championshipRecordTab}
+        garagePanel={garagePanel}
+        gameProfileMenu={profileMenu()}
+        setForm={setForm}
+        setResultTab={setResultTab}
+        setResultOpen={setResultOpen}
+        setDirectiveStep={setDirectiveStep}
+        setGameView={setGameView}
+        setPlanSubscreen={setPlanSubscreen}
+        setQualifyingResult={setQualifyingResult}
+        openQualifyingHistory={openQualifyingHistory}
+        setSeasonRecapSeason={setSeasonRecapSeason}
+        setChampionshipRecordTab={setChampionshipRecordTab}
+        setGaragePanel={setGaragePanel}
+        setQualifyingPanelOpen={setQualifyingPanelOpen}
+        closeHistoryReplay={closeHistoryReplay}
+        openHistoryReplay={openHistoryReplay}
+        buyCard={(cardId, quantity) =>
+          void (soloMode
+            ? runSoloMutation("status_buying_card", () => buySoloCard(leagueState!, { teamId: playerTeam?.id, cardId, quantity }), "status_card_bought")
+            : buyCard(cardId, quantity))
+        }
+        sellCard={(cardId) =>
+          void (soloMode
+            ? runSoloMutation("status_selling_card", () => sellSoloCard(leagueState!, { teamId: playerTeam?.id, cardId }), "status_card_sold")
+            : sellCard(cardId))
+        }
+        buyCarAsset={(carAssetId) =>
+          void (soloMode
+            ? runSoloMutation("status_buying_car", () => buySoloCarAsset(leagueState!, { teamId: playerTeam?.id, carAssetId }), "status_car_bought")
+            : buyCarAsset(carAssetId))
+        }
+        updateLivery={(livery, options) =>
+          void (soloMode
+            ? runSoloMutation("status_livery_updating", () => updateSoloTeamLivery(leagueState!, { teamId: playerTeam?.id, livery }), "status_livery_updated")
+            : updateLivery(livery, options))
+        }
+        updateTeamName={(name) =>
+          void (soloMode
+            ? runSoloMutation("status_team_name_updating", () => updateSoloTeamName(leagueState!, { teamId: playerTeam?.id, name }), "status_team_name_updated")
+            : updateTeamName(name))
+        }
+        clearTransientNotifications={clearTransientNotifications}
+        clearScreenOnboardingSnoozes={clearScreenOnboardingSnoozes}
+        markCommandClicked={markCommandClicked}
+        openQualifyingRun={soloMode ? openSoloQualifyingRun : openQualifyingRun}
+        goHome={() => {
+          setSetupEntryMode("choice");
+          goHome();
+        }}
+        backToAdminConsole={() => {
+          setGameView("admin");
+          setLeagueState(null);
+          setAdminInspecting(false);
+        }}
+      />
+    </SetupProvider>
   );
 
   function rememberPlayer(state: LeagueState) {

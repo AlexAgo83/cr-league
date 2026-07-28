@@ -1,10 +1,10 @@
 import { APP_VERSION } from "@cr-league/shared";
 import type { ReactNode } from "react";
-import type { StoredPlayerClaim } from "./appStorage.js";
 import type { GameView, FormState, LeagueState, ProfileSession } from "./types.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import { SetupShell } from "./OnboardingShell.js";
-import { LeagueSetupView, ProfileSetupView, SetupEntryView, type ProfileMode, type SetupEntryMode, type SetupMode } from "./SetupViews.js";
+import { useSetup } from "./setupContext.js";
+import { LeagueSetupView, ProfileSetupView, SetupEntryView } from "./SetupViews.js";
 
 export function SetupGate({
   profileSession,
@@ -15,32 +15,9 @@ export function SetupGate({
   notificationStack,
   overlays,
   form,
-  message,
-  profileMode,
-  profileForm,
-  profileFormError,
-  leagueFormError,
-  setupEntryMode,
-  setupMode,
-  savedClaims,
-  savedLeagueIndex,
   status,
   pendingMessage,
-  setForm,
-  setProfileMode,
-  setProfileForm,
-  setProfileFormError,
-  setLeagueFormError,
-  setSetupEntryMode,
-  setSetupMode,
-  setSavedLeagueIndex,
-  createProfileSession,
-  recoverProfileSession,
-  requestRecoveryCode,
-  startSolo,
-  createLeague,
-  joinLeague,
-  switchLeague
+  setForm
 }: {
   profileSession: ProfileSession | null;
   leagueState: LeagueState | null;
@@ -50,33 +27,35 @@ export function SetupGate({
   notificationStack: ReactNode;
   overlays: ReactNode;
   form: FormState;
-  message: string;
-  profileMode: ProfileMode;
-  profileForm: { email: string; recoveryCode: string };
-  profileFormError: string | null;
-  leagueFormError: string | null;
-  setupEntryMode: SetupEntryMode;
-  setupMode: SetupMode;
-  savedClaims: StoredPlayerClaim[];
-  savedLeagueIndex: number;
   status: "idle" | "loading" | "error";
   pendingMessage: string | null;
   setForm: (form: FormState) => void;
-  setProfileMode: (mode: ProfileMode) => void;
-  setProfileForm: (form: { email: string; recoveryCode: string }) => void;
-  setProfileFormError: (error: string | null) => void;
-  setLeagueFormError: (error: string | null) => void;
-  setSetupEntryMode: (mode: SetupEntryMode) => void;
-  setSetupMode: (mode: SetupMode) => void;
-  setSavedLeagueIndex: (updater: (index: number) => number) => void;
-  createProfileSession: () => void;
-  recoverProfileSession: () => void;
-  requestRecoveryCode: () => void;
-  startSolo: () => void;
-  createLeague: () => void;
-  joinLeague: () => void;
-  switchLeague: (teamId: string) => void;
 }) {
+  const {
+    message,
+    profileMode,
+    profileForm,
+    profileFormError,
+    leagueFormError,
+    setupEntryMode,
+    setupMode,
+    savedClaims,
+    savedLeagueIndex,
+    setProfileMode,
+    setProfileForm,
+    setProfileFormError,
+    setLeagueFormError,
+    setSetupEntryMode,
+    setSetupMode,
+    setSavedLeagueIndex,
+    createProfileSession,
+    recoverProfileSession,
+    requestRecoveryCode,
+    startSolo,
+    createLeague,
+    joinLeague,
+    switchLeague
+  } = useSetup();
   const utilitySetupView = profileSession && ((gameView === "admin" && profileSession.admin) || gameView === "changelog");
 
   if (!leagueState && setupEntryMode === "choice" && !utilitySetupView) {

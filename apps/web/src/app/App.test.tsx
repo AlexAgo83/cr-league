@@ -168,6 +168,20 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-help-profile-code")).toBe("1");
   });
 
+  it("closes the league intro carousel without stepping through it", async () => {
+    saveProfile();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(resolvedState));
+
+    render(<App />);
+    createLeagueFromSetup();
+
+    const intro = await screen.findByRole("dialog", { name: "Welcome to the grid" });
+    // Four carousel steps with no escape hatch was the whole friction; one click must be enough.
+    fireEvent.click(within(intro).getByRole("button", { name: "Close" }));
+
+    await waitFor(() => expect(screen.queryByRole("dialog", { name: "Welcome to the grid" })).toBe(null));
+  });
+
   it("keeps league onboarding dismissed after a plain close", async () => {
     saveProfile();
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(resolvedState));
@@ -1398,7 +1412,8 @@ describe("App", () => {
     expect(recap.textContent).toContain("Final standings");
     expect(localStorage.getItem("cr-league-season-recap:league_1:1")).toBe("seen");
 
-    fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    // Scoped to the recap: the league intro carousel behind it also has a Close button.
+    fireEvent.click(within(recap).getByRole("button", { name: "Close" }));
     fireEvent.click(screen.getByRole("button", { name: "Championship" }));
     expect(screen.getByRole("heading", { name: "Circuits" })).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Palmares" }));

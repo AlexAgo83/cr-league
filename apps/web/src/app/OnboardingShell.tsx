@@ -149,7 +149,7 @@ export function LeagueIntroModal({
   const isLastStep = step === LEAGUE_ONBOARDING_IMAGES.length - 1;
 
   return (
-    <Modal label={tt("league_onboarding_title")} onClose={() => onClose(dismiss)}>
+    <Modal label={tt("league_onboarding_title")} closeLabel={tt("action_close")} showCloseButton onClose={() => onClose(dismiss)}>
       <div className="league-onboarding">
         <ModalHero image={LEAGUE_ONBOARDING_IMAGES[step]!} kicker={tt("onboarding_kicker")} title={tt(`league_onboarding_step_${stepNumber}_title` as TranslationKey)} />
         <p>{tt(`league_onboarding_step_${stepNumber}_body` as TranslationKey)}</p>

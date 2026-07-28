@@ -1,10 +1,10 @@
 ## item_346_add_ci_only_playwright_retries_if_flakiness_is_evidenced - Add CI-only Playwright retries if flakiness is evidenced
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: Low
 > Theme: CI hygiene
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -49,3 +49,9 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Outcome: **no retries added** — the conditional in the slice's own scope was not met.
+- Evidence (`gh run list --limit 100 --workflow CI`, checked 2026-07-28): 100 CI runs, 48 failures, and **zero commits with both a success and a failure on the same SHA**. Flakiness would show up as the same SHA passing on a re-run; nothing in the last 100 runs does.
+- Every failure is deterministic and already explained: the recurring ones are the parked Dependabot majors (`prisma` 6 -> 7, `eslint`/`@eslint/js` 9 -> 10, `@vitejs/plugin-react` 5 -> 6, `@types/node` 24 -> 26), which the roadmap watchlist already records as needing focused migration chains, plus one-off failures on real feature commits that were then fixed forward.
+- `playwright.config.ts` is unchanged. Adding retries here would have hidden nothing real and would have slowed the honest failures down.

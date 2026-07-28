@@ -26,6 +26,31 @@ describe("ChampionshipView circuit regions", () => {
   });
 });
 
+describe("ChampionshipView standings order", () => {
+  it("ranks teams by points instead of trusting the array order", () => {
+    const state = {
+      ...(baseState as unknown as LeagueState),
+      teams: [
+        { ...(baseState.teams[0] as LeagueState["teams"][number]), id: "team_1", name: "Volt Union", points: 12 },
+        { ...(baseState.teams[1] as LeagueState["teams"][number]), id: "team_2", name: "Mika Blitz", points: 40 }
+      ]
+    } satisfies LeagueState;
+
+    renderWithT(createElement(ChampionshipView, {
+      state,
+      playerTeamId: "team_1",
+      recordTab: "standings",
+      onReplayGrandPrix: () => undefined,
+      onOpenSeasonRecap: () => undefined,
+      onSelectRecordTab: () => undefined
+    }));
+
+    const rows = screen.getAllByRole("listitem");
+    expect(within(rows[0]!).getByText("Mika Blitz")).toBeTruthy();
+    expect(within(rows[1]!).getByText("Volt Union")).toBeTruthy();
+  });
+});
+
 describe("ChampionshipView rival marker", () => {
   it("marks the player's derived rival in standings", () => {
     const state = {

@@ -53,13 +53,14 @@ export function ChampionshipView({
   onSelectRecordTab: (tab: ChampionshipRecordTab) => void;
 }) {
   const tt = useT();
-  const leader = state.teams[0];
+  const leader = rankTeams(state)[0];
   const currentGrandPrix = state.currentGrandPrix;
   const sortedHistory = [...state.grandPrixHistory].sort((left, right) => left.season - right.season || left.round - right.round);
   const historyBySeason = groupHistoryBySeason(sortedHistory);
   const completedSeasons = completedSeasonSummaries(state);
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
+  const rankedTeams = rankTeams(state);
   const playerRival = standingsRival(state, playerTeamId);
   const [profileTeamId, setProfileTeamId] = useState<string | undefined>();
   const [previewCircuit, setPreviewCircuit] = useState<CityCircuit | undefined>();
@@ -164,7 +165,7 @@ export function ChampionshipView({
 
           {activeRecordTab === "standings" ? (
             <ol className="standings-table">
-              {state.teams.map((team, index) => (
+              {rankedTeams.map((team, index) => (
                 <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
                   <ChampionshipCarBackdrop livery={team.livery} />
                   <PositionBadge position={index + 1} className="standings-rank" />
@@ -472,8 +473,14 @@ function ProfileStat({ label, value }: { label: string; value: ReactNode }) {
   );
 }
 
+// The API returns teams already ordered by points, but the local solo engine keeps them in
+// creation order. Ranking here instead of trusting the array keeps both sources correct.
+function rankTeams(state: LeagueState) {
+  return [...state.teams].sort((left, right) => right.points - left.points || left.name.localeCompare(right.name));
+}
+
 function teamSeasonStats(state: LeagueState, teamId: string) {
-  const rank = Math.max(1, state.teams.findIndex((team) => team.id === teamId) + 1);
+  const rank = Math.max(1, rankTeams(state).findIndex((team) => team.id === teamId) + 1);
   const results = state.grandPrixHistory
     .filter((grandPrix) => grandPrix.season === state.currentGrandPrix.season)
     .flatMap((grandPrix) => grandPrix.result?.classification.find((entry) => entry.teamId === teamId) ?? []);

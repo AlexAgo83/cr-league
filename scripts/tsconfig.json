@@ -5,7 +5,17 @@
     "declaration": false,
     "declarationMap": false,
     "noEmit": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ]
   },
-  "include": ["*.ts", "../packages/shared/src/**/*.ts", "../apps/web/src/app/circuits.ts", "../apps/api/src/features/leagues/qualifying.ts", "../apps/api/src/features/leagues/utils.ts"]
+  "include": [
+    "*.ts",
+    "../packages/shared/src/**/*.ts",
+    "../apps/web/src/app/circuits.ts",
+    "../apps/api/src/features/leagues/qualifying.ts",
+    "../apps/api/src/features/leagues/utils.ts",
+    "../apps/web/src/app/soloLeague.ts",
+    "../apps/web/src/app/types.ts"
+  ]
 }

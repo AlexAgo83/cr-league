@@ -1,7 +1,9 @@
 import { CARD_DEFINITIONS } from "../cards/definitions.js";
+import { circuitIdentityForRound, circuitSeasonSeed, trackSpeedProfileForCircuit } from "./circuits.js";
 import { isCarAssetId, CAR_ASSET_PRICES } from "../economy/carAssets.js";
 import { CARD_PRICES } from "../economy/constants.js";
-import type { CardId, RaceDecision, TeamLivery } from "./race.js";
+import { createQualifyingRuns } from "../simulation/qualifyingRuns.js";
+import type { CardId, RaceDecision, RaceInput, TeamLivery } from "./race.js";
 import { PIT_STRATEGIES, RACE_APPROACHES, TECHNICAL_PREPARATIONS } from "./race.js";
 import type { LeagueState } from "./league.js";
 
@@ -42,6 +44,10 @@ export type SubmitDecisionInput = TeamScopedInput & {
   pitStrategy?: unknown;
   cardId?: unknown;
   rivalTeamId?: unknown;
+};
+
+export type RunQualifyingInput = SubmitDecisionInput & {
+  laps?: number;
 };
 
 export function buyCard(state: LeagueState, input: BuyCardInput = {}) {
@@ -139,6 +145,87 @@ export function submitDecision(state: LeagueState, input: SubmitDecisionInput) {
   };
 }
 
+export function runQualifying(state: LeagueState, input: RunQualifyingInput) {
+  if (state.currentGrandPrix.status === "resolved") {
+    throw new SharedLeagueRuleError("This Grand Prix is already resolved.");
+  }
+  const team = teamForInput(state, input);
+  if (state.decisions.some((decision) => decision.teamId === team.id)) {
+    throw new SharedLeagueRuleError("Qualifying is closed after submitting your directive.");
+  }
+  const decision = validateDecisionValues(state, input);
+  const lockedCardId = qualifyingCardForTeam(state.currentGrandPrix.qualifyingRuns, team.id);
+  if (lockedCardId && decision.cardId && decision.cardId !== lockedCardId) {
+    throw new SharedLeagueRuleError("This Grand Prix card is already locked by your qualifying run.");
+  }
+  const cardId = lockedCardId ?? decision.cardId;
+  if (cardId && !team.cards.includes(cardId)) {
+    throw new SharedLeagueRuleError("This card is not in your inventory.");
+  }
+
+  const teamRuns = state.currentGrandPrix.qualifyingRuns.filter((run) => run.teamId === team.id);
+  const previousBest = teamRuns.reduce<LeagueState["currentGrandPrix"]["qualifyingRuns"][number] | null>((best, run) => (!best || run.time < best.time ? run : best), null);
+  const attempts = Math.max(0, ...teamRuns.map((run) => run.attempts)) + 1;
+  if (attempts > state.league.qualifyingAttemptLimit) {
+    throw new SharedLeagueRuleError("No qualifying attempts left.");
+  }
+
+  const circuit = circuitIdentityForRound(state.currentGrandPrix.round, circuitSeasonSeed(state.league.id, state.currentGrandPrix.season));
+  const attemptRuns = createQualifyingRuns({
+    seed: `${state.currentGrandPrix.id}-${team.id}-qualifying-${attempts}`,
+    teamId: team.id,
+    teamName: team.name,
+    decision: { ...decision, pitStrategy: decision.pitStrategy ?? "standard", cardId },
+    primaryTrait: state.currentGrandPrix.primaryTrait as RaceInput["primaryTrait"],
+    secondaryTrait: state.currentGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+    traits: circuit.traits,
+    trackLengthMeters: circuit.trackLengthMeters,
+    speedProfile: trackSpeedProfileForCircuit(circuit),
+    forecast: state.currentGrandPrix.forecast,
+    laps: clampInteger(input.laps, 3, 1, 3),
+    weatherSeed: state.currentGrandPrix.id
+  });
+  const nextRunsForAttempt = attemptRuns.map((run) => ({ ...run, attempts }));
+  const nextRun = nextRunsForAttempt.reduce((best, run) => (run.time < best.time ? run : best), nextRunsForAttempt[0]!);
+  const nextRuns = [...state.currentGrandPrix.qualifyingRuns, ...nextRunsForAttempt];
+
+  for (const bot of state.teams.filter((candidate) => candidate.kind === "bot")) {
+    const botAttempt = Math.max(0, ...nextRuns.filter((run) => run.teamId === bot.id).map((run) => run.attempts)) + 1;
+    if (botAttempt > attempts || botAttempt > state.league.qualifyingAttemptLimit) continue;
+    nextRuns.push(
+      {
+        ...createQualifyingRuns({
+          seed: `${state.currentGrandPrix.id}-${bot.id}-bot-qualifying-${botAttempt}`,
+          teamId: bot.id,
+          teamName: bot.name,
+          decision: defaultBotDecision(state, bot),
+          primaryTrait: state.currentGrandPrix.primaryTrait as RaceInput["primaryTrait"],
+          secondaryTrait: state.currentGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+          traits: circuit.traits,
+          trackLengthMeters: circuit.trackLengthMeters,
+          speedProfile: trackSpeedProfileForCircuit(circuit),
+          forecast: state.currentGrandPrix.forecast,
+          laps: 1,
+          weatherSeed: state.currentGrandPrix.id
+        })[0]!,
+        attempts: botAttempt
+      }
+    );
+  }
+
+  return {
+    state: {
+      ...state,
+      currentGrandPrix: {
+        ...state.currentGrandPrix,
+        qualifyingRuns: nextRuns
+      }
+    },
+    run: nextRun,
+    isBest: !previousBest || nextRun.time < previousBest.time
+  };
+}
+
 export function validateDecisionValues(state: LeagueState, input: SubmitDecisionInput): RaceDecision {
   if (!RACE_APPROACHES.includes(input.approach as RaceDecision["approach"])) {
     throw new SharedLeagueRuleError("Unsupported race approach.");
@@ -201,6 +288,25 @@ function isCardId(value: string): value is CardId {
 
 function clampInteger(value: unknown, fallback: number, min: number, max: number) {
   return typeof value === "number" && Number.isFinite(value) ? Math.max(min, Math.min(max, Math.round(value))) : fallback;
+}
+
+function defaultBotDecision(state: LeagueState, team: LeagueState["teams"][number]): RaceDecision {
+  const submittedDecision = state.decisions.find((decision) => decision.teamId === team.id);
+  if (submittedDecision) {
+    return {
+      approach: submittedDecision.approach,
+      preparation: submittedDecision.preparation,
+      pitStrategy: submittedDecision.pitStrategy ?? "standard",
+      cardId: submittedDecision.cardId ?? undefined,
+      rivalTeamId: submittedDecision.rivalTeamId ?? undefined
+    };
+  }
+  return {
+    approach: "balanced",
+    preparation: "speed",
+    pitStrategy: "standard",
+    cardId: team.cards[0]
+  };
 }
 
 function normalizeDisplayName(value: unknown, maxLength: number) {

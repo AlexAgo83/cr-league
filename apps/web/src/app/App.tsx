@@ -1,6 +1,7 @@
 import {
   SharedLeagueRuleError,
   buyCard as buySoloCard,
+  runQualifying as runSoloQualifying,
   sellCard as sellSoloCard,
   submitDecision as submitSoloDecision,
   type QualifyingRun,
@@ -573,8 +574,44 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     showStatus(tt("status_solo_action_unavailable"), "info", false);
   }
 
-  function openSoloQualifyingRun() {
-    showStatus(tt("status_solo_action_unavailable"), "info", false);
+  async function launchSoloQualifyingRun() {
+    if (!leagueState || !playerTeam || qualifyingDisabled) return;
+    await run(
+      tt("status_qualifying_running"),
+      async () => {
+        const response = runSoloQualifying(leagueState, {
+          teamId: playerTeam.id,
+          approach: form.approach,
+          preparation: form.preparation,
+          pitStrategy: form.pitStrategy,
+          cardId: selectedCardId || undefined,
+          laps: 3
+        });
+        persistSoloState(response.state);
+        setQualifyingResult(response.run);
+        showStatus(response.isBest ? tt("status_qualifying_best") : tt("status_qualifying_done"));
+      },
+      undefined,
+      true,
+      (error) => (error instanceof SharedLeagueRuleError ? error.message : "")
+    );
+  }
+
+  function openSoloQualifyingRun(options?: { confirm?: boolean }) {
+    if (qualifyingDisabled) return;
+    markCommandClicked("qualifying");
+    if (!options?.confirm && qualifyingAttemptsLeft > 1) {
+      setQualifyingResult(null);
+      void launchSoloQualifyingRun();
+      return;
+    }
+    setQualifyingConfirmOpen(true);
+  }
+
+  function startSoloQualifyingRunConfirmed() {
+    setQualifyingConfirmOpen(false);
+    setQualifyingResult(null);
+    void launchSoloQualifyingRun();
   }
 
   function changeLocale(nextLocale: Locale) {
@@ -728,7 +765,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         setGameView("plan");
       }}
       onResolveGrandPrix={() => void (soloMode ? resolveSoloGrandPrix() : resolveGrandPrix())}
-      onStartQualifyingRunConfirmed={startQualifyingRunConfirmed}
+      onStartQualifyingRunConfirmed={soloMode ? startSoloQualifyingRunConfirmed : startQualifyingRunConfirmed}
       onStartNextGrandPrix={() => void (soloMode ? startSoloNextGrandPrix() : startNextGrandPrix())}
       onOpenResultReport={() => {
         setNextGrandPrixConfirmOpen(false);

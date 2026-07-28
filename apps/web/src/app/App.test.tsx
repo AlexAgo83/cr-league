@@ -232,6 +232,23 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-solo-save-v1")).toContain("solo-local");
   });
 
+  it("runs local solo qualifying without calling the API", async () => {
+    localStorage.setItem("cr-league-help-league-intro:solo-local", "1");
+    const fetch = vi.spyOn(globalThis, "fetch");
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    await screen.findByRole("heading", { name: "1. Read the circuit" });
+    fireEvent.click(screen.getByRole("button", { name: "Plan" }));
+    fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
+    fireEvent.click(screen.getByRole("button", { name: "New chrono" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "New chrono" }).at(-1)!);
+
+    await waitFor(() => expect(localStorage.getItem("cr-league-solo-save-v1")).toContain("\"time\""));
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it("resets only the local solo save from the solo menu", async () => {
     localStorage.setItem("cr-league-help-league-intro:solo-local", "1");
     const fetch = vi.spyOn(globalThis, "fetch");

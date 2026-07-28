@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   buyCard,
+  runQualifying,
   sellCard,
   submitDecision,
   updateTeamLivery,
@@ -143,6 +144,26 @@ describe("leagueEngine", () => {
 
     expect(() => submitDecision(initial, { teamId: "a", approach: "balanced", preparation: "speed", cardId: "rain_grip" })).toThrow("This Grand Prix card is already locked by your qualifying run.");
     expect(submitDecision(initial, { teamId: "a", approach: "balanced", preparation: "speed" }).decisions[0]?.cardId).toBe("qualifying_focus");
+  });
+
+  it("runs local qualifying attempts and bot companion runs", () => {
+    const initial = state({
+      teams: [team("a", "Alpha", ["qualifying_focus"]), { ...team("bot", "Bot"), kind: "bot" }]
+    });
+
+    const result = runQualifying(initial, {
+      teamId: "a",
+      approach: "balanced",
+      preparation: "speed",
+      cardId: "qualifying_focus",
+      laps: 3
+    });
+
+    expect(result.run.teamId).toBe("a");
+    expect(result.isBest).toBe(true);
+    expect(result.state.currentGrandPrix.qualifyingRuns.filter((run) => run.teamId === "a")).toHaveLength(3);
+    expect(result.state.currentGrandPrix.qualifyingRuns.filter((run) => run.teamId === "bot")).toHaveLength(1);
+    expect(initial.currentGrandPrix.qualifyingRuns).toEqual([]);
   });
 });
 

@@ -1,0 +1,418 @@
+{
+  "title": "Repo review remediation pass 7: DB indexes, test-fake drift, 0.6 E2E coverage, code organization, and admin/session hardening",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "logics/roadmap/road_002_cr_league_roadmap_v2.md",
+    "logics/request/req_129_0_6_beta_season_lifecycle_and_league_management_private_seasons_commissioner_tools_actionability_rivals_team_identity_and_optional_economy_variants.md",
+    "prisma/schema.prisma",
+    "apps/api/src/testMemoryDb.ts",
+    "apps/api/src/features/leagues/lifecycle.ts",
+    "apps/api/src/features/leagues/transactionHelpers.ts",
+    "apps/api/src/features/leagues/utils.ts",
+    "apps/api/src/features/admin/store.ts",
+    "apps/api/src/features/admin/routes.ts",
+    "apps/web/src/app/helpers.ts",
+    "apps/web/src/features/replay/ReplayProgress.tsx",
+    "packages/shared/src/simulation/replayMoment.ts",
+    "apps/web/src/app/useReplayClock.ts",
+    "tests/e2e/private-league.spec.ts",
+    "playwright.config.ts",
+    "vitest.config.ts",
+    "A whole-repo review after the v0.6.0 release surfaced independent architecture, security, and test/CI-quality gaps. DB: Team (schema.prisma:52) and GrandPrix (schema.prisma:78) have no @@index([leagueId]) despite it being the most common query filter (getLeagueState, getCurrentGrandPrix). Test fake drift: testMemoryDb.ts's grandPrix.findMany ignores `select` entirely (called with select from lifecycle.ts:203-206), masking real over-fetch/data-leak bugs; separately team.findUnique always attaches `league` regardless of `include`, and several deleteMany/updateMany methods hardcode `{ count: 0 }`. E2E: tests/e2e/private-league.spec.ts has zero coverage of the just-shipped 0.6 corpus (variable shop, rival thread, card guidance, team profiles); the commissioner Race direction button is only asserted visible, never clicked. Coverage: vitest.config.ts's branch threshold is 80% against a measured 80.65%, propped up by apps/web/src/features/replay/ReplayProgress.tsx (~50% branch), packages/shared/src/simulation/replayMoment.ts (~35% branch), and apps/web/src/app/useReplayClock.ts (~60% branch). Code organization: seasonStandings/derivedRivalForTeam (apps/web/src/app/helpers.ts:129,179) are pure domain logic stranded in the web app instead of packages/shared, and conflate with the unrelated explicit RaceDecision.rivalTeamId concept with no cross-reference; apps/api/src/features/admin/store.ts (196 lines of real business logic) shares a filename with apps/api/src/features/leagues/store.ts (a pure re-export barrel), misleading contributors; apps/api/src/features/leagues/lifecycle.ts is 671 lines / 18 exports mixing season lifecycle, team admin, reminders, and visibility rules. Security/hardening: /admin/* routes (admin/routes.ts) have no rate limiting unlike league write routes (WRITE_RATE_LIMIT, 30/min); Team.claimCode is stored and compared in plaintext (transactionHelpers.ts, requireTeamClaim) unlike the already-hashed sessionClaimCodeHash/recoveryCodeHash. CI hygiene: tests/e2e/private-league.spec.ts hard-asserts exact UI copy dozens of times and already broke once this session on a button rename (League controls -> Race direction); playwright.config.ts has no retries configured."
+  ],
+  "request": {
+    "complexity": "High",
+    "theme": "Repo review remediation",
+    "needs": [
+      "Add the missing leagueId indexes on Team and GrandPrix so the most common query path is indexed.",
+      "Stop testMemoryDb.ts (the hand-rolled in-memory Prisma test fake) from silently diverging from real Prisma include/select/mutation-count semantics, since that drift already hid one real bug this session.",
+      "Add targeted Playwright E2E coverage for the highest-risk 0.6 flows that currently have zero E2E coverage: commissioner Race direction, variable shop mode, and team profiles.",
+      "Raise branch coverage on the specific files propping up a coverage threshold that is currently within 1 point of failing CI on unrelated PRs.",
+      "Move stranded pure domain logic (season standings, rival derivation) from the web app into packages/shared, and stop the derived-rival and explicit-rival concepts from being confusable.",
+      "Remove two code-organization traps a new contributor or another AI agent would fall into: a misleading store.ts filename collision between the leagues and admin features, and a 671-line lifecycle.ts mixing unrelated responsibilities.",
+      "Close two hardening gaps: unrate-limited admin routes, and a plaintext-at-rest team claim code.",
+      "Reduce E2E fragility from hardcoded UI copy assertions, and add CI-only Playwright retries if justified."
+    ],
+    "context": [
+      "Every item below is an independent, narrowly-scoped slice meant to be picked up and implemented by another AI agent with no context beyond its own backlog doc — do not assume the implementing agent has read the review conversation that produced this corpus.",
+      "The testMemoryDb.ts fix (fix the select-shape bug) must land before the broader testMemoryDb hardening pass, since the hardening pass reuses the same shared include/select-respecting helper. Sequence: fix first, harden second.",
+      "The claimCode hashing item is the highest-effort, highest-risk slice in this corpus: it needs a Prisma migration and must not break existing saved-league claim flows for teams created before the migration. Follow the same legacy-upgrade pattern this codebase already uses for verifyRecoveryCode (accept a legacy plaintext match once, then upgrade the stored value to a hash) rather than inventing a new migration strategy.",
+      "The lifecycle.ts split and the standings/rival move both touch widely-imported modules; each must keep every existing call site working (update every import) and run the full test suite (unit, integration, e2e) before considering the slice done, not just typecheck.",
+      "The CI-retries item is explicitly optional/low-priority: only add Playwright retries if the implementing agent finds evidence of actual flakiness in recent CI runs (e.g. `gh run list` history showing intermittent failures on the same commit); if no such evidence exists, note that in the report and skip the change rather than adding retries speculatively.",
+      "This is an internal engineering-quality corpus, not a user-facing feature: no product design, no new user-visible copy beyond what a code-organization or coverage change incidentally requires."
+    ],
+    "acceptance_criteria": [
+      "AC1: Team and GrandPrix models have @@index([leagueId]) in prisma/schema.prisma, backed by a Postgres migration, with no behavior change.",
+      "AC2: testMemoryDb.ts's fake Prisma methods respect a requested `select` shape via one shared helper, not just the currently-broken grandPrix.findMany call site.",
+      "AC3: testMemoryDb.ts's `include` handling and deleteMany/updateMany affected-row counts match real Prisma semantics for every method exercised by the existing test suite.",
+      "AC4: Playwright E2E covers, with real assertions beyond visibility: clicking into the commissioner Race direction screen and verifying the reminder action, creating a league with variable shop mode enabled and verifying the shop UI reflects it, and opening a team profile modal from standings.",
+      "AC5: apps/web/src/features/replay/ReplayProgress.tsx, packages/shared/src/simulation/replayMoment.ts, and apps/web/src/app/useReplayClock.ts have added unit tests raising their branch coverage, and the repo-wide branch coverage is no longer within 1 percentage point of the enforced vitest.config.ts threshold.",
+      "AC6: seasonStandings and rival-derivation logic live in packages/shared (re-exported from apps/web/src/app/helpers.ts for back-compat), the derived-rival naming is distinct from RaceDecision.rivalTeamId, and a code comment cross-references the two concepts.",
+      "AC7: apps/api/src/features/admin/store.ts is renamed to reflect its actual content, every import across the codebase is updated, and behavior is unchanged.",
+      "AC8: apps/api/src/features/leagues/lifecycle.ts is split into focused files by responsibility (season lifecycle, team admin, reminders, visibility) with no behavior change and every existing call site and test still passing.",
+      "AC9: Every route under /admin in apps/api/src/features/admin/routes.ts is rate-limited.",
+      "AC10: Team claimCode is hashed at rest with a safe migration path for pre-existing rows (legacy plaintext match once, then upgrade to hash, mirroring verifyRecoveryCode's existing pattern), verified via the existing timing-safe hash-compare helper, and the plaintext value is only ever returned once at team-creation/join response time.",
+      "AC11: tests/e2e/private-league.spec.ts's structural/navigational locators use data-testid instead of translated copy, except where a test specifically verifies that a translation/copy string renders.",
+      "AC12: playwright.config.ts has CI-only retries added only if the implementing agent found evidence of real flakiness, with that evidence (or its absence) recorded in the closeout report.",
+      "AC13: npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate all pass after implementation of each slice."
+    ]
+  },
+  "product": {
+    "title": "Repo Review Remediation Pass 7 Product Brief",
+    "overview": "A seventh remediation pass driven by the post-v0.6.0 full-repo review: index the hottest query path, stop the in-memory Prisma test fake from silently diverging from real Prisma semantics, close the 0.6 corpus's E2E coverage gap, shore up a razor-thin coverage threshold, relocate stranded domain logic into packages/shared, remove two code-organization traps, close an admin-route rate-limiting gap and a plaintext-claim-code exposure, and reduce E2E fragility from hardcoded copy assertions.",
+    "goals": [
+      "The most common DB query path (filtering by leagueId) is indexed.",
+      "The in-memory Prisma test fake can no longer silently return data shaped differently than real Prisma would.",
+      "The 0.6 corpus's highest-risk flows (commissioner screen, variable shop, team profiles) have real E2E coverage.",
+      "The enforced branch-coverage threshold has real margin instead of a hair's-breadth pass.",
+      "Standings/rival domain logic is reusable from the API, not stranded in the web app, and the two 'rival' concepts are no longer confusable.",
+      "A new contributor or AI agent grepping this codebase does not land in the wrong file due to a misleading filename, and lifecycle.ts's responsibilities are each easy to find.",
+      "Admin routes are rate-limited like every other write route, and a team's claim code is no longer recoverable in plaintext from a DB dump.",
+      "E2E assertions on copy strings only break when the copy actually needs to be re-verified, not on every unrelated rename."
+    ],
+    "non_goals": [
+      "No new user-facing features or product design; this is an internal engineering-quality corpus.",
+      "Do not migrate qualifyingRuns, cards, or other JSON columns to relational tables in this corpus; that stays a future evidence-gated item.",
+      "Do not replace testMemoryDb.ts with a real ephemeral Postgres test harness; only harden the existing fake.",
+      "Do not build an explicit team-ownership-transfer UX or rework the broader auth/session model beyond hashing claimCode.",
+      "Do not add Playwright retries speculatively without evidence of real flakiness."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Add missing leagueId indexes on Team and GrandPrix",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Database performance",
+      "request_acs": ["AC1", "AC13"],
+      "problem": [
+        "Team (prisma/schema.prisma:52) and GrandPrix (prisma/schema.prisma:78) have no @@index([leagueId]), despite leagueId being the most common query filter across the codebase (getLeagueState in apps/api/src/features/leagues/lifecycle.ts:181, getCurrentGrandPrix in apps/api/src/features/leagues/persistence.ts).",
+        "The existing @@unique([leagueId, name]) on Team and @@unique([leagueId, season, round]) on GrandPrix provide only incidental leading-column index coverage for exact-match lookups, not for the broader leagueId-scoped queries and orderings used elsewhere."
+      ],
+      "scope_in": [
+        "Add @@index([leagueId]) to the Team model and to the GrandPrix model in prisma/schema.prisma.",
+        "Write a matching Postgres migration under prisma/migrations/ following this repo's existing hand-authored migration.sql convention (see prisma/migrations/20260728120000_add_variable_shop/migration.sql for the exact style: plain ALTER TABLE / CREATE INDEX statements, no down migration).",
+        "Run npm run db:generate and confirm the app and full test suite still pass with the new schema."
+      ],
+      "scope_out": [
+        "Any other schema normalization (JSON columns, reminder columns, etc.) — out of scope for this slice.",
+        "Query rewrites; this slice only adds indexes, it does not change any query code."
+      ],
+      "acceptance_criteria": [
+        "AC1: Team and GrandPrix have @@index([leagueId]) in prisma/schema.prisma.",
+        "AC2: A Postgres migration exists that creates both indexes, matching this repo's existing hand-authored migration style.",
+        "AC3: npm run db:generate, npm run typecheck, and the full test suite pass with no behavior change."
+      ]
+    },
+    {
+      "title": "Fix testMemoryDb's silent `select` handling",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Test infrastructure integrity",
+      "request_acs": ["AC2", "AC13"],
+      "problem": [
+        "apps/api/src/testMemoryDb.ts is a hand-rolled in-memory fake standing in for Prisma in API tests. Its grandPrix.findMany method (testMemoryDb.ts, around line 399-402) ignores a `select` option entirely and always returns full rows.",
+        "apps/api/src/features/leagues/lifecycle.ts:203-206 calls db.grandPrix.findMany({ where, orderBy, select: { id, name, season, round, status, result } }) expecting only those fields back. Because the fake ignores `select`, tests exercising this path cannot catch a real Prisma `select` mistake (accidental over-fetch or a data-leak bug) since the fake always 'succeeds' by returning everything regardless of what was actually requested.",
+        "This exact class of bug (the fake ignoring a real Prisma option shape) was already found and fixed once this session for league.findUnique's `include: { teams: true }` boolean shorthand — this is the same failure mode on a different method."
+      ],
+      "scope_in": [
+        "Add one shared helper (e.g. applySelect(row, select)) in testMemoryDb.ts that, given a row object and a Prisma-style `select` object, returns only the selected keys — used consistently everywhere the fake's methods accept a `select` option, not just grandPrix.findMany.",
+        "Apply the helper to grandPrix.findMany specifically, since that is the currently broken call site.",
+        "Add or update a unit test asserting that db.grandPrix.findMany({ ..., select: {...} }) returns only the selected fields, so the fake cannot silently regress on this again.",
+        "Grep every method in testMemoryDb.ts for a `select` parameter in its type signature and confirm each one either genuinely doesn't need it or now uses the new helper — do not leave a second silently-broken select call site."
+      ],
+      "scope_out": [
+        "Fixing `include`-handling bugs or deleteMany/updateMany count bugs — those are the next backlog slice, which depends on this one landing first for its shared helper.",
+        "Replacing testMemoryDb.ts with a real database-backed test harness."
+      ],
+      "acceptance_criteria": [
+        "AC1: A shared applySelect-style helper exists and is used by every testMemoryDb.ts method whose real Prisma counterpart accepts `select`.",
+        "AC2: db.grandPrix.findMany with a `select` option returns exactly the selected fields, proven by a test.",
+        "AC3: The full existing test suite still passes with no behavior change to any other call site."
+      ]
+    },
+    {
+      "title": "Harden testMemoryDb against further include/mutation-count drift",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Test infrastructure integrity",
+      "request_acs": ["AC3", "AC13"],
+      "problem": [
+        "Beyond the `select`-ignoring bug fixed in the prerequisite slice, apps/api/src/testMemoryDb.ts has other places where it silently diverges from real Prisma behavior: team.findUnique always attaches the `league` relation regardless of whether the caller's `include` actually requested it (the opposite failure mode — over-including instead of under-including), and several deleteMany/updateMany methods hardcode a return of `{ count: 0 }` instead of the actual number of affected rows.",
+        "This drift means a test can pass against the fake while a caller's real-Prisma `include`/mutation-count expectations are silently wrong, and it means any future test that asserts on a deleteMany/updateMany count will get a hardcoded wrong answer rather than a real one."
+      ],
+      "scope_in": [
+        "This slice depends on the prerequisite testMemoryDb select-fix slice landing first — reuse its shared select/include-respecting helper pattern rather than writing a second one.",
+        "Fix team.findUnique to only attach `league` when the caller's `include` actually requested it.",
+        "Fix every deleteMany/updateMany method in testMemoryDb.ts that currently hardcodes `{ count: 0 }` to return the real count of rows it affected.",
+        "Do a full pass over every method in testMemoryDb.ts, comparing its handled where/include/select shapes against every real call site in apps/api/src/features/**/*.ts that uses that Prisma model method, and fix any other mismatch found.",
+        "Add or update unit tests locking in the corrected behavior for each fix so this class of bug cannot silently regress again."
+      ],
+      "scope_out": [
+        "The `select`-ignoring bug on grandPrix.findMany — that is the prerequisite slice, not this one.",
+        "Replacing testMemoryDb.ts with a real database-backed test harness (that is a much larger future effort, not this slice)."
+      ],
+      "acceptance_criteria": [
+        "AC1: team.findUnique only attaches the `league` relation when `include` requests it.",
+        "AC2: Every deleteMany/updateMany method in testMemoryDb.ts returns the real affected-row count.",
+        "AC3: A systematic comparison of every testMemoryDb.ts method against its real call sites' where/include/select shapes is documented in the closeout report, with every mismatch found either fixed or explicitly noted as out of scope with a reason.",
+        "AC4: The full existing test suite still passes with no behavior change to any other call site."
+      ]
+    },
+    {
+      "title": "Add E2E coverage for the 0.6 corpus's highest-risk flows",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Test coverage",
+      "request_acs": ["AC4", "AC13"],
+      "problem": [
+        "tests/e2e/private-league.spec.ts has zero Playwright coverage of the just-shipped 0.6 beta season lifecycle corpus: variable shop mode, the rival thread, contextual card guidance, and team profiles are never mentioned.",
+        "The commissioner 'Race direction' button (tests/e2e/private-league.spec.ts, around line 153) is only ever asserted visible inside a profile-menu ordering check — it is never actually clicked, so the entire Direction de course commissioner screen has no E2E exercise at all."
+      ],
+      "scope_in": [
+        "Add a Playwright scenario that clicks the 'Race direction' / commissioner button and verifies the resulting screen renders with a working reminder action (e.g. the manual 'Relancer les retardataires' / send-reminder control).",
+        "Add a Playwright scenario that creates a league with the variable shop mode checkbox enabled at creation, and verifies the resulting league's shop UI actually reflects the variable-shop behavior (e.g. showing exactly 6 cards, or whatever the current UI surfaces) rather than the fixed default shop.",
+        "Add a Playwright scenario that opens a team profile modal from the standings view and verifies it renders (livery/rank/points/etc. as currently implemented).",
+        "Rival-thread and card-guidance logic can remain unit-tested only (they are pure logic with existing unit coverage per the review) — do not force new E2E scenarios for those unless it is natural to extend one of the three scenarios above to touch them incidentally."
+      ],
+      "scope_out": [
+        "Rewriting or restructuring the existing 4 E2E test scenarios beyond what's needed to add the new ones.",
+        "Full E2E coverage of every 0.6 feature — only the three flows named above are required.",
+        "Changing production UI/UX to make it more testable, beyond adding data-testid where covered by the separate 'replace hardcoded E2E copy' backlog slice."
+      ],
+      "acceptance_criteria": [
+        "AC1: A Playwright test clicks into the commissioner Race direction screen and asserts on real rendered content and a working reminder action, not just button visibility.",
+        "AC2: A Playwright test creates a league with variable shop mode enabled and asserts the shop UI reflects that mode.",
+        "AC3: A Playwright test opens a team profile modal from standings and asserts it renders expected content.",
+        "AC4: npm run test:e2e passes with the new scenarios included."
+      ]
+    },
+    {
+      "title": "Raise branch coverage on weak replay-timing files",
+      "priority": "High",
+      "complexity": "Low",
+      "theme": "Test coverage",
+      "request_acs": ["AC5", "AC13"],
+      "problem": [
+        "vitest.config.ts enforces a branches coverage threshold of 80%, and the last measured full-suite branch coverage was 80.65% — a 0.65 percentage-point margin. A single unrelated PR touching low-branch-coverage files can push the average below the threshold and fail the required `coverage` CI lane.",
+        "The specific files propping up the average with weak branch coverage are apps/web/src/features/replay/ReplayProgress.tsx (~50% branch), packages/shared/src/simulation/replayMoment.ts (~35% branch), and apps/web/src/app/useReplayClock.ts (~60% branch, ~70% statement)."
+      ],
+      "scope_in": [
+        "Add targeted unit tests for the untested branches in apps/web/src/features/replay/ReplayProgress.tsx, packages/shared/src/simulation/replayMoment.ts, and apps/web/src/app/useReplayClock.ts — read each file's current test file (if any) first and extend it, following this repo's existing testing conventions and libraries (vitest, @testing-library/react where applicable).",
+        "Re-run npx vitest run --coverage after adding tests and confirm the repo-wide branch coverage percentage has meaningfully increased (target: at least a few percentage points of real margin above the 80% threshold, not just barely above it).",
+        "Do not test implementation details that would make the tests brittle to refactors — test observable behavior (rendered output, returned values, clock ticks) for each branch."
+      ],
+      "scope_out": [
+        "Lowering or removing the coverage threshold in vitest.config.ts — that is explicitly not the fix.",
+        "Adding coverage to any other file not named above, unless trivially adjacent to a change already being made.",
+        "Refactoring the three target files' implementation — only add tests, unless a file is genuinely untestable in its current shape, in which case note that in the closeout report rather than silently skipping it."
+      ],
+      "acceptance_criteria": [
+        "AC1: apps/web/src/features/replay/ReplayProgress.tsx, packages/shared/src/simulation/replayMoment.ts, and apps/web/src/app/useReplayClock.ts each have measurably higher branch coverage than before this change.",
+        "AC2: The repo-wide branch coverage reported by npx vitest run --coverage is no longer within 1 percentage point of the vitest.config.ts threshold.",
+        "AC3: All added tests pass and the full existing test suite is unaffected."
+      ]
+    },
+    {
+      "title": "Move standings/rival-derivation logic into packages/shared",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Code organization",
+      "request_acs": ["AC6", "AC13"],
+      "problem": [
+        "seasonStandings and derivedRivalForTeam (apps/web/src/app/helpers.ts:129 and :179) are pure domain logic (standings ranking with tie-breaks, rival distance derivation) that takes plain data in and returns plain data out, with no UI/React dependency — yet they live in the web app instead of packages/shared, so the API cannot reuse them (e.g. for a future server-side rival hint or notification).",
+        "Two unrelated 'rival' concepts coexist in this codebase without any cross-reference: the explicit, user-chosen RaceDecision.rivalTeamId (prisma/schema.prisma, apps/api/src/features/leagues/decisions.ts) versus the auto-computed standings-proximity rival in derivedRivalForTeam. Sharing the bare word 'rival' with no comment linking them risks confusing a future contributor into thinking they're the same mechanism."
+      ],
+      "scope_in": [
+        "Move seasonStandings and derivedRivalForTeam (and any tightly-coupled helper functions they depend on) from apps/web/src/app/helpers.ts into packages/shared, in a new file (e.g. packages/shared/src/domain/standings.ts) or as an addition to the existing packages/shared/src/domain/league.ts — follow this repo's existing packages/shared file-organization convention.",
+        "Re-export the moved functions from apps/web/src/app/helpers.ts so every existing web-app import path keeps working with no call-site changes required.",
+        "Rename the derived-rival function/variable naming to something distinct from the explicit rivalTeamId concept (e.g. standingsRival / impliedRival), updating every call site.",
+        "Add a short code comment at both the explicit RaceDecision.rivalTeamId definition and the new derived-rival function explaining the other exists and how they differ, so a reader landing on either one understands there are two separate mechanisms."
+      ],
+      "scope_out": [
+        "Changing the actual standings/rival-derivation algorithm or its output — this is a pure code-movement and renaming slice, not a behavior change.",
+        "Building any new API endpoint that exposes the now-shared logic to the server side — only make it reusable, do not add a new consumer.",
+        "Touching the RaceDecision.rivalTeamId schema or its own logic beyond adding the cross-referencing comment."
+      ],
+      "acceptance_criteria": [
+        "AC1: seasonStandings and derivedRivalForTeam (under their new name) live in packages/shared and are re-exported from apps/web/src/app/helpers.ts.",
+        "AC2: The derived-rival concept has a name distinct from rivalTeamId, and both the explicit and derived rival code have a comment cross-referencing the other.",
+        "AC3: No behavior change — every existing test (unit, e2e) passes unmodified in outcome, only import paths and naming change where required."
+      ]
+    },
+    {
+      "title": "Rename admin/store.ts to reflect its actual content",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "Code organization",
+      "request_acs": ["AC7", "AC13"],
+      "problem": [
+        "apps/api/src/features/admin/store.ts (196 lines) contains real cleanup/inspection business logic (cleanupAdminTestData, listAdminLeagues, inspectAdminLeague, etc.), but shares its filename with apps/api/src/features/leagues/store.ts, which is a pure re-export barrel/facade — the established store.ts convention elsewhere in this codebase.",
+        "A contributor or AI agent grepping 'store.ts' in the admin feature folder, expecting the leagues-feature convention (a thin facade), lands instead in a file with real logic and a completely different role."
+      ],
+      "scope_in": [
+        "Rename apps/api/src/features/admin/store.ts to a name reflecting its actual content (e.g. adminData.ts) — pick whatever name best matches this repo's existing naming conventions for similar files (e.g. compare to apps/api/src/features/leagues/persistence.ts, cards.ts, decisions.ts for naming style).",
+        "Update every import of the old path across the codebase, including apps/api/src/features/admin/routes.ts and the cross-feature import from apps/api/src/features/leagues/lifecycle.ts (or wherever admin/store.ts is imported from outside its own feature folder).",
+        "Leave apps/api/src/features/leagues/store.ts untouched — it matches the established barrel convention used elsewhere and should not be renamed."
+      ],
+      "scope_out": [
+        "Splitting or refactoring the renamed file's internal contents — this is a rename-only slice.",
+        "Renaming any other file in the codebase."
+      ],
+      "acceptance_criteria": [
+        "AC1: apps/api/src/features/admin/store.ts no longer exists under that name; its content lives under a new name reflecting its actual role.",
+        "AC2: Every import of the old path is updated; npm run typecheck passes with no dangling references.",
+        "AC3: The full test suite passes with no behavior change."
+      ]
+    },
+    {
+      "title": "Split lifecycle.ts by responsibility",
+      "priority": "Medium",
+      "complexity": "Medium",
+      "theme": "Code organization",
+      "request_acs": ["AC8", "AC13"],
+      "problem": [
+        "apps/api/src/features/leagues/lifecycle.ts is 671 lines across 18 exported functions, mixing several unrelated responsibilities: season lifecycle (createDemoLeague, startNextGrandPrix, restartLeague, season summary helpers), team admin (updateTeamLivery, updateTeamName, updateLeagueSettings), reminder orchestration (sendPlanReminders), and visibility/decision-reveal rules (publicLeagueState, withPlayer, canRevealOpponentDecisions, revealedDecisions, buildActionState)."
+      ],
+      "scope_in": [
+        "Split lifecycle.ts into focused files by responsibility, for example: seasonLifecycle.ts (createDemoLeague, startNextGrandPrix, restartLeague, season summary helpers), teamAdmin.ts (updateTeamLivery, updateTeamName, updateLeagueSettings), reminders.ts (sendPlanReminders), visibility.ts (publicLeagueState, withPlayer, canRevealOpponentDecisions, revealedDecisions, buildActionState).",
+        "getLeagueState is the central read model used throughout this feature — keep it in whichever resulting file keeps the overall import graph cleanest (e.g. seasonLifecycle.ts, or its own file if that's clearer), and update every caller's import path accordingly.",
+        "Update apps/api/src/features/leagues/store.ts's re-exports to point at the new file locations so every existing external import path (routes.ts, tests, cross-feature admin import) keeps working unchanged.",
+        "Run the full test suite after the split and fix any import path the split missed."
+      ],
+      "scope_out": [
+        "Changing any function's behavior, signature, or logic — this is a pure file-organization split, not a refactor of logic.",
+        "Renaming any function during the split unless strictly necessary to avoid a naming collision between the new files."
+      ],
+      "acceptance_criteria": [
+        "AC1: lifecycle.ts's 18 exported functions are split across focused files grouped by the responsibilities named above, with no single resulting file mixing more than one of those responsibility groups.",
+        "AC2: apps/api/src/features/leagues/store.ts's public re-export surface is unchanged from the outside — every existing external import path still resolves to the same function.",
+        "AC3: The full test suite (unit, integration, e2e) passes with no behavior change."
+      ]
+    },
+    {
+      "title": "Rate-limit all admin routes",
+      "priority": "Medium",
+      "complexity": "Low",
+      "theme": "API hardening",
+      "request_acs": ["AC9", "AC13"],
+      "problem": [
+        "Every route under /admin in apps/api/src/features/admin/routes.ts has no rate limiting, unlike league write routes which already use a WRITE_RATE_LIMIT hook (30/min, defined in apps/api/src/features/leagues/routes.ts). Admin token comparison is already timing-safe (constant-time compare with a dummy call on mismatch), but nothing throttles repeated Authorization-header guesses against it."
+      ],
+      "scope_in": [
+        "Apply a rate-limit hook consistently across every route registered in apps/api/src/features/admin/routes.ts — reuse the existing WRITE_RATE_LIMIT constant/pattern from the leagues feature, or define an equivalent (optionally stricter, since these are admin-privileged routes) constant local to the admin feature.",
+        "Verify the rate limit applies to both read (GET /admin/users, /admin/leagues, etc.) and write (POST /admin/test-data-cleanup, etc.) admin routes, not just the write ones.",
+        "Add or update a test asserting that repeated requests to an admin route past the configured limit are rejected (mirroring however the existing league-route rate-limit behavior is already tested, if it is)."
+      ],
+      "scope_out": [
+        "Changing the admin authentication/token model itself.",
+        "Adding rate limiting to any non-admin route — those are already covered or out of scope."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every route in apps/api/src/features/admin/routes.ts has a rate-limit hook applied.",
+        "AC2: A test proves that exceeding the configured limit on at least one admin route is rejected.",
+        "AC3: The full test suite passes with no behavior change to normal (under-limit) admin usage."
+      ]
+    },
+    {
+      "title": "Hash team claimCode at rest with a backward-compatible migration",
+      "priority": "Medium",
+      "complexity": "High",
+      "theme": "Security hardening",
+      "request_acs": ["AC10", "AC13"],
+      "problem": [
+        "Team.claimCode (prisma/schema.prisma, the Team model) is stored and compared in plaintext (apps/api/src/features/leagues/transactionHelpers.ts, requireTeamClaim, and its use in apps/api/src/features/leagues/utils.ts / lifecycle.ts wherever teams are created/joined), unlike sessionClaimCodeHash and recoveryCodeHash, which are already hashed. A database dump or backup leak exposes every team's claim code directly, with no hash protecting it.",
+        "This is the highest-effort, highest-risk slice in this corpus: it requires a schema migration and must not break claim/recovery flows for teams already created before the migration runs, since those existing rows will have no hash to verify against."
+      ],
+      "scope_in": [
+        "Add a claimCodeHash column to the Team model via a Prisma migration, following this repo's existing hand-authored migration.sql convention.",
+        "At team creation and join time, generate the plaintext claimCode as today, but store only its hash (using the same hashing helper already used for sessionClaimCodeHash/recoveryCodeHash), returning the plaintext to the caller exactly once in the creation/join response — mirroring the existing recovery-code pattern already used elsewhere in this codebase.",
+        "Update requireTeamClaim (and any other claimCode verification path) to verify against the hash using the existing timing-safe compare helper, instead of the current plaintext `!==` comparison.",
+        "Handle pre-migration rows explicitly: since existing teams have no claimCodeHash yet, follow the same legacy-upgrade pattern this codebase already uses in verifyRecoveryCode — accept a legacy plaintext match once (if a legacy plaintext claimCode column/value is still present), then immediately upgrade that row to store only the hash going forward. Do not silently lock out existing saved leagues.",
+        "Add tests covering: a freshly created team's claim only works via the hash path, a pre-migration-style team (no hash, plaintext code) still successfully claims once and is upgraded to a hash afterward, and a wrong claim code is rejected in both cases."
+      ],
+      "scope_out": [
+        "Reworking the broader session/auth model beyond this one field.",
+        "Deprecating or removing claimCode as a concept in favor of session credentials — that is a larger, separate decision not in scope here.",
+        "Any change to recoveryCodeHash or sessionClaimCodeHash, which are already correctly hashed."
+      ],
+      "acceptance_criteria": [
+        "AC1: Team.claimCode is no longer stored in plaintext for any newly created or newly claimed team; only claimCodeHash is persisted going forward.",
+        "AC2: Existing pre-migration teams can still successfully claim exactly once via a legacy plaintext match, and are upgraded to hash-only storage immediately after that successful claim.",
+        "AC3: Claim verification uses the existing timing-safe hash-compare helper, not a plaintext string comparison.",
+        "AC4: Tests cover fresh-team claim, legacy-team claim-and-upgrade, and wrong-code rejection for both cases.",
+        "AC5: No existing saved-league claim flow test regresses."
+      ]
+    },
+    {
+      "title": "Replace hardcoded E2E copy assertions with data-testid",
+      "priority": "Low",
+      "complexity": "Medium",
+      "theme": "Test resilience",
+      "request_acs": ["AC11", "AC13"],
+      "problem": [
+        "tests/e2e/private-league.spec.ts hard-asserts exact UI copy dozens of times (button names, menu labels, toast text) for structural/navigational purposes. This already broke once this session: a 'League controls' -> 'Race direction' button rename broke an E2E assertion that had nothing to do with testing that specific copy string, purely because the locator matched on translated text."
+      ],
+      "scope_in": [
+        "Add data-testid attributes to structural/navigational elements in the web app that the E2E suite currently locates by exact text (profile menu buttons, nav tabs, modal triggers) — scope this to the elements tests/e2e/private-league.spec.ts actually locates today, not a speculative blanket pass over the whole UI.",
+        "Update the corresponding Playwright locators in tests/e2e/private-league.spec.ts to use the new data-testid attributes instead of getByRole/getByText matching on translated copy, wherever the test is checking that the element exists/works structurally rather than checking the copy itself.",
+        "Keep text-based assertions only where the test is specifically verifying that a translation/copy string renders correctly (e.g. a test whose actual purpose is confirming localized text appears) — do not blanket-replace every text assertion."
+      ],
+      "scope_out": [
+        "Adding data-testid to elements not currently referenced by the E2E suite.",
+        "Rewriting the E2E suite's test scenarios or coverage beyond swapping locator strategy.",
+        "Changing any translation/copy string itself."
+      ],
+      "acceptance_criteria": [
+        "AC1: Structural/navigational Playwright locators in tests/e2e/private-league.spec.ts use data-testid rather than translated copy, except where the test is specifically about copy correctness.",
+        "AC2: npm run test:e2e passes.",
+        "AC3: A subsequent rename of one of the newly-data-testid'd elements' copy would not break the corresponding test (spot-checked by the implementer, e.g. by temporarily renaming a label locally and confirming the relevant test still passes)."
+      ]
+    },
+    {
+      "title": "Add CI-only Playwright retries if flakiness is evidenced",
+      "priority": "Low",
+      "complexity": "Low",
+      "theme": "CI hygiene",
+      "request_acs": ["AC12", "AC13"],
+      "problem": [
+        "playwright.config.ts has no `retries` field configured (defaults to 0), and the CI e2e job runs a single attempt with no retry mechanism, so any transient flake fails the PR outright with no automatic recovery."
+      ],
+      "scope_in": [
+        "Before making any change, check recent CI run history (e.g. via `gh run list`/`gh run view` on the e2e/CI workflow) for evidence of genuine intermittent test failures on the same commit across retried runs.",
+        "If real flakiness is found: add `retries: process.env.CI ? 2 : 0` (or similar, matching this repo's existing conventions) to playwright.config.ts, scoped to CI only — do not add retries to the local dev config or to vitest.",
+        "If no real flakiness is found in the available CI history: make no code change, and record in the closeout report that this slice was evaluated and skipped for lack of evidence, along with what was checked."
+      ],
+      "scope_out": [
+        "Adding retries to vitest unit tests — unit-test flakiness should be fixed at the source, not retried.",
+        "Any retry mechanism beyond Playwright/CI."
+      ],
+      "acceptance_criteria": [
+        "AC1: The implementer's closeout report states explicitly whether CI flakiness evidence was found and what was checked.",
+        "AC2: If retries were added, they are scoped to CI only in playwright.config.ts and npm run test:e2e still passes locally with retries effectively disabled outside CI.",
+        "AC3: If no evidence was found, no code change is made and the slice is recorded as evaluated-and-skipped."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate repo review remediation pass 7",
+    "plan": [
+      "Land the DB index slice first — it is independent, low-risk, and quick.",
+      "Land the testMemoryDb select-fix slice, then the broader testMemoryDb hardening slice that depends on it (in that order — the hardening slice reuses the select-fix slice's shared helper).",
+      "Land the 0.6 E2E coverage slice and the coverage-threshold-margin slice in parallel with the above; they are independent of the testMemoryDb and DB-index work.",
+      "Land the standings/rival code-move, the admin/store.ts rename, and the lifecycle.ts split as a code-organization batch — each is independent of the others but all three touch widely-imported modules, so run the full test suite after each one individually rather than batching all three changes before testing.",
+      "Land the admin rate-limiting slice (quick, independent).",
+      "Land the claimCode hashing slice last among the required work — it is the highest-effort and highest-risk slice (schema migration, backward compatibility) and benefits from every other slice's test-suite hardening already being in place.",
+      "Land the E2E data-testid slice, and evaluate (and land only if justified) the CI-retries slice.",
+      "Run npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate after the full set of slices; record proof at closeout.",
+      "Keep commits scoped per slice (or per small related group of slices) rather than one giant commit, so each change is independently reviewable and revertible."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/repo-review-remediation-pass-7.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

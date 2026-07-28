@@ -80,7 +80,9 @@ export function SetupGate({
   switchLeague: (teamId: string) => void;
   tt: Translator;
 }) {
-  if (!profileSession && setupEntryMode === "choice") {
+  const utilitySetupView = profileSession && ((gameView === "admin" && profileSession.admin) || gameView === "changelog");
+
+  if (!leagueState && setupEntryMode === "choice" && !utilitySetupView) {
     return (
       <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
         <SetupEntryView message={message} status={status} onStartSolo={startSolo} onStartMultiplayer={() => setSetupEntryMode("multiplayer")} tt={tt} />

@@ -212,6 +212,7 @@ describe("App", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     fireEvent.click(screen.getByRole("button", { name: /Create league/ }));
     fireEvent.submit(screen.getByLabelText("League").closest("form")!);
 
@@ -653,6 +654,7 @@ describe("App", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     expect(screen.getByRole("heading", { name: "Stand" })).toBeTruthy();
 
     createLeagueFromSetup();

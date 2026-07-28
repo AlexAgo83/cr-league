@@ -221,6 +221,7 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     fireEvent.click(screen.getByRole("button", { name: /Join league/ }));
     fireEvent.change(screen.getByLabelText("Join code"), { target: { value: "abc123" } });
     fireEvent.change(screen.getByLabelText("Team"), { target: { value: "Volt Union" } });
@@ -249,6 +250,7 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
+    startMultiplayerSetup();
     fireEvent.click(screen.getByRole("button", { name: /Join league/ }));
     fireEvent.submit(screen.getByLabelText("Join code").closest("form")!);
 
@@ -345,6 +347,8 @@ describe("App profile and admin", () => {
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.click(screen.getByRole("button", { name: "Manage league" }));
 
+    expect(screen.getByRole("heading", { name: "Choose your grid" })).toBeTruthy();
+    startMultiplayerSetup();
     expect(screen.getByRole("button", { name: /Create league/ })).toBeTruthy();
     expect(screen.getByText("Saved leagues")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
@@ -377,6 +381,8 @@ describe("App profile and admin", () => {
     expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "CR League Office League" }));
 
+    expect(screen.getByRole("heading", { name: "Choose your grid" })).toBeTruthy();
+    startMultiplayerSetup();
     expect(screen.getByRole("heading", { name: "Stand" })).toBeTruthy();
     expect(screen.getByText("Saved leagues")).toBeTruthy();
     expect(screen.getByRole("button", { name: /Office League/ })).toBeTruthy();
@@ -387,6 +393,8 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
+    expect(screen.getByRole("heading", { name: "Choose your grid" })).toBeTruthy();
+    startMultiplayerSetup();
     expect(screen.getByText("Saved leagues")).toBeTruthy();
     expect(screen.getByText("No saved leagues yet.")).toBeTruthy();
     expect(document.querySelector(".saved-leagues-empty img")).toBe(null);
@@ -561,6 +569,7 @@ describe("App profile and admin", () => {
     expect(await screen.findByText("Saved league no longer exists. Join the playtest again.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-player-claims")).toBe("[]");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
+    startMultiplayerSetup();
     expect(screen.getByRole("button", { name: /Join league/ })).toBeTruthy();
   });
 

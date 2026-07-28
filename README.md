@@ -227,6 +227,7 @@ npm run replay:validate -- race-result.json
 npm run generate:circuit -- --place "Montreal" --layoutKey circuit_montreal_island_loop
 npm run audit:circuits
 npm run review:circuits:water
+npm run capture:screenshots
 ```
 
 Seed a private playtest league:
@@ -251,6 +252,8 @@ Agent-oriented validation docs:
 - [Board icon assets runbook](docs/board-icon-assets-runbook.md) — generation,
   crop, audit, and UI mapping workflow for the CRL board-style PNG icon sheets.
 - [Circuit generation](docs/circuit-generation.md)
+- [Screenshot capture runbook](docs/screenshot-capture-runbook.md) — regenerating the
+  marketing screenshots below from a deterministic solo save.
 
 ## Render Configuration
 

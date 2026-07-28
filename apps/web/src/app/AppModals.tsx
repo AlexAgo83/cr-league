@@ -271,7 +271,7 @@ export function AdminDeleteUserModal({
   const [confirmation, setConfirmation] = useState("");
   return (
     <Modal label={tt("admin_delete_user_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <ModalHero image="/assets/crl/league-arrival.webp" kicker={tt("admin_kicker")} title={tt("admin_delete_user_title")} />
+      <ModalHero image="/assets/crl/danger-reset.webp" kicker={tt("admin_kicker")} title={tt("admin_delete_user_title")} />
       <p>{tt("admin_delete_user_confirm", { email: user.email })}</p>
       <label className="field">
         <span>{tt("admin_delete_user_confirmation_label")}</span>
@@ -466,7 +466,7 @@ export function RestartConfirmModal({
   const tt = useT();
   return (
     <Modal label={tt("action_restart_league")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
-      <ModalHero image="/assets/crl/league-arrival.webp" kicker={tt("championship_kicker")} title={tt("action_restart_league")} />
+      <ModalHero image="/assets/crl/danger-reset.webp" kicker={tt("championship_kicker")} title={tt("action_restart_league")} />
       <p>{tt("restart_confirm")}</p>
       <div className="actions secondary-actions">
         <PendingFeedback message={pendingMessage} />

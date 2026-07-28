@@ -319,12 +319,11 @@ button.command-icon-button {
 }
 
 /* The hero follows the race verdict: a champagne shot above "P12, lost 3 places" reads as a
-   bug. Reuses existing library art, so swapping in bespoke images is four URLs here.
-   ponytail: no new assets, the outcome variable already existed in buildRaceVerdict. */
+   bug. The outcome variable already existed in buildRaceVerdict. */
 .report-hero {
   --color-text: #f8f3e8;
   --color-muted: rgb(248 243 232 / 0.78);
-  --report-hero-image: url("/assets/crl/onboarding-pit-wall.webp");
+  --report-hero-image: url("/assets/crl/report-hold.webp");
   background:
     linear-gradient(90deg, rgb(16 14 18 / 0.86), rgb(16 14 18 / 0.34)),
     var(--report-hero-image) center / cover no-repeat,
@@ -342,11 +341,11 @@ button.command-icon-button {
 }
 
 .report-hero[data-outcome="gain"] {
-  --report-hero-image: url("/assets/crl/onboarding-chrono.webp");
+  --report-hero-image: url("/assets/crl/report-gain.webp");
 }
 
 .report-hero[data-outcome="loss"] {
-  --report-hero-image: url("/assets/crl/onboarding-season.webp");
+  --report-hero-image: url("/assets/crl/report-loss.webp");
 }
 
 .report-hero .report-headline,

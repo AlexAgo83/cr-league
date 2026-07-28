@@ -2,7 +2,9 @@ import { DEMO_RACE_INPUT, circuitIdentityForRound, circuitSeasonSeed, simulateRa
 import { LeagueRuleError } from "./errors.js";
 import { getCurrentGrandPrix, lockGrandPrixRow, runWrite } from "./persistence.js";
 import { bestQualifyingRuns } from "./qualifying.js";
-import { defaultBotDecision, ensureBotQualifyingRuns, fillLeagueWithBots, getLeagueState, normalizePitStrategy } from "./lifecycle.js";
+import { defaultBotDecision, fillLeagueWithBots, normalizePitStrategy } from "./botLifecycle.js";
+import { ensureBotQualifyingRuns } from "./lifecycle.js";
+import { getLeagueState } from "./leagueState.js";
 import { requireAdminClaim } from "./transactionHelpers.js";
 import type { Db, LeagueState, ResolveGrandPrixInput } from "./types.js";
 

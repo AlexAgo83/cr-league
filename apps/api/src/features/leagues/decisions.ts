@@ -2,7 +2,9 @@ import { PIT_STRATEGIES, RACE_APPROACHES, TECHNICAL_PREPARATIONS } from "@cr-lea
 import { LeagueRuleError } from "./errors.js";
 import { getCurrentGrandPrix, lockGrandPrixRow, lockTeamRow, runWrite } from "./persistence.js";
 import { qualifyingCardForTeam } from "./qualifying.js";
-import { ensureBotQualifyingRuns, fillLeagueWithBots, getLeagueState } from "./lifecycle.js";
+import { fillLeagueWithBots } from "./botLifecycle.js";
+import { ensureBotQualifyingRuns } from "./lifecycle.js";
+import { getLeagueState } from "./leagueState.js";
 import { requireTeamClaim } from "./transactionHelpers.js";
 import type { Db, LeagueState, SubmitDecisionInput } from "./types.js";
 import { isCardId, normalizeCards, normalizeQualifyingRuns } from "./utils.js";

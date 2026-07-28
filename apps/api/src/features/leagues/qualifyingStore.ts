@@ -2,7 +2,8 @@ import { DEMO_RACE_INPUT, circuitIdentityForRound, circuitSeasonSeed, trackSpeed
 import { LeagueRuleError } from "./errors.js";
 import { getCurrentGrandPrix, lockGrandPrixRow, runWrite } from "./persistence.js";
 import { createQualifyingRuns, qualifyingCardForTeam } from "./qualifying.js";
-import { defaultBotDecision, getLeagueState } from "./lifecycle.js";
+import { defaultBotDecision } from "./botLifecycle.js";
+import { getLeagueState } from "./leagueState.js";
 import { requireTeamClaim } from "./transactionHelpers.js";
 import type { Db, SubmitQualifyingInput } from "./types.js";
 import { clampInteger, normalizeQualifyingRuns } from "./utils.js";

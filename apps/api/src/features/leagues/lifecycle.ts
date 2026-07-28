@@ -1,6 +1,5 @@
 import {
   CAR_ASSET_PRICES,
-  CARD_PRICES,
   DEMO_RACE_INPUT,
   circuitIdentityForRound,
   circuitSeasonSeed,
@@ -9,13 +8,10 @@ import {
   trackSpeedProfileForCircuit,
   type CarAssetId,
   type LeagueState as SharedLeagueState,
-  type RaceDecision,
-  type RaceInput,
-  type RaceResult
+  type RaceInput
 } from "@cr-league/shared";
 import { createHash } from "node:crypto";
 import {
-  CARD_SHOP,
   DEFAULT_GRAND_PRIX_PER_SEASON,
   DEFAULT_MAX_PLAYERS,
   DEFAULT_QUALIFYING_ATTEMPTS,
@@ -32,9 +28,11 @@ import { buyBotCards, buyBotCars, defaultBotDecision, fillLeagueWithBots, normal
 import { LeagueRuleError } from "./errors.js";
 import { getCurrentGrandPrix, isUniqueConstraintError, lockGrandPrixRow, lockLeagueRow, lockTeamRow, retryUnique, runWrite } from "./persistence.js";
 import { createQualifyingRuns } from "./qualifying.js";
-import { requireAdminClaim, requireTeamClaim } from "./transactionHelpers.js";
-import type { AdminProofInput, CreateLeagueInput, Db, JoinLeagueInput, LeagueState, RejoinLeagueInput, UpdateLeagueSettingsInput, UpdateTeamLiveryInput, UpdateTeamNameInput } from "./types.js";
-import { clampInteger, createClaimCode, createLeagueCode, createSessionCredential, ensureProfileOwnership, hashRecoveryCode, isLeagueCadence, liveryKey, normalizeCards, normalizeDisplayName, normalizeLivery, normalizeQualifyingRuns, normalizeSeasonSummaries, normalizeUnlockedCarAssetIds, randomLivery, uniqueBotLivery, verifyRecoveryCode } from "./utils.js";
+import { requireAdminClaim } from "./transactionHelpers.js";
+import { getLeagueState } from "./leagueState.js";
+import { withPlayer } from "./visibility.js";
+import type { AdminProofInput, CreateLeagueInput, Db, JoinLeagueInput, LeagueState, RejoinLeagueInput } from "./types.js";
+import { clampInteger, createClaimCode, createLeagueCode, createSessionCredential, ensureProfileOwnership, hashRecoveryCode, liveryKey, normalizeDisplayName, normalizeLivery, normalizeQualifyingRuns, normalizeUnlockedCarAssetIds, randomLivery, uniqueBotLivery, verifyRecoveryCode } from "./utils.js";
 
 export { defaultBotDecision, fillLeagueWithBots, normalizePitStrategy };
 
@@ -176,241 +174,6 @@ export async function rejoinLeague(db: Db, input: RejoinLeagueInput = {}) {
 
   const state = await getLeagueState(db, team.leagueId, { includeInviteCode: true });
   return state ? withPlayer(state, team.id, input.claimCode ?? "") : null;
-}
-
-export async function getLeagueState(db: Db, leagueId: string, options: { includeInviteCode?: boolean } = {}): Promise<LeagueState | null> {
-  // ponytail: fetch only the current GP with its decisions; past GPs pulled decisions + result/
-  // qualifying/forecast JSON blobs for nothing (history only needs id/name/season/round/status/result),
-  // a cost that grew unbounded with seasons.
-  const league = await db.league.findUnique({
-    where: { id: leagueId },
-    include: {
-      teams: { orderBy: [{ points: "desc" }, { name: "asc" }] },
-      grandPrixes: {
-        orderBy: [{ season: "desc" }, { round: "desc" }],
-        take: 1,
-        include: {
-          decisions: true
-        }
-      }
-    }
-  });
-
-  if (!league || !league.grandPrixes[0]) return null;
-
-  const grandPrix = league.grandPrixes[0];
-  const grandPrixHistory = await db.grandPrix.findMany({
-    where: { leagueId },
-    orderBy: [{ season: "desc" }, { round: "desc" }],
-    select: { id: true, name: true, season: true, round: true, status: true, result: true }
-  });
-  const currentCircuit = circuitIdentityForRound(grandPrix.round, circuitSeasonSeed(league.id, grandPrix.season));
-  return {
-    league: {
-      id: league.id,
-      name: league.name,
-      code: options.includeInviteCode ? league.code : null,
-      status: league.status,
-      cadence: league.cadence,
-      maxPlayers: league.maxPlayers,
-      fillWithBots: league.fillWithBots,
-      qualifyingAttemptLimit: league.qualifyingAttemptLimit,
-      maxGrandPrixPerSeason: league.maxGrandPrixPerSeason,
-      variableShop: league.variableShop,
-      preparationDeadlineAt: league.preparationDeadlineAt?.toISOString() ?? null,
-      reminderSentAt: league.reminderSentAt?.toISOString() ?? null,
-      reminderSentBy: league.reminderSentBy,
-      reminderSeasonNumber: league.reminderSeasonNumber,
-      reminderSentCount: league.reminderSentCount,
-      reminderSkippedCount: league.reminderSkippedCount
-    },
-    seasonSummaries: normalizeSeasonSummaries(league.seasonSummaries),
-    currentGrandPrix: {
-      id: grandPrix.id,
-      name: grandPrix.name,
-      season: grandPrix.season,
-      round: grandPrix.round,
-      status: grandPrix.status,
-      primaryTrait: grandPrix.primaryTrait as RaceInput["primaryTrait"],
-      secondaryTrait: grandPrix.secondaryTrait as RaceInput["secondaryTrait"],
-      trackLengthMeters: currentCircuit.trackLengthMeters,
-      forecast: grandPrix.forecast as RaceInput["forecast"],
-      qualifyingRuns: normalizeQualifyingRuns(grandPrix.qualifyingRuns),
-      result: grandPrix.result as RaceResult | null
-    },
-    grandPrixHistory: grandPrixHistory.map((entry) => ({
-      id: entry.id,
-      name: entry.name,
-      season: entry.season,
-      round: entry.round,
-      status: entry.status,
-      result: entry.result as RaceResult | null
-    })),
-    teams: league.teams.map((team) => ({
-      id: team.id,
-      name: team.name,
-      kind: team.kind,
-      points: team.points,
-      credits: team.credits,
-      cards: normalizeCards(team.cards),
-      livery: normalizeLivery(team.livery),
-      unlockedCarAssetIds: normalizeUnlockedCarAssetIds(team.unlockedCarAssetIds),
-      ready: grandPrix.decisions.some((decision) => decision.teamId === team.id)
-    })),
-    cardShop: league.variableShop
-      ? normalizeCards(grandPrix.shopCardIds).map((cardId) => ({ cardId, price: CARD_PRICES[cardId] }))
-      : CARD_SHOP,
-    actionState: buildActionState(
-      league.teams.map((team) => ({ id: team.id, kind: team.kind })),
-      grandPrix.status,
-      grandPrix.decisions.map((decision) => decision.teamId)
-    ),
-    decisions: grandPrix.decisions.map((decision) => ({
-      teamId: decision.teamId,
-      approach: decision.approach as RaceDecision["approach"],
-      preparation: decision.preparation as RaceDecision["preparation"],
-      pitStrategy: normalizePitStrategy(decision.pitStrategy),
-      cardId: decision.cardId as RaceDecision["cardId"] | null,
-      rivalTeamId: decision.rivalTeamId
-    }))
-  };
-}
-
-export async function updateLeagueSettings(db: Db, leagueId: string, input: UpdateLeagueSettingsInput = {}) {
-  await requireAdminClaim(db, leagueId, input);
-  const data: { name?: string; cadence?: string; preparationDeadlineAt?: Date | null } = {};
-
-  if (input.name !== undefined) {
-    const name = normalizeDisplayName(input.name, LEAGUE_NAME_LIMIT);
-    if (!name) {
-      throw new LeagueRuleError("League name must be 3 to 40 readable characters.");
-    }
-    data.name = name;
-  }
-
-  if (input.cadence !== undefined) {
-    if (!isLeagueCadence(input.cadence)) {
-      throw new LeagueRuleError("Unsupported league cadence.");
-    }
-    data.cadence = input.cadence;
-  }
-
-  if (input.preparationDeadlineAt !== undefined) {
-    data.preparationDeadlineAt = input.preparationDeadlineAt ? new Date(input.preparationDeadlineAt) : null;
-    if (data.preparationDeadlineAt && Number.isNaN(data.preparationDeadlineAt.getTime())) {
-      throw new LeagueRuleError("Invalid preparation deadline.");
-    }
-  }
-
-  const league = await db.league.findUnique({ where: { id: leagueId } });
-  if (!league) return null;
-
-  await db.league.update({
-    where: { id: leagueId },
-    data
-  });
-
-  return getLeagueState(db, leagueId);
-}
-
-export async function updateTeamLivery(db: Db, leagueId: string, input: UpdateTeamLiveryInput = {}) {
-  const livery = normalizeLivery(input.livery);
-  const state = await getLeagueState(db, leagueId);
-  if (!state) return null;
-  const team = await requireTeamClaim(db, leagueId, input);
-  const selectedCarAssetId = livery.carAssetId;
-  if (
-    selectedCarAssetId &&
-    isCarAssetId(selectedCarAssetId) &&
-    CAR_ASSET_PRICES[selectedCarAssetId] > 0 &&
-    !normalizeUnlockedCarAssetIds(team.unlockedCarAssetIds).includes(selectedCarAssetId)
-  ) {
-    throw new LeagueRuleError("This car is locked.");
-  }
-
-  await db.team.update({
-    where: { id: team.id },
-    data: { livery }
-  });
-
-  return getLeagueState(db, leagueId);
-}
-
-export async function updateTeamName(db: Db, leagueId: string, input: UpdateTeamNameInput = {}) {
-  const name = normalizeDisplayName(input.name, TEAM_NAME_LIMIT);
-  if (!name) {
-    throw new LeagueRuleError("Team name must be 3 to 32 readable characters.");
-  }
-
-  const state = await getLeagueState(db, leagueId);
-  if (!state) return null;
-  const team = await requireTeamClaim(db, leagueId, input);
-  if (state.teams.some((candidate) => candidate.id !== team.id && candidate.name.toLowerCase() === name.toLowerCase())) {
-    throw new LeagueRuleError("This team name is already taken.");
-  }
-
-  await db.team.update({
-    where: { id: team.id },
-    data: { name }
-  });
-
-  return getLeagueState(db, leagueId);
-}
-
-export async function sendPlanReminders(db: Db, leagueId: string, input: AdminProofInput = {}, mailer?: { active: boolean; sendPlanReminder?: (email: string, input: { leagueName: string; teamName: string; grandPrixName: string; season: number; round: number }) => Promise<boolean> }) {
-  await requireAdminClaim(db, leagueId, input);
-  const league = await db.league.findUnique({
-    where: { id: leagueId },
-    include: {
-      teams: { include: { profile: true } },
-      grandPrixes: {
-        orderBy: [{ season: "desc" }, { round: "desc" }],
-        take: 1,
-        include: { decisions: true }
-      }
-    }
-  });
-  const grandPrix = league?.grandPrixes[0];
-  if (!league || !grandPrix) return null;
-  if (league.reminderSeasonNumber === grandPrix.season && league.reminderSentAt) {
-    return { state: await getLeagueState(db, leagueId), reminder: { alreadySent: true, sentCount: 0, skippedCount: 0 } };
-  }
-
-  const submitted = new Set(grandPrix.decisions.map((decision) => decision.teamId));
-  const pendingTeams = league.teams.filter((team) => team.kind === "human" && !submitted.has(team.id));
-  let sentCount = 0;
-  let skippedCount = 0;
-  for (const team of pendingTeams) {
-    const email = team.profile?.email;
-    if (!email || !mailer?.active || !mailer.sendPlanReminder) {
-      skippedCount += 1;
-      continue;
-    }
-    try {
-      if (await mailer.sendPlanReminder(email, { leagueName: league.name, teamName: team.name, grandPrixName: grandPrix.name, season: grandPrix.season, round: grandPrix.round })) {
-        sentCount += 1;
-      } else {
-        skippedCount += 1;
-      }
-    } catch {
-      skippedCount += 1;
-    }
-  }
-
-  if (sentCount > 0) {
-    await db.league.update({
-      where: { id: leagueId },
-      data: {
-        reminderSentAt: new Date(),
-        reminderSentBy: input.teamId,
-        reminderSeasonNumber: grandPrix.season,
-        reminderSentCount: sentCount,
-        reminderSkippedCount: skippedCount
-      }
-    });
-  }
-
-  return { state: await getLeagueState(db, leagueId), reminder: { alreadySent: false, sentCount, skippedCount } };
 }
 
 export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminProofInput = {}) {
@@ -608,64 +371,3 @@ export async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnT
   });
 }
 
-function buildActionState(teams: Array<{ id: string; kind: string }>, grandPrixStatus: string, submittedTeamIds: string[]) {
-  const submitted = new Set(submittedTeamIds);
-  const humanTeamIds = teams.filter((team) => team.kind === "human").map((team) => team.id);
-  const missingTeamIds = grandPrixStatus === "resolved" ? [] : humanTeamIds.filter((teamId) => !submitted.has(teamId));
-  const canStartNextGrandPrix = grandPrixStatus === "resolved";
-  const canResolve = grandPrixStatus !== "resolved" && humanTeamIds.length > 0 && missingTeamIds.length === 0;
-  const canResolveWithDefaults = grandPrixStatus !== "resolved" && missingTeamIds.length > 0;
-
-  return {
-    submittedTeamIds,
-    missingTeamIds,
-    canResolve,
-    canResolveWithDefaults,
-    canStartNextGrandPrix,
-    nextAction: canStartNextGrandPrix ? "start_next_grand_prix" : canResolve ? "resolve_grand_prix" : canResolveWithDefaults ? "resolve_with_defaults" : "wait_for_directives"
-  };
-}
-
-export function publicLeagueState(state: LeagueState): LeagueState {
-  return { ...state, decisions: [] };
-}
-
-export function withPlayer(state: LeagueState, teamId: string, claimCode: string): LeagueState {
-  const visibleState = canRevealOpponentDecisions(state, teamId)
-    ? { ...state, decisions: revealedDecisions(state) }
-    : { ...state, decisions: state.decisions.filter((decision) => decision.teamId === teamId) };
-  return {
-    ...visibleState,
-    league: {
-      ...visibleState.league,
-      code: visibleState.league.code ?? ""
-    },
-    player: {
-      teamId,
-      claimCode
-    }
-  };
-}
-
-export function canRevealOpponentDecisions(state: LeagueState, teamId: string) {
-  return state.currentGrandPrix.status === "resolved" || state.decisions.some((decision) => decision.teamId === teamId);
-}
-
-export function revealedDecisions(state: LeagueState): LeagueState["decisions"] {
-  const byTeam = new Map(state.decisions.map((decision) => [decision.teamId, decision]));
-  return state.teams.flatMap((team, index) => {
-    const explicit = byTeam.get(team.id);
-    if (explicit) return [explicit];
-    if (team.kind !== "bot" && state.currentGrandPrix.status !== "resolved") return [];
-    const demo = DEMO_RACE_INPUT.participants[index % DEMO_RACE_INPUT.participants.length];
-    const decision = defaultBotDecision(state, team, demo?.decision);
-    return [{
-      teamId: team.id,
-      approach: decision.approach,
-      preparation: decision.preparation,
-      pitStrategy: normalizePitStrategy(decision.pitStrategy),
-      cardId: decision.cardId ?? null,
-      rivalTeamId: decision.rivalTeamId ?? null
-    }];
-  });
-}

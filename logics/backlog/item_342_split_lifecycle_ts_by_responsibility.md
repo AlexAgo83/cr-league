@@ -1,10 +1,10 @@
 ## item_342_split_lifecycle_ts_by_responsibility - Split lifecycle.ts by responsibility
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Code organization
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -50,3 +50,10 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Done: `lifecycle.ts` went from 671 lines to 375 and now holds only season lifecycle (`createDemoLeague`, `joinLeagueByCode`, `rejoinLeague`, `startNextGrandPrix`, `restartLeague`, `ensureBotQualifyingRuns`, and the season-summary / car-asset helpers).
+- Extracted: `leagueState.ts` (104 lines, `getLeagueState` — the central read model, given its own file so both lifecycle and the other stores depend on it rather than on each other), `teamAdmin.ts` (88 lines, `updateLeagueSettings` / `updateTeamLivery` / `updateTeamName`), `reminders.ts` (59 lines, `sendPlanReminders`), `visibility.ts` (65 lines, `buildActionState` / `publicLeagueState` / `withPlayer` / `canRevealOpponentDecisions` / `revealedDecisions`).
+- `buildActionState` had to become exported (it was file-private) so `leagueState.ts` can use it; no other signature changed. Import graph is acyclic: `visibility` -> `leagueState` -> `teamAdmin`/`reminders`/`lifecycle`.
+- Internal importers (`cards.ts`, `carAssets.ts`, `decisions.ts`, `qualifyingStore.ts`, `resolution.ts`, `opponentComparison.ts`) now import from the new modules directly instead of re-importing through `lifecycle.ts`; `store.ts`'s external re-export surface is byte-identical in effect.
+- Pure move — no logic change. Typecheck, lint, build, and the full suite (380 passed, 7 skipped) green.

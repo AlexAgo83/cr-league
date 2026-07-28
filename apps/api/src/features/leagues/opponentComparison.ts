@@ -1,5 +1,7 @@
 import { LeagueRuleError } from "./errors.js";
-import { canRevealOpponentDecisions, getLeagueState, normalizePitStrategy, revealedDecisions } from "./lifecycle.js";
+import { normalizePitStrategy } from "./botLifecycle.js";
+import { getLeagueState } from "./leagueState.js";
+import { canRevealOpponentDecisions, revealedDecisions } from "./visibility.js";
 import { requireTeamClaim } from "./transactionHelpers.js";
 import type { Db, OpponentConfigComparison } from "./types.js";
 

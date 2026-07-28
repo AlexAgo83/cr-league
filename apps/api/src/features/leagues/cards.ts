@@ -2,7 +2,7 @@ import { CARD_PRICES } from "@cr-league/shared";
 import { LeagueRuleError } from "./errors.js";
 import { getCurrentGrandPrix, lockTeamRow, runWrite } from "./persistence.js";
 import { qualifyingCardForTeam } from "./qualifying.js";
-import { getLeagueState } from "./lifecycle.js";
+import { getLeagueState } from "./leagueState.js";
 import { requireTeamClaim } from "./transactionHelpers.js";
 import type { Db } from "./types.js";
 import { clampInteger, isCardId, normalizeCards, normalizeQualifyingRuns, removeOneCard } from "./utils.js";

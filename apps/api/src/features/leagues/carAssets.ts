@@ -1,7 +1,7 @@
 import { CAR_ASSET_PRICES, isCarAssetId } from "@cr-league/shared";
 import { LeagueRuleError } from "./errors.js";
 import { lockTeamRow, runWrite } from "./persistence.js";
-import { getLeagueState } from "./lifecycle.js";
+import { getLeagueState } from "./leagueState.js";
 import { requireTeamClaim } from "./transactionHelpers.js";
 import type { BuyCarAssetInput, Db } from "./types.js";
 import { normalizeLivery, normalizeUnlockedCarAssetIds } from "./utils.js";

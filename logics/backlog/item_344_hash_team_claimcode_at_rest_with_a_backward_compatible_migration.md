@@ -8,9 +8,11 @@
 > Complexity: High
 > Theme: Security hardening
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: Raised priority to High and noted that production already holds plaintext claimCode rows since v0.6.0 shipped; no scope or AC change.
 
 # Problem
 - Team.claimCode (prisma/schema.prisma, the Team model) is stored and compared in plaintext (apps/api/src/features/leagues/transactionHelpers.ts, requireTeamClaim, and its use in apps/api/src/features/leagues/utils.ts / lifecycle.ts wherever teams are created/joined), unlike sessionClaimCodeHash and recoveryCodeHash, which are already hashed. A database dump or backup leak exposes every team's claim code directly, with no hash protecting it.
+- This is not theoretical: v0.6.0 is live in production (https://cr-league-api.onrender.com), so real leagues and teams created since that release already have plaintext claimCode rows sitting in the production database today. The migration below must be run against that real, already-populated production data, not just against hypothetical "existing rows" — validate the legacy-upgrade path against production-shaped data before considering this closed.
 - This is the highest-effort, highest-risk slice in this corpus: it requires a schema migration and must not break claim/recovery flows for teams already created before the migration runs, since those existing rows will have no hash to verify against.
 
 # Scope
@@ -53,5 +55,5 @@
 - Skip when: The change belongs to another backlog slice.
 
 # Priority
-- Priority: Medium
-- Rationale: Set by scaffold input or defaulted for grooming.
+- Priority: High
+- Rationale: v0.6.0 is already deployed to production, so plaintext claimCode rows already exist in the live database — this is a present exposure, not a future one.

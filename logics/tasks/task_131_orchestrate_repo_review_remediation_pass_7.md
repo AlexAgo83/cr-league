@@ -8,9 +8,11 @@
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
+> Non-semantic edit: Noted that v0.6.0 is live in production and item_344's exposure is already real, not just future risk; no scope or plan change.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
+- v0.6.0 is live in production (https://cr-league-api.onrender.com). `item_344` (hash team claimCode) is not a preventive fix for a future risk — real leagues/teams created since that release already have plaintext claimCode rows in the production database today. Treat `item_344` as High priority and validate its migration against production-shaped data, not only against fresh test rows.
 
 # Plan
 - [ ] 1. Land the DB index slice first — it is independent, low-risk, and quick.

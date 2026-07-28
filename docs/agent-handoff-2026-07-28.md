@@ -1,34 +1,39 @@
 # Agent Handoff - 2026-07-28
 
 ## Current State
-- Latest commits:
-  - `e85072f` preserves credits across season rollover.
-  - `3c70f15` preserves garage cards across season rollover.
-  - `68a6119` sorts Garage inventory/shop cards by availability first, then deterministic utility.
-  - `9d61ff8` adds in-league team profile modals from standings.
-  - `a082667`, `746945e`, and `79a52d7` delivered contextual card guidance, derived rivals, and actionable report guidance.
-- Active Logics workflow: `req_129` / `task_130` for the 0.6 beta season lifecycle and league management corpus.
-- `logics-manager status` reports 5 open workflow docs and no detected next action. The open work is optional/evidence-gated, not a blocker for the delivered 0.6 core.
+- `req_129` / `task_130` (0.6 beta season lifecycle and league management) is fully **Done and closed**. `item_331` (optional variable shop) shipped; `item_332` and `item_333` are Archived with documented reopen triggers. `prod_081` and specs `spec_004/005/006/009` are Settled.
+- **v0.6.0 is released and live in production** (`https://cr-league-api.onrender.com`, web at `https://cr-league.onrender.com`). Tag `v0.6.0`, GitHub Release published, `deploy-release.yml` succeeded, production `/health` confirmed `version: 0.6.0`.
+- A whole-repo review after the v0.6.0 release (architecture, security, test/CI health) found no high-severity security issues and no dead code, but surfaced 12 independent code-quality/hardening findings, now scaffolded as **`req_130` / `task_131` ("repo review remediation pass 7")** — Status: Ready, not yet implemented.
+- `logics-manager status` reports the pass-7 corpus as the only open workflow chain. `logics-manager lint`/`audit` are clean (only the expected pre-implementation AC-traceability warnings on `req_130`, normal for an unimplemented request).
 
-## Delivered
-- `item_324` through `item_330` are delivered: season presets, explicit season-end/next-season flow, commissioner `Direction de course`, manual one-send-per-season reminders, accessibility fixes, report next-action guidance, derived rival context, contextual card guidance, and in-league team profiles.
-- Season rollover now resets championship points only. Players, palmares, archived season stats, livery/team identity, credits, and garage cards persist.
-- Championship/Garage UI follow-ups landed during the handoff run: board-style switches, dark standings/palmares/history surfaces, mobile standings/palmares/profile fixes, profile stars, card modal contrast, card-cell layout fixes, inventory/shop sort, and unavailable-card ordering.
+## Next Work: req_130 / task_131 (repo review remediation pass 7)
+12 independent backlog slices, each self-contained (read the backlog doc, no need to re-read prior conversation history):
+- `item_335` — add missing `@@index([leagueId])` on `Team` and `GrandPrix` (quick, low-risk).
+- `item_336` — fix `testMemoryDb.ts`'s silent `select`-ignoring bug on `grandPrix.findMany`.
+- `item_337` — harden `testMemoryDb.ts` further (include/mutation-count drift); **depends on `item_336` landing first** (reuses its shared helper).
+- `item_338` — add Playwright E2E coverage for the 0.6 corpus's highest-risk flows (commissioner Race direction, variable shop, team profiles) — currently zero E2E coverage on any of them.
+- `item_339` — raise branch coverage on `ReplayProgress.tsx`, `replayMoment.ts`, `useReplayClock.ts`; the repo's branch-coverage threshold (80%) currently has only a 0.65-point margin.
+- `item_340` — move `seasonStandings`/`derivedRivalForTeam` from `apps/web/src/app/helpers.ts` into `packages/shared`; disambiguate the derived-rival concept from `RaceDecision.rivalTeamId`.
+- `item_341` — rename `apps/api/src/features/admin/store.ts` (filename collision with the `leagues/store.ts` barrel convention).
+- `item_342` — split `apps/api/src/features/leagues/lifecycle.ts` (671 lines / 18 exports) by responsibility.
+- `item_343` — rate-limit every route under `/admin/*` (currently unthrottled, unlike league write routes).
+- `item_344` — **High priority**: hash `Team.claimCode` at rest with a backward-compatible migration. This is not preventive — v0.6.0 is already live, so real leagues/teams created since release already have plaintext `claimCode` rows in the production database today. Validate the legacy-upgrade path against production-shaped data, not only fresh test rows.
+- `item_345` — replace hardcoded UI-copy assertions in `tests/e2e/private-league.spec.ts` with `data-testid` (already broke once this session on a button rename).
+- `item_346` — optional: CI-only Playwright retries, **only if** real flakiness evidence is found in CI history; otherwise skip and record that in the closeout report.
 
-## Remaining 0.6 Work
-- `item_331` optional variable shop stays deferred unless tester evidence shows the fixed shop is too flat or predictable.
-- `item_332` is effectively reframed: the baseline continuity rule is now preserve credits and garage cards; only future cap/anti-snowball work should reopen it, and only with balance evidence.
-- `item_333` deterministic race engineer stays deferred unless Plan/card guidance remains unclear in playtest.
-- Do not add automatic reminders, polling/SSE, deadline auto-resolution, bot replacement, public matchmaking, compact replay, tutorial rewrite, or broad card tuning without new evidence.
+`task_131`'s suggested sequencing: DB index first -> testMemoryDb select-fix then hardening -> E2E/coverage in parallel -> code-organization batch (standings move, admin rename, lifecycle split) testing after each individually -> admin rate-limit -> claimCode hashing (last among required work, benefits from the rest already landing) -> E2E data-testid -> evaluate CI retries. Keep commits scoped per slice, not one giant commit.
 
 ## Validation To Re-run
-- Last run on 2026-07-28: Logics lint OK, audit OK with expected `req_129` AC traceability warnings while `task_130` is not Done, typecheck OK, targeted API/web tests OK (106 passed), and `git diff --check` OK.
-- `rtk logics-manager lint --require-status`
-- `rtk logics-manager audit --group-by-doc`
-- `rtk npm run typecheck`
-- `rtk npm test -- --run apps/api/src/app.test.ts apps/web/src/app/helpers.test.ts apps/web/src/app/App.test.tsx apps/web/src/features/ChampionshipView.test.ts`
-- `rtk npm run playtest:browser -- --rounds 2 --report reports/playtest/team-profile-browser.md --ux-report reports/ux/team-profile-browser.md --ux-assets reports/ux/team-profile-browser`
+- `logics-manager lint --require-status`
+- `logics-manager audit --group-by-doc`
+- `npm run typecheck`
+- `npm test` (full suite) and `npx vitest run --coverage`
+- `npm run build`
+- `npm run test:e2e`
+- `npm run balance:gate`
+- `npm run logics:validate`
 
 ## Watchouts
-- `logics-manager flow progress task` can mutate sibling item indicators. If used, verify `item_331`, `item_332`, and `item_333` remain Ready/0 unless they are deliberately started.
-- If final-season standings look odd after a 3-GP browser run, investigate that view directly; the latest profile evidence used the normal standings/profile route.
+- `apps/api/src/testMemoryDb.ts` is a hand-rolled in-memory Prisma fake that has already silently diverged from real Prisma semantics twice this session (`include: { teams: true }` boolean shorthand, and the `select`-ignoring bug fixed as part of the v0.6.0 release prep). Treat any change to a real Prisma call's `where`/`include`/`select` shape as a signal to check whether the fake actually handles it.
+- `item_344`'s migration touches live production data — do not treat "existing rows" as hypothetical; there are real rows today.
+- `item_337`, `item_340`, and `item_342` all touch widely-imported modules (`testMemoryDb.ts`, `apps/web/src/app/helpers.ts`, `apps/api/src/features/leagues/lifecycle.ts`) — run the full test suite after each slice individually, not just at the end.

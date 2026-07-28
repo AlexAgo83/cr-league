@@ -1,9 +1,10 @@
 import { CARD_DEFINITIONS } from "../cards/definitions.js";
-import { circuitIdentityForRound, circuitSeasonSeed, trackSpeedProfileForCircuit } from "./circuits.js";
+import { circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, trackSpeedProfileForCircuit, trackZonesForCircuit } from "./circuits.js";
 import { isCarAssetId, CAR_ASSET_PRICES } from "../economy/carAssets.js";
 import { CARD_PRICES } from "../economy/constants.js";
-import { createQualifyingRuns } from "../simulation/qualifyingRuns.js";
-import type { CardId, RaceDecision, RaceInput, TeamLivery } from "./race.js";
+import { bestQualifyingRuns, createQualifyingRuns } from "../simulation/qualifyingRuns.js";
+import { simulateRace } from "../simulation/simulateRace.js";
+import type { CardId, RaceDecision, RaceInput, RaceParticipant, TeamLivery } from "./race.js";
 import { PIT_STRATEGIES, RACE_APPROACHES, TECHNICAL_PREPARATIONS } from "./race.js";
 import type { LeagueState } from "./league.js";
 
@@ -48,6 +49,10 @@ export type SubmitDecisionInput = TeamScopedInput & {
 
 export type RunQualifyingInput = SubmitDecisionInput & {
   laps?: number;
+};
+
+export type ResolveGrandPrixInput = {
+  allowDefaults?: boolean;
 };
 
 export function buyCard(state: LeagueState, input: BuyCardInput = {}) {
@@ -139,9 +144,11 @@ export function submitDecision(state: LeagueState, input: SubmitDecisionInput) {
     cardId: cardId ?? null,
     rivalTeamId: decision.rivalTeamId ?? null
   };
+  const decisions = [nextDecision, ...state.decisions.filter((candidate) => candidate.teamId !== team.id)];
   return {
     ...state,
-    decisions: [nextDecision, ...state.decisions.filter((candidate) => candidate.teamId !== team.id)]
+    decisions,
+    actionState: buildActionState(state.teams, state.currentGrandPrix.status, decisions.map((decision) => decision.teamId))
   };
 }
 
@@ -226,6 +233,107 @@ export function runQualifying(state: LeagueState, input: RunQualifyingInput) {
   };
 }
 
+export function resolveGrandPrix(state: LeagueState, input: ResolveGrandPrixInput = {}) {
+  if (state.currentGrandPrix.status === "resolved") {
+    throw new SharedLeagueRuleError("This Grand Prix is already resolved.");
+  }
+  const missingTeamIds = missingHumanTeamIds(state);
+  if (missingTeamIds.length && !input.allowDefaults) {
+    throw new SharedLeagueRuleError("Some drivers still need to submit their race directive.");
+  }
+  if (state.teams.length < 2) {
+    throw new SharedLeagueRuleError("At least two teams are required to launch the Grand Prix.");
+  }
+
+  const circuit = circuitIdentityForRound(state.currentGrandPrix.round, circuitSeasonSeed(state.league.id, state.currentGrandPrix.season));
+  const result = simulateRace({
+    seed: state.currentGrandPrix.id,
+    grandPrixName: state.currentGrandPrix.name,
+    primaryTrait: state.currentGrandPrix.primaryTrait as RaceInput["primaryTrait"],
+    secondaryTrait: state.currentGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
+    traits: circuit.traits,
+    trackLengthMeters: circuit.trackLengthMeters,
+    laps: circuit.laps,
+    pitLaneProgress: circuit.pitLaneProgress,
+    trackZones: trackZonesForCircuit(circuit),
+    speedProfile: trackSpeedProfileForCircuit(circuit),
+    forecast: state.currentGrandPrix.forecast,
+    participants: buildParticipants(state)
+  });
+  result.defaultedTeamIds = missingTeamIds;
+  const consumedByTeam = new Map<string, CardId[]>();
+  for (const consumed of result.consumedCards) {
+    consumedByTeam.set(consumed.teamId, [...(consumedByTeam.get(consumed.teamId) ?? []), consumed.cardId]);
+  }
+  const rewardByTeam = new Map(result.classification.map((entry) => [entry.teamId, entry]));
+  const teams = state.teams.map((team) => {
+    const reward = rewardByTeam.get(team.id);
+    const cards = [...team.cards];
+    for (const cardId of consumedByTeam.get(team.id) ?? []) {
+      const index = cards.indexOf(cardId);
+      if (index >= 0) cards.splice(index, 1);
+    }
+    return {
+      ...team,
+      points: team.points + (reward?.points ?? 0),
+      credits: team.credits + (reward?.credits ?? 0),
+      cards,
+      ready: true
+    };
+  });
+  const currentGrandPrix = {
+    ...state.currentGrandPrix,
+    status: "resolved",
+    result
+  };
+
+  return {
+    ...state,
+    currentGrandPrix,
+    grandPrixHistory: upsertGrandPrixHistory(state.grandPrixHistory, currentGrandPrix),
+    teams,
+    actionState: buildActionState(teams, "resolved", state.decisions.map((decision) => decision.teamId))
+  };
+}
+
+export function startNextGrandPrix(state: LeagueState) {
+  if (state.currentGrandPrix.status !== "resolved") {
+    throw new SharedLeagueRuleError("Resolve the current Grand Prix before starting the next one.");
+  }
+  const nextSeason = state.currentGrandPrix.round >= state.league.maxGrandPrixPerSeason ? state.currentGrandPrix.season + 1 : state.currentGrandPrix.season;
+  const nextRound = state.currentGrandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : state.currentGrandPrix.round + 1;
+  const nextRaceInput = raceInputFromCircuit(circuitIdentityForRound(nextRound, circuitSeasonSeed(state.league.id, nextSeason)));
+  const closingSeasonSummary = nextSeason !== state.currentGrandPrix.season ? seasonSummaryFromState(state, state.currentGrandPrix.season) : null;
+  const teams = state.teams.map((team) => ({
+    ...team,
+    points: nextSeason !== state.currentGrandPrix.season ? 0 : team.points,
+    ready: false
+  }));
+  const currentGrandPrix = {
+    id: `${state.league.id}-gp-${nextSeason}-${nextRound}`,
+    name: state.currentGrandPrix.name,
+    season: nextSeason,
+    round: nextRound,
+    status: "briefing",
+    primaryTrait: nextRaceInput.primaryTrait,
+    secondaryTrait: nextRaceInput.secondaryTrait,
+    trackLengthMeters: nextRaceInput.trackLengthMeters ?? state.currentGrandPrix.trackLengthMeters,
+    forecast: nextRaceInput.forecast,
+    qualifyingRuns: [],
+    result: null
+  };
+
+  return {
+    ...state,
+    seasonSummaries: closingSeasonSummary ? upsertSeasonSummary(state.seasonSummaries, closingSeasonSummary) : state.seasonSummaries,
+    currentGrandPrix,
+    grandPrixHistory: upsertGrandPrixHistory(state.grandPrixHistory, state.currentGrandPrix),
+    teams,
+    decisions: [],
+    actionState: buildActionState(teams, "briefing", [])
+  };
+}
+
 export function validateDecisionValues(state: LeagueState, input: SubmitDecisionInput): RaceDecision {
   if (!RACE_APPROACHES.includes(input.approach as RaceDecision["approach"])) {
     throw new SharedLeagueRuleError("Unsupported race approach.");
@@ -260,6 +368,96 @@ export function qualifyingCardForTeam(runs: LeagueState["currentGrandPrix"]["qua
   return runs.find((run) => run.teamId === teamId && run.decision?.cardId === "qualifying_focus")?.decision?.cardId;
 }
 
+function missingHumanTeamIds(state: LeagueState) {
+  const submitted = new Set(state.decisions.map((decision) => decision.teamId));
+  return state.teams.filter((team) => team.kind === "human" && !submitted.has(team.id)).map((team) => team.id);
+}
+
+function buildParticipants(state: LeagueState): RaceParticipant[] {
+  const baseRank = new Map(state.teams.map((team, index) => [team.id, index + 1]));
+  const qualifyingTime = new Map(bestQualifyingRuns(state.currentGrandPrix.qualifyingRuns).map((run) => [run.teamId, run.time]));
+  const qualifyingRank = new Map(
+    [...state.teams]
+      .sort(
+        (left, right) =>
+          (qualifyingTime.get(left.id) ?? Number.POSITIVE_INFINITY) - (qualifyingTime.get(right.id) ?? Number.POSITIVE_INFINITY) ||
+          (baseRank.get(left.id) ?? 999) - (baseRank.get(right.id) ?? 999)
+      )
+      .map((team, index) => [team.id, index + 1])
+  );
+
+  return state.teams.map((team, index) => {
+    const decision = state.decisions.find((candidate) => candidate.teamId === team.id);
+    return {
+      teamId: team.id,
+      teamName: team.name,
+      kind: team.kind === "bot" ? "bot" : "human",
+      standingsRank: qualifyingRank.get(team.id) ?? index + 1,
+      decision: team.kind === "bot" ? defaultBotDecision(state, team) : decision
+        ? {
+            approach: decision.approach,
+            preparation: decision.preparation,
+            pitStrategy: normalizePitStrategy(decision.pitStrategy),
+            cardId: decision.cardId ?? undefined,
+            rivalTeamId: decision.rivalTeamId ?? undefined
+          }
+        : {
+            approach: "balanced",
+            preparation: "reliability",
+            pitStrategy: "standard"
+          }
+    };
+  });
+}
+
+function buildActionState(teams: Array<{ id: string; kind: string }>, grandPrixStatus: string, submittedTeamIds: string[]) {
+  const submitted = new Set(submittedTeamIds);
+  const humanTeamIds = teams.filter((team) => team.kind === "human").map((team) => team.id);
+  const missingTeamIds = grandPrixStatus === "resolved" ? [] : humanTeamIds.filter((teamId) => !submitted.has(teamId));
+  const canStartNextGrandPrix = grandPrixStatus === "resolved";
+  const canResolve = grandPrixStatus !== "resolved" && humanTeamIds.length > 0 && missingTeamIds.length === 0;
+  const canResolveWithDefaults = grandPrixStatus !== "resolved" && missingTeamIds.length > 0;
+  return {
+    submittedTeamIds,
+    missingTeamIds,
+    canResolve,
+    canResolveWithDefaults,
+    canStartNextGrandPrix,
+    nextAction: canStartNextGrandPrix ? "start_next_grand_prix" : canResolve ? "resolve_grand_prix" : canResolveWithDefaults ? "resolve_with_defaults" : "wait_for_directives"
+  };
+}
+
+function upsertGrandPrixHistory(history: LeagueState["grandPrixHistory"], grandPrix: LeagueState["currentGrandPrix"]): LeagueState["grandPrixHistory"] {
+  const entry = {
+    id: grandPrix.id,
+    name: grandPrix.name,
+    season: grandPrix.season,
+    round: grandPrix.round,
+    status: grandPrix.status,
+    result: grandPrix.result
+  };
+  return [entry, ...history.filter((candidate) => candidate.id !== grandPrix.id)].sort((left, right) => left.season - right.season || left.round - right.round);
+}
+
+function seasonSummaryFromState(state: LeagueState, season: number): LeagueState["seasonSummaries"][number] | null {
+  const gpCount = state.grandPrixHistory.filter((grandPrix) => grandPrix.season === season && grandPrix.result).length;
+  const standings = [...state.teams]
+    .sort((left, right) => right.points - left.points || left.name.localeCompare(right.name))
+    .map((team, index) => ({
+      position: index + 1,
+      teamId: team.id,
+      teamName: team.name,
+      points: team.points,
+      livery: team.livery
+    }));
+  const champion = standings[0];
+  return champion ? { season, gpCount, standings, champion } : null;
+}
+
+function upsertSeasonSummary(existing: LeagueState["seasonSummaries"], summary: LeagueState["seasonSummaries"][number]) {
+  return [summary, ...existing.filter((candidate) => candidate.season !== summary.season)].sort((left, right) => right.season - left.season);
+}
+
 function teamForInput(state: LeagueState, input: TeamScopedInput) {
   const team = state.teams.find((candidate) => candidate.id === input.teamId);
   if (!team) {
@@ -288,6 +486,10 @@ function isCardId(value: string): value is CardId {
 
 function clampInteger(value: unknown, fallback: number, min: number, max: number) {
   return typeof value === "number" && Number.isFinite(value) ? Math.max(min, Math.min(max, Math.round(value))) : fallback;
+}
+
+function normalizePitStrategy(value: unknown): NonNullable<RaceDecision["pitStrategy"]> {
+  return PIT_STRATEGIES.includes(value as NonNullable<RaceDecision["pitStrategy"]>) ? value as NonNullable<RaceDecision["pitStrategy"]> : "standard";
 }
 
 function defaultBotDecision(state: LeagueState, team: LeagueState["teams"][number]): RaceDecision {

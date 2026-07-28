@@ -87,7 +87,7 @@ export function createInitialSoloLeagueState(): LeagueState {
     cardShop: STARTER_CARDS.map((cardId) => ({ cardId, price: CARD_PRICES[cardId] })),
     actionState: {
       submittedTeamIds: [],
-      missingTeamIds: teams.map((team) => team.id),
+      missingTeamIds: teams.filter((team) => team.kind === "human").map((team) => team.id),
       canResolve: false,
       canResolveWithDefaults: true,
       canStartNextGrandPrix: false,

@@ -1,8 +1,10 @@
 import { describe, expect, it } from "vitest";
 import {
   buyCard,
+  resolveGrandPrix,
   runQualifying,
   sellCard,
+  startNextGrandPrix,
   submitDecision,
   updateTeamLivery,
   updateTeamName,
@@ -164,6 +166,38 @@ describe("leagueEngine", () => {
     expect(result.state.currentGrandPrix.qualifyingRuns.filter((run) => run.teamId === "a")).toHaveLength(3);
     expect(result.state.currentGrandPrix.qualifyingRuns.filter((run) => run.teamId === "bot")).toHaveLength(1);
     expect(initial.currentGrandPrix.qualifyingRuns).toEqual([]);
+  });
+
+  it("resolves a grand prix and applies rewards", () => {
+    const initial = submitDecision(state({ teams: [team("a", "Alpha", ["rain_grip"]), { ...team("bot", "Bot"), kind: "bot" }] }), {
+      teamId: "a",
+      approach: "balanced",
+      preparation: "weather",
+      cardId: "rain_grip"
+    });
+    const resolved = resolveGrandPrix(initial);
+
+    expect(resolved.currentGrandPrix.status).toBe("resolved");
+    expect(resolved.currentGrandPrix.result?.classification).toHaveLength(2);
+    expect(resolved.teams.reduce((sum, candidate) => sum + candidate.points, 0)).toBeGreaterThan(0);
+    expect(resolved.actionState.canStartNextGrandPrix).toBe(true);
+    expect(resolved.grandPrixHistory[0]?.result).toBeTruthy();
+  });
+
+  it("starts the next grand prix from a resolved state", () => {
+    const initial = submitDecision(state({ teams: [team("a", "Alpha"), { ...team("bot", "Bot"), kind: "bot" }] }), {
+      teamId: "a",
+      approach: "balanced",
+      preparation: "weather"
+    });
+    const next = startNextGrandPrix(resolveGrandPrix(initial));
+
+    expect(next.currentGrandPrix.round).toBe(2);
+    expect(next.currentGrandPrix.status).toBe("briefing");
+    expect(next.currentGrandPrix.result).toBe(null);
+    expect(next.decisions).toEqual([]);
+    expect(next.actionState.canStartNextGrandPrix).toBe(false);
+    expect(next.grandPrixHistory[0]?.status).toBe("resolved");
   });
 });
 

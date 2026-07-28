@@ -249,6 +249,33 @@ describe("App", () => {
     expect(fetch).not.toHaveBeenCalled();
   });
 
+  it("resolves a local solo grand prix and starts the next one without calling the API", async () => {
+    localStorage.setItem("cr-league-help-league-intro:solo-local", "1");
+    const fetch = vi.spyOn(globalThis, "fetch");
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    await screen.findByRole("heading", { name: "1. Read the circuit" });
+    fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
+    fireEvent.click(screen.getByTestId("modal-confirm"));
+    expect(await screen.findByRole("button", { name: "Launch GP" })).toBeTruthy();
+    fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Launch GP" }).at(-1)!);
+
+    await waitFor(() => expect(localStorage.getItem("cr-league-solo-save-v1")).toContain("\"classification\""));
+    fireEvent.click(screen.getByRole("button", { name: "Stand" }));
+    fireEvent.click(await screen.findByRole("button", { name: "Next GP" }));
+    fireEvent.click(screen.getAllByRole("button", { name: "Next GP" }).at(-1)!);
+
+    await waitFor(() => {
+      const save = JSON.parse(localStorage.getItem("cr-league-solo-save-v1")!);
+      expect(save.state.currentGrandPrix.round).toBe(2);
+      expect(save.state.currentGrandPrix.result).toBe(null);
+    });
+    expect(fetch).not.toHaveBeenCalled();
+  });
+
   it("resets only the local solo save from the solo menu", async () => {
     localStorage.setItem("cr-league-help-league-intro:solo-local", "1");
     const fetch = vi.spyOn(globalThis, "fetch");

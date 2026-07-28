@@ -1,8 +1,10 @@
 import {
   SharedLeagueRuleError,
   buyCard as buySoloCard,
+  resolveGrandPrix as resolveSoloGrandPrixState,
   runQualifying as runSoloQualifying,
   sellCard as sellSoloCard,
+  startNextGrandPrix as startSoloNextGrandPrixState,
   submitDecision as submitSoloDecision,
   type QualifyingRun,
   updateTeamLivery as updateSoloTeamLivery,
@@ -565,13 +567,47 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   }
 
   async function resolveSoloGrandPrix() {
+    if (!leagueState) return;
     setResolveConfirmOpen(false);
-    showStatus(tt("status_solo_action_unavailable"), "info", false);
+    await run(
+      tt("status_resolving_grand_prix"),
+      async () => {
+        const nextState = resolveSoloGrandPrixState(leagueState, { allowDefaults: leagueState.actionState.missingTeamIds.length > 0 });
+        persistSoloState(nextState);
+        setGameView("drive");
+        setResultTab("replay");
+        setResultOpen(true);
+        pushCommandHint("resolved");
+      },
+      undefined,
+      true,
+      (error) => (error instanceof SharedLeagueRuleError ? error.message : "")
+    );
   }
 
   async function startSoloNextGrandPrix() {
+    if (!leagueState) return;
+    const finishingSeason = leagueState.currentGrandPrix.round >= leagueState.league.maxGrandPrixPerSeason;
     setNextGrandPrixConfirmOpen(false);
-    showStatus(tt("status_solo_action_unavailable"), "info", false);
+    setRouteReplayGrandPrixId(undefined);
+    setHistoryReplay(null);
+    setResultOpen(false);
+    setGameView("drive");
+    await run(
+      tt(finishingSeason ? "status_starting_next_season" : "status_starting_next_grand_prix"),
+      async () => {
+        const nextState = startSoloNextGrandPrixState(leagueState);
+        persistSoloState(nextState);
+        setForm((current) => (current.cardId ? { ...current, cardId: "" } : current));
+        setGameView("drive");
+        setResultOpen(false);
+        showStatus(tt(finishingSeason ? "status_next_season_started" : "status_next_grand_prix_started"));
+        pushCommandHint("prepare");
+      },
+      undefined,
+      true,
+      (error) => (error instanceof SharedLeagueRuleError ? error.message : "")
+    );
   }
 
   async function launchSoloQualifyingRun() {

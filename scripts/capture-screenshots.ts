@@ -22,16 +22,24 @@ type Shot = {
   path: string;
   clip?: string;
   padding?: number;
+  viewport?: { width: number; height: number };
+  out?: string;
 };
 
 const HIDE_ALWAYS = [".notification-stack", ".onboarding-help", ".pending-feedback"];
+// Served assets, so these live in the web app rather than the docs folder.
+const SOCIAL_DIR = "apps/web/public/assets/social";
 
 const SHOTS: Shot[] = [
   { name: "market-plan", path: "/plan/approach", clip: ".plan-view" },
   { name: "market-garage", path: "/garage/shop", clip: ".garage-grid" },
   { name: "market-championship", path: "/championship/standings", clip: ".championship-view" },
   { name: "market-report", path: "/plan/report", clip: ".report-view" },
-  { name: "market-replay", path: "/drive", clip: ".drive-grid" }
+  { name: "market-replay", path: "/drive", clip: ".drive-grid" },
+  // Social card and PWA install screenshots: fixed frames, so no element crop.
+  { name: "og-card", path: "/drive", viewport: { width: 1200, height: 630 }, out: SOCIAL_DIR },
+  { name: "install-wide", path: "/championship/standings", viewport: { width: 1280, height: 720 }, out: SOCIAL_DIR },
+  { name: "install-narrow", path: "/plan/approach", viewport: { width: 390, height: 844 }, out: SOCIAL_DIR }
 ];
 
 async function main() {
@@ -45,7 +53,7 @@ async function main() {
     }
 
     const fixture = buildSoloFixture();
-    await mkdir(outDir, { recursive: true });
+    for (const dir of new Set(SHOTS.map((shot) => shot.out ?? outDir))) await mkdir(dir, { recursive: true });
 
     browser = await chromium.launch();
     const context = await browser.newContext({
@@ -76,8 +84,7 @@ async function main() {
     const page = await context.newPage();
     await enterSolo(page);
     for (const shot of SHOTS) {
-      await capture(page, shot);
-      console.log(`captured ${outDir}/${shot.name}.png`);
+      console.log(`captured ${await capture(page, shot)}`);
     }
   } finally {
     await browser?.close();
@@ -95,6 +102,7 @@ async function enterSolo(page: Page) {
 }
 
 async function capture(page: Page, shot: Shot) {
+  if (shot.viewport) await reframe(page, shot);
   await page.evaluate((path) => {
     window.history.pushState(null, "", path);
     window.dispatchEvent(new PopStateEvent("popstate"));
@@ -103,10 +111,10 @@ async function capture(page: Page, shot: Shot) {
   await page.evaluate(() => window.scrollTo(0, 0));
   await delay(400); // let entry animations settle before the frame is grabbed
 
-  const path = `${outDir}/${shot.name}.png`;
+  const path = `${shot.out ?? outDir}/${shot.name}.png`;
   if (!shot.clip) {
     await page.screenshot({ path });
-    return;
+    return path;
   }
 
   const target = page.locator(shot.clip).first();
@@ -128,6 +136,15 @@ async function capture(page: Page, shot: Shot) {
       height: Math.min(box.height + pad * 2, Math.max(viewport.height, scroll.height) - Math.max(0, box.y - pad))
     }
   });
+  return path;
+}
+
+// The app picks its layout on mount, so a resized frame needs a reload and a fresh entry.
+// deviceScaleFactor stays at --scale, hence the doubled pixel sizes in the manifest.
+async function reframe(page: Page, shot: Shot) {
+  await page.setViewportSize(shot.viewport!);
+  await page.reload({ waitUntil: "networkidle" });
+  await enterSolo(page);
 }
 
 async function hide(page: Page, selectors: string[]) {

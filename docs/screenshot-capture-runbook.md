@@ -28,6 +28,16 @@ the 45 approach x preparation x card combinations for a first place.
 The league is named `Riverside Invitational`; the teams are the solo defaults (Volt Union
 plus five bots).
 
+## What It Produces
+
+| Shot | Output | Used by |
+| --- | --- | --- |
+| `market-*` | `docs/assets/readme` | The README product tour. |
+| `og-card` | `apps/web/public/assets/social` | `og:image` in `apps/web/index.html`. |
+| `install-wide`, `install-narrow` | `apps/web/public/assets/social` | `screenshots` in `manifest.webmanifest`. |
+
+The social assets are served, so they live in the web app rather than the docs folder.
+
 ## Adding or Changing a Shot
 
 Shots are declared in `SHOTS` in `scripts/capture-screenshots.ts`:
@@ -40,8 +50,11 @@ Shots are declared in `SHOTS` in `scripts/capture-screenshots.ts`:
 - `clip` is a CSS selector. Crops are element-scoped rather than pixel boxes so they survive
   layout changes; widths therefore vary per screen, which is the intended framing.
 - `padding` defaults to 16 device-independent pixels around the element.
+- `viewport` overrides the frame for that shot; the page reloads and re-enters Solo, because
+  the app picks its layout on mount.
+- `out` overrides the output directory.
 
-Omit `clip` for a full-viewport shot.
+Omit `clip` for a full-viewport shot, which is what the social and install shots use.
 
 ## Flags
 
@@ -63,3 +76,8 @@ Omit `clip` for a full-viewport shot.
   screen.
 - This is not wired into CI on purpose: a screenshot moving by a pixel must not fail a pull
   request.
+- `deviceScaleFactor` stays at `--scale` for every shot, so the social files come out at
+  twice their declared frame. The manifest declares the real pixel sizes; changing `--scale`
+  means updating `manifest.webmanifest` and the `og:image:width`/`height` meta tags.
+- `render.yaml` serves `/assets/*` as `immutable`, so a regenerated `og-card.png` will not
+  propagate to scrapers on its own. Bump the `?v=` query on the `og:image` meta tag.

@@ -2,8 +2,8 @@
 > From version: 0.5.2
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 92
-> Confidence: 93
+> Understanding: 94
+> Confidence: 94
 > Progress: 0%
 > Complexity: Medium
 > Theme: Season economy
@@ -13,11 +13,11 @@
 - Repeated seasons need some continuity, but too much carry-over can snowball leaders.
 - The user asked to develop the idea before it becomes broad card-economy work.
 - The right first pass should be small, capped, and easy to remove or tune.
-- Owner decision: first pass resets credits but preserves garage cards; capped credit carry-over is a later evidence-gated follow-up if reset feels too dry in beta.
+- Owner decision: first pass preserves credits and garage cards; capped credit carry-over is no longer needed for the baseline unless beta later needs a cap.
 
 # Scope
 - In:
-  - Document and implement first-pass season rollover: preserve players, palmares, archived season stats, cosmetic/team identity, and garage cards; reset credits.
+  - Document and implement first-pass season rollover: preserve players, palmares, archived season stats, cosmetic/team identity, credits, and garage cards.
   - Record capped partial credit carry-over as a later option, not the first implementation.
   - Prefer palmares/cosmetic recognition over large mechanical champion bonuses.
   - Run balance/replayability evidence if mechanical carry-over ships.
@@ -29,7 +29,7 @@
 
 # Acceptance criteria
 - AC1: The documented season rollover rule preserves players, palmares, archived season stats, cosmetic/team identity, and garage cards.
-- AC2: The first implementation resets credits for every team while preserving garage cards.
+- AC2: The first implementation preserves credits and garage cards for every team.
 - AC3: Any later credit carry-over proposal is documented as a separate evidence-gated follow-up with a 25-35% cap candidate and anti-snowball rationale.
 - AC4: Season rollover tests cover top, middle, and bottom teams.
 - AC5: Balance evidence is recorded if mechanical carry-over changes gameplay in a later slice.

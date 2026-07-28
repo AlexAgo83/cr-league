@@ -1376,7 +1376,7 @@ describe("api app", () => {
     const created = createResponse.json();
     const leagueId = created.league.id;
     const teamId = created.player.teamId;
-    await db.team.update({ where: { id: teamId }, data: { cards: ["rain_grip"] } });
+    await db.team.update({ where: { id: teamId }, data: { cards: ["rain_grip"], credits: 420 } });
 
     await app.inject({
       method: "POST",
@@ -1417,6 +1417,7 @@ describe("api app", () => {
         expect(nextResponse.json().currentGrandPrix).toMatchObject({ round: round + 1, status: "briefing" });
       }
     }
+    const playerCreditsBeforeRollover = state.teams.find((team: { id: string }) => team.id === teamId).credits;
     const nextSeasonResponse = await app.inject({
       method: "POST",
       url: `/leagues/${leagueId}/next-grand-prix`,
@@ -1427,7 +1428,7 @@ describe("api app", () => {
 
     expect(nextSeasonResponse.statusCode).toBe(200);
     expect(nextSeasonResponse.json().currentGrandPrix).toMatchObject({ season: 2, round: 1, status: "briefing" });
-    expect(nextSeasonResponse.json().teams.find((team: { id: string }) => team.id === teamId).cards).toEqual(["rain_grip"]);
+    expect(nextSeasonResponse.json().teams.find((team: { id: string }) => team.id === teamId)).toMatchObject({ cards: ["rain_grip"], credits: playerCreditsBeforeRollover });
     expect(nextSeasonResponse.json().teams.reduce((total: number, team: { points: number }) => total + team.points, 0)).toBe(0);
     expect(nextSeasonResponse.json().grandPrixHistory).toHaveLength(4);
     expect(state.grandPrixHistory.map((grandPrix: { round: number }) => grandPrix.round)).toEqual([3, 2, 1]);

@@ -2,7 +2,7 @@
 > From version: 0.5.2
 > Schema version: 1.0
 > Status: In progress
-> Understanding: 93
+> Understanding: 94
 > Confidence: 94
 > Complexity: High
 > Theme: 0.6 beta season lifecycle
@@ -19,7 +19,7 @@
 - The user explicitly approved the 0.6 lifecycle direction, commissioner-style league management, manual reminders, actionable race feedback, a clear rival concept, contextual card guidance, team profile personalization, optional variable shop mode, and an immersive race-engineer assistant concept.
 - The user explicitly rejected automatic mail reminders, replay compact/highlight changes for now, public matchmaking for now, and mandatory secondary objectives for the first 0.6 pass.
 - The user clarified that manual email reminders should be limited to one send per season for the first implementation.
-- The owner decisions for the first 0.6 implementation are now explicit: no automatic GP resolution, commissioner-controlled resolution with visible defaults for absent players, `Quick beta` 3-GP and `Standard season` 6-GP presets, point and credit reset on season rollover while garage cards persist, fixed shop as the baseline, variable shop limited to a deterministic 6-card GP shop when enabled, and the race-engineer assistant deferred until the core flow and card guidance have been observed.
+- The owner decisions for the first 0.6 implementation are now explicit: no automatic GP resolution, commissioner-controlled resolution with visible defaults for absent players, `Quick beta` 3-GP and `Standard season` 6-GP presets, point reset on season rollover while credits and garage cards persist, fixed shop as the baseline, variable shop limited to a deterministic 6-card GP shop when enabled, and the race-engineer assistant deferred until the core flow and card guidance have been observed.
 - The commissioner screen must feel like a polished CR League operations surface, not a generic SaaS admin table. It should stay dense and functional, but use the app's racing vocabulary, visual rhythm, and existing components.
 - Existing card affinity language already exists (`card_fit_recommended` / "Affinité haute"); contextual card guidance must reuse, refine, or replace that signal deliberately instead of adding a competing recommendation layer.
 - UX micro-decisions are now fixed for the first implementation: expose creator controls as `Direction de course` inside the existing league context, label manual reminders as `Relancer les retardataires`, replace/map existing card affinity into one coherent label system, and use French card labels `Utile ici`, `Situationnel`, and `Impact faible`.

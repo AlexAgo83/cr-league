@@ -15,7 +15,7 @@
 
 # Plan
 - [x] 1. Confirm the final 0.6 scope from the product brief and keep deferred ideas out of implementation unless explicitly pulled in.
-- [x] 2. Implement the beta season lifecycle core before optional flavor items: `Quick beta` 3 GP, `Standard season` 6 GP default, no auto-resolve, neutral absent-player defaults, explicit next-season action, point/credit reset on season rollover while garage cards persist.
+- [x] 2. Implement the beta season lifecycle core before optional flavor items: `Quick beta` 3 GP, `Standard season` 6 GP default, no auto-resolve, neutral absent-player defaults, explicit next-season action, point reset on season rollover while credits and garage cards persist.
 - [x] 3. Add commissioner management, share controls, and one-reminder-per-season manual email reminders with minimal audit fields while preserving creator-only API access.
 - [x] 4. Close the accessibility gate without redesigning the app.
 - [x] 5. Improve race feedback, rival context, and contextual card guidance using deterministic data.
@@ -38,7 +38,7 @@
 - Presets: ship only `Quick beta` (3 GP) and `Standard season` (6 GP, default); no custom length yet.
 - GP resolution: do not auto-resolve; expose normal commissioner resolve when all plans are ready and resolve-with-defaults when absent players remain.
 - Absents: show one neutral default plan before resolution and mark default-plan use in the report. Use balanced setup, no card, and medium strategy.
-- Season economy: preserve players, palmares, archived stats, cosmetic/team identity, and garage cards; reset points and credits in the first pass; defer capped credit carry-over unless beta says reset is too dry.
+- Season economy: preserve players, palmares, archived stats, cosmetic/team identity, credits, and garage cards; reset points only at season rollover.
 - Manual reminders: route through one owner-only API mutation, target pending human players only, return sent/skipped counts, store `reminderSentAt`, `reminderSentBy`, `reminderSeasonNumber`, `sentCount`, and `skippedCount`, and enforce a one-send-per-season cap in the API only after at least one email is sent.
 - Commissioner authority: authorize in API transactions, not only in UI visibility. Commissioner means league creator only for 0.6.
 - Commissioner UX: expose a creator-only `Direction de course` entry inside the existing league context. Build a polished game-native management surface, not a generic SaaS table. Current GP state, readiness groups, invite/share, `Relancer les retardataires`, and resolve actions should be visually organized around race operations. On mobile, use stacked sections unless an existing sticky action pattern is already available.
@@ -92,7 +92,7 @@
 - 2026-07-28 item_329 delivered: contextual card guidance now replaces the old affinity labels across Plan and Garage, with deterministic reasons tied to weather, circuit traits, position pressure, chrono timing, and economy tradeoffs. Browser UX evidence covers Plan and Garage after fixing card-cell overlap and Plan ellipsis.
 - 2026-07-28 item_330 delivered: standings rows now open an in-league team profile modal with livery identity, rank, points, credits, GP count, podiums, palmares count, recent form, current rival, and derived style. Tests cover profile rendering and unsafe team-name text rendering. Browser UX evidence covers mobile standings and team profile with zero axe violations at `reports/ux/team-profile-browser.md`; Palmarès mobile text alignment is scoped in CSS for completed-season rows.
 - 2026-07-28 profile/garage follow-up: mobile standings and Palmarès livery plates now reserve enough room for title stars, and Garage inventory/shop card order uses availability first, then deterministic utility score. Locked inventory cards fade and move after usable cards.
-- 2026-07-28 season economy follow-up: season rollover no longer deletes garage cards; API coverage now verifies a player-owned card survives the transition to season 2 while points and credits still reset.
+- 2026-07-28 season economy follow-up: season rollover no longer deletes garage cards or resets credits; API coverage now verifies a player-owned card and credit balance survive the transition to season 2 while points still reset.
 
 # AI Context
 - Summary: Orchestrate the 0.6 beta season lifecycle and league management corpus

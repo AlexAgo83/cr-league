@@ -18,6 +18,7 @@ export function createSessionActions({
   setAdminInspecting,
   setGameView,
   setSetupMode,
+  setSetupEntryMode,
   setProfileOpen,
   setProfileMode,
   setProfileCodeOpen,
@@ -42,6 +43,7 @@ export function createSessionActions({
   setAdminInspecting: (inspecting: boolean) => void;
   setGameView: (view: GameView) => void;
   setSetupMode: (mode: "choice") => void;
+  setSetupEntryMode: (mode: "choice") => void;
   setProfileOpen: (open: boolean) => void;
   setProfileMode: (mode: "choice") => void;
   setProfileCodeOpen: (open: boolean) => void;
@@ -83,7 +85,14 @@ export function createSessionActions({
     await rejoinClaim(claim, { setDrive: true, notify: true });
   }
 
+  // Home means the very first screen, so it also rewinds the solo/multiplayer choice.
+  // addLeague keeps the current entry mode: the player already chose multiplayer.
   function goHome() {
+    addLeague();
+    setSetupEntryMode("choice");
+  }
+
+  function addLeague() {
     setLeagueState(null);
     setAdminInspecting(false);
     setGameView("drive");
@@ -129,6 +138,7 @@ export function createSessionActions({
     setProfileOpen(false);
     setProfileMode("choice");
     setSetupMode("choice");
+    setSetupEntryMode("choice");
     setSavedClaims([]);
     storePlayerClaims([], undefined);
     showStatus(initialStatusText);
@@ -138,7 +148,7 @@ export function createSessionActions({
     rejoinClaim,
     switchLeague,
     goHome,
-    addLeague: goHome,
+    addLeague,
     forgetPlayer,
     copyProfileCode,
     copyTechnicalError,

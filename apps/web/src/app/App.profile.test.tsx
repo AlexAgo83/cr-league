@@ -27,6 +27,17 @@ afterEach(() => {
 });
 
 describe("App profile and admin", () => {
+  it("returns to the solo/multiplayer choice from inside the multiplayer setup", () => {
+    render(<App />);
+
+    startMultiplayerSetup();
+    expect(screen.queryByRole("button", { name: /Multiplayer/ })).toBe(null);
+
+    fireEvent.click(screen.getByRole("button", { name: "CR League" }));
+
+    expect(screen.getByRole("button", { name: /Multiplayer/ })).toBeTruthy();
+  });
+
   it("removes legacy saved profile codes from local storage", () => {
     saveProfile({ recoveryCode: "ABCD1234" });
     const writeText = vi.fn().mockResolvedValue(undefined);

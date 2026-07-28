@@ -336,6 +336,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setAdminInspecting,
     setGameView,
     setSetupMode,
+    setSetupEntryMode,
     setProfileOpen,
     setProfileMode,
     setProfileCodeOpen,
@@ -788,10 +789,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       hasResult={Boolean(result)}
       setForm={setForm}
       onCopyProfileCode={() => void copyProfileCode()}
-      onForgetProfile={() => {
-        forgetProfile();
-        setSetupEntryMode("choice");
-      }}
+      onForgetProfile={forgetProfile}
       onResetUiPreferences={resetUiPreferences}
       onResetSolo={resetSoloLeague}
       onCopyTechnicalError={() => void copyTechnicalError()}
@@ -974,10 +972,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         clearScreenOnboardingSnoozes={clearScreenOnboardingSnoozes}
         markCommandClicked={markCommandClicked}
         openQualifyingRun={soloMode ? openSoloQualifyingRun : openQualifyingRun}
-        goHome={() => {
-          setSetupEntryMode("choice");
-          goHome();
-        }}
+        goHome={goHome}
         backToAdminConsole={() => {
           setGameView("admin");
           setLeagueState(null);

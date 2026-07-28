@@ -262,7 +262,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     if (!initialProfileSession.current) return;
     const saved = initialActiveClaim.current;
     if (!saved) return;
-    void rejoinClaim(saved, { setDrive: false, notify: false });
+    void rejoinClaim(saved, { setDrive: false, notify: false, silent: true });
     // The automatic rejoin intentionally uses the first local-storage snapshot only.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -358,7 +358,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       if (!claim) return;
 
       tabRefreshInFlight.current = true;
-      void rejoinClaim(claim, { setDrive: false, notify: false, preserveLocalState: true }).finally(() => {
+      void rejoinClaim(claim, { setDrive: false, notify: false, preserveLocalState: true, silent: true }).finally(() => {
         tabRefreshInFlight.current = false;
       });
     }
@@ -497,13 +497,15 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       setStatus("idle");
     } catch (error) {
       setStatus("error");
-      const friendlyError = errorText?.(error);
-      if (!friendlyError && isStaleLeagueError(error)) {
+      // A stale claim is cleaned up whatever the caller supplies as friendly text: the saved
+      // league is genuinely gone, and leaving the claim behind would retry it forever.
+      if (isStaleLeagueError(error)) {
         forgetClaim(staleClaimTeamId);
         setLeagueState(null);
         showStatus(tt("status_saved_league_expired"), "error", false);
         return;
       }
+      const friendlyError = errorText?.(error);
       if (!friendlyError || (error instanceof ApiError && error.statusCode >= 500)) {
         setTechnicalError(error instanceof Error ? error.message : String(error));
       }

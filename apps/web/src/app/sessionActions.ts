@@ -56,7 +56,10 @@ export function createSessionActions({
   showStatus: (text: string, tone?: NotificationTone, notify?: boolean) => void;
   pushCommandHint: (nextDeskState: "prepare" | "ready" | "resolved") => void;
 }) {
-  async function rejoinClaim(claim: SavedClaim, options: { setDrive: boolean; notify: boolean; preserveLocalState?: boolean }) {
+  // silent: the automatic restores on boot and on tab focus. The player did not ask for
+  // anything, so a failure must not raise the technical-error modal over the setup screen.
+  // Supplying an errorText is what keeps run() from stashing a technicalError.
+  async function rejoinClaim(claim: SavedClaim, options: { setDrive: boolean; notify: boolean; preserveLocalState?: boolean; silent?: boolean }) {
     await run(
       tt("status_rejoining_league"),
       async () => {
@@ -74,7 +77,7 @@ export function createSessionActions({
       },
       claim.teamId,
       options.notify,
-      undefined,
+      options.silent ? () => tt("status_api_unavailable") : undefined,
       !options.preserveLocalState
     );
   }

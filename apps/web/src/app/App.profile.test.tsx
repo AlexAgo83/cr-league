@@ -50,6 +50,20 @@ describe("App profile and admin", () => {
     expect(screen.getByRole("button", { name: /Multiplayer/ })).toBeTruthy();
   });
 
+  it("restores a saved league quietly when the API is unreachable", async () => {
+    saveProfile();
+    const claims = [{ leagueId: "league_1", leagueName: "Riverside", leagueCode: "RIV24", teamId: "team_1", teamName: "Volt Union", claimCode: "CLAIM1" }];
+    localStorage.setItem("cr-league-player-claims", JSON.stringify(claims));
+    localStorage.setItem("cr-league-active-player-claim", "team_1");
+    vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("Failed to fetch"));
+
+    render(<App />);
+
+    // The player asked for nothing: a boot-time restore that fails must not raise the modal.
+    await waitFor(() => expect(screen.getByRole("button", { name: /Multiplayer/ })).toBeTruthy());
+    expect(screen.queryByRole("dialog", { name: "Action blocked" })).toBe(null);
+  });
+
   it("removes legacy saved profile codes from local storage", () => {
     saveProfile({ recoveryCode: "ABCD1234" });
     const writeText = vi.fn().mockResolvedValue(undefined);

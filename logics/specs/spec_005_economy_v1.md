@@ -1,7 +1,7 @@
 ## spec_005_economy_v1 - Economy V1
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 85
 > Confidence: 84
 > Related request: `req_002_define_cr_league_v1_planning_specs`
@@ -10,6 +10,7 @@
 > Related product: `prod_001_cr_league_product_brief`
 > Non-semantic edit: 2026-07-23 corpus grooming note added; spec remains Draft.
 > Semantic edit: 2026-07-23 refreshed current status after `req_086` completion and active `positionDelta` follow-up in `req_099`.
+> Semantic edit: 2026-07-28 settled: `req_099` resolved `positionDelta` (wired into classification), `req_127` landed the first price/role follow-up, and the owner confirmed the real playtest session took place; the honest card model has a validated baseline.
 
 # Purpose
 Define the minimal economy for V1.
@@ -17,7 +18,7 @@ Define the minimal economy for V1.
 The economy should create useful choices between races without becoming the game.
 
 # Current Status
-Keep this spec in Draft. The prototype has credits, fixed-price card buying, bot card buying, 15 consumable cards, an AI playtest report, and a balance simulation kit. The gameplay/economy integrity pass (`req_086`) has landed, so the monotonic payout and unchosen-card-consumption blockers are no longer open. Card economy tuning is still held until `req_099` resolves whether `positionDelta` position-gain cards affect classification or should be removed, then a fresh balance/playtest baseline confirms the honest card model.
+Settled. The prototype has credits, fixed-price card buying, bot card buying, 15 consumable cards, an AI playtest report, and a balance simulation kit. The gameplay/economy integrity pass (`req_086`) landed, `req_099` resolved whether `positionDelta` position-gain cards affect classification (wired into `classificationScore`), and `req_127` moved `pit_relay`/`hard_tires` to 120 credits from fresh balance evidence. The owner confirmed the real playtest session ran and validated the model.
 
 # Resources
 V1 has three resource concepts:

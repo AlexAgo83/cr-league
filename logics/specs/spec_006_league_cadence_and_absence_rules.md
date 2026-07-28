@@ -1,7 +1,7 @@
 ## spec_006_league_cadence_and_absence_rules - League Cadence and Absence Rules
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 90%
 > Confidence: 83
 > Related request: `req_002_define_cr_league_v1_planning_specs`
@@ -10,12 +10,13 @@
 > Related product: `prod_001_cr_league_product_brief`
 > Non-semantic edit: 2026-07-23 corpus grooming note added; spec remains Draft.
 > Semantic edit: 2026-07-23 refreshed current status with active owner-team resilience follow-up in `req_099`.
+> Semantic edit: 2026-07-28 settled: `req_099` owner-team resilience landed; the 0.6 corpus (`req_129`) shipped neutral absent-player defaults and manual commissioner reminders as the deliberate cadence model. Automatic deadline resolution/reminders stay an explicit non-goal (recorded in `item_334`), not an open validation gap. The owner confirmed the real playtest session validated asynchronous absence behavior.
 
 # Purpose
 Define how asynchronous leagues advance without stalling.
 
 # Current Status
-Keep this spec in Draft. Manual cadence, readiness, missing-player defaults, and league controls exist, and the recent hardening/canonical-track chains are Done. The active `req_099` owner-team resilience item must still ensure admin controls recover if the owner team is removed; automatic deadline resolution, reminders, and real asynchronous absence behavior are not validated yet.
+Settled. Manual cadence, readiness, neutral missing-player defaults, manual commissioner reminders, and league controls exist; the hardening/canonical-track chains and `req_099` owner-team resilience are Done. Automatic deadline resolution and automatic reminders are a deliberate 0.6 non-goal (see `item_334`), not an unvalidated gap. The owner confirmed the real playtest session validated real asynchronous absence behavior.
 
 # Cadence Model
 Solo:

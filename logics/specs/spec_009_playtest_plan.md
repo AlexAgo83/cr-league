@@ -1,7 +1,7 @@
 ## spec_009_playtest_plan - Playtest Plan
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 85%
 > Confidence: 87
 > Related request: `req_002_define_cr_league_v1_planning_specs`
@@ -10,12 +10,13 @@
 > Related product: `prod_001_cr_league_product_brief`
 > Non-semantic edit: 2026-07-23 corpus grooming note added; spec remains Draft.
 > Semantic edit: 2026-07-23 refreshed current status so `req_099` precedes the next playtest baseline.
+> Semantic edit: 2026-07-28 settled: `req_099` review-findings remediation landed, and the owner confirmed the real 3-to-5 tester human playtest session took place, closing the last human-session gate.
 
 # Purpose
 Define how to test whether the CR League loop is fun before building too much.
 
 # Current Status
-Keep this spec in Draft. The repository has a private-league checklist, AI playtest report, and balance evidence workflow, and the 0.4.11-0.4.13 hardening/replay-geometry chains are Done. Run the active `req_099` review-findings remediation before using automated evidence as the next human-session gate; the qualifying/replay/garage loop still needs a real 3-to-5 tester session before the playtest plan is settled.
+Settled. The repository has a private-league checklist, AI playtest report, and balance evidence workflow, and the 0.4.11-0.4.13 hardening/replay-geometry chains and `req_099` review-findings remediation are Done. The owner confirmed the real 3-to-5 tester human playtest session ran on the qualifying/replay/garage loop.
 
 # Test Goal
 Validate the core product question:

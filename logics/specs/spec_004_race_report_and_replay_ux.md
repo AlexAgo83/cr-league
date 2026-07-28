@@ -1,7 +1,7 @@
 ## spec_004_race_report_and_replay_ux - Race Report and Replay UX
 > From version: 1.0.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Settled
 > Understanding: 90%
 > Confidence: 86
 > Related request: `req_002_define_cr_league_v1_planning_specs`
@@ -11,6 +11,7 @@
 > Related spec: `spec_001_grand_prix_core_loop_and_simulation_v1`
 > Non-semantic edit: 2026-07-23 corpus grooming note added; spec remains Draft.
 > Semantic edit: 2026-07-23 refreshed current status after completed race-track work and active replay-determinism remediation.
+> Semantic edit: 2026-07-28 settled: `req_099` (replay-selection determinism, replay-validator coverage) landed, and the owner confirmed the real multi-person playtest session took place; replay/report comprehension is validated.
 
 # Purpose
 Define how race outcomes are presented so players understand and remember them.
@@ -18,7 +19,7 @@ Define how race outcomes are presented so players understand and remember them.
 The replay and report are not decoration. They are the explanation layer for an automated simulation.
 
 # Current Status
-Keep this spec in Draft. The app now has animated road-routed GP replay, qualifying replay, canonical pit/start geometry from the completed race-track work, report tabs, historical replay, and localized event summaries. The active `req_099` remediation must still restore weighted-selection determinism and expand replay-validator negative coverage before the next playtest baseline; replay/report comprehension still needs current multi-person playtest evidence before this becomes settled.
+Settled. The app has animated road-routed GP replay, qualifying replay, canonical pit/start geometry from the completed race-track work, report tabs, historical replay, and localized event summaries. `req_099` (weighted-selection determinism, replay-validator negative coverage) is Done, and the owner confirmed the real multi-person playtest session ran and validated replay/report comprehension.
 
 # UX Goal
 After a Grand Prix, the player should know:

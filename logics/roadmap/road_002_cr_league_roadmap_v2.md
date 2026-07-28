@@ -44,6 +44,7 @@
 > Semantic edit: 2026-07-28 synced 0.6 delivery through item_330 and the rollover rule that preserves credits and garage cards while resetting points only.
 > Semantic edit: 2026-07-28 shipped item_331 optional variable shop mode; archived item_332 (capped credit carry-over already deferred by its own scope, baseline covered by item_324) and item_333 (superseded by item_329 card guidance), each with a documented reopen trigger.
 > Semantic edit: 2026-07-28 closed req_129/task_130 and shipped v0.6.0 to production; opened req_130/task_131 (repo review remediation pass 7) from a post-release whole-repo review, and added a watchlist note on the review's deferred JSON-column normalization item.
+> Non-semantic edit: 2026-07-28 synced the 0.6 milestone and Sequencing sections with the already-recorded state (req_129 closed, item_331 shipped, item_332/333 archived, req_130/task_131 active); no scope change.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -190,10 +191,10 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 ## 0.6 - Live beta season
 - Goal: Run a real beta season long enough to validate cadence, replay comprehension, economy pressure, and return behavior.
-- Status: In progress; active corpus is `req_129` / `task_130`.
+- Status: v0.6.0 shipped 2026-07-28; `req_129` / `task_130` is Done and closed. The active corpus is now `req_130` / `task_131` (repo review remediation pass 7).
 - Scope to slice into patches when requests exist: beta season lifecycle, `Quick beta` 3-GP and `Standard season` 6-GP presets, creator-only `Direction de course`, manual GP resolution, visible neutral absent-player defaults, explicit `Saison terminée` -> `Lancer la saison suivante` rollover, manual one-reminder-per-season email action, feedback capture across GP cycles, rival context, card guidance labels, in-league team profiles, optional variable shop, and lightweight season continuity rules.
-- Delivered status: `item_324`-`item_330` are in code and documented. This includes lifecycle presets, explicit commissioner resolution, manual reminders, accessibility cleanup, report next-action guidance, derived rivals, contextual card guidance, team profiles, and season rollover preserving credits/garage cards while resetting points only.
-- Remaining optional slices: `item_331` variable shop only if the fixed shop feels too flat, `item_332` only for future cap/anti-snowball evidence beyond the delivered baseline continuity rule, and `item_333` race engineer only if Plan/card guidance remains unclear.
+- Delivered status: `item_324`-`item_331` are in code and documented. This includes lifecycle presets, explicit commissioner resolution, manual reminders, accessibility cleanup, report next-action guidance, derived rivals, contextual card guidance, team profiles, optional variable shop mode, and season rollover preserving credits/garage cards while resetting points only.
+- Archived slices: `item_332` (capped credit carry-over — the baseline rollover rule from `item_324` covers the non-optional part) and `item_333` (race-engineer assistant — superseded by `item_329` card guidance). Both carry documented reopen triggers on their backlog docs; reopen only on fresh cap/anti-snowball evidence or proven Plan/card guidance confusion.
 - Corpus policy: `req_129` is the first 0.6 corpus. Include alpha-evidence gates for accessibility cleanup and profile-dominance monitoring; keep reminders manual/admin-triggered only, capped to one successful send per season, and do not pre-scaffold polling/SSE, automatic reminders, deadline auto-resolution, bot replacement, public matchmaking, compact replay, tutorial rewrite, arcade/quick-play modes, or more card tuning without beta evidence.
 - Exit signal: beta players complete a short season with enough feedback to decide what belongs in 1.0; remaining 1.0 work is known, not guessed.
 - Linked docs: `prod_001_cr_league_product_brief`, `prod_081_0_6_beta_season_lifecycle_and_league_management_product_brief`, `req_129_0_6_beta_season_lifecycle_and_league_management_private_seasons_commissioner_tools_actionability_rivals_team_identity_and_optional_economy_variants`, `task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus`, `spec_016_implementation_roadmap`.
@@ -208,7 +209,8 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 # Sequencing
 - The 0.4 ship/maintainability/review queue through `task_127` is Done.
-- Continue `req_129` / `task_130`: keep `item_324`-`item_330` closed unless regressions appear. Only start `item_331`, `item_332`, or `item_333` from fresh beta/playtest evidence.
+- `req_129` / `task_130` is Done: keep `item_324`-`item_331` closed unless regressions appear, and reopen the archived `item_332` / `item_333` only from fresh beta/playtest evidence.
+- Next up is `req_130` / `task_131` (repo review remediation pass 7), in the task's stated slice order: DB indexes, then the testMemoryDb select-fix before its hardening pass, E2E/coverage in parallel, the code-organization batch (full test suite after each slice), admin rate limiting, then `item_344` claimCode hashing — High priority, since production already holds plaintext rows since v0.6.0.
 - Keep release validation explicit: use `logics-manager release status|plan|validate` and record evidence before claiming any 0.4.x release readiness.
 - Do not start 1.0 hardening until the 0.6 beta has produced real usage.
 

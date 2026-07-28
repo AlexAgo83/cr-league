@@ -241,7 +241,7 @@ export function LeagueSetupView({
         {mode === "choice" ? (
           <div className="setup-choice-grid">
             <SetupChoice
-              icon="next-gp"
+              icon="create-league"
               label={tt("action_create_league")}
               hint={tt("setup_create_hint")}
               onSelect={() => {
@@ -250,7 +250,7 @@ export function LeagueSetupView({
               }}
             />
             <SetupChoice
-              icon="inspect-league"
+              icon="join-league"
               label={tt("action_join_league")}
               hint={tt("setup_join_hint")}
               onSelect={() => {

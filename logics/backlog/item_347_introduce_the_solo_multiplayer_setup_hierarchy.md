@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 5%
+> Progress: 8%
 > Complexity: Medium
 > Theme: Setup flow and navigation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -24,6 +24,9 @@
   - Visual redesign of all setup screens.
   - Multiple solo save slots.
   - Any backend change for multiplayer.
+
+# Progress notes
+- 2026-07-28: Workstream launched. Initial implementation focus is the Solo / Multiplayer entry point, preserving the existing Multiplayer profile and Create / Join subflow while Solo remains profile-free.
 
 # Acceptance criteria
 - AC1: Create / Join is no longer the first setup choice.

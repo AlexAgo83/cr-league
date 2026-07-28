@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 88
-> Progress: 5%
+> Progress: 8%
 > Complexity: High
 > Theme: Local solo game loop
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -29,6 +29,9 @@
   - Cloud save or profile recovery for solo.
   - A separate solo-only simulation engine or duplicate web-only race/garage/team rules.
   - Service worker/PWA offline packaging.
+
+# Progress notes
+- 2026-07-28: Workstream launched. Initial implementation focus is shared engine extraction and a small persistence boundary so API and local solo both call shared league rules instead of duplicating game behavior.
 
 # Acceptance criteria
 - AC3: Solo can start or resume with the API unavailable.

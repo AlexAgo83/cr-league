@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 5%
+> Progress: 8%
 > Complexity: Medium
 > Theme: Mode clarity and data safety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -23,6 +23,9 @@
 - Out:
   - Settings for multiple solo profiles.
   - Migration UI for old solo saves, unless the implementation introduces a versioned key and needs a simple guard.
+
+# Progress notes
+- 2026-07-28: Workstream launched. Initial implementation focus is copy, `Solo local` affordance, reset confirmation, and proving multiplayer logout/forget flows do not touch solo storage.
 
 # Acceptance criteria
 - AC5: Multiplayer logout and forget flows do not corrupt solo progress.

@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 88
-> Progress: 5%
+> Progress: 8%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -29,6 +29,10 @@
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.
 
+# Progress notes
+- 2026-07-28: Implementation started; current progress is around 5-10%. Three workstreams are now active: shared engine extraction, Solo / Multiplayer setup UI, and solo local storage/action adapter.
+- No item is done yet. Keep this task open and continue updating docs at each meaningful ADR 009 checkpoint.
+
 # Backlog
 - `item_347_introduce_the_solo_multiplayer_setup_hierarchy`
 - `item_348_build_local_solo_state_persistence_and_action_adapter`
@@ -51,7 +55,7 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete.
+- Implementation launched; no closeout has been attempted.
 
 # AI Context
 - Summary: Orchestrate Solo / Multiplayer entry and local solo mode

@@ -6,6 +6,7 @@
 > Confidence: 90
 > Complexity: High
 > Theme: Setup flow and local solo play
+> Non-semantic edit: 2026-07-28 added implementation launch progress note only; request scope/status unchanged.
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.
 
 # Needs
@@ -31,6 +32,7 @@
 - Keep the implementation minimal: a single local solo season slot is enough for V1. No multi-save list, import/export, cloud sync, account recovery, offline PWA packaging, or public local campaign system in this slice.
 - "No network" in V1 means no API calls for solo actions after the web app is loaded; it does not require service worker/PWA offline packaging.
 - Deliver in three implementation waves: shared engine extraction without multiplayer behavior change; Solo / Multiplayer entry plus solo storage; solo action wiring, local badge/reset, and no-fetch tests.
+- Implementation launch note: development has started at low progress (about 5-10%) with three parallel workstreams: shared engine extraction, setup hierarchy UI, and solo local storage/action adapter. No delivery slice is complete yet.
 
 # Acceptance criteria
 - AC1: When the app has no active game context, the first gameplay setup decision is Solo / Multiplayer, not Create league / Join league.

@@ -27,6 +27,17 @@
   clip-path: polygon(0 0, 100% 0, 100% 100%, 12px 100%, 0 calc(100% - 12px));
 }
 
+/* A choice step is a poster moment, not a form: it opts out of the paper surface so the
+   ambient circuit shows through. The forms in the same panel keep the light material. */
+.setup-choice-panel {
+  --color-surface: rgb(16 14 18 / 0.72);
+  --color-text: #f8f3e8;
+  --color-muted: rgb(248 243 232 / 0.76);
+  --color-border: rgb(248 243 232 / 0.14);
+  --color-accent: #ff6a1f;
+  color: var(--color-text);
+}
+
 /* dark translucent chips become print tints on paper */
 .championship-view .standings-table li,
 .championship-view .palmares-button,
@@ -45,6 +56,23 @@
 .setup-main-panel .setup-choice {
   background: rgb(23 21 26 / 0.05);
   border-color: rgb(23 21 26 / 0.16);
+}
+
+/* Choice steps sit on the dark panel above, so their tints invert. */
+.setup-choice-panel .setup-choice {
+  align-content: start;
+  align-items: center;
+  background: rgb(248 243 232 / 0.06);
+  border: 1px solid rgb(248 243 232 / 0.18);
+  column-gap: 14px;
+  grid-template-columns: auto 1fr;
+  padding: 16px 18px;
+}
+
+.setup-choice-panel .setup-choice:hover,
+.setup-choice-panel .setup-choice:focus-visible {
+  background: rgb(248 243 232 / 0.12);
+  border-color: var(--color-accent);
 }
 
 .championship-view .standings-table li,

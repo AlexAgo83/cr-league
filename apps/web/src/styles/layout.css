@@ -42,7 +42,7 @@
   contain: paint;
   left: 0;
   max-width: 100vw;
-  opacity: 0.54;
+  opacity: 0.78;
   overflow: clip;
   pointer-events: none;
   position: fixed;
@@ -72,17 +72,20 @@
   }
 }
 
+/* Veil kept just heavy enough for the topbar to stay legible over the moving circuit. */
 .ambient-race-background::after {
   background:
-    radial-gradient(circle at 50% 42%, rgb(16 14 18 / 0.1), rgb(16 14 18 / 0.78) 68%),
-    linear-gradient(180deg, rgb(16 14 18 / 0.35), rgb(16 14 18 / 0.88));
+    radial-gradient(circle at 50% 42%, rgb(16 14 18 / 0.06), rgb(16 14 18 / 0.6) 74%),
+    linear-gradient(180deg, rgb(16 14 18 / 0.24), rgb(16 14 18 / 0.72));
   content: "";
   inset: 0;
   position: absolute;
 }
 
+/* The animated circuit behind the setup screens. It was rendered, lazily loading its route
+   and driving cars, then hidden by display:none, so the entry screens read as flat black. */
 .ambient-race-map {
-  display: none;
+  display: block;
   height: 100%;
   max-width: 100%;
   overflow: hidden;
@@ -368,6 +371,12 @@
   grid-template-columns: 1fr;
 }
 
+@media (min-width: 860px) {
+  .setup-choice-panel .setup-choice-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
 .setup-choice {
   background: rgb(23 21 26 / 0.05);
   border: 1px solid rgb(23 21 26 / 0.16);
@@ -379,10 +388,21 @@
   text-align: left;
 }
 
+.setup-choice-icon {
+  height: 40px;
+  width: 40px;
+}
+
+.setup-choice-copy {
+  display: grid;
+  gap: 5px;
+}
+
 .setup-choice:hover {
   border-color: var(--color-accent);
   color: var(--color-text);
 }
+
 
 .setup-choice strong {
   color: var(--color-text);

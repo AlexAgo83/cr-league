@@ -1,4 +1,5 @@
 import { useT } from "../i18n/index.js";
+import { BoardIcon, type BoardIconName } from "../features/VisualIcon.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import type { FormState } from "./types.js";
 
@@ -12,6 +13,20 @@ type SavedClaim = {
   leagueCode: string;
   teamName: string;
 };
+
+// A choice step is a poster moment, not a form: icon first, and the panel drops the paper
+// surface so the ambient circuit shows through. The forms keep the light surface.
+function SetupChoice({ icon, label, hint, onSelect }: { icon: BoardIconName; label: string; hint: string; onSelect: () => void }) {
+  return (
+    <button type="button" className="setup-choice" aria-label={label} onClick={onSelect}>
+      <BoardIcon className="setup-choice-icon" name={icon} />
+      <span className="setup-choice-copy">
+        <strong>{label}</strong>
+        <small>{hint}</small>
+      </span>
+    </button>
+  );
+}
 
 // Only shown at the "choice" step of each setup view: the create/join/recover forms already
 // carry their own textual Back button, and two back affordances on one screen read as a bug.
@@ -43,16 +58,10 @@ export function SetupEntryView({
         <h1 id="setup-entry-title">{tt("setup_entry_title")}</h1>
         <p className={status === "error" ? "status error" : "status"}>{message === tt("status_initial") ? tt("setup_entry_intro") : message}</p>
       </div>
-      <div className="panel setup-main-panel setup-form-panel">
+      <div className="panel setup-main-panel setup-form-panel setup-choice-panel">
         <div className="setup-choice-grid">
-          <button type="button" className="setup-choice" aria-label={tt("action_start_solo")} onClick={onStartSolo}>
-            <strong>{tt("action_start_solo")}</strong>
-            <small>{tt("setup_solo_hint")}</small>
-          </button>
-          <button type="button" className="setup-choice" aria-label={tt("action_start_multiplayer")} onClick={onStartMultiplayer}>
-            <strong>{tt("action_start_multiplayer")}</strong>
-            <small>{tt("setup_multiplayer_hint")}</small>
-          </button>
+          <SetupChoice icon="stand-drive" label={tt("action_start_solo")} hint={tt("setup_solo_hint")} onSelect={onStartSolo} />
+          <SetupChoice icon="championship" label={tt("action_start_multiplayer")} hint={tt("setup_multiplayer_hint")} onSelect={onStartMultiplayer} />
         </div>
       </div>
     </section>
@@ -97,31 +106,27 @@ export function ProfileSetupView({
         <h1 id="profile-title">{mode === "create" ? tt("profile_create_title") : mode === "recover" ? tt("profile_recover_title") : tt("profile_title")}</h1>
         <p className={status === "error" ? "status error" : "status"}>{message === tt("status_initial") ? tt("profile_intro") : message}</p>
       </div>
-      <div className="panel setup-main-panel setup-form-panel">
+      <div className={`panel setup-main-panel setup-form-panel${mode === "choice" ? " setup-choice-panel" : ""}`}>
         {mode === "choice" ? (
           <div className="setup-choice-grid">
-            <button
-              type="button"
-              className="setup-choice"
-              onClick={() => {
+            <SetupChoice
+              icon="team-profile"
+              label={tt("action_create_profile")}
+              hint={tt("profile_create_hint")}
+              onSelect={() => {
                 onSetProfileFormError(null);
                 onSetMode("create");
               }}
-            >
-              <strong>{tt("action_create_profile")}</strong>
-              <small>{tt("profile_create_hint")}</small>
-            </button>
-            <button
-              type="button"
-              className="setup-choice"
-              onClick={() => {
+            />
+            <SetupChoice
+              icon="reset-recovery"
+              label={tt("action_recover_profile")}
+              hint={tt("profile_recover_hint")}
+              onSelect={() => {
                 onSetProfileFormError(null);
                 onSetMode("recover");
               }}
-            >
-              <strong>{tt("action_recover_profile")}</strong>
-              <small>{tt("profile_recover_hint")}</small>
-            </button>
+            />
           </div>
         ) : (
           <form
@@ -232,31 +237,27 @@ export function LeagueSetupView({
         <h1>{mode === "create" ? tt("setup_create_title") : mode === "join" ? tt("setup_join_title") : tt("race_desk_title")}</h1>
         <p className={status === "error" ? "status error" : "status"}>{message}</p>
       </div>
-      <div className="panel setup-main-panel setup-form-panel">
+      <div className={`panel setup-main-panel setup-form-panel${mode === "choice" ? " setup-choice-panel" : ""}`}>
         {mode === "choice" ? (
           <div className="setup-choice-grid">
-            <button
-              type="button"
-              className="setup-choice"
-              onClick={() => {
+            <SetupChoice
+              icon="next-gp"
+              label={tt("action_create_league")}
+              hint={tt("setup_create_hint")}
+              onSelect={() => {
                 onSetFormError(null);
                 onSetMode("create");
               }}
-            >
-              <strong>{tt("action_create_league")}</strong>
-              <small>{tt("setup_create_hint")}</small>
-            </button>
-            <button
-              type="button"
-              className="setup-choice"
-              onClick={() => {
+            />
+            <SetupChoice
+              icon="inspect-league"
+              label={tt("action_join_league")}
+              hint={tt("setup_join_hint")}
+              onSelect={() => {
                 onSetFormError(null);
                 onSetMode("join");
               }}
-            >
-              <strong>{tt("action_join_league")}</strong>
-              <small>{tt("setup_join_hint")}</small>
-            </button>
+            />
           </div>
         ) : (
           <form

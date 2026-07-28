@@ -76,6 +76,7 @@ export function SetupGate({
           profileFormError={profileFormError}
           status={status}
           pendingMessage={pendingMessage}
+          onBack={() => setSetupEntryMode("choice")}
           onCreateProfile={createProfileSession}
           onRecoverProfile={recoverProfileSession}
           onRequestRecoveryCode={requestRecoveryCode}
@@ -104,6 +105,7 @@ export function SetupGate({
             savedLeagueIndex={savedLeagueIndex}
             status={status}
             pendingMessage={pendingMessage}
+            onBack={() => setSetupEntryMode("choice")}
             onCreateLeague={createLeague}
             onJoinLeague={joinLeague}
             onSetForm={setForm}

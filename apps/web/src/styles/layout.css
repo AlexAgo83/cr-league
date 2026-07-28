@@ -338,8 +338,15 @@
   margin: 0;
 }
 
+.setup-back-button {
+  font-size: 1.2rem;
+  height: 32px;
+  width: 32px;
+}
+
 .setup-hero-panel {
   --color-text: #f8f3e8;
+  position: relative;
   --color-muted: rgb(248 243 232 / 0.78);
   border-bottom: 0;
   border-bottom-left-radius: 0;

@@ -38,6 +38,18 @@ describe("App profile and admin", () => {
     expect(screen.getByRole("button", { name: /Multiplayer/ })).toBeTruthy();
   });
 
+  it("offers a back button out of the league setup choice", () => {
+    saveProfile();
+    render(<App />);
+
+    startMultiplayerSetup();
+    expect(screen.getByRole("heading", { name: "Stand" })).toBeTruthy();
+
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+
+    expect(screen.getByRole("button", { name: /Multiplayer/ })).toBeTruthy();
+  });
+
   it("removes legacy saved profile codes from local storage", () => {
     saveProfile({ recoveryCode: "ABCD1234" });
     const writeText = vi.fn().mockResolvedValue(undefined);

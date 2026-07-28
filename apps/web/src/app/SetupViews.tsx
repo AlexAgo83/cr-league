@@ -13,6 +13,17 @@ type SavedClaim = {
   teamName: string;
 };
 
+// Only shown at the "choice" step of each setup view: the create/join/recover forms already
+// carry their own textual Back button, and two back affordances on one screen read as a bug.
+function SetupBackButton({ onBack }: { onBack: () => void }) {
+  const tt = useT();
+  return (
+    <button className="modal-close-button setup-back-button" type="button" aria-label={tt("action_back")} onClick={onBack}>
+      ×
+    </button>
+  );
+}
+
 export function SetupEntryView({
   message,
   status,
@@ -55,6 +66,7 @@ export function ProfileSetupView({
   profileForm,
   profileFormError,
   status,
+  onBack,
   onCreateProfile,
   onRecoverProfile,
   onRequestRecoveryCode,
@@ -71,6 +83,7 @@ export function ProfileSetupView({
   onCreateProfile: () => void;
   onRecoverProfile: () => void;
   onRequestRecoveryCode: () => void;
+  onBack: () => void;
   onSetMode: (mode: ProfileMode) => void;
   onSetProfileForm: (form: { email: string; recoveryCode: string }) => void;
   onSetProfileFormError: (error: string | null) => void;
@@ -79,6 +92,7 @@ export function ProfileSetupView({
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="profile-title">
       <div className="panel setup-main-panel setup-hero-panel profile-hero-panel">
+        {mode === "choice" ? <SetupBackButton onBack={onBack} /> : null}
         <span className="section-kicker">{tt("profile_kicker")}</span>
         <h1 id="profile-title">{mode === "create" ? tt("profile_create_title") : mode === "recover" ? tt("profile_recover_title") : tt("profile_title")}</h1>
         <p className={status === "error" ? "status error" : "status"}>{message === tt("status_initial") ? tt("profile_intro") : message}</p>
@@ -183,6 +197,7 @@ export function LeagueSetupView({
   savedClaims,
   savedLeagueIndex,
   status,
+  onBack,
   onCreateLeague,
   onJoinLeague,
   onSetForm,
@@ -199,6 +214,7 @@ export function LeagueSetupView({
   savedClaims: SavedClaim[];
   savedLeagueIndex: number;
   status: "idle" | "loading" | "error";
+  onBack: () => void;
   onCreateLeague: () => void;
   onJoinLeague: () => void;
   onSetForm: (form: FormState) => void;
@@ -211,6 +227,7 @@ export function LeagueSetupView({
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-label={tt("flow_label")}>
       <div className="panel setup-main-panel setup-hero-panel league-hero-panel">
+        {mode === "choice" ? <SetupBackButton onBack={onBack} /> : null}
         <span className="section-kicker">{tt("race_desk_kicker")}</span>
         <h1>{mode === "create" ? tt("setup_create_title") : mode === "join" ? tt("setup_join_title") : tt("race_desk_title")}</h1>
         <p className={status === "error" ? "status error" : "status"}>{message}</p>

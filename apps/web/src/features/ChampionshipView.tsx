@@ -536,7 +536,15 @@ function CircuitStatsPanel({ stats }: { stats?: CircuitTeamStats }) {
 }
 
 function rankTeams(state: LeagueState) {
-  return [...state.teams].sort((left, right) => right.points - left.points || left.name.localeCompare(right.name));
+  // Tie-break matches seasonStandings in the shared domain: points, then the incoming order,
+  // then the name — so equal-points teams keep whatever order the source already implied.
+  const incoming = new Map(state.teams.map((team, index) => [team.id, index]));
+  return [...state.teams].sort(
+    (left, right) =>
+      right.points - left.points ||
+      (incoming.get(left.id) ?? 0) - (incoming.get(right.id) ?? 0) ||
+      left.name.localeCompare(right.name)
+  );
 }
 
 function teamSeasonStats(state: LeagueState, teamId: string) {

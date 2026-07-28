@@ -112,7 +112,8 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
 
   await page.goto("/");
   await expect(page.getByRole("main", { name: "CR League home" })).toBeVisible();
-  await expect(page.locator(".home-splash-background")).toHaveCSS("object-fit", "contain");
+  // cover, not contain: the portrait key art used to letterbox on wide screens.
+  await expect(page.locator(".home-splash-background")).toHaveCSS("object-fit", "cover");
   await expect(page.locator(".home-press-start")).toBeVisible();
   expect(
     await page.evaluate(() => ({
@@ -531,7 +532,8 @@ test("opens a team profile from the standings", async ({ page }) => {
   await page.getByTestId("nav-championship").click();
   await dismissOnboarding(page);
   await page.locator(`[data-section-tab="standings"]`).click();
-  await page.locator(".standings-profile-button").first().click();
+  // Target the row by name rather than position: standings rank by points now.
+  await page.locator(".standings-profile-button").filter({ hasText: "Volt Union" }).first().click();
 
   const profile = page.getByTestId("dialog-team-profile");
   await expect(profile).toBeVisible();

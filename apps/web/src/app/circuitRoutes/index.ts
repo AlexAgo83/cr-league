@@ -1,6 +1,6 @@
 import { useSyncExternalStore } from "react";
 
-// Lazy circuit-route loading: the 25 lat/lng polylines (~47 KB gz) used to be a static import on
+// Lazy circuit-route loading: the lat/lng polylines (~47 KB gz) used to be a static import on
 // the first-paint critical path though only one circuit renders per round. They now load on demand
 // via a single dynamic import of ./data.js, and consumers read routes from this cache by layoutKey.
 // ponytail: one dynamic import for the whole barrel — simpler and enough; per-circuit splitting buys

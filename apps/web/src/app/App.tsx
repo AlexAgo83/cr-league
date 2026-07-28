@@ -1,4 +1,12 @@
-import { type QualifyingRun } from "@cr-league/shared";
+import {
+  SharedLeagueRuleError,
+  buyCard as buySoloCard,
+  sellCard as sellSoloCard,
+  submitDecision as submitSoloDecision,
+  type QualifyingRun,
+  updateTeamLivery as updateSoloTeamLivery,
+  updateTeamName as updateSoloTeamName
+} from "@cr-league/shared";
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { t, type Locale, type TranslationKey } from "../i18n/index.js";
 import { type LeagueState, type ProfileSession } from "./types.js";
@@ -34,6 +42,8 @@ import { useNotifications, type Notification } from "./useNotifications.js";
 import { usePlanForm } from "./usePlanForm.js";
 import { useRaceDerivations } from "./useRaceDerivations.js";
 import { useReplayUiState } from "./useReplayUiState.js";
+import { createInitialSoloLeagueState, isSoloLeagueState } from "./soloLeague.js";
+import { loadSoloSave, saveSoloState } from "./soloStorage.js";
 
 const AdminConsoleView = lazy(() => import("../features/AdminConsoleView.js").then((module) => ({ default: module.AdminConsoleView })));
 
@@ -265,6 +275,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   } = race;
   const seasonRecap = seasonRecapSeason === null ? undefined : completedSeasons.find((season) => season.season === seasonRecapSeason);
   const nextGrandPrixActionLabel = tt(isSeasonFinalGrandPrix ? "action_start_next_season" : "action_next_grand_prix");
+  const soloMode = isSoloLeagueState(leagueState);
   const { updateSettings, resolveGrandPrix, startNextGrandPrix, buyCard, sellCard, buyCarAsset, updateLivery, updateTeamName, restartLeague: restartLeagueState, sendPlanReminders } = createLeagueMutations({
     leagueState,
     playerTeam,
@@ -327,6 +338,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     function refreshOnVisible() {
       if (document.visibilityState !== "visible" || statusRef.current === "loading" || adminInspectingRef.current || tabRefreshInFlight.current) return;
       if (!leagueStateRef.current?.player) return;
+      if (isSoloLeagueState(leagueStateRef.current)) return;
       const claim = getActiveClaim(savedClaimsRef.current);
       if (!claim) return;
 
@@ -495,6 +507,74 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     openQualifyingReplay(run);
   }
 
+  function persistSoloState(nextState: LeagueState) {
+    saveSoloState(nextState);
+    setLeagueState(nextState);
+  }
+
+  async function startSolo() {
+    const save = loadSoloSave();
+    const state = save?.state ?? createInitialSoloLeagueState();
+    if (!save) saveSoloState(state);
+    setAdminInspecting(false);
+    setSetupEntryMode("choice");
+    setLeagueState(state);
+    setGameView("drive");
+    showStatus(tt(save ? "status_solo_resumed" : "status_solo_started"));
+    pushCommandHint("prepare");
+  }
+
+  async function runSoloMutation(loadingKey: TranslationKey, action: () => LeagueState, successKey: TranslationKey) {
+    await run(
+      tt(loadingKey),
+      async () => {
+        persistSoloState(action());
+        showStatus(tt(successKey));
+      },
+      undefined,
+      true,
+      (error) => (error instanceof SharedLeagueRuleError ? error.message : "")
+    );
+  }
+
+  async function submitSoloDirectiveConfirmed() {
+    if (!leagueState || !playerTeam) return;
+    setDirectiveConfirmOpen(false);
+    await run(
+      tt("status_submitting_directive"),
+      async () => {
+        const nextState = submitSoloDecision(leagueState, {
+          teamId: playerTeam.id,
+          approach: form.approach,
+          preparation: form.preparation,
+          pitStrategy: form.pitStrategy,
+          cardId: selectedCardId || undefined
+        });
+        persistSoloState(nextState);
+        setQualifyingResult(null);
+        showStatus(tt("status_directive_locked"));
+        pushCommandHint("ready");
+      },
+      undefined,
+      true,
+      (error) => (error instanceof SharedLeagueRuleError ? error.message : "")
+    );
+  }
+
+  async function resolveSoloGrandPrix() {
+    setResolveConfirmOpen(false);
+    showStatus(tt("status_solo_action_unavailable"), "info", false);
+  }
+
+  async function startSoloNextGrandPrix() {
+    setNextGrandPrixConfirmOpen(false);
+    showStatus(tt("status_solo_action_unavailable"), "info", false);
+  }
+
+  function openSoloQualifyingRun() {
+    showStatus(tt("status_solo_action_unavailable"), "info", false);
+  }
+
   function changeLocale(nextLocale: Locale) {
     onLocaleChange(nextLocale);
     if (!leagueState && message === t("status_initial", locale)) {
@@ -613,7 +693,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       }}
       onResetUiPreferences={resetUiPreferences}
       onCopyTechnicalError={() => void copyTechnicalError()}
-      onSubmitDirectiveConfirmed={submitDirectiveConfirmed}
+      onSubmitDirectiveConfirmed={soloMode ? submitSoloDirectiveConfirmed : submitDirectiveConfirmed}
       onEditPlan={() => {
         setDirectiveConfirmOpen(false);
         setQualifyingConfirmOpen(false);
@@ -625,9 +705,9 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         setPlanSubscreen("chrono");
         setGameView("plan");
       }}
-      onResolveGrandPrix={() => void resolveGrandPrix()}
+      onResolveGrandPrix={() => void (soloMode ? resolveSoloGrandPrix() : resolveGrandPrix())}
       onStartQualifyingRunConfirmed={startQualifyingRunConfirmed}
-      onStartNextGrandPrix={() => void startNextGrandPrix()}
+      onStartNextGrandPrix={() => void (soloMode ? startSoloNextGrandPrix() : startNextGrandPrix())}
       onOpenResultReport={() => {
         setNextGrandPrixConfirmOpen(false);
         setPlanSubscreen("report");
@@ -753,21 +833,37 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       createProfileSession={() => void createProfileSession()}
       recoverProfileSession={() => void recoverProfileSession()}
       requestRecoveryCode={() => void requestRecoveryCode()}
-      startSolo={() => showStatus(tt("status_solo_not_ready"), "info", false)}
+      startSolo={() => void startSolo()}
       createLeague={() => void createLeague()}
       joinLeague={() => void joinLeague()}
       switchLeague={(teamId) => void switchLeague(teamId)}
       closeHistoryReplay={closeHistoryReplay}
       openHistoryReplay={openHistoryReplay}
-      buyCard={buyCard}
-      sellCard={sellCard}
+      buyCard={(cardId, quantity) =>
+        void (soloMode
+          ? runSoloMutation("status_buying_card", () => buySoloCard(leagueState!, { teamId: playerTeam?.id, cardId, quantity }), "status_card_bought")
+          : buyCard(cardId, quantity))
+      }
+      sellCard={(cardId) =>
+        void (soloMode
+          ? runSoloMutation("status_selling_card", () => sellSoloCard(leagueState!, { teamId: playerTeam?.id, cardId }), "status_card_sold")
+          : sellCard(cardId))
+      }
       buyCarAsset={buyCarAsset}
-      updateLivery={updateLivery}
-      updateTeamName={updateTeamName}
+      updateLivery={(livery, options) =>
+        void (soloMode
+          ? runSoloMutation("status_livery_updating", () => updateSoloTeamLivery(leagueState!, { teamId: playerTeam?.id, livery }), "status_livery_updated")
+          : updateLivery(livery, options))
+      }
+      updateTeamName={(name) =>
+        void (soloMode
+          ? runSoloMutation("status_team_name_updating", () => updateSoloTeamName(leagueState!, { teamId: playerTeam?.id, name }), "status_team_name_updated")
+          : updateTeamName(name))
+      }
       clearTransientNotifications={clearTransientNotifications}
       clearScreenOnboardingSnoozes={clearScreenOnboardingSnoozes}
       markCommandClicked={markCommandClicked}
-      openQualifyingRun={openQualifyingRun}
+      openQualifyingRun={soloMode ? openSoloQualifyingRun : openQualifyingRun}
       goHome={() => {
         setSetupEntryMode("choice");
         goHome();
@@ -782,6 +878,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   );
 
   function rememberPlayer(state: LeagueState) {
+    if (isSoloLeagueState(state)) return;
     const nextClaims = rememberPlayerClaim(state);
     if (nextClaims) setSavedClaims(nextClaims);
   }

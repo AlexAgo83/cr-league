@@ -54,6 +54,10 @@ flowchart TD
 - The UI visibly labels the active local save as Solo local and provides a safe reset path.
 - Typecheck, focused tests, web build, and Logics validation pass.
 
+# Delivery Checkpoints
+- 2026-07-28: Entry split, single local save storage, shared-engine helper extraction, and first solo start/action adapter slice are in place. Solo can start before profile with no API call and can persist shared-engine directive/card/livery/name mutations locally.
+- Still required for the success signals: complete local qualifying/resolution/next GP, add the Solo local indicator and reset safety, extend no-fetch action coverage, and run final build/Logics validation.
+
 # References
 - Product back-reference: `req_131_solo_and_multiplayer_entry_split_with_local_solo_mode`
 - Task back-reference: `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode`

@@ -6,6 +6,7 @@ import type { DirectiveStep } from "../features/DirectivePanel.js";
 import { DriveView } from "./DriveView.js";
 import { GameViews } from "./GameViews.js";
 import { SetupGate } from "./SetupGate.js";
+import { isSoloLeagueState } from "./soloLeague.js";
 import type { ProfileMode, SetupEntryMode, SetupMode } from "./SetupViews.js";
 import type { PlanSubscreen } from "./routes.js";
 import type { FormState, GameView, LeagueState, ProfileSession } from "./types.js";
@@ -169,7 +170,7 @@ export function AppShell({
   backToAdminConsole: () => void;
   tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }) {
-  if (!profileSession || !leagueState) {
+  if (!leagueState || (!profileSession && !isSoloLeagueState(leagueState))) {
     return (
       <SetupGate
         profileSession={profileSession}

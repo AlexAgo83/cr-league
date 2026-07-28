@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 88
-> Progress: 35%
+> Progress: 45%
 > Complexity: High
 > Theme: Local solo game loop
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -32,6 +32,7 @@
 
 # Progress notes
 - 2026-07-28: Workstream launched. Initial implementation focus is shared engine extraction and a small persistence boundary so API and local solo both call shared league rules instead of duplicating game behavior.
+- 2026-07-28: First local action adapter slice is implemented in the web app. `soloLeague.ts` creates the initial local LeagueState, `soloStorage.ts` persists the versioned save, and App-level solo routing now applies shared-engine transitions for directive submit, card buy/sell, livery update, and team rename without API calls. Qualifying, race resolution, next GP, car unlock, reset, and deeper no-fetch action tests remain open.
 
 # Acceptance criteria
 - AC3: Solo can start or resume with the API unavailable.

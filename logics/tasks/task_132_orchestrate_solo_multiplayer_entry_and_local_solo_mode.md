@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 96
 > Confidence: 88
-> Progress: 35
+> Progress: 45%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -32,7 +32,8 @@
 # Progress notes
 - 2026-07-28: Implementation started; current progress is around 5-10%. Three workstreams are now active: shared engine extraction, Solo / Multiplayer setup UI, and solo local storage/action adapter.
 - 2026-07-28: Wave checkpoints committed: `58eb7b3` local solo save storage, `7145fda` shared league engine helpers, `443a56c` Solo / Multiplayer setup choice, and `a811ba9` corrected the setup gate so Solo / Multiplayer remains before profile setup even when a profile is already saved. Web App/App.profile suites and web/shared typechecks passed at this checkpoint.
-- Remaining implementation risk is Wave 3: replace the Solo stub with real localStorage -> shared engine -> React state persistence, then add `Solo local` badge/reset and no-fetch proof.
+- 2026-07-28: Wave 3 first slice replaced the Solo stub with a real local save start/resume path. Solo now bypasses profile, creates `solo-local`, persists `cr-league-solo-save-v1`, skips tab-refresh rejoin, and routes directive submit, buy/sell card, livery update, and team rename through the shared engine into localStorage. Focused no-fetch start proof, App/soloStorage Vitest, and web typecheck pass.
+- Remaining implementation risk is Wave 3 completion: shared/local qualifying, GP resolution, next GP, car unlocks if kept exposed, `Solo local` badge, confirmed solo reset, and broader no-fetch action coverage.
 
 # Backlog
 - `item_347_introduce_the_solo_multiplayer_setup_hierarchy`

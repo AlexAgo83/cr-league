@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 90
-> Progress: 35%
+> Progress: 45%
 > Complexity: Medium
 > Theme: Setup flow and navigation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -27,6 +27,7 @@
 
 # Progress notes
 - 2026-07-28: Workstream launched. Initial implementation focus is the Solo / Multiplayer entry point, preserving the existing Multiplayer profile and Create / Join subflow while Solo remains profile-free.
+- 2026-07-28: Setup hierarchy now reaches an actual local solo league before profile setup. The AppShell guard explicitly allows `solo-local` without a profile, while the Multiplayer branch still preserves the existing profile and league setup path.
 
 # Acceptance criteria
 - AC1: Create / Join is no longer the first setup choice.

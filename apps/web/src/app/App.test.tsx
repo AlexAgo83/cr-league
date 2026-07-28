@@ -220,6 +220,18 @@ describe("App", () => {
     expect(fetch).toHaveBeenCalledWith("http://127.0.0.1:4874/leagues", expect.objectContaining({ method: "POST" }));
   });
 
+  it("starts a local solo league without calling the API", async () => {
+    const fetch = vi.spyOn(globalThis, "fetch");
+
+    render(<App />);
+
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+
+    expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
+    expect(fetch).not.toHaveBeenCalled();
+    expect(localStorage.getItem("cr-league-solo-save-v1")).toContain("solo-local");
+  });
+
   it("refreshes the active league once when returning to a visible tab", async () => {
     saveProfile();
     saveActiveClaim();

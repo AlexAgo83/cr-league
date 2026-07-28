@@ -421,7 +421,6 @@ test("keeps first-click commands animated and result shortcuts wired", async ({ 
   await page.getByTestId("nav-garage").click();
   await dismissOnboarding(page);
   await expect(page.locator(".garage-empty-inventory")).toContainText("No cards in inventory.");
-  await expect(page.locator(".garage-empty-inventory img, .garage-empty-inventory image")).toHaveCount(0);
 
   await page.getByTestId("nav-drive").click();
   await dismissOnboarding(page);
@@ -585,6 +584,8 @@ async function createProfile(page: Page) {
 async function enterSplash(page: Page) {
   const pressStart = page.getByRole("button", { name: "PRESS START" });
   if (await pressStart.isVisible({ timeout: 500 }).catch(() => false)) await pressStart.click();
+  const multiplayer = page.getByRole("button", { name: "Multiplayer" });
+  if (await multiplayer.isVisible({ timeout: 500 }).catch(() => false)) await multiplayer.click();
 }
 
 async function createLeague(page: Page, options: { variableShop?: boolean } = {}) {

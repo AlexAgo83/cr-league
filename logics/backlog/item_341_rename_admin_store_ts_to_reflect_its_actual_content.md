@@ -1,10 +1,10 @@
 ## item_341_rename_admin_store_ts_to_reflect_its_actual_content - Rename admin/store.ts to reflect its actual content
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: Low
 > Theme: Code organization
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -50,3 +50,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Done: `apps/api/src/features/admin/store.ts` renamed to `apps/api/src/features/admin/adminData.ts` (`git mv`, so history follows). The only importer is `apps/api/src/features/admin/routes.ts`; there is no cross-feature import of it, so the rename touched exactly two files.
+- `apps/api/src/features/leagues/store.ts` (the barrel) is untouched, as scoped. Content of the renamed file is unchanged — rename only.
+- Historical Logics docs from closed chains still mention the old path; they are deliberately left as-is since they record what was true at the time.
+- Typecheck, lint, and the full suite (380 passed, 7 skipped) green.

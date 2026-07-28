@@ -11,7 +11,7 @@ import {
   listAdminUsers,
   resetAdminUserRecoveryCode,
   type AdminListInput
-} from "./store.js";
+} from "./adminData.js";
 
 type AdminListQuery = {
   q?: string;

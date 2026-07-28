@@ -95,34 +95,34 @@ export function ProfileMenu({
         if (!event.currentTarget.contains(event.relatedTarget)) onClose();
       }}
     >
-      <button type="button" className="profile-menu-button" aria-label={tt("profile_menu")} aria-expanded={profileOpen} onClick={onToggleOpen}>
+      <button type="button" data-testid="profile-menu" className="profile-menu-button" aria-label={tt("profile_menu")} aria-expanded={profileOpen} onClick={onToggleOpen}>
         {playerTeamName?.slice(0, 2).toUpperCase() ?? "CR"}
       </button>
       {profileOpen ? (
         <div className="profile-menu-panel">
           <PendingFeedback message={pendingMessage} />
           {showManageLeague ? (
-            <button type="button" className="profile-menu-action" onClick={onAddLeague}>
+            <button type="button" data-testid="profile-action-add-league" className="profile-menu-action" onClick={onAddLeague}>
               {tt("action_add_league")}
             </button>
           ) : null}
           {hasLeague ? (
-            <button type="button" className="profile-menu-action" onClick={onOpenLeagueControls}>
+            <button type="button" data-testid="profile-action-race-direction" className="profile-menu-action" onClick={onOpenLeagueControls}>
               {tt("settings_title")}
             </button>
           ) : null}
           {isAdmin ? (
-            <button type="button" className="profile-menu-action profile-menu-action-info" onClick={onOpenAdminConsole}>
+            <button type="button" data-testid="profile-action-admin" className="profile-menu-action profile-menu-action-info" onClick={onOpenAdminConsole}>
               {tt("admin_action_open")}
             </button>
           ) : null}
           {hasRecoveryCode ? (
-            <button type="button" className="profile-menu-action profile-menu-action-info" onClick={onOpenProfileCode}>
+            <button type="button" data-testid="profile-action-profile-code" className="profile-menu-action profile-menu-action-info" onClick={onOpenProfileCode}>
               {tt("action_copy_profile_code")}
             </button>
           ) : null}
           <LanguageSwitcher locale={locale} tt={tt} onChangeLocale={onChangeLocale} />
-          <button type="button" className="profile-menu-action profile-menu-action-info" onClick={onOpenPreferencesReset}>
+          <button type="button" data-testid="profile-action-reset-preferences" className="profile-menu-action profile-menu-action-info" onClick={onOpenPreferencesReset}>
             {tt("action_reset_ui_preferences")}
           </button>
           {updateReady ? (
@@ -134,10 +134,10 @@ export function ProfileMenu({
               {tt("action_install_app")}
             </button>
           ) : null}
-          <button type="button" className="profile-menu-action profile-menu-action-danger" onClick={onOpenProfileLogout}>
+          <button type="button" data-testid="profile-action-sign-out" className="profile-menu-action profile-menu-action-danger" onClick={onOpenProfileLogout}>
             {tt("action_forget_profile")}
           </button>
-          <button type="button" className="profile-menu-version" onClick={onOpenChangelog}>
+          <button type="button" data-testid="profile-action-changelog" className="profile-menu-version" onClick={onOpenChangelog}>
             v{APP_VERSION}
           </button>
         </div>
@@ -202,7 +202,7 @@ export function GameTopbar({
       </button>
       <nav className="game-nav" aria-label={tt("cockpit_sections")}>
         {GAME_VIEWS.map((view) => (
-          <button key={view} type="button" className={gameView === view ? "active" : undefined} aria-label={tt(`rail_${view}` as TranslationKey)} onClick={() => onSelectView(view)}>
+          <button key={view} type="button" data-testid={`nav-${view}`} className={gameView === view ? "active" : undefined} aria-label={tt(`rail_${view}` as TranslationKey)} onClick={() => onSelectView(view)}>
             <BoardIcon className="nav-board-icon" name={GAME_VIEW_ICONS[view]} />
             <span className="nav-label-full">{tt(`rail_${view}` as TranslationKey)}</span>
             <span className="nav-label-short" aria-hidden="true">

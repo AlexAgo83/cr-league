@@ -1,10 +1,10 @@
 ## item_345_replace_hardcoded_e2e_copy_assertions_with_data_testid - Replace hardcoded E2E copy assertions with data-testid
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Test resilience
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -50,3 +50,11 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Structural/navigational locators now use stable hooks; copy assertions that exist *to check the copy* were deliberately kept (the profile-menu label list, the launch-GP dialog's "Starting grid"/"Grip"/"Likely weather" content checks, notification texts, headings).
+- Added `data-testid` in the app: `nav-{drive|plan|championship|garage}` and `profile-menu` / `profile-action-*` (`AppChrome.tsx`), a `testId` pass-through on the `Modal` primitive plus `modal-close`, a `testId` pass-through on `ConfirmActionModal` plus `modal-confirm` on every confirm button, and named dialogs `dialog-profile-code` / `dialog-send-plan` / `dialog-run-chrono` / `dialog-launch-gp` / `dialog-next-gp` / `dialog-race-direction`.
+- Tabs needed no new attribute: `SectionSwitch` already emitted `data-section-tab={key}`, so the six `getByRole("tab", { name: <copy> })` locators became `[data-section-tab="..."]`. Reused rather than added.
+- `getByRole("dialog", { name: <copy> })` is down to one occurrence, the league-onboarding intro, which is asserted for its copy.
+- The failure mode this slice targets is now covered: renaming `League controls` -> `Race direction` (which broke the suite once) would no longer touch a locator.
+- E2E green (4 passed), plus typecheck, lint, and the unit suite.

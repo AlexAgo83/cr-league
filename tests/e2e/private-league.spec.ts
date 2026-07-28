@@ -126,12 +126,12 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await createProfile(page);
 
   await createLeague(page);
-  await expect(page.getByRole("button", { name: "Stand", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Plan", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Championship", exact: true })).toBeVisible();
-  await expect(page.getByRole("button", { name: "Garage", exact: true })).toBeVisible();
+  await expect(page.getByTestId("nav-drive")).toBeVisible();
+  await expect(page.getByTestId("nav-plan")).toBeVisible();
+  await expect(page.getByTestId("nav-championship")).toBeVisible();
+  await expect(page.getByTestId("nav-garage")).toBeVisible();
   await expect(page.getByRole("button", { name: "Result" })).toHaveCount(0);
-  await page.getByRole("button", { name: "Championship", exact: true }).click();
+  await page.getByTestId("nav-championship").click();
   await dismissOnboarding(page);
   await expect(page.getByText("ABC123")).toBeVisible();
   await expect(page.getByText("Round 1").first()).toBeVisible();
@@ -142,13 +142,13 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect
     .poll(async () => page.locator(".dashboard-summary").evaluate((element) => getComputedStyle(element).gridTemplateColumns.split(" ").length))
     .toBe(3);
-  await page.getByRole("tab", { name: "Standings" }).click();
+  await page.locator(`[data-section-tab="standings"]`).click();
   await expect(page.locator(".standings-table")).toContainText("Volt Union");
-  await page.getByRole("tab", { name: "Grand Prix history" }).click();
+  await page.locator(`[data-section-tab="history"]`).click();
   await expect(page.locator(".round-timeline")).toContainText("R1");
-  await page.getByRole("tab", { name: "Standings" }).click();
+  await page.locator(`[data-section-tab="standings"]`).click();
   await expect(page.locator(".championship-settings-panel")).toHaveCount(0);
-  await page.getByRole("button", { name: "Profile menu" }).click();
+  await page.getByTestId("profile-menu").click();
   await expect(page.getByRole("button", { name: "Manage league" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Race direction" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy profile code" })).toBeVisible();
@@ -157,31 +157,31 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   const menuButtons = await page.locator(".profile-menu-panel button").evaluateAll((buttons) => buttons.map((button) => button.textContent?.trim()));
   expect(menuButtons).toEqual(["Manage league", "Race direction", "Copy profile code", "EN", "FR", "Reset UI preferences", "Sign out", `v${APP_VERSION}`]);
   await expect(page.getByLabel("Language")).toBeVisible();
-  await page.getByRole("button", { name: "Copy profile code" }).click();
-  await expect(page.getByRole("dialog", { name: "Profile code" })).toBeVisible();
+  await page.getByTestId("profile-action-profile-code").click();
+  await expect(page.getByTestId("dialog-profile-code")).toBeVisible();
   await expect(page.getByLabel("Copy profile code")).toHaveValue("ABCD1234");
   await page.getByLabel("Copy profile code").click();
   await expect(page.getByText("Profile code copied.")).toBeVisible();
   await expect(page.getByText("Profile code copied: ABCD1234")).toHaveCount(0);
-  await page.getByRole("dialog", { name: "Profile code" }).getByRole("button", { name: "Close", exact: true }).click();
+  await page.getByTestId("dialog-profile-code").getByTestId("modal-close").click();
   await hideReadmeNoise(page);
   await page.screenshot({ path: testInfo.outputPath("championship-layout-desktop.png"), fullPage: true });
 
   await expect(page.getByLabel("League summary").getByText("Wait for directives")).toBeVisible();
 
   for (const expectedRound of [1, 2, 3]) {
-    await page.getByRole("button", { name: "Stand", exact: true }).click();
+    await page.getByTestId("nav-drive").click();
     await dismissOnboarding(page);
     await page.getByRole("button", { name: "Send plan" }).click();
-    await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click();
+    await page.getByTestId("dialog-send-plan").getByTestId("modal-confirm").click();
     await expect(page.getByRole("button", { name: "Launch GP" })).toBeVisible();
 
     await page.getByRole("button", { name: "Launch GP" }).click();
-    await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toBeVisible();
-    await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toContainText("Starting grid");
-    await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toContainText("Grip");
-    await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toContainText("Likely weather");
-    await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
+    await expect(page.getByTestId("dialog-launch-gp")).toBeVisible();
+    await expect(page.getByTestId("dialog-launch-gp")).toContainText("Starting grid");
+    await expect(page.getByTestId("dialog-launch-gp")).toContainText("Grip");
+    await expect(page.getByTestId("dialog-launch-gp")).toContainText("Likely weather");
+    await page.getByTestId("dialog-launch-gp").getByTestId("modal-confirm").click();
     await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
     await expect(page.locator(".replay-moments-panel")).toHaveCount(0);
     await expect(page.locator(".replay-marker").first()).toBeVisible();
@@ -201,17 +201,17 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
     await expect(page.locator(".report-main-recap")).toContainText(/P\d/);
 
     if (expectedRound < 3) {
-      await page.getByRole("button", { name: "Stand", exact: true }).click();
+      await page.getByTestId("nav-drive").click();
       await page.getByRole("button", { name: "Next GP" }).click();
-      await page.getByRole("dialog", { name: "Start the next race day?" }).getByRole("button", { name: "Next GP" }).click();
+      await page.getByTestId("dialog-next-gp").getByTestId("modal-confirm").click();
       await expect(page.getByRole("heading", { name: "1. Read the circuit" })).toBeVisible();
       await dismissOnboarding(page);
-      await page.getByRole("button", { name: "Championship", exact: true }).click();
+      await page.getByTestId("nav-championship").click();
       await expect(page.getByText(`Round ${expectedRound + 1}`).first()).toBeVisible();
     }
   }
 
-  await page.getByRole("button", { name: "Championship", exact: true }).click();
+  await page.getByTestId("nav-championship").click();
   await expect(page.getByText("Round 3").first()).toBeVisible();
 });
 
@@ -221,14 +221,14 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.goto("/");
   await createProfile(page);
   await createLeague(page);
-  await page.getByRole("button", { name: "Garage", exact: true }).click();
+  await page.getByTestId("nav-garage").click();
   await dismissOnboarding(page);
-  await page.getByRole("tab", { name: "My team" }).click();
+  await page.locator(`[data-section-tab="team"]`).click();
   await page.getByLabel("Primary").fill("#c51697");
   await page.getByLabel("Secondary").fill("#633af8");
   await page.getByRole("button", { name: "Save colors" }).click();
   await expect(page.getByText("Car colors updated.")).toBeVisible();
-  await page.getByRole("button", { name: "Stand", exact: true }).click();
+  await page.getByTestId("nav-drive").click();
 
   const driveMap = page.locator(".drive-map-panel");
   await expect(driveMap).toHaveClass(/circuit-map/);
@@ -282,13 +282,13 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   await page.setViewportSize({ width: 1440, height: 1000 });
 
   await dismissOnboarding(page);
-  await page.getByRole("button", { name: "Stand", exact: true }).click();
+  await page.getByTestId("nav-drive").click();
   await dismissOnboarding(page);
   await page.getByRole("button", { name: "Send plan" }).click();
-  await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click();
+  await page.getByTestId("dialog-send-plan").getByTestId("modal-confirm").click();
   await page.getByRole("button", { name: "Launch GP" }).click();
   await page.setViewportSize({ width: 360, height: 720 });
-  await expect(page.getByRole("dialog", { name: "Launch Grand Prix?" })).toBeVisible();
+  await expect(page.getByTestId("dialog-launch-gp")).toBeVisible();
   const launchModalMobile = await page.evaluate(() => {
     const modal = document.querySelector(".launch-gp-modal");
     const row = document.querySelector(".launch-gp-modal .starting-grid-list li");
@@ -308,7 +308,7 @@ test("keeps replay layout zones separated", async ({ page }, testInfo) => {
   });
   await page.screenshot({ path: testInfo.outputPath("launch-gp-modal-mobile.png"), fullPage: true });
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
+  await page.getByTestId("dialog-launch-gp").getByTestId("modal-confirm").click();
   await expect(page.getByRole("heading", { name: "Race replay" })).toBeVisible();
 
   const mapPanel = page.locator(".replay-map-panel");
@@ -406,29 +406,29 @@ test("keeps first-click commands animated and result shortcuts wired", async ({ 
   await expect(page.locator(".saved-leagues-empty img, .saved-leagues-empty image")).toHaveCount(0);
 
   await createLeague(page);
-  await page.getByRole("button", { name: "Garage", exact: true }).click();
+  await page.getByTestId("nav-garage").click();
   await dismissOnboarding(page);
   await expect(page.locator(".garage-empty-inventory")).toContainText("No cards in inventory.");
   await expect(page.locator(".garage-empty-inventory img, .garage-empty-inventory image")).toHaveCount(0);
 
-  await page.getByRole("button", { name: "Stand", exact: true }).click();
+  await page.getByTestId("nav-drive").click();
   await dismissOnboarding(page);
-  await page.getByRole("button", { name: "Plan", exact: true }).click();
-  await page.getByRole("tab", { name: "Chrono" }).click();
+  await page.getByTestId("nav-plan").click();
+  await page.locator(`[data-section-tab="chrono"]`).click();
   await expectAnimatedHighlight(page.getByRole("button", { name: "New chrono" }));
-  await page.getByRole("button", { name: "Stand", exact: true }).click();
+  await page.getByTestId("nav-drive").click();
   await expect(page.getByRole("button", { name: "Edit" })).not.toHaveClass(/highlight-command/);
   await expect(page.getByRole("button", { name: "Send plan" })).not.toHaveClass(/highlight-command/);
   await page.getByRole("button", { name: "Edit" }).click();
   await expect(page.getByRole("heading", { name: "Tune the race plan" })).toBeVisible();
-  await page.getByRole("button", { name: "Stand", exact: true }).click();
+  await page.getByTestId("nav-drive").click();
   await expect(page.getByRole("button", { name: "Edit" })).not.toHaveClass(/highlight-command/);
   await expect(page.getByRole("button", { name: "Send plan" })).not.toHaveClass(/highlight-command/);
   await page.getByRole("button", { name: "Send plan" }).click();
-  await page.getByRole("dialog", { name: "Send race plan" }).getByRole("button", { name: "Send" }).click();
+  await page.getByTestId("dialog-send-plan").getByTestId("modal-confirm").click();
   await expectAnimatedHighlight(page.getByRole("button", { name: "Launch GP" }));
   await page.getByRole("button", { name: "Launch GP" }).click();
-  await page.getByRole("dialog", { name: "Launch Grand Prix?" }).getByRole("button", { name: "Launch GP" }).click();
+  await page.getByTestId("dialog-launch-gp").getByTestId("modal-confirm").click();
 
   await expect(page.getByRole("heading", { name: "Race replay" }).or(page.getByRole("button", { name: "View" }).and(page.locator('[title="Final classification"]'))).first()).toBeVisible();
   if (await page.locator(".replay-report-button").isVisible({ timeout: 500 }).catch(() => false)) await page.locator(".replay-report-button").click();
@@ -441,7 +441,7 @@ test("keeps first-click commands animated and result shortcuts wired", async ({ 
   await page.getByRole("button", { name: "Back to stand" }).click();
   await openFinalClassificationReport(page);
   await expect(page.getByRole("heading", { name: expectedCircuitTitle(1) })).toBeVisible();
-  await page.getByRole("button", { name: "Stand", exact: true }).click();
+  await page.getByTestId("nav-drive").click();
   await expectAnimatedHighlight(page.getByRole("button", { name: "Next GP" }));
 });
 
@@ -460,13 +460,13 @@ test("keeps mobile document pages usable", async ({ page }) => {
   await expect(page.locator(".garage-grid")).toHaveCSS("max-width", "860px");
   await expect(page.locator(".garage-grid > .panel")).toHaveCount(2);
   await expect(page.getByRole("heading", { name: "Inventory" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "Inventory" })).toHaveAttribute("aria-selected", "true");
-  await page.getByRole("tab", { name: "Shop" }).click();
+  await expect(page.locator(`[data-section-tab="inventory"]`)).toHaveAttribute("aria-selected", "true");
+  await page.locator(`[data-section-tab="shop"]`).click();
   await expect(page.getByRole("heading", { name: "Shop" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "Shop" })).toHaveAttribute("aria-selected", "true");
-  await page.getByRole("tab", { name: "My team" }).click();
+  await expect(page.locator(`[data-section-tab="shop"]`)).toHaveAttribute("aria-selected", "true");
+  await page.locator(`[data-section-tab="team"]`).click();
   await expect(page.getByRole("heading", { name: "My team" })).toBeVisible();
-  await expect(page.getByRole("tab", { name: "My team" })).toHaveAttribute("aria-selected", "true");
+  await expect(page.locator(`[data-section-tab="team"]`)).toHaveAttribute("aria-selected", "true");
 });
 
 function expectedCircuitTitle(resultRound: number) {
@@ -501,7 +501,7 @@ async function createProfile(page: Page) {
   await page.getByRole("button", { name: "Recover profile" }).click();
   await expect(page.getByText("Profile recovered.")).toBeVisible();
   await dismissOnboarding(page);
-  await expect(page.getByRole("button", { name: "Profile menu" })).toHaveAttribute("aria-expanded", "false");
+  await expect(page.getByTestId("profile-menu")).toHaveAttribute("aria-expanded", "false");
   await expect(page.locator(".profile-menu-panel")).toHaveCount(0);
   await expect(page.getByText("No saved leagues yet.")).toBeVisible();
   await expect(page.getByLabel("Language")).toHaveCount(0);

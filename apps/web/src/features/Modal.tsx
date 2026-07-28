@@ -40,6 +40,8 @@ function lockBodyScroll() {
 
 export function Modal({
   label,
+  // Stable hook for tests: the accessible name is translated copy and moves with wording changes.
+  testId,
   className = "panel modal",
   closeLabel = "Close",
   showCloseButton = false,
@@ -47,6 +49,7 @@ export function Modal({
   children
 }: {
   label: string;
+  testId?: string;
   className?: string;
   closeLabel?: string;
   showCloseButton?: boolean;
@@ -103,9 +106,9 @@ export function Modal({
       }}
     >
       {/* eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions -- dialog owns the focus trap keyboard handler. */}
-      <section ref={dialogRef} className={className} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={handleKeyDown}>
+      <section ref={dialogRef} data-testid={testId} className={className} role="dialog" aria-modal="true" aria-label={label} tabIndex={-1} onKeyDown={handleKeyDown}>
         {showCloseButton ? (
-          <button className="modal-close-button" type="button" aria-label={closeLabel} onClick={onClose}>
+          <button className="modal-close-button" type="button" data-testid="modal-close" aria-label={closeLabel} onClick={onClose}>
             ×
           </button>
         ) : null}

@@ -26,7 +26,7 @@ export function ProfileCodeModal({
   onCopy: () => void;
 }) {
   return (
-    <Modal label={tt("profile_code_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+    <Modal label={tt("profile_code_title")} testId="dialog-profile-code" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/profile-arrival.webp" kicker={tt("profile_kicker")} title={tt("profile_code_title")} />
       {profileSession?.recoveryCode ? (
         <input
@@ -48,6 +48,7 @@ export function ProfileCodeModal({
 
 export function ConfirmActionModal({
   label,
+  testId,
   image,
   kicker,
   title,
@@ -65,6 +66,7 @@ export function ConfirmActionModal({
   onConfirm
 }: {
   label: string;
+  testId?: string;
   image: string;
   kicker: string;
   title: string;
@@ -82,7 +84,7 @@ export function ConfirmActionModal({
   onConfirm: () => void;
 }) {
   return (
-    <Modal label={label} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+    <Modal label={label} testId={testId} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image={image} kicker={kicker} title={title} />
       {typeof body === "string" ? <p>{body}</p> : <div className="modal-body">{body}</div>}
       <div className="actions secondary-actions">
@@ -99,7 +101,7 @@ export function ConfirmActionModal({
             {extraActionLabel}
           </button>
         ) : null}
-        <button type="button" className={danger ? "danger-button modal-action-command" : "modal-action-command"} onClick={onConfirm} disabled={status === "loading"}>
+        <button type="button" data-testid="modal-confirm" className={danger ? "danger-button modal-action-command" : "modal-action-command"} onClick={onConfirm} disabled={status === "loading"}>
           <ModalActionIcon danger={danger} label={actionLabel} tt={tt} />
           {actionLabel}
         </button>
@@ -130,7 +132,7 @@ export function NextGrandPrixConfirmModal({
   onOpenReport: () => void;
 }) {
   return (
-    <Modal label={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+    <Modal label={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} testId="dialog-next-gp" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/next-gp-modal.webp" kicker={nextGrandPrixActionLabel} title={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} />
       <p>{tt(isSeasonFinalGrandPrix ? "finish_season_confirm_body" : "next_gp_confirm_body")}</p>
       <div className="actions secondary-actions">
@@ -139,7 +141,7 @@ export function NextGrandPrixConfirmModal({
           <BoardIcon className="modal-action-icon" name="race-report" />
           {tt("result_tab_report")}
         </button>
-        <button type="button" className="modal-action-command" onClick={onStartNextGrandPrix} disabled={status === "loading"}>
+        <button type="button" data-testid="modal-confirm" className="modal-action-command" onClick={onStartNextGrandPrix} disabled={status === "loading"}>
           <BoardIcon className="modal-action-icon" name={isSeasonFinalGrandPrix ? "championship" : "next-gp"} />
           {nextGrandPrixActionLabel}
         </button>
@@ -185,7 +187,7 @@ export function ResolveGrandPrixConfirmModal({
   const hiddenCount = startingGridEntries.length - displayedEntries.length;
 
   return (
-    <Modal label={tt("launch_gp_confirm_title")} className="panel modal launch-gp-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+    <Modal label={tt("launch_gp_confirm_title")} testId="dialog-launch-gp" className="panel modal launch-gp-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/launch-gp-modal.webp" kicker={tt("action_launch_grand_prix")} title={tt("launch_gp_confirm_title")} />
       <div className="launch-gp-content">
         <p>{tt("launch_gp_confirm_body")}</p>
@@ -223,7 +225,7 @@ export function ResolveGrandPrixConfirmModal({
       </div>
       <div className="actions secondary-actions">
         <PendingFeedback message={pendingMessage} />
-        <button type="button" className="modal-action-command" onClick={onResolve} disabled={status === "loading"}>
+        <button type="button" data-testid="modal-confirm" className="modal-action-command" onClick={onResolve} disabled={status === "loading"}>
           <BoardIcon className="modal-action-icon" name="launch-gp" />
           {tt("action_launch_grand_prix")}
         </button>
@@ -385,7 +387,7 @@ export function LeagueControlsModal({
   const reminderLocked = leagueState.league.reminderSeasonNumber === leagueState.currentGrandPrix.season && Boolean(leagueState.league.reminderSentAt);
   const inviteLink = leagueState.league.code ? `${globalThis.location?.origin ?? ""}/?code=${leagueState.league.code}` : "";
   return (
-    <Modal label={tt("settings_title")} className="panel modal league-controls-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+    <Modal label={tt("settings_title")} testId="dialog-race-direction" className="panel modal league-controls-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/league-arrival.webp" kicker={tt("championship_kicker")} title={tt("settings_title")} />
       <div className="race-direction-grid">
         <section className="race-direction-panel">

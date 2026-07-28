@@ -454,10 +454,9 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
         await lockTeamRow(tx, team.id);
         const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
         if (!freshTeam || freshTeam.leagueId !== leagueId) continue;
-        const data: { points: number; credits: number; cards: string[]; livery?: { primary: string; secondary: string; carAssetId?: CarAssetId } } = {
+        const data: { points: number; credits: number; livery?: { primary: string; secondary: string; carAssetId?: CarAssetId } } = {
           points: 0,
-          credits: freshTeam.kind === "human" ? STARTING_CREDITS : 0,
-          cards: freshTeam.kind === "human" ? STARTER_CARDS : []
+          credits: freshTeam.kind === "human" ? STARTING_CREDITS : 0
         };
         if (freshTeam.kind === "bot") {
           const livery = normalizeLivery(freshTeam.livery);

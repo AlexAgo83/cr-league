@@ -2,8 +2,8 @@
 > From version: 0.5.2
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 92%
+> Understanding: 92
+> Confidence: 93
 > Progress: 0%
 > Complexity: Medium
 > Theme: Season economy
@@ -13,23 +13,23 @@
 - Repeated seasons need some continuity, but too much carry-over can snowball leaders.
 - The user asked to develop the idea before it becomes broad card-economy work.
 - The right first pass should be small, capped, and easy to remove or tune.
-- Owner decision: first pass resets credits and cards; capped credit carry-over is a later evidence-gated follow-up if reset feels too dry in beta.
+- Owner decision: first pass resets credits but preserves garage cards; capped credit carry-over is a later evidence-gated follow-up if reset feels too dry in beta.
 
 # Scope
 - In:
-  - Document and implement first-pass season rollover: preserve players, palmares, archived season stats, and cosmetic/team identity; reset credits and cards.
+  - Document and implement first-pass season rollover: preserve players, palmares, archived season stats, cosmetic/team identity, and garage cards; reset credits.
   - Record capped partial credit carry-over as a later option, not the first implementation.
   - Prefer palmares/cosmetic recognition over large mechanical champion bonuses.
   - Run balance/replayability evidence if mechanical carry-over ships.
 - Out:
   - Broad card-economy expansion.
   - Large winner bonuses.
-  - Persistent card inventories across seasons unless specifically justified.
+  - Broad card carry-over bonuses beyond preserving the garage inventory.
   - Paid cosmetics or external progression.
 
 # Acceptance criteria
-- AC1: The documented season rollover rule preserves players, palmares, archived season stats, and cosmetic/team identity.
-- AC2: The first implementation resets credits and cards for every team.
+- AC1: The documented season rollover rule preserves players, palmares, archived season stats, cosmetic/team identity, and garage cards.
+- AC2: The first implementation resets credits for every team while preserving garage cards.
 - AC3: Any later credit carry-over proposal is documented as a separate evidence-gated follow-up with a 25-35% cap candidate and anti-snowball rationale.
 - AC4: Season rollover tests cover top, middle, and bottom teams.
 - AC5: Balance evidence is recorded if mechanical carry-over changes gameplay in a later slice.

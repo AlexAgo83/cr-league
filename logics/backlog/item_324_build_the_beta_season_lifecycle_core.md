@@ -2,7 +2,7 @@
 > From version: 0.5.2
 > Schema version: 1.0
 > Status: Done
-> Understanding: 90%
+> Understanding: 95
 > Confidence: 95
 > Progress: 100%
 > Complexity: High
@@ -46,7 +46,7 @@
 - 2026-07-27: Added the neutral absent-player plan used at resolution: balanced approach, reliability preparation, standard pit strategy, no card.
 - 2026-07-27: Recorded defaulted human team ids on the race result for report/UI follow-up.
 - 2026-07-27: Changed final-round action copy to `Lancer la saison suivante` / `Start next season`.
-- 2026-07-27: Fixed next-season rollover to reset team points, credits, and cards while preserving players and livery identity.
+- 2026-07-27: Fixed next-season rollover to reset team points and credits while preserving players, garage cards, and livery identity.
 - 2026-07-27: Added resolve confirmation copy naming absent human teams and their neutral default plan before commissioner launch.
 - 2026-07-27: Added `Default plan` / `Plan par défaut` labeling for defaulted teams in the post-race report podium/classification.
 - Evidence: `rtk npm test -- --run apps/api/src/app.test.ts apps/web/src/app/App.test.tsx` -> 70 tests passed.

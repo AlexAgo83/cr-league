@@ -1349,6 +1349,12 @@
 
   .palmares-button > .standings-livery-plate {
     grid-area: plate;
+    height: 36px;
+    width: 54px;
+  }
+
+  .palmares-button .livery-plate-stars {
+    font-size: 0.5rem;
   }
 
   .palmares-button > .standings-team {
@@ -1439,7 +1445,13 @@
   }
 
   .standings-profile-button .standings-livery-plate {
-    flex: 0 0 48px;
+    flex: 0 0 54px;
+    height: 36px;
+    width: 54px;
+  }
+
+  .standings-profile-button .livery-plate-stars {
+    font-size: 0.5rem;
   }
 
   .standings-profile-button .standings-team {

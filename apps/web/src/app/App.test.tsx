@@ -460,11 +460,12 @@ describe("App", () => {
     expect(localStorage.getItem("cr-league-garage-panel")).toBe("shop");
   });
 
-  it("sorts owned garage cards by name and marks sellable cards", async () => {
+  it("sorts owned garage cards by usefulness and marks sellable cards", async () => {
     saveProfile();
     const inventoryState = {
       ...baseState,
-      teams: [{ ...baseState.teams[0], cards: ["defensive_order", "soft_tires", "rain_grip", "qualifying_focus"] }, baseState.teams[1]]
+      teams: [{ ...baseState.teams[0], cards: ["defensive_order", "soft_tires", "rain_grip", "qualifying_focus"] }, baseState.teams[1]],
+      decisions: [{ teamId: "team_1", approach: "balanced", preparation: "speed", pitStrategy: "standard", cardId: "soft_tires", rivalTeamId: null }]
     };
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(inventoryState));
 
@@ -474,7 +475,8 @@ describe("App", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     const cards = [...document.querySelectorAll(".card-inventory-button")].map((button) => button.textContent ?? "");
-    expect(cards.map((text) => text.match(/Rain Grip|Soft Tires|Qualifying Lap|Defensive Order/)?.[0])).toEqual(["Defensive Order", "Qualifying Lap", "Rain Grip", "Soft Tires"]);
+    expect(cards.map((text) => text.match(/Rain Grip|Soft Tires|Qualifying Lap|Defensive Order/)?.[0])).toEqual(["Rain Grip", "Qualifying Lap", "Defensive Order", "Soft Tires"]);
+    expect(screen.getByRole("button", { name: /Soft Tires/ }).className).toContain("unavailable");
     expect(cards.every((text) => !text.includes("Sell for"))).toBe(true);
   });
 

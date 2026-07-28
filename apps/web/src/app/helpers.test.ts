@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRaceActionRecommendation, buildRaceVerdict, cardFit, clampNumber, completedSeasonSummaries, derivedRivalForTeam, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid, translateLine } from "./helpers.js";
+import { buildRaceActionRecommendation, buildRaceVerdict, cardFit, clampNumber, completedSeasonSummaries, derivedRivalForTeam, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, sortInventoryCardsForGarage, sortShopOffersForGarage, startingGrid, translateLine } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { circuitIdentityForRound, circuitSeasonSeed, type CardId, type RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
@@ -36,6 +36,34 @@ describe("sortCardIdsByName", () => {
     const cards: CardId[] = ["rain_grip", "adjustable_wing", "defensive_order"];
 
     expect(sortCardIdsByName(cards, (key) => t(key, "en"))).toEqual(["adjustable_wing", "defensive_order", "rain_grip"]);
+  });
+});
+
+describe("sortShopOffersForGarage", () => {
+  it("keeps affordable cards first, sorted by usefulness", () => {
+    const offers = [
+      { cardId: "rain_grip", price: 240, fit: { level: "recommended", reasonKey: "card_guidance_rain_match", score: 90 } },
+      { cardId: "soft_tires", price: 140, fit: { level: "recommended", reasonKey: "card_guidance_fast_match", score: 82 } },
+      { cardId: "defensive_order", price: 120, fit: { level: "low", reasonKey: "card_guidance_low_race_value", score: 42 } },
+      { cardId: "launch_boost", price: 260, fit: { level: "risky", reasonKey: "card_guidance_start_pressure", score: 50 } }
+    ] as ReturnType<typeof sortShopOffersForGarage>;
+
+    expect(sortShopOffersForGarage(offers, 150, (key) => t(key, "en")).map((offer) => offer.cardId)).toEqual(["soft_tires", "defensive_order", "rain_grip", "launch_boost"]);
+  });
+});
+
+describe("sortInventoryCardsForGarage", () => {
+  it("keeps usable cards first, sorted by usefulness", () => {
+    const state = stateWithHistory([]);
+    state.currentGrandPrix.primaryTrait = "fast";
+    state.currentGrandPrix.secondaryTrait = "weather_sensitive";
+
+    expect(sortInventoryCardsForGarage(["defensive_order", "soft_tires", "rain_grip", "qualifying_focus"], state, "dry", (cardId) => cardId === "soft_tires", (key) => t(key, "en"))).toEqual([
+      "rain_grip",
+      "qualifying_focus",
+      "defensive_order",
+      "soft_tires"
+    ]);
   });
 });
 

@@ -90,6 +90,20 @@ export function recommendedShopOffers(state: LeagueState, forecastPick: string) 
     .sort((left, right) => right.fit.score - left.fit.score || left.cardId.localeCompare(right.cardId));
 }
 
+export function sortShopOffersForGarage(offers: ReturnType<typeof recommendedShopOffers>, credits: number, tt: Translator) {
+  return [...offers].sort((left, right) => {
+    const availability = Number(right.price <= credits) - Number(left.price <= credits);
+    return availability || right.fit.score - left.fit.score || tt(`card_${left.cardId}` as TranslationKey).localeCompare(tt(`card_${right.cardId}` as TranslationKey));
+  });
+}
+
+export function sortInventoryCardsForGarage(cardIds: CardId[], state: LeagueState, forecastPick: string, isUnavailable: (cardId: CardId) => boolean, tt: Translator) {
+  return [...cardIds].sort((left, right) => {
+    const availability = Number(isUnavailable(left)) - Number(isUnavailable(right));
+    return availability || cardFit(right, state, forecastPick).score - cardFit(left, state, forecastPick).score || tt(`card_${left}` as TranslationKey).localeCompare(tt(`card_${right}` as TranslationKey));
+  });
+}
+
 export function startingGrid(state: LeagueState) {
   const baseRank = new Map(state.teams.map((team, index) => [team.id, index + 1]));
   const bestTime = new Map<string, number>();

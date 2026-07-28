@@ -91,6 +91,7 @@
 - 2026-07-28 item_328 delivered: derived rival context now threads through standings, Plan pre-race guidance, and report action reasoning, with no mandatory rival selection and no first-race rival before meaningful points exist.
 - 2026-07-28 item_329 delivered: contextual card guidance now replaces the old affinity labels across Plan and Garage, with deterministic reasons tied to weather, circuit traits, position pressure, chrono timing, and economy tradeoffs. Browser UX evidence covers Plan and Garage after fixing card-cell overlap and Plan ellipsis.
 - 2026-07-28 item_330 delivered: standings rows now open an in-league team profile modal with livery identity, rank, points, credits, GP count, podiums, palmares count, recent form, current rival, and derived style. Tests cover profile rendering and unsafe team-name text rendering. Browser UX evidence covers mobile standings and team profile with zero axe violations at `reports/ux/team-profile-browser.md`; Palmarès mobile text alignment is scoped in CSS for completed-season rows.
+- 2026-07-28 profile/garage follow-up: mobile standings and Palmarès livery plates now reserve enough room for title stars, and Garage inventory/shop card order uses availability first, then deterministic utility score. Locked inventory cards fade and move after usable cards.
 
 # AI Context
 - Summary: Orchestrate the 0.6 beta season lifecycle and league management corpus

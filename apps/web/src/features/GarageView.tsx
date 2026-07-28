@@ -3,7 +3,7 @@ import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { safeStorage } from "../app/appStorage.js";
-import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, sortCardIdsByName, type Translator } from "../app/helpers.js";
+import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, sortInventoryCardsForGarage, sortShopOffersForGarage, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { GARAGE_PANEL_KEY, type CardPanel } from "../app/viewPreferences.js";
 import { AssetImage } from "./AssetImage.js";
@@ -107,11 +107,11 @@ export function GarageView({
     );
   }
 
-  const shopOffers = recommendedShopOffers(state, forecastPick).sort((left, right) => tt(`card_${left.cardId}` as TranslationKey).localeCompare(tt(`card_${right.cardId}` as TranslationKey)));
+  const shopOffers = sortShopOffersForGarage(recommendedShopOffers(state, forecastPick), playerTeam.credits, tt);
   const isCardLocked = (cardId: CardId) =>
     state.decisions.some((decision) => decision.teamId === playerTeam.id && decision.cardId === cardId) ||
     state.currentGrandPrix.qualifyingRuns.some((run) => run.teamId === playerTeam.id && run.decision?.cardId === cardId);
-  const inventoryCards = sortCardIdsByName(ownedCardIds, tt);
+  const inventoryCards = sortInventoryCardsForGarage(ownedCardIds, state, forecastPick, isCardLocked, tt);
   const pendingBuy = shopOffers.find((item) => item.cardId === pendingBuyCardId);
   const viewingFit = viewingCardId ? cardFit(viewingCardId, state, forecastPick) : null;
   const viewingSellPrice = (state.cardShop.find((item) => item.cardId === viewingCardId)?.price ?? 0) / 2;
@@ -266,7 +266,7 @@ export function GarageView({
               {inventoryCards.length ? (
                 inventoryCards.map((cardId) => (
                   <li key={cardId}>
-                    <button className="card-inventory-button card-art-cell" type="button" aria-label={`${tt("field_card")}: ${tt(`card_${cardId}` as TranslationKey)}`} onClick={() => setViewingCardId(cardId)}>
+                    <button className={`card-inventory-button card-art-cell${isCardLocked(cardId) ? " unavailable" : ""}`} type="button" aria-label={`${tt("field_card")}: ${tt(`card_${cardId}` as TranslationKey)}`} onClick={() => setViewingCardId(cardId)}>
                       <span className="card-copy">
                         <CardName cardId={cardId} tt={tt} />
                         <CardGuidance fit={cardFit(cardId, state, forecastPick)} tt={tt} />

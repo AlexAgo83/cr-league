@@ -443,7 +443,8 @@
   border-color: var(--color-accent);
 }
 
-.card-shop button.unaffordable {
+.card-shop button.unaffordable,
+.card-inventory button.unavailable {
   filter: grayscale(0.75);
   opacity: 0.48;
 }

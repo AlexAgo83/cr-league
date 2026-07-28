@@ -736,6 +736,11 @@
   font-size: 0.72rem;
 }
 
+.standings-team .rival-marker {
+  color: #fbbf24;
+  font-weight: 900;
+}
+
 .ready-pill {
   border-radius: 999px;
   font-size: 0.72rem;

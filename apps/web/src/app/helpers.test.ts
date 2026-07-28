@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRaceVerdict, clampNumber, completedSeasonSummaries, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid, translateLine } from "./helpers.js";
+import { buildRaceActionRecommendation, buildRaceVerdict, clampNumber, completedSeasonSummaries, derivedRivalForTeam, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, startingGrid, translateLine } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { circuitIdentityForRound, circuitSeasonSeed, type CardId, type RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
@@ -199,6 +199,36 @@ describe("seasonStandings", () => {
   });
 });
 
+describe("derivedRivalForTeam", () => {
+  it("does not invent a rival before points exist", () => {
+    const state = stateWithHistory([]);
+    state.teams = [
+      { id: "team_1", name: "One", kind: "human", points: 0, credits: 0, cards: [], livery: { primary: "#111111", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true },
+      { id: "team_2", name: "Two", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#222222", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true }
+    ];
+
+    expect(derivedRivalForTeam(state, "team_1")).toBe(null);
+  });
+
+  it("uses nearest standings proximity, then points gap, then stable team id", () => {
+    const state = stateWithHistory([]);
+    state.teams = [
+      { id: "team_3", name: "Three", kind: "bot", points: 25, credits: 0, cards: [], livery: { primary: "#333333", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true },
+      { id: "team_1", name: "One", kind: "human", points: 18, credits: 0, cards: [], livery: { primary: "#111111", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true },
+      { id: "team_2", name: "Two", kind: "bot", points: 15, credits: 0, cards: [], livery: { primary: "#222222", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true }
+    ];
+
+    expect(derivedRivalForTeam(state, "team_1")).toMatchObject({ teamId: "team_2", position: 3, pointsGap: 3 });
+
+    state.teams = [
+      { ...state.teams[0]!, points: 20, id: "team_b", name: "Bee" },
+      { ...state.teams[1]!, points: 18 },
+      { ...state.teams[2]!, points: 16, id: "team_a", name: "Aye" }
+    ];
+    expect(derivedRivalForTeam(state, "team_1")?.teamId).toBe("team_a");
+  });
+});
+
 describe("raceRecapCards", () => {
   it("uses the player's most impactful card event and next circuit identity", () => {
     const state = stateWithHistory([]);
@@ -294,6 +324,23 @@ describe("raceRecapCards", () => {
     expect(recap.planRead).toContain("Your plan:");
     expect(recap.planRead).toContain("Winner team_2:");
     expect(recap.planRead).toContain("Launch Boost");
+  });
+});
+
+describe("buildRaceActionRecommendation", () => {
+  it("uses the derived rival when no explicit rival was selected", () => {
+    const state = stateWithHistory([]);
+    state.teams = [
+      { id: "team_1", name: "One", kind: "human", points: 18, credits: 0, cards: [], livery: { primary: "#111111", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true },
+      { id: "team_2", name: "Two", kind: "bot", points: 15, credits: 0, cards: [], livery: { primary: "#222222", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true }
+    ];
+    const race = result("team_2", "team_1");
+    race.classification[0]!.teamName = "Two";
+    const decision = { teamId: "team_1", approach: "balanced", preparation: "speed", cardId: null } satisfies LeagueState["decisions"][number];
+
+    const recommendation = buildRaceActionRecommendation(race, state, "team_1", decision, (key, params) => t(key, "en", params));
+
+    expect(recommendation.reason).toContain("Two finished ahead");
   });
 });
 

@@ -176,6 +176,17 @@ try {
         ]
       });
     }
+    if (round === 2) {
+      await observeScenario(page, {
+        id: "rival-thread-read",
+        question: "Do I have a local standings target for this GP?",
+        evidence: "After one scored GP, the Plan read exposes a non-blocking Rival context.",
+        locators: [
+          { label: "Rival read", find: () => page!.getByText("Rival", { exact: true }) },
+          { label: "Closest target copy", find: () => page!.getByText(/closest standings target/) }
+        ]
+      });
+    }
     await captureUx(page, `round-${round}-plan`, `Selected ${decision.approach}/${decision.preparation}/${decision.pitStrategy ?? "standard"} with ${decision.cardId ?? "no card"}.`);
     state = await submitPlan(page, state, round);
     await observeComprehension(page, `round-${round}-ready`, "The next action after sending a plan is visible.", [() => page!.getByRole("button", { name: "Launch GP" })], round);
@@ -475,6 +486,7 @@ async function captureUx(page: Page, label: string, note: string) {
   const prefix = `${String(step).padStart(2, "0")}-${slug(label)}`;
   const desktop = `${uxAssetsDir}/${prefix}-desktop.png`;
   const mobile = `${uxAssetsDir}/${prefix}-mobile.png`;
+  await page.evaluate(() => window.scrollTo(0, 0));
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.screenshot({ path: desktop, fullPage: true });
   await page.setViewportSize({ width: 390, height: 900 });

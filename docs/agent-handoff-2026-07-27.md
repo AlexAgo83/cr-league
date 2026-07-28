@@ -23,10 +23,8 @@
 - Auto-suggested team names are now a shared 100-name source of truth.
 
 ## Remaining 0.6 Work
-- Finish `item_324`: expose the neutral absent-player default before commissioner confirmation, show defaulted teams in reports/classification, and add focused 3-GP/default-plan UI tests.
-- Finish `item_325`: capture desktop/mobile browser evidence for `Direction de course`, show post-reminder sent/skipped detail if still useful, and add web coverage for locked reminder labels.
-- Keep `item_326` closed unless the next UI pass introduces new axe failures or mobile overflow.
-- Next wave after 324/325: `item_327` post-race next action, `item_328` rival thread, and `item_329` coherent card guidance.
+- `item_324`, `item_325`, `item_326`, `item_327`, and `item_328` are closed.
+- Next focused slice: `item_329` coherent contextual card guidance in Plan and Garage.
 - Optional later only: `item_330` team profiles, `item_331` variable shop, `item_332` season economy continuity, `item_333` race engineer.
 
 ## Commands To Re-run

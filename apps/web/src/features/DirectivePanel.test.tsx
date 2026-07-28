@@ -143,4 +143,19 @@ describe("DirectivePanel", () => {
     expect(screen.getByRole("button", { name: "New chrono" }).className).not.toContain("highlight-command");
     expect(screen.getByRole("button", { name: "Send plan" }).className).toContain("highlight-command");
   });
+
+  it("shows a non-blocking rival read when provided", () => {
+    render(
+      <DirectivePanel
+        {...baseProps}
+        planRecommendation={{ traitKey: "grip", weatherKey: "dry", trait: "Grip", weather: "Dry", traitAdvice: "", weatherAdvice: "" }}
+        rival={{ teamId: "team_2", teamName: "Mika Blitz", position: 2, points: 15, pointsGap: 3 }}
+        setForm={vi.fn()}
+        onSelectStep={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText("Rival")).toBeTruthy();
+    expect(screen.getByText("Mika Blitz is your closest standings target, 3 points away.")).toBeTruthy();
+  });
 });

@@ -2,7 +2,7 @@ import type { CSSProperties } from "react";
 import { RACE_SEGMENTS, type CardId, type QualifyingRun, type RaceResult } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
-import { cardFit, type CardFit, type Translator } from "../app/helpers.js";
+import { cardFit, derivedRivalForTeam, type CardFit, type Translator } from "../app/helpers.js";
 import { formatSeconds } from "../app/helpers.js";
 import { buildPlanRecommendationParts, type ChronoReport, type PlanRiskRead } from "../app/raceFlow.js";
 import type { PlanSubscreen } from "../app/routes.js";
@@ -85,6 +85,7 @@ export function PlanView({
   tt: Translator;
 }) {
   const planRecommendation = buildPlanRecommendationParts({ circuitTraits, forecastPick, tt });
+  const playerRival = derivedRivalForTeam(state, playerTeamId);
   const activeSubscreen = planSubscreen;
   const reportTitle = `${reportCircuit.city} ${tt(reportCircuit.layoutKey)}`;
   const chronoCardClass = (cardId?: CardId) => `chrono-session-choice type-card${isChronoCardRelevant(cardId, forecastPick) ? "" : " is-faded"}`;
@@ -273,6 +274,7 @@ export function PlanView({
           cardLocked={cardLocked}
           disabled={disabled}
           locked={locked}
+          rival={playerRival}
           onQualifying={() => {
             onSetGameView("drive");
             onOpenQualifyingRun();

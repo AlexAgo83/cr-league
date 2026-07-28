@@ -4,7 +4,7 @@
 > Status: In Progress
 > Understanding: 92
 > Confidence: 94
-> Progress: 55
+> Progress: 62%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -88,6 +88,7 @@
 - Next wave: start `item_327`, `item_328`, and `item_329`; keep optional slices deferred unless pulled in explicitly.
 - 2026-07-28 corpus closeout: intentionally kept item_327, item_328, item_329, item_330, item_331, item_332, and item_333 open as implementation-ready follow-up slices rather than marking unshipped work Done. Deferred-mode guardrail item_334 records reopen triggers for optional secondary objectives, arcade solo, quick play matchmaking, onboarding/tutorial rewrite, compact replay/highlights, automatic reminders, polling/SSE, bot replacement, and 1.0 hardening.
 - 2026-07-28 item_327 delivered: race reports now expose a deterministic Next action card with a primary race reason, next-GP attempt guidance, and a card/setup hint. The recommendation uses race result, played-card trigger/miss, existing rival decision when present, and next circuit/weather context without adding auto-pick or generative advice.
+- 2026-07-28 item_328 delivered: derived rival context now threads through standings, Plan pre-race guidance, and report action reasoning, with no mandatory rival selection and no first-race rival before meaningful points exist.
 
 # AI Context
 - Summary: Orchestrate the 0.6 beta season lifecycle and league management corpus

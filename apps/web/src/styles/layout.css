@@ -1501,6 +1501,10 @@ label small {
   grid-column: 1 / -1;
 }
 
+.plan-recommendation .plan-rival-read {
+  border-color: rgb(251 191 36 / 0.42);
+}
+
 .plan-recommendation strong {
   color: var(--color-muted);
   font-size: 0.62rem;

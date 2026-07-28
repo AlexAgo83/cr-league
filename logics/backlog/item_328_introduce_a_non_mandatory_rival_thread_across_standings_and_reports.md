@@ -1,13 +1,14 @@
 ## item_328_introduce_a_non_mandatory_rival_thread_across_standings_and_reports - Introduce a non-mandatory rival thread across standings and reports
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 94
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Rivalry
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Owner: codex
 
 # Problem
 - Rivalry is already present in the specs and simulation language but is not yet a stable player-facing thread.
@@ -41,6 +42,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- 2026-07-28 delivery: shipped derived nearest-standing rival context without a required selection step. Standings mark the current rival, Plan shows a non-blocking Rival read after meaningful points exist, and race report recommendations fall back to the derived rival when no explicit rival decision exists.
 
 # Links
 - Product brief(s): `prod_081_0_6_beta_season_lifecycle_and_league_management_product_brief`
@@ -57,3 +59,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-28 validation: vitest targeted helpers/report/directive/championship tests passed (43 tests); npm run typecheck passed; git diff --check passed; browser playtest rounds 2 passed earlier with Rival read evidence in reports/playtest/rival-thread-browser.md and reports/ux/rival-thread-browser.md.

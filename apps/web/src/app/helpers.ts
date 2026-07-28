@@ -34,6 +34,13 @@ export type RaceActionRecommendation = {
   nextAttempt: string;
   cardHint: string;
 };
+export type DerivedRival = {
+  teamId: string;
+  teamName: string;
+  position: number;
+  points: number;
+  pointsGap: number;
+};
 
 export { strongestForecast };
 
@@ -153,6 +160,33 @@ export function seasonWinsByTeamId(state: LeagueState) {
   return wins;
 }
 
+export function derivedRivalForTeam(state: LeagueState, teamId: string | undefined): DerivedRival | null {
+  if (!teamId || state.teams.every((team) => team.points === 0)) return null;
+  const baseRank = new Map(state.teams.map((team, index) => [team.id, index]));
+  const standings = [...state.teams]
+    .sort((left, right) => right.points - left.points || (baseRank.get(left.id) ?? 999) - (baseRank.get(right.id) ?? 999) || left.id.localeCompare(right.id))
+    .map((team, index) => ({ team, position: index + 1 }));
+  const player = standings.find((entry) => entry.team.id === teamId);
+  if (!player) return null;
+
+  const rival = standings
+    .filter((entry) => entry.team.id !== teamId)
+    .sort(
+      (left, right) =>
+        Math.abs(left.position - player.position) - Math.abs(right.position - player.position) ||
+        Math.abs(left.team.points - player.team.points) - Math.abs(right.team.points - player.team.points) ||
+        left.team.id.localeCompare(right.team.id)
+    )[0];
+  if (!rival) return null;
+  return {
+    teamId: rival.team.id,
+    teamName: rival.team.name,
+    position: rival.position,
+    points: rival.team.points,
+    pointsGap: Math.abs(rival.team.points - player.team.points)
+  };
+}
+
 export function raceRecapCards(
   result: RaceResult,
   state: LeagueState,
@@ -204,7 +238,9 @@ export function buildRaceActionRecommendation(
   tt: Translator
 ): RaceActionRecommendation {
   const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
-  const rivalResult = decision?.rivalTeamId ? result.classification.find((entry) => entry.teamId === decision.rivalTeamId) : undefined;
+  const autoRival = derivedRivalForTeam(state, playerTeamId);
+  const rivalTeamId = decision?.rivalTeamId ?? autoRival?.teamId;
+  const rivalResult = rivalTeamId ? result.classification.find((entry) => entry.teamId === rivalTeamId) : undefined;
   const ownCardEvent = decision?.cardId ? result.events.find((event) => event.teamId === playerTeamId && event.cardId === decision.cardId) : undefined;
   const nextSeason = state.currentGrandPrix.round >= state.league.maxGrandPrixPerSeason ? state.currentGrandPrix.season + 1 : state.currentGrandPrix.season;
   const nextRound = state.currentGrandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : state.currentGrandPrix.round + 1;

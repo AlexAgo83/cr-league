@@ -3,7 +3,7 @@ import type { TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, withRoute, type CityCircuit } from "../app/circuits.js";
 import { safeStorage } from "../app/appStorage.js";
-import { completedSeasonSummaries, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
+import { completedSeasonSummaries, derivedRivalForTeam, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, type ChampionshipRecordTab } from "../app/viewPreferences.js";
 import { AssetImage } from "./AssetImage.js";
@@ -59,6 +59,7 @@ export function ChampionshipView({
   const completedSeasons = completedSeasonSummaries(state);
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
+  const playerRival = derivedRivalForTeam(state, playerTeamId);
   const [previewCircuit, setPreviewCircuit] = useState<CityCircuit | undefined>();
   const [previewFocus, setPreviewFocus] = useState(true);
   const seasonCircuits = circuitsForSeason(state.league.id, currentGrandPrix.season);
@@ -168,6 +169,7 @@ export function ChampionshipView({
                   <span className="standings-team">
                     {team.name}
                     <small>{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</small>
+                    {team.id === playerRival?.teamId ? <small className="rival-marker">{tt("rival_marker", { gap: playerRival.pointsGap })}</small> : null}
                   </span>
                   <span className={team.ready ? "ready-pill ready" : "ready-pill missing"}>
                     {team.ready ? tt("team_ready") : tt("team_missing")}

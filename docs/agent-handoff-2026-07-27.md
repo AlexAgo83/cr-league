@@ -1,5 +1,7 @@
 # Agent Handoff - 2026-07-27
 
+Superseded for current takeover by [docs/agent-handoff-2026-07-28.md](agent-handoff-2026-07-28.md).
+
 ## Current State
 - Latest code commits:
   - `1dd63fc` shared 100 team-name suggestions across web and API.

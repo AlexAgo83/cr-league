@@ -299,9 +299,9 @@ Current roadmap direction:
 - `0.3`: playtest game loop polish is closed for the current release line;
 - `0.4`: ship rails, maintainability, performance, and review remediation are closed in Logics;
 - `0.5`: economy/card depth has moved to evidence-backed narrow follow-ups only;
-- `0.6`: beta season lifecycle is active via `req_129` / `task_130`; season defaults, race-direction evidence, action feedback, derived rival context, contextual card guidance, and in-league team profiles are delivered. Remaining slices are optional economy/recommendation follow-ups.
+- `0.6`: beta season lifecycle is active via `req_129` / `task_130`; season defaults, race-direction evidence, action feedback, derived rival context, contextual card guidance, in-league team profiles, and season rollover persistence for credits/cards are delivered. Remaining slices are optional economy/recommendation follow-ups.
 
-Latest implementation handoff: [docs/agent-handoff-2026-07-27.md](docs/agent-handoff-2026-07-27.md).
+Latest implementation handoff: [docs/agent-handoff-2026-07-28.md](docs/agent-handoff-2026-07-28.md).
 
 ## Contributing
 

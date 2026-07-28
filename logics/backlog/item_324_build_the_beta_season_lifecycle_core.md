@@ -2,7 +2,7 @@
 > From version: 0.5.2
 > Schema version: 1.0
 > Status: Done
-> Understanding: 96
+> Understanding: 97
 > Confidence: 95
 > Progress: 100%
 > Complexity: High
@@ -22,7 +22,7 @@
   - Keep commissioner-controlled resolution as the default cadence; when all plans are ready the resolve action becomes available, but the app does not auto-resolve.
   - For absent players, expose the neutral default plan before resolution and record default-plan use in the race report. The 0.6 default is balanced setup, no card, and medium strategy.
   - Require an explicit commissioner action to start the next season after champion/podium/palmares state is visible in a `Saison terminée` state.
-  - On next-season/restart, preserve league players, palmares, archived season stats, and cosmetic/team identity while resetting cards and credits.
+  - On next-season/restart, preserve league players, palmares, archived season stats, cosmetic/team identity, credits, and garage cards while resetting championship points only.
   - Update playtest/checklist docs so another operator can run a full beta season from a clean league.
 - Out:
   - Automatic calendar scheduling.
@@ -36,7 +36,7 @@
 - AC3: The app never auto-resolves a GP; commissioner-controlled resolve is available when all plans are ready.
 - AC4: Commissioner-controlled resolve-with-defaults shows the neutral absent-player default before resolution and marks default-plan teams in the report.
 - AC5: The next season starts only after a creator-only `Lancer la saison suivante` action from a `Saison terminée` state, preserving champion/podium/palmares review before rollover.
-- AC6: Starting the next season or restarting the season preserves players, palmares, archived season stats, and cosmetic/team identity while resetting cards and credits.
+- AC6: Starting the next season or restarting the season preserves players, palmares, archived season stats, cosmetic/team identity, credits, and garage cards while resetting championship points only.
 - AC7: API and web tests cover season presets, season completion, manual resolution, absent-player defaults, and restart/next-season behavior.
 
 # Implementation Notes
@@ -59,7 +59,7 @@
 # AC Traceability
 - request-AC1 -> This backlog slice. Proof: AC1: A creator can create or configure a league with a short and default season preset.
 - request-AC3 -> This backlog slice. Proof: AC2: A league can complete a full season and expose champion/podium/season-end state without database edits.
-- request-AC10 -> This backlog slice. Proof: AC6: Starting the next season or restarting the season preserves players, palmares, archived season stats, and cosmetic/team identity while resetting cards and credits.
+- request-AC10 -> This backlog slice. Proof: AC6: Starting the next season or restarting the season preserves players, palmares, archived season stats, cosmetic/team identity, credits, and garage cards while resetting championship points only.
 - request-AC13 -> This backlog slice. Proof: AC7: API and web tests cover season presets, season completion, manual resolution, absent-player defaults, and restart/next-season behavior.
 
 # Decision framing

@@ -41,6 +41,7 @@
 > Semantic edit: 2026-07-27 scaffolded `req_129` / `task_130` as the 0.6 beta season lifecycle and league-management corpus, covering private seasons, commissioner tools, manual reminders, accessibility, action feedback, rivals, card guidance, team profiles, optional shop variety, lightweight season economy framing, and deferred-mode discipline.
 > Semantic edit: 2026-07-27 synchronized 0.6 roadmap scope with the ready-to-dev corpus guardrails: `Direction de course`, manual one-per-season reminder, no auto/deadline resolution, neutral absent-player defaults, explicit next-season action, coherent card guidance labels, and deferred realtime/automation.
 > Semantic edit: 2026-07-27 handoff sync after first 0.6 implementation wave: lifecycle/reminder/accessibility work is partially delivered, accessibility is Done, and the next agent should finish visible default-plan/report handling plus `Direction de course` browser evidence before starting wave 2.
+> Semantic edit: 2026-07-28 synced 0.6 delivery through item_330 and the rollover rule that preserves credits and garage cards while resetting points only.
 
 # Summary
 Plan CR League from the current playable prototype toward a stable private-league V1, replacing `road_001`'s closed milestone blocks with an open three-level scheme: `X.Y` is a stable theme, `X.Y.Z` is one feature drop (roughly one request chain). New features slot in as new patches under the nearest active theme — the roadmap absorbs ideas without renumbering.
@@ -54,7 +55,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Insertion rule: a new feature idea = a new patch under the closest active theme. A new minor is created only for a genuinely new theme.
 - Version labels are planning targets, not release promises.
 
-# Current Position (2026-07-27)
+# Current Position (2026-07-28)
 - 0.1 (vertical slice) and 0.2 (private league prototype) are implemented; their detail is preserved in `road_001` and the specs.
 - The prototype runs the full private-league loop: profiles, invite codes, qualifying, directives, resolution, animated replay, reports, seasons, garage with a 15-card economy, EN/FR, balance simulations.
 - The 0.3 playtest-ready loop line has shipped through `v0.3.26`: the hosted app, CI/release flow, map/replay/report polish, mobile fixes, garage presentation, chrono/plan clarity, home splash, and production health evidence are real.
@@ -65,7 +66,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - The 2026-07-26/27 execution queue is now closed: `req_118`-`req_126` are Done, Logics lint/audit are clean, and `logics-manager status` reports zero open workflow docs. Delivered since the previous sync: twenty new circuits, browser-driven AI playtest, UX evaluation harness, replayability/fun analytics, source-of-truth remediation, aggressive mini-pack diagnostic, eager bundle/script-boundary follow-up, runtime performance remediation, and credential/dependency/App.tsx review remediation.
 - The first post-closeout 0.5 economy follow-up is `req_127`: fresh replayability did not justify a broad aggressive/mini-pack nerf, but card-role evidence justified moving `pit_relay` and `hard_tires` from 180 to 120 credits. No new card mechanics, shop model, or UI surface were opened.
 - The AI alpha seasons evidence run `req_128` / `task_129` is Done. Decision package: `docs/audits/ai-alpha-seasons-decision-2026-07-27.md`. It recommended opening 0.6 beta-season lifecycle next; that corpus is now active as `req_129` / `task_130`.
-- First 0.6 implementation wave status: `item_324` season lifecycle core is in progress, `item_325` `Direction de course` / manual reminders is in progress, and `item_326` accessibility is Done. Latest handoff: `docs/agent-handoff-2026-07-27.md`.
+- 0.6 implementation status: `item_324` through `item_330` are delivered. The active corpus remains `req_129` / `task_130`; `item_331`, `item_332`, and `item_333` are optional/evidence-gated follow-ups. Latest handoff: `docs/agent-handoff-2026-07-28.md`.
 - Still not real: automatic scheduler, full auth, dynamic objectives, broad beta operations evidence, multi-person playtest evidence for the current balance, and any further card-economy expansion beyond the narrow `req_127` price fix.
 
 # Milestones
@@ -187,9 +188,8 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - Goal: Run a real beta season long enough to validate cadence, replay comprehension, economy pressure, and return behavior.
 - Status: In progress; active corpus is `req_129` / `task_130`.
 - Scope to slice into patches when requests exist: beta season lifecycle, `Quick beta` 3-GP and `Standard season` 6-GP presets, creator-only `Direction de course`, manual GP resolution, visible neutral absent-player defaults, explicit `Saison terminée` -> `Lancer la saison suivante` rollover, manual one-reminder-per-season email action, feedback capture across GP cycles, rival context, card guidance labels, in-league team profiles, optional variable shop, and lightweight season continuity rules.
-- First wave status: `item_324` season lifecycle core and `item_325` `Direction de course` / manual reminders are partially delivered; `item_326` accessibility is Done. Finish visible default-plan confirmation/report labeling and desktop/mobile `Direction de course` browser evidence before opening wave 2.
-- Second wave: `item_327` action feedback, `item_328` rival thread, and `item_329` coherent card guidance using `Utile ici`, `Situationnel`, and `Impact faible` while replacing or mapping the existing `Affinité haute` surface.
-- Third wave only if still small: `item_330` in-league team profiles, `item_331` optional `Boutique variable à chaque GP`, and `item_332` season rollover persistence/reset rules. `item_333` race engineer stays deferred unless card guidance still leaves the Plan screen hard to read.
+- Delivered status: `item_324`-`item_330` are in code and documented. This includes lifecycle presets, explicit commissioner resolution, manual reminders, accessibility cleanup, report next-action guidance, derived rivals, contextual card guidance, team profiles, and season rollover preserving credits/garage cards while resetting points only.
+- Remaining optional slices: `item_331` variable shop only if the fixed shop feels too flat, `item_332` only for future cap/anti-snowball evidence beyond the delivered baseline continuity rule, and `item_333` race engineer only if Plan/card guidance remains unclear.
 - Corpus policy: `req_129` is the first 0.6 corpus. Include alpha-evidence gates for accessibility cleanup and profile-dominance monitoring; keep reminders manual/admin-triggered only, capped to one successful send per season, and do not pre-scaffold polling/SSE, automatic reminders, deadline auto-resolution, bot replacement, public matchmaking, compact replay, tutorial rewrite, arcade/quick-play modes, or more card tuning without beta evidence.
 - Exit signal: beta players complete a short season with enough feedback to decide what belongs in 1.0; remaining 1.0 work is known, not guessed.
 - Linked docs: `prod_001_cr_league_product_brief`, `prod_081_0_6_beta_season_lifecycle_and_league_management_product_brief`, `req_129_0_6_beta_season_lifecycle_and_league_management_private_seasons_commissioner_tools_actionability_rivals_team_identity_and_optional_economy_variants`, `task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus`, `spec_016_implementation_roadmap`.
@@ -204,7 +204,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 
 # Sequencing
 - The 0.4 ship/maintainability/review queue through `task_127` is Done.
-- Continue `req_129` / `task_130`: finish `item_324` and `item_325` first, keep `item_326` closed unless regressions appear, then start `item_327` / `item_328` / `item_329`.
+- Continue `req_129` / `task_130`: keep `item_324`-`item_330` closed unless regressions appear. Only start `item_331`, `item_332`, or `item_333` from fresh beta/playtest evidence.
 - Keep release validation explicit: use `logics-manager release status|plan|validate` and record evidence before claiming any 0.4.x release readiness.
 - Do not start 1.0 hardening until the 0.6 beta has produced real usage.
 
@@ -222,7 +222,7 @@ Delivered-work history lives in `changelogs/`, not here: this document keeps goa
 - JSON-column inventory/decision writes are known risk areas; keep new card/team mutations on the row-lock/runWrite pattern from `req_085` and the cross-operation serialization settled by `req_088`.
 - Economy tuning was blocked by card-effect honesty, now settled: `req_086` made the economy baseline monotonic and `req_099` wired position-gain cards into classification (`classificationScore`), so the remaining gate before retuning card prices/roles is a fresh playtest/balance baseline, not the honesty question.
 - Post-0.3 carry-over discipline: do not silently append gameplay/readability work back into 0.3.x; promote it from the carry-over queue into 0.5, 0.6, or a focused hotfix only when evidence justifies it.
-- No-corpus discipline: dynamic race objectives, broad 0.5 economy/card depth, 0.6 live beta season, and 1.0 V1 remain unscaffolded by design until their evidence gates are met.
+- No-corpus discipline: dynamic race objectives, broad 0.5 economy/card depth, and 1.0 V1 remain unscaffolded by design until their evidence gates are met.
 
 - After the existing coverage lane from `req_058` identifies weak screens, add render/interaction tests for the 2-3 weakest game screens (PlanView, GarageView, ResultView first) as a backlog item on an existing chain — not a dedicated corpus.
 - Keep `submitDecision`'s repeated full-state reloads as-is until the existing Postgres integration lane measures a real cost; the fix (thread loaded state through) is mechanical when justified.

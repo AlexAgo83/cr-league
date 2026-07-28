@@ -23,6 +23,7 @@ type Shot = {
   clip?: string;
   padding?: number;
   viewport?: { width: number; height: number };
+  scale?: number;
   out?: string;
 };
 
@@ -37,9 +38,9 @@ const SHOTS: Shot[] = [
   { name: "market-report", path: "/plan/report", clip: ".report-view" },
   { name: "market-replay", path: "/drive", clip: ".drive-grid" },
   // Social card and PWA install screenshots: fixed frames, so no element crop.
-  { name: "og-card", path: "/drive", viewport: { width: 1200, height: 630 }, out: SOCIAL_DIR },
-  { name: "install-wide", path: "/championship/standings", viewport: { width: 1280, height: 720 }, out: SOCIAL_DIR },
-  { name: "install-narrow", path: "/plan/approach", viewport: { width: 390, height: 844 }, out: SOCIAL_DIR }
+  { name: "og-card", path: "/drive", viewport: { width: 1200, height: 630 }, scale: 1, out: SOCIAL_DIR },
+  { name: "install-wide", path: "/championship/standings", viewport: { width: 1280, height: 720 }, scale: 1, out: SOCIAL_DIR },
+  { name: "install-narrow", path: "/plan/approach", viewport: { width: 390, height: 844 }, scale: 1, out: SOCIAL_DIR }
 ];
 
 async function main() {
@@ -56,41 +57,45 @@ async function main() {
     for (const dir of new Set(SHOTS.map((shot) => shot.out ?? outDir))) await mkdir(dir, { recursive: true });
 
     browser = await chromium.launch();
-    const context = await browser.newContext({
-      baseURL: webBaseUrl,
-      deviceScaleFactor: scale,
-      viewport: { width: 1440, height: 1000 }
-    });
-    await context.addInitScript(
-      ([saveKey, languageKey, save, leagueId]) => {
-        localStorage.clear();
-        localStorage.setItem(languageKey!, "en");
-        localStorage.setItem(saveKey!, save!);
-        // Onboarding modals dim the whole page, so mark them all as already seen. Most are
-        // scoped to the league id, hence the suffixed variants.
-        localStorage.setItem("cr-league-help-profile-code", "1");
-        for (const key of ["league-intro", "race", "plan", "garage"]) {
-          localStorage.setItem(`cr-league-help-${key}`, "1");
-          localStorage.setItem(`cr-league-help-${key}:${leagueId}`, "1");
-        }
-        // Tab preferences win over the URL, so pin them to what the shots expect.
-        localStorage.setItem("cr-league-championship-record-tab", "standings");
-        localStorage.setItem("cr-league-garage-panel", "shop");
-        localStorage.setItem("cr-league-directive-step", "approach");
-      },
-      [SOLO_SAVE_KEY, LANGUAGE_KEY, JSON.stringify(fixture), SOLO_LEAGUE_ID] as const
-    );
+    const openPage = async (frame: { width: number; height: number }, deviceScaleFactor: number) => {
+      const context = await browser!.newContext({ baseURL: webBaseUrl, deviceScaleFactor, viewport: frame });
+      await context.addInitScript(initScript, [SOLO_SAVE_KEY, LANGUAGE_KEY, JSON.stringify(fixture), SOLO_LEAGUE_ID] as const);
+      const page = await context.newPage();
+      await enterSolo(page);
+      return page;
+    };
 
-    const page = await context.newPage();
-    await enterSolo(page);
+    const page = await openPage({ width: 1440, height: 1000 }, scale);
     for (const shot of SHOTS) {
-      console.log(`captured ${await capture(page, shot)}`);
+      // deviceScaleFactor is fixed per context, so a shot with its own frame gets its own.
+      const target = shot.viewport ? await openPage(shot.viewport, shot.scale ?? scale) : page;
+      console.log(`captured ${await capture(target, shot)}`);
+      if (target !== page) await target.context().close();
     }
   } finally {
     await browser?.close();
     for (const server of servers) server.kill("SIGTERM");
   }
 }
+
+const initScript = (
+  [saveKey, languageKey, save, leagueId]: readonly [string, string, string, string]
+) => {
+  localStorage.clear();
+  localStorage.setItem(languageKey, "en");
+  localStorage.setItem(saveKey, save);
+  // Onboarding modals dim the whole page, so mark them all as already seen. Most are
+  // scoped to the league id, hence the suffixed variants.
+  localStorage.setItem("cr-league-help-profile-code", "1");
+  for (const key of ["league-intro", "race", "plan", "garage"]) {
+    localStorage.setItem(`cr-league-help-${key}`, "1");
+    localStorage.setItem(`cr-league-help-${key}:${leagueId}`, "1");
+  }
+  // Tab preferences win over the URL, so pin them to what the shots expect.
+  localStorage.setItem("cr-league-championship-record-tab", "standings");
+  localStorage.setItem("cr-league-garage-panel", "shop");
+  localStorage.setItem("cr-league-directive-step", "approach");
+};
 
 // The solo save is only read when the player picks Solo, and a full reload would drop the
 // league back to the setup screen. So enter once, then move between screens client-side.
@@ -102,7 +107,6 @@ async function enterSolo(page: Page) {
 }
 
 async function capture(page: Page, shot: Shot) {
-  if (shot.viewport) await reframe(page, shot);
   await page.evaluate((path) => {
     window.history.pushState(null, "", path);
     window.dispatchEvent(new PopStateEvent("popstate"));
@@ -137,14 +141,6 @@ async function capture(page: Page, shot: Shot) {
     }
   });
   return path;
-}
-
-// The app picks its layout on mount, so a resized frame needs a reload and a fresh entry.
-// deviceScaleFactor stays at --scale, hence the doubled pixel sizes in the manifest.
-async function reframe(page: Page, shot: Shot) {
-  await page.setViewportSize(shot.viewport!);
-  await page.reload({ waitUntil: "networkidle" });
-  await enterSolo(page);
 }
 
 async function hide(page: Page, selectors: string[]) {

@@ -115,15 +115,17 @@
 .home-splash-background {
   height: 100%;
   inset: 0;
-  object-fit: contain;
+  object-fit: cover;
   object-position: center;
   position: fixed;
   width: 100%;
   z-index: -2;
 }
 
+/* The landscape art lights its floor, so the bottom stop is deep enough to keep PRESS START
+   separated from it. The middle stays light so the ring and the car keep their glow. */
 .home-splash::after {
-  background: linear-gradient(180deg, rgb(16 14 18 / 0.28), rgb(16 14 18 / 0.1) 44%, rgb(16 14 18 / 0.72));
+  background: linear-gradient(180deg, rgb(16 14 18 / 0.28), rgb(16 14 18 / 0.1) 44%, rgb(16 14 18 / 0.86));
   content: "";
   inset: 0;
   pointer-events: none;

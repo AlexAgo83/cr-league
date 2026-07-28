@@ -7,6 +7,8 @@
 > Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
+> Semantic edit: 2026-07-28 renamed the visible Solo badge from `Solo local` to `Solo`.
+> Non-semantic edit: 2026-07-28 post-closeout copy label update only; status/progress unchanged.
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 > Owner: codex
 
@@ -22,7 +24,7 @@
 - [x] 4. Add one versioned local solo save, recommended `cr-league-solo-save-v1`, storing LeagueState plus schemaVersion, createdAt, and updatedAt metadata. Keep it separate from profile and multiplayer claim keys.
 - [x] 5. Wave 3: wire solo actions to localStorage load -> shared engine transition -> React state update -> localStorage persist.
 - [x] 6. Cover solo briefing, plan editing, chrono/qualifying, directive lock, GP resolution, replay/report, next Grand Prix, garage buy/sell, livery update, and team rename.
-- [x] 7. Add clear en/fr copy, a `Solo local` indicator, and a confirmed reset solo command that only clears the solo save.
+- [x] 7. Add clear en/fr copy, a `Solo` indicator, and a confirmed reset solo command that only clears the solo save.
 - [x] 8. Add focused tests for setup hierarchy, multiplayer regression, solo no-fetch behavior, solo persistence, solo reset, and multiplayer logout isolation.
 - [x] 9. Run web typecheck, focused Vitest suites, web build, and Logics validation; record any deliberately deferred work in the closeout notes.
 - [x] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
@@ -33,7 +35,7 @@
 - 2026-07-28: Implementation started; current progress is around 5-10%. Three workstreams are now active: shared engine extraction, Solo / Multiplayer setup UI, and solo local storage/action adapter.
 - 2026-07-28: Wave checkpoints committed: `58eb7b3` local solo save storage, `7145fda` shared league engine helpers, `443a56c` Solo / Multiplayer setup choice, and `a811ba9` corrected the setup gate so Solo / Multiplayer remains before profile setup even when a profile is already saved. Web App/App.profile suites and web/shared typechecks passed at this checkpoint.
 - 2026-07-28: Wave 3 first slice replaced the Solo stub with a real local save start/resume path. Solo now bypasses profile, creates `solo-local`, persists `cr-league-solo-save-v1`, skips tab-refresh rejoin, and routes directive submit, buy/sell card, livery update, and team rename through the shared engine into localStorage. Focused no-fetch start proof, App/soloStorage Vitest, and web typecheck pass.
-- 2026-07-28: Solo clarity/safety slice added the `Solo local` topbar badge and a confirmed reset action that clears only `cr-league-solo-save-v1`; focused reset no-fetch coverage passes.
+- 2026-07-28: Solo clarity/safety slice added the `Solo` topbar badge and a confirmed reset action that clears only `cr-league-solo-save-v1`; focused reset no-fetch coverage passes.
 - 2026-07-28: Qualification slice moved `createQualifyingRuns` into `packages/shared`, added shared `runQualifying`, kept API qualification on the shared generator, and wired Solo chrono through localStorage with no-fetch proof.
 - 2026-07-28: Local GP loop slice added shared `resolveGrandPrix` and `startNextGrandPrix`, then wired Solo launch and next GP through localStorage. Focused no-fetch proof now covers Solo start, chrono, directive, GP resolution, and next GP.
 - 2026-07-28: Garage car unlocks are now handled by the shared engine and wired through localStorage in Solo, with no-fetch coverage for buying and equipping a paid car.
@@ -60,7 +62,7 @@
 - request-AC4 -> This task. Proof: `App.test.tsx` covers Solo chrono, directive, GP resolve, next GP, garage car unlock, and reset; shared engine tests cover card/livery/name/resolve/next transitions.
 - request-AC5 -> This task. Proof: `soloStorage.test.ts` covers the versioned solo save; profile/logout paths leave solo reset behind a dedicated command.
 - request-AC6 -> This task. Proof: Solo tests spy on `globalThis.fetch` and assert no API calls for setup, chrono, resolve/next GP, and garage car unlock.
-- request-AC7 -> This task. Proof: en/fr i18n keys and UI tests cover Solo / Multiplayer copy plus the `Solo local` badge/reset affordance.
+- request-AC7 -> This task. Proof: en/fr i18n keys and UI tests cover Solo / Multiplayer copy plus the `Solo` badge/reset affordance.
 - request-AC8 -> This task. Proof: shared/api/web typechecks, API/web Vitest suites, web build, and Logics validation passed on 2026-07-28.
 
 # Validation

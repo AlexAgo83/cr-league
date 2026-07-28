@@ -7,6 +7,7 @@
 > Related architecture: `adr_009_shared_local_and_network_league_engine`
 > Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
 > Semantic edit: 2026-07-28 captured confirmed Solo-before-profile, V1 no-API scope, single local save, explicit solo reset, and shared engine architecture.
+> Semantic edit: 2026-07-28 renamed the visible Solo badge from `Solo local` to `Solo`.
 > Reminder: Update status, linked refs, scope, decisions, success signals, and open questions when you edit this doc.
 
 # Overview
@@ -51,12 +52,12 @@ flowchart TD
 - Multiplayer create/join/rejoin behavior is unchanged after the entry split.
 - Solo starts before profile, survives reload, and can complete the first GP loop with fetch mocked to fail.
 - Shared engine functions are used by both API-backed multiplayer and local solo actions.
-- The UI visibly labels the active local save as Solo local and provides a safe reset path.
+- The UI visibly labels the active local save as Solo and provides a safe reset path.
 - Typecheck, focused tests, web build, and Logics validation pass.
 
 # Delivery Checkpoints
 - 2026-07-28: Entry split, single local save storage, shared-engine helper extraction, and first solo start/action adapter slice are in place. Solo can start before profile with no API call and can persist shared-engine directive/card/livery/name mutations locally.
-- 2026-07-28: The active local game now carries a `Solo local` badge and a confirmed reset path that deletes only the solo save.
+- 2026-07-28: The active local game now carries a `Solo` badge and a confirmed reset path that deletes only the solo save.
 - 2026-07-28: Solo chrono is no-fetch and backed by shared qualification generation.
 - 2026-07-28: Solo can now resolve the GP and start the next round locally with persisted replay/report output.
 - 2026-07-28: Solo garage can now unlock and equip paid car assets locally through the shared engine without API calls.

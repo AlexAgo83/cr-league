@@ -322,10 +322,10 @@ describe("App", () => {
     render(<App />);
 
     fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
-    expect(await screen.findByText("Solo local")).toBeTruthy();
+    expect(await screen.findByText("Solo")).toBeTruthy();
     fireEvent.click(screen.getByTestId("profile-menu"));
     fireEvent.click(screen.getByTestId("profile-action-reset-solo"));
-    expect(screen.getByRole("dialog", { name: "Reset local solo season?" })).toBeTruthy();
+    expect(screen.getByRole("dialog", { name: "Reset solo season?" })).toBeTruthy();
     fireEvent.click(screen.getByTestId("modal-confirm"));
 
     expect(localStorage.getItem("cr-league-solo-save-v1")).toBe(null);

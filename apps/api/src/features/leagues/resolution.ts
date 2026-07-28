@@ -1,6 +1,6 @@
 import { resolveGrandPrix as applyResolveGrandPrix } from "@cr-league/shared";
 import { LeagueRuleError } from "./errors.js";
-import { getCurrentGrandPrix, lockGrandPrixRow, runWrite } from "./persistence.js";
+import { getCurrentGrandPrix, lockGrandPrixRow, lockTeamRow, runWrite } from "./persistence.js";
 import { fillLeagueWithBots } from "./botLifecycle.js";
 import { ensureBotQualifyingRuns } from "./lifecycle.js";
 import { getLeagueState } from "./leagueState.js";
@@ -33,6 +33,9 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
   }
 
   await runWrite(db, async (tx) => {
+    for (const team of [...raceState.teams].sort((left, right) => left.id.localeCompare(right.id))) {
+      await lockTeamRow(tx, team.id);
+    }
     await lockGrandPrixRow(tx, grandPrix.id);
     const freshState = await getLeagueState(tx, leagueId);
     const freshGrandPrix = await getCurrentGrandPrix(tx, leagueId);
@@ -53,13 +56,18 @@ export async function resolveCurrentGrandPrix(db: Db, leagueId: string, input: R
 
     for (const nextTeam of nextState.teams) {
       const previousTeam = teamFromSharedState(freshState, nextTeam.id);
+      const data: {
+        points: { increment: number };
+        credits: { increment: number };
+        cards?: typeof nextTeam.cards;
+      } = {
+        points: { increment: nextTeam.points - previousTeam.points },
+        credits: { increment: nextTeam.credits - previousTeam.credits }
+      };
+      if (!sameCards(previousTeam.cards, nextTeam.cards)) data.cards = nextTeam.cards;
       await tx.team.update({
         where: { id: nextTeam.id },
-        data: {
-          points: { increment: nextTeam.points - previousTeam.points },
-          credits: { increment: nextTeam.credits - previousTeam.credits },
-          cards: nextTeam.cards
-        }
+        data
       });
     }
   });
@@ -71,6 +79,10 @@ function missingHumanTeamIds(state: LeagueState) {
   const humanTeamIds = new Set(state.teams.filter((team) => team.kind === "human").map((team) => team.id));
   const submittedTeamIds = new Set(state.decisions.map((decision) => decision.teamId));
   return [...humanTeamIds].filter((teamId) => !submittedTeamIds.has(teamId));
+}
+
+function sameCards(left: readonly string[], right: readonly string[]) {
+  return left.length === right.length && left.every((cardId, index) => cardId === right[index]);
 }
 
 function applyShared<T>(fn: () => T) {

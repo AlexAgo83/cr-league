@@ -7,6 +7,8 @@
 > Progress: 100%
 > Complexity: Medium
 > Theme: Mode clarity and data safety
+> Semantic edit: 2026-07-28 renamed the visible Solo badge from `Solo local` to `Solo`.
+> Non-semantic edit: 2026-07-28 post-closeout copy label update only; status/progress unchanged.
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
 
 # Problem
@@ -15,7 +17,7 @@
 
 # Scope
 - In:
-  - Show a compact `Solo local` indicator in the topbar or profile/home surface when the active game is local solo.
+  - Show a compact `Solo` indicator in the topbar or profile/home surface when the active game is local solo.
   - Add setup copy that frames Solo as "local to this device" and Multiplayer as a private league with invite code.
   - Add a deliberate reset/forget solo action with confirmation copy that only clears the dedicated solo save key.
   - Ensure existing multiplayer forget/logout paths leave solo storage untouched unless the new solo reset path is invoked.
@@ -25,8 +27,8 @@
   - Migration UI for old solo saves, unless the implementation introduces a versioned key and needs a simple guard.
 
 # Progress notes
-- 2026-07-28: Workstream launched. Initial implementation focus is copy, `Solo local` affordance, reset confirmation, and proving multiplayer logout/forget flows do not touch solo storage.
-- 2026-07-28: `Solo local` is now visible in the game topbar for local solo state, and the menu exposes a confirmed reset that only clears the solo save. The focused App test proves reset returns to Solo / Multiplayer setup without fetch.
+- 2026-07-28: Workstream launched. Initial implementation focus is copy, `Solo` affordance, reset confirmation, and proving multiplayer logout/forget flows do not touch solo storage.
+- 2026-07-28: `Solo` is now visible in the game topbar for local solo state, and the menu exposes a confirmed reset that only clears the solo save. The focused App test proves reset returns to Solo / Multiplayer setup without fetch.
 
 # Acceptance criteria
 - AC5: Multiplayer logout and forget flows do not corrupt solo progress.

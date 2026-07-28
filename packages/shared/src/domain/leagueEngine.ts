@@ -4,6 +4,7 @@ import { isCarAssetId, CAR_ASSET_PRICES } from "../economy/carAssets.js";
 import { CARD_PRICES } from "../economy/constants.js";
 import { bestQualifyingRuns, createQualifyingRuns } from "../simulation/qualifyingRuns.js";
 import { simulateRace } from "../simulation/simulateRace.js";
+import { DEMO_RACE_INPUT } from "../simulation/demoRace.js";
 import type { CardId, RaceDecision, RaceInput, RaceParticipant, TeamLivery } from "./race.js";
 import { PIT_STRATEGIES, RACE_APPROACHES, TECHNICAL_PREPARATIONS } from "./race.js";
 import type { LeagueState } from "./league.js";
@@ -57,6 +58,7 @@ export type RunQualifyingInput = SubmitDecisionInput & {
 
 export type ResolveGrandPrixInput = {
   allowDefaults?: boolean;
+  seed?: string;
 };
 
 export function buyCard(state: LeagueState, input: BuyCardInput = {}) {
@@ -273,7 +275,7 @@ export function resolveGrandPrix(state: LeagueState, input: ResolveGrandPrixInpu
 
   const circuit = circuitIdentityForRound(state.currentGrandPrix.round, circuitSeasonSeed(state.league.id, state.currentGrandPrix.season));
   const result = simulateRace({
-    seed: state.currentGrandPrix.id,
+    seed: input.seed ?? state.currentGrandPrix.id,
     grandPrixName: state.currentGrandPrix.name,
     primaryTrait: state.currentGrandPrix.primaryTrait as RaceInput["primaryTrait"],
     secondaryTrait: state.currentGrandPrix.secondaryTrait as RaceInput["secondaryTrait"],
@@ -413,13 +415,18 @@ function buildParticipants(state: LeagueState): RaceParticipant[] {
   );
 
   return state.teams.map((team, index) => {
+    const demo = DEMO_RACE_INPUT.participants[index % DEMO_RACE_INPUT.participants.length];
+    if (!demo) {
+      throw new Error("Demo race participant template is missing.");
+    }
     const decision = state.decisions.find((candidate) => candidate.teamId === team.id);
     return {
       teamId: team.id,
       teamName: team.name,
       kind: team.kind === "bot" ? "bot" : "human",
       standingsRank: qualifyingRank.get(team.id) ?? index + 1,
-      decision: team.kind === "bot" ? defaultBotDecision(state, team) : decision
+      botArchetype: demo.botArchetype,
+      decision: team.kind === "bot" ? defaultBotDecision(state, team, demo.decision) : decision
         ? {
             approach: decision.approach,
             preparation: decision.preparation,
@@ -518,23 +525,45 @@ function normalizePitStrategy(value: unknown): NonNullable<RaceDecision["pitStra
   return PIT_STRATEGIES.includes(value as NonNullable<RaceDecision["pitStrategy"]>) ? value as NonNullable<RaceDecision["pitStrategy"]> : "standard";
 }
 
-function defaultBotDecision(state: LeagueState, team: LeagueState["teams"][number]): RaceDecision {
+function defaultBotDecision(state: LeagueState, team: LeagueState["teams"][number], fallback?: RaceDecision): RaceDecision {
   const submittedDecision = state.decisions.find((decision) => decision.teamId === team.id);
   if (submittedDecision) {
     return {
       approach: submittedDecision.approach,
       preparation: submittedDecision.preparation,
-      pitStrategy: submittedDecision.pitStrategy ?? "standard",
+      pitStrategy: normalizePitStrategy(submittedDecision.pitStrategy),
       cardId: submittedDecision.cardId ?? undefined,
       rivalTeamId: submittedDecision.rivalTeamId ?? undefined
     };
   }
   return {
-    approach: "balanced",
-    preparation: "speed",
-    pitStrategy: "standard",
-    cardId: team.cards[0]
+    approach: fallback?.approach ?? "balanced",
+    preparation: fallback?.preparation ?? "speed",
+    pitStrategy: botPitStrategyForCircuit(state, team, fallback),
+    cardId: defaultCardForTeam(team, fallback?.cardId),
+    rivalTeamId: fallback?.rivalTeamId
   };
+}
+
+function botPitStrategyForCircuit(state: LeagueState, team: LeagueState["teams"][number], fallback?: RaceDecision): NonNullable<RaceDecision["pitStrategy"]> {
+  const circuit = circuitIdentityForRound(state.currentGrandPrix.round, circuitSeasonSeed(state.league.id, state.currentGrandPrix.season));
+  const traits = circuit.traits;
+  const wetRisk = state.currentGrandPrix.forecast.light_rain + state.currentGrandPrix.forecast.heavy_rain * 2;
+  const archetype = fallback?.preparation === "weather" ? "rain" : fallback?.approach;
+  const wantsAttack = traits.overtaking >= 72 || state.currentGrandPrix.primaryTrait === "fast" || state.currentGrandPrix.primaryTrait === "urban";
+  const wantsEndurance = traits.energy <= 58 || circuit.trackLengthMeters >= 5600 || state.currentGrandPrix.primaryTrait === "high_wear";
+
+  if (wetRisk >= 100) return "standard";
+  if (archetype === "aggressive" && wantsAttack) return "mini_pack";
+  if (archetype === "prudent" && wantsEndurance) return "heavy_pack";
+  if (archetype === "rain" && wetRisk >= 70) return "standard";
+  if (wantsEndurance && team.id.length % 2 === 0) return "heavy_pack";
+  if (wantsAttack) return "mini_pack";
+  return normalizePitStrategy(fallback?.pitStrategy);
+}
+
+function defaultCardForTeam(team: LeagueState["teams"][number], preferred?: CardId) {
+  return preferred && team.cards.includes(preferred) ? preferred : team.cards[0];
 }
 
 function normalizeDisplayName(value: unknown, maxLength: number) {

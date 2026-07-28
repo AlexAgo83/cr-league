@@ -1,8 +1,8 @@
 ## prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief - Solo / Multiplayer Entry And Local Solo Mode Product Brief
 > Date: 2026-07-28
-> Status: Proposed
+> Status: Settled
 > Related request: `req_131_solo_and_multiplayer_entry_split_with_local_solo_mode`
-> Related backlog: `item_347_introduce_the_solo_multiplayer_setup_hierarchy`, `item_348_build_local_solo_state_persistence_and_action_adapter`, `item_349_polish_solo_multiplayer_affordances_and_reset_safety`
+> Related backlog: `item_347_introduce_the_solo_multiplayer_setup_hierarchy`
 > Related task: `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode`
 > Related architecture: `adr_009_shared_local_and_network_league_engine`
 > Non-semantic edit: Added overview Mermaid diagram to satisfy companion-doc hygiene; no scope/status change.
@@ -62,9 +62,10 @@ flowchart TD
 - 2026-07-28: Solo garage can now unlock and equip paid car assets locally through the shared engine without API calls.
 - 2026-07-28: Solo hides the API-only league controls surface, keeping settings/reminders/restart in the multiplayer path.
 - 2026-07-28: Multiplayer garage/card/team identity mutations now run through the shared engine before DB persistence, aligning the common team-action rules with Solo.
-- Still required for the success signals: final no-fetch sweep, web build, and Logics closeout.
+- 2026-07-28: Multiplayer GP resolution and next-GP lifecycle now run through shared engine state transitions while preserving DB-specific seeds, shops, bot fill, bot purchases, and season rollover behavior.
+- Success signals are implemented and validated; final Logics closeout is in progress.
 
 # References
-- Product back-reference: `req_131_solo_and_multiplayer_entry_split_with_local_solo_mode`
+- Product back-reference: `item_347_introduce_the_solo_multiplayer_setup_hierarchy`
 - Task back-reference: `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode`
 - Architecture back-reference: `adr_009_shared_local_and_network_league_engine`

@@ -1,10 +1,10 @@
 ## item_349_polish_solo_multiplayer_affordances_and_reset_safety - Polish solo/multiplayer affordances and reset safety
 > From version: 0.6.1
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 95%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Mode clarity and data safety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -37,6 +37,11 @@
 - request-AC5 -> This backlog slice. Proof: AC5: Multiplayer logout and forget flows do not corrupt solo progress.
 - request-AC7 -> This backlog slice. Proof: AC7: Solo is visibly identified as local to this device.
 - request-AC8 -> This backlog slice. Proof: AC8: Focused tests and typecheck pass.
+- request-AC1 -> This backlog slice. Evidence needed: When the app has no active game context, the first gameplay setup decision is Solo / Multiplayer, not Create league / Join league.
+- request-AC2 -> This backlog slice. Evidence needed: Choosing Multiplayer shows the existing Create league, Join league, and saved multiplayer league flow with unchanged API behavior, validation, saved-claim switching, admin/changelog access, and copy.
+- request-AC3 -> This backlog slice. Evidence needed: Choosing Solo starts or resumes a local solo league before profile setup and without requiring API availability, profile creation, recovery code, invite code, or multiplayer claim.
+- request-AC4 -> This backlog slice. Evidence needed: In solo mode, the first playable loop works locally through at least briefing, plan editing, chrono/qualifying, directive lock, GP resolution, replay/report viewing, next Grand Prix, garage card purchase/sale, livery update, and team rename.
+- request-AC6 -> This backlog slice. Evidence needed: Solo mode never calls fetch/api() for solo-only actions. Tests prove this by running solo setup and at least one solo GP action with fetch mocked to fail if called.
 
 # Decision framing
 - Product framing: Not needed
@@ -57,3 +62,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode`
+
+# Notes
+- Task `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode` was finished via `logics-manager flow finish task` on 2026-07-28.

@@ -1,10 +1,10 @@
 ## item_348_build_local_solo_state_persistence_and_action_adapter - Build local solo state, persistence, and action adapter
 > From version: 0.6.1
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 88
-> Progress: 95%
+> Progress: 100%
 > Complexity: High
 > Theme: Local solo game loop
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -37,6 +37,7 @@
 - 2026-07-28: Local solo GP resolution and next-GP transition now use shared engine functions, apply race rewards/cards locally, persist replay/report output, and advance round 2 without API calls.
 - 2026-07-28: Local solo garage car unlocks now use shared `buyCarAsset`, decrement credits, unlock and equip the paid car locally, and persist without API calls.
 - 2026-07-28: Multiplayer API card buy/sell, car unlock, livery, and team-name handlers now execute the shared engine and persist the resulting team deltas, reducing rule drift with Solo.
+- 2026-07-28: Multiplayer API GP resolution and next-GP lifecycle now execute shared engine transitions for race result, rewards, consumed cards, next-round validation, and season summaries while preserving DB transactions and bot lifecycle hooks.
 
 # Acceptance criteria
 - AC3: Solo can start or resume with the API unavailable.
@@ -50,6 +51,9 @@
 - request-AC5 -> This backlog slice. Proof: AC5: Solo persistence is isolated from multiplayer storage.
 - request-AC6 -> This backlog slice. Proof: AC6: Tests prove solo actions do not call fetch/api().
 - request-AC8 -> This backlog slice. Proof: AC6: Tests prove solo actions do not call fetch/api().
+- request-AC1 -> This backlog slice. Evidence needed: When the app has no active game context, the first gameplay setup decision is Solo / Multiplayer, not Create league / Join league.
+- request-AC2 -> This backlog slice. Evidence needed: Choosing Multiplayer shows the existing Create league, Join league, and saved multiplayer league flow with unchanged API behavior, validation, saved-claim switching, admin/changelog access, and copy.
+- request-AC7 -> This backlog slice. Evidence needed: The UI labels and empty states clearly distinguish local Solo from Multiplayer/private league play in both English and French.
 
 # Decision framing
 - Product framing: Not needed
@@ -70,3 +74,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode`
+
+# Notes
+- Task `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode` was finished via `logics-manager flow finish task` on 2026-07-28.

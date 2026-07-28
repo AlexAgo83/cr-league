@@ -1,10 +1,10 @@
 ## item_347_introduce_the_solo_multiplayer_setup_hierarchy - Introduce the Solo / Multiplayer setup hierarchy
 > From version: 0.6.1
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 95
 > Confidence: 90
-> Progress: 95%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Setup flow and navigation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -41,6 +41,9 @@
 - request-AC3 -> This backlog slice. Proof: AC3: Solo can be selected without first creating a multiplayer profile.
 - request-AC7 -> This backlog slice. Proof: AC7: English and French labels make the mode distinction clear.
 - request-AC8 -> This backlog slice. Proof: AC7: English and French labels make the mode distinction clear.
+- request-AC4 -> This backlog slice. Evidence needed: In solo mode, the first playable loop works locally through at least briefing, plan editing, chrono/qualifying, directive lock, GP resolution, replay/report viewing, next Grand Prix, garage card purchase/sale, livery update, and team rename.
+- request-AC5 -> This backlog slice. Evidence needed: Solo progress survives reload via a single versioned local storage save and is isolated from multiplayer profile/session/claim storage. Forgetting or logging out of a multiplayer profile does not corrupt solo progress unless a dedicated solo reset command is used.
+- request-AC6 -> This backlog slice. Evidence needed: Solo mode never calls fetch/api() for solo-only actions. Tests prove this by running solo setup and at least one solo GP action with fetch mocked to fail if called.
 
 # Decision framing
 - Product framing: Not needed
@@ -61,3 +64,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode`
+
+# Notes
+- Task `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode` was finished via `logics-manager flow finish task` on 2026-07-28.

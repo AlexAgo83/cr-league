@@ -3,11 +3,11 @@ import {
   DEMO_RACE_INPUT,
   circuitIdentityForRound,
   circuitSeasonSeed,
+  startNextGrandPrix as applyStartNextGrandPrix,
   raceInputFromCircuit,
   isCarAssetId,
   trackSpeedProfileForCircuit,
   type CarAssetId,
-  type LeagueState as SharedLeagueState,
   type RaceInput
 } from "@cr-league/shared";
 import { createHash } from "node:crypto";
@@ -30,6 +30,7 @@ import { getCurrentGrandPrix, isUniqueConstraintError, lockGrandPrixRow, lockLea
 import { createQualifyingRuns } from "./qualifying.js";
 import { requireAdminClaim } from "./transactionHelpers.js";
 import { getLeagueState } from "./leagueState.js";
+import { teamFromSharedState, toLeagueRuleError } from "./sharedRules.js";
 import { withPlayer } from "./visibility.js";
 import type { AdminProofInput, CreateLeagueInput, Db, JoinLeagueInput, LeagueState, RejoinLeagueInput } from "./types.js";
 import { clampInteger, createClaimCode, createLeagueCode, createSessionCredential, ensureProfileOwnership, hashRecoveryCode, liveryKey, normalizeDisplayName, normalizeLivery, normalizeQualifyingRuns, normalizeUnlockedCarAssetIds, randomLivery, uniqueBotLivery, verifyRecoveryCode, verifyTeamClaimCode } from "./utils.js";
@@ -186,10 +187,10 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
     throw new LeagueRuleError("Resolve the current Grand Prix before starting the next one.");
   }
   if (!state) return null;
-  const nextSeason = grandPrix.round >= state.league.maxGrandPrixPerSeason ? grandPrix.season + 1 : grandPrix.season;
-  const nextRound = grandPrix.round >= state.league.maxGrandPrixPerSeason ? 1 : grandPrix.round + 1;
-  const nextRaceInput = raceInputFromCircuit(circuitIdentityForRound(nextRound, circuitSeasonSeed(leagueId, nextSeason)));
-  const closingSeasonSummary = nextSeason !== grandPrix.season ? seasonSummaryFromState(state, grandPrix.season) : null;
+  const nextState = applyShared(() => applyStartNextGrandPrix(state));
+  const nextGrandPrix = nextState.currentGrandPrix;
+  const nextSeason = nextGrandPrix.season;
+  const nextRound = nextGrandPrix.round;
 
   await runWrite(db, async (tx) => {
     // The (leagueId, season, round) unique constraint claims the transition: a concurrent double call fails here before touching credits or points.
@@ -201,9 +202,9 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
           season: nextSeason,
           round: nextRound,
           seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-s${nextSeason}-r${nextRound}`,
-          primaryTrait: nextRaceInput.primaryTrait,
-          secondaryTrait: nextRaceInput.secondaryTrait,
-          forecast: nextRaceInput.forecast,
+          primaryTrait: nextGrandPrix.primaryTrait,
+          secondaryTrait: nextGrandPrix.secondaryTrait,
+          forecast: nextGrandPrix.forecast,
           shopCardIds: state.league.variableShop ? variableShopCardIds(leagueId, nextSeason, nextRound) : []
         }
       });
@@ -211,11 +212,11 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
       if (isUniqueConstraintError(error)) throw new LeagueRuleError("The next Grand Prix has already started.");
       throw error;
     }
-    if (closingSeasonSummary) {
+    if (nextSeason !== grandPrix.season) {
       await tx.league.update({
         where: { id: leagueId },
         data: {
-          seasonSummaries: upsertSeasonSummary(state.seasonSummaries, closingSeasonSummary)
+          seasonSummaries: nextState.seasonSummaries
         }
       });
     }
@@ -227,7 +228,7 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
         const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
         if (!freshTeam || freshTeam.leagueId !== leagueId) continue;
         const data: { points: number; livery?: { primary: string; secondary: string; carAssetId?: CarAssetId } } = {
-          points: 0
+          points: teamFromSharedState(nextState, team.id).points
         };
         if (freshTeam.kind === "bot") {
           const livery = normalizeLivery(freshTeam.livery);
@@ -252,23 +253,12 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
   return getLeagueState(db, leagueId);
 }
 
-function seasonSummaryFromState(state: LeagueState, season: number): SharedLeagueState["seasonSummaries"][number] | null {
-  const gpCount = state.grandPrixHistory.filter((grandPrix) => grandPrix.season === season && grandPrix.result).length;
-  const standings = [...state.teams]
-    .sort((left, right) => right.points - left.points || left.name.localeCompare(right.name))
-    .map((team, index) => ({
-      position: index + 1,
-      teamId: team.id,
-      teamName: team.name,
-      points: team.points,
-      livery: team.livery
-    }));
-  const champion = standings[0];
-  return champion ? { season, gpCount, standings, champion } : null;
-}
-
-function upsertSeasonSummary(existing: LeagueState["seasonSummaries"], summary: NonNullable<ReturnType<typeof seasonSummaryFromState>>) {
-  return [summary, ...existing.filter((candidate) => candidate.season !== summary.season)].sort((left, right) => right.season - left.season);
+function applyShared<T>(fn: () => T) {
+  try {
+    return fn();
+  } catch (error) {
+    return toLeagueRuleError(error);
+  }
 }
 
 function availableCarAssetIds(unlocked: CarAssetId[]): CarAssetId[] {
@@ -371,4 +361,3 @@ export async function ensureBotQualifyingRuns(db: Db, grandPrix: Awaited<ReturnT
     await tx.grandPrix.update({ where: { id: freshGrandPrix.id }, data: { qualifyingRuns: nextRuns } });
   });
 }
-

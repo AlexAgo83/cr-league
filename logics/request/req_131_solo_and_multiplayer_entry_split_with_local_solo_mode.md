@@ -1,7 +1,7 @@
 ## req_131_solo_and_multiplayer_entry_split_with_local_solo_mode - Solo and multiplayer entry split with local solo mode
 > From version: 0.6.1
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 95
 > Confidence: 90
 > Complexity: High

@@ -1,4 +1,5 @@
-import type { Locale, TranslationKey } from "../i18n/index.js";
+import type { Locale } from "../i18n/index.js";
+import { useT } from "../i18n/index.js";
 import type { AdminLeague, AdminPagination, AdminUser } from "../app/types.js";
 import { PendingFeedback } from "./PendingFeedback.js";
 import { BoardIcon } from "./VisualIcon.js";
@@ -31,8 +32,7 @@ export function AdminConsoleView({
   onSetAdminToken,
   onSetAdminUserQuery,
   onCleanupLeague,
-  onCleanupUser,
-  tt
+  onCleanupUser
 }: {
   adminLeagues: AdminLeague[];
   adminRecoveryCode: { email: string; code: string } | null;
@@ -60,8 +60,8 @@ export function AdminConsoleView({
   onSetAdminTab: (tab: AdminTab) => void;
   onSetAdminToken: (token: string) => void;
   onSetAdminUserQuery: (query: string) => void;
-  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }) {
+  const tt = useT();
   return (
     <section className="admin-console" aria-label={tt("admin_title")}>
       <div className="panel admin-console-header">
@@ -120,7 +120,6 @@ export function AdminConsoleView({
               onSetQuery={onSetAdminUserQuery}
               pagination={adminUserPagination}
               query={adminUserQuery}
-              tt={tt}
             />
             <table className="admin-table">
               <thead>
@@ -172,7 +171,6 @@ export function AdminConsoleView({
               onSetQuery={onSetAdminLeagueQuery}
               pagination={adminLeaguePagination}
               query={adminLeagueQuery}
-              tt={tt}
             />
             <table className="admin-table">
               <thead>
@@ -232,8 +230,7 @@ function AdminListControls({
   onSearch,
   onSetQuery,
   pagination,
-  query,
-  tt
+  query
 }: {
   label: string;
   loading: boolean;
@@ -242,8 +239,8 @@ function AdminListControls({
   onSetQuery: (query: string) => void;
   pagination: AdminPagination;
   query: string;
-  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }) {
+  const tt = useT();
   return (
     <div className="admin-list-controls">
       <form

@@ -2,7 +2,6 @@ import { APP_VERSION } from "@cr-league/shared";
 import type { ReactNode } from "react";
 import type { StoredPlayerClaim } from "./appStorage.js";
 import type { GameView, FormState, LeagueState, ProfileSession } from "./types.js";
-import type { Translator } from "./helpers.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import { SetupShell } from "./OnboardingShell.js";
 import { LeagueSetupView, ProfileSetupView, SetupEntryView, type ProfileMode, type SetupEntryMode, type SetupMode } from "./SetupViews.js";
@@ -41,8 +40,7 @@ export function SetupGate({
   startSolo,
   createLeague,
   joinLeague,
-  switchLeague,
-  tt
+  switchLeague
 }: {
   profileSession: ProfileSession | null;
   leagueState: LeagueState | null;
@@ -78,21 +76,20 @@ export function SetupGate({
   createLeague: () => void;
   joinLeague: () => void;
   switchLeague: (teamId: string) => void;
-  tt: Translator;
 }) {
   const utilitySetupView = profileSession && ((gameView === "admin" && profileSession.admin) || gameView === "changelog");
 
   if (!leagueState && setupEntryMode === "choice" && !utilitySetupView) {
     return (
-      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
-        <SetupEntryView message={message} status={status} onStartSolo={startSolo} onStartMultiplayer={() => setSetupEntryMode("multiplayer")} tt={tt} />
+      <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+        <SetupEntryView message={message} status={status} onStartSolo={startSolo} onStartMultiplayer={() => setSetupEntryMode("multiplayer")} />
       </SetupShell>
     );
   }
 
   if (!profileSession) {
     return (
-      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+      <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
         <ProfileSetupView
           message={message}
           mode={profileMode}
@@ -106,7 +103,6 @@ export function SetupGate({
           onSetMode={setProfileMode}
           onSetProfileForm={setProfileForm}
           onSetProfileFormError={setProfileFormError}
-          tt={tt}
         />
       </SetupShell>
     );
@@ -114,11 +110,11 @@ export function SetupGate({
 
   if (!leagueState) {
     return (
-      <SetupShell tt={tt} topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+      <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
         {gameView === "admin" && profileSession.admin ? (
           adminView
         ) : gameView === "changelog" ? (
-          <ChangelogView currentVersion={APP_VERSION} tt={tt} />
+          <ChangelogView currentVersion={APP_VERSION} />
         ) : (
           <LeagueSetupView
             form={form}
@@ -136,7 +132,6 @@ export function SetupGate({
             onSetMode={setSetupMode}
             onSetSavedLeagueIndex={setSavedLeagueIndex}
             onSwitchLeague={switchLeague}
-            tt={tt}
           />
         )}
       </SetupShell>

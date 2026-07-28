@@ -1,8 +1,9 @@
 import type { CSSProperties } from "react";
+import { useT } from "../i18n/index.js";
 import { RACE_SEGMENTS, type CardId, type QualifyingRun, type RaceResult } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
-import { cardFit, standingsRival, type CardFit, type Translator } from "../app/helpers.js";
+import { cardFit, standingsRival, type CardFit } from "../app/helpers.js";
 import { formatSeconds } from "../app/helpers.js";
 import { buildPlanRecommendationParts, type ChronoReport, type PlanRiskRead } from "../app/raceFlow.js";
 import type { PlanSubscreen } from "../app/routes.js";
@@ -49,8 +50,7 @@ export function PlanView({
   onOpenGarageShop,
   onOpenRaceReplay,
   onOpenQualifyingRun,
-  onOpenQualifyingHistory,
-  tt
+  onOpenQualifyingHistory
 }: {
   cardLocked: boolean;
   chronoReport: ChronoReport;
@@ -82,8 +82,8 @@ export function PlanView({
   onOpenRaceReplay: () => void;
   onOpenQualifyingRun: () => void;
   onOpenQualifyingHistory: (run: QualifyingRun) => void;
-  tt: Translator;
 }) {
+  const tt = useT();
   const planRecommendation = buildPlanRecommendationParts({ circuitTraits, forecastPick, tt });
   const playerRival = standingsRival(state, playerTeamId);
   const activeSubscreen = planSubscreen;
@@ -102,7 +102,7 @@ export function PlanView({
         reportResult ? (
           <div className="plan-gp-report-shell">
             <Suspense fallback={null}>
-              <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} onOpenReplay={onOpenRaceReplay} replayActionVariant="primary" tt={tt} />
+              <ReportView state={state} result={reportResult} circuit={reportCircuit} playerTeamId={playerTeamId} playerDecision={playerDecision} onOpenReplay={onOpenRaceReplay} replayActionVariant="primary" />
             </Suspense>
           </div>
         ) : (
@@ -257,7 +257,7 @@ export function PlanView({
               </p>
             )}
           </section>
-          {!reportResult ? <OpponentConfigComparison state={state} playerTeamId={playerTeamId} title={tt("opponent_config_title_locked")} tt={tt} /> : null}
+          {!reportResult ? <OpponentConfigComparison state={state} playerTeamId={playerTeamId} title={tt("opponent_config_title_locked")} /> : null}
         </>
       ) : (
         <DirectivePanel
@@ -284,7 +284,6 @@ export function PlanView({
           }}
           onOpenGarageShop={onOpenGarageShop}
           onSelectStep={onSetDirectiveStep}
-          tt={tt}
         />
       )}
     </div>

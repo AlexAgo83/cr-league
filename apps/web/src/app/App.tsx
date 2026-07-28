@@ -12,7 +12,7 @@ import {
   updateTeamName as updateSoloTeamName
 } from "@cr-league/shared";
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
-import { t, type Locale, type TranslationKey } from "../i18n/index.js";
+import { t, TranslationProvider, type Locale, type TranslationKey } from "../i18n/index.js";
 import { type LeagueState, type ProfileSession } from "./types.js";
 import { LanguageSwitcher, NotificationStack, ProfileMenu, SetupTopbar } from "./AppChrome.js";
 import { AppOverlays } from "./AppOverlays.js";
@@ -69,8 +69,15 @@ export function App() {
     setLocaleState(nextLocale);
   }, []);
 
-  if (!entered) return <HomeSplash locale={locale} tt={tt} onChangeLocale={changeLocale} onEnter={() => setEntered(true)} />;
-  return <GameApp locale={locale} onLocaleChange={changeLocale} />;
+  return (
+    <TranslationProvider value={tt}>
+      {entered ? (
+        <GameApp locale={locale} onLocaleChange={changeLocale} />
+      ) : (
+        <HomeSplash locale={locale} onChangeLocale={changeLocale} onEnter={() => setEntered(true)} />
+      )}
+    </TranslationProvider>
+  );
 }
 
 // ponytail: keep App.tsx as orchestration wiring; reopen a broader split only when an App.tsx change
@@ -658,7 +665,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     }
   }
 
-  const languageSwitcher = <LanguageSwitcher locale={locale} tt={tt} onChangeLocale={changeLocale} />;
+  const languageSwitcher = <LanguageSwitcher locale={locale} onChangeLocale={changeLocale} />;
 
   function resetUiPreferences() {
     clearStoredUiPreferences();
@@ -699,7 +706,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       isSoloLeague={soloMode}
       isAdmin={Boolean(profileSession?.admin)}
       hasRecoveryCode={Boolean(profileSession?.recoveryCode)}
-      tt={tt}
       onChangeLocale={changeLocale}
       onToggleOpen={() => setProfileOpen((open) => !open)}
       onClose={() => setProfileOpen(false)}
@@ -745,7 +751,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     <SetupTopbar hideWordmark profileMenu={profileSession ? profileMenu(false) : null} languageSwitcher={languageSwitcher} pendingMessage={pendingMessage} onHome={goHome} />
   );
 
-  const notificationStack = <NotificationStack notifications={notifications} tt={tt} onDismiss={dismissNotification} />;
+  const notificationStack = <NotificationStack notifications={notifications} onDismiss={dismissNotification} />;
   const commonOverlays = (
     <AppOverlays
       profileSession={profileSession}
@@ -779,7 +785,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       isSeasonFinalGrandPrix={isSeasonFinalGrandPrix}
       nextGrandPrixActionLabel={nextGrandPrixActionLabel}
       hasResult={Boolean(result)}
-      tt={tt}
       setForm={setForm}
       onCopyProfileCode={() => void copyProfileCode()}
       onForgetProfile={() => {
@@ -866,7 +871,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         onSetAdminTab={setAdminTab}
         onSetAdminToken={setAdminToken}
         onSetAdminUserQuery={setAdminUserQuery}
-        tt={tt}
       />
     </Suspense>
   ) : null;
@@ -974,7 +978,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         setLeagueState(null);
         setAdminInspecting(false);
       }}
-      tt={tt}
     />
   );
 

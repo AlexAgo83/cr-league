@@ -1,4 +1,5 @@
 import { type CSSProperties, useState } from "react";
+import { useT } from "../i18n/index.js";
 import { APPROACH_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type CardId, type DecisionDeltaKey, type DecisionDeltas } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { safeStorage } from "../app/appStorage.js";
@@ -99,8 +100,8 @@ const ENGINE_STAT_HINTS: Record<DecisionDeltaKey, TranslationKey> = {
   aggression: "engine_stat_aggression_hint"
 };
 
-function ImpactBadges({ badges, tt }: { badges: StatBadge[]; tt: Translator }) {
-  return <span className="card-stat-badges"><StatBadges badges={badges} tt={tt} /></span>;
+function ImpactBadges({ badges }: { badges: StatBadge[] }) {
+  return <span className="card-stat-badges"><StatBadges badges={badges} /></span>;
 }
 
 function DirectiveChoiceArt({ src }: { src: string }) {
@@ -197,8 +198,7 @@ export function DirectivePanel({
   rival,
   onQualifying,
   onOpenGarageShop,
-  onSelectStep,
-  tt
+  onSelectStep
 }: {
   form: FormState;
   setForm: (form: FormState) => void;
@@ -220,8 +220,8 @@ export function DirectivePanel({
   onQualifying?: () => void;
   onOpenGarageShop?: () => void;
   onSelectStep: (step: DirectiveStep) => void;
-  tt: Translator;
 }) {
+  const tt = useT();
   const cardChoices = ["", ...sortCardIdsByName(ownedCardIds, tt)] as Array<"" | CardId>;
   const selectedCardLabel = selectedCardId ? tt(`card_${selectedCardId}` as TranslationKey) : tt("card_none");
   const canRunQualifying = Boolean(onQualifying && !locked && qualifyingAttemptsLeft > 0);
@@ -274,8 +274,8 @@ export function DirectivePanel({
         <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
         <div className="garage-buy-card">
           <CardArtImage cardId={viewingCardId} />
-          {viewingFit ? <CardGuidance fit={viewingFit} tt={tt} /> : null}
-          <CardStatBadges cardId={viewingCardId} tt={tt} />
+          {viewingFit ? <CardGuidance fit={viewingFit} /> : null}
+          <CardStatBadges cardId={viewingCardId} />
         </div>
       </Modal>
     ) : null}
@@ -327,7 +327,7 @@ export function DirectivePanel({
 
     <section className="panel directive-panel directive-selection-panel">
       <div className="directive-summary-stack">
-        <PlanRiskSummary read={planRiskRead} tt={tt} lockLabel={locked ? tt("race_step_locked") : undefined} lockTitle={locked ? `${tt("directive_locked_title")}. ${tt("directive_locked_body")}` : undefined} />
+        <PlanRiskSummary read={planRiskRead} lockLabel={locked ? tt("race_step_locked") : undefined} lockTitle={locked ? `${tt("directive_locked_title")}. ${tt("directive_locked_body")}` : undefined} />
       </div>
       <div className="plan-steps directive-plan-steps" role="tablist" aria-label={tt("directive_title")}>
         {steps.map((entry) => (
@@ -351,7 +351,7 @@ export function DirectivePanel({
                   <strong>{tt(`approach_${approach}` as TranslationKey)}</strong>
                 </span>
                 <small>{tt(`approach_${approach}_hint` as TranslationKey)}</small>
-                <ImpactBadges badges={badgesFromDeltas(APPROACH_DELTAS[approach])} tt={tt} />
+                <ImpactBadges badges={badgesFromDeltas(APPROACH_DELTAS[approach])} />
                 <DirectiveChoiceArt src={APPROACH_ART[approach]} />
               </button>
             ))}
@@ -370,7 +370,7 @@ export function DirectivePanel({
                   <strong>{tt(`preparation_${preparation}` as TranslationKey)}</strong>
                 </span>
                 <small>{tt(`preparation_${preparation}_hint` as TranslationKey)}</small>
-                <ImpactBadges badges={badgesFromDeltas(PREPARATION_DELTAS[preparation])} tt={tt} />
+                <ImpactBadges badges={badgesFromDeltas(PREPARATION_DELTAS[preparation])} />
                 <DirectiveChoiceArt src={PREPARATION_ART[preparation]} />
               </button>
             ))}
@@ -389,7 +389,7 @@ export function DirectivePanel({
                   <strong>{tt(`pit_strategy_${pitStrategy}` as TranslationKey)}</strong>
                 </span>
                 <small>{tt(`pit_strategy_${pitStrategy}_hint` as TranslationKey)}</small>
-                <ImpactBadges badges={badgesFromDeltas(PIT_STRATEGY_DELTAS[pitStrategy])} tt={tt} />
+                <ImpactBadges badges={badgesFromDeltas(PIT_STRATEGY_DELTAS[pitStrategy])} />
                 <DirectiveChoiceArt src={PIT_ART[pitStrategy]} />
               </button>
             ))}
@@ -410,8 +410,8 @@ export function DirectivePanel({
                     <strong>{cardId ? tt(`card_${cardId}` as TranslationKey) : tt("card_none")}</strong>
                     <PlanCardMarker active={Boolean(cardId)} />
                   </span>
-                  {cardId && fit ? <CardGuidance fit={fit} tt={tt} /> : <small>{tt("card_none_hint")}</small>}
-                  {cardId ? <CardStatBadges cardId={cardId} tt={tt} /> : null}
+                  {cardId && fit ? <CardGuidance fit={fit} /> : <small>{tt("card_none_hint")}</small>}
+                  {cardId ? <CardStatBadges cardId={cardId} /> : null}
                   {cardId ? <CardArtImage cardId={cardId} /> : null}
                 </button>
               );

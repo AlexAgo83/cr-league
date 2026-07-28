@@ -1,11 +1,11 @@
 import { APP_NAME, APP_VERSION } from "@cr-league/shared";
+import { useT } from "../i18n/index.js";
 import type { ReactNode } from "react";
 import type { Locale, TranslationKey } from "../i18n/index.js";
 import { AssetImage } from "../features/AssetImage.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { BoardIcon, CountryBadge, type BoardIconName } from "../features/VisualIcon.js";
 import { GAME_VIEWS, type GameView } from "./types.js";
-import type { Translator } from "./helpers.js";
 import type { Notification } from "./useNotifications.js";
 import { usePwaInstall, usePwaUpdate } from "./pwa.js";
 
@@ -18,7 +18,8 @@ const GAME_VIEW_ICONS: Record<GameView, BoardIconName> = {
   plan: "edit-plan"
 };
 
-export function NotificationStack({ notifications, tt, onDismiss }: { notifications: Notification[]; tt: Translator; onDismiss: (id: number) => void }) {
+export function NotificationStack({ notifications, onDismiss }: { notifications: Notification[]; onDismiss: (id: number) => void }) {
+  const tt = useT();
   return notifications.length ? (
     <div className="notification-stack" aria-live="polite">
       {notifications.map((notification) => (
@@ -31,7 +32,8 @@ export function NotificationStack({ notifications, tt, onDismiss }: { notificati
   ) : null;
 }
 
-export function LanguageSwitcher({ locale, tt, onChangeLocale }: { locale: Locale; tt: Translator; onChangeLocale: (locale: Locale) => void }) {
+export function LanguageSwitcher({ locale, onChangeLocale }: { locale: Locale; onChangeLocale: (locale: Locale) => void }) {
+  const tt = useT();
   return (
     <div className="language-select" role="group" aria-label={tt("language_label")}>
       <span>{tt("language_label")}</span>
@@ -55,7 +57,6 @@ export function ProfileMenu({
   isSoloLeague = false,
   isAdmin,
   hasRecoveryCode,
-  tt,
   onChangeLocale,
   onToggleOpen,
   onClose,
@@ -77,7 +78,6 @@ export function ProfileMenu({
   isSoloLeague?: boolean;
   isAdmin: boolean;
   hasRecoveryCode: boolean;
-  tt: Translator;
   onChangeLocale: (locale: Locale) => void;
   onToggleOpen: () => void;
   onClose: () => void;
@@ -90,6 +90,7 @@ export function ProfileMenu({
   onOpenProfileLogout: () => void;
   onOpenChangelog: () => void;
 }) {
+  const tt = useT();
   const { canInstall, promptInstall } = usePwaInstall();
   const { updateReady, applyUpdate } = usePwaUpdate();
   return (
@@ -125,7 +126,7 @@ export function ProfileMenu({
               {tt("action_copy_profile_code")}
             </button>
           ) : null}
-          <LanguageSwitcher locale={locale} tt={tt} onChangeLocale={onChangeLocale} />
+          <LanguageSwitcher locale={locale} onChangeLocale={onChangeLocale} />
           <button type="button" data-testid="profile-action-reset-preferences" className="profile-menu-action profile-menu-action-info" onClick={onOpenPreferencesReset}>
             {tt("action_reset_ui_preferences")}
           </button>
@@ -189,7 +190,6 @@ export function GameTopbar({
   gameView,
   pendingMessage = null,
   profileMenu,
-  tt,
   onHome,
   onSelectView
 }: {
@@ -198,10 +198,10 @@ export function GameTopbar({
   gameView: GameView;
   pendingMessage?: string | null;
   profileMenu: ReactNode;
-  tt: Translator;
   onHome: () => void;
   onSelectView: (view: GameView) => void;
 }) {
+  const tt = useT();
   return (
     <header className="topbar">
       <button type="button" className="brand brand-button" aria-label={`${APP_NAME} ${leagueName}`} onClick={onHome}>

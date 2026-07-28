@@ -1,6 +1,7 @@
-import type { Translator } from "../app/helpers.js";
+import { useT } from "../i18n/index.js";
 
-export function RewardValue({ type, value, signed = false, tt }: { type: "points" | "credits"; value: number; signed?: boolean; tt: Translator }) {
+export function RewardValue({ type, value, signed = false }: { type: "points" | "credits"; value: number; signed?: boolean }) {
+  const tt = useT();
   const label = type === "points" ? tt("unit_points") : tt("unit_credits");
   const prefix = signed && value > 0 ? "+" : "";
   return (

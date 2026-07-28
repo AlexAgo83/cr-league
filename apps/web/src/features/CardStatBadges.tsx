@@ -1,6 +1,6 @@
 import { CARD_DESCRIPTORS, type CardId, type CardStrengthBand, type DecisionDeltaKey } from "@cr-league/shared";
+import { useT } from "../i18n/index.js";
 import type { TranslationKey } from "../i18n/index.js";
-import type { Translator } from "../app/helpers.js";
 import { AssetImage } from "./AssetImage.js";
 import { VisualIcon } from "./VisualIcon.js";
 
@@ -123,7 +123,8 @@ const BADGE_TRAIT_HINT: Record<StatTrait, TranslationKey> = {
   aggression: "engine_stat_aggression_hint"
 };
 
-export function StatBadges({ badges, tt }: { badges: StatBadge[]; tt: Translator }) {
+export function StatBadges({ badges }: { badges: StatBadge[] }) {
+  const tt = useT();
   return (
     <>
       {badges.map((badge) => {
@@ -142,13 +143,14 @@ export function StatBadges({ badges, tt }: { badges: StatBadge[]; tt: Translator
   );
 }
 
-export function CardStatBadges({ cardId, tt }: { cardId: CardId; tt: Translator }) {
+export function CardStatBadges({ cardId }: { cardId: CardId }) {
+  const tt = useT();
   const infoLabel = CARD_INFO_BADGES[cardId];
   const descriptor = CARD_DESCRIPTORS[cardId];
 
   return (
     <span className="card-stat-badges">
-      <StatBadges badges={CARD_BADGES[cardId]} tt={tt} />
+      <StatBadges badges={CARD_BADGES[cardId]} />
       {infoLabel ? (
         <span className="card-stat-badge card-info-badge">
           <i aria-hidden="true">i</i>

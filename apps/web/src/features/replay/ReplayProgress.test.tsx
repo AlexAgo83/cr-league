@@ -1,5 +1,6 @@
+import { renderWithT } from "../../testRender.js";
 import { createRef } from "react";
-import { fireEvent, render, within } from "@testing-library/react";
+import { fireEvent, within } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { ReplayProgress, type ReplayTimelineMarker } from "./ReplayProgress.js";
 
@@ -14,7 +15,7 @@ const marker = (id: string, time: number): ReplayTimelineMarker => ({
 const resolvedWeather = { start: "dry", early: "dry", mid: "light_rain", late: "light_rain", finish: "dry" } as never;
 
 function renderProgress(seek = vi.fn(), scrubbingRef = { current: false }) {
-  const view = render(
+  const view = renderWithT(
     <ReplayProgress
       progressRef={createRef<HTMLDivElement>()}
       rangeRef={createRef<HTMLInputElement>()}
@@ -27,7 +28,6 @@ function renderProgress(seek = vi.fn(), scrubbingRef = { current: false }) {
       seek={seek}
       markers={[marker("moment", 12)]}
       directorMarkers={[marker("director", 34)]}
-      tt={((key: string) => key) as never}
     />
   );
   // no global testing-library cleanup in this repo, so every query is scoped to its own container

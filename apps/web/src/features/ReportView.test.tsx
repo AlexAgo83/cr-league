@@ -1,10 +1,10 @@
-import { render, screen } from "@testing-library/react";
+import { renderWithT } from "../testRender.js";
+import { screen } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import type { RaceResult } from "@cr-league/shared";
 import { circuitForRound } from "../app/circuits.js";
 import { baseState } from "../app/App.testFixtures.js";
 import type { LeagueState } from "../app/types.js";
-import { t } from "../i18n/index.js";
 import { ReportView } from "./ReportView.js";
 
 describe("ReportView", () => {
@@ -42,14 +42,13 @@ describe("ReportView", () => {
       consumedCards: [],
       report: { headline: "Test", blocks: [] }
     };
-    const { container } = render(
+    const { container } = renderWithT(
       <ReportView
         state={state}
         result={result}
         circuit={circuitForRound(1)}
         playerTeamId="team_1"
         playerDecision={state.decisions[0]}
-        tt={(key, params) => t(key, "en", params)}
       />
     );
 
@@ -61,14 +60,13 @@ describe("ReportView", () => {
     expect(container.querySelector(".recap-card.action")?.textContent).toContain("Rain Grip was your clearest lever");
     expect(recap.compareDocumentPosition(phases) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 
-    const tokyo = render(
+    const tokyo = renderWithT(
       <ReportView
         state={state}
         result={result}
         circuit={{ ...circuitForRound(1), city: "Tokyo", layoutKey: "circuit_tokyo_bay_loop" }}
         playerTeamId="team_1"
         playerDecision={state.decisions[0]}
-        tt={(key, params) => t(key, "en", params)}
       />
     );
     expect(tokyo.container.querySelector(".report-headline h2")?.textContent).toBe("Tokyo Street Circuit");
@@ -96,7 +94,7 @@ describe("ReportView", () => {
       report: { headline: "Test", blocks: [] }
     };
 
-    const { container } = render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+    const { container } = renderWithT(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} />);
 
     const comparison = container.querySelector(".opponent-config-comparison") as HTMLElement;
     expect(comparison.textContent).toContain("Launch Boost");
@@ -119,7 +117,7 @@ describe("ReportView", () => {
       report: { headline: "Test", blocks: [] }
     };
 
-    const { container } = render(<ReportView state={typedBaseState} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={undefined} tt={(key, params) => t(key, "en", params)} />);
+    const { container } = renderWithT(<ReportView state={typedBaseState} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={undefined} />);
 
     expect(container.querySelector(".report-podium")?.textContent).toContain("Late ApexDefault plan");
     expect(container.querySelectorAll(".report-default-plan-badge")).toHaveLength(1);
@@ -149,7 +147,7 @@ describe("ReportView", () => {
       report: { headline: "Test", blocks: [] }
     };
 
-    const { container } = render(<ReportView state={state} result={result} circuit={circuit} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+    const { container } = renderWithT(<ReportView state={state} result={result} circuit={circuit} playerTeamId="team_1" playerDecision={state.decisions[0]} />);
 
     expect(screen.queryByText("Lap 5")).toBe(null);
     expect(screen.queryByText("Lap 10")).toBe(null);
@@ -200,7 +198,7 @@ describe("ReportView", () => {
       report: { headline: "Test", blocks: [] }
     };
 
-    const { container } = render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+    const { container } = renderWithT(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} />);
     const moments = container.querySelectorAll(".report-key-moments li");
     const keyMomentText = container.querySelector(".report-key-moments")?.textContent ?? "";
 
@@ -230,7 +228,7 @@ describe("ReportView", () => {
       report: { headline: "Test", blocks: [] }
     };
 
-    const { container } = render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+    const { container } = renderWithT(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} />);
 
     const recap = container.querySelector(".report-side-recap") as HTMLElement;
     const resultCard = container.querySelector(".recap-card.difference") as HTMLElement;
@@ -259,7 +257,7 @@ describe("ReportView", () => {
       report: { headline: "Test", blocks: [] }
     };
 
-    const { container } = render(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} tt={(key, params) => t(key, "en", params)} />);
+    const { container } = renderWithT(<ReportView state={state} result={result} circuit={circuitForRound(1)} playerTeamId="team_1" playerDecision={state.decisions[0]} />);
 
     const action = container.querySelector(".recap-card.action")!;
     expect(action.textContent).toContain("Launch Boost did not trigger");
@@ -281,7 +279,7 @@ describe("ReportView", () => {
       report: { headline: "Test", blocks: [] }
     } satisfies Omit<RaceResult, "classification">;
 
-    const won = render(
+    const won = renderWithT(
       <ReportView
         state={state}
         result={{
@@ -294,13 +292,12 @@ describe("ReportView", () => {
         circuit={circuitForRound(1)}
         playerTeamId="team_1"
         playerDecision={state.decisions[0]}
-        tt={(key, params) => t(key, "en", params)}
       />
     );
     expect(won.container.querySelector(".recap-card.action")?.textContent).toContain("You beat Mika Blitz");
     won.unmount();
 
-    const lost = render(
+    const lost = renderWithT(
       <ReportView
         state={state}
         result={{
@@ -313,7 +310,6 @@ describe("ReportView", () => {
         circuit={circuitForRound(1)}
         playerTeamId="team_1"
         playerDecision={state.decisions[0]}
-        tt={(key, params) => t(key, "en", params)}
       />
     );
     expect(lost.container.querySelector(".recap-card.action")?.textContent).toContain("Mika Blitz finished ahead");

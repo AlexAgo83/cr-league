@@ -1,7 +1,7 @@
 import { type ReactNode, useMemo, useState } from "react";
 import { CITY_CIRCUITS, withRoute } from "./circuits.js";
 import { useCircuitRoutesReady } from "./circuitRoutes/index.js";
-import { type TranslationKey } from "../i18n/index.js";
+import { type TranslationKey, useT } from "../i18n/index.js";
 import { CircuitMap } from "../features/CircuitMap.js";
 import { Modal } from "../features/Modal.js";
 import { ModalHero } from "../features/ModalHero.js";
@@ -32,7 +32,7 @@ export type StandardOnboardingHelpTopic = Exclude<OnboardingHelpTopic, "leagueIn
 
 export const SCREEN_ONBOARDING_HELP_TOPICS = ["race", "plan", "garage"] as const satisfies readonly OnboardingHelpTopic[];
 
-function AmbientRaceBackground({ tt }: { tt: (key: TranslationKey) => string }) {
+function AmbientRaceBackground() {
   useCircuitRoutesReady(); // subscribe: re-render (and re-read the route below) once the cache loads
   const { circuit, cars } = useMemo(() => {
     const liveries: Array<[string, string]> = [
@@ -62,7 +62,7 @@ function AmbientRaceBackground({ tt }: { tt: (key: TranslationKey) => string }) 
 
   return (
     <div className="ambient-race-background" aria-hidden="true">
-      <CircuitMap className="ambient-race-map" circuit={hydratedCircuit} tt={tt} cars={cars} camera={{ enabled: true, car: cars[0] }} showHeading={false} framed={false} showTraits={false} />
+      <CircuitMap className="ambient-race-map" circuit={hydratedCircuit} cars={cars} camera={{ enabled: true, car: cars[0] }} showHeading={false} framed={false} showTraits={false} />
     </div>
   );
 }
@@ -74,8 +74,7 @@ export function SetupShell({
   preferencesResetModal,
   profileCodeModal,
   profileLogoutModal,
-  topbar,
-  tt
+  topbar
 }: {
   children: ReactNode;
   errorModal: ReactNode;
@@ -84,11 +83,10 @@ export function SetupShell({
   profileCodeModal: ReactNode;
   profileLogoutModal: ReactNode;
   topbar: ReactNode;
-  tt: (key: TranslationKey) => string;
 }) {
   return (
     <main className="app-shell setup-shell">
-      <AmbientRaceBackground tt={tt} />
+      <AmbientRaceBackground />
       {topbar}
       {children}
       {notificationStack}
@@ -103,14 +101,13 @@ export function SetupShell({
 export function OnboardingHelpModal({
   topic,
   recoveryCode,
-  onClose,
-  tt
+  onClose
 }: {
   topic: StandardOnboardingHelpTopic;
   recoveryCode?: string;
   onClose: (dismiss: boolean) => void;
-  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }) {
+  const tt = useT();
   const [dismiss, setDismiss] = useState(false);
   const items = topic === "profileCode" ? [] : [1, 2, 3].map((index) => tt(`onboarding_${topic}_item_${index}` as TranslationKey));
   const image = topic === "profileCode" ? "/assets/crl/profile-arrival.webp" : ONBOARDING_HELP_IMAGES[topic];
@@ -141,12 +138,11 @@ export function OnboardingHelpModal({
 }
 
 export function LeagueIntroModal({
-  onClose,
-  tt
+  onClose
 }: {
   onClose: (dismiss: boolean) => void;
-  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }) {
+  const tt = useT();
   const [step, setStep] = useState(0);
   const [dismiss, setDismiss] = useState(false);
   const stepNumber = step + 1;

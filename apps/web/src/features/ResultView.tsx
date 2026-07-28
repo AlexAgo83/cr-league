@@ -1,4 +1,5 @@
 import { DEMO_RACE_INPUT, type RaceDecision, type RaceResult } from "@cr-league/shared";
+import { useT } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import type { Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
@@ -27,8 +28,7 @@ export function ResultView({
   onOpenReplay,
   onOpenPlanReport,
   onOpenPlan,
-  onClose,
-  tt
+  onClose
 }: {
   state: LeagueState;
   result: RaceResult;
@@ -44,8 +44,8 @@ export function ResultView({
   onOpenPlanReport?: () => void;
   onOpenPlan?: () => void;
   onClose?: () => void;
-  tt: Translator;
 }) {
+  const tt = useT();
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
   const explicitPlans = new Map((replayPlanDecisions ?? state.decisions).map((decision) => [decision.teamId, decision]));
   const consumedCardByTeam = new Map(result.consumedCards.map((card) => [card.teamId, card.cardId]));
@@ -77,13 +77,13 @@ export function ResultView({
         <div>
           <dt>{tt("payoff_points")}</dt>
           <dd>
-            <RewardValue type="points" value={payoff.points} signed tt={tt} />
+            <RewardValue type="points" value={payoff.points} signed />
           </dd>
         </div>
         <div>
           <dt>{tt("payoff_credits")}</dt>
           <dd>
-            <RewardValue type="credits" value={payoff.credits} signed tt={tt} />
+            <RewardValue type="credits" value={payoff.credits} signed />
           </dd>
         </div>
         <div>
@@ -127,7 +127,6 @@ export function ResultView({
               onOpenPlan={onOpenPlan}
               closeLabel={tt("action_back_to_race")}
               afterMapContent={payoffPanel}
-              tt={tt}
             />
           ) : (
             <ReportView
@@ -138,7 +137,6 @@ export function ResultView({
               playerDecision={playerDecision}
               onOpenReplay={onOpenReplay}
               onClose={onClose}
-              tt={tt}
             />
           )}
         </Suspense>

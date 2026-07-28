@@ -1,8 +1,9 @@
 import type { PlanRiskRead } from "../app/raceFlow.js";
-import type { Translator } from "../app/helpers.js";
+import { useT } from "../i18n/index.js";
 import type { TranslationKey } from "../i18n/index.js";
 
-export function PlanRiskSummary({ read, tt, compact = false, note, lockLabel, lockTitle }: { read: PlanRiskRead; tt: Translator; compact?: boolean; note?: string; lockLabel?: string; lockTitle?: string }) {
+export function PlanRiskSummary({ read, compact = false, note, lockLabel, lockTitle }: { read: PlanRiskRead; compact?: boolean; note?: string; lockLabel?: string; lockTitle?: string }) {
+  const tt = useT();
   return (
     <section className={["plan-risk-summary", compact ? "compact" : "", `plan-risk-${read.level}`].filter(Boolean).join(" ")} aria-label={tt("plan_risk_title")}>
       <strong>{tt(`plan_risk_level_${read.level}` as TranslationKey)}</strong>

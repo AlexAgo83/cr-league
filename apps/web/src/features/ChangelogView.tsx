@@ -1,4 +1,4 @@
-import type { Translator } from "../app/helpers.js";
+import { useT } from "../i18n/index.js";
 
 const changelogFiles = import.meta.glob("../../../../changelogs/CHANGELOGS_*.md", { query: "?raw", import: "default", eager: true }) as Record<string, string>;
 
@@ -9,7 +9,8 @@ const CHANGELOGS = Object.entries(changelogFiles)
   })
   .sort((left, right) => compareVersions(left.version, right.version));
 
-export function ChangelogView({ currentVersion, tt }: { currentVersion: string; tt: Translator }) {
+export function ChangelogView({ currentVersion }: { currentVersion: string }) {
+  const tt = useT();
   return (
     <div className="plan-view changelog-view">
       <section className="panel changelog-hero">

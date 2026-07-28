@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useId, useMemo, useRef, useState, type MouseEvent, type Ref, type RefObject } from "react";
+import { useT } from "../i18n/index.js";
 import type { CSSProperties } from "react";
 import type { DecisionDeltaKey, TeamLivery, TrackSpeedProfile, Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import { useCircuitRoutesReady } from "../app/circuitRoutes/index.js";
-import type { Translator } from "../app/helpers.js";
 import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { DEFAULT_CAR_ASSET, carAssetForId, carRenderGeometryForId, type CarAsset } from "./carAssets.js";
 import { safeHex } from "./LiveryPlate.js";
@@ -25,7 +25,8 @@ export type MapCar = {
   repeatCount?: number | "indefinite";
 };
 
-export function MapStatsToggle({ expanded, onToggle, tt }: { expanded: boolean; onToggle: (expanded: boolean) => void; tt: Translator }) {
+export function MapStatsToggle({ expanded, onToggle }: { expanded: boolean; onToggle: (expanded: boolean) => void }) {
+  const tt = useT();
   return (
     <button
       className="map-plan-stats-toggle"
@@ -312,7 +313,6 @@ export function CircuitMap(props: Parameters<typeof CircuitMapInner>[0]) {
 
 function CircuitMapInner({
   circuit,
-  tt,
   cars = [],
   svgRef,
   overlay,
@@ -328,7 +328,6 @@ function CircuitMapInner({
   tireTrails = true
 }: {
   circuit: CityCircuit;
-  tt: Translator;
   cars?: MapCar[];
   svgRef?: Ref<SVGSVGElement>;
   overlay?: React.ReactNode;
@@ -348,6 +347,7 @@ function CircuitMapInner({
   reduceMotion?: boolean;
   tireTrails?: boolean;
 }) {
+  const tt = useT();
   const { zoom, tiles, points, d } = useMemo(() => circuitScene(circuit), [circuit]);
   const cameraRef = useRef<SVGGElement>(null);
   const mapId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
@@ -665,7 +665,7 @@ function CircuitMapInner({
                 </small>
               </div>
             ) : null}
-            {showTraits ? <MapTraitsPanel traits={circuit.traits} tt={tt} /> : null}
+            {showTraits ? <MapTraitsPanel traits={circuit.traits} /> : null}
           </div>
         ) : null}
         {overlay}
@@ -751,7 +751,8 @@ export function MapCarSprite({ asset = DEFAULT_CAR_ASSET, braking = false, maskI
   );
 }
 
-export function MapTraitsPanel({ traits, tt, impacts = {} }: { traits: MapTraitStats; tt: Translator; impacts?: MapTraitImpacts }) {
+export function MapTraitsPanel({ traits, impacts = {} }: { traits: MapTraitStats; impacts?: MapTraitImpacts }) {
+  const tt = useT();
   const engineRows: Array<{ key: DecisionDeltaKey; label: TranslationKey; hint: TranslationKey }> = [
     { key: "pace", label: "engine_stat_pace", hint: "engine_stat_pace_hint" },
     { key: "control", label: "engine_stat_control", hint: "engine_stat_control_hint" },

@@ -1,10 +1,10 @@
-import { fireEvent, render } from "@testing-library/react";
+import { renderWithT } from "../testRender.js";
+import { fireEvent } from "@testing-library/react";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { CITY_CIRCUITS, withRoute } from "../app/circuits.js";
 import { loadCircuitRoutes } from "../app/circuitRoutes/index.js";
 import { CircuitMap, type MapCar } from "./CircuitMap.js";
 
-const tt = (key: string) => key;
 
 describe("CircuitMap rendering", () => {
   // Route polylines now load lazily; populate the cache before rendering.
@@ -12,7 +12,7 @@ describe("CircuitMap rendering", () => {
     await loadCircuitRoutes();
   });
   it("fits static map tiles and route with one shared transform", () => {
-    const { container } = render(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} />);
+    const { container } = renderWithT(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} />);
 
     const content = container.querySelector(".circuit-map-content");
     expect(content?.getAttribute("transform")).toContain("scale(");
@@ -23,7 +23,7 @@ describe("CircuitMap rendering", () => {
 
   it("keeps replay focus mode in the native tile coordinate space", () => {
     const car: MapCar = { id: "player", label: "P", player: true, delay: 0, duration: 10, progress: 0 };
-    const { container } = render(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} cars={[car]} camera={{ enabled: true, car }} />);
+    const { container } = renderWithT(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} cars={[car]} camera={{ enabled: true, car }} />);
 
     expect(container.querySelector(".circuit-map-content")?.getAttribute("transform")).toBeNull();
   });
@@ -31,7 +31,7 @@ describe("CircuitMap rendering", () => {
   it("reports a clicked car while focus selection is enabled", () => {
     const car: MapCar = { id: "rival", label: "R", player: false, delay: 0, duration: 10, progress: 0 };
     const onCarClick = vi.fn();
-    const { container } = render(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} cars={[car]} onCarClick={onCarClick} />);
+    const { container } = renderWithT(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} cars={[car]} onCarClick={onCarClick} />);
 
     fireEvent.click(container.querySelector(".map-car")!);
 
@@ -41,7 +41,7 @@ describe("CircuitMap rendering", () => {
   it("renders metadata-driven tire trails and headlights", () => {
     const moving: MapCar = { id: "moving", label: "M", player: false, delay: 0, duration: 10, progress: 1, braking: true };
 
-    const movingMap = render(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} cars={[moving]} />);
+    const movingMap = renderWithT(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} cars={[moving]} />);
     expect(movingMap.container.querySelectorAll(".map-car-trail[data-segment]")).toHaveLength(36);
     expect(movingMap.container.querySelectorAll(".map-car-headlight")).toHaveLength(2);
     expect(movingMap.container.querySelectorAll(".map-car-rear-light.braking")).toHaveLength(2);
@@ -49,7 +49,7 @@ describe("CircuitMap rendering", () => {
 
   it("renders ambient cars through the shared visual effects pipeline", () => {
     const ambient: MapCar = { id: "ambient", label: "A", player: false, delay: 0, duration: 10 };
-    const { container } = render(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} cars={[ambient]} />);
+    const { container } = renderWithT(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} cars={[ambient]} />);
 
     expect(container.querySelector("animateMotion")).toBeNull();
     expect(container.querySelectorAll(".map-car-trail[data-segment]")).toHaveLength(36);
@@ -65,7 +65,7 @@ describe("CircuitMap rendering", () => {
       duration: 10,
       progress: index / 10
     }));
-    const { container } = render(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} cars={cars} camera={{ enabled: true, car: cars[3] }} />);
+    const { container } = renderWithT(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} cars={cars} camera={{ enabled: true, car: cars[3] }} />);
 
     expect(container.querySelectorAll(".map-car")).toHaveLength(8);
     expect(container.querySelectorAll(".map-car-trail[data-segment]")).toHaveLength(72);
@@ -73,10 +73,10 @@ describe("CircuitMap rendering", () => {
 
   it("keeps car SVG definitions unique across map instances", () => {
     const car: MapCar = { id: "player", label: "P", player: true, delay: 0, duration: 10, progress: 0 };
-    const { container } = render(
+    const { container } = renderWithT(
       <>
-        <CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} cars={[car]} />
-        <CircuitMap circuit={withRoute(CITY_CIRCUITS[1]!)} tt={tt} cars={[car]} />
+        <CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} cars={[car]} />
+        <CircuitMap circuit={withRoute(CITY_CIRCUITS[1]!)} cars={[car]} />
       </>
     );
 
@@ -86,7 +86,7 @@ describe("CircuitMap rendering", () => {
 
   it("sanitizes car ids before using them in SVG paint server urls", () => {
     const car: MapCar = { id: "circuit-preview-Rio de Janeiro", label: "R", player: true, delay: 0, duration: 10, progress: 0 };
-    const { container } = render(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} cars={[car]} />);
+    const { container } = renderWithT(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} cars={[car]} />);
 
     expect(container.querySelector(".map-car-headlight path")?.getAttribute("fill")).not.toContain(" ");
     expect(container.querySelector(".map-car-tint")?.getAttribute("mask")).not.toContain(" ");
@@ -94,7 +94,7 @@ describe("CircuitMap rendering", () => {
 
   it("renders car lights above the body tint", () => {
     const car: MapCar = { id: "player", label: "P", player: true, delay: 0, duration: 10, progress: 0 };
-    const { container } = render(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} cars={[car]} />);
+    const { container } = renderWithT(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} cars={[car]} />);
     const spriteChildren = [...container.querySelector(".map-car-sprite")!.children];
 
     expect(spriteChildren.findIndex((node) => node.classList.contains("map-car-headlight"))).toBeGreaterThan(
@@ -104,14 +104,14 @@ describe("CircuitMap rendering", () => {
 
   it("keeps ambient cars static when reduced motion is requested", () => {
     const ambient: MapCar = { id: "ambient", label: "A", player: false, delay: 0, duration: 10 };
-    const { container } = render(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} cars={[ambient]} reduceMotion />);
+    const { container } = renderWithT(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} cars={[ambient]} reduceMotion />);
 
     expect(container.querySelector("animateMotion")).toBeNull();
   });
 
   it("uses the car skin selected in the team livery", () => {
     const car: MapCar = { id: "player", label: "P", player: true, delay: 0, duration: 10, progress: 0, livery: { primary: "#111111", secondary: "#ff0000", carAssetId: "car-005" } };
-    const { container } = render(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} tt={tt} cars={[car]} />);
+    const { container } = renderWithT(<CircuitMap circuit={withRoute(CITY_CIRCUITS[0]!)} cars={[car]} />);
 
     expect(container.querySelector(".map-car-detail")?.getAttribute("href")).toContain("/assets/cars/crl-v2/car-005/top.webp");
   });

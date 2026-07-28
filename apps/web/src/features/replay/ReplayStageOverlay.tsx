@@ -1,7 +1,7 @@
 import { type RaceDecision, type RaceResult, type TeamLivery, type Weather } from "@cr-league/shared";
+import { useT } from "../../i18n/index.js";
 import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import type { CityCircuit } from "../../app/circuits.js";
-import type { Translator } from "../../app/helpers.js";
 import { useMapStatsExpanded } from "../../app/viewPreferences.js";
 import type { TranslationKey } from "../../i18n/index.js";
 import { MapStatsToggle, MapTraitsPanel, type MapTraitImpacts } from "../CircuitMap.js";
@@ -71,7 +71,6 @@ export function ReplayStageOverlay({
   markers,
   directorMarkers,
   replayPercentAtRaceProgress,
-  tt,
   setPlaying,
   setSpeed,
   setDriverFocus,
@@ -113,7 +112,6 @@ export function ReplayStageOverlay({
   markers: ReplayTimelineMarker[];
   directorMarkers: ReplayTimelineMarker[];
   replayPercentAtRaceProgress: (progress: number) => number;
-  tt: Translator;
   setPlaying: (playing: boolean) => void;
   setSpeed: (speed: ReplaySpeed) => void;
   setDriverFocus: (focused: boolean) => void;
@@ -127,6 +125,7 @@ export function ReplayStageOverlay({
   onClose?: () => void;
   closeLabel?: string;
 }) {
+  const tt = useT();
   const directorTitle = tt(activeDirector?.type === "qualifying_start" || activeDirector?.type === "qualifying_pace" || activeDirector?.type === "qualifying_final" ? "replay_director_chrono_title" : "replay_director_title");
   const seekValueText = `${tt("unit_lap")} ${liveLap}/${circuit.laps}, ${Math.round(clockSeconds)}s`;
   const [weatherInfoOpen, setWeatherInfoOpen] = useState(false);
@@ -134,7 +133,7 @@ export function ReplayStageOverlay({
 
   return (
     <>
-      {weatherInfoOpen ? <ReplayWeatherModal resolvedWeather={resolvedWeather} tt={tt} onClose={() => setWeatherInfoOpen(false)} /> : null}
+      {weatherInfoOpen ? <ReplayWeatherModal resolvedWeather={resolvedWeather} onClose={() => setWeatherInfoOpen(false)} /> : null}
       <div className="map-info-stack">
         <div className="map-status">
           <span className="circuit-city">
@@ -158,9 +157,9 @@ export function ReplayStageOverlay({
           </button>
         </div>
         <div className={mapStatsExpanded ? "map-plan-performance" : "map-plan-performance stats-collapsed"}>
-          <MapPlanPanel decision={planDecision} editLabel={tt("action_view_plan")} onEdit={onOpenPlan} tt={tt} />
-          <MapStatsToggle expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} tt={tt} />
-          {mapStatsExpanded ? <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, liveLap)} impacts={traitImpacts} tt={tt} /> : null}
+          <MapPlanPanel decision={planDecision} editLabel={tt("action_view_plan")} onEdit={onOpenPlan} />
+          <MapStatsToggle expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} />
+          {mapStatsExpanded ? <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, liveLap)} impacts={traitImpacts} /> : null}
         </div>
       </div>
       {activeMoment ? (
@@ -225,7 +224,7 @@ export function ReplayStageOverlay({
             <circle cx="12" cy="12" r="3" />
           </svg>
         </button>
-        <ReplaySpeedMenu speed={speed} setSpeed={setSpeed} tt={tt} />
+        <ReplaySpeedMenu speed={speed} setSpeed={setSpeed} />
         {onOpenReport ? (
           <button type="button" className="replay-report-button" aria-label={tt("result_tab_report")} title={tt("result_tab_report")} onClick={onOpenReport}>
             <BoardIcon className="replay-report-icon" name="race-report" />
@@ -275,7 +274,6 @@ export function ReplayStageOverlay({
         seek={seek}
         markers={markers}
         directorMarkers={directorMarkers}
-        tt={tt}
       />
     </>
   );
@@ -327,16 +325,18 @@ function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowe
   );
 }
 
-function ReplayWeatherModal({ resolvedWeather, tt, onClose }: { resolvedWeather: RaceResult["resolvedWeather"]; tt: Translator; onClose: () => void }) {
+function ReplayWeatherModal({ resolvedWeather, onClose }: { resolvedWeather: RaceResult["resolvedWeather"]; onClose: () => void }) {
+  const tt = useT();
   return (
     <Modal label={tt("race_gp_info_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <h2>{tt("race_gp_info_title")}</h2>
-      <RaceInfoDetailsForResolvedWeather resolvedWeather={resolvedWeather} tt={tt} />
+      <RaceInfoDetailsForResolvedWeather resolvedWeather={resolvedWeather} />
     </Modal>
   );
 }
 
-function ReplaySpeedMenu({ speed, setSpeed, tt }: { speed: ReplaySpeed; setSpeed: (speed: ReplaySpeed) => void; tt: Translator }) {
+function ReplaySpeedMenu({ speed, setSpeed }: { speed: ReplaySpeed; setSpeed: (speed: ReplaySpeed) => void }) {
+  const tt = useT();
   const [open, setOpen] = useState(false);
   const listId = useId();
 

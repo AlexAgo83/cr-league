@@ -1,12 +1,12 @@
+import { renderWithT } from "../testRender.js";
 // @vitest-environment jsdom
 
-import { cleanup, fireEvent, render, screen, within } from "@testing-library/react";
+import { cleanup, fireEvent, screen, within } from "@testing-library/react";
 import { createElement } from "react";
 import { afterEach, describe, expect, it } from "vitest";
 import { CITY_CIRCUITS } from "../app/circuits.js";
 import { baseState } from "../app/App.testFixtures.js";
 import type { LeagueState } from "../app/types.js";
-import { t } from "../i18n/index.js";
 import { ChampionshipView, COUNTRY_REGION } from "./ChampionshipView.js";
 
 afterEach(() => {
@@ -36,14 +36,13 @@ describe("ChampionshipView rival marker", () => {
       ]
     } satisfies LeagueState;
 
-    render(createElement(ChampionshipView, {
+    renderWithT(createElement(ChampionshipView, {
       state,
       playerTeamId: "team_1",
       recordTab: "standings",
       onReplayGrandPrix: () => undefined,
       onOpenSeasonRecap: () => undefined,
-      onSelectRecordTab: () => undefined,
-      tt: (key, params) => t(key, "en", params)
+      onSelectRecordTab: () => undefined
     }));
 
     expect(screen.getByText("Rival · 3 pts")).toBeTruthy();
@@ -80,14 +79,13 @@ describe("ChampionshipView rival marker", () => {
       ]
     } satisfies LeagueState;
 
-    render(createElement(ChampionshipView, {
+    renderWithT(createElement(ChampionshipView, {
       state,
       playerTeamId: "team_1",
       recordTab: "standings",
       onReplayGrandPrix: () => undefined,
       onOpenSeasonRecap: () => undefined,
-      onSelectRecordTab: () => undefined,
-      tt: (key, params) => t(key, "en", params)
+      onSelectRecordTab: () => undefined
     }));
 
     fireEvent.click(screen.getByRole("button", { name: "View profile: Volt Union" }));
@@ -105,14 +103,13 @@ describe("ChampionshipView rival marker", () => {
       ...(baseState as unknown as LeagueState),
       teams: [{ ...(baseState.teams[0] as LeagueState["teams"][number]), id: "team_1", name: unsafeName, points: 1 }]
     } satisfies LeagueState;
-    const { container } = render(createElement(ChampionshipView, {
+    const { container } = renderWithT(createElement(ChampionshipView, {
       state,
       playerTeamId: "team_1",
       recordTab: "standings",
       onReplayGrandPrix: () => undefined,
       onOpenSeasonRecap: () => undefined,
-      onSelectRecordTab: () => undefined,
-      tt: (key, params) => t(key, "en", params)
+      onSelectRecordTab: () => undefined
     }));
 
     fireEvent.click(screen.getByRole("button", { name: `View profile: ${unsafeName}` }));

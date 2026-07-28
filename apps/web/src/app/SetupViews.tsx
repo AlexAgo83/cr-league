@@ -1,4 +1,4 @@
-import type { TranslationKey } from "../i18n/index.js";
+import { useT } from "../i18n/index.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import type { FormState } from "./types.js";
 
@@ -17,15 +17,14 @@ export function SetupEntryView({
   message,
   status,
   onStartSolo,
-  onStartMultiplayer,
-  tt
+  onStartMultiplayer
 }: {
   message: string;
   status: "idle" | "loading" | "error";
   onStartSolo: () => void;
   onStartMultiplayer: () => void;
-  tt: (key: TranslationKey) => string;
 }) {
+  const tt = useT();
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="setup-entry-title">
       <div className="panel setup-main-panel setup-hero-panel setup-entry-hero-panel">
@@ -61,8 +60,7 @@ export function ProfileSetupView({
   onRequestRecoveryCode,
   onSetMode,
   onSetProfileForm,
-  onSetProfileFormError,
-  tt
+  onSetProfileFormError
 }: {
   message: string;
   mode: ProfileMode;
@@ -76,8 +74,8 @@ export function ProfileSetupView({
   onSetMode: (mode: ProfileMode) => void;
   onSetProfileForm: (form: { email: string; recoveryCode: string }) => void;
   onSetProfileFormError: (error: string | null) => void;
-  tt: (key: TranslationKey) => string;
 }) {
+  const tt = useT();
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="profile-title">
       <div className="panel setup-main-panel setup-hero-panel profile-hero-panel">
@@ -191,8 +189,7 @@ export function LeagueSetupView({
   onSetFormError,
   onSetMode,
   onSetSavedLeagueIndex,
-  onSwitchLeague,
-  tt
+  onSwitchLeague
 }: {
   form: FormState;
   formError: string | null;
@@ -209,8 +206,8 @@ export function LeagueSetupView({
   onSetMode: (mode: SetupMode) => void;
   onSetSavedLeagueIndex: (updater: (index: number) => number) => void;
   onSwitchLeague: (teamId: string) => void;
-  tt: (key: TranslationKey) => string;
 }) {
+  const tt = useT();
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-label={tt("flow_label")}>
       <div className="panel setup-main-panel setup-hero-panel league-hero-panel">

@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
+import { useT } from "../i18n/index.js";
 import type { TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, withRoute, type CityCircuit } from "../app/circuits.js";
 import { safeStorage } from "../app/appStorage.js";
-import { completedSeasonSummaries, standingsRival, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
+import { completedSeasonSummaries, standingsRival, seasonWinsByTeamId, statusLabel } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, type ChampionshipRecordTab } from "../app/viewPreferences.js";
 import { AssetImage } from "./AssetImage.js";
@@ -42,8 +43,7 @@ export function ChampionshipView({
   recordTab,
   onReplayGrandPrix,
   onOpenSeasonRecap,
-  onSelectRecordTab,
-  tt
+  onSelectRecordTab
 }: {
   state: LeagueState;
   playerTeamId: string | undefined;
@@ -51,8 +51,8 @@ export function ChampionshipView({
   onReplayGrandPrix: (grandPrix: LeagueState["grandPrixHistory"][number]) => void;
   onOpenSeasonRecap: (season: number) => void;
   onSelectRecordTab: (tab: ChampionshipRecordTab) => void;
-  tt: Translator;
 }) {
+  const tt = useT();
   const leader = state.teams[0];
   const currentGrandPrix = state.currentGrandPrix;
   const sortedHistory = [...state.grandPrixHistory].sort((left, right) => left.season - right.season || left.round - right.round);
@@ -141,7 +141,7 @@ export function ChampionshipView({
               <strong>-</strong>
             )}
             <small>
-              <RewardValue type="points" value={leader?.points ?? 0} tt={tt} />
+              <RewardValue type="points" value={leader?.points ?? 0} />
             </small>
           </div>
           <div className="league-flow-summary">
@@ -180,10 +180,10 @@ export function ChampionshipView({
                     {team.ready ? tt("team_ready") : tt("team_missing")}
                   </span>
                   <span className="standings-score standings-points">
-                    <RewardValue type="points" value={team.points} tt={tt} />
+                    <RewardValue type="points" value={team.points} />
                   </span>
                   <span className="standings-score standings-credits">
-                    <RewardValue type="credits" value={team.credits} tt={tt} />
+                    <RewardValue type="credits" value={team.credits} />
                   </span>
                 </li>
               ))}
@@ -197,7 +197,6 @@ export function ChampionshipView({
                 cars={previewCar ? [previewCar] : []}
                 carProgressRef={previewClock.carProgressRef}
                 camera={{ enabled: previewFocus && Boolean(previewCar), car: previewCar, timeRef: previewClock.timeRef, zoom: 3.4 }}
-                tt={tt}
                 showHeading={false}
                 showTraits={false}
                 overlay={
@@ -406,7 +405,7 @@ export function ChampionshipView({
           ) : null}
         </section>
       </div>
-      {profileTeam ? <TeamProfileModal state={state} team={profileTeam} playerTeamId={playerTeamId} seasonWins={seasonWins.get(profileTeam.id) ?? 0} tt={tt} onClose={() => setProfileTeamId(undefined)} /> : null}
+      {profileTeam ? <TeamProfileModal state={state} team={profileTeam} playerTeamId={playerTeamId} seasonWins={seasonWins.get(profileTeam.id) ?? 0} onClose={() => setProfileTeamId(undefined)} /> : null}
     </div>
   );
 }
@@ -416,16 +415,15 @@ function TeamProfileModal({
   team,
   playerTeamId,
   seasonWins,
-  tt,
   onClose
 }: {
   state: LeagueState;
   team: LeagueState["teams"][number];
   playerTeamId: string | undefined;
   seasonWins: number;
-  tt: Translator;
   onClose: () => void;
 }) {
+  const tt = useT();
   const stats = teamSeasonStats(state, team.id);
   const rival = standingsRival(state, team.id);
   const styleKey = teamStyleKey(state, team.id);
@@ -441,8 +439,8 @@ function TeamProfileModal({
       </div>
       <div className="team-profile-stats">
         <ProfileStat label={tt("team_profile_rank")} value={`P${stats.rank}`} />
-        <ProfileStat label={tt("payoff_points")} value={<RewardValue type="points" value={team.points} tt={tt} />} />
-        <ProfileStat label={tt("payoff_credits")} value={<RewardValue type="credits" value={team.credits} tt={tt} />} />
+        <ProfileStat label={tt("payoff_points")} value={<RewardValue type="points" value={team.points} />} />
+        <ProfileStat label={tt("payoff_credits")} value={<RewardValue type="credits" value={team.credits} />} />
         <ProfileStat label={tt("team_profile_gps")} value={stats.gpCount} />
         <ProfileStat label={tt("team_profile_podiums")} value={stats.podiums} />
         <ProfileStat label={tt("team_profile_wins")} value={seasonWins} />

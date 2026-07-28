@@ -4,7 +4,7 @@ import { lazy, Suspense, type ReactNode } from "react";
 import type { CityCircuit } from "./circuits.js";
 import type { ChronoReport, PlanRiskRead } from "./raceFlow.js";
 import type { GameView, FormState, LeagueState } from "./types.js";
-import type { CardFit, Translator } from "./helpers.js";
+import type { CardFit } from "./helpers.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import type { MapTraitImpacts } from "../features/CircuitMap.js";
 import { PlanView } from "../features/PlanView.js";
@@ -69,8 +69,7 @@ export function GameViews({
   buyCarAsset,
   setGaragePanel,
   updateLivery,
-  updateTeamName,
-  tt
+  updateTeamName
 }: {
   gameView: GameView;
   state: LeagueState;
@@ -124,7 +123,6 @@ export function GameViews({
   setGaragePanel: (panel: CardPanel) => void;
   updateLivery: (livery: LeagueState["teams"][number]["livery"], options?: { silent?: boolean }) => void;
   updateTeamName: (name: string) => void;
-  tt: Translator;
 }) {
   return (
     <>
@@ -156,7 +154,6 @@ export function GameViews({
               if (historyReplay) closeHistoryReplay();
               else setResultOpen(false);
             }}
-            tt={tt}
           />
         </Suspense>
       ) : null}
@@ -199,12 +196,11 @@ export function GameViews({
           }}
           onOpenQualifyingRun={() => openQualifyingRun({ confirm: true })}
           onOpenQualifyingHistory={openQualifyingHistory}
-          tt={tt}
         />
       ) : null}
       {gameView === "championship" ? (
         <Suspense fallback={null}>
-          <ChampionshipView state={state} playerTeamId={playerTeam?.id} recordTab={championshipRecordTab} onReplayGrandPrix={openHistoryReplay} onOpenSeasonRecap={setSeasonRecapSeason} onSelectRecordTab={setChampionshipRecordTab} tt={tt} />
+          <ChampionshipView state={state} playerTeamId={playerTeam?.id} recordTab={championshipRecordTab} onReplayGrandPrix={openHistoryReplay} onOpenSeasonRecap={setSeasonRecapSeason} onSelectRecordTab={setChampionshipRecordTab} />
         </Suspense>
       ) : null}
       {gameView === "garage" ? (
@@ -225,11 +221,10 @@ export function GameViews({
             onSelectCardPanel={setGaragePanel}
             onUpdateLivery={updateLivery}
             onUpdateTeamName={updateTeamName}
-            tt={tt}
           />
         </Suspense>
       ) : null}
-      {gameView === "changelog" ? <ChangelogView currentVersion={APP_VERSION} tt={tt} /> : null}
+      {gameView === "changelog" ? <ChangelogView currentVersion={APP_VERSION} /> : null}
     </>
   );
 }

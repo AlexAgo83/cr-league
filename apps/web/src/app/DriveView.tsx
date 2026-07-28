@@ -1,7 +1,7 @@
 import { DEMO_RACE_INPUT, RACE_SEGMENTS, type RaceDecision, type RaceResult, type RaceSegment, type TeamLivery, type Weather } from "@cr-league/shared";
+import { useT } from "../i18n/index.js";
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "./circuits.js";
-import type { Translator } from "./helpers.js";
 import { formatSeconds } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { CircuitMap, MapStatsToggle, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
@@ -50,8 +50,7 @@ export function DriveView({
   onOpenQualifyingRun,
   setPlanSubscreen,
   setGameView,
-  markCommandClicked,
-  tt
+  markCommandClicked
 }: {
   state: LeagueState;
   result: RaceResult | null | undefined;
@@ -81,8 +80,8 @@ export function DriveView({
   setPlanSubscreen: (screen: PlanSubscreen) => void;
   setGameView: (view: "drive" | "plan") => void;
   markCommandClicked: (command: CommandClick) => void;
-  tt: Translator;
 }) {
+  const tt = useT();
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
   const [weatherInfoOpen, setWeatherInfoOpen] = useState(false);
   const [mapStatsExpanded, setMapStatsExpanded] = useMapStatsExpanded();
@@ -91,7 +90,7 @@ export function DriveView({
 
   return (
     <div className="drive-grid">
-      {weatherInfoOpen ? <RaceWeatherModal result={result} forecastWeather={forecastWeather} tt={tt} onClose={() => setWeatherInfoOpen(false)} /> : null}
+      {weatherInfoOpen ? <RaceWeatherModal result={result} forecastWeather={forecastWeather} onClose={() => setWeatherInfoOpen(false)} /> : null}
       <div className="drive-content-column">
         {!result && currentQualifyingResult ? (
           <div className="qualifying-replay-inline drive-map-panel">
@@ -116,7 +115,6 @@ export function DriveView({
                       setPlanSubscreen("chrono");
                       setGameView("plan");
                     }}
-                    tt={tt}
                   />
                 }
                 titleKey="qualifying_replay_title"
@@ -130,7 +128,6 @@ export function DriveView({
                   setGameView("plan");
                 }}
                 closeLabel={tt("action_back_to_race")}
-                tt={tt}
               />
             </Suspense>
           </div>
@@ -138,7 +135,6 @@ export function DriveView({
           <CircuitMap
             className="drive-map-panel"
             circuit={currentCircuit}
-            tt={tt}
             showHeading={false}
             framed={false}
             showTraits={false}
@@ -179,10 +175,9 @@ export function DriveView({
                         setPlanSubscreen("plan");
                         setGameView("plan");
                       }}
-                      tt={tt}
                     />
-                    <MapStatsToggle expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} tt={tt} />
-                    {mapStatsExpanded ? <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} tt={tt} /> : null}
+                    <MapStatsToggle expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} />
+                    {mapStatsExpanded ? <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} /> : null}
                   </div>
                 </div>
                 <div className="map-workflow-panel">
@@ -213,7 +208,6 @@ export function DriveView({
                       setPlanSubscreen("report");
                       setGameView("plan");
                     }}
-                    tt={tt}
                   />
                 ) : qualifyingPanelOpen ? (
                   <QualifyingTimesPanel
@@ -226,7 +220,6 @@ export function DriveView({
                       setPlanSubscreen("chrono");
                       setGameView("plan");
                     }}
-                    tt={tt}
                   />
                 ) : (
                   <button className="map-qualifying-toggle" type="button" onClick={() => setQualifyingPanelOpen(true)}>
@@ -240,7 +233,6 @@ export function DriveView({
                   canRunQualifying={deskState === "prepare" && qualifyingAttemptsLeft > 0}
                   qualifyingCommandClass={`primary-command${qualifyingAttemptsUsed ? "" : " highlight-command"}`}
                   onOpenQualifyingRun={onOpenQualifyingRun}
-                  tt={tt}
                 />
               </>
             }
@@ -251,7 +243,8 @@ export function DriveView({
   );
 }
 
-function RaceWeatherModal({ result, forecastWeather, tt, onClose }: { result: RaceResult | null | undefined; forecastWeather: Weather; tt: Translator; onClose: () => void }) {
+function RaceWeatherModal({ result, forecastWeather, onClose }: { result: RaceResult | null | undefined; forecastWeather: Weather; onClose: () => void }) {
+  const tt = useT();
   const title = tt(result ? "race_weather_info_title" : "race_forecast_info_title");
   const body = tt(result ? "race_weather_info_body" : "race_forecast_info_body");
   const segments = result ? RACE_SEGMENTS : ["start", "finish"] as const;
@@ -260,7 +253,7 @@ function RaceWeatherModal({ result, forecastWeather, tt, onClose }: { result: Ra
   return (
     <Modal label={tt("race_gp_info_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <h2>{tt("race_gp_info_title")}</h2>
-      <RaceInfoDetails title={title} body={body} segments={segments} weatherForSegment={weatherForSegment} tt={tt} />
+      <RaceInfoDetails title={title} body={body} segments={segments} weatherForSegment={weatherForSegment} />
     </Modal>
   );
 }
@@ -271,8 +264,7 @@ function QualifyingTimesPanel({
   attemptsUsed,
   attemptLimit,
   replay = false,
-  onReport,
-  tt
+  onReport
 }: {
   entries: QualifyingEntry[];
   playerTeamId?: string;
@@ -280,8 +272,8 @@ function QualifyingTimesPanel({
   attemptLimit: number;
   replay?: boolean;
   onReport?: () => void;
-  tt: Translator;
 }) {
+  const tt = useT();
   const reportLabel = tt(attemptsUsed > 0 ? "action_qualifying_history" : "action_view_plan").split(" ")[0];
   const panelClassName = [
     "map-qualifying-times",
@@ -357,16 +349,15 @@ function FinalClassification({
   result,
   playerTeamId,
   teamLiveries,
-  onReport,
-  tt
+  onReport
 }: {
   state: LeagueState;
   result: RaceResult;
   playerTeamId?: string;
   teamLiveries: Record<string, TeamLivery>;
   onReport: () => void;
-  tt: Translator;
 }) {
+  const tt = useT();
   const finalTrace = result.replayTrace?.at(-1);
   const explicitPlans = new Map(state.decisions.map((decision) => [decision.teamId, decision]));
   const consumedCardByTeam = new Map(result.consumedCards.map((card) => [card.teamId, card.cardId]));
@@ -409,8 +400,7 @@ function DriveActions({
   primaryCommand,
   canRunQualifying,
   qualifyingCommandClass,
-  onOpenQualifyingRun,
-  tt
+  onOpenQualifyingRun
 }: {
   result: RaceResult | null | undefined;
   primaryCommandClass: string;
@@ -418,13 +408,13 @@ function DriveActions({
   canRunQualifying: boolean;
   qualifyingCommandClass: string;
   onOpenQualifyingRun: () => void;
-  tt: Translator;
 }) {
+  const tt = useT();
   if (result) {
     return (
       <div className="race-phase-actions map-race-actions">
         <button className={`${primaryCommandClass} map-action-button`} type="button" aria-label={primaryCommand.label} title={primaryCommand.label} onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-          <MapActionIcon label={primaryCommand.label} tt={tt} />
+          <MapActionIcon label={primaryCommand.label} />
           <span className="visually-hidden">{primaryCommand.label}</span>
         </button>
       </div>
@@ -435,19 +425,20 @@ function DriveActions({
     <div className="race-phase-actions map-race-actions">
       {canRunQualifying ? (
         <button className={`${qualifyingCommandClass} map-action-button`} type="button" aria-label={tt("action_qualifying")} title={tt("action_qualifying")} onClick={onOpenQualifyingRun}>
-          <MapActionIcon label={tt("action_qualifying")} tt={tt} />
+          <MapActionIcon label={tt("action_qualifying")} />
           <span className="visually-hidden">{tt("action_qualifying")}</span>
         </button>
       ) : null}
       <button className={`${primaryCommandClass} map-action-button`} type="button" aria-label={primaryCommand.label} title={primaryCommand.label} onClick={primaryCommand.action} disabled={primaryCommand.disabled}>
-        <MapActionIcon label={primaryCommand.label} tt={tt} />
+        <MapActionIcon label={primaryCommand.label} />
         <span className="visually-hidden">{primaryCommand.label}</span>
       </button>
     </div>
   );
 }
 
-function MapActionIcon({ label, tt }: { label: string; tt: Translator }) {
+function MapActionIcon({ label }: { label: string }) {
+  const tt = useT();
   const icon: BoardIconName =
     label === tt("action_qualifying")
       ? "new-chrono"

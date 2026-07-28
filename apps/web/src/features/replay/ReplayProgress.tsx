@@ -1,7 +1,7 @@
 import { RACE_SEGMENTS, type RaceResult } from "@cr-league/shared";
+import { useT } from "../../i18n/index.js";
 import type { RefObject } from "react";
 import type { TranslationKey } from "../../i18n/index.js";
-import type { Translator } from "../../app/helpers.js";
 import { VisualIcon } from "../VisualIcon.js";
 
 export type ReplayTimelineMarker = {
@@ -23,8 +23,7 @@ export function ReplayProgress({
   replayPercentAtRaceProgress,
   seek,
   markers,
-  directorMarkers,
-  tt
+  directorMarkers
 }: {
   progressRef: RefObject<HTMLDivElement | null>;
   rangeRef: RefObject<HTMLInputElement | null>;
@@ -37,8 +36,8 @@ export function ReplayProgress({
   seek: (time: number) => void;
   markers: ReplayTimelineMarker[];
   directorMarkers: ReplayTimelineMarker[];
-  tt: Translator;
 }) {
+  const tt = useT();
   return (
     <>
       <div className="replay-progress">

@@ -1,9 +1,10 @@
 import { type RaceDecision, type RaceResult, type TeamLivery } from "@cr-league/shared";
+import { useT } from "../i18n/index.js";
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { safeStorage } from "../app/appStorage.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
-import { eventReplayText, teamNamesFromResult, type Translator } from "../app/helpers.js";
+import { eventReplayText, teamNamesFromResult } from "../app/helpers.js";
 import type { RaceEvent } from "../app/helpers.js";
 import { CircuitMap, type MapCar, type MapTraitImpacts } from "./CircuitMap.js";
 import { PositionBadge } from "./PositionBadge.js";
@@ -124,8 +125,7 @@ export function ReplayView({
   towerReplacement,
   planDecisions,
   planDecision,
-  afterMapContent,
-  tt
+  afterMapContent
 }: {
   result: RaceResult;
   circuit: CityCircuit;
@@ -147,8 +147,8 @@ export function ReplayView({
   planDecisions?: ReplayPlanDecision[];
   planDecision?: RaceDecision;
   afterMapContent?: ReactNode;
-  tt: Translator;
 }) {
+  const tt = useT();
   const [driverFocus, setDriverFocus] = useState(() => safeStorage.get(REPLAY_FOCUS_KEY) !== "0");
   const [focusedCarId, setFocusedCarId] = useState(playerTeamId);
   const [copyDismissed, setCopyDismissed] = useState(() => safeStorage.get(DISMISSED_REPLAY_HELP_KEY) === "1");
@@ -405,7 +405,6 @@ export function ReplayView({
           <CircuitMap
             className="replay-map-panel"
             circuit={circuit}
-            tt={tt}
             cars={cars}
             carProgressRef={carProgressRef}
             weather={liveWeather}
@@ -450,7 +449,6 @@ export function ReplayView({
                 markers={markers}
                 directorMarkers={directorMarkers}
                 replayPercentAtRaceProgress={replayPercentAtRaceProgress}
-                tt={tt}
                 setPlaying={setPlaying}
                 setSpeed={setSpeed}
                 setDriverFocus={setReplayDriverFocus}

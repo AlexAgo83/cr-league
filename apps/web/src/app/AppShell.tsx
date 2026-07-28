@@ -1,6 +1,6 @@
 import type { CardId, CarAssetId, QualifyingRun } from "@cr-league/shared";
+import { useT } from "../i18n/index.js";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
-import type { TranslationKey } from "../i18n/index.js";
 import { GameTopbar } from "./AppChrome.js";
 import type { DirectiveStep } from "../features/DirectivePanel.js";
 import { DriveView } from "./DriveView.js";
@@ -91,8 +91,7 @@ export function AppShell({
   markCommandClicked,
   openQualifyingRun,
   goHome,
-  backToAdminConsole,
-  tt
+  backToAdminConsole
 }: {
   profileSession: ProfileSession | null;
   leagueState: LeagueState | null;
@@ -168,8 +167,8 @@ export function AppShell({
   openQualifyingRun: (options?: { confirm?: boolean }) => void;
   goHome: () => void;
   backToAdminConsole: () => void;
-  tt: (key: TranslationKey, params?: Record<string, string | number>) => string;
 }) {
+  const tt = useT();
   if (!leagueState || (!profileSession && !isSoloLeagueState(leagueState))) {
     return (
       <SetupGate
@@ -207,7 +206,6 @@ export function AppShell({
         createLeague={createLeague}
         joinLeague={joinLeague}
         switchLeague={switchLeague}
-        tt={tt}
       />
     );
   }
@@ -224,7 +222,7 @@ export function AppShell({
 
   return (
     <main className={isMapScreen ? "app-shell game-shell map-screen" : "app-shell game-shell"}>
-      <GameTopbar leagueName={leagueState.league.name} modeBadge={isSoloLeagueState(leagueState) ? tt("mode_badge_solo_local") : undefined} gameView={gameView} pendingMessage={pendingMessage} profileMenu={gameProfileMenu} tt={tt} onHome={goHome} onSelectView={selectGameView} />
+      <GameTopbar leagueName={leagueState.league.name} modeBadge={isSoloLeagueState(leagueState) ? tt("mode_badge_solo_local") : undefined} gameView={gameView} pendingMessage={pendingMessage} profileMenu={gameProfileMenu} onHome={goHome} onSelectView={selectGameView} />
       <h1 className="visually-hidden">{leagueState.league.name}</h1>
 
       <section className="view-container">
@@ -289,7 +287,6 @@ export function AppShell({
           setGaragePanel={setGaragePanel}
           updateLivery={updateLivery}
           updateTeamName={updateTeamName}
-          tt={tt}
         />
         {gameView === "drive" && !historyReplay && (race.currentQualifyingResult || !race.result || !resultOpen) ? (
           <DriveView
@@ -321,7 +318,6 @@ export function AppShell({
             setPlanSubscreen={setPlanSubscreen}
             setGameView={setGameView}
             markCommandClicked={markCommandClicked}
-            tt={tt}
           />
         ) : null}
       </section>

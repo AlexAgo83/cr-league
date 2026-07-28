@@ -1,9 +1,10 @@
 import { CAR_ASSET_PRICES, type CardId, type CarAssetId, type RaceResult } from "@cr-league/shared";
+import { useT } from "../i18n/index.js";
 import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { safeStorage } from "../app/appStorage.js";
-import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, sortInventoryCardsForGarage, sortShopOffersForGarage, type Translator } from "../app/helpers.js";
+import { cardFit, countCards, recommendedShopOffers, seasonWinsByTeamId, sortInventoryCardsForGarage, sortShopOffersForGarage } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { GARAGE_PANEL_KEY, type CardPanel } from "../app/viewPreferences.js";
 import { AssetImage } from "./AssetImage.js";
@@ -35,7 +36,8 @@ const CARD_NAME_ICONS: Record<CardId, BoardIconName> = {
   urban_draft: "urban-draft"
 };
 
-function CardName({ cardId, tt }: { cardId: CardId; tt: Translator }) {
+function CardName({ cardId }: { cardId: CardId }) {
+  const tt = useT();
   return (
     <span className="garage-card-name">
       <BoardIcon className="garage-card-name-icon" name={CARD_NAME_ICONS[cardId]} />
@@ -59,8 +61,7 @@ export function GarageView({
   onBuyCarAsset,
   onSelectCardPanel,
   onUpdateLivery,
-  onUpdateTeamName,
-  tt
+  onUpdateTeamName
 }: {
   state: LeagueState;
   playerTeam: LeagueState["teams"][number] | undefined;
@@ -77,8 +78,8 @@ export function GarageView({
   onSelectCardPanel: (panel: CardPanel) => void;
   onUpdateLivery: (livery: LeagueState["teams"][number]["livery"], options?: { silent?: boolean }) => void;
   onUpdateTeamName: (name: string) => void;
-  tt: Translator;
 }) {
+  const tt = useT();
   const [livery, setLivery] = useState(playerTeam?.livery ?? { primary: "#16c784", secondary: "#38bdf8" });
   const [teamName, setTeamName] = useState(playerTeam?.name ?? "");
   const [pendingBuyCardId, setPendingBuyCardId] = useState<CardId | undefined>();
@@ -178,7 +179,7 @@ export function GarageView({
           </div>
           <span className="garage-credit-summary">
             <small>{tt("payoff_credits")}</small>
-            <RewardValue type="credits" value={playerTeam.credits} tt={tt} />
+            <RewardValue type="credits" value={playerTeam.credits} />
           </span>
         </div>
         <div className="garage-car-showcase">
@@ -249,7 +250,7 @@ export function GarageView({
               <div className="garage-summary">
                 <strong>{tt("garage_last_gp")}</strong>
                 <span>
-                  <RewardValue type="credits" value={playerResult.credits} signed tt={tt} /> <RewardValue type="points" value={playerResult.points} signed tt={tt} />
+                  <RewardValue type="credits" value={playerResult.credits} signed /> <RewardValue type="points" value={playerResult.points} signed />
                 </span>
                 <span>
                   {consumedCardIds.length
@@ -268,9 +269,9 @@ export function GarageView({
                   <li key={cardId}>
                     <button className={`card-inventory-button card-art-cell${isCardLocked(cardId) ? " unavailable" : ""}`} type="button" aria-label={`${tt("field_card")}: ${tt(`card_${cardId}` as TranslationKey)}`} onClick={() => setViewingCardId(cardId)}>
                       <span className="card-copy">
-                        <CardName cardId={cardId} tt={tt} />
-                        <CardGuidance fit={cardFit(cardId, state, forecastPick)} tt={tt} />
-                        <CardStatBadges cardId={cardId} tt={tt} />
+                        <CardName cardId={cardId} />
+                        <CardGuidance fit={cardFit(cardId, state, forecastPick)} />
+                        <CardStatBadges cardId={cardId} />
                       </span>
                       <strong className="card-owned-count">x{countCards(playerTeam.cards, cardId)}</strong>
                       <CardArtImage cardId={cardId} />
@@ -298,9 +299,9 @@ export function GarageView({
               return (
                 <button key={item.cardId} className={`card-art-cell${affordable ? "" : " unaffordable"}`} type="button" aria-label={`${tt("field_card")}: ${tt(`card_${item.cardId}` as TranslationKey)}`} onClick={() => { setPendingBuyCardId(item.cardId); setBuyQuantity(1); }} disabled={loading}>
                   <span className="card-copy">
-                    <CardName cardId={item.cardId} tt={tt} />
-                    <CardGuidance fit={item.fit} tt={tt} />
-                    <CardStatBadges cardId={item.cardId} tt={tt} />
+                    <CardName cardId={item.cardId} />
+                    <CardGuidance fit={item.fit} />
+                    <CardStatBadges cardId={item.cardId} />
                   </span>
                   <strong className="card-price-badge">
                     <span aria-hidden="true" className="reward-icon">●</span>
@@ -317,15 +318,15 @@ export function GarageView({
       {pendingBuy ? (
         <Modal label={tt("garage_buy_confirm_title")} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setPendingBuyCardId(undefined)}>
           <ModalHero image="/assets/crl/garage-buy-modal.webp" kicker={tt("garage_shop")} title={tt(`card_${pendingBuy.cardId}` as TranslationKey)} />
-          <CardName cardId={pendingBuy.cardId} tt={tt} />
+          <CardName cardId={pendingBuy.cardId} />
           <p>{tt(`card_${pendingBuy.cardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
             <CardArtImage cardId={pendingBuy.cardId} />
             <strong>
-              <RewardValue type="credits" value={pendingBuy.price * buyQuantity} tt={tt} />
+              <RewardValue type="credits" value={pendingBuy.price * buyQuantity} />
             </strong>
-            <CardGuidance fit={pendingBuy.fit} tt={tt} />
-            <CardStatBadges cardId={pendingBuy.cardId} tt={tt} />
+            <CardGuidance fit={pendingBuy.fit} />
+            <CardStatBadges cardId={pendingBuy.cardId} />
           </div>
           <p className="garage-buy-confirm-note">{pendingBuyAffordable ? tt("garage_buy_confirm_body") : tt("garage_buy_missing_credits")}</p>
           <div className="modal-actions">
@@ -362,12 +363,12 @@ export function GarageView({
       {viewingCardId && viewingFit ? (
         <Modal label={tt(`card_${viewingCardId}` as TranslationKey)} className="panel modal garage-buy-modal" closeLabel={tt("action_close")} showCloseButton onClose={() => setViewingCardId(undefined)}>
           <ModalHero image="/assets/crl/garage-sell-modal.webp" kicker={tt("garage_inventory")} title={tt(`card_${viewingCardId}` as TranslationKey)} />
-          <CardName cardId={viewingCardId} tt={tt} />
+          <CardName cardId={viewingCardId} />
           <p>{tt(`card_${viewingCardId}_hint` as TranslationKey)}</p>
           <div className="garage-buy-card">
             <CardArtImage cardId={viewingCardId} />
-            <CardGuidance fit={viewingFit} tt={tt} />
-            <CardStatBadges cardId={viewingCardId} tt={tt} />
+            <CardGuidance fit={viewingFit} />
+            <CardStatBadges cardId={viewingCardId} />
           </div>
           {viewingCardLocked ? <p className="garage-buy-confirm-note">{tt("garage_sell_card_locked")}</p> : null}
           <div className="modal-actions">

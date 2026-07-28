@@ -1,20 +1,19 @@
 import type { RaceDecision } from "@cr-league/shared";
+import { useT } from "../i18n/index.js";
 import type { TranslationKey } from "../i18n/index.js";
-import type { Translator } from "../app/helpers.js";
 
 export function MapPlanPanel({
   className = "",
   decision,
   editLabel,
-  onEdit,
-  tt
+  onEdit
 }: {
   className?: string;
   decision: RaceDecision | undefined;
   editLabel?: string;
   onEdit?: () => void;
-  tt: Translator;
 }) {
+  const tt = useT();
   if (!decision) return null;
   const pitStrategy = decision.pitStrategy ?? "standard";
   const actionLabel = editLabel ?? tt("action_edit_plan");

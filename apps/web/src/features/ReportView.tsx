@@ -1,4 +1,5 @@
 import { RACE_SEGMENTS, type RaceEvent, type RaceResult } from "@cr-league/shared";
+import { useT } from "../i18n/index.js";
 import type { CityCircuit } from "../app/circuits.js";
 import type { TranslationKey } from "../i18n/index.js";
 import { displayLapForEvent, maxEventLap } from "../app/lapDisplay.js";
@@ -33,8 +34,7 @@ export function ReportView({
   playerDecision,
   onOpenReplay,
   onClose,
-  replayActionVariant = "icon",
-  tt
+  replayActionVariant = "icon"
 }: {
   state: LeagueState;
   result: RaceResult;
@@ -44,8 +44,8 @@ export function ReportView({
   onOpenReplay?: () => void;
   onClose?: () => void;
   replayActionVariant?: "icon" | "primary";
-  tt: Translator;
 }) {
+  const tt = useT();
   const names = teamNamesFromResult(result);
   const layoutTitle = tt(circuit.layoutKey);
   const raceTitle = layoutTitle.toLowerCase().startsWith(circuit.city.toLowerCase()) ? layoutTitle : `${circuit.city} ${layoutTitle}`;
@@ -124,7 +124,7 @@ export function ReportView({
                 {defaultedTeamIds.has(entry.teamId) ? <small className="report-default-plan-badge">{tt("result_default_plan_badge")}</small> : null}
               </span>
               <small>
-                <RewardValue type="points" value={entry.points} tt={tt} /> <RewardValue type="credits" value={entry.credits} tt={tt} />
+                <RewardValue type="points" value={entry.points} /> <RewardValue type="credits" value={entry.credits} />
               </small>
             </li>
           ))}
@@ -190,7 +190,7 @@ export function ReportView({
               ))}
             </ol>
           </section>
-          <OpponentConfigComparison state={state} result={result} playerTeamId={playerTeamId} title={tt("opponent_config_title_report")} tt={tt} />
+          <OpponentConfigComparison state={state} result={result} playerTeamId={playerTeamId} title={tt("opponent_config_title_report")} />
         </div>
       </div>
     </div>

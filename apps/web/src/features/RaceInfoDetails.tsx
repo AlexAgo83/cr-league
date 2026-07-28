@@ -1,6 +1,6 @@
 import { useState } from "react";
+import { useT } from "../i18n/index.js";
 import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type Weather } from "@cr-league/shared";
-import type { Translator } from "../app/helpers.js";
 import type { TranslationKey } from "../i18n/index.js";
 import { VisualIcon } from "./VisualIcon.js";
 
@@ -10,15 +10,14 @@ export function RaceInfoDetails({
   title,
   body,
   segments,
-  weatherForSegment,
-  tt
+  weatherForSegment
 }: {
   title: string;
   body: string;
   segments: readonly RaceSegment[];
   weatherForSegment: (segment: RaceSegment) => Weather;
-  tt: Translator;
 }) {
+  const tt = useT();
   const [subscreen, setSubscreen] = useState<InfoSubscreen>("weather");
   const tabs: Array<{ item: InfoSubscreen; label: string }> = [
     { item: "weather", label: title },
@@ -35,21 +34,21 @@ export function RaceInfoDetails({
           </button>
         ))}
       </div>
-      {subscreen === "weather" && <RaceWeatherSection body={body} segments={segments} weatherForSegment={weatherForSegment} tt={tt} />}
-      {subscreen === "stats" && <RaceStatsExplainer tt={tt} />}
-      {subscreen === "legend" && <RaceLegend tt={tt} />}
+      {subscreen === "weather" && <RaceWeatherSection body={body} segments={segments} weatherForSegment={weatherForSegment} />}
+      {subscreen === "stats" && <RaceStatsExplainer />}
+      {subscreen === "legend" && <RaceLegend />}
     </section>
   );
 }
 
-export function RaceInfoDetailsForResolvedWeather({ resolvedWeather, tt }: { resolvedWeather: RaceResult["resolvedWeather"]; tt: Translator }) {
+export function RaceInfoDetailsForResolvedWeather({ resolvedWeather }: { resolvedWeather: RaceResult["resolvedWeather"] }) {
+  const tt = useT();
   return (
     <RaceInfoDetails
       title={tt("race_weather_info_title")}
       body={tt("race_weather_info_body")}
       segments={RACE_SEGMENTS}
       weatherForSegment={(segment) => resolvedWeather[segment]}
-      tt={tt}
     />
   );
 }
@@ -57,14 +56,13 @@ export function RaceInfoDetailsForResolvedWeather({ resolvedWeather, tt }: { res
 function RaceWeatherSection({
   body,
   segments,
-  weatherForSegment,
-  tt
+  weatherForSegment
 }: {
   body: string;
   segments: readonly RaceSegment[];
   weatherForSegment: (segment: RaceSegment) => Weather;
-  tt: Translator;
 }) {
+  const tt = useT();
   return (
     <div className="race-weather-section" role="tabpanel">
       <p>{body}</p>
@@ -83,7 +81,8 @@ function RaceWeatherSection({
   );
 }
 
-function RaceLegend({ tt }: { tt: Translator }) {
+function RaceLegend() {
+  const tt = useT();
   return (
     <div className="race-info-subpanel" role="tabpanel">
       <p>
@@ -98,7 +97,8 @@ function RaceLegend({ tt }: { tt: Translator }) {
   );
 }
 
-function RaceStatsExplainer({ tt }: { tt: Translator }) {
+function RaceStatsExplainer() {
+  const tt = useT();
   const rows: Array<{ key: TranslationKey; hint: TranslationKey }> = [
     { key: "engine_stat_pace", hint: "engine_stat_pace_hint" },
     { key: "engine_stat_control", hint: "engine_stat_control_hint" },

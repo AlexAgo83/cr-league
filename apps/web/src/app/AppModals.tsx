@@ -1,7 +1,7 @@
 import type { AdminUser, FormState, ProfileSession } from "./types.js";
+import { useT } from "../i18n/index.js";
 import type { ReactNode } from "react";
 import { useState } from "react";
-import type { Translator } from "./helpers.js";
 import { completedSeasonSummaries } from "./helpers.js";
 import type { CityCircuit } from "./circuits.js";
 import type { LeagueState } from "./types.js";
@@ -16,15 +16,14 @@ import { BoardIcon, CountryBadge, type BoardIconName } from "../features/VisualI
 
 export function ProfileCodeModal({
   profileSession,
-  tt,
   onClose,
   onCopy
 }: {
   profileSession: ProfileSession | null;
-  tt: Translator;
   onClose: () => void;
   onCopy: () => void;
 }) {
+  const tt = useT();
   return (
     <Modal label={tt("profile_code_title")} testId="dialog-profile-code" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/profile-arrival.webp" kicker={tt("profile_kicker")} title={tt("profile_code_title")} />
@@ -59,7 +58,6 @@ export function ConfirmActionModal({
   status,
   pendingMessage,
   danger = false,
-  tt,
   onClose,
   onSecondaryAction,
   onExtraAction,
@@ -77,12 +75,12 @@ export function ConfirmActionModal({
   status: string;
   pendingMessage?: string | null;
   danger?: boolean;
-  tt: Translator;
   onClose: () => void;
   onSecondaryAction?: () => void;
   onExtraAction?: () => void;
   onConfirm: () => void;
 }) {
+  const tt = useT();
   return (
     <Modal label={label} testId={testId} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image={image} kicker={kicker} title={title} />
@@ -91,18 +89,18 @@ export function ConfirmActionModal({
         {pendingMessage !== undefined ? <PendingFeedback message={pendingMessage} /> : null}
         {secondaryActionLabel && onSecondaryAction ? (
           <button type="button" className="secondary-button modal-secondary-command" onClick={onSecondaryAction} disabled={status === "loading"}>
-            <ModalActionIcon label={secondaryActionLabel} tt={tt} />
+            <ModalActionIcon label={secondaryActionLabel} />
             {secondaryActionLabel}
           </button>
         ) : null}
         {extraActionLabel && onExtraAction ? (
           <button type="button" className="secondary-button modal-secondary-command" onClick={onExtraAction} disabled={status === "loading"}>
-            <ModalActionIcon label={extraActionLabel} tt={tt} />
+            <ModalActionIcon label={extraActionLabel} />
             {extraActionLabel}
           </button>
         ) : null}
         <button type="button" data-testid="modal-confirm" className={danger ? "danger-button modal-action-command" : "modal-action-command"} onClick={onConfirm} disabled={status === "loading"}>
-          <ModalActionIcon danger={danger} label={actionLabel} tt={tt} />
+          <ModalActionIcon danger={danger} label={actionLabel} />
           {actionLabel}
         </button>
       </div>
@@ -116,7 +114,6 @@ export function NextGrandPrixConfirmModal({
   status,
   pendingMessage,
   hasResult,
-  tt,
   onClose,
   onStartNextGrandPrix,
   onOpenReport
@@ -126,11 +123,11 @@ export function NextGrandPrixConfirmModal({
   status: string;
   pendingMessage: string | null;
   hasResult: boolean;
-  tt: Translator;
   onClose: () => void;
   onStartNextGrandPrix: () => void;
   onOpenReport: () => void;
 }) {
+  const tt = useT();
   return (
     <Modal label={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} testId="dialog-next-gp" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/next-gp-modal.webp" kicker={nextGrandPrixActionLabel} title={tt(isSeasonFinalGrandPrix ? "finish_season_confirm_title" : "next_gp_confirm_title")} />
@@ -165,7 +162,6 @@ export function ResolveGrandPrixConfirmModal({
   status,
   pendingMessage,
   startingGridExpanded,
-  tt,
   onClose,
   onShowFullGrid,
   onResolve
@@ -178,11 +174,11 @@ export function ResolveGrandPrixConfirmModal({
   status: string;
   pendingMessage: string | null;
   startingGridExpanded: boolean;
-  tt: Translator;
   onClose: () => void;
   onShowFullGrid: () => void;
   onResolve: () => void;
 }) {
+  const tt = useT();
   const displayedEntries = startingGridExpanded ? startingGridEntries : startingGridEntries.slice(0, 4);
   const hiddenCount = startingGridEntries.length - displayedEntries.length;
 
@@ -234,7 +230,8 @@ export function ResolveGrandPrixConfirmModal({
   );
 }
 
-function ModalActionIcon({ danger = false, label, tt }: { danger?: boolean; label: string; tt: Translator }) {
+function ModalActionIcon({ danger = false, label }: { danger?: boolean; label: string }) {
+  const tt = useT();
   const icon: BoardIconName = label === tt("directive_confirm_action")
     ? "send-plan"
     : label === tt("action_qualifying")
@@ -263,15 +260,14 @@ function ModalActionIcon({ danger = false, label, tt }: { danger?: boolean; labe
 
 export function AdminDeleteUserModal({
   user,
-  tt,
   onClose,
   onDelete
 }: {
   user: AdminUser;
-  tt: Translator;
   onClose: () => void;
   onDelete: (confirmation: string) => void;
 }) {
+  const tt = useT();
   const [confirmation, setConfirmation] = useState("");
   return (
     <Modal label={tt("admin_delete_user_title")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
@@ -295,14 +291,13 @@ type SeasonRecap = ReturnType<typeof completedSeasonSummaries>[number];
 export function SeasonRecapModal({
   recap,
   playerTeamId,
-  tt,
   onClose
 }: {
   recap: SeasonRecap;
   playerTeamId?: string;
-  tt: Translator;
   onClose: () => void;
 }) {
+  const tt = useT();
   const leaderPoints = recap.standings[0]?.points ?? recap.champion.points;
   return (
     <Modal label={tt("season_recap_title")} className="panel modal season-recap-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
@@ -313,7 +308,7 @@ export function SeasonRecapModal({
           <span>{tt("season_champion")}</span>
           <strong>{recap.champion.teamName}</strong>
           <small>
-            <RewardValue type="points" value={recap.champion.points} tt={tt} /> · {recap.gpCount} {tt("season_gp_count")}
+            <RewardValue type="points" value={recap.champion.points} /> · {recap.gpCount} {tt("season_gp_count")}
           </small>
         </div>
       </div>
@@ -327,7 +322,7 @@ export function SeasonRecapModal({
                 {entry.livery ? <LiveryPlate className="standings-livery-plate" livery={entry.livery} name={entry.teamName} wins={entry.teamId === recap.champion.teamId ? 1 : 0} /> : null}
                 <span>
                   {entry.teamName}
-                  <small><RewardValue type="points" value={entry.points} tt={tt} /></small>
+                  <small><RewardValue type="points" value={entry.points} /></small>
                 </span>
               </li>
             ))}
@@ -341,7 +336,7 @@ export function SeasonRecapModal({
                 <PositionBadge position={entry.position} />
                 <span>{entry.teamName}</span>
                 <small>
-                  <RewardValue type="points" value={entry.points} tt={tt} />
+                  <RewardValue type="points" value={entry.points} />
                   <em>{entry.position === 1 ? "-" : `+${leaderPoints - entry.points}`}</em>
                 </small>
               </li>
@@ -359,7 +354,6 @@ export function LeagueControlsModal({
   status,
   pendingMessage,
   hasPlayer,
-  tt,
   setForm,
   onClose,
   onUpdateSettings,
@@ -372,7 +366,6 @@ export function LeagueControlsModal({
   status: string;
   pendingMessage: string | null;
   hasPlayer: boolean;
-  tt: Translator;
   setForm: (form: FormState) => void;
   onClose: () => void;
   onUpdateSettings: () => void;
@@ -380,6 +373,7 @@ export function LeagueControlsModal({
   onForgetPlayer: () => void;
   onOpenRestartConfirm: () => void;
 }) {
+  const tt = useT();
   const submitted = new Set(leagueState.actionState.submittedTeamIds);
   const humanTeams = leagueState.teams.filter((team) => team.kind === "human");
   const pendingTeams = humanTeams.filter((team) => !submitted.has(team.id));
@@ -461,16 +455,15 @@ export function LeagueControlsModal({
 export function RestartConfirmModal({
   status,
   pendingMessage,
-  tt,
   onClose,
   onRestart
 }: {
   status: string;
   pendingMessage: string | null;
-  tt: Translator;
   onClose: () => void;
   onRestart: () => void;
 }) {
+  const tt = useT();
   return (
     <Modal label={tt("action_restart_league")} closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <ModalHero image="/assets/crl/league-arrival.webp" kicker={tt("championship_kicker")} title={tt("action_restart_league")} />

@@ -1,7 +1,7 @@
 import type { CSSProperties } from "react";
+import { useT } from "../i18n/index.js";
 import type { CardId, RaceResult } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
-import type { Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { CARD_ART } from "./CardStatBadges.js";
 import { APPROACH_ART, PIT_ART, PREPARATION_ART } from "./DirectivePanel.js";
@@ -9,7 +9,8 @@ import { PositionBadge } from "./PositionBadge.js";
 
 const chronoChoiceStyle = (src?: string) => (src ? ({ "--chrono-choice-image": `url("${src}")` } as CSSProperties) : undefined);
 
-export function OpponentConfigComparison({ state, result = state.currentGrandPrix.result, playerTeamId, title, tt }: { state: LeagueState; result?: RaceResult | null; playerTeamId?: string; title: string; tt: Translator }) {
+export function OpponentConfigComparison({ state, result = state.currentGrandPrix.result, playerTeamId, title }: { state: LeagueState; result?: RaceResult | null; playerTeamId?: string; title: string }) {
+  const tt = useT();
   const resultByTeam = new Map(result?.classification.map((entry) => [entry.teamId, entry]));
   const consumedCardByTeam = new Map(result?.consumedCards.map((entry) => [entry.teamId, entry.cardId]));
   const teamName = new Map(state.teams.map((team) => [team.id, team.name]));

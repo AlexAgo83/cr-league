@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 95
 > Confidence: 88
-> Progress: 90%
+> Progress: 95%
 > Complexity: High
 > Theme: Local solo game loop
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,7 @@
 - 2026-07-28: Local solo qualification now uses shared `runQualifying`; the API's existing qualifying generator was moved to `packages/shared` and re-exported from the API module to keep multiplayer behavior aligned.
 - 2026-07-28: Local solo GP resolution and next-GP transition now use shared engine functions, apply race rewards/cards locally, persist replay/report output, and advance round 2 without API calls.
 - 2026-07-28: Local solo garage car unlocks now use shared `buyCarAsset`, decrement credits, unlock and equip the paid car locally, and persist without API calls.
+- 2026-07-28: Multiplayer API card buy/sell, car unlock, livery, and team-name handlers now execute the shared engine and persist the resulting team deltas, reducing rule drift with Solo.
 
 # Acceptance criteria
 - AC3: Solo can start or resume with the API unavailable.

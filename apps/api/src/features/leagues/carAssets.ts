@@ -1,42 +1,44 @@
-import { CAR_ASSET_PRICES, isCarAssetId } from "@cr-league/shared";
+import { buyCarAsset as applyBuyCarAsset } from "@cr-league/shared";
 import { LeagueRuleError } from "./errors.js";
 import { lockTeamRow, runWrite } from "./persistence.js";
 import { getLeagueState } from "./leagueState.js";
+import { teamFromSharedState, toLeagueRuleError } from "./sharedRules.js";
 import { requireTeamClaim } from "./transactionHelpers.js";
 import type { BuyCarAssetInput, Db } from "./types.js";
-import { normalizeLivery, normalizeUnlockedCarAssetIds } from "./utils.js";
 
 export async function buyCarAsset(db: Db, leagueId: string, input: BuyCarAssetInput = {}) {
-  const carAssetId = input.carAssetId;
-  if (typeof carAssetId !== "string" || !isCarAssetId(carAssetId) || CAR_ASSET_PRICES[carAssetId] <= 0) {
-    throw new LeagueRuleError("Expected a valid paid car.");
-  }
-
   const state = await getLeagueState(db, leagueId);
   if (!state) return null;
 
   const team = await requireTeamClaim(db, leagueId, input);
-  const price = CAR_ASSET_PRICES[carAssetId];
-  if (team.credits < price) throw new LeagueRuleError("Not enough credits to buy this car.");
 
   await runWrite(db, async (tx) => {
     await lockTeamRow(tx, team.id);
-    const freshTeam = await tx.team.findUnique({ where: { id: team.id } });
-    const unlocked = normalizeUnlockedCarAssetIds(freshTeam?.unlockedCarAssetIds);
-    if (!freshTeam || freshTeam.leagueId !== leagueId) throw new LeagueRuleError("Team not found in this league.");
-    if (unlocked.includes(carAssetId)) throw new LeagueRuleError("This car is already unlocked.");
-    if (freshTeam.credits < price) throw new LeagueRuleError("Not enough credits to buy this car.");
+    const freshState = await getLeagueState(tx, leagueId);
+    if (!freshState) throw new LeagueRuleError("Team not found in this league.");
+    const nextState = applyShared(() => applyBuyCarAsset(freshState, { teamId: team.id, carAssetId: input.carAssetId }));
+    const freshTeam = teamFromSharedState(freshState, team.id);
+    const nextTeam = teamFromSharedState(nextState, team.id);
+    const price = freshTeam.credits - nextTeam.credits;
 
     const updated = await tx.team.updateMany({
-      where: { id: freshTeam.id, credits: { gte: price } },
+      where: { id: team.id, credits: { gte: price } },
       data: {
         credits: { decrement: price },
-        unlockedCarAssetIds: [...unlocked, carAssetId],
-        livery: { ...normalizeLivery(freshTeam.livery), carAssetId }
+        unlockedCarAssetIds: nextTeam.unlockedCarAssetIds,
+        livery: nextTeam.livery
       }
     });
     if (updated.count !== 1) throw new LeagueRuleError("Not enough credits to buy this car.");
   });
 
   return getLeagueState(db, leagueId);
+}
+
+function applyShared<T>(fn: () => T) {
+  try {
+    return fn();
+  } catch (error) {
+    return toLeagueRuleError(error);
+  }
 }

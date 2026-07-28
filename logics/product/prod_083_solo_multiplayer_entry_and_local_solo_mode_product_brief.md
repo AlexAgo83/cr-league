@@ -61,6 +61,7 @@ flowchart TD
 - 2026-07-28: Solo can now resolve the GP and start the next round locally with persisted replay/report output.
 - 2026-07-28: Solo garage can now unlock and equip paid car assets locally through the shared engine without API calls.
 - 2026-07-28: Solo hides the API-only league controls surface, keeping settings/reminders/restart in the multiplayer path.
+- 2026-07-28: Multiplayer garage/card/team identity mutations now run through the shared engine before DB persistence, aligning the common team-action rules with Solo.
 - Still required for the success signals: final no-fetch sweep, web build, and Logics closeout.
 
 # References

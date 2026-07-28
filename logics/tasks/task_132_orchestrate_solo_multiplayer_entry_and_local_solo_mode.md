@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 96
 > Confidence: 88
-> Progress: 90%
+> Progress: 95%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -38,7 +38,8 @@
 - 2026-07-28: Local GP loop slice added shared `resolveGrandPrix` and `startNextGrandPrix`, then wired Solo launch and next GP through localStorage. Focused no-fetch proof now covers Solo start, chrono, directive, GP resolution, and next GP.
 - 2026-07-28: Garage car unlocks are now handled by the shared engine and wired through localStorage in Solo, with no-fetch coverage for buying and equipping a paid car.
 - 2026-07-28: The API-only league controls modal is hidden in Solo so settings/reminders/restart commands cannot escape the local mode path.
-- Remaining implementation risk is Wave 3 closeout: final no-fetch sweep, web build, and final Logics closeout.
+- 2026-07-28: API-backed card buy/sell, car unlock, livery update, and team rename now call the shared engine before persisting DB deltas, preserving the existing API tests.
+- Remaining implementation risk is the high-coupling API GP lifecycle refactor (resolve/next GP with DB transactions, bots, and history), plus final Logics closeout.
 
 # Backlog
 - `item_347_introduce_the_solo_multiplayer_setup_hierarchy`

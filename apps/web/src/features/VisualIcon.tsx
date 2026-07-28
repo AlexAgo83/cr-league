@@ -130,20 +130,20 @@ export type VisualIconName =
   | "dot";
 
 export const VISUAL_ICON_ASSETS: Partial<Record<VisualIconName, string>> = {
-  card: "/assets/crl/icons/strategy.png",
-  distance: "/assets/crl/icons/distance.png",
-  dry: "/assets/crl/icons/dry-weather.png",
-  energy: "/assets/crl/icons/energy.png",
-  grip: "/assets/crl/icons/grip.png",
-  heavy_rain: "/assets/crl/icons/heavy-rain.png",
-  laps: "/assets/crl/icons/laps.png",
-  light_rain: "/assets/crl/icons/light-rain.png",
-  overtaking: "/assets/crl/icons/overtaking.png",
-  position: "/assets/crl/icons/position.png",
+  card: "/assets/crl/icons/strategy.webp",
+  distance: "/assets/crl/icons/distance.webp",
+  dry: "/assets/crl/icons/dry-weather.webp",
+  energy: "/assets/crl/icons/energy.webp",
+  grip: "/assets/crl/icons/grip.webp",
+  heavy_rain: "/assets/crl/icons/heavy-rain.webp",
+  laps: "/assets/crl/icons/laps.webp",
+  light_rain: "/assets/crl/icons/light-rain.webp",
+  overtaking: "/assets/crl/icons/overtaking.webp",
+  position: "/assets/crl/icons/position.webp",
 };
 
 export function BoardIcon({ className = "", name }: { className?: string; name: BoardIconName }) {
-  return <img className={`board-icon ${className}`} src={`/assets/crl/icons/${name}.png`} alt="" aria-hidden="true" />;
+  return <img className={`board-icon ${className}`} src={`/assets/crl/icons/${name}.webp`} alt="" aria-hidden="true" />;
 }
 
 export function VisualIcon({ name }: { name: VisualIconName }) {

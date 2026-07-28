@@ -6,7 +6,9 @@ import { describe, expect, it } from "vitest";
 import { BoardIcon, VISUAL_ICON_ASSETS, VisualIcon } from "./VisualIcon.js";
 
 const publicDir = join(dirname(fileURLToPath(import.meta.url)), "..", "..", "public");
-const pngSignature = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+// RIFF container magic plus the WEBP fourcc at offset 8.
+const riffMagic = [0x52, 0x49, 0x46, 0x46];
+const webpFourCC = [0x57, 0x45, 0x42, 0x50];
 const boardIconFiles = [
   "adjustable-wing",
   "admin-tools",
@@ -125,11 +127,12 @@ const boardIconFiles = [
 ];
 
 describe("VisualIcon", () => {
-  it("keeps generated board icons available as png assets", () => {
+  it("keeps generated board icons available as webp assets", () => {
     for (const iconName of boardIconFiles) {
-      const icon = readFileSync(join(publicDir, "assets", "crl", "icons", `${iconName}.png`));
+      const icon = readFileSync(join(publicDir, "assets", "crl", "icons", `${iconName}.webp`));
 
-      expect([...icon.subarray(0, pngSignature.length)]).toEqual(pngSignature);
+      expect([...icon.subarray(0, 4)]).toEqual(riffMagic);
+      expect([...icon.subarray(8, 12)]).toEqual(webpFourCC);
     }
   });
 
@@ -145,7 +148,7 @@ describe("VisualIcon", () => {
     const { container } = render(<BoardIcon name="chrono" className="command-board-icon" />);
     const icon = container.querySelector("img.board-icon");
 
-    expect(icon?.getAttribute("src")).toBe("/assets/crl/icons/chrono.png");
+    expect(icon?.getAttribute("src")).toBe("/assets/crl/icons/chrono.webp");
     expect(icon?.classList.contains("command-board-icon")).toBe(true);
   });
 

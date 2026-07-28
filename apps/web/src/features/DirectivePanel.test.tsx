@@ -96,7 +96,7 @@ describe("DirectivePanel", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "Launch GP" }));
     expect(action).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("button", { name: "Launch GP" }).querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/launch-gp.png");
+    expect(screen.getByRole("button", { name: "Launch GP" }).querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/launch-gp.webp");
 
     rerender(<DirectivePanel {...baseProps} primaryCommand={{ label: "Launch GP", action, disabled: true }} setForm={vi.fn()} onSelectStep={vi.fn()} />);
     expect(screen.getByRole("button", { name: "Launch GP" })).toHaveProperty("disabled", true);
@@ -105,13 +105,13 @@ describe("DirectivePanel", () => {
   it("shows board icons on plan choices", () => {
     const { rerender } = renderWithT(<DirectivePanel {...baseProps} step="approach" setForm={vi.fn()} onSelectStep={vi.fn()} />);
 
-    expect(screen.getByRole("button", { name: "Approach: Balanced" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/balanced-approach.png");
+    expect(screen.getByRole("button", { name: "Approach: Balanced" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/balanced-approach.webp");
 
     rerender(<DirectivePanel {...baseProps} step="preparation" setForm={vi.fn()} onSelectStep={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "Tire prep: Weather" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/weather-prep.png");
+    expect(screen.getByRole("button", { name: "Tire prep: Weather" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/weather-prep.webp");
 
     rerender(<DirectivePanel {...baseProps} step="pit" setForm={vi.fn()} onSelectStep={vi.fn()} />);
-    expect(screen.getByRole("button", { name: "Pit strategy: Standard swap" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/standard-pack.png");
+    expect(screen.getByRole("button", { name: "Pit strategy: Standard swap" }).querySelector(".plan-choice-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/standard-pack.webp");
   });
 
   it("shows card fit in the plan card cell and opens card info separately", () => {
@@ -134,7 +134,7 @@ describe("DirectivePanel", () => {
 
     const chronoButton = screen.getByRole("button", { name: "New chrono" });
     expect(chronoButton.className).toContain("highlight-command");
-    expect(chronoButton.querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/new-chrono.png");
+    expect(chronoButton.querySelector(".command-board-icon")?.getAttribute("src")).toBe("/assets/crl/icons/new-chrono.webp");
     fireEvent.click(chronoButton);
     expect(onQualifying).toHaveBeenCalledTimes(1);
     expect(screen.getByRole("button", { name: "Launch GP" }).parentElement?.className).toContain("directive-command-row");

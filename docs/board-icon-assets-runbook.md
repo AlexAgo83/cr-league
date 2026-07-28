@@ -3,6 +3,19 @@
 This runbook covers CRL board icon sheets generated as 4x4 PNG grids and imported as
 individual transparent icons under `apps/web/public/assets/crl/icons`.
 
+The committed icons are **128x128 WebP**. The extraction script below writes 256x256 PNG
+cells, so finish with a conversion pass before committing:
+
+```bash
+cd apps/web/public/assets/crl/icons
+for f in *.png; do magick "$f" -resize 128x128 -quality 88 "${f%.png}.webp"; done
+rm -f *.png
+```
+
+The icons render at 40px at most (`.plan-choice-board-icon`), so 128px covers retina with
+room to spare. The set went from 5.4 MB as 256px PNG to 688 KB this way. `VisualIcon.test.tsx`
+asserts every declared icon exists and carries a RIFF/WEBP header.
+
 ## Source Contract
 
 Put raw generated sheets in `logics/external/` with a stable name such as:
@@ -14,7 +27,7 @@ Put raw generated sheets in `logics/external/` with a stable name such as:
 - `board_icones_5.png`
 - `board_icones_6.png`
 
-These source sheets are ignored by Git. Commit only the final app PNGs.
+These source sheets are ignored by Git. Commit only the final app WebP icons.
 
 The ideal source sheet is:
 
@@ -50,7 +63,7 @@ as the extraction name list.
 ## Extraction Names
 
 Use kebab-case file names because `BoardIcon` resolves directly to
-`/assets/crl/icons/${name}.png`.
+`/assets/crl/icons/${name}.webp`.
 
 Example name list:
 

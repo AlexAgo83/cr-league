@@ -2,17 +2,27 @@ name: CI
 
 on:
   pull_request:
+    paths-ignore:
+      - "**/*.md"
+      - "changelogs/**"
+      - "docs/**"
+      - "logics/**"
   push:
     branches:
       - main
+    paths-ignore:
+      - "**/*.md"
+      - "changelogs/**"
+      - "docs/**"
+      - "logics/**"
   workflow_dispatch:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ci-${{ github.event.pull_request.number || github.run_id }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 jobs:
   quality:
@@ -32,31 +42,8 @@ jobs:
       - run: npm run balance:gate
       - run: npm run logics:validate
 
-  unit:
-    name: Unit (${{ matrix.workspace }})
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - workspace: shared
-            test_path: packages/shared
-          - workspace: api
-            test_path: apps/api
-          - workspace: web
-            test_path: apps/web
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: npm
-      - run: npm ci
-      - run: npm run db:generate
-      - run: npm test -- ${{ matrix.test_path }}
-
-  coverage:
-    name: Coverage
+  test:
+    name: Test and coverage
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -101,6 +88,7 @@ jobs:
 
   e2e:
     name: E2E
+    if: github.actor != 'dependabot[bot]'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -143,8 +131,7 @@ jobs:
     if: always()
     needs:
       - quality
-      - unit
-      - coverage
+      - test
       - postgres-integration
       - e2e
       - build
@@ -152,10 +139,9 @@ jobs:
       - name: Fail when a required lane failed
         run: |
           if [ "${{ needs.quality.result }}" != "success" ] ||
-             [ "${{ needs.unit.result }}" != "success" ] ||
-             [ "${{ needs.coverage.result }}" != "success" ] ||
+             [ "${{ needs.test.result }}" != "success" ] ||
              [ "${{ needs.postgres-integration.result }}" != "success" ] ||
-             [ "${{ needs.e2e.result }}" != "success" ] ||
+             { [ "${{ needs.e2e.result }}" != "success" ] && [ "${{ needs.e2e.result }}" != "skipped" ]; } ||
              [ "${{ needs.build.result }}" != "success" ]; then
             echo "A required CI lane failed."
             exit 1

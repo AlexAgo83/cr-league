@@ -8,7 +8,8 @@ CR League releases are promoted from immutable GitHub releases. Render auto depl
 2. Add a short changelog entry under `changelogs/`.
 3. Commit the version and changelog update.
 4. Create a tag named `v<package.json version>`, for example `v0.1.1`.
-5. Publish a GitHub Release for that tag.
+5. Wait for the `CI` workflow on that commit to succeed.
+6. Publish a GitHub Release for that tag.
 
 The release workflow rejects a tag that does not exactly match `v<package.json version>` at the release commit. The `/health` endpoint returns the same package version and commit SHA so the workflow can verify the API deployment.
 
@@ -36,7 +37,7 @@ For each release it:
 
 1. Resolves the release tag and commit SHA.
 2. Verifies all workspace package versions match the tag.
-3. Waits for the `CI` workflow to succeed on the release commit.
+3. Verifies that `CI` has already succeeded on the release commit; it does not occupy a runner while CI is still running.
 4. Creates a GitHub Deployment for the API service.
 5. Calls the Render API deploy hook.
 6. Polls production `/health` for up to 10 minutes until the returned `version` equals the release tag without the leading `v` and `commit` equals the release SHA.

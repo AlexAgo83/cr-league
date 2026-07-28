@@ -75,10 +75,9 @@ npm run build
 npm run logics:validate
 ```
 
-Release-only or pre-release checks are heavier and run when preparing a release
-or validating a risky UI/runtime change: `npm run test:coverage`,
-`npm run test:e2e`, plus the immutable release workflow described in
-`docs/release-contract.md`.
+The CI test lane runs the full suite with coverage. Release-only checks are
+the immutable release workflow described in `docs/release-contract.md`; publish
+only after CI has succeeded for the release commit.
 
 Local development and maintenance scripts are not merge gates: `npm run dev`,
 `dev:stop`, `dev:api`, `dev:web`, `clean`, and `db:*`.

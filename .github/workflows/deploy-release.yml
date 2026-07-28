@@ -77,34 +77,20 @@ jobs:
             fi
           done
 
-      - name: Wait for CI on release commit
+      - name: Verify CI on release commit
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_SHA: ${{ steps.release.outputs.sha }}
         run: |
           set -euo pipefail
 
-          deadline=$((SECONDS + 1800))
-          while [ "$SECONDS" -lt "$deadline" ]; do
-            runs="$(gh run list --workflow ci.yml --commit "$RELEASE_SHA" --json conclusion,databaseId,status,url --limit 20)"
-            success_url="$(jq -r '.[] | select(.status == "completed" and .conclusion == "success") | .url' <<< "$runs" | head -n 1)"
-            failed_url="$(jq -r '.[] | select(.status == "completed" and (.conclusion != "success" and .conclusion != "skipped")) | .url' <<< "$runs" | head -n 1)"
-
-            if [ -n "$success_url" ]; then
-              echo "CI succeeded: ${success_url}"
-              exit 0
-            fi
-            if [ -n "$failed_url" ]; then
-              echo "CI failed: ${failed_url}"
-              exit 1
-            fi
-
-            echo "Waiting for CI on ${RELEASE_SHA}..."
-            sleep 30
-          done
-
-          echo "Timed out waiting for CI on ${RELEASE_SHA}."
-          exit 1
+          runs="$(gh run list --workflow ci.yml --commit "$RELEASE_SHA" --json conclusion,status,url --limit 20)"
+          success_url="$(jq -r '.[] | select(.status == "completed" and .conclusion == "success") | .url' <<< "$runs" | head -n 1)"
+          if [ -z "$success_url" ]; then
+            echo "A successful CI run is required before publishing a release for ${RELEASE_SHA}."
+            exit 1
+          fi
+          echo "CI succeeded: ${success_url}"
 
       - name: Create deployment
         id: deployment

@@ -251,7 +251,10 @@ export function PlanView({
                   ))}
               </ol>
             ) : (
-              <p>{tt("chrono_report_history_empty")}</p>
+              <p className="empty-state-line">
+                <BoardIcon className="empty-state-inline-icon" name="no-chrono" />
+                {tt("chrono_report_history_empty")}
+              </p>
             )}
           </section>
           {!reportResult ? <OpponentConfigComparison state={state} playerTeamId={playerTeamId} title={tt("opponent_config_title_locked")} tt={tt} /> : null}

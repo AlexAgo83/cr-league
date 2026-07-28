@@ -304,6 +304,20 @@ button.command-icon-button {
   color: var(--color-ink);
 }
 
+.recap-card h3,
+.report-key-moments strong {
+  align-items: center;
+  display: flex;
+  gap: 6px;
+}
+
+.recap-card-icon,
+.report-key-moment-icon {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.22));
+  height: 28px;
+  width: 28px;
+}
+
 .report-hero {
   --color-text: #f8f3e8;
   --color-muted: rgb(248 243 232 / 0.78);

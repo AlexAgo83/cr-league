@@ -14,7 +14,7 @@ import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
-import { CountryBadge, VisualIcon, type BoardIconName } from "./VisualIcon.js";
+import { BoardIcon, CountryBadge, VisualIcon, type BoardIconName } from "./VisualIcon.js";
 import { SectionSwitch, type SectionSwitchItem } from "./SectionSwitch.js";
 
 type CircuitRegion = "europe" | "americas" | "asia" | "africa" | "oceania";
@@ -30,7 +30,7 @@ export const COUNTRY_REGION: Record<string, CircuitRegion> = {
   AU: "oceania", NZ: "oceania"
 };
 const RECORD_TAB_ICONS: Record<ChampionshipRecordTab, BoardIconName> = {
-  calendar: "circuits",
+  calendar: "circuit-preview",
   standings: "standings-board",
   palmares: "honors",
   history: "gp-history"
@@ -276,7 +276,10 @@ export function ChampionshipView({
               <span className="circuit-filter-count">{tt("circuit_filter_count", { count: filteredCircuits.length })}</span>
             </div>
             {filteredCircuits.length === 0 ? (
-              <p className="circuit-filter-empty">{tt("circuit_filter_empty")}</p>
+              <p className="circuit-filter-empty empty-state-line">
+                <BoardIcon className="empty-state-inline-icon" name="no-circuit-match" />
+                {tt("circuit_filter_empty")}
+              </p>
             ) : null}
             <ol className="circuit-calendar-list" aria-label={tt("championship_calendar")}>
               {pageCircuits.map((circuit) => {

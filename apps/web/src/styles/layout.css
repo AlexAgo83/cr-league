@@ -727,11 +727,30 @@
   gap: 1rem;
 }
 
+.admin-console-title {
+  align-items: center;
+  display: flex;
+  gap: 0.85rem;
+}
+
+.admin-console-title-icon {
+  filter: drop-shadow(0 3px 5px rgb(0 0 0 / 0.36));
+  height: 58px;
+  width: 58px;
+}
+
 .admin-token-form {
   display: grid;
   gap: 0.75rem;
   grid-template-columns: minmax(220px, 1fr) auto;
   align-items: end;
+}
+
+.admin-token-form button,
+.admin-row-actions button {
+  align-items: center;
+  display: inline-flex;
+  gap: 0.35rem;
 }
 
 .admin-token-form label,
@@ -801,6 +820,11 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+}
+
+.admin-action-icon {
+  height: 24px;
+  width: 24px;
 }
 
 .admin-inspection-banner {
@@ -1261,6 +1285,24 @@ button:disabled {
 
 .command-board-icon {
   filter: drop-shadow(0 2px 2px rgb(0 0 0 / 0.3));
+  height: 34px;
+  width: 34px;
+}
+
+.empty-state-board-icon {
+  filter: drop-shadow(0 3px 5px rgb(0 0 0 / 0.34));
+  height: 58px;
+  width: 58px;
+}
+
+.empty-state-line {
+  align-items: center;
+  display: flex;
+  gap: 0.5rem;
+}
+
+.empty-state-inline-icon {
+  filter: drop-shadow(0 2px 3px rgb(0 0 0 / 0.28));
   height: 34px;
   width: 34px;
 }

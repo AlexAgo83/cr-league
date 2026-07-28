@@ -23,10 +23,14 @@ const boardIconFiles = [
   "clean-air",
   "comeback-run",
   "cornering-balance",
+  "connect-admin",
   "copy-error",
   "credits",
+  "cleanup-test-data",
+  "circuit-preview",
   "damage-risk",
   "delete-danger",
+  "delete-user",
   "defensive-order",
   "dirty-air",
   "edit-plan",
@@ -43,7 +47,9 @@ const boardIconFiles = [
   "heavy-pack",
   "honors",
   "incident-review",
+  "inspect-league",
   "inventory",
+  "key-moment",
   "launch-boost",
   "launch-gp",
   "leaderboard-gain",
@@ -53,13 +59,21 @@ const boardIconFiles = [
   "mini-pack",
   "new-chrono",
   "empty-card-slot",
+  "empty-inventory",
   "next-gp",
   "next-action",
+  "next-lesson",
+  "no-chrono",
+  "no-circuit-match",
   "open-replay",
   "overcut",
   "overtaking",
+  "plan-worked",
   "pit-relay",
   "pit-stop",
+  "podium-result",
+  "position-gain",
+  "position-loss",
   "previous-action",
   "profile-menu",
   "prudent-approach",
@@ -73,11 +87,13 @@ const boardIconFiles = [
   "replay",
   "report",
   "reset-action",
+  "reset-recovery",
   "review-chrono",
   "review-race",
   "rival-pressure",
   "safety-car",
   "sector-pace",
+  "security-warning",
   "send-plan",
   "setup-locked",
   "shop",
@@ -99,6 +115,8 @@ const boardIconFiles = [
   "traffic",
   "undercut",
   "urban-draft",
+  "users-admin",
+  "leagues-admin",
   "weather",
   "weather-prep",
   "speed-prep",
@@ -131,10 +149,9 @@ describe("VisualIcon", () => {
     expect(icon?.classList.contains("command-board-icon")).toBe(true);
   });
 
-  it("keeps unmapped icons as inline svg", () => {
+  it("renders weather icons from the CRL asset set", () => {
     const { container } = render(<VisualIcon name="dry" />);
 
-    expect(container.querySelector("svg.visual-icon-dry")).toBeTruthy();
-    expect(container.querySelector("img")).toBeNull();
+    expect(container.querySelector("img.visual-icon-dry")?.getAttribute("src")).toBe(VISUAL_ICON_ASSETS.dry);
   });
 });

@@ -15,7 +15,15 @@ import type { LeagueState } from "../app/types.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { OpponentConfigComparison } from "./OpponentConfigComparison.js";
 import { RewardValue } from "./RewardValue.js";
-import { BoardIcon, VisualIcon } from "./VisualIcon.js";
+import { BoardIcon, VisualIcon, type BoardIconName } from "./VisualIcon.js";
+
+const RECAP_ICONS: Record<string, BoardIconName> = {
+  action: "next-lesson",
+  difference: "podium-result",
+  directive: "plan-worked",
+  lesson: "next-lesson",
+  "plan-read": "plan-worked"
+};
 
 export function ReportView({
   state,
@@ -130,7 +138,10 @@ export function ReportView({
             <div className="recap-grid">
               {recap.map((item) => (
                 <section key={item.title} className={`recap-card ${item.className}`}>
-                  <h3>{item.title}</h3>
+                  <h3>
+                    <BoardIcon className="recap-card-icon" name={RECAP_ICONS[item.className] ?? "race-report"} />
+                    {item.title}
+                  </h3>
                   <p>{item.body}</p>
                 </section>
               ))}
@@ -147,7 +158,10 @@ export function ReportView({
                       {tt("unit_lap")} {displayLapForEvent(event, rawMaxLap, circuit.laps)}
                     </span>
                     <div>
-                      <strong>{names.get(event.teamId) ?? tt("event_major")}</strong>
+                      <strong>
+                        <BoardIcon className="report-key-moment-icon" name={event.positionDelta < 0 ? "position-loss" : event.positionDelta > 0 ? "position-gain" : "key-moment"} />
+                        {names.get(event.teamId) ?? tt("event_major")}
+                      </strong>
                       <p>{eventReportText(event, names, tt)}</p>
                       <small>{describeEventImpact(event, tt)}</small>
                     </div>

@@ -1,6 +1,7 @@
 import type { Locale, TranslationKey } from "../i18n/index.js";
 import type { AdminLeague, AdminPagination, AdminUser } from "../app/types.js";
 import { PendingFeedback } from "./PendingFeedback.js";
+import { BoardIcon } from "./VisualIcon.js";
 
 export type AdminTab = "users" | "leagues";
 
@@ -64,9 +65,14 @@ export function AdminConsoleView({
   return (
     <section className="admin-console" aria-label={tt("admin_title")}>
       <div className="panel admin-console-header">
-        <span className="section-kicker">{tt("admin_kicker")}</span>
-        <h1>{tt("admin_title")}</h1>
-        <p>{tt("admin_body")}</p>
+        <div className="admin-console-title">
+          <BoardIcon className="admin-console-title-icon" name="security-warning" />
+          <div>
+            <span className="section-kicker">{tt("admin_kicker")}</span>
+            <h1>{tt("admin_title")}</h1>
+            <p>{tt("admin_body")}</p>
+          </div>
+        </div>
         <form
           className="admin-token-form"
           onSubmit={(event) => {
@@ -79,6 +85,7 @@ export function AdminConsoleView({
             <input type="password" value={adminToken} onChange={(event) => onSetAdminToken(event.target.value)} autoComplete="off" />
           </label>
           <button type="submit" disabled={loading}>
+            <BoardIcon className="command-board-icon" name="connect-admin" />
             {tt("admin_action_connect")}
           </button>
         </form>
@@ -95,9 +102,11 @@ export function AdminConsoleView({
         <PendingFeedback message={pendingMessage} />
         <div className="plan-steps plan-subscreen-tabs" role="tablist" aria-label={tt("admin_tabs_label")}>
           <button type="button" role="tab" aria-selected={adminTab === "users"} className={adminTab === "users" ? "plan-step active" : "plan-step"} onClick={() => onSetAdminTab("users")}>
+            <BoardIcon className="section-switch-icon" name="users-admin" />
             <span className="plan-step-label">{tt("admin_tab_users")}</span>
           </button>
           <button type="button" role="tab" aria-selected={adminTab === "leagues"} className={adminTab === "leagues" ? "plan-step active" : "plan-step"} onClick={() => onSetAdminTab("leagues")}>
+            <BoardIcon className="section-switch-icon" name="leagues-admin" />
             <span className="plan-step-label">{tt("admin_tab_leagues")}</span>
           </button>
         </div>
@@ -134,12 +143,15 @@ export function AdminConsoleView({
                     <td>
                       <div className="admin-row-actions">
                         <button type="button" onClick={() => onResetRecoveryCode(user)} disabled={loading}>
+                          <BoardIcon className="admin-action-icon" name="reset-recovery" />
                           {tt("admin_action_reset_recovery")}
                         </button>
                         <button type="button" className="danger-button" onClick={() => onCleanupUser(user)} disabled={loading}>
+                          <BoardIcon className="admin-action-icon" name="cleanup-test-data" />
                           {tt("admin_action_cleanup_test_data")}
                         </button>
                         <button type="button" className="danger-button" onClick={() => onDeleteUser(user)} disabled={loading}>
+                          <BoardIcon className="admin-action-icon" name="delete-user" />
                           {tt("admin_action_delete_user")}
                         </button>
                       </div>
@@ -192,9 +204,11 @@ export function AdminConsoleView({
                     <td>
                       <div className="admin-row-actions">
                         <button type="button" onClick={() => onInspectLeague(league)} disabled={loading}>
+                          <BoardIcon className="admin-action-icon" name="inspect-league" />
                           {tt("admin_action_inspect_league")}
                         </button>
                         <button type="button" className="danger-button" onClick={() => onCleanupLeague(league)} disabled={loading}>
+                          <BoardIcon className="admin-action-icon" name="cleanup-test-data" />
                           {tt("admin_action_cleanup_test_data")}
                         </button>
                       </div>

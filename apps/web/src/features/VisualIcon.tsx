@@ -16,10 +16,14 @@ export type BoardIconName =
   | "clean-air"
   | "comeback-run"
   | "cornering-balance"
+  | "connect-admin"
   | "copy-error"
   | "credits"
+  | "cleanup-test-data"
+  | "circuit-preview"
   | "damage-risk"
   | "delete-danger"
+  | "delete-user"
   | "defensive-order"
   | "dirty-air"
   | "edit-plan"
@@ -36,7 +40,9 @@ export type BoardIconName =
   | "honors"
   | "gp-history"
   | "incident-review"
+  | "inspect-league"
   | "inventory"
+  | "key-moment"
   | "launch-boost"
   | "launch-gp"
   | "leaderboard-gain"
@@ -46,11 +52,19 @@ export type BoardIconName =
   | "mini-pack"
   | "new-chrono"
   | "empty-card-slot"
+  | "empty-inventory"
   | "next-gp"
   | "next-action"
+  | "next-lesson"
+  | "no-chrono"
+  | "no-circuit-match"
   | "open-replay"
   | "overcut"
   | "overtaking"
+  | "plan-worked"
+  | "podium-result"
+  | "position-gain"
+  | "position-loss"
   | "pit-relay"
   | "pit-stop"
   | "previous-action"
@@ -66,11 +80,13 @@ export type BoardIconName =
   | "report"
   | "reliability-prep"
   | "reset-action"
+  | "reset-recovery"
   | "review-chrono"
   | "review-race"
   | "rival-pressure"
   | "safety-car"
   | "sector-pace"
+  | "security-warning"
   | "send-plan"
   | "setup-locked"
   | "shop"
@@ -92,6 +108,8 @@ export type BoardIconName =
   | "traffic"
   | "undercut"
   | "urban-draft"
+  | "users-admin"
+  | "leagues-admin"
   | "weather"
   | "weather-prep"
   | "speed-prep"
@@ -113,12 +131,15 @@ export type VisualIconName =
 
 export const VISUAL_ICON_ASSETS: Partial<Record<VisualIconName, string>> = {
   card: "/assets/crl/icons/strategy.png",
+  distance: "/assets/crl/icons/distance.png",
+  dry: "/assets/crl/icons/dry-weather.png",
   energy: "/assets/crl/icons/energy.png",
   grip: "/assets/crl/icons/grip.png",
-  heavy_rain: "/assets/crl/icons/weather.png",
-  light_rain: "/assets/crl/icons/weather.png",
+  heavy_rain: "/assets/crl/icons/heavy-rain.png",
+  laps: "/assets/crl/icons/laps.png",
+  light_rain: "/assets/crl/icons/light-rain.png",
   overtaking: "/assets/crl/icons/overtaking.png",
-  position: "/assets/crl/icons/overtaking.png",
+  position: "/assets/crl/icons/position.png",
 };
 
 export function BoardIcon({ className = "", name }: { className?: string; name: BoardIconName }) {

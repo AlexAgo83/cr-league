@@ -127,12 +127,13 @@ export function createMemoryDb(): PrismaClient {
         include
       }: {
         where: { id?: string; code?: string };
-        include?: { teams?: { orderBy?: { createdAt?: string } | Array<{ points?: string; name?: string }>; include?: { profile?: boolean } } };
+        include?: { teams?: boolean | { orderBy?: { createdAt?: string } | Array<{ points?: string; name?: string }>; include?: { profile?: boolean } } };
       }) => {
         const league = leagues.find((candidate) => candidate.id === where.id || candidate.code === where.code);
         if (!league) return null;
+        const teamsInclude = typeof include?.teams === "object" ? include.teams : undefined;
         const leagueTeams = teams.filter((team) => team.leagueId === league.id);
-        if (Array.isArray(include?.teams?.orderBy)) {
+        if (Array.isArray(teamsInclude?.orderBy)) {
           leagueTeams.sort((left, right) => right.points - left.points || left.name.localeCompare(right.name));
         } else {
           leagueTeams.sort((left, right) => left.createdAt.getTime() - right.createdAt.getTime());
@@ -149,7 +150,7 @@ export function createMemoryDb(): PrismaClient {
           ...league,
           teams: leagueTeams.map((team) => ({
             ...team,
-            profile: include?.teams && "include" in include.teams && include.teams.include?.profile ? profiles.find((profile) => profile.id === team.profileId) ?? null : undefined
+            profile: teamsInclude?.include?.profile ? profiles.find((profile) => profile.id === team.profileId) ?? null : undefined
           })),
           grandPrixes: leagueGrandPrixes
         };

@@ -1,13 +1,14 @@
 ## item_333_prototype_deterministic_race_engineer_profile_recommendations - Prototype deterministic race-engineer profile recommendations
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: Archived
 > Understanding: 90%
 > Confidence: 90%
 > Progress: 0%
 > Complexity: Medium
 > Theme: Race engineer assistant
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: Archived with a decision note explaining the defer rationale and reopen trigger; no scope change to the documented prototype.
 
 # Problem
 - An immersive assistant could help if the game remains hard to read.
@@ -42,6 +43,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- Deferred for the 0.6 beta corpus: item_329 contextual card guidance shipped and is expected to make the Plan screen readable enough without a race-engineer assistant. Reopen trigger: beta observation shows the Plan screen is still hard to read after card guidance, or players ask for profile-level guidance beyond card-level tips.
 
 # Links
 - Product brief(s): `prod_081_0_6_beta_season_lifecycle_and_league_management_product_brief`

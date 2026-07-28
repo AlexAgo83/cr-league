@@ -1,5 +1,6 @@
 import {
   CAR_ASSET_PRICES,
+  CARD_PRICES,
   DEMO_RACE_INPUT,
   circuitIdentityForRound,
   circuitSeasonSeed,
@@ -24,7 +25,8 @@ import {
   MAX_QUALIFYING_ATTEMPTS,
   STARTER_CARDS,
   STARTING_CREDITS,
-  TEAM_NAME_LIMIT
+  TEAM_NAME_LIMIT,
+  variableShopCardIds
 } from "./constants.js";
 import { buyBotCards, buyBotCars, defaultBotDecision, fillLeagueWithBots, normalizePitStrategy } from "./botLifecycle.js";
 import { LeagueRuleError } from "./errors.js";
@@ -61,7 +63,8 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
           maxPlayers,
           fillWithBots: input.fillWithBots ?? true,
           qualifyingAttemptLimit,
-          maxGrandPrixPerSeason
+          maxGrandPrixPerSeason,
+          variableShop: input.variableShop ?? false
         }
       });
       const openingRaceInput = raceInputFromCircuit(circuitIdentityForRound(1, circuitSeasonSeed(league.id, 1)));
@@ -95,7 +98,8 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
           seed: `${DEMO_RACE_INPUT.seed}-${league.id}`,
           primaryTrait: openingRaceInput.primaryTrait,
           secondaryTrait: openingRaceInput.secondaryTrait,
-          forecast: openingRaceInput.forecast
+          forecast: openingRaceInput.forecast,
+          shopCardIds: league.variableShop ? variableShopCardIds(league.id, 1, 1) : []
         }
       });
 
@@ -212,6 +216,7 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
       fillWithBots: league.fillWithBots,
       qualifyingAttemptLimit: league.qualifyingAttemptLimit,
       maxGrandPrixPerSeason: league.maxGrandPrixPerSeason,
+      variableShop: league.variableShop,
       preparationDeadlineAt: league.preparationDeadlineAt?.toISOString() ?? null,
       reminderSentAt: league.reminderSentAt?.toISOString() ?? null,
       reminderSentBy: league.reminderSentBy,
@@ -252,7 +257,9 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
       unlockedCarAssetIds: normalizeUnlockedCarAssetIds(team.unlockedCarAssetIds),
       ready: grandPrix.decisions.some((decision) => decision.teamId === team.id)
     })),
-    cardShop: CARD_SHOP,
+    cardShop: league.variableShop
+      ? normalizeCards(grandPrix.shopCardIds).map((cardId) => ({ cardId, price: CARD_PRICES[cardId] }))
+      : CARD_SHOP,
     actionState: buildActionState(
       league.teams.map((team) => ({ id: team.id, kind: team.kind })),
       grandPrix.status,
@@ -432,7 +439,8 @@ export async function startNextGrandPrix(db: Db, leagueId: string, input: AdminP
           seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-s${nextSeason}-r${nextRound}`,
           primaryTrait: nextRaceInput.primaryTrait,
           secondaryTrait: nextRaceInput.secondaryTrait,
-          forecast: nextRaceInput.forecast
+          forecast: nextRaceInput.forecast,
+          shopCardIds: state.league.variableShop ? variableShopCardIds(leagueId, nextSeason, nextRound) : []
         }
       });
     } catch (error) {
@@ -554,7 +562,8 @@ export async function restartLeague(db: Db, leagueId: string, input: AdminProofI
         seed: `${DEMO_RACE_INPUT.seed}-${leagueId}-restart`,
         primaryTrait: DEMO_RACE_INPUT.primaryTrait,
         secondaryTrait: DEMO_RACE_INPUT.secondaryTrait,
-        forecast: DEMO_RACE_INPUT.forecast
+        forecast: DEMO_RACE_INPUT.forecast,
+        shopCardIds: state.league.variableShop ? variableShopCardIds(leagueId, 1, 1) : []
       }
     });
   });

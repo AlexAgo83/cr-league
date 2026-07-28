@@ -12,6 +12,7 @@ export type FormState = {
   teamName: string;
   maxPlayers: number | "";
   fillWithBots: boolean;
+  variableShop: boolean;
   qualifyingAttemptLimit: number | "";
   maxGrandPrixPerSeason: number | "";
   cadence: string;

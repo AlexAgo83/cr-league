@@ -222,6 +222,7 @@ export function createInitialForm(locale: Locale): FormState {
     teamName: randomTeamName() || t("default_team_name", locale),
     maxPlayers: 8,
     fillWithBots: true,
+    variableShop: false,
     qualifyingAttemptLimit: 3,
     maxGrandPrixPerSeason: 6,
     cadence: "manual",

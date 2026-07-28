@@ -146,6 +146,7 @@
   "field_team": "Écurie",
   "field_max_players": "Joueurs max",
   "field_fill_with_bots": "Ajouter des équipes auto",
+  "field_variable_shop": "Boutique variable à chaque GP (change les cartes disponibles avant chaque course)",
   "field_qualifying_attempts": "Essais chrono",
   "field_gp_per_season": "GP par saison",
   "season_preset_standard": "Standard - 6 GP",

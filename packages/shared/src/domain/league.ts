@@ -12,6 +12,7 @@ export type LeagueState = {
     fillWithBots: boolean;
     qualifyingAttemptLimit: number;
     maxGrandPrixPerSeason: number;
+    variableShop: boolean;
     preparationDeadlineAt: string | null;
     reminderSentAt: string | null;
     reminderSentBy: string | null;

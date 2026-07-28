@@ -75,7 +75,8 @@ export function createRaceActions({
             maxPlayers: clampNumber(Number(form.maxPlayers), 2, 16),
             fillWithBots: form.fillWithBots,
             qualifyingAttemptLimit: clampNumber(Number(form.qualifyingAttemptLimit), 1, 5),
-            maxGrandPrixPerSeason: clampNumber(Number(form.maxGrandPrixPerSeason), 1, 18)
+            maxGrandPrixPerSeason: clampNumber(Number(form.maxGrandPrixPerSeason), 1, 18),
+            variableShop: form.variableShop
           })
         });
         rememberPlayer(state);

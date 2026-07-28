@@ -135,6 +135,40 @@ describe("api app", () => {
     expect(signatures.size).toBeGreaterThan(1);
   });
 
+  it("keeps the fixed shop for default leagues and a frozen deterministic 6-card shop for variable-shop leagues", async () => {
+    const fixedApp = await createTestApp(createMemoryDb());
+    const fixedCreate = await fixedApp.inject({ method: "POST", url: "/leagues", payload: { name: "Fixed Shop League", teamName: "Volt Union" } });
+    const fixedCreated = fixedCreate.json();
+    expect(fixedCreated.league.variableShop).toBe(false);
+    expect(fixedCreated.cardShop.length).toBeGreaterThan(6);
+    await fixedApp.close();
+
+    const app = await createTestApp(createMemoryDb());
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Variable Shop League", teamName: "Volt Union", variableShop: true }
+    });
+    const created = createResponse.json();
+    const leagueId = created.league.id;
+    const claim = created.player;
+    expect(created.league.variableShop).toBe(true);
+    expect(created.cardShop).toHaveLength(6);
+    expect(new Set(created.cardShop.map((entry: { cardId: string }) => entry.cardId)).size).toBe(6);
+
+    const rereadResponse = await app.inject({ method: "GET", url: `/leagues/${leagueId}` });
+    expect(rereadResponse.json().cardShop).toEqual(created.cardShop);
+
+    await app.inject({ method: "POST", url: `/leagues/${leagueId}/decisions`, payload: { teamId: claim.teamId, claimCode: claim.claimCode, approach: "balanced", preparation: "speed" } });
+    await app.inject({ method: "POST", url: `/leagues/${leagueId}/resolve`, payload: { teamId: claim.teamId, claimCode: claim.claimCode } });
+    const nextResponse = await app.inject({ method: "POST", url: `/leagues/${leagueId}/next-grand-prix`, payload: { teamId: claim.teamId, claimCode: claim.claimCode } });
+    const next = nextResponse.json();
+    expect(next.cardShop).toHaveLength(6);
+    expect(next.cardShop).not.toEqual(created.cardShop);
+
+    await app.close();
+  });
+
   it("creates, updates, and resolves a persisted demo league", async () => {
     const app = await createTestApp(createMemoryDb());
 

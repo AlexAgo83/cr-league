@@ -146,6 +146,7 @@
   "field_team": "Team",
   "field_max_players": "Max players",
   "field_fill_with_bots": "Fill with bots at launch",
+  "field_variable_shop": "Variable shop every GP (changes available cards before each race)",
   "field_qualifying_attempts": "Chrono attempts",
   "field_gp_per_season": "GP per season",
   "season_preset_standard": "Standard - 6 GP",

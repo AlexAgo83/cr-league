@@ -14,6 +14,7 @@ const baseForm: FormState = {
   teamName: "",
   maxPlayers: 4,
   fillWithBots: true,
+  variableShop: false,
   maxGrandPrixPerSeason: 3,
   qualifyingAttemptLimit: 3,
   cadence: "",

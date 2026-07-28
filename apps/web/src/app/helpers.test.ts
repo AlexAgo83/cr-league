@@ -116,6 +116,7 @@ function stateWithHistory(grandPrixHistory: LeagueState["grandPrixHistory"]): Le
       cadence: "manual",
       maxPlayers: 2,
       fillWithBots: true,
+      variableShop: false,
       qualifyingAttemptLimit: 3,
       maxGrandPrixPerSeason: 2,
       preparationDeadlineAt: null,

@@ -20,6 +20,7 @@ export type CreateLeagueInput = {
   fillWithBots?: boolean;
   qualifyingAttemptLimit?: number;
   maxGrandPrixPerSeason?: number;
+  variableShop?: boolean;
 };
 
 export type JoinLeagueInput = {

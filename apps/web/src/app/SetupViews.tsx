@@ -275,6 +275,10 @@ export function LeagueSetupView({
                     <input type="checkbox" checked={form.fillWithBots} onChange={(event) => onSetForm({ ...form, fillWithBots: event.target.checked })} />
                     {tt("field_fill_with_bots")}
                   </label>
+                  <label className="checkbox-field">
+                    <input type="checkbox" checked={form.variableShop} onChange={(event) => onSetForm({ ...form, variableShop: event.target.checked })} />
+                    {tt("field_variable_shop")}
+                  </label>
                 </>
               ) : null}
             </div>

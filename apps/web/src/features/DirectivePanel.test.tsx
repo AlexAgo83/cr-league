@@ -11,6 +11,7 @@ const form: FormState = {
   teamName: "",
   maxPlayers: "",
   fillWithBots: true,
+  variableShop: false,
   qualifyingAttemptLimit: "",
   maxGrandPrixPerSeason: "",
   cadence: "manual",

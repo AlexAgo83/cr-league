@@ -18,6 +18,7 @@ export const baseState = {
     cadence: "manual",
     maxPlayers: 8,
     fillWithBots: true,
+    variableShop: false,
     qualifyingAttemptLimit: 3,
     maxGrandPrixPerSeason: 6,
     preparationDeadlineAt: null,

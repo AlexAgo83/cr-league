@@ -11,6 +11,7 @@ export function createMemoryDb(): PrismaClient {
     fillWithBots: boolean;
     qualifyingAttemptLimit: number;
     maxGrandPrixPerSeason: number;
+    variableShop: boolean;
     ownerTeamId: string | null;
     preparationDeadlineAt: Date | null;
     reminderSentAt: Date | null;
@@ -54,6 +55,7 @@ export function createMemoryDb(): PrismaClient {
     primaryTrait: string;
     secondaryTrait: string;
     forecast: unknown;
+    shopCardIds: unknown;
     qualifyingRuns: unknown;
     status: string;
     result: unknown;
@@ -94,7 +96,7 @@ export function createMemoryDb(): PrismaClient {
       }: {
         data: Pick<LeagueRow, "name" | "code"> &
           Partial<
-            Pick<LeagueRow, "cadence" | "maxPlayers" | "fillWithBots" | "qualifyingAttemptLimit" | "maxGrandPrixPerSeason" | "preparationDeadlineAt">
+            Pick<LeagueRow, "cadence" | "maxPlayers" | "fillWithBots" | "qualifyingAttemptLimit" | "maxGrandPrixPerSeason" | "variableShop" | "preparationDeadlineAt">
           >;
       }) => {
         const league = {
@@ -105,6 +107,7 @@ export function createMemoryDb(): PrismaClient {
           fillWithBots: true,
           qualifyingAttemptLimit: 3,
           maxGrandPrixPerSeason: 6,
+          variableShop: false,
           ownerTeamId: null,
           preparationDeadlineAt: null,
           reminderSentAt: null,
@@ -387,8 +390,8 @@ export function createMemoryDb(): PrismaClient {
       }
     },
     grandPrix: {
-      create: async ({ data }: { data: Omit<GrandPrixRow, "id" | "qualifyingRuns" | "status" | "result"> }) => {
-        const grandPrix = { id: id("gp"), qualifyingRuns: [], status: "briefing", result: null, ...data };
+      create: async ({ data }: { data: Omit<GrandPrixRow, "id" | "shopCardIds" | "qualifyingRuns" | "status" | "result"> & Partial<Pick<GrandPrixRow, "shopCardIds">> }) => {
+        const grandPrix = { id: id("gp"), shopCardIds: [], qualifyingRuns: [], status: "briefing", result: null, ...data };
         grandPrixes.push(grandPrix);
         return grandPrix;
       },

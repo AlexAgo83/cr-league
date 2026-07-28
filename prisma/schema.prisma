@@ -17,6 +17,7 @@ model League {
   fillWithBots           Boolean   @default(true)
   qualifyingAttemptLimit Int       @default(3)
   maxGrandPrixPerSeason  Int       @default(6)
+  variableShop           Boolean   @default(false)
   ownerTeamId            String?
   preparationDeadlineAt  DateTime?
   reminderSentAt         DateTime?
@@ -84,6 +85,7 @@ model GrandPrix {
   primaryTrait   String
   secondaryTrait String
   forecast       Json
+  shopCardIds    Json     @default("[]")
   qualifyingRuns Json     @default("[]")
   status         String   @default("briefing")
   result         Json?

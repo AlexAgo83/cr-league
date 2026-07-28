@@ -1,10 +1,10 @@
 ## item_331_add_an_optional_variable_shop_mode_at_league_creation - Add an optional variable shop mode at league creation
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 95
-> Progress: 0%
+> Progress: 100
 > Complexity: Medium
 > Theme: Shop variety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

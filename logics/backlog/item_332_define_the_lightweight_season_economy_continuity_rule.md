@@ -1,13 +1,14 @@
 ## item_332_define_the_lightweight_season_economy_continuity_rule - Define the lightweight season economy continuity rule
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: Archived
 > Understanding: 94
 > Confidence: 94
 > Progress: 0%
 > Complexity: Medium
 > Theme: Season economy
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: Archived with a decision note explaining the defer rationale and reopen trigger; no scope change to the documented rule itself.
 
 # Problem
 - Repeated seasons need some continuity, but too much carry-over can snowball leaders.
@@ -41,6 +42,7 @@
 # Decision framing
 - Product framing: Not needed
 - Architecture framing: Not needed
+- Deferred for the 0.6 beta corpus: baseline rollover (preserve players, palmares, credits, garage cards) already covered by item_324. The capped credit carry-over variant stays out of the first pass per the item's own owner decision. Reopen trigger: beta evidence shows a snowball problem that palmares/cosmetic recognition alone does not solve.
 
 # Links
 - Product brief(s): `prod_081_0_6_beta_season_lifecycle_and_league_management_product_brief`

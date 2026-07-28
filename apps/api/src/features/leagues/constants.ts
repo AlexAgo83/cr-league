@@ -1,9 +1,20 @@
-import { CARD_DEFINITIONS, CARD_PRICES, TEAM_NAME_SUGGESTIONS, type CardId, type TeamLivery } from "@cr-league/shared";
+import { CARD_DEFINITIONS, CARD_PRICES, TEAM_NAME_SUGGESTIONS, createPrng, type CardId, type TeamLivery } from "@cr-league/shared";
 
 export const LEAGUE_CADENCES = ["manual", "fast", "weekly"] as const;
 export const STARTING_CREDITS = 180;
 export const STARTER_CARDS: CardId[] = [];
+export const VARIABLE_SHOP_SIZE = 6;
 export const CARD_SHOP = Object.keys(CARD_DEFINITIONS).map((cardId) => ({ cardId: cardId as CardId, price: CARD_PRICES[cardId as CardId] }));
+
+export function variableShopCardIds(leagueId: string, season: number, round: number): CardId[] {
+  const prng = createPrng(`${leagueId}:season:${season}:round:${round}:shop`);
+  const cardIds = Object.keys(CARD_DEFINITIONS) as CardId[];
+  for (let index = cardIds.length - 1; index > 0; index -= 1) {
+    const swapIndex = Math.floor(prng.next() * (index + 1));
+    [cardIds[index], cardIds[swapIndex]] = [cardIds[swapIndex]!, cardIds[index]!];
+  }
+  return cardIds.slice(0, VARIABLE_SHOP_SIZE);
+}
 export const DEFAULT_LIVERY: TeamLivery = { primary: "#16c784", secondary: "#38bdf8" };
 export const PRIMARY_LIVERY_COLORS = ["#020617", "#050816", "#09090b", "#0b1020", "#111827", "#0f172a", "#120712", "#07120f"] as const;
 export const SECONDARY_LIVERY_COLORS = ["#00f5ff", "#39ff14", "#ff2bd6", "#ffea00", "#ff6b00", "#7c3cff", "#00ff9d", "#ff1744"] as const;

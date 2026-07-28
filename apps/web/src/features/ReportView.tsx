@@ -86,7 +86,7 @@ export function ReportView({
 
   return (
     <div className="view-stack report-view">
-      <section className="panel report-hero">
+      <section className="panel report-hero" data-outcome={verdict.outcome}>
         <header className={`chrono-report-header report-headline${hasPrimaryReplayAction ? "" : " report-headline-full"}`}>
           <div>
             <span className="section-kicker">{tt("result_race_report")}</span>

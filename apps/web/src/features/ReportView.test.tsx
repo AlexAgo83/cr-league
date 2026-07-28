@@ -59,6 +59,8 @@ describe("ReportView", () => {
     expect(recap.textContent).toContain("Rain Grip");
     expect(container.querySelector(".recap-card.action")?.textContent).toContain("Rain Grip was your clearest lever");
     expect(recap.compareDocumentPosition(phases) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    // The hero art is picked from this attribute, so a P1 finish must not be flagged as a loss.
+    expect(container.querySelector(".report-hero")?.getAttribute("data-outcome")).toBe("podium");
 
     const tokyo = renderWithT(
       <ReportView
@@ -262,6 +264,8 @@ describe("ReportView", () => {
     const action = container.querySelector(".recap-card.action")!;
     expect(action.textContent).toContain("Launch Boost did not trigger");
     expect(action.textContent).toContain("Review Launch Boost");
+    // P4 after losing two places must not inherit the celebration art.
+    expect(container.querySelector(".report-hero")?.getAttribute("data-outcome")).toBe("loss");
   });
 
   it("uses an existing rival decision when explaining the next action", () => {

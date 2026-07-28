@@ -32,7 +32,7 @@ import { requireAdminClaim } from "./transactionHelpers.js";
 import { getLeagueState } from "./leagueState.js";
 import { withPlayer } from "./visibility.js";
 import type { AdminProofInput, CreateLeagueInput, Db, JoinLeagueInput, LeagueState, RejoinLeagueInput } from "./types.js";
-import { clampInteger, createClaimCode, createLeagueCode, createSessionCredential, ensureProfileOwnership, hashRecoveryCode, liveryKey, normalizeDisplayName, normalizeLivery, normalizeQualifyingRuns, normalizeUnlockedCarAssetIds, randomLivery, uniqueBotLivery, verifyRecoveryCode } from "./utils.js";
+import { clampInteger, createClaimCode, createLeagueCode, createSessionCredential, ensureProfileOwnership, hashRecoveryCode, liveryKey, normalizeDisplayName, normalizeLivery, normalizeQualifyingRuns, normalizeUnlockedCarAssetIds, randomLivery, uniqueBotLivery, verifyRecoveryCode, verifyTeamClaimCode } from "./utils.js";
 
 export { defaultBotDecision, fillLeagueWithBots, normalizePitStrategy };
 
@@ -73,7 +73,8 @@ export async function createDemoLeague(db: Db, input: CreateLeagueInput = {}) {
           profileId: input.profileId,
           name: playerTeamName || DEMO_RACE_INPUT.participants[0]?.teamName || "Player Team",
           kind: "human",
-          claimCode: playerClaimCode,
+          claimCode: null,
+          claimCodeHash: await hashRecoveryCode(playerClaimCode),
           sessionClaimCodeHash: await hashRecoveryCode(sessionClaimCode),
           points: 0,
           credits: STARTING_CREDITS,
@@ -146,7 +147,8 @@ export async function joinLeagueByCode(db: Db, input: JoinLeagueInput = {}) {
           profileId: input.profileId,
           name: teamName,
           kind: "human",
-          claimCode: createClaimCode(),
+          claimCode: null,
+          claimCodeHash: await hashRecoveryCode(createClaimCode()),
           sessionClaimCodeHash: await hashRecoveryCode(createSessionCredential()),
           points: 0,
           credits: STARTING_CREDITS,
@@ -168,9 +170,8 @@ export async function rejoinLeague(db: Db, input: RejoinLeagueInput = {}) {
     where: { id: input.teamId },
     include: { league: true }
   });
-  // ponytail: plain !== is fine — claim codes are 40-bit random, network timing attack is impractical; use timingSafeEqual only if codes ever get shorter/predictable.
   const sessionValid = team?.sessionClaimCodeHash && input.claimCode ? await verifyRecoveryCode(input.claimCode, team.sessionClaimCodeHash) : false;
-  if (!team || (team.claimCode !== input.claimCode && !sessionValid)) return null;
+  if (!team || !(sessionValid || (await verifyTeamClaimCode(db, team, input.claimCode)))) return null;
 
   const state = await getLeagueState(db, team.leagueId, { includeInviteCode: true });
   return state ? withPlayer(state, team.id, input.claimCode ?? "") : null;

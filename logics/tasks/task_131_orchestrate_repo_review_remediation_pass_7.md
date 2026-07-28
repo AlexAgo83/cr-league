@@ -4,7 +4,7 @@
 > Status: In progress
 > Understanding: 90%
 > Confidence: 85%
-> Progress: 58%
+> Progress: 67%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -20,7 +20,7 @@
 - [ ] 3. Land the 0.6 E2E coverage slice and the coverage-threshold-margin slice in parallel with the above; they are independent of the testMemoryDb and DB-index work.
 - [x] 4. Land the standings/rival code-move, the admin/store.ts rename, and the lifecycle.ts split as a code-organization batch — each is independent of the others but all three touch widely-imported modules, so run the full test suite after each one individually rather than batching all three changes before testing. (`item_340`, `item_341`, `item_342` Done, one commit each, full suite run after each.)
 - [x] 5. Land the admin rate-limiting slice (quick, independent). (`item_343` Done: `ADMIN_RATE_LIMIT` 20/min on all six admin routes, reads included; also throttles token guessing since the limit runs on `onRequest`.)
-- [ ] 6. Land the claimCode hashing slice last among the required work — it is the highest-effort and highest-risk slice (schema migration, backward compatibility) and benefits from every other slice's test-suite hardening already being in place.
+- [x] 6. Land the claimCode hashing slice last among the required work — it is the highest-effort and highest-risk slice (schema migration, backward compatibility) and benefits from every other slice's test-suite hardening already being in place. (`item_344` Done: `claimCodeHash` column, single `verifyTeamClaimCode` path, legacy accept-once-then-upgrade, validated on a real Postgres via the integration lane.)
 - [ ] 7. Land the E2E data-testid slice, and evaluate (and land only if justified) the CI-retries slice.
 - [ ] 8. Run npm run typecheck, npm test, npm run build, npm run lint, npm run test:e2e, and npm run logics:validate after the full set of slices; record proof at closeout.
 - [ ] 9. Keep commits scoped per slice (or per small related group of slices) rather than one giant commit, so each change is independently reviewable and revertible.

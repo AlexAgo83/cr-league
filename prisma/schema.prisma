@@ -55,7 +55,10 @@ model Team {
   profileId            String?
   name                 String
   kind                 String   @default("human")
+  // Legacy plaintext claim code, kept only so teams created before the hashing migration can claim
+  // once; verifyTeamClaimCode() nulls it and writes claimCodeHash on that first successful claim.
   claimCode            String?  @unique
+  claimCodeHash        String?
   sessionClaimCodeHash String?
   credits              Int      @default(0)
   points               Int      @default(0)

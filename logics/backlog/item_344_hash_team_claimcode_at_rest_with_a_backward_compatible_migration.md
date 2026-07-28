@@ -1,10 +1,10 @@
 ## item_344_hash_team_claimcode_at_rest_with_a_backward_compatible_migration - Hash team claimCode at rest with a backward-compatible migration
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: High
 > Theme: Security hardening
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -57,3 +57,12 @@
 # Priority
 - Priority: High
 - Rationale: v0.6.0 is already deployed to production, so plaintext claimCode rows already exist in the live database — this is a present exposure, not a future one.
+
+# Notes
+- Done: `Team.claimCodeHash` added (migration `20260728170000_hash_team_claim_code`, one nullable column, no backfill). Team creation and league join now store `claimCode: null` plus a scrypt hash of the generated code; the plaintext is never written and was already never returned (both flows hand the client a session credential instead), so no response shape changed.
+- New `verifyTeamClaimCode(db, team, code)` in `utils.ts` is the single verification path, used by `requireTeamClaim` and `rejoinLeague`. It checks `claimCodeHash` via the existing timing-safe `verifyRecoveryCode`; the plaintext `!==` comparisons and their two `ponytail:` comments are gone.
+- Legacy upgrade: a pre-migration row (plaintext `claimCode`, `claimCodeHash` NULL) is matched once via `verifyRecoveryCode(code, hashLegacyRecoveryCode(team.claimCode))` — timing-safe, same helper as the recovery-code legacy path — then the row is rewritten to `claimCode: null` + hash. A wrong code leaves the row untouched. `claimCode` stays `@unique` and nullable; Postgres allows many NULLs, so nulling upgraded rows is safe.
+- Production-shaped validation: two tests were added to the **Postgres integration lane** (`app.postgres.test.ts`), not just the in-memory fake — they run `prisma migrate deploy` against a real Postgres, force a team row into the pre-migration shape, and assert wrong-code rejection without upgrade, one successful legacy claim, the row upgrade to `scrypt$...`, and continued access afterwards. Run: `POSTGRES_INTEGRATION=1 DATABASE_URL=... npx vitest run apps/api/src/app.postgres.test.ts` — 9 passed.
+- Unit coverage in `apps/api/src/features/leagues/teamClaim.test.ts`: fresh team stores hash only, hashed verify accept/reject, legacy accept-then-upgrade, legacy wrong-code no-upgrade, legacy rejoin through the real endpoint.
+- Operational note: existing production rows keep their plaintext value until each team claims once. There is no forced backfill, by design — the plaintext is the only thing that can produce the hash. Rows that never claim again stay plaintext; if that residue needs clearing, it is a separate decision (invalidate and re-issue), not part of this slice.
+- Typecheck, lint, full suite (385 passed, 7 skipped), and the Postgres lane all green.

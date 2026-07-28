@@ -216,6 +216,71 @@ run("api app postgres integration", () => {
     expect(after.currentGrandPrix).toMatchObject({ id: before.currentGrandPrix.id, season: 1, round: 2 });
     expect(after.grandPrixHistory.map((grandPrix: { id: string }) => grandPrix.id)).toEqual(before.grandPrixHistory.map((grandPrix: { id: string }) => grandPrix.id));
   });
+
+  // A team row shaped like production before the claim-code hashing migration: plaintext claimCode,
+  // claimCodeHash still NULL. Runs against the real migrated schema, not the in-memory fake.
+  it("upgrades a pre-migration plaintext claim code on the first successful claim", async () => {
+    const app = await createTestApp(prisma);
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
+    });
+    const created = createResponse.json();
+    await prisma.team.update({
+      where: { id: created.player.teamId },
+      data: { claimCode: "LEGACYCLAIM", claimCodeHash: null, sessionClaimCodeHash: null }
+    });
+
+    const wrongResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/rejoin",
+      payload: { teamId: created.player.teamId, claimCode: "NOTTHECODE" }
+    });
+    const stillPlaintext = await prisma.team.findUnique({ where: { id: created.player.teamId } });
+    const legacyResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/rejoin",
+      payload: { teamId: created.player.teamId, claimCode: "LEGACYCLAIM" }
+    });
+    const upgraded = await prisma.team.findUnique({ where: { id: created.player.teamId } });
+    const afterUpgradeResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/rejoin",
+      payload: { teamId: created.player.teamId, claimCode: "LEGACYCLAIM" }
+    });
+
+    await app.close();
+
+    expect(wrongResponse.statusCode).toBe(404);
+    expect(stillPlaintext).toMatchObject({ claimCode: "LEGACYCLAIM", claimCodeHash: null });
+    expect(legacyResponse.statusCode).toBe(200);
+    expect(upgraded?.claimCode).toBe(null);
+    expect(upgraded?.claimCodeHash).toMatch(/^scrypt\$/);
+    expect(afterUpgradeResponse.statusCode).toBe(200);
+  });
+
+  it("never persists a plaintext claim code for a freshly created team", async () => {
+    const app = await createTestApp(prisma);
+    const createResponse = await app.inject({
+      method: "POST",
+      url: "/leagues",
+      payload: { name: "Office League", teamName: "Volt Union", fillWithBots: false }
+    });
+    const created = createResponse.json();
+    const joinResponse = await app.inject({
+      method: "POST",
+      url: "/leagues/join",
+      payload: { code: created.league.code, teamName: "Late Apex" }
+    });
+    const teams = await prisma.team.findMany({ where: { leagueId: created.league.id } });
+
+    await app.close();
+
+    expect(joinResponse.statusCode).toBe(200);
+    expect(teams.map((team) => team.claimCode)).toEqual(teams.map(() => null));
+    expect(teams.every((team) => team.kind !== "human" || (team.claimCodeHash ?? "").startsWith("scrypt$"))).toBe(true);
+  });
 });
 
 function testDatabaseUrls() {

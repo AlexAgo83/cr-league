@@ -37,6 +37,7 @@ export function createMemoryDb(): PrismaClient {
     name: string;
     kind: string;
     claimCode: string | null;
+    claimCodeHash: string | null;
     sessionClaimCodeHash: string | null;
     points: number;
     credits: number;
@@ -322,19 +323,19 @@ export function createMemoryDb(): PrismaClient {
       create: async ({
         data
       }: {
-        data: Omit<TeamRow, "id" | "livery" | "unlockedCarAssetIds" | "profileId" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "unlockedCarAssetIds" | "profileId">>;
+        data: Omit<TeamRow, "id" | "livery" | "unlockedCarAssetIds" | "profileId" | "claimCodeHash" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "unlockedCarAssetIds" | "profileId" | "claimCodeHash">>;
       }) => {
-        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, unlockedCarAssetIds: [], createdAt: new Date(), ...data, profileId: data.profileId ?? null, sessionClaimCodeHash: data.sessionClaimCodeHash ?? null };
+        const team = { id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, unlockedCarAssetIds: [], createdAt: new Date(), claimCodeHash: null, ...data, profileId: data.profileId ?? null, sessionClaimCodeHash: data.sessionClaimCodeHash ?? null };
         teams.push(team);
         return team;
       },
       createMany: async ({
         data
       }: {
-        data: Array<Omit<TeamRow, "id" | "livery" | "unlockedCarAssetIds" | "profileId" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "unlockedCarAssetIds" | "profileId">>>;
+        data: Array<Omit<TeamRow, "id" | "livery" | "unlockedCarAssetIds" | "profileId" | "claimCodeHash" | "createdAt"> & Partial<Pick<TeamRow, "livery" | "unlockedCarAssetIds" | "profileId" | "claimCodeHash">>>;
       }) => {
         for (const team of data) {
-          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, unlockedCarAssetIds: [], createdAt: new Date(), ...team, profileId: team.profileId ?? null, sessionClaimCodeHash: team.sessionClaimCodeHash ?? null });
+          teams.push({ id: id("team"), livery: { primary: "#16c784", secondary: "#38bdf8" }, unlockedCarAssetIds: [], createdAt: new Date(), claimCodeHash: null, ...team, profileId: team.profileId ?? null, sessionClaimCodeHash: team.sessionClaimCodeHash ?? null });
         }
         return { count: data.length };
       },
@@ -360,6 +361,8 @@ export function createMemoryDb(): PrismaClient {
           livery?: { primary: string; secondary: string; carAssetId?: string };
           unlockedCarAssetIds?: string[];
           name?: string;
+          claimCode?: string | null;
+          claimCodeHash?: string | null;
           sessionClaimCodeHash?: string | null;
         };
       }) => {
@@ -380,6 +383,8 @@ export function createMemoryDb(): PrismaClient {
         if (data.livery) team.livery = data.livery;
         if (data.unlockedCarAssetIds) team.unlockedCarAssetIds = data.unlockedCarAssetIds;
         if (data.name) team.name = data.name;
+        if (data.claimCode !== undefined) team.claimCode = data.claimCode;
+        if (data.claimCodeHash !== undefined) team.claimCodeHash = data.claimCodeHash;
         if (data.sessionClaimCodeHash !== undefined) team.sessionClaimCodeHash = data.sessionClaimCodeHash;
         return team;
       },

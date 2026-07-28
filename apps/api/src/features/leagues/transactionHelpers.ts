@@ -1,6 +1,6 @@
 import { LeagueRuleError } from "./errors.js";
 import type { AdminProofInput, Db } from "./types.js";
-import { normalizeCards, normalizeLivery, verifyRecoveryCode } from "./utils.js";
+import { normalizeCards, normalizeLivery, verifyRecoveryCode, verifyTeamClaimCode } from "./utils.js";
 
 export { getCurrentGrandPrix, lockGrandPrixRow, lockLeagueRow, lockTeamRow, runWrite } from "./persistence.js";
 export { normalizeQualifyingRuns } from "./utils.js";
@@ -33,9 +33,9 @@ export async function requireTeamClaim(db: Db, leagueId: string, input: { teamId
     throw new LeagueRuleError("A valid team claim is required.");
   }
   const team = await db.team.findUnique({ where: { id: input.teamId } });
-  // ponytail: plain !== is fine — 40-bit random claim codes; revisit with timingSafeEqual only if codes get shorter/predictable.
   const sessionValid = team?.sessionClaimCodeHash ? await verifyRecoveryCode(input.claimCode, team.sessionClaimCodeHash) : false;
-  if (!team || team.leagueId !== leagueId || team.kind !== "human" || (team.claimCode !== input.claimCode && !sessionValid)) {
+  const claimValid = team ? sessionValid || (await verifyTeamClaimCode(db, team, input.claimCode)) : false;
+  if (!team || team.leagueId !== leagueId || team.kind !== "human" || !claimValid) {
     throw new LeagueRuleError("A valid team claim is required.");
   }
   return { ...team, cards: normalizeCards(team.cards), livery: normalizeLivery(team.livery) };

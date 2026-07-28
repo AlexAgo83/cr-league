@@ -61,6 +61,25 @@ export async function verifyRecoveryCode(code: string, hash: string): Promise<"c
   return expected.length === actual.length && timingSafeEqual(expected, actual) ? "legacy" : false;
 }
 
+/**
+ * Verifies a team claim code against the stored hash, and upgrades pre-migration rows.
+ * Teams created before the claim-code hashing migration still carry a plaintext `claimCode`; those
+ * are accepted exactly once (timing-safe, via the same legacy-hash compare `verifyRecoveryCode`
+ * already uses for recovery codes), then rewritten to hash-only storage. Mirrors the recovery-code
+ * legacy-upgrade pattern rather than inventing a second migration strategy.
+ */
+export async function verifyTeamClaimCode(
+  db: Db,
+  team: { id: string; claimCode: string | null; claimCodeHash: string | null },
+  code: string | undefined
+): Promise<boolean> {
+  if (!code) return false;
+  if (team.claimCodeHash && (await verifyRecoveryCode(code, team.claimCodeHash))) return true;
+  if (!team.claimCode || !(await verifyRecoveryCode(code, hashLegacyRecoveryCode(team.claimCode)))) return false;
+  await db.team.update({ where: { id: team.id }, data: { claimCode: null, claimCodeHash: await hashRecoveryCode(code) } });
+  return true;
+}
+
 function normalizeRecoveryCode(code: string) {
   return code.trim().toUpperCase();
 }

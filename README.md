@@ -238,6 +238,16 @@ npm run playtest:seed
 
 This creates league code `PLAY01` with bot teams. Use [docs/playtest/private-league-3gp-checklist.md](docs/playtest/private-league-3gp-checklist.md) for the manual three-Grand-Prix playtest script.
 
+Play the solo loop with AI profiles:
+
+```bash
+npm run playtest:solo -- --seasons 8 --profiles sprinter,banker,no-card-saver
+```
+
+This drives the shared engine directly — the same code the browser runs offline — so it needs
+neither the API nor a database. The multiplayer playtests all go through the API; this is the
+only one that exercises solo end to end.
+
 Run balance simulations:
 
 ```bash

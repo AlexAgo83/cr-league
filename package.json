@@ -54,7 +54,8 @@
     "audit:circuits": "node scripts/audit-circuits.mjs",
     "review:circuits:water": "node scripts/review-circuit-water.mjs",
     "logics:validate": "logics-manager lint --require-status && logics-manager audit --group-by-doc",
-    "capture:screenshots": "tsx scripts/capture-screenshots.ts"
+    "capture:screenshots": "tsx scripts/capture-screenshots.ts",
+    "playtest:solo": "tsx scripts/solo-playtest.ts"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",

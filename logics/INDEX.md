@@ -12,6 +12,7 @@
 | [adr_006_accessibility](architecture/adr_006_accessibility.md) | Accessibility | Accepted |  |  | architecture/adr_006_accessibility.md |
 | [adr_007_i18n](architecture/adr_007_i18n.md) | Internationalization | Accepted |  |  | architecture/adr_007_i18n.md |
 | [adr_008_testing_quality](architecture/adr_008_testing_quality.md) | Testing and Quality | Accepted |  |  | architecture/adr_008_testing_quality.md |
+| [adr_009_shared_local_and_network_league_engine](architecture/adr_009_shared_local_and_network_league_engine.md) | Shared local and network league engine | Proposed |  |  | architecture/adr_009_shared_local_and_network_league_engine.md |
 
 ## Product briefs
 
@@ -595,9 +596,9 @@
 | [item_344_hash_team_claimcode_at_rest_with_a_backward_compatible_migration](backlog/item_344_hash_team_claimcode_at_rest_with_a_backward_compatible_migration.md) | Hash team claimCode at rest with a backward-compatible migration | Done |  | 100 | backlog/item_344_hash_team_claimcode_at_rest_with_a_backward_compatible_migration.md |
 | [item_345_replace_hardcoded_e2e_copy_assertions_with_data_testid](backlog/item_345_replace_hardcoded_e2e_copy_assertions_with_data_testid.md) | Replace hardcoded E2E copy assertions with data-testid | Done |  | 100 | backlog/item_345_replace_hardcoded_e2e_copy_assertions_with_data_testid.md |
 | [item_346_add_ci_only_playwright_retries_if_flakiness_is_evidenced](backlog/item_346_add_ci_only_playwright_retries_if_flakiness_is_evidenced.md) | Add CI-only Playwright retries if flakiness is evidenced | Done |  | 100 | backlog/item_346_add_ci_only_playwright_retries_if_flakiness_is_evidenced.md |
-| [item_347_introduce_the_solo_multiplayer_setup_hierarchy](backlog/item_347_introduce_the_solo_multiplayer_setup_hierarchy.md) | Introduce the Solo / Multiplayer setup hierarchy | Ready |  | 0% | backlog/item_347_introduce_the_solo_multiplayer_setup_hierarchy.md |
-| [item_348_build_local_solo_state_persistence_and_action_adapter](backlog/item_348_build_local_solo_state_persistence_and_action_adapter.md) | Build local solo state, persistence, and action adapter | Ready |  | 0% | backlog/item_348_build_local_solo_state_persistence_and_action_adapter.md |
-| [item_349_polish_solo_multiplayer_affordances_and_reset_safety](backlog/item_349_polish_solo_multiplayer_affordances_and_reset_safety.md) | Polish solo/multiplayer affordances and reset safety | Ready |  | 0% | backlog/item_349_polish_solo_multiplayer_affordances_and_reset_safety.md |
+| [item_347_introduce_the_solo_multiplayer_setup_hierarchy](backlog/item_347_introduce_the_solo_multiplayer_setup_hierarchy.md) | Introduce the Solo / Multiplayer setup hierarchy | Ready |  | 0 | backlog/item_347_introduce_the_solo_multiplayer_setup_hierarchy.md |
+| [item_348_build_local_solo_state_persistence_and_action_adapter](backlog/item_348_build_local_solo_state_persistence_and_action_adapter.md) | Build local solo state, persistence, and action adapter | Ready |  | 0 | backlog/item_348_build_local_solo_state_persistence_and_action_adapter.md |
+| [item_349_polish_solo_multiplayer_affordances_and_reset_safety](backlog/item_349_polish_solo_multiplayer_affordances_and_reset_safety.md) | Polish solo/multiplayer affordances and reset safety | Ready |  | 0 | backlog/item_349_polish_solo_multiplayer_affordances_and_reset_safety.md |
 
 ## Tasks
 
@@ -734,4 +735,4 @@
 | [task_129_orchestrate_the_ai_alpha_seasons_evidence_run](tasks/task_129_orchestrate_the_ai_alpha_seasons_evidence_run.md) | Orchestrate the AI alpha seasons evidence run | Done |  | 100% | tasks/task_129_orchestrate_the_ai_alpha_seasons_evidence_run.md |
 | [task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus](tasks/task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus.md) | Orchestrate the 0.6 beta season lifecycle and league management corpus | Done |  | 100% | tasks/task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus.md |
 | [task_131_orchestrate_repo_review_remediation_pass_7](tasks/task_131_orchestrate_repo_review_remediation_pass_7.md) | Orchestrate repo review remediation pass 7 | Done |  | 100 | tasks/task_131_orchestrate_repo_review_remediation_pass_7.md |
-| [task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode](tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md) | Orchestrate Solo / Multiplayer entry and local solo mode | Ready |  | 0% | tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md |
+| [task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode](tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md) | Orchestrate Solo / Multiplayer entry and local solo mode | Ready |  | 0 | tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md |

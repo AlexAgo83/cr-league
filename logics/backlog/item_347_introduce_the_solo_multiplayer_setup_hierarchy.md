@@ -2,9 +2,9 @@
 > From version: 0.6.1
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 95
+> Confidence: 90
+> Progress: 0
 > Complexity: Medium
 > Theme: Setup flow and navigation
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -15,9 +15,9 @@
 
 # Scope
 - In:
-  - Add a setup mode layer that presents Solo and Multiplayer as the first no-active-game choice.
+  - Add a setup mode layer that presents Solo and Multiplayer as the first no-active-game choice immediately after the splash/root entry.
   - Move the existing LeagueSetupView create/join/saved-claims experience behind the Multiplayer branch with a back action to the mode choice.
-  - Decide and implement the profile ordering: preferred V1 is Solo available without profile, Multiplayer requiring the existing profile flow.
+  - Implement the confirmed profile ordering: Solo is available before profile setup; Multiplayer keeps the existing profile create/recover flow before league create/join.
   - Add en/fr copy for Solo, Multiplayer, local-only explanation, and back/navigation labels.
   - Add tests proving the top-level no-game setup shows Solo/Multiplayer and that Multiplayer still reaches the existing create/join UI.
 - Out:
@@ -28,7 +28,7 @@
 # Acceptance criteria
 - AC1: Create / Join is no longer the first setup choice.
 - AC2: Multiplayer preserves the current create/join/saved-league flow.
-- AC3: Solo can be selected without first creating a multiplayer profile.
+- AC3: Solo can be selected and started before creating or recovering a multiplayer profile.
 - AC7: English and French labels make the mode distinction clear.
 
 # AC Traceability
@@ -40,11 +40,11 @@
 
 # Decision framing
 - Product framing: Not needed
-- Architecture framing: Not needed
+- Architecture framing: Follow `adr_009_shared_local_and_network_league_engine` for the app mode boundary between shared engine and persistence adapters.
 
 # Links
 - Product brief(s): `prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief`
-- Architecture decision(s): (none yet)
+- Architecture decision(s): `adr_009_shared_local_and_network_league_engine`
 - Request: `req_131_solo_and_multiplayer_entry_split_with_local_solo_mode`
 - Primary task(s): `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode`
 

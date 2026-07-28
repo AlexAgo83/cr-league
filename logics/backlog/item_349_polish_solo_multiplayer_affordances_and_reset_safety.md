@@ -2,9 +2,9 @@
 > From version: 0.6.1
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 95
+> Confidence: 90
+> Progress: 0
 > Complexity: Medium
 > Theme: Mode clarity and data safety
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -15,8 +15,9 @@
 
 # Scope
 - In:
-  - Show a compact Solo/local indicator in the topbar or profile/home surface when the active game is local solo.
-  - Add a deliberate reset/forget solo action with confirmation copy that only clears solo storage.
+  - Show a compact `Solo local` indicator in the topbar or profile/home surface when the active game is local solo.
+  - Add setup copy that frames Solo as "local to this device" and Multiplayer as a private league with invite code.
+  - Add a deliberate reset/forget solo action with confirmation copy that only clears the dedicated solo save key.
   - Ensure existing multiplayer forget/logout paths leave solo storage untouched unless the new solo reset path is invoked.
   - Add tests for solo reset and multiplayer logout isolation.
 - Out:
@@ -35,11 +36,11 @@
 
 # Decision framing
 - Product framing: Not needed
-- Architecture framing: Not needed
+- Architecture framing: Follow `adr_009_shared_local_and_network_league_engine`; this slice should not introduce presentation-only forks of game behavior.
 
 # Links
 - Product brief(s): `prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief`
-- Architecture decision(s): (none yet)
+- Architecture decision(s): `adr_009_shared_local_and_network_league_engine`
 - Request: `req_131_solo_and_multiplayer_entry_split_with_local_solo_mode`
 - Primary task(s): `task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode`
 

@@ -2,25 +2,28 @@
 > From version: 0.6.1
 > Schema version: 1.0
 > Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Understanding: 95
+> Confidence: 88
+> Progress: 0
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
 
 # Context
 - Orchestrate the scaffolded request chain and keep sibling implementation slices linked.
+- Confirmed product decisions: Solo appears before profile setup; Multiplayer keeps the existing profile then create/join flow; Solo V1 is local no-API after app load, not installable/PWA offline.
+- Confirmed architecture decision: use `adr_009_shared_local_and_network_league_engine`; extract shared league rules into `packages/shared` and keep API/localStorage as persistence adapters.
 
 # Plan
-- [ ] 1. Audit the current setup/profile/league gates and choose the smallest routing/state shape for an explicit app mode: none, solo, or multiplayer.
-- [ ] 2. Add the Solo / Multiplayer setup screen, keeping the existing LeagueSetupView as the Multiplayer sublevel and preserving admin/changelog exceptions.
-- [ ] 3. Implement a local solo LeagueState factory and dedicated storage helpers with no overlap with multiplayer profile or claim keys.
-- [ ] 4. Introduce a small action boundary so solo actions mutate local state while multiplayer keeps using api().
-- [ ] 5. Wire the first solo loop through plan, qualifying, directive lock, resolve, replay/report, next Grand Prix, garage, livery, and team name updates.
-- [ ] 6. Add clear en/fr copy, a local solo indicator, and a confirmed solo reset command.
-- [ ] 7. Add focused tests for setup hierarchy, multiplayer regression, solo no-fetch behavior, solo persistence, and reset/logout isolation.
-- [ ] 8. Run web typecheck, focused Vitest suites, web build, and Logics validation; record any deliberately deferred work in the closeout notes.
+- [ ] 1. Wave 1: extract shared league rules under `packages/shared/src/domain/leagueFactory.ts` and `packages/shared/src/domain/leagueEngine.ts` without changing multiplayer behavior.
+- [ ] 2. Refactor API-backed multiplayer actions to use the shared engine around DB load/persist, with regression tests proving create/join/rejoin, qualifying, resolve, next GP, garage, livery, and team rename still behave as before.
+- [ ] 3. Wave 2: add the Solo / Multiplayer setup screen before profile setup. Solo bypasses profile; Multiplayer keeps the existing profile gate and LeagueSetupView create/join/saved-claims sublevel.
+- [ ] 4. Add one versioned local solo save, recommended `cr-league-solo-save-v1`, storing LeagueState plus schemaVersion, createdAt, and updatedAt metadata. Keep it separate from profile and multiplayer claim keys.
+- [ ] 5. Wave 3: wire solo actions to localStorage load -> shared engine transition -> React state update -> localStorage persist.
+- [ ] 6. Cover solo briefing, plan editing, chrono/qualifying, directive lock, GP resolution, replay/report, next Grand Prix, garage buy/sell, livery update, and team rename.
+- [ ] 7. Add clear en/fr copy, a `Solo local` indicator, and a confirmed reset solo command that only clears the solo save.
+- [ ] 8. Add focused tests for setup hierarchy, multiplayer regression, solo no-fetch behavior, solo persistence, solo reset, and multiplayer logout isolation.
+- [ ] 9. Run web typecheck, focused Vitest suites, web build, and Logics validation; record any deliberately deferred work in the closeout notes.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
 - [ ] Keep commit creation under operator control; do not force one commit per micro-step.
 - [ ] GATE: do not close until lint, audit, and scaffold validation pass.
@@ -58,4 +61,4 @@
 # Links
 - Request: `req_131_solo_and_multiplayer_entry_split_with_local_solo_mode`
 - Product brief(s): `prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief`
-- Architecture decision(s): (none yet)
+- Architecture decision(s): `adr_009_shared_local_and_network_league_engine`

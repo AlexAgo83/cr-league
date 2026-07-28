@@ -1,35 +1,11 @@
 {
   "budgets": {
-    "max_docs": 20,
+    "max_docs": 24,
     "max_docs_per_ref": 4
   },
   "changed_paths": [],
-  "command": "logics-manager sync context-pack req_131_solo_and_multiplayer_entry_split_with_local_solo_mode item_347_introduce_the_solo_multiplayer_setup_hierarchy item_348_build_local_solo_state_persistence_and_action_adapter item_349_polish_solo_multiplayer_affordances_and_reset_safety task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode --mode summary-only --profile normal --handoff",
-  "companion_docs": [
-    {
-      "kind": "product",
-      "linked_refs": {
-        "item": [
-          "item_347_introduce_the_solo_multiplayer_setup_hierarchy",
-          "item_348_build_local_solo_state_persistence_and_action_adapter",
-          "item_349_polish_solo_multiplayer_affordances_and_reset_safety"
-        ],
-        "prod": [
-          "prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief"
-        ],
-        "req": [
-          "req_131_solo_and_multiplayer_entry_split_with_local_solo_mode"
-        ],
-        "task": [
-          "task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode"
-        ]
-      },
-      "path": "logics/product/prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief.md",
-      "ref": "prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief",
-      "status": "Proposed",
-      "title": "Solo / Multiplayer Entry And Local Solo Mode Product Brief"
-    }
-  ],
+  "command": "logics-manager sync context-pack req_131_solo_and_multiplayer_entry_split_with_local_solo_mode item_347_introduce_the_solo_multiplayer_setup_hierarchy item_348_build_local_solo_state_persistence_and_action_adapter item_349_polish_solo_multiplayer_affordances_and_reset_safety task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode adr_009_shared_local_and_network_league_engine --mode summary-only --profile normal",
+  "companion_docs": [],
   "docs": [
     {
       "ai_context": {
@@ -40,6 +16,9 @@
       },
       "kind": "request",
       "linked_refs": {
+        "adr": [
+          "adr_009_shared_local_and_network_league_engine"
+        ],
         "item": [
           "item_347_introduce_the_solo_multiplayer_setup_hierarchy",
           "item_348_build_local_solo_state_persistence_and_action_adapter",
@@ -67,6 +46,9 @@
       },
       "kind": "backlog",
       "linked_refs": {
+        "adr": [
+          "adr_009_shared_local_and_network_league_engine"
+        ],
         "item": [
           "item_347_introduce_the_solo_multiplayer_setup_hierarchy"
         ],
@@ -95,6 +77,9 @@
       },
       "kind": "backlog",
       "linked_refs": {
+        "adr": [
+          "adr_009_shared_local_and_network_league_engine"
+        ],
         "item": [
           "item_348_build_local_solo_state_persistence_and_action_adapter"
         ],
@@ -123,6 +108,9 @@
       },
       "kind": "backlog",
       "linked_refs": {
+        "adr": [
+          "adr_009_shared_local_and_network_league_engine"
+        ],
         "item": [
           "item_349_polish_solo_multiplayer_affordances_and_reset_safety"
         ],
@@ -151,6 +139,9 @@
       },
       "kind": "task",
       "linked_refs": {
+        "adr": [
+          "adr_009_shared_local_and_network_league_engine"
+        ],
         "item": [
           "item_347_introduce_the_solo_multiplayer_setup_hierarchy",
           "item_348_build_local_solo_state_persistence_and_action_adapter",
@@ -176,6 +167,9 @@
       "ai_context": {},
       "kind": "product",
       "linked_refs": {
+        "adr": [
+          "adr_009_shared_local_and_network_league_engine"
+        ],
         "item": [
           "item_347_introduce_the_solo_multiplayer_setup_hierarchy",
           "item_348_build_local_solo_state_persistence_and_action_adapter",
@@ -196,25 +190,52 @@
       "schema_version": "1.0",
       "status": "Proposed",
       "title": "Solo / Multiplayer Entry And Local Solo Mode Product Brief"
+    },
+    {
+      "ai_context": {},
+      "kind": "architecture",
+      "linked_refs": {
+        "adr": [
+          "adr_009_shared_local_and_network_league_engine"
+        ],
+        "item": [
+          "item_348_build_local_solo_state_persistence_and_action_adapter"
+        ],
+        "prod": [
+          "prod_083_solo_multiplayer_entry_and_local_solo_mode_product_brief"
+        ],
+        "req": [
+          "req_131_solo_and_multiplayer_entry_split_with_local_solo_mode"
+        ],
+        "task": [
+          "task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode"
+        ]
+      },
+      "path": "logics/architecture/adr_009_shared_local_and_network_league_engine.md",
+      "ref": "adr_009_shared_local_and_network_league_engine",
+      "schema_version": "1.0",
+      "status": "Proposed",
+      "title": "Shared local and network league engine"
     }
   ],
   "estimates": {
-    "char_count": 6495,
-    "companion_doc_count": 1,
-    "doc_count": 6
+    "char_count": 6779,
+    "companion_doc_count": 0,
+    "doc_count": 7
   },
-  "generated_at": "2026-07-28T08:50:55Z",
+  "generated_at": "2026-07-28T09:23:21Z",
   "handoff": {
-    "companion_doc_count": 1,
-    "enabled": true,
+    "companion_doc_count": 0,
+    "enabled": false,
     "source_refs": [
       "req_131_solo_and_multiplayer_entry_split_with_local_solo_mode",
       "item_347_introduce_the_solo_multiplayer_setup_hierarchy",
       "item_348_build_local_solo_state_persistence_and_action_adapter",
       "item_349_polish_solo_multiplayer_affordances_and_reset_safety",
-      "task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode"
+      "task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode",
+      "adr_009_shared_local_and_network_league_engine"
     ],
-    "validation_summary_count": 1
+    "validation_summary_count": 0
   },
   "i18n": {
     "actions": [
@@ -248,13 +269,14 @@
   },
   "mode": "summary-only",
   "profile": "normal",
-  "ref": "req_131_solo_and_multiplayer_entry_split_with_local_solo_mode,item_347_introduce_the_solo_multiplayer_setup_hierarchy,item_348_build_local_solo_state_persistence_and_action_adapter,item_349_polish_solo_multiplayer_affordances_and_reset_safety,task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode",
+  "ref": "req_131_solo_and_multiplayer_entry_split_with_local_solo_mode,item_347_introduce_the_solo_multiplayer_setup_hierarchy,item_348_build_local_solo_state_persistence_and_action_adapter,item_349_polish_solo_multiplayer_affordances_and_reset_safety,task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode,adr_009_shared_local_and_network_league_engine",
   "refs": [
     "req_131_solo_and_multiplayer_entry_split_with_local_solo_mode",
     "item_347_introduce_the_solo_multiplayer_setup_hierarchy",
     "item_348_build_local_solo_state_persistence_and_action_adapter",
     "item_349_polish_solo_multiplayer_affordances_and_reset_safety",
-    "task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode"
+    "task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode",
+    "adr_009_shared_local_and_network_league_engine"
   ],
   "release": {
     "blocking_reasons": [],
@@ -329,14 +351,5 @@
     "state": "ready",
     "target_version": "0.6.1"
   },
-  "validation_summary": [
-    {
-      "items": [
-        "- Run `python3 -m logics_manager lint --require-status`.",
-        "- Run scaffold command tests."
-      ],
-      "path": "logics/tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md",
-      "ref": "task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode"
-    }
-  ]
+  "validation_summary": []
 }

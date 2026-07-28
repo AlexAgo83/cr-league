@@ -1,10 +1,10 @@
 ## item_338_add_e2e_coverage_for_the_0_6_corpus_s_highest_risk_flows - Add E2E coverage for the 0.6 corpus's highest-risk flows
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Test coverage
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -53,3 +53,13 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Three scenarios added to `tests/e2e/private-league.spec.ts`, taking the suite from 4 to 7 tests (all green):
+  - **Race direction**: opens the commissioner screen from the profile menu and asserts real content (season/round, invite code, `Pending plans (1)` / `Locked plans (0)` — only human drivers are counted), then clicks `Remind pending drivers` and asserts the sent feedback, the persisted `Last reminder: 1 sent, 1 skipped.` line, and that the action locks itself afterwards (the one-send-per-season rule).
+  - **Variable shop**: ticks the variable-shop checkbox at creation; the mock reads `variableShop` off the create request body and switches `cardShop` from the 2-card fixed list to a 6-card rotation, and the test asserts the shop renders 6 offers including `Pit Relay`.
+  - **Team profile**: opens the modal from a standings row and asserts the team heading, `Rank` / `P1`, and `GPs`, then closes it.
+- Mock support added: `variableShop` and the reminder fields on the league payload, a `/leagues/league_1/reminders/plan` route with alreadySent behaviour, and a `createLeague(page, { variableShop })` option.
+- `data-testid="dialog-team-profile"` added to the team-profile modal (same mechanism as `item_345`).
+- Rival thread and card guidance stayed unit-tested, as the slice's scope allows; the team-profile scenario incidentally renders the rival section.
+- `npm run test:e2e` -> 7 passed. Typecheck, lint, and the unit suite green.

@@ -427,7 +427,7 @@ function TeamProfileModal({
   const rival = standingsRival(state, team.id);
   const styleKey = teamStyleKey(state, team.id);
   return (
-    <Modal label={tt("team_profile_title", { team: team.name })} className="panel modal team-profile-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+    <Modal label={tt("team_profile_title", { team: team.name })} testId="dialog-team-profile" className="panel modal team-profile-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
       <div className="team-profile-hero">
         <ChampionshipCarBackdrop livery={team.livery} />
         <LiveryPlate className="standings-livery-plate team-profile-livery" livery={team.livery} name={team.name} wins={seasonWins} />

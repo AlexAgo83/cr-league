@@ -12,6 +12,10 @@ let credits = 0;
 let points = 0;
 let cards: string[] = ["rain_grip"];
 let livery = { primary: "#16c784", secondary: "#38bdf8" };
+let variableShop = false;
+let reminder = { sentAt: null as string | null, sentCount: 0, skippedCount: 0, season: null as number | null };
+
+const VARIABLE_SHOP_CARDS = ["rain_grip", "launch_boost", "pit_relay", "hard_tires", "urban_draft", "final_surge"];
 
 test.beforeEach(() => {
   round = 1;
@@ -22,6 +26,8 @@ test.beforeEach(() => {
   points = 0;
   cards = ["rain_grip"];
   livery = { primary: "#16c784", secondary: "#38bdf8" };
+  variableShop = false;
+  reminder = { sentAt: null, sentCount: 0, skippedCount: 0, season: null };
 });
 
 async function mockLeagueApi(page: Page) {
@@ -48,7 +54,13 @@ async function mockLeagueApi(page: Page) {
       });
     }
     if (path === "/leagues") {
+      variableShop = Boolean((request.postDataJSON() as { variableShop?: boolean } | null)?.variableShop);
       return route.fulfill({ json: leagueState() });
+    }
+    if (path === "/leagues/league_1/reminders/plan") {
+      if (reminder.sentAt) return route.fulfill({ json: { ...leagueState(), reminder: { alreadySent: true, sentCount: 0, skippedCount: 0 } } });
+      reminder = { sentAt: new Date().toISOString(), sentCount: 1, skippedCount: 1, season: 1 };
+      return route.fulfill({ json: { ...leagueState(), reminder: { alreadySent: false, sentCount: 1, skippedCount: 1 } } });
     }
     if (path === "/leagues/league_1/settings") {
       cadence = "weekly";
@@ -469,6 +481,69 @@ test("keeps mobile document pages usable", async ({ page }) => {
   await expect(page.locator(`[data-section-tab="team"]`)).toHaveAttribute("aria-selected", "true");
 });
 
+test("runs the commissioner Race direction screen and its reminder action", async ({ page }) => {
+  await mockLeagueApi(page);
+  await page.goto("/");
+  await createProfile(page);
+  await createLeague(page);
+
+  await page.getByTestId("profile-menu").click();
+  await page.getByTestId("profile-action-race-direction").click();
+
+  const raceDirection = page.getByTestId("dialog-race-direction");
+  await expect(raceDirection).toBeVisible();
+  // only human drivers are counted, and the bot never appears in either lane
+  await expect(raceDirection.getByRole("heading", { name: /Pending plans \(1\)/ })).toBeVisible();
+  await expect(raceDirection.getByRole("heading", { name: /Locked plans \(0\)/ })).toBeVisible();
+  await expect(raceDirection).toContainText("Volt Union");
+  await expect(raceDirection).toContainText("ABC123");
+
+  const remind = raceDirection.getByRole("button", { name: "Remind pending drivers" });
+  await expect(remind).toBeEnabled();
+  await remind.click();
+
+  await expect(page.getByText("Reminder sent: 1 sent, 1 skipped.")).toBeVisible();
+  await expect(raceDirection).toContainText("Last reminder: 1 sent, 1 skipped.");
+  // one successful send per season: the action locks itself afterwards
+  await expect(raceDirection.getByRole("button", { name: "Reminder already sent this season" })).toBeDisabled();
+});
+
+test("creates a league with variable shop mode and shows the varied shop", async ({ page }) => {
+  await mockLeagueApi(page);
+  await page.goto("/");
+  await createProfile(page);
+  await createLeague(page, { variableShop: true });
+
+  await page.getByTestId("nav-garage").click();
+  await dismissOnboarding(page);
+  await page.locator(`[data-section-tab="shop"]`).click();
+
+  // the fixed shop offers 2 cards; variable-shop mode rotates a wider set in
+  await expect(page.locator(".card-shop .card-art-cell")).toHaveCount(6);
+  await expect(page.locator(".card-shop")).toContainText("Pit Relay");
+});
+
+test("opens a team profile from the standings", async ({ page }) => {
+  await mockLeagueApi(page);
+  await page.goto("/");
+  await createProfile(page);
+  await createLeague(page);
+
+  await page.getByTestId("nav-championship").click();
+  await dismissOnboarding(page);
+  await page.locator(`[data-section-tab="standings"]`).click();
+  await page.locator(".standings-profile-button").first().click();
+
+  const profile = page.getByTestId("dialog-team-profile");
+  await expect(profile).toBeVisible();
+  await expect(profile.getByRole("heading", { name: "Volt Union" })).toBeVisible();
+  await expect(profile).toContainText("Rank");
+  await expect(profile).toContainText("P1");
+  await expect(profile).toContainText("GPs");
+  await profile.getByTestId("modal-close").click();
+  await expect(profile).toBeHidden();
+});
+
 function expectedCircuitTitle(resultRound: number) {
   const circuit = circuitForRound(resultRound, "league_1", 1);
   return t(circuit.layoutKey, "en");
@@ -512,9 +587,10 @@ async function enterSplash(page: Page) {
   if (await pressStart.isVisible({ timeout: 500 }).catch(() => false)) await pressStart.click();
 }
 
-async function createLeague(page: Page) {
+async function createLeague(page: Page, options: { variableShop?: boolean } = {}) {
   await page.getByRole("button", { name: "Create league" }).click();
   await suppressOnboarding(page);
+  if (options.variableShop) await page.getByLabel(/Variable shop/).check();
   await page.getByRole("button", { name: "Start league" }).click();
   await expect(page.locator(".game-nav button")).toHaveCount(4);
   await dismissOnboarding(page);
@@ -572,7 +648,13 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
       fillWithBots: true,
       qualifyingAttemptLimit: 3,
       maxGrandPrixPerSeason: 6,
-      preparationDeadlineAt: null
+      variableShop,
+      preparationDeadlineAt: null,
+      reminderSentAt: reminder.sentAt,
+      reminderSentBy: reminder.sentAt ? player.teamId : null,
+      reminderSeasonNumber: reminder.season,
+      reminderSentCount: reminder.sentCount,
+      reminderSkippedCount: reminder.skippedCount
     },
     currentGrandPrix: {
       id: `gp_${round}`,
@@ -623,10 +705,12 @@ function leagueState(result: ReturnType<typeof resultForRound> | null = null) {
         ready: false
       }
     ],
-    cardShop: [
-      { cardId: "rain_grip", price: 100 },
-      { cardId: "launch_boost", price: 100 }
-    ],
+    cardShop: variableShop
+      ? VARIABLE_SHOP_CARDS.map((cardId) => ({ cardId, price: 100 }))
+      : [
+          { cardId: "rain_grip", price: 100 },
+          { cardId: "launch_boost", price: 100 }
+        ],
     actionState: {
       submittedTeamIds: hasDecision ? ["team_1"] : [],
       missingTeamIds: currentStatus === "resolved" ? [] : hasDecision ? ["team_2"] : ["team_1", "team_2"],

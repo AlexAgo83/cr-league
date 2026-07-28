@@ -1518,3 +1518,69 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Per-circuit team stats. The calendar line stays quiet — it sits under the circuit name and
+   must not compete with it; the preview panel spells the same numbers out. */
+.circuit-stats-line {
+  align-items: center;
+  color: var(--color-accent);
+  display: flex;
+  flex-wrap: wrap;
+  font-weight: 800;
+  gap: 4px 10px;
+  margin-top: 2px;
+}
+
+.circuit-stats-line span {
+  align-items: center;
+  display: inline-flex;
+  gap: 4px;
+}
+
+.circuit-stats-icon {
+  height: 18px;
+  width: 18px;
+}
+
+.circuit-detail-stats {
+  background: rgb(16 14 18 / 0.82);
+  border: 1px solid rgb(248 243 232 / 0.14);
+  border-radius: 8px;
+  bottom: 12px;
+  display: grid;
+  gap: 6px 18px;
+  grid-template-columns: repeat(2, auto);
+  left: 12px;
+  margin: 0;
+  padding: 10px 14px;
+  position: absolute;
+  z-index: 3;
+}
+
+.circuit-detail-stats div {
+  display: grid;
+  gap: 1px;
+}
+
+.circuit-detail-stats dt {
+  color: rgb(248 243 232 / 0.68);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.circuit-detail-stats dd {
+  color: #f8f3e8;
+  font-size: 0.94rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.circuit-detail-stats-empty {
+  grid-column: 1 / -1;
+}
+
+.circuit-detail-stats-empty dt {
+  text-transform: none;
+}

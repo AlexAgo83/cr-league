@@ -1,4 +1,4 @@
-import { DEMO_RACE_INPUT, circuitIdentityForRound, circuitSeasonSeed, trackSpeedProfileForCircuit, type QualifyingRun, type RaceDecision, type RaceInput } from "@cr-league/shared";
+import { betterCircuitTime, normalizeCircuitRecords, withCircuitRecord, DEMO_RACE_INPUT, circuitIdentityForRound, circuitSeasonSeed, trackSpeedProfileForCircuit, type QualifyingRun, type RaceDecision, type RaceInput } from "@cr-league/shared";
 import { LeagueRuleError } from "./errors.js";
 import { getCurrentGrandPrix, lockGrandPrixRow, runWrite } from "./persistence.js";
 import { createQualifyingRuns, qualifyingCardForTeam } from "./qualifying.js";
@@ -99,6 +99,15 @@ export async function submitQualifyingRun(db: Db, leagueId: string, input: Submi
       where: { id: freshGrandPrix.id },
       data: { qualifyingRuns: nextRuns }
     });
+
+    // Only the time is stored; wins and finishes stay derived from grand-prix history.
+    const records = normalizeCircuitRecords(team.circuitRecords);
+    if (betterCircuitTime(records, circuit.layoutKey, nextRun.time)) {
+      await tx.team.update({
+        where: { id: team.id },
+        data: { circuitRecords: withCircuitRecord(records, circuit.layoutKey, nextRun.time) }
+      });
+    }
 
     return { nextRun, previousBest };
   });

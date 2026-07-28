@@ -1,4 +1,5 @@
 import { CARD_DEFINITIONS } from "../cards/definitions.js";
+import { normalizeCircuitRecords, withCircuitRecord } from "./circuitStats.js";
 import { circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, trackSpeedProfileForCircuit, trackZonesForCircuit } from "./circuits.js";
 import { isCarAssetId, CAR_ASSET_PRICES } from "../economy/carAssets.js";
 import { CARD_PRICES } from "../economy/constants.js";
@@ -251,6 +252,11 @@ export function runQualifying(state: LeagueState, input: RunQualifyingInput) {
   return {
     state: {
       ...state,
+      teams: state.teams.map((candidate) =>
+        candidate.id === team.id
+          ? { ...candidate, circuitRecords: withCircuitRecord(normalizeCircuitRecords(candidate.circuitRecords), circuit.layoutKey, nextRun.time) }
+          : candidate
+      ),
       currentGrandPrix: {
         ...state.currentGrandPrix,
         qualifyingRuns: nextRuns

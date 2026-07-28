@@ -1,4 +1,4 @@
-import { CARD_PRICES, circuitIdentityForRound, circuitSeasonSeed, type RaceDecision, type RaceInput, type RaceResult } from "@cr-league/shared";
+import { normalizeCircuitRecords, CARD_PRICES, circuitIdentityForRound, circuitSeasonSeed, type RaceDecision, type RaceInput, type RaceResult } from "@cr-league/shared";
 import { CARD_SHOP } from "./constants.js";
 import { normalizePitStrategy } from "./botLifecycle.js";
 import type { Db, LeagueState } from "./types.js";
@@ -82,6 +82,7 @@ export async function getLeagueState(db: Db, leagueId: string, options: { includ
       cards: normalizeCards(team.cards),
       livery: normalizeLivery(team.livery),
       unlockedCarAssetIds: normalizeUnlockedCarAssetIds(team.unlockedCarAssetIds),
+      circuitRecords: normalizeCircuitRecords(team.circuitRecords),
       ready: grandPrix.decisions.some((decision) => decision.teamId === team.id)
     })),
     cardShop: league.variableShop

@@ -52,6 +52,9 @@ export type LeagueState = {
     livery: TeamLivery;
     unlockedCarAssetIds: CarAssetId[];
     ready: boolean;
+    // layoutKey -> best qualifying time. See domain/circuitStats.ts for why this one value is
+    // stored while wins and finishes stay derived.
+    circuitRecords?: Record<string, number>;
   }>;
   cardShop: Array<{
     cardId: CardId;

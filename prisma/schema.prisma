@@ -65,6 +65,9 @@ model Team {
   cards                Json     @default("[]")
   livery               Json     @default("{\"primary\":\"#16c784\",\"secondary\":\"#38bdf8\"}")
   unlockedCarAssetIds  Json     @default("[]")
+  // layoutKey -> best qualifying time for this team. Wins and finishes stay derived from
+  // grand-prix history; only the time needs storing (see shared domain/circuitStats.ts).
+  circuitRecords       Json     @default("{}")
   createdAt            DateTime @default(now())
   updatedAt            DateTime @updatedAt
 

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { layoutKeyForRound } from "./circuitStats.js";
 import {
   buyCard,
   buyCarAsset,
@@ -176,6 +177,12 @@ describe("leagueEngine", () => {
     expect(result.state.currentGrandPrix.qualifyingRuns.filter((run) => run.teamId === "a")).toHaveLength(3);
     expect(result.state.currentGrandPrix.qualifyingRuns.filter((run) => run.teamId === "bot")).toHaveLength(1);
     expect(initial.currentGrandPrix.qualifyingRuns).toEqual([]);
+
+    // The circuit record is the one value that cannot be derived from history later on.
+    const layoutKey = layoutKeyForRound(initial.league.id, initial.currentGrandPrix.season, initial.currentGrandPrix.round);
+    const records = result.state.teams.find((candidate) => candidate.id === "a")!.circuitRecords!;
+    expect(records[layoutKey]).toBe(result.run.time);
+    expect(initial.teams.find((candidate) => candidate.id === "a")!.circuitRecords).toBeUndefined();
   });
 
   it("resolves a grand prix and applies rewards", () => {

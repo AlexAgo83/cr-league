@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import { useT } from "../i18n/index.js";
-import type { TeamLivery } from "@cr-league/shared";
+import { circuitStatsForTeam, type CircuitTeamStats, type TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, withRoute, type CityCircuit } from "../app/circuits.js";
 import { safeStorage } from "../app/appStorage.js";
@@ -61,6 +61,8 @@ export function ChampionshipView({
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
   const rankedTeams = rankTeams(state);
+  // Per-team, per-circuit: wins and finishes come from history, the best time from the stored record.
+  const circuitStats = useMemo(() => circuitStatsForTeam(state, playerTeamId), [state, playerTeamId]);
   const playerRival = standingsRival(state, playerTeamId);
   const [profileTeamId, setProfileTeamId] = useState<string | undefined>();
   const [previewCircuit, setPreviewCircuit] = useState<CityCircuit | undefined>();
@@ -239,6 +241,7 @@ export function ChampionshipView({
                         <path d="m9 6 6 6-6 6" />
                       </svg>
                     </button>
+                    <CircuitStatsPanel stats={circuitStats.get(previewCircuit.layoutKey)} />
                   </>
                 }
               />
@@ -296,6 +299,7 @@ export function ChampionshipView({
                         <small>
                           {circuit.laps} {tt("unit_laps")} · <VisualIcon name={circuit.likelyWeather} /> {tt(`weather_${circuit.likelyWeather}` as TranslationKey)}
                         </small>
+                        <CircuitStatsLine stats={circuitStats.get(circuit.layoutKey)} />
                       </span>
                       {rounds.length ? (
                         <span className="circuit-order-badges circuit-order-badges-used">
@@ -475,6 +479,62 @@ function ProfileStat({ label, value }: { label: string; value: ReactNode }) {
 
 // The API returns teams already ordered by points, but the local solo engine keeps them in
 // creation order. Ranking here instead of trusting the array keeps both sources correct.
+/** One quiet line under the circuit name; renders nothing until the team has actually raced there. */
+function CircuitStatsLine({ stats }: { stats?: CircuitTeamStats }) {
+  if (!stats || (!stats.races && stats.bestTime === null)) return null;
+  return (
+    <small className="circuit-stats-line">
+      {stats.wins ? (
+        <span className="circuit-stats-wins">
+          <BoardIcon className="circuit-stats-icon" name="honors" />
+          {stats.wins}
+        </span>
+      ) : null}
+      {stats.bestTime !== null ? (
+        <span>
+          <BoardIcon className="circuit-stats-icon" name="chrono" />
+          {stats.bestTime.toFixed(2)}s
+        </span>
+      ) : null}
+    </small>
+  );
+}
+
+/** The same numbers as the calendar line, spelled out, on the preview map. */
+function CircuitStatsPanel({ stats }: { stats?: CircuitTeamStats }) {
+  const tt = useT();
+  const raced = Boolean(stats && (stats.races || stats.bestTime !== null));
+  return (
+    <dl className="circuit-detail-stats">
+      {raced ? (
+        <>
+          <div>
+            <dt>{tt("circuit_stats_best_time")}</dt>
+            <dd>{stats!.bestTime !== null ? `${stats!.bestTime.toFixed(2)}s` : "—"}</dd>
+          </div>
+          <div>
+            <dt>{tt("circuit_stats_wins_label")}</dt>
+            <dd>{stats!.wins}</dd>
+          </div>
+          <div>
+            <dt>{tt("circuit_stats_races")}</dt>
+            <dd>{stats!.races}</dd>
+          </div>
+          <div>
+            <dt>{tt("circuit_stats_best_finish")}</dt>
+            <dd>{stats!.bestFinish !== null ? `P${stats!.bestFinish}` : "—"}</dd>
+          </div>
+        </>
+      ) : (
+        <div className="circuit-detail-stats-empty">
+          <dt>{tt("circuit_stats_none")}</dt>
+          <dd />
+        </div>
+      )}
+    </dl>
+  );
+}
+
 function rankTeams(state: LeagueState) {
   return [...state.teams].sort((left, right) => right.points - left.points || left.name.localeCompare(right.name));
 }

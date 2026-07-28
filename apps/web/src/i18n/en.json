@@ -970,5 +970,10 @@
   "circuit_accra_independence_avenue": "Accra Independence Avenue GP",
   "circuit_addis_ababa_meskel_square": "Addis Ababa Meskel Square Circuit",
   "circuit_lagos_victoria_island": "Lagos Victoria Island Sprint",
-  "circuit_maputo_baixa_waterfront": "Maputo Baixa Waterfront Loop"
+  "circuit_maputo_baixa_waterfront": "Maputo Baixa Waterfront Loop",
+  "circuit_stats_best_time": "Best time",
+  "circuit_stats_races": "Races",
+  "circuit_stats_best_finish": "Best finish",
+  "circuit_stats_none": "Not raced yet.",
+  "circuit_stats_wins_label": "Wins"
 }

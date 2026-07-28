@@ -970,5 +970,10 @@
   "circuit_accra_independence_avenue": "GP Independence Avenue d'Accra",
   "circuit_addis_ababa_meskel_square": "Circuit Meskel Square d'Addis-Abeba",
   "circuit_lagos_victoria_island": "Sprint Victoria Island de Lagos",
-  "circuit_maputo_baixa_waterfront": "Boucle waterfront Baixa de Maputo"
+  "circuit_maputo_baixa_waterfront": "Boucle waterfront Baixa de Maputo",
+  "circuit_stats_best_time": "Meilleur temps",
+  "circuit_stats_races": "Courses",
+  "circuit_stats_best_finish": "Meilleur résultat",
+  "circuit_stats_none": "Jamais couru.",
+  "circuit_stats_wins_label": "Victoires"
 }

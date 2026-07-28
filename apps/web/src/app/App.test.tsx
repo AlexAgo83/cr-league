@@ -1167,7 +1167,9 @@ describe("App", () => {
     expect(screen.getByRole("heading", { name: "My team" })).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Inventory" }));
     expect(screen.getByText("No cards in inventory.")).toBeTruthy();
-    expect(document.querySelector(".garage-empty-inventory img")).toBeTruthy();
+    // A board icon, not a full-bleed illustration: the CSS sizes it at 58px, and a stray rule
+    // stretching it to a 16/9 full-width block is what used to clip this empty state.
+    expect(document.querySelector(".garage-empty-inventory .empty-state-board-icon")).toBeTruthy();
     fireEvent.click(screen.getByRole("tab", { name: "Shop" }));
     expect(screen.getByRole("button", { name: /Soft Tires/ })).toBeTruthy();
     expect(screen.getByRole("button", { name: /Qualifying Lap/ })).toBeTruthy();

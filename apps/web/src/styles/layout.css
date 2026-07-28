@@ -5032,35 +5032,28 @@ label small {
   color: var(--color-text);
 }
 
+/* The inventory is a two-column grid; the empty state is one message, so it spans both. */
 .garage-panel-inventory .card-inventory li.garage-empty-inventory {
   align-items: center;
   display: flex;
-  gap: 6px;
+  gap: 10px;
+  grid-column: 1 / -1;
   justify-content: flex-start;
+  padding: 16px;
 }
 
 .card-inventory li > .empty-inventory-shop-link,
 .directive-lock-note.empty-inventory-shop-link {
-  align-items: baseline;
+  align-items: center;
   display: inline-flex;
-  gap: 6px;
-  white-space: nowrap;
+  flex-wrap: wrap;
+  gap: 10px;
 }
 
 .garage-empty-shop-button {
   font-size: 0.78rem;
   min-height: 0;
   padding: 4px 8px;
-}
-
-.garage-empty-inventory img {
-  aspect-ratio: 16 / 9;
-  background:
-    linear-gradient(135deg, rgb(248 243 232 / 0.08), rgb(248 243 232 / 0.02)),
-    #050505;
-  display: block;
-  object-fit: cover;
-  width: 100%;
 }
 
 .card-stat-badges {

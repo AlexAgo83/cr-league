@@ -662,7 +662,6 @@
   "result_replay_reference": "Reference",
   "result_replay_axis": "Front of the classification is on the left.",
   "result_replay_phase": "Phase",
-  "result_replay_empty": "No replay events were recorded for this GP.",
   "city_circuit_map": "City circuit map",
   "circuit_filter_search": "Search a circuit",
   "circuit_filter_region": "Region",

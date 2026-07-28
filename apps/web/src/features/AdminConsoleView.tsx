@@ -159,7 +159,7 @@ export function AdminConsoleView({
                 ))}
               </tbody>
             </table>
-            {!adminUsers.length ? <p className="admin-empty">{tt("admin_users_empty")}</p> : null}
+            {!adminUsers.length ? <p className="admin-empty empty-state-line"><BoardIcon className="empty-state-inline-icon" name="users-admin" />{tt("admin_users_empty")}</p> : null}
           </div>
         ) : (
           <div className="admin-table-wrap">
@@ -215,7 +215,7 @@ export function AdminConsoleView({
                 ))}
               </tbody>
             </table>
-            {!adminLeagues.length ? <p className="admin-empty">{tt("admin_leagues_empty")}</p> : null}
+            {!adminLeagues.length ? <p className="admin-empty empty-state-line"><BoardIcon className="empty-state-inline-icon" name="leagues-admin" />{tt("admin_leagues_empty")}</p> : null}
           </div>
         )}
       </div>

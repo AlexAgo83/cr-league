@@ -311,7 +311,10 @@ function QualifyingTimesPanel({
           ))}
         </ol>
       ) : (
-        <small>{tt("qualifying_times_empty")}</small>
+        <small className="empty-state-line">
+          <BoardIcon className="empty-state-inline-icon" name="no-chrono" />
+          {tt("qualifying_times_empty")}
+        </small>
       )}
     </div>
   );

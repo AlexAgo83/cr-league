@@ -68,11 +68,25 @@ export function circuitStatsForTeam(state: LeagueState, teamId: string | undefin
     });
   }
 
+  // The current Grand Prix keeps its runs in state, so read them directly rather than waiting
+  // for the stored record. This is also what surfaces a time on a league that predates the
+  // record column: history gives the wins, the live runs give the current circuit's time.
+  const liveTimes = state.currentGrandPrix.qualifyingRuns
+    .filter((run) => run.teamId === teamId)
+    .map((run) => run.time);
+  const liveBest = liveTimes.length ? Math.min(...liveTimes) : null;
+  const currentLayout = layoutKeyForRound(state.league.id, state.currentGrandPrix.season, state.currentGrandPrix.round);
+
   // A record can exist for a layout with no finished race yet: the player set a time, then the
   // Grand Prix was restarted or is still open.
   for (const [layoutKey, time] of Object.entries(records)) {
     const current = stats.get(layoutKey) ?? { layoutKey, races: 0, wins: 0, bestFinish: null, bestTime: null };
     stats.set(layoutKey, { ...current, bestTime: time });
+  }
+
+  if (liveBest !== null) {
+    const current = stats.get(currentLayout) ?? { layoutKey: currentLayout, races: 0, wins: 0, bestFinish: null, bestTime: null };
+    stats.set(currentLayout, { ...current, bestTime: current.bestTime === null ? liveBest : Math.min(current.bestTime, liveBest) });
   }
 
   return stats;

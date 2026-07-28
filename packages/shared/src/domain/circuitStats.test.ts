@@ -11,9 +11,14 @@ function classification(winnerId: string, playerPosition: number) {
   ].filter((entry, index, all) => index === 0 || entry.teamId !== all[0]!.teamId);
 }
 
-function stateWith(history: Array<{ season: number; round: number; winnerId: string; playerPosition: number }>, records: Record<string, number> = {}) {
+function stateWith(
+  history: Array<{ season: number; round: number; winnerId: string; playerPosition: number }>,
+  records: Record<string, number> = {},
+  liveRuns: Array<{ teamId: string; time: number }> = []
+) {
   return {
     league: { id: LEAGUE_ID },
+    currentGrandPrix: { season: 1, round: 1, qualifyingRuns: liveRuns },
     teams: [{ id: "team_1", circuitRecords: records }],
     grandPrixHistory: history.map((entry) => ({
       id: `gp-${entry.season}-${entry.round}`,
@@ -67,6 +72,30 @@ describe("circuitStatsForTeam", () => {
 
   it("returns nothing for an unknown team", () => {
     expect(circuitStatsForTeam(stateWith([]), undefined).size).toBe(0);
+  });
+});
+
+describe("live qualifying runs", () => {
+  it("reads the current Grand Prix runs when no record is stored yet", () => {
+    // A league created before the record column: history still yields the wins, and the runs
+    // sitting on the current Grand Prix still yield its time.
+    const state = stateWith([{ season: 1, round: 1, winnerId: "team_1", playerPosition: 1 }], {}, [
+      { teamId: "team_1", time: 91.4 },
+      { teamId: "team_1", time: 90.2 },
+      { teamId: "team_2", time: 80.1 }
+    ]);
+
+    const stats = circuitStatsForTeam(state, "team_1").get(layoutKeyForRound(LEAGUE_ID, 1, 1))!;
+
+    expect(stats.wins).toBe(1);
+    expect(stats.bestTime).toBe(90.2);
+  });
+
+  it("keeps the faster of the stored record and the live runs", () => {
+    const layout = layoutKeyForRound(LEAGUE_ID, 1, 1);
+    const state = stateWith([], { [layout]: 88 }, [{ teamId: "team_1", time: 92 }]);
+
+    expect(circuitStatsForTeam(state, "team_1").get(layout)!.bestTime).toBe(88);
   });
 });
 

@@ -3,7 +3,7 @@ import type { TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, withRoute, type CityCircuit } from "../app/circuits.js";
 import { safeStorage } from "../app/appStorage.js";
-import { completedSeasonSummaries, derivedRivalForTeam, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
+import { completedSeasonSummaries, standingsRival, seasonWinsByTeamId, statusLabel, type Translator } from "../app/helpers.js";
 import type { LeagueState } from "../app/types.js";
 import { CHAMPIONSHIP_RECORD_TAB_KEY, type ChampionshipRecordTab } from "../app/viewPreferences.js";
 import { AssetImage } from "./AssetImage.js";
@@ -60,7 +60,7 @@ export function ChampionshipView({
   const completedSeasons = completedSeasonSummaries(state);
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
-  const playerRival = derivedRivalForTeam(state, playerTeamId);
+  const playerRival = standingsRival(state, playerTeamId);
   const [profileTeamId, setProfileTeamId] = useState<string | undefined>();
   const [previewCircuit, setPreviewCircuit] = useState<CityCircuit | undefined>();
   const [previewFocus, setPreviewFocus] = useState(true);
@@ -424,7 +424,7 @@ function TeamProfileModal({
   onClose: () => void;
 }) {
   const stats = teamSeasonStats(state, team.id);
-  const rival = derivedRivalForTeam(state, team.id);
+  const rival = standingsRival(state, team.id);
   const styleKey = teamStyleKey(state, team.id);
   return (
     <Modal label={tt("team_profile_title", { team: team.name })} className="panel modal team-profile-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>

@@ -18,6 +18,7 @@ export { safeHex } from "./domain/colors.js";
 export { APPROACH_DELTAS, CARD_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type DecisionDeltaKey, type DecisionDeltas } from "./domain/decisionDeltas.js";
 export type { LeagueState, ProfileSession, SeasonSummary } from "./domain/league.js";
 export * from "./domain/race.js";
+export { seasonStandings, standingsRival, type SeasonStanding, type StandingsRival } from "./domain/standings.js";
 export { TEAM_NAME_SUGGESTIONS } from "./domain/teamNames.js";
 export { strongestForecast } from "./domain/weather.js";
 export {

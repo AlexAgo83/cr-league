@@ -2,7 +2,7 @@ import { type CSSProperties, useState } from "react";
 import { APPROACH_DELTAS, PIT_STRATEGY_DELTAS, PREPARATION_DELTAS, type CardId, type DecisionDeltaKey, type DecisionDeltas } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { safeStorage } from "../app/appStorage.js";
-import { sortCardIdsByName, type CardFit, type DerivedRival, type Translator } from "../app/helpers.js";
+import { sortCardIdsByName, type CardFit, type StandingsRival, type Translator } from "../app/helpers.js";
 import type { PlanRecommendation, PlanRiskRead } from "../app/raceFlow.js";
 import type { FormState } from "../app/types.js";
 import { AssetImage } from "./AssetImage.js";
@@ -216,7 +216,7 @@ export function DirectivePanel({
   cardLocked?: boolean;
   disabled?: boolean;
   locked?: boolean;
-  rival?: DerivedRival | null;
+  rival?: StandingsRival | null;
   onQualifying?: () => void;
   onOpenGarageShop?: () => void;
   onSelectStep: (step: DirectiveStep) => void;

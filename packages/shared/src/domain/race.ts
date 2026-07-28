@@ -70,6 +70,11 @@ export type RaceDecision = {
   preparation: TechnicalPreparation;
   pitStrategy?: PitStrategy;
   cardId?: CardId;
+  /**
+   * The rival the player explicitly picked for this Grand Prix, and the only stored one.
+   * Distinct from `standingsRival()` in ./standings.ts, which derives a rival on the fly
+   * from standings proximity and is never persisted or chosen.
+   */
   rivalTeamId?: string;
 };
 

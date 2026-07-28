@@ -109,6 +109,8 @@ model RaceDecision {
   preparation String
   pitStrategy String   @default("standard")
   cardId      String?
+  // Explicitly picked by the player for this Grand Prix. Not the derived standings-proximity
+  // rival from standingsRival() in packages/shared/src/domain/standings.ts, which is never stored.
   rivalTeamId String?
   submittedAt DateTime @default(now())
 

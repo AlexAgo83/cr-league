@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildRaceActionRecommendation, buildRaceVerdict, cardFit, clampNumber, completedSeasonSummaries, derivedRivalForTeam, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, sortInventoryCardsForGarage, sortShopOffersForGarage, startingGrid, translateLine } from "./helpers.js";
+import { buildRaceActionRecommendation, buildRaceVerdict, cardFit, clampNumber, completedSeasonSummaries, standingsRival, eventReplayText, raceRecapCards, seasonStandings, seasonWinsByTeamId, sortCardIdsByName, sortInventoryCardsForGarage, sortShopOffersForGarage, startingGrid, translateLine } from "./helpers.js";
 import type { LeagueState } from "./types.js";
 import { circuitIdentityForRound, circuitSeasonSeed, type CardId, type RaceResult } from "@cr-league/shared";
 import { t } from "../i18n/index.js";
@@ -245,7 +245,7 @@ describe("seasonStandings", () => {
   });
 });
 
-describe("derivedRivalForTeam", () => {
+describe("standingsRival", () => {
   it("does not invent a rival before points exist", () => {
     const state = stateWithHistory([]);
     state.teams = [
@@ -253,7 +253,7 @@ describe("derivedRivalForTeam", () => {
       { id: "team_2", name: "Two", kind: "bot", points: 0, credits: 0, cards: [], livery: { primary: "#222222", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true }
     ];
 
-    expect(derivedRivalForTeam(state, "team_1")).toBe(null);
+    expect(standingsRival(state, "team_1")).toBe(null);
   });
 
   it("uses nearest standings proximity, then points gap, then stable team id", () => {
@@ -264,14 +264,14 @@ describe("derivedRivalForTeam", () => {
       { id: "team_2", name: "Two", kind: "bot", points: 15, credits: 0, cards: [], livery: { primary: "#222222", secondary: "#eeeeee" }, unlockedCarAssetIds: [], ready: true }
     ];
 
-    expect(derivedRivalForTeam(state, "team_1")).toMatchObject({ teamId: "team_2", position: 3, pointsGap: 3 });
+    expect(standingsRival(state, "team_1")).toMatchObject({ teamId: "team_2", position: 3, pointsGap: 3 });
 
     state.teams = [
       { ...state.teams[0]!, points: 20, id: "team_b", name: "Bee" },
       { ...state.teams[1]!, points: 18 },
       { ...state.teams[2]!, points: 16, id: "team_a", name: "Aye" }
     ];
-    expect(derivedRivalForTeam(state, "team_1")?.teamId).toBe("team_a");
+    expect(standingsRival(state, "team_1")?.teamId).toBe("team_a");
   });
 });
 

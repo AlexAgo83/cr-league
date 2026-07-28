@@ -1,4 +1,4 @@
-import { RACE_SEGMENTS, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, strongestForecast, type CardId, type RaceResult } from "@cr-league/shared";
+import { RACE_SEGMENTS, circuitIdentityForRound, circuitSeasonSeed, raceInputFromCircuit, seasonStandings, standingsRival, strongestForecast, type CardId, type RaceResult, type SeasonStanding, type StandingsRival } from "@cr-league/shared";
 import type { TranslationKey, TranslationParams } from "../i18n/index.js";
 import type { LeagueState } from "./types.js";
 import { displayLapForEvent, maxEventLap } from "./lapDisplay.js";
@@ -6,13 +6,6 @@ import { displayLapForEvent, maxEventLap } from "./lapDisplay.js";
 export type Translator = (key: TranslationKey, params?: TranslationParams) => string;
 
 export type RaceEvent = RaceResult["events"][number];
-export type SeasonStanding = {
-  position: number;
-  teamId: string;
-  teamName: string;
-  livery?: LeagueState["teams"][number]["livery"];
-  points: number;
-};
 export type CompletedSeasonSummary = {
   season: number;
   gpCount: number;
@@ -34,15 +27,12 @@ export type RaceActionRecommendation = {
   nextAttempt: string;
   cardHint: string;
 };
-export type DerivedRival = {
-  teamId: string;
-  teamName: string;
-  position: number;
-  points: number;
-  pointsGap: number;
-};
 
 export { strongestForecast };
+// Standings ranking and the implied-rival derivation are pure domain logic and live in
+// packages/shared; they stay re-exported here so existing web import paths keep working.
+export { seasonStandings, standingsRival };
+export type { SeasonStanding, StandingsRival };
 
 export function clampNumber(value: number, min: number, max: number) {
   return Number.isFinite(value) ? Math.min(max, Math.max(min, value)) : min;
@@ -126,31 +116,6 @@ export function startingGrid(state: LeagueState) {
     }));
 }
 
-export function seasonStandings(state: LeagueState, season: number): SeasonStanding[] {
-  const teamRank = new Map(state.teams.map((team, index) => [team.id, index]));
-  const teams = new Map(state.teams.map((team) => [team.id, team]));
-  const points = new Map(state.teams.map((team) => [team.id, 0]));
-  const names = new Map(state.teams.map((team) => [team.id, team.name]));
-
-  for (const grandPrix of state.grandPrixHistory) {
-    if (grandPrix.season !== season || !grandPrix.result) continue;
-    for (const entry of grandPrix.result.classification) {
-      points.set(entry.teamId, (points.get(entry.teamId) ?? 0) + entry.points);
-      names.set(entry.teamId, entry.teamName);
-    }
-  }
-
-  return [...points.entries()]
-    .sort((left, right) => right[1] - left[1] || (teamRank.get(left[0]) ?? 999) - (teamRank.get(right[0]) ?? 999) || (names.get(left[0]) ?? left[0]).localeCompare(names.get(right[0]) ?? right[0]))
-    .map(([teamId, score], index) => ({
-      position: index + 1,
-      teamId,
-      teamName: names.get(teamId) ?? teamId,
-      livery: teams.get(teamId)?.livery,
-      points: score
-    }));
-}
-
 export function completedSeasonSummaries(state: LeagueState): CompletedSeasonSummary[] {
   if (state.seasonSummaries?.length) return state.seasonSummaries;
   const seasons = new Map<number, number>();
@@ -174,33 +139,6 @@ export function seasonWinsByTeamId(state: LeagueState) {
     wins.set(season.champion.teamId, (wins.get(season.champion.teamId) ?? 0) + 1);
   }
   return wins;
-}
-
-export function derivedRivalForTeam(state: LeagueState, teamId: string | undefined): DerivedRival | null {
-  if (!teamId || state.teams.every((team) => team.points === 0)) return null;
-  const baseRank = new Map(state.teams.map((team, index) => [team.id, index]));
-  const standings = [...state.teams]
-    .sort((left, right) => right.points - left.points || (baseRank.get(left.id) ?? 999) - (baseRank.get(right.id) ?? 999) || left.id.localeCompare(right.id))
-    .map((team, index) => ({ team, position: index + 1 }));
-  const player = standings.find((entry) => entry.team.id === teamId);
-  if (!player) return null;
-
-  const rival = standings
-    .filter((entry) => entry.team.id !== teamId)
-    .sort(
-      (left, right) =>
-        Math.abs(left.position - player.position) - Math.abs(right.position - player.position) ||
-        Math.abs(left.team.points - player.team.points) - Math.abs(right.team.points - player.team.points) ||
-        left.team.id.localeCompare(right.team.id)
-    )[0];
-  if (!rival) return null;
-  return {
-    teamId: rival.team.id,
-    teamName: rival.team.name,
-    position: rival.position,
-    points: rival.team.points,
-    pointsGap: Math.abs(rival.team.points - player.team.points)
-  };
 }
 
 export function raceRecapCards(
@@ -254,7 +192,7 @@ export function buildRaceActionRecommendation(
   tt: Translator
 ): RaceActionRecommendation {
   const playerResult = result.classification.find((entry) => entry.teamId === playerTeamId);
-  const autoRival = derivedRivalForTeam(state, playerTeamId);
+  const autoRival = standingsRival(state, playerTeamId);
   const rivalTeamId = decision?.rivalTeamId ?? autoRival?.teamId;
   const rivalResult = rivalTeamId ? result.classification.find((entry) => entry.teamId === rivalTeamId) : undefined;
   const ownCardEvent = decision?.cardId ? result.events.find((event) => event.teamId === playerTeamId && event.cardId === decision.cardId) : undefined;

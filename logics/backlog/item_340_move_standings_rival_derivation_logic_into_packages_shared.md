@@ -1,10 +1,10 @@
 ## item_340_move_standings_rival_derivation_logic_into_packages_shared - Move standings/rival-derivation logic into packages/shared
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Code organization
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -52,3 +52,10 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Done: `seasonStandings` and the renamed `standingsRival` (was `derivedRivalForTeam`) now live in `packages/shared/src/domain/standings.ts`, with the `SeasonStanding` / `StandingsRival` types, exported from the shared barrel.
+- `apps/web/src/app/helpers.ts` re-exports all four symbols, so no web import path changed; call sites in `PlanView.tsx`, `ChampionshipView.tsx`, `DirectivePanel.tsx`, and `helpers.test.ts` were updated to the new name only. `helpers.test.ts` still exercises them through the web re-export, which doubles as the back-compat proof.
+- `completedSeasonSummaries` / `seasonWinsByTeamId` stayed in the web app: they depend on `seasonStandings` rather than the reverse, and their `CompletedSeasonSummary` shape is web-facing.
+- Cross-reference comments added on both concepts: on `RaceDecision.rivalTeamId` (`packages/shared/src/domain/race.ts` and `prisma/schema.prisma`) pointing at the derived rival, and on `standingsRival()` pointing back at the explicit one.
+- Algorithm untouched — pure move plus rename. Typecheck, lint, build, and the full suite (380 passed, 7 skipped) green.

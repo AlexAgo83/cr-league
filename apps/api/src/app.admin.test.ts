@@ -280,6 +280,27 @@ describe("api app profile and admin", () => {
     expect(okResponse.statusCode).toBe(200);
   });
 
+  it("rate-limits admin routes, including repeated token guesses", async () => {
+    const app = await createTestApp(createMemoryDb(), "secret-admin-token");
+
+    const guesses = [];
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      guesses.push(await app.inject({ method: "GET", url: "/admin/users", headers: { authorization: `Bearer guess-${attempt}` } }));
+    }
+    const limitedGuess = await app.inject({ method: "GET", url: "/admin/users", headers: { authorization: "Bearer guess-20" } });
+    // ponytail: the budget is per route, so an authenticated read route needs its own burst to prove it is limited too.
+    for (let attempt = 0; attempt < 20; attempt += 1) {
+      await app.inject({ method: "GET", url: "/admin/leagues", headers: { authorization: "Bearer secret-admin-token" } });
+    }
+    const limitedRead = await app.inject({ method: "GET", url: "/admin/leagues", headers: { authorization: "Bearer secret-admin-token" } });
+
+    await app.close();
+
+    expect(guesses.every((response) => response.statusCode === 403)).toBe(true);
+    expect(limitedGuess.statusCode).toBe(429);
+    expect(limitedRead.statusCode).toBe(429);
+  });
+
   it("allows browser preflight for admin delete requests", async () => {
     const app = await createTestApp(createMemoryDb(), "secret-admin-token");
 

@@ -27,6 +27,10 @@ type AdminDeleteBody = {
   confirmation?: string;
 };
 
+// ponytail: stricter than the leagues WRITE_RATE_LIMIT (30/min) on purpose — admin routes are token-guarded
+// and legitimately low-traffic, so a tight budget also throttles Authorization-header guessing.
+const ADMIN_RATE_LIMIT = { config: { rateLimit: { max: 20, timeWindow: "1 minute" } } };
+
 export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient, config: ApiConfig) {
   app.addHook("preHandler", async (request, reply) => {
     if (!request.url.startsWith("/admin/")) return;
@@ -34,9 +38,9 @@ export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient
     if (!sameToken(adminTokenFrom(request), config.adminToken)) return reply.code(403).send({ error: "Forbidden", message: "Admin token is required." });
   });
 
-  app.get<{ Querystring: AdminListQuery }>("/admin/users", async (request) => listAdminUsers(db, adminListInput(request.query)));
+  app.get<{ Querystring: AdminListQuery }>("/admin/users", ADMIN_RATE_LIMIT, async (request) => listAdminUsers(db, adminListInput(request.query)));
 
-  app.post<{ Params: { profileId: string } }>("/admin/users/:profileId/recovery-code", async (request, reply) => {
+  app.post<{ Params: { profileId: string } }>("/admin/users/:profileId/recovery-code", ADMIN_RATE_LIMIT, async (request, reply) => {
     try {
       return await resetAdminUserRecoveryCode(db, request.params.profileId);
     } catch (error) {
@@ -44,7 +48,7 @@ export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient
     }
   });
 
-  app.delete<{ Params: { profileId: string }; Body: AdminDeleteBody }>("/admin/users/:profileId", async (request, reply) => {
+  app.delete<{ Params: { profileId: string }; Body: AdminDeleteBody }>("/admin/users/:profileId", ADMIN_RATE_LIMIT, async (request, reply) => {
     try {
       return await deleteAdminUser(db, request.params.profileId, request.body ?? {});
     } catch (error) {
@@ -53,7 +57,7 @@ export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient
     }
   });
 
-  app.post<{ Body: AdminCleanupBody }>("/admin/test-data-cleanup", async (request, reply) => {
+  app.post<{ Body: AdminCleanupBody }>("/admin/test-data-cleanup", ADMIN_RATE_LIMIT, async (request, reply) => {
     try {
       return await cleanupAdminTestData(db, request.body);
     } catch (error) {
@@ -62,9 +66,9 @@ export async function registerAdminRoutes(app: FastifyInstance, db: PrismaClient
     }
   });
 
-  app.get<{ Querystring: AdminListQuery }>("/admin/leagues", async (request) => listAdminLeagues(db, adminListInput(request.query)));
+  app.get<{ Querystring: AdminListQuery }>("/admin/leagues", ADMIN_RATE_LIMIT, async (request) => listAdminLeagues(db, adminListInput(request.query)));
 
-  app.get<{ Params: { leagueId: string } }>("/admin/leagues/:leagueId", async (request, reply) => {
+  app.get<{ Params: { leagueId: string } }>("/admin/leagues/:leagueId", ADMIN_RATE_LIMIT, async (request, reply) => {
     const state = await inspectAdminLeague(db, request.params.leagueId);
     if (!state) return reply.code(404).send({ error: "Not Found", message: "League not found." });
     return state;

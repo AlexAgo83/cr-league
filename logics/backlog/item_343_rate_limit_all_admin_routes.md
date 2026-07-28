@@ -1,10 +1,10 @@
 ## item_343_rate_limit_all_admin_routes - Rate-limit all admin routes
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: Low
 > Theme: API hardening
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -49,3 +49,9 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Done: `ADMIN_RATE_LIMIT` (20/min, deliberately stricter than the leagues `WRITE_RATE_LIMIT` of 30/min) is applied to all six routes in `apps/api/src/features/admin/routes.ts` — the three reads (`GET /admin/users`, `GET /admin/leagues`, `GET /admin/leagues/:leagueId`) as well as the writes.
+- `@fastify/rate-limit` runs on `onRequest`, before the admin-token `preHandler`, so the limit also throttles repeated `Authorization`-header guesses (proven by the new test: 20 wrong-token 403s, then 429).
+- The budget is per route, not per feature — the test bursts `/admin/leagues` separately to prove authenticated reads are limited too, and a comment records that.
+- Test added in `apps/api/src/app.admin.test.ts`. Full suite green (380 passed, 7 skipped).

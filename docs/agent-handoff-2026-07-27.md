@@ -23,13 +23,13 @@
 - Auto-suggested team names are now a shared 100-name source of truth.
 
 ## Remaining 0.6 Work
-- `item_324`, `item_325`, `item_326`, `item_327`, `item_328`, and `item_329` are closed.
-- Next focused slice: `item_330` lightweight team identity and in-league profiles.
-- Optional later only after team profiles: `item_331` variable shop, `item_332` season economy continuity, `item_333` race engineer.
+- `item_324`, `item_325`, `item_326`, `item_327`, `item_328`, `item_329`, and `item_330` are closed.
+- Optional later slices: `item_331` variable shop, `item_332` season economy continuity, `item_333` race engineer.
 
 ## Commands To Re-run
 - `rtk logics-manager status`
 - `rtk logics-manager lint --require-status`
 - `rtk npm run typecheck`
 - `rtk npm test -- --run apps/api/src/app.test.ts apps/web/src/app/App.test.tsx apps/web/src/app/helpers.test.ts`
+- `rtk npm run playtest:browser -- --rounds 2 --report reports/playtest/team-profile-browser.md --ux-report reports/ux/team-profile-browser.md --ux-assets reports/ux/team-profile-browser`
 - `rtk npm run playtest:ux`

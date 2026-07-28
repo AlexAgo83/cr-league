@@ -4,7 +4,7 @@
 > Status: In Progress
 > Understanding: 92
 > Confidence: 94
-> Progress: 70%
+> Progress: 82%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -18,8 +18,8 @@
 - [x] 2. Implement the beta season lifecycle core before optional flavor items: `Quick beta` 3 GP, `Standard season` 6 GP default, no auto-resolve, neutral absent-player defaults, explicit next-season action, card/credit reset on season rollover.
 - [x] 3. Add commissioner management, share controls, and one-reminder-per-season manual email reminders with minimal audit fields while preserving creator-only API access.
 - [x] 4. Close the accessibility gate without redesigning the app.
-- [ ] 5. Improve race feedback, rival context, and contextual card guidance using deterministic data.
-- [ ] 6. Add lightweight team profiles and evaluate whether season economy continuity and variable shop mode should ship in this corpus or be deferred after design proof.
+- [x] 5. Improve race feedback, rival context, and contextual card guidance using deterministic data.
+- [x] 6. Add lightweight team profiles and evaluate whether season economy continuity and variable shop mode should ship in this corpus or be deferred after design proof.
 - [ ] 7. Prototype the deterministic race-engineer assistant only if the core beta flow plus card guidance remain insufficient after observation.
 - [ ] 8. Update roadmap/deferred decisions, run relevant tests and browser evidence, run npm run logics:validate, and commit.
 - [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
@@ -90,6 +90,7 @@
 - 2026-07-28 item_327 delivered: race reports now expose a deterministic Next action card with a primary race reason, next-GP attempt guidance, and a card/setup hint. The recommendation uses race result, played-card trigger/miss, existing rival decision when present, and next circuit/weather context without adding auto-pick or generative advice.
 - 2026-07-28 item_328 delivered: derived rival context now threads through standings, Plan pre-race guidance, and report action reasoning, with no mandatory rival selection and no first-race rival before meaningful points exist.
 - 2026-07-28 item_329 delivered: contextual card guidance now replaces the old affinity labels across Plan and Garage, with deterministic reasons tied to weather, circuit traits, position pressure, chrono timing, and economy tradeoffs. Browser UX evidence covers Plan and Garage after fixing card-cell overlap and Plan ellipsis.
+- 2026-07-28 item_330 delivered: standings rows now open an in-league team profile modal with livery identity, rank, points, credits, GP count, podiums, palmares count, recent form, current rival, and derived style. Tests cover profile rendering and unsafe team-name text rendering. Browser UX evidence covers mobile standings and team profile with zero axe violations at `reports/ux/team-profile-browser.md`; Palmarès mobile text alignment is scoped in CSS for completed-season rows.
 
 # AI Context
 - Summary: Orchestrate the 0.6 beta season lifecycle and league management corpus

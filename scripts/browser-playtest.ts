@@ -254,6 +254,8 @@ try {
   await page.getByRole("button", { name: "Championship", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Current GP" })).toBeVisible();
   await captureUx(page, "championship-return", "Returned to Championship after the browser playthrough.");
+  await inspectPalmares(page);
+  await inspectTeamProfile(page, state);
   await browser.close();
   browser = undefined;
   await writeReport({ reports, consoleErrors, failed: false });
@@ -450,6 +452,38 @@ async function openResultReport(page: Page) {
   if (await reportButton.isVisible().catch(() => false)) await reportButton.click();
   else await page.locator(".replay-tower .map-plan-edit-button").first().click();
   await expect(page.getByText("Race report")).toBeVisible();
+}
+
+async function inspectTeamProfile(page: Page, state: LeagueState) {
+  const team = state.teams.find((candidate) => candidate.id === state.player?.teamId) ?? state.teams[0];
+  if (!team) throw new Error("No team available for profile inspection.");
+  await trackedClick(page, "team-profile", "open-standings", () => page.getByRole("tab", { name: "Standings" }).click());
+  await captureUx(page, "standings", "Opened mobile standings before inspecting a team profile.");
+  await trackedClick(page, "team-profile", "open-profile", () => page.getByRole("button", { name: `View profile: ${team.name}` }).click());
+  const dialog = page.getByRole("dialog", { name: `${team.name} profile` });
+  await expect(dialog).toBeVisible();
+  await expect(dialog.getByText("Current rival")).toBeVisible();
+  await expect(dialog.getByText("Recent form")).toBeVisible();
+  await observeScenario(page, {
+    id: "team-profile-read",
+    question: "Can I inspect an in-league team identity from standings?",
+    evidence: "Standings rows open a private in-league team profile with identity, stats, rival, style, and form.",
+    locators: [
+      { label: "Profile dialog", find: () => dialog },
+      { label: "Team identity", find: () => dialog.getByText(team.name) },
+      { label: "Style read", find: () => dialog.getByText("Style", { exact: true }) },
+      { label: "Recent form", find: () => dialog.getByText("Recent form", { exact: true }) }
+    ]
+  });
+  await captureUx(page, "team-profile", `Opened ${team.name} team profile from standings.`);
+}
+
+async function inspectPalmares(page: Page) {
+  const tab = page.getByRole("tab", { name: "Palmares" });
+  if (!(await tab.isVisible().catch(() => false))) return;
+  await trackedClick(page, "palmares", "open-palmares", () => tab.click());
+  await expect(page.locator(".palmares-button").first()).toBeVisible();
+  await captureUx(page, "palmares", "Opened completed-season palmares on Championship.");
 }
 
 async function returnToStand(page: Page) {

@@ -279,6 +279,19 @@
   color: #f8f3e8;
 }
 
+.championship-view .record-panel-standings .standings-livery-plate,
+.championship-view .record-panel-palmares .standings-livery-plate,
+.team-profile-modal .standings-livery-plate {
+  color: #f8f3e8;
+}
+
+.championship-view .record-panel-standings .livery-plate-text,
+.championship-view .record-panel-palmares .livery-plate-text,
+.team-profile-modal .livery-plate-text {
+  -webkit-text-stroke: 0;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.8);
+}
+
 .championship-view .record-panel-history .round-chip.status-resolved {
   border-color: rgb(255 138 61 / 0.42);
   color: #ff8a3d;
@@ -729,6 +742,34 @@
   min-width: 0;
 }
 
+.standings-profile-button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  color: inherit;
+  display: grid;
+  gap: 10px;
+  grid-column: 2 / 4;
+  grid-template-columns: 48px minmax(0, 1fr);
+  min-width: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.standings-profile-button:hover .standings-team,
+.standings-profile-button:focus-visible .standings-team {
+  color: #ff8a3d;
+}
+
+.standings-profile-button:focus-visible {
+  outline: 2px solid #ff8a3d;
+  outline-offset: 4px;
+}
+
+.standings-profile-button .standings-livery-plate {
+  grid-area: auto;
+}
+
 .standings-team small,
 .standings-score small,
 .round-timeline small {
@@ -739,6 +780,100 @@
 .standings-team .rival-marker {
   color: #fbbf24;
   font-weight: 900;
+}
+
+.team-profile-modal {
+  background: #17151a;
+  color: #f8f3e8;
+  max-width: min(720px, calc(100vw - 24px));
+}
+
+.team-profile-hero {
+  align-items: center;
+  background: rgb(16 14 18 / 0.88);
+  border: 1px solid rgb(248 243 232 / 0.14);
+  display: grid;
+  gap: 14px;
+  grid-template-columns: 64px minmax(0, 1fr);
+  margin-bottom: 14px;
+  min-height: 118px;
+  overflow: hidden;
+  padding: 16px;
+  position: relative;
+}
+
+.team-profile-hero > *:not(.championship-car-backdrop) {
+  position: relative;
+  z-index: 1;
+}
+
+.team-profile-hero h3 {
+  color: #f8f3e8;
+  margin: 2px 0 0;
+}
+
+.team-profile-hero .section-kicker {
+  color: #ffb168;
+}
+
+.team-profile-livery {
+  background: #101010;
+  color: #f8f3e8;
+  grid-area: auto;
+  grid-column: 1;
+  grid-row: 1;
+  height: 42px;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.7);
+  width: 58px;
+}
+
+.team-profile-livery .livery-plate-text {
+  -webkit-text-stroke: 0;
+}
+
+.team-profile-hero > div {
+  grid-column: 2;
+  min-width: 0;
+}
+
+.team-profile-stats {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.team-profile-stats section,
+.team-profile-read section {
+  background: rgb(248 243 232 / 0.08);
+  border: 1px solid rgb(248 243 232 / 0.16);
+  display: grid;
+  gap: 4px;
+  padding: 10px;
+}
+
+.team-profile-stats span,
+.team-profile-read strong {
+  color: #d8c8a8;
+  font-size: 0.72rem;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.team-profile-stats strong {
+  align-items: center;
+  display: inline-flex;
+  min-height: 24px;
+}
+
+.team-profile-read {
+  display: grid;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.team-profile-read p {
+  color: #f8f3e8;
+  margin: 0;
 }
 
 .ready-pill {
@@ -1201,6 +1336,33 @@
     grid-template-columns: 36px minmax(0, 1fr) auto;
   }
 
+  .palmares-button {
+    grid-template-areas:
+      "season plate team"
+      "season plate count";
+    grid-template-columns: 38px 48px minmax(0, 1fr);
+  }
+
+  .palmares-season-badge {
+    grid-area: season;
+  }
+
+  .palmares-button > .standings-livery-plate {
+    grid-area: plate;
+  }
+
+  .palmares-button > .standings-team {
+    grid-area: team;
+    justify-items: end;
+    text-align: right;
+  }
+
+  .palmares-gp-count {
+    grid-area: count;
+    justify-self: end;
+    text-align: right;
+  }
+
   .season-podium-list li > span:not(.position-badge),
   .season-standings-list li > span:not(.position-badge) {
     overflow: hidden;
@@ -1235,44 +1397,107 @@
   }
 
   .standings-table li {
+    align-items: center;
+    display: grid;
+    gap: 8px 10px;
     grid-template-areas:
-      "rank plate team ready"
-      "rank points points credits";
-    grid-template-columns: 38px 42px minmax(0, 1fr) auto;
+      "rank team ready"
+      "rank points credits";
+    grid-template-columns: 48px minmax(0, 1fr) auto;
+    min-height: 104px;
+    padding: 12px;
   }
 
   .standings-rank {
     grid-area: rank;
+    justify-self: start;
+    position: relative;
+    transform: none;
   }
 
   .standings-livery-plate {
     grid-area: plate;
   }
 
-  .standings-team {
+  .standings-profile-button {
+    align-items: center;
+    display: flex;
+    gap: 10px;
     grid-area: team;
+    min-width: 0;
+    padding: 0;
+    width: 100%;
+  }
+
+  .standings-table li > .standings-team {
+    grid-area: team;
+  }
+
+  .standings-profile-button .standings-livery-plate,
+  .standings-profile-button .standings-team {
+    grid-area: auto;
+  }
+
+  .standings-profile-button .standings-livery-plate {
+    flex: 0 0 48px;
+  }
+
+  .standings-profile-button .standings-team {
+    flex: 1 1 auto;
   }
 
   .ready-pill {
     grid-area: ready;
     justify-self: end;
+    position: static;
   }
 
   .standings-score {
     align-items: baseline;
     display: flex;
     gap: 4px;
-    justify-items: start;
     min-width: 0;
+    position: static;
   }
 
   .standings-points {
     grid-area: points;
+    justify-self: start;
   }
 
   .standings-credits {
     grid-area: credits;
     justify-self: end;
+  }
+
+  .team-profile-hero {
+    grid-template-areas:
+      "livery title"
+      "car car";
+    grid-template-columns: 64px minmax(0, 1fr);
+    min-height: 0;
+  }
+
+  .team-profile-hero .championship-car-backdrop {
+    grid-area: car;
+    justify-self: center;
+    opacity: 0.55;
+    position: relative;
+    transform: none;
+    left: auto;
+    top: auto;
+    width: 120px;
+  }
+
+  .team-profile-livery {
+    grid-area: livery;
+    grid-column: auto;
+    grid-row: auto;
+  }
+
+  .team-profile-hero > div {
+    grid-area: title;
+    grid-column: auto;
   }
 }
 

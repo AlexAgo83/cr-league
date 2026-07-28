@@ -1,13 +1,14 @@
 ## item_330_add_lightweight_team_identity_and_public_in_league_team_profiles - Add lightweight team identity and public in-league team profiles
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
 > Confidence: 95
-> Progress: 0%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Team identity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Owner: codex
 
 # Problem
 - Team attachment can improve beta retention without changing the race engine.
@@ -61,3 +62,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Validation
+- 2026-07-28 delivered in-league team profiles from standings using existing team/livery/stat/history data only. `rtk npm test -- --run apps/web/src/features/ChampionshipView.test.ts apps/web/src/app/helpers.test.ts`, `rtk npm run typecheck`, and `rtk npm run playtest:browser -- --rounds 2 --report reports/playtest/team-profile-browser.md --ux-report reports/ux/team-profile-browser.md --ux-assets reports/ux/team-profile-browser` passed. Browser UX evidence covers mobile standings and profile modal with zero axe violations.

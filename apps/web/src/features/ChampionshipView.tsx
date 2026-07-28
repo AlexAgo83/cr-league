@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from "react";
 import type { TeamLivery } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
 import { CITY_CIRCUITS, circuitsForSeason, withRoute, type CityCircuit } from "../app/circuits.js";
@@ -11,6 +11,7 @@ import { CircuitMap, analyzeCircuitRoute, type MapCar } from "./CircuitMap.js";
 import { carAssetForId } from "./carAssets.js";
 import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { LiveryPlate } from "./LiveryPlate.js";
+import { Modal } from "./Modal.js";
 import { PositionBadge } from "./PositionBadge.js";
 import { RewardValue } from "./RewardValue.js";
 import { CountryBadge, VisualIcon, type BoardIconName } from "./VisualIcon.js";
@@ -60,6 +61,7 @@ export function ChampionshipView({
   const completedBySeason = new Map(completedSeasons.map((season) => [season.season, season]));
   const seasonWins = seasonWinsByTeamId(state);
   const playerRival = derivedRivalForTeam(state, playerTeamId);
+  const [profileTeamId, setProfileTeamId] = useState<string | undefined>();
   const [previewCircuit, setPreviewCircuit] = useState<CityCircuit | undefined>();
   const [previewFocus, setPreviewFocus] = useState(true);
   const seasonCircuits = circuitsForSeason(state.league.id, currentGrandPrix.season);
@@ -91,6 +93,7 @@ export function ChampionshipView({
   ].map((tab) => ({ ...tab, displayLabel: tab.key === "history" ? compactHistoryLabel(tab.label) : undefined, icon: RECORD_TAB_ICONS[tab.key] }));
   const activeRecordTab = recordTabs.some((tab) => tab.key === recordTab) ? recordTab : "calendar";
   const activeRecordLabel = recordTabs.find((tab) => tab.key === activeRecordTab)?.label ?? tt("championship_calendar");
+  const profileTeam = state.teams.find((team) => team.id === profileTeamId);
   const selectRecordTab = (nextTab: ChampionshipRecordTab) => {
     safeStorage.set(CHAMPIONSHIP_RECORD_TAB_KEY, nextTab);
     setPreviewCircuit(undefined);
@@ -165,12 +168,14 @@ export function ChampionshipView({
                 <li key={team.id} className={team.id === playerTeamId ? "current-team" : undefined}>
                   <ChampionshipCarBackdrop livery={team.livery} />
                   <PositionBadge position={index + 1} className="standings-rank" />
-                  <LiveryPlate className="standings-livery-plate" livery={team.livery} name={team.name} wins={seasonWins.get(team.id) ?? 0} />
-                  <span className="standings-team">
-                    {team.name}
-                    <small>{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</small>
-                    {team.id === playerRival?.teamId ? <small className="rival-marker">{tt("rival_marker", { gap: playerRival.pointsGap })}</small> : null}
-                  </span>
+                  <button type="button" className="standings-profile-button" aria-label={tt("team_profile_open", { team: team.name })} onClick={() => setProfileTeamId(team.id)}>
+                    <LiveryPlate className="standings-livery-plate" livery={team.livery} name={team.name} wins={seasonWins.get(team.id) ?? 0} />
+                    <span className="standings-team">
+                      {team.name}
+                      <small>{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</small>
+                      {team.id === playerRival?.teamId ? <small className="rival-marker">{tt("rival_marker", { gap: playerRival.pointsGap })}</small> : null}
+                    </span>
+                  </button>
                   <span className={team.ready ? "ready-pill ready" : "ready-pill missing"}>
                     {team.ready ? tt("team_ready") : tt("team_missing")}
                   </span>
@@ -398,8 +403,93 @@ export function ChampionshipView({
           ) : null}
         </section>
       </div>
+      {profileTeam ? <TeamProfileModal state={state} team={profileTeam} playerTeamId={playerTeamId} seasonWins={seasonWins.get(profileTeam.id) ?? 0} tt={tt} onClose={() => setProfileTeamId(undefined)} /> : null}
     </div>
   );
+}
+
+function TeamProfileModal({
+  state,
+  team,
+  playerTeamId,
+  seasonWins,
+  tt,
+  onClose
+}: {
+  state: LeagueState;
+  team: LeagueState["teams"][number];
+  playerTeamId: string | undefined;
+  seasonWins: number;
+  tt: Translator;
+  onClose: () => void;
+}) {
+  const stats = teamSeasonStats(state, team.id);
+  const rival = derivedRivalForTeam(state, team.id);
+  const styleKey = teamStyleKey(state, team.id);
+  return (
+    <Modal label={tt("team_profile_title", { team: team.name })} className="panel modal team-profile-modal" closeLabel={tt("action_close")} showCloseButton onClose={onClose}>
+      <div className="team-profile-hero">
+        <ChampionshipCarBackdrop livery={team.livery} />
+        <LiveryPlate className="standings-livery-plate team-profile-livery" livery={team.livery} name={team.name} wins={seasonWins} />
+        <div>
+          <span className="section-kicker">{team.id === playerTeamId ? tt("team_you") : team.kind === "bot" ? tt("team_bot") : tt("team_player")}</span>
+          <h3>{team.name}</h3>
+        </div>
+      </div>
+      <div className="team-profile-stats">
+        <ProfileStat label={tt("team_profile_rank")} value={`P${stats.rank}`} />
+        <ProfileStat label={tt("payoff_points")} value={<RewardValue type="points" value={team.points} tt={tt} />} />
+        <ProfileStat label={tt("payoff_credits")} value={<RewardValue type="credits" value={team.credits} tt={tt} />} />
+        <ProfileStat label={tt("team_profile_gps")} value={stats.gpCount} />
+        <ProfileStat label={tt("team_profile_podiums")} value={stats.podiums} />
+        <ProfileStat label={tt("team_profile_wins")} value={seasonWins} />
+      </div>
+      <div className="team-profile-read">
+        <section>
+          <strong>{tt("team_profile_current_rival")}</strong>
+          <p>{rival ? tt("team_profile_rival_body", { rival: rival.teamName, gap: rival.pointsGap }) : tt("team_profile_no_rival")}</p>
+        </section>
+        <section>
+          <strong>{tt("team_profile_style")}</strong>
+          <p>{tt(styleKey)}</p>
+        </section>
+        <section>
+          <strong>{tt("team_profile_recent_form")}</strong>
+          <p>{stats.form.length ? stats.form.map((position) => `P${position}`).join(" · ") : tt("team_profile_no_form")}</p>
+        </section>
+      </div>
+    </Modal>
+  );
+}
+
+function ProfileStat({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <section>
+      <span>{label}</span>
+      <strong>{value}</strong>
+    </section>
+  );
+}
+
+function teamSeasonStats(state: LeagueState, teamId: string) {
+  const rank = Math.max(1, state.teams.findIndex((team) => team.id === teamId) + 1);
+  const results = state.grandPrixHistory
+    .filter((grandPrix) => grandPrix.season === state.currentGrandPrix.season)
+    .flatMap((grandPrix) => grandPrix.result?.classification.find((entry) => entry.teamId === teamId) ?? []);
+  return {
+    rank,
+    gpCount: results.length,
+    podiums: results.filter((entry) => entry.position <= 3).length,
+    form: results.slice(-5).map((entry) => entry.position)
+  };
+}
+
+function teamStyleKey(state: LeagueState, teamId: string): TranslationKey {
+  const decision = [...state.decisions].reverse().find((entry) => entry.teamId === teamId);
+  if (decision?.approach === "aggressive" || decision?.preparation === "speed") return "team_profile_style_attack";
+  if (decision?.approach === "prudent" || decision?.preparation === "reliability" || decision?.pitStrategy === "heavy_pack") return "team_profile_style_control";
+  if (decision?.preparation === "weather") return "team_profile_style_weather";
+  return "team_profile_style_balanced";
 }
 
 function compactHistoryLabel(label: string) {

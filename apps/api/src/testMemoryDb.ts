@@ -89,6 +89,17 @@ export function createMemoryDb(): PrismaClient {
       })
     );
 
+  // ponytail: flat `{ field: true }` shapes only — the shape every real call site uses.
+  // Nested relation `select` is intentionally unsupported; add it here (not per method) if a call site needs it.
+  type SelectShape<T> = Partial<Record<keyof T, boolean>>;
+  const applySelect = <T extends Record<string, unknown>>(row: T, select?: SelectShape<T>): T => {
+    if (!select) return row;
+    const picked = Object.entries(select)
+      .filter(([, enabled]) => enabled)
+      .map(([field]) => [field, row[field as keyof T]] as const);
+    return Object.fromEntries(picked) as T;
+  };
+
   return {
     league: {
       create: async ({
@@ -320,9 +331,10 @@ export function createMemoryDb(): PrismaClient {
         }
         return { count: data.length };
       },
-      findUnique: async ({ where }: { where: { id: string } }) => {
+      findUnique: async ({ where, select }: { where: { id: string }; select?: SelectShape<TeamRow> }) => {
         const team = teams.find((candidate) => candidate.id === where.id);
         if (!team) return null;
+        if (select) return applySelect(team, select);
         return {
           ...team,
           league: leagues.find((league) => league.id === team.leagueId) ?? null
@@ -396,14 +408,18 @@ export function createMemoryDb(): PrismaClient {
         grandPrixes.push(grandPrix);
         return grandPrix;
       },
-      findFirst: async ({ where }: { where: { leagueId: string } }) =>
+      findFirst: async ({ where, select }: { where: { leagueId: string }; select?: SelectShape<GrandPrixRow> }) => {
+        const grandPrix =
+          grandPrixes
+            .filter((candidate) => candidate.leagueId === where.leagueId)
+            .sort((left, right) => right.season - left.season || right.round - left.round)[0] ?? null;
+        return grandPrix && applySelect(grandPrix, select);
+      },
+      findMany: async ({ where, select }: { where: { leagueId: string }; select?: SelectShape<GrandPrixRow> }) =>
         grandPrixes
           .filter((grandPrix) => grandPrix.leagueId === where.leagueId)
-          .sort((left, right) => right.season - left.season || right.round - left.round)[0] ?? null,
-      findMany: async ({ where }: { where: { leagueId: string } }) =>
-        grandPrixes
-          .filter((grandPrix) => grandPrix.leagueId === where.leagueId)
-          .sort((left, right) => right.season - left.season || right.round - left.round),
+          .sort((left, right) => right.season - left.season || right.round - left.round)
+          .map((grandPrix) => applySelect(grandPrix, select)),
       update: async ({ where, data }: { where: { id: string }; data: Partial<Pick<GrandPrixRow, "qualifyingRuns" | "status" | "result">> }) => {
         const grandPrix = grandPrixes.find((candidate) => candidate.id === where.id);
         if (!grandPrix) throw new Error("Grand Prix not found");
@@ -466,11 +482,13 @@ export function createMemoryDb(): PrismaClient {
         decisions.push(decision);
         return decision;
       },
-      findMany: async ({ where }: { where: { grandPrixId?: string; teamId?: string } }) =>
-        decisions.filter((decision) =>
-          (where.grandPrixId === undefined || decision.grandPrixId === where.grandPrixId) &&
-          (where.teamId === undefined || decision.teamId === where.teamId)
-        ),
+      findMany: async ({ where, select }: { where: { grandPrixId?: string; teamId?: string }; select?: SelectShape<DecisionRow> }) =>
+        decisions
+          .filter((decision) =>
+            (where.grandPrixId === undefined || decision.grandPrixId === where.grandPrixId) &&
+            (where.teamId === undefined || decision.teamId === where.teamId)
+          )
+          .map((decision) => applySelect(decision, select)),
       deleteMany: async ({ where }: { where: { grandPrix: { leagueId: string } } }) => {
         const grandPrixIds = new Set(grandPrixes.filter((grandPrix) => grandPrix.leagueId === where.grandPrix.leagueId).map((grandPrix) => grandPrix.id));
         for (let index = decisions.length - 1; index >= 0; index -= 1) {

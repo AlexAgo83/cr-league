@@ -1,10 +1,10 @@
 ## item_336_fix_testmemorydb_s_silent_select_handling - Fix testMemoryDb's silent `select` handling
 > From version: 0.6.0
 > Schema version: 1.0
-> Status: Ready
+> Status: Done
 > Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Test infrastructure integrity
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -52,3 +52,8 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Done: added a shared `applySelect(row, select)` helper in `apps/api/src/testMemoryDb.ts` and wired it into `grandPrix.findMany` (the broken call site from `lifecycle.ts:205`), plus `grandPrix.findFirst`, `raceDecision.findMany`, and `team.findUnique`.
+- Relation-returning finders (`league.findUnique/findMany`, `profile.findUnique/findMany`) deliberately do not accept `select`: no call site uses it and the helper only supports flat `{ field: true }` shapes. A `ponytail:` comment on the helper records that nested relation `select` must be added once, in the helper, not per method.
+- New regression test `apps/api/src/testMemoryDb.test.ts` pins the selected-fields shape, the no-select full-row shape, and `findFirst`/`team.findUnique`. Full suite green (376 passed, 7 skipped).

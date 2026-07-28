@@ -1,7 +1,7 @@
 ## req_129_0_6_beta_season_lifecycle_and_league_management_private_seasons_commissioner_tools_actionability_rivals_team_identity_and_optional_economy_variants - 0.6 beta season lifecycle and league management: private seasons, commissioner tools, actionability, rivals, team identity, and optional economy variants
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 94
 > Confidence: 94
 > Complexity: High

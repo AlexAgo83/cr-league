@@ -37,8 +37,7 @@
 - AC5: Browser playtest confirms the assistant does not add a blocking step.
 
 # AC Traceability
-- request-AC11 -> This backlog slice. Proof: AC1: The assistant presents bounded profile options with clear risk/reward text.
-- request-AC13 -> This backlog slice. Proof: AC5: Browser playtest confirms the assistant does not add a blocking step.
+- request-AC11 -> This backlog slice. Proof: this slice is Archived per its own scope's condition (skip if `item_329` card guidance makes the Plan screen readable enough); `item_329` shipped and was judged sufficient, so the assistant (AC1-AC5 above) was not built. Reopen trigger recorded in Decision framing.
 
 # Decision framing
 - Product framing: Not needed
@@ -60,3 +59,6 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus` was finished via `logics-manager flow finish task` on 2026-07-28.

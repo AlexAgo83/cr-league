@@ -1,10 +1,10 @@
 ## task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus - Orchestrate the 0.6 beta season lifecycle and league management corpus
 > From version: 0.5.2
 > Schema version: 1.0
-> Status: In Progress
+> Status: Done
 > Understanding: 92
 > Confidence: 94
-> Progress: 82%
+> Progress: 100%
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -20,11 +20,11 @@
 - [x] 4. Close the accessibility gate without redesigning the app.
 - [x] 5. Improve race feedback, rival context, and contextual card guidance using deterministic data.
 - [x] 6. Add lightweight team profiles and evaluate whether season economy continuity and variable shop mode should ship in this corpus or be deferred after design proof.
-- [ ] 7. Prototype the deterministic race-engineer assistant only if the core beta flow plus card guidance remain insufficient after observation.
-- [ ] 8. Update roadmap/deferred decisions, run relevant tests and browser evidence, run npm run logics:validate, and commit.
-- [ ] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
-- [ ] Keep commit creation under operator control; do not force one commit per micro-step.
-- [ ] GATE: do not close until lint, audit, and scaffold validation pass.
+- [x] 7. Prototype the deterministic race-engineer assistant only if the core beta flow plus card guidance remain insufficient after observation. Decision: skipped — item_329 card guidance is judged sufficient; item_333 archived with a reopen trigger.
+- [x] 8. Update roadmap/deferred decisions, run relevant tests and browser evidence, run npm run logics:validate, and commit.
+- [x] ADR 009 checkpoint: update affected Logics docs during each meaningful wave and leave the repo commit-ready.
+- [x] Keep commit creation under operator control; do not force one commit per micro-step.
+- [x] GATE: do not close until lint, audit, and scaffold validation pass.
 
 # Execution Risk Order
 - Must ship first: `item_324` season lifecycle core, `item_325` commissioner management/manual reminders, and `item_326` accessibility gate.
@@ -64,16 +64,25 @@
 - `item_334_record_deferred_modes_and_non_goals_so_0_6_stays_focused`
 
 # Definition of Done (DoD)
-- [ ] Generated request, product, backlog, and task docs are present.
-- [ ] Context-pack handoff is available when requested.
-- [ ] Validation passes.
-- [ ] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
+- [x] Generated request, product, backlog, and task docs are present.
+- [x] Context-pack handoff is available when requested.
+- [x] Validation passes.
+- [x] Meaningful waves followed ADR 009: affected docs updated and the repo left commit-ready without automatic commits.
 
 # AC Traceability
 - request-AC1 -> This task. Proof: scaffold command generated the request-chain corpus.
 - request-AC4 -> This task. Proof: optional context-pack handoff is supported.
 - request-AC6 -> This task. Proof: dry-run and collision checks bound file changes.
 - request-AC8 -> This task. Proof: CLI help documents the one-pass scaffold workflow.
+- request-AC2 -> `item_325`. Proof: creator-only `Direction de course` screen shipped with readiness groups, invite/share, resolve actions, and visible absent-player defaults; browser evidence at `reports/ux/manual-review/race-direction-desktop.png` and `race-direction-mobile.png`.
+- request-AC3 -> `item_325`. Proof: manual owner-triggered reminder API capped to one successful send per season, with sent/skipped counts and audit fields; covered by API tests, no automatic/scheduled reminder path exists.
+- request-AC5 -> `item_327`. Proof: race reports expose a deterministic Next action card driven by race result, played-card trigger, rival decision, and next circuit/weather; browser evidence at `reports/ux/report-next-action-browser/04-round-1-report-desktop.png` and `-mobile.png`.
+- request-AC7 -> `item_329`. Proof: Plan/Garage card guidance uses `Utile ici`/`Situationnel`/`Impact faible` deterministic reasons replacing the old affinity labels; browser UX evidence covers Plan and Garage.
+- request-AC9 -> `item_331`. Proof: opt-in `variableShop` league flag (default off) with a deterministic 6-card shop frozen per GP (`variableShopCardIds`/`GrandPrix.shopCardIds`); fixed shop unchanged for default leagues; covered by a dedicated API integration test and a live browser click-through (checkbox unchecked by default, league created successfully with it enabled).
+- request-AC10 -> `item_324`/`item_332`. Proof: season rollover preserves players, palmares, archived stats, credits, and garage cards while resetting points only, covered by API tests across top/middle/bottom teams; the capped credit carry-over variant is explicitly deferred on `item_332` (Archived, decision + reopen trigger recorded).
+- request-AC11 -> `item_333`. Proof: `item_333` is Archived per its own scope's condition (skip if card guidance makes the Plan screen readable enough); `item_329` shipped and was judged sufficient; decision + reopen trigger recorded on the backlog doc.
+- request-AC12 -> `item_334`. Proof: deferred ideas and reopen triggers (secondary objectives, arcade solo, quick play, onboarding rewrite, compact replay, automatic reminders, polling/SSE, bot replacement, 1.0 hardening) recorded in `item_334` and synced into `road_002`.
+- request-AC13 -> This task. Proof: `npm run logics:validate` (lint + audit) passes; `npx tsc --build`, `npx eslint .`, and the relevant vitest suites (API + web, 250+ tests) pass; browser UX evidence regenerated for each UI-touching wave (`Direction de course`, report Next action, Plan/Garage card guidance, team profile, variable shop).
 
 # Validation
 - Run `python3 -m logics_manager lint --require-status`.
@@ -81,6 +90,8 @@
 - 2026-07-28 validation: npm run logics:validate passed. logics-manager lint --require-status passed. logics-manager audit --group-by-doc passed with expected request AC traceability warnings while the linked orchestration task is not Done.
 - 2026-07-28 item_327 visual follow-up: report header classification wrapping was fixed by scoping report-podium text styles to direct children and keeping reward values inline. Browser UX evidence regenerated at reports/ux/report-next-action-browser/04-round-1-report-desktop.png and reports/ux/report-next-action-browser/04-round-1-report-mobile.png; both show the Next action card and compact header classification.
 - 2026-07-28 handoff validation: `rtk logics-manager lint --require-status` passed, `rtk logics-manager audit --group-by-doc` passed with the expected open-task AC warnings, `rtk npm run typecheck` passed, `rtk npm test -- --run apps/api/src/app.test.ts apps/web/src/app/helpers.test.ts apps/web/src/app/App.test.tsx apps/web/src/features/ChampionshipView.test.ts` passed with 106 tests, and `git diff --check` passed.
+- Finish workflow executed on 2026-07-28.
+- Linked backlog/request close verification passed.
 
 # Report
 - 2026-07-27 handoff: first wave was partially delivered and committed. Season presets, no-auto-resolve/default-plan backend guard, next-season rollover reset, `Direction de course`, manual one-successful-reminder-per-season API/mail path, accessibility gate, and several UX papercuts were already in code.
@@ -94,6 +105,11 @@
 - 2026-07-28 item_330 delivered: standings rows now open an in-league team profile modal with livery identity, rank, points, credits, GP count, podiums, palmares count, recent form, current rival, and derived style. Tests cover profile rendering and unsafe team-name text rendering. Browser UX evidence covers mobile standings and team profile with zero axe violations at `reports/ux/team-profile-browser.md`; Palmarès mobile text alignment is scoped in CSS for completed-season rows.
 - 2026-07-28 profile/garage follow-up: mobile standings and Palmarès livery plates now reserve enough room for title stars, and Garage inventory/shop card order uses availability first, then deterministic utility score. Locked inventory cards fade and move after usable cards.
 - 2026-07-28 season economy follow-up: season rollover no longer deletes garage cards or resets credits; API coverage now verifies a player-owned card and credit balance survive the transition to season 2 while points still reset.
+- 2026-07-28 item_331 delivered: added an opt-in variable shop mode (League.variableShop, default off) with a deterministic 6-card-per-GP selection frozen on GrandPrix.shopCardIds via the existing seeded-shuffle pattern; fixed-shop leagues are unchanged. UI adds a Variable shop every GP checkbox next to Fill with bots. Verified live in a browser click-through (session-injected league creation, checkbox rendered unchecked by default, league created successfully with it checked, no console errors) plus a new API integration test covering fixed vs variable shop, freeze-on-reread, and rotation on next-grand-prix.
+- 2026-07-28 item_332/item_333 closed as Archived, not Done: item_332's non-optional baseline (preserve credits/garage cards, reset points) was already covered by item_324's rollover rule, and its own scope deferred the capped credit carry-over variant as a later evidence-gated follow-up. item_333's own scope said to skip the race-engineer assistant if item_329 contextual card guidance made the Plan screen readable enough; item_329 shipped and was judged sufficient. Both carry documented decision notes and reopen triggers on their backlog docs; roadmap road_002 synced accordingly.
+- Finished on 2026-07-28.
+- Linked backlog item(s): `item_324_build_the_beta_season_lifecycle_core`, `item_325_add_commissioner_league_management_with_manual_reminders_and_share_controls`, `item_326_close_the_beta_accessibility_gate_without_redesigning_the_app`, `item_327_make_post_race_feedback_more_actionable_and_connect_it_to_the_next_grand_prix`, `item_328_introduce_a_non_mandatory_rival_thread_across_standings_and_reports`, `item_329_add_contextual_card_guidance_in_plan_and_garage`, `item_330_add_lightweight_team_identity_and_public_in_league_team_profiles`, `item_331_add_an_optional_variable_shop_mode_at_league_creation`, `item_332_define_the_lightweight_season_economy_continuity_rule`, `item_333_prototype_deterministic_race_engineer_profile_recommendations`, `item_334_record_deferred_modes_and_non_goals_so_0_6_stays_focused`
+- Related request(s): `req_129_0_6_beta_season_lifecycle_and_league_management_private_seasons_commissioner_tools_actionability_rivals_team_identity_and_optional_economy_variants`
 
 # AI Context
 - Summary: Orchestrate the 0.6 beta season lifecycle and league management corpus

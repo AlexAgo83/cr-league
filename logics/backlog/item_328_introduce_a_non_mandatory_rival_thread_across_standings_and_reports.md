@@ -8,6 +8,7 @@
 > Complexity: Medium
 > Theme: Rivalry
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: Appended a closeout note recording that task_130 finished; no status or scope change.
 > Owner: codex
 
 # Problem
@@ -62,3 +63,6 @@
 
 # Validation
 - 2026-07-28 validation: vitest targeted helpers/report/directive/championship tests passed (43 tests); npm run typecheck passed; git diff --check passed; browser playtest rounds 2 passed earlier with Rival read evidence in reports/playtest/rival-thread-browser.md and reports/ux/rival-thread-browser.md.
+
+# Notes
+- Task `task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus` was finished via `logics-manager flow finish task` on 2026-07-28.

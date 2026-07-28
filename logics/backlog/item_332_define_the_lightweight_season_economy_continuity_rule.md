@@ -36,7 +36,7 @@
 - AC5: Balance evidence is recorded if mechanical carry-over changes gameplay in a later slice.
 
 # AC Traceability
-- request-AC10 -> This backlog slice. Proof: AC1 and AC2 document the first-pass season rollover rule, including preserved and reset resources.
+- request-AC10 -> This backlog slice. Proof: AC1 and AC2 document the first-pass season rollover rule, including preserved and reset resources. The capped credit carry-over variant (AC3 here) is explicitly deferred; see Decision framing.
 - request-AC13 -> This backlog slice. Proof: AC4: Season rollover tests cover top, middle, and bottom teams.
 
 # Decision framing
@@ -59,3 +59,6 @@
 # Priority
 - Priority: Medium
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus` was finished via `logics-manager flow finish task` on 2026-07-28.

@@ -8,6 +8,7 @@
 > Complexity: Medium
 > Theme: Card readability
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: Appended a closeout note recording that task_130 finished; no status or scope change.
 > Owner: codex
 
 # Problem
@@ -65,3 +66,6 @@
 
 # Validation
 - 2026-07-28 validation: targeted vitest helpers and DirectivePanel passed (33 tests); npm run typecheck passed; browser playtest rounds 2 passed with contextual card guidance scenario and UX PASS, 0 axe violations, no mobile body overflow, evidence in reports/playtest/card-guidance-browser.md and reports/ux/card-guidance-browser.md.
+
+# Notes
+- Task `task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus` was finished via `logics-manager flow finish task` on 2026-07-28.

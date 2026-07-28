@@ -8,6 +8,7 @@
 > Complexity: Medium
 > Theme: Race feedback
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: Appended a closeout note recording that task_130 finished; no status or scope change.
 
 # Problem
 - The report explains more than before, but beta players need a clearer next action after each GP.
@@ -57,3 +58,6 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus` was finished via `logics-manager flow finish task` on 2026-07-28.

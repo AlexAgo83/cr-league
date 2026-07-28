@@ -8,6 +8,7 @@
 > Complexity: Low
 > Theme: Roadmap discipline
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
+> Non-semantic edit: Appended a closeout note recording that task_130 finished; no status or scope change.
 > Non-semantic edit: Added deferred-idea reopen triggers from owner follow-up; no status or implementation scope change.
 
 # Problem
@@ -65,3 +66,6 @@
 # Priority
 - Priority: Low
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Notes
+- Task `task_130_orchestrate_the_0_6_beta_season_lifecycle_and_league_management_corpus` was finished via `logics-manager flow finish task` on 2026-07-28.

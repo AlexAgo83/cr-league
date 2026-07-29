@@ -170,3 +170,4 @@
 {"commit":"caf2d85e9087c0f715d2d5e786af30bd9593c0a1","gate_id":"git_push","kind":"git","observed_at":"2026-07-29T20:24:22Z","status":"passed","summary":"caf2d85 pushed to origin/main","target_version":"0.8.3"}
 {"commit":"4f0cf1366ecd3a203848f1b3cd4c1e1fe3d20634","gate_id":"ci","kind":"ci","observed_at":"2026-07-29T20:28:18Z","status":"passed","summary":"CI run 30488314441 passed for caf2d85","target_version":"0.8.3"}
 {"gate_id":"github_release","kind":"github_release","observed_at":"2026-07-29T20:28:34Z","status":"passed","summary":"GitHub release v0.8.3 published","tag":"v0.8.3","target_version":"0.8.3"}
+{"gate_id":"production_deployment","kind":"external","observed_at":"2026-07-29T20:31:14Z","status":"passed","summary":"Deploy Release run 30488586050 passed for v0.8.3","tag":"v0.8.3","target_version":"0.8.3"}

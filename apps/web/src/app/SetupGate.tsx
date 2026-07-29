@@ -4,7 +4,8 @@ import type { GameView, FormState, LeagueState, ProfileSession } from "./types.j
 import { ChangelogView } from "../features/ChangelogView.js";
 import { SetupShell } from "./OnboardingShell.js";
 import { useSetup } from "./setupContext.js";
-import { LeagueSetupView, ProfileSetupView, SetupEntryView, SoloSlotsView } from "./SetupViews.js";
+import { ArcadeCatalogueView, LeagueSetupView, ProfileSetupView, SetupEntryView, SoloModeView, SoloSlotsView } from "./SetupViews.js";
+import { DestinyWheelView } from "../features/arcade/DestinyWheelView.js";
 
 export function SetupGate({
   profileSession,
@@ -39,6 +40,7 @@ export function SetupGate({
     leagueFormError,
     setupEntryMode,
     soloSlots,
+    startCampaign,
     openSoloSlot,
     deleteSoloSlot,
     setupMode,
@@ -72,7 +74,31 @@ export function SetupGate({
   if (!leagueState && setupEntryMode === "solo" && !utilitySetupView) {
     return (
       <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
-        <SoloSlotsView slots={soloSlots} status={status} onBack={() => setSetupEntryMode("choice")} onOpenSlot={openSoloSlot} onDeleteSlot={deleteSoloSlot} />
+        <SoloModeView status={status} onBack={() => setSetupEntryMode("choice")} onStartCampaign={startCampaign} onStartArcade={() => setSetupEntryMode("arcade")} />
+      </SetupShell>
+    );
+  }
+
+  if (!leagueState && setupEntryMode === "campaign" && !utilitySetupView) {
+    return (
+      <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+        <SoloSlotsView slots={soloSlots} status={status} onBack={() => setSetupEntryMode("solo")} onOpenSlot={openSoloSlot} onDeleteSlot={deleteSoloSlot} />
+      </SetupShell>
+    );
+  }
+
+  if (!leagueState && setupEntryMode === "arcade" && !utilitySetupView) {
+    return (
+      <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+        <ArcadeCatalogueView status={status} onBack={() => setSetupEntryMode("solo")} onOpenWheel={() => setSetupEntryMode("wheel")} />
+      </SetupShell>
+    );
+  }
+
+  if (!leagueState && setupEntryMode === "wheel" && !utilitySetupView) {
+    return (
+      <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+        <DestinyWheelView onBack={() => setSetupEntryMode("arcade")} />
       </SetupShell>
     );
   }

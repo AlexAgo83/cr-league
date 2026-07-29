@@ -1,10 +1,10 @@
 ## item_358_enter_and_keep_the_destiny_wheel_participants - Enter and keep the Destiny Wheel participants
 > From version: 0.8.0
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: Done
+> Understanding: 100
+> Confidence: 95
+> Progress: 100
 > Complexity: Low
 > Theme: Solo modes
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.

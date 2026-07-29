@@ -5275,6 +5275,90 @@ label small {
   min-width: 0;
 }
 
+/* ---------- Arcade: Destiny Wheel ---------- */
+
+.wheel-add {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  margin-bottom: 12px;
+}
+
+.wheel-participants {
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.wheel-participant,
+.wheel-order-row {
+  align-items: center;
+  background: rgb(248 243 232 / 0.06);
+  border: 1px solid rgb(248 243 232 / 0.16);
+  display: grid;
+  gap: 10px;
+  padding: 6px 10px;
+}
+
+.wheel-participant {
+  grid-template-columns: 64px minmax(0, 1fr) auto;
+}
+
+.wheel-participant-remove {
+  min-height: 0;
+  padding: 4px 10px;
+}
+
+.wheel-empty {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  opacity: 0.72;
+}
+
+.wheel-count {
+  margin-right: auto;
+  opacity: 0.72;
+}
+
+.wheel-order {
+  counter-reset: wheel-order;
+  display: grid;
+  gap: 6px;
+  list-style: none;
+  margin: 0 0 12px;
+  padding: 0;
+}
+
+.wheel-order-row {
+  grid-template-columns: 28px 64px minmax(0, 1fr);
+}
+
+.wheel-order-rank {
+  font-weight: 900;
+  opacity: 0.72;
+  text-align: center;
+}
+
+/* The answer to the draw: it earns the accent the rest of the list does not. */
+.wheel-order-winner {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 18px rgb(255 106 31 / 0.28);
+}
+
+.wheel-order-winner .wheel-order-rank {
+  color: var(--color-accent);
+  opacity: 1;
+}
+
+.wheel-participant-car,
+.wheel-order-car {
+  flex: none;
+  width: 64px;
+}
+
 /* Wider than the 40px board icon it replaces: a car read at icon size is a smudge. Scoped past
    the garage frame's own 176px basis, which would otherwise size it. */
 .solo-slot-open .solo-slot-car {

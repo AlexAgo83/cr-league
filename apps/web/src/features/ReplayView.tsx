@@ -114,6 +114,8 @@ export function ReplayView({
   titleKey = "result_replay_title",
   explainerKey = "result_replay_explainer",
   showIntro = true,
+  showPerformancePanel = true,
+  towerTitleKey,
   towerEntries,
   initialLap,
   preferencesResetSignal = 0,
@@ -135,6 +137,8 @@ export function ReplayView({
   titleKey?: TranslationKey;
   explainerKey?: TranslationKey;
   showIntro?: boolean;
+  showPerformancePanel?: boolean;
+  towerTitleKey?: TranslationKey;
   towerEntries?: ReplayTowerEntry[];
   initialLap?: number;
   preferencesResetSignal?: number;
@@ -433,6 +437,8 @@ export function ReplayView({
                 circuitDistance={circuitDistance}
                 planDecision={planDecision}
                 traitImpacts={traitImpacts}
+                showPerformancePanel={showPerformancePanel}
+                towerTitleKey={towerTitleKey}
                 resolvedWeather={result.resolvedWeather}
                 activeMoment={activeMomentNotice}
                 activeDirector={activeDirector}

@@ -25,7 +25,17 @@ function SaveLine({ icon, children }: { icon: BoardIconName; children: string })
 
 export type ProfileMode = "choice" | "create" | "recover";
 export type SetupMode = "choice" | "create" | "join";
-export type SetupEntryMode = "choice" | "multiplayer" | "solo";
+export type SetupEntryMode = "choice" | "multiplayer" | "solo" | "campaign" | "arcade" | "wheel";
+
+/**
+ * Stand-in board icons until the generated ones land (item_356). Swapping each is one line here;
+ * nothing else in the app names them.
+ */
+export const SOLO_MODE_ICONS = {
+  campaign: "stand-drive",
+  arcade: "launch-boost",
+  destinyWheel: "key-moment"
+} satisfies Record<string, BoardIconName>;
 
 // A choice step is a poster moment, not a form: icon first, and the panel drops the paper
 // surface so the ambient circuit shows through. The forms keep the light surface.
@@ -75,6 +85,71 @@ export function SetupEntryView({
         <div className="setup-choice-grid">
           <SetupChoice icon="stand-drive" label={tt("action_start_solo")} hint={tt("setup_solo_hint")} onSelect={onStartSolo} />
           <SetupChoice icon="championship" label={tt("action_start_multiplayer")} hint={tt("setup_multiplayer_hint")} onSelect={onStartMultiplayer} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/** Solo's two sub-modes. Campaign is what Solo has always been; Arcade is the new door. */
+export function SoloModeView({
+  status,
+  onBack,
+  onStartCampaign,
+  onStartArcade
+}: {
+  status: "idle" | "loading" | "error";
+  onBack: () => void;
+  onStartCampaign: () => void;
+  onStartArcade: () => void;
+}) {
+  const tt = useT();
+  return (
+    <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="solo-mode-title">
+      <div className="panel setup-main-panel setup-hero-panel setup-entry-hero-panel">
+        <SetupBackButton onBack={onBack} />
+        <span className="section-kicker">{tt("solo_mode_kicker")}</span>
+        <h1 id="solo-mode-title">{tt("solo_mode_title")}</h1>
+        <p className={status === "error" ? "status error" : "status"}>{tt("solo_mode_intro")}</p>
+      </div>
+      <div className="panel setup-main-panel setup-form-panel setup-choice-panel">
+        <div className="setup-choice-grid">
+          <SetupChoice icon={SOLO_MODE_ICONS.campaign} label={tt("solo_mode_campaign")} hint={tt("solo_mode_campaign_hint")} onSelect={onStartCampaign} />
+          <SetupChoice icon={SOLO_MODE_ICONS.arcade} label={tt("solo_mode_arcade")} hint={tt("solo_mode_arcade_hint")} onSelect={onStartArcade} />
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Lists the arcade games that exist. One today; another is one entry in this array, which is why
+ * it is a list rather than a hand-placed pair of cards.
+ */
+export function ArcadeCatalogueView({
+  status,
+  onBack,
+  onOpenWheel
+}: {
+  status: "idle" | "loading" | "error";
+  onBack: () => void;
+  onOpenWheel: () => void;
+}) {
+  const tt = useT();
+  const games = [{ key: "wheel", icon: SOLO_MODE_ICONS.destinyWheel, label: tt("arcade_wheel_title"), hint: tt("arcade_wheel_hint"), onSelect: onOpenWheel }];
+  return (
+    <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="arcade-title">
+      <div className="panel setup-main-panel setup-hero-panel setup-entry-hero-panel">
+        <SetupBackButton onBack={onBack} />
+        <span className="section-kicker">{tt("arcade_kicker")}</span>
+        <h1 id="arcade-title">{tt("arcade_title")}</h1>
+        <p className={status === "error" ? "status error" : "status"}>{tt("arcade_intro")}</p>
+      </div>
+      <div className="panel setup-main-panel setup-form-panel setup-choice-panel">
+        <div className="setup-choice-grid">
+          {games.map((game) => (
+            <SetupChoice key={game.key} icon={game.icon} label={game.label} hint={game.hint} onSelect={game.onSelect} />
+          ))}
         </div>
       </div>
     </section>

@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
 import { CITY_CIRCUITS } from "./circuits.js";
 import { testCircuit, baseState, decidedState, resolvedState, nextGrandPrixState, seasonTwoState, qualifyingRun, qualifiedState, decidedStateWithQualifying, settingsState } from "./App.testFixtures.js";
-import { closeLeagueIntro, createLeagueFromSetup, expectGarageCode, response, saveProfile, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
+import { closeLeagueIntro, createLeagueFromSetup, expectGarageCode, response, saveProfile, startCampaign, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
 import { createInitialSoloLeagueState } from "./soloLeague.js";
 import { SOLO_SAVE_SCHEMA_VERSION, SOLO_SLOT_KEY_PREFIX } from "./soloStorage.js";
 import { t } from "../i18n/index.js";
@@ -241,7 +241,7 @@ describe("App", () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
 
     expect(await screen.findByRole("heading", { name: "1. Read the circuit" })).toBeTruthy();
     expect(fetch).not.toHaveBeenCalled();
@@ -253,13 +253,13 @@ describe("App", () => {
   it("picks a solo slot once one holds a game, and opens that slot", async () => {
     render(<App />);
     // Play a first solo game so slot 1 is taken, then come back to the entry screen.
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
     await screen.findByRole("heading", { name: "1. Read the circuit" });
     const firstSave = localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`);
     cleanup();
 
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
 
     expect(await screen.findByRole("heading", { name: "Choose a save" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: /Slot 2: Empty/ }));
@@ -272,12 +272,12 @@ describe("App", () => {
 
   it("glows the slot played most recently, and only when there is a choice", async () => {
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
     await screen.findByRole("heading", { name: "1. Read the circuit" });
     cleanup();
 
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
     await screen.findByRole("heading", { name: "Choose a save" });
     // A single save has nothing to be told apart from.
     expect(document.querySelectorAll(".solo-slot-recent")).toHaveLength(0);
@@ -286,7 +286,7 @@ describe("App", () => {
     cleanup();
 
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
     await screen.findByRole("heading", { name: "Choose a save" });
 
     const glowing = document.querySelectorAll(".solo-slot-recent");
@@ -296,18 +296,18 @@ describe("App", () => {
 
   it("asks for confirmation before deleting a solo slot and keeps the others", async () => {
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
     await screen.findByRole("heading", { name: "1. Read the circuit" });
     cleanup();
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
     await screen.findByRole("heading", { name: "Choose a save" });
     fireEvent.click(screen.getByRole("button", { name: /Slot 2: Empty/ }));
     await screen.findByRole("heading", { name: "1. Read the circuit" });
     cleanup();
 
     render(<App />);
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
     await screen.findByRole("heading", { name: "Choose a save" });
     fireEvent.click(screen.getByRole("button", { name: "Delete save — Slot 1: Volt Union" }));
 
@@ -325,7 +325,7 @@ describe("App", () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
     await screen.findByRole("heading", { name: "1. Read the circuit" });
     fireEvent.click(screen.getByRole("button", { name: "Plan" }));
     fireEvent.click(screen.getByRole("tab", { name: "Chrono" }));
@@ -353,7 +353,7 @@ describe("App", () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /^Solo/ }));
+    startCampaign();
     fireEvent.click(await screen.findByRole("button", { name: /^Slot 1:/ }));
     await screen.findByRole("heading", { name: "1. Read the circuit" });
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
@@ -378,7 +378,7 @@ describe("App", () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
     await screen.findByRole("heading", { name: "1. Read the circuit" });
     fireEvent.click(screen.getByRole("button", { name: "Send plan" }));
     fireEvent.click(screen.getByTestId("modal-confirm"));
@@ -405,7 +405,7 @@ describe("App", () => {
 
     render(<App />);
 
-    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    startCampaign();
     expect(await screen.findByText("Solo")).toBeTruthy();
     fireEvent.click(screen.getByTestId("profile-menu"));
     fireEvent.click(screen.getByTestId("profile-action-reset-solo"));

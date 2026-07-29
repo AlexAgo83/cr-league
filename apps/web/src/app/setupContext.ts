@@ -32,6 +32,7 @@ export type SetupContextValue = {
   recoverProfileSession: () => void;
   requestRecoveryCode: () => void;
   startSolo: () => void;
+  startCampaign: () => void;
   createLeague: () => void;
   joinLeague: () => void;
   switchLeague: (teamId: string) => void;

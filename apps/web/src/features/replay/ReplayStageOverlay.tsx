@@ -49,6 +49,8 @@ export function ReplayStageOverlay({
   circuitDistance,
   planDecision,
   traitImpacts,
+  showPerformancePanel = true,
+  towerTitleKey = "result_final_classification",
   resolvedWeather,
   activeMoment,
   activeDirector,
@@ -90,6 +92,8 @@ export function ReplayStageOverlay({
   circuitDistance: string;
   planDecision?: RaceDecision;
   traitImpacts: MapTraitImpacts;
+  showPerformancePanel?: boolean;
+  towerTitleKey?: TranslationKey;
   resolvedWeather: RaceResult["resolvedWeather"];
   activeMoment?: { player: boolean; lap: number; icon: VisualIconName; context: string; detail: string; impact: string };
   activeDirector?: { type: string; lap: number; title: string; detail: ReactNode; zone?: string };
@@ -156,11 +160,15 @@ export function ReplayStageOverlay({
             {tt("action_info")}
           </button>
         </div>
-        <div className={mapStatsExpanded ? "map-plan-performance" : "map-plan-performance stats-collapsed"}>
-          <MapPlanPanel decision={planDecision} editLabel={tt("action_view_plan")} onEdit={onOpenPlan} />
-          <MapStatsToggle expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} />
-          {mapStatsExpanded ? <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, liveLap)} impacts={traitImpacts} /> : null}
-        </div>
+        {/* A race with no plan behind it has nothing to show here, so the block is absent
+            rather than empty. */}
+        {showPerformancePanel ? (
+          <div className={mapStatsExpanded ? "map-plan-performance" : "map-plan-performance stats-collapsed"}>
+            <MapPlanPanel decision={planDecision} editLabel={tt("action_view_plan")} onEdit={onOpenPlan} />
+            <MapStatsToggle expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} />
+            {mapStatsExpanded ? <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, liveLap)} impacts={traitImpacts} /> : null}
+          </div>
+        ) : null}
       </div>
       {activeMoment ? (
         <div className={activeMoment.player ? "replay-moment-notification player" : "replay-moment-notification"} role="status" aria-live="polite">
@@ -253,7 +261,7 @@ export function ReplayStageOverlay({
           entries={tower}
           playerTeamId={playerTeamId}
           positionPops={positionPops}
-          title={tt("result_final_classification")}
+          title={tt(towerTitleKey)}
           onReport={onOpenTowerReport}
           reportLabel={tt("action_view_plan").split(" ")[0] ?? tt("result_tab_report")}
           teamLiveries={teamLiveries}

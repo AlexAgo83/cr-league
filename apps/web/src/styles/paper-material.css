@@ -31,6 +31,9 @@
    ambient circuit shows through. The forms in the same panel keep the light material. */
 .setup-choice-panel {
   --color-surface: rgb(16 14 18 / 0.72);
+  /* Inputs paint with --color-cockpit; without inverting it too, light text landed on the
+     paper cockpit colour and typed names were near-invisible. */
+  --color-cockpit: rgb(248 243 232 / 0.08);
   --color-text: #f8f3e8;
   --color-muted: rgb(248 243 232 / 0.76);
   --color-border: rgb(248 243 232 / 0.14);

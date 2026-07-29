@@ -549,14 +549,18 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setSoloSlots(listSoloSlots());
   }
 
-  async function startSolo() {
+  function startSolo() {
+    setSetupEntryMode("solo");
+  }
+
+  function startCampaign() {
     // A first-time player has nothing to choose between, so keep their path to a race direct.
     if (!hasAnySoloSave()) {
       openSoloSlot(firstFreeSoloSlot() ?? 0);
       return;
     }
     setSoloSlots(listSoloSlots());
-    setSetupEntryMode("solo");
+    setSetupEntryMode("campaign");
   }
 
   async function runSoloMutation(loadingKey: TranslationKey, action: () => LeagueState, successKey: TranslationKey) {
@@ -919,7 +923,8 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     createProfileSession: () => void createProfileSession(),
     recoverProfileSession: () => void recoverProfileSession(),
     requestRecoveryCode: () => void requestRecoveryCode(),
-    startSolo: () => void startSolo(),
+    startSolo,
+    startCampaign,
     createLeague: () => void createLeague(),
     joinLeague: () => void joinLeague(),
     switchLeague: (teamId) => void switchLeague(teamId)

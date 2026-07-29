@@ -612,10 +612,10 @@
 | [item_353_bound_what_a_solo_save_costs_in_storage](backlog/item_353_bound_what_a_solo_save_costs_in_storage.md) | Bound what a solo save costs in storage | Done |  | 100 | backlog/item_353_bound_what_a_solo_save_costs_in_storage.md |
 | [item_354_store_solo_games_in_three_slots_with_a_light_index](backlog/item_354_store_solo_games_in_three_slots_with_a_light_index.md) | Store solo games in three slots with a light index | Done |  | 100 | backlog/item_354_store_solo_games_in_three_slots_with_a_light_index.md |
 | [item_355_pick_a_solo_slot_from_the_entry_screen](backlog/item_355_pick_a_solo_slot_from_the_entry_screen.md) | Pick a solo slot from the entry screen | Done |  | 100 | backlog/item_355_pick_a_solo_slot_from_the_entry_screen.md |
-| [item_356_produce_the_arcade_board_icons_and_hero](backlog/item_356_produce_the_arcade_board_icons_and_hero.md) | Arcade catalogue hero | Ready |  | 0% | backlog/item_356_produce_the_arcade_board_icons_and_hero.md |
-| [item_357_split_solo_into_campaign_and_arcade](backlog/item_357_split_solo_into_campaign_and_arcade.md) | Split Solo into Campaign and Arcade | Ready |  | 0% | backlog/item_357_split_solo_into_campaign_and_arcade.md |
-| [item_358_enter_and_keep_the_destiny_wheel_participants](backlog/item_358_enter_and_keep_the_destiny_wheel_participants.md) | Enter and keep the Destiny Wheel participants | Ready |  | 0% | backlog/item_358_enter_and_keep_the_destiny_wheel_participants.md |
-| [item_359_race_the_destiny_wheel_draw_and_show_the_order](backlog/item_359_race_the_destiny_wheel_draw_and_show_the_order.md) | Race the Destiny Wheel draw and show the order | Ready |  | 0% | backlog/item_359_race_the_destiny_wheel_draw_and_show_the_order.md |
+| [item_356_produce_the_arcade_board_icons_and_hero](backlog/item_356_produce_the_arcade_board_icons_and_hero.md) | Arcade catalogue hero | In progress |  | 10% | backlog/item_356_produce_the_arcade_board_icons_and_hero.md |
+| [item_357_split_solo_into_campaign_and_arcade](backlog/item_357_split_solo_into_campaign_and_arcade.md) | Split Solo into Campaign and Arcade | Done |  | 100 | backlog/item_357_split_solo_into_campaign_and_arcade.md |
+| [item_358_enter_and_keep_the_destiny_wheel_participants](backlog/item_358_enter_and_keep_the_destiny_wheel_participants.md) | Enter and keep the Destiny Wheel participants | Done |  | 100 | backlog/item_358_enter_and_keep_the_destiny_wheel_participants.md |
+| [item_359_race_the_destiny_wheel_draw_and_show_the_order](backlog/item_359_race_the_destiny_wheel_draw_and_show_the_order.md) | Race the Destiny Wheel draw and show the order | Done |  | 100 | backlog/item_359_race_the_destiny_wheel_draw_and_show_the_order.md |
 
 ## Tasks
 
@@ -755,4 +755,4 @@
 | [task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode](tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md) | Orchestrate Solo / Multiplayer entry and local solo mode | Done | codex | 100% | tasks/task_132_orchestrate_solo_multiplayer_entry_and_local_solo_mode.md |
 | [task_133_orchestrate_race_replay_driver_emotes](tasks/task_133_orchestrate_race_replay_driver_emotes.md) | Orchestrate race replay driver emotes | Done |  | 100% | tasks/task_133_orchestrate_race_replay_driver_emotes.md |
 | [task_134_orchestrate_solo_save_slots](tasks/task_134_orchestrate_solo_save_slots.md) | Orchestrate solo save slots | Done |  | 100 | tasks/task_134_orchestrate_solo_save_slots.md |
-| [task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel](tasks/task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel.md) | Orchestrate the Solo Arcade and its Destiny Wheel | Ready |  | 0% | tasks/task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel.md |
+| [task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel](tasks/task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel.md) | Orchestrate the Solo Arcade and its Destiny Wheel | In progress |  | 85 | tasks/task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel.md |

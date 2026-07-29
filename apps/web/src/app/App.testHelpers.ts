@@ -21,6 +21,12 @@ export function createLeagueFromSetup() {
   fireEvent.click(screen.getByRole("button", { name: "Start league" }));
 }
 
+/** Solo now opens a sub-mode step; Campaign is what Solo used to do on its own. */
+export function startCampaign() {
+  fireEvent.click(screen.getByRole("button", { name: /^Solo$/ }));
+  fireEvent.click(screen.getByRole("button", { name: /^Campaign$/ }));
+}
+
 export function startMultiplayerSetup() {
   const multiplayer = screen.queryByRole("button", { name: /Multiplayer/ });
   if (multiplayer) fireEvent.click(multiplayer);

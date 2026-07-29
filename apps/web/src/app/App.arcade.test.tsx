@@ -57,6 +57,20 @@ describe("solo sub-modes", () => {
   });
 });
 
+describe("profile menu", () => {
+  it("does not offer to manage a league in solo, where there is none", async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: "PRESS START" }));
+    fireEvent.click(await screen.findByRole("button", { name: /^Solo$/ }));
+    fireEvent.click(await screen.findByRole("button", { name: /^Campaign$/ }));
+    await screen.findByRole("heading", { name: "1. Read the circuit" });
+
+    fireEvent.click(screen.getByTestId("profile-menu"));
+
+    expect(screen.getByTestId("profile-action-add-league").textContent).toBe("Back to the menu");
+  });
+});
+
 describe("destiny wheel", () => {
   it("refuses to race below two participants", async () => {
     await openWheel();

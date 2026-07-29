@@ -1015,5 +1015,6 @@
   "wheel_draw_again": "Draw again",
   "wheel_back_to_catalogue": "Back to the arcade",
   "wheel_back_to_entry": "Change the names",
-  "wheel_running_order": "Running order"
+  "wheel_running_order": "Running order",
+  "action_leave_game": "Back to the menu"
 }

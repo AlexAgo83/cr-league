@@ -20,7 +20,8 @@ export type MapCar = {
   livery?: TeamLivery;
   positionDelta?: number;
   positionDeltaKey?: number;
-  eventLabel?: string;
+  emote?: string;
+  emoteKey?: number;
   braking?: boolean;
   repeatCount?: number | "indefinite";
 };
@@ -628,10 +629,16 @@ function CircuitMapInner({
                             {car.positionDelta > 0 ? `+${car.positionDelta}` : car.positionDelta}
                           </text>
                         ) : null}
-                        {car.eventLabel ? (
-                          <text className="map-car-event" x="0" y="-34" textAnchor="middle">
-                            {car.eventLabel}
-                          </text>
+                        {car.emote ? (
+                          <image
+                            key={`${car.id}-emote-${car.emoteKey}`}
+                            className="map-car-emote"
+                            href={`/assets/crl/emotes/${car.emote}.webp`}
+                            x="-22"
+                            y="-62"
+                            width="44"
+                            height="44"
+                          />
                         ) : null}
                       </g>
                     </g>

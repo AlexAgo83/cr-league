@@ -1,4 +1,4 @@
-import { type RaceDecision, type RaceResult, type TeamLivery } from "@cr-league/shared";
+import { emoteCandidates, type RaceDecision, type RaceResult, type TeamLivery } from "@cr-league/shared";
 import { useT } from "../i18n/index.js";
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
@@ -155,6 +155,8 @@ export function ReplayView({
   const [resultUnlocked, setResultUnlocked] = useState(false);
   const replayTrace = useMemo(() => result.replayTrace ?? [], [result.replayTrace]);
   const replayPlan = useMemo(() => buildReplayPlan(result, replayTrace), [replayTrace, result]);
+  // Thinned once per result: the clock only has to check whether it has crossed one.
+  const raceEmotes = useMemo(() => emoteCandidates(result.events), [result.events]);
   const replayMode = titleKey === "qualifying_replay_title" ? "qualifying" : "race";
   const pitProgress = pitLapProgress(circuit);
   const replayTimes = useMemo(() => scaleFinishTimes(finishTimes(result, replayTrace), replayDistanceScale(circuit)), [circuit, replayTrace, result]);
@@ -240,6 +242,7 @@ export function ReplayView({
     activeMomentId,
     startSignal,
     positionPops,
+    emotePops,
     currentRaceProgress,
     reduceMotion,
     seek,
@@ -261,7 +264,8 @@ export function ReplayView({
     createTower,
     smoothCarProgress,
     displayLapAtProgress,
-    segmentAtProgress
+    segmentAtProgress,
+    emoteCandidates: raceEmotes
   });
   const replayComplete = resultUnlocked || clock.current >= replayEnd;
   const unlockResult = () => {
@@ -285,8 +289,10 @@ export function ReplayView({
       }),
       livery: teamLiveries[entry.teamId],
       positionDelta: positionPops[entry.teamId]?.delta,
-      positionDeltaKey: positionPops[entry.teamId]?.key
-  })), [circuit.speedProfile, field, playerTeamId, positionPops, replayTimes.leader, replayTimes.times, snapshot.carProgress, snapshot.tower, teamLiveries]);
+      positionDeltaKey: positionPops[entry.teamId]?.key,
+      emote: emotePops[entry.teamId]?.emote,
+      emoteKey: emotePops[entry.teamId]?.key
+  })), [circuit.speedProfile, emotePops, field, playerTeamId, positionPops, replayTimes.leader, replayTimes.times, snapshot.carProgress, snapshot.tower, teamLiveries]);
   const playerCar = cars.find((car) => car.player) ?? cars[0];
   const focusedCar = cars.find((car) => car.id === focusedCarId) ?? playerCar;
   const setReplayDriverFocus = (focused: boolean) => {

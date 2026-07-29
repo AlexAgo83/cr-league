@@ -1,4 +1,4 @@
-import { positionDeltas, RACE_SEGMENTS, type RaceResult, type RaceSegment } from "@cr-league/shared";
+import { positionDeltas, RACE_SEGMENTS, type EmoteCandidate, type EmoteId, type RaceResult, type RaceSegment } from "@cr-league/shared";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { safeStorage } from "../../app/appStorage.js";
 import { REPLAY_SPEED_KEY, type ReplayStartSignal, startSignalAt } from "./replayMath.js";
@@ -30,6 +30,8 @@ type ReplayClockOptions = {
   smoothCarProgress: (current: Record<string, number>, target: Record<string, number>, elapsedSeconds: number) => Record<string, number>;
   displayLapAtProgress: (progress: number, laps: number) => number;
   segmentAtProgress: (progress: number) => RaceSegment;
+  /** Pre-thinned reactions, positioned along the trace. Empty disables the channel. */
+  emoteCandidates?: readonly EmoteCandidate[];
 };
 
 export function replayProgressAt(time: number, raceDuration: number, startHoldSeconds: number) {
@@ -74,7 +76,8 @@ export function useReplayClock({
   createTower,
   smoothCarProgress,
   displayLapAtProgress,
-  segmentAtProgress
+  segmentAtProgress,
+  emoteCandidates: emotes = []
 }: ReplayClockOptions) {
   const svgRef = useRef<SVGSVGElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -86,6 +89,9 @@ export function useReplayClock({
   const orderRef = useRef(initialOrder);
   const lastPublishedTimeRef = useRef(Number.NEGATIVE_INFINITY);
   const positionPopTimers = useRef<number[]>([]);
+  const emotePopTimers = useRef<number[]>([]);
+  const firedEmotes = useRef(new Set<number>());
+  const lastEmoteProgress = useRef(0);
   const reduceMotion = typeof window !== "undefined" && window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
   const [playing, setPlaying] = useState(!reduceMotion);
   const [speed, setSpeed] = useState<ReplaySpeed>(() => savedReplaySpeed());
@@ -94,6 +100,7 @@ export function useReplayClock({
   const [activeMomentId, setActiveMomentId] = useState<string | null>(null);
   const [startSignal, setStartSignal] = useState<ReplayStartSignal | null>(null);
   const [positionPops, setPositionPops] = useState<Record<string, { delta: number; key: number }>>({});
+  const [emotePops, setEmotePops] = useState<Record<string, { emote: EmoteId; key: number }>>({});
   const currentRaceProgress = replayProgressAt(clock.current, raceDuration, startHoldSeconds);
 
   const updateLive = useCallback((time: number, animatePositions = true, elapsedSeconds = 1 / 60, publishState = true) => {
@@ -121,6 +128,22 @@ export function useReplayClock({
       }
       orderRef.current = nextOrder;
     }
+    if (publishState && animatePositions) {
+      const from = lastEmoteProgress.current;
+      if (progress < from) firedEmotes.current.clear();
+      for (const [index, candidate] of emotes.entries()) {
+        if (firedEmotes.current.has(index) || candidate.progress > progress || candidate.progress < from) continue;
+        firedEmotes.current.add(index);
+        const key = Math.round(time * 1000) + index;
+        setEmotePops((current) => ({ ...current, [candidate.teamId]: { emote: candidate.emote, key } }));
+        const timer = window.setTimeout(() => {
+          emotePopTimers.current = emotePopTimers.current.filter((id) => id !== timer);
+          setEmotePops((current) => (current[candidate.teamId]?.key === key ? Object.fromEntries(Object.entries(current).filter(([id]) => id !== candidate.teamId)) : current));
+        }, 1400);
+        emotePopTimers.current.push(timer);
+      }
+      lastEmoteProgress.current = progress;
+    }
     snapshotRef.current = nextSnapshot;
     if (publishState) {
       lastPublishedTimeRef.current = time;
@@ -132,7 +155,7 @@ export function useReplayClock({
       setStartSignal((current) => (current?.lights === nextSignal?.lights && current?.go === nextSignal?.go ? current : nextSignal));
       setSnapshot(nextSnapshot);
     }
-  }, [createTargetSnapshot, createTower, displayLapAtProgress, getActiveMomentId, initialSnapshot.carProgress, laps, raceDuration, segmentAtProgress, smoothCarProgress, startHoldSeconds]);
+  }, [createTargetSnapshot, createTower, displayLapAtProgress, emotes, getActiveMomentId, initialSnapshot.carProgress, laps, raceDuration, segmentAtProgress, smoothCarProgress, startHoldSeconds]);
 
   const seek = useCallback((time: number) => {
     clock.current = Math.max(0, Math.min(time, replayEnd));
@@ -141,6 +164,11 @@ export function useReplayClock({
     if (rangeRef.current) rangeRef.current.value = String(clock.current);
     positionPopTimers.current.forEach(window.clearTimeout);
     positionPopTimers.current = [];
+    emotePopTimers.current.forEach(window.clearTimeout);
+    emotePopTimers.current = [];
+    firedEmotes.current.clear();
+    lastEmoteProgress.current = 0;
+    setEmotePops({});
     setPositionPops({});
     lastPublishedTimeRef.current = Number.NEGATIVE_INFINITY;
     const progress = replayProgressAt(clock.current, raceDuration, startHoldSeconds);
@@ -210,6 +238,7 @@ export function useReplayClock({
     activeMomentId,
     startSignal,
     positionPops,
+    emotePops,
     currentRaceProgress,
     reduceMotion,
     seek,

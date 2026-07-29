@@ -1,10 +1,10 @@
 ## item_351_produce_the_emote_sprite_sheet_and_its_assets - Produce the emote sprite sheet and its assets
 > From version: 0.8.0
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 95
-> Confidence: 90
-> Progress: 0
+> Status: Done
+> Understanding: 100
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Race replay expressiveness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -81,6 +81,12 @@ needs; 11 to 16 are reserve, so a later event type does not require a second she
 
 # AC Traceability
 - request-AC6 -> This backlog slice. Proof: AC1: Every emote identifier declared by the mapping has a committed 128 px WebP asset.
+- request-AC2 -> This backlog slice. Evidence needed: Events that are narration or bookkeeping rather than a reaction emit nothing, and a single pit stop produces at most one emote instead of one per pit event.
+- request-AC3 -> This backlog slice. Evidence needed: A per-car cooldown caps how often one car can react, with major severity winning over minor when both fall inside the same window.
+- request-AC4 -> This backlog slice. Evidence needed: Every car on the map can emote, not only the player's car.
+- request-AC5 -> This backlog slice. Evidence needed: The emote appears above the car at the moment the replay clock crosses the event position, floats and fades like the existing position delta, and is cleared without leaking timers.
+- request-AC7 -> This backlog slice. Evidence needed: Motion is disabled under prefers-reduced-motion while the emote itself stays visible, matching the existing reduced-motion blocks.
+- request-AC8 -> This backlog slice. Evidence needed: Lint, typecheck, build, unit tests and the e2e suite pass.
 
 # Decision framing
 - Product framing: Not needed
@@ -101,3 +107,9 @@ needs; 11 to 16 are reserve, so a later event type does not require a second she
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_133_orchestrate_race_replay_driver_emotes`
+
+# Notes
+- Task `task_133_orchestrate_race_replay_driver_emotes` was finished via `logics-manager flow finish task` on 2026-07-29.

@@ -4385,6 +4385,8 @@ label small {
 @media (prefers-reduced-motion: reduce) {
   .replay-pole-flash { animation: none; opacity: 0.5; }
   .saved-league-card { animation: none; }
+  /* The reaction still shows; only the motion stops. */
+  .map-car .map-car-emote { animation: none; }
 }
 
 @keyframes replay-flag-pop {
@@ -4979,14 +4981,29 @@ label small {
   fill: #fb7185;
 }
 
-.map-car-event {
-  fill: #fff7ed;
-  font-size: 11px;
-  font-weight: 900;
-  paint-order: stroke;
-  stroke: rgb(17 16 20 / 0.94);
-  stroke-linejoin: round;
-  stroke-width: 7px;
+/* Sits above the position delta at y=-16, so the two never overlap. Mirrors the delta float. */
+.map-car .map-car-emote {
+  animation: map-car-emote-float 1.4s ease-out both;
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.55));
+  pointer-events: none;
+}
+
+@keyframes map-car-emote-float {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.6);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(0) scale(1.08);
+  }
+  30% {
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-26px) scale(1);
+  }
 }
 
 @keyframes map-car-delta-float {

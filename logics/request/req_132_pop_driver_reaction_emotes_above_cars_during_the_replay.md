@@ -1,7 +1,7 @@
 ## req_132_pop_driver_reaction_emotes_above_cars_during_the_replay - Pop driver reaction emotes above cars during the replay
 > From version: 0.8.0
 > Schema version: 1.0
-> Status: Draft
+> Status: Done
 > Understanding: 90
 > Confidence: 85
 > Complexity: Medium

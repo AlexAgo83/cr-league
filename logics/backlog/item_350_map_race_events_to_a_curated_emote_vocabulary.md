@@ -1,10 +1,10 @@
 ## item_350_map_race_events_to_a_curated_emote_vocabulary - Map race events to a curated emote vocabulary
 > From version: 0.8.0
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: Done
+> Understanding: 100
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Race replay expressiveness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -36,6 +36,11 @@
 - request-AC1 -> This backlog slice. Proof: AC1: Every RaceEventType resolves deterministically to an emote identifier or to nothing, asserted by a parametrized test over the declared union so a new event type cannot be silently unmapped.
 - request-AC2 -> This backlog slice. Proof: AC2: The consecutive pit_imminent, pit_stop and pit_exit sequence produces at most one emote.
 - request-AC3 -> This backlog slice. Proof: AC3: Two events inside the cooldown window yield one emote, and a major severity event wins over a minor one.
+- request-AC4 -> This backlog slice. Evidence needed: Every car on the map can emote, not only the player's car.
+- request-AC5 -> This backlog slice. Evidence needed: The emote appears above the car at the moment the replay clock crosses the event position, floats and fades like the existing position delta, and is cleared without leaking timers.
+- request-AC6 -> This backlog slice. Evidence needed: A 16-emote sprite sheet is generated, sliced, converted to 128 px WebP, and every declared emote identifier resolves to a committed asset, asserted by a test in the same spirit as the existing board icon asset test.
+- request-AC7 -> This backlog slice. Evidence needed: Motion is disabled under prefers-reduced-motion while the emote itself stays visible, matching the existing reduced-motion blocks.
+- request-AC8 -> This backlog slice. Evidence needed: Lint, typecheck, build, unit tests and the e2e suite pass.
 
 # Decision framing
 - Product framing: Not needed
@@ -56,3 +61,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_133_orchestrate_race_replay_driver_emotes`
+
+# Notes
+- Task `task_133_orchestrate_race_replay_driver_emotes` was finished via `logics-manager flow finish task` on 2026-07-29.

@@ -1,10 +1,10 @@
 ## item_352_render_the_emote_above_every_car_on_the_replay_map - Render the emote above every car on the replay map
 > From version: 0.8.0
 > Schema version: 1.0
-> Status: Ready
-> Understanding: 90%
-> Confidence: 85%
-> Progress: 0%
+> Status: Done
+> Understanding: 100
+> Confidence: 95
+> Progress: 100
 > Complexity: Medium
 > Theme: Race replay expressiveness
 > Reminder: Update status/understanding/confidence/progress and linked request/task references when you edit this doc.
@@ -38,6 +38,7 @@
 - request-AC5 -> This backlog slice. Proof: AC2: The emote appears when the clock crosses the event position, floats, fades and is removed.
 - request-AC7 -> This backlog slice. Proof: AC3: Timers are cleared on unmount and no emote state leaks between replays.
 - request-AC8 -> This backlog slice. Proof: AC4: Under prefers-reduced-motion the emote is shown without motion.
+- request-AC6 -> This backlog slice. Evidence needed: A 16-emote sprite sheet is generated, sliced, converted to 128 px WebP, and every declared emote identifier resolves to a committed asset, asserted by a test in the same spirit as the existing board icon asset test.
 
 # Decision framing
 - Product framing: Not needed
@@ -58,3 +59,9 @@
 # Priority
 - Priority: High
 - Rationale: Set by scaffold input or defaulted for grooming.
+
+# Tasks
+- `task_133_orchestrate_race_replay_driver_emotes`
+
+# Notes
+- Task `task_133_orchestrate_race_replay_driver_emotes` was finished via `logics-manager flow finish task` on 2026-07-29.

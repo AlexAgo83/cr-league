@@ -338,6 +338,14 @@
     top: auto;
   }
 
+  /* The per-map `bottom` offsets are for the absolute placement these panels get on a wide
+     screen. In this stack they are relative, where a `bottom` shifts the panel up its own box
+     instead — 66px of it, straight over the info panel above. */
+  .drive-map-panel .map-info-stack > .map-plan-performance,
+  .replay-map-panel .map-info-stack > .map-plan-performance {
+    bottom: auto;
+  }
+
   .map-info-stack > .map-status {
     bottom: auto;
     left: auto;
@@ -354,44 +362,9 @@
     position: relative;
   }
 
-  .drive-map-panel .map-info-stack {
-    display: contents;
-    position: static;
-  }
-
-  .drive-map-panel .map-info-stack > .map-status {
-    left: 8px;
-    position: absolute;
-    top: 64px;
-  }
-
-  .drive-map-panel .map-info-stack > .map-plan-performance {
-    bottom: 104px;
-    left: 8px;
-    position: absolute;
-    top: auto;
-  }
-
-  /* The chrono replay renders inside a .drive-map-panel wrapper, so it inherited the GP map's
-     `display: contents` and absolute placement above. Its own stack goes back to being a grid,
-     and the plan panel flows under the info panel with the stack's gap — following it when the
-     readouts fold, where a fixed 154px top used to land inside the info panel. */
-  .qualifying-replay-inline .replay-map-panel .map-info-stack {
-    display: grid;
-    gap: 8px;
-    left: 8px;
-    position: absolute;
-    top: 68px;
-  }
-
-  .qualifying-replay-inline .replay-map-panel .map-info-stack > .map-status,
-  .qualifying-replay-inline .replay-map-panel .map-info-stack > .map-plan-performance {
-    bottom: auto;
-    left: auto;
-    position: relative;
-    top: auto;
-  }
-
+  /* Both phone maps use the same top-left stack: the info panel, then the plan under it with the
+     stack's gap, so the plan follows the info panel as its readouts fold. The GP map used to pin
+     its plan to the bottom of the screen instead, which left it stranded from the panel above. */
   .map-info-stack > .map-plan-performance .map-plan-panel > strong {
     font-size: 0.58rem;
     margin-bottom: 1px;

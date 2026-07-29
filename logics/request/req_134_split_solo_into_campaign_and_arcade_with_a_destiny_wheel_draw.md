@@ -1,9 +1,9 @@
 ## req_134_split_solo_into_campaign_and_arcade_with_a_destiny_wheel_draw - Split Solo into Campaign and Arcade, with a Destiny Wheel draw
 > From version: 0.8.0
 > Schema version: 1.0
-> Status: Draft
-> Understanding: 90%
-> Confidence: 85%
+> Status: Done
+> Understanding: 100
+> Confidence: 95
 > Complexity: Medium
 > Theme: Solo modes
 > Reminder: Update status/understanding/confidence and linked backlog/task references when you edit this doc.

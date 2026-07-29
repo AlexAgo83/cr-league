@@ -1,122 +1,128 @@
 import { AssetImage } from "./AssetImage.js";
 
-export type BoardIconName =
-  | "adjustable-wing"
-  | "admin-tools"
-  | "balanced-approach"
-  | "battery-harvest"
-  | "brake-risk"
-  | "boost"
-  | "car-skin"
-  | "card-info"
-  | "championship"
-  | "changelog"
-  | "chrono"
-  | "circuits"
-  | "create-league"
-  | "clean-air"
-  | "comeback-run"
-  | "cornering-balance"
-  | "connect-admin"
-  | "copy-error"
-  | "credits"
-  | "cleanup-test-data"
-  | "circuit-preview"
-  | "damage-risk"
-  | "delete-danger"
-  | "delete-user"
-  | "defensive-order"
-  | "dirty-air"
-  | "edit-plan"
-  | "energy"
-  | "engine-heat"
-  | "finish-flag-icon"
-  | "fleet-maintenance"
-  | "fleet-sponsorship"
-  | "fuel-delta"
-  | "garage"
-  | "grip"
-  | "hard-tires"
-  | "heavy-pack"
-  | "honors"
-  | "gp-history"
-  | "incident-review"
-  | "inspect-league"
-  | "inventory"
-  | "join-league"
-  | "key-moment"
-  | "launch-boost"
-  | "launch-gp"
-  | "leaderboard-gain"
-  | "leaderboard-loss"
-  | "locked-plan"
-  | "morale-momentum"
-  | "mini-pack"
-  | "new-chrono"
-  | "empty-card-slot"
-  | "empty-inventory"
-  | "next-gp"
-  | "next-action"
-  | "next-lesson"
-  | "no-chrono"
-  | "no-circuit-match"
-  | "open-replay"
-  | "overcut"
-  | "overtaking"
-  | "plan-worked"
-  | "podium-result"
-  | "position-gain"
-  | "position-loss"
-  | "pit-relay"
-  | "pit-stop"
-  | "previous-action"
-  | "profile-menu"
-  | "prudent-approach"
-  | "qualifying-setup"
-  | "race-report"
-  | "rain-mapping"
-  | "rain-grip"
-  | "race-director"
-  | "reliability"
-  | "replay"
-  | "report"
-  | "reliability-prep"
-  | "reset-action"
-  | "reset-recovery"
-  | "review-chrono"
-  | "review-race"
-  | "rival-pressure"
-  | "safety-car"
-  | "sector-pace"
-  | "security-warning"
-  | "send-plan"
-  | "setup-locked"
-  | "shop"
-  | "save-colors"
-  | "save-name"
-  | "sell-card"
-  | "speed"
-  | "soft-tires"
-  | "standings"
-  | "standings-board"
-  | "standard-pack"
-  | "stand-drive"
-  | "steward-warning"
-  | "strategy"
-  | "straight-line-power"
-  | "team-profile"
-  | "tire-wear"
-  | "tire-window"
-  | "traffic"
-  | "undercut"
-  | "urban-draft"
-  | "users-admin"
-  | "leagues-admin"
-  | "weather"
-  | "weather-prep"
-  | "speed-prep"
-  | "settings"
-  | "logout-profile";
+export const BOARD_ICON_NAMES = [
+  "adjustable-wing",
+  "arcade",
+  "admin-tools",
+  "balanced-approach",
+  "battery-harvest",
+  "brake-risk",
+  "boost",
+  "car-skin",
+  "card-info",
+  "championship",
+  "changelog",
+  "chrono",
+  "circuits",
+  "destiny-wheel",
+  "create-league",
+  "clean-air",
+  "comeback-run",
+  "cornering-balance",
+  "connect-admin",
+  "copy-error",
+  "credits",
+  "cleanup-test-data",
+  "circuit-preview",
+  "damage-risk",
+  "delete-danger",
+  "delete-user",
+  "defensive-order",
+  "dirty-air",
+  "edit-plan",
+  "energy",
+  "engine-heat",
+  "finish-flag-icon",
+  "fleet-maintenance",
+  "fleet-sponsorship",
+  "fuel-delta",
+  "garage",
+  "grip",
+  "hard-tires",
+  "heavy-pack",
+  "honors",
+  "gp-history",
+  "incident-review",
+  "inspect-league",
+  "inventory",
+  "join-league",
+  "key-moment",
+  "launch-boost",
+  "launch-gp",
+  "leaderboard-gain",
+  "leaderboard-loss",
+  "locked-plan",
+  "morale-momentum",
+  "mini-pack",
+  "new-chrono",
+  "empty-card-slot",
+  "empty-inventory",
+  "next-gp",
+  "next-action",
+  "next-lesson",
+  "no-chrono",
+  "no-circuit-match",
+  "open-replay",
+  "overcut",
+  "overtaking",
+  "plan-worked",
+  "podium-result",
+  "position-gain",
+  "position-loss",
+  "pit-relay",
+  "pit-stop",
+  "previous-action",
+  "profile-menu",
+  "prudent-approach",
+  "qualifying-setup",
+  "race-report",
+  "rain-mapping",
+  "rain-grip",
+  "race-director",
+  "reliability",
+  "replay",
+  "report",
+  "reliability-prep",
+  "reset-action",
+  "reset-recovery",
+  "review-chrono",
+  "review-race",
+  "rival-pressure",
+  "safety-car",
+  "sector-pace",
+  "security-warning",
+  "send-plan",
+  "setup-locked",
+  "shop",
+  "save-colors",
+  "save-name",
+  "sell-card",
+  "speed",
+  "soft-tires",
+  "standings",
+  "standings-board",
+  "standard-pack",
+  "solo-campaign",
+  "stand-drive",
+  "steward-warning",
+  "strategy",
+  "straight-line-power",
+  "team-profile",
+  "tire-wear",
+  "tire-window",
+  "traffic",
+  "undercut",
+  "urban-draft",
+  "users-admin",
+  "leagues-admin",
+  "weather",
+  "weather-prep",
+  "speed-prep",
+  "settings",
+  "logout-profile",
+] as const;
+
+export type BoardIconName = (typeof BOARD_ICON_NAMES)[number];
 
 export type VisualIconName =
   | "grip"

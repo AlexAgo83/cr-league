@@ -69,7 +69,7 @@ export function DestinyWheelView({ onBack }: { onBack: () => void }) {
   if (draw) {
     return (
       <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="wheel-result-title">
-        <div className="panel setup-main-panel setup-hero-panel setup-entry-hero-panel">
+        <div className="panel setup-main-panel setup-hero-panel arcade-hero-panel">
           <span className="section-kicker">{tt("wheel_result_kicker")}</span>
           <h1 id="wheel-result-title">{tt("wheel_result_title")}</h1>
           <p className="status">{draw.circuit.city}</p>
@@ -102,7 +102,7 @@ export function DestinyWheelView({ onBack }: { onBack: () => void }) {
 
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="wheel-title">
-      <div className="panel setup-main-panel setup-hero-panel setup-entry-hero-panel">
+      <div className="panel setup-main-panel setup-hero-panel arcade-hero-panel">
         <button className="modal-close-button setup-back-button" type="button" aria-label={tt("action_back")} onClick={onBack}>
           ×
         </button>

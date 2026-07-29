@@ -377,6 +377,11 @@
   .setup-choice-panel .setup-choice-grid {
     grid-template-columns: 1fr 1fr;
   }
+
+  /* A catalogue holding one game would otherwise sit in half a row with nothing beside it. */
+  .setup-choice-panel .setup-choice-grid > :only-child {
+    grid-column: 1 / -1;
+  }
 }
 
 .setup-choice {
@@ -1167,6 +1172,13 @@
     url("/assets/crl/league-arrival.webp") center / cover no-repeat,
     linear-gradient(90deg, transparent, rgb(36 130 118 / 0.14), transparent) -120% 0 / 220% 100% no-repeat,
     linear-gradient(135deg, rgb(36 130 118 / 0.26), rgb(22 18 18 / 0.9));
+}
+
+.arcade-hero-panel {
+  background:
+    linear-gradient(90deg, rgb(16 14 18 / 0.92), rgb(16 14 18 / 0.28)),
+    url("/assets/crl/arcade-catalogue.webp") center / cover no-repeat,
+    linear-gradient(135deg, rgb(255 106 31 / 0.22), rgb(22 18 18 / 0.9));
 }
 
 .panel h2,

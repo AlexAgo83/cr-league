@@ -27,14 +27,10 @@ export type ProfileMode = "choice" | "create" | "recover";
 export type SetupMode = "choice" | "create" | "join";
 export type SetupEntryMode = "choice" | "multiplayer" | "solo" | "campaign" | "arcade" | "wheel";
 
-/**
- * Stand-in board icons until the generated ones land (item_356). Swapping each is one line here;
- * nothing else in the app names them.
- */
 export const SOLO_MODE_ICONS = {
-  campaign: "stand-drive",
-  arcade: "launch-boost",
-  destinyWheel: "key-moment"
+  campaign: "solo-campaign",
+  arcade: "arcade",
+  destinyWheel: "destiny-wheel"
 } satisfies Record<string, BoardIconName>;
 
 // A choice step is a poster moment, not a form: icon first, and the panel drops the paper
@@ -139,7 +135,7 @@ export function ArcadeCatalogueView({
   const games = [{ key: "wheel", icon: SOLO_MODE_ICONS.destinyWheel, label: tt("arcade_wheel_title"), hint: tt("arcade_wheel_hint"), onSelect: onOpenWheel }];
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="arcade-title">
-      <div className="panel setup-main-panel setup-hero-panel setup-entry-hero-panel">
+      <div className="panel setup-main-panel setup-hero-panel arcade-hero-panel">
         <SetupBackButton onBack={onBack} />
         <span className="section-kicker">{tt("arcade_kicker")}</span>
         <h1 id="arcade-title">{tt("arcade_title")}</h1>

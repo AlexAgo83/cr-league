@@ -1,10 +1,10 @@
 ## task_135_orchestrate_the_solo_arcade_and_its_destiny_wheel - Orchestrate the Solo Arcade and its Destiny Wheel
 > From version: 0.8.0
 > Schema version: 1.0
-> Status: In progress
+> Status: Done
 > Understanding: 100
 > Confidence: 95
-> Progress: 85
+> Progress: 100
 > Complexity: Medium
 > Theme: Implementation delivery
 > Reminder: Update status/understanding/confidence/progress and linked request/backlog references when you edit this doc.
@@ -45,7 +45,7 @@
 - request-AC5 -> This task. Proof: a rendered run showed 14 map elements and 0 plan surfaces. ReplayView gained two optional opt-outs, `showPerformancePanel` and `towerTitleKey`, both defaulting to today's behaviour.
 - request-AC6 -> This task. Proof: the result screen lists the classification with the winner accented and offers Draw again, Change the names and Back to the arcade. A rendered draw returned "1 Sam, 2 Chris, 3 Robin, 4 Alex" for names entered Alex-first.
 - request-AC7 -> This task. Proof: `arcadeStorage` uses its own key; "does not touch campaign or multiplayer storage" asserts the slot, index and claim keys are unchanged, and a rendered run left `cr-league-solo-slot-v1-0` null.
-- request-AC8 -> Deferred. The three icons and the arcade hero are not generated yet; the screens use stand-in board icons listed in one place, `SOLO_MODE_ICONS`, and the entry hero. item_356 carries the prompts.
+- request-AC8 -> This task. Proof: `solo-campaign`, `arcade` and `destiny-wheel` are committed as 128px WebP (5.8-7.6 KB each) and `arcade-catalogue.webp` as 1600x600, 60 KB. The delivered sheet came back opaque as predicted and went through `rembg`; no extracted cell touched its edge, so no manual recrop was needed. A rendered run reported no 404 under /assets/crl.
 - request-AC9 -> This task. Proof: lint, typecheck and build pass; 518 unit tests pass (9 skipped) and 7 chromium e2e scenarios pass.
 
 # Validation
@@ -53,7 +53,7 @@
 - Run scaffold command tests.
 
 # Report
-- Implementation complete except the assets, which the operator is generating from item_356.
+- Implementation complete, assets included.
 - One diagnostic in the request was too optimistic: ReplayView needed no change for the plan
   surfaces, which are optional props, but the circuit traits panel and the tower title had no
   opt-out. Two optional props were added, both defaulting to the existing behaviour.
@@ -61,6 +61,10 @@
   titled "Final classification" over a live order, which gives a draw away before the flag, and
   the participant input painted light text on the paper cockpit colour because the dark choice
   panel inverted every colour variable except that one.
+- The board icon existence test kept its own copy of the icon name list, which could drift from
+  the union it was meant to guard. `BoardIconName` is now derived from a `BOARD_ICON_NAMES`
+  array and the test iterates that array, so a declared icon without artwork fails on sight.
+  Verified by removing an icon and watching the suite fail.
 
 # AI Context
 - Summary: Orchestrate the Solo Arcade and its Destiny Wheel

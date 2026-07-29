@@ -5207,7 +5207,12 @@ label small {
 /* Solo save slots. The open action reuses .setup-choice so the slot reads like the other
    choice steps; the delete action sits beside it rather than inside the clickable area. */
 .solo-slot-list {
+  align-items: center;
   display: grid;
+  /* The delete column is declared on the list, not the row, so an empty slot keeps the same
+     card width as a filled one instead of stretching across the missing button. */
+  grid-auto-rows: 1fr;
+  grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
   list-style: none;
   margin: 0;
@@ -5215,13 +5220,12 @@ label small {
 }
 
 .solo-slot {
-  align-items: center;
-  display: grid;
-  gap: 8px;
-  grid-template-columns: minmax(0, 1fr) auto;
+  display: contents;
 }
 
 .solo-slot-open {
+  grid-column: 1;
+  height: 100%;
   width: 100%;
 }
 
@@ -5241,6 +5245,7 @@ label small {
 }
 
 .solo-slot-delete {
+  grid-column: 2;
   font-size: 0.78rem;
   min-height: 0;
   padding: 6px 10px;

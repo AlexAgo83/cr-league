@@ -69,10 +69,9 @@
   padding: 16px 18px;
 }
 
-.setup-choice-panel .solo-slot-delete {
-  background: rgb(248 243 232 / 0.06);
-  border: 1px solid rgb(248 243 232 / 0.18);
-  color: #f8f3e8;
+/* Slot cards share a row height, so their content centres instead of hanging from the top. */
+.setup-choice-panel .setup-choice.solo-slot-open {
+  align-content: center;
 }
 
 .setup-choice-panel .setup-choice:hover,
@@ -774,16 +773,30 @@
   outline-offset: 2px;
 }
 
-:is(.championship-view, .garage-grid, .report-view, .plan-view, .setup-form-panel) :is(.secondary-button, .secondary-actions button:not(.modal-action-command)):not(:disabled) {
+:is(.championship-view, .garage-grid, .report-view, .plan-view, .setup-form-panel:not(.setup-choice-panel)) :is(.secondary-button, .secondary-actions button:not(.modal-action-command)):not(:disabled) {
   background: rgb(23 21 26 / 0.04);
   border-color: rgb(23 21 26 / 0.24);
   color: var(--color-ink);
 }
 
-:is(.championship-view, .garage-grid, .report-view, .plan-view, .setup-form-panel) :is(.secondary-button, .secondary-actions button:not(.modal-action-command)):not(:disabled):is(:hover, :focus-visible) {
+:is(.championship-view, .garage-grid, .report-view, .plan-view, .setup-form-panel:not(.setup-choice-panel)) :is(.secondary-button, .secondary-actions button:not(.modal-action-command)):not(:disabled):is(:hover, :focus-visible) {
   background: rgb(197 58 0 / 0.1);
   border-color: rgb(197 58 0 / 0.48);
   color: var(--color-ink);
+}
+
+/* A choice panel is dark, so its secondary buttons invert like the cards they sit by. The
+   light-paper rule above skips it: the same element carries both classes. */
+.setup-choice-panel .solo-slot-delete:not(:disabled) {
+  background: rgb(248 243 232 / 0.06);
+  border-color: rgb(248 243 232 / 0.22);
+  color: #f8f3e8;
+}
+
+.setup-choice-panel .solo-slot-delete:not(:disabled):is(:hover, :focus-visible) {
+  background: rgb(197 58 0 / 0.22);
+  border-color: var(--color-accent);
+  color: #f8f3e8;
 }
 
 .garage-grid .garage-panel-inventory .garage-empty-shop-button.secondary-button:not(:disabled) {

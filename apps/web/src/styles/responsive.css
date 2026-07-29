@@ -71,11 +71,14 @@
   .map-screen .map-qualifying-times,
   .map-screen .map-qualifying-toggle,
   .map-screen .map-final-classification,
-  .map-screen .replay-map-controls {
+  .map-screen .replay-map-controls,
+  .wheel-race .replay-map-controls {
     top: 68px;
   }
 
-  .map-screen .replay-tower {
+  /* Sits just under the controls; the generic 176px below is for a tower over a boxed map. */
+  .map-screen .replay-tower,
+  .wheel-race .replay-tower {
     top: 114px;
   }
 
@@ -597,7 +600,8 @@
     top: 176px;
   }
 
-  .map-screen .replay-map-panel .replay-tower {
+  .map-screen .replay-map-panel .replay-tower,
+  .wheel-race .replay-map-panel .replay-tower {
     top: 116px;
   }
 

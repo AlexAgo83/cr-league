@@ -502,9 +502,6 @@ export function ReplayView({
             <section className="panel race-context-panel replay-result-gate">
               <h2>{tt("replay_result_locked_title")}</h2>
               <p>{tt("replay_result_locked_body")}</p>
-              <button type="button" className="secondary-button" onClick={unlockResult}>
-                {tt("action_skip_to_result")}
-              </button>
             </section>
           ) : null}
           {showIntro && !copyDismissed ? (

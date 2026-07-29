@@ -4265,12 +4265,6 @@ label small {
   color: #fff;
 }
 
-@media (min-width: 861px) {
-  .replay-result-gate .secondary-button {
-    display: none;
-  }
-}
-
 .replay-map-controls button {
   background: rgb(255 255 255 / 0.07);
   border: 0;

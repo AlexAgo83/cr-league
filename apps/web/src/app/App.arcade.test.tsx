@@ -66,7 +66,7 @@ describe("profile menu", () => {
     await screen.findByRole("heading", { name: "1. Read the circuit" });
 
     fireEvent.click(screen.getByTestId("profile-menu"));
-    expect(screen.getByTestId("profile-action-add-league").textContent).toBe("Change save");
+    expect(screen.getByTestId("profile-action-add-league").textContent).toBe("Saves");
     fireEvent.click(screen.getByTestId("profile-action-add-league"));
 
     // The brand button already covers the root menu; from a campaign the useful move is another save.

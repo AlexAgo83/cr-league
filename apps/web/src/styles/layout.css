@@ -3621,7 +3621,9 @@ label small {
   left: 12px;
   padding: 10px 12px;
   position: absolute;
-  right: 76px;
+  /* Clear of the action stack rather than flush against it: its own offset, plus a button, plus
+     a gap. At a plain 76px the text ended exactly where the buttons began. */
+  right: calc(18px + 58px + 12px);
   z-index: 2;
 }
 

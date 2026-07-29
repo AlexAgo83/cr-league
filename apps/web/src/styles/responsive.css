@@ -397,7 +397,9 @@
     grid-template-columns: 1fr;
     left: 8px;
     padding: 8px 10px;
-    right: 60px;
+    /* Same derivation as the wide layout, with the phone's smaller stack: 60px put the panel
+       under the buttons rather than beside them. */
+    right: calc(12px + 52px + 10px);
   }
 
   .map-workflow-panel h2 {

@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useT } from "../i18n/index.js";
-import { RACE_SEGMENTS, type RaceResult, type RaceSegment, type Weather } from "@cr-league/shared";
+import { EMOTE_IDS, RACE_SEGMENTS, type RaceResult, type RaceSegment, type Weather } from "@cr-league/shared";
 import type { TranslationKey } from "../i18n/index.js";
+import { AssetImage } from "./AssetImage.js";
 import { VisualIcon } from "./VisualIcon.js";
 
-type InfoSubscreen = "weather" | "stats" | "legend";
+type InfoSubscreen = "weather" | "stats" | "legend" | "reactions";
 
 export function RaceInfoDetails({
   title,
@@ -22,7 +23,8 @@ export function RaceInfoDetails({
   const tabs: Array<{ item: InfoSubscreen; label: string }> = [
     { item: "weather", label: title },
     { item: "stats", label: tt("race_stats_title") },
-    { item: "legend", label: tt("legend_title") }
+    { item: "legend", label: tt("legend_title") },
+    { item: "reactions", label: tt("reactions_title") }
   ];
 
   return (
@@ -37,6 +39,7 @@ export function RaceInfoDetails({
       {subscreen === "weather" && <RaceWeatherSection body={body} segments={segments} weatherForSegment={weatherForSegment} />}
       {subscreen === "stats" && <RaceStatsExplainer />}
       {subscreen === "legend" && <RaceLegend />}
+      {subscreen === "reactions" && <RaceReactionsExplainer />}
     </section>
   );
 }
@@ -92,6 +95,26 @@ function RaceLegend() {
         <span><span className="replay-legend-marker pit-stop" aria-hidden="true" /> {tt("replay_pit_marker_legend")}</span>
         <span><VisualIcon name="light_rain" /> {tt("replay_weather_phase_legend")}</span>
         <span><span className="replay-legend-finish-line" aria-hidden="true" /> {tt("replay_finish_line_legend")}</span>
+      </p>
+    </div>
+  );
+}
+
+/**
+ * What the faces popping over a car mean. Driven off EMOTE_IDS rather than a local list, so a
+ * reaction added to the race engine shows up here or fails the i18n key check.
+ */
+function RaceReactionsExplainer() {
+  const tt = useT();
+  return (
+    <div className="race-info-subpanel race-reactions-explainer" role="tabpanel">
+      <p>
+        {EMOTE_IDS.map((emote) => (
+          <span key={emote}>
+            <AssetImage className="race-reaction-face" src={`/assets/crl/emotes/${emote}.webp`} />
+            {tt(`reaction_${emote}` as TranslationKey)}
+          </span>
+        ))}
       </p>
     </div>
   );

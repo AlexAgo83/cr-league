@@ -13,6 +13,7 @@
 | [adr_007_i18n](architecture/adr_007_i18n.md) | Internationalization | Accepted |  |  | architecture/adr_007_i18n.md |
 | [adr_008_testing_quality](architecture/adr_008_testing_quality.md) | Testing and Quality | Accepted |  |  | architecture/adr_008_testing_quality.md |
 | [adr_009_shared_local_and_network_league_engine](architecture/adr_009_shared_local_and_network_league_engine.md) | Shared local and network league engine | Proposed |  |  | architecture/adr_009_shared_local_and_network_league_engine.md |
+| [adr_010_replay_layout_zone_ownership](architecture/adr_010_replay_layout_zone_ownership.md) | Replay layout zone ownership | Accepted |  |  | architecture/adr_010_replay_layout_zone_ownership.md |
 
 ## Product briefs
 

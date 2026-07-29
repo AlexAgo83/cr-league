@@ -127,6 +127,18 @@
     font-size: 0.875rem;
   }
 
+  /* A 92px car took a third of a 338px cell and pushed every copy line into a wrap. */
+  .solo-slot-open .solo-slot-car,
+  .solo-slot-open .setup-choice-icon {
+    width: 58px;
+  }
+
+  /* Equal rows make three cells read alike on a wide screen; on a narrow one they only stretch
+     the empty slots into blank space, so each cell takes the height it needs. */
+  .solo-slot-list {
+    grid-auto-rows: auto;
+  }
+
   /* The map is narrow here: a row of controls eats its width, so they stack down the corner. */
   .circuit-detail-actions {
     flex-direction: column;

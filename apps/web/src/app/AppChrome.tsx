@@ -116,6 +116,7 @@ export function ProfileMenu({
               {tt(isSoloLeague ? "action_back_to_menu" : "action_add_league")}
             </button>
           ) : null}
+          {showManageLeague ? <hr className="profile-menu-separator" /> : null}
           {hasLeague && !isSoloLeague ? (
             <button type="button" data-testid="profile-action-race-direction" className="profile-menu-action" onClick={onOpenLeagueControls}>
               {tt("settings_title")}
@@ -151,6 +152,7 @@ export function ProfileMenu({
           <button type="button" data-testid="profile-action-sign-out" className="profile-menu-action profile-menu-action-danger" onClick={onOpenProfileLogout}>
             {tt("action_forget_profile")}
           </button>
+          <hr className="profile-menu-separator" />
           <button type="button" data-testid="profile-action-changelog" className="profile-menu-version" onClick={onOpenChangelog}>
             v{APP_VERSION}
           </button>

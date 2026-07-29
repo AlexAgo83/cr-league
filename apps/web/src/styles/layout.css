@@ -720,6 +720,13 @@
   z-index: 20;
 }
 
+.profile-menu-separator {
+  border: 0;
+  border-top: 1px solid var(--color-border);
+  margin: 0;
+  width: 100%;
+}
+
 .profile-menu-action {
   background: transparent;
   border: 1px solid var(--color-border);

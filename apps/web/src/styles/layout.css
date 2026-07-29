@@ -674,6 +674,15 @@
   width: 38px;
 }
 
+.profile-menu-glyph {
+  fill: none;
+  height: 16px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-width: 2;
+  width: 16px;
+}
+
 .profile-menu-button:hover,
 .profile-menu-button[aria-expanded="true"] {
   border-color: var(--color-accent);

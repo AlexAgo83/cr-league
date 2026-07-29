@@ -158,6 +158,17 @@ describe("App profile and admin", () => {
     expect(screen.getByRole("heading", { name: `CR League ${APP_VERSION}` })).toBeTruthy();
   });
 
+  it("shows a menu glyph instead of initials when there is no team", () => {
+    saveProfile();
+    render(<App />);
+
+    const button = screen.getByRole("button", { name: "Profile menu" });
+
+    // "CR" read as a logo rather than something to press.
+    expect(button.textContent).toBe("");
+    expect(button.querySelector("svg")).toBeTruthy();
+  });
+
   it("closes the profile menu when focus leaves it", async () => {
     saveProfile();
     render(<App />);

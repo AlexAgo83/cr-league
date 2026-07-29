@@ -101,7 +101,9 @@ export function ProfileMenu({
       }}
     >
       <button type="button" data-testid="profile-menu" className="profile-menu-button" aria-label={tt("profile_menu")} aria-expanded={profileOpen} onClick={onToggleOpen}>
-        {playerTeamName?.slice(0, 2).toUpperCase() ?? "CR"}
+        {/* Without a team there are no initials to show, and "CR" read as a logo rather than
+            something to press. A menu glyph says what the button does. */}
+        {playerTeamName ? playerTeamName.slice(0, 2).toUpperCase() : <MenuGlyph />}
       </button>
       {profileOpen ? (
         <div className="profile-menu-panel">
@@ -166,6 +168,14 @@ function BrandLoadingIndicator({ pendingMessage }: { pendingMessage: string | nu
       <span className="visually-hidden">{pendingMessage}</span>
     </span>
   ) : null;
+}
+
+function MenuGlyph() {
+  return (
+    <svg className="profile-menu-glyph" viewBox="0 0 16 16" aria-hidden="true" focusable="false">
+      <path d="M2 4h12M2 8h12M2 12h12" />
+    </svg>
+  );
 }
 
 export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = null, onHome, hideBrand = false, hideWordmark = false }: { profileMenu: ReactNode; languageSwitcher: ReactNode; pendingMessage?: string | null; onHome: () => void; hideBrand?: boolean; hideWordmark?: boolean }) {

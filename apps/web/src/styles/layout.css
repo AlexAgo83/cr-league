@@ -5300,9 +5300,9 @@ label small {
   justify-content: center;
 }
 
-.saved-league-head .save-livery-plate {
-  height: 34px;
-  width: 34px;
+.saved-league-head .saved-league-car {
+  flex: none;
+  width: 76px;
 }
 
 .save-livery-plate .livery-plate-text {

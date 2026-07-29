@@ -82,6 +82,17 @@ describe("soloStorage slots", () => {
     expect(slots[1]?.updatedAt).toBe("2026-01-02T03:04:05.000Z");
   });
 
+  it("refreshes an index entry written before a displayed field existed", () => {
+    saveSoloSlot(0, state);
+    // Exactly what the previous build wrote: a full summary, minus the field it did not know.
+    const stale = JSON.parse(localStorage.getItem(SOLO_SLOT_INDEX_KEY)!) as Record<string, Record<string, unknown>>;
+    delete stale["0"]!.livery;
+    localStorage.setItem(SOLO_SLOT_INDEX_KEY, JSON.stringify(stale));
+
+    expect(listSoloSlots()[0]?.livery).toBeDefined();
+    expect(localStorage.getItem(SOLO_SLOT_INDEX_KEY)).toContain("livery");
+  });
+
   it("rebuilds a lost index from the slots themselves", () => {
     saveSoloSlot(2, state, new Date("2026-01-02T03:04:05.000Z"));
     localStorage.removeItem(SOLO_SLOT_INDEX_KEY);

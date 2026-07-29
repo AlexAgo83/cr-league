@@ -3,7 +3,6 @@ import { useT } from "../i18n/index.js";
 import { ConfirmActionModal } from "./AppModals.js";
 import { BoardIcon, type BoardIconName } from "../features/VisualIcon.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
-import { LiveryPlate } from "../features/LiveryPlate.js";
 import { TeamCar } from "../features/TeamCar.js";
 import type { FormState } from "./types.js";
 import type { SoloSlotSummary } from "./soloStorage.js";
@@ -478,7 +477,7 @@ export function LeagueSetupView({
                   return (
                     <button type="button" className="profile-menu-action saved-league-card" onClick={() => onSwitchLeague(claim.teamId)} disabled={status === "loading"}>
                       <span className="saved-league-head">
-                        {claim.livery ? <LiveryPlate className="save-livery-plate" livery={claim.livery} name={claim.teamName} /> : null}
+                        {claim.livery ? <TeamCar className="saved-league-car" livery={claim.livery} /> : null}
                         <span>
                           <strong>{claim.leagueName}</strong>
                           <small>

@@ -135,8 +135,8 @@ export function clearSoloSlot(slot: SoloSlot) {
 
 /**
  * Summaries for every slot, cheap by design: the picker reads one small key instead of parsing
- * three full games. Falls back to the slot itself when the index is missing, which also repairs
- * an index lost to a cleared or partially written storage.
+ * three full games. Falls back to the slot itself when the index entry is missing or was written
+ * by an older build, which repairs both a lost index and one that predates a displayed field.
  */
 export function listSoloSlots(): Array<SoloSlotSummary | null> {
   migrateLegacySoloSave();
@@ -145,7 +145,7 @@ export function listSoloSlots(): Array<SoloSlotSummary | null> {
 
   const summaries = SOLO_SLOTS.map((slot) => {
     const known = index[`${slot}`];
-    if (known) return known;
+    if (known && isCurrentSummary(known)) return known;
     const save = loadSoloSlot(slot);
     if (!save) return null;
     const summary = summarizeSoloSave(slot, save);
@@ -155,6 +155,15 @@ export function listSoloSlots(): Array<SoloSlotSummary | null> {
 
   if (repaired) writeIndex(repaired);
   return summaries;
+}
+
+/**
+ * An index entry written before a field was displayed has no value for it, and would otherwise
+ * be trusted forever: the picker would keep showing an old build's version of an existing save.
+ * Anything added to the summary later belongs in this check.
+ */
+function isCurrentSummary(summary: SoloSlotSummary) {
+  return summary.livery !== undefined;
 }
 
 export function hasAnySoloSave() {

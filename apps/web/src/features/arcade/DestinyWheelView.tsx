@@ -1,10 +1,12 @@
 import { lazy, Suspense, useEffect, useState } from "react";
 import { useT } from "../../i18n/index.js";
+import { SetupBackButton } from "../../app/SetupViews.js";
 import { BoardIcon } from "../VisualIcon.js";
 import { TeamCar } from "../TeamCar.js";
 import {
   addWheelParticipant,
   loadWheelParticipants,
+  recolourWheelParticipant,
   removeWheelParticipant,
   saveWheelParticipants,
   WHEEL_MAX_PARTICIPANTS,
@@ -107,9 +109,7 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
   return (
     <section className="setup-grid setup-grid-single setup-grid-split" aria-labelledby="wheel-title">
       <div className="panel setup-main-panel setup-hero-panel arcade-hero-panel">
-        <button className="modal-close-button setup-back-button" type="button" aria-label={tt("action_back")} onClick={onBack}>
-          ×
-        </button>
+        <SetupBackButton onBack={onBack} />
         <span className="section-kicker">{tt("wheel_kicker")}</span>
         <h1 id="wheel-title">{tt("wheel_title")}</h1>
         <p className="status">{tt("wheel_intro")}</p>
@@ -139,8 +139,19 @@ export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => voi
           <ul className="wheel-participants">
             {participants.map((participant, index) => (
               <li key={participant.id} className="wheel-participant">
-                <TeamCar className="wheel-participant-car" livery={wheelLivery(index)} />
+                <TeamCar className="wheel-participant-car" livery={wheelLivery(index, participant)} />
                 <strong>{participant.name}</strong>
+                <span className="wheel-participant-colours">
+                  {(["primary", "secondary"] as const).map((slot) => (
+                    <input
+                      key={slot}
+                      type="color"
+                      aria-label={tt(slot === "primary" ? "garage_livery_primary" : "garage_livery_secondary")}
+                      value={wheelLivery(index, participant)[slot]}
+                      onChange={(event) => setParticipants(recolourWheelParticipant(participants, participant.id, { [slot]: event.target.value }))}
+                    />
+                  ))}
+                </span>
                 <button
                   type="button"
                   className="secondary-button wheel-participant-remove"

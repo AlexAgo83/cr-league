@@ -49,11 +49,14 @@ function SetupChoice({ icon, label, hint, onSelect }: { icon: BoardIconName; lab
 
 // Only shown at the "choice" step of each setup view: the create/join/recover forms already
 // carry their own textual Back button, and two back affordances on one screen read as a bug.
-function SetupBackButton({ onBack }: { onBack: () => void }) {
+export function SetupBackButton({ onBack }: { onBack: () => void }) {
   const tt = useT();
   return (
+    // A chevron, not a cross: it steps back to the previous screen rather than closing anything.
     <button className="modal-close-button setup-back-button" type="button" aria-label={tt("action_back")} onClick={onBack}>
-      ×
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="m14 6-6 6 6 6" />
+      </svg>
     </button>
   );
 }

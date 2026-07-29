@@ -555,6 +555,12 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
     setLastGame((current) => (current && "slot" in current && current.slot === slot ? null : current));
   }
 
+  /** Both the topbar pill and its narrow-screen twin in the profile menu land here. */
+  function leaveToMenu() {
+    if (soloMode) leaveSoloForSlots();
+    else addLeague();
+  }
+
   function resumeLastGame() {
     if (!lastGame) return;
     setProfileOpen(false);
@@ -751,6 +757,8 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
       playerTeamName={playerTeam?.name}
       pendingMessage={pendingMessage}
       hasLeague={Boolean(leagueState)}
+      onLeaveToMenu={leagueState ? leaveToMenu : undefined}
+      onResumeGame={!leagueState && lastGame ? resumeLastGame : undefined}
       isSoloLeague={soloMode}
       isAdmin={Boolean(profileSession?.admin)}
       hasRecoveryCode={Boolean(profileSession?.recoveryCode)}
@@ -1022,7 +1030,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         markCommandClicked={markCommandClicked}
         openQualifyingRun={soloMode ? openSoloQualifyingRun : openQualifyingRun}
         goHome={goHome}
-        leaveToMenu={soloMode ? leaveSoloForSlots : addLeague}
+        leaveToMenu={leaveToMenu}
         backToAdminConsole={() => {
           setGameView("admin");
           setLeagueState(null);

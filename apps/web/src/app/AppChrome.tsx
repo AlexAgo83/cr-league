@@ -57,6 +57,8 @@ export function ProfileMenu({
   isAdmin,
   hasRecoveryCode,
   onChangeLocale,
+  onLeaveToMenu,
+  onResumeGame,
   onToggleOpen,
   onClose,
   onOpenLeagueControls,
@@ -76,6 +78,9 @@ export function ProfileMenu({
   isAdmin: boolean;
   hasRecoveryCode: boolean;
   onChangeLocale: (locale: Locale) => void;
+  /** Both mirror the topbar pills, which a phone has no room for. Hidden on wide screens. */
+  onLeaveToMenu?: () => void;
+  onResumeGame?: () => void;
   onToggleOpen: () => void;
   onClose: () => void;
   onOpenLeagueControls: () => void;
@@ -105,7 +110,16 @@ export function ProfileMenu({
         <div className="profile-menu-panel">
           <PendingFeedback message={pendingMessage} />
           <LanguageSwitcher locale={locale} onChangeLocale={onChangeLocale} />
-          {/* The way out of a game is the topbar pill and the brand button, not an entry here. */}
+          {onLeaveToMenu ? (
+            <button type="button" data-testid="profile-action-leave-to-menu" className="profile-menu-action profile-menu-narrow-only" onClick={onLeaveToMenu}>
+              {tt("menu_title")}
+            </button>
+          ) : null}
+          {onResumeGame ? (
+            <button type="button" data-testid="profile-action-resume-game" className="profile-menu-action profile-menu-narrow-only" onClick={onResumeGame}>
+              {tt("action_resume_game")}
+            </button>
+          ) : null}
           <hr className="profile-menu-separator" />
           {hasLeague && !isSoloLeague ? (
             <button type="button" data-testid="profile-action-race-direction" className="profile-menu-action" onClick={onOpenLeagueControls}>

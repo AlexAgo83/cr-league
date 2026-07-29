@@ -10,6 +10,9 @@ export const WHEEL_MIN_PARTICIPANTS = 2;
 export type WheelParticipant = {
   id: string;
   name: string;
+  /** Absent until the entry is recoloured; the palette default stands in until then. */
+  primary?: string;
+  secondary?: string;
 };
 
 export function loadWheelParticipants(): WheelParticipant[] {
@@ -39,6 +42,10 @@ export function addWheelParticipant(participants: WheelParticipant[], name: stri
 
 export function removeWheelParticipant(participants: WheelParticipant[], id: string): WheelParticipant[] {
   return participants.filter((participant) => participant.id !== id);
+}
+
+export function recolourWheelParticipant(participants: WheelParticipant[], id: string, colours: Partial<Pick<WheelParticipant, "primary" | "secondary">>): WheelParticipant[] {
+  return participants.map((participant) => (participant.id === id ? { ...participant, ...colours } : participant));
 }
 
 function isParticipant(entry: unknown): entry is WheelParticipant {

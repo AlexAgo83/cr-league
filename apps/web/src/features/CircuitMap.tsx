@@ -26,11 +26,31 @@ export type MapCar = {
   repeatCount?: number | "indefinite";
 };
 
-export function MapStatsToggle({ expanded, onToggle }: { expanded: boolean; onToggle: (expanded: boolean) => void }) {
+const CHEVRON_UP = "m6 15 6-6 6 6";
+const CHEVRON_DOWN = "m6 9 6 6 6-6";
+
+/**
+ * The chevron points where the click sends the panel, not at some abstract open/closed state.
+ * `grows` says which way the panel grows: the plan panel is anchored to the bottom of the map and
+ * opens upwards, a list under a header opens downwards.
+ */
+export function MapStatsToggle({
+  className = "map-plan-stats-toggle",
+  expanded,
+  grows = "down",
+  onToggle
+}: {
+  className?: string;
+  expanded: boolean;
+  grows?: "up" | "down";
+  onToggle: (expanded: boolean) => void;
+}) {
   const tt = useT();
+  const opening = grows === "up" ? CHEVRON_UP : CHEVRON_DOWN;
+  const closing = grows === "up" ? CHEVRON_DOWN : CHEVRON_UP;
   return (
     <button
-      className="map-plan-stats-toggle"
+      className={className}
       type="button"
       aria-expanded={expanded}
       aria-label={tt(expanded ? "action_collapse_stats" : "action_expand_stats")}
@@ -38,7 +58,7 @@ export function MapStatsToggle({ expanded, onToggle }: { expanded: boolean; onTo
       onClick={() => onToggle(!expanded)}
     >
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d={expanded ? "m6 15 6-6 6 6" : "m6 9 6 6 6-6"} />
+        <path d={expanded ? closing : opening} />
       </svg>
     </button>
   );

@@ -1,5 +1,9 @@
-import type { CSSProperties } from "react";
+import { useState, type CSSProperties } from "react";
 import { safeHex, type RaceDecision, type TeamLivery } from "@cr-league/shared";
+import { MapStatsToggle } from "../CircuitMap.js";
+
+/** Past this the tower covered the map it sits on, so the tail folds behind a chevron. */
+const TOWER_COLLAPSED_ROWS = 6;
 
 const CHRONO_PLAN_MARKERS = {
   approach: { prudent: 1, balanced: 2, aggressive: 3 },
@@ -32,6 +36,9 @@ export function ReplayTower({
   focusLabel?: string;
   onTeamFocus?: (teamId: string) => void;
 }) {
+  const [expanded, setExpanded] = useState(false);
+  const foldable = entries.length > TOWER_COLLAPSED_ROWS;
+  const shown = foldable && !expanded ? entries.slice(0, TOWER_COLLAPSED_ROWS) : entries;
   return (
     <section className="replay-tower" aria-label={title}>
       <header>
@@ -44,7 +51,7 @@ export function ReplayTower({
         ) : null}
       </header>
       <ol>
-        {entries.map((entry, index) => {
+        {shown.map((entry, index) => {
           const positionPop = positionPops[entry.teamId];
           const positionDelta = positionPop?.delta ?? 0;
           const badgeClass = `replay-tower-livery position-badge${index < 3 ? ` top-${index + 1}` : ""}`;
@@ -87,6 +94,7 @@ export function ReplayTower({
           );
         })}
       </ol>
+      {foldable ? <MapStatsToggle className="replay-tower-toggle" expanded={expanded} onToggle={setExpanded} /> : null}
     </section>
   );
 }

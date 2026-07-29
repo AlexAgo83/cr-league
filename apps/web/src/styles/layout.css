@@ -378,12 +378,6 @@
   margin: 0;
 }
 
-.setup-back-button {
-  font-size: 1.2rem;
-  height: 32px;
-  width: 32px;
-}
-
 .setup-hero-panel {
   --color-text: #f8f3e8;
   position: relative;
@@ -744,6 +738,11 @@
   right: 0;
   top: calc(100% + 8px);
   z-index: 20;
+}
+
+/* Duplicates of the topbar pills, for the width where those are hidden. Shown by responsive.css. */
+.profile-menu-narrow-only {
+  display: none;
 }
 
 .profile-menu-separator {
@@ -2955,6 +2954,23 @@ label small {
   outline-offset: 2px;
 }
 
+/* Back, not close. It has to sit after .modal-close-button to win, and it has to zero the
+   generic button padding or the flex box crushes the chevron to a couple of pixels. */
+.setup-back-button {
+  padding: 0;
+}
+
+.setup-back-button svg {
+  fill: none;
+  flex: 0 0 auto;
+  height: 18px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.6;
+  width: 18px;
+}
+
 .qualifying-modal {
   max-width: 960px;
   position: relative;
@@ -3576,8 +3592,10 @@ label small {
   font-weight: 800;
 }
 
+/* Sits just clear of the phase panel below it rather than a row of dead map between the two.
+   Coupled to that panel's height, so it moves if the phase copy grows another line. */
 .drive-map-panel .map-info-stack > .map-plan-performance {
-  bottom: 86px;
+  bottom: 66px;
 }
 
 .replay-map-panel .map-info-stack > .map-plan-performance {
@@ -4672,6 +4690,37 @@ label small {
   top: 12px;
 }
 
+/* Same chevron as the plan panel, but this list opens downwards, so it points the other way. */
+.replay-tower-toggle {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  clip-path: none;
+  color: var(--color-muted);
+  cursor: pointer;
+  display: grid;
+  grid-column: 1 / -1;
+  height: 16px;
+  justify-items: center;
+  padding: 0;
+}
+
+.replay-tower-toggle:hover,
+.replay-tower-toggle:focus-visible {
+  color: var(--color-accent);
+}
+
+.replay-tower-toggle svg {
+  fill: none;
+  height: 14px;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+  width: 14px;
+}
+
 .replay-tower > header {
   display: contents;
 }
@@ -5386,6 +5435,16 @@ label small {
   padding: 0;
 }
 
+/* Six rows, then the list scrolls: past that the entry step grew the page instead, and the
+   launch button walked off the bottom of a phone. */
+.wheel-participants,
+.wheel-order {
+  --wheel-row-height: 48px;
+  max-height: calc(6 * var(--wheel-row-height) + 5 * 6px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
 .wheel-participant,
 .wheel-order-row {
   align-items: center;
@@ -5397,7 +5456,12 @@ label small {
 }
 
 .wheel-participant {
-  grid-template-columns: 64px minmax(0, 1fr) auto;
+  grid-template-columns: 64px minmax(0, 1fr) auto auto;
+}
+
+.wheel-participant-colours {
+  display: flex;
+  gap: 6px;
 }
 
 .wheel-participant-remove {

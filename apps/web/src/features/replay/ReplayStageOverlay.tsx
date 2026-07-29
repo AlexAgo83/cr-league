@@ -165,7 +165,7 @@ export function ReplayStageOverlay({
         {showPerformancePanel ? (
           <div className={mapStatsExpanded ? "map-plan-performance" : "map-plan-performance stats-collapsed"}>
             <MapPlanPanel decision={planDecision} editLabel={tt("action_view_plan")} onEdit={onOpenPlan} />
-            <MapStatsToggle expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} />
+            <MapStatsToggle grows="up" expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} />
             {mapStatsExpanded ? <MapTraitsPanel traits={liveTraits(circuit.traits, liveWeather, liveLap)} impacts={traitImpacts} /> : null}
           </div>
         ) : null}

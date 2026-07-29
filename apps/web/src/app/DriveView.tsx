@@ -176,7 +176,7 @@ export function DriveView({
                         setGameView("plan");
                       }}
                     />
-                    <MapStatsToggle expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} />
+                    <MapStatsToggle grows="up" expanded={mapStatsExpanded} onToggle={setMapStatsExpanded} />
                     {mapStatsExpanded ? <MapTraitsPanel traits={currentCircuit.traits} impacts={result ? replayTraitImpacts : directiveTraitImpacts} /> : null}
                   </div>
                 </div>

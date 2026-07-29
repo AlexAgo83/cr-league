@@ -380,7 +380,8 @@
   gap: 8px;
 }
 
-.garage-livery-fields input[type="color"] {
+.garage-livery-fields input[type="color"],
+.wheel-participant-colours input[type="color"] {
   border: 2px solid rgb(255 255 255 / 0.18);
   border-radius: 999px;
   cursor: pointer;
@@ -391,16 +392,19 @@
   width: 32px;
 }
 
-.garage-livery-fields input[type="color"]::-webkit-color-swatch-wrapper {
+.garage-livery-fields input[type="color"]::-webkit-color-swatch-wrapper,
+.wheel-participant-colours input[type="color"]::-webkit-color-swatch-wrapper {
   padding: 0;
 }
 
-.garage-livery-fields input[type="color"]::-webkit-color-swatch {
+.garage-livery-fields input[type="color"]::-webkit-color-swatch,
+.wheel-participant-colours input[type="color"]::-webkit-color-swatch {
   border: 0;
   border-radius: 999px;
 }
 
-.garage-livery-fields input[type="color"]::-moz-color-swatch {
+.garage-livery-fields input[type="color"]::-moz-color-swatch,
+.wheel-participant-colours input[type="color"]::-moz-color-swatch {
   border: 0;
   border-radius: 999px;
 }

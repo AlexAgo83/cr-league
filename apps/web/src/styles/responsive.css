@@ -207,6 +207,11 @@
     width: min(280px, calc(100vw - 24px));
   }
 
+  /* The topbar pills are hidden at this width, so the menu carries them instead. */
+  .profile-menu-narrow-only {
+    display: block;
+  }
+
   .game-nav {
     display: grid;
     grid-column: 2;

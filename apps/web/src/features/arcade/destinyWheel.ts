@@ -36,11 +36,12 @@ const WHEEL_PALETTE = [
 
 const ARCHETYPES: BotArchetype[] = ["prudent", "gambler", "rain_specialist", "mechanic", "sprinter", "opportunist"];
 
-export function wheelLivery(index: number): TeamLivery {
+/** `chosen` wins where it is set: the palette is the default, not the rule. */
+export function wheelLivery(index: number, chosen?: Pick<WheelParticipant, "primary" | "secondary">): TeamLivery {
   const [primary, secondary] = WHEEL_PALETTE[index % WHEEL_PALETTE.length] ?? WHEEL_PALETTE[0];
   // Cars vary alongside colours so two neighbours on the grid never look the same.
   const car = CAR_ASSETS[index % CAR_ASSETS.length] ?? DEFAULT_CAR_ASSET;
-  return { primary, secondary, carAssetId: car.id };
+  return { primary: chosen?.primary ?? primary, secondary: chosen?.secondary ?? secondary, carAssetId: car.id };
 }
 
 /**
@@ -59,7 +60,7 @@ export function drawDestinyWheel(participants: WheelParticipant[], seed: string)
   const identity = CITY_CIRCUIT_IDENTITIES[index] ?? CITY_CIRCUIT_IDENTITIES[0];
   const liveries: Record<string, TeamLivery> = {};
   participants.forEach((participant, index) => {
-    liveries[participant.id] = wheelLivery(index);
+    liveries[participant.id] = wheelLivery(index, participant);
   });
 
   const result = simulateRace({

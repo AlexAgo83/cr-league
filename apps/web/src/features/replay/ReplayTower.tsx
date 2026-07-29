@@ -1,6 +1,6 @@
 import { useState, type CSSProperties } from "react";
 import { safeHex, type RaceDecision, type TeamLivery } from "@cr-league/shared";
-import { MAP_LIST_COLLAPSED_ROWS, MapStatsToggle } from "../CircuitMap.js";
+import { MapStatsToggle } from "../CircuitMap.js";
 
 const CHRONO_PLAN_MARKERS = {
   approach: { prudent: 1, balanced: 2, aggressive: 3 },
@@ -34,10 +34,8 @@ export function ReplayTower({
   onTeamFocus?: (teamId: string) => void;
 }) {
   const [expanded, setExpanded] = useState(false);
-  const foldable = entries.length > MAP_LIST_COLLAPSED_ROWS;
-  const shown = foldable && !expanded ? entries.slice(0, MAP_LIST_COLLAPSED_ROWS) : entries;
   return (
-    <section className="replay-tower" aria-label={title}>
+    <section className={expanded ? "replay-tower" : "replay-tower map-list-collapsed"} aria-label={title}>
       <header>
         <strong>{title}</strong>
         {/* Label only: the icon doubled the width of a button that overlays the map. */}
@@ -48,7 +46,7 @@ export function ReplayTower({
         ) : null}
       </header>
       <ol>
-        {shown.map((entry, index) => {
+        {entries.map((entry, index) => {
           const positionPop = positionPops[entry.teamId];
           const positionDelta = positionPop?.delta ?? 0;
           const badgeClass = `replay-tower-livery position-badge${index < 3 ? ` top-${index + 1}` : ""}`;
@@ -91,7 +89,7 @@ export function ReplayTower({
           );
         })}
       </ol>
-      {foldable ? <MapStatsToggle className="map-list-toggle" collapseKey="action_collapse_list" expandKey="action_expand_list" expanded={expanded} onToggle={setExpanded} /> : null}
+      <MapStatsToggle className="map-list-toggle" collapseKey="action_collapse_list" expandKey="action_expand_list" expanded={expanded} onToggle={setExpanded} />
     </section>
   );
 }

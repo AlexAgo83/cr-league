@@ -621,6 +621,15 @@
     top: 176px;
   }
 
+  /* Four rows, not six: a phone has that much map to spare and no more. */
+  .map-list-collapsed > ol > li:nth-child(n + 5) {
+    display: none;
+  }
+
+  :is(.replay-tower, .map-qualifying-times):has(> ol > li:nth-child(5)) > .map-list-toggle {
+    display: grid;
+  }
+
   .map-screen .replay-map-panel .replay-tower {
     top: 116px;
   }

@@ -30,9 +30,6 @@ export type MapCar = {
 const CHEVRON_UP = "m6 15 6-6 6 6";
 const CHEVRON_DOWN = "m6 9 6 6 6-6";
 
-/** Past this a list overlaying the map covers the map. Shared, so the panels agree with each other. */
-export const MAP_LIST_COLLAPSED_ROWS = 6;
-
 /**
  * Every one of these sits directly above what it folds, so the chevron points at that content:
  * down when it is hidden, up when it is showing. The panel's own anchoring is not what a reader

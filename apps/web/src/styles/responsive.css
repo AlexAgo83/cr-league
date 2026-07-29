@@ -205,12 +205,24 @@
   .game-shell .result-view,
   .game-shell .drive-grid,
   .game-shell .drive-content-column,
-  .game-shell .replay-main-grid {
+  .game-shell .replay-main-grid,
+  .wheel-race .replay-main-grid {
     min-height: 0;
   }
 
+  /* The arcade race is a race: it gets the screen the campaign map gets, through the same rules
+     rather than a second set. The setup shell's padding and width cap are undone for it. */
+  .setup-shell:has(.wheel-race) {
+    max-width: none;
+    overflow: hidden;
+    /* The setup topbar is fixed, not sticky like the game's, so its height stays reserved or it
+       lands on top of the replay controls. */
+    padding: var(--setup-topbar-height) 0 0;
+  }
+
   .game-shell .drive-map-panel,
-  .game-shell .replay-map-panel {
+  .game-shell .replay-map-panel,
+  .wheel-race .replay-map-panel {
     margin-left: 0;
     margin-right: 0;
     min-height: 100dvh;
@@ -218,7 +230,8 @@
   }
 
   .game-shell .drive-map-panel .circuit-map-stage,
-  .game-shell .replay-map-panel .circuit-map-stage {
+  .game-shell .replay-map-panel .circuit-map-stage,
+  .wheel-race .replay-map-panel .circuit-map-stage {
     border: 0;
     border-radius: 0;
     min-height: inherit;
@@ -260,7 +273,8 @@
   }
 
   .game-shell .drive-map-panel .circuit-map-stage > svg,
-  .game-shell .replay-map-panel .circuit-map-stage > svg {
+  .game-shell .replay-map-panel .circuit-map-stage > svg,
+  .wheel-race .replay-map-panel .circuit-map-stage > svg {
     height: 100%;
     left: 50%;
     max-width: none;

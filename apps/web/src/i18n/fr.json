@@ -1028,5 +1028,6 @@
   "wheel_back_to_entry": "Changer les noms",
   "wheel_running_order": "Ordre en course",
   "action_back_to_menu": "Retour menu",
-  "action_resume_game": "Retour à la partie"
+  "action_resume_game": "Retour à la partie",
+  "menu_title": "Menu"
 }

@@ -67,6 +67,7 @@ export function AppShell({
   markCommandClicked,
   openQualifyingRun,
   goHome,
+  leaveToMenu,
   backToAdminConsole
 }: {
   profileSession: ProfileSession | null;
@@ -119,6 +120,7 @@ export function AppShell({
   markCommandClicked: (command: CommandClick) => void;
   openQualifyingRun: (options?: { confirm?: boolean }) => void;
   goHome: () => void;
+  leaveToMenu: () => void;
   backToAdminConsole: () => void;
 }) {
   const tt = useT();
@@ -152,7 +154,7 @@ export function AppShell({
 
   return (
     <main className={isMapScreen ? "app-shell game-shell map-screen" : "app-shell game-shell"}>
-      <GameTopbar leagueName={leagueState.league.name} modeBadge={isSoloLeagueState(leagueState) ? tt("mode_badge_solo_local") : undefined} gameView={gameView} pendingMessage={pendingMessage} profileMenu={gameProfileMenu} onHome={goHome} onSelectView={selectGameView} />
+      <GameTopbar leagueName={leagueState.league.name} modeBadge={isSoloLeagueState(leagueState) ? tt("mode_badge_solo_local") : undefined} gameView={gameView} pendingMessage={pendingMessage} profileMenu={gameProfileMenu} onHome={goHome} onLeaveToMenu={leaveToMenu} onSelectView={selectGameView} />
       <h1 className="visually-hidden">{leagueState.league.name}</h1>
 
       <section className="view-container">

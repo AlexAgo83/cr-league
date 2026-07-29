@@ -121,12 +121,18 @@
     display: inline;
   }
 
-  .setup-resume-label {
+  /* The setup topbar keeps the pill as an icon; the game topbar has no room for it at all,
+     between the brand, four nav entries and the profile button. */
+  .topbar-pill-label {
     display: none;
   }
 
-  .setup-resume-button {
+  .setup-topbar .topbar-pill-button {
     padding: 4px 6px;
+  }
+
+  .topbar .topbar-pill-button {
+    display: none;
   }
 
   .setup-topbar .language-select {

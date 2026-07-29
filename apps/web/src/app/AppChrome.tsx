@@ -197,10 +197,10 @@ export function SetupTopbar({ profileMenu, languageSwitcher, pendingMessage = nu
       )}
       <div className="setup-topbar-actions">
         {onResumeGame ? (
-          <button type="button" data-testid="setup-resume-game" className="setup-resume-button" aria-label={tt("action_resume_game")} onClick={onResumeGame}>
-            <BoardIcon className="setup-resume-icon" name="stand-drive" />
+          <button type="button" data-testid="setup-resume-game" className="topbar-pill-button" aria-label={tt("action_resume_game")} onClick={onResumeGame}>
+            <BoardIcon className="topbar-pill-icon" name="stand-drive" />
             {/* Dropped on a phone, where the label pushed the language pills off the edge. */}
-            <span className="setup-resume-label">{tt("action_resume_game")}</span>
+            <span className="topbar-pill-label">{tt("action_resume_game")}</span>
           </button>
         ) : null}
         {profileMenu ?? languageSwitcher}
@@ -216,6 +216,7 @@ export function GameTopbar({
   pendingMessage = null,
   profileMenu,
   onHome,
+  onLeaveToMenu,
   onSelectView
 }: {
   leagueName: string;
@@ -224,6 +225,8 @@ export function GameTopbar({
   pendingMessage?: string | null;
   profileMenu: ReactNode;
   onHome: () => void;
+  /** The same exit the profile menu offers, surfaced on wide screens where there is room. */
+  onLeaveToMenu: () => void;
   onSelectView: (view: GameView) => void;
 }) {
   const tt = useT();
@@ -249,6 +252,10 @@ export function GameTopbar({
           </button>
         ))}
       </nav>
+      <button type="button" data-testid="topbar-leave-to-menu" className="topbar-pill-button" onClick={onLeaveToMenu}>
+        <BoardIcon className="topbar-pill-icon" name="previous-action" />
+        <span className="topbar-pill-label">{tt("menu_title")}</span>
+      </button>
       {profileMenu}
     </header>
   );

@@ -1024,6 +1024,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
         markCommandClicked={markCommandClicked}
         openQualifyingRun={soloMode ? openSoloQualifyingRun : openQualifyingRun}
         goHome={goHome}
+        leaveToMenu={soloMode ? leaveSoloForSlots : addLeague}
         backToAdminConsole={() => {
           setGameView("admin");
           setLeagueState(null);

@@ -102,6 +102,13 @@
     grid-template-columns: auto minmax(0, 1fr);
   }
 
+  /* The grid is shaped for brand + actions, but the splash has no brand: without an explicit
+     column the actions fall into the first one and hang on the left edge. */
+  .setup-topbar .setup-topbar-actions {
+    grid-column: 2;
+    justify-self: end;
+  }
+
   .setup-topbar .brand strong {
     display: inline;
   }

@@ -159,6 +159,7 @@ export function ReplayView({
   const [focusedCarId, setFocusedCarId] = useState(playerTeamId);
   const [copyDismissed, setCopyDismissed] = useState(() => safeStorage.get(DISMISSED_REPLAY_HELP_KEY) === "1");
   const [resultUnlocked, setResultUnlocked] = useState(false);
+  const [finishRecapDismissed, setFinishRecapDismissed] = useState(false);
   const replayTrace = useMemo(() => result.replayTrace ?? [], [result.replayTrace]);
   const replayPlan = useMemo(() => buildReplayPlan(result, replayTrace), [replayTrace, result]);
   // Thinned once per result: the clock only has to check whether it has crossed one.
@@ -198,6 +199,7 @@ export function ReplayView({
 
   useEffect(() => {
     setResultUnlocked(false);
+    setFinishRecapDismissed(false);
     setFocusedCarId(playerTeamId);
   }, [playerTeamId, result.seed, titleKey]);
 
@@ -274,6 +276,7 @@ export function ReplayView({
     emoteCandidates: raceEmotes
   });
   const replayComplete = resultUnlocked || clock.current >= replayEnd;
+  const finishRecapOpen = Boolean(afterMapContent && replayComplete && !finishRecapDismissed);
   const unlockResult = () => {
     seek(replayEnd);
     setPlaying(false);
@@ -307,6 +310,8 @@ export function ReplayView({
   };
   const restartReplay = () => {
     setFocusedCarId(playerCar?.id);
+    setResultUnlocked(false);
+    setFinishRecapDismissed(false);
     restart();
   };
   const towerPlanByTeam = new Map(planDecisions?.map((decision) => [decision.teamId, decision]));
@@ -431,14 +436,17 @@ export function ReplayView({
             overlay={
               <>
               <ReplayStartLights signal={startSignal} />
-              {afterMapContent && replayComplete ? (
+              {finishRecapOpen ? (
                 <div className="replay-finish-recap">
                   <div className="replay-finish-recap-panel">
                     <ReplayFinishFlag show pole={replayMode === "qualifying"} />
+                    <button type="button" className="context-panel-close replay-finish-recap-close" aria-label={tt("action_close")} onClick={() => setFinishRecapDismissed(true)}>
+                      ×
+                    </button>
                     {afterMapContent}
                   </div>
                 </div>
-              ) : <ReplayFinishFlag show={currentRaceProgress >= 1} pole={replayMode === "qualifying"} />}
+              ) : <ReplayFinishFlag show={currentRaceProgress >= 1 && (!afterMapContent || !finishRecapDismissed)} pole={replayMode === "qualifying"} />}
               <ReplayStageOverlay
                 circuit={circuit}
                 liveLap={live.lap}
@@ -482,6 +490,11 @@ export function ReplayView({
                 onClose={onClose}
                 closeLabel={closeLabel}
               />
+              {afterMapContent && !finishRecapOpen ? (
+                <button type="button" className="replay-skip-result-button" onClick={() => replayComplete ? setFinishRecapDismissed(false) : unlockResult()}>
+                  {tt("action_skip_to_result")}
+                </button>
+              ) : null}
               </>
             }
           />

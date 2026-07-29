@@ -1,6 +1,10 @@
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
+  .replay-skip-result-button {
+    display: none;
+  }
+
   .circuit-weather-light_rain .circuit-map-stage::after,
   .circuit-weather-heavy_rain .circuit-map-stage::after {
     animation: none;

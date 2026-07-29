@@ -4245,6 +4245,32 @@ label small {
   z-index: 70;
 }
 
+.replay-skip-result-button {
+  background: rgb(16 14 18 / 0.86);
+  border: 1px solid rgb(255 77 0 / 0.62);
+  bottom: 72px;
+  box-shadow: 0 6px 18px rgb(0 0 0 / 0.28);
+  color: var(--color-text);
+  font-size: 0.78rem;
+  font-weight: 800;
+  position: absolute;
+  right: 14px;
+  z-index: 70;
+}
+
+.replay-skip-result-button:hover,
+.replay-skip-result-button:focus-visible {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  color: #fff;
+}
+
+@media (min-width: 861px) {
+  .replay-result-gate .secondary-button {
+    display: none;
+  }
+}
+
 .replay-map-controls button {
   background: rgb(255 255 255 / 0.07);
   border: 0;
@@ -4596,6 +4622,7 @@ label small {
   margin: 0;
   min-width: 0;
   padding: 7px 14px;
+  position: relative;
   width: 100%;
 }
 
@@ -4609,6 +4636,14 @@ label small {
 .replay-finish-recap-panel .race-payoff-recap dl > div:last-child {
   flex-basis: 100%;
   justify-content: center;
+}
+
+.replay-finish-recap-close {
+  margin: 0;
+  position: absolute;
+  right: 6px;
+  top: 6px;
+  z-index: 1;
 }
 
 .replay-pole-flash {

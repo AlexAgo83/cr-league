@@ -86,6 +86,11 @@ export function SoloSlotsView({
 }) {
   const tt = useT();
   const [pendingDelete, setPendingDelete] = useState<SoloSlotSummary | null>(null);
+  // The run the player left off in is the one they most likely came back for, so it gets the
+  // same pull as a saved league on the multiplayer screen. With a single save there is nothing
+  // to tell apart, so the glow stays off.
+  const filled = slots.filter((slot): slot is SoloSlotSummary => Boolean(slot));
+  const lastPlayed = filled.length > 1 ? filled.reduce((best, slot) => (slot.updatedAt > best.updatedAt ? slot : best)) : null;
   const formatDate = (iso: string) => {
     const date = new Date(iso);
     return Number.isNaN(date.getTime()) ? "" : date.toLocaleDateString();
@@ -105,7 +110,7 @@ export function SoloSlotsView({
             <li key={index} className={slot ? "solo-slot solo-slot-filled" : "solo-slot"}>
               <button
                 type="button"
-                className="setup-choice solo-slot-open"
+                className={slot && slot.slot === lastPlayed?.slot ? "setup-choice solo-slot-open solo-slot-recent" : "setup-choice solo-slot-open"}
                 aria-label={slot ? `${tt("solo_slot_label", { slot: index + 1 })}: ${slot.teamName}` : `${tt("solo_slot_label", { slot: index + 1 })}: ${tt("solo_slot_empty")}`}
                 disabled={status === "loading"}
                 onClick={() => onOpenSlot(index)}

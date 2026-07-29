@@ -4384,7 +4384,8 @@ label small {
 
 @media (prefers-reduced-motion: reduce) {
   .replay-pole-flash { animation: none; opacity: 0.5; }
-  .saved-league-card { animation: none; }
+  .saved-league-card,
+  .solo-slot-recent { animation: none; }
   /* The reaction still shows; only the motion stops. */
   .map-car .map-car-emote { animation: none; }
 }
@@ -5223,6 +5224,17 @@ label small {
 .solo-slot-open {
   height: 100%;
   width: 100%;
+}
+
+/* Borrows the saved-league glow rather than a second one: same meaning, "this is the one you
+   were playing". Only the glow declarations, so the card keeps its own layout. */
+.solo-slot-recent {
+  animation: saved-league-glow 2.4s ease-in-out infinite;
+  border-color: rgb(255 122 26 / 0.52);
+  box-shadow:
+    inset 0 0 0 1px rgb(248 243 232 / 0.06),
+    0 0 0 2px rgb(255 106 31 / 0.16),
+    0 0 22px rgb(255 106 31 / 0.3);
 }
 
 .solo-slot-index {

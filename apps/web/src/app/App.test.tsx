@@ -270,6 +270,30 @@ describe("App", () => {
     expect(localStorage.getItem(`${SOLO_SLOT_KEY_PREFIX}0`)).toBe(firstSave);
   });
 
+  it("glows the slot played most recently, and only when there is a choice", async () => {
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    await screen.findByRole("heading", { name: "1. Read the circuit" });
+    cleanup();
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    await screen.findByRole("heading", { name: "Choose a save" });
+    // A single save has nothing to be told apart from.
+    expect(document.querySelectorAll(".solo-slot-recent")).toHaveLength(0);
+    fireEvent.click(screen.getByRole("button", { name: /^Slot 2:/ }));
+    await screen.findByRole("heading", { name: "1. Read the circuit" });
+    cleanup();
+
+    render(<App />);
+    fireEvent.click(screen.getByRole("button", { name: /Solo/ }));
+    await screen.findByRole("heading", { name: "Choose a save" });
+
+    const glowing = document.querySelectorAll(".solo-slot-recent");
+    expect(glowing).toHaveLength(1);
+    expect(glowing[0]!.getAttribute("aria-label")).toContain("Slot 2");
+  });
+
   it("asks for confirmation before deleting a solo slot and keeps the others", async () => {
     render(<App />);
     fireEvent.click(screen.getByRole("button", { name: /Solo/ }));

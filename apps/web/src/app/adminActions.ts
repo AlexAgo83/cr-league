@@ -2,6 +2,9 @@ import type { TranslationKey } from "../i18n/index.js";
 import { ApiError, api } from "./appStorage.js";
 import type { AdminLeague, AdminPagination, AdminUser, GameView, LeagueState } from "./types.js";
 
+/** A page an admin can actually read. The API caps it at 100 either way. */
+export const ADMIN_PAGE_SIZE = 20;
+
 type AdminUsersResponse = { users: AdminUser[]; pagination: AdminPagination };
 type AdminLeaguesResponse = { leagues: AdminLeague[]; pagination: AdminPagination };
 
@@ -54,7 +57,7 @@ export function createAdminActions({
 }) {
   const adminHeaders = () => ({ authorization: `Bearer ${adminToken.trim()}` });
   const adminListPath = (path: string, query: string, page: number) => {
-    const params = new URLSearchParams({ page: String(page), limit: "100" });
+    const params = new URLSearchParams({ page: String(page), limit: String(ADMIN_PAGE_SIZE) });
     if (query.trim()) params.set("q", query.trim());
     return `${path}?${params.toString()}`;
   };

@@ -94,7 +94,7 @@ export function ReplayTower({
           );
         })}
       </ol>
-      {foldable ? <MapStatsToggle className="replay-tower-toggle" expanded={expanded} onToggle={setExpanded} /> : null}
+      {foldable ? <MapStatsToggle className="replay-tower-toggle" collapseKey="action_collapse_list" expandKey="action_expand_list" expanded={expanded} onToggle={setExpanded} /> : null}
     </section>
   );
 }

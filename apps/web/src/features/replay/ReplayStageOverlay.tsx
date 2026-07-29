@@ -2,7 +2,7 @@ import { type RaceDecision, type RaceResult, type TeamLivery, type Weather } fro
 import { useT } from "../../i18n/index.js";
 import { type CSSProperties, type ReactNode, useEffect, useId, useRef, useState } from "react";
 import type { CityCircuit } from "../../app/circuits.js";
-import { useMapStatsExpanded } from "../../app/viewPreferences.js";
+import { useMapInfoExpanded, useMapStatsExpanded } from "../../app/viewPreferences.js";
 import type { TranslationKey } from "../../i18n/index.js";
 import { MapStatsToggle, MapTraitsPanel, type MapTraitImpacts } from "../CircuitMap.js";
 import { MapPlanPanel } from "../MapPlanPanel.js";
@@ -134,12 +134,13 @@ export function ReplayStageOverlay({
   const seekValueText = `${tt("unit_lap")} ${liveLap}/${circuit.laps}, ${Math.round(clockSeconds)}s`;
   const [weatherInfoOpen, setWeatherInfoOpen] = useState(false);
   const [mapStatsExpanded, setMapStatsExpanded] = useMapStatsExpanded();
+  const [mapInfoExpanded, setMapInfoExpanded] = useMapInfoExpanded();
 
   return (
     <>
       {weatherInfoOpen ? <ReplayWeatherModal resolvedWeather={resolvedWeather} onClose={() => setWeatherInfoOpen(false)} /> : null}
       <div className="map-info-stack">
-        <div className="map-status">
+        <div className={mapInfoExpanded ? "map-status" : "map-status readouts-collapsed"}>
           <span className="circuit-city">
             <CountryBadge country={circuit.country} /> {circuit.city}
           </span>
@@ -159,6 +160,7 @@ export function ReplayStageOverlay({
           <button className="map-plan-edit-button map-weather-info-button" type="button" aria-label={tt("race_weather_info_title")} title={tt("race_weather_info_title")} onClick={() => setWeatherInfoOpen(true)}>
             {tt("action_info")}
           </button>
+          <MapStatsToggle className="map-status-toggle" collapseKey="action_collapse_readouts" expandKey="action_expand_readouts" expanded={mapInfoExpanded} onToggle={setMapInfoExpanded} />
         </div>
         {/* A race with no plan behind it has nothing to show here, so the block is absent
             rather than empty. */}

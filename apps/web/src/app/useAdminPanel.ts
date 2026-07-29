@@ -1,10 +1,10 @@
 import { useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
-import { createAdminActions } from "./adminActions.js";
+import { ADMIN_PAGE_SIZE, createAdminActions } from "./adminActions.js";
 import type { AdminLeague, AdminPagination, AdminUser, GameView, LeagueState } from "./types.js";
 import type { AdminTab } from "../features/AdminConsoleView.js";
 
-const EMPTY_ADMIN_PAGINATION: AdminPagination = { page: 1, limit: 100, total: 0, totalPages: 1, hasPrevious: false, hasNext: false };
+const EMPTY_ADMIN_PAGINATION: AdminPagination = { page: 1, limit: ADMIN_PAGE_SIZE, total: 0, totalPages: 1, hasPrevious: false, hasNext: false };
 
 export function useAdminPanel({
   profileIsAdmin,

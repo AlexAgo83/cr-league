@@ -313,24 +313,14 @@ export function ChampionshipView({
             </ol>
             {circuitPageCount > 1 ? (
               <div className="circuit-pagination">
-                <button
-                  type="button"
-                  className="secondary-button"
-                  aria-label={tt("admin_action_previous_page")}
-                  disabled={circuitPageIndex === 0}
-                  onClick={() => setCircuitPage(circuitPageIndex - 1)}
-                >
-                  ‹
+                {/* Not .secondary-button: it paints a disabled arrow as a pale slab and an
+                    enabled one as near-invisible muted text on the dark panel. */}
+                <button type="button" aria-label={tt("admin_action_previous_page")} disabled={circuitPageIndex === 0} onClick={() => setCircuitPage(circuitPageIndex - 1)}>
+                  <PagerChevron direction="left" />
                 </button>
                 <span aria-live="polite">{circuitPageIndex + 1} / {circuitPageCount}</span>
-                <button
-                  type="button"
-                  className="secondary-button"
-                  aria-label={tt("action_next")}
-                  disabled={circuitPageIndex >= circuitPageCount - 1}
-                  onClick={() => setCircuitPage(circuitPageIndex + 1)}
-                >
-                  ›
+                <button type="button" aria-label={tt("action_next")} disabled={circuitPageIndex >= circuitPageCount - 1} onClick={() => setCircuitPage(circuitPageIndex + 1)}>
+                  <PagerChevron direction="right" />
                 </button>
               </div>
             ) : null}
@@ -689,4 +679,12 @@ function groupHistoryBySeason(history: LeagueState["grandPrixHistory"]) {
     groups.set(grandPrix.season, [...(groups.get(grandPrix.season) ?? []), grandPrix]);
   }
   return [...groups.entries()].sort((left, right) => right[0] - left[0]);
+}
+
+function PagerChevron({ direction }: { direction: "left" | "right" }) {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d={direction === "left" ? "m14 6-6 6 6 6" : "m10 6 6 6-6 6"} />
+    </svg>
+  );
 }

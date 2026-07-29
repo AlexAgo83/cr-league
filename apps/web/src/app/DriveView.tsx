@@ -11,7 +11,7 @@ import { RaceInfoDetails } from "../features/RaceInfoDetails.js";
 import { ReplayTower } from "../features/replay/ReplayTower.js";
 import { BoardIcon, CountryBadge, VisualIcon, type BoardIconName } from "../features/VisualIcon.js";
 import type { PlanSubscreen } from "./routes.js";
-import { useMapStatsExpanded } from "./viewPreferences.js";
+import { useMapInfoExpanded, useMapStatsExpanded } from "./viewPreferences.js";
 import { lazy, Suspense, useState } from "react";
 
 const ReplayView = lazy(() => import("../features/ReplayView.js").then((module) => ({ default: module.ReplayView })));
@@ -85,6 +85,7 @@ export function DriveView({
   const teamLiveries = Object.fromEntries(state.teams.map((team) => [team.id, team.livery]));
   const [weatherInfoOpen, setWeatherInfoOpen] = useState(false);
   const [mapStatsExpanded, setMapStatsExpanded] = useMapStatsExpanded();
+  const [mapInfoExpanded, setMapInfoExpanded] = useMapInfoExpanded();
   const forecastWeather = forecastPick as Weather;
   const weatherInfoTitle = tt(result ? "race_weather_info_title" : "race_forecast_info_title");
 
@@ -142,7 +143,7 @@ export function DriveView({
             overlay={
               <>
                 <div className="map-info-stack">
-                  <div className="map-status">
+                  <div className={mapInfoExpanded ? "map-status" : "map-status readouts-collapsed"}>
                     <span className="circuit-city">
                       <CountryBadge country={currentCircuit.country} /> {currentCircuit.city}
                     </span>
@@ -165,6 +166,7 @@ export function DriveView({
                     <button className="map-plan-edit-button map-weather-info-button" type="button" aria-label={weatherInfoTitle} title={weatherInfoTitle} onClick={() => setWeatherInfoOpen(true)}>
                       {tt("action_info")}
                     </button>
+                    <MapStatsToggle className="map-status-toggle" collapseKey="action_collapse_readouts" expandKey="action_expand_readouts" expanded={mapInfoExpanded} onToggle={setMapInfoExpanded} />
                   </div>
                   <div className={mapStatsExpanded ? "map-plan-performance" : "map-plan-performance stats-collapsed"}>
                     <MapPlanPanel

@@ -5,6 +5,7 @@ import type { DecisionDeltaKey, TeamLivery, TrackSpeedProfile, Weather } from "@
 import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "../app/circuits.js";
 import { useCircuitRoutesReady } from "../app/circuitRoutes/index.js";
+import { useMapInfoExpanded } from "../app/viewPreferences.js";
 import { applyTrackSpeedProfile } from "./replay/replayMath.js";
 import { DEFAULT_CAR_ASSET, carAssetForId, carRenderGeometryForId, type CarAsset } from "./carAssets.js";
 import { safeHex } from "./LiveryPlate.js";
@@ -36,16 +37,22 @@ const CHEVRON_DOWN = "m6 9 6 6 6-6";
  */
 export function MapStatsToggle({
   className = "map-plan-stats-toggle",
+  collapseKey = "action_collapse_stats",
+  expandKey = "action_expand_stats",
   expanded,
   grows = "down",
   onToggle
 }: {
   className?: string;
+  /** Two of these can share a map, so each says what it folds rather than all saying "stats". */
+  collapseKey?: TranslationKey;
+  expandKey?: TranslationKey;
   expanded: boolean;
   grows?: "up" | "down";
   onToggle: (expanded: boolean) => void;
 }) {
   const tt = useT();
+  const label = tt(expanded ? collapseKey : expandKey);
   const opening = grows === "up" ? CHEVRON_UP : CHEVRON_DOWN;
   const closing = grows === "up" ? CHEVRON_DOWN : CHEVRON_UP;
   return (
@@ -53,8 +60,8 @@ export function MapStatsToggle({
       className={className}
       type="button"
       aria-expanded={expanded}
-      aria-label={tt(expanded ? "action_collapse_stats" : "action_expand_stats")}
-      title={tt(expanded ? "action_collapse_stats" : "action_expand_stats")}
+      aria-label={label}
+      title={label}
       onClick={() => onToggle(!expanded)}
     >
       <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -369,6 +376,7 @@ function CircuitMapInner({
   tireTrails?: boolean;
 }) {
   const tt = useT();
+  const [mapInfoExpanded, setMapInfoExpanded] = useMapInfoExpanded();
   const { zoom, tiles, points, d } = useMemo(() => circuitScene(circuit), [circuit]);
   const cameraRef = useRef<SVGGElement>(null);
   const mapId = useId().replace(/[^a-zA-Z0-9_-]/g, "");
@@ -673,7 +681,7 @@ function CircuitMapInner({
         {showHeading || showTraits ? (
           <div className="map-info-stack">
             {showHeading ? (
-              <div className="map-status">
+              <div className={mapInfoExpanded ? "map-status" : "map-status readouts-collapsed"}>
                 <span className="circuit-city">
                   <CountryBadge country={circuit.country} /> {circuit.city}
                 </span>
@@ -690,6 +698,7 @@ function CircuitMapInner({
                   <VisualIcon name={displayWeather} />
                   <span>{tt(`weather_${displayWeather}` as TranslationKey)}</span>
                 </small>
+                <MapStatsToggle className="map-status-toggle" collapseKey="action_collapse_readouts" expandKey="action_expand_readouts" expanded={mapInfoExpanded} onToggle={setMapInfoExpanded} />
               </div>
             ) : null}
             {showTraits ? <MapTraitsPanel traits={circuit.traits} /> : null}

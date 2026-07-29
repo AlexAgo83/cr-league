@@ -526,7 +526,7 @@ describe("App profile and admin", () => {
     await screen.findByText("pilot@example.test");
     expect(fetch).toHaveBeenNthCalledWith(
       1,
-      "http://127.0.0.1:4874/admin/users?page=1&limit=100",
+      "http://127.0.0.1:4874/admin/users?page=1&limit=20",
       expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
     );
     expect(screen.getByText("Page 1/1 · 1 total")).toBeTruthy();
@@ -535,7 +535,7 @@ describe("App profile and admin", () => {
     await waitFor(() =>
       expect(fetch).toHaveBeenNthCalledWith(
         3,
-        "http://127.0.0.1:4874/admin/users?page=1&limit=100&q=pilot",
+        "http://127.0.0.1:4874/admin/users?page=1&limit=20&q=pilot",
         expect.objectContaining({ headers: expect.objectContaining({ authorization: "Bearer secret-admin-token" }) })
       )
     );

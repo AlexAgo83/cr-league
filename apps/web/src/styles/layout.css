@@ -1150,10 +1150,6 @@
   .drive-grid {
     grid-template-columns: 1fr;
   }
-
-  .setup-grid {
-    grid-template-columns: 1fr;
-  }
 }
 
 .panel {
@@ -5445,7 +5441,9 @@ label small {
   opacity: 1;
 }
 
-/* Keeps the last played line clear of the button. */
-.solo-slot-filled .setup-choice-copy {
+/* The delete button overlays the top-right corner, so only the two lines beside it give way.
+   Reserving the width on the whole column wrapped every info line on a 360px screen. */
+.solo-slot-filled .setup-choice-copy > .solo-slot-index,
+.solo-slot-filled .setup-choice-copy > strong {
   padding-right: 84px;
 }

@@ -167,3 +167,4 @@
 {"commit":"8c4db8106b7972f3406d0c20c425af7b680e92cf","gate_id":"version_metadata","kind":"file","observed_at":"2026-07-29T20:23:51Z","status":"passed","summary":"package and workspace manifests set to 0.8.3","target_version":"0.8.3"}
 {"commit":"8c4db8106b7972f3406d0c20c425af7b680e92cf","gate_id":"changelog","kind":"file","observed_at":"2026-07-29T20:23:51Z","status":"passed","summary":"changelogs/CHANGELOGS_0_8_3.md added","target_version":"0.8.3"}
 {"commit":"8c4db8106b7972f3406d0c20c425af7b680e92cf","gate_id":"local_validation","kind":"command","observed_at":"2026-07-29T20:23:51Z","status":"passed","summary":"npm ci, lint, typecheck, test, coverage, build, balance, Logics validation, audit, and Chromium E2E passed","target_version":"0.8.3"}
+{"commit":"caf2d85e9087c0f715d2d5e786af30bd9593c0a1","gate_id":"git_push","kind":"git","observed_at":"2026-07-29T20:24:22Z","status":"passed","summary":"caf2d85 pushed to origin/main","target_version":"0.8.3"}

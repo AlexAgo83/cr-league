@@ -19,8 +19,11 @@ export function expandedSpeedSpan(span: SpeedProfile[number]) {
 }
 
 export function speedFactorAt(progress: number, speedProfile: SpeedProfile, mode: SpeedProfileFactorMode = "min") {
-  const factors = speedProfile.filter((span) => progressInSpeedSpan(progress, span)).map((span) => span.factor);
-  if (!factors.length) return 1;
+  const spans = speedProfile.filter((span) => progressInSpeedSpan(progress, span));
+  if (!spans.length) return 1;
+  const straightFactors = spans.filter((span) => span.kind === "straight").map((span) => span.factor);
+  if (mode === "visual" && straightFactors.length && spans.some((span) => span.factor < 1)) return Math.max(...straightFactors);
+  const factors = spans.map((span) => span.factor);
   return mode === "visual" && factors.every((factor) => factor >= 1) ? Math.max(...factors) : Math.min(...factors);
 }
 

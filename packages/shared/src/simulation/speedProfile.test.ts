@@ -23,4 +23,14 @@ describe("speedProfile", () => {
     expect(speedFactorAt(0.3, profile, "visual")).toBe(1.12);
     expect(integratedSpeedProfile(1, profile, "visual")).toBeGreaterThan(integratedSpeedProfile(1, profile));
   });
+
+  it("keeps the visual finish-line straight from inheriting an overlapping corner slowdown", () => {
+    const profile: SpeedProfile = [
+      { kind: "corner", startProgress: 0.96, endProgress: 0.03, factor: 0.45 },
+      { kind: "straight", startProgress: 0.98, endProgress: 0.02, factor: 1.14 }
+    ];
+
+    expect(speedFactorAt(0.99, profile)).toBe(0.45);
+    expect(speedFactorAt(0.99, profile, "visual")).toBe(1.14);
+  });
 });

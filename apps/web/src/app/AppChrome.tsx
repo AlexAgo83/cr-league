@@ -111,8 +111,8 @@ export function ProfileMenu({
           <LanguageSwitcher locale={locale} onChangeLocale={onChangeLocale} />
           {showManageLeague ? (
             <button type="button" data-testid="profile-action-add-league" className="profile-menu-action" onClick={onAddLeague}>
-              {/* Solo has no league to manage; what a campaign player wants here is another save. */}
-              {tt(isSoloLeague ? "action_change_save" : "action_add_league")}
+              {/* Solo has no league to manage; this leads back out to the save slots. */}
+              {tt(isSoloLeague ? "action_back_to_menu" : "action_add_league")}
             </button>
           ) : null}
           {hasLeague && !isSoloLeague ? (

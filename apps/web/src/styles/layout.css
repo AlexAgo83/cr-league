@@ -3267,13 +3267,10 @@ label small {
   width: 15px;
 }
 
+/* Pinned to the corner and allowed to sit over the text. Reserving a gutter for it stretched
+   the panel wider than its own content and wrapped the circuit name for nothing. */
 .map-weather-info-button {
   left: auto;
-}
-
-.map-status:has(.map-weather-info-button) {
-  min-width: 172px;
-  padding-right: 46px;
 }
 
 .race-weather-phase-list {

@@ -108,6 +108,7 @@ export function ProfileMenu({
       {profileOpen ? (
         <div className="profile-menu-panel">
           <PendingFeedback message={pendingMessage} />
+          <LanguageSwitcher locale={locale} onChangeLocale={onChangeLocale} />
           {showManageLeague ? (
             <button type="button" data-testid="profile-action-add-league" className="profile-menu-action" onClick={onAddLeague}>
               {/* Solo has no league to manage; what a campaign player wants here is another save. */}
@@ -129,7 +130,6 @@ export function ProfileMenu({
               {tt("action_copy_profile_code")}
             </button>
           ) : null}
-          <LanguageSwitcher locale={locale} onChangeLocale={onChangeLocale} />
           <button type="button" data-testid="profile-action-reset-preferences" className="profile-menu-action profile-menu-action-info" onClick={onOpenPreferencesReset}>
             {tt("action_reset_ui_preferences")}
           </button>

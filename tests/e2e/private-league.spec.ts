@@ -161,14 +161,14 @@ test("plays a three Grand Prix private league loop", async ({ page }, testInfo) 
   await expect(page.locator(".round-timeline")).toContainText("R1");
   await page.locator(`[data-section-tab="standings"]`).click();
   await expect(page.locator(".championship-settings-panel")).toHaveCount(0);
+  await expect(page.getByTestId("topbar-leave-to-menu")).toBeVisible();
   await page.getByTestId("profile-menu").click();
-  await expect(page.getByRole("button", { name: "Manage league" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Race direction" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Copy profile code" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Reset UI preferences" })).toBeVisible();
   await expect(page.getByRole("button", { name: "Sign out" })).toBeVisible();
   const menuButtons = await page.locator(".profile-menu-panel button").evaluateAll((buttons) => buttons.map((button) => button.textContent?.trim()));
-  expect(menuButtons).toEqual(["Manage league", "Race direction", "Copy profile code", "EN", "FR", "Reset UI preferences", "Sign out", `v${APP_VERSION}`]);
+  expect(menuButtons).toEqual(["EN", "FR", "Menu", "Race direction", "Copy profile code", "Reset UI preferences", "Sign out", `v${APP_VERSION}`]);
   await expect(page.getByLabel("Language")).toBeVisible();
   await page.getByTestId("profile-action-profile-code").click();
   await expect(page.getByTestId("dialog-profile-code")).toBeVisible();

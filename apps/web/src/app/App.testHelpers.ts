@@ -27,6 +27,17 @@ export function startCampaign() {
   fireEvent.click(screen.getByRole("button", { name: /^Campaign$/ }));
 }
 
+/**
+ * A saved league is no longer opened on boot: the player lands on the entry screen and picks it
+ * from the saved-league carousel.
+ */
+export function resumeSavedLeague() {
+  startMultiplayerSetup();
+  const card = document.querySelector<HTMLButtonElement>(".saved-league-card");
+  if (!card) throw new Error("No saved league card to resume.");
+  fireEvent.click(card);
+}
+
 export function startMultiplayerSetup() {
   const multiplayer = screen.queryByRole("button", { name: /Multiplayer/ });
   if (multiplayer) fireEvent.click(multiplayer);

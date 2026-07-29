@@ -3,7 +3,7 @@ import { APP_VERSION } from "@cr-league/shared";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
 import { baseState, resolvedState } from "./App.testFixtures.js";
-import { createLeagueFromSetup, expectGarageCode, response, saveProfile, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
+import { createLeagueFromSetup, expectGarageCode, response, saveProfile, resumeSavedLeague, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
 
 beforeEach(() => {
   window.history.replaceState(null, "", "/drive");
@@ -50,17 +50,18 @@ describe("App profile and admin", () => {
     expect(screen.getByRole("button", { name: /Multiplayer/ })).toBeTruthy();
   });
 
-  it("restores a saved league quietly when the API is unreachable", async () => {
+  it("does not open a saved league on boot, nor call the API for it", async () => {
     saveProfile();
     const claims = [{ leagueId: "league_1", leagueName: "Riverside", leagueCode: "RIV24", teamId: "team_1", teamName: "Volt Union", claimCode: "CLAIM1" }];
     localStorage.setItem("cr-league-player-claims", JSON.stringify(claims));
     localStorage.setItem("cr-league-active-player-claim", "team_1");
-    vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("Failed to fetch"));
+    const fetch = vi.spyOn(globalThis, "fetch").mockRejectedValue(new TypeError("Failed to fetch"));
 
     render(<App />);
 
-    // The player asked for nothing: a boot-time restore that fails must not raise the modal.
+    // Starting the app is not a request to resume: the player lands on the entry choice.
     await waitFor(() => expect(screen.getByRole("button", { name: /Multiplayer/ })).toBeTruthy());
+    expect(fetch).not.toHaveBeenCalled();
     expect(screen.queryByRole("dialog", { name: "Action blocked" })).toBe(null);
   });
 
@@ -314,9 +315,9 @@ describe("App profile and admin", () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
 
     render(<App />);
+    resumeSavedLeague();
 
     expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
-    expect(document.querySelector(".notification-stack")).toBe(null);
     expect(fetch).toHaveBeenCalledWith(
       "http://127.0.0.1:4874/leagues/rejoin",
       expect.objectContaining({
@@ -354,6 +355,7 @@ describe("App profile and admin", () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
 
     render(<App />);
+    resumeSavedLeague();
 
     expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
@@ -379,13 +381,13 @@ describe("App profile and admin", () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(baseState));
 
     render(<App />);
+    resumeSavedLeague();
 
     expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
     fireEvent.click(screen.getByRole("button", { name: "Manage league" }));
 
-    expect(screen.getByRole("heading", { name: "Choose your grid" })).toBeTruthy();
-    startMultiplayerSetup();
+    // Manage league keeps the multiplayer entry mode, so it lands on the league setup itself.
     expect(screen.getByRole("button", { name: /Create league/ })).toBeTruthy();
     expect(screen.getByText("Saved leagues")).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "Profile menu" }));
@@ -414,6 +416,7 @@ describe("App profile and admin", () => {
     vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState));
 
     render(<App />);
+    resumeSavedLeague();
 
     expect(await screen.findByRole("button", { name: "Stand" })).toBeTruthy();
     fireEvent.click(screen.getByRole("button", { name: "CR League Office League" }));
@@ -603,10 +606,13 @@ describe("App profile and admin", () => {
 
     render(<App />);
 
+    // Nothing is fetched on boot any more, so a dead league is only discovered when opened.
+    expect(localStorage.getItem("cr-league-player-claims")).toContain("Office League");
+    resumeSavedLeague();
+
     expect(await screen.findByText("Saved league no longer exists. Join the playtest again.")).toBeTruthy();
     expect(localStorage.getItem("cr-league-player-claims")).toBe("[]");
     expect(localStorage.getItem("cr-league-active-player-claim")).toBe(null);
-    startMultiplayerSetup();
     expect(screen.getByRole("button", { name: /Join league/ })).toBeTruthy();
   });
 

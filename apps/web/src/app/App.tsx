@@ -169,8 +169,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const [onboardingHelp, setOnboardingHelp] = useState<OnboardingHelpTopic | null>(null);
   const pendingMessage = status === "loading" ? message : null;
   const snoozedOnboardingHelp = useRef(new Set<string>());
-  const initialProfileSession = useRef(profileSession);
-  const initialActiveClaim = useRef(getActiveClaim(savedClaims));
   const savedClaimsRef = useRef(savedClaims);
   const statusRef = useRef(status);
   const adminInspectingRef = useRef(false);
@@ -259,15 +257,6 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   useEffect(() => {
     leagueStateRef.current = leagueState;
   }, [leagueState]);
-
-  useEffect(() => {
-    if (!initialProfileSession.current) return;
-    const saved = initialActiveClaim.current;
-    if (!saved) return;
-    void rejoinClaim(saved, { setDrive: false, notify: false, silent: true });
-    // The automatic rejoin intentionally uses the first local-storage snapshot only.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const race = useRaceDerivations({ leagueState, adminInspecting, form, qualifyingResult, historyReplay, resultOpen, status, tt });
   const {

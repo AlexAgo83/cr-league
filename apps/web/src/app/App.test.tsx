@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { App } from "./App.js";
 import { CITY_CIRCUITS } from "./circuits.js";
 import { testCircuit, baseState, decidedState, resolvedState, nextGrandPrixState, seasonTwoState, qualifyingRun, qualifiedState, decidedStateWithQualifying, settingsState } from "./App.testFixtures.js";
-import { closeLeagueIntro, createLeagueFromSetup, expectGarageCode, response, saveProfile, startCampaign, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
+import { closeLeagueIntro, createLeagueFromSetup, expectGarageCode, response, saveProfile, startCampaign, resumeSavedLeague, startMultiplayerSetup, withoutPlayer } from "./App.testHelpers.js";
 import { createInitialSoloLeagueState } from "./soloLeague.js";
 import { SOLO_SAVE_SCHEMA_VERSION, SOLO_SLOT_KEY_PREFIX } from "./soloStorage.js";
 import { t } from "../i18n/index.js";
@@ -424,6 +424,7 @@ describe("App", () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(response(refreshedState));
 
     render(<App />);
+    resumeSavedLeague();
 
     await screen.findByRole("button", { name: "Stand" });
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
@@ -450,6 +451,7 @@ describe("App", () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(stateWithSavedSkin)).mockResolvedValueOnce(response(updatedState)).mockResolvedValueOnce(response(updatedState));
 
     render(<App />);
+    resumeSavedLeague();
 
     await screen.findByRole("button", { name: "Stand" });
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
@@ -482,6 +484,7 @@ describe("App", () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(garageState)).mockResolvedValueOnce(response(purchasedState));
 
     render(<App />);
+    resumeSavedLeague();
     await screen.findByRole("button", { name: "Stand" });
     fireEvent.click(screen.getByRole("button", { name: "Garage" }));
     await waitFor(() => expect(document.querySelector(".garage-grid")).toBeTruthy());
@@ -547,6 +550,7 @@ describe("App", () => {
     const fetch = vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(response(baseState)).mockResolvedValueOnce(staleResponse());
 
     render(<App />);
+    resumeSavedLeague();
 
     await screen.findByRole("button", { name: "Stand" });
     document.dispatchEvent(new Event("visibilitychange"));

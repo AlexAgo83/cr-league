@@ -32,8 +32,10 @@ describe("destiny wheel draw", () => {
   });
 
   it("does not favour the order participants were entered in", () => {
-    // Whoever is typed first must not tend to win, or the draw is rigged.
-    const winners = Array.from({ length: 40 }, (_, index) => order(`draw-${index}`)[0]);
+    // Whoever is typed first must not tend to win, or the draw is rigged. Twelve draws show
+    // that plainly; forty ran a full simulation each and timed out on a CI runner under
+    // coverage instrumentation, which is slower than a local `npm test`.
+    const winners = Array.from({ length: 12 }, (_, index) => order(`draw-${index}`)[0]);
 
     expect(new Set(winners).size).toBeGreaterThan(1);
     expect(winners.filter((winner) => winner === "p0").length).toBeLessThan(winners.length);

@@ -68,6 +68,7 @@ function AmbientRaceBackground() {
 }
 
 export function SetupShell({
+  mapScreen = false,
   children,
   errorModal,
   notificationStack,
@@ -76,6 +77,9 @@ export function SetupShell({
   profileLogoutModal,
   topbar
 }: {
+  /** Same topbar-over-full-map layout the campaign uses for /drive. It also drops the ambient
+      circuit: a second animated SVG behind an opaque one is pure cost. */
+  mapScreen?: boolean;
   children: ReactNode;
   errorModal: ReactNode;
   notificationStack: ReactNode;
@@ -85,8 +89,8 @@ export function SetupShell({
   topbar: ReactNode;
 }) {
   return (
-    <main className="app-shell setup-shell">
-      <AmbientRaceBackground />
+    <main className={mapScreen ? "app-shell setup-shell map-screen" : "app-shell setup-shell"}>
+      {mapScreen ? null : <AmbientRaceBackground />}
       {topbar}
       {children}
       {notificationStack}

@@ -1,5 +1,5 @@
 import { APP_VERSION } from "@cr-league/shared";
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import type { GameView, FormState, LeagueState, ProfileSession } from "./types.js";
 import { ChangelogView } from "../features/ChangelogView.js";
 import { SetupShell } from "./OnboardingShell.js";
@@ -62,6 +62,8 @@ export function SetupGate({
     switchLeague
   } = useSetup();
   const utilitySetupView = profileSession && ((gameView === "admin" && profileSession.admin) || gameView === "changelog");
+  // The entry step still wants the ambient circuit behind its panel; the race covers the screen.
+  const [wheelRacing, setWheelRacing] = useState(false);
 
   if (!leagueState && setupEntryMode === "choice" && !utilitySetupView) {
     return (
@@ -97,8 +99,8 @@ export function SetupGate({
 
   if (!leagueState && setupEntryMode === "wheel" && !utilitySetupView) {
     return (
-      <SetupShell topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
-        <DestinyWheelView onBack={() => setSetupEntryMode("arcade")} />
+      <SetupShell mapScreen={wheelRacing} topbar={setupTopbar} notificationStack={notificationStack} errorModal={overlays} profileCodeModal={null} profileLogoutModal={null} preferencesResetModal={null}>
+        <DestinyWheelView onBack={() => setSetupEntryMode("arcade")} onRacingChange={setWheelRacing} />
       </SetupShell>
     );
   }

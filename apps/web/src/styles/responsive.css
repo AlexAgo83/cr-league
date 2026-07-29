@@ -34,7 +34,8 @@
     width: calc(100% - 24px);
   }
 
-  .game-shell.map-screen {
+  /* `.app-shell`, not `.game-shell`: the arcade draw is the same screen in the setup shell. */
+  .app-shell.map-screen {
     height: 100dvh;
     max-width: none;
     overflow: hidden;
@@ -61,7 +62,8 @@
     z-index: 60;
   }
 
-  .map-screen .view-container {
+  .map-screen .view-container,
+  .map-screen .wheel-race {
     inset: 0;
     position: fixed;
     z-index: 1;
@@ -86,6 +88,7 @@
 
   .map-screen .result-view,
   .map-screen .result-view > div,
+  .map-screen .wheel-race,
   .map-screen .view-stack,
   .map-screen .replay-main-grid,
   .map-screen .replay-content-column,
@@ -201,50 +204,24 @@
     padding: 14px;
   }
 
-  .game-shell .view-container,
-  .game-shell .result-view,
-  .game-shell .drive-grid,
-  .game-shell .drive-content-column,
-  .game-shell .replay-main-grid,
-  .wheel-race .replay-main-grid {
+  .app-shell .view-container,
+  .app-shell .result-view,
+  .app-shell .drive-grid,
+  .app-shell .drive-content-column,
+  .app-shell .replay-main-grid {
     min-height: 0;
   }
 
-  /* The arcade race is a race: it gets the screen the campaign map gets, through the same rules
-     rather than a second set. The setup shell's padding and width cap are undone for it. */
-  .setup-shell:has(.wheel-race) {
-    max-width: none;
-    overflow: hidden;
-    /* The setup topbar is fixed, not sticky like the game's, so its height stays reserved or it
-       lands on top of the replay controls. */
-    padding: var(--setup-topbar-height) 0 0;
-  }
-
-  .game-shell .drive-map-panel,
-  .game-shell .replay-map-panel {
+  .app-shell .drive-map-panel,
+  .app-shell .replay-map-panel {
     margin-left: 0;
     margin-right: 0;
     min-height: 100dvh;
     width: 100%;
   }
 
-  /* Same treatment, minus the topbar the setup shell already reserves above it: a full 100dvh
-     here pushed the bottom of the stage, and its timeline, past the fold. */
-  .wheel-race .replay-map-panel {
-    margin-left: 0;
-    margin-right: 0;
-    min-height: calc(100dvh - var(--setup-topbar-height));
-    width: 100%;
-  }
-
-  /* Right under the controls. The generic 176px is meant for a tower over a boxed map. */
-  .wheel-race .replay-tower {
-    top: 60px;
-  }
-
-  .game-shell .drive-map-panel .circuit-map-stage,
-  .game-shell .replay-map-panel .circuit-map-stage,
-  .wheel-race .replay-map-panel .circuit-map-stage {
+  .app-shell .drive-map-panel .circuit-map-stage,
+  .app-shell .replay-map-panel .circuit-map-stage {
     border: 0;
     border-radius: 0;
     min-height: inherit;
@@ -285,9 +262,8 @@
     width: auto;
   }
 
-  .game-shell .drive-map-panel .circuit-map-stage > svg,
-  .game-shell .replay-map-panel .circuit-map-stage > svg,
-  .wheel-race .replay-map-panel .circuit-map-stage > svg {
+  .app-shell .drive-map-panel .circuit-map-stage > svg,
+  .app-shell .replay-map-panel .circuit-map-stage > svg {
     height: 100%;
     left: 50%;
     max-width: none;

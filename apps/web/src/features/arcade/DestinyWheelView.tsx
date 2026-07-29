@@ -1,4 +1,4 @@
-import { lazy, Suspense, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { useT } from "../../i18n/index.js";
 import { BoardIcon } from "../VisualIcon.js";
 import { TeamCar } from "../TeamCar.js";
@@ -19,13 +19,17 @@ const ReplayView = lazy(() => import("../ReplayView.js").then((module) => ({ def
  * The whole game lives here: the participant list, the race, the order. It holds no LeagueState
  * and touches no campaign slot, so nothing about it needs to reach App.
  */
-export function DestinyWheelView({ onBack }: { onBack: () => void }) {
+export function DestinyWheelView({ onBack, onRacingChange }: { onBack: () => void; onRacingChange?: (racing: boolean) => void }) {
   const tt = useT();
   const [participants, setParticipants] = useState<WheelParticipant[]>(() => loadWheelParticipants());
   const [name, setName] = useState("");
   const [draw, setDraw] = useState<WheelDraw | null>(null);
   const [showOrder, setShowOrder] = useState(false);
   const canRace = participants.length >= WHEEL_MIN_PARTICIPANTS;
+  const racing = Boolean(draw) && !showOrder;
+  useEffect(() => {
+    onRacingChange?.(racing);
+  }, [onRacingChange, racing]);
 
   function launch() {
     if (!canRace) return;
@@ -42,7 +46,7 @@ export function DestinyWheelView({ onBack }: { onBack: () => void }) {
     setParticipants(next);
   }
 
-  if (draw && !showOrder) {
+  if (draw && racing) {
     return (
       <div className="wheel-race">
         <Suspense fallback={null}>

@@ -21,6 +21,11 @@
   position: relative;
 }
 
+/* A map screen is not a centred panel: it hangs off the topbar, the way /drive does. */
+.setup-shell.map-screen {
+  justify-content: flex-start;
+}
+
 .game-shell {
   padding-bottom: 96px; /* room for the sticky command bar */
 }
@@ -5297,7 +5302,6 @@ label small {
 }
 
 /* ---------- Arcade: Destiny Wheel ---------- */
-
 
 .wheel-add {
   display: grid;

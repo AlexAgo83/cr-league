@@ -354,10 +354,6 @@
     position: relative;
   }
 
-  .replay-map-panel .map-info-stack > .map-plan-performance {
-    bottom: auto;
-  }
-
   .drive-map-panel .map-info-stack {
     display: contents;
     position: static;
@@ -376,11 +372,24 @@
     top: auto;
   }
 
-  .qualifying-replay-inline .replay-map-panel .map-info-stack > .map-plan-performance {
-    bottom: auto;
+  /* The chrono replay renders inside a .drive-map-panel wrapper, so it inherited the GP map's
+     `display: contents` and absolute placement above. Its own stack goes back to being a grid,
+     and the plan panel flows under the info panel with the stack's gap — following it when the
+     readouts fold, where a fixed 154px top used to land inside the info panel. */
+  .qualifying-replay-inline .replay-map-panel .map-info-stack {
+    display: grid;
+    gap: 8px;
     left: 8px;
     position: absolute;
-    top: 154px;
+    top: 68px;
+  }
+
+  .qualifying-replay-inline .replay-map-panel .map-info-stack > .map-status,
+  .qualifying-replay-inline .replay-map-panel .map-info-stack > .map-plan-performance {
+    bottom: auto;
+    left: auto;
+    position: relative;
+    top: auto;
   }
 
   .map-info-stack > .map-plan-performance .map-plan-panel > strong {

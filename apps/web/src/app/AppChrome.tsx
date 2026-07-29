@@ -116,7 +116,8 @@ export function ProfileMenu({
               {tt(isSoloLeague ? "action_back_to_menu" : "action_add_league")}
             </button>
           ) : null}
-          {showManageLeague ? <hr className="profile-menu-separator" /> : null}
+          {/* Unconditional: with no exit entry it still rules the language switch off the rest. */}
+          <hr className="profile-menu-separator" />
           {hasLeague && !isSoloLeague ? (
             <button type="button" data-testid="profile-action-race-direction" className="profile-menu-action" onClick={onOpenLeagueControls}>
               {tt("settings_title")}

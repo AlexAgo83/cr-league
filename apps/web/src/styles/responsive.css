@@ -163,25 +163,6 @@
     display: none;
   }
 
-  /* Sat across the bottom of the logo rather than after it: with the league name hidden the brand
-     box is the logo, so centring on it is centring on the CR. Out of flow, so it costs the nav no
-     width, and it takes no taps either. */
-  .brand:has(.topbar-mode-badge) {
-    position: relative;
-  }
-
-  .topbar-mode-badge {
-    /* It sits on artwork now, so it carries its own backdrop. */
-    background: rgb(16 14 18 / 0.85);
-    bottom: 0;
-    font-size: 0.5rem;
-    left: 50%;
-    padding: 2px 5px;
-    pointer-events: none;
-    position: absolute;
-    transform: translateX(-50%);
-  }
-
   .profile-menu {
     grid-column: 3;
     grid-row: 1;

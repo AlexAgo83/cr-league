@@ -592,16 +592,23 @@
   white-space: nowrap;
 }
 
+/* Along the bottom edge of the CR, centred on it. Out of flow, so it costs the topbar no width,
+   and `pointer-events: none` keeps the brand button clickable through it. */
 .topbar-mode-badge {
+  background: rgb(16 14 18 / 0.85);
   border: 1px solid rgb(22 199 132 / 0.55);
   border-radius: 999px;
+  bottom: 0;
   color: #7dd3a8;
-  flex: 0 0 auto;
-  font-size: 0.72rem;
+  font-size: 0.5rem;
   font-weight: 800;
+  left: 50%;
   line-height: 1;
-  padding: 5px 8px;
+  padding: 2px 5px;
+  pointer-events: none;
+  position: absolute;
   text-transform: uppercase;
+  transform: translateX(-50%);
 }
 
 .invite-code {

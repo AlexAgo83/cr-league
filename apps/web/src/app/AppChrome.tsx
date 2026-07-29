@@ -219,9 +219,10 @@ export function GameTopbar({
         <span className="brand-icon-slot">
           <AssetImage className="brand-icon brand-icon-cr" src="/assets/crl/home-title-cr.webp" alt="" loading="eager" />
           <BrandLoadingIndicator pendingMessage={pendingMessage} />
+          {/* Inside the logo slot, not next to it: the slot is the box the badge sits on. */}
+          {modeBadge ? <span className="topbar-mode-badge">{modeBadge}</span> : null}
         </span>
         <strong>{leagueName}</strong>
-        {modeBadge ? <span className="topbar-mode-badge">{modeBadge}</span> : null}
       </button>
       <nav className="game-nav" aria-label={tt("cockpit_sections")}>
         {GAME_VIEWS.map((view) => (

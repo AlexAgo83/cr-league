@@ -5,6 +5,11 @@
     padding: 12px;
   }
 
+  /* The shorthand above would drop the reserved topbar height. */
+  .setup-shell {
+    padding-top: var(--setup-topbar-height);
+  }
+
   .replay-start-lights {
     top: 50%;
   }
@@ -120,6 +125,11 @@
 
   .setup-topbar .language-select select {
     font-size: 0.875rem;
+  }
+
+  /* The map is narrow here: a row of controls eats its width, so they stack down the corner. */
+  .circuit-detail-actions {
+    flex-direction: column;
   }
 
   .setup-choice-grid {

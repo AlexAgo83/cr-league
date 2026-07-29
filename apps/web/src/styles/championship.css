@@ -572,14 +572,17 @@
   padding: 0;
 }
 
-.championship-view .circuit-detail-screen .circuit-map-stage button.secondary-button:not(:disabled) {
+/* `.circuit-map` is in the chain to outrank the generic paper-material rule for secondary
+   buttons inside .championship-view: the two were specificity-tied and paper-material loads
+   later, so these buttons came out ink-on-ink over the dark map. Do not shorten this selector. */
+.championship-view .circuit-detail-screen .circuit-map .circuit-map-stage button.secondary-button:not(:disabled) {
   background: rgb(248 243 232 / 0.9);
   border-color: rgb(255 255 255 / 0.46);
   color: #17151a;
 }
 
-.championship-view .circuit-detail-screen .circuit-map-stage button.secondary-button:not(:disabled):is(:hover, :focus-visible),
-.championship-view .circuit-detail-screen .circuit-map-stage button.secondary-button.active:not(:disabled) {
+.championship-view .circuit-detail-screen .circuit-map .circuit-map-stage button.secondary-button:not(:disabled):is(:hover, :focus-visible),
+.championship-view .circuit-detail-screen .circuit-map .circuit-map-stage button.secondary-button.active:not(:disabled) {
   background: #ff4d00;
   border-color: #ff8a3d;
   color: #1d1205;

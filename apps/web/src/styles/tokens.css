@@ -22,6 +22,7 @@
   --chamfer: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
   --chamfer-sm: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 0 100%);
   --space-page: 20px;
+  --setup-topbar-height: 62px;
   --font-sans: "Barlow", "Helvetica Neue", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Barlow Condensed", "Avenir Next Condensed", "Arial Narrow", var(--font-sans);
 }

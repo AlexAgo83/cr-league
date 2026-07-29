@@ -13,7 +13,11 @@
 }
 
 .setup-shell {
-  justify-content: center;
+  /* `safe` so a panel taller than the viewport overflows downwards only: plain centring pushed
+     its top off-screen on short screens, past the fixed topbar and out of reach. */
+  justify-content: safe center;
+  /* The topbar is fixed and out of flow, so the centred content has to reserve its height. */
+  padding-top: var(--setup-topbar-height);
   position: relative;
 }
 

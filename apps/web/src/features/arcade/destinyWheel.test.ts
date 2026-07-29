@@ -8,6 +8,10 @@ function order(seed: string, participants = people) {
   return drawDestinyWheel(participants, seed).result.classification.map((entry) => entry.teamId);
 }
 
+function grid(seed: string) {
+  return drawDestinyWheel(people, seed).result.replayTrace?.[0]?.order ?? [];
+}
+
 describe("destiny wheel draw", () => {
   it("ranks every participant entered", () => {
     const finished = order("draw-1");
@@ -25,6 +29,13 @@ describe("destiny wheel draw", () => {
 
   it("repeats itself for one given seed", () => {
     expect(order("draw-1")).toEqual(order("draw-1"));
+  });
+
+  it("draws a fresh starting grid for each launch", () => {
+    const grids = ["draw-1", "draw-2", "draw-3", "draw-4"].map((seed) => grid(seed).join(","));
+
+    expect(new Set(grids).size).toBeGreaterThan(1);
+    expect([...grid("draw-1")].sort()).toEqual(people.map((person) => person.id).sort());
   });
 
   it("refuses to draw between fewer than two", () => {

@@ -293,17 +293,25 @@ function ReplayDriverConnectors({ entries, teamLiveries }: { entries: ReplayTowe
   const ref = useRef<SVGSVGElement>(null);
 
   useEffect(() => {
+    const svg = ref.current;
+    const stage = svg?.parentElement;
+    if (!svg || !stage) return;
+    const cars = new Map(Array.from(stage.querySelectorAll<SVGGElement>(".map-car[data-car-id]")).map((car) => [car.dataset.carId, car]));
+    const badges = new Map(Array.from(stage.querySelectorAll<HTMLElement>(".replay-tower-livery[data-team-id]")).map((badge) => [badge.dataset.teamId, badge]));
+    const lines = Array.from(svg.querySelectorAll<SVGLineElement>("line[data-team-id]"));
+    let lastUpdate = 0;
     let frame = 0;
-    const update = () => {
-      const svg = ref.current;
-      const stage = svg?.parentElement;
-      if (!svg || !stage) return;
+    const update = (now: number) => {
+      if (now - lastUpdate < 50) {
+        frame = requestAnimationFrame(update);
+        return;
+      }
+      lastUpdate = now;
       const stageRect = stage.getBoundingClientRect();
-      const cars = Array.from(stage.querySelectorAll<SVGGElement>(".map-car[data-car-id]"));
-      for (const line of svg.querySelectorAll<SVGLineElement>("line[data-team-id]")) {
+      for (const line of lines) {
         const teamId = line.dataset.teamId;
-        const badge = teamId ? Array.from(stage.querySelectorAll<HTMLElement>(".replay-tower-livery[data-team-id]")).find((element) => element.dataset.teamId === teamId) : undefined;
-        const car = teamId ? cars.find((element) => element.dataset.carId === teamId) : undefined;
+        const badge = teamId ? badges.get(teamId) : undefined;
+        const car = teamId ? cars.get(teamId) : undefined;
         if (!badge || !car) {
           line.style.opacity = "0";
           continue;

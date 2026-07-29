@@ -25,7 +25,7 @@ type ReplayClockOptions = {
   startHoldSeconds: number;
   getActiveMomentId: (time: number) => string | null;
   getOrderAtProgress: (progress: number) => string[];
-  createTargetSnapshot: (raceTime: number, progress: number, currentOrder: string[]) => ReplayClockSnapshot;
+  createTargetCarProgress: (raceTime: number, progress: number) => Record<string, number>;
   createTower: (progress: number, carProgress: Record<string, number>, currentOrder: string[]) => ReplayClockSnapshot["tower"];
   smoothCarProgress: (current: Record<string, number>, target: Record<string, number>, elapsedSeconds: number) => Record<string, number>;
   displayLapAtProgress: (progress: number, laps: number) => number;
@@ -72,7 +72,7 @@ export function useReplayClock({
   startHoldSeconds,
   getActiveMomentId,
   getOrderAtProgress,
-  createTargetSnapshot,
+  createTargetCarProgress,
   createTower,
   smoothCarProgress,
   displayLapAtProgress,
@@ -106,27 +106,29 @@ export function useReplayClock({
   const updateLive = useCallback((time: number, animatePositions = true, elapsedSeconds = 1 / 60, publishState = true) => {
     const progress = replayProgressAt(time, raceDuration, startHoldSeconds);
     const raceTime = Math.max(0, time - startHoldSeconds);
-    const targetSnapshot = createTargetSnapshot(raceTime, progress, orderRef.current);
-    const carProgress = replayFrameCarProgress(time, startHoldSeconds, initialSnapshot.carProgress, snapshotRef.current.carProgress, targetSnapshot.carProgress, animatePositions, elapsedSeconds, smoothCarProgress);
+    const targetCarProgress = createTargetCarProgress(raceTime, progress);
+    const carProgress = replayFrameCarProgress(time, startHoldSeconds, initialSnapshot.carProgress, snapshotRef.current.carProgress, targetCarProgress, animatePositions, elapsedSeconds, smoothCarProgress);
     carProgressRef.current = carProgress;
     const nextTower = publishState ? createTower(progress, carProgress, orderRef.current) : snapshotRef.current.tower;
     const nextSnapshot = { carProgress, tower: nextTower };
-    const nextOrder = nextTower.map((entry) => entry.teamId);
-    if (publishState && orderRef.current.join("|") !== nextOrder.join("|")) {
-      if (animatePositions) {
-        const deltas = positionDeltas(orderRef.current, nextOrder);
-        const key = Math.round(time * 1000);
-        const pops = Object.fromEntries(Object.entries(deltas).map(([teamId, delta]) => [teamId, { delta, key }]));
-        setPositionPops((current) => ({ ...current, ...pops }));
-        for (const teamId of Object.keys(pops)) {
-          const timer = window.setTimeout(() => {
-            positionPopTimers.current = positionPopTimers.current.filter((id) => id !== timer);
-            setPositionPops((current) => (current[teamId]?.key === key ? Object.fromEntries(Object.entries(current).filter(([id]) => id !== teamId)) : current));
-          }, 1100);
-          positionPopTimers.current.push(timer);
+    if (publishState) {
+      const nextOrder = nextTower.map((entry) => entry.teamId);
+      if (orderRef.current.join("|") !== nextOrder.join("|")) {
+        if (animatePositions) {
+          const deltas = positionDeltas(orderRef.current, nextOrder);
+          const key = Math.round(time * 1000);
+          const pops = Object.fromEntries(Object.entries(deltas).map(([teamId, delta]) => [teamId, { delta, key }]));
+          setPositionPops((current) => ({ ...current, ...pops }));
+          for (const teamId of Object.keys(pops)) {
+            const timer = window.setTimeout(() => {
+              positionPopTimers.current = positionPopTimers.current.filter((id) => id !== timer);
+              setPositionPops((current) => (current[teamId]?.key === key ? Object.fromEntries(Object.entries(current).filter(([id]) => id !== teamId)) : current));
+            }, 1100);
+            positionPopTimers.current.push(timer);
+          }
         }
+        orderRef.current = nextOrder;
       }
-      orderRef.current = nextOrder;
     }
     if (publishState && animatePositions) {
       const from = lastEmoteProgress.current;
@@ -155,7 +157,7 @@ export function useReplayClock({
       setStartSignal((current) => (current?.lights === nextSignal?.lights && current?.go === nextSignal?.go ? current : nextSignal));
       setSnapshot(nextSnapshot);
     }
-  }, [createTargetSnapshot, createTower, displayLapAtProgress, emotes, getActiveMomentId, initialSnapshot.carProgress, laps, raceDuration, segmentAtProgress, smoothCarProgress, startHoldSeconds]);
+  }, [createTargetCarProgress, createTower, displayLapAtProgress, emotes, getActiveMomentId, initialSnapshot.carProgress, laps, raceDuration, segmentAtProgress, smoothCarProgress, startHoldSeconds]);
 
   const seek = useCallback((time: number) => {
     clock.current = Math.max(0, Math.min(time, replayEnd));

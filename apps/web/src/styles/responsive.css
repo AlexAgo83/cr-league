@@ -1,6 +1,12 @@
 /* ---------- Responsive ---------- */
 
 @media (max-width: 860px) {
+  .circuit-weather-light_rain .circuit-map-stage::after,
+  .circuit-weather-heavy_rain .circuit-map-stage::after {
+    animation: none;
+    filter: none;
+  }
+
   .app-shell {
     padding: 12px;
   }

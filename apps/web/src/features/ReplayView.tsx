@@ -33,6 +33,7 @@ export {
   playerReplayContext,
   positionDeltas,
   replayDistanceScale,
+  replayCarProgressAt,
   replayOrderAtProgress,
   replayPlanDebugLines,
   replayProgressForVisualTrackProgress,
@@ -65,6 +66,7 @@ import {
   pitStopTraceProgress,
   playerReplayContext,
   replaySnapshot,
+  replayCarProgressAt,
   replayDistanceScale,
   replayOrderAtProgress,
   replayProgressForVisualTrackProgress,
@@ -221,8 +223,8 @@ export function ReplayView({
     [eventTrackProgress, keyMoments, raceTimeAtTrackProgress]
   );
   const activeMomentIdAt = useCallback((time: number) => timedKeyMoments.find((moment) => Math.abs(moment.time - time) <= MOMENT_NOTIFICATION_SECONDS)?.event.id ?? null, [timedKeyMoments]);
-  const createTargetSnapshot = useCallback(
-    (raceTime: number, progress: number, currentOrder: string[]) => replaySnapshot(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, currentOrder, circuit.speedProfile),
+  const createTargetCarProgress = useCallback(
+    (raceTime: number, progress: number) => replayCarProgressAt(result, replayTrace, replayTimes, raceTime, progress, circuit.laps, replayPlan, circuit.speedProfile),
     [circuit.laps, circuit.speedProfile, replayPlan, replayTimes, replayTrace, result]
   );
   const createTower = useCallback(
@@ -264,7 +266,7 @@ export function ReplayView({
     startHoldSeconds: START_HOLD_SECONDS,
     getActiveMomentId: activeMomentIdAt,
     getOrderAtProgress,
-    createTargetSnapshot,
+    createTargetCarProgress,
     createTower,
     smoothCarProgress,
     displayLapAtProgress,

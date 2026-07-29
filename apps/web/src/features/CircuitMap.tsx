@@ -551,9 +551,11 @@ function CircuitMapInner({
     }
 
     const length = route.getTotalLength();
+    const markers = Array.from(cameraGroup.querySelectorAll<SVGGElement>(".map-car-marker"));
     const focusX = VIEW_WIDTH / 2;
     const focusY = VIEW_HEIGHT / 2;
     const startedAt = performance.now();
+    let lastMarkerScale = Number.NaN;
     let frame = 0;
     const tick = () => {
       const car = carsRef.current.find((candidate) => candidate.id === carId);
@@ -589,7 +591,11 @@ function CircuitMapInner({
       const baseZoom = camera.zoom ?? FOCUS_ZOOM;
       const targetZoom = zoomModeRef.current === "close" ? Math.max(CLOSE_FOCUS_ZOOM, baseZoom) : zoomModeRef.current === "traffic" ? Math.max(TRAFFIC_FOCUS_ZOOM, baseZoom) : baseZoom;
       zoomRef.current += (targetZoom - zoomRef.current) * 0.08;
-      cameraGroup.querySelectorAll<SVGGElement>(".map-car-marker").forEach((marker) => marker.setAttribute("transform", `scale(${1 / zoomRef.current})`));
+      const markerScale = 1 / zoomRef.current;
+      if (Math.abs(markerScale - lastMarkerScale) >= 0.005) {
+        markers.forEach((marker) => marker.setAttribute("transform", `scale(${markerScale})`));
+        lastMarkerScale = markerScale;
+      }
       cameraGroup.setAttribute("transform", `translate(${focusX} ${focusY}) scale(${zoomRef.current}) translate(${-point.x} ${-point.y})`);
       frame = requestAnimationFrame(tick);
     };
@@ -599,7 +605,7 @@ function CircuitMapInner({
       cancelAnimationFrame(frame);
       cameraGroup.removeAttribute("transform");
     };
-  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, camera?.zoom, carProgressRef, circuit.laps, circuit.speedProfile, routeAnalysis.startProgress]);
+  }, [camera?.enabled, camera?.car?.id, camera?.timeRef, camera?.zoom, carDomKey, carProgressRef, circuit.laps, circuit.speedProfile, routeAnalysis.startProgress]);
 
   return (
     <section

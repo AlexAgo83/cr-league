@@ -321,9 +321,22 @@ export function replaySnapshot(
   currentOrder: string[] = [],
   speedProfile?: TrackSpeedProfile
 ) {
-  const baseProgress = progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan, speedProfile);
+  const baseProgress = replayCarProgressAt(result, trace, replayTimes, raceTime, progress, laps, plan, speedProfile);
   const tower = liveClassificationByCarProgress(result, trace, progress, baseProgress, currentOrder);
   return { carProgress: baseProgress, tower };
+}
+
+export function replayCarProgressAt(
+  result: RaceResult,
+  trace: ReplayTracePoint[],
+  replayTimes: ReturnType<typeof scaleFinishTimes>,
+  raceTime: number,
+  progress: number,
+  laps: number,
+  plan?: ReplayPlan,
+  speedProfile?: TrackSpeedProfile
+) {
+  return progress >= 1 ? carProgressAtRaceTime(result, replayTimes.times, raceTime, laps) : carProgressAtTrace(result, trace, progress, laps, plan, speedProfile);
 }
 
 export function smoothCarProgress(current: Record<string, number>, target: Record<string, number>, elapsedSeconds = 1 / 60) {

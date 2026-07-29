@@ -62,6 +62,7 @@ export function drawDestinyWheel(participants: WheelParticipant[], seed: string)
   participants.forEach((participant, index) => {
     liveries[participant.id] = wheelLivery(index, participant);
   });
+  const grid = [...participants].sort((left, right) => hash(`${seed}:grid:${left.id}`) - hash(`${seed}:grid:${right.id}`) || left.id.localeCompare(right.id));
 
   const result = simulateRace({
     seed,
@@ -72,11 +73,11 @@ export function drawDestinyWheel(participants: WheelParticipant[], seed: string)
     speedProfile: circuit.speedProfile,
     pitLaneProgress: circuit.pitLaneProgress,
     ...raceInputFromCircuit(identity),
-    participants: participants.map((participant, index) => ({
+    participants: grid.map((participant, index) => ({
       teamId: participant.id,
       teamName: participant.name,
       kind: "bot" as const,
-      // Everyone starts level: a draw with a favourite is a rigged draw.
+      // Everyone starts level, but the seed draws a new grid on every launch.
       standingsRank: index + 1,
       botArchetype: ARCHETYPES[hash(`${seed}:${participant.id}`) % ARCHETYPES.length]!,
       decision: { approach: "balanced" as const, preparation: "speed" as const }

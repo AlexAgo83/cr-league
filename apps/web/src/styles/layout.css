@@ -4773,7 +4773,7 @@ label small {
 }
 
 /* Same chevron as the plan panel, but this list opens downwards, so it points the other way. */
-.replay-tower-toggle {
+.map-list-toggle {
   align-items: center;
   background: transparent;
   border: 0;
@@ -4788,12 +4788,12 @@ label small {
   padding: 0;
 }
 
-.replay-tower-toggle:hover,
-.replay-tower-toggle:focus-visible {
+.map-list-toggle:hover,
+.map-list-toggle:focus-visible {
   color: var(--color-accent);
 }
 
-.replay-tower-toggle svg {
+.map-list-toggle svg {
   fill: none;
   height: 14px;
   stroke: currentColor;

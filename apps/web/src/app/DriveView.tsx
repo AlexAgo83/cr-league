@@ -4,7 +4,7 @@ import type { TranslationKey } from "../i18n/index.js";
 import { circuitDistanceLabel, type CityCircuit } from "./circuits.js";
 import { formatSeconds } from "./helpers.js";
 import type { LeagueState } from "./types.js";
-import { CircuitMap, MapStatsToggle, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
+import { CircuitMap, MAP_LIST_COLLAPSED_ROWS, MapStatsToggle, MapTraitsPanel, type MapTraitImpacts } from "../features/CircuitMap.js";
 import { MapPlanPanel } from "../features/MapPlanPanel.js";
 import { Modal } from "../features/Modal.js";
 import { RaceInfoDetails } from "../features/RaceInfoDetails.js";
@@ -276,6 +276,9 @@ function QualifyingTimesPanel({
   onReport?: () => void;
 }) {
   const tt = useT();
+  const [expanded, setExpanded] = useState(false);
+  const foldable = entries.length > MAP_LIST_COLLAPSED_ROWS;
+  const shown = foldable && !expanded ? entries.slice(0, MAP_LIST_COLLAPSED_ROWS) : entries;
   const reportLabel = tt(attemptsUsed > 0 ? "action_qualifying_history" : "action_view_plan").split(" ")[0];
   const panelClassName = [
     "map-qualifying-times",
@@ -298,7 +301,7 @@ function QualifyingTimesPanel({
       </header>
       {entries.length ? (
         <ol>
-          {entries.map((run) => (
+          {shown.map((run) => (
             <li key={`${run.teamId}-${run.attempts}-${run.lap ?? 0}-${run.createdAt}`} className={run.teamId === playerTeamId ? "player" : undefined}>
               <span className="chrono-rank">#{run.position}</span>
               <ChronoPlanAsset decision={run.decision} />
@@ -318,6 +321,7 @@ function QualifyingTimesPanel({
           {tt("qualifying_times_empty")}
         </small>
       )}
+      {foldable ? <MapStatsToggle className="map-list-toggle" collapseKey="action_collapse_list" expandKey="action_expand_list" expanded={expanded} onToggle={setExpanded} /> : null}
     </div>
   );
 }

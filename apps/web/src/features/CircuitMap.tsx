@@ -30,6 +30,9 @@ export type MapCar = {
 const CHEVRON_UP = "m6 15 6-6 6 6";
 const CHEVRON_DOWN = "m6 9 6 6 6-6";
 
+/** Past this a list overlaying the map covers the map. Shared, so the panels agree with each other. */
+export const MAP_LIST_COLLAPSED_ROWS = 6;
+
 /**
  * The chevron points where the click sends the panel, not at some abstract open/closed state.
  * `grows` says which way the panel grows: the plan panel is anchored to the bottom of the map and

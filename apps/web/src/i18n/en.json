@@ -1027,5 +1027,6 @@
   "wheel_back_to_catalogue": "Back to the arcade",
   "wheel_back_to_entry": "Change the names",
   "wheel_running_order": "Running order",
-  "action_back_to_menu": "Back to menu"
+  "action_back_to_menu": "Back to menu",
+  "action_resume_game": "Back to the game"
 }

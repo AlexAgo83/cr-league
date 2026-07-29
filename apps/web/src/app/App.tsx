@@ -149,6 +149,12 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   const [profileMode, setProfileMode] = useState<ProfileMode>("choice");
   const [setupEntryMode, setSetupEntryMode] = useState<SetupEntryMode>("choice");
   const [activeSoloSlot, setActiveSoloSlot] = useState<SoloSlot | null>(null);
+  /**
+   * How to get back into the last game, not the game itself: leaving one drops leagueState on
+   * purpose, and both modes already have a single call that re-enters. Deliberately not cleared
+   * when a game is left — that is the whole point of it.
+   */
+  const [lastGame, setLastGame] = useState<{ slot: SoloSlot } | { teamId: string } | null>(null);
   const [soloSlots, setSoloSlots] = useState<Array<SoloSlotSummary | null>>([null, null, null]);
   const [setupMode, setSetupMode] = useState<SetupMode>("choice");
   const { commandClicks, markCommandClicked, resetCommandClicks } = useCommandClicks();
@@ -257,6 +263,15 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   useEffect(() => {
     leagueStateRef.current = leagueState;
   }, [leagueState]);
+
+  // Watching the state rather than every exit path: a game can be left from the brand button, the
+  // profile menu or a sign-out, and they all end in leagueState going null.
+  useEffect(() => {
+    if (!leagueState) return;
+    const teamId = leagueState.player?.teamId;
+    if (activeSoloSlot !== null) setLastGame({ slot: activeSoloSlot });
+    else if (teamId) setLastGame({ teamId });
+  }, [activeSoloSlot, leagueState]);
 
   const race = useRaceDerivations({ leagueState, adminInspecting, form, qualifyingResult, historyReplay, resultOpen, status, tt });
   const {
@@ -536,6 +551,15 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   function deleteSoloSlot(slot: SoloSlot) {
     clearSoloSlot(slot);
     setSoloSlots(listSoloSlots());
+    // Or resuming would open the deleted slot and silently start a fresh campaign in it.
+    setLastGame((current) => (current && "slot" in current && current.slot === slot ? null : current));
+  }
+
+  function resumeLastGame() {
+    if (!lastGame) return;
+    setProfileOpen(false);
+    if ("slot" in lastGame) openSoloSlot(lastGame.slot);
+    else void switchLeague(lastGame.teamId);
   }
 
   function startSolo() {
@@ -773,7 +797,7 @@ function GameApp({ locale, onLocaleChange }: { locale: Locale; onLocaleChange: (
   );
 
   const setupTopbar = (
-    <SetupTopbar hideWordmark profileMenu={profileSession ? profileMenu(false) : null} languageSwitcher={languageSwitcher} pendingMessage={pendingMessage} onHome={goHome} />
+    <SetupTopbar hideWordmark profileMenu={profileSession ? profileMenu(false) : null} languageSwitcher={languageSwitcher} pendingMessage={pendingMessage} onHome={goHome} onResumeGame={lastGame ? resumeLastGame : undefined} />
   );
 
   const notificationStack = <NotificationStack notifications={notifications} onDismiss={dismissNotification} />;

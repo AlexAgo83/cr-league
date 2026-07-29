@@ -316,6 +316,31 @@
   margin-left: auto;
 }
 
+/* Shaped like the language pills next to it rather than a CTA: it is a way back, not the step. */
+.setup-resume-button {
+  align-items: center;
+  background: rgb(16 14 18 / 0.46);
+  border: 1px solid var(--color-accent);
+  border-radius: 999px;
+  clip-path: none;
+  color: var(--color-text);
+  display: inline-flex;
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-style: normal;
+  gap: 6px;
+  letter-spacing: 0;
+  min-height: 32px;
+  padding: 4px 12px 4px 6px;
+  text-transform: none;
+  white-space: nowrap;
+}
+
+.setup-resume-icon {
+  height: 26px;
+  width: 26px;
+}
+
 .profile-code-input {
   cursor: copy;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;

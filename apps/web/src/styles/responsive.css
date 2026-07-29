@@ -121,6 +121,14 @@
     display: inline;
   }
 
+  .setup-resume-label {
+    display: none;
+  }
+
+  .setup-resume-button {
+    padding: 4px 6px;
+  }
+
   .setup-topbar .language-select {
     font-size: 0;
     gap: 0;

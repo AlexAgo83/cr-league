@@ -727,6 +727,19 @@
   text-align: left;
 }
 
+/* Only the entries that carry an icon become a row; the rest stay plain text buttons. */
+.profile-menu-action:has(.profile-menu-action-icon) {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+}
+
+.profile-menu-action-icon {
+  flex: 0 0 auto;
+  height: 24px;
+  width: 24px;
+}
+
 .profile-menu-action:hover {
   border-color: var(--color-accent);
   color: var(--color-text);

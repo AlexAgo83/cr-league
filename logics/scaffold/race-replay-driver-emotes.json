@@ -1,0 +1,174 @@
+{
+  "title": "Pop driver reaction emotes above cars during the replay",
+  "references": [
+    "AGENTS.md",
+    "LOGICS.md",
+    "logics/instructions.md",
+    "apps/web/src/features/CircuitMap.tsx",
+    "apps/web/src/features/ReplayView.tsx",
+    "apps/web/src/features/replay/useReplayClock.ts",
+    "apps/web/src/features/VisualIcon.tsx",
+    "apps/web/src/styles/layout.css",
+    "packages/shared/src/domain/race.ts",
+    "docs/board-icon-assets-runbook.md",
+    "Current diagnostic: CircuitMap already renders a text slot for car.eventLabel at y=-34, above the position delta at y=-16, but no caller ever sets eventLabel, so the slot has never displayed anything.",
+    "Current diagnostic: useReplayClock already computes positionPops as a record keyed by teamId holding a delta plus a key that forces the float animation to replay, and clears each entry with a 1100 ms timer. An emote channel is the same shape with a glyph instead of a number.",
+    "Current diagnostic: RaceEvent already carries lap, traceProgress, trackProgress, zoneKind, severity and positionDelta, so events are positioned along the trace and can be fired as the replay clock crosses them.",
+    "Current diagnostic: RaceEventType declares 26 event types. A measured 8-lap solo race with 5 teams produced 27 events in total and 6 for a single team, three of which were the consecutive pit_imminent, pit_stop and pit_exit of one pit stop.",
+    "Current diagnostic: the CSS keyframe map-car-delta-float already animates a 32 px rise with a fade over 1 s and is the pattern the emote pop should mirror.",
+    "Current diagnostic: prefers-reduced-motion blocks already exist in layout.css for the splash title, the finish flag and the saved league card."
+  ],
+  "request": {
+    "complexity": "Medium",
+    "theme": "Race replay expressiveness",
+    "needs": [
+      "Give every car on the replay map a visible reaction to what happens to it during the race.",
+      "React to simulation race events rather than to player-authored input, so solo and multiplayer both benefit.",
+      "Keep the replay readable: the map already carries car sprites, position deltas, the plan panel, the classification and the race director banner.",
+      "Reuse the existing pop-and-float machinery instead of introducing a second animation system."
+    ],
+    "context": [
+      "The replay is the emotional payoff of a Grand Prix and currently shows position changes as bare numbers, with no reaction attached to mechanical scares, errors, defenses or personal records.",
+      "Events are already resolved to a position on the trace, so an emote can appear where the incident happens rather than at a fixed screen location.",
+      "Event density is the main risk: 27 events across 5 cars in one race means an unfiltered mapping would produce near-continuous pops, and one pit stop alone emits three consecutive events.",
+      "The project ships 128 px WebP board icons produced from 4x4 sprite sheets, documented in the board icon assets runbook, and the emote set should follow the same production and conversion path.",
+      "The generator prompt for the emote sheet is produced by logics-manager design prompt with --kind icon-sheet, --cell-size 256x256 and a --cells manifest, so the sheet contract is reproducible."
+    ],
+    "acceptance_criteria": [
+      "AC1: A pure mapping function in packages/shared resolves a RaceEvent to an emote identifier or to nothing, and is covered by unit tests without a browser.",
+      "AC2: Events that are narration or bookkeeping rather than a reaction emit nothing, and a single pit stop produces at most one emote instead of one per pit event.",
+      "AC3: A per-car cooldown caps how often one car can react, with major severity winning over minor when both fall inside the same window.",
+      "AC4: Every car on the map can emote, not only the player's car.",
+      "AC5: The emote appears above the car at the moment the replay clock crosses the event position, floats and fades like the existing position delta, and is cleared without leaking timers.",
+      "AC6: A 16-emote sprite sheet is generated, sliced, converted to 128 px WebP, and every declared emote identifier resolves to a committed asset, asserted by a test in the same spirit as the existing board icon asset test.",
+      "AC7: Motion is disabled under prefers-reduced-motion while the emote itself stays visible, matching the existing reduced-motion blocks.",
+      "AC8: Lint, typecheck, build, unit tests and the e2e suite pass."
+    ]
+  },
+  "product": {
+    "title": "Race Replay Driver Emotes Product Brief",
+    "overview": "Make the replay read as a race rather than a table of positions by having each car react to what happens to it, using event data the simulation already produces and a rendering slot that already exists.",
+    "goals": [
+      "Attach a visible reaction to the incidents that already drive the race narrative.",
+      "Cover every car so rivalries read from the map, not only the player's own run.",
+      "Hold the number of reactions low enough that each one still registers.",
+      "Reuse the existing pop machinery, rendering slot and asset pipeline."
+    ],
+    "non_goals": [
+      "Do not add player-authored or live chat emotes; the reaction is derived from the simulation.",
+      "Do not restate what the race director banner, the key moments list or the report already narrate.",
+      "Do not change the race simulation, its event types or its balance.",
+      "Do not introduce a second animation system, a sprite atlas runtime, or a new image dependency."
+    ]
+  },
+  "backlog_items": [
+    {
+      "title": "Map race events to a curated emote vocabulary",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race replay expressiveness",
+      "request_acs": ["AC1", "AC2", "AC3"],
+      "problem": [
+        "RaceEventType declares 26 types, and mapping all of them would make the map unreadable.",
+        "A measured race emitted 27 events across 5 cars, with three consecutive events for a single pit stop.",
+        "Without a cooldown, one car can react several times within a second and none of the reactions register."
+      ],
+      "scope_in": [
+        "Add a pure mapping from RaceEvent to an emote identifier or nothing, in packages/shared next to the other race domain helpers.",
+        "Cover the visceral events: mechanical scare and save, best sector and personal record, overtake and being overtaken, pressure, minor error, successful defense, critical battery, penalty risk.",
+        "Return nothing for pit sequence events, weather changes, race notes, sponsor payouts and the finish, which are narration or already shown elsewhere.",
+        "Add a per-car cooldown with major severity taking precedence inside the same window.",
+        "Cover the mapping and the cooldown with unit tests, including the measured pit sequence as a regression case."
+      ],
+      "scope_out": [
+        "No rendering work in this item.",
+        "No change to RaceEventType or to the simulation.",
+        "No player-authored emote selection."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every RaceEventType resolves deterministically to an emote identifier or to nothing, asserted by a parametrized test over the declared union so a new event type cannot be silently unmapped.",
+        "AC2: The consecutive pit_imminent, pit_stop and pit_exit sequence produces at most one emote.",
+        "AC3: Two events inside the cooldown window yield one emote, and a major severity event wins over a minor one.",
+        "AC4: The mapping is pure and tested without a browser or a DOM."
+      ]
+    },
+    {
+      "title": "Produce the emote sprite sheet and its assets",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race replay expressiveness",
+      "request_acs": ["AC6"],
+      "problem": [
+        "The emote vocabulary needs artwork, and the project has an established sheet-to-WebP path that should be followed rather than reinvented.",
+        "A previous sheet came back with an opaque gradient background despite the prompt asking for transparency, so the extraction pass has to be planned rather than assumed.",
+        "Nothing currently asserts that a declared emote identifier has a committed asset behind it."
+      ],
+      "scope_in": [
+        "Generate the sheet prompt with logics-manager design prompt using --kind icon-sheet, --cell-size 256x256, a --cells manifest listing every emote in fill order, and the project palette and style.",
+        "Slice the returned sheet, remove the background if the generator ignores the transparency instruction, and convert to 128 px WebP as the board icon runbook describes.",
+        "Commit only the final WebP assets and keep the source sheet in logics/external, which is not versioned.",
+        "Add a test asserting every declared emote identifier resolves to a committed asset carrying a RIFF/WEBP header, mirroring the existing board icon asset test."
+      ],
+      "scope_out": [
+        "Do not commit the source sheet or intermediate PNG cells.",
+        "Do not add a runtime image dependency or a sprite atlas loader.",
+        "Do not produce per-team or per-livery emote variants."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every emote identifier declared by the mapping has a committed 128 px WebP asset.",
+        "AC2: Assets carry a transparent background and are readable at the size the map renders them.",
+        "AC3: A test fails if an emote identifier has no asset behind it.",
+        "AC4: The board icon assets runbook covers the emote sheet, including the extraction pass when transparency is ignored."
+      ]
+    },
+    {
+      "title": "Render the emote above every car on the replay map",
+      "priority": "High",
+      "complexity": "Medium",
+      "theme": "Race replay expressiveness",
+      "request_acs": ["AC4", "AC5", "AC7", "AC8"],
+      "problem": [
+        "The rendering slot exists but has never been fed: CircuitMap renders car.eventLabel and no caller sets it.",
+        "The replay clock already knows how to pop, animate and clear a per-car indicator, and duplicating that logic would create a second lifecycle to keep correct.",
+        "The map is already dense, so the emote has to be legible without competing with the position delta directly below it."
+      ],
+      "scope_in": [
+        "Fire the mapped emote when the replay clock crosses the event position along the trace, for every car in the field.",
+        "Add an emote channel to useReplayClock modelled on positionPops, including the key that replays the animation and the timer that clears it.",
+        "Feed the existing car.eventLabel slot in CircuitMap, or replace it with an image slot if a text glyph cannot carry the asset.",
+        "Add a float-and-fade keyframe alongside map-car-delta-float and register the emote in the prefers-reduced-motion block.",
+        "Cover the clock behaviour with tests: an emote appears when its position is crossed, and clears without leaking timers."
+      ],
+      "scope_out": [
+        "Do not change how position deltas are computed or displayed.",
+        "Do not add a settings toggle unless review asks for one.",
+        "Do not render emotes outside the replay map."
+      ],
+      "acceptance_criteria": [
+        "AC1: Every car on the map can display an emote, not only the player's.",
+        "AC2: The emote appears when the clock crosses the event position, floats, fades and is removed.",
+        "AC3: Timers are cleared on unmount and no emote state leaks between replays.",
+        "AC4: Under prefers-reduced-motion the emote is shown without motion.",
+        "AC5: Lint, typecheck, build, unit tests and the e2e suite pass."
+      ]
+    }
+  ],
+  "orchestration_task": {
+    "title": "Orchestrate race replay driver emotes",
+    "plan": [
+      "Read CircuitMap.tsx around the car.eventLabel slot, useReplayClock.ts around positionPops, and RaceEventType in packages/shared/src/domain/race.ts before writing any code.",
+      "Measure event density on a real race first: build a solo fixture, resolve a Grand Prix, and count events per team and per type, so the cooldown is tuned against data rather than guessed.",
+      "Implement the pure event-to-emote mapping and the cooldown in packages/shared, with tests, before touching any rendering.",
+      "Generate the sheet prompt with logics-manager design prompt, then slice, extract and convert following the board icon assets runbook.",
+      "Add the emote channel to useReplayClock by mirroring positionPops, then feed the existing CircuitMap slot for every car in the field.",
+      "Add the float keyframe and the prefers-reduced-motion entry alongside the existing ones.",
+      "Verify visually on a rendered replay, not only through unit tests, and check that the emote does not collide with the position delta.",
+      "Run lint, typecheck, build, unit tests and the e2e suite, and record the results."
+    ]
+  },
+  "context_pack": {
+    "out": "logics/context-packs/race-replay-driver-emotes.json",
+    "mode": "summary-only",
+    "profile": "normal"
+  }
+}

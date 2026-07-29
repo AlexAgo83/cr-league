@@ -1,0 +1,49 @@
+{
+  "asset_kind": "icon-sheet",
+  "cell_size": "256x256",
+  "cells": [
+    "scare: a worried grimace, wide eyes, sweat drop",
+    "relief: an exhaling face, eyes closed, puff of breath",
+    "fire: a determined blazing face",
+    "angry: a frustrated snort, furrowed brow",
+    "eyeing: narrowed focused eyes sizing up a target",
+    "pressure: a tense clenched grimace, gritted teeth",
+    "dizzy: a dazed face with spiral eyes",
+    "strong: a confident grin with a flexed arm",
+    "empty-battery: a drained face beside a flat battery",
+    "warning: an alarmed face beside a hazard triangle",
+    "cheer: a jubilant open-mouthed cheer",
+    "smug: a self-satisfied smirk",
+    "shocked: a jaw-dropped gasp",
+    "cool: a face wearing dark visor shades",
+    "sad: a downcast disappointed face",
+    "sleepy: a bored half-lidded yawn"
+  ],
+  "count": 16,
+  "generator_target": "general AI image generator",
+  "kind": "logics-design-prompt-pack",
+  "layout": "4x4 grid",
+  "machining": [
+    "slice grid cells before resizing",
+    "trim transparent padding only after slicing",
+    "name files 01-name.png, 02-name.png, ..."
+  ],
+  "ok": true,
+  "palette": "warm oranges, reds, charcoal, steel grey, gold; no blues",
+  "prompt": "Create 16 icon sheet asset(s) for: driver reaction emotes that pop above a race car during a replay, seen at small size on a dark map.\nGenerator target: general AI image generator.\nCanvas: 4x4 grid, 1024x1024 total with 256x256 cells; transparent background PNG; one asset per cell, centered, with generous padding and no bleed between cells. Fill left-to-right, then top-to-bottom.\nAssets, in fill order:\n1. scare: a worried grimace, wide eyes, sweat drop\n2. relief: an exhaling face, eyes closed, puff of breath\n3. fire: a determined blazing face\n4. angry: a frustrated snort, furrowed brow\n5. eyeing: narrowed focused eyes sizing up a target\n6. pressure: a tense clenched grimace, gritted teeth\n7. dizzy: a dazed face with spiral eyes\n8. strong: a confident grin with a flexed arm\n9. empty-battery: a drained face beside a flat battery\n10. warning: an alarmed face beside a hazard triangle\n11. cheer: a jubilant open-mouthed cheer\n12. smug: a self-satisfied smirk\n13. shocked: a jaw-dropped gasp\n14. cool: a face wearing dark visor shades\n15. sad: a downcast disappointed face\n16. sleepy: a bored half-lidded yawn\nPalette: warm oranges, reds, charcoal, steel grey, gold; no blues. Do not introduce colours outside it.\nStyle: glossy 3D board-game token, thick soft outlines, saturated colours, subtle top-left light.\nClean silhouettes, consistent lighting and perspective, readable at 24px, 32px and 48px.\nExclude: text, letters, numbers, labels, grid lines, watermarks, background decoration, any opaque or gradient background, drop shadows cast onto the transparent background, cropped or clipped assets.",
+  "ref": "",
+  "safe_area": "",
+  "sections": {
+    "canvas": "Canvas: 4x4 grid, 1024x1024 total with 256x256 cells; transparent background PNG; one asset per cell, centered, with generous padding and no bleed between cells. Fill left-to-right, then top-to-bottom.",
+    "cells": "Assets, in fill order:\n1. scare: a worried grimace, wide eyes, sweat drop\n2. relief: an exhaling face, eyes closed, puff of breath\n3. fire: a determined blazing face\n4. angry: a frustrated snort, furrowed brow\n5. eyeing: narrowed focused eyes sizing up a target\n6. pressure: a tense clenched grimace, gritted teeth\n7. dizzy: a dazed face with spiral eyes\n8. strong: a confident grin with a flexed arm\n9. empty-battery: a drained face beside a flat battery\n10. warning: an alarmed face beside a hazard triangle\n11. cheer: a jubilant open-mouthed cheer\n12. smug: a self-satisfied smirk\n13. shocked: a jaw-dropped gasp\n14. cool: a face wearing dark visor shades\n15. sad: a downcast disappointed face\n16. sleepy: a bored half-lidded yawn",
+    "exclude": "Exclude: text, letters, numbers, labels, grid lines, watermarks, background decoration, any opaque or gradient background, drop shadows cast onto the transparent background, cropped or clipped assets.",
+    "palette": "Palette: warm oranges, reds, charcoal, steel grey, gold; no blues. Do not introduce colours outside it.",
+    "quality": "Clean silhouettes, consistent lighting and perspective, readable at 24px, 32px and 48px.",
+    "style": "Style: glossy 3D board-game token, thick soft outlines, saturated colours, subtle top-left light.",
+    "subject": "Create 16 icon sheet asset(s) for: driver reaction emotes that pop above a race car during a replay, seen at small size on a dark map.",
+    "target": "Generator target: general AI image generator."
+  },
+  "sliceable": true,
+  "style": "glossy 3D board-game token, thick soft outlines, saturated colours, subtle top-left light",
+  "transparent": true
+}

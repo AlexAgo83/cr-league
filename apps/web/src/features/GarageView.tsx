@@ -1,6 +1,5 @@
 import { CAR_ASSET_PRICES, type CardId, type CarAssetId, type RaceResult } from "@cr-league/shared";
 import { useT } from "../i18n/index.js";
-import type { CSSProperties } from "react";
 import { useEffect, useState } from "react";
 import type { TranslationKey } from "../i18n/index.js";
 import { safeStorage } from "../app/appStorage.js";
@@ -11,6 +10,7 @@ import { AssetImage } from "./AssetImage.js";
 import { CardGuidance } from "./CardGuidance.js";
 import { CardArtImage, CardStatBadges } from "./CardStatBadges.js";
 import { CAR_ASSETS, DEFAULT_CAR_ASSET, DEFAULT_CAR_ASSET_INDEX } from "./carAssets.js";
+import { TeamCar } from "./TeamCar.js";
 import { LiveryPlate } from "./LiveryPlate.js";
 import { Modal } from "./Modal.js";
 import { ModalHero } from "./ModalHero.js";
@@ -158,9 +158,8 @@ export function GarageView({
   const selectedCarPrice = CAR_ASSET_PRICES[selectedCarAsset.id];
   const selectedCarUnlocked = selectedCarPrice === 0 || (playerTeam.unlockedCarAssetIds ?? []).includes(selectedCarAsset.id);
   const selectedCarAffordable = playerTeam.credits >= selectedCarPrice;
-  const carTintStyle = { "--garage-car-secondary": livery.secondary, "--garage-car-stroke": livery.primary } as CSSProperties & Record<string, string>;
-  const topCarStyle = { ...carTintStyle, "--garage-car-mask": `url("${selectedCarAsset.top}")` } as CSSProperties & Record<string, string>;
-  const sideCarStyle = { ...carTintStyle, "--garage-car-mask": `url("${selectedCarAsset.side}")` } as CSSProperties & Record<string, string>;
+  // The showcase previews the skin being browsed, which is not the one the team wears yet.
+  const previewLivery = { ...livery, carAssetId: selectedCarAsset.id };
   const canChangeCarAsset = CAR_ASSETS.length > 1;
   const selectedSkinSaved = selectedCarAsset.id === livery.carAssetId || (!livery.carAssetId && selectedCarAsset.id === DEFAULT_CAR_ASSET.id);
   const selectedCarActionIcon: BoardIconName = selectedSkinSaved ? "reliability-prep" : selectedCarUnlocked ? "car-skin" : "setup-locked";
@@ -184,16 +183,12 @@ export function GarageView({
         </div>
         <div className="garage-car-showcase">
           <div className="garage-car-assets-row">
-            <span className={`garage-car-preview-frame garage-car-preview-top${selectedCarUnlocked ? "" : " locked"}`} style={topCarStyle}>
-              <AssetImage className="garage-car-preview" src={selectedCarAsset.top} alt="" />
-              <span className="garage-car-gradient" aria-hidden="true" />
+            <TeamCar livery={previewLivery} locked={!selectedCarUnlocked} view="top">
               {!selectedCarUnlocked ? <CarLock /> : null}
-            </span>
-            <span className={`garage-car-preview-frame garage-car-preview-side${selectedCarUnlocked ? "" : " locked"}`} style={sideCarStyle}>
-              <AssetImage className="garage-car-preview" src={selectedCarAsset.side} alt="" />
-              <span className="garage-car-gradient" aria-hidden="true" />
+            </TeamCar>
+            <TeamCar livery={previewLivery} locked={!selectedCarUnlocked} view="side">
               {!selectedCarUnlocked ? <CarLock /> : null}
-            </span>
+            </TeamCar>
           </div>
           <div className="garage-car-controls-row">
             <button className="garage-car-skin-button" type="button" aria-label="Previous car skin" disabled={!canChangeCarAsset} onClick={() => previewCarAsset((carAssetIndex + CAR_ASSETS.length - 1) % CAR_ASSETS.length)}>

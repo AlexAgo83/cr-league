@@ -4,6 +4,7 @@ import { ConfirmActionModal } from "./AppModals.js";
 import { BoardIcon, type BoardIconName } from "../features/VisualIcon.js";
 import { PendingFeedback } from "../features/PendingFeedback.js";
 import { LiveryPlate } from "../features/LiveryPlate.js";
+import { TeamCar } from "../features/TeamCar.js";
 import type { FormState } from "./types.js";
 import type { SoloSlotSummary } from "./soloStorage.js";
 import type { StoredPlayerClaim } from "./appStorage.js";
@@ -121,7 +122,7 @@ export function SoloSlotsView({
                 onClick={() => onOpenSlot(index)}
               >
                 {slot?.livery ? (
-                  <LiveryPlate className="setup-choice-icon save-livery-plate" livery={slot.livery} name={slot.teamName} />
+                  <TeamCar className="solo-slot-car" livery={slot.livery} />
                 ) : (
                   <BoardIcon className="setup-choice-icon" name={slot ? "stand-drive" : "empty-card-slot"} />
                 )}

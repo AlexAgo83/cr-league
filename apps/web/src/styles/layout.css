@@ -5275,6 +5275,20 @@ label small {
   min-width: 0;
 }
 
+/* Wider than the 40px board icon it replaces: a car read at icon size is a smudge. Scoped past
+   the garage frame's own 176px basis, which would otherwise size it. */
+.solo-slot-open .solo-slot-car {
+  flex: none;
+  width: 92px;
+}
+
+/* The empty slot's icon keeps its own size but takes the car's width, so all three cells start
+   their copy on the same line. */
+.solo-slot-open .setup-choice-icon {
+  object-fit: contain;
+  width: 92px;
+}
+
 /* No size of its own: in a slot it inherits the 40px of the board icon it replaces, so a
    filled and an empty slot keep their copy on the same line. */
 .save-livery-plate {
